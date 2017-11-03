@@ -248,6 +248,11 @@ drawing.symbolNumber = function(v) {
     return Math.floor(Math.max(v, 0));
 };
 
+function makePointPath(symbolNumber, r) {
+    var base = symbolNumber % 100;
+    return drawing.symbolFuncs[base](r) + (symbolNumber >= 200 ? DOTPATH : '');
+}
+
 function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine, gd) {
     if(Registry.traceIs(trace, 'symbols')) {
         var sizeFn = makeBubbleSizeFn(trace);
@@ -256,8 +261,9 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
             var r;
 
             // handle multi-trace graph edit case
-            if(d.ms === 'various' || marker.size === 'various') r = 3;
-            else {
+            if(d.ms === 'various' || marker.size === 'various') {
+                r = 3;
+            } else {
                 r = subTypes.isBubble(trace) ?
                         sizeFn(d.ms) : (marker.size || 6) / 2;
             }
@@ -266,15 +272,13 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
             d.mrc = r;
 
             // turn the symbol into a sanitized number
-            var x = drawing.symbolNumber(d.mx || marker.symbol) || 0,
-                xBase = x % 100;
+            var x = drawing.symbolNumber(d.mx || marker.symbol) || 0;
 
             // save if this marker is open
             // because that impacts how to handle colors
             d.om = x % 200 >= 100;
 
-            return drawing.symbolFuncs[xBase](r) +
-                (x >= 200 ? DOTPATH : '');
+            return makePointPath(x, r);
         });
     }
 
@@ -443,13 +447,41 @@ drawing.selectedPointStyle = function(s, trace) {
 
     s.each(function(d) {
         var pt = d3.select(this);
-        var smc = (selectedAttrs.marker || {}).color;
-        var usmc = (unselectedAttrs.marker || {}).color;
+        var marker = trace.marker || {};
+        var selectedMarker = selectedAttrs.marker || {};
+        var unselectedMarker = unselectedAttrs.marker || {};
+
+        var smc = selectedMarker.color;
+        var usmc = unselectedMarker.color;
 
         if(d.selected) {
             if(smc) Color.fill(pt, smc);
         } else {
             if(usmc) Color.fill(pt, usmc);
+        }
+
+        if(Registry.traceIs(trace, 'symbols')) {
+            var sms = selectedMarker.size;
+            var smx = selectedMarker.symbol;
+            var usms = unselectedMarker.size;
+            var usmx = unselectedMarker.symbol;
+            var mrc = d.mrc;
+            var mx = d.mx || marker.symbol || 0;
+            var mrc2;
+            var mx2;
+
+            if(d.selected) {
+                mrc2 = (sms + 1) ? sms / 2 : mrc;
+                mx2 = smx || mx;
+            } else {
+                mrc2 = (usms + 1) ? usms / 2 : mrc;
+                mx2 = usmx || mx;
+            }
+
+            // save for selectedTextStyle
+            d.mrc2 = mrc2;
+
+            pt.attr('d', makePointPath(drawing.symbolNumber(mx2), mrc2));
         }
     });
 };
@@ -467,8 +499,39 @@ drawing.tryColorscale = function(marker, prefix) {
     else return Lib.identity;
 };
 
-// draw text at points
 var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1};
+
+function textPointPosition(s, textPosition, fontSize, markerRadius) {
+    var group = d3.select(s.node().parentNode);
+
+    var v = textPosition.indexOf('top') !== -1 ?
+        'top' :
+        textPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
+    var h = textPosition.indexOf('left') !== -1 ?
+        'end' :
+        textPosition.indexOf('right') !== -1 ? 'start' : 'middle';
+
+    // if markers are shown, offset a little more than
+    // the nominal marker size
+    // ie 2/1.6 * nominal, bcs some markers are a bit bigger
+    var r = markerRadius ? markerRadius / 0.8 + 1 : 0;
+
+    var numLines = (svgTextUtils.lineCount(s) - 1) * LINE_SPACING + 1;
+    var dx = TEXTOFFSETSIGN[h] * r;
+    var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
+            (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
+
+    // fix the overall text group position
+    s.attr('text-anchor', h);
+    group.attr('transform', 'translate(' + dx + ',' + dy + ')');
+}
+
+function extracTextFontSize(d, trace) {
+    var fontSize = d.ts || trace.textfont.size;
+    return (isNumeric(fontSize) && fontSize > 0) ? fontSize : 0;
+}
+
+// draw text at points
 drawing.textPointStyle = function(s, trace, gd) {
     s.each(function(d) {
         var p = d3.select(this);
@@ -479,35 +542,16 @@ drawing.textPointStyle = function(s, trace, gd) {
             return;
         }
 
-        var pos = d.tp || trace.textposition,
-            v = pos.indexOf('top') !== -1 ? 'top' :
-                pos.indexOf('bottom') !== -1 ? 'bottom' : 'middle',
-            h = pos.indexOf('left') !== -1 ? 'end' :
-                pos.indexOf('right') !== -1 ? 'start' : 'middle',
-            fontSize = d.ts || trace.textfont.size,
-            // if markers are shown, offset a little more than
-            // the nominal marker size
-            // ie 2/1.6 * nominal, bcs some markers are a bit bigger
-            r = d.mrc ? (d.mrc / 0.8 + 1) : 0;
-
-        fontSize = (isNumeric(fontSize) && fontSize > 0) ? fontSize : 0;
+        var pos = d.tp || trace.textposition;
+        var fontSize = extracTextFontSize(d, trace);
 
         p.call(drawing.font,
                 d.tf || trace.textfont.family,
                 fontSize,
                 d.tc || trace.textfont.color)
-            .attr('text-anchor', h)
             .text(text)
-            .call(svgTextUtils.convertToTspans, gd);
-
-        var pgroup = d3.select(this.parentNode);
-        var numLines = (svgTextUtils.lineCount(p) - 1) * LINE_SPACING + 1;
-        var dx = TEXTOFFSETSIGN[h] * r;
-        var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
-                (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
-
-        // fix the overall text group position
-        pgroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
+            .call(svgTextUtils.convertToTspans, gd)
+            .call(textPointPosition, pos, fontSize, d.mrc);
     });
 };
 
@@ -520,6 +564,8 @@ drawing.selectedTextStyle = function(s, trace) {
     s.each(function(d) {
         var tx = d3.select(this);
         var tc = d.tc || trace.textfont.color;
+        var tp = d.tp || trace.textposition;
+        var fontSize = extracTextFontSize(d, trace);
         var stc = (selectedAttrs.textfont || {}).color;
         var utc = (unselectedAttrs.textfont || {}).color;
         var tc2;
@@ -533,6 +579,7 @@ drawing.selectedTextStyle = function(s, trace) {
         }
 
         Color.fill(tx, tc2);
+        textPointPosition(tx, tp, fontSize, d.mrc2 || d.mrc);
     });
 };
 

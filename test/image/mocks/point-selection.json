@@ -13,7 +13,8 @@
     "selectedpoints": [1, 2, 3],
     "selected": {
       "marker": {
-        "color": "blue"
+        "color": "blue",
+        "size": 20
       }
     },
     "unselected": {

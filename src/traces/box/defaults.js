@@ -87,6 +87,8 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
         coerce('unselected.marker.opacity', DESELECTDIM * mo);
         coerce('selected.marker.color');
         coerce('unselected.marker.color');
+        coerce('selected.marker.size');
+        coerce('unselected.marker.size');
 
         coerce('text');
     } else {

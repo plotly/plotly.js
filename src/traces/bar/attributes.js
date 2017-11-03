@@ -159,8 +159,24 @@ module.exports = {
 
     marker: marker,
 
-    selected: scatterAttrs.selected,
-    unselected: scatterAttrs.unselected,
+    selected: {
+        marker: {
+            opacity: scatterAttrs.selected.marker.opacity,
+            color: scatterAttrs.selected.marker.color,
+            editType: 'style'
+        },
+        textfont: scatterAttrs.selected.textfont,
+        editType: 'style'
+    },
+    unselected: {
+        marker: {
+            opacity: scatterAttrs.unselected.marker.opacity,
+            color: scatterAttrs.unselected.marker.color,
+            editType: 'style'
+        },
+        textfont: scatterAttrs.unselected.textfont,
+        editType: 'style'
+    },
 
     r: scatterAttrs.r,
     t: scatterAttrs.t,

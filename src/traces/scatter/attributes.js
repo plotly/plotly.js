@@ -393,6 +393,13 @@ module.exports = {
                 editType: 'style',
                 description: 'Sets the marker color of selected points.'
             },
+            size: {
+                valType: 'number',
+                min: 0,
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the marker size of selected points.'
+            },
             editType: 'style'
         },
         textfont: {
@@ -421,6 +428,13 @@ module.exports = {
                 role: 'style',
                 editType: 'style',
                 description: 'Sets the marker color of unselected points, applied only when a selection exists.'
+            },
+            size: {
+                valType: 'number',
+                min: 0,
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the marker size of unselected points, applied only when a selection exists.'
             },
             editType: 'style'
         },

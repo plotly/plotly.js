@@ -48,6 +48,9 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
 
         coerce('selected.marker.color');
         coerce('unselected.marker.color');
+
+        coerce('selected.marker.size');
+        coerce('unselected.marker.size');
     }
 
     if(!opts.noLine) {
