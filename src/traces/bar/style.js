@@ -35,7 +35,7 @@ module.exports = function style(gd, cd) {
 
     s.selectAll('g.points').each(function(d) {
         var sel = d3.select(this);
-        var pts = sel.selectAll('.point');
+        var pts = sel.selectAll('path');
         var txs = sel.selectAll('text');
         var trace = d[0].trace;
 
