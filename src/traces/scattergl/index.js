@@ -502,24 +502,22 @@ ScatterRegl.calc = function calc(container, trace) {
         // highlight selected points
         scene.select = function select(selection) {
             if(!scene.select2d) return;
+            if(!selection.length) return;
 
             scene.select2d.regl.clear({color: true});
 
-            if(!selection.length) return;
+            var batch = Array(scene.count), i, traceId;
+            for (i = 0; i < scene.count; i++) {
+                batch[i] = []
+            }
 
-            var options = selection.map(function(points) {
-                if(!points || !points.length) return null;
+            for(i = 0; i < selection.length; i++) {
+                var traceId = selection[i].curveNumber || 0;
+                batch[traceId].push(selection[i].pointNumber);
+            }
 
-                var elements = Array(points.length);
-                for(var i = 0; i < points.length; i++) {
-                    elements[i] = points[i].pointNumber;
-                }
-                return elements;
-            });
+            scene.select2d.draw(batch);
 
-            scene.select2d.draw(options);
-
-            // FIXME: this can be a strong guess, possibly we can redraw scene once
             scene.scatter2d.regl.clear({color: true});
             scene.draw();
         };
@@ -702,6 +700,8 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
         var cd = cdscatter[0];
         var trace = cd.trace;
         var stash = cd.t;
+        var x = stash.rawx,
+            y = stash.rawy;
         var xaxis = Axes.getFromId(container, trace.xaxis || 'x');
         var yaxis = Axes.getFromId(container, trace.yaxis || 'y');
 
@@ -723,8 +723,8 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
             // precalculate px coords since we are not going to pan during select
             var xpx = Array(stash.count), ypx = Array(stash.count);
             for(var i = 0; i < stash.count; i++) {
-                xpx[i] = xaxis.c2p(trace.x[i]);
-                ypx[i] = yaxis.c2p(trace.y[i]);
+                xpx[i] = xaxis.c2p(x[i]);
+                ypx[i] = yaxis.c2p(y[i]);
             }
             stash.xpx = xpx;
             stash.ypx = ypx;
@@ -923,8 +923,11 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
     }
     // filter out points by visible scatter ones
     else {
+        let els = []
+
         for(var i = 0; i < stash.count; i++) {
             if(polygon.contains([stash.xpx[i], stash.ypx[i]])) {
+                els.push(i)
                 selection.push({
                     pointNumber: i,
                     x: x[i],
@@ -939,7 +942,11 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
                 return {opacity: opt.opacity * DESELECTDIM};
             }));
         }
+
+        // update scattergl selection
+        scene.select(selection);
     }
+
 
     return selection;
 };

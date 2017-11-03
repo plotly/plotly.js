@@ -2039,7 +2039,7 @@ function _relayout(gd, aobj) {
             else flags.plot = true;
         }
         else {
-            if(fullLayout._has('gl2d') &&
+            if((fullLayout._has('gl2d') || fullLayout._has('regl')) &&
                 (ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))

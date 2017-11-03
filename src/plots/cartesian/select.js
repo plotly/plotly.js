@@ -118,24 +118,21 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         fillRangeItems = plotinfo.fillRangeItems;
     } else {
         if(mode === 'select') {
-            // FIXME: this is regression
-            fillRangeItems = function(eventData, currentPolygon) {
+            fillRangeItems = function(eventData, poly) {
                 var ranges = eventData.range = {};
 
                 for(i = 0; i < allAxes.length; i++) {
                     var ax = allAxes[i];
                     var axLetter = ax._id.charAt(0);
-                    var x = axLetter === 'x';
 
-                    // FIXME: this should be fixed to read xmin/xmax, ymin/ymax
                     ranges[ax._id] = [
-                        ax.p2d(currentPolygon[0][x ? 0 : 1]),
-                        ax.p2d(currentPolygon[2][x ? 0 : 1])
+                        ax.p2d(poly[axLetter + 'min']),
+                        ax.p2d(poly[axLetter + 'max'])
                     ].sort(ascending);
                 }
             };
         } else {
-            fillRangeItems = function(eventData, currentPolygon, filterPoly) {
+            fillRangeItems = function(eventData, poly, filterPoly) {
                 var dataPts = eventData.lassoPoints = {};
 
                 for(i = 0; i < allAxes.length; i++) {
@@ -220,15 +217,12 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             function() {
                 selection = [];
 
-                var traceSelections = [], traceSelection;
+                var thisSelection;
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 
-                    traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
-                    traceSelections.push(traceSelection);
-
-                    var thisSelection = fillSelectionItem(
-                        traceSelection, searchInfo
+                    thisSelection = fillSelectionItem(
+                        searchInfo.selectPoints(searchInfo, testPoly), searchInfo
                     );
                     if(selection.length) {
                         for(var j = 0; j < thisSelection.length; j++) {
@@ -236,6 +230,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                         }
                     }
                     else selection = thisSelection;
+                }
+
+                // update selection scene
+                if (plotinfo._scene) {
+                    plotinfo._scene.select(selection)
                 }
 
                 eventData = {points: selection};

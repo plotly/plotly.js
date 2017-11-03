@@ -30,7 +30,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
 
     var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
 
-    if(polygon === false) { // clear selection
+    if(polygon === false || polygon.degenerate) { // clear selection
         for(i = 0; i < cd.length; i++) cd[i].dim = 0;
     }
     else {
