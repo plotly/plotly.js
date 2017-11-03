@@ -41,7 +41,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         xAxisIds = dragOptions.xaxes.map(getAxId),
         yAxisIds = dragOptions.yaxes.map(getAxId),
         allAxes = dragOptions.xaxes.concat(dragOptions.yaxes),
-        filterPoly, testPoly, mergedPolygons, currentPolygon;
+        filterPoly, testPoly, mergedPolygons, currentPolygon,
+        subtract = e.altKey;
 
     if(mode === 'lasso') {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
@@ -196,7 +197,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
         // create outline & tester
         if(dragOptions.polygons && dragOptions.polygons.length) {
-            mergedPolygons = joinPolygons(dragOptions.mergedPolygons, currentPolygon);
+            mergedPolygons = mergePolygons(dragOptions.mergedPolygons, currentPolygon, subtract);
+            currentPolygon.subtract = subtract;
             testPoly = multipolygonTester(dragOptions.polygons.concat([currentPolygon]));
         }
         else {
@@ -265,17 +267,33 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
             if(currentPolygon && dragOptions.polygons) {
                 // save last polygons
+                currentPolygon.subtract = subtract;
                 dragOptions.polygons.push(currentPolygon);
 
-                // we have to keep reference to arrays, therefore just replace items
-                dragOptions.mergedPolygons.splice.apply(dragOptions.mergedPolygons, [0, dragOptions.mergedPolygons.length].concat(mergedPolygons));
+                // we have to keep reference to arrays container
+                dragOptions.mergedPolygons.length = 0;
+                [].push.apply(dragOptions.mergedPolygons, mergedPolygons);
             }
         });
     };
 };
 
-function joinPolygons(list, poly) {
-    var res = polybool.union({
+function mergePolygons(list, poly, subtract) {
+    var res;
+
+    if(subtract) {
+        res = polybool.difference({
+            regions: list,
+            inverted: false
+        }, {
+            regions: [poly],
+            inverted: false
+        });
+
+        return res.regions;
+    }
+
+    res = polybool.union({
         regions: list,
         inverted: false
     }, {
