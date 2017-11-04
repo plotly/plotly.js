@@ -24,16 +24,16 @@ var axisIds = require('./axis_ids');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    var layoutKeys = Object.keys(layoutIn),
-        xaListCartesian = [],
-        yaListCartesian = [],
-        xaListGl2d = [],
-        yaListGl2d = [],
-        xaCheater = {},
-        xaNonCheater = {},
-        outerTicks = {},
-        noGrids = {},
-        i;
+    var layoutKeys = Object.keys(layoutIn);
+    var xaListCartesian = [];
+    var yaListCartesian = [];
+    var xaListGl2d = [];
+    var yaListGl2d = [];
+    var xaCheater = {};
+    var xaNonCheater = {};
+    var outerTicks = {};
+    var noGrids = {};
+    var i;
 
     // look for axes in the data
     for(i = 0; i < fullData.length; i++) {
@@ -50,8 +50,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
         else continue;
 
-        var xaName = axisIds.id2name(trace.xaxis),
-            yaName = axisIds.id2name(trace.yaxis);
+        var xaName = axisIds.id2name(trace.xaxis);
+        var yaName = axisIds.id2name(trace.yaxis);
 
         // Two things trigger axis visibility:
         // 1. is not carpet
@@ -116,14 +116,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     function axSort(a, b) {
-        var aNum = Number(a.substr(5) || 1),
-            bNum = Number(b.substr(5) || 1);
+        var aNum = Number(a.substr(5) || 1);
+        var bNum = Number(b.substr(5) || 1);
         return aNum - bNum;
     }
 
-    var xaList = xaListCartesian.concat(xaListGl2d).sort(axSort),
-        yaList = yaListCartesian.concat(yaListGl2d).sort(axSort),
-        axesList = xaList.concat(yaList);
+    var xaList = xaListCartesian.concat(xaListGl2d).sort(axSort);
+    var yaList = yaListCartesian.concat(yaListGl2d).sort(axSort);
+    var axesList = xaList.concat(yaList);
 
     // plot_bgcolor only makes sense if there's a (2D) plot!
     // TODO: bgcolor for each subplot, to inherit from the main one
