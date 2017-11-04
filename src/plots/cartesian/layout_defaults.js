@@ -29,8 +29,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         yaListCartesian = [],
         xaListGl2d = [],
         yaListGl2d = [],
-        xaListCheater = [],
-        xaListNonCheater = [],
+        xaCheater = {},
+        xaNonCheater = {},
         outerTicks = {},
         noGrids = {},
         i;
@@ -57,7 +57,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         // 1. is not carpet
         // 2. carpet that's not cheater
         if(!Registry.traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
-            if(xaName) Lib.pushUnique(xaListNonCheater, xaName);
+            if(xaName) xaNonCheater[xaName] = 1;
         }
 
         // The above check for definitely-not-cheater is not adequate. This
@@ -65,7 +65,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         // full condition triggering hiding is:
         //   *could* be a cheater and *is not definitely visible*
         if(trace.type === 'carpet' && trace._cheater) {
-            if(xaName) Lib.pushUnique(xaListCheater, xaName);
+            if(xaName) xaCheater[xaName] = 1;
         }
 
         // add axes implied by traces
@@ -186,7 +186,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             data: fullData,
             bgColor: bgColor,
             calendar: layoutOut.calendar,
-            cheateronly: axLetter === 'x' && (xaListCheater.indexOf(axName) !== -1 && xaListNonCheater.indexOf(axName) === -1)
+            cheateronly: axLetter === 'x' && (xaCheater[axName] && !xaNonCheater[axName])
         };
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
