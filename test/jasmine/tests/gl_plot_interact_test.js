@@ -839,6 +839,7 @@ describe('Test gl2d plots', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000
     });
 
     afterEach(function() {
@@ -855,12 +856,14 @@ describe('Test gl2d plots', function() {
 
     it('should respond to drag interactions', function(done) {
         var _mock = Lib.extendDeep({}, mock);
+        _mock.data[0].type = 'scatter'
+
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
-        var originalX = [-0.3037383177570093, 5.303738317757009];
-        var originalY = [-0.5532219548705213, 6.191112269783224];
-        var newX = [-0.5373831775700935, 5.070093457943925];
-        var newY = [-1.7575673521301187, 4.986766872523626];
+        var originalX = [-0.3169014084507042,5.316901408450704];
+        var originalY = [-0.5806379476536665,6.218528262566369];
+        var newX = [-0.5516431924882629,5.082159624413145];
+        var newY = [-1.7947747709072441,5.004391439312791];
         var precision = 5;
 
         Plotly.plot(gd, _mock)
@@ -931,9 +934,10 @@ describe('Test gl2d plots', function() {
 
             // a callback value structure and contents check
             expect(relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({
-                lastInputTime: jasmine.any(Number),
-                xaxis: [jasmine.any(Number), jasmine.any(Number)],
-                yaxis: [jasmine.any(Number), jasmine.any(Number)]
+                'xaxis.range[0]': jasmine.any(Number),
+                'xaxis.range[1]': jasmine.any(Number),
+                'yaxis.range[0]': jasmine.any(Number),
+                'yaxis.range[1]': jasmine.any(Number)
             }));
         })
         .then(done);
