@@ -26,6 +26,7 @@ var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var svgSdf = require('svg-path-sdf');
+var fillHoverText = require('../scatter/fill_hover_text');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var MAXDIST = Fx.constants.MAXDIST;
@@ -876,6 +877,24 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
         yc = ya.c2p(di.y, true),
         rad = di.mrc || 1;
 
+    var hoverlabel = trace.hoverlabel;
+
+    if (hoverlabel) {
+        di.hbg = Array.isArray(hoverlabel.bgcolor) ? hoverlabel.bgcolor[id] : hoverlabel.bgcolor;
+        di.hbc = Array.isArray(hoverlabel.bordercolor) ? hoverlabel.bordercolor[id] : hoverlabel.bordercolor;
+        di.hts = Array.isArray(hoverlabel.font.size) ? hoverlabel.font.size[id] : hoverlabel.font.size;
+        di.htc = Array.isArray(hoverlabel.font.color) ? hoverlabel.font.color[id] : hoverlabel.font.color;
+        di.htf = Array.isArray(hoverlabel.font.family) ? hoverlabel.font.family[id] : hoverlabel.font.family;
+        di.hnl = Array.isArray(hoverlabel.namelength) ? hoverlabel.namelength[id] : hoverlabel.namelength;
+    }
+    var hoverinfo = trace.hoverinfo;
+    if (hoverinfo) {
+        di.hi = Array.isArray(hoverinfo) ? hoverinfo[id] : hoverinfo;
+    }
+
+    var fakeCd = {};
+    fakeCd[pointData.index] = di;
+
     Lib.extendFlat(pointData, {
         color: getTraceColor(trace, di),
 
@@ -885,13 +904,17 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
 
         y0: yc - rad,
         y1: yc + rad,
-        yLabelVal: di.y
+        yLabelVal: di.y,
+
+        cd: fakeCd
     });
 
     if(di.htx) pointData.text = di.htx;
     else if(trace.hovertext) pointData.text = trace.hovertext;
     else if(di.tx) pointData.text = di.tx;
     else if(trace.text) pointData.text = trace.text;
+
+    fillHoverText(di, trace, pointData);
     ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];
