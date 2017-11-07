@@ -12,26 +12,24 @@ var extendDeepAll = Lib.extendDeepAll;
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 
 var µ = module.exports = { version: '0.2.2' };
-
-µ.Axis = function module() {
-    var config = {
-        data: [],
-        layout: {}
-    }, inputConfig = {}, liveConfig = {};
+µ.Axis = function module(){
+    var config = {data: [],layout: {}}, inputConfig = {}, liveConfig = {};
     var svg, container, dispatch = d3.dispatch('hover'), radialScale, angularScale;
     var exports = {};
+
     function render(_container) {
         container = _container || container;
         var data = config.data;
         var axisConfig = config.layout;
+
+        // set container if container isnt set right ?
         if (typeof container == 'string' || container.nodeName) container = d3.select(container);
         container.datum(data).each(function(_data, _index) {
             var dataOriginal = _data.slice();
-            liveConfig = {
-                data: µ.util.cloneJson(dataOriginal),
-                layout: µ.util.cloneJson(axisConfig)
-            };
+            liveConfig = {data: µ.util.cloneJson(dataOriginal),layout: µ.util.cloneJson(axisConfig)};
+            //debugger;
             var colorIndex = 0;
+
             dataOriginal.forEach(function(d, i) {
                 if (!d.color) {
                     d.color = axisConfig.defaultColorRange[colorIndex];
@@ -45,15 +43,18 @@ var µ = module.exports = { version: '0.2.2' };
                 liveConfig.data[i].strokeDash = d.strokeDash;
                 liveConfig.data[i].strokeSize = d.strokeSize;
             });
+
             var data = dataOriginal.filter(function(d, i) {
                 var visible = d.visible;
                 return typeof visible === 'undefined' || visible === true;
             });
+
             var isStacked = false;
             var dataWithGroupId = data.map(function(d, i) {
                 isStacked = isStacked || typeof d.groupId !== 'undefined';
                 return d;
             });
+
             if (isStacked) {
                 var grouped = d3.nest().key(function(d, i) {
                     return typeof d.groupId != 'undefined' ? d.groupId : 'unstacked';
@@ -133,6 +134,7 @@ var µ = module.exports = { version: '0.2.2' };
             liveConfig.layout.angularAxis.domain = angularScale.domain();
             liveConfig.layout.angularAxis.endPadding = needsEndSpacing ? angularDomainStep : 0;
             svg = d3.select(this).select('svg.chart-root');
+            debugger;
             if (typeof svg === 'undefined' || svg.empty()) {
                 var skeleton = "<svg xmlns='http://www.w3.org/2000/svg' class='chart-root'>' + '<g class='outer-group'>' + '<g class='chart-group'>' + '<circle class='background-circle'></circle>' + '<g class='geometry-group'></g>' + '<g class='radial axis-group'>' + '<circle class='outside-circle'></circle>' + '</g>' + '<g class='angular axis-group'></g>' + '<g class='guides-group'><line></line><circle r='0'></circle></g>' + '</g>' + '<g class='legend-group'></g>' + '<g class='tooltips-group'></g>' + '<g class='title-group'><text></text></g>' + '</g>' + '</svg>";
                 var doc = new DOMParser().parseFromString(skeleton, 'application/xml');
@@ -161,6 +163,7 @@ var µ = module.exports = { version: '0.2.2' };
                     return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;
                 }).join(',')
             };
+            
             var legendContainer;
             if (axisConfig.showLegend) {
                 legendContainer = svg.select('.legend-group').attr({
@@ -175,6 +178,11 @@ var µ = module.exports = { version: '0.2.2' };
                     datumClone.color = d.geometry === 'LinePlot' ? d.strokeColor : d.color;
                     return datumClone;
                 });
+
+
+
+
+
 
                 µ.Legend().config({
                     data: data.map(function(d, i) {
@@ -489,6 +497,11 @@ var µ = module.exports = { version: '0.2.2' };
         });
         return exports;
     }
+
+
+
+
+
     exports.render = function(_container) {
         render(_container);
         return this;
@@ -1153,18 +1166,12 @@ var µ = module.exports = { version: '0.2.2' };
 
 µ.Legend.defaultConfig = function(d, i) {
     var config = {
-        data: [ 'a', 'b', 'c' ],
+        data: [ 'a'],
         legendConfig: {
             elements: [ {
                 symbol: 'line',
                 color: 'red'
-            }, {
-                symbol: 'square',
-                color: 'yellow'
-            }, {
-                symbol: 'diamond',
-                color: 'limegreen'
-            } ],
+            },],
             height: 150,
             colorBandWidth: 30,
             fontSize: 12,
