@@ -10,8 +10,156 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 var extendDeepAll = Lib.extendDeepAll;
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
-
 var µ = module.exports = { version: '0.2.2' };
+// Creation of Legend
+function buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig){
+    var legendContainer;
+    var legendBBox;
+    if (axisConfig.showLegend) {
+        legendContainer = svg.select('.legend-group').attr({
+            transform: 'translate(' + [ radius, axisConfig.margin.top ] + ')'
+        }).style({
+            display: 'block'
+        });
+        var elements = data.map(function(d, i) {
+            var datumClone = µ.util.cloneJson(d);
+            datumClone.symbol = d.geometry === 'DotPlot' ? d.dotType || 'circle' : d.geometry != 'LinePlot' ? 'square' : 'line';
+            datumClone.visibleInLegend = typeof d.visibleInLegend === 'undefined' || d.visibleInLegend;
+            datumClone.color = d.geometry === 'LinePlot' ? d.strokeColor : d.color;
+            return datumClone;
+        });
+
+        µ.Legend().config({
+            data: data.map(function(d, i) {
+                return d.name || 'Element' + i;
+            }),
+            legendConfig: extendDeepAll({},
+                µ.Legend.defaultConfig().legendConfig,
+                {
+                    container: legendContainer,
+                    elements: elements,
+                    reverseOrder: axisConfig.legend.reverseOrder
+                }
+            )
+        })();
+
+        legendBBox = legendContainer.node().getBBox();
+        radius = Math.min(axisConfig.width - legendBBox.width - axisConfig.margin.left - axisConfig.margin.right, axisConfig.height - axisConfig.margin.top - axisConfig.margin.bottom) / 2;
+        radius = Math.max(10, radius);
+        chartCenter = [ axisConfig.margin.left + radius, axisConfig.margin.top + radius ];
+        radialScale.range([ 0, radius ]);
+        liveConfig.layout.radialAxis.domain = radialScale.domain();
+        legendContainer.attr('transform', 'translate(' + [ chartCenter[0] + radius, chartCenter[1] - radius ] + ')');
+    } else {
+        legendContainer = svg.select('.legend-group').style({
+            display: 'none'
+        });
+    }
+    return [legendBBox,legendContainer,liveConfig,radius]
+}
+
+function buildFontStyle(axisConfig){
+    var fontStyle = {
+        'font-size': axisConfig.font.size,
+        'font-family': axisConfig.font.family,
+        fill: axisConfig.font.color,
+        'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {
+            return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;
+        }).join(',')
+    };
+    return fontStyle
+}
+
+function createSVG(self,d3){
+    svg = d3.select(self).select('svg.chart-root');
+    debugger;
+    if (typeof svg === 'undefined' || svg.empty()) {
+        var skeleton = "<svg xmlns='http://www.w3.org/2000/svg' class='chart-root'>' + '<g class='outer-group'>' + '<g class='chart-group'>' + '<circle class='background-circle'></circle>' + '<g class='geometry-group'></g>' + '<g class='radial axis-group'>' + '<circle class='outside-circle'></circle>' + '</g>' + '<g class='angular axis-group'></g>' + '<g class='guides-group'><line></line><circle r='0'></circle></g>' + '</g>' + '<g class='legend-group'></g>' + '<g class='tooltips-group'></g>' + '<g class='title-group'><text></text></g>' + '</g>' + '</svg>";
+        var doc = new DOMParser().parseFromString(skeleton, 'application/xml');
+        var newSvg = self.appendChild(self.ownerDocument.importNode(doc.documentElement, true));
+        svg = d3.select(newSvg);
+    }
+    svg.select('.guides-group').style({
+        'pointer-events': 'none'
+    });
+    svg.select('.angular.axis-group').style({
+        'pointer-events': 'none'
+    });
+    svg.select('.radial.axis-group').style({
+        'pointer-events': 'none'
+    });
+    return svg
+}
+
+function assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup){
+    svg.attr({width: axisConfig.width,height: axisConfig.height}).style({opacity: axisConfig.opacity});
+    chartGroup.attr('transform', 'translate(' + chartCenter + ')').style({cursor: 'crosshair'});
+
+    var centeringOffset = [ (axisConfig.width - (axisConfig.margin.left + axisConfig.margin.right + radius * 2 + (legendBBox ? legendBBox.width : 0))) / 2, (axisConfig.height - (axisConfig.margin.top + axisConfig.margin.bottom + radius * 2)) / 2 ];
+    centeringOffset[0] = Math.max(0, centeringOffset[0]);
+    centeringOffset[1] = Math.max(0, centeringOffset[1]);
+    svg.select('.outer-group').attr('transform', 'translate(' + centeringOffset + ')');
+
+    if (axisConfig.title) {
+        var title = svg.select('g.title-group text').style(fontStyle).text(axisConfig.title);
+        var titleBBox = title.node().getBBox();
+        title.attr({
+            x: chartCenter[0] - titleBBox.width / 2,
+            y: chartCenter[1] - radius - 20
+        });
+    }
+    return [svg,centeringOffset]
+    
+}
+
+function createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius){
+    var radialAxis = svg.select('.radial.axis-group');
+    if (axisConfig.radialAxis.gridLinesVisible) {
+        var gridCircles = radialAxis.selectAll('circle.grid-circle').data(radialScale.ticks(5));
+        gridCircles.enter().append('circle').attr({
+            'class': 'grid-circle'
+        }).style(lineStyle);
+        gridCircles.attr('r', radialScale);
+        gridCircles.exit().remove();
+    }
+
+    radialAxis.select('circle.outside-circle').attr({
+        r: radius
+    }).style(lineStyle);
+    var backgroundCircle = svg.select('circle.background-circle').attr({
+        r: radius
+    }).style({
+        fill: axisConfig.backgroundColor,
+        stroke: axisConfig.stroke
+    });
+    if (axisConfig.radialAxis.visible) {
+        var axis = d3.svg.axis().scale(radialScale).ticks(5).tickSize(5);
+        radialAxis.call(axis).attr({
+            transform: 'rotate(' + axisConfig.radialAxis.orientation + ')'
+        });
+        radialAxis.selectAll('.domain').style(lineStyle);
+        radialAxis.selectAll('g>text').text(function(d, i) {
+            return this.textContent + axisConfig.radialAxis.ticksSuffix;
+        }).style(fontStyle).style({
+            'text-anchor': 'start'
+        }).attr({
+            x: 0,
+            y: 0,
+            dx: 0,
+            dy: 0,
+            transform: function(d, i) {
+                if (axisConfig.radialAxis.tickOrientation === 'horizontal') {
+                    return 'rotate(' + -axisConfig.radialAxis.orientation + ') translate(' + [ 0, fontStyle['font-size'] ] + ')';
+                } else return 'translate(' + [ 0, fontStyle['font-size'] ] + ')';
+            }
+        });
+        radialAxis.selectAll('g>line').style({
+            stroke: 'black'
+        });
+    }
+    return [radialAxis]
+}
+function build
 µ.Axis = function module(){
     var config = {data: [],layout: {}}, inputConfig = {}, liveConfig = {};
     var svg, container, dispatch = d3.dispatch('hover'), radialScale, angularScale;
@@ -133,152 +281,38 @@ var µ = module.exports = { version: '0.2.2' };
             angularScale = d3.scale.linear().domain(angularDomainWithPadding.slice(0, 2)).range(axisConfig.direction === 'clockwise' ? [ 0, 360 ] : [ 360, 0 ]);
             liveConfig.layout.angularAxis.domain = angularScale.domain();
             liveConfig.layout.angularAxis.endPadding = needsEndSpacing ? angularDomainStep : 0;
-            svg = d3.select(this).select('svg.chart-root');
-            debugger;
-            if (typeof svg === 'undefined' || svg.empty()) {
-                var skeleton = "<svg xmlns='http://www.w3.org/2000/svg' class='chart-root'>' + '<g class='outer-group'>' + '<g class='chart-group'>' + '<circle class='background-circle'></circle>' + '<g class='geometry-group'></g>' + '<g class='radial axis-group'>' + '<circle class='outside-circle'></circle>' + '</g>' + '<g class='angular axis-group'></g>' + '<g class='guides-group'><line></line><circle r='0'></circle></g>' + '</g>' + '<g class='legend-group'></g>' + '<g class='tooltips-group'></g>' + '<g class='title-group'><text></text></g>' + '</g>' + '</svg>";
-                var doc = new DOMParser().parseFromString(skeleton, 'application/xml');
-                var newSvg = this.appendChild(this.ownerDocument.importNode(doc.documentElement, true));
-                svg = d3.select(newSvg);
-            }
-            svg.select('.guides-group').style({
-                'pointer-events': 'none'
-            });
-            svg.select('.angular.axis-group').style({
-                'pointer-events': 'none'
-            });
-            svg.select('.radial.axis-group').style({
-                'pointer-events': 'none'
-            });
-            var chartGroup = svg.select('.chart-group');
-            var lineStyle = {
-                fill: 'none',
-                stroke: axisConfig.tickColor
-            };
-            var fontStyle = {
-                'font-size': axisConfig.font.size,
-                'font-family': axisConfig.font.family,
-                fill: axisConfig.font.color,
-                'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {
-                    return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;
-                }).join(',')
-            };
             
-            var legendContainer;
-            if (axisConfig.showLegend) {
-                legendContainer = svg.select('.legend-group').attr({
-                    transform: 'translate(' + [ radius, axisConfig.margin.top ] + ')'
-                }).style({
-                    display: 'block'
-                });
-                var elements = data.map(function(d, i) {
-                    var datumClone = µ.util.cloneJson(d);
-                    datumClone.symbol = d.geometry === 'DotPlot' ? d.dotType || 'circle' : d.geometry != 'LinePlot' ? 'square' : 'line';
-                    datumClone.visibleInLegend = typeof d.visibleInLegend === 'undefined' || d.visibleInLegend;
-                    datumClone.color = d.geometry === 'LinePlot' ? d.strokeColor : d.color;
-                    return datumClone;
-                });
 
 
 
 
-
-
-                µ.Legend().config({
-                    data: data.map(function(d, i) {
-                        return d.name || 'Element' + i;
-                    }),
-                    legendConfig: extendDeepAll({},
-                        µ.Legend.defaultConfig().legendConfig,
-                        {
-                            container: legendContainer,
-                            elements: elements,
-                            reverseOrder: axisConfig.legend.reverseOrder
-                        }
-                    )
-                })();
-
-                var legendBBox = legendContainer.node().getBBox();
-                radius = Math.min(axisConfig.width - legendBBox.width - axisConfig.margin.left - axisConfig.margin.right, axisConfig.height - axisConfig.margin.top - axisConfig.margin.bottom) / 2;
-                radius = Math.max(10, radius);
-                chartCenter = [ axisConfig.margin.left + radius, axisConfig.margin.top + radius ];
-                radialScale.range([ 0, radius ]);
-                liveConfig.layout.radialAxis.domain = radialScale.domain();
-                legendContainer.attr('transform', 'translate(' + [ chartCenter[0] + radius, chartCenter[1] - radius ] + ')');
-            } else {
-                legendContainer = svg.select('.legend-group').style({
-                    display: 'none'
-                });
-            }
-            svg.attr({
-                width: axisConfig.width,
-                height: axisConfig.height
-            }).style({
-                opacity: axisConfig.opacity
-            });
-            chartGroup.attr('transform', 'translate(' + chartCenter + ')').style({
-                cursor: 'crosshair'
-            });
-            var centeringOffset = [ (axisConfig.width - (axisConfig.margin.left + axisConfig.margin.right + radius * 2 + (legendBBox ? legendBBox.width : 0))) / 2, (axisConfig.height - (axisConfig.margin.top + axisConfig.margin.bottom + radius * 2)) / 2 ];
-            centeringOffset[0] = Math.max(0, centeringOffset[0]);
-            centeringOffset[1] = Math.max(0, centeringOffset[1]);
-            svg.select('.outer-group').attr('transform', 'translate(' + centeringOffset + ')');
-            if (axisConfig.title) {
-                var title = svg.select('g.title-group text').style(fontStyle).text(axisConfig.title);
-                var titleBBox = title.node().getBBox();
-                title.attr({
-                    x: chartCenter[0] - titleBBox.width / 2,
-                    y: chartCenter[1] - radius - 20
-                });
-            }
-            var radialAxis = svg.select('.radial.axis-group');
-            if (axisConfig.radialAxis.gridLinesVisible) {
-                var gridCircles = radialAxis.selectAll('circle.grid-circle').data(radialScale.ticks(5));
-                gridCircles.enter().append('circle').attr({
-                    'class': 'grid-circle'
-                }).style(lineStyle);
-                gridCircles.attr('r', radialScale);
-                gridCircles.exit().remove();
-            }
-            radialAxis.select('circle.outside-circle').attr({
-                r: radius
-            }).style(lineStyle);
-            var backgroundCircle = svg.select('circle.background-circle').attr({
-                r: radius
-            }).style({
-                fill: axisConfig.backgroundColor,
-                stroke: axisConfig.stroke
-            });
+            // Create svg
+            svg = createSVG(this,d3);         
+            var lineStyle = {fill: 'none',stroke: axisConfig.tickColor};
+            // Get font Style
+            fontStyle = buildFontStyle(axisConfig)
+            // Builds the legend, returning the container and the bounding box, returns changes
+            legendData = buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig);
+            legendBBox = legendData[0];
+            legendContainer = legendData[1];
+            liveConfig = legendData[2];
+            radius = legendData[3];
+            var chartGroup = svg.select('.chart-group');
+            // Set Svg Attributes
+            svgData = assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup);
+            svg = svgData[0];
+            centeringOffset = svgData[1];
+            // Create the radial Axis
+            radialAxisData = createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius);
+            radialAxis = radialAxisData[0];
+            // Could this be moved?
             function currentAngle(d, i) {
                 return angularScale(d) % 360 + axisConfig.orientation;
             }
-            if (axisConfig.radialAxis.visible) {
-                var axis = d3.svg.axis().scale(radialScale).ticks(5).tickSize(5);
-                radialAxis.call(axis).attr({
-                    transform: 'rotate(' + axisConfig.radialAxis.orientation + ')'
-                });
-                radialAxis.selectAll('.domain').style(lineStyle);
-                radialAxis.selectAll('g>text').text(function(d, i) {
-                    return this.textContent + axisConfig.radialAxis.ticksSuffix;
-                }).style(fontStyle).style({
-                    'text-anchor': 'start'
-                }).attr({
-                    x: 0,
-                    y: 0,
-                    dx: 0,
-                    dy: 0,
-                    transform: function(d, i) {
-                        if (axisConfig.radialAxis.tickOrientation === 'horizontal') {
-                            return 'rotate(' + -axisConfig.radialAxis.orientation + ') translate(' + [ 0, fontStyle['font-size'] ] + ')';
-                        } else return 'translate(' + [ 0, fontStyle['font-size'] ] + ')';
-                    }
-                });
-                radialAxis.selectAll('g>line').style({
-                    stroke: 'black'
-                });
-            }
             var angularAxis = svg.select('.angular.axis-group').selectAll('g.angular-tick').data(angularAxisRange);
+
             var angularAxisEnter = angularAxis.enter().append('g').classed('angular-tick', true);
+
             angularAxis.attr({
                 transform: function(d, i) {
                     return 'rotate(' + currentAngle(d, i) + ')';
@@ -286,7 +320,9 @@ var µ = module.exports = { version: '0.2.2' };
             }).style({
                 display: axisConfig.angularAxis.visible ? 'block' : 'none'
             });
+
             angularAxis.exit().remove();
+
             angularAxisEnter.append('line').classed('grid-line', true).classed('major', function(d, i) {
                 return i % (axisConfig.minorTicks + 1) == 0;
             }).classed('minor', function(d, i) {
@@ -295,12 +331,14 @@ var µ = module.exports = { version: '0.2.2' };
             angularAxisEnter.selectAll('.minor').style({
                 stroke: axisConfig.minorTickColor
             });
+
             angularAxis.select('line.grid-line').attr({
                 x1: axisConfig.tickLength ? radius - axisConfig.tickLength : 0,
                 x2: radius
             }).style({
                 display: axisConfig.angularAxis.gridLinesVisible ? 'block' : 'none'
             });
+
             angularAxisEnter.append('text').classed('axis-text', true).style(fontStyle);
             var ticksText = angularAxis.select('text.axis-text').attr({
                 x: radius + axisConfig.labelOffset,
@@ -320,10 +358,14 @@ var µ = module.exports = { version: '0.2.2' };
                     return ticks[d] + axisConfig.angularAxis.ticksSuffix;
                 } else return d + axisConfig.angularAxis.ticksSuffix;
             }).style(fontStyle);
+
+
             if (axisConfig.angularAxis.rewriteTicks) ticksText.text(function(d, i) {
                 if (i % (axisConfig.minorTicks + 1) != 0) return '';
                 return axisConfig.angularAxis.rewriteTicks(this.textContent, i);
             });
+
+
             var rightmostTickEndX = d3.max(chartGroup.selectAll('.angular-tick text')[0].map(function(d, i) {
                 return d.getCTM().e + d.getBBox().width;
             }));
