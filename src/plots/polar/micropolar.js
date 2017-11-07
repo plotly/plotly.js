@@ -15,6 +15,7 @@ var µ = module.exports = { version: '0.2.2' };
 function buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig){
     var legendContainer;
     var legendBBox;
+    var chartCenter;
     if (axisConfig.showLegend) {
         legendContainer = svg.select('.legend-group').attr({
             transform: 'translate(' + [ radius, axisConfig.margin.top ] + ')'
@@ -55,7 +56,7 @@ function buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig){
             display: 'none'
         });
     }
-    return [legendBBox,legendContainer,liveConfig,radius]
+    return [legendBBox,legendContainer,liveConfig,radius,chartCenter]
 }
 
 function buildFontStyle(axisConfig){
@@ -91,7 +92,7 @@ function createSVG(self,d3){
     return svg
 }
 
-function assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup){
+function assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup,chartCenter){
     svg.attr({width: axisConfig.width,height: axisConfig.height}).style({opacity: axisConfig.opacity});
     chartGroup.attr('transform', 'translate(' + chartCenter + ')').style({cursor: 'crosshair'});
 
@@ -157,9 +158,9 @@ function createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius){
             stroke: 'black'
         });
     }
-    return [radialAxis]
+    return [radialAxis,backgroundCircle]
 }
-function build
+
 µ.Axis = function module(){
     var config = {data: [],layout: {}}, inputConfig = {}, liveConfig = {};
     var svg, container, dispatch = d3.dispatch('hover'), radialScale, angularScale;
@@ -297,22 +298,28 @@ function build
             legendContainer = legendData[1];
             liveConfig = legendData[2];
             radius = legendData[3];
+            console.log("chartCenter",chartCenter)
+            chartCenterBuffer = legendData[4];
+            if(typeof chartCenterBuffer !== "undefined"){
+                chartCenter = chartCenterBuffer
+            }
+            console.log("chartCenter",chartCenter)
             var chartGroup = svg.select('.chart-group');
             // Set Svg Attributes
-            svgData = assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup);
+            svgData = assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup,chartCenter);
             svg = svgData[0];
             centeringOffset = svgData[1];
             // Create the radial Axis
             radialAxisData = createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius);
             radialAxis = radialAxisData[0];
+            backgroundCircle = radialAxisData[1];
             // Could this be moved?
             function currentAngle(d, i) {
                 return angularScale(d) % 360 + axisConfig.orientation;
             }
             var angularAxis = svg.select('.angular.axis-group').selectAll('g.angular-tick').data(angularAxisRange);
-
+            
             var angularAxisEnter = angularAxis.enter().append('g').classed('angular-tick', true);
-
             angularAxis.attr({
                 transform: function(d, i) {
                     return 'rotate(' + currentAngle(d, i) + ')';
@@ -320,9 +327,7 @@ function build
             }).style({
                 display: axisConfig.angularAxis.visible ? 'block' : 'none'
             });
-
             angularAxis.exit().remove();
-
             angularAxisEnter.append('line').classed('grid-line', true).classed('major', function(d, i) {
                 return i % (axisConfig.minorTicks + 1) == 0;
             }).classed('minor', function(d, i) {
@@ -331,14 +336,12 @@ function build
             angularAxisEnter.selectAll('.minor').style({
                 stroke: axisConfig.minorTickColor
             });
-
             angularAxis.select('line.grid-line').attr({
                 x1: axisConfig.tickLength ? radius - axisConfig.tickLength : 0,
                 x2: radius
             }).style({
                 display: axisConfig.angularAxis.gridLinesVisible ? 'block' : 'none'
             });
-
             angularAxisEnter.append('text').classed('axis-text', true).style(fontStyle);
             var ticksText = angularAxis.select('text.axis-text').attr({
                 x: radius + axisConfig.labelOffset,
@@ -358,14 +361,10 @@ function build
                     return ticks[d] + axisConfig.angularAxis.ticksSuffix;
                 } else return d + axisConfig.angularAxis.ticksSuffix;
             }).style(fontStyle);
-
-
             if (axisConfig.angularAxis.rewriteTicks) ticksText.text(function(d, i) {
                 if (i % (axisConfig.minorTicks + 1) != 0) return '';
                 return axisConfig.angularAxis.rewriteTicks(this.textContent, i);
             });
-
-
             var rightmostTickEndX = d3.max(chartGroup.selectAll('.angular-tick text')[0].map(function(d, i) {
                 return d.getCTM().e + d.getBBox().width;
             }));
