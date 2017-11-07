@@ -161,6 +161,223 @@ function createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius){
     return [radialAxis,backgroundCircle]
 }
 
+function assignAngularAxisAttributes(angularAxis,currentAngle,axisConfig,angularAxisEnter,lineStyle,radius,ticks,chartGroup){
+    angularAxis.attr({transform: function(d, i) {
+            return 'rotate(' + currentAngle(d, i) + ')';
+        }
+    }).style({
+        display: axisConfig.angularAxis.visible ? 'block' : 'none'
+    });
+
+    angularAxis.exit().remove();
+
+    angularAxisEnter.append('line').classed('grid-line', true).classed('major', function(d, i) {
+        return i % (axisConfig.minorTicks + 1) == 0;
+    }).classed('minor', function(d, i) {
+        return !(i % (axisConfig.minorTicks + 1) == 0);
+    }).style(lineStyle);
+
+    angularAxisEnter.selectAll('.minor').style({stroke: axisConfig.minorTickColor});
+
+    angularAxis.select('line.grid-line').attr({
+        x1: axisConfig.tickLength ? radius - axisConfig.tickLength : 0,
+        x2: radius
+    }).style({
+        display: axisConfig.angularAxis.gridLinesVisible ? 'block' : 'none'
+    });
+
+    angularAxisEnter.append('text').classed('axis-text', true).style(fontStyle);
+    var ticksText = angularAxis.select('text.axis-text').attr({
+        x: radius + axisConfig.labelOffset,
+        dy: MID_SHIFT + 'em',
+        transform: function(d, i) {
+            var angle = currentAngle(d, i);
+            var rad = radius + axisConfig.labelOffset;
+            var orient = axisConfig.angularAxis.tickOrientation;
+            if (orient == 'horizontal') return 'rotate(' + -angle + ' ' + rad + ' 0)'; else if (orient == 'radial') return angle < 270 && angle > 90 ? 'rotate(180 ' + rad + ' 0)' : null; else return 'rotate(' + (angle <= 180 && angle > 0 ? -90 : 90) + ' ' + rad + ' 0)';
+        }
+    }).style({
+        'text-anchor': 'middle',
+        display: axisConfig.angularAxis.labelsVisible ? 'block' : 'none'
+    }).text(function(d, i) {
+        if (i % (axisConfig.minorTicks + 1) != 0) return '';
+        if (ticks) {
+            return ticks[d] + axisConfig.angularAxis.ticksSuffix;
+        } else return d + axisConfig.angularAxis.ticksSuffix;
+    }).style(fontStyle);
+    if (axisConfig.angularAxis.rewriteTicks) ticksText.text(function(d, i) {
+        if (i % (axisConfig.minorTicks + 1) != 0) return '';
+        return axisConfig.angularAxis.rewriteTicks(this.textContent, i);
+    });
+
+    var rightmostTickEndX = d3.max(chartGroup.selectAll('.angular-tick text')[0].map(function(d, i) {
+        return d.getCTM().e + d.getBBox().width;
+    }));
+
+    legendContainer.attr({
+        transform: 'translate(' + [ radius + rightmostTickEndX, axisConfig.margin.top ] + ')'
+    });
+
+    return angularAxis
+}
+function isOrdinalCheck(isOrdinal,guides,chartGroup,radius,axisConfig,angularScale,angularTooltip,chartCenter){
+    if (!isOrdinal) {
+        var angularGuideLine = guides.select('line').attr({
+            x1: 0,
+            y1: 0,
+            y2: 0
+        }).style({
+            stroke: 'grey',
+            'pointer-events': 'none'
+        });
+        chartGroup.on('mousemove.angular-guide', function(d, i) {
+            var mouseAngle = µ.util.getMousePos(backgroundCircle).angle;
+            angularGuideLine.attr({
+                x2: -radius,
+                transform: 'rotate(' + mouseAngle + ')'
+            }).style({
+                opacity: .5
+            });
+            var angleWithOriginOffset = (mouseAngle + 180 + 360 - axisConfig.orientation) % 360;
+            angularValue = angularScale.invert(angleWithOriginOffset);
+            var pos = µ.util.convertToCartesian(radius + 12, mouseAngle + 180);
+            angularTooltip.text(µ.util.round(angularValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
+        }).on('mouseout.angular-guide', function(d, i) {
+            guides.select('line').style({
+                opacity: 0
+            });
+        });
+    }
+    
+}
+
+function assignGeometryContainerAttributes(geometryContainer,data,radialScale,angularScale,axisConfig){
+    geometryContainer.enter().append('g').attr({
+        'class': function(d, i) {
+            return 'geometry geometry' + i;
+        }
+    });
+
+    geometryContainer.exit().remove();
+    if (data[0] || hasGeometry) {
+        var geometryConfigs = [];
+        data.forEach(function(d, i) {
+            var geometryConfig = {};
+            geometryConfig.radialScale = radialScale;
+            geometryConfig.angularScale = angularScale;
+            geometryConfig.container = geometryContainer.filter(function(dB, iB) {
+                return iB == i;
+            });
+            geometryConfig.geometry = d.geometry;
+            geometryConfig.orientation = axisConfig.orientation;
+            geometryConfig.direction = axisConfig.direction;
+            geometryConfig.index = i;
+            geometryConfigs.push({
+                data: d,
+                geometryConfig: geometryConfig
+            });
+        });
+        var geometryConfigsGrouped = d3.nest().key(function(d, i) {
+            return typeof d.data.groupId != 'undefined' || 'unstacked';
+        }).entries(geometryConfigs);
+        var geometryConfigsGrouped2 = [];
+        geometryConfigsGrouped.forEach(function(d, i) {
+            if (d.key === 'unstacked') geometryConfigsGrouped2 = geometryConfigsGrouped2.concat(d.values.map(function(d, i) {
+                return [ d ];
+            })); else geometryConfigsGrouped2.push(d.values);
+        });
+        geometryConfigsGrouped2.forEach(function(d, i) {
+            var geometry;
+            if (Array.isArray(d)) geometry = d[0].geometryConfig.geometry; else geometry = d.geometryConfig.geometry;
+            var finalGeometryConfig = d.map(function(dB, iB) {
+                return extendDeepAll(µ[geometry].defaultConfig(), dB);
+            });
+            µ[geometry]().config(finalGeometryConfig)();
+        });
+    }
+    return geometryContainer
+}
+
+function svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks){
+    svg.selectAll('.geometry-group .mark').on('mouseover.tooltip', function(d, i) {
+        var el = d3.select(this);
+        var color = this.style.fill;
+        var newColor = 'black';
+        var opacity = this.style.opacity || 1;
+        el.attr({
+            'data-opacity': opacity
+        });
+        if (color && color !== 'none') {
+            el.attr({
+                'data-fill': color
+            });
+            newColor = d3.hsl(color).darker().toString();
+            el.style({
+                fill: newColor,
+                opacity: 1
+            });
+            var textData = {
+                t: µ.util.round(d[0]),
+                r: µ.util.round(d[1])
+            };
+            if (isOrdinal) textData.t = ticks[d[0]];
+            var text = 't: ' + textData.t + ', r: ' + textData.r;
+            var bbox = this.getBoundingClientRect();
+            var svgBBox = svg.node().getBoundingClientRect();
+            var pos = [ bbox.left + bbox.width / 2 - centeringOffset[0] - svgBBox.left, bbox.top + bbox.height / 2 - centeringOffset[1] - svgBBox.top ];
+            geometryTooltip.config({
+                color: newColor
+            }).text(text);
+            geometryTooltip.move(pos);
+        } else {
+            color = this.style.stroke || 'black';
+            el.attr({
+                'data-stroke': color
+            });
+            newColor = d3.hsl(color).darker().toString();
+            el.style({
+                stroke: newColor,
+                opacity: 1
+            });
+        }
+    }).on('mousemove.tooltip', function(d, i) {
+        if (d3.event.which != 0) return false;
+        if (d3.select(this).attr('data-fill')) geometryTooltip.show();
+    }).on('mouseout.tooltip', function(d, i) {
+        geometryTooltip.hide();
+        var el = d3.select(this);
+        var fillColor = el.attr('data-fill');
+        if (fillColor) el.style({
+            fill: fillColor,
+            opacity: el.attr('data-opacity')
+        }); else el.style({
+            stroke: el.attr('data-stroke'),
+            opacity: el.attr('data-opacity')
+        });
+    });
+}
+function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircle,radialScale,axisConfig,chartCenter,geometryTooltip,angularTooltip){
+    chartGroup.on('mousemove.radial-guide', function(d, i) {
+        var r = µ.util.getMousePos(backgroundCircle).radius;
+        angularGuideCircle.attr({
+            r: r
+        }).style({
+            opacity: .5
+        });
+        radialValue = radialScale.invert(µ.util.getMousePos(backgroundCircle).radius);
+        var pos = µ.util.convertToCartesian(r, axisConfig.radialAxis.orientation);
+        radialTooltip.text(µ.util.round(radialValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
+    }).on('mouseout.radial-guide', function(d, i) {
+        angularGuideCircle.style({
+            opacity: 0
+        });
+        geometryTooltip.hide();
+        angularTooltip.hide();
+        radialTooltip.hide();
+    });
+    return chartGroup
+}
+
 µ.Axis = function module(){
     var config = {data: [],layout: {}}, inputConfig = {}, liveConfig = {};
     var svg, container, dispatch = d3.dispatch('hover'), radialScale, angularScale;
@@ -282,9 +499,7 @@ function createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius){
             angularScale = d3.scale.linear().domain(angularDomainWithPadding.slice(0, 2)).range(axisConfig.direction === 'clockwise' ? [ 0, 360 ] : [ 360, 0 ]);
             liveConfig.layout.angularAxis.domain = angularScale.domain();
             liveConfig.layout.angularAxis.endPadding = needsEndSpacing ? angularDomainStep : 0;
-            
-
-
+        
 
 
             // Create svg
@@ -298,12 +513,11 @@ function createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius){
             legendContainer = legendData[1];
             liveConfig = legendData[2];
             radius = legendData[3];
-            console.log("chartCenter",chartCenter)
             chartCenterBuffer = legendData[4];
+            // check return makes sense
             if(typeof chartCenterBuffer !== "undefined"){
                 chartCenter = chartCenterBuffer
             }
-            console.log("chartCenter",chartCenter)
             var chartGroup = svg.select('.chart-group');
             // Set Svg Attributes
             svgData = assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup,chartCenter);
@@ -317,224 +531,47 @@ function createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius){
             function currentAngle(d, i) {
                 return angularScale(d) % 360 + axisConfig.orientation;
             }
+            // angularAxis
             var angularAxis = svg.select('.angular.axis-group').selectAll('g.angular-tick').data(angularAxisRange);
-            
             var angularAxisEnter = angularAxis.enter().append('g').classed('angular-tick', true);
-            angularAxis.attr({
-                transform: function(d, i) {
-                    return 'rotate(' + currentAngle(d, i) + ')';
-                }
-            }).style({
-                display: axisConfig.angularAxis.visible ? 'block' : 'none'
-            });
-            angularAxis.exit().remove();
-            angularAxisEnter.append('line').classed('grid-line', true).classed('major', function(d, i) {
-                return i % (axisConfig.minorTicks + 1) == 0;
-            }).classed('minor', function(d, i) {
-                return !(i % (axisConfig.minorTicks + 1) == 0);
-            }).style(lineStyle);
-            angularAxisEnter.selectAll('.minor').style({
-                stroke: axisConfig.minorTickColor
-            });
-            angularAxis.select('line.grid-line').attr({
-                x1: axisConfig.tickLength ? radius - axisConfig.tickLength : 0,
-                x2: radius
-            }).style({
-                display: axisConfig.angularAxis.gridLinesVisible ? 'block' : 'none'
-            });
-            angularAxisEnter.append('text').classed('axis-text', true).style(fontStyle);
-            var ticksText = angularAxis.select('text.axis-text').attr({
-                x: radius + axisConfig.labelOffset,
-                dy: MID_SHIFT + 'em',
-                transform: function(d, i) {
-                    var angle = currentAngle(d, i);
-                    var rad = radius + axisConfig.labelOffset;
-                    var orient = axisConfig.angularAxis.tickOrientation;
-                    if (orient == 'horizontal') return 'rotate(' + -angle + ' ' + rad + ' 0)'; else if (orient == 'radial') return angle < 270 && angle > 90 ? 'rotate(180 ' + rad + ' 0)' : null; else return 'rotate(' + (angle <= 180 && angle > 0 ? -90 : 90) + ' ' + rad + ' 0)';
-                }
-            }).style({
-                'text-anchor': 'middle',
-                display: axisConfig.angularAxis.labelsVisible ? 'block' : 'none'
-            }).text(function(d, i) {
-                if (i % (axisConfig.minorTicks + 1) != 0) return '';
-                if (ticks) {
-                    return ticks[d] + axisConfig.angularAxis.ticksSuffix;
-                } else return d + axisConfig.angularAxis.ticksSuffix;
-            }).style(fontStyle);
-            if (axisConfig.angularAxis.rewriteTicks) ticksText.text(function(d, i) {
-                if (i % (axisConfig.minorTicks + 1) != 0) return '';
-                return axisConfig.angularAxis.rewriteTicks(this.textContent, i);
-            });
-            var rightmostTickEndX = d3.max(chartGroup.selectAll('.angular-tick text')[0].map(function(d, i) {
-                return d.getCTM().e + d.getBBox().width;
-            }));
-            legendContainer.attr({
-                transform: 'translate(' + [ radius + rightmostTickEndX, axisConfig.margin.top ] + ')'
-            });
+            angularAxis = assignAngularAxisAttributes(angularAxis,currentAngle,axisConfig,angularAxisEnter,lineStyle,radius,ticks,chartGroup);
+
+            // geometryContainer
             var hasGeometry = svg.select('g.geometry-group').selectAll('g').size() > 0;
             var geometryContainer = svg.select('g.geometry-group').selectAll('g.geometry').data(data);
-            geometryContainer.enter().append('g').attr({
-                'class': function(d, i) {
-                    return 'geometry geometry' + i;
-                }
-            });
-            geometryContainer.exit().remove();
-            if (data[0] || hasGeometry) {
-                var geometryConfigs = [];
-                data.forEach(function(d, i) {
-                    var geometryConfig = {};
-                    geometryConfig.radialScale = radialScale;
-                    geometryConfig.angularScale = angularScale;
-                    geometryConfig.container = geometryContainer.filter(function(dB, iB) {
-                        return iB == i;
-                    });
-                    geometryConfig.geometry = d.geometry;
-                    geometryConfig.orientation = axisConfig.orientation;
-                    geometryConfig.direction = axisConfig.direction;
-                    geometryConfig.index = i;
-                    geometryConfigs.push({
-                        data: d,
-                        geometryConfig: geometryConfig
-                    });
-                });
-                var geometryConfigsGrouped = d3.nest().key(function(d, i) {
-                    return typeof d.data.groupId != 'undefined' || 'unstacked';
-                }).entries(geometryConfigs);
-                var geometryConfigsGrouped2 = [];
-                geometryConfigsGrouped.forEach(function(d, i) {
-                    if (d.key === 'unstacked') geometryConfigsGrouped2 = geometryConfigsGrouped2.concat(d.values.map(function(d, i) {
-                        return [ d ];
-                    })); else geometryConfigsGrouped2.push(d.values);
-                });
-                geometryConfigsGrouped2.forEach(function(d, i) {
-                    var geometry;
-                    if (Array.isArray(d)) geometry = d[0].geometryConfig.geometry; else geometry = d.geometryConfig.geometry;
-                    var finalGeometryConfig = d.map(function(dB, iB) {
-                        return extendDeepAll(µ[geometry].defaultConfig(), dB);
-                    });
-                    µ[geometry]().config(finalGeometryConfig)();
-                });
-            }
+            geometryContainer = assignGeometryContainerAttributes(geometryContainer,data,radialScale,angularScale,axisConfig);
+    
             var guides = svg.select('.guides-group');
             var tooltipContainer = svg.select('.tooltips-group');
+
             var angularTooltip = µ.tooltipPanel().config({
                 container: tooltipContainer,
                 fontSize: 8
             })();
+
             var radialTooltip = µ.tooltipPanel().config({
                 container: tooltipContainer,
                 fontSize: 8
             })();
+
             var geometryTooltip = µ.tooltipPanel().config({
                 container: tooltipContainer,
                 hasTick: true
             })();
+
             var angularValue, radialValue;
-            if (!isOrdinal) {
-                var angularGuideLine = guides.select('line').attr({
-                    x1: 0,
-                    y1: 0,
-                    y2: 0
-                }).style({
-                    stroke: 'grey',
-                    'pointer-events': 'none'
-                });
-                chartGroup.on('mousemove.angular-guide', function(d, i) {
-                    var mouseAngle = µ.util.getMousePos(backgroundCircle).angle;
-                    angularGuideLine.attr({
-                        x2: -radius,
-                        transform: 'rotate(' + mouseAngle + ')'
-                    }).style({
-                        opacity: .5
-                    });
-                    var angleWithOriginOffset = (mouseAngle + 180 + 360 - axisConfig.orientation) % 360;
-                    angularValue = angularScale.invert(angleWithOriginOffset);
-                    var pos = µ.util.convertToCartesian(radius + 12, mouseAngle + 180);
-                    angularTooltip.text(µ.util.round(angularValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
-                }).on('mouseout.angular-guide', function(d, i) {
-                    guides.select('line').style({
-                        opacity: 0
-                    });
-                });
-            }
+            isOrdinalCheck(isOrdinal,guides,chartGroup,radius,axisConfig,angularScale,angularTooltip,chartCenter)
+
             var angularGuideCircle = guides.select('circle').style({
                 stroke: 'grey',
                 fill: 'none'
             });
-            chartGroup.on('mousemove.radial-guide', function(d, i) {
-                var r = µ.util.getMousePos(backgroundCircle).radius;
-                angularGuideCircle.attr({
-                    r: r
-                }).style({
-                    opacity: .5
-                });
-                radialValue = radialScale.invert(µ.util.getMousePos(backgroundCircle).radius);
-                var pos = µ.util.convertToCartesian(r, axisConfig.radialAxis.orientation);
-                radialTooltip.text(µ.util.round(radialValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
-            }).on('mouseout.radial-guide', function(d, i) {
-                angularGuideCircle.style({
-                    opacity: 0
-                });
-                geometryTooltip.hide();
-                angularTooltip.hide();
-                radialTooltip.hide();
-            });
-            svg.selectAll('.geometry-group .mark').on('mouseover.tooltip', function(d, i) {
-                var el = d3.select(this);
-                var color = this.style.fill;
-                var newColor = 'black';
-                var opacity = this.style.opacity || 1;
-                el.attr({
-                    'data-opacity': opacity
-                });
-                if (color && color !== 'none') {
-                    el.attr({
-                        'data-fill': color
-                    });
-                    newColor = d3.hsl(color).darker().toString();
-                    el.style({
-                        fill: newColor,
-                        opacity: 1
-                    });
-                    var textData = {
-                        t: µ.util.round(d[0]),
-                        r: µ.util.round(d[1])
-                    };
-                    if (isOrdinal) textData.t = ticks[d[0]];
-                    var text = 't: ' + textData.t + ', r: ' + textData.r;
-                    var bbox = this.getBoundingClientRect();
-                    var svgBBox = svg.node().getBoundingClientRect();
-                    var pos = [ bbox.left + bbox.width / 2 - centeringOffset[0] - svgBBox.left, bbox.top + bbox.height / 2 - centeringOffset[1] - svgBBox.top ];
-                    geometryTooltip.config({
-                        color: newColor
-                    }).text(text);
-                    geometryTooltip.move(pos);
-                } else {
-                    color = this.style.stroke || 'black';
-                    el.attr({
-                        'data-stroke': color
-                    });
-                    newColor = d3.hsl(color).darker().toString();
-                    el.style({
-                        stroke: newColor,
-                        opacity: 1
-                    });
-                }
-            }).on('mousemove.tooltip', function(d, i) {
-                if (d3.event.which != 0) return false;
-                if (d3.select(this).attr('data-fill')) geometryTooltip.show();
-            }).on('mouseout.tooltip', function(d, i) {
-                geometryTooltip.hide();
-                var el = d3.select(this);
-                var fillColor = el.attr('data-fill');
-                if (fillColor) el.style({
-                    fill: fillColor,
-                    opacity: el.attr('data-opacity')
-                }); else el.style({
-                    stroke: el.attr('data-stroke'),
-                    opacity: el.attr('data-opacity')
-                });
-            });
+            // outer ring display
+            chartGroup =  outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircle,radialScale,axisConfig,chartCenter,geometryTooltip,angularTooltip);
+
+            // Displays box with result values in
+            svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks);
+
         });
         return exports;
     }
