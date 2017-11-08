@@ -233,8 +233,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 }
 
                 // update selection scene
-                if (plotinfo._scene) {
-                    plotinfo._scene.select(selection)
+                if(plotinfo._scene) {
+                    plotinfo._scene.select(selection);
                 }
 
                 eventData = {points: selection};

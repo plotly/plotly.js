@@ -72,7 +72,7 @@ ScatterRegl.calc = function calc(container, trace) {
         }
     }
 
-    var lineOptions, scatterOptions, errorXOptions, errorYOptions, fillOptions;
+    var lineOptions, markerOptions, errorXOptions, errorYOptions, fillOptions;
     var hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
     var linePositions;
 
@@ -292,8 +292,8 @@ ScatterRegl.calc = function calc(container, trace) {
     }
 
     if(hasMarkers) {
-        scatterOptions = {};
-        scatterOptions.positions = positions;
+        markerOptions = {};
+        markerOptions.positions = positions;
 
         // get basic symbol info
         var multiMarker = Array.isArray(markerOpts.symbol);
@@ -303,8 +303,8 @@ ScatterRegl.calc = function calc(container, trace) {
         }
         // prepare colors
         if(multiMarker || Array.isArray(markerOpts.color) || Array.isArray(markerOpts.line.color) || Array.isArray(markerOpts.line)) {
-            scatterOptions.colors = new Array(count);
-            scatterOptions.borderColors = new Array(count);
+            markerOptions.colors = new Array(count);
+            markerOptions.borderColors = new Array(count);
 
             var colors = formatColor(markerOpts, markerOpts.opacity, count);
             var borderColors = formatColor(markerOpts.line, markerOpts.opacity, count);
@@ -324,8 +324,8 @@ ScatterRegl.calc = function calc(container, trace) {
                 }
             }
 
-            scatterOptions.colors = colors;
-            scatterOptions.borderColors = borderColors;
+            markerOptions.colors = colors;
+            markerOptions.borderColors = borderColors;
 
             for(i = 0; i < count; i++) {
                 if(multiMarker) {
@@ -339,29 +339,29 @@ ScatterRegl.calc = function calc(container, trace) {
                 }
             }
 
-            scatterOptions.opacity = trace.opacity;
+            markerOptions.opacity = trace.opacity;
         }
         else {
-            scatterOptions.color = markerOpts.color;
-            scatterOptions.borderColor = markerOpts.line.color;
-            scatterOptions.opacity = trace.opacity * markerOpts.opacity;
+            markerOptions.color = markerOpts.color;
+            markerOptions.borderColor = markerOpts.line.color;
+            markerOptions.opacity = trace.opacity * markerOpts.opacity;
 
             if(isOpen) {
-                scatterOptions.borderColor = scatterOptions.color.slice();
-                scatterOptions.color = scatterOptions.color.slice();
-                scatterOptions.color[3] = 0;
+                markerOptions.borderColor = markerOptions.color.slice();
+                markerOptions.color = markerOptions.color.slice();
+                markerOptions.color[3] = 0;
             }
         }
 
         // prepare markers
         if(Array.isArray(markerOpts.symbol)) {
-            scatterOptions.markers = new Array(count);
+            markerOptions.markers = new Array(count);
             for(i = 0; i < count; ++i) {
-                scatterOptions.markers[i] = getSymbolSdf(markerOpts.symbol[i]);
+                markerOptions.markers[i] = getSymbolSdf(markerOpts.symbol[i]);
             }
         }
         else {
-            scatterOptions.marker = getSymbolSdf(markerOpts.symbol);
+            markerOptions.marker = getSymbolSdf(markerOpts.symbol);
         }
 
         // prepare sizes and expand axes
@@ -371,8 +371,8 @@ ScatterRegl.calc = function calc(container, trace) {
         var size, sizes;
 
         if(multiSize) {
-            sizes = scatterOptions.sizes = new Array(count);
-            var borderSizes = scatterOptions.borderSizes = new Array(count);
+            sizes = markerOptions.sizes = new Array(count);
+            var borderSizes = markerOptions.borderSizes = new Array(count);
 
             if(Array.isArray(markerOpts.size)) {
                 for(i = 0; i < count; ++i) {
@@ -403,8 +403,8 @@ ScatterRegl.calc = function calc(container, trace) {
             Axes.expand(yaxis, stash.rawy, { padded: true, ppad: sizes });
         }
         else {
-            size = scatterOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
-            scatterOptions.borderSizes = markerOpts.line.width * 0.5;
+            size = markerOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
+            markerOptions.borderSizes = markerOpts.line.width * 0.5;
 
             // axes bounds
             for(i = 0; i < count; i++) {
@@ -422,7 +422,7 @@ ScatterRegl.calc = function calc(container, trace) {
             }
             // update axes fast for big number of points
             else {
-                var pad = scatterOptions.size;
+                var pad = markerOptions.size;
                 if(xaxis._min) {
                     xaxis._min.push({ val: xbounds[0], pad: pad });
                 }
@@ -460,7 +460,7 @@ ScatterRegl.calc = function calc(container, trace) {
             // last used options
             lineOptions: [],
             fillOptions: [],
-            scatterOptions: [],
+            markerOptions: [],
             errorXOptions: [],
             errorYOptions: [],
 
@@ -508,12 +508,12 @@ ScatterRegl.calc = function calc(container, trace) {
             scene.select2d.regl.clear({color: true});
 
             var batch = Array(scene.count), i, traceId;
-            for (i = 0; i < scene.count; i++) {
-                batch[i] = []
+            for(i = 0; i < scene.count; i++) {
+                batch[i] = [];
             }
 
             for(i = 0; i < selection.length; i++) {
-                var traceId = selection[i].curveNumber || 0;
+                traceId = selection[i].curveNumber || 0;
                 batch[traceId].push(selection[i].pointNumber);
             }
 
@@ -536,17 +536,17 @@ ScatterRegl.calc = function calc(container, trace) {
         scene.count = 0;
         scene.lineOptions = [];
         scene.fillOptions = [];
-        scene.scatterOptions = [];
+        scene.markerOptions = [];
         scene.errorXOptions = [];
         scene.errorYOptions = [];
     }
 
     // save initial batch
-    scene.lineOptions.push(lineOptions);
-    scene.errorXOptions.push(errorXOptions);
-    scene.errorYOptions.push(errorYOptions);
-    scene.fillOptions.push(fillOptions);
-    scene.scatterOptions.push(scatterOptions);
+    scene.lineOptions.push(hasLines ? lineOptions : null);
+    scene.errorXOptions.push(hasErrorX ? errorXOptions : null);
+    scene.errorYOptions.push(hasErrorY ? errorYOptions : null);
+    scene.fillOptions.push(hasFill ? fillOptions : null);
+    scene.markerOptions.push(hasMarkers ? markerOptions : null);
     scene.count++;
 
     // stash scene ref
@@ -597,6 +597,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
     if(!scene) return;
 
     var vpSize = layout._size, width = layout.width, height = layout.height;
+
     var regl = layout._glcanvas.data()[0].regl;
 
     // that is needed for fills
@@ -625,7 +626,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
             scene.error2d.update(errorBatch);
         }
         if(scene.scatter2d) {
-            scene.scatter2d.update(scene.scatterOptions);
+            scene.scatter2d.update(scene.markerOptions);
         }
         // fill requires linked traces, so we generate it's positions here
         if(scene.fill2d) {
@@ -681,6 +682,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
 
     // make sure selection layer is initialized if we require selection
     var dragmode = layout.dragmode;
+
     if(dragmode === 'lasso' || dragmode === 'select') {
         if(!scene.select2d && scene.scatter2d) {
             var selectRegl = layout._glcanvas.data()[1].regl;
@@ -688,7 +690,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
             scene.select2d = createScatter(selectRegl);
 
             // TODO: modify options here according to the proposed selection options
-            scene.select2d.update(scene.scatterOptions);
+            scene.select2d.update(scene.markerOptions);
         }
     }
     else {
@@ -735,16 +737,16 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
 
             // reset opacities
             if(scene.scatter2d) {
-                scene.scatter2d.update(scene.scatterOptions.map(function(opt) {
+                scene.scatter2d.update(scene.markerOptions.map(function(opt) {
                     return {opacity: opt ? opt.opacity : 1};
                 }));
             }
         }
 
-        return {
+        return trace.visible ? {
             viewport: viewport,
             range: range
-        };
+        } : null;
     });
 
     // uploat batch data to GPU
@@ -879,7 +881,7 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
 
     var hoverlabel = trace.hoverlabel;
 
-    if (hoverlabel) {
+    if(hoverlabel) {
         di.hbg = Array.isArray(hoverlabel.bgcolor) ? hoverlabel.bgcolor[id] : hoverlabel.bgcolor;
         di.hbc = Array.isArray(hoverlabel.bordercolor) ? hoverlabel.bordercolor[id] : hoverlabel.bordercolor;
         di.hts = Array.isArray(hoverlabel.font.size) ? hoverlabel.font.size[id] : hoverlabel.font.size;
@@ -888,7 +890,7 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
         di.hnl = Array.isArray(hoverlabel.namelength) ? hoverlabel.namelength[id] : hoverlabel.namelength;
     }
     var hoverinfo = trace.hoverinfo;
-    if (hoverinfo) {
+    if(hoverinfo) {
         di.hi = Array.isArray(hoverinfo) ? hoverinfo[id] : hoverinfo;
     }
 
@@ -939,18 +941,18 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
     // degenerate polygon does not enable selection
     if(polygon === false || polygon.degenerate) {
         if(scene.scatter2d) {
-            scene.scatter2d.update(scene.scatterOptions.map(function(opt) {
+            scene.scatter2d.update(scene.markerOptions.map(function(opt) {
                 return {opacity: opt.opacity};
             }));
         }
     }
     // filter out points by visible scatter ones
     else {
-        let els = []
+        var els = [];
 
         for(var i = 0; i < stash.count; i++) {
             if(polygon.contains([stash.xpx[i], stash.ypx[i]])) {
-                els.push(i)
+                els.push(i);
                 selection.push({
                     pointNumber: i,
                     x: x[i],
@@ -961,7 +963,7 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 
         // adjust selection transparency via canvas opacity
         if(scene.scatter2d) {
-            scene.scatter2d.update(scene.scatterOptions.map(function(opt) {
+            scene.scatter2d.update(scene.markerOptions.map(function(opt) {
                 return {opacity: opt.opacity * DESELECTDIM};
             }));
         }

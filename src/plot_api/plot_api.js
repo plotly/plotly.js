@@ -196,8 +196,8 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        if(!fullLayout._glcanvas) {
-            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data(fullLayout._has('gl') ? [{
+        if(!fullLayout._glcanvas && fullLayout._has('gl')) {
+            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data([{
                 key: 'contextLayer',
                 context: true,
                 pick: false
@@ -209,7 +209,7 @@ Plotly.plot = function(gd, data, layout, config) {
                 key: 'pickLayer',
                 context: false,
                 pick: true
-            }] : []);
+            }]);
 
             fullLayout._glcanvas.enter().append('canvas')
                 .each(function(d) {

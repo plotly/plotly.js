@@ -801,7 +801,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
         var _module = fullTrace._module;
         if(!_module) return;
-
         Lib.pushUnique(modules, _module);
         Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
 
@@ -847,7 +846,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
             }
         }
         else {
-
             // add identify refs for consistency with transformed traces
             fullTrace._fullInput = fullTrace;
             fullTrace._expandedInput = fullTrace;

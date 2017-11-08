@@ -11,6 +11,7 @@ var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var selectButton = require('../assets/modebar_button');
 var delay = require('../assets/delay');
+var readPixel = require('../assets/read_pixel');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -839,7 +840,7 @@ describe('Test gl2d plots', function() {
 
     beforeEach(function() {
         gd = createGraphDiv();
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
     });
 
     afterEach(function() {
@@ -856,14 +857,14 @@ describe('Test gl2d plots', function() {
 
     it('should respond to drag interactions', function(done) {
         var _mock = Lib.extendDeep({}, mock);
-        _mock.data[0].type = 'scatter'
+        _mock.data[0].type = 'scatter';
 
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
-        var originalX = [-0.3169014084507042,5.316901408450704];
-        var originalY = [-0.5806379476536665,6.218528262566369];
-        var newX = [-0.5516431924882629,5.082159624413145];
-        var newY = [-1.7947747709072441,5.004391439312791];
+        var originalX = [-0.3169014084507042, 5.316901408450704];
+        var originalY = [-0.5806379476536665, 6.218528262566369];
+        var newX = [-0.5516431924882629, 5.082159624413145];
+        var newY = [-1.7947747709072441, 5.004391439312791];
         var precision = 5;
 
         Plotly.plot(gd, _mock)
@@ -946,40 +947,28 @@ describe('Test gl2d plots', function() {
     it('should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock);
 
-        // a line object + scatter fancy
-        var OBJECT_PER_TRACE = 2;
-
-        var objects = function() {
-            return gd._fullLayout._plots.xy._scene2d.glplot.objects;
-        };
-
         Plotly.plot(gd, _mock)
         .then(delay(20))
         .then(function() {
-            expect(objects().length).toEqual(OBJECT_PER_TRACE);
-
             return Plotly.restyle(gd, 'visible', 'legendonly');
         })
         .then(function() {
-            expect(objects().length).toEqual(OBJECT_PER_TRACE);
-            expect(objects()[0].data.length).toEqual(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).toBe(0);
 
             return Plotly.restyle(gd, 'visible', true);
         })
         .then(function() {
-            expect(objects().length).toEqual(OBJECT_PER_TRACE);
-            expect(objects()[0].data.length).not.toEqual(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
 
             return Plotly.restyle(gd, 'visible', false);
         })
         .then(function() {
-            expect(gd._fullLayout._plots.xy._scene2d).toBeUndefined();
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).toBe(0);
 
             return Plotly.restyle(gd, 'visible', true);
         })
         .then(function() {
-            expect(objects().length).toEqual(OBJECT_PER_TRACE);
-            expect(objects()[0].data.length).not.toEqual(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
         })
         .then(done);
     });
