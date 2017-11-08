@@ -387,6 +387,28 @@ module.exports = {
             'plotted on'
         ].join(' ')
     },
+    showcrossline: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        editType: 'none',
+        description: 'Determines whether or not crossline are drawn for this axis.'
+    },
+    crosslinecolor: {
+        valType: 'color',
+        dflt: null,
+        role: 'style',
+        editType: 'none',
+        description: 'Sets the crossline color. If undefined, will use the contrast to background color'
+    },
+    crosslinethickness: {
+        valType: 'number',
+        dflt: 2,
+        role: 'style',
+        editType: 'none',
+        description: 'Sets the width (in px) of the zero line.'
+    },
+    crosslinedash: extendFlat({}, dash, {dflt: 'solid', editType: 'none'}),
     tickfont: fontAttrs({
         editType: 'ticks',
         description: 'Sets the tick font.'
