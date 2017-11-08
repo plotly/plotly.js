@@ -232,7 +232,13 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         xval,
         yval,
         pointData,
-        closedataPreviousLength;
+        closedataPreviousLength,
+
+        // crosslinePoints: the set of candidate points we've found to draw crosslines to
+        crosslinePoints = {
+            hLinePoint: null,
+            vLinePoint: null
+        };
 
     // Figure out what we're hovering on:
     // mouse location or user-supplied data
@@ -402,10 +408,60 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             hoverData.splice(0, closedataPreviousLength);
             distance = hoverData[0].distance;
         }
+
+        var showSpikes = fullLayout.xaxis && fullLayout.xaxis.showspikes && fullLayout.yaxis && fullLayout.yaxis.showspikes;
+        var showCrosslines = fullLayout.xaxis && fullLayout.xaxis.showcrossline || fullLayout.yaxis && fullLayout.yaxis.showcrossline;
+
+        if(fullLayout._has('cartesian') && showCrosslines && !(showSpikes && hovermode === 'closest')) {
+            // Now find the points for the crosslines.
+            if(fullLayout.yaxis.showcrossline) {
+                crosslinePoints.hLinePoint = findCrosslinePoint(pointData, xval, yval, 'y', crosslinePoints.hLinePoint);
+            }
+            if(fullLayout.xaxis.showcrossline) {
+                crosslinePoints.vLinePoint = findCrosslinePoint(pointData, xval, yval, 'x', crosslinePoints.vLinePoint);
+            }
+        }
     }
 
-    // nothing left: remove all labels and quit
-    if(hoverData.length === 0) return dragElement.unhoverRaw(gd, evt);
+    function findCrosslinePoint(pointData, xval, yval, mode, endPoint) {
+        var resultPoint = endPoint;
+        pointData.distance = Infinity;
+        pointData.index = false;
+        var closestPoints = trace._module.hoverPoints(pointData, xval, yval, mode);
+        if(closestPoints) {
+            var closestPt = closestPoints[0];
+            if(isNumeric(closestPt.x0) && isNumeric(closestPt.y0)) {
+                var tmpPoint = {
+                    xa: closestPt.xa,
+                    ya: closestPt.ya,
+                    x0: closestPt.x0,
+                    x1: closestPt.x1,
+                    y0: closestPt.y0,
+                    y1: closestPt.y1,
+                    distance: closestPt.distance,
+                    curveNumber: closestPt.trace.index,
+                    pointNumber: closestPt.index
+                };
+                if(!resultPoint || (resultPoint.distance > tmpPoint.distance)) {
+                    resultPoint = tmpPoint;
+                }
+            }
+        }
+        return resultPoint;
+    }
+
+    // if hoverData is empty check for the crosslines to draw and quit if there are none
+    if(hoverData.length === 0) {
+        var result = dragElement.unhoverRaw(gd, evt);
+        if(fullLayout._has('cartesian') && ((crosslinePoints.hLinePoint !== null) || (crosslinePoints.vLinePoint !== null))) {
+            createCrosslines(crosslinePoints, fullLayout);
+        }
+        return result;
+    }
+
+    if(fullLayout._has('cartesian')) {
+        createCrosslines(crosslinePoints, fullLayout);
+    }
 
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
@@ -1106,6 +1162,77 @@ function cleanPoint(d, hovermode) {
     }
 
     return d;
+}
+
+function createCrosslines(hoverData, fullLayout) {
+    var showXSpikeline = fullLayout.xaxis && fullLayout.xaxis.showspikes;
+    var showYSpikeline = fullLayout.yaxis && fullLayout.yaxis.showspikes;
+    var showH = fullLayout.yaxis && fullLayout.yaxis.showcrossline;
+    var showV = fullLayout.xaxis && fullLayout.xaxis.showcrossline;
+    var container = fullLayout._hoverlayer;
+    var hovermode = fullLayout.hovermode;
+    if(!(showV || showH) || (showXSpikeline && showYSpikeline && hovermode === 'closest')) return;
+    var hLinePoint,
+        vLinePoint,
+        xa,
+        ya,
+        hLinePointY,
+        vLinePointX;
+
+    // Remove old crossline items
+    container.selectAll('.crossline').remove();
+
+    var contrastColor = Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor);
+    var dfltCrosslineColor = Color.contrast(contrastColor);
+
+    // do not draw a crossline if there is a spikeline
+    if(showV && !(showXSpikeline && hovermode === 'closest')) {
+        vLinePoint = hoverData.vLinePoint;
+        xa = vLinePoint.xa;
+        vLinePointX = xa._offset + (vLinePoint.x0 + vLinePoint.x1) / 2;
+
+        var xThickness = xa.crosslinethickness;
+        var xDash = xa.crosslinedash;
+        var xColor = xa.crosslinecolor || dfltCrosslineColor;
+
+        // Foreground vertical line (to x-axis)
+        container.insert('line', ':first-child')
+            .attr({
+                'x1': vLinePointX,
+                'x2': vLinePointX,
+                'y1': xa._counterSpan[0],
+                'y2': xa._counterSpan[1],
+                'stroke-width': xThickness,
+                'stroke': xColor,
+                'stroke-dasharray': Drawing.dashStyle(xDash, xThickness)
+            })
+            .classed('crossline', true)
+            .classed('crisp', true);
+    }
+
+    if(showH && !(showYSpikeline && hovermode === 'closest')) {
+        hLinePoint = hoverData.hLinePoint;
+        ya = hLinePoint.ya;
+        hLinePointY = ya._offset + (hLinePoint.y0 + hLinePoint.y1) / 2;
+
+        var yThickness = ya.crosslinethickness;
+        var yDash = ya.crosslinedash;
+        var yColor = ya.crosslinecolor || dfltCrosslineColor;
+
+        // Foreground horizontal line (to y-axis)
+        container.insert('line', ':first-child')
+            .attr({
+                'x1': ya._counterSpan[0],
+                'x2': ya._counterSpan[1],
+                'y1': hLinePointY,
+                'y2': hLinePointY,
+                'stroke-width': yThickness,
+                'stroke': yColor,
+                'stroke-dasharray': Drawing.dashStyle(yDash, yThickness)
+            })
+            .classed('crossline', true)
+            .classed('crisp', true);
+    }
 }
 
 function createSpikelines(hoverData, opts) {

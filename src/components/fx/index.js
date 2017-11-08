@@ -59,6 +59,7 @@ function loneUnhover(containerOrSelection) {
 
     selection.selectAll('g.hovertext').remove();
     selection.selectAll('.spikeline').remove();
+    selection.selectAll('.crossline').remove();
 }
 
 // helpers for traces that use Fx.loneHover

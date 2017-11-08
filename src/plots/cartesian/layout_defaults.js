@@ -191,6 +191,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
+        var showCrossline = coerce('showcrossline');
+        if(showCrossline) {
+            coerce('crosslinecolor');
+            coerce('crosslinethickness');
+            coerce('crosslinedash');
+        }
+
         var showSpikes = coerce('showspikes');
         if(showSpikes) {
             coerce('spikecolor');
