@@ -54,7 +54,6 @@ ScatterRegl.calc = function calc(container, trace) {
 
     // FIXME: is it the best way to obtain subplot object from trace
     var subplot = layout._plots[trace.xaxis + trace.yaxis];
-
     // makeCalcdata runs d2c (data-to-coordinate) on every point
     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
@@ -513,6 +512,8 @@ ScatterRegl.calc = function calc(container, trace) {
             scene.markerOptions = null;
             scene.errorXOptions = null;
             scene.errorYOptions = null;
+
+            delete subplot._scene;
         };
 
         // highlight selected points

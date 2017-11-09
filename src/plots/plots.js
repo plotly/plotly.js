@@ -1304,7 +1304,6 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 // Remove all plotly attributes from a div so it can be replotted fresh
 // TODO: these really need to be encapsulated into a much smaller set...
 plots.purge = function(gd) {
-
     // note: we DO NOT remove _context because it doesn't change when we insert
     // a new plot, and may have been set outside of our scope.
 
@@ -1326,6 +1325,9 @@ plots.purge = function(gd) {
             window.cancelAnimationFrame(gd._transitionData._animationRaf);
         }
     }
+
+    // remove any planned throttles
+    Lib.clearThrottle();
 
     // data and layout
     delete gd.data;

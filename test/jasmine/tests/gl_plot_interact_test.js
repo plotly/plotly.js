@@ -1071,7 +1071,6 @@ describe('Test gl2d plots', function() {
 
     it('should change plot type with incomplete data', function(done) {
         Plotly.plot(gd, [{}]);
-
         expect(function() {
             Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
         }).not.toThrow();
@@ -1120,7 +1119,7 @@ describe('Test removal of gl contexts', function() {
 
             Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
 
-            expect(gd._fullLayout._plots).toEqual({});
+            expect(gd._fullLayout._plots.xy._scene).toBeUndefined();
         })
         .then(done);
     });
@@ -1169,7 +1168,7 @@ describe('Test removal of gl contexts', function() {
         .then(done);
     });
 
-    fit('Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
+    it('Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
         var firstGlplotObject, firstGlContext, firstCanvas;
 
         Plotly.plot(gd, [{
@@ -1178,8 +1177,8 @@ describe('Test removal of gl contexts', function() {
             y: [2, 1, 3]
         }])
         .then(function() {
-            firstGlplotObject = gd._fullLayout._plots.xy._scene2d.glplot;
-            firstGlContext = firstGlplotObject.gl;
+            firstGlplotObject = gd._fullLayout._plots.xy._scene;
+            firstGlContext = firstGlplotObject.scatter2d.gl;
             firstCanvas = firstGlContext.canvas;
 
             expect(firstGlplotObject).toBeDefined();
@@ -1193,8 +1192,8 @@ describe('Test removal of gl contexts', function() {
             }], {});
         })
         .then(function() {
-            var secondGlplotObject = gd._fullLayout._plots.xy._scene2d.glplot;
-            var secondGlContext = secondGlplotObject.gl;
+            var secondGlplotObject = gd._fullLayout._plots.xy._scene;
+            var secondGlContext = secondGlplotObject.scatter2d.gl;
             var secondCanvas = secondGlContext.canvas;
 
             expect(Object.keys(gd._fullLayout._plots).length === 1);
@@ -1276,7 +1275,8 @@ describe('Test gl plot side effects', function() {
 
             return Plotly.deleteTraces(gd, [0]);
         }).then(function() {
-            countCanvases(0);
+            // deleteTraces should not delete canvases since we may reuse them
+            countCanvases(3);
 
             return Plotly.purge(gd);
         }).then(done);
@@ -1324,10 +1324,10 @@ describe('Test gl2d interactions', function() {
             dragmode: 'pan'
         })
         .then(function() {
-            assertAnnotation([327, 315]);
+            assertAnnotation([327, 312]);
 
             drag([250, 200], [200, 150]);
-            assertAnnotation([277, 265]);
+            assertAnnotation([277, 262]);
 
             return Plotly.relayout(gd, {
                 'xaxis.range': [1.5, 2.5],
