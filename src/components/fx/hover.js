@@ -385,6 +385,19 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             yval = yvalArray[subploti];
         }
 
+        var showSpikes = fullLayout.xaxis && fullLayout.xaxis.showspikes && fullLayout.yaxis && fullLayout.yaxis.showspikes;
+        var showCrosslines = fullLayout.xaxis && fullLayout.xaxis.showcrossline || fullLayout.yaxis && fullLayout.yaxis.showcrossline;
+
+        // Find the points for the crosslines first to avoid overwriting the hoverLabels data.
+        if(fullLayout._has('cartesian') && showCrosslines && !(showSpikes && hovermode === 'closest')) {
+            if(fullLayout.yaxis.showcrossline) {
+                crosslinePoints.hLinePoint = findCrosslinePoint(pointData, xval, yval, 'y', crosslinePoints.hLinePoint);
+            }
+            if(fullLayout.xaxis.showcrossline) {
+                crosslinePoints.vLinePoint = findCrosslinePoint(pointData, xval, yval, 'x', crosslinePoints.vLinePoint);
+            }
+        }
+
         // Now find the points.
         if(trace._module && trace._module.hoverPoints) {
             var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
@@ -408,22 +421,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             hoverData.splice(0, closedataPreviousLength);
             distance = hoverData[0].distance;
         }
-
-        var showSpikes = fullLayout.xaxis && fullLayout.xaxis.showspikes && fullLayout.yaxis && fullLayout.yaxis.showspikes;
-        var showCrosslines = fullLayout.xaxis && fullLayout.xaxis.showcrossline || fullLayout.yaxis && fullLayout.yaxis.showcrossline;
-
-        if(fullLayout._has('cartesian') && showCrosslines && !(showSpikes && hovermode === 'closest')) {
-            // Now find the points for the crosslines.
-            if(fullLayout.yaxis.showcrossline) {
-                crosslinePoints.hLinePoint = findCrosslinePoint(pointData, xval, yval, 'y', crosslinePoints.hLinePoint);
-            }
-            if(fullLayout.xaxis.showcrossline) {
-                crosslinePoints.vLinePoint = findCrosslinePoint(pointData, xval, yval, 'x', crosslinePoints.vLinePoint);
-            }
-        }
     }
 
     function findCrosslinePoint(pointData, xval, yval, mode, endPoint) {
+        var tmpDistance = pointData.distance;
+        var tmpIndex = pointData.index;
         var resultPoint = endPoint;
         pointData.distance = Infinity;
         pointData.index = false;
@@ -447,6 +449,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 }
             }
         }
+        pointData.index = tmpIndex;
+        pointData.distance = tmpDistance;
         return resultPoint;
     }
 
@@ -1145,7 +1149,7 @@ function cleanPoint(d, hovermode) {
     return d;
 }
 
-function createCrosslines(hoverData, fullLayout) {
+function createCrosslines(closestPoints, fullLayout) {
     var showXSpikeline = fullLayout.xaxis && fullLayout.xaxis.showspikes;
     var showYSpikeline = fullLayout.yaxis && fullLayout.yaxis.showspikes;
     var showH = fullLayout.yaxis && fullLayout.yaxis.showcrossline;
@@ -1168,7 +1172,7 @@ function createCrosslines(hoverData, fullLayout) {
 
     // do not draw a crossline if there is a spikeline
     if(showV && !(showXSpikeline && hovermode === 'closest')) {
-        vLinePoint = hoverData.vLinePoint;
+        vLinePoint = closestPoints.vLinePoint;
         xa = vLinePoint.xa;
         vLinePointX = xa._offset + (vLinePoint.x0 + vLinePoint.x1) / 2;
 
@@ -1192,7 +1196,7 @@ function createCrosslines(hoverData, fullLayout) {
     }
 
     if(showH && !(showYSpikeline && hovermode === 'closest')) {
-        hLinePoint = hoverData.hLinePoint;
+        hLinePoint = closestPoints.hLinePoint;
         ya = hLinePoint.ya;
         hLinePointY = ya._offset + (hLinePoint.y0 + hLinePoint.y1) / 2;
 
