@@ -8,6 +8,8 @@
 
 var d3 = require('d3');
 var Lib = require('../../lib');
+var defaults = require('./defaults');
+var utility = require('./utility');
 var extendDeepAll = Lib.extendDeepAll;
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var µ = module.exports = { version: '0.2.2' };
@@ -73,7 +75,7 @@ function buildFontStyle(axisConfig){
 
 function createSVG(self,d3){
     svg = d3.select(self).select('svg.chart-root');
-    debugger;
+    //debugger;
     if (typeof svg === 'undefined' || svg.empty()) {
         var skeleton = "<svg xmlns='http://www.w3.org/2000/svg' class='chart-root'>' + '<g class='outer-group'>' + '<g class='chart-group'>' + '<circle class='background-circle'></circle>' + '<g class='geometry-group'></g>' + '<g class='radial axis-group'>' + '<circle class='outside-circle'></circle>' + '</g>' + '<g class='angular axis-group'></g>' + '<g class='guides-group'><line></line><circle r='0'></circle></g>' + '</g>' + '<g class='legend-group'></g>' + '<g class='tooltips-group'></g>' + '<g class='title-group'><text></text></g>' + '</g>' + '</svg>";
         var doc = new DOMParser().parseFromString(skeleton, 'application/xml');
@@ -220,7 +222,25 @@ function assignAngularAxisAttributes(angularAxis,currentAngle,axisConfig,angular
 
     return angularAxis
 }
-function isOrdinalCheck(isOrdinal,guides,chartGroup,radius,axisConfig,angularScale,angularTooltip,chartCenter){
+
+function isOrdinalCheckOne(angularDataMerged,data,isStacked){
+    var ticks;
+    var isOrdinal = typeof angularDataMerged[0] === 'string';
+    if (isOrdinal) {
+        angularDataMerged = µ.util.deduplicate(angularDataMerged);
+        ticks = angularDataMerged.slice();
+        angularDataMerged = d3.range(angularDataMerged.length);
+        data = data.map(function(d, i) {
+            var result = d;
+            d.t = [ angularDataMerged ];
+            if (isStacked) result.yStack = d.yStack;
+            return result;
+        });
+    }
+    return [data,ticks,angularDataMerged,isOrdinal]
+}
+
+function isOrdinalCheckTwo(isOrdinal,guides,chartGroup,radius,axisConfig,angularScale,angularTooltip,chartCenter){
     if (!isOrdinal) {
         var angularGuideLine = guides.select('line').attr({
             x1: 0,
@@ -290,6 +310,7 @@ function assignGeometryContainerAttributes(geometryContainer,data,radialScale,an
             var geometry;
             if (Array.isArray(d)) geometry = d[0].geometryConfig.geometry; else geometry = d.geometryConfig.geometry;
             var finalGeometryConfig = d.map(function(dB, iB) {
+                //console.log(µ[geometry].defaultConfig())
                 return extendDeepAll(µ[geometry].defaultConfig(), dB);
             });
             µ[geometry]().config(finalGeometryConfig)();
@@ -298,12 +319,13 @@ function assignGeometryContainerAttributes(geometryContainer,data,radialScale,an
     return geometryContainer
 }
 
-function svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks){
+function svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks,data){
     svg.selectAll('.geometry-group .mark').on('mouseover.tooltip', function(d, i) {
         var el = d3.select(this);
         var color = this.style.fill;
         var newColor = 'black';
         var opacity = this.style.opacity || 1;
+        var name = "N/A"
         el.attr({
             'data-opacity': opacity
         });
@@ -318,16 +340,32 @@ function svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks){
             });
             var textData = {
                 t: µ.util.round(d[0]),
-                r: µ.util.round(d[1])
+                r: µ.util.round(d[1]),              
             };
+            // Get the objects name attach it with to resulting object text
+            for(var i = 0;i<dataWithGroupId.length;i++){
+                // Remove spaces to get run comparison
+                dataColour = color.replace(/\s+/g, '');
+                if(dataColour == dataWithGroupId[i].color){
+                    name = dataWithGroupId[i].name;
+                }
+            }   
+            
+            // Check if data name should be displayed
+            var text
             if (isOrdinal) textData.t = ticks[d[0]];
-            var text = 't: ' + textData.t + ', r: ' + textData.r;
+            if (name == "N/A"){
+                text = 't: ' + textData.t + ', r: ' + textData.r;
+            }else{
+                text = 't: ' + textData.t + ', r: ' + textData.r + ', N: ' + name;
+            }
+
             var bbox = this.getBoundingClientRect();
             var svgBBox = svg.node().getBoundingClientRect();
             var pos = [ bbox.left + bbox.width / 2 - centeringOffset[0] - svgBBox.left, bbox.top + bbox.height / 2 - centeringOffset[1] - svgBBox.top ];
-            geometryTooltip.config({
-                color: newColor
-            }).text(text);
+
+            geometryTooltip.config({color: newColor}).text(text);
+            
             geometryTooltip.move(pos);
         } else {
             color = this.style.stroke || 'black';
@@ -356,6 +394,7 @@ function svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks){
         });
     });
 }
+
 function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircle,radialScale,axisConfig,chartCenter,geometryTooltip,angularTooltip){
     chartGroup.on('mousemove.radial-guide', function(d, i) {
         var r = µ.util.getMousePos(backgroundCircle).radius;
@@ -378,6 +417,67 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
     return chartGroup
 }
 
+function addSegementDividers(dataOriginal,axisConfig,liveConfig){
+    var colorIndex = 0;
+    dataOriginal.forEach(function(d, i) {
+        if (!d.color) {
+            d.color = axisConfig.defaultColorRange[colorIndex];
+            colorIndex = (colorIndex + 1) % axisConfig.defaultColorRange.length;
+        }
+        if (!d.strokeColor) {
+            d.strokeColor = d.geometry === 'LinePlot' ? d.color : d3.rgb(d.color).darker().toString();
+        }
+        liveConfig.data[i].color = d.color;
+        liveConfig.data[i].strokeColor = d.strokeColor;
+        liveConfig.data[i].strokeDash = d.strokeDash;
+        liveConfig.data[i].strokeSize = d.strokeSize;
+    });
+    return dataOriginal
+}
+
+function isStackedCheck(data,axisConfig){
+    var isStacked = false;
+    var dataWithGroupId = data.map(function(d, i) {
+        isStacked = isStacked || typeof d.groupId !== 'undefined';
+        return d;
+    });
+
+    if (isStacked) {
+        var grouped = d3.nest().key(function(d, i) {
+            return typeof d.groupId != 'undefined' ? d.groupId : 'unstacked';
+        }).entries(dataWithGroupId);
+        var dataYStack = [];
+        var stacked = grouped.map(function(d, i) {
+            if (d.key === 'unstacked') return d.values; else {
+                var prevArray = d.values[0].r.map(function(d, i) {
+                    return 0;
+                });
+                d.values.forEach(function(d, i, a) {
+                    d.yStack = [ prevArray ];
+                    dataYStack.push(prevArray);
+                    prevArray = µ.util.sumArrays(d.r, prevArray);
+                });
+                return d.values;
+            }
+        });
+        data = d3.merge(stacked);
+    }
+    data.forEach(function(d, i) {
+        d.t = Array.isArray(d.t[0]) ? d.t : [ d.t ];
+        d.r = Array.isArray(d.r[0]) ? d.r : [ d.r ];
+    });
+    var radius = Math.min(axisConfig.width - axisConfig.margin.left - axisConfig.margin.right, axisConfig.height - axisConfig.margin.top - axisConfig.margin.bottom) / 2;
+    radius = Math.max(10, radius);
+    var chartCenter = [ axisConfig.margin.left + radius, axisConfig.margin.top + radius ];
+    var extent;
+    if (isStacked) {
+        var highestStackedValue = d3.max(µ.util.sumArrays(µ.util.arrayLast(data).r[0], µ.util.arrayLast(dataYStack)));
+        extent = [ 0, highestStackedValue ];
+    } else extent = d3.extent(µ.util.flattenArray(data.map(function(d, i) {
+        return d.r;
+    })));
+    return [isStacked,radius,chartCenter,dataWithGroupId,extent]
+}
 µ.Axis = function module(){
     var config = {data: [],layout: {}}, inputConfig = {}, liveConfig = {};
     var svg, container, dispatch = d3.dispatch('hover'), radialScale, angularScale;
@@ -394,93 +494,46 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
             var dataOriginal = _data.slice();
             liveConfig = {data: µ.util.cloneJson(dataOriginal),layout: µ.util.cloneJson(axisConfig)};
             //debugger;
-            var colorIndex = 0;
 
-            dataOriginal.forEach(function(d, i) {
-                if (!d.color) {
-                    d.color = axisConfig.defaultColorRange[colorIndex];
-                    colorIndex = (colorIndex + 1) % axisConfig.defaultColorRange.length;
-                }
-                if (!d.strokeColor) {
-                    d.strokeColor = d.geometry === 'LinePlot' ? d.color : d3.rgb(d.color).darker().toString();
-                }
-                liveConfig.data[i].color = d.color;
-                liveConfig.data[i].strokeColor = d.strokeColor;
-                liveConfig.data[i].strokeDash = d.strokeDash;
-                liveConfig.data[i].strokeSize = d.strokeSize;
-            });
-
+            // Adds lines between data (areas)
+            dataOriginal = addSegementDividers(dataOriginal,axisConfig,liveConfig);
+            // Get Data - not sure what this is doing
             var data = dataOriginal.filter(function(d, i) {
                 var visible = d.visible;
                 return typeof visible === 'undefined' || visible === true;
             });
 
-            var isStacked = false;
-            var dataWithGroupId = data.map(function(d, i) {
-                isStacked = isStacked || typeof d.groupId !== 'undefined';
-                return d;
-            });
+            // check for stacked data 
+            result  = isStackedCheck(data,axisConfig);
+            isStacked = result[0];
+            radius = result[1];
+            chartCenter = result[2];
+            dataWithGroupId = result[3];
+            extent = result[4];
 
-            if (isStacked) {
-                var grouped = d3.nest().key(function(d, i) {
-                    return typeof d.groupId != 'undefined' ? d.groupId : 'unstacked';
-                }).entries(dataWithGroupId);
-                var dataYStack = [];
-                var stacked = grouped.map(function(d, i) {
-                    if (d.key === 'unstacked') return d.values; else {
-                        var prevArray = d.values[0].r.map(function(d, i) {
-                            return 0;
-                        });
-                        d.values.forEach(function(d, i, a) {
-                            d.yStack = [ prevArray ];
-                            dataYStack.push(prevArray);
-                            prevArray = µ.util.sumArrays(d.r, prevArray);
-                        });
-                        return d.values;
-                    }
-                });
-                data = d3.merge(stacked);
-            }
-            data.forEach(function(d, i) {
-                d.t = Array.isArray(d.t[0]) ? d.t : [ d.t ];
-                d.r = Array.isArray(d.r[0]) ? d.r : [ d.r ];
-            });
-            var radius = Math.min(axisConfig.width - axisConfig.margin.left - axisConfig.margin.right, axisConfig.height - axisConfig.margin.top - axisConfig.margin.bottom) / 2;
-            radius = Math.max(10, radius);
-            var chartCenter = [ axisConfig.margin.left + radius, axisConfig.margin.top + radius ];
-            var extent;
-            if (isStacked) {
-                var highestStackedValue = d3.max(µ.util.sumArrays(µ.util.arrayLast(data).r[0], µ.util.arrayLast(dataYStack)));
-                extent = [ 0, highestStackedValue ];
-            } else extent = d3.extent(µ.util.flattenArray(data.map(function(d, i) {
-                return d.r;
-            })));
             if (axisConfig.radialAxis.domain != µ.DATAEXTENT) extent[0] = 0;
             radialScale = d3.scale.linear().domain(axisConfig.radialAxis.domain != µ.DATAEXTENT && axisConfig.radialAxis.domain ? axisConfig.radialAxis.domain : extent).range([ 0, radius ]);
             liveConfig.layout.radialAxis.domain = radialScale.domain();
             var angularDataMerged = µ.util.flattenArray(data.map(function(d, i) {
                 return d.t;
             }));
-            var isOrdinal = typeof angularDataMerged[0] === 'string';
-            var ticks;
-            if (isOrdinal) {
-                angularDataMerged = µ.util.deduplicate(angularDataMerged);
-                ticks = angularDataMerged.slice();
-                angularDataMerged = d3.range(angularDataMerged.length);
-                data = data.map(function(d, i) {
-                    var result = d;
-                    d.t = [ angularDataMerged ];
-                    if (isStacked) result.yStack = d.yStack;
-                    return result;
-                });
-            }
+            
+            // Builds some data based on if the plot is ordinal
+            result = isOrdinalCheckOne(angularDataMerged,data,isStacked);
+            data = result[0];
+            ticks = result[1];
+            angularDataMerged = result[2];
+            isOrdinal = result[3];
+            // More variable setup
             var hasOnlyLineOrDotPlot = data.filter(function(d, i) {
                 return d.geometry === 'LinePlot' || d.geometry === 'DotPlot';
             }).length === data.length;
+
             var needsEndSpacing = axisConfig.needsEndSpacing === null ? isOrdinal || !hasOnlyLineOrDotPlot : axisConfig.needsEndSpacing;
             var useProvidedDomain = axisConfig.angularAxis.domain && axisConfig.angularAxis.domain != µ.DATAEXTENT && !isOrdinal && axisConfig.angularAxis.domain[0] >= 0;
             var angularDomain = useProvidedDomain ? axisConfig.angularAxis.domain : d3.extent(angularDataMerged);
             var angularDomainStep = Math.abs(angularDataMerged[1] - angularDataMerged[0]);
+
             if (hasOnlyLineOrDotPlot && !isOrdinal) angularDomainStep = 0;
             var angularDomainWithPadding = angularDomain.slice();
             if (needsEndSpacing && isOrdinal) angularDomainWithPadding[1] += angularDomainStep;
@@ -489,6 +542,7 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
             if (axisConfig.angularAxis.ticksStep) {
                 tickCount = (angularDomainWithPadding[1] - angularDomainWithPadding[0]) / tickCount;
             }
+
             var angularTicksStep = axisConfig.angularAxis.ticksStep || (angularDomainWithPadding[1] - angularDomainWithPadding[0]) / (tickCount * (axisConfig.minorTicks + 1));
             if (ticks) angularTicksStep = Math.max(Math.round(angularTicksStep), 1);
             if (!angularDomainWithPadding[2]) angularDomainWithPadding[2] = angularTicksStep;
@@ -496,11 +550,10 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
             angularAxisRange = angularAxisRange.map(function(d, i) {
                 return parseFloat(d.toPrecision(12));
             });
+
             angularScale = d3.scale.linear().domain(angularDomainWithPadding.slice(0, 2)).range(axisConfig.direction === 'clockwise' ? [ 0, 360 ] : [ 360, 0 ]);
             liveConfig.layout.angularAxis.domain = angularScale.domain();
             liveConfig.layout.angularAxis.endPadding = needsEndSpacing ? angularDomainStep : 0;
-        
-
 
             // Create svg
             svg = createSVG(this,d3);         
@@ -560,7 +613,7 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
             })();
 
             var angularValue, radialValue;
-            isOrdinalCheck(isOrdinal,guides,chartGroup,radius,axisConfig,angularScale,angularTooltip,chartCenter)
+            isOrdinalCheckTwo(isOrdinal,guides,chartGroup,radius,axisConfig,angularScale,angularTooltip,chartCenter)
 
             var angularGuideCircle = guides.select('circle').style({
                 stroke: 'grey',
@@ -570,20 +623,16 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
             chartGroup =  outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircle,radialScale,axisConfig,chartCenter,geometryTooltip,angularTooltip);
 
             // Displays box with result values in
-            svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks);
-
+            svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks,data);
         });
         return exports;
     }
-
-
-
-
 
     exports.render = function(_container) {
         render(_container);
         return this;
     };
+    
     exports.config = function(_x) {
         if (!arguments.length) return config;
         var xClone = µ.util.cloneJson(_x);
@@ -612,76 +661,12 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
         return svg;
     };
     d3.rebind(exports, dispatch, 'on');
+    
     return exports;
 };
 
 µ.Axis.defaultConfig = function(d, i) {
-    var config = {
-        data: [ {
-            t: [ 1, 2, 3, 4 ],
-            r: [ 10, 11, 12, 13 ],
-            name: 'Line1',
-            geometry: 'LinePlot',
-            color: null,
-            strokeDash: 'solid',
-            strokeColor: null,
-            strokeSize: '1',
-            visibleInLegend: true,
-            opacity: 1
-        } ],
-        layout: {
-            defaultColorRange: d3.scale.category10().range(),
-            title: null,
-            height: 450,
-            width: 500,
-            margin: {
-                top: 40,
-                right: 40,
-                bottom: 40,
-                left: 40
-            },
-            font: {
-                size: 12,
-                color: 'gray',
-                outlineColor: 'white',
-                family: 'Tahoma, sans-serif'
-            },
-            direction: 'clockwise',
-            orientation: 0,
-            labelOffset: 10,
-            radialAxis: {
-                domain: null,
-                orientation: -45,
-                ticksSuffix: '',
-                visible: true,
-                gridLinesVisible: true,
-                tickOrientation: 'horizontal',
-                rewriteTicks: null
-            },
-            angularAxis: {
-                domain: [ 0, 360 ],
-                ticksSuffix: '',
-                visible: true,
-                gridLinesVisible: true,
-                labelsVisible: true,
-                tickOrientation: 'horizontal',
-                rewriteTicks: null,
-                ticksCount: null,
-                ticksStep: null
-            },
-            minorTicks: 0,
-            tickLength: null,
-            tickColor: 'silver',
-            minorTickColor: '#eee',
-            backgroundColor: 'none',
-            needsEndSpacing: null,
-            showLegend: true,
-            legend: {
-                reverseOrder: false
-            },
-            opacity: 1
-        }
-    };
+    var config = defaults.defaultConfig();
     return config;
 };
 
@@ -1042,35 +1027,7 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
 };
 
 µ.PolyChart.defaultConfig = function() {
-    var config = {
-        data: {
-            name: 'geom1',
-            t: [ [ 1, 2, 3, 4 ] ],
-            r: [ [ 1, 2, 3, 4 ] ],
-            dotType: 'circle',
-            dotSize: 64,
-            dotVisible: false,
-            barWidth: 20,
-            color: '#ffa500',
-            strokeSize: 1,
-            strokeColor: 'silver',
-            strokeDash: 'solid',
-            opacity: 1,
-            index: 0,
-            visible: true,
-            visibleInLegend: true
-        },
-        geometryConfig: {
-            geometry: 'LinePlot',
-            geometryType: 'arc',
-            direction: 'clockwise',
-            orientation: 0,
-            container: 'body',
-            radialScale: null,
-            angularScale: null,
-            colorScale: d3.scale.category20()
-        }
-    };
+    var config = defaults.polyChartDefaultConfig();
     return config;
 };
 
@@ -1105,12 +1062,7 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
 };
 
 µ.DotPlot.defaultConfig = function() {
-    var config = {
-        geometryConfig: {
-            geometryType: 'dot',
-            dotType: 'circle'
-        }
-    };
+    var config = defaults.dotPlotDefaultConfig();
     return config;
 };
 
@@ -1119,11 +1071,7 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
 };
 
 µ.LinePlot.defaultConfig = function() {
-    var config = {
-        geometryConfig: {
-            geometryType: 'line'
-        }
-    };
+    var config = defaults.linePlotDefaultConfig();
     return config;
 };
 
@@ -1243,22 +1191,7 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
 };
 
 µ.Legend.defaultConfig = function(d, i) {
-    var config = {
-        data: [ 'a'],
-        legendConfig: {
-            elements: [ {
-                symbol: 'line',
-                color: 'red'
-            },],
-            height: 150,
-            colorBandWidth: 30,
-            fontSize: 12,
-            container: 'body',
-            isContinuous: null,
-            textColor: 'grey',
-            reverseOrder: false
-        }
-    };
+    var config = defaults.legendDefaultConfig();
     return config;
 };
 
@@ -1300,6 +1233,7 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
             fill: fillColor,
             'font-size': config.fontSize + 'px'
         }).text(text);
+        
         var padding = config.padding;
         var bbox = tooltipTextEl.node().getBBox();
         var boxStyle = {
@@ -1375,6 +1309,7 @@ function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircl
                 ];
                 toTranslate.forEach(function(d, i) {
                     µ.util.translator.apply(null, d.concat(reverse));
+                    utility.µ.apply(null, d.concat(reverse));
                 });
 
                 if (!reverse) delete r.marker;
