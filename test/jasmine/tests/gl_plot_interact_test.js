@@ -857,14 +857,13 @@ describe('Test gl2d plots', function() {
 
     it('should respond to drag interactions', function(done) {
         var _mock = Lib.extendDeep({}, mock);
-        _mock.data[0].type = 'scatter';
 
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
-        var originalX = [-0.3169014084507042, 5.316901408450704];
-        var originalY = [-0.5806379476536665, 6.218528262566369];
-        var newX = [-0.5516431924882629, 5.082159624413145];
-        var newY = [-1.7947747709072441, 5.004391439312791];
+        var originalX = [-0.3037383177570093, 5.303738317757009];
+        var originalY = [-0.5532219548705213, 6.191112269783224];
+        var newX = [-0.5373831775700935, 5.070093457943925];
+        var newY = [-1.7575673521301185, 4.986766872523626];
         var precision = 5;
 
         Plotly.plot(gd, _mock)
@@ -973,25 +972,6 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should clear orphan cartesian subplots on addTraces', function(done) {
-        Plotly.newPlot(gd, [], {
-            xaxis: { title: 'X' },
-            yaxis: { title: 'Y' }
-        })
-        .then(function() {
-            return Plotly.addTraces(gd, [{
-                type: 'scattergl',
-                x: [1, 2, 3, 4, 5, 6, 7],
-                y: [0, 5, 8, 9, 8, 5, 0]
-            }]);
-        })
-        .then(function() {
-            expect(d3.select('.xtitle').size()).toEqual(0);
-            expect(d3.select('.ytitle').size()).toEqual(0);
-        })
-        .then(done);
-    });
-
     it('supports 1D and 2D Zoom', function(done) {
         var centerX, centerY;
         Plotly.newPlot(gd,
@@ -1026,8 +1006,8 @@ describe('Test gl2d plots', function() {
 
             // no change - too small
             mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([5, 7], 3);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 16], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
         })
         .catch(fail)
         .then(done);
@@ -1073,8 +1053,8 @@ describe('Test gl2d plots', function() {
 
             // no change - too small
             mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([4, 6], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([9, 10], 3);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-8, 24], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
 
             return Plotly.relayout(gd, {
                 'xaxis.autorange': true,
@@ -1082,8 +1062,8 @@ describe('Test gl2d plots', function() {
             });
         })
         .then(function() {
-            expect(gd.layout.xaxis.range).toBeCloseToArray([-8.09195, 24.09195], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([-0.04598, 16.04598], 3);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-8.091954022988505, 24.091954022988503], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([-0.04597701149425282, 16.04597701149425], 3);
         })
         .catch(fail)
         .then(done);
@@ -1136,9 +1116,10 @@ describe('Test removal of gl contexts', function() {
             y: [2, 1, 3]
         }])
         .then(function() {
-            expect(gd._fullLayout._plots.xy._scene2d.glplot).toBeDefined();
+            expect(gd._fullLayout._plots.xy._scene).toBeDefined();
 
             Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
+
             expect(gd._fullLayout._plots).toEqual({});
         })
         .then(done);
@@ -1188,7 +1169,7 @@ describe('Test removal of gl contexts', function() {
         .then(done);
     });
 
-    it('Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
+    fit('Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
         var firstGlplotObject, firstGlContext, firstCanvas;
 
         Plotly.plot(gd, [{

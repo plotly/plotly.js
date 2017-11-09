@@ -145,6 +145,26 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
     var hadScatter, hasScatter, i;
 
+    // destruct scattergl
+    var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, 'cartesian');
+
+    for(i = 0; i < oldSceneKeys.length; i++) {
+        var id = oldSceneKeys[i],
+            oldSubplot = oldFullLayout._plots[id];
+
+        // old subplot wasn't gl2d; nothing to do
+        if(!oldSubplot._scene) continue;
+
+        // if no traces are present, delete gl2d subplot
+        var subplotData = Plots.getSubplotData(newFullData, 'gl', id);
+
+        if(subplotData.length === 0) {
+            oldSubplot._scene.destroy();
+            delete oldFullLayout._plots[id];
+        }
+    }
+
+
     for(i = 0; i < oldModules.length; i++) {
         if(oldModules[i].name === 'scatter') {
             hadScatter = true;

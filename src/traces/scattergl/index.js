@@ -500,6 +500,21 @@ ScatterRegl.calc = function calc(container, trace) {
             scene.dirty = false;
         };
 
+        // remove scene resources
+        scene.destroy = function destroy() {
+            if(scene.fill2d) scene.fill2d.destroy();
+            if(scene.scatter2d) scene.scatter2d.destroy();
+            if(scene.error2d) scene.error2d.destroy();
+            if(scene.line2d) scene.line2d.destroy();
+            if(scene.select2d) scene.select2d.destroy();
+
+            scene.lineOptions = null;
+            scene.fillOptions = null;
+            scene.markerOptions = null;
+            scene.errorXOptions = null;
+            scene.errorYOptions = null;
+        };
+
         // highlight selected points
         scene.select = function select(selection) {
             if(!scene.select2d) return;
