@@ -426,6 +426,30 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
     return hasOneAxisChanged;
 };
 
+// save a copy of the initial crossline visibility
+axes.saveShowCrosslineInitial = function(gd, overwrite) {
+    var axList = axes.list(gd, '', true),
+        hasOneAxisChanged = false;
+
+    for(var i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+
+        var isNew = (ax._showCrosslineInitial === undefined);
+        var hasChanged = (
+            isNew || !(
+                ax.showcrossline === ax._showcrossline
+            )
+        );
+
+        if((isNew) || (overwrite && hasChanged)) {
+            ax._showCrosslineInitial = ax.showcrossline;
+            hasOneAxisChanged = true;
+        }
+
+    }
+    return hasOneAxisChanged;
+};
+
 // axes.expand: if autoranging, include new data in the outer limits
 // for this axis
 // data is an array of numbers (ie already run through ax.d2c)
@@ -2121,7 +2145,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                         top: pos,
                         bottom: pos,
                         left: ax._offset,
-                        rigth: ax._offset + ax._length,
+                        right: ax._offset + ax._length,
                         width: ax._length,
                         height: 0
                     };
