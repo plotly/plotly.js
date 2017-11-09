@@ -52,13 +52,13 @@ describe('crossline', function() {
             Plotly.plot(gd, _mock).then(function() {
                 _hover({xval: 2, yval: 3}, 'xy');
                 _assert(
-                    [[80, 250, 1033, 250], [557, 100, 557, 401]]
+                    [[80, 250, 1036, 250], [557, 100, 557, 401]]
                 );
             })
             .then(function() {
                 _hover({xval: 30, yval: 40}, 'x2y2');
                 _assert(
-                    [[651, 167, 985, 167], [820, 115, 820, 220]]
+                    [[651, 167, 988, 167], [820, 115, 820, 220]]
                 );
             })
             .catch(fail)
@@ -74,13 +74,13 @@ describe('crossline', function() {
             Plotly.plot(gd, _mock).then(function() {
                 _hover({xval: 2, yval: 3}, 'xy');
                 _assert(
-                    [[80, 250, 1033, 250], [557, 100, 557, 401]]
+                    [[80, 250, 1036, 250], [557, 100, 557, 401]]
                 );
             })
             .then(function() {
                 _hover({xval: 30, yval: 40}, 'x2y2');
                 _assert(
-                    [[651, 167, 985, 167], [820, 115, 820, 220]]
+                    [[651, 167, 988, 167], [820, 115, 820, 220]]
                 );
             })
             .catch(fail)
@@ -96,13 +96,13 @@ describe('crossline', function() {
             Plotly.plot(gd, _mock).then(function() {
                 _hover({xval: 2, yval: 3}, 'xy');
                 _assert(
-                    [[80, 250, 1033, 250], [557, 100, 557, 401]]
+                    [[80, 250, 1036, 250], [557, 100, 557, 401]]
                 );
             })
             .then(function() {
                 _hover({xval: 30, yval: 40}, 'x2y2');
                 _assert(
-                    [[652, 167, 985, 167], [820, 115, 820, 220]]
+                    [[652, 167, 988, 167], [820, 115, 820, 220]]
                 );
             })
             .catch(fail)
@@ -118,13 +118,13 @@ describe('crossline', function() {
             Plotly.plot(gd, _mock).then(function() {
                 _hover({xval: 2, yval: 3}, 'xy');
                 _assert(
-                    [[80, 250, 1033, 250]]
+                    [[80, 250, 1036, 250]]
                 );
             })
             .then(function() {
                 _hover({xval: 30, yval: 40}, 'x2y2');
                 _assert(
-                    [[652, 167, 985, 167]]
+                    [[652, 167, 988, 167]]
                 );
             })
             .catch(fail)
@@ -146,7 +146,7 @@ describe('crossline', function() {
             .then(function() {
                 _hover({xval: 30, yval: 40}, 'x2y2');
                 _assert(
-                    [[818, 115, 818, 220]]
+                    [[820, 115, 820, 220]]
                 );
             })
             .catch(fail)
