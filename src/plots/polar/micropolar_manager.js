@@ -18,7 +18,6 @@ var adapter = require('./adapter');
 var micropolar = require('./micropolar');
 var UndoManager = require('./undo_manager');
 var extendDeepAll = Lib.extendDeepAll;
-
 var manager = module.exports = {};
 manager.framework = function(_gd) {
     var config, previousConfigClone, plot, convertedInput, container;

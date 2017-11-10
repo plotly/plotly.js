@@ -10,6 +10,8 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 var defaults = require('./defaults');
 var utility = require('./utility');
+var tooltip= require('./tooltip');
+var legend= require('./legend');
 var extendDeepAll = Lib.extendDeepAll;
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var µ = module.exports = { version: '0.2.2' };
@@ -32,12 +34,12 @@ function buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig){
             return datumClone;
         });
 
-        µ.Legend().config({
+        legend.Legend().config({
             data: data.map(function(d, i) {
                 return d.name || 'Element' + i;
             }),
             legendConfig: extendDeepAll({},
-                µ.Legend.defaultConfig().legendConfig,
+                legend.Legend.defaultConfig().legendConfig,
                 {
                     container: legendContainer,
                     elements: elements,
@@ -597,17 +599,17 @@ function isStackedCheck(data,axisConfig){
             var guides = svg.select('.guides-group');
             var tooltipContainer = svg.select('.tooltips-group');
 
-            var angularTooltip = µ.tooltipPanel().config({
+            var angularTooltip = tooltip.tooltipPanel().config({
                 container: tooltipContainer,
                 fontSize: 8
             })();
 
-            var radialTooltip = µ.tooltipPanel().config({
+            var radialTooltip = tooltip.tooltipPanel().config({
                 container: tooltipContainer,
                 fontSize: 8
             })();
 
-            var geometryTooltip = µ.tooltipPanel().config({
+            var geometryTooltip = tooltip.tooltipPanel().config({
                 container: tooltipContainer,
                 hasTick: true
             })();
@@ -635,6 +637,7 @@ function isStackedCheck(data,axisConfig){
     
     exports.config = function(_x) {
         if (!arguments.length) return config;
+
         var xClone = utility.cloneJson(_x);
         xClone.data.forEach(function(d, i) {
             if (!config.data[i]) config.data[i] = {};
@@ -669,7 +672,6 @@ function isStackedCheck(data,axisConfig){
     var config = defaults.defaultConfig();
     return config;
 };
-
 
 µ.DATAEXTENT = 'dataExtent';
 
@@ -912,363 +914,10 @@ function isStackedCheck(data,axisConfig){
     return config;
 };
 
-µ.Legend = function module() {
-    var config = µ.Legend.defaultConfig();
-    var dispatch = d3.dispatch('hover');
-    function exports() {
-        var legendConfig = config.legendConfig;
-        var flattenData = config.data.map(function(d, i) {
-            return [].concat(d).map(function(dB, iB) {
-                var element = extendDeepAll({}, legendConfig.elements[i]);
-                element.name = dB;
-                element.color = [].concat(legendConfig.elements[i].color)[iB];
-                return element;
-            });
-        });
-        var data = d3.merge(flattenData);
-        data = data.filter(function(d, i) {
-            return legendConfig.elements[i] && (legendConfig.elements[i].visibleInLegend || typeof legendConfig.elements[i].visibleInLegend === 'undefined');
-        });
-        if (legendConfig.reverseOrder) data = data.reverse();
-        var container = legendConfig.container;
-        if (typeof container == 'string' || container.nodeName) container = d3.select(container);
-        var colors = data.map(function(d, i) {
-            return d.color;
-        });
-        var lineHeight = legendConfig.fontSize;
-        var isContinuous = legendConfig.isContinuous == null ? typeof data[0] === 'number' : legendConfig.isContinuous;
-        var height = isContinuous ? legendConfig.height : lineHeight * data.length;
-        var legendContainerGroup = container.classed('legend-group', true);
-        var svg = legendContainerGroup.selectAll('svg').data([ 0 ]);
-        var svgEnter = svg.enter().append('svg').attr({
-            width: 300,
-            height: height + lineHeight,
-            xmlns: 'http://www.w3.org/2000/svg',
-            'xmlns:xlink': 'http://www.w3.org/1999/xlink',
-            version: '1.1'
-        });
-        svgEnter.append('g').classed('legend-axis', true);
-        svgEnter.append('g').classed('legend-marks', true);
-        var dataNumbered = d3.range(data.length);
-        var colorScale = d3.scale[isContinuous ? 'linear' : 'ordinal']().domain(dataNumbered).range(colors);
-        var dataScale = d3.scale[isContinuous ? 'linear' : 'ordinal']().domain(dataNumbered)[isContinuous ? 'range' : 'rangePoints']([ 0, height ]);
-        var shapeGenerator = function(_type, _size) {
-            var squareSize = _size * 3;
-            if (_type === 'line') {
-                return 'M' + [ [ -_size / 2, -_size / 12 ], [ _size / 2, -_size / 12 ], [ _size / 2, _size / 12 ], [ -_size / 2, _size / 12 ] ] + 'Z';
-            } else if (d3.svg.symbolTypes.indexOf(_type) != -1) return d3.svg.symbol().type(_type).size(squareSize)(); else return d3.svg.symbol().type('square').size(squareSize)();
-        };
-        if (isContinuous) {
-            var gradient = svg.select('.legend-marks').append('defs').append('linearGradient').attr({
-                id: 'grad1',
-                x1: '0%',
-                y1: '0%',
-                x2: '0%',
-                y2: '100%'
-            }).selectAll('stop').data(colors);
-            gradient.enter().append('stop');
-            gradient.attr({
-                offset: function(d, i) {
-                    return i / (colors.length - 1) * 100 + '%';
-                }
-            }).style({
-                'stop-color': function(d, i) {
-                    return d;
-                }
-            });
-            svg.append('rect').classed('legend-mark', true).attr({
-                height: legendConfig.height,
-                width: legendConfig.colorBandWidth,
-                fill: 'url(#grad1)'
-            });
-        } else {
-            var legendElement = svg.select('.legend-marks').selectAll('path.legend-mark').data(data);
-            legendElement.enter().append('path').classed('legend-mark', true);
-            legendElement.attr({
-                transform: function(d, i) {
-                    return 'translate(' + [ lineHeight / 2, dataScale(i) + lineHeight / 2 ] + ')';
-                },
-                d: function(d, i) {
-                    var symbolType = d.symbol;
-                    return shapeGenerator(symbolType, lineHeight);
-                },
-                fill: function(d, i) {
-                    return colorScale(i);
-                }
-            });
-            legendElement.exit().remove();
-        }
-        var legendAxis = d3.svg.axis().scale(dataScale).orient('right');
-        var axis = svg.select('g.legend-axis').attr({
-            transform: 'translate(' + [ isContinuous ? legendConfig.colorBandWidth : lineHeight, lineHeight / 2 ] + ')'
-        }).call(legendAxis);
-        axis.selectAll('.domain').style({
-            fill: 'none',
-            stroke: 'none'
-        });
-        axis.selectAll('line').style({
-            fill: 'none',
-            stroke: isContinuous ? legendConfig.textColor : 'none'
-        });
-        axis.selectAll('text').style({
-            fill: legendConfig.textColor,
-            'font-size': legendConfig.fontSize
-        }).text(function(d, i) {
-            return data[i].name;
-        });
-        return exports;
-    }
-    exports.config = function(_x) {
-        if (!arguments.length) return config;
-        extendDeepAll(config, _x);
-        return this;
-    };
-    d3.rebind(exports, dispatch, 'on');
-    return exports;
-};
-
-µ.Legend.defaultConfig = function(d, i) {
+legend.Legend.defaultConfig = function(d, i) {
     var config = defaults.legendDefaultConfig();
     return config;
 };
+tooltip.tooltipPanel.uid = 1;
 
-µ.tooltipPanel = function() {
-    var tooltipEl, tooltipTextEl, backgroundEl;
-    var config = {
-        container: null,
-        hasTick: false,
-        fontSize: 12,
-        color: 'white',
-        padding: 5
-    };
-    var id = 'tooltip-' + µ.tooltipPanel.uid++;
-    var tickSize = 10;
-    var exports = function() {
-        tooltipEl = config.container.selectAll('g.' + id).data([ 0 ]);
-        var tooltipEnter = tooltipEl.enter().append('g').classed(id, true).style({
-            'pointer-events': 'none',
-            display: 'none'
-        });
-        backgroundEl = tooltipEnter.append('path').style({
-            fill: 'white',
-            'fill-opacity': .9
-        }).attr({
-            d: 'M0 0'
-        });
-        tooltipTextEl = tooltipEnter.append('text').attr({
-            dx: config.padding + tickSize,
-            dy: +config.fontSize * .3
-        });
-        return exports;
-    };
-    exports.text = function(_text) {
-        var l = d3.hsl(config.color).l;
-        var strokeColor = l >= .5 ? '#aaa' : 'white';
-        var fillColor = l >= .5 ? 'black' : 'white';
-        var text = _text || '';
-        tooltipTextEl.style({
-            fill: fillColor,
-            'font-size': config.fontSize + 'px'
-        }).text(text);
-        
-        var padding = config.padding;
-        var bbox = tooltipTextEl.node().getBBox();
-        var boxStyle = {
-            fill: config.color,
-            stroke: strokeColor,
-            'stroke-width': '2px'
-        };
-        var backGroundW = bbox.width + padding * 2 + tickSize;
-        var backGroundH = bbox.height + padding * 2;
-        backgroundEl.attr({
-            d: 'M' + [ [ tickSize, -backGroundH / 2 ], [ tickSize, -backGroundH / 4 ], [ config.hasTick ? 0 : tickSize, 0 ], [ tickSize, backGroundH / 4 ], [ tickSize, backGroundH / 2 ], [ backGroundW, backGroundH / 2 ], [ backGroundW, -backGroundH / 2 ] ].join('L') + 'Z'
-        }).style(boxStyle);
-        tooltipEl.attr({
-            transform: 'translate(' + [ tickSize, -backGroundH / 2 + padding * 2 ] + ')'
-        });
-        tooltipEl.style({
-            display: 'block'
-        });
-        return exports;
-    };
-    exports.move = function(_pos) {
-        if (!tooltipEl) return;
-        tooltipEl.attr({
-            transform: 'translate(' + [ _pos[0], _pos[1] ] + ')'
-        }).style({
-            display: 'block'
-        });
-        return exports;
-    };
-    exports.hide = function() {
-        if (!tooltipEl) return;
-        tooltipEl.style({
-            display: 'none'
-        });
-        return exports;
-    };
-    exports.show = function() {
-        if (!tooltipEl) return;
-        tooltipEl.style({
-            display: 'block'
-        });
-        return exports;
-    };
-    exports.config = function(_x) {
-        extendDeepAll(config, _x);
-        return exports;
-    };
-    return exports;
-};
 
-µ.tooltipPanel.uid = 1;
-
-µ.adapter = {};
-
-µ.adapter.plotly = function module() {
-    var exports = {};
-    exports.convert = function(_inputConfig, reverse) {
-        var outputConfig = {};
-        if (_inputConfig.data) {
-            outputConfig.data = _inputConfig.data.map(function(d, i) {
-                var r = extendDeepAll({}, d);
-                var toTranslate = [
-                    [ r, [ 'marker', 'color' ], [ 'color' ] ],
-                    [ r, [ 'marker', 'opacity' ], [ 'opacity' ] ],
-                    [ r, [ 'marker', 'line', 'color' ], [ 'strokeColor' ] ],
-                    [ r, [ 'marker', 'line', 'dash' ], [ 'strokeDash' ] ],
-                    [ r, [ 'marker', 'line', 'width' ], [ 'strokeSize' ] ],
-                    [ r, [ 'marker', 'symbol' ], [ 'dotType' ] ],
-                    [ r, [ 'marker', 'size' ], [ 'dotSize' ] ],
-                    [ r, [ 'marker', 'barWidth' ], [ 'barWidth' ] ],
-                    [ r, [ 'line', 'interpolation' ], [ 'lineInterpolation' ] ],
-                    [ r, [ 'showlegend' ], [ 'visibleInLegend' ] ]
-                ];
-                toTranslate.forEach(function(d, i) {
-                    utility.translator.apply(null, d.concat(reverse));
-                });
-
-                if (!reverse) delete r.marker;
-                if (reverse) delete r.groupId;
-                if (!reverse) {
-                    if (r.type === 'scatter') {
-                        if (r.mode === 'lines') r.geometry = 'LinePlot'; else if (r.mode === 'markers') r.geometry = 'DotPlot'; else if (r.mode === 'lines+markers') {
-                            r.geometry = 'LinePlot';
-                            r.dotVisible = true;
-                        }
-                    } else if (r.type === 'area') r.geometry = 'AreaChart'; else if (r.type === 'bar') r.geometry = 'BarChart';
-                    delete r.mode;
-                    delete r.type;
-                } else {
-                    if (r.geometry === 'LinePlot') {
-                        r.type = 'scatter';
-                        if (r.dotVisible === true) {
-                            delete r.dotVisible;
-                            r.mode = 'lines+markers';
-                        } else r.mode = 'lines';
-                    } else if (r.geometry === 'DotPlot') {
-                        r.type = 'scatter';
-                        r.mode = 'markers';
-                    } else if (r.geometry === 'AreaChart') r.type = 'area'; else if (r.geometry === 'BarChart') r.type = 'bar';
-                    delete r.geometry;
-                }
-                return r;
-            });
-            if (!reverse && _inputConfig.layout && _inputConfig.layout.barmode === 'stack') {
-                var duplicates = utility.duplicates(outputConfig.data.map(function(d, i) {
-                    return d.geometry;
-                }));
-                outputConfig.data.forEach(function(d, i) {
-                    var idx = duplicates.indexOf(d.geometry);
-                    if (idx != -1) outputConfig.data[i].groupId = idx;
-                });
-            }
-        }
-        if (_inputConfig.layout) {
-            var r = extendDeepAll({}, _inputConfig.layout);
-            var toTranslate = [
-                [ r, [ 'plot_bgcolor' ], [ 'backgroundColor' ] ],
-                [ r, [ 'showlegend' ], [ 'showLegend' ] ],
-                [ r, [ 'radialaxis' ], [ 'radialAxis' ] ],
-                [ r, [ 'angularaxis' ], [ 'angularAxis' ] ],
-                [ r.angularaxis, [ 'showline' ], [ 'gridLinesVisible' ] ],
-                [ r.angularaxis, [ 'showticklabels' ], [ 'labelsVisible' ] ],
-                [ r.angularaxis, [ 'nticks' ], [ 'ticksCount' ] ],
-                [ r.angularaxis, [ 'tickorientation' ], [ 'tickOrientation' ] ],
-                [ r.angularaxis, [ 'ticksuffix' ], [ 'ticksSuffix' ] ],
-                [ r.angularaxis, [ 'range' ], [ 'domain' ] ],
-                [ r.angularaxis, [ 'endpadding' ], [ 'endPadding' ] ],
-                [ r.radialaxis, [ 'showline' ], [ 'gridLinesVisible' ] ],
-                [ r.radialaxis, [ 'tickorientation' ], [ 'tickOrientation' ] ],
-                [ r.radialaxis, [ 'ticksuffix' ], [ 'ticksSuffix' ] ],
-                [ r.radialaxis, [ 'range' ], [ 'domain' ] ],
-                [ r.angularAxis, [ 'showline' ], [ 'gridLinesVisible' ] ],
-                [ r.angularAxis, [ 'showticklabels' ], [ 'labelsVisible' ] ],
-                [ r.angularAxis, [ 'nticks' ], [ 'ticksCount' ] ],
-                [ r.angularAxis, [ 'tickorientation' ], [ 'tickOrientation' ] ],
-                [ r.angularAxis, [ 'ticksuffix' ], [ 'ticksSuffix' ] ],
-                [ r.angularAxis, [ 'range' ], [ 'domain' ] ],
-                [ r.angularAxis, [ 'endpadding' ], [ 'endPadding' ] ],
-                [ r.radialAxis, [ 'showline' ], [ 'gridLinesVisible' ] ],
-                [ r.radialAxis, [ 'tickorientation' ], [ 'tickOrientation' ] ],
-                [ r.radialAxis, [ 'ticksuffix' ], [ 'ticksSuffix' ] ],
-                [ r.radialAxis, [ 'range' ], [ 'domain' ] ],
-                [ r.font, [ 'outlinecolor' ], [ 'outlineColor' ] ],
-                [ r.legend, [ 'traceorder' ], [ 'reverseOrder' ] ],
-                [ r, [ 'labeloffset' ], [ 'labelOffset' ] ],
-                [ r, [ 'defaultcolorrange' ], [ 'defaultColorRange' ] ]
-            ];
-            toTranslate.forEach(function(d, i) {
-                utility.translator.apply(null, d.concat(reverse));
-            });
-
-            if (!reverse) {
-                if (r.angularAxis && typeof r.angularAxis.ticklen !== 'undefined') r.tickLength = r.angularAxis.ticklen;
-                if (r.angularAxis && typeof r.angularAxis.tickcolor !== 'undefined') r.tickColor = r.angularAxis.tickcolor;
-            } else {
-                if (typeof r.tickLength !== 'undefined') {
-                    r.angularaxis.ticklen = r.tickLength;
-                    delete r.tickLength;
-                }
-                if (r.tickColor) {
-                    r.angularaxis.tickcolor = r.tickColor;
-                    delete r.tickColor;
-                }
-            }
-            if (r.legend && typeof r.legend.reverseOrder != 'boolean') {
-                r.legend.reverseOrder = r.legend.reverseOrder != 'normal';
-            }
-            if (r.legend && typeof r.legend.traceorder == 'boolean') {
-                r.legend.traceorder = r.legend.traceorder ? 'reversed' : 'normal';
-                delete r.legend.reverseOrder;
-            }
-            if (r.margin && typeof r.margin.t != 'undefined') {
-                var source = [ 't', 'r', 'b', 'l', 'pad' ];
-                var target = [ 'top', 'right', 'bottom', 'left', 'pad' ];
-                var margin = {};
-                d3.entries(r.margin).forEach(function(dB, iB) {
-                    margin[target[source.indexOf(dB.key)]] = dB.value;
-                });
-                r.margin = margin;
-            }
-            if (reverse) {
-                delete r.needsEndSpacing;
-                delete r.minorTickColor;
-                delete r.minorTicks;
-                delete r.angularaxis.ticksCount;
-                delete r.angularaxis.ticksCount;
-                delete r.angularaxis.ticksStep;
-                delete r.angularaxis.rewriteTicks;
-                delete r.angularaxis.nticks;
-                delete r.radialaxis.ticksCount;
-                delete r.radialaxis.ticksCount;
-                delete r.radialaxis.ticksStep;
-                delete r.radialaxis.rewriteTicks;
-                delete r.radialaxis.nticks;
-            }
-            outputConfig.layout = r;
-        }
-        return outputConfig;
-    };
-    return exports;
-};
