@@ -25,7 +25,7 @@ function buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig){
             display: 'block'
         });
         var elements = data.map(function(d, i) {
-            var datumClone = µ.util.cloneJson(d);
+            var datumClone = utility.cloneJson(d);
             datumClone.symbol = d.geometry === 'DotPlot' ? d.dotType || 'circle' : d.geometry != 'LinePlot' ? 'square' : 'line';
             datumClone.visibleInLegend = typeof d.visibleInLegend === 'undefined' || d.visibleInLegend;
             datumClone.color = d.geometry === 'LinePlot' ? d.strokeColor : d.color;
@@ -227,7 +227,7 @@ function isOrdinalCheckOne(angularDataMerged,data,isStacked){
     var ticks;
     var isOrdinal = typeof angularDataMerged[0] === 'string';
     if (isOrdinal) {
-        angularDataMerged = µ.util.deduplicate(angularDataMerged);
+        angularDataMerged = utility.deduplicate(angularDataMerged);
         ticks = angularDataMerged.slice();
         angularDataMerged = d3.range(angularDataMerged.length);
         data = data.map(function(d, i) {
@@ -251,7 +251,7 @@ function isOrdinalCheckTwo(isOrdinal,guides,chartGroup,radius,axisConfig,angular
             'pointer-events': 'none'
         });
         chartGroup.on('mousemove.angular-guide', function(d, i) {
-            var mouseAngle = µ.util.getMousePos(backgroundCircle).angle;
+            var mouseAngle = utility.getMousePos(backgroundCircle).angle;
             angularGuideLine.attr({
                 x2: -radius,
                 transform: 'rotate(' + mouseAngle + ')'
@@ -260,8 +260,8 @@ function isOrdinalCheckTwo(isOrdinal,guides,chartGroup,radius,axisConfig,angular
             });
             var angleWithOriginOffset = (mouseAngle + 180 + 360 - axisConfig.orientation) % 360;
             angularValue = angularScale.invert(angleWithOriginOffset);
-            var pos = µ.util.convertToCartesian(radius + 12, mouseAngle + 180);
-            angularTooltip.text(µ.util.round(angularValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
+            var pos = utility.convertToCartesian(radius + 12, mouseAngle + 180);
+            angularTooltip.text(utility.round(angularValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
         }).on('mouseout.angular-guide', function(d, i) {
             guides.select('line').style({
                 opacity: 0
@@ -339,8 +339,8 @@ function svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks,data){
                 opacity: 1
             });
             var textData = {
-                t: µ.util.round(d[0]),
-                r: µ.util.round(d[1]),              
+                t: utility.round(d[0]),
+                r: utility.round(d[1]),              
             };
             // Get the objects name attach it with to resulting object text
             for(var i = 0;i<dataWithGroupId.length;i++){
@@ -397,15 +397,15 @@ function svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks,data){
 
 function outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircle,radialScale,axisConfig,chartCenter,geometryTooltip,angularTooltip){
     chartGroup.on('mousemove.radial-guide', function(d, i) {
-        var r = µ.util.getMousePos(backgroundCircle).radius;
+        var r = utility.getMousePos(backgroundCircle).radius;
         angularGuideCircle.attr({
             r: r
         }).style({
             opacity: .5
         });
-        radialValue = radialScale.invert(µ.util.getMousePos(backgroundCircle).radius);
-        var pos = µ.util.convertToCartesian(r, axisConfig.radialAxis.orientation);
-        radialTooltip.text(µ.util.round(radialValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
+        radialValue = radialScale.invert(utility.getMousePos(backgroundCircle).radius);
+        var pos = utility.convertToCartesian(r, axisConfig.radialAxis.orientation);
+        radialTooltip.text(utility.round(radialValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
     }).on('mouseout.radial-guide', function(d, i) {
         angularGuideCircle.style({
             opacity: 0
@@ -455,7 +455,7 @@ function isStackedCheck(data,axisConfig){
                 d.values.forEach(function(d, i, a) {
                     d.yStack = [ prevArray ];
                     dataYStack.push(prevArray);
-                    prevArray = µ.util.sumArrays(d.r, prevArray);
+                    prevArray = utility.sumArrays(d.r, prevArray);
                 });
                 return d.values;
             }
@@ -471,9 +471,9 @@ function isStackedCheck(data,axisConfig){
     var chartCenter = [ axisConfig.margin.left + radius, axisConfig.margin.top + radius ];
     var extent;
     if (isStacked) {
-        var highestStackedValue = d3.max(µ.util.sumArrays(µ.util.arrayLast(data).r[0], µ.util.arrayLast(dataYStack)));
+        var highestStackedValue = d3.max(utility.sumArrays(utility.arrayLast(data).r[0], utility.arrayLast(dataYStack)));
         extent = [ 0, highestStackedValue ];
-    } else extent = d3.extent(µ.util.flattenArray(data.map(function(d, i) {
+    } else extent = d3.extent(utility.flattenArray(data.map(function(d, i) {
         return d.r;
     })));
     return [isStacked,radius,chartCenter,dataWithGroupId,extent]
@@ -492,7 +492,7 @@ function isStackedCheck(data,axisConfig){
         if (typeof container == 'string' || container.nodeName) container = d3.select(container);
         container.datum(data).each(function(_data, _index) {
             var dataOriginal = _data.slice();
-            liveConfig = {data: µ.util.cloneJson(dataOriginal),layout: µ.util.cloneJson(axisConfig)};
+            liveConfig = {data: utility.cloneJson(dataOriginal),layout: utility.cloneJson(axisConfig)};
             //debugger;
 
             // Adds lines between data (areas)
@@ -514,7 +514,7 @@ function isStackedCheck(data,axisConfig){
             if (axisConfig.radialAxis.domain != µ.DATAEXTENT) extent[0] = 0;
             radialScale = d3.scale.linear().domain(axisConfig.radialAxis.domain != µ.DATAEXTENT && axisConfig.radialAxis.domain ? axisConfig.radialAxis.domain : extent).range([ 0, radius ]);
             liveConfig.layout.radialAxis.domain = radialScale.domain();
-            var angularDataMerged = µ.util.flattenArray(data.map(function(d, i) {
+            var angularDataMerged = utility.flattenArray(data.map(function(d, i) {
                 return d.t;
             }));
             
@@ -635,7 +635,7 @@ function isStackedCheck(data,axisConfig){
     
     exports.config = function(_x) {
         if (!arguments.length) return config;
-        var xClone = µ.util.cloneJson(_x);
+        var xClone = utility.cloneJson(_x);
         xClone.data.forEach(function(d, i) {
             if (!config.data[i]) config.data[i] = {};
             extendDeepAll(config.data[i], µ.Axis.defaultConfig().data[0]);
@@ -670,7 +670,6 @@ function isStackedCheck(data,axisConfig){
     return config;
 };
 
-µ.util = {};
 
 µ.DATAEXTENT = 'dataExtent';
 
@@ -681,168 +680,6 @@ function isStackedCheck(data,axisConfig){
 µ.DOT = 'DotPlot';
 
 µ.BAR = 'BarChart';
-
-µ.util._override = function(_objA, _objB) {
-    for (var x in _objA) if (x in _objB) _objB[x] = _objA[x];
-};
-
-µ.util._extend = function(_objA, _objB) {
-    for (var x in _objA) _objB[x] = _objA[x];
-};
-
-µ.util._rndSnd = function() {
-    return Math.random() * 2 - 1 + (Math.random() * 2 - 1) + (Math.random() * 2 - 1);
-};
-
-µ.util.dataFromEquation2 = function(_equation, _step) {
-    var step = _step || 6;
-    var data = d3.range(0, 360 + step, step).map(function(deg, index) {
-        var theta = deg * Math.PI / 180;
-        var radius = _equation(theta);
-        return [ deg, radius ];
-    });
-    return data;
-};
-
-µ.util.dataFromEquation = function(_equation, _step, _name) {
-    var step = _step || 6;
-    var t = [], r = [];
-    d3.range(0, 360 + step, step).forEach(function(deg, index) {
-        var theta = deg * Math.PI / 180;
-        var radius = _equation(theta);
-        t.push(deg);
-        r.push(radius);
-    });
-    var result = {
-        t: t,
-        r: r
-    };
-    if (_name) result.name = _name;
-    return result;
-};
-
-µ.util.ensureArray = function(_val, _count) {
-    if (typeof _val === 'undefined') return null;
-    var arr = [].concat(_val);
-    return d3.range(_count).map(function(d, i) {
-        return arr[i] || arr[0];
-    });
-};
-
-µ.util.fillArrays = function(_obj, _valueNames, _count) {
-    _valueNames.forEach(function(d, i) {
-        _obj[d] = µ.util.ensureArray(_obj[d], _count);
-    });
-    return _obj;
-};
-
-µ.util.cloneJson = function(json) {
-    return JSON.parse(JSON.stringify(json));
-};
-
-µ.util.validateKeys = function(obj, keys) {
-    if (typeof keys === 'string') keys = keys.split('.');
-    var next = keys.shift();
-    return obj[next] && (!keys.length || objHasKeys(obj[next], keys));
-};
-
-µ.util.sumArrays = function(a, b) {
-    return d3.zip(a, b).map(function(d, i) {
-        return d3.sum(d);
-    });
-};
-
-µ.util.arrayLast = function(a) {
-    return a[a.length - 1];
-};
-
-µ.util.arrayEqual = function(a, b) {
-    var i = Math.max(a.length, b.length, 1);
-    while (i-- >= 0 && a[i] === b[i]) ;
-    return i === -2;
-};
-
-µ.util.flattenArray = function(arr) {
-    var r = [];
-    while (!µ.util.arrayEqual(r, arr)) {
-        r = arr;
-        arr = [].concat.apply([], arr);
-    }
-    return arr;
-};
-
-µ.util.deduplicate = function(arr) {
-    return arr.filter(function(v, i, a) {
-        return a.indexOf(v) == i;
-    });
-};
-
-µ.util.convertToCartesian = function(radius, theta) {
-    var thetaRadians = theta * Math.PI / 180;
-    var x = radius * Math.cos(thetaRadians);
-    var y = radius * Math.sin(thetaRadians);
-    return [ x, y ];
-};
-
-µ.util.round = function(_value, _digits) {
-    var digits = _digits || 2;
-    var mult = Math.pow(10, digits);
-    return Math.round(_value * mult) / mult;
-};
-
-µ.util.getMousePos = function(_referenceElement) {
-    var mousePos = d3.mouse(_referenceElement.node());
-    var mouseX = mousePos[0];
-    var mouseY = mousePos[1];
-    var mouse = {};
-    mouse.x = mouseX;
-    mouse.y = mouseY;
-    mouse.pos = mousePos;
-    mouse.angle = (Math.atan2(mouseY, mouseX) + Math.PI) * 180 / Math.PI;
-    mouse.radius = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
-    return mouse;
-};
-
-µ.util.duplicatesCount = function(arr) {
-    var uniques = {}, val;
-    var dups = {};
-    for (var i = 0, len = arr.length; i < len; i++) {
-        val = arr[i];
-        if (val in uniques) {
-            uniques[val]++;
-            dups[val] = uniques[val];
-        } else {
-            uniques[val] = 1;
-        }
-    }
-    return dups;
-};
-
-µ.util.duplicates = function(arr) {
-    return Object.keys(µ.util.duplicatesCount(arr));
-};
-
-µ.util.translator = function(obj, sourceBranch, targetBranch, reverse) {
-    if (reverse) {
-        var targetBranchCopy = targetBranch.slice();
-        targetBranch = sourceBranch;
-        sourceBranch = targetBranchCopy;
-    }
-    var value = sourceBranch.reduce(function(previousValue, currentValue) {
-        if (typeof previousValue != 'undefined') return previousValue[currentValue];
-    }, obj);
-    if (typeof value === 'undefined') return;
-    sourceBranch.reduce(function(previousValue, currentValue, index) {
-        if (typeof previousValue == 'undefined') return;
-        if (index === sourceBranch.length - 1) delete previousValue[currentValue];
-        return previousValue[currentValue];
-    }, obj);
-    targetBranch.reduce(function(previousValue, currentValue, index) {
-        if (typeof previousValue[currentValue] === 'undefined') previousValue[currentValue] = {};
-        if (index === targetBranch.length - 1) previousValue[currentValue] = value;
-        return previousValue[currentValue];
-    }, obj);
-};
 
 µ.PolyChart = function module() {
     var config = [ µ.PolyChart.defaultConfig() ];
@@ -1308,8 +1145,7 @@ function isStackedCheck(data,axisConfig){
                     [ r, [ 'showlegend' ], [ 'visibleInLegend' ] ]
                 ];
                 toTranslate.forEach(function(d, i) {
-                    µ.util.translator.apply(null, d.concat(reverse));
-                    utility.µ.apply(null, d.concat(reverse));
+                    utility.translator.apply(null, d.concat(reverse));
                 });
 
                 if (!reverse) delete r.marker;
@@ -1339,7 +1175,7 @@ function isStackedCheck(data,axisConfig){
                 return r;
             });
             if (!reverse && _inputConfig.layout && _inputConfig.layout.barmode === 'stack') {
-                var duplicates = µ.util.duplicates(outputConfig.data.map(function(d, i) {
+                var duplicates = utility.duplicates(outputConfig.data.map(function(d, i) {
                     return d.geometry;
                 }));
                 outputConfig.data.forEach(function(d, i) {
@@ -1383,7 +1219,7 @@ function isStackedCheck(data,axisConfig){
                 [ r, [ 'defaultcolorrange' ], [ 'defaultColorRange' ] ]
             ];
             toTranslate.forEach(function(d, i) {
-                µ.util.translator.apply(null, d.concat(reverse));
+                utility.translator.apply(null, d.concat(reverse));
             });
 
             if (!reverse) {

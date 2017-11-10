@@ -13,13 +13,13 @@
 var d3 = require('d3');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
-
+var utility = require('./utility');
+var adapter = require('./adapter');
 var micropolar = require('./micropolar');
 var UndoManager = require('./undo_manager');
 var extendDeepAll = Lib.extendDeepAll;
 
 var manager = module.exports = {};
-
 manager.framework = function(_gd) {
     var config, previousConfigClone, plot, convertedInput, container;
     var undoManager = new UndoManager();
@@ -31,9 +31,8 @@ manager.framework = function(_gd) {
         config = (!config) ?
             _inputConfig :
             extendDeepAll(config, _inputConfig);
-
         if(!plot) plot = micropolar.Axis();
-        convertedInput = micropolar.adapter.plotly().convert(config);
+        convertedInput = adapter.plotly().convert(config);
         plot.config(convertedInput).render(container);
         _gd.data = config.data;
         _gd.layout = config.layout;
@@ -44,12 +43,12 @@ manager.framework = function(_gd) {
     exports.svg = function() { return plot.svg(); };
     exports.getConfig = function() { return config; };
     exports.getLiveConfig = function() {
-        return micropolar.adapter.plotly().convert(plot.getLiveConfig(), true);
+        return adapter.plotly().convert(plot.getLiveConfig(), true);
     };
     exports.getLiveScales = function() { return {t: plot.angularScale(), r: plot.radialScale()}; };
     exports.setUndoPoint = function() {
         var that = this;
-        var configClone = micropolar.util.cloneJson(config);
+        var configClone = utility.cloneJson(config);
         (function(_configClone, _previousConfigClone) {
             undoManager.add({
                 undo: function() {
@@ -60,7 +59,7 @@ manager.framework = function(_gd) {
                 }
             });
         })(configClone, previousConfigClone);
-        previousConfigClone = micropolar.util.cloneJson(configClone);
+        previousConfigClone = utility.cloneJson(configClone);
     };
     exports.undo = function() { undoManager.undo(); };
     exports.redo = function() { undoManager.redo(); };
