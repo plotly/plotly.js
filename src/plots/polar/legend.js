@@ -1,7 +1,6 @@
+'use strict';
 var d3 = require('d3');
 var Lib = require('../../lib');
-var utility = require('./utility');
-var tooltip= require('./tooltip');
 var extendDeepAll = Lib.extendDeepAll;
 var µ = module.exports = { version: '0.2.2' };
 µ.Legend = function module() {
@@ -21,14 +20,14 @@ var µ = module.exports = { version: '0.2.2' };
         data = data.filter(function(d, i) {
             return legendConfig.elements[i] && (legendConfig.elements[i].visibleInLegend || typeof legendConfig.elements[i].visibleInLegend === 'undefined');
         });
-        if (legendConfig.reverseOrder) data = data.reverse();
+        if(legendConfig.reverseOrder) data = data.reverse();
         var container = legendConfig.container;
-        if (typeof container == 'string' || container.nodeName) container = d3.select(container);
-        var colors = data.map(function(d, i) {
+        if(typeof container === 'string' || container.nodeName) container = d3.select(container);
+        var colors = data.map(function(d) {
             return d.color;
         });
         var lineHeight = legendConfig.fontSize;
-        var isContinuous = legendConfig.isContinuous == null ? typeof data[0] === 'number' : legendConfig.isContinuous;
+        var isContinuous = legendConfig.isContinuous === null ? typeof data[0] === 'number' : legendConfig.isContinuous;
         var height = isContinuous ? legendConfig.height : lineHeight * data.length;
         var legendContainerGroup = container.classed('legend-group', true);
         var svg = legendContainerGroup.selectAll('svg').data([ 0 ]);
@@ -46,11 +45,11 @@ var µ = module.exports = { version: '0.2.2' };
         var dataScale = d3.scale[isContinuous ? 'linear' : 'ordinal']().domain(dataNumbered)[isContinuous ? 'range' : 'rangePoints']([ 0, height ]);
         var shapeGenerator = function(_type, _size) {
             var squareSize = _size * 3;
-            if (_type === 'line') {
+            if(_type === 'line') {
                 return 'M' + [ [ -_size / 2, -_size / 12 ], [ _size / 2, -_size / 12 ], [ _size / 2, _size / 12 ], [ -_size / 2, _size / 12 ] ] + 'Z';
-            } else if (d3.svg.symbolTypes.indexOf(_type) != -1) return d3.svg.symbol().type(_type).size(squareSize)(); else return d3.svg.symbol().type('square').size(squareSize)();
+            } else if(d3.svg.symbolTypes.indexOf(_type) !== -1) return d3.svg.symbol().type(_type).size(squareSize)(); else return d3.svg.symbol().type('square').size(squareSize)();
         };
-        if (isContinuous) {
+        if(isContinuous) {
             var gradient = svg.select('.legend-marks').append('defs').append('linearGradient').attr({
                 id: 'grad1',
                 x1: '0%',
@@ -64,7 +63,7 @@ var µ = module.exports = { version: '0.2.2' };
                     return i / (colors.length - 1) * 100 + '%';
                 }
             }).style({
-                'stop-color': function(d, i) {
+                'stop-color': function(d) {
                     return d;
                 }
             });
@@ -80,7 +79,7 @@ var µ = module.exports = { version: '0.2.2' };
                 transform: function(d, i) {
                     return 'translate(' + [ lineHeight / 2, dataScale(i) + lineHeight / 2 ] + ')';
                 },
-                d: function(d, i) {
+                d: function(d) {
                     var symbolType = d.symbol;
                     return shapeGenerator(symbolType, lineHeight);
                 },
@@ -111,7 +110,7 @@ var µ = module.exports = { version: '0.2.2' };
         return exports;
     }
     exports.config = function(_x) {
-        if (!arguments.length) return config;
+        if(!arguments.length) return config;
         extendDeepAll(config, _x);
         return this;
     };

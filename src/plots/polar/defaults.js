@@ -1,11 +1,6 @@
-
+'use strict';
 var d3 = require('d3');
-
-var a = function a(x){
-   console.log("working"); 
-   console.log(x); 
-};
-var defaultConfig = function defaultConfig(d, i) {
+var defaultConfig = function defaultConfig() {
     var config = {
         data: [ {
             t: [ 1, 2, 3, 4 ],
@@ -134,14 +129,14 @@ var linePlotDefaultConfig = function linePlotDefaultConfig() {
     return config;
 };
 
-var legendDefaultConfig = function legendDefaultConfig(d, i) {
+var legendDefaultConfig = function legendDefaultConfig() {
     var config = {
         data: [ 'a'],
         legendConfig: {
             elements: [ {
                 symbol: 'line',
                 color: 'red'
-            },],
+            }, ],
             height: 150,
             colorBandWidth: 30,
             fontSize: 12,
@@ -153,8 +148,6 @@ var legendDefaultConfig = function legendDefaultConfig(d, i) {
     };
     return config;
 };
-
-module.exports.a = a;
 module.exports.defaultConfig = defaultConfig;
 module.exports.polyChartDefaultConfig = polyChartDefaultConfig;
 module.exports.barChartDefaultConfig = barChartDefaultConfig;

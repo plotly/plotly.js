@@ -1,35 +1,36 @@
 
+'use strict';
 var µ = module.exports = { version: '0.2.2' };
 µ.util = {};
-
+var d3 = require('d3');
 µ.util.translator = function(obj, sourceBranch, targetBranch, reverse) {
-    if (reverse) {
+    if(reverse) {
         var targetBranchCopy = targetBranch.slice();
         targetBranch = sourceBranch;
         sourceBranch = targetBranchCopy;
     }
     var value = sourceBranch.reduce(function(previousValue, currentValue) {
-        if (typeof previousValue != 'undefined') return previousValue[currentValue];
+        if(typeof previousValue !== 'undefined') return previousValue[currentValue];
     }, obj);
-    if (typeof value === 'undefined') return;
+    if(typeof value === 'undefined') return;
     sourceBranch.reduce(function(previousValue, currentValue, index) {
-        if (typeof previousValue == 'undefined') return;
-        if (index === sourceBranch.length - 1) delete previousValue[currentValue];
+        if(typeof previousValue === 'undefined') return;
+        if(index === sourceBranch.length - 1) delete previousValue[currentValue];
         return previousValue[currentValue];
     }, obj);
     targetBranch.reduce(function(previousValue, currentValue, index) {
-        if (typeof previousValue[currentValue] === 'undefined') previousValue[currentValue] = {};
-        if (index === targetBranch.length - 1) previousValue[currentValue] = value;
+        if(typeof previousValue[currentValue] === 'undefined') previousValue[currentValue] = {};
+        if(index === targetBranch.length - 1) previousValue[currentValue] = value;
         return previousValue[currentValue];
     }, obj);
 };
 
 µ.util._override = function(_objA, _objB) {
-    for (var x in _objA) if (x in _objB) _objB[x] = _objA[x];
+    for(var x in _objA) if(x in _objB) _objB[x] = _objA[x];
 };
 
 µ.util._extend = function(_objA, _objB) {
-    for (var x in _objA) _objB[x] = _objA[x];
+    for(var x in _objA) _objB[x] = _objA[x];
 };
 
 µ.util._rndSnd = function() {
@@ -38,7 +39,7 @@ var µ = module.exports = { version: '0.2.2' };
 
 µ.util.dataFromEquation2 = function(_equation, _step) {
     var step = _step || 6;
-    var data = d3.range(0, 360 + step, step).map(function(deg, index) {
+    var data = d3.range(0, 360 + step, step).map(function(deg) {
         var theta = deg * Math.PI / 180;
         var radius = _equation(theta);
         return [ deg, radius ];
@@ -49,7 +50,7 @@ var µ = module.exports = { version: '0.2.2' };
 µ.util.dataFromEquation = function(_equation, _step, _name) {
     var step = _step || 6;
     var t = [], r = [];
-    d3.range(0, 360 + step, step).forEach(function(deg, index) {
+    d3.range(0, 360 + step, step).forEach(function(deg) {
         var theta = deg * Math.PI / 180;
         var radius = _equation(theta);
         t.push(deg);
@@ -59,12 +60,12 @@ var µ = module.exports = { version: '0.2.2' };
         t: t,
         r: r
     };
-    if (_name) result.name = _name;
+    if(_name) result.name = _name;
     return result;
 };
 
 µ.util.ensureArray = function(_val, _count) {
-    if (typeof _val === 'undefined') return null;
+    if(typeof _val === 'undefined') return null;
     var arr = [].concat(_val);
     return d3.range(_count).map(function(d, i) {
         return arr[i] || arr[0];
@@ -72,7 +73,7 @@ var µ = module.exports = { version: '0.2.2' };
 };
 
 µ.util.fillArrays = function(_obj, _valueNames, _count) {
-    _valueNames.forEach(function(d, i) {
+    _valueNames.forEach(function(d) {
         _obj[d] = µ.util.ensureArray(_obj[d], _count);
     });
     return _obj;
@@ -83,13 +84,14 @@ var µ = module.exports = { version: '0.2.2' };
 };
 
 µ.util.validateKeys = function(obj, keys) {
-    if (typeof keys === 'string') keys = keys.split('.');
+    var objHasKeys;
+    if(typeof keys === 'string') keys = keys.split('.');
     var next = keys.shift();
     return obj[next] && (!keys.length || objHasKeys(obj[next], keys));
 };
 
 µ.util.sumArrays = function(a, b) {
-    return d3.zip(a, b).map(function(d, i) {
+    return d3.zip(a, b).map(function(d) {
         return d3.sum(d);
     });
 };
@@ -100,13 +102,13 @@ var µ = module.exports = { version: '0.2.2' };
 
 µ.util.arrayEqual = function(a, b) {
     var i = Math.max(a.length, b.length, 1);
-    while (i-- >= 0 && a[i] === b[i]) ;
+    while(i-- >= 0 && a[i] === b[i]) ;
     return i === -2;
 };
 
 µ.util.flattenArray = function(arr) {
     var r = [];
-    while (!µ.util.arrayEqual(r, arr)) {
+    while(!µ.util.arrayEqual(r, arr)) {
         r = arr;
         arr = [].concat.apply([], arr);
     }
@@ -115,7 +117,7 @@ var µ = module.exports = { version: '0.2.2' };
 
 µ.util.deduplicate = function(arr) {
     return arr.filter(function(v, i, a) {
-        return a.indexOf(v) == i;
+        return a.indexOf(v) === i;
     });
 };
 
@@ -148,9 +150,9 @@ var µ = module.exports = { version: '0.2.2' };
 µ.util.duplicatesCount = function(arr) {
     var uniques = {}, val;
     var dups = {};
-    for (var i = 0, len = arr.length; i < len; i++) {
+    for(var i = 0, len = arr.length; i < len; i++) {
         val = arr[i];
-        if (val in uniques) {
+        if(val in uniques) {
             uniques[val]++;
             dups[val] = uniques[val];
         } else {
@@ -183,5 +185,3 @@ module.exports.getMousePos = µ.util.getMousePos;
 module.exports.duplicatesCount = µ.util.duplicatesCount;
 module.exports.duplicates = µ.util.duplicates;
 module.exports.translator = µ.util.translator;
-
-

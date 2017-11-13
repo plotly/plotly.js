@@ -1,3 +1,4 @@
+'use strict';
 var Lib = require('../../lib');
 var extendDeepAll = Lib.extendDeepAll;
 var d3 = require('d3');
@@ -21,26 +22,25 @@ var µ = module.exports = { version: '0.2.2' };
         });
         backgroundEl = tooltipEnter.append('path').style({
             fill: 'white',
-            'fill-opacity': .9
+            'fill-opacity': 0.9
         }).attr({
             d: 'M0 0'
         });
         tooltipTextEl = tooltipEnter.append('text').attr({
             dx: config.padding + tickSize,
-            dy: +config.fontSize * .3
+            dy: +config.fontSize * 0.3
         });
         return exports;
     };
     exports.text = function(_text) {
         var l = d3.hsl(config.color).l;
-        var strokeColor = l >= .5 ? '#aaa' : 'white';
-        var fillColor = l >= .5 ? 'black' : 'white';
+        var strokeColor = l >= 0.5 ? '#aaa' : 'white';
+        var fillColor = l >= 0.5 ? 'black' : 'white';
         var text = _text || '';
         tooltipTextEl.style({
             fill: fillColor,
             'font-size': config.fontSize + 'px'
         }).text(text);
-        
         var padding = config.padding;
         var bbox = tooltipTextEl.node().getBBox();
         var boxStyle = {
@@ -62,7 +62,7 @@ var µ = module.exports = { version: '0.2.2' };
         return exports;
     };
     exports.move = function(_pos) {
-        if (!tooltipEl) return;
+        if(!tooltipEl) return;
         tooltipEl.attr({
             transform: 'translate(' + [ _pos[0], _pos[1] ] + ')'
         }).style({
@@ -71,14 +71,14 @@ var µ = module.exports = { version: '0.2.2' };
         return exports;
     };
     exports.hide = function() {
-        if (!tooltipEl) return;
+        if(!tooltipEl) return;
         tooltipEl.style({
             display: 'none'
         });
         return exports;
     };
     exports.show = function() {
-        if (!tooltipEl) return;
+        if(!tooltipEl) return;
         tooltipEl.style({
             display: 'block'
         });

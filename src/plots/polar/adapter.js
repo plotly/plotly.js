@@ -1,4 +1,5 @@
 
+'use strict';
 var utility = require('./utility');
 var Lib = require('../../lib');
 var d3 = require('d3');
@@ -11,7 +12,7 @@ var µ = module.exports = { version: '0.2.2' };
     exports.convert = function(_inputConfig, reverse) {
         var outputConfig = {};
         if(_inputConfig.data) {
-            outputConfig.data = _inputConfig.data.map(function(d, i) {
+            outputConfig.data = _inputConfig.data.map(function(d) {
                 var r = extendDeepAll({}, d);
                 var toTranslate = [
                     [ r, [ 'marker', 'color' ], [ 'color' ] ],
@@ -25,7 +26,7 @@ var µ = module.exports = { version: '0.2.2' };
                     [ r, [ 'line', 'interpolation' ], [ 'lineInterpolation' ] ],
                     [ r, [ 'showlegend' ], [ 'visibleInLegend' ] ]
                 ];
-                toTranslate.forEach(function(d,i) {
+                toTranslate.forEach(function(d) {
                     utility.translator.apply(null, d.concat(reverse));
                 });
 
@@ -33,11 +34,11 @@ var µ = module.exports = { version: '0.2.2' };
                 if(reverse) delete r.groupId;
                 if(!reverse) {
                     if(r.type === 'scatter') {
-                        if(r.mode === 'lines') r.geometry = 'LinePlot'; else if (r.mode === 'markers') r.geometry = 'DotPlot'; else if (r.mode === 'lines+markers') {
+                        if(r.mode === 'lines') r.geometry = 'LinePlot'; else if(r.mode === 'markers') r.geometry = 'DotPlot'; else if(r.mode === 'lines+markers') {
                             r.geometry = 'LinePlot';
                             r.dotVisible = true;
                         }
-                    } else if(r.type === 'area') r.geometry = 'AreaChart'; else if (r.type === 'bar') r.geometry = 'BarChart';
+                    } else if(r.type === 'area') r.geometry = 'AreaChart'; else if(r.type === 'bar') r.geometry = 'BarChart';
                     delete r.mode;
                     delete r.type;
                 } else {
@@ -50,18 +51,18 @@ var µ = module.exports = { version: '0.2.2' };
                     } else if(r.geometry === 'DotPlot') {
                         r.type = 'scatter';
                         r.mode = 'markers';
-                    } else if(r.geometry === 'AreaChart') r.type = 'area'; else if (r.geometry === 'BarChart') r.type = 'bar';
+                    } else if(r.geometry === 'AreaChart') r.type = 'area'; else if(r.geometry === 'BarChart') r.type = 'bar';
                     delete r.geometry;
                 }
                 return r;
             });
             if(!reverse && _inputConfig.layout && _inputConfig.layout.barmode === 'stack') {
-                var duplicates = utility.duplicates(outputConfig.data.map(function(d, i) {
+                var duplicates = utility.duplicates(outputConfig.data.map(function(d) {
                     return d.geometry;
                 }));
                 outputConfig.data.forEach(function(d, i) {
                     var idx = duplicates.indexOf(d.geometry);
-                    if(idx != -1) outputConfig.data[i].groupId = idx;
+                    if(idx !== -1) outputConfig.data[i].groupId = idx;
                 });
             }
         }
@@ -99,7 +100,7 @@ var µ = module.exports = { version: '0.2.2' };
                 [ r, [ 'labeloffset' ], [ 'labelOffset' ] ],
                 [ r, [ 'defaultcolorrange' ], [ 'defaultColorRange' ] ]
             ];
-            toTranslate.forEach(function(d, i) {
+            toTranslate.forEach(function(d) {
                 utility.translator.apply(null, d.concat(reverse));
             });
 
@@ -116,18 +117,18 @@ var µ = module.exports = { version: '0.2.2' };
                     delete r.tickColor;
                 }
             }
-            if(r.legend && typeof r.legend.reverseOrder != 'boolean') {
-                r.legend.reverseOrder = r.legend.reverseOrder != 'normal';
+            if(r.legend && typeof r.legend.reverseOrder !== 'boolean') {
+                r.legend.reverseOrder = r.legend.reverseOrder !== 'normal';
             }
-            if(r.legend && typeof r.legend.traceorder == 'boolean') {
+            if(r.legend && typeof r.legend.traceorder === 'boolean') {
                 r.legend.traceorder = r.legend.traceorder ? 'reversed' : 'normal';
                 delete r.legend.reverseOrder;
             }
-            if(r.margin && typeof r.margin.t != 'undefined') {
+            if(r.margin && typeof r.margin.t !== 'undefined') {
                 var source = [ 't', 'r', 'b', 'l', 'pad' ];
                 var target = [ 'top', 'right', 'bottom', 'left', 'pad' ];
                 var margin = {};
-                d3.entries(r.margin).forEach(function(dB, iB) {
+                d3.entries(r.margin).forEach(function(dB) {
                     margin[target[source.indexOf(dB.key)]] = dB.value;
                 });
                 r.margin = margin;
