@@ -20,26 +20,26 @@ function drag(path, options) {
     Lib.clearThrottle();
 
     if(options.type === 'touch') {
-        touchEvent('touchstart', path[0][0], path[0][1]);
+        touchEvent('touchstart', path[0][0], path[0][1], options);
 
         path.slice(1, len).forEach(function(pt) {
             Lib.clearThrottle();
-            touchEvent('touchmove', pt[0], pt[1]);
+            touchEvent('touchmove', pt[0], pt[1], options);
         });
 
-        touchEvent('touchend', path[len - 1][0], path[len - 1][1]);
+        touchEvent('touchend', path[len - 1][0], path[len - 1][1], options);
         return;
     }
 
-    mouseEvent('mousemove', path[0][0], path[0][1]);
-    mouseEvent('mousedown', path[0][0], path[0][1]);
+    mouseEvent('mousemove', path[0][0], path[0][1], options);
+    mouseEvent('mousedown', path[0][0], path[0][1], options);
 
     path.slice(1, len).forEach(function(pt) {
         Lib.clearThrottle();
-        mouseEvent('mousemove', pt[0], pt[1]);
+        mouseEvent('mousemove', pt[0], pt[1], options);
     });
 
-    mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
+    mouseEvent('mouseup', path[len - 1][0], path[len - 1][1], options);
 }
 
 function assertSelectionNodes(cornerCnt, outlineCnt) {
@@ -158,26 +158,6 @@ describe('Test select box and lasso in general:', function() {
             drag(selectPath);
 
             selectedPromise.then(function() {
-                expect(selectingCnt).toBe(1, 'with the correct selecting count');
-                assertEventData(selectingData.points, [{
-                    curveNumber: 0,
-                    pointNumber: 0,
-                    x: 0.002,
-                    y: 16.25,
-                    id: 'id-0.002',
-                    customdata: 'customdata-16.25'
-                }, {
-                    curveNumber: 0,
-                    pointNumber: 1,
-                    x: 0.004,
-                    y: 12.5,
-                    id: 'id-0.004',
-                    customdata: 'customdata-12.5'
-                }], 'with the correct selecting points (1)');
-                assertRange(selectingData.range, {
-                    x: [0.002000, 0.0046236],
-                    y: [0.10209191961595454, 24.512223978291406]
-                }, 'with the correct selecting range');
                 expect(selectedCnt).toBe(1, 'with the correct selected count');
                 assertEventData(selectedData.points, [{
                     curveNumber: 0,
@@ -202,6 +182,91 @@ describe('Test select box and lasso in general:', function() {
                 return doubleClick(250, 200);
             })
             .then(deselectPromise)
+            .then(function() {
+                expect(doubleClickData).toBe(null, 'with the correct deselect data');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should handle add/sub selection', function(done) {
+            resetEvents(gd);
+
+            drag(selectPath);
+
+            selectedPromise.then(function() {
+                expect(selectingCnt).toBe(1, 'with the correct selecting count');
+                assertEventData(selectingData.points, [{
+                    curveNumber: 0,
+                    pointNumber: 0,
+                    x: 0.002,
+                    y: 16.25,
+                    id: 'id-0.002',
+                    customdata: 'customdata-16.25'
+                }, {
+                    curveNumber: 0,
+                    pointNumber: 1,
+                    x: 0.004,
+                    y: 12.5,
+                    id: 'id-0.004',
+                    customdata: 'customdata-12.5'
+                }], 'with the correct selecting points (1)');
+                assertRange(selectingData.range, {
+                    x: [0.002000, 0.0046236],
+                    y: [0.10209191961595454, 24.512223978291406]
+                }, 'with the correct selecting range');
+            })
+            .then(function() {
+                // add selection
+                drag([[193, 193], [213, 193]], {shiftKey: true});
+            })
+            .then(function() {
+                expect(selectingCnt).toBe(2, 'with the correct selecting count');
+                assertEventData(selectingData.points, [{
+                    curveNumber: 0,
+                    pointNumber: 0,
+                    x: 0.002,
+                    y: 16.25,
+                    id: 'id-0.002',
+                    customdata: 'customdata-16.25'
+                }, {
+                    curveNumber: 0,
+                    pointNumber: 1,
+                    x: 0.004,
+                    y: 12.5,
+                    id: 'id-0.004',
+                    customdata: 'customdata-12.5'
+                }, {
+                    curveNumber: 0,
+                    pointNumber: 4,
+                    x: 0.013,
+                    y: 6.875,
+                    id: 'id-0.013',
+                    customdata: 'customdata-6.875'
+                }], 'with the correct selecting points (1)');
+            })
+            .then(function() {
+                // sub selection
+                drag([[219, 143], [219, 183]], {altKey: true});
+            }).then(function() {
+                assertEventData(selectingData.points, [{
+                    curveNumber: 0,
+                    pointNumber: 0,
+                    x: 0.002,
+                    y: 16.25,
+                    id: 'id-0.002',
+                    customdata: 'customdata-16.25'
+                }, {
+                    curveNumber: 0,
+                    pointNumber: 1,
+                    x: 0.004,
+                    y: 12.5,
+                    id: 'id-0.004',
+                    customdata: 'customdata-12.5'
+                }], 'with the correct selecting points (1)');
+
+                return doubleClick(250, 200);
+            })
             .then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
             })
