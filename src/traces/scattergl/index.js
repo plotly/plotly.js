@@ -301,10 +301,9 @@ ScatterRegl.calc = function calc(container, trace) {
             isOpen = /-open/.test(markerOpts.symbol);
         }
         // prepare colors
-        if(multiMarker || Array.isArray(markerOpts.color) || Array.isArray(markerOpts.line.color) || Array.isArray(markerOpts.line)) {
+        if(multiMarker || Array.isArray(markerOpts.color) || Array.isArray(markerOpts.line.color) || Array.isArray(markerOpts.line) || Array.isArray(markerOpts.opacity)) {
             markerOptions.colors = new Array(count);
             markerOptions.borderColors = new Array(count);
-
             var colors = formatColor(markerOpts, markerOpts.opacity, count);
             var borderColors = formatColor(markerOpts.line, markerOpts.opacity, count);
 
