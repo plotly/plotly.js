@@ -7,7 +7,6 @@
 */
 
 /* eslint-disable new-cap */
-
 'use strict';
 
 var d3 = require('d3');
