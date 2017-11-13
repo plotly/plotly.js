@@ -141,6 +141,22 @@ exports.valObjectMeta = {
             else propOut.set(dflt);
         }
     },
+    colorlist: {
+        description: [
+            'A list of colors.',
+            'Must be an {array} containing valid colors.',
+        ].join(' '),
+        requiredOpts: [],
+        otherOpts: ['dflt'],
+        coerceFunction: function(v, propOut, dflt) {
+            function isColor(color) {
+                return tinycolor(color).isValid();
+            }
+            if(!Array.isArray(v)) propOut.set(dflt);
+            else if(v.every(isColor)) propOut.set(v);
+            else propOut.set(dflt);
+        }
+    },
     colorscale: {
         description: [
             'A Plotly colorscale either picked by a name:',
