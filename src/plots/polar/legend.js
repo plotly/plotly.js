@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 var d3 = require('d3');
 var Lib = require('../../lib');
