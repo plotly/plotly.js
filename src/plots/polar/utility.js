@@ -5,8 +5,8 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-'use strict';
 
+'use strict';
 var µ = module.exports = { version: '0.2.2' };
 µ.util = {};
 var d3 = require('d3');
