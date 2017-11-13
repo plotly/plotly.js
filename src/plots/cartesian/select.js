@@ -44,6 +44,19 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         filterPoly, testPoly, mergedPolygons, currentPolygon,
         subtract = e.altKey;
 
+
+    // take over selection polygons from prev mode, if any
+    if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
+        dragOptions.polygons = plotinfo.selection.polygons;
+        dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
+    }
+    // create new polygons, if shift mode
+    else if((!e.shiftKey && !e.altKey) || ((e.shiftKey || e.altKey) && !plotinfo.selection)) {
+        plotinfo.selection = {};
+        plotinfo.selection.polygons = dragOptions.polygons = [];
+        plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
+    }
+
     if(mode === 'lasso') {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
