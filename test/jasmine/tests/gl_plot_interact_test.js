@@ -1290,7 +1290,7 @@ describe('Test gl plot side effects', function() {
 
             return Plotly.plot(gd, data);
         }).then(function() {
-            countCanvases(1);
+            countCanvases(3);
 
             return Plotly.purge(gd);
         }).then(function() {
@@ -1298,11 +1298,11 @@ describe('Test gl plot side effects', function() {
 
             return Plotly.plot(gd, data);
         }).then(function() {
-            countCanvases(1);
+            countCanvases(3);
 
             return Plotly.deleteTraces(gd, [0]);
         }).then(function() {
-            countCanvases(0);
+            countCanvases(3);
 
             return Plotly.purge(gd);
         }).then(done);
