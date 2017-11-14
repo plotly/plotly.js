@@ -1,0 +1,26 @@
+{
+    "data": [
+        {
+            "x": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            "y": [0, 3, 6, 4, 5, 2, 3, 5, 4],
+            "type": "scatter",
+            "name": "title"
+        },
+        {
+            "x": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            "y": [0, 4, 7, 8, 3, 6, 3, 3, 4],
+            "type": "scatter",
+            "name": "this is a really long legend title"
+        },
+        {
+            "x": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+            "y": [2, 6, 5, 9, 2, 4, 6, 3, 7],
+            "type": "scatter",
+            "name": "this is a title"
+        }
+    ],
+    "layout": {
+        "title": "Average Distribution per Month",
+        "legend": { "orientation": "h" }
+    }
+}
