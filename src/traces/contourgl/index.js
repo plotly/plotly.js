@@ -23,7 +23,7 @@ ContourGl.plot = require('./convert');
 ContourGl.moduleType = 'trace';
 ContourGl.name = 'contourgl';
 ContourGl.basePlotModule = require('../../plots/gl2d');
-ContourGl.categories = ['gl2d', '2dMap'];
+ContourGl.categories = ['gl', 'gl2d', '2dMap'];
 ContourGl.meta = {
     description: [
         'WebGL contour (beta)'

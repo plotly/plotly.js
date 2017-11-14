@@ -569,13 +569,27 @@ plots.createTransitionData = function(gd) {
 
 // helper function to be bound to fullLayout to check
 // whether a certain plot type is present on plot
+// or trace has a category
 plots._hasPlotType = function(category) {
-    var basePlotModules = this._basePlotModules || [];
+    // check plot
 
-    for(var i = 0; i < basePlotModules.length; i++) {
+    var basePlotModules = this._basePlotModules || [];
+    var i;
+
+    for(i = 0; i < basePlotModules.length; i++) {
         var _module = basePlotModules[i];
 
         if(_module.name === category) return true;
+    }
+
+    // check trace
+    var modules = this._modules || [];
+
+    for(i = 0; i < modules.length; i++) {
+        var _ = modules[i];
+        if(_.categories && _.categories.indexOf(category) >= 0) {
+            return true;
+        }
     }
 
     return false;
@@ -1318,6 +1332,9 @@ plots.purge = function(gd) {
             window.cancelAnimationFrame(gd._transitionData._animationRaf);
         }
     }
+
+    // remove any planned throttles
+    Lib.clearThrottle();
 
     // data and layout
     delete gd.data;

@@ -42,6 +42,8 @@ var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
 var axisIds = require('../plots/cartesian/axis_ids');
 
+var createRegl = require('regl');
+
 
 /**
  * Main plot-creation function
@@ -193,6 +195,51 @@ Plotly.plot = function(gd, data, layout, config) {
             if(basePlotModules[i].drawFramework) {
                 basePlotModules[i].drawFramework(gd);
             }
+        }
+
+        if(!fullLayout._glcanvas && fullLayout._has('gl')) {
+            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data([{
+                key: 'contextLayer',
+                context: true,
+                pick: false
+            }, {
+                key: 'focusLayer',
+                context: false,
+                pick: false
+            }, {
+                key: 'pickLayer',
+                context: false,
+                pick: true
+            }]);
+
+            fullLayout._glcanvas.enter().append('canvas')
+                .each(function(d) {
+                    d.regl = createRegl({
+                        canvas: this,
+                        attributes: {
+                            antialias: !d.pick,
+                            preserveDrawingBuffer: true
+                        },
+                        extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
+                        pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio
+                    });
+                })
+                .attr('class', function(d) {
+                    return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
+                })
+                .style({
+                    'position': 'absolute',
+                    'top': 0,
+                    'left': 0,
+                    'width': '100%',
+                    'height': '100%',
+                    'pointer-events': 'none',
+                    'overflow': 'visible'
+                })
+                .attr('width', fullLayout.width)
+                .attr('height', fullLayout.height);
+
+            fullLayout._glcanvas.exit().remove();
         }
 
         return Lib.syncOrAsync([
@@ -1993,7 +2040,7 @@ function _relayout(gd, aobj) {
             else flags.plot = true;
         }
         else {
-            if(fullLayout._has('gl2d') &&
+            if((fullLayout._has('gl2d') || fullLayout._has('regl')) &&
                 (ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
@@ -2754,7 +2801,7 @@ function makePlotFramework(gd) {
         .classed('plotly', true);
 
     // Make the svg container
-    fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
+    fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([{}]);
     fullLayout._paperdiv.enter().append('div')
         .classed('svg-container', true)
         .style('position', 'relative');
@@ -2765,9 +2812,12 @@ function makePlotFramework(gd) {
     // TODO: sort out all the ordering so we don't have to
     // explicitly delete anything
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
-        .data([0]);
+        .data([{}]);
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
+
+    // That is initialized in drawFramework if there are `gl` traces
+    fullLayout._glcanvas = null;
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
