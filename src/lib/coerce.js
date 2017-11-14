@@ -152,7 +152,7 @@ exports.valObjectMeta = {
             function isColor(color) {
                 return tinycolor(color).isValid();
             }
-            if(!Array.isArray(v)) propOut.set(dflt);
+            if(!Array.isArray(v) || !v.length) propOut.set(dflt);
             else if(v.every(isColor)) propOut.set(v);
             else propOut.set(dflt);
         }

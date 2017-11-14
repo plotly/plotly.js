@@ -8,9 +8,7 @@
     {
       "labels": ["a","b","c","c","c","a","d","e","f","f","g","h"],
       "type": "pie",
-      "domain": {"x": [0, 0.4]},
-      "xaxis": "x2",
-      "yaxis": "y2"
+      "domain": {"x": [0, 0.4]}
     }
   ],
   "layout": {
@@ -24,9 +22,6 @@
     ],
     "xaxis": {
       "domain": [0.4, 1]
-    },
-    "yaxis": {
-      "anchor": "y2"
     }
   }
 }
