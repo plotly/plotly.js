@@ -64,7 +64,7 @@ function buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig){
     return [legendBBox,legendContainer,liveConfig,radius,chartCenter]
 }
 
-function buildFontStyle(axisConfig){
+function buildFontStyles(axisConfig){
     var fontStyle = {
         'font-size': axisConfig.font.size,
         'font-family': axisConfig.font.family,
@@ -73,12 +73,37 @@ function buildFontStyle(axisConfig){
             return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;
         }).join(',')
     };
-    return fontStyle
+    // Added feature to alter the title, will use default font features if aspect is not found
+    // Gets font size if possible
+    try{
+        var titleStyle = {'font-size': axisConfig.titlefont.size};
+    } catch(err){
+        var titleStyle = {'font-size': axisConfig.font.size};
+    }
+    // Gets font type
+    try{
+        titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.titlefont.family});
+    } catch(err){
+        titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.font.family});
+    }
+    // Get font colour
+    try{
+        titleStyle = Object.assign(titleStyle, {fill: axisConfig.titlefont.color});
+    } catch(err){
+        titleStyle = Object.assign(titleStyle, {fill: axisConfig.font.color});
+    }
+    // Get text shadow
+    try{
+        titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
+    } catch(err){
+        titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
+    }
+
+    return [fontStyle,titleStyle]
 }
 
 function createSVG(self,d3){
     svg = d3.select(self).select('svg.chart-root');
-    //debugger;
     if (typeof svg === 'undefined' || svg.empty()) {
         var skeleton = "<svg xmlns='http://www.w3.org/2000/svg' class='chart-root'>' + '<g class='outer-group'>' + '<g class='chart-group'>' + '<circle class='background-circle'></circle>' + '<g class='geometry-group'></g>' + '<g class='radial axis-group'>' + '<circle class='outside-circle'></circle>' + '</g>' + '<g class='angular axis-group'></g>' + '<g class='guides-group'><line></line><circle r='0'></circle></g>' + '</g>' + '<g class='legend-group'></g>' + '<g class='tooltips-group'></g>' + '<g class='title-group'><text></text></g>' + '</g>' + '</svg>";
         var doc = new DOMParser().parseFromString(skeleton, 'application/xml');
@@ -107,7 +132,7 @@ function assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup,chartCe
     svg.select('.outer-group').attr('transform', 'translate(' + centeringOffset + ')');
 
     if (axisConfig.title) {
-        var title = svg.select('g.title-group text').style(fontStyle).text(axisConfig.title);
+        var title = svg.select('g.title-group text').style(titleStyle).text(axisConfig.title);
         var titleBBox = title.node().getBBox();
         title.attr({
             x: chartCenter[0] - titleBBox.width / 2,
@@ -313,7 +338,6 @@ function assignGeometryContainerAttributes(geometryContainer,data,radialScale,an
             var geometry;
             if (Array.isArray(d)) geometry = d[0].geometryConfig.geometry; else geometry = d.geometryConfig.geometry;
             var finalGeometryConfig = d.map(function(dB, iB) {
-                //console.log(µ[geometry].defaultConfig())
                 return extendDeepAll(µ[geometry].defaultConfig(), dB);
             });
             µ[geometry]().config(finalGeometryConfig)();
@@ -496,8 +520,6 @@ function isStackedCheck(data,axisConfig){
         container.datum(data).each(function(_data, _index) {
             var dataOriginal = _data.slice();
             liveConfig = {data: utility.cloneJson(dataOriginal),layout: utility.cloneJson(axisConfig)};
-            //debugger;
-
             // Adds lines between data (areas)
             dataOriginal = addSegementDividers(dataOriginal,axisConfig,liveConfig);
             // Get Data - not sure what this is doing
@@ -525,6 +547,7 @@ function isStackedCheck(data,axisConfig){
             result = isOrdinalCheckOne(angularDataMerged,data,isStacked);
             data = result[0];
             ticks = result[1];
+
             angularDataMerged = result[2];
             isOrdinal = result[3];
             // More variable setup
@@ -561,8 +584,10 @@ function isStackedCheck(data,axisConfig){
             // Create svg
             svg = createSVG(this,d3);         
             var lineStyle = {fill: 'none',stroke: axisConfig.tickColor};
-            // Get font Style
-            fontStyle = buildFontStyle(axisConfig)
+            // Get font Style, for the title and axis
+            styles = buildFontStyles(axisConfig)
+            fontStyle  = styles[0];
+            titleStyle = styles[1];
             // Builds the legend, returning the container and the bounding box, returns changes
             legendData = buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig);
             legendBBox = legendData[0];
@@ -576,6 +601,7 @@ function isStackedCheck(data,axisConfig){
             }
             var chartGroup = svg.select('.chart-group');
             // Set Svg Attributes
+
             svgData = assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup,chartCenter);
             svg = svgData[0];
             centeringOffset = svgData[1];
@@ -596,7 +622,6 @@ function isStackedCheck(data,axisConfig){
             var hasGeometry = svg.select('g.geometry-group').selectAll('g').size() > 0;
             var geometryContainer = svg.select('g.geometry-group').selectAll('g.geometry').data(data);
             geometryContainer = assignGeometryContainerAttributes(geometryContainer,data,radialScale,angularScale,axisConfig);
-    
             var guides = svg.select('.guides-group');
             var tooltipContainer = svg.select('.tooltips-group');
 
@@ -624,7 +649,6 @@ function isStackedCheck(data,axisConfig){
             });
             // outer ring display
             chartGroup =  outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircle,radialScale,axisConfig,chartCenter,geometryTooltip,angularTooltip);
-
             // Displays box with result values in
             svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks,data);
         });
