@@ -97,6 +97,7 @@ var µ = module.exports = { version: '0.2.2' };
                 }
             });
             legendElement.exit().remove();
+            legends = legendElement[0];
         }
         var legendAxis = d3.svg.axis().scale(dataScale).orient('right');
         var axis = svg.select('g.legend-axis').attr({
@@ -117,47 +118,44 @@ var µ = module.exports = { version: '0.2.2' };
             return data[i].name;
         });
          // ADDED SECTION START
-        var legends = legendElement[0];
         var tickElements = axis[0][0].children;
          // APPLY CLICK HANDLER
         for(var i = 0, n = tickElements.length; i < n - 1; i++) {
             var el = tickElements[i];
             var key = legends[i];
-            // listener for the text
-            el.addEventListener('click', (function(i, el, key) {
-                return function() {
-                var li = document.getElementsByClassName("line");
-                if(el.children[1].style.fill === 'black') {
-                    el.children[1].style.fill = 'grey';
-                    legends[i].style.fill = 'grey';
+            // Listener for the text
+            el.addEventListener('click', (function(i, el) {return function() {
+                var li = document.getElementsByClassName('line');
+                if(el.children[1].style.fill === legendConfig.textColor) {
+                    el.children[1].style.fill = 'black';
+                    legends[i].style.fill = 'black';
                     li[i].style.display = 'none';
                 } else {
                     li[i].style.display = 'block';
-                    el.children[1].style.fill = 'black';
+                    el.children[1].style.fill = legendConfig.textColor;
                     legends[i].style.fill = colorScale(i);
                 }
-                };
+            };
             })(i, el), false);
-            //listener for the legend
-            key.addEventListener('click', (function(i, el, key) {
-                return function() {
-                if(el.children[1].style.fill === 'black') {
-                    el.children[1].style.fill = 'grey';
-                    legends[i].style.fill = 'grey';
+            // Listener for the legend
+            key.addEventListener('click', (function(i, el) {return function() {
+                if(el.children[1].style.fill === legendConfig.textColor) {
+                    el.children[1].style.fill = 'black';
+                    legends[i].style.fill = 'black';
                 } else {
-                    el.children[1].style.fill = 'black'
+                    el.children[1].style.fill = legendConfig.textColor;
                     legends[i].style.fill = colorScale(i);
                 }
-                };
+            };
             })(i, el), false);
         }
 
-        //set text black
+        // Set text black
         for(var j = 0, m = tickElements.length; j < m - 1; j++) {
             var e2 = tickElements[j];
-            e2.children[1].style.fill = 'black';
+            e2.children[1].style.fill = legendConfig.textColor;
         }
-         // ADDED SECTION END      
+         // ADDED SECTION END
         return exports;
     }
 
