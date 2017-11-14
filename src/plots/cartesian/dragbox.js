@@ -140,10 +140,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 // to pan (or to zoom if it already is pan) on shift
                 if(e.shiftKey) {
                     if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
-                }
-                else if(e.ctrlKey) {
-                    dragModeNow = 'pan';
+                    else dragModeNow = 'pan';
                 }
             }
             // all other draggers just pan
@@ -529,7 +526,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         updateSubplots([x0, y0, pw - dx, ph - dy]);
-
         ticksAndAnnotations(yActive, xActive);
     }
 
@@ -928,7 +924,9 @@ function removeZoombox(gd) {
 }
 
 function isSelectOrLasso(dragmode) {
-    return dragmode === 'lasso' || dragmode === 'select';
+    var modes = ['lasso', 'select'];
+
+    return modes.indexOf(dragmode) !== -1;
 }
 
 function xCorners(box, y0) {
