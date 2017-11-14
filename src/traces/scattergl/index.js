@@ -518,7 +518,7 @@ ScatterRegl.calc = function calc(container, trace) {
         // highlight selected points
         scene.select = function select(selection) {
             if(!scene.select2d) return;
-            if(!selection.length) return;
+            // if(!selection.length) return;
 
             scene.select2d.regl.clear({color: true});
 
@@ -959,6 +959,13 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
             scene.scatter2d.update(scene.markerOptions.map(function(opt) {
                 return {opacity: opt.opacity};
             }));
+
+            scene.scatter2d.regl.clear({color: true});
+            scene.draw();
+
+            if(scene.select2d) {
+                scene.select2d.regl.clear({color: true});
+            }
         }
     }
     // filter out points by visible scatter ones
@@ -986,7 +993,6 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
         // update scattergl selection
         scene.select(selection);
     }
-
 
     return selection;
 };
