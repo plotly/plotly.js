@@ -139,7 +139,7 @@ module.exports = function initInteractions(gd) {
     // we do this so that we can put the hover text in front of everything,
     // but still be able to interact with everything as if it isn't there
     var hoverLayer = fullLayout._hoverlayer.node();
-
+    console.log("hey");
     hoverLayer.onmousemove = function(evt) {
         evt.target = fullLayout._lasthover;
         Fx.hover(gd, evt, fullLayout._hoversubplot);
