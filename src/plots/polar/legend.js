@@ -118,7 +118,7 @@ var µ = module.exports = { version: '0.2.2' };
             return data[i].name;
         });
          // ADDED SECTION START
-        var tickElements = axis[0][0].children;
+        var tickElements = axis[0][0].childNodes;
          // APPLY CLICK HANDLER
         for(var i = 0, n = tickElements.length; i < n - 1; i++) {
             var el = tickElements[i];
@@ -126,24 +126,24 @@ var µ = module.exports = { version: '0.2.2' };
             // Listener for the text
             el.addEventListener('click', (function(i, el) {return function() {
                 var li = document.getElementsByClassName('line');
-                if(el.children[1].style.fill === legendConfig.textColor) {
-                    el.children[1].style.fill = 'black';
+                if(el.childNodes[1].style.fill === legendConfig.textColor) {
+                    el.childNodes[1].style.fill = 'black';
                     legends[i].style.fill = 'black';
                     li[i].style.display = 'none';
                 } else {
                     li[i].style.display = 'block';
-                    el.children[1].style.fill = legendConfig.textColor;
+                    el.childNodes[1].style.fill = legendConfig.textColor;
                     legends[i].style.fill = colorScale(i);
                 }
             };
             })(i, el), false);
             // Listener for the legend
             key.addEventListener('click', (function(i, el) {return function() {
-                if(el.children[1].style.fill === legendConfig.textColor) {
-                    el.children[1].style.fill = 'black';
+                if(el.childNodes[1].style.fill === legendConfig.textColor) {
+                    el.childNodes[1].style.fill = 'black';
                     legends[i].style.fill = 'black';
                 } else {
-                    el.children[1].style.fill = legendConfig.textColor;
+                    el.childNodes[1].style.fill = legendConfig.textColor;
                     legends[i].style.fill = colorScale(i);
                 }
             };
@@ -153,7 +153,7 @@ var µ = module.exports = { version: '0.2.2' };
         // Set text black
         for(var j = 0, m = tickElements.length; j < m - 1; j++) {
             var e2 = tickElements[j];
-            e2.children[1].style.fill = legendConfig.textColor;
+            e2.childNodes[1].style.fill = legendConfig.textColor;
         }
          // ADDED SECTION END
         return exports;
