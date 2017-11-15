@@ -12,7 +12,6 @@
 var Color = require('../../components/color');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout) {
     coerce('marker.color', defaultColor);
@@ -32,13 +31,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
     }
 
     coerce('marker.line.width');
-
-    var mo = coerce('marker.opacity');
-    var moEffective = Array.isArray(mo) ? 1 : mo;
-
-    coerce('selected.marker.opacity', moEffective);
-    coerce('unselected.marker.opacity', DESELECTDIM * moEffective);
-
+    coerce('marker.opacity');
     coerce('selected.marker.color');
     coerce('unselected.marker.color');
 };

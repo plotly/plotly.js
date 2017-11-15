@@ -11,7 +11,6 @@
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var attributes = require('./attributes');
 
@@ -72,7 +71,7 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
         coerce('pointpos', points === 'all' ? -1.5 : 0);
 
         coerce('marker.symbol');
-        var mo = coerce('marker.opacity');
+        coerce('marker.opacity');
         coerce('marker.size');
         coerce('marker.color', traceOut.line.color);
         coerce('marker.line.color');
@@ -83,8 +82,6 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
             coerce('marker.line.outlierwidth');
         }
 
-        coerce('selected.marker.opacity', mo);
-        coerce('unselected.marker.opacity', DESELECTDIM * mo);
         coerce('selected.marker.color');
         coerce('unselected.marker.color');
         coerce('selected.marker.size');
@@ -96,6 +93,8 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
     }
 
     coerce('hoveron');
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }
 
 module.exports = {

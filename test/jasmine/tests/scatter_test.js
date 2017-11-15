@@ -128,6 +128,52 @@ describe('Test scatter', function() {
             expect(traceOut.xcalendar).toBe('coptic');
             expect(traceOut.ycalendar).toBe('ethiopian');
         });
+
+        describe('selected / unselected attribute containers', function() {
+            function _supply(patch) { traceIn = Lib.extendFlat({
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [2, 1, 2]
+            }, patch);
+                traceOut = {visible: true};
+                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            }
+
+            it('should fill in [un]selected.marker.opacity default when no other [un]selected is set', function() {
+                _supply({});
+                expect(traceOut.selected.marker.opacity).toBe(1);
+                expect(traceOut.unselected.marker.opacity).toBe(0.2);
+
+                _supply({ marker: {opacity: 0.6} });
+                expect(traceOut.selected.marker.opacity).toBe(0.6);
+                expect(traceOut.unselected.marker.opacity).toBe(0.12);
+            });
+
+            it('should not fill in [un]selected.marker.opacity default when some other [un]selected is set', function() {
+                _supply({
+                    selected: {marker: {size: 20}}
+                });
+                expect(traceOut.selected.marker.opacity).toBeUndefined();
+                expect(traceOut.selected.marker.size).toBe(20);
+                expect(traceOut.unselected).toBeUndefined();
+
+                _supply({
+                    unselected: {marker: {color: 'red'}}
+                });
+                expect(traceOut.selected).toBeUndefined();
+                expect(traceOut.unselected.marker.opacity).toBeUndefined();
+                expect(traceOut.unselected.marker.color).toBe('red');
+
+                _supply({
+                    mode: 'markers+text',
+                    selected: {textfont: {color: 'blue'}}
+                });
+                expect(traceOut.selected.marker).toBeUndefined();
+                expect(traceOut.selected.textfont.color).toBe('blue');
+                expect(traceOut.unselected).toBeUndefined();
+            });
+        });
+
     });
 
     describe('isBubble', function() {
@@ -736,6 +782,11 @@ describe('scatter hoverPoints', function() {
         .catch(fail)
         .then(done);
     });
+});
+
+describe('Test Scatter.style', function() {
+
+
 });
 
 describe('Test scatter *clipnaxis*:', function() {

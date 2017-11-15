@@ -76,4 +76,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 
     coerce('cliponaxis');
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

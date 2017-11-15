@@ -12,7 +12,6 @@
 var Color = require('../../components/color');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var subTypes = require('./subtypes');
 
@@ -33,7 +32,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     if(lineColor) defaultColor = lineColor;
 
     coerce('marker.symbol');
-    var mo = coerce('marker.opacity', isBubble ? 0.7 : 1);
+    coerce('marker.opacity', isBubble ? 0.7 : 1);
     coerce('marker.size');
 
     coerce('marker.color', defaultColor);
@@ -42,13 +41,8 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(!opts.noSelect) {
-        var moEffective = Array.isArray(mo) ? 1 : mo;
-        coerce('selected.marker.opacity', moEffective);
-        coerce('unselected.marker.opacity', DESELECTDIM * moEffective);
-
         coerce('selected.marker.color');
         coerce('unselected.marker.color');
-
         coerce('selected.marker.size');
         coerce('unselected.marker.size');
     }
