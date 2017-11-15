@@ -111,6 +111,17 @@ exports.makeEventData = function makeEventData(pt, trace, cd) {
         pointNumber: pointNumber
     };
 
+    if(trace._indexToPoints) {
+        var pointIndices = trace._indexToPoints[pointNumber];
+
+        if(pointIndices.length === 1) {
+            out.pointIndex = pointIndices[0];
+        } else {
+            out.pointIndices = pointIndices;
+        }
+    } else {
+        out.pointIndex = pointNumber;
+    }
 
     if(trace._module.eventData) {
         out = trace._module.eventData(out, pt, trace, cd, pointNumber);

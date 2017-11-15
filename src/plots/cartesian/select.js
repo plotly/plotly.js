@@ -308,8 +308,13 @@ function updateSelectedState(gd, searchTraces, eventData) {
             var data = pt.data;
             var fullData = pt.fullData;
 
-            data.selectedpoints.push(pt.pointIndex);
-            fullData.selectedpoints.push(pt.pointIndex);
+            if(pt.pointIndices) {
+                data.selectedpoints = data.selectedpoints.concat(pt.pointIndices);
+                fullData.selectedpoints = fullData.selectedpoints.concat(pt.pointIndices);
+            } else {
+                data.selectedpoints.push(pt.pointIndex);
+                fullData.selectedpoints.push(pt.pointIndex);
+            }
         }
     }
     else {
