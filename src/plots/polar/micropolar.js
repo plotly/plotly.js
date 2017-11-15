@@ -81,29 +81,29 @@ function buildFontStyle(axisConfig){
         var titleStyle = {'font-size': axisConfig.font.size};
     }
     // Gets font type
-    // try{
-    //     titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.titlefont.family});
-    // } catch(err){
-    //     titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.font.family});
-    // }
-    // // Get font colour
-    // try{
-    //     titleStyle = Object.assign(titleStyle, {fill: axisConfig.titlefont.color});
-    // } catch(err){
-    //     titleStyle = Object.assign(titleStyle, {fill: axisConfig.font.color});
-    // }
-    // // Get text shadow
-    // try{
-    //     titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
-    // } catch(err){
-    //     titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
-    // }
-    // if(titleStyle === fontStyle){
-    //     console.log("same");
-    // }else{
-    //     console.log(fontStyle);
-    //     console.log(titleStyle);
-    // }
+    try{
+        titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.titlefont.family});
+    } catch(err){
+        titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.font.family});
+    }
+    // Get font colour
+    try{
+        titleStyle = Object.assign(titleStyle, {fill: axisConfig.titlefont.color});
+    } catch(err){
+        titleStyle = Object.assign(titleStyle, {fill: axisConfig.font.color});
+    }
+    // Get text shadow
+    try{
+        titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
+    } catch(err){
+        titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
+    }
+    if(titleStyle === fontStyle){
+        console.log("same");
+    }else{
+        console.log(fontStyle);
+        console.log(titleStyle);
+    }
     return [fontStyle,titleStyle]
 }
 
