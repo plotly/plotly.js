@@ -74,35 +74,38 @@ function buildFontStyle(axisConfig){
         }).join(',')
     };
     // Added feature to alter the title, will use default font features if aspect is not found
-    // Gets font size if possible
-    try{
-        var titleStyle = {'font-size': axisConfig.titlefont.size};
-    } catch(err){
-        var titleStyle = {'font-size': axisConfig.font.size};
-    }
-    // Gets font type
-    try{
-        titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.titlefont.family});
-    } catch(err){
-        titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.font.family});
-    }
-    // Get font colour
-    try{
-        titleStyle = Object.assign(titleStyle, {fill: axisConfig.titlefont.color});
-    } catch(err){
-        titleStyle = Object.assign(titleStyle, {fill: axisConfig.font.color});
-    }
-    // Get text shadow
-    try{
-        titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
-    } catch(err){
-        titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
-    }
-    if(titleStyle === fontStyle){
-        console.log("same");
+    // Gets font size if possible#
+    if(axisConfig.titlefont == undefined){
     }else{
-        console.log(fontStyle);
-        console.log(titleStyle);
+        try{
+            var titleStyle = {'font-size': axisConfig.titlefont.size};
+        } catch(err){
+            var titleStyle = {'font-size': axisConfig.font.size};
+        }
+        // Gets font type
+        try{
+            titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.titlefont.family});
+        } catch(err){
+            titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.font.family});
+        }
+        // Get font colour
+        try{
+            titleStyle = Object.assign(titleStyle, {fill: axisConfig.titlefont.color});
+        } catch(err){
+            titleStyle = Object.assign(titleStyle, {fill: axisConfig.font.color});
+        }
+        // Get text shadow
+        try{
+            titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
+        } catch(err){
+            titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
+        }
+        if(titleStyle === fontStyle){
+            console.log("same");
+        }else{
+            console.log(fontStyle);
+            console.log(titleStyle);
+        }
     }
     return [fontStyle,titleStyle]
 }
