@@ -64,7 +64,7 @@ function buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig){
     return [legendBBox,legendContainer,liveConfig,radius,chartCenter]
 }
 
-function buildFontStyles(axisConfig){
+function buildFontStyle(axisConfig){
     var fontStyle = {
         'font-size': axisConfig.font.size,
         'font-family': axisConfig.font.family,
@@ -81,29 +81,29 @@ function buildFontStyles(axisConfig){
         var titleStyle = {'font-size': axisConfig.font.size};
     }
     // Gets font type
-    try{
-        titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.titlefont.family});
-    } catch(err){
-        titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.font.family});
-    }
-    // Get font colour
-    try{
-        titleStyle = Object.assign(titleStyle, {fill: axisConfig.titlefont.color});
-    } catch(err){
-        titleStyle = Object.assign(titleStyle, {fill: axisConfig.font.color});
-    }
-    // Get text shadow
-    try{
-        titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
-    } catch(err){
-        titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
-    }
-    if(titleStyle === fontStyle){
-        console.log("same");
-    }else{
-        console.log(fontStyle);
-        console.log(titleStyle);
-    }
+    // try{
+    //     titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.titlefont.family});
+    // } catch(err){
+    //     titleStyle = Object.assign(titleStyle, {'font-family': axisConfig.font.family});
+    // }
+    // // Get font colour
+    // try{
+    //     titleStyle = Object.assign(titleStyle, {fill: axisConfig.titlefont.color});
+    // } catch(err){
+    //     titleStyle = Object.assign(titleStyle, {fill: axisConfig.font.color});
+    // }
+    // // Get text shadow
+    // try{
+    //     titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
+    // } catch(err){
+    //     titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
+    // }
+    // if(titleStyle === fontStyle){
+    //     console.log("same");
+    // }else{
+    //     console.log(fontStyle);
+    //     console.log(titleStyle);
+    // }
     return [fontStyle,titleStyle]
 }
 
@@ -589,7 +589,7 @@ function isStackedCheck(data,axisConfig){
             svg = createSVG(this,d3);         
             var lineStyle = {fill: 'none',stroke: axisConfig.tickColor};
             // Get font Style, for the title and axis
-            styles = buildFontStyles(axisConfig)
+            styles = buildFontStyle(axisConfig)
             fontStyle  = styles[0];
             titleStyle = styles[1];
             // Builds the legend, returning the container and the bounding box, returns changes
