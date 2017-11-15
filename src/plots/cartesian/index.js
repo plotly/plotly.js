@@ -51,9 +51,11 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     // clear gl frame, if any, since we preserve drawing buffer
     if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
         fullLayout._glcanvas.each(function(d) {
-            d.regl.clear({
-                color: true
-            });
+            if (d.regl)  {
+                d.regl.clear({
+                    color: true
+                });
+            }
         });
     }
 
