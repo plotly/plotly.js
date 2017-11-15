@@ -950,8 +950,9 @@ plots.supplyFrameDefaults = function(frameIn) {
 };
 
 plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInIndex) {
+    var colorway = layout.colorway || Color.defaults;
     var traceOut = {},
-        defaultColor = Color.defaults[traceOutIndex % Color.defaults.length];
+        defaultColor = colorway[traceOutIndex % colorway.length];
 
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
@@ -1137,6 +1138,8 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 
     coerce('separators');
     coerce('hidesources');
+
+    coerce('colorway');
 
     Registry.getComponentMethod(
         'calendars',
@@ -2171,6 +2174,7 @@ plots.doCalcdata = function(gd, traces) {
 
     // for sharing colors across pies (and for legend)
     fullLayout._piecolormap = {};
+    fullLayout._piecolorway = null;
     fullLayout._piedefaultcolorcount = 0;
 
     // If traces were specified and this trace was not included,

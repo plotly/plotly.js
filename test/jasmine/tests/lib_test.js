@@ -1073,6 +1073,15 @@ describe('Test lib.js:', function() {
             });
         });
 
+        it('should work for valType \'colorlist\' where', function() {
+            var shouldPass = [['red'], ['#ffffff'], ['rgba(0,0,0,1)'], ['red', 'green', 'blue']],
+                shouldFail = [1, null, undefined, {}, [], 'red', ['red', null]];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'colorlist'
+            });
+        });
+
         it('should work for valType \'colorscale\' where', function() {
             var good = [ [0, 'red'], [1, 'blue'] ],
                 bad = [ [0.1, 'red'], [1, 'blue'] ],
