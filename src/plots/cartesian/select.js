@@ -13,7 +13,7 @@ var polybool = require('polybooljs');
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var color = require('../../components/color');
-var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
+var makeEventData = require('../../components/fx/helpers').makeEventData;
 
 var axes = require('./axes');
 var constants = require('./constants');
@@ -355,15 +355,11 @@ function mergePolygons(list, poly, subtract) {
 
 function fillSelectionItem(selection, searchInfo) {
     if(Array.isArray(selection)) {
+        var cd = searchInfo.cd;
         var trace = searchInfo.cd[0].trace;
 
         for(var i = 0; i < selection.length; i++) {
-            var sel = selection[i];
-
-            sel.curveNumber = trace.index;
-            sel.data = trace._input;
-            sel.fullData = trace;
-            appendArrayPointValue(sel, trace, sel.pointNumber);
+            selection[i] = makeEventData(selection[i], trace, cd);
         }
     }
 

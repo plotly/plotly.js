@@ -85,6 +85,52 @@ exports.quadrature = function quadrature(dx, dy) {
     };
 };
 
+/** Fill event data point object for hover and selection.
+ *  Invokes _module.eventData if present.
+ *
+ * N.B. note that point 'index' corresponds to input data array index
+ *  whereas 'number' is its post-transform version.
+ *
+ * If the hovered/selected pt corresponds to an multiple input points
+ * (e.g. for histogram and transformed traces), 'pointNumbers` and 'pointIndices'
+ * are include in the event data.
+ *
+ * @param {object} pt
+ * @param {object} trace
+ * @param {object} cd
+ * @return {object}
+ */
+exports.makeEventData = function makeEventData(pt, trace, cd) {
+    // hover uses 'index', select uses 'pointNumber'
+    var pointNumber = 'index' in pt ? pt.index : pt.pointNumber;
+
+    var out = {
+        data: trace._input,
+        fullData: trace,
+        curveNumber: trace.index,
+        pointNumber: pointNumber
+    };
+
+
+    if(trace._module.eventData) {
+        out = trace._module.eventData(out, pt, trace, cd, pointNumber);
+    } else {
+        if('xVal' in pt) out.x = pt.xVal;
+        else if('x' in pt) out.x = pt.x;
+
+        if('yVal' in pt) out.y = pt.yVal;
+        else if('y' in pt) out.y = pt.y;
+
+        if(pt.xa) out.xaxis = pt.xa;
+        if(pt.ya) out.yaxis = pt.ya;
+        if(pt.zLabelVal !== undefined) out.z = pt.zLabelVal;
+    }
+
+    exports.appendArrayPointValue(out, trace, pointNumber);
+
+    return out;
+};
+
 /** Appends values inside array attributes corresponding to given point number
  *
  * @param {object} pointData : point data object (gets mutated here)
