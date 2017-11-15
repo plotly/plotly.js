@@ -42,8 +42,6 @@ var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
 var axisIds = require('../plots/cartesian/axis_ids');
 
-var createRegl = require('regl');
-
 
 /**
  * Main plot-creation function
@@ -213,17 +211,6 @@ Plotly.plot = function(gd, data, layout, config) {
             }]);
 
             fullLayout._glcanvas.enter().append('canvas')
-                .each(function(d) {
-                    d.regl = createRegl({
-                        canvas: this,
-                        attributes: {
-                            antialias: !d.pick,
-                            preserveDrawingBuffer: true
-                        },
-                        extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
-                        pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio
-                    });
-                })
                 .attr('class', function(d) {
                     return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
                 })
