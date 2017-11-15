@@ -76,6 +76,7 @@ function buildFontStyle(axisConfig){
     // Added feature to alter the title, will use default font features if aspect is not found
     // Gets font size if possible#
     if(axisConfig.titlefont == undefined){
+        var titleStyle = fontStyle;
     }else{
         try{
             var titleStyle = {'font-size': axisConfig.titlefont.size};
@@ -133,13 +134,12 @@ function createSVG(self,d3){
 function assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup,chartCenter){
     svg.attr({width: axisConfig.width,height: axisConfig.height}).style({opacity: axisConfig.opacity});
     chartGroup.attr('transform', 'translate(' + chartCenter + ')').style({cursor: 'crosshair'});
-
     var centeringOffset = [ (axisConfig.width - (axisConfig.margin.left + axisConfig.margin.right + radius * 2 + (legendBBox ? legendBBox.width : 0))) / 2, (axisConfig.height - (axisConfig.margin.top + axisConfig.margin.bottom + radius * 2)) / 2 ];
     centeringOffset[0] = Math.max(0, centeringOffset[0]);
     centeringOffset[1] = Math.max(0, centeringOffset[1]);
     svg.select('.outer-group').attr('transform', 'translate(' + centeringOffset + ')');
     if (axisConfig.title) {
-        var title = svg.select('g.title-group text').style(fontStyle).text(axisConfig.title);
+        var title = svg.select('g.title-group text').style(titleStyle).text(axisConfig.title);
         var titleBBox = title.node().getBBox();
         title.attr({
             x: chartCenter[0] - titleBBox.width / 2,
