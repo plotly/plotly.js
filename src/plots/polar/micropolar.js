@@ -98,7 +98,12 @@ function buildFontStyles(axisConfig){
     } catch(err){
         titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
     }
-
+    if(titleStyle === fontStyle){
+        console.log("same");
+    }else{
+        console.log(fontStyle);
+        console.log(titleStyle);
+    }
     return [fontStyle,titleStyle]
 }
 
@@ -130,9 +135,8 @@ function assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup,chartCe
     centeringOffset[0] = Math.max(0, centeringOffset[0]);
     centeringOffset[1] = Math.max(0, centeringOffset[1]);
     svg.select('.outer-group').attr('transform', 'translate(' + centeringOffset + ')');
-
     if (axisConfig.title) {
-        var title = svg.select('g.title-group text').style(titleStyle).text(axisConfig.title);
+        var title = svg.select('g.title-group text').style(fontStyle).text(axisConfig.title);
         var titleBBox = title.node().getBBox();
         title.attr({
             x: chartCenter[0] - titleBBox.width / 2,
