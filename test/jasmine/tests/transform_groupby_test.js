@@ -57,8 +57,10 @@ describe('groupby', function() {
                 expect(gd._fullData.length).toEqual(2);
                 expect(gd._fullData[0].x).toEqual([1, -1, 0, 3]);
                 expect(gd._fullData[0].y).toEqual([1, 2, 1, 1]);
+                expect(gd._fullData[0].transforms[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [3], 3: [6]});
                 expect(gd._fullData[1].x).toEqual([-2, 1, 2]);
                 expect(gd._fullData[1].y).toEqual([3, 2, 3]);
+                expect(gd._fullData[1].transforms[0]._indexToPoints).toEqual({0: [2], 1: [4], 2: [5]});
 
                 assertDims([4, 3]);
 
@@ -459,6 +461,7 @@ describe('groupby', function() {
                     expect(gd._fullData[0].x).toEqual([1, -1, 0, 3]);
                     expect(gd._fullData[0].y).toEqual([0, 1, 3, 6]);
                     expect(gd._fullData[0].marker.line.width).toEqual([4, 2, 2, 3]);
+
 
                     expect(gd._fullData[1].ids).toEqual(['r', 'y', 'u']);
                     expect(gd._fullData[1].x).toEqual([-2, 1, 2]);
