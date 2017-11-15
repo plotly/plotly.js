@@ -162,6 +162,7 @@ describe('Test select box and lasso in general:', function() {
                 assertEventData(selectedData.points, [{
                     curveNumber: 0,
                     pointNumber: 0,
+                    pointIndex: 0,
                     x: 0.002,
                     y: 16.25,
                     id: 'id-0.002',
@@ -169,6 +170,7 @@ describe('Test select box and lasso in general:', function() {
                 }, {
                     curveNumber: 0,
                     pointNumber: 1,
+                    pointIndex: 1,
                     x: 0.004,
                     y: 12.5,
                     id: 'id-0.004',
@@ -199,6 +201,7 @@ describe('Test select box and lasso in general:', function() {
                 assertEventData(selectingData.points, [{
                     curveNumber: 0,
                     pointNumber: 0,
+                    pointIndex: 0,
                     x: 0.002,
                     y: 16.25,
                     id: 'id-0.002',
@@ -206,6 +209,7 @@ describe('Test select box and lasso in general:', function() {
                 }, {
                     curveNumber: 0,
                     pointNumber: 1,
+                    pointIndex: 1,
                     x: 0.004,
                     y: 12.5,
                     id: 'id-0.004',
@@ -225,6 +229,7 @@ describe('Test select box and lasso in general:', function() {
                 assertEventData(selectingData.points, [{
                     curveNumber: 0,
                     pointNumber: 0,
+                    pointIndex: 0,
                     x: 0.002,
                     y: 16.25,
                     id: 'id-0.002',
@@ -232,6 +237,7 @@ describe('Test select box and lasso in general:', function() {
                 }, {
                     curveNumber: 0,
                     pointNumber: 1,
+                    pointIndex: 1,
                     x: 0.004,
                     y: 12.5,
                     id: 'id-0.004',
@@ -239,6 +245,7 @@ describe('Test select box and lasso in general:', function() {
                 }, {
                     curveNumber: 0,
                     pointNumber: 4,
+                    pointIndex: 4,
                     x: 0.013,
                     y: 6.875,
                     id: 'id-0.013',
@@ -252,6 +259,7 @@ describe('Test select box and lasso in general:', function() {
                 assertEventData(selectingData.points, [{
                     curveNumber: 0,
                     pointNumber: 0,
+                    pointIndex: 0,
                     x: 0.002,
                     y: 16.25,
                     id: 'id-0.002',
@@ -259,6 +267,7 @@ describe('Test select box and lasso in general:', function() {
                 }, {
                     curveNumber: 0,
                     pointNumber: 1,
+                    pointIndex: 1,
                     x: 0.004,
                     y: 12.5,
                     id: 'id-0.004',
@@ -299,6 +308,7 @@ describe('Test select box and lasso in general:', function() {
                 assertEventData(selectingData.points, [{
                     curveNumber: 0,
                     pointNumber: 10,
+                    pointIndex: 10,
                     x: 0.099,
                     y: 2.75
                 }], 'with the correct selecting points (1)');
@@ -307,6 +317,7 @@ describe('Test select box and lasso in general:', function() {
                 assertEventData(selectedData.points, [{
                     curveNumber: 0,
                     pointNumber: 10,
+                    pointIndex: 10,
                     x: 0.099,
                     y: 2.75,
                 }], 'with the correct selected points (2)');
@@ -374,6 +385,7 @@ describe('Test select box and lasso in general:', function() {
                 assertEventData(selectingData.points, [{
                     curveNumber: 0,
                     pointNumber: 10,
+                    pointIndex: 10,
                     x: 0.099,
                     y: 2.75
                 }], 'with the correct selecting points (1)');
@@ -382,6 +394,7 @@ describe('Test select box and lasso in general:', function() {
                 assertEventData(selectedData.points, [{
                     curveNumber: 0,
                     pointNumber: 10,
+                    pointIndex: 10,
                     x: 0.099,
                     y: 2.75,
                 }], 'with the correct selected points (2)');

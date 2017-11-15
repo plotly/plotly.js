@@ -569,7 +569,7 @@ describe('Test geo interactions', function() {
 
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber',
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                     'lon', 'lat', 'location', 'marker.size'
                 ]);
                 expect(cnt).toEqual(1);
@@ -632,7 +632,7 @@ describe('Test geo interactions', function() {
 
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber',
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                     'lon', 'lat', 'location', 'marker.size'
                 ]);
             });
@@ -664,7 +664,7 @@ describe('Test geo interactions', function() {
 
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber',
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                     'lon', 'lat', 'location', 'marker.size'
                 ]);
             });
@@ -693,7 +693,7 @@ describe('Test geo interactions', function() {
 
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber',
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                     'location', 'z'
                 ]);
             });
@@ -721,7 +721,7 @@ describe('Test geo interactions', function() {
 
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber',
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                     'location', 'z'
                 ]);
             });
@@ -753,7 +753,7 @@ describe('Test geo interactions', function() {
 
             it('should contain the correct fields', function() {
                 expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber',
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                     'location', 'z'
                 ]);
             });
@@ -1303,7 +1303,8 @@ describe('Test event property of interactions on a geo plot:', function() {
                 evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat',
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                'lon', 'lat',
                 'location', 'text', 'marker.size'
             ]);
 
@@ -1351,7 +1352,8 @@ describe('Test event property of interactions on a geo plot:', function() {
                 evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat',
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                'lon', 'lat',
                 'location', 'text', 'marker.size'
             ]);
 
@@ -1392,7 +1394,8 @@ describe('Test event property of interactions on a geo plot:', function() {
                 evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat',
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                'lon', 'lat',
                 'location', 'text', 'marker.size'
             ]);
 
@@ -1428,7 +1431,8 @@ describe('Test event property of interactions on a geo plot:', function() {
                     evt = futureData.event;
 
                 expect(Object.keys(pt)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat',
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                    'lon', 'lat',
                     'location', 'text', 'marker.size'
                 ]);
 
