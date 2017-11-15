@@ -465,6 +465,57 @@ lib.extractOption = function(calcPt, trace, calcKey, traceKey) {
     if(!Array.isArray(traceVal)) return traceVal;
 };
 
+/** Tag selected calcdata items
+ *
+ * N.B. note that point 'index' corresponds to input data array index
+ *  whereas 'number' is its post-transform version.
+ *
+ * @param {array} calcTrace
+ * @param {object} trace
+ *  - selectedpoints {array}
+ *  - _indexToPoints {object}
+ * @param {ptNumber2cdIndex} ptNumber2cdIndex (optional)
+ *  optional map object for trace types that do not have 1-to-1 point number to
+ *  calcdata item index correspondence (e.g. histogram)
+ */
+lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
+    var selectedpoints = trace.selectedpoints;
+    var indexToPoints = trace._indexToPoints;
+    var ptIndex2ptNumber;
+
+    // make pt index-to-number map object, which takes care of transformed traces
+    if(indexToPoints) {
+        ptIndex2ptNumber = {};
+        for(var k in indexToPoints) {
+            var pts = indexToPoints[k];
+            for(var j = 0; j < pts.length; j++) {
+                ptIndex2ptNumber[pts[j]] = k;
+            }
+        }
+    }
+
+    function isPtIndexValid(v) {
+        return lib.validate(v, {valType: 'integer', min: 0});
+    }
+
+    function isCdIndexValid(v) {
+        return v !== undefined && v < calcTrace.length;
+    }
+
+    for(var i = 0; i < selectedpoints.length; i++) {
+        var ptIndex = selectedpoints[i];
+
+        if(isPtIndexValid(ptIndex)) {
+            var ptNumber = ptIndex2ptNumber ? ptIndex2ptNumber[ptIndex] : ptIndex;
+            var cdIndex = ptNumber2cdIndex ? ptNumber2cdIndex[ptNumber] : ptNumber;
+
+            if(isCdIndexValid(cdIndex)) {
+                calcTrace[cdIndex].selected = 1;
+            }
+        }
+    }
+};
+
 /** Returns target as set by 'target' transform attribute
  *
  * @param {object} trace : full trace object

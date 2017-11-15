@@ -240,9 +240,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
                     traceSelections.push(traceSelection);
 
-                    var thisSelection = fillSelectionItem(
-                        traceSelection, searchInfo
-                    );
+                    var thisSelection = fillSelectionItem(traceSelection, searchInfo);
                     if(selection.length) {
                         for(var j = 0; j < thisSelection.length; j++) {
                             selection.push(thisSelection[j]);
@@ -294,30 +292,31 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 };
 
 function updateSelectedState(gd, searchTraces, eventData) {
-    var i, searchInfo;
+    var i, searchInfo, trace;
 
     if(eventData) {
         var pts = eventData.points || [];
 
         for(i = 0; i < searchTraces.length; i++) {
-            searchInfo = searchTraces[i];
-            searchInfo.cd[0].trace.selectedpoints = [];
-            searchInfo.cd[0].trace._input.selectedpoints = [];
+            trace = searchTraces[i].cd[0].trace;
+            trace.selectedpoints = [];
+            trace._input.selectedpoints = [];
         }
 
         for(i = 0; i < pts.length; i++) {
             var pt = pts[i];
-            var ptNumber = pt.pointNumber;
+            var data = pt.data;
+            var fullData = pt.fullData;
 
-            pt.data.selectedpoints.push(ptNumber);
-            pt.fullData.selectedpoints.push(ptNumber);
+            data.selectedpoints.push(pt.pointIndex);
+            fullData.selectedpoints.push(pt.pointIndex);
         }
     }
     else {
         for(i = 0; i < searchTraces.length; i++) {
-            searchInfo = searchTraces[i];
-            delete searchInfo.cd[0].trace.selectedpoints;
-            delete searchInfo.cd[0].trace._input.selectedpoints;
+            trace = searchTraces[i].cd[0].trace;
+            delete trace.selectedpoints;
+            delete trace._input.selectedpoints;
         }
     }
 

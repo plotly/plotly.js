@@ -8,20 +8,12 @@
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
+var Lib = require('../../lib');
+
+// TODO ids vs points??
 
 module.exports = function calcSelection(cd, trace) {
-    var selectedpoints = trace.selectedpoints;
-
-    // TODO ids vs points??
-
-    if(Array.isArray(selectedpoints)) {
-        for(var i = 0; i < selectedpoints.length; i++) {
-            var ptNumber = selectedpoints[i];
-
-            if(isNumeric(ptNumber)) {
-                cd[+ptNumber].selected = 1;
-            }
-        }
+    if(Array.isArray(trace.selectedpoints)) {
+        Lib.tagSelected(cd, trace);
     }
 };

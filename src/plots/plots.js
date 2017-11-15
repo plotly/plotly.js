@@ -2241,7 +2241,21 @@ plots.doCalcdata = function(gd, traces) {
 
         if(trace.visible === true) {
             _module = trace._module;
-            if(_module && _module.calc) cd = _module.calc(gd, trace);
+
+            // keep ref of index-to-points map object of the *last* enabled transform,
+            // this index-to-points map object is required to determine the calcdata indices
+            // that correspond to input indices (e.g. from 'selectedpoints')
+            var transforms = trace.transforms || [];
+            for(j = transforms.length - 1; j >= 0; j--) {
+                if(transforms[j].enabled) {
+                    trace._indexToPoints = transforms[j]._indexToPoints;
+                    break;
+                }
+            }
+
+            if(_module && _module.calc) {
+                cd = _module.calc(gd, trace);
+            }
         }
 
         // Make sure there is a first point.

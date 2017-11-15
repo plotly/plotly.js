@@ -15,14 +15,12 @@ var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 
 var arraysToCalcdata = require('../bar/arrays_to_calcdata');
-var calcSelection = require('../scatter/calc_selection');
 var binFunctions = require('./bin_functions');
 var normFunctions = require('./norm_functions');
 var doAvg = require('./average');
 var cleanBins = require('./clean_bins');
 var oneMonth = require('../../constants/numerical').ONEAVGMONTH;
 var getBinSpanLabelRound = require('./bin_label_vals');
-
 
 module.exports = function calc(gd, trace) {
     // ignore as much processing as possible (and including in autorange) if bar is not visible
@@ -510,5 +508,21 @@ function cdf(size, direction, currentBin) {
             size.push(0);
             size.shift();
         }
+    }
+}
+
+function calcSelection(cd, trace) {
+    if(Array.isArray(trace.selectedpoints)) {
+        var ptNumber2cdIndex = {};
+
+        // make histogram-specific pt-number-to-cd-index map object
+        for(var i = 0; i < cd.length; i++) {
+            var pts = cd[i].pts || [];
+            for(var j = 0; j < pts.length; j++) {
+                ptNumber2cdIndex[pts[j]] = i;
+            }
+        }
+
+        Lib.tagSelected(cd, trace, ptNumber2cdIndex);
     }
 }
