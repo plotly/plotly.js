@@ -15,14 +15,7 @@ module.exports = function eventData(out, pt, trace, cd, pointNumber) {
     if(cd[pointNumber]) {
         var cdi = cd[pointNumber];
 
-        // N.B. These are the scale coordinates !!!
-        //
-        // On master, hover events get the non-scaled coordinates
-        // whereas selection events get the scaled version.
-        // Note also that the hover labels show the scaled version.
-        //
-        // What about the 'raw' input coordinates?
-        // Should we include them in parallel here or replace a/b/c with them?
+        // N.B. These are the normalized coordinates.
         out.a = cdi.a;
         out.b = cdi.b;
         out.c = cdi.c;

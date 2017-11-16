@@ -501,9 +501,9 @@ describe('Test event property of interactions on a ternary plot:', function() {
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             expect(typeof pt.xaxis).toEqual(typeof {}, 'points[0].xaxis');
             expect(typeof pt.yaxis).toEqual(typeof {}, 'points[0].yaxis');
-            expect(pt.a).toEqual(2, 'points[0].a');
-            expect(pt.b).toEqual(1, 'points[0].b');
-            expect(pt.c).toEqual(1, 'points[0].c');
+            expect(pt.a).toEqual(0.5, 'points[0].a');
+            expect(pt.b).toEqual(0.25, 'points[0].b');
+            expect(pt.c).toEqual(0.25, 'points[0].c');
 
             expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
             expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
@@ -549,9 +549,9 @@ describe('Test event property of interactions on a ternary plot:', function() {
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             expect(typeof pt.xaxis).toEqual(typeof {}, 'points[0].xaxis');
             expect(typeof pt.yaxis).toEqual(typeof {}, 'points[0].yaxis');
-            expect(pt.a).toEqual(2, 'points[0].a');
-            expect(pt.b).toEqual(1, 'points[0].b');
-            expect(pt.c).toEqual(1, 'points[0].c');
+            expect(pt.a).toEqual(0.5, 'points[0].a');
+            expect(pt.b).toEqual(0.25, 'points[0].b');
+            expect(pt.c).toEqual(0.25, 'points[0].c');
 
             expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
             expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
@@ -594,9 +594,9 @@ describe('Test event property of interactions on a ternary plot:', function() {
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             expect(typeof pt.xaxis).toEqual(typeof {}, 'points[0].xaxis');
             expect(typeof pt.yaxis).toEqual(typeof {}, 'points[0].yaxis');
-            expect(pt.a).toEqual(2, 'points[0].a');
-            expect(pt.b).toEqual(1, 'points[0].b');
-            expect(pt.c).toEqual(1, 'points[0].c');
+            expect(pt.a).toEqual(0.5, 'points[0].a');
+            expect(pt.b).toEqual(0.25, 'points[0].b');
+            expect(pt.c).toEqual(0.25, 'points[0].c');
 
             expect(xaxes0).toEqual(pt.xaxis, 'xaxes[0]');
             expect(xvals0).toEqual(-0.0016654247744483342, 'xaxes[0]');
@@ -638,9 +638,9 @@ describe('Test event property of interactions on a ternary plot:', function() {
             expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
             expect(typeof pt.xaxis).toEqual(typeof {}, 'points[0].xaxis');
             expect(typeof pt.yaxis).toEqual(typeof {}, 'points[0].yaxis');
-            expect(pt.a).toEqual(2, 'points[0].a');
-            expect(pt.b).toEqual(1, 'points[0].b');
-            expect(pt.c).toEqual(1, 'points[0].c');
+            expect(pt.a).toEqual(0.5, 'points[0].a');
+            expect(pt.b).toEqual(0.25, 'points[0].b');
+            expect(pt.c).toEqual(0.25, 'points[0].c');
 
             expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
             expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
