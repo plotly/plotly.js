@@ -112,11 +112,13 @@ module.exports = function calc(gd, trace) {
         };
     }
 
+    // bin the data
+    // and make histogram-specific pt-number-to-cd-index map object
     var nMax = size.length;
     var uniqueValsPerBin = true;
     var leftGap = Infinity;
     var rightGap = Infinity;
-    // bin the data
+    var ptNumber2cdIndex = {};
     for(i = 0; i < pos0.length; i++) {
         var posi = pos0[i];
         n = Lib.findBin(posi, bins);
@@ -126,6 +128,7 @@ module.exports = function calc(gd, trace) {
                 uniqueValsPerBin = false;
             }
             inputPoints[n].push(i);
+            ptNumber2cdIndex[i] = n;
 
             leftGap = Math.min(leftGap, posi - binEdges[n]);
             rightGap = Math.min(rightGap, binEdges[n + 1] - posi);
@@ -195,7 +198,10 @@ module.exports = function calc(gd, trace) {
     }
 
     arraysToCalcdata(cd, trace);
-    calcSelection(cd, trace);
+
+    if(Array.isArray(trace.selectedpoints)) {
+        Lib.tagSelected(cd, trace, ptNumber2cdIndex);
+    }
 
     return cd;
 };
@@ -508,21 +514,5 @@ function cdf(size, direction, currentBin) {
             size.push(0);
             size.shift();
         }
-    }
-}
-
-function calcSelection(cd, trace) {
-    if(Array.isArray(trace.selectedpoints)) {
-        var ptNumber2cdIndex = {};
-
-        // make histogram-specific pt-number-to-cd-index map object
-        for(var i = 0; i < cd.length; i++) {
-            var pts = cd[i].pts || [];
-            for(var j = 0; j < pts.length; j++) {
-                ptNumber2cdIndex[pts[j]] = i;
-            }
-        }
-
-        Lib.tagSelected(cd, trace, ptNumber2cdIndex);
     }
 }

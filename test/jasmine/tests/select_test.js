@@ -554,6 +554,8 @@ describe('Test select box and lasso per trace:', function() {
 
                     if(typeof e[j] === 'number') {
                         expect(p[k]).toBeCloseTo(e[j], 1, msgFull);
+                    } else if(Array.isArray(e[j])) {
+                        expect(p[k]).toBeCloseToArray(e[j], 1, msgFull);
                     } else {
                         expect(p[k]).toBe(e[j], msgFull);
                     }
@@ -990,7 +992,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     it('should work for histogram traces', function(done) {
-        var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
+        var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y', 'pointIndices']);
         var assertRanges = makeAssertRanges();
         var assertLassoPoints = makeAssertLassoPoints();
 
@@ -1006,7 +1008,7 @@ describe('Test select box and lasso per trace:', function() {
                 [[200, 200], [400, 200], [400, 350], [200, 350], [200, 200]],
                 function() {
                     assertPoints([
-                        [0, 1.8, 2], [1, 2.2, 1], [1, 3.2, 1]
+                        [0, 1.8, 2, [3, 4]], [1, 2.2, 1, [1]], [1, 3.2, 1, [2]]
                     ]);
                     assertLassoPoints([
                         [1.66, 3.59, 3.59, 1.66, 1.66],
@@ -1024,7 +1026,7 @@ describe('Test select box and lasso per trace:', function() {
                 [[200, 200], [400, 350]],
                 function() {
                     assertPoints([
-                        [0, 1.8, 2], [1, 2.2, 1], [1, 3.2, 1]
+                        [0, 1.8, 2, [3, 4]], [1, 2.2, 1, [1]], [1, 3.2, 1, [2]]
                     ]);
                     assertRanges([[1.66, 3.59], [0.69, 2.17]]);
                 },
