@@ -40,14 +40,5 @@ function styleTrace(gd, calcTrace) {
             .style('opacity', marker.opacity);
     });
 
-    if(trace.selectedpoints) {
-        var selectedAttrs = trace.selected || {};
-        var unselectedAttrs = trace.unselected || {};
-
-        locs.style('opacity', function(d) {
-            return d.selected ?
-                selectedAttrs.marker.opacity :
-                unselectedAttrs.marker.opacity;
-        });
-    }
+    Drawing.selectedPointStyle(locs, trace);
 }

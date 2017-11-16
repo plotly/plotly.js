@@ -435,55 +435,70 @@ drawing.selectedPointStyle = function(s, trace) {
     var selectedAttrs = trace.selected || {};
     var unselectedAttrs = trace.unselected || {};
 
-    s.style('opacity', function(d) {
-        return d.selected ?
-            (selectedAttrs.marker || {}).opacity :
-            (unselectedAttrs.marker || {}).opacity;
-    });
+    var marker = trace.marker || {};
+    var selectedMarker = selectedAttrs.marker || {};
+    var unselectedMarker = unselectedAttrs.marker || {};
 
-    // which is slightly different than:
-    // ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
-    // in https://github.com/plotly/plotly.js/blob/master/src/traces/scatter/select.js
+    var mo = marker.opacity;
+    var smo = selectedMarker.opacity;
+    var usmo = unselectedMarker.opacity;
 
     s.each(function(d) {
         var pt = d3.select(this);
-        var marker = trace.marker || {};
-        var selectedMarker = selectedAttrs.marker || {};
-        var unselectedMarker = unselectedAttrs.marker || {};
+        var mo2;
 
-        var smc = selectedMarker.color;
-        var usmc = unselectedMarker.color;
-
-        if(d.selected) {
-            if(smc) Color.fill(pt, smc);
-        } else {
-            if(usmc) Color.fill(pt, usmc);
+        if(d.mo + 1 || smo || usmo) {
+            if(d.selected) {
+                if(smo + 1) mo2 = smo;
+            } else {
+                if(usmo + 1) mo2 = usmo;
+                else mo2 = DESELECTDIM * ((d.mo + 1) ? d.mo : mo);
+            }
         }
 
-        if(Registry.traceIs(trace, 'symbols')) {
-            var sms = selectedMarker.size;
-            var smx = selectedMarker.symbol;
-            var usms = unselectedMarker.size;
-            var usmx = unselectedMarker.symbol;
+        if(mo2 + 1) pt.style('opacity', mo2);
+    });
+
+    var smc = selectedMarker.color;
+    var usmc = unselectedMarker.color;
+
+    if(smc || usmc) {
+        s.each(function(d) {
+            var pt = d3.select(this);
+            var mc2;
+
+            if(d.selected) {
+                if(smc) mc2 = smc;
+            } else {
+                if(usmc) mc2 = usmc;
+            }
+
+            if(mc2) Color.fill(pt, mc2);
+        });
+    }
+
+    var sms = selectedMarker.size;
+    var usms = unselectedMarker.size;
+
+    if(Registry.traceIs(trace, 'symbols') && (sms + 1 || usms + 1)) {
+        s.each(function(d) {
+            var pt = d3.select(this);
             var mrc = d.mrc;
             var mx = d.mx || marker.symbol || 0;
             var mrc2;
-            var mx2;
 
             if(d.selected) {
                 mrc2 = (sms + 1) ? sms / 2 : mrc;
-                mx2 = smx || mx;
             } else {
                 mrc2 = (usms + 1) ? usms / 2 : mrc;
-                mx2 = usmx || mx;
             }
+
+            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2));
 
             // save for selectedTextStyle
             d.mrc2 = mrc2;
-
-            pt.attr('d', makePointPath(drawing.symbolNumber(mx2), mrc2));
-        }
-    });
+        });
+    }
 };
 
 drawing.tryColorscale = function(marker, prefix) {
@@ -572,13 +587,12 @@ drawing.selectedTextStyle = function(s, trace) {
 
         if(d.selected) {
             if(stc) tc2 = stc;
-            else tc2 = Color.addOpacity(tc, 1);
         } else {
             if(utc) tc2 = utc;
-            else tc2 = Color.addOpacity(tc, DESELECTDIM);
+            else if(!stc) tc2 = Color.addOpacity(tc, DESELECTDIM);
         }
 
-        Color.fill(tx, tc2);
+        if(tc2) Color.fill(tx, tc2);
         textPointPosition(tx, tp, fontSize, d.mrc2 || d.mrc);
     });
 };
