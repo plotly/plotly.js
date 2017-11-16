@@ -8,12 +8,11 @@
 
 'use strict';
 
-var Lib = require('../../lib');
+module.exports = function eventData(out, pt, trace, cd, pointNumber) {
+    var cdi = cd[pointNumber];
 
-// TODO ids vs points??
+    out.a = cdi.a;
+    out.b = cdi.b;
 
-module.exports = function calcSelection(cd, trace) {
-    if(Array.isArray(trace.selectedpoints)) {
-        Lib.tagSelected(cd, trace);
-    }
+    return out;
 };

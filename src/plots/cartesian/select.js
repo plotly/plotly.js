@@ -13,7 +13,7 @@ var polybool = require('polybooljs');
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var color = require('../../components/color');
-var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
+var makeEventData = require('../../components/fx/helpers').makeEventData;
 
 var axes = require('./axes');
 var constants = require('./constants');
@@ -240,9 +240,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
                     traceSelections.push(traceSelection);
 
-                    var thisSelection = fillSelectionItem(
-                        traceSelection, searchInfo
-                    );
+                    var thisSelection = fillSelectionItem(traceSelection, searchInfo);
                     if(selection.length) {
                         for(var j = 0; j < thisSelection.length; j++) {
                             selection.push(thisSelection[j]);
@@ -294,30 +292,36 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 };
 
 function updateSelectedState(gd, searchTraces, eventData) {
-    var i, searchInfo;
+    var i, searchInfo, trace;
 
     if(eventData) {
         var pts = eventData.points || [];
 
         for(i = 0; i < searchTraces.length; i++) {
-            searchInfo = searchTraces[i];
-            searchInfo.cd[0].trace.selectedpoints = [];
-            searchInfo.cd[0].trace._input.selectedpoints = [];
+            trace = searchTraces[i].cd[0].trace;
+            trace.selectedpoints = [];
+            trace._input.selectedpoints = [];
         }
 
         for(i = 0; i < pts.length; i++) {
             var pt = pts[i];
-            var ptNumber = pt.pointNumber;
+            var data = pt.data;
+            var fullData = pt.fullData;
 
-            pt.data.selectedpoints.push(ptNumber);
-            pt.fullData.selectedpoints.push(ptNumber);
+            if(pt.pointIndices) {
+                data.selectedpoints = data.selectedpoints.concat(pt.pointIndices);
+                fullData.selectedpoints = fullData.selectedpoints.concat(pt.pointIndices);
+            } else {
+                data.selectedpoints.push(pt.pointIndex);
+                fullData.selectedpoints.push(pt.pointIndex);
+            }
         }
     }
     else {
         for(i = 0; i < searchTraces.length; i++) {
-            searchInfo = searchTraces[i];
-            delete searchInfo.cd[0].trace.selectedpoints;
-            delete searchInfo.cd[0].trace._input.selectedpoints;
+            trace = searchTraces[i].cd[0].trace;
+            delete trace.selectedpoints;
+            delete trace._input.selectedpoints;
         }
     }
 
@@ -355,15 +359,11 @@ function mergePolygons(list, poly, subtract) {
 
 function fillSelectionItem(selection, searchInfo) {
     if(Array.isArray(selection)) {
+        var cd = searchInfo.cd;
         var trace = searchInfo.cd[0].trace;
 
         for(var i = 0; i < selection.length; i++) {
-            var sel = selection[i];
-
-            sel.curveNumber = trace.index;
-            sel.data = trace._input;
-            sel.fullData = trace;
-            appendArrayPointValue(sel, trace, sel.pointNumber);
+            selection[i] = makeEventData(selection[i], trace, cd);
         }
     }
 

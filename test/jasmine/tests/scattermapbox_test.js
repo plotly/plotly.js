@@ -697,7 +697,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
                 evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
             ]);
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -741,7 +741,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
                 evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
             ]);
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -778,7 +778,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
                 evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
             ]);
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
@@ -810,7 +810,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
                     evt = futureData.event;
 
                 expect(Object.keys(pt)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'lon', 'lat'
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
                 ]);
 
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');

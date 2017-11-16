@@ -114,6 +114,7 @@ module.exports = function calc(gd, trace) {
         }
     }
 
+    calcSelection(cd, trace);
     Axes.expand(valAxis, val, {padded: true});
 
     if(cd.length > 0) {
@@ -193,13 +194,13 @@ function arraysToCalcdata(pt, trace, i) {
             pt[trace2calc[k]] = trace[k][i];
         }
     }
+}
 
-    var selectedpoints = trace.selectedpoints;
-
-    // TODO this is slow
-    if(Array.isArray(selectedpoints)) {
-        if(selectedpoints.indexOf(pt.i) !== -1) {
-            pt.selected = 1;
+function calcSelection(cd, trace) {
+    if(Array.isArray(trace.selectedpoints)) {
+        for(var i = 0; i < cd.length; i++) {
+            var pts = cd[i].pts || [];
+            Lib.tagSelected(pts, trace);
         }
     }
 }
