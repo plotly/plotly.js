@@ -495,7 +495,7 @@ lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
     }
 
     function isPtIndexValid(v) {
-        return lib.validate(v, {valType: 'integer', min: 0});
+        return isNumeric(v) && v >= 0 && v % 1 === 0;
     }
 
     function isCdIndexValid(v) {
