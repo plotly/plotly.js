@@ -10,6 +10,7 @@
 
 var Lib = require('../lib');
 var Axes = require('../plots/cartesian/axes');
+var pointsAccessorFunction = require('./helpers').pointsAccessorFunction;
 
 exports.moduleType = 'transform';
 
@@ -87,18 +88,27 @@ exports.calcTransform = function(gd, trace, opts) {
     var arrayAttrs = trace._arrayAttrs;
     var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
     var indices = getIndices(opts, targetArray, d2c);
+    var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
+    var indexToPoints = {};
+    var i, j;
 
-    for(var i = 0; i < arrayAttrs.length; i++) {
+    for(i = 0; i < arrayAttrs.length; i++) {
         var np = Lib.nestedProperty(trace, arrayAttrs[i]);
         var arrayOld = np.get();
         var arrayNew = new Array(len);
 
-        for(var j = 0; j < len; j++) {
+        for(j = 0; j < len; j++) {
             arrayNew[j] = arrayOld[indices[j]];
         }
 
         np.set(arrayNew);
     }
+
+    for(j = 0; j < len; j++) {
+        indexToPoints[j] = originalPointsAccessor(indices[j]);
+    }
+
+    opts._indexToPoints = indexToPoints;
 };
 
 function getIndices(opts, targetArray, d2c) {
