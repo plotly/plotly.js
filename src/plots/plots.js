@@ -1024,7 +1024,6 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
 
         if(_module && _module.selectPoints && traceOut.type !== 'scattergl') {
             coerce('selectedpoints');
-            coerce('selectedids');
         }
 
         plots.supplyTransformDefaults(traceIn, traceOut, layout);

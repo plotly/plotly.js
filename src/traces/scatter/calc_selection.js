@@ -10,8 +10,6 @@
 
 var Lib = require('../../lib');
 
-// TODO ids vs points??
-
 module.exports = function calcSelection(cd, trace) {
     if(Array.isArray(trace.selectedpoints)) {
         Lib.tagSelected(cd, trace);

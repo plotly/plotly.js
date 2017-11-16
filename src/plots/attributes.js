@@ -98,7 +98,7 @@ module.exports = {
     // N.B. these cannot be 'data_array' as they do not have the same length as
     // other data arrays and arrayOk attributes in general
     //
-    // TODO maybe add another valType:
+    // Maybe add another valType:
     // https://github.com/plotly/plotly.js/issues/1894
     selectedpoints: {
         valType: 'any',
@@ -110,16 +110,6 @@ module.exports = {
             'Note that an empty array means an empty selection where the `unselected`',
             'are turned on for all points, whereas, any other non-array values means no',
             'selection all where the `selected` and `unselected` styles have no effect.'
-        ].join(' ')
-    },
-    selectedids: {
-        valType: 'any',
-        role: 'info',
-        editType: 'calc',
-        description: [
-            'Array containing `ids` of selected points.',
-            'Has an effect only for traces that support selections.',
-            '...'
         ].join(' ')
     },
 
