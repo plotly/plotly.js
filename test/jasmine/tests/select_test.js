@@ -917,6 +917,16 @@ describe('Test select box and lasso per trace:', function() {
             return Plotly.relayout(gd, 'dragmode', 'select');
         })
         .then(function() {
+            // For some reason we need this to make the following tests pass
+            // on CI consistently. It appears that a double-click action
+            // is being confused with a mere click. See
+            // https://github.com/plotly/plotly.js/pull/2135#discussion_r148897529
+            // for more info.
+            return new Promise(function(resolve) {
+                setTimeout(resolve, 100);
+            });
+        })
+        .then(function() {
             return _run(
                 [[350, 200], [370, 220]],
                 function() {
