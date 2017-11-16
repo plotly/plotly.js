@@ -72,6 +72,7 @@ module.exports = overrideAll({
     showarrow: annAtts.showarrow,
     arrowcolor: annAtts.arrowcolor,
     arrowhead: annAtts.arrowhead,
+    arrowanchor: annAtts.arrowanchor,
     arrowsize: annAtts.arrowsize,
     arrowwidth: annAtts.arrowwidth,
     standoff: annAtts.standoff,

@@ -175,6 +175,14 @@ module.exports = {
         editType: 'arraydraw',
         description: 'Sets the annotation arrow head style.'
     },
+    arrowanchor: {
+        valType: 'enumerated',
+        values: ['end', 'start', 'start+end'],
+        dflt: 'end',
+        role: 'style',
+        editType: 'arraydraw',
+        description: 'Sets the annotation arrow head position.'
+    },
     arrowsize: {
         valType: 'number',
         min: 0.3,

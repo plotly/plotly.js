@@ -37,6 +37,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     if(showArrow) {
         coerce('arrowcolor', borderOpacity ? annOut.bordercolor : Color.defaultLine);
         coerce('arrowhead');
+        coerce('arrowanchor');
         coerce('arrowsize');
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
         coerce('standoff');

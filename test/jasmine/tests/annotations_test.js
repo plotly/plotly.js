@@ -140,6 +140,16 @@ describe('Test annotations', function() {
             expect(layoutOut.annotations[2]._xclick).toBe(2, 'log');
             expect(layoutOut.annotations[2]._yclick).toBe('A', 'category');
         });
+
+        it('should default to end for arrowanchor', function() {
+            var layoutIn = {
+                annotations: [{ showarrow: true, arrowhead: 2 }]
+            };
+
+            var out = _supply(layoutIn);
+
+            expect(out[0].arrowanchor).toEqual('end');
+        });
     });
 });
 
