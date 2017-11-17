@@ -11,8 +11,10 @@ var Lib = require('../../lib');
 var extendDeepAll = Lib.extendDeepAll;
 var d3 = require('d3');
 var µ = module.exports = { version: '0.2.2' };
+// The Tool Tip is the box that displays revealing data as the cursor hovers over data
 µ.tooltipPanel = function() {
     var tooltipEl, tooltipTextEl, backgroundEl;
+    // Display Box Configs - Can be alterd to alter display
     var config = {
         container: null,
         hasTick: false,

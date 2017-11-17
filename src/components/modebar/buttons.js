@@ -182,7 +182,8 @@ function handleCartesian(gd, ev) {
         ax,
         allEnabled = 'on',
         i;
-
+    console.log(Axes.list(gd, null, true));
+    console.log(Axes.list(gd, null, true));
     if(astr === 'zoom') {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
@@ -217,7 +218,6 @@ function handleCartesian(gd, ev) {
                         ax.r2l(ax.range[0]),
                         ax.r2l(ax.range[1]),
                     ];
-
                     var rangeNew = [
                         r0 * rangeNow[0] + r1 * rangeNow[1],
                         r0 * rangeNow[1] + r1 * rangeNow[0]
@@ -425,6 +425,24 @@ modeBarButtons.zoomOutGeo = {
     click: handleGeo
 };
 
+modeBarButtons.zoomInPolar = {
+    name: 'zoomInPolar',
+    title: 'Zoom in',
+    attr: 'zoom',
+    val: 'in',
+    icon: Icons.zoom_plus,
+    click: handlePolar
+};
+
+modeBarButtons.zoomOutPolar = {
+    name: 'zoomOutPolar',
+    title: 'Zoom out',
+    attr: 'zoom',
+    val: 'out',
+    icon: Icons.zoom_minus,
+    click: handlePolar
+};
+
 modeBarButtons.resetGeo = {
     name: 'resetGeo',
     title: 'Reset',
@@ -465,6 +483,19 @@ function handleGeo(gd, ev) {
             resetView(gd, 'geo');
         }
     }
+}
+
+function handlePolar(gd, ev) {
+    var button = ev.currentTarget;
+    var val = button.getAttribute('data-val') || true;
+    if(val === 'in') {
+        gd.framework({data: gd.data, layout: gd.layout}, undefined, 2);
+    } else {
+        gd.framework({data: gd.data, layout: gd.layout}, undefined, 0.5);
+    }
+    var ModeBar = require('../modebar');
+    ModeBar.manage(gd);
+
 }
 
 modeBarButtons.hoverClosestGl2d = {

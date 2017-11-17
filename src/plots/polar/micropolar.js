@@ -101,12 +101,6 @@ function buildFontStyle(axisConfig){
         } catch(err){
             titleStyle = Object.assign(titleStyle, {'text-shadow': [ '-1px 0px', '1px -1px', '-1px 1px', '1px 1px' ].map(function(d, i) {return ' ' + d + ' 0 ' + axisConfig.font.outlineColor;}).join(',')});
         }
-        if(titleStyle === fontStyle){
-            console.log("same");
-        }else{
-            console.log(fontStyle);
-            console.log(titleStyle);
-        }
     }
     return [fontStyle,titleStyle]
 }
@@ -150,10 +144,34 @@ function assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup,chartCe
     
 }
 
-function createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius){
+function createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius,plotData){
     var radialAxis = svg.select('.radial.axis-group');
     if (axisConfig.radialAxis.gridLinesVisible) {
-        var gridCircles = radialAxis.selectAll('circle.grid-circle').data(radialScale.ticks(5));
+        //console.log(plotData);
+        //console.log(radialScale.ticks(10));
+        //get heighest and lowest value
+        highestVal = 0;
+        lowestVal =0;
+        for(var numberOfData = 0;numberOfData<plotData.length;numberOfData++){
+            for(var counter = 0;counter<plotData[numberOfData].r[0].length;counter++){
+                if(plotData[numberOfData].r[0][counter] > highestVal) {
+                    highestVal = plotData[numberOfData].r[0][counter]; 
+                }
+                if(plotData[numberOfData].r[0][counter] < lowestVal) {
+                    lowestVal = plotData[numberOfData].r[0][counter]; 
+                }
+            }
+        }
+        var steps = 5;
+        var interval = (highestVal - lowestVal)/steps;
+        var values = [lowestVal];
+        for(var count = 1; count <= steps;count++){
+            values.push(lowestVal+(interval*count));
+        }
+        //console.log(values);
+
+
+        var gridCircles = radialAxis.selectAll('circle.grid-circle').data((radialScale).ticks(5));
         gridCircles.enter().append('circle').attr({
             'class': 'grid-circle'
         }).style(lineStyle);
@@ -306,17 +324,43 @@ function isOrdinalCheckTwo(isOrdinal,guides,chartGroup,radius,axisConfig,angular
     
 }
 
-function assignGeometryContainerAttributes(geometryContainer,data,radialScale,angularScale,axisConfig){
+function assignGeometryContainerAttributes(geometryContainer,data,radialScale,angularScale,axisConfig,scale,radialScale){
+
+    //debugger;
+    //console.log(data[0]);
+    //console.log(data[0].r);
+    var radialScaleValues = radialScale.ticks(5);
+    //console.log(radialScaleValues);
+    var getMaxVal = radialScaleValues[radialScaleValues.length -1 ];
+    for(var numberOfData = 0;numberOfData<data.length;numberOfData++){
+        
+        rs = [];
+        rt = [];
+        for(var counter = 0;counter<data[numberOfData].r[0].length;counter++){
+            //if(data[numberOfData].r[0][counter]*scale<= getMaxVal){
+                rs.push(data[numberOfData].r[0][counter]*scale);
+                rt.push(data[numberOfData].t[0][counter]);
+            //}
+        }
+        data[numberOfData].r[0] = rs;
+        data[numberOfData].t[0] = rt;
+    }
+    //console.log(rs);
+
+
+
     geometryContainer.enter().append('g').attr({
         'class': function(d, i) {
             return 'geometry geometry' + i;
         }
     });
-
     geometryContainer.exit().remove();
     if (data[0] || hasGeometry) {
+        
         var geometryConfigs = [];
         data.forEach(function(d, i) {
+            
+            
             var geometryConfig = {};
             geometryConfig.radialScale = radialScale;
             geometryConfig.angularScale = angularScale;
@@ -331,6 +375,9 @@ function assignGeometryContainerAttributes(geometryContainer,data,radialScale,an
                 data: d,
                 geometryConfig: geometryConfig
             });
+            //console.log(d);
+            //console.log(geometryConfig);
+            
         });
         var geometryConfigsGrouped = d3.nest().key(function(d, i) {
             return typeof d.data.groupId != 'undefined' || 'unstacked';
@@ -347,6 +394,8 @@ function assignGeometryContainerAttributes(geometryContainer,data,radialScale,an
             var finalGeometryConfig = d.map(function(dB, iB) {
                 return extendDeepAll(µ[geometry].defaultConfig(), dB);
             });
+            //console.log(finalGeometryConfig);
+            //debugger;
             µ[geometry]().config(finalGeometryConfig)();
         });
     }
@@ -517,11 +566,15 @@ function isStackedCheck(data,axisConfig){
     var svg, container, dispatch = d3.dispatch('hover'), radialScale, angularScale;
     var exports = {};
 
-    function render(_container) {
+    function render(_container,scaler) {
         container = _container || container;
         var data = config.data;
         var axisConfig = config.layout;
-
+        // test scaler , remove old legend
+        if(scaler != 1){
+            var x = document.getElementsByClassName("legend-group")[0];
+            x.removeChild(x.childNodes[0]);   
+        }
         // set container if container isnt set right ?
         if (typeof container == 'string' || container.nodeName) container = d3.select(container);
         container.datum(data).each(function(_data, _index) {
@@ -534,7 +587,6 @@ function isStackedCheck(data,axisConfig){
                 var visible = d.visible;
                 return typeof visible === 'undefined' || visible === true;
             });
-
             // check for stacked data 
             result  = isStackedCheck(data,axisConfig);
             isStacked = result[0];
@@ -544,7 +596,7 @@ function isStackedCheck(data,axisConfig){
             extent = result[4];
 
             if (axisConfig.radialAxis.domain != µ.DATAEXTENT) extent[0] = 0;
-            radialScale = d3.scale.linear().domain(axisConfig.radialAxis.domain != µ.DATAEXTENT && axisConfig.radialAxis.domain ? axisConfig.radialAxis.domain : extent).range([ 0, radius ]);
+            radialScale = d3.scale.linear().domain(axisConfig.radialAxis.domain != µ.DATAEXTENT && axisConfig.radialAxis.domain ? axisConfig.radialAxis.domain : extent).range([0, radius ]);
             liveConfig.layout.radialAxis.domain = radialScale.domain();
             var angularDataMerged = utility.flattenArray(data.map(function(d, i) {
                 return d.t;
@@ -613,7 +665,8 @@ function isStackedCheck(data,axisConfig){
             svg = svgData[0];
             centeringOffset = svgData[1];
             // Create the radial Axis
-            radialAxisData = createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius);
+            radialAxisData = createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius,data);
+            //console.log(radialScale.ticks(5));
             radialAxis = radialAxisData[0];
             backgroundCircle = radialAxisData[1];
             // Could this be moved?
@@ -628,20 +681,21 @@ function isStackedCheck(data,axisConfig){
             // geometryContainer
             var hasGeometry = svg.select('g.geometry-group').selectAll('g').size() > 0;
             var geometryContainer = svg.select('g.geometry-group').selectAll('g.geometry').data(data);
-            geometryContainer = assignGeometryContainerAttributes(geometryContainer,data,radialScale,angularScale,axisConfig);
+            geometryContainer = assignGeometryContainerAttributes(geometryContainer,data,radialScale,angularScale,axisConfig,scaler,radialScale);
             var guides = svg.select('.guides-group');
+            // Tooltips Creation
             var tooltipContainer = svg.select('.tooltips-group');
-
+            // Displays Degree's Value
             var angularTooltip = tooltip.tooltipPanel().config({
                 container: tooltipContainer,
                 fontSize: 8
             })();
-
+            // Displays Distance Value
             var radialTooltip = tooltip.tooltipPanel().config({
                 container: tooltipContainer,
                 fontSize: 8
             })();
-
+            
             var geometryTooltip = tooltip.tooltipPanel().config({
                 container: tooltipContainer,
                 hasTick: true
@@ -662,8 +716,8 @@ function isStackedCheck(data,axisConfig){
         return exports;
     }
 
-    exports.render = function(_container) {
-        render(_container);
+    exports.render = function(_container,scaler) {
+        render(_container,scaler);
         return this;
     };
     
@@ -756,11 +810,16 @@ function isStackedCheck(data,axisConfig){
                     'class': 'mark dot',
                     d: symbol,
                     transform: function(d, i) {
-                        var coord = convertToCartesian(getPolarCoordinates(stackedData));
+                        //console.log(stackedData);
+                        var coord = convertToCartesian(getPolarCoordinates(stackedData,0));
+                        
                         return 'translate(' + [ coord.x, coord.y ] + ')';
                     }
                 });
             };
+            //console.log("hey");
+            //console.log(getPolarCoordinates([360,-1]));
+            //console.log(convertToCartesian(getPolarCoordinates([360,1],360)));
             var line = d3.svg.line.radial().interpolate(_config[0].data.lineInterpolation).radius(function(d) {
                 return geometryConfig.radialScale(d[1]);
             }).angle(function(d) {
@@ -779,36 +838,40 @@ function isStackedCheck(data,axisConfig){
                     'class': 'mark dot'
                 });
                 if (i > 0) return;
-                var lineSelection = d3.select(this.parentNode).selectAll('path.line').data([ 0 ]);
-                lineSelection.enter().insert('path');
-                lineSelection.attr({
-                    'class': 'line',
-                    d: line(lineData),
-                    transform: function(dB, iB) {
-                        return 'rotate(' + (geometryConfig.orientation + 90) + ')';
-                    },
-                    'pointer-events': 'none'
-                }).style({
-                    fill: function(dB, iB) {
-                        return markStyle.fill(d, i, pI);
-                    },
-                    'fill-opacity': 0,
-                    stroke: function(dB, iB) {
-                        return markStyle.stroke(d, i, pI);
-                    },
-                    'stroke-width': function(dB, iB) {
-                        return markStyle['stroke-width'](d, i, pI);
-                    },
-                    'stroke-dasharray': function(dB, iB) {
-                        return markStyle['stroke-dasharray'](d, i, pI);
-                    },
-                    opacity: function(dB, iB) {
-                        return markStyle.opacity(d, i, pI);
-                    },
-                    display: function(dB, iB) {
-                        return markStyle.display(d, i, pI);
-                    }
-                });
+                //for(var counter = 0;counter < lineData.length-1;counter++){
+                    var lineSelection = d3.select(this.parentNode).selectAll('path.line').data([ 0 ]);
+                    lineSelection.enter().insert('path');
+                    lineSelection.attr({
+                        'class': 'line',
+                        //d: line([lineData[counter],lineData[counter+1]]),
+                        d: line(lineData),
+                        transform: function(dB, iB) {
+                            return 'rotate(' + (geometryConfig.orientation + 90) + ')';
+                        },
+                        'pointer-events': 'none'
+                    }).style({
+                        fill: function(dB, iB) {
+                            return markStyle.fill(d, i, pI);
+                        },
+                        'fill-opacity': 0,
+                        stroke: function(dB, iB) {
+                            return markStyle.stroke(d, i, pI);
+                        },
+                        'stroke-width': function(dB, iB) {
+                            return markStyle['stroke-width'](d, i, pI);
+                        },
+                        'stroke-dasharray': function(dB, iB) {
+                            return markStyle['stroke-dasharray'](d, i, pI);
+                        },
+                        opacity: function(dB, iB) {
+                            return markStyle.opacity(d, i, pI);
+                        },
+                        display: function(dB, iB) {
+                            return markStyle.display(d, i, pI);
+                        }
+                    });
+                    //console.log(counter)
+                //}
             };
             var angularRange = geometryConfig.angularScale.range();
             var triangleAngle = Math.abs(angularRange[1] - angularRange[0]) / data[0].length * Math.PI / 180;
@@ -865,7 +928,8 @@ function isStackedCheck(data,axisConfig){
             geometryLayer.exit().remove();
             function getPolarCoordinates(d, i) {
                 var r = geometryConfig.radialScale(d[1]);
-                var t = (geometryConfig.angularScale(d[0]) + geometryConfig.orientation) * Math.PI / 180;
+                var t = ((geometryConfig.angularScale(d[0]) + geometryConfig.orientation)) * Math.PI / 180;
+                //console.log(r,t);
                 return {
                     r: r,
                     t: t

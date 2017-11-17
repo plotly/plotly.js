@@ -18,11 +18,19 @@ var micropolar = require('./micropolar');
 var UndoManager = require('./undo_manager');
 var extendDeepAll = Lib.extendDeepAll;
 var manager = module.exports = {};
+var scale = 1;
 manager.framework = function(_gd) {
     var config, previousConfigClone, plot, convertedInput, container;
     var undoManager = new UndoManager();
+    var savedContainer;
 
-    function exports(_inputConfig, _container) {
+    function exports(_inputConfig, _container, scaler) {
+        if(_container !== undefined) {
+            savedContainer = _container;
+        } else {
+            _container = savedContainer;
+        }
+
         if(_container) container = _container;
         d3.select(d3.select(container).node().parentNode).selectAll('.svg-container>*:not(.chart-root)').remove();
 
@@ -31,7 +39,8 @@ manager.framework = function(_gd) {
             extendDeepAll(config, _inputConfig);
         if(!plot) plot = micropolar.Axis();
         convertedInput = adapter.plotly().convert(config);
-        plot.config(convertedInput).render(container);
+        scale = scale * scaler;
+        plot.config(convertedInput).render(container, scale);
         _gd.data = config.data;
         _gd.layout = config.layout;
         manager.fillLayout(_gd);
