@@ -13,8 +13,7 @@
     "selectedpoints": [1, 2, 3],
     "selected": {
       "marker": {
-        "color": "blue",
-        "size": 20
+        "color": "blue"
       }
     },
     "unselected": {
@@ -30,7 +29,7 @@
       "value": [3.5, 4.5]
     }]
   }, {
-    "mode": "lines+markers+text",
+    "type": "bar",
     "x": [1, 2, 3, 4, 5, 6],
     "y": [6, 5, 6, 5, 4, 3],
     "ids": ["a", "b", "c", "d", "e", "f"],
@@ -58,7 +57,36 @@
       "operation": "][",
       "value": [3.5, 4.5]
     }]
-  }],
+  }, {
+      "type": "bar",
+      "x": [1, 2, 3, 4, 5, 6],
+      "y": [1, 2, 3, 4, 3, 2],
+      "ids": ["a", "b", "c", "d", "e", "f"],
+      "text": ["a", "b", "c", "d", "e", "f"],
+      "marker": {
+        "color": "#34ABA2",
+        "size": 12
+      },
+      "textposition": "top left",
+      "selectedpoints": [0, 1, 4],
+      "selected": {
+        "marker": {
+          "color": "orange"
+        }
+      },
+      "unselected": {
+        "marker": {
+          "color": "orange",
+          "opacity": 0.2
+        }
+      },
+      "transforms": [{
+        "type": "filter",
+        "target": "x",
+        "operation": "][",
+        "value": [3.5, 4.5]
+      }]
+    }],
   "layout": {
     "dragmode": "lasso",
     "legend": {
