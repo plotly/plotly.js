@@ -1338,14 +1338,15 @@ describe('Test that selections persist:', function() {
     it('should persist for box', function(done) {
         function _assert(expected) {
             var selected = gd.calcdata[0][0].pts.map(function(d) { return d.selected; });
-            expect(selected).toBeCloseToArray(expected.selected, 'selected vals');
+            expect(selected).toBeCloseToArray(expected.cd, 'selected calcdata vals');
+            expect(gd.data[0].selectedpoints).toBeCloseToArray(expected.selectedpoints, 'selectedpoints array');
             assertPtOpacity('.point', expected);
         }
 
         Plotly.plot(gd, [{
             type: 'box',
             x0: 0,
-            y: [1, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5],
+            y: [5, 4, 4, 1, 2, 2, 2, 2, 2, 3, 3, 3],
             boxpoints: 'all'
         }], {
             dragmode: 'select',
@@ -1360,7 +1361,9 @@ describe('Test that selections persist:', function() {
         })
         .then(function() {
             _assert({
-                selected: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+                // N.B. pts in calcdata are sorted
+                cd: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+                selectedpoints: [1, 2, 0],
                 style: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 1, 1, 1],
             });
 
@@ -1369,7 +1372,8 @@ describe('Test that selections persist:', function() {
         })
         .then(function() {
             _assert({
-                selected: [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 1, 1, 1],
+                cd: [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 1, 1, 1],
+                selectedpoints: [1, 2, 0],
                 style: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 1, 1, 1],
             });
         })

@@ -200,7 +200,13 @@ function calcSelection(cd, trace) {
     if(Array.isArray(trace.selectedpoints)) {
         for(var i = 0; i < cd.length; i++) {
             var pts = cd[i].pts || [];
-            Lib.tagSelected(pts, trace);
+            var ptNumber2cdIndex = {};
+
+            for(var j = 0; j < pts.length; j++) {
+                ptNumber2cdIndex[pts[j].i] = j;
+            }
+
+            Lib.tagSelected(pts, trace, ptNumber2cdIndex);
         }
     }
 }
