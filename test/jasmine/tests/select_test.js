@@ -713,6 +713,7 @@ describe('Test select box and lasso per trace:', function() {
         var assertSelectedPoints = makeAssertSelectedPoints();
 
         var fig = Lib.extendDeep({}, require('@mocks/scattercarpet'));
+        delete fig.data[6].selectedpoints;
         fig.layout.dragmode = 'select';
         addInvisible(fig);
 
