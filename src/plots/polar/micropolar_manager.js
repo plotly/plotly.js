@@ -23,7 +23,7 @@ manager.framework = function(_gd) {
     var config, previousConfigClone, plot, convertedInput, container;
     var undoManager = new UndoManager();
     var savedContainer;
-
+    scale = 1;
     function exports(_inputConfig, _container, scaler) {
         if(_container !== undefined) {
             savedContainer = _container;
