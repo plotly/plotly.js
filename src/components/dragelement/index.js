@@ -78,10 +78,6 @@ dragElement.init = function init(options) {
     element.ontouchstart = onStart;
 
     function onStart(e) {
-        if(e.buttons && e.buttons === 2) {    // right click
-            return;
-        }
-
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
@@ -90,6 +86,7 @@ dragElement.init = function init(options) {
         startX = offset[0];
         startY = offset[1];
         initialTarget = e.target;
+        var rightClick = e.buttons && e.buttons === 2;
 
         newMouseDownTime = (new Date()).getTime();
         if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
@@ -104,11 +101,11 @@ dragElement.init = function init(options) {
 
         if(options.prepFn) options.prepFn(e, startX, startY);
 
-        if(hasHover) {
+        if(hasHover && !rightClick) {
             dragCover = coverSlip();
             dragCover.style.cursor = window.getComputedStyle(element).cursor;
         }
-        else {
+        else if(!hasHover) {
             // document acts as a dragcover for mobile, bc we can't create dragcover dynamically
             dragCover = document;
             cursor = window.getComputedStyle(document.documentElement).cursor;
