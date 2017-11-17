@@ -1279,6 +1279,147 @@ describe('Test select box and lasso per trace:', function() {
     });
 });
 
+describe('Test that selections persist:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertPtOpacity(selector, expected) {
+        d3.selectAll(selector).each(function(_, i) {
+            var style = Number(this.style.opacity);
+            expect(style).toBe(expected.style[i], 'style for pt ' + i);
+        });
+    }
+
+    it('should persist for scatter', function(done) {
+        function _assert(expected) {
+            var selected = gd.calcdata[0].map(function(d) { return d.selected; });
+            expect(selected).toBeCloseToArray(expected.selected, 'selected vals');
+            assertPtOpacity('.point', expected);
+        }
+
+        Plotly.plot(gd, [{
+            x: [1, 2, 3],
+            y: [1, 2, 1]
+        }], {
+            dragmode: 'select',
+            width: 400,
+            height: 400,
+            margin: {l: 0, t: 0, r: 0, b: 0}
+        })
+        .then(function() {
+            resetEvents(gd);
+            drag([[5, 5], [250, 350]]);
+            return selectedPromise;
+        })
+        .then(function() {
+            _assert({
+                selected: [0, 1, 0],
+                style: [0.2, 1, 0.2]
+            });
+
+            // trigger a recalc
+            Plotly.restyle(gd, 'x', [[10, 20, 30]]);
+        })
+        .then(function() {
+            _assert({
+                selected: [undefined, 1, undefined],
+                style: [0.2, 1, 0.2]
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should persist for box', function(done) {
+        function _assert(expected) {
+            var selected = gd.calcdata[0][0].pts.map(function(d) { return d.selected; });
+            expect(selected).toBeCloseToArray(expected.selected, 'selected vals');
+            assertPtOpacity('.point', expected);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'box',
+            x0: 0,
+            y: [1, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5],
+            boxpoints: 'all'
+        }], {
+            dragmode: 'select',
+            width: 400,
+            height: 400,
+            margin: {l: 0, t: 0, r: 0, b: 0}
+        })
+        .then(function() {
+            resetEvents(gd);
+            drag([[5, 5], [400, 150]]);
+            return selectedPromise;
+        })
+        .then(function() {
+            _assert({
+                selected: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
+                style: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 1, 1, 1],
+            });
+
+            // trigger a recalc
+            Plotly.restyle(gd, 'x0', 1);
+        })
+        .then(function() {
+            _assert({
+                selected: [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 1, 1, 1],
+                style: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 1, 1, 1],
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should persist for histogram', function(done) {
+        function _assert(expected) {
+            var selected = gd.calcdata[0].map(function(d) { return d.selected; });
+            expect(selected).toBeCloseToArray(expected.selected, 'selected vals');
+            assertPtOpacity('.point > path', expected);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'histogram',
+            x: [1, 2, 2, 2, 2, 2, 3, 3, 3, 4, 4, 5],
+            boxpoints: 'all'
+        }], {
+            dragmode: 'select',
+            width: 400,
+            height: 400,
+            margin: {l: 0, t: 0, r: 0, b: 0}
+        })
+        .then(function() {
+            resetEvents(gd);
+            drag([[5, 5], [400, 150]]);
+            return selectedPromise;
+        })
+        .then(function() {
+            _assert({
+                selected: [0, 1, 0, 0, 0],
+                style: [0.2, 1, 0.2, 0.2, 0.2],
+            });
+
+            // trigger a recalc
+            Plotly.restyle(gd, 'histfunc', 'sum');
+        })
+        .then(done)
+        .then(function() {
+            _assert({
+                selected: [undefined, 1, undefined, undefined, undefined],
+                style: [0.2, 1, 0.2, 0.2, 0.2],
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
+
 // to make sure none of the above tests fail with extraneous invisible traces,
 // add a bunch of them here
 function addInvisible(fig, canHaveLegend) {
