@@ -48,12 +48,16 @@ module.exports = function calc(gd, trace) {
     }
 
     // create the "calculated data" to plot
-    var serieslen = Math.min(pos.length, size.length),
-        cd = new Array(serieslen);
+    var serieslen = Math.min(pos.length, size.length);
+    var cd = new Array(serieslen);
 
     // set position and size
     for(i = 0; i < serieslen; i++) {
         cd[i] = { p: pos[i], s: size[i] };
+
+        if(trace.ids) {
+            cd[i].id = String(trace.ids[i]);
+        }
     }
 
     // set base

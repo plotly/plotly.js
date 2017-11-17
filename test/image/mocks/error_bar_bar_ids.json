@@ -1,0 +1,20 @@
+{
+  "data": [{  
+    "type":"bar",
+    "x": ["A", "B", "C"],
+    "y": [0, "2.12", "2.32"],
+    "ids": ["A", "B", "C"], 
+    "name": "<b>Sample</b>",
+    "marker": {  
+       "color": "#FFFFCC",
+       "line":{  
+          "color": "rgba(0,0,0,0.4)",
+          "width": 1.5
+       }
+    },
+    "error_y": {  
+       "array": ["1.32", "1.43", "1.58"],
+       "arrayminus": ["1.31", "1.44", "1.57"]
+    }
+  }]
+}
