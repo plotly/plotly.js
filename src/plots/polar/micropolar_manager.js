@@ -81,7 +81,7 @@ manager.fillLayout = function(_gd) {
         paperDiv = container.selectAll('.svg-container'),
         paper = _gd.framework && _gd.framework.svg && _gd.framework.svg(),
         dflts = {
-            width: 800,
+            width: 500,
             height: 600,
             paper_bgcolor: Color.background,
             _container: container,

@@ -16,6 +16,7 @@ var legend= require('./legend');
 var extendDeepAll = Lib.extendDeepAll;
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var µ = module.exports = { version: '0.2.2' };
+var radiansOn = false;
 // Render the Polar Plot
 µ.Axis = function module(){
     var config = {data: [],layout: {}}, inputConfig = {}, liveConfig = {};
@@ -97,7 +98,6 @@ var µ = module.exports = { version: '0.2.2' };
             angularScale = d3.scale.linear().domain(angularDomainWithPadding.slice(0, 2)).range(axisConfig.direction === 'clockwise' ? [ 0, 360 ] : [ 360, 0 ]);
             liveConfig.layout.angularAxis.domain = angularScale.domain();
             liveConfig.layout.angularAxis.endPadding = needsEndSpacing ? angularDomainStep : 0;
-
             // Create svg
             svg = createSVG(this,d3);         
             var lineStyle = {fill: 'none',stroke: axisConfig.tickColor};
@@ -158,8 +158,6 @@ var µ = module.exports = { version: '0.2.2' };
                 container: tooltipContainer,
                 hasTick: true
             })();
-
-            var angularValue, radialValue;
             isOrdinalCheckTwo(isOrdinal,guides,chartGroup,radius,axisConfig,angularScale,angularTooltip,chartCenter)
 
             var angularGuideCircle = guides.select('circle').style({
@@ -716,7 +714,13 @@ function assignAngularAxisAttributes(angularAxis,currentAngle,axisConfig,angular
         if (i % (axisConfig.minorTicks + 1) != 0) return '';
         if (ticks) {
             return ticks[d] + axisConfig.angularAxis.ticksSuffix;
-        } else return d + axisConfig.angularAxis.ticksSuffix;
+        } else if(radiansOn){
+            // Display for Radians
+            return ((parseInt(d)*Math.PI)/180).toPrecision(3).toString(); + axisConfig.angularAxis.ticksSuffix;
+        } else {
+            // Display for Degrees
+            return d + axisConfig.angularAxis.ticksSuffix;
+        }
     }).style(fontStyle);
     if (axisConfig.angularAxis.rewriteTicks) ticksText.text(function(d, i) {
         if (i % (axisConfig.minorTicks + 1) != 0) return '';
@@ -771,6 +775,10 @@ function isOrdinalCheckTwo(isOrdinal,guides,chartGroup,radius,axisConfig,angular
             });
             var angleWithOriginOffset = (mouseAngle + 180 + 360 - axisConfig.orientation) % 360;
             angularValue = angularScale.invert(angleWithOriginOffset);
+            //Display radians on tool tip
+            if(radiansOn){
+                angularValue = ((parseInt(angularValue)*Math.PI)/180).toPrecision(3);
+            }
             var pos = utility.convertToCartesian(radius + 12, mouseAngle + 180);
             angularTooltip.text(utility.round(angularValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
         }).on('mouseout.angular-guide', function(d, i) {
@@ -778,6 +786,7 @@ function isOrdinalCheckTwo(isOrdinal,guides,chartGroup,radius,axisConfig,angular
                 opacity: 0
             });
         });
+
     }
     
 }
@@ -879,10 +888,17 @@ function svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks,data){
                 fill: newColor,
                 opacity: 1
             });
-            var textData = {
-                t: utility.round(d[0]),
-                r: utility.round(d[1]),              
-            };
+            if(radiansOn){
+                var textData = {
+                    t: ((parseInt(d[0])*Math.PI)/180).toPrecision(3),
+                    r: utility.round(d[1]),              
+                };
+            }else{
+                var textData = {
+                    t: utility.round(d[0]),
+                    r: utility.round(d[1]),              
+                };
+            }
             // Get the objects name attach it with to resulting object text
             for(var i = 0;i<dataWithGroupId.length;i++){
                 // Remove spaces to get run comparison
@@ -891,7 +907,6 @@ function svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks,data){
                     name = dataWithGroupId[i].name;
                 }
             }   
-            
             // Check if data name should be displayed
             var text
             if (isOrdinal) textData.t = ticks[d[0]];
@@ -900,13 +915,10 @@ function svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks,data){
             }else{
                 text = 't: ' + textData.t + ', r: ' + textData.r + ', N: ' + name;
             }
-
             var bbox = this.getBoundingClientRect();
             var svgBBox = svg.node().getBoundingClientRect();
             var pos = [ bbox.left + bbox.width / 2 - centeringOffset[0] - svgBBox.left, bbox.top + bbox.height / 2 - centeringOffset[1] - svgBBox.top ];
-
             geometryTooltip.config({color: newColor}).text(text);
-            
             geometryTooltip.move(pos);
         } else {
             color = this.style.stroke || 'black';
