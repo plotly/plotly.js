@@ -76,7 +76,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var ya0 = ya[0];
         pw = xa0._length;
         ph = ya0._length;
-
         var constraintGroups = fullLayout._axisConstraintGroups;
         var xIDs = [xa0._id];
         var yIDs = [ya0._id];

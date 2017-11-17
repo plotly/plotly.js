@@ -141,16 +141,13 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     Plots.supplyDefaults(gd);
-
     var fullLayout = gd._fullLayout;
-
     // Polar plots
     if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
 
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
     fullLayout._replotting = true;
-
     // make or remake the framework if we need to
     if(graphWasEmpty) makePlotFramework(gd);
 
@@ -159,7 +156,6 @@ Plotly.plot = function(gd, data, layout, config) {
         gd.framework = makePlotFramework;
         makePlotFramework(gd);
     }
-
     // clear gradient defs on each .plot call, because we know we'll loop through all traces
     Drawing.initGradients(gd);
 
@@ -181,9 +177,7 @@ Plotly.plot = function(gd, data, layout, config) {
     /*
      * start async-friendly code - now we're actually drawing things
      */
-
     var oldmargins = JSON.stringify(fullLayout._size);
-
     // draw framework first so that margin-pushing
     // components can position themselves correctly
     function drawFramework() {
@@ -199,7 +193,6 @@ Plotly.plot = function(gd, data, layout, config) {
             subroutines.layoutStyles
         ], gd);
     }
-
     // draw anything that can affect margins.
     function marginPushers() {
         var calcdata = gd.calcdata;
@@ -332,13 +325,11 @@ Plotly.plot = function(gd, data, layout, config) {
                 fullLayout._infolayer.selectAll('.cb' + uid).remove();
             }
         }
-
         // loop over the base plot modules present on graph
         var basePlotModules = fullLayout._basePlotModules;
         for(i = 0; i < basePlotModules.length; i++) {
             basePlotModules[i].plot(gd);
         }
-
         // keep reference to shape layers in subplots
         var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
         fullLayout._shapeSubplotLayers = layerSubplot.selectAll('.shapelayer');
@@ -516,8 +507,7 @@ function plotPolar(gd, data, layout) {
     gd.framework = Polar.manager.framework(gd);
 
     // plot
-    gd.framework({data: gd.data, layout: gd.layout}, paperDiv.node());
-
+    gd.framework({data: gd.data, layout: gd.layout}, paperDiv.node(), 1);
     // set undo point
     gd.framework.setUndoPoint();
 
@@ -1069,7 +1059,6 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     if(!Array.isArray(newIndices)) {
         newIndices = [newIndices];
     }
-
     try {
 
         // this is redundant, but necessary to not catch later possible errors!
@@ -1461,7 +1450,6 @@ function _restyle(gd, aobj, traces) {
             else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
                 doextra('colorbar.tickmode', 'linear', i);
             }
-
             if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
                 var labelsTo = 'x',
                     valuesTo = 'y';
@@ -1651,7 +1639,6 @@ function _restyle(gd, aobj, traces) {
 Plotly.relayout = function relayout(gd, astr, val) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
-
     if(gd.framework && gd.framework.isPolar) {
         return Promise.resolve(gd);
     }
@@ -1686,7 +1673,6 @@ Plotly.relayout = function relayout(gd, astr, val) {
     }
     else if(Object.keys(aobj).length) {
         Plots.supplyDefaults(gd);
-
         if(flags.legend) seq.push(subroutines.doLegend);
         if(flags.layoutstyle) seq.push(subroutines.layoutStyles);
         if(flags.ticks) seq.push(subroutines.doTicksRelayout);

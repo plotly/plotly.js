@@ -21,7 +21,6 @@ var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
 var initInteractions = require('../plots/cartesian/graph_interact');
 var cartesianConstants = require('../plots/cartesian/constants');
-
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, exports.lsInner], gd);
 };
@@ -46,13 +45,11 @@ exports.lsInner = function(gd) {
     var gs = fullLayout._size;
     var pad = gs.p;
     var axList = Plotly.Axes.list(gd);
-
     // _has('cartesian') means SVG specifically, not GL2D - but GL2D
     // can still get here because it makes some of the SVG structure
     // for shared features like selections.
     var hasSVGCartesian = fullLayout._has('cartesian');
     var i;
-
     // clear axis line positions, to be set in the subplot loop below
     for(i = 0; i < axList.length; i++) axList[i]._linepositions = {};
 
@@ -341,7 +338,6 @@ exports.lsInner = function(gd) {
         if(showFreeX) freeFinished[xa._id] = 1;
         if(showFreeY) freeFinished[ya._id] = 1;
     });
-
     Plotly.Axes.makeClipPaths(gd);
     exports.drawMainTitle(gd);
     ModeBar.manage(gd);
