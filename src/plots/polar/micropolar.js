@@ -16,6 +16,464 @@ var legend= require('./legend');
 var extendDeepAll = Lib.extendDeepAll;
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var µ = module.exports = { version: '0.2.2' };
+// Render the Polar Plot
+µ.Axis = function module(){
+    var config = {data: [],layout: {}}, inputConfig = {}, liveConfig = {};
+    var svg, container, dispatch = d3.dispatch('hover'), radialScale, angularScale;
+    var exports = {};
+
+    function render(_container,scaler) {
+        container = _container || container;
+        var data = config.data;
+        var axisConfig = config.layout;
+        //Remove old legend if there is one
+        var x = document.getElementsByClassName("legend-group")[0];
+        if(x != undefined){
+            if(x.childNodes.length>0){
+                x.removeChild(x.childNodes[0]);  
+            } 
+        }
+        // Set container if container isnt set right ?
+        if (typeof container == 'string' || container.nodeName) container = d3.select(container);
+        container.datum(data).each(function(_data, _index) {
+            var dataOriginal = _data.slice();
+            liveConfig = {data: utility.cloneJson(dataOriginal),layout: utility.cloneJson(axisConfig)};
+            // Adds lines between data (areas)
+            dataOriginal = addSegementDividers(dataOriginal,axisConfig,liveConfig);
+            // Get Data - not sure what this is doing
+            var data = dataOriginal.filter(function(d, i) {
+                var visible = d.visible;
+                return typeof visible === 'undefined' || visible === true;
+            });
+            // Check for stacked data 
+            result  = isStackedCheck(data,axisConfig);
+            isStacked = result[0];
+            radius = result[1];
+            chartCenter = result[2];
+            dataWithGroupId = result[3];
+            extent = result[4];
+
+            if (axisConfig.radialAxis.domain != µ.DATAEXTENT) extent[0] = 0;
+            radialScale = d3.scale.linear().domain(axisConfig.radialAxis.domain != µ.DATAEXTENT && axisConfig.radialAxis.domain ? axisConfig.radialAxis.domain : extent).range([0, radius ]);
+            liveConfig.layout.radialAxis.domain = radialScale.domain();
+            var angularDataMerged = utility.flattenArray(data.map(function(d, i) {
+                return d.t;
+            }));
+            
+            // Builds some data based on if the plot is ordinal
+            result = isOrdinalCheckOne(angularDataMerged,data,isStacked);
+            data = result[0];
+            ticks = result[1];
+
+            angularDataMerged = result[2];
+            isOrdinal = result[3];
+            // More variable setup
+            var hasOnlyLineOrDotPlot = data.filter(function(d, i) {
+                return d.geometry === 'LinePlot' || d.geometry === 'DotPlot';
+            }).length === data.length;
+
+            var needsEndSpacing = axisConfig.needsEndSpacing === null ? isOrdinal || !hasOnlyLineOrDotPlot : axisConfig.needsEndSpacing;
+            var useProvidedDomain = axisConfig.angularAxis.domain && axisConfig.angularAxis.domain != µ.DATAEXTENT && !isOrdinal && axisConfig.angularAxis.domain[0] >= 0;
+            var angularDomain = useProvidedDomain ? axisConfig.angularAxis.domain : d3.extent(angularDataMerged);
+            var angularDomainStep = Math.abs(angularDataMerged[1] - angularDataMerged[0]);
+
+            if (hasOnlyLineOrDotPlot && !isOrdinal) angularDomainStep = 0;
+            var angularDomainWithPadding = angularDomain.slice();
+            if (needsEndSpacing && isOrdinal) angularDomainWithPadding[1] += angularDomainStep;
+            var tickCount = axisConfig.angularAxis.ticksCount || 4;
+            if (tickCount > 8) tickCount = tickCount / (tickCount / 8) + tickCount % 8;
+            if (axisConfig.angularAxis.ticksStep) {
+                tickCount = (angularDomainWithPadding[1] - angularDomainWithPadding[0]) / tickCount;
+            }
+
+            var angularTicksStep = axisConfig.angularAxis.ticksStep || (angularDomainWithPadding[1] - angularDomainWithPadding[0]) / (tickCount * (axisConfig.minorTicks + 1));
+            if (ticks) angularTicksStep = Math.max(Math.round(angularTicksStep), 1);
+            if (!angularDomainWithPadding[2]) angularDomainWithPadding[2] = angularTicksStep;
+            var angularAxisRange = d3.range.apply(this, angularDomainWithPadding);
+            angularAxisRange = angularAxisRange.map(function(d, i) {
+                return parseFloat(d.toPrecision(12));
+            });
+
+            angularScale = d3.scale.linear().domain(angularDomainWithPadding.slice(0, 2)).range(axisConfig.direction === 'clockwise' ? [ 0, 360 ] : [ 360, 0 ]);
+            liveConfig.layout.angularAxis.domain = angularScale.domain();
+            liveConfig.layout.angularAxis.endPadding = needsEndSpacing ? angularDomainStep : 0;
+
+            // Create svg
+            svg = createSVG(this,d3);         
+            var lineStyle = {fill: 'none',stroke: axisConfig.tickColor};
+            // Get font Style, for the title and axis
+            styles = buildFontStyle(axisConfig)
+            fontStyle  = styles[0];
+            titleStyle = styles[1];
+            // Builds the legend, returning the container and the bounding box, returns changes
+            legendData = buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig);
+            legendBBox = legendData[0];
+            legendContainer = legendData[1];
+            liveConfig = legendData[2];
+            radius = legendData[3];
+            chartCenterBuffer = legendData[4];
+            // check return makes sense
+            if(typeof chartCenterBuffer !== "undefined"){
+                chartCenter = chartCenterBuffer
+            }
+            var chartGroup = svg.select('.chart-group');
+            // Set Svg Attributes
+
+            svgData = assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup,chartCenter);
+            svg = svgData[0];
+            centeringOffset = svgData[1];
+            // Create the radial Axis
+            radialAxisData = createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius,data);
+            //console.log(radialScale.ticks(5));
+            radialAxis = radialAxisData[0];
+            backgroundCircle = radialAxisData[1];
+            // Could this be moved?
+            function currentAngle(d, i) {
+                return angularScale(d) % 360 + axisConfig.orientation;
+            }
+            // angularAxis
+            var angularAxis = svg.select('.angular.axis-group').selectAll('g.angular-tick').data(angularAxisRange);
+            var angularAxisEnter = angularAxis.enter().append('g').classed('angular-tick', true);
+            angularAxis = assignAngularAxisAttributes(angularAxis,currentAngle,axisConfig,angularAxisEnter,lineStyle,radius,ticks,chartGroup);
+
+            // geometryContainer
+            var hasGeometry = svg.select('g.geometry-group').selectAll('g').size() > 0;
+            var geometryContainer = svg.select('g.geometry-group').selectAll('g.geometry').data(data);
+            geometryContainer = assignGeometryContainerAttributes(geometryContainer,data,radialScale,angularScale,axisConfig,scaler,radialScale);
+            var guides = svg.select('.guides-group');
+            // Tooltips Creation
+            var tooltipContainer = svg.select('.tooltips-group');
+            // Displays Degree's Value
+            var angularTooltip = tooltip.tooltipPanel().config({
+                container: tooltipContainer,
+                fontSize: 8
+            })();
+            // Displays Distance Value
+            var radialTooltip = tooltip.tooltipPanel().config({
+                container: tooltipContainer,
+                fontSize: 8
+            })();
+
+            var geometryTooltip = tooltip.tooltipPanel().config({
+                container: tooltipContainer,
+                hasTick: true
+            })();
+
+            var angularValue, radialValue;
+            isOrdinalCheckTwo(isOrdinal,guides,chartGroup,radius,axisConfig,angularScale,angularTooltip,chartCenter)
+
+            var angularGuideCircle = guides.select('circle').style({
+                stroke: 'grey',
+                fill: 'none'
+            });
+            // outer ring display
+            chartGroup =  outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircle,radialScale,axisConfig,chartCenter,geometryTooltip,angularTooltip);
+            // Displays box with result values in
+            svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks,data);
+        });
+        return exports;
+    }
+
+    exports.render = function(_container,scaler) {
+        render(_container,scaler);
+        return this;
+    };
+    
+    exports.config = function(_x) {
+        if (!arguments.length) return config;
+
+        var xClone = utility.cloneJson(_x);
+        xClone.data.forEach(function(d, i) {
+            if (!config.data[i]) config.data[i] = {};
+            extendDeepAll(config.data[i], µ.Axis.defaultConfig().data[0]);
+            extendDeepAll(config.data[i], d);
+        });
+        extendDeepAll(config.layout, µ.Axis.defaultConfig().layout);
+        extendDeepAll(config.layout, xClone.layout);
+        return this;
+    };
+    exports.getLiveConfig = function() {
+        return liveConfig;
+    };
+    exports.getinputConfig = function() {
+        return inputConfig;
+    };
+    exports.radialScale = function(_x) {
+        return radialScale;
+    };
+    exports.angularScale = function(_x) {
+        return angularScale;
+    };
+    exports.svg = function() {
+        return svg;
+    };
+    d3.rebind(exports, dispatch, 'on');
+    
+    return exports;
+};
+
+µ.Axis.defaultConfig = function(d, i) {
+    var config = defaults.defaultConfig();
+    return config;
+};
+
+µ.DATAEXTENT = 'dataExtent';
+
+µ.AREA = 'AreaChart';
+
+µ.LINE = 'LinePlot';
+
+µ.DOT = 'DotPlot';
+
+µ.BAR = 'BarChart';
+
+µ.PolyChart = function module() {
+    var config = [ µ.PolyChart.defaultConfig() ];
+    var dispatch = d3.dispatch('hover');
+    var dashArray = {
+        solid: 'none',
+        dash: [ 5, 2 ],
+        dot: [ 2, 5 ]
+    };
+    var colorScale;
+    function exports() {
+        var geometryConfig = config[0].geometryConfig;
+        var container = geometryConfig.container;
+        if (typeof container == 'string') container = d3.select(container);
+        container.datum(config).each(function(_config, _index) {
+            var isStack = !!_config[0].data.yStack;
+            var data = _config.map(function(d, i) {
+                if (isStack) return d3.zip(d.data.t[0], d.data.r[0], d.data.yStack[0]); else return d3.zip(d.data.t[0], d.data.r[0]);
+            });
+            var angularScale = geometryConfig.angularScale;
+            var domainMin = geometryConfig.radialScale.domain()[0];
+            var generator = {};
+            generator.bar = function(d, i, pI) {
+                var dataConfig = _config[pI].data;
+                var h = geometryConfig.radialScale(d[1]) - geometryConfig.radialScale(0);
+                var stackTop = geometryConfig.radialScale(d[2] || 0);
+                var w = dataConfig.barWidth;
+                d3.select(this).attr({
+                    'class': 'mark bar',
+                    d: 'M' + [ [ h + stackTop, -w / 2 ], [ h + stackTop, w / 2 ], [ stackTop, w / 2 ], [ stackTop, -w / 2 ] ].join('L') + 'Z',
+                    transform: function(d, i) {
+                        return 'rotate(' + (geometryConfig.orientation + angularScale(d[0])) + ')';
+                    }
+                });
+            };
+            generator.dot = function(d, i, pI) {
+                var stackedData = d[2] ? [ d[0], d[1] + d[2] ] : d;
+                var symbol = d3.svg.symbol().size(_config[pI].data.dotSize).type(_config[pI].data.dotType)(d, i);
+                d3.select(this).attr({
+                    'class': 'mark dot',
+                    d: symbol,
+                    transform: function(d, i) {
+                        //console.log(stackedData);
+                        var coord = convertToCartesian(getPolarCoordinates(stackedData,0));
+                        
+                        return 'translate(' + [ coord.x, coord.y ] + ')';
+                    }
+                });
+            };
+            //console.log("hey");
+            //console.log(getPolarCoordinates([360,-1]));
+            //console.log(convertToCartesian(getPolarCoordinates([360,1],360)));
+            var line = d3.svg.line.radial().interpolate(_config[0].data.lineInterpolation).radius(function(d) {
+                return geometryConfig.radialScale(d[1]);
+            }).angle(function(d) {
+                return geometryConfig.angularScale(d[0]) * Math.PI / 180;
+            });
+            generator.line = function(d, i, pI) {
+                var lineData = d[2] ? data[pI].map(function(d, i) {
+                    return [ d[0], d[1] + d[2] ];
+                }) : data[pI];
+                d3.select(this).each(generator['dot']).style({
+                    opacity: function(dB, iB) {
+                        return +_config[pI].data.dotVisible;
+                    },
+                    fill: markStyle.stroke(d, i, pI)
+                }).attr({
+                    'class': 'mark dot'
+                });
+                if (i > 0) return;
+                //for(var counter = 0;counter < lineData.length-1;counter++){
+                    var lineSelection = d3.select(this.parentNode).selectAll('path.line').data([ 0 ]);
+                    lineSelection.enter().insert('path');
+                    lineSelection.attr({
+                        'class': 'line',
+                        //d: line([lineData[counter],lineData[counter+1]]),
+                        d: line(lineData),
+                        transform: function(dB, iB) {
+                            return 'rotate(' + (geometryConfig.orientation + 90) + ')';
+                        },
+                        'pointer-events': 'none'
+                    }).style({
+                        fill: function(dB, iB) {
+                            return markStyle.fill(d, i, pI);
+                        },
+                        'fill-opacity': 0,
+                        stroke: function(dB, iB) {
+                            return markStyle.stroke(d, i, pI);
+                        },
+                        'stroke-width': function(dB, iB) {
+                            return markStyle['stroke-width'](d, i, pI);
+                        },
+                        'stroke-dasharray': function(dB, iB) {
+                            return markStyle['stroke-dasharray'](d, i, pI);
+                        },
+                        opacity: function(dB, iB) {
+                            return markStyle.opacity(d, i, pI);
+                        },
+                        display: function(dB, iB) {
+                            return markStyle.display(d, i, pI);
+                        }
+                    });
+                    //console.log(counter)
+                //}
+            };
+            var angularRange = geometryConfig.angularScale.range();
+            var triangleAngle = Math.abs(angularRange[1] - angularRange[0]) / data[0].length * Math.PI / 180;
+            var arc = d3.svg.arc().startAngle(function(d) {
+                return -triangleAngle / 2;
+            }).endAngle(function(d) {
+                return triangleAngle / 2;
+            }).innerRadius(function(d) {
+                return geometryConfig.radialScale(domainMin + (d[2] || 0));
+            }).outerRadius(function(d) {
+                return geometryConfig.radialScale(domainMin + (d[2] || 0)) + geometryConfig.radialScale(d[1]);
+            });
+            generator.arc = function(d, i, pI) {
+                d3.select(this).attr({
+                    'class': 'mark arc',
+                    d: arc,
+                    transform: function(d, i) {
+                        return 'rotate(' + (geometryConfig.orientation + angularScale(d[0]) + 90) + ')';
+                    }
+                });
+            };
+            var markStyle = {
+                fill: function(d, i, pI) {
+                    return _config[pI].data.color;
+                },
+                stroke: function(d, i, pI) {
+                    return _config[pI].data.strokeColor;
+                },
+                'stroke-width': function(d, i, pI) {
+                    return _config[pI].data.strokeSize + 'px';
+                },
+                'stroke-dasharray': function(d, i, pI) {
+                    return dashArray[_config[pI].data.strokeDash];
+                },
+                opacity: function(d, i, pI) {
+                    return _config[pI].data.opacity;
+                },
+                display: function(d, i, pI) {
+                    return typeof _config[pI].data.visible === 'undefined' || _config[pI].data.visible ? 'block' : 'none';
+                }
+            };
+            var geometryLayer = d3.select(this).selectAll('g.layer').data(data);
+            geometryLayer.enter().append('g').attr({
+                'class': 'layer'
+            });
+            var geometry = geometryLayer.selectAll('path.mark').data(function(d, i) {
+                return d;
+            });
+            geometry.enter().append('path').attr({
+                'class': 'mark'
+            });
+            geometry.style(markStyle).each(generator[geometryConfig.geometryType]);
+            geometry.exit().remove();
+            geometryLayer.exit().remove();
+            function getPolarCoordinates(d, i) {
+                var r = geometryConfig.radialScale(d[1]);
+                var t = ((geometryConfig.angularScale(d[0]) + geometryConfig.orientation)) * Math.PI / 180;
+                //console.log(r,t);
+                return {
+                    r: r,
+                    t: t
+                };
+            }
+            function convertToCartesian(polarCoordinates) {
+                var x = polarCoordinates.r * Math.cos(polarCoordinates.t);
+                var y = polarCoordinates.r * Math.sin(polarCoordinates.t);
+                return {
+                    x: x,
+                    y: y
+                };
+            }
+        });
+    }
+    exports.config = function(_x) {
+        if (!arguments.length) return config;
+        _x.forEach(function(d, i) {
+            if (!config[i]) config[i] = {};
+            extendDeepAll(config[i], µ.PolyChart.defaultConfig());
+            extendDeepAll(config[i], d);
+        });
+        return this;
+    };
+    exports.getColorScale = function() {
+        return colorScale;
+    };
+    d3.rebind(exports, dispatch, 'on');
+    return exports;
+};
+
+µ.PolyChart.defaultConfig = function() {
+    var config = defaults.polyChartDefaultConfig();
+    return config;
+};
+
+µ.BarChart = function module() {
+    return µ.PolyChart();
+};
+
+µ.BarChart.defaultConfig = function() {
+    var config = {
+        geometryConfig: {
+            geometryType: 'bar'
+        }
+    };
+    return config;
+};
+
+µ.AreaChart = function module() {
+    return µ.PolyChart();
+};
+
+µ.AreaChart.defaultConfig = function() {
+    var config = {
+        geometryConfig: {
+            geometryType: 'arc'
+        }
+    };
+    return config;
+};
+
+µ.DotPlot = function module() {
+    return µ.PolyChart();
+};
+
+µ.DotPlot.defaultConfig = function() {
+    var config = defaults.dotPlotDefaultConfig();
+    return config;
+};
+
+µ.LinePlot = function module() {
+    return µ.PolyChart();
+};
+
+µ.LinePlot.defaultConfig = function() {
+    var config = defaults.linePlotDefaultConfig();
+    return config;
+};
+
+legend.Legend.defaultConfig = function(d, i) {
+    var config = defaults.legendDefaultConfig();
+    return config;
+};
+tooltip.tooltipPanel.uid = 1;
+
 // Creation of Legend
 function buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig){
     var legendContainer;
@@ -561,459 +1019,5 @@ function isStackedCheck(data,axisConfig){
     })));
     return [isStacked,radius,chartCenter,dataWithGroupId,extent]
 }
-µ.Axis = function module(){
-    var config = {data: [],layout: {}}, inputConfig = {}, liveConfig = {};
-    var svg, container, dispatch = d3.dispatch('hover'), radialScale, angularScale;
-    var exports = {};
-
-    function render(_container,scaler) {
-        container = _container || container;
-        var data = config.data;
-        var axisConfig = config.layout;
-        // test scaler , remove old legend
-        if(scaler != 1){
-            var x = document.getElementsByClassName("legend-group")[0];
-            x.removeChild(x.childNodes[0]);   
-        }
-        // set container if container isnt set right ?
-        if (typeof container == 'string' || container.nodeName) container = d3.select(container);
-        container.datum(data).each(function(_data, _index) {
-            var dataOriginal = _data.slice();
-            liveConfig = {data: utility.cloneJson(dataOriginal),layout: utility.cloneJson(axisConfig)};
-            // Adds lines between data (areas)
-            dataOriginal = addSegementDividers(dataOriginal,axisConfig,liveConfig);
-            // Get Data - not sure what this is doing
-            var data = dataOriginal.filter(function(d, i) {
-                var visible = d.visible;
-                return typeof visible === 'undefined' || visible === true;
-            });
-            // check for stacked data 
-            result  = isStackedCheck(data,axisConfig);
-            isStacked = result[0];
-            radius = result[1];
-            chartCenter = result[2];
-            dataWithGroupId = result[3];
-            extent = result[4];
-
-            if (axisConfig.radialAxis.domain != µ.DATAEXTENT) extent[0] = 0;
-            radialScale = d3.scale.linear().domain(axisConfig.radialAxis.domain != µ.DATAEXTENT && axisConfig.radialAxis.domain ? axisConfig.radialAxis.domain : extent).range([0, radius ]);
-            liveConfig.layout.radialAxis.domain = radialScale.domain();
-            var angularDataMerged = utility.flattenArray(data.map(function(d, i) {
-                return d.t;
-            }));
-            
-            // Builds some data based on if the plot is ordinal
-            result = isOrdinalCheckOne(angularDataMerged,data,isStacked);
-            data = result[0];
-            ticks = result[1];
-
-            angularDataMerged = result[2];
-            isOrdinal = result[3];
-            // More variable setup
-            var hasOnlyLineOrDotPlot = data.filter(function(d, i) {
-                return d.geometry === 'LinePlot' || d.geometry === 'DotPlot';
-            }).length === data.length;
-
-            var needsEndSpacing = axisConfig.needsEndSpacing === null ? isOrdinal || !hasOnlyLineOrDotPlot : axisConfig.needsEndSpacing;
-            var useProvidedDomain = axisConfig.angularAxis.domain && axisConfig.angularAxis.domain != µ.DATAEXTENT && !isOrdinal && axisConfig.angularAxis.domain[0] >= 0;
-            var angularDomain = useProvidedDomain ? axisConfig.angularAxis.domain : d3.extent(angularDataMerged);
-            var angularDomainStep = Math.abs(angularDataMerged[1] - angularDataMerged[0]);
-
-            if (hasOnlyLineOrDotPlot && !isOrdinal) angularDomainStep = 0;
-            var angularDomainWithPadding = angularDomain.slice();
-            if (needsEndSpacing && isOrdinal) angularDomainWithPadding[1] += angularDomainStep;
-            var tickCount = axisConfig.angularAxis.ticksCount || 4;
-            if (tickCount > 8) tickCount = tickCount / (tickCount / 8) + tickCount % 8;
-            if (axisConfig.angularAxis.ticksStep) {
-                tickCount = (angularDomainWithPadding[1] - angularDomainWithPadding[0]) / tickCount;
-            }
-
-            var angularTicksStep = axisConfig.angularAxis.ticksStep || (angularDomainWithPadding[1] - angularDomainWithPadding[0]) / (tickCount * (axisConfig.minorTicks + 1));
-            if (ticks) angularTicksStep = Math.max(Math.round(angularTicksStep), 1);
-            if (!angularDomainWithPadding[2]) angularDomainWithPadding[2] = angularTicksStep;
-            var angularAxisRange = d3.range.apply(this, angularDomainWithPadding);
-            angularAxisRange = angularAxisRange.map(function(d, i) {
-                return parseFloat(d.toPrecision(12));
-            });
-
-            angularScale = d3.scale.linear().domain(angularDomainWithPadding.slice(0, 2)).range(axisConfig.direction === 'clockwise' ? [ 0, 360 ] : [ 360, 0 ]);
-            liveConfig.layout.angularAxis.domain = angularScale.domain();
-            liveConfig.layout.angularAxis.endPadding = needsEndSpacing ? angularDomainStep : 0;
-
-            // Create svg
-            svg = createSVG(this,d3);         
-            var lineStyle = {fill: 'none',stroke: axisConfig.tickColor};
-            // Get font Style, for the title and axis
-            styles = buildFontStyle(axisConfig)
-            fontStyle  = styles[0];
-            titleStyle = styles[1];
-            // Builds the legend, returning the container and the bounding box, returns changes
-            legendData = buildLegend(axisConfig,svg,radius,data,radialScale,liveConfig);
-            legendBBox = legendData[0];
-            legendContainer = legendData[1];
-            liveConfig = legendData[2];
-            radius = legendData[3];
-            chartCenterBuffer = legendData[4];
-            // check return makes sense
-            if(typeof chartCenterBuffer !== "undefined"){
-                chartCenter = chartCenterBuffer
-            }
-            var chartGroup = svg.select('.chart-group');
-            // Set Svg Attributes
-
-            svgData = assignSvgAttributes(svg,axisConfig,legendBBox,radius,chartGroup,chartCenter);
-            svg = svgData[0];
-            centeringOffset = svgData[1];
-            // Create the radial Axis
-            radialAxisData = createRadialAxis(svg,axisConfig,radialScale,lineStyle,radius,data);
-            //console.log(radialScale.ticks(5));
-            radialAxis = radialAxisData[0];
-            backgroundCircle = radialAxisData[1];
-            // Could this be moved?
-            function currentAngle(d, i) {
-                return angularScale(d) % 360 + axisConfig.orientation;
-            }
-            // angularAxis
-            var angularAxis = svg.select('.angular.axis-group').selectAll('g.angular-tick').data(angularAxisRange);
-            var angularAxisEnter = angularAxis.enter().append('g').classed('angular-tick', true);
-            angularAxis = assignAngularAxisAttributes(angularAxis,currentAngle,axisConfig,angularAxisEnter,lineStyle,radius,ticks,chartGroup);
-
-            // geometryContainer
-            var hasGeometry = svg.select('g.geometry-group').selectAll('g').size() > 0;
-            var geometryContainer = svg.select('g.geometry-group').selectAll('g.geometry').data(data);
-            geometryContainer = assignGeometryContainerAttributes(geometryContainer,data,radialScale,angularScale,axisConfig,scaler,radialScale);
-            var guides = svg.select('.guides-group');
-            // Tooltips Creation
-            var tooltipContainer = svg.select('.tooltips-group');
-            // Displays Degree's Value
-            var angularTooltip = tooltip.tooltipPanel().config({
-                container: tooltipContainer,
-                fontSize: 8
-            })();
-            // Displays Distance Value
-            var radialTooltip = tooltip.tooltipPanel().config({
-                container: tooltipContainer,
-                fontSize: 8
-            })();
-            
-            var geometryTooltip = tooltip.tooltipPanel().config({
-                container: tooltipContainer,
-                hasTick: true
-            })();
-
-            var angularValue, radialValue;
-            isOrdinalCheckTwo(isOrdinal,guides,chartGroup,radius,axisConfig,angularScale,angularTooltip,chartCenter)
-
-            var angularGuideCircle = guides.select('circle').style({
-                stroke: 'grey',
-                fill: 'none'
-            });
-            // outer ring display
-            chartGroup =  outerRingValueDisplay(chartGroup,radius,radialTooltip,angularGuideCircle,radialScale,axisConfig,chartCenter,geometryTooltip,angularTooltip);
-            // Displays box with result values in
-            svgMouserHoverDisplay(isOrdinal,geometryTooltip,ticks,data);
-        });
-        return exports;
-    }
-
-    exports.render = function(_container,scaler) {
-        render(_container,scaler);
-        return this;
-    };
-    
-    exports.config = function(_x) {
-        if (!arguments.length) return config;
-
-        var xClone = utility.cloneJson(_x);
-        xClone.data.forEach(function(d, i) {
-            if (!config.data[i]) config.data[i] = {};
-            extendDeepAll(config.data[i], µ.Axis.defaultConfig().data[0]);
-            extendDeepAll(config.data[i], d);
-        });
-        extendDeepAll(config.layout, µ.Axis.defaultConfig().layout);
-        extendDeepAll(config.layout, xClone.layout);
-        return this;
-    };
-    exports.getLiveConfig = function() {
-        return liveConfig;
-    };
-    exports.getinputConfig = function() {
-        return inputConfig;
-    };
-    exports.radialScale = function(_x) {
-        return radialScale;
-    };
-    exports.angularScale = function(_x) {
-        return angularScale;
-    };
-    exports.svg = function() {
-        return svg;
-    };
-    d3.rebind(exports, dispatch, 'on');
-    
-    return exports;
-};
-
-µ.Axis.defaultConfig = function(d, i) {
-    var config = defaults.defaultConfig();
-    return config;
-};
-
-µ.DATAEXTENT = 'dataExtent';
-
-µ.AREA = 'AreaChart';
-
-µ.LINE = 'LinePlot';
-
-µ.DOT = 'DotPlot';
-
-µ.BAR = 'BarChart';
-
-µ.PolyChart = function module() {
-    var config = [ µ.PolyChart.defaultConfig() ];
-    var dispatch = d3.dispatch('hover');
-    var dashArray = {
-        solid: 'none',
-        dash: [ 5, 2 ],
-        dot: [ 2, 5 ]
-    };
-    var colorScale;
-    function exports() {
-        var geometryConfig = config[0].geometryConfig;
-        var container = geometryConfig.container;
-        if (typeof container == 'string') container = d3.select(container);
-        container.datum(config).each(function(_config, _index) {
-            var isStack = !!_config[0].data.yStack;
-            var data = _config.map(function(d, i) {
-                if (isStack) return d3.zip(d.data.t[0], d.data.r[0], d.data.yStack[0]); else return d3.zip(d.data.t[0], d.data.r[0]);
-            });
-            var angularScale = geometryConfig.angularScale;
-            var domainMin = geometryConfig.radialScale.domain()[0];
-            var generator = {};
-            generator.bar = function(d, i, pI) {
-                var dataConfig = _config[pI].data;
-                var h = geometryConfig.radialScale(d[1]) - geometryConfig.radialScale(0);
-                var stackTop = geometryConfig.radialScale(d[2] || 0);
-                var w = dataConfig.barWidth;
-                d3.select(this).attr({
-                    'class': 'mark bar',
-                    d: 'M' + [ [ h + stackTop, -w / 2 ], [ h + stackTop, w / 2 ], [ stackTop, w / 2 ], [ stackTop, -w / 2 ] ].join('L') + 'Z',
-                    transform: function(d, i) {
-                        return 'rotate(' + (geometryConfig.orientation + angularScale(d[0])) + ')';
-                    }
-                });
-            };
-            generator.dot = function(d, i, pI) {
-                var stackedData = d[2] ? [ d[0], d[1] + d[2] ] : d;
-                var symbol = d3.svg.symbol().size(_config[pI].data.dotSize).type(_config[pI].data.dotType)(d, i);
-                d3.select(this).attr({
-                    'class': 'mark dot',
-                    d: symbol,
-                    transform: function(d, i) {
-                        //console.log(stackedData);
-                        var coord = convertToCartesian(getPolarCoordinates(stackedData,0));
-                        
-                        return 'translate(' + [ coord.x, coord.y ] + ')';
-                    }
-                });
-            };
-            //console.log("hey");
-            //console.log(getPolarCoordinates([360,-1]));
-            //console.log(convertToCartesian(getPolarCoordinates([360,1],360)));
-            var line = d3.svg.line.radial().interpolate(_config[0].data.lineInterpolation).radius(function(d) {
-                return geometryConfig.radialScale(d[1]);
-            }).angle(function(d) {
-                return geometryConfig.angularScale(d[0]) * Math.PI / 180;
-            });
-            generator.line = function(d, i, pI) {
-                var lineData = d[2] ? data[pI].map(function(d, i) {
-                    return [ d[0], d[1] + d[2] ];
-                }) : data[pI];
-                d3.select(this).each(generator['dot']).style({
-                    opacity: function(dB, iB) {
-                        return +_config[pI].data.dotVisible;
-                    },
-                    fill: markStyle.stroke(d, i, pI)
-                }).attr({
-                    'class': 'mark dot'
-                });
-                if (i > 0) return;
-                //for(var counter = 0;counter < lineData.length-1;counter++){
-                    var lineSelection = d3.select(this.parentNode).selectAll('path.line').data([ 0 ]);
-                    lineSelection.enter().insert('path');
-                    lineSelection.attr({
-                        'class': 'line',
-                        //d: line([lineData[counter],lineData[counter+1]]),
-                        d: line(lineData),
-                        transform: function(dB, iB) {
-                            return 'rotate(' + (geometryConfig.orientation + 90) + ')';
-                        },
-                        'pointer-events': 'none'
-                    }).style({
-                        fill: function(dB, iB) {
-                            return markStyle.fill(d, i, pI);
-                        },
-                        'fill-opacity': 0,
-                        stroke: function(dB, iB) {
-                            return markStyle.stroke(d, i, pI);
-                        },
-                        'stroke-width': function(dB, iB) {
-                            return markStyle['stroke-width'](d, i, pI);
-                        },
-                        'stroke-dasharray': function(dB, iB) {
-                            return markStyle['stroke-dasharray'](d, i, pI);
-                        },
-                        opacity: function(dB, iB) {
-                            return markStyle.opacity(d, i, pI);
-                        },
-                        display: function(dB, iB) {
-                            return markStyle.display(d, i, pI);
-                        }
-                    });
-                    //console.log(counter)
-                //}
-            };
-            var angularRange = geometryConfig.angularScale.range();
-            var triangleAngle = Math.abs(angularRange[1] - angularRange[0]) / data[0].length * Math.PI / 180;
-            var arc = d3.svg.arc().startAngle(function(d) {
-                return -triangleAngle / 2;
-            }).endAngle(function(d) {
-                return triangleAngle / 2;
-            }).innerRadius(function(d) {
-                return geometryConfig.radialScale(domainMin + (d[2] || 0));
-            }).outerRadius(function(d) {
-                return geometryConfig.radialScale(domainMin + (d[2] || 0)) + geometryConfig.radialScale(d[1]);
-            });
-            generator.arc = function(d, i, pI) {
-                d3.select(this).attr({
-                    'class': 'mark arc',
-                    d: arc,
-                    transform: function(d, i) {
-                        return 'rotate(' + (geometryConfig.orientation + angularScale(d[0]) + 90) + ')';
-                    }
-                });
-            };
-            var markStyle = {
-                fill: function(d, i, pI) {
-                    return _config[pI].data.color;
-                },
-                stroke: function(d, i, pI) {
-                    return _config[pI].data.strokeColor;
-                },
-                'stroke-width': function(d, i, pI) {
-                    return _config[pI].data.strokeSize + 'px';
-                },
-                'stroke-dasharray': function(d, i, pI) {
-                    return dashArray[_config[pI].data.strokeDash];
-                },
-                opacity: function(d, i, pI) {
-                    return _config[pI].data.opacity;
-                },
-                display: function(d, i, pI) {
-                    return typeof _config[pI].data.visible === 'undefined' || _config[pI].data.visible ? 'block' : 'none';
-                }
-            };
-            var geometryLayer = d3.select(this).selectAll('g.layer').data(data);
-            geometryLayer.enter().append('g').attr({
-                'class': 'layer'
-            });
-            var geometry = geometryLayer.selectAll('path.mark').data(function(d, i) {
-                return d;
-            });
-            geometry.enter().append('path').attr({
-                'class': 'mark'
-            });
-            geometry.style(markStyle).each(generator[geometryConfig.geometryType]);
-            geometry.exit().remove();
-            geometryLayer.exit().remove();
-            function getPolarCoordinates(d, i) {
-                var r = geometryConfig.radialScale(d[1]);
-                var t = ((geometryConfig.angularScale(d[0]) + geometryConfig.orientation)) * Math.PI / 180;
-                //console.log(r,t);
-                return {
-                    r: r,
-                    t: t
-                };
-            }
-            function convertToCartesian(polarCoordinates) {
-                var x = polarCoordinates.r * Math.cos(polarCoordinates.t);
-                var y = polarCoordinates.r * Math.sin(polarCoordinates.t);
-                return {
-                    x: x,
-                    y: y
-                };
-            }
-        });
-    }
-    exports.config = function(_x) {
-        if (!arguments.length) return config;
-        _x.forEach(function(d, i) {
-            if (!config[i]) config[i] = {};
-            extendDeepAll(config[i], µ.PolyChart.defaultConfig());
-            extendDeepAll(config[i], d);
-        });
-        return this;
-    };
-    exports.getColorScale = function() {
-        return colorScale;
-    };
-    d3.rebind(exports, dispatch, 'on');
-    return exports;
-};
-
-µ.PolyChart.defaultConfig = function() {
-    var config = defaults.polyChartDefaultConfig();
-    return config;
-};
-
-µ.BarChart = function module() {
-    return µ.PolyChart();
-};
-
-µ.BarChart.defaultConfig = function() {
-    var config = {
-        geometryConfig: {
-            geometryType: 'bar'
-        }
-    };
-    return config;
-};
-
-µ.AreaChart = function module() {
-    return µ.PolyChart();
-};
-
-µ.AreaChart.defaultConfig = function() {
-    var config = {
-        geometryConfig: {
-            geometryType: 'arc'
-        }
-    };
-    return config;
-};
-
-µ.DotPlot = function module() {
-    return µ.PolyChart();
-};
-
-µ.DotPlot.defaultConfig = function() {
-    var config = defaults.dotPlotDefaultConfig();
-    return config;
-};
-
-µ.LinePlot = function module() {
-    return µ.PolyChart();
-};
-
-µ.LinePlot.defaultConfig = function() {
-    var config = defaults.linePlotDefaultConfig();
-    return config;
-};
-
-legend.Legend.defaultConfig = function(d, i) {
-    var config = defaults.legendDefaultConfig();
-    return config;
-};
-tooltip.tooltipPanel.uid = 1;
 
 

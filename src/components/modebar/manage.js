@@ -73,18 +73,19 @@ module.exports = function manageModeBar(gd) {
 function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
+    var hasCartesian, hasGL3D, hasGeo, hasPie, hasGL2D, hasTernary, hasMapbox, hasPolar;
     try {
-        var hasCartesian = fullLayout._has('cartesian');
-        var hasGL3D = fullLayout._has('gl3d');
-        var hasGeo = fullLayout._has('geo');
-        var hasPie = fullLayout._has('pie');
-        var hasGL2D = fullLayout._has('gl2d');
-        var hasTernary = fullLayout._has('ternary');
-        var hasMapbox = fullLayout._has('mapbox');
+        hasCartesian = fullLayout._has('cartesian');
+        hasGL3D = fullLayout._has('gl3d');
+        hasGeo = fullLayout._has('geo');
+        hasPie = fullLayout._has('pie');
+        hasGL2D = fullLayout._has('gl2d');
+        hasTernary = fullLayout._has('ternary');
+        hasMapbox = fullLayout._has('mapbox');
     } catch(err) {
-        var hasPolar = true;
+        hasPolar = true;
     }
-    console.log(hasCartesian);
+    // console.log(hasCartesian);
     var groups = [];
 
     function addGroup(newGroup) {
@@ -121,7 +122,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     }
-    if(hasPolar){
+    if(hasPolar) {
         addGroup(['zoomInPolar', 'zoomOutPolar']);
     }
     if(hasMapbox || hasGeo) {

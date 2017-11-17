@@ -182,8 +182,6 @@ function handleCartesian(gd, ev) {
         ax,
         allEnabled = 'on',
         i;
-    console.log(Axes.list(gd, null, true));
-    console.log(Axes.list(gd, null, true));
     if(astr === 'zoom') {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
@@ -493,8 +491,6 @@ function handlePolar(gd, ev) {
     } else {
         gd.framework({data: gd.data, layout: gd.layout}, undefined, 0.5);
     }
-    var ModeBar = require('../modebar');
-    ModeBar.manage(gd);
 
 }
 

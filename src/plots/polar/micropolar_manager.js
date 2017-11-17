@@ -23,6 +23,7 @@ manager.framework = function(_gd) {
     var config, previousConfigClone, plot, convertedInput, container;
     var undoManager = new UndoManager();
     var savedContainer;
+    // resset scale to avoid issues
     scale = 1;
     function exports(_inputConfig, _container, scaler) {
         if(_container !== undefined) {
@@ -44,6 +45,8 @@ manager.framework = function(_gd) {
         _gd.data = config.data;
         _gd.layout = config.layout;
         manager.fillLayout(_gd);
+        var ModeBar = require('../../components/modebar');
+        ModeBar.manage(_gd);
         return config;
     }
     exports.isPolar = true;
@@ -85,6 +88,5 @@ manager.fillLayout = function(_gd) {
             _paperdiv: paperDiv,
             _paper: paper
         };
-
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };

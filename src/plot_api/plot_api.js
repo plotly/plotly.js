@@ -508,10 +508,6 @@ function plotPolar(gd, data, layout) {
 
     // plot
     gd.framework({data: gd.data, layout: gd.layout}, paperDiv.node(), 1);
-    
-    var ModeBar = require('../components/modebar');
-    ModeBar.manage(gd);
-
     // set undo point
     gd.framework.setUndoPoint();
 

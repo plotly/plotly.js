@@ -19,8 +19,8 @@ var µ = module.exports = { version: '0.2.2' };
     function exports() {
 
         var legendConfig = config.legendConfig;
-        var flattenData = flattenConfigElements(config,legendConfig);
-        var data = setupData(flattenData,legendConfig);
+        var flattenData = flattenConfigElements(config, legendConfig);
+        var data = setupData(flattenData, legendConfig);
         if(legendConfig.reverseOrder) data = data.reverse();
         var container = legendConfig.container;
         if(typeof container === 'string' || container.nodeName) container = d3.select(container);
@@ -33,25 +33,25 @@ var µ = module.exports = { version: '0.2.2' };
         var height = isContinuous ? legendConfig.height : lineHeight * data.length;
         var legendContainerGroup = container.classed('legend-group', true);
         var svg = legendContainerGroup.selectAll('svg').data([ 0 ]);
-        var svgEnter = defineSVG(svg,height,lineHeight);
+        defineSVG(svg, height, lineHeight);
         var dataNumbered = d3.range(data.length);
         var colorScale = d3.scale[isContinuous ? 'linear' : 'ordinal']().domain(dataNumbered).range(colors);
         var dataScale = d3.scale[isContinuous ? 'linear' : 'ordinal']().domain(dataNumbered)[isContinuous ? 'range' : 'rangePoints']([ 0, height ]);
         // Gets the legend elements is the data is not continuous
-        var results = continuousCheck(isContinuous,data,lineHeight,dataScale,colorScale);
+        var results = continuousCheck(isContinuous, data, lineHeight, dataScale, colorScale, legendConfig, svg, colors);
         // Legend Elements
         var legendElement = results;
         // refine legendElement data
         var legendElementData = legendElement[0];
         var legendAxis = d3.svg.axis().scale(dataScale).orient('right');
         // Build Axis
-        var axis = buildAxis(isContinuous,lineHeight,legendAxis,legendConfig,data);
-         // Extract legend objects 
+        var axis = buildAxis(isContinuous, lineHeight, legendAxis, legendConfig, data, svg);
+         // Extract legend objects
         var tickElements = axis[0][0].childNodes;
         // Build the click handler for the elements in the legend
-        applyLegendClickHandler(tickElements,legendElementData,legendConfig,colorScale);
+        applyLegendClickHandler(tickElements, legendElementData, legendConfig, colorScale);
         // Default text colour
-        applyDefaultTextColour(tickElements,legendConfig);
+        applyDefaultTextColour(tickElements, legendConfig);
         return exports;
     }
 
@@ -65,7 +65,7 @@ var µ = module.exports = { version: '0.2.2' };
 };
 // Takes in config data and output elements
 // Extracts legend elements from config
-function flattenConfigElements(config,legendConfig){
+function flattenConfigElements(config, legendConfig) {
     return config.data.map(function(d, i) {
         return [].concat(d).map(function(dB, iB) {
             var element = extendDeepAll({}, legendConfig.elements[i]);
@@ -75,17 +75,16 @@ function flattenConfigElements(config,legendConfig){
         });
     });
 }
-// Obtains Line data, containing colour and data labels 
-function setupData(flattenData,legendConfig){
+// Obtains Line data, containing colour and data labels
+function setupData(flattenData, legendConfig) {
     var data = d3.merge(flattenData);
     data = data.filter(function(d, i) {
         return legendConfig.elements[i] && (legendConfig.elements[i].visibleInLegend || typeof legendConfig.elements[i].visibleInLegend === 'undefined');
     });
-    console.log(data)
     return data;
 }
 // Creates skeleton to hold legend
-function defineSVG(svg,height,lineHeight){
+function defineSVG(svg, height, lineHeight) {
     var svgEnter = svg.enter().append('svg').attr({
         width: 300,
         height: height + lineHeight,
@@ -103,20 +102,20 @@ function shapeGenerator(_type, _size) {
     if(_type === 'line') {
         return 'M' + [ [ -_size / 2, -_size / 12 ], [ _size / 2, -_size / 12 ], [ _size / 2, _size / 12 ], [ -_size / 2, _size / 12 ] ] + 'Z';
     } else if(d3.svg.symbolTypes.indexOf(_type) !== -1) return d3.svg.symbol().type(_type).size(squareSize)(); else return d3.svg.symbol().type('square').size(squareSize)();
-};
+}
 // Returns legend elements if the data is not continuous; otherwise attempts to handle it
-function continuousCheck(isContinuous,data,lineHeight,dataScale,colorScale){
-    var legendElement =  ''
+function continuousCheck(isContinuous, data, lineHeight, dataScale, colorScale, legendConfig, svg, colors) {
+    var legendElement = '';
     if(isContinuous) {
-        handleContinousData();
+        handleContinousData(legendConfig, svg, colors);
     } else {
-        legendElement = handleNonContinousData(isContinuous,data,lineHeight,dataScale,colorScale);
+        legendElement = handleNonContinousData(isContinuous, data, lineHeight, dataScale, colorScale, svg);
     }
-    return legendElement
+    return legendElement;
 }
 // Takes in legend config and infomation on the data on the axis
 // Creates the axis for legend data
-function buildAxis(isContinuous,lineHeight,legendAxis,legendConfig,data){
+function buildAxis(isContinuous, lineHeight, legendAxis, legendConfig, data, svg) {
     var axis = svg.select('g.legend-axis').attr({
         transform: 'translate(' + [ isContinuous ? legendConfig.colorBandWidth : lineHeight, lineHeight / 2 ] + ')'
     }).call(legendAxis);
@@ -139,14 +138,14 @@ function buildAxis(isContinuous,lineHeight,legendAxis,legendConfig,data){
 // Takes in the legend data
 // Loops through each data type, applys and on click handler to each.
 // Handler hides/shows the corrosponding line data
-function applyLegendClickHandler(tickElements,legends,legendConfig,colorScale){
+function applyLegendClickHandler(tickElements, legends, legendConfig, colorScale) {
     for(var i = 0, n = tickElements.length; i < n - 1; i++) {
         var el = tickElements[i];
         var key = legends[i];
         // Listener for the text
         el.addEventListener('click', (function(i, el) {return function() {
             var li = document.getElementsByClassName('line');
-            //var li = document.querySelectorAll('path[class^="line"]');
+            // var li = document.querySelectorAll('path[class^="line"]');
             if(el.childNodes[1].style.fill === legendConfig.textColor) {
                 el.childNodes[1].style.fill = 'black';
                 legends[i].style.fill = 'black';
@@ -172,14 +171,14 @@ function applyLegendClickHandler(tickElements,legends,legendConfig,colorScale){
     }
 }
 // Applys the default text colour, mainly used to pass pixel comparison tests
-function applyDefaultTextColour(tickElements,legendConfig) {
+function applyDefaultTextColour(tickElements, legendConfig) {
     for(var j = 0, m = tickElements.length; j < m - 1; j++) {
         var e2 = tickElements[j];
         e2.childNodes[1].style.fill = legendConfig.textColor;
     }
 }
 // Deals with the lack of legend elements
-function handleContinousData(){
+function handleContinousData(legendConfig, svg, colors) {
     var gradient = svg.select('.legend-marks').append('defs').append('linearGradient').attr({
         id: 'grad1',
         x1: '0%',
@@ -204,7 +203,7 @@ function handleContinousData(){
     });
 }
 // Creates Legend Elements if the data is continous
-function handleNonContinousData(isContinuous,data,lineHeight,dataScale,colorScale){
+function handleNonContinousData(isContinuous, data, lineHeight, dataScale, colorScale, svg) {
     var legendElement = svg.select('.legend-marks').selectAll('path.legend-mark').data(data);
     legendElement.enter().append('path').classed('legend-mark', true);
     legendElement.attr({
