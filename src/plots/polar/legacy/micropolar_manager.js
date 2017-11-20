@@ -11,8 +11,8 @@
 'use strict';
 
 var d3 = require('d3');
-var Lib = require('../../lib');
-var Color = require('../../components/color');
+var Lib = require('../../../lib');
+var Color = require('../../../components/color');
 
 var micropolar = require('./micropolar');
 var UndoManager = require('./undo_manager');

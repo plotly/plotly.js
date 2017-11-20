@@ -9,9 +9,9 @@
 
 'use strict';
 
-var axesAttrs = require('../cartesian/layout_attributes');
-var extendFlat = require('../../lib/extend').extendFlat;
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var axesAttrs = require('../../cartesian/layout_attributes');
+var extendFlat = require('../../../lib/extend').extendFlat;
+var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 
 var domainAttr = extendFlat({}, axesAttrs.domain, {
     description: [

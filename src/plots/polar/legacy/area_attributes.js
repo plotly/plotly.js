@@ -8,7 +8,7 @@
 
 'use strict';
 
-var scatterAttrs = require('../../traces/scatter/attributes');
+var scatterAttrs = require('../../../traces/scatter/attributes');
 var scatterMarkerAttrs = scatterAttrs.marker;
 
 module.exports = {

@@ -11,7 +11,7 @@ var surface = require('@src/traces/surface');
 var baseLayoutAttrs = require('@src/plots/layout_attributes');
 var cartesianAttrs = require('@src/plots/cartesian').layoutAttributes;
 var gl3dAttrs = require('@src/plots/gl3d').layoutAttributes;
-var polarLayoutAttrs = require('@src/plots/polar/axis_attributes');
+var polarLayoutAttrs = require('@src/plots/polar/legacy/axis_attributes');
 var annotationAttrs = require('@src/components/annotations').layoutAttributes;
 var updatemenuAttrs = require('@src/components/updatemenus').layoutAttributes;
 
@@ -390,7 +390,7 @@ describe('getTraceValObject', function() {
     });
 
     it('supports polar area attributes', function() {
-        var areaAttrs = require('@src/plots/polar/area_attributes');
+        var areaAttrs = require('@src/plots/polar/legacy/area_attributes');
         expect(getTraceValObject({type: 'area'}, ['r'])).toBe(areaAttrs.r);
         expect(getTraceValObject({type: 'area'}, ['t', 23])).toBe(areaAttrs.t);
         expect(getTraceValObject({type: 'area'}, ['q'])).toBe(false);
