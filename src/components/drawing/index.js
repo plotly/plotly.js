@@ -442,21 +442,25 @@ drawing.selectedPointStyle = function(s, trace) {
     var mo = marker.opacity;
     var smo = selectedMarker.opacity;
     var usmo = unselectedMarker.opacity;
+    var smoIsDefined = smo !== undefined;
+    var usmoIsDefined = usmo !== undefined;
 
     s.each(function(d) {
         var pt = d3.select(this);
+        var dmo = d.mo;
+        var dmoIsDefined = dmo !== undefined;
         var mo2;
 
-        if(d.mo + 1 || smo || usmo) {
+        if(dmoIsDefined || smoIsDefined || usmoIsDefined) {
             if(d.selected) {
-                if(smo + 1) mo2 = smo;
+                if(smoIsDefined) mo2 = smo;
             } else {
-                if(usmo + 1) mo2 = usmo;
-                else mo2 = DESELECTDIM * ((d.mo + 1) ? d.mo : mo);
+                if(usmoIsDefined) mo2 = usmo;
+                else mo2 = DESELECTDIM * (dmoIsDefined ? dmo : mo);
             }
         }
 
-        if(mo2 + 1) pt.style('opacity', mo2);
+        if(mo2 !== undefined) pt.style('opacity', mo2);
     });
 
     var smc = selectedMarker.color;
@@ -479,8 +483,10 @@ drawing.selectedPointStyle = function(s, trace) {
 
     var sms = selectedMarker.size;
     var usms = unselectedMarker.size;
+    var smsIsDefined = sms !== undefined;
+    var usmsIsDefined = usms !== undefined;
 
-    if(Registry.traceIs(trace, 'symbols') && (sms + 1 || usms + 1)) {
+    if(Registry.traceIs(trace, 'symbols') && (smsIsDefined || usmsIsDefined)) {
         s.each(function(d) {
             var pt = d3.select(this);
             var mrc = d.mrc;
@@ -488,9 +494,9 @@ drawing.selectedPointStyle = function(s, trace) {
             var mrc2;
 
             if(d.selected) {
-                mrc2 = (sms + 1) ? sms / 2 : mrc;
+                mrc2 = (smsIsDefined) ? sms / 2 : mrc;
             } else {
-                mrc2 = (usms + 1) ? usms / 2 : mrc;
+                mrc2 = (usmsIsDefined) ? usms / 2 : mrc;
             }
 
             pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2));

@@ -382,6 +382,9 @@ exports.coerceHoverinfo = function(traceIn, traceOut, layoutOut) {
  *  default selection behavior while allowing to be overtaken by any other
  *  [un]selected attribute.
  *
+ *  N.B. This must be called *after* coercing all the other [un]selected attrs,
+ *  to give the intended result.
+ *
  * @param {object} traceOut : fullData item
  * @param {function} coerce : lib.coerce wrapper with implied first three arguments
  */

@@ -866,6 +866,34 @@ describe('Test Scatter.style', function() {
         })
         .then(function() {
             return check(
+                {selectedpoints: [[1, 2]]},
+                [[0.12, 1, 1], [0.1, 1, 1]],
+                'selected pt 1-2 w/ set selected.marker.opacity'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[2]]},
+                [[0.12, 0.12, 1], [0.1, 0.1, 1]],
+                'selected pt 2 w/ set selected.marker.opacity'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: null},
+                [[0.6, 0.6, 0.6], [0.5, 0.5, 0.5]],
+                'no selected pts w/ set selected.marker.opacity'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[1]]},
+                [[0.12, 1, 0.12], [0.1, 1, 0.1]],
+                'selected pt 1 w/o [un]selected setting (take 2)'
+            );
+        })
+        .then(function() {
+            return check(
                 {'unselected.marker.opacity': 0},
                 [[0, 1, 0], [0, 1, 0]],
                 'selected pt 1 w/ set [un]selected.marker.opacity'
@@ -928,6 +956,27 @@ describe('Test Scatter.style', function() {
                 null,
                 [[1, 1, 1], [1, 1, 1]],
                 'selected pts 0-2 w/o [un]selected setting [should NOT change opacity]'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[1, 2]]},
+                [[b, y, y], [r, y, y]],
+                'selected pt 1-2 w/ set selected.marker.color'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: null},
+                [[b, b, b], [r, g, b]],
+                'no selected pts w/ set selected.marker.color'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[0, 2]]},
+                [[y, b, y], [y, g, y]],
+                'selected pts 0-2 w/ set selected.marker.color (take 2)'
             );
         })
         .then(function() {
