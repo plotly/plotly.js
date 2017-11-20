@@ -751,21 +751,21 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 .call(Drawing.setTranslate, clipDx, clipDy)
                 .call(Drawing.setScale, xScaleFactor2, yScaleFactor2);
 
-            var scatterPoints = subplot.plot.selectAll('.scatterlayer .points, .boxlayer .points');
+            var traceGroups = subplot.plot
+                .selectAll('.scatterlayer .trace, .boxlayer .trace');
 
             subplot.plot
                 .call(Drawing.setTranslate, plotDx, plotDy)
                 .call(Drawing.setScale, 1 / xScaleFactor2, 1 / yScaleFactor2);
 
-            // This is specifically directed at scatter traces, applying an inverse
-            // scale to individual points to counteract the scale of the trace
-            // as a whole:
-            scatterPoints.selectAll('.point')
-                .call(Drawing.setPointGroupScale, xScaleFactor2, yScaleFactor2)
-                .call(Drawing.hideOutsideRangePoints, subplot);
-
-            scatterPoints.selectAll('.textpoint')
-                .call(Drawing.setTextPointsScale, xScaleFactor2, yScaleFactor2)
+            // This is specifically directed at marker points in scatter, box and violin traces,
+            // applying an inverse scale to individual points to counteract
+            // the scale of the trace as a whole:
+            traceGroups.selectAll('.point')
+                .call(Drawing.setPointGroupScale, xScaleFactor2, yScaleFactor2);
+            traceGroups.selectAll('.textpoint')
+                .call(Drawing.setTextPointsScale, xScaleFactor2, yScaleFactor2);
+            traceGroups
                 .call(Drawing.hideOutsideRangePoints, subplot);
         }
     }
