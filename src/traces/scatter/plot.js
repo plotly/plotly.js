@@ -445,7 +445,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
 
                 if(plotinfo.layerClipId) {
-                    Drawing.hideOutsideRangePoint(d, sel, xa, ya);
+                    Drawing.hideOutsideRangePoint(d, sel, xa, ya, trace.xcalendar, trace.ycalendar);
                 }
 
                 if(trace.customdata) {
@@ -481,7 +481,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
             if(hasNode) {
                 if(plotinfo.layerClipId) {
-                    Drawing.hideOutsideRangePoint(d, g, xa, ya);
+                    Drawing.hideOutsideRangePoint(d, g, xa, ya, trace.xcalendar, trace.ycalendar);
                 }
             } else {
                 g.remove();

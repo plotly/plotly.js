@@ -35,7 +35,7 @@
     },
     {
       "mode": "markers",
-      "x": [1, 1, 2, 3, 3, 2],
+      "x": ["a", "a", "b", "c", "c", "b"],
       "y": [2, 1, 1, 1, 2, 2],
       "marker": {
         "size": [15, 20, 40, 25, 50, 40],
@@ -75,7 +75,7 @@
     },
     "xaxis2": {
       "anchor": "y2",
-      "range": [1, 3],
+      "range": [0, 2],
       "domain": [0.52, 1],
       "showline": true,
       "linewidth": 2,

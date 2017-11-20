@@ -92,10 +92,10 @@ drawing.translatePoints = function(s, xa, ya) {
     });
 };
 
-drawing.hideOutsideRangePoint = function(d, sel, xa, ya) {
+drawing.hideOutsideRangePoint = function(d, sel, xa, ya, xcalendar, ycalendar) {
     sel.attr(
         'display',
-        xa.isPtWithinRange(d) && ya.isPtWithinRange(d) ? null : 'none'
+        (xa.isPtWithinRange(d, xcalendar) && ya.isPtWithinRange(d, ycalendar)) ? null : 'none'
     );
 };
 
@@ -106,8 +106,12 @@ drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
     var ya = subplot.yaxis;
 
     traceGroups.each(function(d) {
+        var trace = d[0].trace;
+        var xcalendar = trace.xcalendar;
+        var ycalendar = trace.ycalendar;
+
         traceGroups.selectAll('.point,.textpoint').each(function(d) {
-            drawing.hideOutsideRangePoint(d, d3.select(this), xa, ya);
+            drawing.hideOutsideRangePoint(d, d3.select(this), xa, ya, xcalendar, ycalendar);
         });
     });
 };

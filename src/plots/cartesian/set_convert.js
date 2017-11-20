@@ -435,17 +435,14 @@ module.exports = function setConvert(ax, fullLayout) {
         );
     };
 
-    if(axLetter === 'x') {
-        ax.isPtWithinRange = function(d) {
-            var x = d.x;
-            return x >= ax.range[0] && x <= ax.range[1];
-        };
-    } else {
-        ax.isPtWithinRange = function(d) {
-            var y = d.y;
-            return y >= ax.range[0] && y <= ax.range[1];
-        };
-    }
+    ax.isPtWithinRange = function(d, calendar) {
+        var coord = ax.c2l(d[axLetter], null, calendar);
+
+        return (
+            coord >= ax.r2l(ax.range[0]) &&
+            coord <= ax.r2l(ax.range[1])
+        );
+    };
 
     // for autoranging: arrays of objects:
     //      {val: axis value, pad: pixel padding}
