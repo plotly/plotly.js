@@ -752,7 +752,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 .call(Drawing.setScale, xScaleFactor2, yScaleFactor2);
 
             var traceGroups = subplot.plot
-                .selectAll('.scatterlayer .trace, .boxlayer .trace');
+                .selectAll('.scatterlayer .trace, .boxlayer .trace, .violinlayer .trace');
 
             subplot.plot
                 .call(Drawing.setTranslate, plotDx, plotDy)
