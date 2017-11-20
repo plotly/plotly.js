@@ -28,6 +28,24 @@
           [1, "rgb(178,10,28)"]
         ]
       }
+    },
+    {
+      "type": "scattermapbox",
+      "selectedpoints": [1],
+      "mode": "markers",
+      "lon": [-10, -20, -30],
+      "lat": [10, 20, 30],
+      "marker": {"size": 20},
+      "selected": {
+        "marker": {
+          "opacity": 0.8
+        }
+      },
+      "unselected": {
+        "marker": {
+          "opacity": 0.5
+        }
+      }
     }
   ],
   "layout": {

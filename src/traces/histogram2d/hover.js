@@ -27,7 +27,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
 
     pointData.xLabel = hoverLabelText(pointData.xa, xRange[0], xRange[1]);
     pointData.yLabel = hoverLabelText(pointData.ya, yRange[0], yRange[1]);
-    pointData.pts = cd0.pts[ny][nx];
 
     return pts;
 };

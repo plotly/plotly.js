@@ -22,7 +22,6 @@ var cleanBins = require('./clean_bins');
 var oneMonth = require('../../constants/numerical').ONEAVGMONTH;
 var getBinSpanLabelRound = require('./bin_label_vals');
 
-
 module.exports = function calc(gd, trace) {
     // ignore as much processing as possible (and including in autorange) if bar is not visible
     if(trace.visible !== true) return;
@@ -113,11 +112,13 @@ module.exports = function calc(gd, trace) {
         };
     }
 
+    // bin the data
+    // and make histogram-specific pt-number-to-cd-index map object
     var nMax = size.length;
     var uniqueValsPerBin = true;
     var leftGap = Infinity;
     var rightGap = Infinity;
-    // bin the data
+    var ptNumber2cdIndex = {};
     for(i = 0; i < pos0.length; i++) {
         var posi = pos0[i];
         n = Lib.findBin(posi, bins);
@@ -127,6 +128,7 @@ module.exports = function calc(gd, trace) {
                 uniqueValsPerBin = false;
             }
             inputPoints[n].push(i);
+            ptNumber2cdIndex[i] = n;
 
             leftGap = Math.min(leftGap, posi - binEdges[n]);
             rightGap = Math.min(rightGap, binEdges[n + 1] - posi);
@@ -196,6 +198,10 @@ module.exports = function calc(gd, trace) {
     }
 
     arraysToCalcdata(cd, trace);
+
+    if(Array.isArray(trace.selectedpoints)) {
+        Lib.tagSelected(cd, trace, ptNumber2cdIndex);
+    }
 
     return cd;
 };

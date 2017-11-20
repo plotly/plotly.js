@@ -16,10 +16,10 @@ var Axes = require('../../plots/cartesian/axes');
 var subTypes = require('../scatter/subtypes');
 var calcColorscale = require('../scatter/colorscale_calc');
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
+var calcSelection = require('../scatter/calc_selection');
 
 var dataArrays = ['a', 'b', 'c'];
 var arraysToFill = {a: ['b', 'c'], b: ['a', 'c'], c: ['a', 'b']};
-
 
 module.exports = function calc(gd, trace) {
     var ternary = gd._fullLayout[trace.subplot],
@@ -90,6 +90,7 @@ module.exports = function calc(gd, trace) {
 
     calcColorscale(trace);
     arraysToCalcdata(cd, trace);
+    calcSelection(cd, trace);
 
     return cd;
 };

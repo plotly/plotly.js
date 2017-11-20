@@ -14,6 +14,8 @@ var mergeArray = require('../../lib').mergeArray;
 
 // arrayOk attributes, merge them into calcdata array
 module.exports = function arraysToCalcdata(cd, trace) {
+    for(var i = 0; i < cd.length; i++) cd[i].i = i;
+
     mergeArray(trace.text, cd, 'tx');
     mergeArray(trace.hovertext, cd, 'htx');
 

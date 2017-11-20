@@ -118,6 +118,9 @@ module.exports = overrideAll({
     },
     fillcolor: scatterAttrs.fillcolor,
 
+    selected: scatterAttrs.selected,
+    unselected: scatterAttrs.unselected,
+
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'location', 'text', 'name']
     })

@@ -17,6 +17,7 @@ var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
+var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 
 exports.valObjectMeta = {
     data_array: {
@@ -390,6 +391,38 @@ exports.coerceHoverinfo = function(traceIn, traceOut, layoutOut) {
     }
 
     return exports.coerce(traceIn, traceOut, attrs, 'hoverinfo', dflt);
+};
+
+/** Coerce shortcut for [un]selected.marker.opacity,
+ *  which has special default logic, to ensure that it corresponds to the
+ *  default selection behavior while allowing to be overtaken by any other
+ *  [un]selected attribute.
+ *
+ *  N.B. This must be called *after* coercing all the other [un]selected attrs,
+ *  to give the intended result.
+ *
+ * @param {object} traceOut : fullData item
+ * @param {function} coerce : lib.coerce wrapper with implied first three arguments
+ */
+exports.coerceSelectionMarkerOpacity = function(traceOut, coerce) {
+    if(!traceOut.marker) return;
+
+    var mo = traceOut.marker.opacity;
+    var smoDflt;
+    var usmoDflt;
+
+    // Don't give [un]selected.marker.opacity a default value if
+    // marker.opacity is an array: handle this during style step.
+    //
+    // Only give [un]selected.marker.opacity a default value if you don't
+    // set any other [un]selected attributes.
+    if(!Array.isArray(mo) && !traceOut.selected && !traceOut.unselected) {
+        smoDflt = mo;
+        usmoDflt = DESELECTDIM * mo;
+    }
+
+    coerce('selected.marker.opacity', smoDflt);
+    coerce('unselected.marker.opacity', usmoDflt);
 };
 
 exports.validate = function(value, opts) {

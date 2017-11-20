@@ -16,9 +16,7 @@ var handleMarkerDefaults = require('../scatter/marker_defaults');
 var handleLineDefaults = require('../scatter/line_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
-
 var attributes = require('./attributes');
-
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -41,7 +39,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true});
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true, noSelect: true});
 
         // array marker.size and marker.color are only supported with circles
 
@@ -56,13 +54,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasText(traceOut)) {
-        handleTextDefaults(traceIn, traceOut, layout, coerce);
+        handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
     }
 
     coerce('fill');
     if(traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
 function handleLonLatDefaults(traceIn, traceOut, coerce) {

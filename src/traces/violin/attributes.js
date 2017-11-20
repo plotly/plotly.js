@@ -229,6 +229,9 @@ module.exports = {
         ].join(' ')
     },
 
+    selected: boxAttrs.selected,
+    unselected: boxAttrs.unselected,
+
     hoveron: {
         valType: 'flaglist',
         flags: ['violins', 'points', 'kde'],

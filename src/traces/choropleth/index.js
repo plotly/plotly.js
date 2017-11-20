@@ -16,6 +16,7 @@ Choropleth.supplyDefaults = require('./defaults');
 Choropleth.colorbar = require('../heatmap/colorbar');
 Choropleth.calc = require('./calc');
 Choropleth.plot = require('./plot');
+Choropleth.style = require('./style');
 Choropleth.hoverPoints = require('./hover');
 Choropleth.eventData = require('./event_data');
 Choropleth.selectPoints = require('./select');

@@ -8,20 +8,17 @@
 
 'use strict';
 
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
-
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
     var selection = [];
-    var node3 = cd[0].node3;
 
     var i, di, ct, x, y;
 
     if(polygon === false) {
         for(i = 0; i < cd.length; i++) {
-            cd[i].dim = 0;
+            cd[i].selected = 0;
         }
     } else {
         for(i = 0; i < cd.length; i++) {
@@ -39,16 +36,12 @@ module.exports = function selectPoints(searchInfo, polygon) {
                     lon: ct[0],
                     lat: ct[1]
                 });
-                di.dim = 0;
+                di.selected = 1;
             } else {
-                di.dim = 1;
+                di.selected = 0;
             }
         }
     }
-
-    node3.selectAll('path').style('opacity', function(d) {
-        return d.dim ? DESELECTDIM : 1;
-    });
 
     return selection;
 };

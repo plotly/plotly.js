@@ -8,7 +8,7 @@
 
 'use strict';
 
-var ScatterGeoAttrs = require('../scattergeo/attributes');
+var scatterGeoAttrs = require('../scattergeo/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var plotAttrs = require('../../plots/attributes');
@@ -17,7 +17,7 @@ var extend = require('../../lib/extend');
 var extendFlat = extend.extendFlat;
 var extendDeepAll = extend.extendDeepAll;
 
-var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
+var scatterGeoMarkerLineAttrs = scatterGeoAttrs.marker.line;
 
 module.exports = extendFlat({
     locations: {
@@ -28,23 +28,49 @@ module.exports = extendFlat({
             'See `locationmode` for more info.'
         ].join(' ')
     },
-    locationmode: ScatterGeoAttrs.locationmode,
+    locationmode: scatterGeoAttrs.locationmode,
     z: {
         valType: 'data_array',
         editType: 'calc',
         description: 'Sets the color values.'
     },
-    text: extendFlat({}, ScatterGeoAttrs.text, {
+    text: extendFlat({}, scatterGeoAttrs.text, {
         description: 'Sets the text elements associated with each location.'
     }),
     marker: {
         line: {
-            color: ScatterGeoMarkerLineAttrs.color,
-            width: extendFlat({}, ScatterGeoMarkerLineAttrs.width, {dflt: 1}),
+            color: scatterGeoMarkerLineAttrs.color,
+            width: extendFlat({}, scatterGeoMarkerLineAttrs.width, {dflt: 1}),
             editType: 'calc'
+        },
+        opacity: {
+            valType: 'number',
+            arrayOk: true,
+            min: 0,
+            max: 1,
+            dflt: 1,
+            role: 'style',
+            editType: 'style',
+            description: 'Sets the opacity of the locations.'
         },
         editType: 'calc'
     },
+
+    selected: {
+        marker: {
+            opacity: scatterGeoAttrs.selected.marker.opacity,
+            editType: 'plot'
+        },
+        editType: 'plot'
+    },
+    unselected: {
+        marker: {
+            opacity: scatterGeoAttrs.unselected.marker.opacity,
+            editType: 'plot'
+        },
+        editType: 'plot'
+    },
+
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         editType: 'calc',
         flags: ['location', 'z', 'text', 'name']

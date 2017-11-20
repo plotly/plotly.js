@@ -9,7 +9,6 @@
 'use strict';
 
 var subtypes = require('../scatter/subtypes');
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd;
@@ -17,19 +16,15 @@ module.exports = function selectPoints(searchInfo, polygon) {
     var ya = searchInfo.yaxis;
     var selection = [];
     var trace = cd[0].trace;
-    var node3 = cd[0].node3;
 
     var di, lonlat, x, y, i;
 
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
     if(hasOnlyLines) return [];
 
-    var marker = trace.marker;
-    var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
-
     if(polygon === false) {
         for(i = 0; i < cd.length; i++) {
-            cd[i].dim = 0;
+            cd[i].selected = 0;
         }
     } else {
         for(i = 0; i < cd.length; i++) {
@@ -44,20 +39,12 @@ module.exports = function selectPoints(searchInfo, polygon) {
                     lon: lonlat[0],
                     lat: lonlat[1]
                 });
-                di.dim = 0;
+                di.selected = 1;
             } else {
-                di.dim = 1;
+                di.selected = 0;
             }
         }
     }
-
-    node3.selectAll('path.point').style('opacity', function(d) {
-        return ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
-    });
-
-    node3.selectAll('text').style('opacity', function(d) {
-        return d.dim ? DESELECTDIM : 1;
-    });
 
     return selection;
 };

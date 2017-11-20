@@ -128,6 +128,52 @@ describe('Test scatter', function() {
             expect(traceOut.xcalendar).toBe('coptic');
             expect(traceOut.ycalendar).toBe('ethiopian');
         });
+
+        describe('selected / unselected attribute containers', function() {
+            function _supply(patch) { traceIn = Lib.extendFlat({
+                mode: 'markers',
+                x: [1, 2, 3],
+                y: [2, 1, 2]
+            }, patch);
+                traceOut = {visible: true};
+                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            }
+
+            it('should fill in [un]selected.marker.opacity default when no other [un]selected is set', function() {
+                _supply({});
+                expect(traceOut.selected.marker.opacity).toBe(1);
+                expect(traceOut.unselected.marker.opacity).toBe(0.2);
+
+                _supply({ marker: {opacity: 0.6} });
+                expect(traceOut.selected.marker.opacity).toBe(0.6);
+                expect(traceOut.unselected.marker.opacity).toBe(0.12);
+            });
+
+            it('should not fill in [un]selected.marker.opacity default when some other [un]selected is set', function() {
+                _supply({
+                    selected: {marker: {size: 20}}
+                });
+                expect(traceOut.selected.marker.opacity).toBeUndefined();
+                expect(traceOut.selected.marker.size).toBe(20);
+                expect(traceOut.unselected).toBeUndefined();
+
+                _supply({
+                    unselected: {marker: {color: 'red'}}
+                });
+                expect(traceOut.selected).toBeUndefined();
+                expect(traceOut.unselected.marker.opacity).toBeUndefined();
+                expect(traceOut.unselected.marker.color).toBe('red');
+
+                _supply({
+                    mode: 'markers+text',
+                    selected: {textfont: {color: 'blue'}}
+                });
+                expect(traceOut.selected.marker).toBeUndefined();
+                expect(traceOut.selected.textfont.color).toBe('blue');
+                expect(traceOut.unselected).toBeUndefined();
+            });
+        });
+
     });
 
     describe('isBubble', function() {
@@ -732,6 +778,347 @@ describe('scatter hoverPoints', function() {
             expect(pts[0].text).toEqual('apple', 'hover text');
             expect(pts[1].text).toEqual('banana', 'hover text');
             expect(pts[2].text).toEqual('orange', 'hover text');
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
+
+describe('Test Scatter.style', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function makeCheckFn(attr, getterFn) {
+        return function(update, expectation, msg) {
+            var msg2 = ' (' + msg + ')';
+            var promise = update ? Plotly.restyle(gd, update) : Promise.resolve();
+            var selector = attr.indexOf('textfont') === 0 ? '.textpoint > text' : '.point';
+
+            return promise.then(function() {
+                d3.selectAll('.trace').each(function(_, i) {
+                    var pts = d3.select(this).selectAll(selector);
+                    var expi = expectation[i];
+
+                    expect(pts.size())
+                        .toBe(expi.length, '# of pts for trace ' + i + msg2);
+
+                    pts.each(function(_, j) {
+                        var msg3 = ' for pt ' + j + ' in trace ' + i + msg2;
+                        expect(getterFn(this)).toBe(expi[j], attr + msg3);
+                    });
+                });
+            });
+        };
+    }
+
+    var getOpacity = function(node) { return Number(node.style.opacity); };
+    var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
+    var getColor = function(node) { return node.style.fill; };
+    var getMarkerSize = function(node) {
+        // find path arc multiply by 2 to get the corresponding marker.size value
+        // (works for circles only)
+        return d3.select(node).attr('d').split('A')[1].split(',')[0] * 2;
+    };
+
+    var r = 'rgb(255, 0, 0)';
+    var g = 'rgb(0, 255, 0)';
+    var b = 'rgb(0, 0, 255)';
+    var y = 'rgb(255, 255, 0)';
+    var c = 'rgb(0, 255, 255)';
+
+    it('should style selected point marker opacity correctly', function(done) {
+        var check = makeCheckFn('marker.opacity', getOpacity);
+
+        Plotly.plot(gd, [{
+            mode: 'markers',
+            y: [1, 2, 1],
+            marker: {opacity: 0.6}
+        }, {
+            mode: 'markers',
+            y: [2, 1, 2],
+            marker: {opacity: [0.5, 0.5, 0.5]}
+        }])
+        .then(function() {
+            return check(
+                null,
+                [[0.6, 0.6, 0.6], [0.5, 0.5, 0.5]],
+                'base case'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[1]]},
+                [[0.12, 0.6, 0.12], [0.1, 0.5, 0.1]],
+                'selected pt 1 w/o [un]selected setting'
+            );
+        })
+        .then(function() {
+            return check(
+                {'selected.marker.opacity': 1},
+                [[0.12, 1, 0.12], [0.1, 1, 0.1]],
+                'selected pt 1 w/ set selected.marker.opacity'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[1, 2]]},
+                [[0.12, 1, 1], [0.1, 1, 1]],
+                'selected pt 1-2 w/ set selected.marker.opacity'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[2]]},
+                [[0.12, 0.12, 1], [0.1, 0.1, 1]],
+                'selected pt 2 w/ set selected.marker.opacity'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: null},
+                [[0.6, 0.6, 0.6], [0.5, 0.5, 0.5]],
+                'no selected pts w/ set selected.marker.opacity'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[1]]},
+                [[0.12, 1, 0.12], [0.1, 1, 0.1]],
+                'selected pt 1 w/o [un]selected setting (take 2)'
+            );
+        })
+        .then(function() {
+            return check(
+                {'unselected.marker.opacity': 0},
+                [[0, 1, 0], [0, 1, 0]],
+                'selected pt 1 w/ set [un]selected.marker.opacity'
+            );
+        })
+        .then(function() {
+            return check(
+                {'selected.marker.opacity': null},
+                [[0, 0.6, 0], [0, 0.5, 0]],
+                'selected pt 1 w/ set unselected.marker.opacity'
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should style selected point marker color correctly', function(done) {
+        var check = makeCheckFn('marker.color', getColor);
+        var checkOpacity = makeCheckFn('marker.opacity', getOpacity);
+
+        Plotly.plot(gd, [{
+            mode: 'markers',
+            y: [1, 2, 1],
+            marker: {color: b}
+        }, {
+            mode: 'markers',
+            y: [2, 1, 2],
+            marker: {color: [r, g, b]}
+        }])
+        .then(function() {
+            return check(
+                null,
+                [[b, b, b], [r, g, b]],
+                'base case'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[0, 2]]},
+                [[b, b, b], [r, g, b]],
+                'selected pts 0-2 w/o [un]selected setting'
+            );
+        })
+        .then(function() {
+            return checkOpacity(
+                null,
+                [[1, 0.2, 1], [1, 0.2, 1]],
+                'selected pts 0-2 w/o [un]selected setting [should just change opacity]'
+            );
+        })
+        .then(function() {
+            return check(
+                {'selected.marker.color': y},
+                [[y, b, y], [y, g, y]],
+                'selected pts 0-2 w/ set selected.marker.color'
+            );
+        })
+        .then(function() {
+            return checkOpacity(
+                null,
+                [[1, 1, 1], [1, 1, 1]],
+                'selected pts 0-2 w/o [un]selected setting [should NOT change opacity]'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[1, 2]]},
+                [[b, y, y], [r, y, y]],
+                'selected pt 1-2 w/ set selected.marker.color'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: null},
+                [[b, b, b], [r, g, b]],
+                'no selected pts w/ set selected.marker.color'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[0, 2]]},
+                [[y, b, y], [y, g, y]],
+                'selected pts 0-2 w/ set selected.marker.color (take 2)'
+            );
+        })
+        .then(function() {
+            return check(
+                {'unselected.marker.color': c},
+                [[y, c, y], [y, c, y]],
+                'selected pts 0-2 w/ set [un]selected.marker.color'
+            );
+        })
+        .then(function() {
+            return check(
+                {'selected.marker.color': null},
+                [[b, c, b], [r, c, b]],
+                'selected pts 0-2 w/ set selected.marker.color'
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should style selected point marker size correctly', function(done) {
+        var check = makeCheckFn('marker.size', getMarkerSize);
+
+        Plotly.plot(gd, [{
+            mode: 'markers',
+            y: [1, 2, 1],
+            marker: {size: 20}
+        }, {
+            mode: 'markers',
+            y: [2, 1, 2],
+            marker: {size: [15, 25, 35]}
+        }])
+        .then(function() {
+            return check(
+                null,
+                [[20, 20, 20], [15, 25, 35]],
+                'base case'
+            );
+        })
+        .then(function() {
+            return check(
+                {selectedpoints: [[0]], 'selected.marker.size': 40},
+                [[40, 20, 20], [40, 25, 35]],
+                'selected pt 0 w/ set selected.marker.size'
+            );
+        })
+        .then(function() {
+            return check(
+                {'unselected.marker.size': 0},
+                [[40, 0, 0], [40, 0, 0]],
+                'selected pt 0 w/ set [un]selected.marker.size'
+            );
+        })
+        .then(function() {
+            return check(
+                {'selected.marker.size': null},
+                [[20, 0, 0], [15, 0, 0]],
+                'selected pt 0 w/ set unselected.marker.size'
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should style selected point textfont correctly', function(done) {
+        var checkFontColor = makeCheckFn('textfont.color', getColor);
+        var checkFontOpacity = makeCheckFn('textfont.color (alpha channel)', getFillOpacity);
+        var checkPtOpacity = makeCheckFn('marker.opacity', getOpacity);
+
+        Plotly.plot(gd, [{
+            mode: 'markers+text',
+            y: [1, 2, 1],
+            text: 'TEXT',
+            textfont: {color: b}
+        }, {
+            mode: 'markers+text',
+            y: [2, 1, 2],
+            text: ['A', 'B', 'C'],
+            textfont: {color: [r, g, b]}
+        }])
+        .then(function() {
+            return checkFontColor(
+                null,
+                [[b, b, b], [r, g, b]],
+                'base case'
+            );
+        })
+        .then(function() {
+            return checkFontColor(
+                {selectedpoints: [[0, 2]]},
+                [[b, b, b], [r, g, b]],
+                'selected pts 0-2 w/o [un]selected setting'
+            );
+        })
+        .then(function() {
+            return checkFontOpacity(
+                null,
+                [[1, 0.2, 1], [1, 0.2, 1]],
+                'selected pts 0-2 w/o [un]selected setting [should change font color alpha]'
+            );
+        })
+        .then(function() {
+            return checkPtOpacity(
+                null,
+                [[1, 0.2, 1], [1, 0.2, 1]],
+                'selected pts 0-2 w/o [un]selected setting [should change pt opacity]'
+            );
+        })
+        .then(function() {
+            return checkFontColor(
+                {'selected.textfont.color': y},
+                [[y, b, y], [y, g, y]],
+                'selected pts 0-2 w/ set selected.textfont.color'
+            );
+        })
+        .then(function() {
+            return checkFontOpacity(
+                null,
+                [[1, 1, 1], [1, 1, 1]],
+                'selected pts 0-2 w set selected.textfont.color [should NOT change font color alpha]'
+            );
+        })
+        .then(function() {
+            return checkPtOpacity(
+                null,
+                [[1, 1, 1], [1, 1, 1]],
+                'selected pts 0-2 w/o [un]selected setting [should NOT change opacity]'
+            );
+        })
+        .then(function() {
+            return checkFontColor(
+                {'unselected.textfont.color': c},
+                [[y, c, y], [y, c, y]],
+                'selected pts 0-2 w/ set [un]selected.textfont.color'
+            );
+        })
+        .then(function() {
+            return checkFontColor(
+                {'selected.textfont.color': null},
+                [[b, c, b], [r, c, b]],
+                'selected pts 0-2 w/ set selected.textfont.color'
+            );
         })
         .catch(fail)
         .then(done);

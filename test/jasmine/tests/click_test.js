@@ -86,7 +86,7 @@ describe('Test click interactions:', function() {
 
             var pt = futureData.points[0];
             expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber',
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                 'x', 'y', 'xaxis', 'yaxis'
             ]);
             expect(pt.curveNumber).toEqual(0);
@@ -128,7 +128,7 @@ describe('Test click interactions:', function() {
 
             var pt = futureData.points[0];
             expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber',
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                 'x', 'y', 'xaxis', 'yaxis'
             ]);
             expect(pt.curveNumber).toEqual(0);
@@ -208,7 +208,7 @@ describe('Test click interactions:', function() {
 
             var pt = futureData.points[0];
             expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber',
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                 'x', 'y', 'xaxis', 'yaxis'
             ]);
             expect(pt.curveNumber).toEqual(0);
@@ -239,7 +239,7 @@ describe('Test click interactions:', function() {
 
             var pt = futureData.points[0];
             expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber',
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                 'x', 'y', 'xaxis', 'yaxis'
             ]);
             expect(pt.curveNumber).toEqual(0);
@@ -274,7 +274,7 @@ describe('Test click interactions:', function() {
 
                 var pt = futureData.points[0];
                 expect(Object.keys(pt)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber',
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
                     'x', 'y', 'xaxis', 'yaxis'
                 ]);
                 expect(pt.curveNumber).toEqual(0);

@@ -25,7 +25,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         var posLetter = trace.orientation === 'h' ? 'y' : 'x';
 
         pointData[posLetter + 'Label'] = hoverLabelText(pointData[posLetter + 'a'], di.p0, di.p1);
-        pointData.pts = di.pts;
     }
 
     return pts;
