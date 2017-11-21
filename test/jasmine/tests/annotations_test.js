@@ -141,14 +141,14 @@ describe('Test annotations', function() {
             expect(layoutOut.annotations[2]._yclick).toBe('A', 'category');
         });
 
-        it('should default to end for arrowanchor', function() {
+        it('should default to end for arrowside', function() {
             var layoutIn = {
                 annotations: [{ showarrow: true, arrowhead: 2 }]
             };
 
             var out = _supply(layoutIn);
 
-            expect(out[0].arrowanchor).toEqual('end');
+            expect(out[0].arrowside).toEqual('end');
         });
     });
 });

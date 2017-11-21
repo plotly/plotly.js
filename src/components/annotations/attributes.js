@@ -173,11 +173,21 @@ module.exports = {
         dflt: 1,
         role: 'style',
         editType: 'arraydraw',
-        description: 'Sets the annotation arrow head style.'
+        description: 'Sets the end annotation arrow head style.'
     },
-    arrowanchor: {
-        valType: 'enumerated',
-        values: ['end', 'start', 'start+end'],
+    startarrowhead: {
+        valType: 'integer',
+        min: 0,
+        max: ARROWPATHS.length,
+        dflt: 1,
+        role: 'style',
+        editType: 'arraydraw',
+        description: 'Sets the start annotation arrow head style.'
+    },
+    arrowside: {
+        valType: 'flaglist',
+        flags: ['end', 'start'],
+        extras: ['none'],
         dflt: 'end',
         role: 'style',
         editType: 'arraydraw',
@@ -190,7 +200,18 @@ module.exports = {
         role: 'style',
         editType: 'calcIfAutorange',
         description: [
-            'Sets the size of the annotation arrow head, relative to `arrowwidth`.',
+            'Sets the size of the end annotation arrow head, relative to `arrowwidth`.',
+            'A value of 1 (default) gives a head about 3x as wide as the line.'
+        ].join(' ')
+    },
+    startarrowsize: {
+        valType: 'number',
+        min: 0.3,
+        dflt: 1,
+        role: 'style',
+        editType: 'calcIfAutorange',
+        description: [
+            'Sets the size of the start annotation arrow head, relative to `arrowwidth`.',
             'A value of 1 (default) gives a head about 3x as wide as the line.'
         ].join(' ')
     },
@@ -208,7 +229,21 @@ module.exports = {
         role: 'style',
         editType: 'calcIfAutorange',
         description: [
-            'Sets a distance, in pixels, to move the arrowhead away from the',
+            'Sets a distance, in pixels, to move the end arrowhead away from the',
+            'position it is pointing at, for example to point at the edge of',
+            'a marker independent of zoom. Note that this shortens the arrow',
+            'from the `ax` / `ay` vector, in contrast to `xshift` / `yshift`',
+            'which moves everything by this amount.'
+        ].join(' ')
+    },
+    startstandoff: {
+        valType: 'number',
+        min: 0,
+        dflt: 0,
+        role: 'style',
+        editType: 'calcIfAutorange',
+        description: [
+            'Sets a distance, in pixels, to move the start arrowhead away from the',
             'position it is pointing at, for example to point at the edge of',
             'a marker independent of zoom. Note that this shortens the arrow',
             'from the `ax` / `ay` vector, in contrast to `xshift` / `yshift`',
