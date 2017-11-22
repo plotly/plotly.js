@@ -10,8 +10,7 @@
 'use strict';
 
 var createGeo = require('./geo');
-var Plots = require('../../plots/plots');
-var getSubplotCalcData = require('../../plots/get_calcdata').getSubplotCalcData;
+var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
 var counterRegex = require('../../lib').counterRegex;
 
 var GEO = 'geo';
@@ -33,7 +32,7 @@ exports.supplyLayoutDefaults = require('./layout/defaults');
 exports.plot = function plotGeo(gd) {
     var fullLayout = gd._fullLayout;
     var calcData = gd.calcdata;
-    var geoIds = Plots.getSubplotIds(fullLayout, GEO);
+    var geoIds = fullLayout._subplots[GEO];
 
     /**
      * If 'plotly-geo-assets.js' is not included,
@@ -66,7 +65,7 @@ exports.plot = function plotGeo(gd) {
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldGeoKeys = Plots.getSubplotIds(oldFullLayout, GEO);
+    var oldGeoKeys = oldFullLayout._subplots[GEO] || [];
 
     for(var i = 0; i < oldGeoKeys.length; i++) {
         var oldGeoKey = oldGeoKeys[i];
@@ -80,7 +79,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 };
 
 exports.updateFx = function(fullLayout) {
-    var subplotIds = Plots.getSubplotIds(fullLayout, GEO);
+    var subplotIds = fullLayout._subplots[GEO];
 
     for(var i = 0; i < subplotIds.length; i++) {
         var subplotLayout = fullLayout[subplotIds[i]];

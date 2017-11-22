@@ -13,7 +13,7 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var fxAttrs = require('../../components/fx/layout_attributes');
 
 var Scene = require('./scene');
-var Plots = require('../plots');
+var getSubplotData = require('../get_data').getSubplotData;
 var Lib = require('../../lib');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
@@ -40,13 +40,13 @@ exports.baseLayoutAttrOverrides = overrideAll({
 exports.supplyLayoutDefaults = require('./layout/defaults');
 
 exports.plot = function plotGl3d(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        sceneIds = Plots.getSubplotIds(fullLayout, GL3D);
+    var fullLayout = gd._fullLayout;
+    var fullData = gd._fullData;
+    var sceneIds = fullLayout._subplots[GL3D];
 
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
-            fullSceneData = Plots.getSubplotData(fullData, GL3D, sceneId),
+            fullSceneData = getSubplotData(fullData, GL3D, sceneId),
             sceneLayout = fullLayout[sceneId],
             scene = sceneLayout._scene;
 
@@ -75,7 +75,7 @@ exports.plot = function plotGl3d(gd) {
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, GL3D);
+    var oldSceneKeys = oldFullLayout._subplots[GL3D] || [];
 
     for(var i = 0; i < oldSceneKeys.length; i++) {
         var oldSceneKey = oldSceneKeys[i];
@@ -93,14 +93,14 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 };
 
 exports.toSVG = function(gd) {
-    var fullLayout = gd._fullLayout,
-        sceneIds = Plots.getSubplotIds(fullLayout, GL3D),
-        size = fullLayout._size;
+    var fullLayout = gd._fullLayout;
+    var sceneIds = fullLayout._subplots[GL3D];
+    var size = fullLayout._size;
 
     for(var i = 0; i < sceneIds.length; i++) {
-        var sceneLayout = fullLayout[sceneIds[i]],
-            domain = sceneLayout.domain,
-            scene = sceneLayout._scene;
+        var sceneLayout = fullLayout[sceneIds[i]];
+        var domain = sceneLayout.domain;
+        var scene = sceneLayout._scene;
 
         var imageData = scene.toImage('png');
         var image = fullLayout._glimages.append('svg:image');
@@ -130,7 +130,7 @@ exports.cleanId = function cleanId(id) {
 };
 
 exports.updateFx = function(fullLayout) {
-    var subplotIds = Plots.getSubplotIds(fullLayout, GL3D);
+    var subplotIds = fullLayout._subplots[GL3D];
 
     for(var i = 0; i < subplotIds.length; i++) {
         var subplotObj = fullLayout[subplotIds[i]]._scene;

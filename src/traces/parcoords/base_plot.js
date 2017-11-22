@@ -9,7 +9,7 @@
 'use strict';
 
 var d3 = require('d3');
-var getModuleCalcData = require('../../plots/get_calcdata').getModuleCalcData;
+var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var parcoordsPlot = require('./plot');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 

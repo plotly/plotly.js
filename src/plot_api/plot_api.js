@@ -276,7 +276,7 @@ Plotly.plot = function(gd, data, layout, config) {
             return;
         }
 
-        var subplots = Plots.getSubplotIds(fullLayout, 'cartesian');
+        var subplots = fullLayout._subplots.cartesian;
         var modules = fullLayout._modules;
         var setPositionsArray = [];
 
@@ -2052,7 +2052,7 @@ function _relayout(gd, aobj) {
     }
 
     // figure out if we need to recalculate axis constraints
-    var constraints = fullLayout._axisConstraintGroups;
+    var constraints = fullLayout._axisConstraintGroups || [];
     for(axId in rangesAltered) {
         for(i = 0; i < constraints.length; i++) {
             var group = constraints[i];

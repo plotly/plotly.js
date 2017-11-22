@@ -309,8 +309,8 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(countCanvases()).toEqual(1);
             expect(gd.layout.scene).toEqual(sceneLayout);
-            expect(gd.layout.xaxis).toBeUndefined();
-            expect(gd.layout.yaxis).toBeUndefined();
+            expect(gd.layout.xaxis === undefined).toBe(true);
+            expect(gd.layout.yaxis === undefined).toBe(true);
             expect(gd._fullLayout._has('gl3d')).toBe(true);
             expect(gd._fullLayout.scene._scene).toBeDefined();
 
@@ -322,7 +322,7 @@ describe('Test gl3d plots', function() {
             expect(gd.layout.xaxis).toBeDefined();
             expect(gd.layout.yaxis).toBeDefined();
             expect(gd._fullLayout._has('gl3d')).toBe(false);
-            expect(gd._fullLayout.scene).toBeUndefined();
+            expect(gd._fullLayout.scene === undefined).toBe(true);
 
             return Plotly.restyle(gd, 'type', 'scatter3d');
         })
@@ -349,7 +349,7 @@ describe('Test gl3d plots', function() {
         .then(function() {
             expect(countCanvases()).toEqual(0);
             expect(gd._fullLayout._has('gl3d')).toBe(false);
-            expect(gd._fullLayout.scene).toBeUndefined();
+            expect(gd._fullLayout.scene === undefined).toBe(true);
         })
         .then(done);
     });
@@ -424,7 +424,7 @@ describe('Test gl3d modebar handlers', function() {
     var gd, modeBar;
 
     function assertScenes(cont, attr, val) {
-        var sceneIds = Plots.getSubplotIds(cont, 'gl3d');
+        var sceneIds = cont._subplots.gl3d;
 
         sceneIds.forEach(function(sceneId) {
             var thisVal = Lib.nestedProperty(cont[sceneId], attr).get();
@@ -479,7 +479,7 @@ describe('Test gl3d modebar handlers', function() {
         expect(buttonZoom3d.isActive()).toBe(false);
 
         buttonZoom3d.click();
-        assertScenes(gd.layout, 'dragmode', 'zoom');
+        assertScenes(gd._fullLayout, 'dragmode', 'zoom');
         expect(gd.layout.dragmode).toBe(undefined);
         expect(gd._fullLayout.dragmode).toBe('zoom');
         expect(buttonTurntable.isActive()).toBe(false);
@@ -500,7 +500,7 @@ describe('Test gl3d modebar handlers', function() {
         expect(buttonPan3d.isActive()).toBe(false);
 
         buttonPan3d.click();
-        assertScenes(gd.layout, 'dragmode', 'pan');
+        assertScenes(gd._fullLayout, 'dragmode', 'pan');
         expect(gd.layout.dragmode).toBe(undefined);
         expect(gd._fullLayout.dragmode).toBe('zoom');
         expect(buttonTurntable.isActive()).toBe(false);
@@ -521,7 +521,7 @@ describe('Test gl3d modebar handlers', function() {
         expect(buttonOrbit.isActive()).toBe(false);
 
         buttonOrbit.click();
-        assertScenes(gd.layout, 'dragmode', 'orbit');
+        assertScenes(gd._fullLayout, 'dragmode', 'orbit');
         expect(gd.layout.dragmode).toBe(undefined);
         expect(gd._fullLayout.dragmode).toBe('zoom');
         expect(buttonTurntable.isActive()).toBe(false);
@@ -946,7 +946,12 @@ describe('Test gl2d plots', function() {
         var OBJECT_PER_TRACE = 2;
 
         var objects = function() {
-            return gd._fullLayout._plots.xy._scene2d.glplot.objects;
+            try {
+                return gd._fullLayout._plots.xy._scene2d.glplot.objects;
+            }
+            catch(e) {
+                return [];
+            }
         };
 
         Plotly.plot(gd, _mock)
@@ -969,7 +974,7 @@ describe('Test gl2d plots', function() {
             return Plotly.restyle(gd, 'visible', false);
         })
         .then(function() {
-            expect(gd._fullLayout._plots.xy._scene2d).toBeUndefined();
+            expect(objects().length).toBe(0);
 
             return Plotly.restyle(gd, 'visible', true);
         })
@@ -977,6 +982,7 @@ describe('Test gl2d plots', function() {
             expect(objects().length).toEqual(OBJECT_PER_TRACE);
             expect(objects()[0].data.length).not.toEqual(0);
         })
+        .catch(fail)
         .then(done);
     });
 
@@ -1603,13 +1609,13 @@ describe('Test gl3d annotations', function() {
         })
         .then(function() {
             assertAnnotationCntPerScene('scene', 1);
-            assertAnnotationCntPerScene('scene2', 0);
+            assertAnnotationCntPerScene('scene2', 2);
 
             return Plotly.deleteTraces(gd, [0]);
         })
         .then(function() {
-            assertAnnotationCntPerScene('scene', 0);
-            assertAnnotationCntPerScene('scene2', 0);
+            assertAnnotationCntPerScene('scene', 1);
+            assertAnnotationCntPerScene('scene2', 2);
         })
         .catch(fail)
         .then(done);

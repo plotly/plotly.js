@@ -721,8 +721,8 @@ describe('annotations autorange', function() {
                 text: 'LT',
                 x: -1,
                 y: 3,
-                xref: 'x5', // will be converted to 'x' and xaxis should autorange
-                yref: 'y5', // same 'y' -> yaxis
+                xref: 'xq', // will be converted to 'x' and xaxis should autorange
+                yref: 'yz', // same 'y' -> yaxis
                 ax: 50,
                 ay: 50
             }});

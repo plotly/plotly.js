@@ -36,7 +36,7 @@ describe('Test Geo layout defaults', function() {
     var layoutIn, layoutOut, fullData;
 
     beforeEach(function() {
-        layoutOut = {};
+        layoutOut = {_subplots: {geo: ['geo']}};
 
         // needs a geo-ref in a trace in order to be detected
         fullData = [{ type: 'scattergeo', geo: 'geo' }];
@@ -242,6 +242,7 @@ describe('Test Geo layout defaults', function() {
     });
 
     it('should add geo data-only geos into layoutIn (converse)', function() {
+        layoutOut._subplots.geo = [];
         layoutIn = {};
         fullData = [{ type: 'scatter' }];
 

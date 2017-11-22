@@ -12,8 +12,7 @@
 var mapboxgl = require('mapbox-gl');
 
 var Lib = require('../../lib');
-var Plots = require('../plots');
-var getSubplotCalcData = require('../../plots/get_calcdata').getSubplotCalcData;
+var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var createMapbox = require('./mapbox');
@@ -50,9 +49,9 @@ exports.layoutAttributes = require('./layout_attributes');
 exports.supplyLayoutDefaults = require('./layout_defaults');
 
 exports.plot = function plotMapbox(gd) {
-    var fullLayout = gd._fullLayout,
-        calcData = gd.calcdata,
-        mapboxIds = Plots.getSubplotIds(fullLayout, MAPBOX);
+    var fullLayout = gd._fullLayout;
+    var calcData = gd.calcdata;
+    var mapboxIds = fullLayout._subplots[MAPBOX];
 
     var accessToken = findAccessToken(gd, mapboxIds);
     mapboxgl.accessToken = accessToken;
@@ -92,7 +91,7 @@ exports.plot = function plotMapbox(gd) {
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldMapboxKeys = Plots.getSubplotIds(oldFullLayout, MAPBOX);
+    var oldMapboxKeys = oldFullLayout._subplots[MAPBOX] || [];
 
     for(var i = 0; i < oldMapboxKeys.length; i++) {
         var oldMapboxKey = oldMapboxKeys[i];
@@ -104,9 +103,9 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 };
 
 exports.toSVG = function(gd) {
-    var fullLayout = gd._fullLayout,
-        subplotIds = Plots.getSubplotIds(fullLayout, MAPBOX),
-        size = fullLayout._size;
+    var fullLayout = gd._fullLayout;
+    var subplotIds = fullLayout._subplots[MAPBOX];
+    var size = fullLayout._size;
 
     for(var i = 0; i < subplotIds.length; i++) {
         var opts = fullLayout[subplotIds[i]],
@@ -158,7 +157,7 @@ function findAccessToken(gd, mapboxIds) {
 }
 
 exports.updateFx = function(fullLayout) {
-    var subplotIds = Plots.getSubplotIds(fullLayout, MAPBOX);
+    var subplotIds = fullLayout._subplots[MAPBOX];
 
     for(var i = 0; i < subplotIds.length; i++) {
         var subplotObj = fullLayout[subplotIds[i]]._subplot;

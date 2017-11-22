@@ -19,7 +19,7 @@ var FROM_BL = require('../../constants/alignment').FROM_BL;
 
 exports.enforce = function enforceAxisConstraints(gd) {
     var fullLayout = gd._fullLayout;
-    var constraintGroups = fullLayout._axisConstraintGroups;
+    var constraintGroups = fullLayout._axisConstraintGroups || [];
 
     var i, j, axisID, ax, normScale, mode, factor;
 

@@ -32,7 +32,7 @@ describe('mapbox defaults', function() {
     var layoutIn, layoutOut, fullData;
 
     beforeEach(function() {
-        layoutOut = { font: { color: 'red' } };
+        layoutOut = { font: { color: 'red' }, _subplots: {mapbox: ['mapbox']} };
 
         // needs a mapbox-ref in a trace in order to be detected
         fullData = [{ type: 'scattermapbox', subplot: 'mapbox' }];
@@ -66,6 +66,7 @@ describe('mapbox defaults', function() {
         };
 
         fullData.push({ type: 'scattermapbox', subplot: 'mapbox2' });
+        layoutOut._subplots.mapbox.push('mapbox2');
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.mapbox.style).toEqual('light');
@@ -317,7 +318,9 @@ describe('@noCI, mapbox plots', function() {
         expect(countVisibleTraces(gd, modes)).toEqual(2);
 
         Plotly.restyle(gd, 'visible', false).then(function() {
-            expect(gd._fullLayout.mapbox).toBeUndefined();
+            expect(gd._fullLayout.mapbox === undefined).toBe(false);
+
+            expect(countVisibleTraces(gd, modes)).toEqual(0);
 
             return Plotly.restyle(gd, 'visible', true);
         })
@@ -381,7 +384,7 @@ describe('@noCI, mapbox plots', function() {
             return Plotly.deleteTraces(gd, [0, 1, 2]);
         })
         .then(function() {
-            expect(gd._fullLayout.mapbox).toBeUndefined();
+            expect(gd._fullLayout.mapbox === undefined).toBe(true);
 
             done();
         });

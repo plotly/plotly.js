@@ -15,6 +15,7 @@ var isNumeric = require('fast-isnumeric');
 var Plotly = require('../plotly');
 var PlotSchema = require('../plot_api/plot_schema');
 var Registry = require('../registry');
+var axisIDs = require('../plots/cartesian/axis_ids');
 var Lib = require('../lib');
 var _ = Lib._;
 var Color = require('../components/color');
@@ -38,7 +39,6 @@ plots.layoutAttributes = require('./layout_attributes');
 // TODO make this a plot attribute?
 plots.fontWeight = 'normal';
 
-var subplotsRegistry = plots.subplotsRegistry;
 var transformsRegistry = plots.transformsRegistry;
 
 var ErrorBars = require('../components/errorbars');
@@ -49,118 +49,6 @@ plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
 plots.manageCommandObserver = commandModule.manageCommandObserver;
 plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
 
-/**
- * Find subplot ids in data.
- * Meant to be used in the defaults step.
- *
- * Use plots.getSubplotIds to grab the current
- * subplot ids later on in Plotly.plot.
- *
- * @param {array} data plotly data array
- *      (intended to be _fullData, but does not have to be).
- * @param {string} type subplot type to look for.
- *
- * @return {array} list of subplot ids (strings).
- *      N.B. these ids possibly un-ordered.
- *
- * TODO incorporate cartesian/gl2d axis finders in this paradigm.
- */
-plots.findSubplotIds = function findSubplotIds(data, type) {
-    var subplotIds = [];
-
-    if(!plots.subplotsRegistry[type]) return subplotIds;
-
-    var attr = plots.subplotsRegistry[type].attr;
-
-    for(var i = 0; i < data.length; i++) {
-        var trace = data[i];
-
-        if(plots.traceIs(trace, type) && subplotIds.indexOf(trace[attr]) === -1) {
-            subplotIds.push(trace[attr]);
-        }
-    }
-
-    return subplotIds;
-};
-
-/**
- * Get the ids of the current subplots.
- *
- * @param {object} layout plotly full layout object.
- * @param {string} type subplot type to look for.
- *
- * @return {array} list of ordered subplot ids (strings).
- *
- */
-plots.getSubplotIds = function getSubplotIds(layout, type) {
-    var _module = plots.subplotsRegistry[type];
-
-    if(!_module) return [];
-
-    // layout must be 'fullLayout' here
-    if(type === 'cartesian' && (!layout._has || !layout._has('cartesian'))) return [];
-    if(type === 'gl2d' && (!layout._has || !layout._has('gl2d'))) return [];
-    if(type === 'cartesian' || type === 'gl2d') {
-        return Object.keys(layout._plots || {});
-    }
-
-    var attrRegex = _module.attrRegex,
-        layoutKeys = Object.keys(layout),
-        subplotIds = [];
-
-    for(var i = 0; i < layoutKeys.length; i++) {
-        var layoutKey = layoutKeys[i];
-
-        if(attrRegex.test(layoutKey)) subplotIds.push(layoutKey);
-    }
-
-    // order the ids
-    var idLen = _module.idRoot.length;
-    subplotIds.sort(function(a, b) {
-        var aNum = +(a.substr(idLen) || 1),
-            bNum = +(b.substr(idLen) || 1);
-        return aNum - bNum;
-    });
-
-    return subplotIds;
-};
-
-/**
- * Get the data trace(s) associated with a given subplot.
- *
- * @param {array} data  plotly full data array.
- * @param {string} type subplot type to look for.
- * @param {string} subplotId subplot id to look for.
- *
- * @return {array} list of trace objects.
- *
- */
-plots.getSubplotData = function getSubplotData(data, type, subplotId) {
-    if(!plots.subplotsRegistry[type]) return [];
-
-    var attr = plots.subplotsRegistry[type].attr,
-        subplotData = [],
-        trace;
-
-    for(var i = 0; i < data.length; i++) {
-        trace = data[i];
-
-        if(type === 'gl2d' && plots.traceIs(trace, 'gl2d')) {
-            var spmatch = Plotly.Axes.subplotMatch,
-                subplotX = 'x' + subplotId.match(spmatch)[1],
-                subplotY = 'y' + subplotId.match(spmatch)[2];
-
-            if(trace[attr[0]] === subplotX && trace[attr[1]] === subplotY) {
-                subplotData.push(trace);
-            }
-        }
-        else {
-            if(trace[attr] === subplotId) subplotData.push(trace);
-        }
-    }
-
-    return subplotData;
-};
 
 // in some cases the browser doesn't seem to know how big
 // the text is at first, so it needs to draw it,
@@ -459,6 +347,11 @@ plots.supplyDefaults = function(gd) {
     // keep track of how many traces are inputted
     newFullLayout._dataLength = newData.length;
 
+    // clear the lists of trace and baseplot modules, and subplots
+    newFullLayout._modules = [];
+    newFullLayout._basePlotModules = [];
+    newFullLayout._subplots = emptySubplotLists();
+
     // then do the data
     newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
     plots.supplyDataDefaults(newData, newFullData, newLayout, newFullLayout);
@@ -504,7 +397,7 @@ plots.supplyDefaults = function(gd) {
     plots.doAutoMargin(gd);
 
     // set scale after auto margin routine
-    var axList = Plotly.Axes.list(gd);
+    var axList = axisIDs.list(gd);
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         ax.setScale();
@@ -525,6 +418,50 @@ plots.supplyDefaults = function(gd) {
         }
     }
 };
+
+/**
+ * Make a container for collecting subplots we need to display.
+ *
+ * Finds all subplot types we need to enumerate once and caches it,
+ * but makes a new output object each time.
+ * Single-trace subplots (which have no `id`) such as pie, table, etc
+ * do not need to be collected because we just draw all visible traces.
+ */
+var collectableSubplotTypes;
+function emptySubplotLists() {
+    var out = {};
+    var i, j;
+
+    if(!collectableSubplotTypes) {
+        collectableSubplotTypes = [];
+
+        var subplotsRegistry = Registry.subplotsRegistry;
+        var subplotTypes = Object.keys(subplotsRegistry);
+
+        for(i = 0; i < subplotTypes.length; i++) {
+            var subplotType = subplotTypes[i];
+            var subplotModule = subplotsRegistry[subplotType];
+            var subplotAttr = subplotModule.attr;
+
+            if(subplotAttr) {
+                collectableSubplotTypes.push(subplotType);
+
+                // special case, currently just for cartesian:
+                // we need to enumerate axes, not just subplots
+                if(Array.isArray(subplotAttr)) {
+                    for(j = 0; j < subplotAttr.length; j++) {
+                        Lib.pushUnique(collectableSubplotTypes, subplotAttr[j]);
+                    }
+                }
+            }
+        }
+    }
+
+    for(i = 0; i < collectableSubplotTypes.length; i++) {
+        out[collectableSubplotTypes[i]] = [];
+    }
+    return out;
+}
 
 function remapTransformedArrays(cd0, newTrace) {
     var oldTrace = cd0.trace;
@@ -738,23 +675,31 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
 };
 
 plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldSubplots = oldFullLayout._plots || {},
-        newSubplots = newFullLayout._plots = {};
+    var oldSubplots = oldFullLayout._plots || {};
+    var newSubplots = newFullLayout._plots = {};
+    var oldSubplotList = oldFullLayout._subplots || {};
+    var newSubplotList = newFullLayout._subplots;
 
     var mockGd = {
         _fullData: newFullData,
         _fullLayout: newFullLayout
     };
 
-    var ids = Plotly.Axes.getSubplots(mockGd);
+    var ids = newSubplotList.cartesian.concat(newSubplotList.gl2d || []);
 
-    var i;
+    var i, j, id, ax;
+
+    // sort subplot lists
+    var subplotTypes = Object.keys(newSubplotList);
+    for(i = 0; i < subplotTypes.length; i++) {
+        newSubplotList[subplotTypes[i]].sort(Lib.subplotSort);
+    }
 
     for(i = 0; i < ids.length; i++) {
-        var id = ids[i];
+        id = ids[i];
         var oldSubplot = oldSubplots[id];
-        var xaxis = Plotly.Axes.getFromId(mockGd, id, 'x');
-        var yaxis = Plotly.Axes.getFromId(mockGd, id, 'y');
+        var xaxis = axisIDs.getFromId(mockGd, id, 'x');
+        var yaxis = axisIDs.getFromId(mockGd, id, 'y');
         var plotinfo;
 
         if(oldSubplot) {
@@ -787,7 +732,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         // find this out here, once of for all.
         plotinfo._hasClipOnAxisFalse = false;
 
-        for(var j = 0; j < newFullData.length; j++) {
+        for(j = 0; j < newFullData.length; j++) {
             var trace = newFullData[j];
 
             if(
@@ -803,13 +748,13 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
     // while we're at it, link overlaying axes to their main axes and
     // anchored axes to the axes they're anchored to
-    var axList = Plotly.Axes.list(mockGd, null, true);
+    var axList = axisIDs.list(mockGd, null, true);
     for(i = 0; i < axList.length; i++) {
-        var ax = axList[i];
+        ax = axList[i];
         var mainAx = null;
 
         if(ax.overlaying) {
-            mainAx = Plotly.Axes.getFromId(mockGd, ax.overlaying);
+            mainAx = axisIDs.getFromId(mockGd, ax.overlaying);
 
             // you cannot overlay an axis that's already overlaying another
             if(mainAx && mainAx.overlaying) {
@@ -831,8 +776,60 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
         ax._anchorAxis = ax.anchor === 'free' ?
             null :
-            Plotly.Axes.getFromId(mockGd, ax.anchor);
+            axisIDs.getFromId(mockGd, ax.anchor);
     }
+
+    for(i = 0; i < axList.length; i++) {
+        // Figure out which subplot to draw ticks, labels, & axis lines on
+        // do this as a separate loop so we already have all the
+        // _mainAxis and _anchorAxis links set
+        ax = axList[i];
+        var isX = ax._id.charAt(0) === 'x';
+        var anchorAx = ax._mainAxis._anchorAxis;
+        var mainSubplotID = '';
+        var nextBestMainSubplotID = '';
+        var anchorID = '';
+        // First try the main ID with the anchor
+        if(anchorAx) {
+            anchorID = anchorAx._mainAxis._id;
+            mainSubplotID = isX ? (ax._id + anchorID) : (anchorID + ax._id);
+        }
+        // Then look for a subplot with the counteraxis overlaying the anchor
+        // If that fails just use the first subplot including this axis
+        if(!mainSubplotID || ids.indexOf(mainSubplotID) === -1) {
+            mainSubplotID = '';
+            for(j = 0; j < ids.length; j++) {
+                id = ids[j];
+                var yIndex = id.indexOf('y');
+                var idPart = isX ? id.substr(0, yIndex) : id.substr(yIndex);
+                var counterPart = isX ? id.substr(yIndex) : id.substr(0, yIndex);
+                if(idPart === ax._id) {
+                    if(!nextBestMainSubplotID) nextBestMainSubplotID = id;
+                    var counterAx = axisIDs.getFromId(mockGd, counterPart);
+                    if(anchorID && counterAx.overlaying === anchorID) {
+                        mainSubplotID = id;
+                        break;
+                    }
+                }
+            }
+        }
+        ax._mainSubplot = mainSubplotID || nextBestMainSubplotID;
+    }
+
+    // and lastly, delete any titles we don't need anymore
+    // check if subplots have changed, and if so clear old titles
+    if(oldSubplotList.xaxis && oldSubplotList.yaxis) {
+        var oldAxIDs = oldSubplotList.xaxis.concat(oldSubplotList.yaxis);
+        var newAxIDs = newSubplotList.xaxis.concat(newSubplotList.yaxis);
+
+        for(i = 0; i < oldAxIDs.length; i++) {
+            if(newAxIDs.indexOf(oldAxIDs[i]) === -1) {
+                oldFullLayout._infolayer.selectAll('.g-' + oldAxIDs[i] + 'title').remove();
+            }
+        }
+    }
+
+
 };
 
 // This function clears any trace attributes with valType: color and
@@ -881,10 +878,12 @@ plots.clearExpandedTraceDefaultColors = function(trace) {
 
 
 plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
+    var modules = fullLayout._modules;
+    var basePlotModules = fullLayout._basePlotModules;
+    var cnt = 0;
+    var colorCnt = 0;
+
     var i, fullTrace, trace;
-    var modules = fullLayout._modules = [],
-        basePlotModules = fullLayout._basePlotModules = [],
-        cnt = 0;
 
     fullLayout._transformModules = [];
 
@@ -894,10 +893,19 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         var _module = fullTrace._module;
         if(!_module) return;
 
-        Lib.pushUnique(modules, _module);
+        if(fullTrace.visible === true) Lib.pushUnique(modules, _module);
         Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
 
         cnt++;
+
+        // TODO: do we really want color not to increment for explicitly invisible traces?
+        // This logic is weird, but matches previous behavior: traces that you explicitly
+        // set to visible:false do not increment the color, but traces WE determine to be
+        // empty or invalid (and thus set to visible:false) DO increment color.
+        // I kind of think we should just let all traces increment color, visible or not.
+        // see mock: axes-autotype-empty vs. a test of restyling visible: false that
+        // I can't find right now...
+        if(fullTrace._input.visible !== false) colorCnt++;
     }
 
     var carpetIndex = {};
@@ -905,7 +913,7 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
     for(i = 0; i < dataIn.length; i++) {
         trace = dataIn[i];
-        fullTrace = plots.supplyTraceDefaults(trace, cnt, fullLayout, i);
+        fullTrace = plots.supplyTraceDefaults(trace, colorCnt, fullLayout, i);
 
         fullTrace.index = i;
         fullTrace._input = trace;
@@ -1051,20 +1059,15 @@ plots.supplyFrameDefaults = function(frameIn) {
     return frameOut;
 };
 
-plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInIndex) {
+plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) {
     var colorway = layout.colorway || Color.defaults;
     var traceOut = {},
-        defaultColor = colorway[traceOutIndex % colorway.length];
+        defaultColor = colorway[colorIndex % colorway.length];
+
+    var i;
 
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
-    }
-
-    function coerceSubplotAttr(subplotType, subplotAttr) {
-        if(!plots.traceIs(traceOut, subplotType)) return;
-
-        return Lib.coerce(traceIn, traceOut,
-            plots.subplotsRegistry[subplotType].attributes, subplotAttr);
     }
 
     var visible = coerce('visible');
@@ -1073,26 +1076,45 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
     coerce('uid');
     coerce('name', layout._traceWord + ' ' + traceInIndex);
 
-    // coerce subplot attributes of all registered subplot types
-    var subplotTypes = Object.keys(subplotsRegistry);
-    for(var i = 0; i < subplotTypes.length; i++) {
-        var subplotType = subplotTypes[i];
+    // we want even invisible traces to make their would-be subplots visible
+    // so coerce the subplot id(s) now no matter what
+    var _module = plots.getModule(traceOut);
+    traceOut._module = _module;
+    if(_module) {
+        var basePlotModule = _module.basePlotModule;
+        var subplotAttr = basePlotModule.attr;
+        if(subplotAttr) {
+            var subplots = layout._subplots;
+            var subplotAttrs = basePlotModule.attributes;
+            var subplotId = '';
 
-        // done below (only when visible is true)
-        // TODO unified this pattern
-        if(['cartesian', 'gl2d'].indexOf(subplotType) !== -1) continue;
+            // TODO - currently if we draw an empty gl2d subplot, it draws
+            // nothing then gets stuck and you can't get it back without newPlot
+            // sort this out in the regl refactor? but for now just drop empty gl2d subplots
+            if(basePlotModule.name !== 'gl2d' || visible) {
+                if(Array.isArray(subplotAttr)) {
+                    for(i = 0; i < subplotAttr.length; i++) {
+                        var attri = subplotAttr[i];
+                        var vali = Lib.coerce(traceIn, traceOut, subplotAttrs, attri);
 
-        var attr = subplotsRegistry[subplotType].attr;
+                        if(subplots[attri]) Lib.pushUnique(subplots[attri], vali);
+                        subplotId += vali;
+                    }
+                }
+                else {
+                    subplotId = Lib.coerce(traceIn, traceOut, subplotAttrs, subplotAttr);
+                }
 
-        if(attr) coerceSubplotAttr(subplotType, attr);
+                if(subplots[basePlotModule.name]) {
+                    Lib.pushUnique(subplots[basePlotModule.name], subplotId);
+                }
+            }
+        }
     }
 
     if(visible) {
         coerce('customdata');
         coerce('ids');
-
-        var _module = plots.getModule(traceOut);
-        traceOut._module = _module;
 
         if(plots.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
@@ -1112,12 +1134,6 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
         }
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
-
-        coerceSubplotAttr('cartesian', 'xaxis');
-        coerceSubplotAttr('cartesian', 'yaxis');
-
-        coerceSubplotAttr('gl2d', 'xaxis');
-        coerceSubplotAttr('gl2d', 'yaxis');
 
         if(plots.traceIs(traceOut, 'notLegendIsolatable')) {
             // This clears out the legendonly state for traces like carpet that
@@ -1352,21 +1368,37 @@ function calculateReservedMargins(margins) {
 }
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, transitionData) {
+    var components = Object.keys(Registry.componentsRegistry);
+    var basePlotModules = layoutOut._basePlotModules;
     var i, _module;
 
-    // can't be be part of basePlotModules loop
-    // in order to handle the orphan axes case
-    Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+    var Cartesian = Registry.subplotsRegistry.cartesian;
+
+    // check if any components need to add more base plot modules
+    // that weren't captured by traces
+    for(i = 0; i < components.length; i++) {
+        _module = Registry.componentsRegistry[components[i]];
+
+        if(_module.includeBasePlot) {
+            _module.includeBasePlot(layoutIn, layoutOut);
+        }
+    }
+
+    // make sure we *at least* have some cartesian axes
+    if(!basePlotModules.length) {
+        basePlotModules.push(Cartesian);
+    }
+
+    // ensure all cartesian axes have at least one subplot
+    if(layoutOut._has('cartesian') || layoutOut._has('gl2d')) {
+        Cartesian.finalizeSubplots(layoutIn, layoutOut);
+    }
 
     // base plot module layout defaults
-    var basePlotModules = layoutOut._basePlotModules;
     for(i = 0; i < basePlotModules.length; i++) {
         _module = basePlotModules[i];
 
-        // done above already
-        if(_module.name === 'cartesian') continue;
-
-        // e.g. gl2d does not have a layout-defaults step
+        // e.g. pie does not have a layout-defaults step
         if(_module.supplyLayoutDefaults) {
             _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         }
@@ -1392,7 +1424,6 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
         }
     }
 
-    var components = Object.keys(Registry.componentsRegistry);
     for(i = 0; i < components.length; i++) {
         _module = Registry.componentsRegistry[components[i]];
 
@@ -2258,7 +2289,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 };
 
 plots.doCalcdata = function(gd, traces) {
-    var axList = Plotly.Axes.list(gd),
+    var axList = axisIDs.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout;
 

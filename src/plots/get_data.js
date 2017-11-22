@@ -9,6 +9,7 @@
 'use strict';
 
 var Registry = require('../registry');
+var SUBPLOT_PATTERN = require('./cartesian/constants').SUBPLOT_PATTERN;
 
 /**
  * Get calcdata traces(s) associated with a given subplot
@@ -49,4 +50,43 @@ exports.getModuleCalcData = function(calcdata, typeOrModule) {
     }
 
     return moduleCalcData;
+};
+
+/**
+ * Get the data trace(s) associated with a given subplot.
+ *
+ * @param {array} data  plotly full data array.
+ * @param {string} type subplot type to look for.
+ * @param {string} subplotId subplot id to look for.
+ *
+ * @return {array} list of trace objects.
+ *
+ */
+exports.getSubplotData = function getSubplotData(data, type, subplotId) {
+    if(!Registry.subplotsRegistry[type]) return [];
+
+    var attr = Registry.subplotsRegistry[type].attr;
+    var subplotData = [];
+    var trace, subplotX, subplotY;
+
+    if(type === 'gl2d') {
+        var spmatch = subplotId.match(SUBPLOT_PATTERN);
+        subplotX = 'x' + spmatch[1];
+        subplotY = 'y' + spmatch[2];
+    }
+
+    for(var i = 0; i < data.length; i++) {
+        trace = data[i];
+
+        if(type === 'gl2d' && Registry.traceIs(trace, 'gl2d')) {
+            if(trace[attr[0]] === subplotX && trace[attr[1]] === subplotY) {
+                subplotData.push(trace);
+            }
+        }
+        else {
+            if(trace[attr] === subplotId) subplotData.push(trace);
+        }
+    }
+
+    return subplotData;
 };

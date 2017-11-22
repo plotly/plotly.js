@@ -9,7 +9,6 @@
 'use strict';
 
 var Registry = require('../../registry');
-var Plots = require('../plots');
 var Lib = require('../../lib');
 
 var constants = require('./constants');
@@ -65,7 +64,7 @@ function listNames(gd, axLetter, only2d) {
     var names = filterAxis(fullLayout, '');
     if(only2d) return names;
 
-    var sceneIds3D = Plots.getSubplotIds(fullLayout, 'gl3d') || [];
+    var sceneIds3D = fullLayout._subplots.gl3d || [];
     for(var i = 0; i < sceneIds3D.length; i++) {
         var sceneId = sceneIds3D[i];
         names = names.concat(
@@ -117,4 +116,12 @@ exports.getFromTrace = function(gd, fullTrace, type) {
     }
 
     return ax;
+};
+
+// sort x, x2, x10, y, y2, y10...
+exports.idSort = function(id1, id2) {
+    var letter1 = id1.charAt(0);
+    var letter2 = id2.charAt(0);
+    if(letter1 !== letter2) return letter1 > letter2 ? 1 : -1;
+    return +(id1.substr(1) || 1) - +(id2.substr(1) || 1);
 };

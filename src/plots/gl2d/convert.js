@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 
 var convertHTMLToUnicode = require('../../lib/html2unicode');
@@ -183,9 +182,9 @@ proto.merge = function(options) {
 
 // is an axis shared with an already-drawn subplot ?
 proto.hasSharedAxis = function(ax) {
-    var scene = this.scene,
-        subplotIds = Plots.getSubplotIds(scene.fullLayout, 'gl2d'),
-        list = Axes.findSubplotsWithAxis(subplotIds, ax);
+    var scene = this.scene;
+    var subplotIds = scene.fullLayout._subplots.gl2d;
+    var list = Axes.findSubplotsWithAxis(subplotIds, ax);
 
     // if index === 0, then the subplot is already drawn as subplots
     // are drawn in order.

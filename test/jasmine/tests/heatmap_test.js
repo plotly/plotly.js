@@ -22,7 +22,8 @@ describe('heatmap supplyDefaults', function() {
     var defaultColor = '#444',
         layout = {
             font: Plots.layoutAttributes.font,
-            _dfltTitle: {colorbar: 'cb'}
+            _dfltTitle: {colorbar: 'cb'},
+            _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
         };
 
     var supplyDefaults = Heatmap.supplyDefaults;

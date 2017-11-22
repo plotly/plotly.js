@@ -293,12 +293,11 @@ modeBarButtons.tableRotation = {
 };
 
 function handleDrag3d(gd, ev) {
-    var button = ev.currentTarget,
-        attr = button.getAttribute('data-attr'),
-        val = button.getAttribute('data-val') || true,
-        fullLayout = gd._fullLayout,
-        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d'),
-        layoutUpdate = {};
+    var button = ev.currentTarget;
+    var attr = button.getAttribute('data-attr');
+    var val = button.getAttribute('data-val') || true;
+    var sceneIds = gd._fullLayout._subplots.gl3d;
+    var layoutUpdate = {};
 
     var parts = attr.split('.');
 
@@ -326,11 +325,11 @@ modeBarButtons.resetCameraLastSave3d = {
 };
 
 function handleCamera3d(gd, ev) {
-    var button = ev.currentTarget,
-        attr = button.getAttribute('data-attr'),
-        fullLayout = gd._fullLayout,
-        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d'),
-        aobj = {};
+    var button = ev.currentTarget;
+    var attr = button.getAttribute('data-attr');
+    var fullLayout = gd._fullLayout;
+    var sceneIds = fullLayout._subplots.gl3d;
+    var aobj = {};
 
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
@@ -360,19 +359,19 @@ modeBarButtons.hoverClosest3d = {
 };
 
 function handleHover3d(gd, ev) {
-    var button = ev.currentTarget,
-        val = button._previousVal || false,
-        layout = gd.layout,
-        fullLayout = gd._fullLayout,
-        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
+    var button = ev.currentTarget;
+    var val = button._previousVal || false;
+    var layout = gd.layout;
+    var fullLayout = gd._fullLayout;
+    var sceneIds = fullLayout._subplots.gl3d;
 
-    var axes = ['xaxis', 'yaxis', 'zaxis'],
-        spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
+    var axes = ['xaxis', 'yaxis', 'zaxis'];
+    var spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
 
     // initialize 'current spike' object to be stored in the DOM
-    var currentSpikes = {},
-        axisSpikes = {},
-        layoutUpdate = {};
+    var currentSpikes = {};
+    var axisSpikes = {};
+    var layoutUpdate = {};
 
     if(val) {
         layoutUpdate = Lib.extendDeep(layout, val);
@@ -452,7 +451,7 @@ function handleGeo(gd, ev) {
     var attr = button.getAttribute('data-attr');
     var val = button.getAttribute('data-val') || true;
     var fullLayout = gd._fullLayout;
-    var geoIds = Plots.getSubplotIds(fullLayout, 'geo');
+    var geoIds = fullLayout._subplots.geo;
 
     for(var i = 0; i < geoIds.length; i++) {
         var id = geoIds[i];
@@ -590,7 +589,7 @@ modeBarButtons.resetViewMapbox = {
 
 function resetView(gd, subplotType) {
     var fullLayout = gd._fullLayout;
-    var subplotIds = Plots.getSubplotIds(fullLayout, subplotType);
+    var subplotIds = fullLayout._subplots[subplotType];
     var aObj = {};
 
     for(var i = 0; i < subplotIds.length; i++) {

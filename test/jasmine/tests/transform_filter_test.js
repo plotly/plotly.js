@@ -14,7 +14,10 @@ var assertStyle = customAssertions.assertStyle;
 
 describe('filter transforms defaults:', function() {
 
-    var fullLayout = { _transformModules: [] };
+    var fullLayout = {
+        _transformModules: [],
+        _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
+    };
 
     var traceIn, traceOut;
 

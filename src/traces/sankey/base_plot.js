@@ -9,7 +9,7 @@
 'use strict';
 
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var getModuleCalcData = require('../../plots/get_calcdata').getModuleCalcData;
+var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var plot = require('./plot');
 var fxAttrs = require('../../components/fx/layout_attributes');
 
@@ -23,7 +23,7 @@ exports.baseLayoutAttrOverrides = overrideAll({
 
 exports.plot = function(gd) {
     var calcData = getModuleCalcData(gd.calcdata, SANKEY);
-    if(calcData.length) plot(gd, calcData);
+    plot(gd, calcData);
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {

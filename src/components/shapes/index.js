@@ -17,6 +17,7 @@ module.exports = {
 
     layoutAttributes: require('./attributes'),
     supplyLayoutDefaults: require('./defaults'),
+    includeBasePlot: require('../../plots/cartesian/include_components')('shapes'),
 
     calcAutorange: require('./calc_autorange'),
     draw: drawModule.draw,

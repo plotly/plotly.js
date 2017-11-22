@@ -8,7 +8,7 @@
 
 'use strict';
 
-var getModuleCalcData = require('../../plots/get_calcdata').getModuleCalcData;
+var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var tablePlot = require('./plot');
 
 var TABLE = 'table';

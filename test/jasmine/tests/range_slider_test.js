@@ -577,6 +577,11 @@ describe('the range slider', function() {
 
         it('should default to *true* when range slider is visible', function() {
             var mock = {
+                data: [
+                    {y: [1, 2]},
+                    {y: [1, 2], yaxis: 'y2'},
+                    {y: [1, 2], yaxis: 'y3'}
+                ],
                 layout: {
                     xaxis: { rangeslider: {} },
                     yaxis: { anchor: 'x' },
@@ -595,6 +600,11 @@ describe('the range slider', function() {
 
         it('should honor user settings', function() {
             var mock = {
+                data: [
+                    {y: [1, 2]},
+                    {y: [1, 2], yaxis: 'y2'},
+                    {y: [1, 2], yaxis: 'y3'}
+                ],
                 layout: {
                     xaxis: { rangeslider: {} },
                     yaxis: { anchor: 'x', fixedrange: false },

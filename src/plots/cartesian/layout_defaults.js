@@ -14,7 +14,6 @@ var Lib = require('../../lib');
 var Color = require('../../components/color');
 var basePlotLayoutAttributes = require('../layout_attributes');
 
-var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var handleTypeDefaults = require('./type_defaults');
 var handleAxisDefaults = require('./axis_defaults');
@@ -24,11 +23,6 @@ var axisIds = require('./axis_ids');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    var layoutKeys = Object.keys(layoutIn);
-    var xaListCartesian = [];
-    var yaListCartesian = [];
-    var xaListGl2d = [];
-    var yaListGl2d = [];
     var xaCheater = {};
     var xaNonCheater = {};
     var outerTicks = {};
@@ -38,17 +32,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // look for axes in the data
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
-        var listX, listY;
 
-        if(Registry.traceIs(trace, 'cartesian')) {
-            listX = xaListCartesian;
-            listY = yaListCartesian;
+        if(!Registry.traceIs(trace, 'cartesian') && !Registry.traceIs(trace, 'gl2d')) {
+            continue;
         }
-        else if(Registry.traceIs(trace, 'gl2d')) {
-            listX = xaListGl2d;
-            listY = yaListGl2d;
-        }
-        else continue;
 
         var xaName = axisIds.id2name(trace.xaxis);
         var yaName = axisIds.id2name(trace.yaxis);
@@ -68,10 +55,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             if(xaName) xaCheater[xaName] = 1;
         }
 
-        // add axes implied by traces
-        if(xaName && listX.indexOf(xaName) === -1) listX.push(xaName);
-        if(yaName && listY.indexOf(yaName) === -1) listY.push(yaName);
-
         // check for default formatting tweaks
         if(Registry.traceIs(trace, '2dMap')) {
             outerTicks[xaName] = true;
@@ -84,51 +67,17 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
     }
 
-    // N.B. Ignore orphan axes (i.e. axes that have no data attached to them)
-    // if gl3d or geo is present on graph. This is retain backward compatible.
-    //
-    // TODO drop this in version 2.0
-    var ignoreOrphan = (layoutOut._has('gl3d') || layoutOut._has('geo'));
-
-    if(!ignoreOrphan) {
-        for(i = 0; i < layoutKeys.length; i++) {
-            var key = layoutKeys[i];
-
-            // orphan layout axes are considered cartesian subplots
-
-            if(xaListGl2d.indexOf(key) === -1 &&
-                xaListCartesian.indexOf(key) === -1 &&
-                    constants.xAxisMatch.test(key)) {
-                xaListCartesian.push(key);
-            }
-            else if(yaListGl2d.indexOf(key) === -1 &&
-                yaListCartesian.indexOf(key) === -1 &&
-                    constants.yAxisMatch.test(key)) {
-                yaListCartesian.push(key);
-            }
-        }
-    }
-
-    // make sure that plots with orphan cartesian axes
-    // are considered 'cartesian'
-    if(xaListCartesian.length && yaListCartesian.length) {
-        Lib.pushUnique(layoutOut._basePlotModules, Registry.subplotsRegistry.cartesian);
-    }
-
-    function axSort(a, b) {
-        var aNum = Number(a.substr(5) || 1);
-        var bNum = Number(b.substr(5) || 1);
-        return aNum - bNum;
-    }
-
-    var xaList = xaListCartesian.concat(xaListGl2d).sort(axSort);
-    var yaList = yaListCartesian.concat(yaListGl2d).sort(axSort);
-    var axesList = xaList.concat(yaList);
+    var subplots = layoutOut._subplots;
+    var xIds = subplots.xaxis;
+    var yIds = subplots.yaxis;
+    var xNames = Lib.simpleMap(xIds, axisIds.id2name);
+    var yNames = Lib.simpleMap(yIds, axisIds.id2name);
+    var axNames = xNames.concat(yNames);
 
     // plot_bgcolor only makes sense if there's a (2D) plot!
     // TODO: bgcolor for each subplot, to inherit from the main one
     var plot_bgcolor = Color.background;
-    if(xaList.length && yaList.length) {
+    if(xIds.length && yIds.length) {
         plot_bgcolor = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'plot_bgcolor');
     }
 
@@ -141,14 +90,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     function getCounterAxes(axLetter) {
-        var list = {x: yaList, y: xaList}[axLetter];
-        return Lib.simpleMap(list, axisIds.name2id);
+        return (axLetter === 'x') ? yIds : xIds;
     }
 
     var counterAxes = {x: getCounterAxes('x'), y: getCounterAxes('y')};
 
     function getOverlayableAxes(axLetter, axName) {
-        var list = {x: xaList, y: yaList}[axLetter];
+        var list = (axLetter === 'x') ? xNames : yNames;
         var out = [];
 
         for(var j = 0; j < list.length; j++) {
@@ -163,8 +111,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     // first pass creates the containers, determines types, and handles most of the settings
-    for(i = 0; i < axesList.length; i++) {
-        axName = axesList[i];
+    for(i = 0; i < axNames.length; i++) {
+        axName = axNames[i];
 
         if(!Lib.isPlainObject(layoutIn[axName])) {
             layoutIn[axName] = {};
@@ -186,7 +134,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             data: fullData,
             bgColor: bgColor,
             calendar: layoutOut.calendar,
-            cheateronly: axLetter === 'x' && (xaCheater[axName] && !xaNonCheater[axName])
+            cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName]
         };
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
@@ -211,11 +159,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     // quick second pass for range slider and selector defaults
-    var rangeSliderDefaults = Registry.getComponentMethod('rangeslider', 'handleDefaults'),
-        rangeSelectorDefaults = Registry.getComponentMethod('rangeselector', 'handleDefaults');
+    var rangeSliderDefaults = Registry.getComponentMethod('rangeslider', 'handleDefaults');
+    var rangeSelectorDefaults = Registry.getComponentMethod('rangeselector', 'handleDefaults');
 
-    for(i = 0; i < xaList.length; i++) {
-        axName = xaList[i];
+    for(i = 0; i < xNames.length; i++) {
+        axName = xNames[i];
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
@@ -226,7 +174,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
                 axLayoutIn,
                 axLayoutOut,
                 layoutOut,
-                yaList,
+                yNames,
                 axLayoutOut.calendar
             );
         }
@@ -234,8 +182,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         coerce('fixedrange');
     }
 
-    for(i = 0; i < yaList.length; i++) {
-        axName = yaList[i];
+    for(i = 0; i < yNames.length; i++) {
+        axName = yNames[i];
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
@@ -259,8 +207,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     layoutOut._axisConstraintGroups = [];
     var allAxisIds = counterAxes.x.concat(counterAxes.y);
 
-    for(i = 0; i < axesList.length; i++) {
-        axName = axesList[i];
+    for(i = 0; i < axNames.length; i++) {
+        axName = axNames[i];
         axLetter = axName.charAt(0);
 
         axLayoutIn = layoutIn[axName];

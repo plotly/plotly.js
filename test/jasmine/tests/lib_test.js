@@ -1968,6 +1968,22 @@ describe('Test lib.js:', function() {
             expect(function() { return Lib.relativeAttr('x.y.', 'z'); }).toThrow();
         });
     });
+
+    describe('subplotSort', function() {
+        it('puts xy subplots in the right order', function() {
+            var a = ['x10y', 'x10y20', 'x10y12', 'x10y2', 'xy', 'x2y12', 'xy2', 'xy15'];
+            a.sort(Lib.subplotSort);
+            expect(a).toEqual(['xy', 'xy2', 'xy15', 'x2y12', 'x10y', 'x10y2', 'x10y12', 'x10y20']);
+        });
+
+        it('puts simple subplots in the right order', function() {
+            ['scene', 'geo', 'ternary', 'mapbox'].forEach(function(v) {
+                var a = [v + '100', v + '43', v, v + '10', v + '2'];
+                a.sort(Lib.subplotSort);
+                expect(a).toEqual([v, v + '2', v + '10', v + '43', v + '100']);
+            });
+        });
+    });
 });
 
 describe('Queue', function() {
