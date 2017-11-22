@@ -75,6 +75,21 @@
       "line": {
         "smoothing": 1,
         "shape": "spline"
+      },
+      "selectedpoints": [1],
+      "selected": {
+        "marker": {
+          "size": 20,
+          "color": "green",
+          "opacity": 1
+        }
+      },
+      "unselected": {
+        "marker": {
+          "size": 20,
+          "color": "red",
+          "opacity": 0.5
+        }
       }
     }
   ],

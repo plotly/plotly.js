@@ -11,6 +11,7 @@
 var Lib = require('../lib');
 var PlotSchema = require('../plot_api/plot_schema');
 var Plots = require('../plots/plots');
+var pointsAccessorFunction = require('./helpers').pointsAccessorFunction;
 
 exports.moduleType = 'transform';
 
@@ -161,6 +162,7 @@ function transformOne(trace, state) {
 
     var opts = state.transform;
     var groups = trace.transforms[state.transformIndex].groups;
+    var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
 
     if(!(Array.isArray(groups)) || groups.length === 0) {
         return [trace];
@@ -184,14 +186,17 @@ function transformOne(trace, state) {
 
     // An index to map group name --> expanded trace index
     var indexLookup = {};
+    var indexCnts = {};
 
     for(i = 0; i < groupNames.length; i++) {
         groupName = groupNames[i];
         indexLookup[groupName] = i;
+        indexCnts[groupName] = 0;
 
         // Start with a deep extend that just copies array references.
         newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
         newTrace._group = groupName;
+        newTrace.transforms[state.transformIndex]._indexToPoints = {};
 
         var suppliedName = null;
         if(groupNameObj) {
@@ -244,6 +249,14 @@ function transformOne(trace, state) {
             // Map group data --> trace index --> array and push data onto it
             arrayLookup[indexLookup[groups[j]]].push(srcArray[j]);
         }
+    }
+
+    for(j = 0; j < len; j++) {
+        newTrace = newData[indexLookup[groups[j]]];
+
+        var indexToPoints = newTrace.transforms[state.transformIndex]._indexToPoints;
+        indexToPoints[indexCnts[groups[j]]] = originalPointsAccessor(j);
+        indexCnts[groups[j]]++;
     }
 
     for(i = 0; i < groupNames.length; i++) {

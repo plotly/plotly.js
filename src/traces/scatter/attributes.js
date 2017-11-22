@@ -377,6 +377,79 @@ module.exports = {
     },
         colorAttributes('marker')
     ),
+    selected: {
+        marker: {
+            opacity: {
+                valType: 'number',
+                min: 0,
+                max: 1,
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the marker opacity of selected points.'
+            },
+            color: {
+                valType: 'color',
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the marker color of selected points.'
+            },
+            size: {
+                valType: 'number',
+                min: 0,
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the marker size of selected points.'
+            },
+            editType: 'style'
+        },
+        textfont: {
+            color: {
+                valType: 'color',
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the text font color of selected points.'
+            },
+            editType: 'style'
+        },
+        editType: 'style'
+    },
+    unselected: {
+        marker: {
+            opacity: {
+                valType: 'number',
+                min: 0,
+                max: 1,
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the marker opacity of unselected points, applied only when a selection exists.'
+            },
+            color: {
+                valType: 'color',
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the marker color of unselected points, applied only when a selection exists.'
+            },
+            size: {
+                valType: 'number',
+                min: 0,
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the marker size of unselected points, applied only when a selection exists.'
+            },
+            editType: 'style'
+        },
+        textfont: {
+            color: {
+                valType: 'color',
+                role: 'style',
+                editType: 'style',
+                description: 'Sets the text font color of unselected points, applied only when a selection exists.'
+            },
+            editType: 'style'
+        },
+        editType: 'style'
+    },
+
     textposition: {
         valType: 'enumerated',
         values: [

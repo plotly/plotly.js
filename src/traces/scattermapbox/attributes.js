@@ -107,6 +107,17 @@ module.exports = overrideAll({
     textfont: mapboxAttrs.layers.symbol.textfont,
     textposition: mapboxAttrs.layers.symbol.textposition,
 
+    selected: {
+        marker: {
+            opacity: scatterAttrs.selected.marker.opacity
+        }
+    },
+    unselected: {
+        marker: {
+            opacity: scatterAttrs.unselected.marker.opacity
+        }
+    },
+
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'text', 'name']
     })

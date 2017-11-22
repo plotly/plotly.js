@@ -14,6 +14,7 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 
 var colorscaleCalc = require('../../components/colorscale/calc');
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
+var calcSelection = require('../scatter/calc_selection');
 
 module.exports = function calc(gd, trace) {
     var len = trace.locations.length;
@@ -30,6 +31,7 @@ module.exports = function calc(gd, trace) {
 
     arraysToCalcdata(calcTrace, trace);
     colorscaleCalc(trace, trace.z, '', 'z');
+    calcSelection(calcTrace, trace);
 
     return calcTrace;
 };

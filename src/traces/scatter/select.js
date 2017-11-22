@@ -10,7 +10,6 @@
 'use strict';
 
 var subtypes = require('./subtypes');
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd,
@@ -18,20 +17,18 @@ module.exports = function selectPoints(searchInfo, polygon) {
         ya = searchInfo.yaxis,
         selection = [],
         trace = cd[0].trace,
-        marker = trace.marker,
         i,
         di,
         x,
         y;
 
-    // TODO: include lines? that would require per-segment line properties
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
     if(hasOnlyLines) return [];
 
-    var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
-
     if(polygon === false) { // clear selection
-        for(i = 0; i < cd.length; i++) cd[i].dim = 0;
+        for(i = 0; i < cd.length; i++) {
+            cd[i].selected = 0;
+        }
     }
     else {
         for(i = 0; i < cd.length; i++) {
@@ -45,23 +42,12 @@ module.exports = function selectPoints(searchInfo, polygon) {
                     x: xa.c2d(di.x),
                     y: ya.c2d(di.y)
                 });
-                di.dim = 0;
+                di.selected = 1;
+            } else {
+                di.selected = 0;
             }
-            else di.dim = 1;
         }
     }
-
-    // do the dimming here, as well as returning the selection
-    // The logic here duplicates Drawing.pointStyle, but I don't want
-    // d.dim in pointStyle in case something goes wrong with selection.
-    cd[0].node3.selectAll('path.point')
-        .style('opacity', function(d) {
-            return ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
-        });
-    cd[0].node3.selectAll('text')
-        .style('opacity', function(d) {
-            return d.dim ? DESELECTDIM : 1;
-        });
 
     return selection;
 };

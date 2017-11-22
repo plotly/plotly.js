@@ -9,39 +9,39 @@
 'use strict';
 
 var d3 = require('d3');
-var Drawing = require('../../components/drawing');
 var Color = require('../../components/color');
+var stylePoints = require('../scatter/style').stylePoints;
 
-module.exports = function style(gd) {
-    var traces = d3.select(gd).selectAll('g.trace.violins');
+module.exports = function style(gd, cd) {
+    var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.violins');
 
-    traces.style('opacity', function(d) { return d[0].trace.opacity; })
-        .each(function(d) {
-            var trace = d[0].trace;
-            var sel = d3.select(this);
-            var box = trace.box || {};
-            var boxLine = box.line || {};
-            var meanline = trace.meanline || {};
-            var meanLineWidth = meanline.width;
+    s.style('opacity', function(d) { return d[0].trace.opacity; });
 
-            sel.selectAll('path.violin')
-                .style('stroke-width', trace.line.width + 'px')
-                .call(Color.stroke, trace.line.color)
-                .call(Color.fill, trace.fillcolor);
+    s.each(function(d) {
+        var trace = d[0].trace;
+        var sel = d3.select(this);
+        var box = trace.box || {};
+        var boxLine = box.line || {};
+        var meanline = trace.meanline || {};
+        var meanLineWidth = meanline.width;
 
-            sel.selectAll('path.box')
-                .style('stroke-width', boxLine.width + 'px')
-                .call(Color.stroke, boxLine.color)
-                .call(Color.fill, box.fillcolor);
+        sel.selectAll('path.violin')
+            .style('stroke-width', trace.line.width + 'px')
+            .call(Color.stroke, trace.line.color)
+            .call(Color.fill, trace.fillcolor);
 
-            sel.selectAll('g.points path')
-                .call(Drawing.pointStyle, trace, gd);
+        sel.selectAll('path.box')
+            .style('stroke-width', boxLine.width + 'px')
+            .call(Color.stroke, boxLine.color)
+            .call(Color.fill, box.fillcolor);
 
-            sel.selectAll('path.mean')
-                .style({
-                    'stroke-width': meanLineWidth + 'px',
-                    'stroke-dasharray': (2 * meanLineWidth) + 'px,' + meanLineWidth + 'px'
-                })
-                .call(Color.stroke, meanline.color);
-        });
+        sel.selectAll('path.mean')
+            .style({
+                'stroke-width': meanLineWidth + 'px',
+                'stroke-dasharray': (2 * meanLineWidth) + 'px,' + meanLineWidth + 'px'
+            })
+            .call(Color.stroke, meanline.color);
+
+        stylePoints(sel, trace, gd);
+    });
 };

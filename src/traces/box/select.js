@@ -8,24 +8,18 @@
 
 'use strict';
 
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
-
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
-    var trace = cd[0].trace;
-    var node3 = cd[0].node3;
     var selection = [];
     var i, j;
-
-    if(trace.visible !== true) return [];
 
     if(polygon === false) {
         for(i = 0; i < cd.length; i++) {
             for(j = 0; j < (cd[i].pts || []).length; j++) {
                 // clear selection
-                cd[i].pts[j].dim = 0;
+                cd[i].pts[j].selected = 0;
             }
         }
     } else {
@@ -41,17 +35,13 @@ module.exports = function selectPoints(searchInfo, polygon) {
                         x: xa.c2d(pt.x),
                         y: ya.c2d(pt.y)
                     });
-                    pt.dim = 0;
+                    pt.selected = 1;
                 } else {
-                    pt.dim = 1;
+                    pt.selected = 0;
                 }
             }
         }
     }
-
-    node3.selectAll('.point').style('opacity', function(d) {
-        return d.dim ? DESELECTDIM : 1;
-    });
 
     return selection;
 };

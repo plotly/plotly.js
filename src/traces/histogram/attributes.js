@@ -191,6 +191,9 @@ module.exports = {
 
     marker: barAttrs.marker,
 
+    selected: barAttrs.selected,
+    unselected: barAttrs.unselected,
+
     error_y: barAttrs.error_y,
     error_x: barAttrs.error_x,
 

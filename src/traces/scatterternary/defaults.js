@@ -101,4 +101,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
 
     coerce('cliponaxis');
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

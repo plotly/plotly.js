@@ -17,7 +17,8 @@ ScatterTernary.calc = require('./calc');
 ScatterTernary.plot = require('./plot');
 ScatterTernary.style = require('./style');
 ScatterTernary.hoverPoints = require('./hover');
-ScatterTernary.selectPoints = require('./select');
+ScatterTernary.selectPoints = require('../scatter/select');
+ScatterTernary.eventData = require('./event_data');
 
 ScatterTernary.moduleType = 'trace';
 ScatterTernary.name = 'scatterternary';

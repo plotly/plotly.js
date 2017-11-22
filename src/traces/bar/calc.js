@@ -14,9 +14,8 @@ var isNumeric = require('fast-isnumeric');
 var Axes = require('../../plots/cartesian/axes');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleCalc = require('../../components/colorscale/calc');
-
 var arraysToCalcdata = require('./arrays_to_calcdata');
-
+var calcSelection = require('../scatter/calc_selection');
 
 module.exports = function calc(gd, trace) {
     // depending on bar direction, set position and size axes
@@ -48,12 +47,16 @@ module.exports = function calc(gd, trace) {
     }
 
     // create the "calculated data" to plot
-    var serieslen = Math.min(pos.length, size.length),
-        cd = new Array(serieslen);
+    var serieslen = Math.min(pos.length, size.length);
+    var cd = new Array(serieslen);
 
     // set position and size
     for(i = 0; i < serieslen; i++) {
         cd[i] = { p: pos[i], s: size[i] };
+
+        if(trace.ids) {
+            cd[i].id = String(trace.ids[i]);
+        }
     }
 
     // set base
@@ -92,6 +95,7 @@ module.exports = function calc(gd, trace) {
     }
 
     arraysToCalcdata(cd, trace);
+    calcSelection(cd, trace);
 
     return cd;
 };

@@ -11,15 +11,13 @@
 
 var d3 = require('d3');
 
-var Drawing = require('../../components/drawing');
-var Color = require('../../components/color');
-
 var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
 var geoJsonUtils = require('../../lib/geojson_utils');
 var subTypes = require('../scatter/subtypes');
+var style = require('./style');
 
 module.exports = function plot(geo, calcData) {
     for(var i = 0; i < calcData.length; i++) {
@@ -79,10 +77,10 @@ module.exports = function plot(geo, calcData) {
                 .append('text')
                 .each(function(calcPt) { removeBADNUM(calcPt, this); });
         }
-    });
 
-    // call style here within topojson request callback
-    style(geo);
+        // call style here within topojson request callback
+        style(geo.graphDiv, calcTrace);
+    });
 };
 
 function calcGeoJSON(calcTrace, topojson) {
@@ -99,38 +97,4 @@ function calcGeoJSON(calcTrace, topojson) {
 
         calcPt.lonlat = feature ? feature.properties.ct : [BADNUM, BADNUM];
     }
-}
-
-function style(geo) {
-    var gTraces = geo.layers.frontplot.selectAll('.trace.scattergeo');
-
-    gTraces.style('opacity', function(calcTrace) {
-        return calcTrace[0].trace.opacity;
-    });
-
-    gTraces.each(function(calcTrace) {
-        var trace = calcTrace[0].trace;
-        var group = d3.select(this);
-
-        group.selectAll('path.point')
-            .call(Drawing.pointStyle, trace, geo.graphDiv);
-        group.selectAll('text')
-            .call(Drawing.textPointStyle, trace, geo.graphDiv);
-    });
-
-    // this part is incompatible with Drawing.lineGroupStyle
-    gTraces.selectAll('path.js-line')
-        .style('fill', 'none')
-        .each(function(d) {
-            var path = d3.select(this);
-            var trace = d.trace;
-            var line = trace.line || {};
-
-            path.call(Color.stroke, line.color)
-                .call(Drawing.dashLine, line.dash || '', line.width || 0);
-
-            if(trace.fill !== 'none') {
-                path.call(Color.fill, trace.fillcolor);
-            }
-        });
 }

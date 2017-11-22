@@ -546,3 +546,44 @@ describe('Test event data of interactions on a pie plot:', function() {
         });
     });
 });
+
+describe('pie relayout', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    it('will update colors when colorway is updated', function(done) {
+        var originalColors = [
+            'rgb(255,0,0)',
+            'rgb(0,255,0)',
+            'rgb(0,0,255)',
+        ];
+
+        var relayoutColors = [
+            'rgb(255,255,0)',
+            'rgb(0,255,255)',
+            'rgb(255,0,255)',
+        ];
+
+        function checkRelayoutColor(d, i) {
+            expect(this.style.fill.replace(/\s/g, '')).toBe(relayoutColors[i]);
+        }
+
+        Plotly.newPlot(gd, [{
+            labels: ['a', 'b', 'c', 'a', 'b', 'a'],
+            type: 'pie'
+        }], {
+            colorway: originalColors
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'colorway', relayoutColors);
+        })
+        .then(function() {
+            var slices = d3.selectAll('.slice path');
+            slices.each(checkRelayoutColor);
+        })
+        .then(done);
+    });
+});

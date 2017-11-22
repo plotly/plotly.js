@@ -652,13 +652,8 @@ proto.initInteractions = function() {
         _this.plotContainer.selectAll('.crisp').classed('crisp', false);
 
         if(_this._hasClipOnAxisFalse) {
-            var scatterPoints = _this.plotContainer
-                .select('.scatterlayer').selectAll('.points');
-
-            scatterPoints.selectAll('.point')
-                .call(Drawing.hideOutsideRangePoints, _this);
-
-            scatterPoints.selectAll('.textpoint')
+            _this.plotContainer
+                .select('.scatterlayer').selectAll('.trace')
                 .call(Drawing.hideOutsideRangePoints, _this);
         }
     }
