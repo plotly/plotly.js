@@ -294,7 +294,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         .each(function(d) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
-            d.model = vm[0].model;
+            d.model = d.viewModel ? d.viewModel.model : null;
         });
 
     var tweakables = {renderers: [], dimensions: []};

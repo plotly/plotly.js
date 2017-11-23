@@ -609,6 +609,16 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
 
     var hasPaper = !!oldFullLayout._paper;
     var hasInfoLayer = !!oldFullLayout._infolayer;
+    var hadGl = oldFullLayout._has && oldFullLayout._has('gl');
+    var hasGl = newFullLayout._has && newFullLayout._has('gl');
+
+    if(hadGl && !hasGl) {
+        if(oldFullLayout._glcontainer !== undefined) {
+            oldFullLayout._glcontainer.selectAll('.gl-canvas').data([]).exit().remove();
+            oldFullLayout._glcontainer.remove();
+            oldFullLayout._glcanvas = null;
+        }
+    }
 
     oldLoop:
     for(i = 0; i < oldFullData.length; i++) {
@@ -1322,7 +1332,11 @@ plots.purge = function(gd) {
     // a new plot, and may have been set outside of our scope.
 
     var fullLayout = gd._fullLayout || {};
-    if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
+    if(fullLayout._glcontainer !== undefined) {
+        fullLayout._glcontainer.selectAll('.gl-canvas').data([]).exit().remove();
+        fullLayout._glcontainer.remove();
+        fullLayout._glcanvas = null;
+    }
     if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
 
     // remove modebar

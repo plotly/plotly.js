@@ -208,7 +208,7 @@ Plotly.plot = function(gd, data, layout, config) {
                 key: 'pickLayer',
                 context: false,
                 pick: true
-            }]);
+            }], function(d) { return d.key; });
 
             fullLayout._glcanvas.enter().append('canvas')
                 .attr('class', function(d) {
@@ -225,8 +225,6 @@ Plotly.plot = function(gd, data, layout, config) {
                 })
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
-
-            fullLayout._glcanvas.exit().remove();
         }
 
         return Lib.syncOrAsync([

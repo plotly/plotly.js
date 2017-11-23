@@ -154,6 +154,7 @@ exports.cleanLayout = function(layout) {
 
         // clean old Camera coords
         var cameraposition = scene.cameraposition;
+
         if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
             var rotation = cameraposition[0],
                 center = cameraposition[1],
