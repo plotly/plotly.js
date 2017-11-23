@@ -615,7 +615,6 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
     if(hadGl && !hasGl) {
         if(oldFullLayout._glcontainer !== undefined) {
             oldFullLayout._glcontainer.selectAll('.gl-canvas').data([]).exit().remove();
-            oldFullLayout._glcontainer.remove();
             oldFullLayout._glcanvas = null;
         }
     }
