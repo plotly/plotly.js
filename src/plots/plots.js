@@ -1040,7 +1040,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
             traceOut.visible = !!traceOut.visible;
         }
 
-        if(_module && _module.selectPoints && traceOut.type !== 'scattergl') {
+        if(_module && _module.selectPoints) {
             coerce('selectedpoints');
         }
 

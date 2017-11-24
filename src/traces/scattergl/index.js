@@ -1009,3 +1009,8 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 
     return selection;
 };
+
+
+ScatterRegl.style = function style(container, cdata) {
+    // TODO
+};
