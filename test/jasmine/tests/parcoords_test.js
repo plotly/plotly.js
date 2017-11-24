@@ -788,7 +788,7 @@ describe('@noCI parcoords', function() {
                 expect(gd.data.length).toEqual(1);
 
                 Plotly.deleteTraces(gd, 0).then(function() {
-                    expect(d3.selectAll('.parcoords-line-layers').node()).toEqual(null);
+                    expect(d3.selectAll('.gl-canvas').node(0)).toEqual(null);
                     expect(gd.data.length).toEqual(0);
                     done();
                 });
@@ -815,13 +815,13 @@ describe('@noCI parcoords', function() {
                     return Plotly.deleteTraces(gd, [0]);
                 })
                 .then(function() {
-                    expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
+                    expect(document.querySelectorAll('.gl-canvas').length).toEqual(3);
                     expect(document.querySelectorAll('.y-axis').length).toEqual(7);
                     expect(gd.data.length).toEqual(1);
                     return Plotly.deleteTraces(gd, 0);
                 })
                 .then(function() {
-                    expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(0);
+                    expect(document.querySelectorAll('.gl-canvas').length).toEqual(0);
                     expect(document.querySelectorAll('.y-axis').length).toEqual(0);
                     expect(gd.data.length).toEqual(0);
                     done();
@@ -869,13 +869,13 @@ describe('@noCI parcoords', function() {
                 mockCopy2.data[0].domain = {x: [0.55, 1]};
                 mockCopy2.data[0].dimensions.splice(3, 4);
 
-                expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(0);
+                expect(document.querySelectorAll('.gl-container').length).toEqual(0);
 
                 Plotly.plot(gd, mockCopy)
                     .then(function() {
 
                         expect(1).toEqual(1);
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(1);
 
                         return Plotly.plot(gd, mockCopy2);
@@ -883,7 +883,7 @@ describe('@noCI parcoords', function() {
                     .then(function() {
 
                         expect(1).toEqual(1);
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(2);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(2);
 
                         done();
@@ -899,19 +899,18 @@ describe('@noCI parcoords', function() {
                 mockCopy2.data[0].domain = {y: [0.65, 1]};
                 mockCopy2.data[0].dimensions.splice(3, 4);
 
-                expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(0);
+                expect(document.querySelectorAll('.gl-container').length).toEqual(0);
 
                 Plotly.plot(gd, mockCopy)
                     .then(function() {
 
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(1);
 
                         return Plotly.addTraces(gd, [mockCopy2.data[0]]);
                     })
                     .then(function() {
-
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(2);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(2);
 
                         done();
@@ -945,12 +944,12 @@ describe('@noCI parcoords', function() {
                 mockCopy2.data[0].dimensions[2].tickvals = [0, 1, 2, 2.5, 3];
                 mockCopy2.data[0].dimensions[2].values = mockCopy2.data[0].dimensions[2].values.map(numberUpdater);
 
-                expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(0);
+                expect(document.querySelectorAll('.gl-container').length).toEqual(0);
 
                 Plotly.plot(gd, mockCopy)
                     .then(function() {
 
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(1);
 
                         return Plotly.restyle(gd, {
@@ -960,7 +959,7 @@ describe('@noCI parcoords', function() {
                     })
                     .then(function() {
 
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(1);
 
                         done();

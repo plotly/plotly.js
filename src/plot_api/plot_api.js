@@ -220,7 +220,6 @@ Plotly.plot = function(gd, data, layout, config) {
                     'left': 0,
                     'width': '100%',
                     'height': '100%',
-                    'pointer-events': 'none',
                     'overflow': 'visible'
                 })
                 .attr('width', fullLayout.width)

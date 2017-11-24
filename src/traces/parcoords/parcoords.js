@@ -302,7 +302,9 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     var lastHovered = null;
 
     parcoordsLineLayer
-        .filter(function(d) {return d.pick;})
+        .filter(function(d) {
+            return d.pick;
+        })
         .on('mousemove', function(d) {
             if(linePickActive && d.lineLayer && callbacks && callbacks.hover) {
                 var event = d3.event;
@@ -440,6 +442,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     });
 
     parcoordsLineLayer
+        .filter(function(d) {return !!d.viewModel;})
         .each(function(d) {
             d.lineLayer = lineLayerMaker(this, d, c.scatter);
             d.viewModel[d.key] = d.lineLayer;

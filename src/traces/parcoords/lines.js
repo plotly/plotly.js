@@ -164,7 +164,7 @@ function valid(i, offset, panelCount) {
     return i + offset <= panelCount;
 }
 
-module.exports = module.exports = function(canvasGL, d, scatter) {
+module.exports = function(canvasGL, d, scatter) {
     var model = d.model,
         vm = d.viewModel,
         domain = model.domain;
