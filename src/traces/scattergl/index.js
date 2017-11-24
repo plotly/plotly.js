@@ -518,9 +518,12 @@ ScatterRegl.calc = function calc(container, trace) {
         // highlight selected points
         scene.select = function select(selection) {
             if(!scene.select2d) return;
-            // if(!selection.length) return;
 
             scene.select2d.regl.clear({color: true});
+            scene.scatter2d.regl.clear({color: true});
+            scene.draw();
+
+            if(!selection.length) return;
 
             var batch = Array(scene.count), i, traceId;
             for(i = 0; i < scene.count; i++) {
@@ -531,11 +534,7 @@ ScatterRegl.calc = function calc(container, trace) {
                 traceId = selection[i].curveNumber || 0;
                 batch[traceId].push(selection[i].pointNumber);
             }
-
             scene.select2d.draw(batch);
-
-            scene.scatter2d.regl.clear({color: true});
-            scene.draw();
         };
     }
     else {

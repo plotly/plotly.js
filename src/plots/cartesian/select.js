@@ -233,7 +233,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             function() {
                 selection = [];
 
-                var thisSelection;
+                var thisSelection, traceSelections = [], traceSelection;
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 
