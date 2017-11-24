@@ -2796,6 +2796,7 @@ function makePlotFramework(gd) {
     // right, rather than enter/exit which can muck up the order
     // TODO: sort out all the ordering so we don't have to
     // explicitly delete anything
+    // FIXME: parcoords reuses this object, not the best pattern
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
         .data([{}]);
     fullLayout._glcontainer.enter().append('div')
