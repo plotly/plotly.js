@@ -209,20 +209,9 @@ Plotly.plot = function(gd, data, layout, config) {
                 key: 'pickLayer',
                 context: false,
                 pick: true
-            }]);
+            }], function(d) { return d.key; });
 
             fullLayout._glcanvas.enter().append('canvas')
-                .each(function(d) {
-                    d.regl = createRegl({
-                        canvas: this,
-                        attributes: {
-                            antialias: !d.pick,
-                            preserveDrawingBuffer: true
-                        },
-                        extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
-                        pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio
-                    });
-                })
                 .attr('class', function(d) {
                     return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
                 })
@@ -237,8 +226,6 @@ Plotly.plot = function(gd, data, layout, config) {
                 })
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
-
-            fullLayout._glcanvas.exit().remove();
         }
 
         return Lib.syncOrAsync([

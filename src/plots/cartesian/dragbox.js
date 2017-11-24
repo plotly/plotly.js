@@ -715,9 +715,11 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // FIXME: code duplication with cartesian.plot
         if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
             fullLayout._glcanvas.each(function(d) {
-                d.regl.clear({
-                    color: true
-                });
+                if(d.regl) {
+                    d.regl.clear({
+                        color: true
+                    });
+                }
             });
         }
 

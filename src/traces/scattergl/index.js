@@ -26,6 +26,7 @@ var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var svgSdf = require('svg-path-sdf');
+var createRegl = require('regl');
 var fillHoverText = require('../scatter/fill_hover_text');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
@@ -611,6 +612,19 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
     if(!scene) return;
 
     var vpSize = layout._size, width = layout.width, height = layout.height;
+
+    // make sure proper regl instances are created
+    layout._glcanvas.each(function(d) {
+        if(d.regl) return;
+        d.regl = createRegl({
+            canvas: this,
+            attributes: {
+                antialias: !d.pick,
+                preserveDrawingBuffer: true
+            },
+            pixelRatio: container._context.plotGlPixelRatio || global.devicePixelRatio
+        });
+    });
 
     var regl = layout._glcanvas.data()[0].regl;
 

@@ -28,7 +28,6 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
     if(hadParcoords && !hasParcoords) {
         oldFullLayout._paperdiv.selectAll('.parcoords').remove();
-        oldFullLayout._paperdiv.selectAll('.parcoords').remove();
         oldFullLayout._glimages.selectAll('*').remove();
     }
 };
