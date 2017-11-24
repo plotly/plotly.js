@@ -6,19 +6,16 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
 
 var Lib = require('../../lib');
-var Color = require('../../components/color');
-var Drawing = require('../../components/drawing');
-var Colorscale = require('../../components/colorscale');
 var polygon = require('../../lib/polygon');
 
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
+var style = require('./style');
 
 module.exports = function plot(geo, calcData) {
     for(var i = 0; i < calcData.length; i++) {
@@ -46,9 +43,10 @@ module.exports = function plot(geo, calcData) {
             .classed('choroplethlocation', true);
 
         paths.exit().remove();
-    });
 
-    style(geo);
+        // call style here within topojson request callback
+        style(geo.graphDiv, calcTrace);
+    });
 };
 
 function calcGeoJSON(calcTrace, topojson) {
@@ -175,29 +173,4 @@ function feature2polygons(feature) {
     }
 
     return polygons;
-}
-
-function style(geo) {
-    var gTraces = geo.layers.backplot.selectAll('.trace.choropleth');
-
-    gTraces.each(function(calcTrace) {
-        var trace = calcTrace[0].trace;
-        var marker = trace.marker || {};
-        var markerLine = marker.line || {};
-
-        var sclFunc = Colorscale.makeColorScaleFunc(
-            Colorscale.extractScale(
-                trace.colorscale,
-                trace.zmin,
-                trace.zmax
-            )
-        );
-
-        d3.select(this).selectAll('.choroplethlocation').each(function(d) {
-            d3.select(this)
-                .attr('fill', sclFunc(d.z))
-                .call(Color.stroke, d.mlc || markerLine.color)
-                .call(Drawing.dashLine, '', d.mlw || markerLine.width || 0);
-        });
-    });
 }

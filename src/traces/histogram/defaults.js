@@ -18,7 +18,6 @@ var handleStyleDefaults = require('../bar/style_defaults');
 var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
 var attributes = require('./attributes');
 
-
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -57,4 +56,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // override defaultColor for error bars with defaultLine
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

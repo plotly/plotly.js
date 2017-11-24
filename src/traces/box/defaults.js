@@ -82,12 +82,19 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
             coerce('marker.line.outlierwidth');
         }
 
+        coerce('selected.marker.color');
+        coerce('unselected.marker.color');
+        coerce('selected.marker.size');
+        coerce('unselected.marker.size');
+
         coerce('text');
     } else {
         delete traceOut.marker;
     }
 
     coerce('hoveron');
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }
 
 module.exports = {

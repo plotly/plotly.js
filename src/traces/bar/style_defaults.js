@@ -13,7 +13,6 @@ var Color = require('../../components/color');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
-
 module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout) {
     coerce('marker.color', defaultColor);
 
@@ -32,4 +31,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
     }
 
     coerce('marker.line.width');
+    coerce('marker.opacity');
+    coerce('selected.marker.color');
+    coerce('unselected.marker.color');
 };

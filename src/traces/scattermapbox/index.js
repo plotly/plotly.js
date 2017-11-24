@@ -20,6 +20,13 @@ ScatterMapbox.hoverPoints = require('./hover');
 ScatterMapbox.eventData = require('./event_data');
 ScatterMapbox.selectPoints = require('./select');
 
+ScatterMapbox.style = function(_, cd) {
+    if(cd) {
+        var trace = cd[0].trace;
+        trace._glTrace.update(cd);
+    }
+};
+
 ScatterMapbox.moduleType = 'trace';
 ScatterMapbox.name = 'scattermapbox';
 ScatterMapbox.basePlotModule = require('../../plots/mapbox');

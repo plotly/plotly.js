@@ -171,30 +171,12 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             else if(isSelectOrLasso(dragModeNow)) {
                 dragOptions.xaxes = xa;
                 dragOptions.yaxes = ya;
-
-                // take over selection polygons from prev mode, if any
-                if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
-                    dragOptions.polygons = plotinfo.selection.polygons;
-                    dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
-                }
-                // create new polygons, if shift mode
-                else if((!e.shiftKey && !e.altKey) || ((e.shiftKey || e.altKey) && !plotinfo.selection)) {
-                    plotinfo.selection = {};
-                    plotinfo.selection.polygons = dragOptions.polygons = [];
-                    plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
-                }
-
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         }
     };
 
     dragElement.init(dragOptions);
-
-    // FIXME: this hack highlights selection once we enter select/lasso mode
-    if(isSelectOrLasso(gd._fullLayout.dragmode) && plotinfo.selection) {
-        showSelect(zoomlayer, dragOptions);
-    }
 
     var x0,
         y0,
@@ -548,8 +530,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         updateSubplots([x0, y0, pw - dx, ph - dy]);
 
-        if(plotinfo.ondrag) plotinfo.ondrag.call([x0, y0, pw - dx, ph - dy]);
-
         ticksAndAnnotations(yActive, xActive);
     }
 
@@ -792,21 +772,21 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 .call(Drawing.setTranslate, clipDx, clipDy)
                 .call(Drawing.setScale, xScaleFactor2, yScaleFactor2);
 
-            var scatterPoints = subplot.plot.selectAll('.scatterlayer .points, .boxlayer .points');
+            var traceGroups = subplot.plot
+                .selectAll('.scatterlayer .trace, .boxlayer .trace, .violinlayer .trace');
 
             subplot.plot
                 .call(Drawing.setTranslate, plotDx, plotDy)
                 .call(Drawing.setScale, 1 / xScaleFactor2, 1 / yScaleFactor2);
 
-            // This is specifically directed at scatter traces, applying an inverse
-            // scale to individual points to counteract the scale of the trace
-            // as a whole:
-            scatterPoints.selectAll('.point')
-                .call(Drawing.setPointGroupScale, xScaleFactor2, yScaleFactor2)
-                .call(Drawing.hideOutsideRangePoints, subplot);
-
-            scatterPoints.selectAll('.textpoint')
-                .call(Drawing.setTextPointsScale, xScaleFactor2, yScaleFactor2)
+            // This is specifically directed at marker points in scatter, box and violin traces,
+            // applying an inverse scale to individual points to counteract
+            // the scale of the trace as a whole:
+            traceGroups.selectAll('.point')
+                .call(Drawing.setPointGroupScale, xScaleFactor2, yScaleFactor2);
+            traceGroups.selectAll('.textpoint')
+                .call(Drawing.setTextPointsScale, xScaleFactor2, yScaleFactor2);
+            traceGroups
                 .call(Drawing.hideOutsideRangePoints, subplot);
         }
     }
@@ -945,31 +925,6 @@ function clearSelect(zoomlayer) {
     // here. The selection itself will be removed when the plot redraws
     // at the end.
     zoomlayer.selectAll('.select-outline').remove();
-}
-
-function showSelect(zoomlayer, dragOptions) {
-    var outlines = zoomlayer.selectAll('path.select-outline').data([1, 2]),
-        plotinfo = dragOptions.plotinfo,
-        xaxis = plotinfo.xaxis,
-        yaxis = plotinfo.yaxis,
-        selection = plotinfo.selection,
-        polygons = selection.mergedPolygons,
-        xs = xaxis._offset,
-        ys = yaxis._offset,
-        paths = [];
-
-    for(var i = 0; i < polygons.length; i++) {
-        var ppts = polygons[i];
-        paths.push(ppts.join('L') + 'L' + ppts[0]);
-    }
-
-    if(paths.length) {
-        outlines.enter()
-            .append('path')
-            .attr('class', function(d) { return 'select-outline select-outline-' + d; })
-            .attr('transform', 'translate(' + xs + ', ' + ys + ')')
-            .attr('d', 'M' + paths.join('M') + 'Z');
-    }
 }
 
 function updateZoombox(zb, corners, box, path0, dimmed, lum) {

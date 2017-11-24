@@ -958,8 +958,9 @@ plots.supplyFrameDefaults = function(frameIn) {
 };
 
 plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInIndex) {
+    var colorway = layout.colorway || Color.defaults;
     var traceOut = {},
-        defaultColor = Color.defaults[traceOutIndex % Color.defaults.length];
+        defaultColor = colorway[traceOutIndex % colorway.length];
 
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
@@ -1028,6 +1029,10 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
             // This clears out the legendonly state for traces like carpet that
             // cannot be isolated in the legend
             traceOut.visible = !!traceOut.visible;
+        }
+
+        if(_module && _module.selectPoints && traceOut.type !== 'scattergl') {
+            coerce('selectedpoints');
         }
 
         plots.supplyTransformDefaults(traceIn, traceOut, layout);
@@ -1145,6 +1150,8 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 
     coerce('separators');
     coerce('hidesources');
+
+    coerce('colorway');
 
     Registry.getComponentMethod(
         'calendars',
@@ -2181,6 +2188,7 @@ plots.doCalcdata = function(gd, traces) {
 
     // for sharing colors across pies (and for legend)
     fullLayout._piecolormap = {};
+    fullLayout._piecolorway = null;
     fullLayout._piedefaultcolorcount = 0;
 
     // If traces were specified and this trace was not included,
@@ -2246,7 +2254,21 @@ plots.doCalcdata = function(gd, traces) {
 
         if(trace.visible === true) {
             _module = trace._module;
-            if(_module && _module.calc) cd = _module.calc(gd, trace);
+
+            // keep ref of index-to-points map object of the *last* enabled transform,
+            // this index-to-points map object is required to determine the calcdata indices
+            // that correspond to input indices (e.g. from 'selectedpoints')
+            var transforms = trace.transforms || [];
+            for(j = transforms.length - 1; j >= 0; j--) {
+                if(transforms[j].enabled) {
+                    trace._indexToPoints = transforms[j]._indexToPoints;
+                    break;
+                }
+            }
+
+            if(_module && _module.calc) {
+                cd = _module.calc(gd, trace);
+            }
         }
 
         // Make sure there is a first point.

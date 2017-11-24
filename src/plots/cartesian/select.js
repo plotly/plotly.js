@@ -13,7 +13,7 @@ var polybool = require('polybooljs');
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var color = require('../../components/color');
-var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
+var makeEventData = require('../../components/fx/helpers').makeEventData;
 
 var axes = require('./axes');
 var constants = require('./constants');
@@ -26,7 +26,9 @@ var MINSELECT = constants.MINSELECT;
 function getAxId(ax) { return ax._id; }
 
 module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
-    var zoomLayer = dragOptions.gd._fullLayout._zoomlayer,
+    var gd = dragOptions.gd,
+        fullLayout = gd._fullLayout,
+        zoomLayer = fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
         plotinfo = dragOptions.plotinfo,
         xs = plotinfo.xaxis._offset,
@@ -43,6 +45,19 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         allAxes = dragOptions.xaxes.concat(dragOptions.yaxes),
         filterPoly, testPoly, mergedPolygons, currentPolygon,
         subtract = e.altKey;
+
+
+    // take over selection polygons from prev mode, if any
+    if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
+        dragOptions.polygons = plotinfo.selection.polygons;
+        dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
+    }
+    // create new polygons, if shift mode
+    else if((!e.shiftKey && !e.altKey) || ((e.shiftKey || e.altKey) && !plotinfo.selection)) {
+        plotinfo.selection = {};
+        plotinfo.selection.polygons = dragOptions.polygons = [];
+        plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
+    }
 
     if(mode === 'lasso') {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
@@ -69,8 +84,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
     // find the traces to search for selection points
     var searchTraces = [];
-    var gd = dragOptions.gd;
-    var throttleID = gd._fullLayout._uid + constants.SELECTID;
+    var throttleID = fullLayout._uid + constants.SELECTID;
     var selection = [];
     var i, cd, trace, searchInfo, eventData;
 
@@ -86,6 +100,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             ) {
                 searchTraces.push({
                     selectPoints: trace._module.selectPoints,
+                    style: trace._module.style,
                     cd: cd,
                     xaxis: dragOptions.xaxes[0],
                     yaxis: dragOptions.yaxes[0]
@@ -97,6 +112,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
             searchTraces.push({
                 selectPoints: trace._module.selectPoints,
+                style: trace._module.style,
                 cd: cd,
                 xaxis: axes.getFromId(gd, trace.xaxis),
                 yaxis: axes.getFromId(gd, trace.yaxis)
@@ -221,9 +237,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 
-                    thisSelection = fillSelectionItem(
-                        searchInfo.selectPoints(searchInfo, testPoly), searchInfo
-                    );
+                    traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
+                    traceSelections.push(traceSelection);
+
+                    var thisSelection = fillSelectionItem(traceSelection, searchInfo);
+
                     if(selection.length) {
                         for(var j = 0; j < thisSelection.length; j++) {
                             selection.push(thisSelection[j]);
@@ -238,6 +256,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 }
 
                 eventData = {points: selection};
+                updateSelectedState(gd, searchTraces, eventData);
                 fillRangeItems(eventData, currentPolygon, filterPoly);
                 dragOptions.gd.emit('plotly_selecting', eventData);
             }
@@ -258,6 +277,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     searchInfo.selectPoints(searchInfo, false);
                 }
 
+                updateSelectedState(gd, searchTraces);
                 gd.emit('plotly_deselect', null);
             }
             else {
@@ -276,6 +296,46 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         });
     };
 };
+
+function updateSelectedState(gd, searchTraces, eventData) {
+    var i, searchInfo, trace;
+
+    if(eventData) {
+        var pts = eventData.points || [];
+
+        for(i = 0; i < searchTraces.length; i++) {
+            trace = searchTraces[i].cd[0].trace;
+            trace.selectedpoints = [];
+            trace._input.selectedpoints = [];
+        }
+
+        for(i = 0; i < pts.length; i++) {
+            var pt = pts[i];
+            var data = pt.data;
+            var fullData = pt.fullData;
+
+            if(pt.pointIndices) {
+                data.selectedpoints = data.selectedpoints.concat(pt.pointIndices);
+                fullData.selectedpoints = fullData.selectedpoints.concat(pt.pointIndices);
+            } else {
+                data.selectedpoints.push(pt.pointIndex);
+                fullData.selectedpoints.push(pt.pointIndex);
+            }
+        }
+    }
+    else {
+        for(i = 0; i < searchTraces.length; i++) {
+            trace = searchTraces[i].cd[0].trace;
+            delete trace.selectedpoints;
+            delete trace._input.selectedpoints;
+        }
+    }
+
+    for(i = 0; i < searchTraces.length; i++) {
+        searchInfo = searchTraces[i];
+        if(searchInfo.style) searchInfo.style(gd, searchInfo.cd);
+    }
+}
 
 function mergePolygons(list, poly, subtract) {
     var res;
@@ -305,15 +365,11 @@ function mergePolygons(list, poly, subtract) {
 
 function fillSelectionItem(selection, searchInfo) {
     if(Array.isArray(selection)) {
+        var cd = searchInfo.cd;
         var trace = searchInfo.cd[0].trace;
 
         for(var i = 0; i < selection.length; i++) {
-            var sel = selection[i];
-
-            sel.curveNumber = trace.index;
-            sel.data = trace._input;
-            sel.fullData = trace;
-            appendArrayPointValue(sel, trace, sel.pointNumber);
+            selection[i] = makeEventData(selection[i], trace, cd);
         }
     }
 

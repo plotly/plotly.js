@@ -608,17 +608,22 @@ function computeLegendDimensions(gd, groups, traces) {
         var rowHeight = 0,
             maxTraceHeight = 0,
             maxTraceWidth = 0,
-            offsetX = 0;
+            offsetX = 0,
+            fullTracesWidth = 0,
+            traceGap = opts.tracegroupgap || 5,
+            oneRowLegend;
 
         // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
             maxTraceWidth = Math.max(40 + d[0].width, maxTraceWidth);
+            fullTracesWidth += 40 + d[0].width + traceGap;
         });
 
+        // check if legend fits in one row
+        oneRowLegend = (fullLayout.width - (fullLayout.margin.r + fullLayout.margin.l)) > borderwidth + fullTracesWidth - traceGap;
         traces.each(function(d) {
             var legendItem = d[0],
-                traceWidth = maxTraceWidth,
-                traceGap = opts.tracegroupgap || 5;
+                traceWidth = oneRowLegend ? 40 + d[0].width : maxTraceWidth;
 
             if((borderwidth + offsetX + traceGap + traceWidth) > (fullLayout.width - (fullLayout.margin.r + fullLayout.margin.l))) {
                 offsetX = 0;

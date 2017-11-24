@@ -16,6 +16,7 @@ var Axes = require('../../plots/cartesian/axes');
 var subTypes = require('../scatter/subtypes');
 var calcColorscale = require('../scatter/colorscale_calc');
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
+var calcSelection = require('../scatter/calc_selection');
 var lookupCarpet = require('../carpet/lookup_carpetid');
 
 module.exports = function calc(gd, trace) {
@@ -67,8 +68,8 @@ module.exports = function calc(gd, trace) {
     }
 
     calcColorscale(trace);
-
     arraysToCalcdata(cd, trace);
+    calcSelection(cd, trace);
 
     return cd;
 };

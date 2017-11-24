@@ -10,10 +10,8 @@
 'use strict';
 
 var Lib = require('../../lib');
-
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
-
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -44,8 +42,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('marker.line.color');
     coerce('marker.line.width');
+    coerce('marker.opacity');
 
     colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
