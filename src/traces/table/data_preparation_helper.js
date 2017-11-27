@@ -33,8 +33,8 @@ module.exports = function calc(gd, trace) {
     var columnOrder = trace._fullInput.columnorder;
     var columnWidths = headerValues.map(function(d, i) {
         return Array.isArray(trace.columnwidth) ?
-            trace.columnwidth[Math.min(i, trace.columnwidth.length - 1)] :
-            isFinite(trace.columnwidth) && trace.columnwidth !== null ? trace.columnwidth : 1;
+            Number(trace.columnwidth[Math.min(i, trace.columnwidth.length - 1)]) :
+            trace.columnwidth !== null && isFinite(Number(trace.columnwidth)) ? Number(trace.columnwidth) : 1;
     });
     var totalColumnWidths = columnWidths.reduce(function(p, n) {return p + n;}, 0);
 
