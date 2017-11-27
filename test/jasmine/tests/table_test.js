@@ -92,6 +92,20 @@ describe('table initialization tests', function() {
             expect(fullTrace.cells.values).toEqual([]);
         });
 
+        it('\'columnwidth\' specification should accept a numerical array', function() {
+            var fullTrace = _supply({
+                columnwidth: [1, 2, 3]
+            });
+            expect(fullTrace.columnwidth).toEqual([1, 2, 3]);
+        });
+
+        it('\'columnwidth\' specification should accept a string array (converted downstream)', function() {
+            var fullTrace = _supply({
+                columnwidth: ['1', '2', '3']
+            });
+            expect(fullTrace.columnwidth).toEqual(['1', '2', '3']);
+        });
+
         it('\'header\' should be used with default values where attributes are not provided', function() {
             var fullTrace = _supply({
                 header: {
