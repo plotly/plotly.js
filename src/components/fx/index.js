@@ -45,6 +45,7 @@ module.exports = {
     unhover: dragElement.unhover,
 
     loneHover: require('./hover').loneHover,
+    customHovers: require('./hover').customHovers,
     loneUnhover: loneUnhover,
 
     click: require('./click')

@@ -1,0 +1,21 @@
+{
+  "data": [
+    {"type": "parcats",
+      "domain": {"x": [0.125, 0.625],"y": [0.25, 0.75]},
+      "dimensions":[
+        {"label": "One", "values": [1, 1, 2, 1, 2, 1, 1, 2, 1]},
+        {"label": "Two", "values": ["A", "B", "A", "B", "C", "C", "A", "B", "C"]},
+        {"label": "Three", "values": [11, 11, 11, 11, 11, 11, 11, 11, 11]}],
+      "bundlecolors": true,
+      "marker": {
+        "color": [0, 0, 1, 1, 0, 1, 0, 0, 0]
+      }
+    }
+  ],
+  "layout": {
+    "height": 602,
+    "width": 592,
+    "margin": {
+      "l": 40, "r": 40, "t": 50, "b": 40
+    }}
+}
