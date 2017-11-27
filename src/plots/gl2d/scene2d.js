@@ -157,6 +157,9 @@ proto.makeFramework = function() {
     mouseContainer.style.position = 'absolute';
     mouseContainer.style['pointer-events'] = 'auto';
 
+    this.pickCanvas = this.container.querySelector('.gl-canvas-pick');
+
+
     // append canvas, hover svg and mouse div to container
     var container = this.container;
     container.appendChild(svgContainer);
@@ -531,8 +534,10 @@ proto.updateTraces = function(fullData, calcData) {
 proto.updateFx = function(dragmode) {
     // switch to svg interactions in lasso/select mode
     if(dragmode === 'lasso' || dragmode === 'select') {
+        this.pickCanvas.style['pointer-events'] = 'none';
         this.mouseContainer.style['pointer-events'] = 'none';
     } else {
+        this.pickCanvas.style['pointer-events'] = 'auto';
         this.mouseContainer.style['pointer-events'] = 'auto';
     }
 

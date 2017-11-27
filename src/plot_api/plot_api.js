@@ -224,6 +224,12 @@ Plotly.plot = function(gd, data, layout, config) {
                 })
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
+
+            fullLayout._glcanvas.filter(function(d) {
+                return !d.pick;
+            }).style({
+                'pointer-events': 'none'
+            });
         }
 
         return Lib.syncOrAsync([
