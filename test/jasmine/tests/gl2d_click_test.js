@@ -492,7 +492,7 @@ describe('@noCI Test gl2d lasso/select:', function() {
     function select(path) {
         return new Promise(function(resolve, reject) {
             gd.once('plotly_selected', resolve);
-            setTimeout(function() { reject('did not trigger *plotly_selected*');}, 100);
+            setTimeout(function() { reject('did not trigger *plotly_selected*');}, 200);
             drag(path);
         });
     }

@@ -1325,7 +1325,7 @@ plots.purge = function(gd) {
 
     var fullLayout = gd._fullLayout || {};
     if(fullLayout._glcontainer !== undefined) {
-        fullLayout._glcontainer.selectAll('.gl-canvas').data([]).exit().remove();
+        fullLayout._glcontainer.selectAll('.gl-canvas').remove();
         fullLayout._glcontainer.remove();
         fullLayout._glcanvas = null;
     }

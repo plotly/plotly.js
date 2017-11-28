@@ -268,7 +268,6 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
         throttle.done(throttleID).then(function() {
             throttle.clear(throttleID);
-
             if(!dragged && numclicks === 2) {
                 // clear selection on doubleclick
                 outlines.remove();

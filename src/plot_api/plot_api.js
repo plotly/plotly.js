@@ -221,11 +221,16 @@ Plotly.plot = function(gd, data, layout, config) {
                     'left': 0,
                     'width': '100%',
                     'height': '100%',
-                    'pointer-events': 'none',
                     'overflow': 'visible'
                 })
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
+
+            fullLayout._glcanvas.filter(function(d) {
+                return !d.pick;
+            }).style({
+                'pointer-events': 'none'
+            });
         }
 
         return Lib.syncOrAsync([
@@ -2797,6 +2802,7 @@ function makePlotFramework(gd) {
     // right, rather than enter/exit which can muck up the order
     // TODO: sort out all the ordering so we don't have to
     // explicitly delete anything
+    // FIXME: parcoords reuses this object, not the best pattern
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
         .data([{}]);
 
