@@ -1012,6 +1012,6 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 };
 
 
-/*ScatterRegl.style = function style(container, cdata) {
+/* ScatterRegl.style = function style(container, cdata) {
     // TODO
 };*/

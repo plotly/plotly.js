@@ -54,4 +54,3 @@ constants.partialBundlePaths.forEach(function(pathObj) {
         pathToMinBundle: pathObj.distMin
     });
 });
-
