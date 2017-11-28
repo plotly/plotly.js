@@ -49,11 +49,11 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts) {
 
     b.transform(bubleify, constants.bubleifyOptions);
 
-    var bundleStream = b.bundle(function(err, buf) {
+    var bundleStream = b.bundle(function(err) {
         if(err) throw err;
-    })
+    });
 
-    if (outputMinified) {
+    if(outputMinified) {
         bundleStream
             .pipe(minify(constants.uglifyOptions))
             .pipe(fs.createWriteStream(pathToMinBundle))
