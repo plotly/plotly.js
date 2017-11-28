@@ -57,7 +57,6 @@
     "@plotly/d3-sankey": "^0.5.0",
     "alpha-shape": "^1.0.0",
     "bubleify": "^1.0.0",
-    "canvas-fit": "^1.5.0",
     "color-rgba": "^1.1.1",
     "convex-hull": "^1.0.3",
     "country-regex": "^1.1.0",
