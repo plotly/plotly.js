@@ -615,13 +615,14 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
 
     // make sure proper regl instances are created
     layout._glcanvas.each(function(d) {
-        if(d.regl) return;
+        if(d.regl || d.pick) return;
         d.regl = createRegl({
             canvas: this,
             attributes: {
                 antialias: !d.pick,
                 preserveDrawingBuffer: true
             },
+            extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
             pixelRatio: container._context.plotGlPixelRatio || global.devicePixelRatio
         });
     });
@@ -1011,6 +1012,6 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 };
 
 
-ScatterRegl.style = function style(container, cdata) {
+/*ScatterRegl.style = function style(container, cdata) {
     // TODO
-};
+};*/

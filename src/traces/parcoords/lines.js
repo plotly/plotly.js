@@ -433,6 +433,7 @@ module.exports = function(canvasGL, d, scatter) {
     }
 
     function destroy() {
+        canvasGL.style['pointer-events'] = 'none';
         paletteTexture.destroy();
     }
 

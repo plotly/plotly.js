@@ -240,7 +240,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
                     traceSelections.push(traceSelection);
 
-                    var thisSelection = fillSelectionItem(traceSelection, searchInfo);
+                    thisSelection = fillSelectionItem(traceSelection, searchInfo);
 
                     if(selection.length) {
                         for(var j = 0; j < thisSelection.length; j++) {

@@ -13,7 +13,6 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 var hasHover = require('has-hover');
-var createRegl = require('regl');
 
 var Plotly = require('../plotly');
 var Lib = require('../lib');
@@ -221,16 +220,11 @@ Plotly.plot = function(gd, data, layout, config) {
                     'left': 0,
                     'width': '100%',
                     'height': '100%',
-                    'overflow': 'visible'
+                    'overflow': 'visible',
+                    'pointer-events': 'none'
                 })
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
-
-            fullLayout._glcanvas.filter(function(d) {
-                return !d.pick;
-            }).style({
-                'pointer-events': 'none'
-            });
         }
 
         return Lib.syncOrAsync([
