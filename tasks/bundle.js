@@ -33,6 +33,7 @@ _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
     pathToMinBundle: constants.pathToPlotlyDistMin
 });
 
+
 // Browserify the geo assets
 _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
     standalone: 'PlotlyGeoAssets'
@@ -53,3 +54,4 @@ constants.partialBundlePaths.forEach(function(pathObj) {
         pathToMinBundle: pathObj.distMin
     });
 });
+
