@@ -84,16 +84,29 @@ module.exports = {
     testContainerHome: '/var/www/streambed/image_server/plotly.js',
 
     uglifyOptions: {
-        fromString: true,
         mangle: true,
         compress: {
-            warnings: false,
-            screw_ie8: true
+            warnings: false
         },
         output: {
             beautify: false,
             ascii_only: true
-        }
+        },
+        sourceMap: false
+    },
+
+    bubleifyOptions: {
+        target: {
+            chrome: 48,
+            firefox: 44,
+            edge: 12
+        },
+        transforms: {
+            arrow: true,
+            defaultParameter: false,
+            dangerousForOf: true,
+        },
+        sourceMap: false
     },
 
     licenseDist: [

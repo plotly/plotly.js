@@ -56,6 +56,8 @@
     "3d-view": "^2.0.0",
     "@plotly/d3-sankey": "^0.5.0",
     "alpha-shape": "^1.0.0",
+    "bubleify": "^1.0.0",
+    "canvas-fit": "^1.5.0",
     "color-rgba": "^1.1.1",
     "convex-hull": "^1.0.3",
     "country-regex": "^1.1.0",
@@ -86,6 +88,7 @@
     "has-hover": "^1.0.1",
     "mapbox-gl": "^0.22.0",
     "matrix-camera-controller": "^2.1.3",
+    "minify-stream": "^1.1.0",
     "mouse-change": "^1.4.0",
     "mouse-event-offset": "^3.0.2",
     "mouse-wheel": "^1.0.2",
@@ -140,7 +143,6 @@
     "read-last-lines": "^1.1.0",
     "requirejs": "^2.3.1",
     "through2": "^2.0.3",
-    "uglify-js": "^2.8.12",
     "watchify": "^3.9.0",
     "xml2js": "^0.4.16"
   }

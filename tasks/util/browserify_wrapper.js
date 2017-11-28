@@ -2,11 +2,11 @@ var fs = require('fs');
 var path = require('path');
 
 var browserify = require('browserify');
-var UglifyJS = require('uglify-js');
+var bubleify = require('bubleify');
+var minify = require('minify-stream');
 
 var constants = require('./constants');
 var compressAttributes = require('./compress_attributes');
-var patchMinified = require('./patch_minified');
 var strictD3 = require('./strict_d3');
 
 /** Convenience browserify wrapper
@@ -46,30 +46,30 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts) {
     }
 
     var b = browserify(pathToIndex, browserifyOpts);
-    var bundleWriteStream = fs.createWriteStream(pathToBundle);
 
-    bundleWriteStream.on('finish', function() {
-        logger(pathToBundle);
-        if(opts.then) {
-            opts.then();
-        }
-    });
+    b.transform(bubleify, constants.bubleifyOptions);
 
-    b.bundle(function(err, buf) {
+    var bundleStream = b.bundle(function(err, buf) {
         if(err) throw err;
+    })
 
-        if(outputMinified) {
-            var minifiedCode = UglifyJS.minify(buf.toString(), constants.uglifyOptions).code;
-            minifiedCode = patchMinified(minifiedCode);
-
-            fs.writeFile(pathToMinBundle, minifiedCode, function(err) {
-                if(err) throw err;
-
+    if (outputMinified) {
+        bundleStream
+            .pipe(minify(constants.uglifyOptions))
+            .pipe(fs.createWriteStream(pathToMinBundle))
+            .on('finish', function() {
                 logger(pathToMinBundle);
             });
-        }
-    })
-    .pipe(bundleWriteStream);
+    }
+
+    bundleStream
+        .pipe(fs.createWriteStream(pathToBundle))
+        .on('finish', function() {
+            logger(pathToBundle);
+            if(opts.then) {
+                opts.then();
+            }
+        });
 };
 
 function logger(pathToOutput) {
