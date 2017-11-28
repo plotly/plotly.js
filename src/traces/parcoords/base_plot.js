@@ -12,7 +12,6 @@ var d3 = require('d3');
 var Plots = require('../../plots/plots');
 var parcoordsPlot = require('./plot');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var c = require('./constants');
 
 exports.name = 'parcoords';
 
@@ -28,9 +27,6 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var hasParcoords = (newFullLayout._has && newFullLayout._has('parcoords'));
 
     if(hadParcoords && !hasParcoords) {
-        oldFullLayout._paperdiv.selectAll('.parcoords-line-layers').remove();
-        oldFullLayout._paperdiv.selectAll('.parcoords-line-layers').remove();
-        oldFullLayout._paperdiv.selectAll('.parcoords').remove();
         oldFullLayout._paperdiv.selectAll('.parcoords').remove();
         oldFullLayout._glimages.selectAll('*').remove();
     }
@@ -41,22 +37,20 @@ exports.toSVG = function(gd) {
     var imageRoot = gd._fullLayout._glimages;
     var root = d3.select(gd).selectAll('.svg-container');
     var canvases = root.filter(function(d, i) {return i === root.size() - 1;})
-        .selectAll('.parcoords-lines.context, .parcoords-lines.focus');
+        .selectAll('.gl-canvas-context, .gl-canvas-focus');
 
-    function canvasToImage(d) {
+    function canvasToImage() {
         var canvas = this;
         var imageData = canvas.toDataURL('image/png');
         var image = imageRoot.append('svg:image');
-        var size = gd._fullLayout._size;
-        var domain = gd._fullData[d.model.key].domain;
 
         image.attr({
             xmlns: xmlnsNamespaces.svg,
             'xlink:href': imageData,
-            x: size.l + size.w * domain.x[0] - c.overdrag,
-            y: size.t + size.h * (1 - domain.y[1]),
-            width: (domain.x[1] - domain.x[0]) * size.w + 2 * c.overdrag,
-            height: (domain.y[1] - domain.y[0]) * size.h,
+            x: 0,
+            y: 0,
+            width: canvas.width,
+            height: canvas.height,
             preserveAspectRatio: 'none'
         });
     }

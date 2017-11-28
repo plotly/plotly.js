@@ -711,13 +711,34 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return ax._length * (1 - scaleFactor) * FROM_TL[ax.constraintoward || 'middle'];
         }
 
-        for(i = 0; i < subplots.length; i++) {
+        // clear gl frame, if any, since we preserve drawing buffer
+        // FIXME: code duplication with cartesian.plot
+        if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
+            fullLayout._glcanvas.each(function(d) {
+                if(d.regl) {
+                    d.regl.clear({
+                        color: true
+                    });
+                }
+            });
+        }
 
+        for(i = 0; i < subplots.length; i++) {
             var subplot = plotinfos[subplots[i]],
                 xa2 = subplot.xaxis,
                 ya2 = subplot.yaxis,
                 editX2 = editX && !xa2.fixedrange && (xa.indexOf(xa2) !== -1),
                 editY2 = editY && !ya2.fixedrange && (ya.indexOf(ya2) !== -1);
+
+            // scattergl translate
+            if(subplot._scene && subplot._scene.update) {
+                // FIXME: possibly we could update axis internal _r and _rl here
+                var xaRange = Lib.simpleMap(xa2.range, xa2.r2l),
+                    yaRange = Lib.simpleMap(ya2.range, ya2.r2l);
+                subplot._scene.update(
+                    {range: [xaRange[0], yaRange[0], xaRange[1], yaRange[1]]}
+                );
+            }
 
             if(editX2) {
                 xScaleFactor2 = xScaleFactor;

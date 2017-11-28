@@ -1290,7 +1290,7 @@ describe('Test gl plot side effects', function() {
 
             return Plotly.plot(gd, data);
         }).then(function() {
-            countCanvases(1);
+            countCanvases(3);
 
             return Plotly.purge(gd);
         }).then(function() {
@@ -1298,7 +1298,7 @@ describe('Test gl plot side effects', function() {
 
             return Plotly.plot(gd, data);
         }).then(function() {
-            countCanvases(1);
+            countCanvases(3);
 
             return Plotly.deleteTraces(gd, [0]);
         }).then(function() {
@@ -1306,6 +1306,30 @@ describe('Test gl plot side effects', function() {
 
             return Plotly.purge(gd);
         }).then(done);
+    });
+
+    it('should be able to switch trace type', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'parcoords',
+            x: [1, 2, 3],
+            y: [2, 1, 2],
+            dimensions: [
+                {
+                    constraintrange: [200, 700],
+                    label: 'Block height',
+                    values: [321, 534, 542, 674, 31, 674, 124, 246, 456, 743]
+                }
+            ]
+        }])
+        .then(function() {
+            expect(d3.selectAll('canvas').size()).toEqual(3);
+
+            return Plotly.restyle(gd, 'type', 'scatter');
+        })
+        .then(function() {
+            expect(d3.selectAll('canvas').size()).toEqual(0);
+        })
+        .then(done);
     });
 });
 

@@ -8,9 +8,8 @@
 
 'use strict';
 
-var createREGL = require('regl');
 var glslify = require('glslify');
-var verticalPadding = require('./constants').verticalPadding;
+var c = require('./constants');
 var vertexShaderSource = glslify('./shaders/vertex.glsl');
 var pickVertexShaderSource = glslify('./shaders/pick_vertex.glsl');
 var fragmentShaderSource = glslify('./shaders/fragment.glsl');
@@ -165,7 +164,19 @@ function valid(i, offset, panelCount) {
     return i + offset <= panelCount;
 }
 
-module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDimensions, initialPanels, unitToColor, context, pick, scatter) {
+module.exports = function(canvasGL, d, scatter) {
+    var model = d.model,
+        vm = d.viewModel,
+        domain = model.domain;
+
+    var lines = model.lines,
+        canvasWidth = model.canvasWidth,
+        canvasHeight = model.canvasHeight,
+        initialDimensions = vm.dimensions,
+        initialPanels = vm.panels,
+        unitToColor = model.unitToColor,
+        context = d.context,
+        pick = d.pick;
 
     var renderState = {
         currentRafs: {},
@@ -189,13 +200,7 @@ module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDim
     var points = makePoints(sampleCount, dimensionCount, initialDims, color);
     var attributes = makeAttributes(sampleCount, points);
 
-    var regl = createREGL({
-        canvas: canvasGL,
-        attributes: {
-            preserveDrawingBuffer: true,
-            antialias: !pick
-        }
-    });
+    var regl = d.regl;
 
     var paletteTexture = regl.texture({
         shape: [256, 1],
@@ -248,6 +253,13 @@ module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDim
             }
         },
 
+        viewport: {
+            x: regl.prop('viewportX'),
+            y: regl.prop('viewportY'),
+            width: regl.prop('viewportWidth'),
+            height: regl.prop('viewportHeight')
+        },
+
         dither: false,
 
         vert: pick ? pickVertexShaderSource : vertexShaderSource,
@@ -297,7 +309,7 @@ module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDim
     function makeItem(i, ii, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, scatter, I, leftmost, rightmost) {
         var loHi, abcd, d, index;
         var leftRight = [i, ii];
-        var filterEpsilon = verticalPadding / canvasPanelSizeY;
+        var filterEpsilon = c.verticalPadding / canvasPanelSizeY;
 
         var dims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
         var lims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
@@ -341,10 +353,15 @@ module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDim
 
             colorClamp: colorClamp,
             scatter: scatter || 0,
-            scissorX: I === leftmost ? 0 : x + overdrag,
+            scissorX: (I === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
             scissorWidth: (I === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (I === leftmost ? x + overdrag : 0),
-            scissorY: y,
-            scissorHeight: canvasPanelSizeY
+            scissorY: y + model.pad.b + model.layoutHeight * domain.y[0],
+            scissorHeight: canvasPanelSizeY,
+
+            viewportX: model.pad.l - overdrag + model.layoutWidth * domain.x[0],
+            viewportY: model.pad.b + model.layoutHeight * domain.y[0],
+            viewportWidth: canvasWidth,
+            viewportHeight: canvasHeight
         };
     }
 
@@ -413,11 +430,15 @@ module.exports = function(canvasGL, lines, canvasWidth, canvasHeight, initialDim
         return pixelArray;
     }
 
+    function destroy() {
+        paletteTexture.destroy();
+    }
+
     return {
         setColorDomain: setColorDomain,
         render: renderGLParcoords,
         readPixel: readPixel,
         readPixels: readPixels,
-        destroy: regl.destroy
+        destroy: destroy
     };
 };

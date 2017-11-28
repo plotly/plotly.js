@@ -195,6 +195,43 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
+        if(!fullLayout._glcanvas && fullLayout._has('gl')) {
+            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data([{
+                key: 'contextLayer',
+                context: true,
+                pick: false
+            }, {
+                key: 'focusLayer',
+                context: false,
+                pick: false
+            }, {
+                key: 'pickLayer',
+                context: false,
+                pick: true
+            }], function(d) { return d.key; });
+
+            fullLayout._glcanvas.enter().append('canvas')
+                .attr('class', function(d) {
+                    return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
+                })
+                .style({
+                    'position': 'absolute',
+                    'top': 0,
+                    'left': 0,
+                    'width': '100%',
+                    'height': '100%',
+                    'overflow': 'visible'
+                })
+                .attr('width', fullLayout.width)
+                .attr('height', fullLayout.height);
+
+            fullLayout._glcanvas.filter(function(d) {
+                return !d.pick;
+            }).style({
+                'pointer-events': 'none'
+            });
+        }
+
         return Lib.syncOrAsync([
             subroutines.layoutStyles
         ], gd);
@@ -1993,7 +2030,7 @@ function _relayout(gd, aobj) {
             else flags.plot = true;
         }
         else {
-            if(fullLayout._has('gl2d') &&
+            if((fullLayout._has('gl2d') || fullLayout._has('regl')) &&
                 (ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
@@ -2764,10 +2801,14 @@ function makePlotFramework(gd) {
     // right, rather than enter/exit which can muck up the order
     // TODO: sort out all the ordering so we don't have to
     // explicitly delete anything
+    // FIXME: parcoords reuses this object, not the best pattern
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
-        .data([0]);
+        .data([{}]);
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
+
+    // That is initialized in drawFramework if there are `gl` traces
+    fullLayout._glcanvas = null;
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 

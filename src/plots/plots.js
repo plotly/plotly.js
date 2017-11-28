@@ -569,13 +569,27 @@ plots.createTransitionData = function(gd) {
 
 // helper function to be bound to fullLayout to check
 // whether a certain plot type is present on plot
+// or trace has a category
 plots._hasPlotType = function(category) {
-    var basePlotModules = this._basePlotModules || [];
+    // check plot
 
-    for(var i = 0; i < basePlotModules.length; i++) {
+    var basePlotModules = this._basePlotModules || [];
+    var i;
+
+    for(i = 0; i < basePlotModules.length; i++) {
         var _module = basePlotModules[i];
 
         if(_module.name === category) return true;
+    }
+
+    // check trace
+    var modules = this._modules || [];
+
+    for(i = 0; i < modules.length; i++) {
+        var _ = modules[i];
+        if(_.categories && _.categories.indexOf(category) >= 0) {
+            return true;
+        }
     }
 
     return false;
@@ -595,6 +609,15 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
 
     var hasPaper = !!oldFullLayout._paper;
     var hasInfoLayer = !!oldFullLayout._infolayer;
+    var hadGl = oldFullLayout._has && oldFullLayout._has('gl');
+    var hasGl = newFullLayout._has && newFullLayout._has('gl');
+
+    if(hadGl && !hasGl) {
+        if(oldFullLayout._glcontainer !== undefined) {
+            oldFullLayout._glcontainer.selectAll('.gl-canvas').remove();
+            oldFullLayout._glcanvas = null;
+        }
+    }
 
     oldLoop:
     for(i = 0; i < oldFullData.length; i++) {
@@ -1308,7 +1331,11 @@ plots.purge = function(gd) {
     // a new plot, and may have been set outside of our scope.
 
     var fullLayout = gd._fullLayout || {};
-    if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
+    if(fullLayout._glcontainer !== undefined) {
+        fullLayout._glcontainer.selectAll('.gl-canvas').remove();
+        fullLayout._glcontainer.remove();
+        fullLayout._glcanvas = null;
+    }
     if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
 
     // remove modebar
@@ -1325,6 +1352,9 @@ plots.purge = function(gd) {
             window.cancelAnimationFrame(gd._transitionData._animationRaf);
         }
     }
+
+    // remove any planned throttles
+    Lib.clearThrottle();
 
     // data and layout
     delete gd.data;
