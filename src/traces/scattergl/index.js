@@ -473,6 +473,7 @@ ScatterRegl.calc = function calc(container, trace) {
             errorXOptions: [],
             errorYOptions: [],
             selectBatch: null,
+            unselectBatch: null,
 
             // regl- component stubs, initialized in dirty plot call
             fill2d: hasFill,
@@ -506,12 +507,13 @@ ScatterRegl.calc = function calc(container, trace) {
                     scene.error2d.draw(i);
                     scene.error2d.draw(i + scene.count);
                 }
-                if(scene.scatter2d) scene.scatter2d.draw(i);
+                if(scene.scatter2d && !scene.selectBatch) scene.scatter2d.draw(i);
             }
 
             // persistent selection draw
             if(scene.select2d && scene.selectBatch) {
                 scene.select2d.draw(scene.selectBatch);
+                scene.scatter2d.draw(scene.unselectBatch);
             }
 
             scene.dirty = false;
@@ -527,6 +529,7 @@ ScatterRegl.calc = function calc(container, trace) {
         scene.clearSelect = function clearSelect() {
             if(!scene.selectBatch) return;
             scene.selectBatch = null;
+            scene.unselectBatch = null;
             scene.scatter2d.update(scene.markerOptions);
             scene.clear();
             scene.draw();
@@ -548,6 +551,7 @@ ScatterRegl.calc = function calc(container, trace) {
             scene.errorXOptions = null;
             scene.errorYOptions = null;
             scene.selectBatch = null;
+            scene.unselectBatch = null;
 
             delete subplot._scene;
         };
@@ -984,10 +988,10 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 
     // degenerate polygon does not enable selection
     // filter out points by visible scatter ones
-    var els = null;
+    var els = null, unels = null, i;
     if(polygon !== false && !polygon.degenerate) {
-        els = [];
-        for(var i = 0; i < stash.count; i++) {
+        els = [], unels = [];
+        for(i = 0; i < stash.count; i++) {
             if(polygon.contains([stash.xpx[i], stash.ypx[i]])) {
                 els.push(i);
                 selection.push({
@@ -996,15 +1000,26 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
                     y: y[i]
                 });
             }
+            else {
+                unels.push(i);
+            }
+        }
+    }
+    else {
+        unels = Array(stash.count);
+        for (i = 0; i < stash.count; i++) {
+            unels[i] = i;
         }
     }
 
     // create selection style once we have something selected
     if(!scene.selectBatch) {
         scene.selectBatch = Array(scene.count);
+        scene.unselectBatch = Array(scene.count);
         scene.scatter2d.update(scene.unselectedOptions);
     }
     scene.selectBatch[trace.index || 0] = els;
+    scene.unselectBatch[trace.index || 0] = unels;
 
     scene.clear();
     scene.draw();
@@ -1013,21 +1028,4 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 };
 
 
-ScatterRegl.style = function style(container, cdata) {
-    if(!cdata) return;
-
-    // var trace = cdata[0].trace;
-    // var pts = trace.selectedpoints;
-    // var stash = cdata[0].t;
-    // var scene = stash.scene;
-
-    // if(!scene.select2d) return;
-
-    // if(!pts.length) return;
-
-    // var selectBatch = Array(scene.count);
-    // selectBatch[trace.index || 0] = pts;
-
-    // scene.select2d.draw(selectBatch);
-    // scene.scatter2d.draw();
-};
+ScatterRegl.style = function style() {};
