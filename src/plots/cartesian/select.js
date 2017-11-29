@@ -322,6 +322,11 @@ function updateSelectedState(gd, searchTraces, eventData) {
             trace = searchTraces[i].cd[0].trace;
             delete trace.selectedpoints;
             delete trace._input.selectedpoints;
+
+            // delete scattergl selection
+            if(searchTraces[i].cd[0].t && searchTraces[i].cd[0].t.scene) {
+                searchTraces[i].cd[0].t.scene.clearSelect();
+            }
         }
     }
 
