@@ -95,20 +95,6 @@ module.exports = {
         sourceMap: false
     },
 
-    bubleifyOptions: {
-        target: {
-            chrome: 48,
-            firefox: 44,
-            edge: 12
-        },
-        transforms: {
-            arrow: true,
-            defaultParameter: false,
-            dangerousForOf: true,
-        },
-        sourceMap: false
-    },
-
     licenseDist: [
         '/**',
         '* plotly.js v' + pkg.version,
