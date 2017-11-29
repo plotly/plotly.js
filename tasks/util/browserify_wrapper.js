@@ -2,7 +2,10 @@ var fs = require('fs');
 var path = require('path');
 
 var browserify = require('browserify');
+<<<<<<< HEAD
 var bubleify = require('bubleify');
+=======
+>>>>>>> bundle-up
 var minify = require('minify-stream');
 
 var constants = require('./constants');
@@ -46,8 +49,6 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts) {
     }
 
     var b = browserify(pathToIndex, browserifyOpts);
-
-    b.transform(bubleify, constants.bubleifyOptions);
 
     var bundleStream = b.bundle(function(err) {
         if(err) throw err;
