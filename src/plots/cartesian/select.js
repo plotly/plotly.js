@@ -250,11 +250,6 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     else selection = thisSelection;
                 }
 
-                // update selection scene
-                if(plotinfo._scene) {
-                    plotinfo._scene.select(selection);
-                }
-
                 eventData = {points: selection};
                 updateSelectedState(gd, searchTraces, eventData);
                 fillRangeItems(eventData, currentPolygon, filterPoly);
@@ -314,8 +309,8 @@ function updateSelectedState(gd, searchTraces, eventData) {
             var fullData = pt.fullData;
 
             if(pt.pointIndices) {
-                data.selectedpoints = data.selectedpoints.concat(pt.pointIndices);
-                fullData.selectedpoints = fullData.selectedpoints.concat(pt.pointIndices);
+                [].push.apply(data.selectedpoints, pt.pointIndices);
+                [].push.apply(fullData.selectedpoints, pt.pointIndices);
             } else {
                 data.selectedpoints.push(pt.pointIndex);
                 fullData.selectedpoints.push(pt.pointIndex);
