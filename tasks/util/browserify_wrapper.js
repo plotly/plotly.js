@@ -2,10 +2,6 @@ var fs = require('fs');
 var path = require('path');
 
 var browserify = require('browserify');
-<<<<<<< HEAD
-var bubleify = require('bubleify');
-=======
->>>>>>> bundle-up
 var minify = require('minify-stream');
 
 var constants = require('./constants');
