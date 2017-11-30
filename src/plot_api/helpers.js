@@ -108,7 +108,7 @@ exports.cleanLayout = function(layout) {
                     eye = [];
 
                 for(j = 0; j < 3; ++j) {
-                    eye[j] = center[i] + radius * mat[2 + 4 * j];
+                    eye[j] = center[j] + radius * mat[2 + 4 * j];
                 }
 
                 scene.camera = {
