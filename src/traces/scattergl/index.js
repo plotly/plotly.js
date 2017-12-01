@@ -294,6 +294,8 @@ ScatterRegl.calc = function calc(container, trace) {
         markerOptions = makeMarkerOptions(markerOpts);
         selectedOptions = trace.selected ? makeMarkerOptions(extend({}, markerOpts, trace.selected.marker)) : markerOptions;
         unselectedOptions = trace.unselected ? makeMarkerOptions(extend({}, markerOpts, trace.unselected.marker)) : markerOptions;
+
+        markerOptions.positions = positions;
     }
     // expand no-markers axes
     else {
@@ -303,8 +305,6 @@ ScatterRegl.calc = function calc(container, trace) {
 
     function makeMarkerOptions(markerOpts) {
         var markerOptions = {};
-
-        markerOptions.positions = positions;
 
         // get basic symbol info
         var multiMarker = Array.isArray(markerOpts.symbol);
@@ -743,7 +743,9 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
     if(dragmode === 'lasso' || dragmode === 'select') {
         if(!scene.select2d && scene.scatter2d) {
             var selectRegl = layout._glcanvas.data()[1].regl;
-            scene.select2d = createScatter(selectRegl);
+
+            // smol hack to create scatter instance by cloning scatter2d
+            scene.select2d = createScatter(selectRegl, {clone: scene.scatter2d});
             scene.select2d.update(scene.selectedOptions);
         }
         // in case if we keep selection
@@ -1007,7 +1009,7 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
     }
     else {
         unels = Array(stash.count);
-        for (i = 0; i < stash.count; i++) {
+        for(i = 0; i < stash.count; i++) {
             unels[i] = i;
         }
     }
