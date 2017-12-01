@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-var spawn = require('child_process').spawn;
+var spawn = require('cross-spawn');
 
 var falafel = require('falafel');
 var gzipSize = require('gzip-size');
