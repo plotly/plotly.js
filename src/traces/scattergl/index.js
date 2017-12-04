@@ -28,6 +28,7 @@ var createError = require('regl-error2d');
 var svgSdf = require('svg-path-sdf');
 var createRegl = require('regl');
 var fillHoverText = require('../scatter/fill_hover_text');
+var isNumeric = require('fast-isnumeric');
 
 var MAXDIST = Fx.constants.MAXDIST;
 var SYMBOL_SDF_SIZE = 200;
@@ -58,7 +59,8 @@ ScatterRegl.calc = function calc(container, trace) {
     // makeCalcdata runs d2c (data-to-coordinate) on every point
     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
-    var count = Math.max(x ? x.length : 0, y ? y.length : 0), i, l, xx, yy, ptrX = 0, ptrY = 0;
+    var count = x.length, i, l, xx, yy, ptrX = 0, ptrY = 0;
+
     if(!x) {
         x = Array(count);
         for(i = 0; i < count; i++) {
@@ -111,8 +113,8 @@ ScatterRegl.calc = function calc(container, trace) {
     for(i = 0; i < count; i++) {
         // if no x defined, we are creating simple int sequence (API)
         // we use parseFloat because it gives NaN (we need that for empty values to avoid drawing lines) and it is incredibly fast
-        xx = parseFloat(x[i]);
-        yy = parseFloat(y[i]);
+        xx = isNumeric(x[i]) ? +x[i] : NaN;
+        yy = isNumeric(y[i]) ? +y[i] : NaN;
 
         positions[i * 2] = xx;
         positions[i * 2 + 1] = yy;
