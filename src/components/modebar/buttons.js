@@ -71,7 +71,7 @@ modeBarButtons.toImage = {
 
 modeBarButtons.sendDataToCloud = {
     name: 'sendDataToCloud',
-    title: 'Send to Chart Studio',
+    title: 'Edit in Chart Studio',
     icon: Icons.disk,
     click: function(gd) {
         Plots.sendDataToCloud(gd);
