@@ -714,7 +714,6 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
                     if(nextTrace && trace.fill === 'tonexty') {
                         pos = srcPos.slice();
 
-                        // FIXME: overcalculation here
                         var nextOptions = scene.lineOptions[i + 1];
 
                         if(nextOptions) {
@@ -962,7 +961,6 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
     });
 
     if(di.htx) pointData.text = di.htx;
-    else if(trace.hovertext) pointData.text = trace.hovertext;
     else if(di.tx) pointData.text = di.tx;
     else if(trace.text) pointData.text = trace.text;
 
@@ -1030,4 +1028,9 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 };
 
 
-ScatterRegl.style = function style() {};
+ScatterRegl.style = function style(gd, cd) {
+    if(cd) {
+        // var trace = cd[0].trace;
+        // trace._glTrace.update(cd);
+    }
+};

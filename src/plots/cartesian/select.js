@@ -220,12 +220,16 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         }
 
         // draw selection
+        var xs = dragOptions.plotinfo.xaxis._offset;
+        var ys = dragOptions.plotinfo.yaxis._offset;
         var paths = [];
         for(i = 0; i < mergedPolygons.length; i++) {
             var ppts = mergedPolygons[i];
             paths.push(ppts.join('L') + 'L' + ppts[0]);
         }
-        outlines.attr('d', 'M' + paths.join('M') + 'Z');
+        outlines
+            .attr('transform', 'translate(' + xs + ', ' + ys + ')')
+            .attr('d', 'M' + paths.join('M') + 'Z');
 
         throttle.throttle(
             throttleID,
