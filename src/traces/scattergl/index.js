@@ -521,8 +521,29 @@ ScatterRegl.calc = function calc(container, trace) {
 
         // make sure canvas is clear
         scene.clear = function clear() {
-            scene.select2d.regl.clear({color: true});
-            scene.scatter2d.regl.clear({color: true});
+            var vpSize = layout._size, width = layout.width, height = layout.height;
+            var vp = [
+                vpSize.l + xaxis.domain[0] * vpSize.w,
+                vpSize.b + yaxis.domain[0] * vpSize.h,
+                (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
+                (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
+            ]
+
+            var gl, regl;
+
+            regl = scene.select2d.regl;
+            gl = regl._gl;
+            gl.enable(gl.SCISSOR_TEST);
+            gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+
+            regl = scene.scatter2d.regl;
+            gl = regl._gl;
+            gl.enable(gl.SCISSOR_TEST);
+            gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
         };
 
         // remove selection
@@ -1018,11 +1039,9 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
         scene.unselectBatch = Array(scene.count);
         scene.scatter2d.update(scene.unselectedOptions);
     }
-    scene.selectBatch[trace.index || 0] = els;
-    scene.unselectBatch[trace.index || 0] = unels;
+    scene.selectBatch[0] = els;
+    scene.unselectBatch[0] = unels;
 
-    scene.clear();
-    scene.draw();
 
     return selection;
 };
@@ -1030,7 +1049,9 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 
 ScatterRegl.style = function style(gd, cd) {
     if(cd) {
-        // var trace = cd[0].trace;
-        // trace._glTrace.update(cd);
+        var stash = cd[0].t;
+        var scene = stash.scene;
+        stash.scene.clear();
+        stash.scene.draw();
     }
 };
