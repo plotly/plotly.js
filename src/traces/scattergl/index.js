@@ -521,7 +521,7 @@ ScatterRegl.calc = function calc(container, trace) {
                 vpSize.b + yaxis.domain[0] * vpSize.h,
                 (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
                 (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
-            ]
+            ];
 
             var gl, regl;
 
@@ -762,15 +762,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
     var dragmode = layout.dragmode;
 
     if(dragmode === 'lasso' || dragmode === 'select') {
-        if(!scene.select2d && scene.scatter2d) {
-            var selectRegl = layout._glcanvas.data()[1].regl;
-
-            // smol hack to create scatter instance by cloning scatter2d
-            scene.select2d = createScatter(selectRegl, {clone: scene.scatter2d});
-            scene.select2d.update(scene.selectedOptions);
-        }
-        // in case if we keep selection
-        else if(scene.selectBatch) {
+        if(scene.select2d && scene.selectBatch) {
             scene.scatter2d.update(scene.unselectedOptions);
         }
     }
@@ -785,6 +777,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
             y = stash.rawy;
         var xaxis = Axes.getFromId(container, trace.xaxis || 'x');
         var yaxis = Axes.getFromId(container, trace.yaxis || 'y');
+        var i;
 
         var range = [
             xaxis._rl[0],
@@ -800,10 +793,41 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
             (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
         ];
 
-        if(dragmode === 'lasso' || dragmode === 'select') {
+        if(trace.selectedpoints || dragmode === 'lasso' || dragmode === 'select') {
+            // create select2d
+            if(!scene.select2d && scene.scatter2d) {
+                var selectRegl = layout._glcanvas.data()[1].regl;
+
+                // smol hack to create scatter instance by cloning scatter2d
+                scene.select2d = createScatter(selectRegl, {clone: scene.scatter2d});
+                scene.select2d.update(scene.selectedOptions);
+
+                // create selection style once we have something selected
+                if(trace.selectedpoints && !scene.selectBatch) {
+                    scene.selectBatch = Array(scene.count);
+                    scene.unselectBatch = Array(scene.count);
+                    scene.scatter2d.update(scene.unselectedOptions);
+                }
+            }
+
+            // form unselected batch
+            if(trace.selectedpoints && !scene.unselectBatch[stash.index]) {
+                scene.selectBatch[stash.index] = trace.selectedpoints;
+                var selPts = trace.selectedpoints;
+                var selDict = {};
+                for(i = 0; i < selPts.length; i++) {
+                    selDict[selPts[i]] = true;
+                }
+                var unselPts = [];
+                for(i = 0; i < stash.count; i++) {
+                    if(!selDict[i]) unselPts.push(i);
+                }
+                scene.unselectBatch[stash.index] = unselPts;
+            }
+
             // precalculate px coords since we are not going to pan during select
             var xpx = Array(stash.count), ypx = Array(stash.count);
-            for(var i = 0; i < stash.count; i++) {
+            for(i = 0; i < stash.count; i++) {
                 xpx[i] = xaxis.c2p(x[i]);
                 ypx[i] = yaxis.c2p(y[i]);
             }
@@ -1043,7 +1067,6 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
     scene.selectBatch[stash.index] = els;
     scene.unselectBatch[stash.index] = unels;
 
-
     return selection;
 };
 
@@ -1052,7 +1075,7 @@ ScatterRegl.style = function style(gd, cd) {
     if(cd) {
         var stash = cd[0].t;
         var scene = stash.scene;
-        stash.scene.clear();
-        stash.scene.draw();
+        scene.clear();
+        scene.draw();
     }
 };
