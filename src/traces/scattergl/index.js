@@ -36,6 +36,7 @@ var SYMBOL_STROKE = SYMBOL_SIZE / 20;
 var SYMBOL_SDF = {};
 var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 var TOO_MANY_POINTS = 1e5;
+var DOT_RE = /-dot/;
 
 var ScatterRegl = module.exports = extend({}, require('../scatter'));
 
@@ -623,7 +624,7 @@ function getSymbolSdf(symbol) {
     var symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
     var symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
 
-    var isDot = /-dot/.test(symbol);
+    var isDot = DOT_RE.test(symbol);
 
     // get symbol sdf from cache or generate it
     if(SYMBOL_SDF[symbol]) return SYMBOL_SDF[symbol];
