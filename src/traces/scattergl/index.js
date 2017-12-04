@@ -132,13 +132,6 @@ ScatterRegl.calc = function calc(container, trace) {
         }
     }
 
-    // stash data
-    stash.x = x;
-    stash.y = y;
-    stash.rawx = rawx;
-    stash.rawy = rawy;
-    stash.positions = positions;
-    stash.count = count;
 
     if(trace.visible !== true) {
         hasLines = false;
@@ -299,8 +292,8 @@ ScatterRegl.calc = function calc(container, trace) {
     }
     // expand no-markers axes
     else {
-        Axes.expand(xaxis, stash.rawx, { padded: true });
-        Axes.expand(yaxis, stash.rawy, { padded: true });
+        Axes.expand(xaxis, rawx, { padded: true });
+        Axes.expand(yaxis, rawy, { padded: true });
     }
 
     function makeMarkerOptions(markerOpts) {
@@ -409,8 +402,8 @@ ScatterRegl.calc = function calc(container, trace) {
                 }
             }
 
-            Axes.expand(xaxis, stash.rawx, { padded: true, ppad: sizes });
-            Axes.expand(yaxis, stash.rawy, { padded: true, ppad: sizes });
+            Axes.expand(xaxis, rawx, { padded: true, ppad: sizes });
+            Axes.expand(yaxis, rawy, { padded: true, ppad: sizes });
         }
         else {
             size = markerOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
@@ -427,8 +420,8 @@ ScatterRegl.calc = function calc(container, trace) {
 
             // FIXME: is there a better way to separate expansion?
             if(count < TOO_MANY_POINTS) {
-                Axes.expand(xaxis, stash.rawx, { padded: true, ppad: size });
-                Axes.expand(yaxis, stash.rawy, { padded: true, ppad: size });
+                Axes.expand(xaxis, rawx, { padded: true, ppad: size });
+                Axes.expand(yaxis, rawy, { padded: true, ppad: size });
             }
             // update axes fast for big number of points
             else {
@@ -609,6 +602,13 @@ ScatterRegl.calc = function calc(container, trace) {
 
     // stash scene ref
     stash.scene = scene;
+    stash.index = scene.count - 1;
+    stash.x = x;
+    stash.y = y;
+    stash.rawx = rawx;
+    stash.rawy = rawy;
+    stash.positions = positions;
+    stash.count = count;
 
     return [{x: false, y: false, t: stash, trace: trace}];
 };
@@ -1039,8 +1039,8 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
         scene.unselectBatch = Array(scene.count);
         scene.scatter2d.update(scene.unselectedOptions);
     }
-    scene.selectBatch[0] = els;
-    scene.unselectBatch[0] = unels;
+    scene.selectBatch[stash.index] = els;
+    scene.unselectBatch[stash.index] = unels;
 
 
     return selection;
