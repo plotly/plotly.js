@@ -62,12 +62,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     if(mode === 'lasso') {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
-
-    var outlines = zoomLayer.selectAll('path.select-outline').data([1, 2]);
+    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1, 2]);
 
     outlines.enter()
         .append('path')
-        .attr('class', function(d) { return 'select-outline select-outline-' + d; })
+        .attr('class', function(d) { return 'select-outline select-outline-' + d + ' select-outline-' + plotinfo.id; })
         .attr('transform', 'translate(' + xs + ', ' + ys + ')')
         .attr('d', path0 + 'Z');
 
@@ -228,7 +227,6 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             paths.push(ppts.join('L') + 'L' + ppts[0]);
         }
         outlines
-            .attr('transform', 'translate(' + xs + ', ' + ys + ')')
             .attr('d', 'M' + paths.join('M') + 'Z');
 
         throttle.throttle(
