@@ -29,6 +29,7 @@ var svgSdf = require('svg-path-sdf');
 var createRegl = require('regl');
 var fillHoverText = require('../scatter/fill_hover_text');
 var isNumeric = require('fast-isnumeric');
+var Scatter = require('../scatter');
 
 var MAXDIST = Fx.constants.MAXDIST;
 var SYMBOL_SDF_SIZE = 200;
@@ -39,14 +40,27 @@ var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 var TOO_MANY_POINTS = 1e5;
 var DOT_RE = /-dot/;
 
-var ScatterRegl = module.exports = extend({}, require('../scatter'));
+
+var ScatterGl = module.exports = {};
+
+ScatterGl.name = 'scattergl';
+ScatterGl.categories = ['gl', 'regl', 'cartesian', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'];
+ScatterGl.attributes = Scatter.attributes;
+ScatterGl.supplyDefaults = Scatter.supplyDefaults;
+ScatterGl.cleanData = Scatter.cleanData;
+ScatterGl.arraysToCalcdata = Scatter.arraysToCalcdata;
+ScatterGl.colorbar = Scatter.colorbar;
+ScatterGl.meta = Scatter.meta;
+ScatterGl.animatable = true;
+ScatterGl.hasLines = subTypes.hasLines;
+ScatterGl.hasMarkers = subTypes.hasMarkers;
+ScatterGl.hasText = subTypes.hasText;
+ScatterGl.isBubble = subTypes.isBubble;
+ScatterGl.moduleType = 'trace';
+ScatterGl.basePlotModule = require('../../plots/cartesian');
 
 
-ScatterRegl.name = 'scattergl';
-ScatterRegl.categories = ['gl', 'regl', 'cartesian', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'];
-
-
-ScatterRegl.calc = function calc(container, trace) {
+ScatterGl.calc = function calc(container, trace) {
     var layout = container._fullLayout;
     var positions;
     var stash = {};
@@ -650,7 +664,7 @@ function getSymbolSdf(symbol) {
 }
 
 
-ScatterRegl.plot = function plot(container, subplot, cdata) {
+ScatterGl.plot = function plot(container, subplot, cdata) {
     var layout = container._fullLayout;
     var scene = subplot._scene;
 
@@ -869,7 +883,7 @@ ScatterRegl.plot = function plot(container, subplot, cdata) {
 };
 
 
-ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
+ScatterGl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
     var cd = pointData.cd,
         stash = cd[0].t,
         trace = cd[0].trace,
@@ -935,6 +949,7 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
 
     // the closest data point
     var di = {
+        pointNumber: id,
         x: x[id],
         y: y[id]
     };
@@ -1019,7 +1034,7 @@ ScatterRegl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
 };
 
 
-ScatterRegl.selectPoints = function select(searchInfo, polygon) {
+ScatterGl.selectPoints = function select(searchInfo, polygon) {
     var cd = searchInfo.cd,
         selection = [],
         trace = cd[0].trace,
@@ -1073,7 +1088,7 @@ ScatterRegl.selectPoints = function select(searchInfo, polygon) {
 };
 
 
-ScatterRegl.style = function style(gd, cd) {
+ScatterGl.style = function style(gd, cd) {
     if(cd) {
         var stash = cd[0].t;
         var scene = stash.scene;
