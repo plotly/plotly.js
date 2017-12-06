@@ -43,7 +43,6 @@ module.exports = function drawArrowHead(el3, ends, options) {
     var startScale = (options.arrowwidth || 1) * options.startarrowsize;
     var doStart = ends.indexOf('start') >= 0;
     var doEnd = ends.indexOf('end') >= 0;
-    var doNone = ends.indexOf('none') >= 0;
     var backOff = headStyle.backoff * scale + options.standoff;
     var startBackOff = startHeadStyle.backoff * startScale + options.startstandoff;
 
@@ -59,7 +58,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
         startRot = Math.atan2(dy, dx);
         endRot = startRot + Math.PI;
         if(backOff && startBackOff) {
-            if(backOff * backOff + startBackOff * startBackOff > dx * dx + dy * dy) {
+            if(backOff + startBackOff > Math.sqrt(dx * dx + dy * dy)) {
                 hideLine();
                 return;
             }
@@ -73,11 +72,10 @@ module.exports = function drawArrowHead(el3, ends, options) {
             var backOffX = backOff * Math.cos(startRot),
                 backOffY = backOff * Math.sin(startRot);
 
-            if(doEnd || doNone) {
-                end.x += backOffX;
-                end.y += backOffY;
-                el3.attr({x2: end.x, y2: end.y});
-            }
+            end.x += backOffX;
+            end.y += backOffY;
+            el3.attr({x2: end.x, y2: end.y});
+
         }
 
         if(startBackOff) {
@@ -88,11 +86,10 @@ module.exports = function drawArrowHead(el3, ends, options) {
             var startBackOffX = startBackOff * Math.cos(startRot),
                 startbackOffY = startBackOff * Math.sin(startRot);
 
-            if(doStart || doNone) {
-                start.x -= startBackOffX;
-                start.y -= startbackOffY;
-                el3.attr({x1: start.x, y1: start.y});
-            }
+            start.x -= startBackOffX;
+            start.y -= startbackOffY;
+            el3.attr({x1: start.x, y1: start.y});
+
         }
     }
     else if(el.nodeName === 'path') {
@@ -103,7 +100,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
             // combine the two
             dashArray = '';
 
-        if(pathlen < backOff || pathlen < startBackOff || pathlen < backOff + startBackOff) {
+        if(pathlen < backOff + startBackOff) {
             hideLine();
             return;
         }
@@ -131,18 +128,18 @@ module.exports = function drawArrowHead(el3, ends, options) {
 
     function hideLine() { el3.style('stroke-dasharray', '0px,100px'); }
 
-    function drawhead(headStyle, p, rot, scale) {
-        if(!headStyle.path) return;
-        if(headStyle.noRotate) rot = 0;
+    function drawhead(arrowHeadStyle, p, rot, arrowScale) {
+        if(!arrowHeadStyle.path) return;
+        if(arrowHeadStyle.noRotate) rot = 0;
 
         d3.select(el.parentNode).append('path')
             .attr({
                 'class': el3.attr('class'),
-                d: headStyle.path,
+                d: arrowHeadStyle.path,
                 transform:
                     'translate(' + p.x + ',' + p.y + ')' +
                     (rot ? 'rotate(' + (rot * 180 / Math.PI) + ')' : '') +
-                    'scale(' + scale + ')'
+                    'scale(' + arrowScale + ')'
             })
             .style({
                 fill: Color.rgb(options.arrowcolor),

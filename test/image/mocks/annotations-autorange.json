@@ -10,13 +10,13 @@
     "layout":{
         "autosize":false,
         "xaxis":{
-            "domain":[0,0.3],
+            "domain":[0,0.21],
             "mirror":true,
             "zeroline":false,
             "showline":true
         },
         "xaxis2":{
-            "domain":[0.35,0.65],
+            "domain":[0.26,0.47],
             "anchor":"y2",
             "mirror":true,
             "zeroline":false,
@@ -24,8 +24,15 @@
             "type": "date"
         },
         "xaxis3":{
-            "domain":[0.7,1],
+            "domain":[0.52,0.73],
             "anchor":"y3",
+            "mirror":true,
+            "zeroline":false,
+            "showline":true
+        },
+        "xaxis4":{
+            "domain":[0.78,1],
+            "anchor":"y4",
             "mirror":true,
             "zeroline":false,
             "showline":true
@@ -48,8 +55,14 @@
             "zeroline":false,
             "showline":true
         },
+        "yaxis4":{
+            "anchor":"x4",
+            "mirror":true,
+            "zeroline":false,
+            "showline":true
+        },
         "height":360,
-        "width":800,
+        "width":1000,
         "margin":{"r":40,"b":100,"l":40,"t":40},
         "annotations":[
             {"ay":0,"ax":50,"x":1,"y":1.5,"text":"Left", "xshift": -10, "yshift": -10},
@@ -95,18 +108,40 @@
                 "yshift": -10
             },
             {
+                "xref":"x4","yref":"y4","text":"From left","y":2,"ax":-27,"ay":0,"x":0,
+                "textangle": -90, "bordercolor": "#444", "xanchor": "left","yanchor": "top",
+                "arrowside":"start+end", "startarrowsize":2,"startarrowhead":6,
+                "xshift": 10
+            },
+            {
+                "xref":"x4","yref":"y4","y":2,"x":6,"ay":0,"ax":40,
+                "arrowside":"start+end", "startarrowsize":3,"startarrowhead":6,
+                "xshift": -10
+            },
+            {
+                "xref":"x4","yref":"y4","y":4,"x":4,"ay":-40,"ax":0,
+                "arrowside":"start+end", "startarrowsize":2,"startarrowhead":6,"xanchor": "right","yanchor": "top",
+                "yshift": -10
+            },
+            {
+                "xref":"x4","yref":"y4","text":"From Bottom","y":1,"ax":0,"ay":60,"x":4,
+                "arrowside":"start+end","startarrowhead":6,"startarrowsize":1,"xanchor": "right","yanchor": "bottom",
+                "bordercolor": "#444", "borderwidth": 3, "height": 30,"textangle":0,
+                "yshift": 10
+            },
+            {
                 "xref": "paper", "yref": "paper", "text": "On the<br>bottom of the plot",
                 "x": 0.3, "y": -0.1, "showarrow": false,
                 "xanchor": "right", "yanchor": "top", "width": 200, "height": 60,
                 "bgcolor": "#eee", "bordercolor": "#444",
-                "xshift": -5, "yshift": 5
+                "xshift": -55, "yshift": 5
             },
             {
                 "xref": "paper", "yref": "paper", "text": "blah blah blah blah<br>blah<br>blah<br>blah<br>blah<br>blah",
                 "x": 0.3, "y": -0.25, "ax": 100, "ay": 0, "textangle": 40, "borderpad": 4,
                 "xanchor": "left", "yanchor": "bottom", "align": "left", "valign": "top",
                 "width": 60, "height": 40, "bgcolor": "#eee", "bordercolor": "#444",
-                "xshift": -5, "yshift": 5
+                "xshift": -55, "yshift": 5
             }
         ]
     }

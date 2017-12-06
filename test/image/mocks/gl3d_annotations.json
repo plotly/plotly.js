@@ -1,9 +1,9 @@
 {
   "data": [{
     "type": "scatter3d",
-    "x": ["2017-01-01", "2017-02-10", "2017-03-20"],
-    "y": ["A", "B", "C"],
-    "z": [1, 1e3, 1e5]
+    "x": ["2017-01-01", "2017-02-10", "2017-03-20", "2017-04-29"],
+    "y": ["A", "B", "C", "B"],
+    "z": [1, 1e3, 1e5, 100]
   }],
   "layout": {
     "scene": {
@@ -72,7 +72,38 @@
         "z": 6,
         "text": "autorange bump!",
         "ax": -50
-      }]
+      }, {        
+        "x": "2017-04-29",
+        "y": "B",
+        "z": 2,
+        "ax": 50,
+        "ay": 50,
+        "arrowside": "start+end",
+        "arrowhead": 2,
+        "startarrowhead": 3,
+        "standoff": 10,
+        "startstandoff": 20
+      }, {        
+        "x": "2017-04-29",
+        "y": "B",
+        "z": 2,
+        "ax": -100,
+        "ay": 0,
+        "arrowside": "start",
+        "startarrowhead": 6,
+        "standoff": 10,
+        "startstandoff": 20
+      }, {        
+        "x": "2017-04-29",
+        "y": "B",
+        "z": 2,
+        "ax": 80,
+        "ay": -50,
+        "arrowside": "none",
+        "standoff": 10,
+        "startstandoff": 20
+      }
+    ]
     }
   }
 }

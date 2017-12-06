@@ -1462,27 +1462,27 @@ describe('Test gl3d annotations', function() {
         mock.layout.scene.annotations.forEach(function(ann, i) { ann.text = String(i); });
 
         Plotly.plot(gd, mock).then(function() {
-            assertAnnotationText(['0', '1', '2', '3'], 'base');
+            assertAnnotationText(['0', '1', '2', '3', '4', '5', '6'], 'base');
 
             return Plotly.relayout(gd, 'scene.yaxis.range', [0.5, 1.5]);
         })
         .then(function() {
-            assertAnnotationText(['1'], 'after yaxis range relayout');
+            assertAnnotationText(['1', '4', '5', '6'], 'after yaxis range relayout');
 
             return Plotly.relayout(gd, 'scene.yaxis.range', null);
         })
         .then(function() {
-            assertAnnotationText(['0', '1', '2', '3'], 'back to base after yaxis range relayout');
+            assertAnnotationText(['0', '1', '2', '3', '4', '5', '6'], 'back to base after yaxis range relayout');
 
             return Plotly.relayout(gd, 'scene.zaxis.range', [0, 3]);
         })
         .then(function() {
-            assertAnnotationText(['0'], 'after zaxis range relayout');
+            assertAnnotationText(['0', '4', '5', '6'], 'after zaxis range relayout');
 
             return Plotly.relayout(gd, 'scene.zaxis.range', null);
         })
         .then(function() {
-            assertAnnotationText(['0', '1', '2', '3'], 'back to base after zaxis range relayout');
+            assertAnnotationText(['0', '1', '2', '3', '4', '5', '6'], 'back to base after zaxis range relayout');
         })
         .catch(fail)
         .then(done);
@@ -1502,27 +1502,27 @@ describe('Test gl3d annotations', function() {
         };
 
         Plotly.plot(gd, mock).then(function() {
-            assertAnnotationText(['0', '1', '2', '3'], 'base');
+            assertAnnotationText(['0', '1', '2', '3', '4', '5', '6'], 'base');
 
             return Plotly.relayout(gd, 'scene.annotations[1].visible', false);
         })
         .then(function() {
-            assertAnnotationText(['0', '2', '3'], 'after [1].visible:false');
+            assertAnnotationText(['0', '2', '3', '4', '5', '6'], 'after [1].visible:false');
 
             return Plotly.relayout(gd, 'scene.annotations[1].visible', true);
         })
         .then(function() {
-            assertAnnotationText(['0', '1', '2', '3'], 'back to base (1)');
+            assertAnnotationText(['0', '1', '2', '3', '4', '5', '6'], 'back to base (1)');
 
             return Plotly.relayout(gd, 'scene.annotations[0]', null);
         })
         .then(function() {
-            assertAnnotationText(['1', '2', '3'], 'after [0] null');
+            assertAnnotationText(['1', '2', '3', '4', '5', '6'], 'after [0] null');
 
             return Plotly.relayout(gd, 'scene.annotations[0]', annNew);
         })
         .then(function() {
-            assertAnnotationText(['new!', '1', '2', '3'], 'after add new (1)');
+            assertAnnotationText(['new!', '1', '2', '3', '4', '5', '6'], 'after add new (1)');
 
             return Plotly.relayout(gd, 'scene.annotations', null);
         })
