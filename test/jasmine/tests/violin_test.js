@@ -9,6 +9,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
@@ -152,7 +153,7 @@ describe('Test violin calc:', function() {
             layout: layout || {},
             calcdata: []
         };
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         Plots.doCalcdata(gd);
         cd = gd.calcdata[0];
         fullLayout = gd._fullLayout;

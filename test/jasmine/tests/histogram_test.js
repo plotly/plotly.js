@@ -1,5 +1,4 @@
 var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var setConvert = require('@src/plots/cartesian/set_convert');
 
@@ -9,6 +8,7 @@ var getBinSpanLabelRound = require('@src/traces/histogram/bin_label_vals');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 
 describe('Test histogram', function() {
@@ -177,7 +177,7 @@ describe('Test histogram', function() {
                 });
             }
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
             var fullTrace = gd._fullData[0];
 
             var out = calc(gd, fullTrace);

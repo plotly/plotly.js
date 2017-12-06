@@ -14,6 +14,8 @@ var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
 
+var supplyAllDefaults = require('../assets/supply_defaults');
+
 describe('carpet supplyDefaults', function() {
     'use strict';
 
@@ -114,13 +116,13 @@ describe('carpet supplyDefaults', function() {
 describe('supplyDefaults visibility check', function() {
     it('does not hide empty subplots', function() {
         var gd = {data: [], layout: {xaxis: {}}};
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         expect(gd._fullLayout.xaxis.visible).toBe(true);
     });
 
     it('does not hide axes with non-carpet traces', function() {
         var gd = {data: [{x: []}]};
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         expect(gd._fullLayout.xaxis.visible).toBe(true);
     });
 
@@ -135,7 +137,7 @@ describe('supplyDefaults visibility check', function() {
             type: 'contourcarpet',
             z: [[1, 2, 3], [4, 5, 6]],
         }]};
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         expect(gd._fullLayout.xaxis.visible).toBe(true);
     });
 
@@ -149,7 +151,7 @@ describe('supplyDefaults visibility check', function() {
             type: 'contourcarpet',
             z: [[1, 2, 3], [4, 5, 6]],
         }]};
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         expect(gd._fullLayout.xaxis.visible).toBe(false);
     });
 
@@ -179,7 +181,7 @@ describe('supplyDefaults visibility check', function() {
             }]
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         expect(gd._fullLayout.xaxis.visible).toBe(true);
     });
 
@@ -209,7 +211,7 @@ describe('supplyDefaults visibility check', function() {
             }]
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         expect(gd._fullLayout.xaxis.visible).toBe(true);
     });
 });

@@ -5,6 +5,7 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 
 describe('Test Plots', function() {
@@ -20,7 +21,7 @@ describe('Test Plots', function() {
                     }
                 };
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
             expect(gd.layout.height).toBe(height);
             expect(gd._fullLayout).toBeDefined();
             expect(gd._fullLayout.height).toBe(height);
@@ -70,7 +71,7 @@ describe('Test Plots', function() {
                 layout: newLayout
             };
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
 
             expect(gd._fullData[0].z).toBe(newData[0].z);
             expect(gd._fullData[1].z).toBe(newData[1].z);
@@ -94,7 +95,7 @@ describe('Test Plots', function() {
             var data = [trace0, trace1];
             var gd = { data: data };
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
 
             expect(gd.data).toBe(data);
 
@@ -116,7 +117,7 @@ describe('Test Plots', function() {
 
         function testSanitizeMarginsHasBeenCalledOnlyOnce(gd) {
             spyOn(Plots, 'sanitizeMargins').and.callThrough();
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
             expect(Plots.sanitizeMargins).toHaveBeenCalledTimes(1);
         }
 
@@ -159,7 +160,12 @@ describe('Test Plots', function() {
             layoutOut,
             expected;
 
-        var supplyLayoutDefaults = Plots.supplyLayoutGlobalDefaults;
+        var supplyLayoutDefaults = function(layoutIn, layoutOut) {
+            layoutOut._dfltTitle = {
+                plot: 'ppplot'
+            };
+            return Plots.supplyLayoutGlobalDefaults(layoutIn, layoutOut);
+        }
 
         beforeEach(function() {
             layoutOut = {};

@@ -1,5 +1,4 @@
 var Plotly = require('@lib');
-var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var ScatterTernary = require('@src/traces/scatterternary');
 
@@ -8,6 +7,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var customAssertions = require('../assets/custom_assertions');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
@@ -149,7 +149,7 @@ describe('scatterternary defaults', function() {
         };
 
         var gd = {data: [traceIn, {}]};
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
 
         expect(gd._fullData[0].hoverinfo).toBe('all');
     });
@@ -163,7 +163,7 @@ describe('scatterternary defaults', function() {
         };
 
         var gd = {data: [traceIn]};
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
 
         expect(gd._fullData[0].hoverinfo).toBe('a+b+c+text');
     });

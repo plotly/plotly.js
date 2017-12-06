@@ -11,6 +11,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var d3 = require('d3');
 
@@ -1520,10 +1521,11 @@ function mockBarPlot(dataWithoutTraceType, layout) {
     var gd = {
         data: dataWithTraceType,
         layout: layout || {},
-        calcdata: []
+        calcdata: [],
+        _context: {locale: 'en', dictionaries: {}}
     };
 
-    Plots.supplyDefaults(gd);
+    supplyAllDefaults(gd);
     Plots.doCalcdata(gd);
 
     var plotinfo = {

@@ -9,6 +9,7 @@ var Heatmap = require('@src/traces/heatmap');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 
 describe('heatmap supplyDefaults', function() {
@@ -19,7 +20,8 @@ describe('heatmap supplyDefaults', function() {
 
     var defaultColor = '#444',
         layout = {
-            font: Plots.layoutAttributes.font
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'}
         };
 
     var supplyDefaults = Heatmap.supplyDefaults;
@@ -131,7 +133,7 @@ describe('heatmap supplyDefaults', function() {
             y: [1, 2],
             z: [[1, 2], [3, 4]]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendDeep({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -147,7 +149,7 @@ describe('heatmap supplyDefaults', function() {
             xcalendar: 'coptic',
             ycalendar: 'ethiopian'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendDeep({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -298,7 +300,7 @@ describe('heatmap calc', function() {
             trace = Lib.extendFlat({}, base, opts),
             gd = { data: [trace] };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         var fullTrace = gd._fullData[0];
         var fullLayout = gd._fullLayout;
 

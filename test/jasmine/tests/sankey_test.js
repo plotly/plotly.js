@@ -4,7 +4,6 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var mock = require('@mocks/sankey_energy.json');
 var mockDark = require('@mocks/sankey_energy_dark.json');
-var Plots = require('@src/plots/plots');
 var Sankey = require('@src/traces/sankey');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -12,6 +11,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('sankey tests', function() {
 
@@ -87,7 +87,7 @@ describe('sankey tests', function() {
         it('should not coerce trace opacity', function() {
             var gd = Lib.extendDeep({}, mock);
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
 
             expect(gd._fullData[0].opacity).toBeUndefined();
         });
@@ -223,7 +223,7 @@ describe('sankey tests', function() {
         function _calc(trace) {
             var gd = { data: [trace] };
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
             var fullTrace = gd._fullData[0];
             Sankey.calc(gd, fullTrace);
             return fullTrace;

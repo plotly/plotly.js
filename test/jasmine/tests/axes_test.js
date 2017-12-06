@@ -14,6 +14,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var selectButton = require('../assets/modebar_button');
+var supplyDefaults = require('../assets/supply_defaults');
 
 
 describe('Test axes', function() {
@@ -49,7 +50,7 @@ describe('Test axes', function() {
                     type: 'date'
                 };
 
-            Plots.supplyDefaults(gd);
+            supplyDefaults(gd);
 
             Axes.swap(gd, [0]);
 
@@ -80,7 +81,7 @@ describe('Test axes', function() {
             expectedLayoutAfter.xaxis.type = 'linear';
             expectedLayoutAfter.yaxis.type = 'linear';
 
-            Plots.supplyDefaults(gd);
+            supplyDefaults(gd);
 
             Axes.swap(gd, [0]);
 
@@ -160,7 +161,7 @@ describe('Test axes', function() {
                     {x: 5, y: 0.5, xref: 'x', yref: 'paper'}
                 ];
 
-            Plots.supplyDefaults(gd);
+            supplyDefaults(gd);
 
             Axes.swap(gd, [0, 1]);
 
@@ -177,7 +178,8 @@ describe('Test axes', function() {
         beforeEach(function() {
             layoutOut = {
                 _has: Plots._hasPlotType,
-                _basePlotModules: []
+                _basePlotModules: [],
+                _dfltTitle: {x: 'x', y: 'y'}
             };
             fullData = [];
         });

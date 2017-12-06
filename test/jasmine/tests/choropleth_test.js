@@ -22,7 +22,8 @@ describe('Test choropleth', function() {
 
         var defaultColor = '#444',
             layout = {
-                font: Plots.layoutAttributes.font
+                font: Plots.layoutAttributes.font,
+                _dfltTitle: {colorbar: 'cb'}
             };
 
         beforeEach(function() {

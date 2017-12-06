@@ -10,7 +10,7 @@ describe('Test surface', function() {
         var supplyDefaults = Surface.supplyDefaults;
 
         var defaultColor = '#444',
-            layout = {};
+            layout = {_dfltTitle: {colorbar: 'cb'}};
 
         var traceIn, traceOut;
 
@@ -155,7 +155,7 @@ describe('Test surface', function() {
             traceIn = {
                 z: [[1, 2, 3], [2, 1, 2]]
             };
-            supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+            supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
 
             // we always fill calendar attributes, because it's hard to tell if
             // we're on a date axis at this point.

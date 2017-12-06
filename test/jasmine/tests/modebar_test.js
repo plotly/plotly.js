@@ -37,7 +37,9 @@ describe('ModeBar', function() {
                 displaylogo: true,
                 displayModeBar: true,
                 modeBarButtonsToRemove: [],
-                modeBarButtonsToAdd: []
+                modeBarButtonsToAdd: [],
+                locale: 'en',
+                dictionaries: {}
             }
         };
     }

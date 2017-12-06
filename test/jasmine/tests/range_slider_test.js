@@ -1,5 +1,4 @@
 var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var setConvert = require('@src/plots/cartesian/set_convert');
 
@@ -11,6 +10,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var TOL = 6;
 
@@ -585,7 +585,7 @@ describe('the range slider', function() {
                 }
             };
 
-            Plots.supplyDefaults(mock);
+            supplyAllDefaults(mock);
 
             expect(mock._fullLayout.xaxis.rangeslider.visible).toBe(true);
             expect(mock._fullLayout.yaxis.fixedrange).toBe(true);
@@ -603,7 +603,7 @@ describe('the range slider', function() {
                 }
             };
 
-            Plots.supplyDefaults(mock);
+            supplyAllDefaults(mock);
 
             expect(mock._fullLayout.xaxis.rangeslider.visible).toBe(true);
             expect(mock._fullLayout.yaxis.fixedrange).toBe(false);

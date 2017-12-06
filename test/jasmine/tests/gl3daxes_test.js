@@ -12,7 +12,8 @@ describe('Test Gl3dAxes', function() {
             font: 'Open Sans',
             scene: {id: 'scene'},
             data: [{x: [], y: []}],
-            bgColor: '#fff'
+            bgColor: '#fff',
+            fullLayout: {_dfltTitle: {x: 'xxx', y: 'yyy', colorbar: 'cbbb'}}
         };
 
         beforeEach(function() {

@@ -5,6 +5,7 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var mock0 = {
     open: [33.01, 33.31, 33.50, 32.06, 34.12, 33.05, 33.31, 33.50],
@@ -29,7 +30,7 @@ describe('finance charts defaults:', function() {
             layout: layout
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
 
         return gd;
     }
@@ -389,7 +390,7 @@ describe('finance charts calc transforms:', function() {
             layout: layout || {}
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         Plots.doCalcdata(gd);
 
         return gd.calcdata.map(calcDatatoTrace);
