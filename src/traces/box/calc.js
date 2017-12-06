@@ -11,6 +11,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var _ = Lib._;
 var Axes = require('../../plots/cartesian/axes');
 
 // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
@@ -122,7 +123,17 @@ module.exports = function calc(gd, trace) {
             num: fullLayout[numKey],
             dPos: dPos,
             posLetter: posLetter,
-            valLetter: valLetter
+            valLetter: valLetter,
+            labels: {
+                med: _(gd, 'median'),
+                min: _(gd, 'min'),
+                q1: _(gd, 'q1'),
+                q3: _(gd, 'q3'),
+                max: _(gd, 'max'),
+                mean: trace.boxmean === 'sd' ? _(gd, 'mean ± σ') : _(gd, 'mean'),
+                lf: _(gd, 'lower fence'),
+                uf: _(gd, 'upper fence')
+            }
         };
 
         fullLayout[numKey]++;

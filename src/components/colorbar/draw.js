@@ -455,7 +455,7 @@ module.exports = function draw(gd, id) {
                 propContainer: cbAxisOut,
                 propName: propName,
                 traceIndex: trace.index,
-                dfltName: 'colorscale',
+                placeholder: fullLayout._dfltTitle.colorbar,
                 containerGroup: container.select('.cbtitle')
             };
 

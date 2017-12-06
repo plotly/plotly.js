@@ -15,6 +15,8 @@ var Color = require('../../components/color');
 var Lib = require('../../lib');
 var cn = require('./constants').cn;
 
+var _ = Lib._;
+
 function renderableValuePresent(d) {return d !== '';}
 
 function ownTrace(selection, d) {
@@ -135,6 +137,11 @@ module.exports = function plot(gd, calcData) {
         });
     };
 
+    var sourceLabel = _(gd, 'Source') + ': ';
+    var targetLabel = _(gd, 'Target') + ': ';
+    var incomingLabel = _(gd, 'Incoming flow count') + ': ';
+    var outgoingLabel = _(gd, 'Outgoing flow count') + ': ';
+
     var linkHoverFollow = function(element, d) {
         var trace = d.link.trace;
         var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
@@ -148,8 +155,8 @@ module.exports = function plot(gd, calcData) {
             name: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix,
             text: [
                 d.link.label || '',
-                ['Source:', d.link.source.label].join(' '),
-                ['Target:', d.link.target.label].join(' ')
+                sourceLabel + d.link.source.label,
+                targetLabel + d.link.target.label
             ].filter(renderableValuePresent).join('<br>'),
             color: castHoverOption(trace, 'bgcolor') || Color.addOpacity(d.tinyColorHue, 1),
             borderColor: castHoverOption(trace, 'bordercolor'),
@@ -209,8 +216,8 @@ module.exports = function plot(gd, calcData) {
             name: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix,
             text: [
                 d.node.label,
-                ['Incoming flow count:', d.node.targetLinks.length].join(' '),
-                ['Outgoing flow count:', d.node.sourceLinks.length].join(' ')
+                incomingLabel + d.node.targetLinks.length,
+                outgoingLabel + d.node.sourceLinks.length
             ].filter(renderableValuePresent).join('<br>'),
             color: castHoverOption(trace, 'bgcolor') || d.tinyColorHue,
             borderColor: castHoverOption(trace, 'bordercolor'),

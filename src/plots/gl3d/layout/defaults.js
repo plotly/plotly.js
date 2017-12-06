@@ -102,7 +102,8 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
         scene: opts.id,
         data: opts.fullData,
         bgColor: bgColorCombined,
-        calendar: opts.calendar
+        calendar: opts.calendar,
+        fullLayout: opts.fullLayout
     });
 
     Registry.getComponentMethod('annotations3d', 'handleDefaults')(

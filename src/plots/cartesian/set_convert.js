@@ -381,9 +381,6 @@ module.exports = function setConvert(ax, fullLayout) {
         }
 
         if(!isFinite(ax._m) || !isFinite(ax._b)) {
-            Lib.notifier(
-                'Something went wrong with axis scaling',
-                'long');
             fullLayout._replotting = false;
             throw new Error('axis scaling');
         }

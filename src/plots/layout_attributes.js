@@ -28,7 +28,6 @@ module.exports = {
     title: {
         valType: 'string',
         role: 'info',
-        dflt: 'Click to enter Plot title',
         editType: 'layoutstyle',
         description: [
             'Sets the plot\'s title.'

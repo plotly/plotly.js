@@ -20,8 +20,6 @@ var Color = require('../color');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var interactConstants = require('../../constants/interactions');
 
-var PLACEHOLDER_RE = /Click to enter .+ title/;
-
 var Titles = module.exports = {};
 
 /**
@@ -35,7 +33,7 @@ var Titles = module.exports = {};
  *      [traceIndex] - include only if this property applies to one trace
  *          (such as a colorbar title) - then editing pipes to Plotly.restyle
  *          instead of Plotly.relayout
- *      dfltName - the name of the title in placeholder text
+ *      placeholder - placeholder text for an empty editable title
  *      [avoid] {object} - include if this title should move to avoid other elements
  *          selection - d3 selection of elements to avoid
  *          side - which direction to move if there is a conflict
@@ -55,8 +53,8 @@ var Titles = module.exports = {};
 Titles.draw = function(gd, titleClass, options) {
     var cont = options.propContainer;
     var prop = options.propName;
+    var placeholder = options.placeholder;
     var traceIndex = options.traceIndex;
-    var name = options.dfltName;
     var avoid = options.avoid || {};
     var attributes = options.attributes;
     var transform = options.transform;
@@ -80,7 +78,7 @@ Titles.draw = function(gd, titleClass, options) {
     var editable = gd._context.edits[editAttr];
 
     if(txt === '') opacity = 0;
-    if(txt.match(PLACEHOLDER_RE)) {
+    else if(txt === placeholder) {
         opacity = 0.2;
         isplaceholder = true;
         if(!editable) txt = '';
@@ -199,13 +197,10 @@ Titles.draw = function(gd, titleClass, options) {
 
     el.call(titleLayout);
 
-    var placeholderText = 'Click to enter ' + name + ' title';
-
     function setPlaceholder() {
         opacity = 0;
         isplaceholder = true;
-        txt = placeholderText;
-        el.text(txt)
+        el.text(placeholder)
             .on('mouseover.opacity', function() {
                 d3.select(this).transition()
                     .duration(interactConstants.SHOW_PLACEHOLDER).style('opacity', 1);

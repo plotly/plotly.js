@@ -11,6 +11,7 @@
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var _ = Lib._;
 var Axes = require('../../plots/cartesian/axes');
 
 var histogram2dCalc = require('../histogram2d/calc');
@@ -82,13 +83,13 @@ module.exports = function calc(gd, trace) {
 
     function noZsmooth(msg) {
         zsmooth = trace._input.zsmooth = trace.zsmooth = false;
-        Lib.notifier('cannot fast-zsmooth: ' + msg);
+        Lib.notifier(_(gd, 'cannot use zsmooth: "fast"') + '<br>' + msg);
     }
 
     // check whether we really can smooth (ie all boxes are about the same size)
     if(zsmooth === 'fast') {
         if(xa.type === 'log' || ya.type === 'log') {
-            noZsmooth('log axis found');
+            noZsmooth(_(gd, 'log axis found'));
         }
         else if(!isHist) {
             if(x.length) {
@@ -96,7 +97,7 @@ module.exports = function calc(gd, trace) {
                     maxErrX = Math.abs(avgdx / 100);
                 for(i = 0; i < x.length - 1; i++) {
                     if(Math.abs(x[i + 1] - x[i] - avgdx) > maxErrX) {
-                        noZsmooth('x scale is not linear');
+                        noZsmooth(_(gd, 'x scale is not linear'));
                         break;
                     }
                 }
@@ -106,7 +107,7 @@ module.exports = function calc(gd, trace) {
                     maxErrY = Math.abs(avgdy / 100);
                 for(i = 0; i < y.length - 1; i++) {
                     if(Math.abs(y[i + 1] - y[i] - avgdy) > maxErrY) {
-                        noZsmooth('y scale is not linear');
+                        noZsmooth(_(gd, 'y scale is not linear'));
                         break;
                     }
                 }
