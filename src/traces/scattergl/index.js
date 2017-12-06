@@ -747,23 +747,41 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                     pos.push(0);
                     pos.push(srcPos[srcPos.length - 1]);
                 }
+                else if(trace.fill === 'toself') {
+                    pos = srcPos.slice();
+                }
+                else if(trace.fill === 'tonext') {
+                    pos = [];
+                    var last = 0;
+                    for(i = 0; i < srcPos.length; i += 2) {
+                        if(isNaN(srcPos[i]) || isNaN(srcPos[i + 1])) {
+                            pos = pos.concat(srcPos.slice(last, i));
+                            pos.push(srcPos[last], srcPos[last + 1]);
+                            last = i;
+                        }
+                    }
+                    pos = pos.concat(srcPos.slice(last));
+                    pos.push(srcPos[last + 2], srcPos[last + 3]);
+                }
                 else {
                     var nextTrace = trace._nexttrace;
-                    if(nextTrace && trace.fill === 'tonexty') {
-                        pos = srcPos.slice();
 
+                    if(nextTrace) {
                         var nextOptions = scene.lineOptions[i + 1];
+                        var nextPos = nextOptions.positions;
 
                         if(nextOptions) {
-                            var nextPos = nextOptions.positions;
+                            if(trace.fill === 'tonexty') {
+                                pos = srcPos.slice();
 
-                            for(i = Math.floor(nextPos.length / 2); i--;) {
-                                var xx = nextPos[i * 2], yy = nextPos[i * 2 + 1];
-                                if(isNaN(xx) || isNaN(yy)) continue;
-                                pos.push(xx);
-                                pos.push(yy);
+                                for(i = Math.floor(nextPos.length / 2); i--;) {
+                                    var xx = nextPos[i * 2], yy = nextPos[i * 2 + 1];
+                                    if(isNaN(xx) || isNaN(yy)) continue;
+                                    pos.push(xx);
+                                    pos.push(yy);
+                                }
+                                fillOptions.fill = nextTrace.fillcolor;
                             }
-                            fillOptions.fill = nextTrace.fillcolor;
                         }
                     }
                 }
