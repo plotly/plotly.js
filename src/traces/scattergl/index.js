@@ -747,10 +747,7 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                     pos.push(0);
                     pos.push(srcPos[srcPos.length - 1]);
                 }
-                else if(trace.fill === 'toself') {
-                    pos = srcPos.slice();
-                }
-                else if(trace.fill === 'tonext') {
+                else if(trace.fill === 'toself' || trace.fill === 'tonext') {
                     pos = [];
                     var last = 0;
                     for(i = 0; i < srcPos.length; i += 2) {
@@ -761,7 +758,9 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                         }
                     }
                     pos = pos.concat(srcPos.slice(last));
-                    pos.push(srcPos[last + 2], srcPos[last + 3]);
+                    if(last) {
+                        pos.push(srcPos[last + 2], srcPos[last + 3]);
+                    }
                 }
                 else {
                     var nextTrace = trace._nexttrace;
@@ -785,6 +784,7 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                         }
                     }
                 }
+                fillOptions.opacity = trace.opacity;
                 fillOptions.positions = pos;
             });
 
