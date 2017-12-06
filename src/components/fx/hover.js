@@ -234,8 +234,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         pointData,
         closedataPreviousLength,
 
-        // crosslinePoints: the set of candidate points we've found to draw crosslines to
-        crosslinePoints = {
+        // closestPoints: the set of candidate points we've found to draw spikes to
+        closestPoints = {
             hLinePoint: null,
             vLinePoint: null
         };
@@ -331,6 +331,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // within one trace mode can sometimes be overridden
         mode = hovermode;
 
+        var hoverdistance = fullLayout.hoverdistance ? fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance : constants.MAXDIST;
+        var spikedistance = fullLayout.spikedistance ? fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance : hoverdistance;
+
         // container for new point, also used to pass info into module.hoverPoints
         pointData = {
             // trace properties
@@ -340,7 +343,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             ya: yaArray[subploti],
             // point properties - override all of these
             index: false, // point index in trace - only used by plotly.js hoverdata consumers
-            distance: Math.min(distance, constants.MAXDIST), // pixel distance or pseudo-distance
+            distance: Math.min(distance, hoverdistance), // pixel distance or pseudo-distance
             color: Color.defaultLine, // trace color
             name: trace.name,
             x0: undefined,
@@ -385,16 +388,14 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             yval = yvalArray[subploti];
         }
 
-        var showSpikes = fullLayout.xaxis && fullLayout.xaxis.showspikes && fullLayout.yaxis && fullLayout.yaxis.showspikes;
-        var showCrosslines = fullLayout.xaxis && fullLayout.xaxis.showcrossline || fullLayout.yaxis && fullLayout.yaxis.showcrossline;
-
-        // Find the points for the crosslines first to avoid overwriting the hoverLabels data.
-        if(fullLayout._has('cartesian') && showCrosslines && !(showSpikes && hovermode === 'closest')) {
-            if(fullLayout.yaxis.showcrossline) {
-                crosslinePoints.hLinePoint = findCrosslinePoint(pointData, xval, yval, 'y', crosslinePoints.hLinePoint);
-            }
-            if(fullLayout.xaxis.showcrossline) {
-                crosslinePoints.vLinePoint = findCrosslinePoint(pointData, xval, yval, 'x', crosslinePoints.vLinePoint);
+        // Find the points for the spikes first to avoid overwriting the hoverLabels data.
+        if(fullLayout._has('cartesian')) {
+            if(fullLayout.hovermode === 'closest') {
+                closestPoints.hLinePoint = findClosestPoint(pointData, xval, yval, 'closest', closestPoints.hLinePoint, spikedistance);
+                closestPoints.vLinePoint = findClosestPoint(pointData, xval, yval, 'closest', closestPoints.vLinePoint, spikedistance);
+            } else {
+                closestPoints.hLinePoint = findClosestPoint(pointData, xval, yval, 'y', closestPoints.hLinePoint, spikedistance);
+                closestPoints.vLinePoint = findClosestPoint(pointData, xval, yval, 'x', closestPoints.vLinePoint, spikedistance);
             }
         }
 
@@ -423,29 +424,41 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         }
     }
 
-    function findCrosslinePoint(pointData, xval, yval, mode, endPoint) {
+    function findClosestPoint(pointData, xval, yval, mode, endPoint, spikedistance) {
         var tmpDistance = pointData.distance;
         var tmpIndex = pointData.index;
         var resultPoint = endPoint;
-        pointData.distance = Infinity;
+        pointData.distance = spikedistance;
         pointData.index = false;
         var closestPoints = trace._module.hoverPoints(pointData, xval, yval, mode);
         if(closestPoints) {
-            var closestPt = closestPoints[0];
-            if(isNumeric(closestPt.x0) && isNumeric(closestPt.y0)) {
-                var tmpPoint = {
-                    xa: closestPt.xa,
-                    ya: closestPt.ya,
-                    x0: closestPt.x0,
-                    x1: closestPt.x1,
-                    y0: closestPt.y0,
-                    y1: closestPt.y1,
-                    distance: closestPt.distance,
-                    curveNumber: closestPt.trace.index,
-                    pointNumber: closestPt.index
-                };
-                if(!resultPoint || (resultPoint.distance > tmpPoint.distance)) {
-                    resultPoint = tmpPoint;
+            closestPoints = closestPoints.filter(function(point) {
+                if(mode === 'x') {
+                    return point.xa.showspikes;
+                } else if(mode === 'y') {
+                    return point.ya.showspikes;
+                } else if(mode === 'closest') {
+                    return point.ya.showspikes && point.ya.showspikes;
+                }
+            });
+            if(closestPoints.length) {
+                var closestPt = closestPoints[0];
+                if(isNumeric(closestPt.x0) && isNumeric(closestPt.y0)) {
+                    var tmpPoint = {
+                        xa: closestPt.xa,
+                        ya: closestPt.ya,
+                        x0: closestPt.x0,
+                        x1: closestPt.x1,
+                        y0: closestPt.y0,
+                        y1: closestPt.y1,
+                        distance: closestPt.distance,
+                        curveNumber: closestPt.trace.index,
+                        color: closestPt.color,
+                        pointNumber: closestPt.index
+                    };
+                    if(!resultPoint || (resultPoint.distance > tmpPoint.distance)) {
+                        resultPoint = tmpPoint;
+                    }
                 }
             }
         }
@@ -454,17 +467,35 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         return resultPoint;
     }
 
-    // if hoverData is empty check for the crosslines to draw and quit if there are none
+    // if hoverData is empty check for the spikes to draw and quit if there are none
+    var spikelineOpts = {
+        hovermode: hovermode,
+        fullLayout: fullLayout,
+        container: fullLayout._hoverlayer,
+        outerContainer: fullLayout._paperdiv,
+        event: evt
+    };
+    var oldspikepoints = gd._spikepoints,
+        newspikepoints = {
+            vLinePoint: closestPoints.vLinePoint,
+            hLinePoint: closestPoints.hLinePoint
+        };
+    gd._spikepoints = newspikepoints;
+
     if(hoverData.length === 0) {
         var result = dragElement.unhoverRaw(gd, evt);
-        if(fullLayout._has('cartesian') && ((crosslinePoints.hLinePoint !== null) || (crosslinePoints.vLinePoint !== null))) {
-            createCrosslines(crosslinePoints, fullLayout);
+        if(fullLayout._has('cartesian') && ((closestPoints.hLinePoint !== null) || (closestPoints.vLinePoint !== null))) {
+            if(spikesChanged(oldspikepoints)) {
+                createSpikelines2(closestPoints, spikelineOpts);
+            }
         }
         return result;
     }
 
     if(fullLayout._has('cartesian')) {
-        createCrosslines(crosslinePoints, fullLayout);
+        if(spikesChanged(oldspikepoints)) {
+            createSpikelines2(closestPoints, spikelineOpts);
+        }
     }
 
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
@@ -481,16 +512,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     }
 
     gd._hoverdata = newhoverdata;
-
-    if(hoverChanged(gd, evt, oldhoverdata) && fullLayout._hasCartesian) {
-        var spikelineOpts = {
-            hovermode: hovermode,
-            fullLayout: fullLayout,
-            container: fullLayout._hoverlayer,
-            outerContainer: fullLayout._paperdiv
-        };
-        createSpikelines(hoverData, spikelineOpts);
-    }
 
     // if there's more than one horz bar trace,
     // rotate the labels so they don't overlap
@@ -1149,14 +1170,11 @@ function cleanPoint(d, hovermode) {
     return d;
 }
 
-function createCrosslines(closestPoints, fullLayout) {
-    var showXSpikeline = fullLayout.xaxis && fullLayout.xaxis.showspikes;
-    var showYSpikeline = fullLayout.yaxis && fullLayout.yaxis.showspikes;
-    var showH = fullLayout.yaxis && fullLayout.yaxis.showcrossline;
-    var showV = fullLayout.xaxis && fullLayout.xaxis.showcrossline;
-    var container = fullLayout._hoverlayer;
-    var hovermode = fullLayout.hovermode;
-    if(!(showV || showH) || (showXSpikeline && showYSpikeline && hovermode === 'closest')) return;
+function createSpikelines2(closestPoints, opts) {
+    var hovermode = opts.hovermode;
+    var container = opts.container;
+    var fullLayout = opts.fullLayout;
+    var evt = opts.event;
     var hLinePoint,
         vLinePoint,
         xa,
@@ -1164,131 +1182,95 @@ function createCrosslines(closestPoints, fullLayout) {
         hLinePointY,
         vLinePointX;
 
-    // Remove old crossline items
-    container.selectAll('.crossline').remove();
-
-    var contrastColor = Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor);
-    var dfltCrosslineColor = Color.contrast(contrastColor);
-
-    // do not draw a crossline if there is a spikeline
-    if(showV && !(showXSpikeline && hovermode === 'closest')) {
-        vLinePoint = closestPoints.vLinePoint;
-        xa = vLinePoint.xa;
-        vLinePointX = xa._offset + (vLinePoint.x0 + vLinePoint.x1) / 2;
-
-        var xThickness = xa.crosslinethickness;
-        var xDash = xa.crosslinedash;
-        var xColor = xa.crosslinecolor || dfltCrosslineColor;
-
-        // Foreground vertical line (to x-axis)
-        container.insert('line', ':first-child')
-            .attr({
-                'x1': vLinePointX,
-                'x2': vLinePointX,
-                'y1': xa._counterSpan[0],
-                'y2': xa._counterSpan[1],
-                'stroke-width': xThickness,
-                'stroke': xColor,
-                'stroke-dasharray': Drawing.dashStyle(xDash, xThickness)
-            })
-            .classed('crossline', true)
-            .classed('crisp', true);
-    }
-
-    if(showH && !(showYSpikeline && hovermode === 'closest')) {
-        hLinePoint = closestPoints.hLinePoint;
-        ya = hLinePoint.ya;
-        hLinePointY = ya._offset + (hLinePoint.y0 + hLinePoint.y1) / 2;
-
-        var yThickness = ya.crosslinethickness;
-        var yDash = ya.crosslinedash;
-        var yColor = ya.crosslinecolor || dfltCrosslineColor;
-
-        // Foreground horizontal line (to y-axis)
-        container.insert('line', ':first-child')
-            .attr({
-                'x1': ya._counterSpan[0],
-                'x2': ya._counterSpan[1],
-                'y1': hLinePointY,
-                'y2': hLinePointY,
-                'stroke-width': yThickness,
-                'stroke': yColor,
-                'stroke-dasharray': Drawing.dashStyle(yDash, yThickness)
-            })
-            .classed('crossline', true)
-            .classed('crisp', true);
-    }
-}
-
-function createSpikelines(hoverData, opts) {
-    var hovermode = opts.hovermode;
-    var container = opts.container;
-    var c0 = hoverData[0];
-    var xa = c0.xa;
-    var ya = c0.ya;
-    var showX = xa.showspikes;
-    var showY = ya.showspikes;
+    var showY = closestPoints.hLinePoint ? true : false;
+    var showX = closestPoints.vLinePoint ? true : false;
 
     // Remove old spikeline items
     container.selectAll('.spikeline').remove();
 
-    if(hovermode !== 'closest' || !(showX || showY)) return;
-
-    var fullLayout = opts.fullLayout;
-    var xPoint = xa._offset + (c0.x0 + c0.x1) / 2;
-    var yPoint = ya._offset + (c0.y0 + c0.y1) / 2;
-    var contrastColor = Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor);
-    var dfltDashColor = tinycolor.readability(c0.color, contrastColor) < 1.5 ?
-            Color.contrast(contrastColor) : c0.color;
+    if(!(showX || showY)) return;
 
     if(showY) {
+        hLinePoint = closestPoints.hLinePoint;
+        ya = hLinePoint && hLinePoint.ya;
+        var ySnap = ya.spikesnap;
+        if(ySnap === 'cursor') {
+            hLinePointY = evt.offsetY;
+        } else {
+            hLinePointY = ya._offset + (hLinePoint.y0 + hLinePoint.y1) / 2;
+        }
+    }
+    if(showX) {
+        vLinePoint = closestPoints.vLinePoint;
+        xa = vLinePoint && vLinePoint.xa;
+        var xSnap = xa.spikesnap;
+        if(xSnap === 'cursor') {
+            vLinePointX = evt.offsetX;
+        } else {
+            vLinePointX = xa._offset + (vLinePoint.x0 + vLinePoint.x1) / 2;
+        }
+    }
+
+    var contrastColor = Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor);
+
+    // Horizontal line (to y-axis)
+    if(showY) {
+        var dfltHLineColor = tinycolor.readability(hLinePoint.color, contrastColor) < 1.5 ?
+            Color.contrast(contrastColor) : hLinePoint.color;
         var yMode = ya.spikemode;
+        if(hovermode !== 'closest' && yMode.indexOf('toaxis') !== -1) {
+            yMode = yMode.replace('toaxis', 'across');
+        }
         var yThickness = ya.spikethickness;
-        var yColor = ya.spikecolor || dfltDashColor;
+        var yColor = ya.spikecolor || dfltHLineColor;
         var yBB = ya._boundingBox;
-        var xEdge = ((yBB.left + yBB.right) / 2) < xPoint ? yBB.right : yBB.left;
+        var xEdge = ((yBB.left + yBB.right) / 2) < vLinePointX ? yBB.right : yBB.left;
+        var xBase;
+        var xEndSpike;
 
         if(yMode.indexOf('toaxis') !== -1 || yMode.indexOf('across') !== -1) {
-            var xBase = xEdge;
-            var xEndSpike = xPoint;
+            if(yMode.indexOf('toaxis') !== -1) {
+                xBase = xEdge;
+                xEndSpike = vLinePointX;
+            }
             if(yMode.indexOf('across') !== -1) {
                 xBase = ya._counterSpan[0];
                 xEndSpike = ya._counterSpan[1];
             }
 
-            // Background horizontal Line (to y-axis)
-            container.append('line')
-                .attr({
-                    'x1': xBase,
-                    'x2': xEndSpike,
-                    'y1': yPoint,
-                    'y2': yPoint,
-                    'stroke-width': yThickness + 2,
-                    'stroke': contrastColor
-                })
-                .classed('spikeline', true)
-                .classed('crisp', true);
-
             // Foreground horizontal line (to y-axis)
-            container.append('line')
+            container.insert('line', ':first-child')
                 .attr({
                     'x1': xBase,
                     'x2': xEndSpike,
-                    'y1': yPoint,
-                    'y2': yPoint,
+                    'y1': hLinePointY,
+                    'y2': hLinePointY,
                     'stroke-width': yThickness,
                     'stroke': yColor,
                     'stroke-dasharray': Drawing.dashStyle(ya.spikedash, yThickness)
                 })
                 .classed('spikeline', true)
                 .classed('crisp', true);
+
+            // Background horizontal Line (to y-axis)
+            container.insert('line', ':first-child')
+                .attr({
+                    'x1': xBase,
+                    'x2': xEndSpike,
+                    'y1': hLinePointY,
+                    'y2': hLinePointY,
+                    'stroke-width': yThickness + 2,
+                    'stroke': contrastColor
+                })
+                .classed('spikeline', true)
+                .classed('crisp', true);
         }
         // Y axis marker
         if(yMode.indexOf('marker') !== -1) {
-            container.append('circle')
+            container.insert('circle', ':first-child')
                 .attr({
                     'cx': xEdge + (ya.side !== 'right' ? yThickness : -yThickness),
-                    'cy': yPoint,
+                    'cy': hLinePointY,
                     'r': yThickness,
                     'fill': yColor
                 })
@@ -1297,38 +1279,35 @@ function createSpikelines(hoverData, opts) {
     }
 
     if(showX) {
+        var dfltVLineColor = tinycolor.readability(vLinePoint.color, contrastColor) < 1.5 ?
+            Color.contrast(contrastColor) : vLinePoint.color;
         var xMode = xa.spikemode;
+        if(hovermode !== 'closest' && xMode.indexOf('toaxis') !== -1) {
+            xMode = xMode.replace('toaxis', 'across');
+        }
         var xThickness = xa.spikethickness;
-        var xColor = xa.spikecolor || dfltDashColor;
+        var xColor = xa.spikecolor || dfltVLineColor;
         var xBB = xa._boundingBox;
-        var yEdge = ((xBB.top + xBB.bottom) / 2) < yPoint ? xBB.bottom : xBB.top;
+        var yEdge = ((xBB.top + xBB.bottom) / 2) < hLinePointY ? xBB.bottom : xBB.top;
+
+        var yBase;
+        var yEndSpike;
 
         if(xMode.indexOf('toaxis') !== -1 || xMode.indexOf('across') !== -1) {
-            var yBase = yEdge;
-            var yEndSpike = yPoint;
+            if(xMode.indexOf('toaxis') !== -1) {
+                yBase = yEdge;
+                yEndSpike = hLinePointY;
+            }
             if(xMode.indexOf('across') !== -1) {
                 yBase = xa._counterSpan[0];
                 yEndSpike = xa._counterSpan[1];
             }
 
-            // Background vertical line (to x-axis)
-            container.append('line')
-                .attr({
-                    'x1': xPoint,
-                    'x2': xPoint,
-                    'y1': yBase,
-                    'y2': yEndSpike,
-                    'stroke-width': xThickness + 2,
-                    'stroke': contrastColor
-                })
-                .classed('spikeline', true)
-                .classed('crisp', true);
-
             // Foreground vertical line (to x-axis)
-            container.append('line')
+            container.insert('line', ':first-child')
                 .attr({
-                    'x1': xPoint,
-                    'x2': xPoint,
+                    'x1': vLinePointX,
+                    'x2': vLinePointX,
                     'y1': yBase,
                     'y2': yEndSpike,
                     'stroke-width': xThickness,
@@ -1337,13 +1316,26 @@ function createSpikelines(hoverData, opts) {
                 })
                 .classed('spikeline', true)
                 .classed('crisp', true);
+
+            // Background vertical line (to x-axis)
+            container.insert('line', ':first-child')
+                .attr({
+                    'x1': vLinePointX,
+                    'x2': vLinePointX,
+                    'y1': yBase,
+                    'y2': yEndSpike,
+                    'stroke-width': xThickness + 2,
+                    'stroke': contrastColor
+                })
+                .classed('spikeline', true)
+                .classed('crisp', true);
         }
 
         // X axis marker
         if(xMode.indexOf('marker') !== -1) {
-            container.append('circle')
+            container.insert('circle', ':first-child')
                 .attr({
-                    'cx': xPoint,
+                    'cx': vLinePointX,
                     'cy': yEdge - (xa.side !== 'top' ? xThickness : -xThickness),
                     'r': xThickness,
                     'fill': xColor
@@ -1365,5 +1357,14 @@ function hoverChanged(gd, evt, oldhoverdata) {
             return true;
         }
     }
+    return false;
+}
+
+function spikesChanged(gd, oldspikepoints) {
+    // don't emit any events if nothing changed
+    if(!oldspikepoints) return true;
+    if(oldspikepoints.vLinePoint !== gd._spikepoints.vLinePoint ||
+        oldspikepoints.hLinePoint !== gd._spikepoints.hLinePoint
+    ) return true;
     return false;
 }

@@ -166,9 +166,6 @@ Plotly.plot = function(gd, data, layout, config) {
     // save initial show spikes once per graph
     if(graphWasEmpty) Plotly.Axes.saveShowSpikeInitial(gd);
 
-    // save initial show crosslines once per graph
-    if(graphWasEmpty) Plotly.Axes.saveShowCrosslineInitial(gd);
-
     // prepare the data and find the autorange
 
     // generate calcdata, if we need to
