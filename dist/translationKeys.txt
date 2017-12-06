@@ -1,0 +1,60 @@
+Autoscale
+Box Select
+Click to enter Colorscale title
+Click to enter Component A title
+Click to enter Component B title
+Click to enter Component C title
+Click to enter Plot title
+Click to enter X axis title
+Click to enter Y axis title
+Close
+Compare data on hover
+Double click on legend to isolate individual trace
+Double-click to<br>zoom back out
+Download plot as a png
+High
+IE only supports svg.  Changing format to svg.
+Incoming flow count
+Lasso Select
+Low
+Open
+Orbital rotation
+Outgoing flow count
+Pan
+Produced with Plotly
+Reset
+Reset axes
+Reset camera to default
+Reset camera to last save
+Reset view
+Reset views
+Save and edit plot in cloud
+Show closest data on hover
+Snapshot succeeded
+Sorry there was a problem downloading your snapshot!
+Source
+Taking snapshot - this may take a few seconds
+Target
+Toggle Spike Lines
+Toggle show closest data on hover
+Turntable rotation
+Zoom
+Zoom in
+Zoom out
+cannot use zsmooth: "fast"
+kde
+lat
+log axis found
+lon
+lower fence
+max
+mean
+mean ± σ
+median
+min
+q1
+q3
+trace
+upper fence
+x scale is not linear
+y scale is not linear
