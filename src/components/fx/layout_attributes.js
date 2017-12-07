@@ -40,7 +40,7 @@ module.exports = {
     },
     hoverdistance: {
         valType: 'integer',
-        min: -1,
+        min: 0,
         dflt: 20,
         role: 'style',
         editType: 'none',
@@ -51,13 +51,13 @@ module.exports = {
     },
     spikedistance: {
         valType: 'integer',
-        min: -1,
+        min: 0,
         dflt: 20,
         role: 'style',
         editType: 'none',
         description: [
             'Sets the default distance (in points) to look for data to draw',
-            'spikelines to (zero means no cutoff). By default inherits from hoverdistance'
+            'spikelines to (zero means no cutoff).'
         ].join(' ')
     },
     hoverlabel: {

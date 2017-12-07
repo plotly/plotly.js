@@ -332,8 +332,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // within one trace mode can sometimes be overridden
         mode = hovermode;
 
-        var hoverdistance = fullLayout.hoverdistance ? fullLayout.hoverdistance === 0 ? Infinity : fullLayout.hoverdistance : constants.MAXDIST;
-        var spikedistance = fullLayout.spikedistance ? fullLayout.spikedistance === 0 ? Infinity : fullLayout.spikedistance : hoverdistance;
+        var hoverdistance = fullLayout.hoverdistance === 0 ? Infinity : fullLayout.hoverdistance;
+        var spikedistance = fullLayout.spikedistance === 0 ? Infinity : fullLayout.spikedistance;
 
         // container for new point, also used to pass info into module.hoverPoints
         pointData = {
