@@ -24,6 +24,7 @@ var Registry = require('../../registry');
 
 var helpers = require('./helpers');
 var constants = require('./constants');
+var getTraceColor = require('../../traces/scatter/get_trace_color');
 
 // hover labels for multiple horizontal bars get tilted by some angle,
 // then need to be offset differently if they overlap
@@ -234,8 +235,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         pointData,
         closedataPreviousLength,
 
-        // closestPoints: the set of candidate points we've found to draw spikes to
-        closestPoints = {
+        // spikePoints: the set of candidate points we've found to draw spikes to
+        spikePoints = {
             hLinePoint: null,
             vLinePoint: null
         };
@@ -331,8 +332,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // within one trace mode can sometimes be overridden
         mode = hovermode;
 
-        var hoverdistance = fullLayout.hoverdistance ? fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance : constants.MAXDIST;
-        var spikedistance = fullLayout.spikedistance ? fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance : hoverdistance;
+        var hoverdistance = fullLayout.hoverdistance ? fullLayout.hoverdistance === 0 ? Infinity : fullLayout.hoverdistance : constants.MAXDIST;
+        var spikedistance = fullLayout.spikedistance ? fullLayout.spikedistance === 0 ? Infinity : fullLayout.spikedistance : hoverdistance;
 
         // container for new point, also used to pass info into module.hoverPoints
         pointData = {
@@ -391,11 +392,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // Find the points for the spikes first to avoid overwriting the hoverLabels data.
         if(fullLayout._has('cartesian')) {
             if(fullLayout.hovermode === 'closest') {
-                closestPoints.hLinePoint = findClosestPoint(pointData, xval, yval, 'closest', closestPoints.hLinePoint, spikedistance);
-                closestPoints.vLinePoint = findClosestPoint(pointData, xval, yval, 'closest', closestPoints.vLinePoint, spikedistance);
+                spikePoints.hLinePoint = setClosestPoint(pointData, xval, yval, 'closest', spikePoints.hLinePoint, spikedistance, 'h');
+                spikePoints.vLinePoint = setClosestPoint(pointData, xval, yval, 'closest', spikePoints.vLinePoint, spikedistance, 'v');
             } else {
-                closestPoints.hLinePoint = findClosestPoint(pointData, xval, yval, 'y', closestPoints.hLinePoint, spikedistance);
-                closestPoints.vLinePoint = findClosestPoint(pointData, xval, yval, 'x', closestPoints.vLinePoint, spikedistance);
+                spikePoints.hLinePoint = setClosestPoint(pointData, xval, yval, 'y', spikePoints.hLinePoint, spikedistance, 'h');
+                spikePoints.vLinePoint = setClosestPoint(pointData, xval, yval, 'x', spikePoints.vLinePoint, spikedistance, 'v');
             }
         }
 
@@ -424,21 +425,72 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         }
     }
 
-    function findClosestPoint(pointData, xval, yval, mode, endPoint, spikedistance) {
+    function findClosestPoints(pointData, xval, yval, hovermode) {
+        var cd = pointData.cd,
+            trace = cd[0].trace,
+            xa = pointData.xa,
+            ya = pointData.ya,
+            xpx = xa.c2p(xval),
+            ypx = ya.c2p(yval),
+            hoveron = trace.hoveron || '';
+
+        if(hoveron.indexOf('points') !== -1) {
+            var dx = function(di) {
+                    // scatter points: d.mrc is the calculated marker radius
+                    // adjust the distance so if you're inside the marker it
+                    // always will show up regardless of point size, but
+                    // prioritize smaller points
+                    var rad = Math.max(3, di.mrc || 0);
+                    return Math.max(Math.abs(xa.c2p(di.x) - xpx) - rad, 1 - 3 / rad);
+                },
+                dy = function(di) {
+                    var rad = Math.max(3, di.mrc || 0);
+                    return Math.max(Math.abs(ya.c2p(di.y) - ypx) - rad, 1 - 3 / rad);
+                },
+                dxy = function(di) {
+                    var rad = Math.max(3, di.mrc || 0),
+                        dx = xa.c2p(di.x) - xpx,
+                        dy = ya.c2p(di.y) - ypx;
+                    return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
+                },
+                distfn = helpers.getDistanceFunction(hovermode, dx, dy, dxy);
+
+            helpers.getClosest(cd, distfn, pointData);
+
+            // skip the rest (for this trace) if we didn't find a close point
+            if(pointData.index !== false) {
+
+                // the closest data point
+                var di = cd[pointData.index],
+                    xc = xa.c2p(di.x, true),
+                    yc = ya.c2p(di.y, true),
+                    rad = di.mrc || 1;
+
+                Lib.extendFlat(pointData, {
+                    color: getTraceColor(trace, di),
+                    x0: xc - rad,
+                    x1: xc + rad,
+                    y0: yc - rad,
+                    y1: yc + rad,
+                });
+                return [pointData];
+            }
+        }
+    }
+
+    function setClosestPoint(pointData, xval, yval, mode, endPoint, spikedistance, type) {
         var tmpDistance = pointData.distance;
         var tmpIndex = pointData.index;
         var resultPoint = endPoint;
         pointData.distance = spikedistance;
         pointData.index = false;
-        var closestPoints = trace._module.hoverPoints(pointData, xval, yval, mode);
+        var closestPoints = findClosestPoints(pointData, xval, yval, mode);
         if(closestPoints) {
             closestPoints = closestPoints.filter(function(point) {
-                if(mode === 'x') {
+                if(type === 'v') {
                     return point.xa.showspikes;
-                } else if(mode === 'y') {
+                } else if(type === 'h') {
                     return point.ya.showspikes;
-                } else if(mode === 'closest') {
-                    return point.ya.showspikes && point.ya.showspikes;
                 }
             });
             if(closestPoints.length) {
@@ -477,16 +529,16 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     };
     var oldspikepoints = gd._spikepoints,
         newspikepoints = {
-            vLinePoint: closestPoints.vLinePoint,
-            hLinePoint: closestPoints.hLinePoint
+            vLinePoint: spikePoints.vLinePoint,
+            hLinePoint: spikePoints.hLinePoint
         };
     gd._spikepoints = newspikepoints;
 
     if(hoverData.length === 0) {
         var result = dragElement.unhoverRaw(gd, evt);
-        if(fullLayout._has('cartesian') && ((closestPoints.hLinePoint !== null) || (closestPoints.vLinePoint !== null))) {
+        if(fullLayout._has('cartesian') && ((spikePoints.hLinePoint !== null) || (spikePoints.vLinePoint !== null))) {
             if(spikesChanged(oldspikepoints)) {
-                createSpikelines2(closestPoints, spikelineOpts);
+                createSpikelines(spikePoints, spikelineOpts);
             }
         }
         return result;
@@ -494,7 +546,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     if(fullLayout._has('cartesian')) {
         if(spikesChanged(oldspikepoints)) {
-            createSpikelines2(closestPoints, spikelineOpts);
+            createSpikelines(spikePoints, spikelineOpts);
         }
     }
 
@@ -1170,17 +1222,13 @@ function cleanPoint(d, hovermode) {
     return d;
 }
 
-function createSpikelines2(closestPoints, opts) {
+function createSpikelines(closestPoints, opts) {
     var hovermode = opts.hovermode;
     var container = opts.container;
     var fullLayout = opts.fullLayout;
     var evt = opts.event;
-    var hLinePoint,
-        vLinePoint,
-        xa,
-        ya,
-        hLinePointY,
-        vLinePointX;
+    var xa,
+        ya;
 
     var showY = closestPoints.hLinePoint ? true : false;
     var showX = closestPoints.vLinePoint ? true : false;
@@ -1190,31 +1238,22 @@ function createSpikelines2(closestPoints, opts) {
 
     if(!(showX || showY)) return;
 
+    var contrastColor = Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor);
+
+    // Horizontal line (to y-axis)
     if(showY) {
-        hLinePoint = closestPoints.hLinePoint;
+        var hLinePoint = closestPoints.hLinePoint;
+        xa = hLinePoint && hLinePoint.xa;
         ya = hLinePoint && hLinePoint.ya;
-        var ySnap = ya.spikesnap;
+        var ySnap = ya.spikesnap,
+            hLinePointX,
+            hLinePointY;
         if(ySnap === 'cursor') {
             hLinePointY = evt.offsetY;
         } else {
             hLinePointY = ya._offset + (hLinePoint.y0 + hLinePoint.y1) / 2;
         }
-    }
-    if(showX) {
-        vLinePoint = closestPoints.vLinePoint;
-        xa = vLinePoint && vLinePoint.xa;
-        var xSnap = xa.spikesnap;
-        if(xSnap === 'cursor') {
-            vLinePointX = evt.offsetX;
-        } else {
-            vLinePointX = xa._offset + (vLinePoint.x0 + vLinePoint.x1) / 2;
-        }
-    }
-
-    var contrastColor = Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor);
-
-    // Horizontal line (to y-axis)
-    if(showY) {
+        hLinePointX = xa._offset + (hLinePoint.x0 + hLinePoint.x1) / 2;
         var dfltHLineColor = tinycolor.readability(hLinePoint.color, contrastColor) < 1.5 ?
             Color.contrast(contrastColor) : hLinePoint.color;
         var yMode = ya.spikemode;
@@ -1224,14 +1263,14 @@ function createSpikelines2(closestPoints, opts) {
         var yThickness = ya.spikethickness;
         var yColor = ya.spikecolor || dfltHLineColor;
         var yBB = ya._boundingBox;
-        var xEdge = ((yBB.left + yBB.right) / 2) < vLinePointX ? yBB.right : yBB.left;
+        var xEdge = ((yBB.left + yBB.right) / 2) < hLinePointX ? yBB.right : yBB.left;
         var xBase;
         var xEndSpike;
 
         if(yMode.indexOf('toaxis') !== -1 || yMode.indexOf('across') !== -1) {
             if(yMode.indexOf('toaxis') !== -1) {
                 xBase = xEdge;
-                xEndSpike = vLinePointX;
+                xEndSpike = hLinePointX;
             }
             if(yMode.indexOf('across') !== -1) {
                 xBase = ya._counterSpan[0];
@@ -1279,8 +1318,20 @@ function createSpikelines2(closestPoints, opts) {
     }
 
     if(showX) {
+        var vLinePoint = closestPoints.vLinePoint;
+        xa = vLinePoint && vLinePoint.xa;
+        ya = vLinePoint && vLinePoint.ya;
+        var xSnap = xa.spikesnap,
+            vLinePointX,
+            vLinePointY;
+        if(xSnap === 'cursor') {
+            vLinePointX = evt.offsetX;
+        } else {
+            vLinePointX = xa._offset + (vLinePoint.x0 + vLinePoint.x1) / 2;
+        }
+        vLinePointY = ya._offset + (vLinePoint.y0 + vLinePoint.y1) / 2;
         var dfltVLineColor = tinycolor.readability(vLinePoint.color, contrastColor) < 1.5 ?
-            Color.contrast(contrastColor) : vLinePoint.color;
+        Color.contrast(contrastColor) : vLinePoint.color;
         var xMode = xa.spikemode;
         if(hovermode !== 'closest' && xMode.indexOf('toaxis') !== -1) {
             xMode = xMode.replace('toaxis', 'across');
@@ -1288,7 +1339,7 @@ function createSpikelines2(closestPoints, opts) {
         var xThickness = xa.spikethickness;
         var xColor = xa.spikecolor || dfltVLineColor;
         var xBB = xa._boundingBox;
-        var yEdge = ((xBB.top + xBB.bottom) / 2) < hLinePointY ? xBB.bottom : xBB.top;
+        var yEdge = ((xBB.top + xBB.bottom) / 2) < vLinePointY ? xBB.bottom : xBB.top;
 
         var yBase;
         var yEndSpike;
@@ -1296,7 +1347,7 @@ function createSpikelines2(closestPoints, opts) {
         if(xMode.indexOf('toaxis') !== -1 || xMode.indexOf('across') !== -1) {
             if(xMode.indexOf('toaxis') !== -1) {
                 yBase = yEdge;
-                yEndSpike = hLinePointY;
+                yEndSpike = vLinePointY;
             }
             if(xMode.indexOf('across') !== -1) {
                 yBase = xa._counterSpan[0];

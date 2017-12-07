@@ -46,7 +46,7 @@ module.exports = {
         editType: 'none',
         description: [
             'Sets the default distance (in points) to look for data',
-            'to add hover labels'
+            'to add hover labels (zero means no cutoff)'
         ].join(' ')
     },
     spikedistance: {
@@ -56,8 +56,8 @@ module.exports = {
         role: 'style',
         editType: 'none',
         description: [
-            'Sets the default distance (in points) to look for data',
-            'to draw spikelines to. By default inherits from hoverdistance'
+            'Sets the default distance (in points) to look for data to draw',
+            'spikelines to (zero means no cutoff). By default inherits from hoverdistance'
         ].join(' ')
     },
     hoverlabel: {
