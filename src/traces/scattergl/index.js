@@ -750,16 +750,16 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                 else if(trace.fill === 'toself' || trace.fill === 'tonext') {
                     pos = [];
                     var last = 0;
-                    for(i = 0; i < srcPos.length; i += 2) {
-                        if(isNaN(srcPos[i]) || isNaN(srcPos[i + 1])) {
-                            pos = pos.concat(srcPos.slice(last, i));
+                    for(var j = 0; j < srcPos.length; j += 2) {
+                        if(isNaN(srcPos[j]) || isNaN(srcPos[j + 1])) {
+                            pos = pos.concat(srcPos.slice(last, j));
                             pos.push(srcPos[last], srcPos[last + 1]);
-                            last = i;
+                            last = j + 2;
                         }
                     }
                     pos = pos.concat(srcPos.slice(last));
                     if(last) {
-                        pos.push(srcPos[last + 2], srcPos[last + 3]);
+                        pos.push(srcPos[last], srcPos[last + 1]);
                     }
                 }
                 else {
@@ -767,9 +767,9 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
 
                     if(nextTrace) {
                         var nextOptions = scene.lineOptions[i + 1];
-                        var nextPos = nextOptions.positions;
 
                         if(nextOptions) {
+                            var nextPos = nextOptions.positions;
                             if(trace.fill === 'tonexty') {
                                 pos = srcPos.slice();
 
@@ -784,6 +784,7 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                         }
                     }
                 }
+
                 fillOptions.opacity = trace.opacity;
                 fillOptions.positions = pos;
             });
