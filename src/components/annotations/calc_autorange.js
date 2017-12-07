@@ -48,13 +48,16 @@ function annAutorange(gd) {
     Lib.filterVisible(fullLayout.annotations).forEach(function(ann) {
         var xa = Axes.getFromId(gd, ann.xref),
             ya = Axes.getFromId(gd, ann.yref),
-            headSize = 3 * ann.arrowsize * ann.arrowwidth || 0;
+            headSize = 3 * ann.arrowsize * ann.arrowwidth || 0,
+            startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
 
-        var headPlus, headMinus;
+        var headPlus, headMinus, startHeadPlus, startHeadMinus;
 
         if(xa && xa.autorange) {
             headPlus = headSize + ann.xshift;
             headMinus = headSize - ann.xshift;
+            startHeadPlus = startHeadSize + ann.xshift;
+            startHeadMinus = startHeadSize - ann.xshift;
 
             if(ann.axref === ann.xref) {
                 // expand for the arrowhead (padded by arrowhead)
@@ -64,14 +67,16 @@ function annAutorange(gd) {
                 });
                 // again for the textbox (padded by textbox)
                 Axes.expand(xa, [xa.r2c(ann.ax)], {
-                    ppadplus: ann._xpadplus,
-                    ppadminus: ann._xpadminus
+                    ppadplus: Math.max(ann._xpadplus, startHeadPlus),
+                    ppadminus: Math.max(ann._xpadminus, startHeadMinus)
                 });
             }
             else {
+                startHeadPlus = ann.ax ? startHeadPlus + ann.ax : startHeadPlus;
+                startHeadMinus = ann.ax ? startHeadMinus - ann.ax : startHeadMinus;
                 Axes.expand(xa, [xa.r2c(ann.x)], {
-                    ppadplus: Math.max(ann._xpadplus, headPlus),
-                    ppadminus: Math.max(ann._xpadminus, headMinus)
+                    ppadplus: Math.max(ann._xpadplus, headPlus, startHeadPlus),
+                    ppadminus: Math.max(ann._xpadminus, headMinus, startHeadMinus)
                 });
             }
         }
@@ -79,6 +84,8 @@ function annAutorange(gd) {
         if(ya && ya.autorange) {
             headPlus = headSize - ann.yshift;
             headMinus = headSize + ann.yshift;
+            startHeadPlus = startHeadSize - ann.yshift;
+            startHeadMinus = startHeadSize + ann.yshift;
 
             if(ann.ayref === ann.yref) {
                 Axes.expand(ya, [ya.r2c(ann.y)], {
@@ -86,14 +93,16 @@ function annAutorange(gd) {
                     ppadminus: headMinus
                 });
                 Axes.expand(ya, [ya.r2c(ann.ay)], {
-                    ppadplus: ann._ypadplus,
-                    ppadminus: ann._ypadminus
+                    ppadplus: Math.max(ann._ypadplus, startHeadPlus),
+                    ppadminus: Math.max(ann._ypadminus, startHeadMinus)
                 });
             }
             else {
+                startHeadPlus = ann.ay ? startHeadPlus + ann.ay : startHeadPlus;
+                startHeadMinus = ann.ay ? startHeadMinus - ann.ay : startHeadMinus;
                 Axes.expand(ya, [ya.r2c(ann.y)], {
-                    ppadplus: Math.max(ann._ypadplus, headPlus),
-                    ppadminus: Math.max(ann._ypadminus, headMinus)
+                    ppadplus: Math.max(ann._ypadplus, headPlus, startHeadPlus),
+                    ppadminus: Math.max(ann._ypadminus, headMinus, startHeadMinus)
                 });
             }
         }
