@@ -22,6 +22,8 @@ var interactConstants = require('../../constants/interactions');
 
 var Titles = module.exports = {};
 
+var numStripRE = / [XY][0-9]* /;
+
 /**
  * Titles - (re)draw titles on the axes and plot:
  * @param {DOM element} gd - the graphDiv
@@ -78,7 +80,11 @@ Titles.draw = function(gd, titleClass, options) {
     var editable = gd._context.edits[editAttr];
 
     if(txt === '') opacity = 0;
-    else if(txt === placeholder) {
+    // look for placeholder text while stripping out numbers from eg X2, Y3
+    // this is just for backward compatibility with the old version that had
+    // "Click to enter X2 title" and may have gotten saved in some old plots,
+    // we don't want this to show up when these are displayed.
+    else if(txt.replace(numStripRE, ' % ') === placeholder.replace(numStripRE, ' % ')) {
         opacity = 0.2;
         isplaceholder = true;
         if(!editable) txt = '';
