@@ -70,7 +70,7 @@ module.exports = function calc(gd, trace) {
         groupStats.maxCount = Math.max(groupStats.maxCount, vals.length);
     }
 
-    cd[0].t.labels.kde = Lib._(gd, 'kde') + ': ';
+    cd[0].t.labels.kde = Lib._(gd, 'kde:');
 
     return cd;
 };

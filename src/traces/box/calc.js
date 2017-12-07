@@ -125,14 +125,14 @@ module.exports = function calc(gd, trace) {
             posLetter: posLetter,
             valLetter: valLetter,
             labels: {
-                med: _(gd, 'median'),
-                min: _(gd, 'min'),
-                q1: _(gd, 'q1'),
-                q3: _(gd, 'q3'),
-                max: _(gd, 'max'),
-                mean: trace.boxmean === 'sd' ? _(gd, 'mean ± σ') : _(gd, 'mean'),
-                lf: _(gd, 'lower fence'),
-                uf: _(gd, 'upper fence')
+                med: _(gd, 'median:'),
+                min: _(gd, 'min:'),
+                q1: _(gd, 'q1:'),
+                q3: _(gd, 'q3:'),
+                max: _(gd, 'max:'),
+                mean: trace.boxmean === 'sd' ? _(gd, 'mean ± σ:') : _(gd, 'mean:'),
+                lf: _(gd, 'lower fence:'),
+                uf: _(gd, 'upper fence:')
             }
         };
 

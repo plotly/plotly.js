@@ -159,7 +159,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
         pointData2[vLetter + '0'] = pointData2[vLetter + '1'] = valPx;
         pointData2[vLetter + 'LabelVal'] = val;
-        pointData2[vLetter + 'Label'] = t.labels[attr] + ': ' + Axes.hoverLabelText(vAxis, val);
+        pointData2[vLetter + 'Label'] = t.labels[attr] + ' ' + Axes.hoverLabelText(vAxis, val);
 
         if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
             pointData2[vLetter + 'err'] = di.sd;

@@ -45,8 +45,8 @@ module.exports = function calc(gd, trace) {
     if(len) {
         calcTrace[0].t = {
             labels: {
-                lat: _(gd, 'lat') + ': ',
-                lon: _(gd, 'lon') + ': '
+                lat: _(gd, 'lat:') + ' ',
+                lon: _(gd, 'lon:') + ' '
             }
         };
     }
