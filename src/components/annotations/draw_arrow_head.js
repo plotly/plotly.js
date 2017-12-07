@@ -39,8 +39,8 @@ module.exports = function drawArrowHead(el3, ends, options) {
     var el = el3.node();
     var headStyle = ARROWPATHS[options.arrowhead || 0];
     var startHeadStyle = ARROWPATHS[options.startarrowhead || 0];
-    var scale = (options.arrowwidth || 1) * options.arrowsize;
-    var startScale = (options.arrowwidth || 1) * options.startarrowsize;
+    var scale = (options.arrowwidth || 1) * (options.arrowsize || 1);
+    var startScale = (options.arrowwidth || 1) * (options.startarrowsize || 1);
     var doStart = ends.indexOf('start') >= 0;
     var doEnd = ends.indexOf('end') >= 0;
     var backOff = headStyle.backoff * scale + options.standoff;

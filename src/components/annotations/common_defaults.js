@@ -36,13 +36,18 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
 
     if(showArrow) {
         var arrowside = coerce('arrowside');
-        var arrowhead = coerce('arrowhead');
-        var arrowsize = coerce('arrowsize');
+        var arrowhead;
+        var arrowsize;
+
+        if(arrowside.indexOf('end') !== -1) {
+            arrowhead = coerce('arrowhead');
+            arrowsize = coerce('arrowsize');
+        }
 
         if(arrowside.indexOf('start') !== -1) {
             coerce('startarrowhead', arrowhead);
+            coerce('startarrowsize', arrowsize);
         }
-        coerce('startarrowsize', arrowsize);
         coerce('arrowcolor', borderOpacity ? annOut.bordercolor : Color.defaultLine);
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
         coerce('standoff');
