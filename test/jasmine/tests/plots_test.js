@@ -160,7 +160,7 @@ describe('Test Plots', function() {
             layoutOut,
             expected;
 
-        var supplyLayoutDefaults = function(layoutIn, layoutOut) {
+        function supplyLayoutDefaults(layoutIn, layoutOut) {
             layoutOut._dfltTitle = {
                 plot: 'ppplot'
             };

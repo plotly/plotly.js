@@ -12,6 +12,7 @@ Compare data on hover
 Double click on legend to isolate individual trace
 Double-click to<br>zoom back out
 Download plot as a png
+Edit in Chart Studio
 High
 IE only supports svg.  Changing format to svg.
 Incoming flow count
@@ -28,7 +29,6 @@ Reset camera to default
 Reset camera to last save
 Reset view
 Reset views
-Save and edit plot in cloud
 Show closest data on hover
 Snapshot succeeded
 Sorry there was a problem downloading your snapshot!

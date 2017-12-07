@@ -8,10 +8,8 @@
 
 'use strict';
 
-var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var extendFlat = require('../../lib').extendFlat;
-var Registry = require('../../registry');
 var colorscaleCalc = require('../../components/colorscale/calc');
 var hasColumns = require('../heatmap/has_columns');
 var convertColumnData = require('../heatmap/convert_column_xyz');
