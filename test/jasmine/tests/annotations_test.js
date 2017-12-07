@@ -600,7 +600,7 @@ describe('annotations autorange', function() {
         expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PRECY2, 'yaxis2');
         expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PRECX3, 'xaxis3');
         expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');
-        expect(fullLayout.xaxis4.range).toBeCloseToArray(x4, PRECX3, 'xaxis4');
+        expect(fullLayout.xaxis4.range).toBeCloseToArray(x4, PRECX2, 'xaxis4');
         expect(fullLayout.yaxis4.range).toBeCloseToArray(y4, PRECY2, 'yaxis4');
     }
 
