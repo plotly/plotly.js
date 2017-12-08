@@ -3,6 +3,7 @@ var d3 = require('d3');
 
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Loggers = require('@src/lib/loggers');
 var Color = require('@src/components/color');
 var tinycolor = require('tinycolor2');
 
@@ -1188,6 +1189,11 @@ describe('Test axes', function() {
             expect(axOut.tick0).toBe('2000-01-01');
             expect(axOut.dtick).toBe('M12');
 
+            var errors = [];
+            spyOn(Loggers, 'error').and.callFake(function(msg) {
+                errors.push(msg);
+            });
+
             // now some stuff that shouldn't work, should give defaults
             [
                 ['next thursday', -1],
@@ -1195,12 +1201,13 @@ describe('Test axes', function() {
                 ['', 'M0.5'],
                 ['', 'M-1'],
                 ['', '2000-01-01']
-            ].forEach(function(v) {
+            ].forEach(function(v, i) {
                 axIn = {tick0: v[0], dtick: v[1]};
                 axOut = {};
                 mockSupplyDefaults(axIn, axOut, 'date');
                 expect(axOut.tick0).toBe('2000-01-01');
                 expect(axOut.dtick).toBe(oneDay);
+                expect(errors.length).toBe(i + 1);
             });
         });
 

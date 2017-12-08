@@ -1,6 +1,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('@src/lib');
+var Loggers = require('@src/lib/loggers');
 var calComponent = require('@src/components/calendars');
 
 // use only the parts of world-calendars that we've imported for our tests
@@ -360,6 +361,11 @@ describe('dates', function() {
         });
 
         it('should fail numbers & js Dates out of range, and other bad objects', function() {
+            var errors = [];
+            spyOn(Loggers, 'error').and.callFake(function(msg) {
+                errors.push(msg);
+            });
+
             [
                 new Date(-20000, 0, 1),
                 new Date(20000, 0, 1),
@@ -372,6 +378,8 @@ describe('dates', function() {
                 if(!isNumeric(+v)) expect(Lib.cleanDate(+v)).toBeUndefined();
                 expect(Lib.cleanDate(v, '2000-01-01')).toBe('2000-01-01');
             });
+
+            expect(errors.length).toBe(16);
         });
 
         it('should not alter valid date strings, even to truncate them', function() {

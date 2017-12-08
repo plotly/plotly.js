@@ -98,6 +98,11 @@ describe('Test annotations', function() {
         });
 
         it('should clean *xclick* and *yclick* values', function() {
+            var errors = [];
+            spyOn(Loggers, 'error').and.callFake(function(msg) {
+                errors.push(msg);
+            });
+
             var layoutIn = {
                 annotations: [{
                     clicktoshow: 'onoff',
@@ -139,6 +144,7 @@ describe('Test annotations', function() {
             expect(layoutOut.annotations[1]._yclick).toBe(undefined, 'invalid date');
             expect(layoutOut.annotations[2]._xclick).toBe(2, 'log');
             expect(layoutOut.annotations[2]._yclick).toBe('A', 'category');
+            expect(errors.length).toBe(1);
         });
     });
 });
