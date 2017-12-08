@@ -172,7 +172,7 @@ describe('choropleth bad data', function() {
     afterEach(destroyGraphDiv);
 
     it('should not throw an error with bad locations', function(done) {
-        spyOn(Lib, 'warn');
+        spyOn(Lib, 'log');
         Plotly.newPlot(gd, [{
             locations: ['canada', 0, null, '', 'utopia'],
             z: [1, 2, 3, 4, 5],
@@ -180,8 +180,8 @@ describe('choropleth bad data', function() {
             type: 'choropleth'
         }])
         .then(function() {
-            // only utopia warns - others are silently ignored
-            expect(Lib.warn).toHaveBeenCalledTimes(1);
+            // only utopia logs - others are silently ignored
+            expect(Lib.log).toHaveBeenCalledTimes(1);
         })
         .catch(fail)
         .then(done);

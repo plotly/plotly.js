@@ -348,15 +348,15 @@ describe('scattergeo bad data', function() {
     afterEach(destroyGraphDiv);
 
     it('should not throw an error with bad locations', function(done) {
-        spyOn(Lib, 'warn');
+        spyOn(Lib, 'log');
         Plotly.newPlot(gd, [{
             locations: ['canada', 0, null, '', 'utopia'],
             locationmode: 'country names',
             type: 'scattergeo'
         }])
         .then(function() {
-            // only utopia warns - others are silently ignored
-            expect(Lib.warn).toHaveBeenCalledTimes(1);
+            // only utopia logs - others are silently ignored
+            expect(Lib.log).toHaveBeenCalledTimes(1);
         })
         .catch(fail)
         .then(done);

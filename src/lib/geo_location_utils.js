@@ -34,7 +34,7 @@ exports.locationToFeature = function(locationmode, location, features) {
             if(feature.id === locationId) return feature;
         }
 
-        Lib.warn([
+        Lib.log([
             'Location with id', locationId,
             'does not have a matching topojson feature at this resolution.'
         ].join(' '));
@@ -56,7 +56,7 @@ function countryNameToISO3(countryName) {
         if(regex.test(countryName.trim().toLowerCase())) return iso3;
     }
 
-    Lib.warn('Unrecognized country name: ' + countryName + '.');
+    Lib.log('Unrecognized country name: ' + countryName + '.');
 
     return false;
 }
