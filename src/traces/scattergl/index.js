@@ -45,8 +45,8 @@ var ScatterGl = module.exports = {};
 
 ScatterGl.name = 'scattergl';
 ScatterGl.categories = ['gl', 'regl', 'cartesian', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'];
-ScatterGl.attributes = Scatter.attributes;
-ScatterGl.supplyDefaults = Scatter.supplyDefaults;
+ScatterGl.attributes = require('./attributes');
+ScatterGl.supplyDefaults = require('./defaults');
 ScatterGl.cleanData = Scatter.cleanData;
 ScatterGl.arraysToCalcdata = Scatter.arraysToCalcdata;
 ScatterGl.colorbar = Scatter.colorbar;
