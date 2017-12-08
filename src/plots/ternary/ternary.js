@@ -589,7 +589,7 @@ proto.initInteractions = function() {
         Plotly.relayout(gd, attrs);
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Lib.notifier(_(gd, 'Double-click to<br>zoom back out'), 'long');
+            Lib.notifier(_(gd, 'Double-click to zoom back out'), 'long');
             SHOWZOOMOUTTIP = false;
         }
     }
