@@ -130,7 +130,7 @@ module.exports = {
 
     // Which localization should we use?
     // Should be a string like 'en' or 'en-US'.
-    locale: 'en',
+    locale: 'en-US',
 
     // Localization dictionaries
     // Dictionaries can be provided either here (specific to one chart) or globally
