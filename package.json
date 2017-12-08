@@ -108,6 +108,7 @@
     "world-calendars": "^1.0.3"
   },
   "devDependencies": {
+    "add-stream": "^1.0.0",
     "brfs": "^1.4.3",
     "browserify": "^14.1.0",
     "browserify-transform-tools": "^1.7.0",
@@ -122,6 +123,7 @@
     "glslify": "^4.0.0",
     "gzip-size": "^3.0.0",
     "image-size": "^0.5.1",
+    "into-stream": "^3.1.0",
     "jasmine-core": "^2.4.1",
     "jsdom": "^11.2.0",
     "karma": "^1.5.0",
