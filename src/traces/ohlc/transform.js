@@ -133,10 +133,10 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
         close = trace.close,
         textIn = trace.text;
 
-    var openName = _(gd, 'Open:') + ' ';
-    var highName = _(gd, 'High:') + ' ';
-    var lowName = _(gd, 'Low:') + ' ';
-    var closeName = _(gd, 'Close:') + ' ';
+    var openName = _(gd, 'open:') + ' ';
+    var highName = _(gd, 'high:') + ' ';
+    var lowName = _(gd, 'low:') + ' ';
+    var closeName = _(gd, 'close:') + ' ';
 
     var len = open.length,
         x = [],

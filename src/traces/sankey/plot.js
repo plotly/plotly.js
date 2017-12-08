@@ -137,10 +137,10 @@ module.exports = function plot(gd, calcData) {
         });
     };
 
-    var sourceLabel = _(gd, 'Source:') + ' ';
-    var targetLabel = _(gd, 'Target:') + ' ';
-    var incomingLabel = _(gd, 'Incoming flow count:') + ' ';
-    var outgoingLabel = _(gd, 'Outgoing flow count:') + ' ';
+    var sourceLabel = _(gd, 'source:') + ' ';
+    var targetLabel = _(gd, 'target:') + ' ';
+    var incomingLabel = _(gd, 'incoming flow count:') + ' ';
+    var outgoingLabel = _(gd, 'outgoing flow count:') + ' ';
 
     var linkHoverFollow = function(element, d) {
         var trace = d.link.trace;

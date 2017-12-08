@@ -66,7 +66,7 @@ modeBarButtons.toImage = {
               Lib.notifier(_(gd, 'Snapshot succeeded') + ' - ' + filename, 'long');
           })
           .catch(function() {
-              Lib.notifier(_(gd, 'Sorry there was a problem downloading your snapshot!'), 'long');
+              Lib.notifier(_(gd, 'Sorry, there was a problem downloading your snapshot!'), 'long');
           });
     }
 };
