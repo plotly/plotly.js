@@ -26,9 +26,11 @@ function findLocaleStrings() {
 
         var dict = {};
         var hasTranslation = false;
+        var maxLen = 0;
 
         files.forEach(function(file) {
             var code = fs.readFileSync(file, 'utf-8');
+            var filePartialPath = file.substr(constants.pathToSrc.length);
 
             falafel(code, {locations: true}, function(node) {
                 // parse through code string looking for translated strings
@@ -44,8 +46,11 @@ function findLocaleStrings() {
                     if(strNode.type !== 'Literal') {
                         logError(file, node, 'Translated string must be a literal');
                     }
-                    dict[strNode.value] = 1;
-                    hasTranslation = true;
+                    if(!dict[strNode.value]) {
+                        dict[strNode.value] = filePartialPath + ':' + node.loc.start.line;
+                        maxLen = Math.max(maxLen, strNode.value.length);
+                        hasTranslation = true;
+                    }
                 }
 
                 // make sure localize is the only thing we assign to a variable `_`
@@ -65,7 +70,9 @@ function findLocaleStrings() {
         }
 
         if(!EXIT_CODE) {
-            var strings = Object.keys(dict).sort().join('\n');
+            var strings = Object.keys(dict).sort().map(function(k) {
+                return k + spaces(maxLen - k.length) + '  // ' + dict[k];
+            }).join('\n');
             common.writeFile(constants.pathToTranslationKeys, strings);
             console.log('ok find_locale_strings');
         }
@@ -76,6 +83,12 @@ function logError(file, node, msg) {
     console.error(file + ' [line ' + node.loc.start.line + '] ' + msg +
         '\n   ' + node.source());
     EXIT_CODE = 1;
+}
+
+function spaces(len) {
+    var out = '';
+    for(var i = 0; i < len; i++) out += ' ';
+    return out;
 }
 
 process.on('exit', function() {
