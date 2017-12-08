@@ -114,7 +114,7 @@ exports.manageCommandObserver = function(gd, container, commandList, onchange) {
     } else {
         // TODO: It'd be really neat to actually give a *reason* for this, but at least a warning
         // is a start
-        Lib.warn('Unable to automatically bind plot updates to API command');
+        Lib.log('Unable to automatically bind plot updates to API command');
 
         ret.lookupTable = {};
         ret.remove = function() {};
