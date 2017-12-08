@@ -122,7 +122,10 @@ module.exports = {
 
     // Turn all console logging on or off (errors will be thrown)
     // This should ONLY be set via Plotly.setPlotConfig
-    logging: false,
+    // 0: no logs
+    // 1: warnings and errors, but not informational messages
+    // 2: verbose logs
+    logging: 1,
 
     // Set global transform to be applied to all traces with no
     // specification needed

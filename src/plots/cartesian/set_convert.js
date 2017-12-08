@@ -382,7 +382,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
         if(!isFinite(ax._m) || !isFinite(ax._b)) {
             fullLayout._replotting = false;
-            throw new Error('axis scaling');
+            throw new Error('Something went wrong with axis scaling');
         }
     };
 
