@@ -149,7 +149,6 @@ ScatterGl.calc = function calc(container, trace) {
         }
     }
 
-
     if(trace.visible !== true) {
         hasLines = false;
         hasErrorX = false;
@@ -732,6 +731,7 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                 var trace = cd.trace;
                 var stash = cd.t;
                 var lineOptions = scene.lineOptions[i];
+                var last, j;
 
                 var pos = [], srcPos = (lineOptions && lineOptions.positions) || stash.positions;
 
@@ -749,8 +749,8 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                 }
                 else if(trace.fill === 'toself' || trace.fill === 'tonext') {
                     pos = [];
-                    var last = 0;
-                    for(var j = 0; j < srcPos.length; j += 2) {
+                    last = 0;
+                    for(j = 0; j < srcPos.length; j += 2) {
                         if(isNaN(srcPos[j]) || isNaN(srcPos[j + 1])) {
                             pos = pos.concat(srcPos.slice(last, j));
                             pos.push(srcPos[last], srcPos[last + 1]);
@@ -783,6 +783,25 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                             }
                         }
                     }
+                }
+
+                // detect prev trace positions to exclude from current fill
+                if(trace._prevtrace && trace._prevtrace.fill === 'tonext') {
+                    var prevLinePos = scene.lineOptions[i - 1].positions;
+
+                    // FIXME: likely this logic should be tested better
+                    var offset = pos.length / 2;
+                    last = offset;
+                    var hole = [last];
+                    for(j = 0; j < prevLinePos.length; j += 2) {
+                        if(isNaN(prevLinePos[j]) || isNaN(prevLinePos[j + 1])) {
+                            hole.push(j / 2 + offset + 1);
+                            last = j + 2;
+                        }
+                    }
+
+                    pos = pos.concat(prevLinePos);
+                    fillOptions.hole = hole;
                 }
 
                 fillOptions.opacity = trace.opacity;
