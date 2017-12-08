@@ -949,6 +949,7 @@ describe('Test gl2d plots', function() {
         Plotly.plot(gd, _mock)
         .then(delay(20))
         .then(function() {
+        // TODO this fails to remove marker points
             return Plotly.restyle(gd, 'visible', 'legendonly');
         })
         .then(function() {
@@ -969,6 +970,30 @@ describe('Test gl2d plots', function() {
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
         })
+        .then(done);
+    });
+
+    it('should be able to toggle from svg to gl', function(done) {
+        Plotly.plot(gd, [{
+            y: [1, 2, 1],
+        }])
+        .then(function() {
+            expect(countCanvases()).toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+
+            return Plotly.restyle(gd, 'type', 'scattergl');
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(3);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+
+            return Plotly.restyle(gd, 'type', 'scatter');
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+        })
+        .catch(fail)
         .then(done);
     });
 

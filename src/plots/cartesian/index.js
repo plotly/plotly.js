@@ -149,14 +149,14 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
 
     for(i = 0; i < oldModules.length; i++) {
-        if(oldModules[i].name === 'scatter' || oldModules[i].name === 'scattergl') {
+        if(oldModules[i].name === 'scatter') {
             hadScatter = true;
             break;
         }
     }
 
     for(i = 0; i < newModules.length; i++) {
-        if(newModules[i].name === 'scatter' || newModules[i].name === 'scattergl') {
+        if(newModules[i].name === 'scatter') {
             hasScatter = true;
             break;
         }
