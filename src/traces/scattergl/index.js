@@ -73,7 +73,7 @@ ScatterGl.calc = function calc(container, trace) {
     // makeCalcdata runs d2c (data-to-coordinate) on every point
     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
-    var count = x.length, i, l, xx, yy, ptrX = 0, ptrY = 0;
+    var count = (x || y).length, i, l, xx, yy, ptrX = 0, ptrY = 0;
 
     if(!x) {
         x = Array(count);
