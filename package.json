@@ -108,7 +108,6 @@
     "world-calendars": "^1.0.3"
   },
   "devDependencies": {
-    "add-stream": "^1.0.0",
     "brfs": "^1.4.3",
     "browserify": "^14.1.0",
     "browserify-transform-tools": "^1.7.0",

@@ -3,12 +3,13 @@ var path = require('path');
 
 var minify = require('minify-stream');
 var intoStream = require('into-stream');
-var addStream = require('add-stream');
 
 var constants = require('./constants');
 
 var prefix = 'Plotly.register(';
 var suffix = ');';
+
+var moduleMarker = 'module.exports = ';
 
 /** Wrap a locale json file into a standalone js file
  *
@@ -18,14 +19,19 @@ var suffix = ');';
  * Logs basename of bundle when completed.
  */
 module.exports = function wrap_locale(pathToInput, pathToOutput) {
-    intoStream(prefix)
-        .pipe(addStream(fs.createReadStream(pathToInput)))
-        .pipe(addStream(intoStream(suffix)))
-        .pipe(minify(constants.uglifyOptions))
-        .pipe(fs.createWriteStream(pathToOutput))
-        .on('finish', function() {
-            logger(pathToOutput);
-        });
+    fs.readFile(pathToInput, 'utf8', function(err, data) {
+        var moduleStart = data.indexOf(moduleMarker) + moduleMarker.length;
+        var moduleEnd = data.indexOf(';', moduleStart);
+
+        var rawOut = prefix + data.substr(moduleStart, moduleEnd - moduleStart) + suffix;
+
+        intoStream(rawOut)
+            .pipe(minify(constants.uglifyOptions))
+            .pipe(fs.createWriteStream(pathToOutput))
+            .on('finish', function() {
+                logger(pathToOutput);
+            });
+    });
 };
 
 function logger(pathToOutput) {
