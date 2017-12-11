@@ -34,3 +34,11 @@ describe('Test scatterpolar trace defaults:', function() {
 describe('Test scatterpolar calc:', function() {
 
 });
+
+describe('Test scatterpolar hover:', function() {
+    // gd;
+
+    it('', function() {
+
+    });
+});

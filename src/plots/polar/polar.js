@@ -435,6 +435,17 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     .call(Color.stroke, angularLayout.linecolor);
 };
 
+proto.isPtWithinSector = function() {
+    var sector = this.sector;
+
+    if(isFullCircle(sector)) return true;
+
+    // check out https://stackoverflow.com/a/13675772/4068492
+    // for possible solution
+    // var deg = wrap360(rad2deg(d.rad));
+    return true;
+};
+
 function setScale(ax, axLayout, fullLayout) {
     Axes.setConvert(ax, fullLayout);
 

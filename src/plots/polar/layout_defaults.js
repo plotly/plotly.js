@@ -221,6 +221,9 @@ function setConvertAngular(ax) {
     // angularaxis 'position' and/or 'direction'
     ax.unTransformRad = unTransformRad;
 
+    // this version is used on hover
+    ax._c2rad = _c2rad;
+
     ax.c2rad = function(v, unit) { return transformRad(_c2rad(v, unit)); };
     ax.rad2c = function(v, unit) { return _rad2c(unTransformRad(v), unit); };
 
