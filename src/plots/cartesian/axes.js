@@ -1905,7 +1905,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     var axLetter = axid.charAt(0),
         counterLetter = axes.counterLetter(axid),
         vals = axes.calcTicks(ax),
-        datafn = function(d) { return [d.text, d.x, ax.mirror].join('_'); },
+        datafn = function(d) { return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_'); },
         tcls = axid + 'tick',
         gcls = axid + 'grid',
         zcls = axid + 'zl',
@@ -2395,6 +2395,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         grid.attr('transform', transfn)
             .call(Color.stroke, ax.gridcolor || '#ddd')
             .style('stroke-width', gridWidth + 'px');
+        if(typeof gridpath === 'function') grid.attr('d', gridpath);
         grid.exit().remove();
 
         // zero line
