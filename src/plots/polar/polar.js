@@ -452,6 +452,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 proto.updateFx = function(fullLayout, polarLayout) {
     if(!this.gd._context.staticPlot) {
         this.updateMainDrag(fullLayout, polarLayout);
+        this.updateRadialDrag(fullLayout, polarLayout);
     }
 };
 
@@ -626,6 +627,58 @@ proto.updateMainDrag = function(fullLayout) {
     if(gd._context.scaleZoom) {
         dragBox.attachWheelEventHandler(mainDrag, zoomWheel);
     }
+
+    dragElement.init(dragOpts);
+};
+
+proto.updateRadialDrag = function(fullLayout, polarLayout) {
+    var _this = this;
+    var gd = _this.gd;
+    var layers = _this.layers;
+    var radius = _this.radius;
+    var cx = _this.cx;
+    var cy = _this.cy;
+    var angle0 = deg2rad(polarLayout.radialaxis.position);
+    var bl = 50;
+    var bl2 = bl / 2;
+    var radialDrag = dragBox.makeDragger(layers, 'radialdrag', 'move', -bl2, -bl2, bl, bl);
+    var radialDrag3 = d3.select(radialDrag);
+    var dragOpts = {element: radialDrag, gd: gd};
+
+    radialDrag3.attr('transform', strTranslate(
+        cx + (radius + bl2) * Math.cos(angle0),
+        cy - (radius + bl2) * Math.sin(angle0)
+    ));
+
+    var x0, y0, angle1;
+
+    function rotatePrep(evt, startX, startY) {
+        x0 = startX;
+        y0 = startY;
+    }
+
+    function rotateMove(dx, dy) {
+        var x1 = x0 + dx;
+        var y1 = y0 + dy;
+        var ax = x1 - cx - bl;
+        var ay = cy - y1 + bl;
+
+        angle1 = rad2deg(Math.atan2(ay, ax));
+
+        var transform = strTranslate(cx, cy) + strRotate(-angle1);
+        layers.radialaxis.attr('transform', transform);
+        layers.radialline.attr('transform', transform);
+    }
+
+    function rotateDone() {
+        Plotly.relayout(gd, _this.id + '.radialaxis.position', angle1);
+    }
+
+    dragOpts.prepFn = function(evt, startX, startY) {
+        rotatePrep(evt, startX, startY);
+        dragOpts.moveFn = rotateMove;
+        dragOpts.doneFn = rotateDone;
+    };
 
     dragElement.init(dragOpts);
 };
