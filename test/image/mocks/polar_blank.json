@@ -1,0 +1,25 @@
+{
+  "data": [{
+    "type": "scatterpolar",
+    "r": [0],
+    "theta": [0]
+  }],
+  "layout": {
+    "polar": {
+      "angularaxis": {
+        "showline": true,
+        "showgrid": false,
+        "showticklabels": false,
+        "ticks": ""
+      },
+      "radialaxis": {
+        "showline": false,
+        "showgrid": false,
+        "showticklabels": false,
+        "ticks": ""
+      }
+    },
+    "width": 600,
+    "height": 500
+  }
+}
