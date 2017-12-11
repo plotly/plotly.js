@@ -2865,6 +2865,9 @@ function makePlotFramework(gd) {
     // single cartesian layer for the whole plot
     fullLayout._cartesianlayer = fullLayout._paper.append('g').classed('cartesianlayer', true);
 
+    // single polar layer for the whole plot
+    fullLayout._polarlayer = fullLayout._paper.append('g').classed('polarlayer', true);
+
     // single ternary layer for the whole plot
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
 

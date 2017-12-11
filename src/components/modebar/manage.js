@@ -81,6 +81,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var hasGL2D = fullLayout._has('gl2d');
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
+    var hasPolar = fullLayout._has('polar');
 
     var groups = [];
 
@@ -115,7 +116,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var allAxesFixed = areAllAxesFixed(fullLayout),
         dragModeGroup = [];
 
-    if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
+    if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary || hasPolar) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     }
     if(hasMapbox || hasGeo) {
