@@ -123,6 +123,9 @@ proto.createButton = function(config) {
 
     var title = config.title;
     if(title === undefined) title = config.name;
+    // for localization: allow title to be a callable that takes gd as arg
+    else if(typeof title === 'function') title = title(this.graphInfo);
+
     if(title || title === 0) button.setAttribute('data-title', title);
 
     if(config.attr !== undefined) button.setAttribute('data-attr', config.attr);
@@ -250,7 +253,7 @@ proto.getLogo = function() {
 
     a.href = 'https://plot.ly/';
     a.target = '_blank';
-    a.setAttribute('data-title', 'Produced with Plotly');
+    a.setAttribute('data-title', Lib._(this.graphInfo, 'Produced with Plotly'));
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
     a.appendChild(this.createIcon(Icons.plotlylogo));

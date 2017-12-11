@@ -1,9 +1,9 @@
 var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('Fx defaults', function() {
     'use strict';
@@ -14,7 +14,7 @@ describe('Fx defaults', function() {
             layout: layout || {}
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
 
         return {
             data: gd._fullData,

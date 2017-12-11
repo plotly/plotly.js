@@ -519,7 +519,7 @@ describe('component bindings', function() {
 
     it('logs a warning if unable to create an observer', function() {
         var warnings = 0;
-        spyOn(Lib, 'warn').and.callFake(function() {
+        spyOn(Lib, 'log').and.callFake(function() {
             warnings++;
         });
 

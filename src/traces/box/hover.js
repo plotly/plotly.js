@@ -138,15 +138,12 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     // box plots: each "point" gets many labels
     var usedVals = {};
     var attrs = ['med', 'min', 'q1', 'q3', 'max'];
-    var prefixes = ['median', 'min', 'q1', 'q3', 'max'];
 
     if(trace.boxmean || (trace.meanline || {}).visible) {
         attrs.push('mean');
-        prefixes.push(trace.boxmean === 'sd' ? 'mean ± σ' : 'mean');
     }
     if(trace.boxpoints || trace.points) {
         attrs.push('lf', 'uf');
-        prefixes.push('lower fence', 'upper fence');
     }
 
     for(var i = 0; i < attrs.length; i++) {
@@ -162,7 +159,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
         pointData2[vLetter + '0'] = pointData2[vLetter + '1'] = valPx;
         pointData2[vLetter + 'LabelVal'] = val;
-        pointData2[vLetter + 'Label'] = prefixes[i] + ': ' + Axes.hoverLabelText(vAxis, val);
+        pointData2[vLetter + 'Label'] = t.labels[attr] + ' ' + Axes.hoverLabelText(vAxis, val);
 
         if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
             pointData2[vLetter + 'err'] = di.sd;

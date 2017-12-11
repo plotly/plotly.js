@@ -177,7 +177,6 @@ module.exports = overrideAll({
     title: {
         valType: 'string',
         role: 'info',
-        dflt: 'Click to enter colorscale title',
         description: 'Sets the title of the color bar.'
     },
     titlefont: fontAttrs({

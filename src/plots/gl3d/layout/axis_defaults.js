@@ -44,14 +44,16 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
         handleAxisDefaults(
             containerIn,
             containerOut,
-            coerce, {
+            coerce,
+            {
                 font: options.font,
                 letter: axName[0],
                 data: options.data,
                 showGrid: true,
                 bgColor: options.bgColor,
                 calendar: options.calendar
-            });
+            },
+            options.fullLayout);
 
         coerce('gridcolor', colorMix(containerOut.color, options.bgColor, gridLightness).toRgbString());
         coerce('title', axName[0]);  // shouldn't this be on-par with 2D?

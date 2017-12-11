@@ -28,6 +28,7 @@ exports.componentsRegistry = {};
 exports.layoutArrayContainers = [];
 exports.layoutArrayRegexes = [];
 exports.traceLayoutAttributes = {};
+exports.localeRegistry = {};
 
 /**
  * register a module as the handler for a trace type
@@ -311,3 +312,39 @@ function getTraceType(traceType) {
     if(typeof traceType === 'object') traceType = traceType.type;
     return traceType;
 }
+
+/**
+ * Register a new locale dictionary
+ *
+ * @param {object} module
+ * @param {string} moduleType
+ *  should be 'locale' so that Plotly.register will forward to this function
+ * @param {string} module.name
+ *  the locale name. Should be a 2-digit language string ('en', 'de')
+ *  optionally with a country/region code ('en-GB', 'de-CH'). If a country
+ *  code is used but the base language locale has not yet been supplied,
+ *  we will use this locale for the base as well.
+ * @param {object} module.dictionary
+ *  the dictionary mapping input strings to localized strings
+ *  generally the keys should be the literal input strings, but
+ *  if default translations are provided you can use any string as a key.
+ */
+exports.registerLocale = function(_module) {
+    var locale = _module.name;
+    var baseLocale = locale.split('-')[0];
+
+    var newDict = _module.dictionary;
+
+    var locales = exports.localeRegistry;
+
+    // Should we use this dict for the base locale?
+    // In case we're overwriting a previous dict for this locale, check
+    // whether the base matches the full locale dict now. If we're not
+    // overwriting, locales[locale] is undefined so this just checks if
+    // baseLocale already had a dict or not.
+    if(baseLocale !== locale && locales[baseLocale] === locales[locale]) {
+        locales[baseLocale] = newDict;
+    }
+
+    locales[locale] = newDict;
+};

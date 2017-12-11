@@ -1,5 +1,4 @@
 var Plotly = require('@lib');
-var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var constants = require('@src/plots/mapbox/constants');
@@ -10,6 +9,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -180,7 +180,7 @@ describe('mapbox defaults', function() {
             layout: {}
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         expect(gd._fullLayout.dragmode).toBe('pan');
     });
 });

@@ -6,8 +6,14 @@ var modeBarButtons = require('../../../src/components/modebar/buttons');
 module.exports = function selectButton(modeBar, name) {
     var button = {};
 
+    var title = modeBarButtons[name].title;
+
+    if(typeof title === 'function') {
+        title = title(modeBar.graphInfo);
+    }
+
     var node = button.node = d3.select(modeBar.element)
-        .select('[data-title="' + modeBarButtons[name].title + '"]')
+        .select('[data-title="' + title + '"]')
         .node();
 
     button.click = function() {

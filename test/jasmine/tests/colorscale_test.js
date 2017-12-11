@@ -195,7 +195,8 @@ describe('Test colorscale:', function() {
     describe('handleDefaults (heatmap-like version)', function() {
         var handleDefaults = Colorscale.handleDefaults,
             layout = {
-                font: Plots.layoutAttributes.font
+                font: Plots.layoutAttributes.font,
+                _dfltTitle: {colorbar: 'cb'}
             },
             opts = {prefix: '', cLetter: 'z'};
         var traceIn, traceOut;
@@ -265,7 +266,8 @@ describe('Test colorscale:', function() {
     describe('handleDefaults (scatter-like version)', function() {
         var handleDefaults = Colorscale.handleDefaults,
             layout = {
-                font: Plots.layoutAttributes.font
+                font: Plots.layoutAttributes.font,
+                _dfltTitle: {colorbar: 'cb'}
             },
             opts = {prefix: 'marker.', cLetter: 'c'};
         var traceIn, traceOut;

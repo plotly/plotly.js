@@ -13,6 +13,7 @@
 var Lib = require('../lib');
 var Plots = require('../plots/plots');
 var PlotSchema = require('./plot_schema');
+var dfltConfig = require('./plot_config');
 
 var isPlainObject = Lib.isPlainObject;
 var isArray = Array.isArray;
@@ -40,9 +41,9 @@ var isArray = Array.isArray;
  *      error message (shown in console in logger config argument is enable)
  */
 module.exports = function valiate(data, layout) {
-    var schema = PlotSchema.get(),
-        errorList = [],
-        gd = {};
+    var schema = PlotSchema.get();
+    var errorList = [];
+    var gd = {_context: Lib.extendFlat({}, dfltConfig)};
 
     var dataIn, layoutIn;
 

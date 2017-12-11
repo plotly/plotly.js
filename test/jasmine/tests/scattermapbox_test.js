@@ -8,6 +8,7 @@ var convert = require('@src/traces/scattermapbox/convert');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
@@ -112,7 +113,7 @@ describe('scattermapbox convert', function() {
 
     function _convert(trace) {
         var gd = { data: [trace] };
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
 
         var fullTrace = gd._fullData[0];
         Plots.doCalcdata(gd, fullTrace);

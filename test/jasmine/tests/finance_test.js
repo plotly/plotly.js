@@ -5,6 +5,7 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var mock0 = {
     open: [33.01, 33.31, 33.50, 32.06, 34.12, 33.05, 33.31, 33.50],
@@ -29,7 +30,7 @@ describe('finance charts defaults:', function() {
             layout: layout
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
 
         return gd;
     }
@@ -389,7 +390,7 @@ describe('finance charts calc transforms:', function() {
             layout: layout || {}
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         Plots.doCalcdata(gd);
 
         return gd.calcdata.map(calcDatatoTrace);
@@ -474,10 +475,10 @@ describe('finance charts calc transforms:', function() {
 
         expect(out[0].hoverinfo).toEqual('x+text+name');
         expect(out[0].text[0])
-            .toEqual('Open: 33.01<br>High: 34.2<br>Low: 31.7<br>Close: 34.1<br>A');
+            .toEqual('open: 33.01<br>high: 34.2<br>low: 31.7<br>close: 34.1<br>A');
         expect(out[0].hoverinfo).toEqual('x+text+name');
         expect(out[1].text[0])
-            .toEqual('Open: 33.31<br>High: 34.37<br>Low: 30.75<br>Close: 31.93<br>B');
+            .toEqual('open: 33.31<br>high: 34.37<br>low: 30.75<br>close: 31.93<br>B');
 
         expect(out[2].hoverinfo).toEqual('x+text');
         expect(out[2].text[0]).toEqual('IMPORTANT');
@@ -487,10 +488,10 @@ describe('finance charts calc transforms:', function() {
 
         expect(out[4].hoverinfo).toEqual('text');
         expect(out[4].text[0])
-            .toEqual('Open: 33.01<br>High: 34.2<br>Low: 31.7<br>Close: 34.1');
+            .toEqual('open: 33.01<br>high: 34.2<br>low: 31.7<br>close: 34.1');
         expect(out[5].hoverinfo).toEqual('text');
         expect(out[5].text[0])
-            .toEqual('Open: 33.31<br>High: 34.37<br>Low: 30.75<br>Close: 31.93');
+            .toEqual('open: 33.31<br>high: 34.37<br>low: 30.75<br>close: 31.93');
 
         expect(out[6].hoverinfo).toEqual('x');
         expect(out[6].text[0]).toEqual('');

@@ -1,16 +1,22 @@
 var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
-var supplyDefaults = require('@src/traces/histogram2d/defaults');
+var supplyDefaultsRaw = require('@src/traces/histogram2d/defaults');
 var calc = require('@src/traces/histogram2d/calc');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('Test histogram2d', function() {
     'use strict';
+
+    function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+        layout._dfltTitle = {colorbar: 'cb'};
+
+        return supplyDefaultsRaw(traceIn, traceOut, defaultColor, layout);
+    }
 
     describe('supplyDefaults', function() {
         var traceIn,
@@ -115,7 +121,7 @@ describe('Test histogram2d', function() {
                 trace = Lib.extendFlat({}, base, opts),
                 gd = { data: [trace] };
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
             var fullTrace = gd._fullData[0];
 
             var out = calc(gd, fullTrace);

@@ -42,6 +42,7 @@ module.exports = {
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
 
     pathToSchema: path.join(pathToDist, 'plot-schema.json'),
+    pathToTranslationKeys: path.join(pathToDist, 'translation-keys.txt'),
 
     partialBundleNames: partialBundleNames,
     partialBundlePaths: partialBundlePaths,
