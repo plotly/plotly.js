@@ -1,5 +1,55 @@
+var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Polar = require('@src/plots/polar');
+
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
+
+describe('Test legacy polar plots logs:', function() {
+    var gd;
+
+    beforeEach(function() {
+        spyOn(Lib, 'warn');
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    var specs = [{
+        name: 'legacy polar scatter traces',
+        data: [{
+            r: [1, 2, 3],
+            t: [1, 2, 3]
+        }]
+    }, {
+        name: 'legacy polar bar traces',
+        data: [{
+            type: 'bar',
+            r: [1, 2, 3],
+            t: [1, 2, 3]
+        }]
+    }, {
+        name: 'legacy area traces',
+        data: [{
+            type: 'area',
+            r: [1, 2, 3],
+            t: [1, 2, 3]
+        }]
+    }];
+
+    specs.forEach(function(s) {
+        it('should log deprecation warning on ' + s.name, function(done) {
+            Plotly.plot(gd, s.data)
+            .then(function() {
+                expect(Lib.warn).toHaveBeenCalledTimes(1);
+                expect(Lib.warn).toHaveBeenCalledWith('Legacy polar charts are deprecated!');
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
+});
 
 describe('Test polar plots defaults:', function() {
     var layoutOut;

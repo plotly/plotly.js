@@ -464,25 +464,6 @@ describe('Test plot structure', function() {
             });
         });
     });
-
-    describe('polar plots', function() {
-        var mock = require('@mocks/polar_scatter.json');
-
-        beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
-        });
-
-        it('has as many *mark dot* nodes as there are points', function() {
-            var nodes = d3.selectAll('path.mark.dot');
-
-            var Npts = 0;
-            mock.data.forEach(function(trace) {
-                Npts += trace.r.length;
-            });
-
-            expect(nodes.size()).toEqual(Npts);
-        });
-    });
 });
 
 describe('plot svg clip paths', function() {
