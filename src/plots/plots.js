@@ -2226,6 +2226,16 @@ plots.doCalcdata = function(gd, traces) {
         trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
     }
 
+    // TODO maybe move this to Axes.list ??
+    // or better yet, make a more general Axes.list
+    var polarIds = plots.getSubplotIds(fullLayout, 'polar');
+    for(i = 0; i < polarIds.length; i++) {
+        axList.push(
+            fullLayout[polarIds[i]].radialaxis,
+            fullLayout[polarIds[i]].angularaxis
+        );
+    }
+
     initCategories(axList);
 
     var hasCalcTransform = false;
