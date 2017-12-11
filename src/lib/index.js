@@ -77,6 +77,11 @@ lib.rotationXYMatrix = matrixModule.rotationXYMatrix;
 lib.apply2DTransform = matrixModule.apply2DTransform;
 lib.apply2DTransform2 = matrixModule.apply2DTransform2;
 
+var anglesModule = require('./angles');
+lib.deg2rad = anglesModule.deg2rad;
+lib.rad2deg = anglesModule.rad2deg;
+lib.wrap360 = anglesModule.wrap360;
+
 var geom2dModule = require('./geometry2d');
 lib.segmentsIntersect = geom2dModule.segmentsIntersect;
 lib.segmentDistance = geom2dModule.segmentDistance;
