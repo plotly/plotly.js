@@ -9,12 +9,18 @@
 'use strict';
 
 var d3 = require('d3');
+var tinycolor = require('tinycolor2');
 
+var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
+var dragElement = require('../../components/dragelement');
+var dragBox = require('../cartesian/dragbox');
+var Fx = require('../../components/fx');
+var prepSelect = require('../cartesian/select');
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 
@@ -23,6 +29,7 @@ var rad2deg = Lib.rad2deg;
 var wrap360 = Lib.wrap360;
 
 var constants = require('./constants');
+var MINDRAG = constants.MINDRAG;
 var axisNames = constants.axisNames;
 
 function Polar(gd, id) {
@@ -36,6 +43,7 @@ function Polar(gd, id) {
     this.clipIds = {};
 
     var fullLayout = gd._fullLayout;
+    var polarLayout = fullLayout[id];
     var clipIdBase = 'clip' + fullLayout._uid + id;
 
     this.clipIds.circle = clipIdBase + '-circle';
@@ -45,6 +53,12 @@ function Polar(gd, id) {
 
     this.framework = fullLayout._polarlayer.append('g')
         .attr('class', id);
+
+    this.viewInitial = {
+        x: polarLayout.x,
+        y: polarLayout.y,
+        zoom: polarLayout.zoom
+    };
 }
 
 var proto = Polar.prototype;
@@ -433,6 +447,187 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     })
     .attr('stroke-width', angularLayout.linewidth)
     .call(Color.stroke, angularLayout.linecolor);
+};
+
+proto.updateFx = function(fullLayout, polarLayout) {
+    if(!this.gd._context.staticPlot) {
+        this.updateMainDrag(fullLayout, polarLayout);
+    }
+};
+
+proto.updateMainDrag = function(fullLayout) {
+    var _this = this;
+    var gd = _this.gd;
+    var layers = _this.layers;
+    var zoomlayer = fullLayout._zoomlayer;
+
+    var mainDrag = dragBox.makeDragger(
+        layers, 'maindrag', 'crosshair',
+        _this.xOffset2, _this.yOffset2, _this.xLength2, _this.yLength2
+    );
+
+    var dragOpts = {
+        element: mainDrag,
+        gd: gd,
+        subplot: _this.id,
+        plotinfo: {
+            xaxis: _this.xaxis,
+            yaxis: _this.yaxis
+        },
+        xaxes: [_this.xaxis],
+        yaxes: [_this.yaxis]
+    };
+
+    // use layout domain and offsets to shadow full subplot domain on 'zoom'
+    var pw = _this.xLength;
+    var ph = _this.yLength;
+    var xs = _this.xOffset;
+    var ys = _this.yOffset;
+    var x0, y0;
+    var box, path0, dimmed, lum;
+    var zb, corners;
+
+    function zoomPrep(evt, startX, startY) {
+        var bbox = mainDrag.getBoundingClientRect();
+        var polarLayoutNow = gd._fullLayout[_this.id];
+        x0 = startX - bbox.left;
+        y0 = startY - bbox.top;
+        box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
+        lum = tinycolor(polarLayoutNow.bgcolor).getLuminance();
+        path0 = 'M0,0H' + pw + 'V' + ph + 'H0V0';
+        dimmed = false;
+
+        zb = dragBox.makeZoombox(zoomlayer, lum, xs, ys, path0);
+        corners = dragBox.makeCorners(zoomlayer, xs, ys);
+        dragBox.clearSelect(zoomlayer);
+    }
+
+    function zoomMove(dx0, dy0) {
+        var x1 = Math.max(0, Math.min(pw, dx0 + x0));
+        var y1 = Math.max(0, Math.min(ph, dy0 + y0));
+        var dx = Math.abs(x1 - x0);
+        var dy = Math.abs(y1 - y0);
+
+        box.w = box.h = Math.max(dx, dy);
+        var delta = box.w / 2;
+
+        if(dx > dy) {
+            box.l = Math.min(x0, x1);
+            box.r = Math.max(x0, x1);
+            box.t = Math.min(y0, y1) - delta;
+            box.b = Math.min(y0, y1) + delta;
+        } else {
+            box.t = Math.min(y0, y1);
+            box.b = Math.max(y0, y1);
+            box.l = Math.min(x0, x1) - delta;
+            box.r = Math.max(x0, x1) + delta;
+        }
+
+        dragBox.updateZoombox(zb, corners, box, path0, dimmed, lum);
+        corners.attr('d', dragBox.xyCorners(box));
+        dimmed = true;
+    }
+
+    function zoomDone(dragged, numClicks) {
+        if(Math.min(box.h, box.w) < MINDRAG * 2) {
+            if(numClicks === 2) doubleClick();
+            return dragBox.removeZoombox(gd);
+        }
+
+        dragBox.removeZoombox(gd);
+
+        // var updateObj = {};
+        // var polarUpdateObj = updateObj[_this.id] = {};
+        // Plotly.relayout(gd, polarUpdateObj);
+    }
+
+    function panMove(dx, dy) {
+        var vb = [dx, dy, pw - dx, ph - dy];
+        updateByViewBox(vb);
+    }
+
+    function panDone(dragged, numClicks) {
+        if(dragged) {
+            updateByViewBox([0, 0, pw, ph]);
+        } else if(numClicks === 2) {
+            doubleClick();
+        }
+    }
+
+    function zoomWheel() {
+        // TODO
+    }
+
+    function updateByViewBox(vb) {
+        var ax = _this.xaxis;
+        var xScaleFactor = vb[2] / ax._length;
+        var yScaleFactor = vb[3] / ax._length;
+        var clipDx = vb[0];
+        var clipDy = vb[1];
+
+        var plotDx = ax._offset - clipDx / xScaleFactor;
+        var plotDy = ax._offset - clipDy / yScaleFactor;
+
+        _this.framework
+            .call(Drawing.setTranslate, -plotDx, -plotDy);
+            // .call(Drawing.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
+
+        // maybe cache this at the plot step
+        var traceGroups = _this.framework.selectAll('.trace');
+
+        traceGroups.selectAll('.point')
+            .call(Drawing.setPointGroupScale, xScaleFactor, yScaleFactor);
+        traceGroups.selectAll('.textpoint')
+            .call(Drawing.setTextPointsScale, xScaleFactor, yScaleFactor);
+        traceGroups
+            .call(Drawing.hideOutsideRangePoints, _this);
+    }
+
+    function doubleClick() {
+        gd.emit('plotly_doubleclick', null);
+        // Plotly.relayout(gd, Lib.extendFlat({}, _this.viewInitial));
+    }
+
+    dragOpts.prepFn = function(evt, startX, startY) {
+        var dragModeNow = gd._fullLayout.dragmode;
+
+        switch(dragModeNow) {
+            case 'zoom':
+                dragOpts.moveFn = zoomMove;
+                dragOpts.doneFn = zoomDone;
+                zoomPrep(evt, startX, startY);
+                break;
+            case 'pan':
+                dragOpts.moveFn = panMove;
+                dragOpts.doneFn = panDone;
+                break;
+            case 'select':
+            case 'lasso':
+                prepSelect(evt, startX, startY, dragOpts, dragModeNow);
+                break;
+        }
+    };
+
+    mainDrag.onmousemove = function(evt) {
+        Fx.hover(gd, evt, _this.id);
+        gd._fullLayout._lasthover = mainDrag;
+        gd._fullLayout._hoversubplot = _this.id;
+    };
+
+    mainDrag.onmouseout = function(evt) {
+        if(gd._dragging) return;
+        dragElement.unhover(gd, evt);
+    };
+
+    mainDrag.onclick = function(evt) {
+        Fx.click(gd, evt, _this.id);
+    };
+
+    if(gd._context.scaleZoom) {
+        dragBox.attachWheelEventHandler(mainDrag, zoomWheel);
+    }
+
+    dragElement.init(dragOpts);
 };
 
 proto.isPtWithinSector = function() {

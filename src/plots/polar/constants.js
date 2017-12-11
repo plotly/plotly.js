@@ -25,4 +25,7 @@ module.exports = {
         'lines',
         'frontplot'
     ],
+
+    MINDRAG: 8,
+    MINZOOM: 20,
 };
