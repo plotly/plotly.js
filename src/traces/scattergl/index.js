@@ -66,14 +66,13 @@ ScatterGl.calc = function calc(container, trace) {
     var stash = {};
     var xaxis = Axes.getFromId(container, trace.xaxis);
     var yaxis = Axes.getFromId(container, trace.yaxis);
-    var markerOpts = trace.marker;
 
-    // FIXME: is it the best way to obtain subplot object from trace
     var subplot = layout._plots[trace.xaxis + trace.yaxis];
-    // makeCalcdata runs d2c (data-to-coordinate) on every point
+
     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
-    var count = (x || y).length, i, l, xx, yy, ptrX = 0, ptrY = 0;
+
+    var count = (x || y).length, i, l, xx, yy;
 
     if(!x) {
         x = Array(count);
@@ -87,10 +86,6 @@ ScatterGl.calc = function calc(container, trace) {
             y[i] = i;
         }
     }
-
-    var lineOptions, markerOptions, errorXOptions, errorYOptions, fillOptions, selectedOptions, unselectedOptions;
-    var hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
-    var linePositions;
 
     // get log converted positions
     var rawx, rawy;
@@ -134,8 +129,6 @@ ScatterGl.calc = function calc(container, trace) {
         positions[i * 2 + 1] = yy;
     }
 
-    calcColorscales(trace);
-
     // we don't build a tree for log axes since it takes long to convert log2px
     // and it is also
     if(xaxis.type !== 'log' && yaxis.type !== 'log') {
@@ -149,6 +142,99 @@ ScatterGl.calc = function calc(container, trace) {
         }
     }
 
+
+    calcColorscales(trace);
+
+    var options = ScatterGl.sceneOptions(container, subplot, trace, positions);
+
+    // expanding axes is separate from options
+    if(!options.markers) {
+        Axes.expand(xaxis, rawx, { padded: true });
+        Axes.expand(yaxis, rawy, { padded: true });
+    }
+    else if(Array.isArray(options.markers.sizes)) {
+        var sizes = options.markers.sizes;
+        Axes.expand(xaxis, rawx, { padded: true, ppad: sizes });
+        Axes.expand(yaxis, rawy, { padded: true, ppad: sizes });
+    }
+    else {
+        var xbounds = [Infinity, -Infinity], ybounds = [Infinity, -Infinity];
+        var size = options.markers.size;
+
+        // axes bounds
+        for(i = 0; i < count; i++) {
+            xx = x[i], yy = y[i];
+            if(xbounds[0] > xx) xbounds[0] = xx;
+            if(xbounds[1] < xx) xbounds[1] = xx;
+            if(ybounds[0] > yy) ybounds[0] = yy;
+            if(ybounds[1] < yy) ybounds[1] = yy;
+        }
+
+        // FIXME: is there a better way to separate expansion?
+        if(count < TOO_MANY_POINTS) {
+            Axes.expand(xaxis, rawx, { padded: true, ppad: size });
+            Axes.expand(yaxis, rawy, { padded: true, ppad: size });
+        }
+        // update axes fast for big number of points
+        else {
+            if(xaxis._min) {
+                xaxis._min.push({ val: xbounds[0], pad: size });
+            }
+            if(xaxis._max) {
+                xaxis._max.push({ val: xbounds[1], pad: size });
+            }
+
+            if(yaxis._min) {
+                yaxis._min.push({ val: ybounds[0], pad: size });
+            }
+            if(yaxis._max) {
+                yaxis._max.push({ val: ybounds[1], pad: size });
+            }
+        }
+    }
+
+    // create scene
+    var scene = ScatterGl.scene(container, subplot);
+
+    // set flags to create scene renderers
+    if(options.fill && !scene.fill2d) scene.fill2d = true;
+    if(options.marker && !scene.scatter2d) scene.scatter2d = true;
+    if(options.line && !scene.line2d) scene.line2d = true;
+    if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
+
+    // save scene options batch
+    scene.lineOptions.push(options.line);
+    scene.errorXOptions.push(options.errorX);
+    scene.errorYOptions.push(options.errorY);
+    scene.fillOptions.push(options.fill);
+    scene.markerOptions.push(options.marker);
+    scene.selectedOptions.push(options.selected);
+    scene.unselectedOptions.push(options.unselected);
+    scene.count++;
+
+    // stash scene ref
+    stash.scene = scene;
+    stash.index = scene.count - 1;
+    stash.x = x;
+    stash.y = y;
+    stash.rawx = rawx;
+    stash.rawy = rawy;
+    stash.positions = positions;
+    stash.count = count;
+
+    return [{x: false, y: false, t: stash, trace: trace}];
+};
+
+
+// create scene options
+ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positions) {
+    var layout = container._fullLayout;
+    var count = positions.length / 2;
+    var markerOpts = trace.marker;
+    var i, ptrX = 0, ptrY = 0;
+
+    var hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
+
     if(trace.visible !== true) {
         hasLines = false;
         hasErrorX = false;
@@ -157,13 +243,16 @@ ScatterGl.calc = function calc(container, trace) {
         hasFill = false;
     }
     else {
-        hasLines = subTypes.hasLines(trace) && positions.length > 2;
-        hasErrorX = trace.error_x.visible === true;
-        hasErrorY = trace.error_y.visible === true;
+        hasLines = subTypes.hasLines(trace) && positions.length > 1;
+        hasErrorX = trace.error_x && trace.error_x.visible === true;
+        hasErrorY = trace.error_y && trace.error_y.visible === true;
         hasError = hasErrorX || hasErrorY;
         hasMarkers = subTypes.hasMarkers(trace);
         hasFill = !!trace.fill && trace.fill !== 'none';
     }
+
+    var lineOptions, markerOptions, errorXOptions, errorYOptions, fillOptions, selectedOptions, unselectedOptions;
+    var linePositions;
 
     // get error values
     var errorVals = hasError ? ErrorBars.calcFromTrace(trace, layout) : null;
@@ -174,8 +263,8 @@ ScatterGl.calc = function calc(container, trace) {
         var errorsX = new Float64Array(4 * count);
 
         for(i = 0; i < count; ++i) {
-            errorsX[ptrX++] = rawx[i] - errorVals[i].xs || 0;
-            errorsX[ptrX++] = errorVals[i].xh - rawx[i] || 0;
+            errorsX[ptrX++] = positions[i * 2] - errorVals[i].xs || 0;
+            errorsX[ptrX++] = errorVals[i].xh - positions[i * 2] || 0;
             errorsX[ptrX++] = 0;
             errorsX[ptrX++] = 0;
         }
@@ -199,8 +288,8 @@ ScatterGl.calc = function calc(container, trace) {
         for(i = 0; i < count; ++i) {
             errorsY[ptrY++] = 0;
             errorsY[ptrY++] = 0;
-            errorsY[ptrY++] = rawy[i] - errorVals[i].ys || 0;
-            errorsY[ptrY++] = errorVals[i].yh - rawy[i] || 0;
+            errorsY[ptrY++] = positions[i * 2 + 1] - errorVals[i].ys || 0;
+            errorsY[ptrY++] = errorVals[i].yh - positions[i * 2 + 1] || 0;
         }
 
         errorYOptions.positions = positions;
@@ -306,14 +395,9 @@ ScatterGl.calc = function calc(container, trace) {
 
         markerOptions.positions = positions;
     }
-    // expand no-markers axes
-    else {
-        Axes.expand(xaxis, rawx, { padded: true });
-        Axes.expand(yaxis, rawy, { padded: true });
-    }
 
     function makeMarkerOptions(markerOpts) {
-        var markerOptions = {};
+        var markerOptions = {}, i;
 
         // get basic symbol info
         var multiMarker = Array.isArray(markerOpts.symbol);
@@ -385,7 +469,6 @@ ScatterGl.calc = function calc(container, trace) {
 
         // prepare sizes and expand axes
         var multiSize = markerOpts && (Array.isArray(markerOpts.size) || Array.isArray(markerOpts.line.width));
-        var xbounds = [Infinity, -Infinity], ybounds = [Infinity, -Infinity];
         var markerSizeFunc = makeBubbleSizeFn(trace);
         var size, sizes;
 
@@ -417,53 +500,31 @@ ScatterGl.calc = function calc(container, trace) {
                     borderSizes[i] = size;
                 }
             }
-
-            Axes.expand(xaxis, rawx, { padded: true, ppad: sizes });
-            Axes.expand(yaxis, rawy, { padded: true, ppad: sizes });
         }
         else {
             size = markerOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
             markerOptions.borderSizes = markerOpts.line.width * 0.5;
-
-            // axes bounds
-            for(i = 0; i < count; i++) {
-                xx = x[i], yy = y[i];
-                if(xbounds[0] > xx) xbounds[0] = xx;
-                if(xbounds[1] < xx) xbounds[1] = xx;
-                if(ybounds[0] > yy) ybounds[0] = yy;
-                if(ybounds[1] < yy) ybounds[1] = yy;
-            }
-
-            // FIXME: is there a better way to separate expansion?
-            if(count < TOO_MANY_POINTS) {
-                Axes.expand(xaxis, rawx, { padded: true, ppad: size });
-                Axes.expand(yaxis, rawy, { padded: true, ppad: size });
-            }
-            // update axes fast for big number of points
-            else {
-                var pad = markerOptions.size;
-                if(xaxis._min) {
-                    xaxis._min.push({ val: xbounds[0], pad: pad });
-                }
-                if(xaxis._max) {
-                    xaxis._max.push({ val: xbounds[1], pad: pad });
-                }
-
-                if(yaxis._min) {
-                    yaxis._min.push({ val: ybounds[0], pad: pad });
-                }
-                if(yaxis._max) {
-                    yaxis._max.push({ val: ybounds[1], pad: pad });
-                }
-            }
         }
 
         return markerOptions;
     }
 
+    return {
+        line: lineOptions,
+        marker: markerOptions,
+        errorX: errorXOptions,
+        errorY: errorYOptions,
+        fill: fillOptions,
+        selected: selectedOptions,
+        unselected: unselectedOptions
+    };
+};
 
-    // make sure scene exists
+
+// make sure scene exists on subplot
+ScatterGl.scene = function getScene(container, subplot) {
     var scene = subplot._scene;
+    var layout = container._fullLayout;
 
     if(!subplot._scene) {
         scene = subplot._scene = {
@@ -485,10 +546,10 @@ ScatterGl.calc = function calc(container, trace) {
             unselectBatch: null,
 
             // regl- component stubs, initialized in dirty plot call
-            fill2d: hasFill,
-            scatter2d: hasMarkers,
-            error2d: hasError,
-            line2d: hasLines,
+            fill2d: false,
+            scatter2d: false,
+            error2d: false,
+            line2d: false,
             select2d: null
         };
 
@@ -536,27 +597,31 @@ ScatterGl.calc = function calc(container, trace) {
         scene.clear = function clear() {
             var vpSize = layout._size, width = layout.width, height = layout.height;
             var vp = [
-                vpSize.l + xaxis.domain[0] * vpSize.w,
-                vpSize.b + yaxis.domain[0] * vpSize.h,
-                (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
-                (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
+                vpSize.l,
+                vpSize.b,
+                (width - vpSize.r),
+                (height - vpSize.t)
             ];
 
             var gl, regl;
 
-            regl = scene.select2d.regl;
-            gl = regl._gl;
-            gl.enable(gl.SCISSOR_TEST);
-            gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
-            gl.clearColor(0, 0, 0, 0);
-            gl.clear(gl.COLOR_BUFFER_BIT);
+            if(scene.select2d) {
+                regl = scene.select2d.regl;
+                gl = regl._gl;
+                gl.enable(gl.SCISSOR_TEST);
+                gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
+                gl.clearColor(0, 0, 0, 0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+            }
 
-            regl = scene.scatter2d.regl;
-            gl = regl._gl;
-            gl.enable(gl.SCISSOR_TEST);
-            gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
-            gl.clearColor(0, 0, 0, 0);
-            gl.clear(gl.COLOR_BUFFER_BIT);
+            if(scene.scatter2d) {
+                regl = scene.scatter2d.regl;
+                gl = regl._gl;
+                gl.enable(gl.SCISSOR_TEST);
+                gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
+                gl.clearColor(0, 0, 0, 0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+            }
         };
 
         // remove selection
@@ -590,12 +655,6 @@ ScatterGl.calc = function calc(container, trace) {
             delete subplot._scene;
         };
     }
-    else {
-        if(hasFill && !scene.fill2d) scene.fill2d = true;
-        if(hasMarkers && !scene.scatter2d) scene.scatter2d = true;
-        if(hasLines && !scene.line2d) scene.line2d = true;
-        if(hasError && !scene.error2d) scene.error2d = true;
-    }
 
     // In case if we have scene from the last calc - reset data
     if(!scene.dirty) {
@@ -610,27 +669,7 @@ ScatterGl.calc = function calc(container, trace) {
         scene.errorYOptions = [];
     }
 
-    // save initial batch
-    scene.lineOptions.push(hasLines ? lineOptions : null);
-    scene.errorXOptions.push(hasErrorX ? errorXOptions : null);
-    scene.errorYOptions.push(hasErrorY ? errorYOptions : null);
-    scene.fillOptions.push(hasFill ? fillOptions : null);
-    scene.markerOptions.push(hasMarkers ? markerOptions : null);
-    scene.selectedOptions.push(hasMarkers ? selectedOptions : null);
-    scene.unselectedOptions.push(hasMarkers ? unselectedOptions : null);
-    scene.count++;
-
-    // stash scene ref
-    stash.scene = scene;
-    stash.index = scene.count - 1;
-    stash.x = x;
-    stash.y = y;
-    stash.rawx = rawx;
-    stash.rawy = rawy;
-    stash.positions = positions;
-    stash.count = count;
-
-    return [{x: false, y: false, t: stash, trace: trace}];
+    return scene;
 };
 
 
@@ -669,7 +708,8 @@ function getSymbolSdf(symbol) {
 
 ScatterGl.plot = function plot(container, subplot, cdata) {
     var layout = container._fullLayout;
-    var scene = subplot._scene;
+    var stash = cdata[0][0].t;
+    var scene = stash.scene;
 
     // we may have more subplots than initialized data due to Axes.getSubplots method
     if(!scene) return;
@@ -833,15 +873,16 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
         var stash = cd.t;
         var x = stash.rawx,
             y = stash.rawy;
-        var xaxis = Axes.getFromId(container, trace.xaxis || 'x');
-        var yaxis = Axes.getFromId(container, trace.yaxis || 'y');
+
+        var xaxis = subplot.xaxis || Axes.getFromId(container, trace.xaxis || 'x');
+        var yaxis = subplot.yaxis || Axes.getFromId(container, trace.yaxis || 'y');
         var i;
 
         var range = [
-            xaxis._rl[0],
-            yaxis._rl[0],
-            xaxis._rl[1],
-            yaxis._rl[1]
+            (xaxis._rl || xaxis.range)[0],
+            (yaxis._rl || yaxis.range)[0],
+            (xaxis._rl || xaxis.range)[1],
+            (yaxis._rl || yaxis.range)[1]
         ];
 
         var viewport = [
@@ -866,6 +907,10 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                     scene.unselectBatch = Array(scene.count);
                     scene.scatter2d.update(scene.unselectedOptions);
                 }
+            }
+            else {
+                // update selection positions, since they may have changed by panning or alike
+                scene.select2d.update(scene.selectedOptions);
             }
 
             // form unselected batch
@@ -902,7 +947,7 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
         } : null;
     });
 
-    // uploat batch data to GPU
+    // uploat viewport/range data to GPU
     if(scene.fill2d) {
         scene.fill2d.update(vpRange);
     }
