@@ -34,6 +34,13 @@ module.exports = {
         editType: 'legend',
         description: 'Sets the width (in px) of the border enclosing the legend.'
     },
+    linewidth: {
+        valType: 'number',
+        min: 0,
+        role: 'style',
+        editType: 'legend',
+        description: 'Sets the width (in px) of the legend lines.'
+    },
     font: fontAttrs({
         editType: 'legend',
         description: 'Sets the font used to text the legend items.'

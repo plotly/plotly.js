@@ -78,10 +78,11 @@ module.exports = function style(s, gd) {
 
         var line = d3.select(this).select('.legendlines').selectAll('path')
             .data(showLine ? [d] : []);
+        var lineWidth = gd._fullLayout.legend.linewidth;
         line.enter().append('path').classed('js-line', true)
             .attr('d', 'M5,0h30');
         line.exit().remove();
-        line.call(Drawing.lineGroupStyle);
+        line.call(Drawing.lineGroupStyle, lineWidth);
     }
 
     function stylePoints(d) {

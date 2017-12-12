@@ -61,6 +61,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     coerce('bgcolor', layoutOut.paper_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
+    coerce('linewidth');
     Lib.coerceFont(coerce, 'font', layoutOut.font);
 
     coerce('orientation');
