@@ -55,7 +55,8 @@ function renderBlock(regl, glAes, renderState, blockLineCount, sampleCount, item
         item.offset = sectionVertexCount * blockNumber * blockLineCount;
         item.count = sectionVertexCount * count;
         if(blockNumber === 0) {
-            window.cancelAnimationFrame(renderState.currentRafs[rafKey]); // stop drawing possibly stale glyphs before clearing
+            // stop drawing possibly stale glyphs before clearing
+            window.cancelAnimationFrame(renderState.currentRafs[rafKey]);
             delete renderState.currentRafs[rafKey];
             clear(regl, item.scissorX, item.scissorY, item.scissorWidth, item.viewBoxSize[1]);
         }
@@ -353,6 +354,7 @@ module.exports = function(canvasGL, d, scatter) {
 
             colorClamp: colorClamp,
             scatter: scatter || 0,
+
             scissorX: (I === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
             scissorWidth: (I === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (I === leftmost ? x + overdrag : 0),
             scissorY: y + model.pad.b + model.layoutHeight * domain.y[0],
@@ -431,6 +433,7 @@ module.exports = function(canvasGL, d, scatter) {
     }
 
     function destroy() {
+        canvasGL.style['pointer-events'] = 'none';
         paletteTexture.destroy();
     }
 

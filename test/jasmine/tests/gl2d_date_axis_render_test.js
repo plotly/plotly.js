@@ -31,12 +31,13 @@ describe('date axis', function() {
         expect(gd._fullLayout.xaxis.type).toBe('date');
         expect(gd._fullLayout.yaxis.type).toBe('linear');
         expect(gd._fullData[0].type).toBe('scattergl');
-        expect(gd._fullData[0]._module.basePlotModule.name).toBe('gl2d');
+        expect(gd._fullData[0]._module.basePlotModule.name).toBe('cartesian');
 
-        // one way of check which renderer - fancy vs not - we're using
-        var objs = gd._fullLayout._plots.xy._scene2d.glplot.objects;
-        expect(objs.length).toEqual(2);
-        expect(objs[1].points.length).toEqual(4);
+        // one way of check which renderer - fancy vs not - we're
+        var scene = gd._fullLayout._plots.xy._scene;
+        expect(scene.scatter2d).toBeDefined();
+        expect(scene.markerOptions[0].positions.length).toEqual(4);
+        expect(scene.line2d).not.toBeUndefined();
     });
 
     it('should use the fancy gl-vis/gl-scatter2d once again', function() {
@@ -57,18 +58,18 @@ describe('date axis', function() {
         expect(gd._fullLayout.xaxis.type).toBe('date');
         expect(gd._fullLayout.yaxis.type).toBe('linear');
         expect(gd._fullData[0].type).toBe('scattergl');
-        expect(gd._fullData[0]._module.basePlotModule.name).toBe('gl2d');
+        expect(gd._fullData[0]._module.basePlotModule.name).toBe('cartesian');
 
-        // one way of check which renderer - fancy vs not - we're using
-        var objs = gd._fullLayout._plots.xy._scene2d.glplot.objects;
-        expect(objs.length).toEqual(2);
-        expect(objs[1].points.length).toEqual(4);
+        var scene = gd._fullLayout._plots.xy._scene;
+        expect(scene.scatter2d).toBeDefined();
+        expect(scene.markerOptions[0].positions.length).toEqual(4);
+        expect(scene.line2d).toBeDefined();
     });
 
     it('should now use the non-fancy gl-vis/gl-scatter2d', function() {
         Plotly.plot(gd, [{
             type: 'scattergl',
-            mode: 'markers', // important, as otherwise lines are assumed (which needs fancy)
+            mode: 'markers',
             x: [new Date('2016-10-10'), new Date('2016-10-11')],
             y: [15, 16]
         }]);
@@ -76,17 +77,18 @@ describe('date axis', function() {
         expect(gd._fullLayout.xaxis.type).toBe('date');
         expect(gd._fullLayout.yaxis.type).toBe('linear');
         expect(gd._fullData[0].type).toBe('scattergl');
-        expect(gd._fullData[0]._module.basePlotModule.name).toBe('gl2d');
+        expect(gd._fullData[0]._module.basePlotModule.name).toBe('cartesian');
 
-        var objs = gd._fullLayout._plots.xy._scene2d.glplot.objects;
-        expect(objs.length).toEqual(1);
-        expect(objs[0].pointCount).toEqual(2);
+        var scene = gd._fullLayout._plots.xy._scene;
+        expect(scene.scatter2d).toBeDefined();
+        expect(scene.markerOptions[0].positions.length).toEqual(4);
+        expect(scene.line2d).toBeDefined();
     });
 
     it('should use the non-fancy gl-vis/gl-scatter2d with string dates', function() {
         Plotly.plot(gd, [{
             type: 'scattergl',
-            mode: 'markers', // important, as otherwise lines are assumed (which needs fancy)
+            mode: 'markers',
             x: ['2016-10-10', '2016-10-11'],
             y: [15, 16]
         }]);
@@ -94,10 +96,11 @@ describe('date axis', function() {
         expect(gd._fullLayout.xaxis.type).toBe('date');
         expect(gd._fullLayout.yaxis.type).toBe('linear');
         expect(gd._fullData[0].type).toBe('scattergl');
-        expect(gd._fullData[0]._module.basePlotModule.name).toBe('gl2d');
+        expect(gd._fullData[0]._module.basePlotModule.name).toBe('cartesian');
 
-        var objs = gd._fullLayout._plots.xy._scene2d.glplot.objects;
-        expect(objs.length).toEqual(1);
-        expect(objs[0].pointCount).toEqual(2);
+        var scene = gd._fullLayout._plots.xy._scene;
+        expect(scene.scatter2d).toBeDefined();
+        expect(scene.markerOptions[0].positions.length).toEqual(4);
+        expect(scene.line2d).toBeDefined();
     });
 });

@@ -33,7 +33,6 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 };
 
 exports.toSVG = function(gd) {
-
     var imageRoot = gd._fullLayout._glimages;
     var root = d3.select(gd).selectAll('.svg-container');
     var canvases = root.filter(function(d, i) {return i === root.size() - 1;})
@@ -47,11 +46,11 @@ exports.toSVG = function(gd) {
         image.attr({
             xmlns: xmlnsNamespaces.svg,
             'xlink:href': imageData,
+            preserveAspectRatio: 'none',
             x: 0,
             y: 0,
             width: canvas.width,
-            height: canvas.height,
-            preserveAspectRatio: 'none'
+            height: canvas.height
         });
     }
 
