@@ -64,15 +64,31 @@ ScatterGl.calc = function calc(container, trace) {
     var layout = container._fullLayout;
     var positions;
     var stash = {};
-    var xaxis = Axes.getFromId(container, trace.xaxis);
-    var yaxis = Axes.getFromId(container, trace.yaxis);
+//     var xaxis = Axes.getFromId(container, trace.xaxis);
+//     var yaxis = Axes.getFromId(container, trace.yaxis);
     var markerOpts = trace.marker;
 
+    var xaxis = {
+        type: 'linear'
+    };
+
+    var yaxis = {
+        type: 'linear'
+    };
+
+    // how to get subplot ref for non-cartesian traces!
+    var subplot = layout[trace.subplot];
+
+
     // FIXME: is it the best way to obtain subplot object from trace
-    var subplot = layout._plots[trace.xaxis + trace.yaxis];
+//     var subplot = layout._plots[trace.xaxis + trace.yaxis];
     // makeCalcdata runs d2c (data-to-coordinate) on every point
-    var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
-    var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
+//     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
+//     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
+
+    var x = trace.x;
+    var y = trace.y;
+
     var count = (x || y).length, i, l, xx, yy, ptrX = 0, ptrY = 0;
 
     if(!x) {
