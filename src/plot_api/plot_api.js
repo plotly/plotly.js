@@ -22,7 +22,7 @@ var Queue = require('../lib/queue');
 var Registry = require('../registry');
 var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
-var Polar = require('../plots/polar');
+var Polar = require('../plots/polar/legacy');
 var initInteractions = require('../plots/cartesian/graph_interact');
 
 var Drawing = require('../components/drawing');
@@ -144,8 +144,11 @@ Plotly.plot = function(gd, data, layout, config) {
 
     var fullLayout = gd._fullLayout;
 
-    // Polar plots
-    if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
+    // Legacy polar plots
+    if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
+        Lib.warn('Legacy polar charts are deprecated!');
+        return plotPolar(gd, data, layout);
+    }
 
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
@@ -2860,6 +2863,9 @@ function makePlotFramework(gd) {
 
     // single cartesian layer for the whole plot
     fullLayout._cartesianlayer = fullLayout._paper.append('g').classed('cartesianlayer', true);
+
+    // single polar layer for the whole plot
+    fullLayout._polarlayer = fullLayout._paper.append('g').classed('polarlayer', true);
 
     // single ternary layer for the whole plot
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);

@@ -45,7 +45,7 @@ var SHOWZOOMOUTTIP = true;
 //          's' - bottom only
 //          'ns' - top and bottom together, difference unchanged
 //      ew - same for horizontal axis
-module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
+function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // mouseDown stores ms of first mousedown event in the last
     // DBLCLICKDELAY ms on the drag bars
     // numClicks stores how many mousedowns have been seen
@@ -439,9 +439,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // everything but the corners gets wheel zoom
     if(ns.length * ew.length !== 1) {
-        // still seems to be some confusion about onwheel vs onmousewheel...
-        if(dragger.onwheel !== undefined) dragger.onwheel = zoomWheel;
-        else if(dragger.onmousewheel !== undefined) dragger.onmousewheel = zoomWheel;
+        attachWheelEventHandler(dragger, zoomWheel);
     }
 
     // plotDrag: move the plot in response to a drag
@@ -794,7 +792,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     return dragger;
-};
+}
 
 function makeDragger(plotinfo, dragClass, cursor, x, y, w, h) {
     var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
@@ -933,6 +931,10 @@ function updateZoombox(zb, corners, box, path0, dimmed, lum) {
     zb.attr('d',
         path0 + 'M' + (box.l) + ',' + (box.t) + 'v' + (box.h) +
         'h' + (box.w) + 'v-' + (box.h) + 'h-' + (box.w) + 'Z');
+    transitionZoombox(zb, corners, dimmed, lum);
+}
+
+function transitionZoombox(zb, corners, dimmed, lum) {
     if(!dimmed) {
         zb.transition()
             .style('fill', lum > 0.2 ? 'rgba(0,0,0,0.4)' :
@@ -1037,3 +1039,25 @@ function calcLinks(constraintGroups, xIDs, yIDs) {
         xy: isSubplotConstrained
     };
 }
+
+// still seems to be some confusion about onwheel vs onmousewheel...
+function attachWheelEventHandler(element, handler) {
+    if(element.onwheel !== undefined) element.onwheel = handler;
+    else if(element.onmousewheel !== undefined) element.onmousewheel = handler;
+}
+
+module.exports = {
+    makeDragBox: makeDragBox,
+
+    makeDragger: makeDragger,
+    makeZoombox: makeZoombox,
+    makeCorners: makeCorners,
+
+    updateZoombox: updateZoombox,
+    xyCorners: xyCorners,
+    transitionZoombox: transitionZoombox,
+    removeZoombox: removeZoombox,
+    clearSelect: clearSelect,
+
+    attachWheelEventHandler: attachWheelEventHandler
+};
