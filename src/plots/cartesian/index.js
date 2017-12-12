@@ -137,7 +137,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             }
         }
 
-        _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+        if (_module.plot) _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }
 }
 
