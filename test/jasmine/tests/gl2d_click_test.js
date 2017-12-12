@@ -358,11 +358,11 @@ describe('Test hover and click interactions', function() {
             y: 18,
             curveNumber: 2,
             pointNumber: 0,
-            bgcolor: 'rgb(255, 127, 14)',
-            bordercolor: 'rgb(68, 68, 68)',
+            bgcolor: 'rgb(44, 160, 44)',
+            bordercolor: 'rgb(255, 255, 255)',
             fontSize: 13,
             fontFamily: 'Arial',
-            fontColor: 'rgb(68, 68, 68)'
+            fontColor: 'rgb(255, 255, 255)'
         }, {
             msg: 'scattergl after visibility restyle'
         });
@@ -406,11 +406,11 @@ describe('Test hover and click interactions', function() {
             y: 18,
             curveNumber: 2,
             pointNumber: 0,
-            bgcolor: 'rgb(255, 127, 14)',
-            bordercolor: 'rgb(68, 68, 68)',
+            bgcolor: 'rgb(44, 160, 44)',
+            bordercolor: 'rgb(255, 255, 255)',
             fontSize: 13,
             fontFamily: 'Arial',
-            fontColor: 'rgb(68, 68, 68)'
+            fontColor: 'rgb(255, 255, 255)'
         }, {
             msg: 'scattergl fancy after visibility restyle'
         });

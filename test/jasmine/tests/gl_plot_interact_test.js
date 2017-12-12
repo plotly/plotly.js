@@ -1360,8 +1360,8 @@ describe('Test gl2d interactions', function() {
             var ann = d3.select('g.annotation-text-g').select('g');
             var translate = Drawing.getTranslate(ann);
 
-            expect(translate.x).toBeWithin(xy[0], 1.5);
-            expect(translate.y).toBeWithin(xy[1], 1.5);
+            expect(translate.x).toBeWithin(xy[0], 3.5);
+            expect(translate.y).toBeWithin(xy[1], 3.5);
         }
 
         Plotly.plot(gd, [{
