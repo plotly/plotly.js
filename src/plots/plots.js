@@ -1002,12 +1002,13 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
         if(attr) coerceSubplotAttr(subplotType, attr);
     }
 
+
+    var _module = plots.getModule(traceOut);
+    traceOut._module = _module;
+
     if(visible) {
         coerce('customdata');
         coerce('ids');
-
-        var _module = plots.getModule(traceOut);
-        traceOut._module = _module;
 
         if(plots.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');

@@ -511,12 +511,16 @@ ScatterGl.calc = function calc(container, trace) {
         scene.draw = function draw() {
             for(var i = 0; i < scene.count; i++) {
                 if(scene.fill2d) scene.fill2d.draw(i);
-                if(scene.line2d) scene.line2d.draw(i);
+                if(scene.line2d) {
+                    scene.line2d.draw(i);
+                }
                 if(scene.error2d) {
                     scene.error2d.draw(i);
                     scene.error2d.draw(i + scene.count);
                 }
-                if(scene.scatter2d && !scene.selectBatch) scene.scatter2d.draw(i);
+                if(scene.scatter2d && !scene.selectBatch) {
+                    scene.scatter2d.draw(i);
+                }
             }
 
             // persistent selection draw
