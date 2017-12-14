@@ -18,7 +18,7 @@ module.exports = {
     supplyDefaults: require('./defaults'),
     calc: require('./calc'),
     plot: require('./plot'),
-    style: require('./style'),
+    style: require('../scatter/style').style,
     hoverPoints: require('./hover'),
     selectPoints: require('../scatter/select'),
 
