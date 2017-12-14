@@ -285,27 +285,29 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     Axes.doTicks(gd, ax, true);
 
-    layers.radialaxis.attr(
-        'transform',
-        strTranslate(cx, cy) + strRotate(-radialLayout.position)
-    );
+    if(ax.visible) {
+        layers.radialaxis.attr(
+            'transform',
+            strTranslate(cx, cy) + strRotate(-radialLayout.position)
+        );
 
-    // move all grid paths to about circle center,
-    // undo individual grid lines translations
-    layers.radialaxisgrid
-        .attr('transform', strTranslate(cx, cy))
-        .selectAll('path').attr('transform', null);
+        // move all grid paths to about circle center,
+        // undo individual grid lines translations
+        layers.radialaxisgrid
+            .attr('transform', strTranslate(cx, cy))
+            .selectAll('path').attr('transform', null);
 
-    layers.radialline.attr({
-        display: radialLayout.showline ? null : 'none',
-        x1: 0,
-        y1: 0,
-        x2: radius,
-        y2: 0,
-        transform: strTranslate(cx, cy) + strRotate(-radialLayout.position)
-    })
-    .attr('stroke-width', radialLayout.linewidth)
-    .call(Color.stroke, radialLayout.linecolor);
+        layers.radialline.attr({
+            display: radialLayout.showline ? null : 'none',
+            x1: 0,
+            y1: 0,
+            x2: radius,
+            y2: 0,
+            transform: strTranslate(cx, cy) + strRotate(-radialLayout.position)
+        })
+        .attr('stroke-width', radialLayout.linewidth)
+        .call(Color.stroke, radialLayout.linecolor);
+    }
 };
 
 proto.updateAngularAxis = function(fullLayout, polarLayout) {
@@ -433,13 +435,15 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     Axes.doTicks(gd, ax, true);
 
-    layers.angularline.attr({
-        display: angularLayout.showline ? null : 'none',
-        d: pathSectorClosed(radius, sector),
-        transform: strTranslate(cx, cy)
-    })
-    .attr('stroke-width', angularLayout.linewidth)
-    .call(Color.stroke, angularLayout.linecolor);
+    if(ax.visible) {
+        layers.angularline.attr({
+            display: angularLayout.showline ? null : 'none',
+            d: pathSectorClosed(radius, sector),
+            transform: strTranslate(cx, cy)
+        })
+        .attr('stroke-width', angularLayout.linewidth)
+        .call(Color.stroke, angularLayout.linecolor);
+    }
 };
 
 proto.updateFx = function(fullLayout, polarLayout) {
@@ -631,7 +635,10 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     var radius = _this.radius;
     var cx = _this.cx;
     var cy = _this.cy;
-    var angle0 = deg2rad(polarLayout.radialaxis.position);
+    var radialLayout = polarLayout.radialaxis;
+    var angle0 = deg2rad(radialLayout.position);
+
+    if(!radialLayout.visible) return;
     var bl = 50;
     var bl2 = bl / 2;
     var radialDrag = dragBox.makeDragger(layers, 'radialdrag', 'move', -bl2, -bl2, bl, bl);
