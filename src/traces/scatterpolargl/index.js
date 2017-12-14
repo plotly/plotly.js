@@ -9,145 +9,93 @@
 'use strict';
 
 var ScatterGl = require('../scattergl');
-var ScatterPolar = require('../scatterpolar');
+var isNumeric = require('fast-isnumeric');
+var calcColorscales = require('../scatter/colorscale_calc');
+var Axes = require('../../plots/cartesian/axes');
+var kdtree = require('kdgrass');
 
-function calc(gd, trace) {
-    // trace.x = cd.map(function(d) { return cd.x; });
-    // trace.y = cd.map(function(d) { return cd.y; });
-
-    // trace.error_x = {};
-    // trace.error_y = {};
-
+function calc(container, trace) {
     var layout = container._fullLayout;
-    var positions;
+    var subplotId = trace.subplot;
+    var radialAxis = layout[subplotId].radialaxis;
+    var angularAxis = layout[subplotId].angularaxis;
+    var rArray = radialAxis.makeCalcdata(trace, 'r');
+    var thetaArray = angularAxis.makeCalcdata(trace, 'theta');
+    var count = rArray.length;
     var stash = {};
-    var markerOpts = trace.marker;
+    var subplot = layout[subplotId];
 
-    var xaxis = {
-        type: 'linear'
-    };
+    var positions = new Array(count * 2), x = Array(count), y = Array(count);
 
-    var yaxis = {
-        type: 'linear'
-    };
+    function c2rad(v) {
+        return angularAxis.c2rad(v, trace.thetaunit);
+    }
 
-    // how to get subplot ref for non-cartesian traces!
-    var subplot = layout[trace.subplot];
+    for(var i = 0; i < count; i++) {
+        var r = rArray[i];
+        var theta = thetaArray[i];
 
-    var x = trace.x;
-    var y = trace.y;
+        if(isNumeric(r) && isNumeric(theta)) {
+            var rad = c2rad(theta);
 
-    var count = (x || y).length, i, l, xx, yy, ptrX = 0, ptrY = 0;
-
-    if(!x) {
-        x = Array(count);
-        for(i = 0; i < count; i++) {
-            x[i] = i;
+            x[i] = positions[i * 2] = r * Math.cos(rad);
+            y[i] = positions[i * 2 + 1] = r * Math.sin(rad);
+        } else {
+            x[i] = y[i] = positions[i * 2] = positions[i * 2 + 1] = NaN;
         }
     }
-    if(!y) {
-        y = Array(count);
-        for(i = 0; i < count; i++) {
-            y[i] = i;
-        }
-    }
-
-    // get log converted positions
-    var rawx, rawy;
-    if(xaxis.type === 'log') {
-        rawx = Array(x.length);
-        for(i = 0, l = x.length; i < l; i++) {
-            rawx[i] = x[i];
-            x[i] = xaxis.d2l(x[i]);
-        }
-    }
-    else {
-        rawx = x;
-        for(i = 0, l = x.length; i < l; i++) {
-            x[i] = parseFloat(x[i]);
-        }
-    }
-    if(yaxis.type === 'log') {
-        rawy = Array(y.length);
-        for(i = 0, l = y.length; i < l; i++) {
-            rawy[i] = y[i];
-            y[i] = yaxis.d2l(y[i]);
-        }
-    }
-    else {
-        rawy = y;
-        for(i = 0, l = y.length; i < l; i++) {
-            y[i] = parseFloat(y[i]);
-        }
-    }
-
-    // we need hi-precision for scatter2d
-    positions = new Array(count * 2);
-
-    for(i = 0; i < count; i++) {
-        // if no x defined, we are creating simple int sequence (API)
-        // we use parseFloat because it gives NaN (we need that for empty values to avoid drawing lines) and it is incredibly fast
-        xx = isNumeric(x[i]) ? +x[i] : NaN;
-        yy = isNumeric(y[i]) ? +y[i] : NaN;
-
-        positions[i * 2] = xx;
-        positions[i * 2 + 1] = yy;
-    }
-
-    // we don't build a tree for log axes since it takes long to convert log2px
-    // and it is also
-    if(xaxis.type !== 'log' && yaxis.type !== 'log') {
-        // FIXME: delegate this to webworker
-        stash.tree = kdtree(positions, 512);
-    }
-    else {
-        var ids = stash.ids = Array(count);
-        for(i = 0; i < count; i++) {
-            ids[i] = i;
-        }
-    }
-
 
     calcColorscales(trace);
 
 
-
-    var options = ScatterGl.sceneOptions(container, subplot, trace, positions)
-    var scene = ScatterGl.scene(container, subplot, trace, positions);
+    var options = ScatterGl.sceneOptions(container, subplot, trace, positions);
 
 
+    Axes.expand(radialAxis, rArray, {tozero: true});
+
+    if(angularAxis.type !== 'linear') {
+        angularAxis.autorange = true;
+        Axes.expand(angularAxis, thetaArray);
+    }
+
+    var scene = ScatterGl.scene(container, subplot, trace, positions, options);
 
     // save scene options batch
-    scene.lineOptions.push(hasLines ? lineOptions : null);
-    scene.errorXOptions.push(hasErrorX ? errorXOptions : null);
-    scene.errorYOptions.push(hasErrorY ? errorYOptions : null);
-    scene.fillOptions.push(hasFill ? fillOptions : null);
-    scene.markerOptions.push(hasMarkers ? markerOptions : null);
-    scene.selectedOptions.push(hasMarkers ? selectedOptions : null);
-    scene.unselectedOptions.push(hasMarkers ? unselectedOptions : null);
+    scene.lineOptions.push(options.line);
+    scene.errorXOptions.push(options.errorX);
+    scene.errorYOptions.push(options.errorY);
+    scene.fillOptions.push(options.fill);
+    scene.markerOptions.push(options.marker);
+    scene.selectedOptions.push(options.selected);
+    scene.unselectedOptions.push(options.unselected);
     scene.count++;
-
 
     // stash scene ref
     stash.scene = scene;
     stash.index = scene.count - 1;
     stash.x = x;
     stash.y = y;
-    stash.rawx = rawx;
-    stash.rawy = rawy;
+    stash.rawx = x;
+    stash.rawy = y;
     stash.positions = positions;
     stash.count = count;
+
+    // FIXME: remove this later on once we get rid of .plot wrapper
+    stash.container = container;
+
+    // FIXME: delegate this to webworker
+    stash.tree = kdtree(positions, 512);
 
     return [{x: false, y: false, t: stash, trace: trace}];
 }
 
-function plot(container, subplot, cdata) {
 
-    console.log(container.xaxis, container.yaxis)
-
-
-    ScatterGl.plot(container, subplot, cdata);
+// FIXME: remove this wrapper once .plot args get consistent order
+function plot(plotinfo, cdata) {
+    var container = cdata[0][0].t.container;
+    return ScatterGl.plot(container, plotinfo, cdata);
 }
+
 
 module.exports = {
     moduleType: 'trace',
