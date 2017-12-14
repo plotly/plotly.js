@@ -196,15 +196,13 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     _this.updateRadialAxis(fullLayout, polarLayout);
     _this.updateAngularAxis(fullLayout, polarLayout);
 
-    // TODO WAIT this does not work for radialaxis ranges that
-    // do not start at 0 !!!
-
-    var rMax = _this.rMax;
+    var radialRange = _this.radialAxis.range;
+    var rSpan = radialRange[1] - radialRange[0];
 
     var xaxis = _this.xaxis = {
         type: 'linear',
         _id: 'x',
-        range: [sectorBBox[0] * rMax, sectorBBox[2] * rMax],
+        range: [sectorBBox[0] * rSpan, sectorBBox[2] * rSpan],
         domain: xDomain2
     };
     Axes.setConvert(xaxis, fullLayout);
@@ -213,7 +211,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var yaxis = _this.yaxis = {
         type: 'linear',
         _id: 'y',
-        range: [sectorBBox[1] * rMax, sectorBBox[3] * rMax],
+        range: [sectorBBox[1] * rSpan, sectorBBox[3] * rSpan],
         domain: yDomain2
     };
     Axes.setConvert(yaxis, fullLayout);
@@ -271,9 +269,6 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     setScale(ax, radialLayout, fullLayout);
     Axes.doAutoRange(ax);
 
-    // save the max radius after autorange (useful for drawing angular axes)
-    _this.rMax = ax.range[1];
-
     // rotate auto tick labels by 180 if in quadrant II and III to make them
     // readable from left-to-right
     //
@@ -318,8 +313,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var gd = _this.gd;
     var layers = _this.layers;
     var radius = _this.radius;
-    var radialAxis = _this.radialAxis;
-    var rMax = _this.rMax;
     var cx = _this.cx;
     var cy = _this.cy;
     var angularLayout = polarLayout.angularaxis;
@@ -379,8 +372,8 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     // (x,y) at max radius
     function rad2xy(rad) {
         return [
-            radialAxis.c2p(rMax * Math.cos(rad)),
-            radialAxis.c2p(rMax * Math.sin(rad))
+            _this.radius * Math.cos(rad),
+            _this.radius * Math.sin(rad)
         ];
     }
 
