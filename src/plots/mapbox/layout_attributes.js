@@ -11,10 +11,10 @@
 
 var Lib = require('../../lib');
 var defaultLine = require('../../components/color').defaultLine;
+var domainAttrs = require('../domain_attributes');
 var fontAttrs = require('../font_attributes');
 var textposition = require('../../traces/scatter/attributes').textposition;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-
 
 var fontAttr = fontAttrs({
     description: [
@@ -26,34 +26,8 @@ fontAttr.family.dflt = 'Open Sans Regular, Arial Unicode MS Regular';
 
 module.exports = overrideAll({
     _arrayAttrRegexps: [Lib.counterRegex('mapbox', '.layers', true)],
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the horizontal domain of this subplot',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the vertical domain of this subplot',
-                '(in plot fraction).'
-            ].join(' ')
-        }
-    },
+
+    domain: domainAttrs({name: 'mapbox'}),
 
     accesstoken: {
         valType: 'string',

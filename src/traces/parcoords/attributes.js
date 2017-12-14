@@ -13,44 +13,14 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 var colorscales = require('../../components/colorscale/scales');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var fontAttrs = require('../../plots/font_attributes');
+var domainAttrs = require('../../plots/domain_attributes');
 
 var extend = require('../../lib/extend');
 var extendDeepAll = extend.extendDeepAll;
 var extendFlat = extend.extendFlat;
 
 module.exports = {
-
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'calc'},
-                {valType: 'number', min: 0, max: 1, editType: 'calc'}
-            ],
-            dflt: [0, 1],
-            editType: 'calc',
-            description: [
-                'Sets the horizontal domain of this `parcoords` trace',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'calc'},
-                {valType: 'number', min: 0, max: 1, editType: 'calc'}
-            ],
-            dflt: [0, 1],
-            editType: 'calc',
-            description: [
-                'Sets the vertical domain of this `parcoords` trace',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        editType: 'calc'
-    },
+    domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
 
     labelfont: fontAttrs({
         editType: 'calc',

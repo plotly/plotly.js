@@ -10,19 +10,9 @@
 
 var colorAttrs = require('../../components/color/attributes');
 var axesAttrs = require('../cartesian/layout_attributes');
+var domainAttrs = require('../domain_attributes');
 var extendFlat = require('../../lib').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-
-var domainItem = {
-    valType: 'info_array',
-    role: 'info',
-    editType: 'plot',
-    items: [
-        {valType: 'number', min: 0, max: 1},
-        {valType: 'number', min: 0, max: 1}
-    ],
-    dflt: [0, 1]
-};
 
 var axisLineGridAttr = overrideAll({
     color: axesAttrs.color,
@@ -266,21 +256,7 @@ module.exports = {
     // y: {},
     // zoom: {},
 
-    domain: {
-        x: extendFlat({}, domainItem, {
-            description: [
-                'Sets the horizontal domain of this subplot',
-                '(in plot fraction).'
-            ].join(' ')
-        }),
-        y: extendFlat({}, domainItem, {
-            description: [
-                'Sets the vertical domain of this subplot',
-                '(in plot fraction).'
-            ].join(' ')
-        }),
-        editType: 'plot'
-    },
+    domain: domainAttrs({name: 'polar', editType: 'plot'}),
 
     // Maybe this should angularaxis.range correspond to
     // angular span of the drawing area?
