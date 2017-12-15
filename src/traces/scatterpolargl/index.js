@@ -15,6 +15,7 @@ var Axes = require('../../plots/cartesian/axes');
 var kdtree = require('kdgrass');
 var Lib = require('../../lib');
 
+
 function calc(container, trace) {
     var layout = container._fullLayout;
     var subplotId = trace.subplot;
@@ -22,35 +23,15 @@ function calc(container, trace) {
     var angularAxis = layout[subplotId].angularaxis;
     var rArray = radialAxis.makeCalcdata(trace, 'r');
     var thetaArray = angularAxis.makeCalcdata(trace, 'theta');
-    var count = rArray.length;
     var stash = {};
-    var subplot = layout[subplotId];
-
-    var positions = new Array(count * 2), x = Array(count), y = Array(count);
-
-    function c2rad(v) {
-        return angularAxis.c2rad(v, trace.thetaunit);
-    }
-
-    for(var i = 0; i < count; i++) {
-        var r = rArray[i];
-        var theta = thetaArray[i];
-
-        if(isNumeric(r) && isNumeric(theta)) {
-            var rad = c2rad(theta);
-
-            x[i] = positions[i * 2] = r * Math.cos(rad);
-            y[i] = positions[i * 2 + 1] = r * Math.sin(rad);
-        } else {
-            x[i] = y[i] = positions[i * 2] = positions[i * 2 + 1] = NaN;
-        }
-    }
 
     calcColorscales(trace);
 
+    stash.r = rArray;
+    stash.theta = thetaArray;
 
-    var options = ScatterGl.sceneOptions(container, subplot, trace, positions);
-
+    // FIXME: remove this once .plot API gets compatible w/others
+    stash.container = container;
 
     Axes.expand(radialAxis, rArray, {tozero: true});
 
@@ -59,48 +40,106 @@ function calc(container, trace) {
         Axes.expand(angularAxis, thetaArray);
     }
 
-    var scene = ScatterGl.scene(container, subplot, trace, positions, options);
-
-    // save scene options batch
-    scene.lineOptions.push(options.line);
-    scene.errorXOptions.push(options.errorX);
-    scene.errorYOptions.push(options.errorY);
-    scene.fillOptions.push(options.fill);
-    scene.markerOptions.push(options.marker);
-    scene.selectedOptions.push(options.selected);
-    scene.unselectedOptions.push(options.unselected);
-    scene.count++;
-
-    // stash scene ref
-    stash.scene = scene;
-    stash.index = scene.count - 1;
-    stash.x = x;
-    stash.y = y;
-    stash.rawx = x;
-    stash.rawy = y;
-    stash.r = rArray;
-    stash.theta = thetaArray;
-    stash.positions = positions;
-    stash.count = count;
-
-    // FIXME: remove this later on once we get rid of .plot wrapper
-    stash.container = container;
-
-    // FIXME: delegate this to webworker
-    stash.tree = kdtree(positions, 512);
-    // var ids = stash.ids = Array(count);
-    // for(i = 0; i < count; i++) {
-    //     ids[i] = i;
-    // }
-
     return [{x: false, y: false, t: stash, trace: trace}];
 }
 
 
-// FIXME: remove this wrapper once .plot args get consistent order
-function plot(plotinfo, cdata) {
-    var container = cdata[0][0].t.container;
-    return ScatterGl.plot(container, plotinfo, cdata);
+function plot(subplot, cdata) {
+    var stash = cdata[0][0].t;
+    var container = stash.container;
+    var radialAxis = subplot.radialAxis;
+    var angularAxis = subplot.angularAxis;
+    var rRange = radialAxis.range;
+    var thetaRange = angularAxis.range;
+
+    var scene = ScatterGl.scene(container, subplot);
+    scene.clear();
+
+    cdata.forEach(function(cdscatter, traceIndex) {
+        if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
+        var cd = cdscatter[0];
+        var trace = cd.trace;
+        var stash = cd.t;
+        var rArray = stash.r;
+        var thetaArray = stash.theta;
+        var i, r, theta;
+
+        // filter out by range
+        var newRadialArray = [];
+        var newThetaArray = [];
+
+        for(i = 0; i < rArray.length; i++) {
+            r = rArray[i], theta = thetaArray[i];
+
+            if(theta < 0) theta += 360;
+
+            if(r >= rRange[0] && r <= rRange[1] && theta >= thetaRange[0] && theta <= thetaRange[1]) {
+                newRadialArray.push(r);
+                newThetaArray.push(theta);
+            }
+        }
+
+        rArray = newRadialArray;
+        thetaArray = newThetaArray;
+
+        var count = rArray.length;
+        var positions = new Array(count * 2), x = Array(count), y = Array(count);
+
+        function c2rad(v) {
+            return angularAxis.c2rad(v, trace.thetaunit);
+        }
+
+        for(i = 0; i < count; i++) {
+            r = rArray[i];
+            theta = thetaArray[i];
+
+            if(isNumeric(r) && isNumeric(theta)) {
+                var rad = c2rad(theta);
+
+                x[i] = positions[i * 2] = r * Math.cos(rad);
+                y[i] = positions[i * 2 + 1] = r * Math.sin(rad);
+            } else {
+                x[i] = y[i] = positions[i * 2] = positions[i * 2 + 1] = NaN;
+            }
+        }
+
+        var options = ScatterGl.sceneOptions(container, subplot, trace, positions);
+
+        // set flags to create scene renderers
+        if(options.fill && !scene.fill2d) scene.fill2d = true;
+        if(options.marker && !scene.scatter2d) scene.scatter2d = true;
+        if(options.line && !scene.line2d) scene.line2d = true;
+        if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
+
+        // save scene options batch
+        scene.lineOptions.push(options.line);
+        scene.errorXOptions.push(options.errorX);
+        scene.errorYOptions.push(options.errorY);
+        scene.fillOptions.push(options.fill);
+        scene.markerOptions.push(options.marker);
+        scene.selectedOptions.push(options.selected);
+        scene.unselectedOptions.push(options.unselected);
+        scene.count = cdata.length;
+
+        // stash scene ref
+        stash.scene = scene;
+        stash.index = traceIndex;
+        stash.x = x;
+        stash.y = y;
+        stash.rawx = x;
+        stash.rawy = y;
+        stash.r = rArray;
+        stash.theta = thetaArray;
+        stash.positions = positions;
+        stash.count = count;
+        stash.tree = kdtree(positions, 512);
+        // var ids = stash.ids = Array(count);
+        // for(i = 0; i < count; i++) {
+        //     ids[i] = i;
+        // }
+    });
+
+    return ScatterGl.plot(container, subplot, cdata);
 }
 
 

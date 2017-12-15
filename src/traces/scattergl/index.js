@@ -194,7 +194,13 @@ ScatterGl.calc = function calc(container, trace) {
     }
 
     // create scene
-    var scene = ScatterGl.scene(container, subplot, trace, positions, options);
+    var scene = ScatterGl.scene(container, subplot);
+
+    // set flags to create scene renderers
+    if(options.fill && !scene.fill2d) scene.fill2d = true;
+    if(options.marker && !scene.scatter2d) scene.scatter2d = true;
+    if(options.line && !scene.line2d) scene.line2d = true;
+    if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
 
     // save scene options batch
     scene.lineOptions.push(options.line);
@@ -516,11 +522,9 @@ ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positi
 
 
 // make sure scene exists on subplot
-ScatterGl.scene = function getScene(container, subplot, trace, positions, options) {
+ScatterGl.scene = function getScene(container, subplot) {
     var scene = subplot._scene;
     var layout = container._fullLayout;
-    var xaxis = Axes.getFromId(container, trace.xaxis);
-    var yaxis = Axes.getFromId(container, trace.yaxis);
 
     if(!subplot._scene) {
         scene = subplot._scene = {
@@ -542,10 +546,10 @@ ScatterGl.scene = function getScene(container, subplot, trace, positions, option
             unselectBatch: null,
 
             // regl- component stubs, initialized in dirty plot call
-            fill2d: !!options.fill,
-            scatter2d: !!options.marker,
-            error2d: !!(options.errorX || options.errorY),
-            line2d: !!options.line,
+            fill2d: false,
+            scatter2d: false,
+            error2d: false,
+            line2d: false,
             select2d: null
         };
 
@@ -566,7 +570,6 @@ ScatterGl.scene = function getScene(container, subplot, trace, positions, option
 
         // draw traces in proper order
         scene.draw = function draw() {
-
             for(var i = 0; i < scene.count; i++) {
                 if(scene.fill2d) scene.fill2d.draw(i);
                 if(scene.line2d) {
@@ -594,27 +597,31 @@ ScatterGl.scene = function getScene(container, subplot, trace, positions, option
         scene.clear = function clear() {
             var vpSize = layout._size, width = layout.width, height = layout.height;
             var vp = [
-                vpSize.l + (xaxis ? xaxis.domain[0] : 0) * vpSize.w,
-                vpSize.b + (yaxis ? yaxis.domain[0] : 0) * vpSize.h,
-                (width - vpSize.r) - (1 - (xaxis ? xaxis.domain[1] : 1)) * vpSize.w,
-                (height - vpSize.t) - (1 - (yaxis ? yaxis.domain[1] : 1)) * vpSize.h
+                vpSize.l,
+                vpSize.b,
+                (width - vpSize.r),
+                (height - vpSize.t)
             ];
 
             var gl, regl;
 
-            regl = scene.select2d.regl;
-            gl = regl._gl;
-            gl.enable(gl.SCISSOR_TEST);
-            gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
-            gl.clearColor(0, 0, 0, 0);
-            gl.clear(gl.COLOR_BUFFER_BIT);
+            if(scene.select2d) {
+                regl = scene.select2d.regl;
+                gl = regl._gl;
+                gl.enable(gl.SCISSOR_TEST);
+                gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
+                gl.clearColor(0, 0, 0, 0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+            }
 
-            regl = scene.scatter2d.regl;
-            gl = regl._gl;
-            gl.enable(gl.SCISSOR_TEST);
-            gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
-            gl.clearColor(0, 0, 0, 0);
-            gl.clear(gl.COLOR_BUFFER_BIT);
+            if(scene.scatter2d) {
+                regl = scene.scatter2d.regl;
+                gl = regl._gl;
+                gl.enable(gl.SCISSOR_TEST);
+                gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
+                gl.clearColor(0, 0, 0, 0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+            }
         };
 
         // remove selection
@@ -647,12 +654,6 @@ ScatterGl.scene = function getScene(container, subplot, trace, positions, option
 
             delete subplot._scene;
         };
-    }
-    else {
-        if(!!options.fill && !scene.fill2d) scene.fill2d = true;
-        if(!!options.marker && !scene.scatter2d) scene.scatter2d = true;
-        if(!!options.line && !scene.line2d) scene.line2d = true;
-        if(!!(options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
     }
 
     // In case if we have scene from the last calc - reset data
@@ -942,7 +943,7 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
         } : null;
     });
 
-    // uploat batch data to GPU
+    // uploat viewport/range data to GPU
     if(scene.fill2d) {
         scene.fill2d.update(vpRange);
     }
