@@ -146,7 +146,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     // Legacy polar plots
     if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
-        Lib.warn('Legacy polar charts are deprecated!');
+        Lib.log('Legacy polar charts are deprecated!');
         return plotPolar(gd, data, layout);
     }
 

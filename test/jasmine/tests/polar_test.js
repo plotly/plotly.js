@@ -10,7 +10,7 @@ describe('Test legacy polar plots logs:', function() {
     var gd;
 
     beforeEach(function() {
-        spyOn(Lib, 'warn');
+        spyOn(Lib, 'log');
         gd = createGraphDiv();
     });
 
@@ -42,8 +42,8 @@ describe('Test legacy polar plots logs:', function() {
         it('should log deprecation warning on ' + s.name, function(done) {
             Plotly.plot(gd, s.data)
             .then(function() {
-                expect(Lib.warn).toHaveBeenCalledTimes(1);
-                expect(Lib.warn).toHaveBeenCalledWith('Legacy polar charts are deprecated!');
+                expect(Lib.log).toHaveBeenCalledTimes(1);
+                expect(Lib.log).toHaveBeenCalledWith('Legacy polar charts are deprecated!');
             })
             .catch(fail)
             .then(done);
