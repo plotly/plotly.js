@@ -79,5 +79,6 @@ module.exports = {
     layoutAttributes: require('./layout_attributes'),
     supplyLayoutDefaults: require('./layout_defaults'),
     plot: plot,
-    clean: clean
+    clean: clean,
+    toSVG: require('../cartesian').toSVG
 };
