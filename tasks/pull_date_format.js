@@ -7,7 +7,7 @@ var args = process.argv.slice(2);
 var argLocale = args[0];
 
 var pathToEn = path.join(constants.pathToSrc, 'locale-en.js');
-var pathToWCRegions = path.join(__dirname, '../node_modules/world-calendars/dist/regional');
+var pathToWCRegions = path.dirname(require.resolve('world-calendars/dist/regional/en-GB'));
 
 if(!argLocale) {
     fs.readdir(pathToWCRegions, function(err, items) {
