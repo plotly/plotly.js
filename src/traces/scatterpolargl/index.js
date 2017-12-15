@@ -166,12 +166,13 @@ function hover(pointData, xval, yval, hovermode) {
     var hoverinfo = cdi.hi || trace.hoverinfo;
     var parts = hoverinfo.split('+');
     var text = [];
-    var _rad = angularAxis.c2rad(cdi.theta, trace.thetaunit);
 
     // augment pointData with r/theta param
     cdi.r = rArray[newPointData.index];
     cdi.theta = thetaArray[newPointData.index];
     cdi.rad = angularAxis.c2rad(cdi.theta, trace.thetaunit);
+
+    var _rad = angularAxis.c2rad(cdi.theta, trace.thetaunit);
 
     if(!subplot.isPtWithinSector(cdi)) return;
 
