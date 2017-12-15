@@ -521,7 +521,7 @@ ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positi
 };
 
 
-// make sure scene exists on subplot
+// make sure scene exists on subplot, return it
 ScatterGl.scene = function getScene(container, subplot) {
     var scene = subplot._scene;
     var layout = container._fullLayout;

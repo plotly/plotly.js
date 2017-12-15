@@ -15,6 +15,7 @@ var Plots = require('../plots');
 
 var axisIds = require('./axis_ids');
 var constants = require('./constants');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 exports.name = 'cartesian';
 
@@ -439,3 +440,28 @@ function joinLayer(parent, nodeType, className) {
 
     return layer;
 }
+
+exports.toSVG = function(gd) {
+    var imageRoot = gd._fullLayout._glimages;
+    var root = d3.select(gd).selectAll('.svg-container');
+    var canvases = root.filter(function(d, i) {return i === root.size() - 1;})
+        .selectAll('.gl-canvas-context, .gl-canvas-focus');
+
+    function canvasToImage() {
+        var canvas = this;
+        var imageData = canvas.toDataURL('image/png');
+        var image = imageRoot.append('svg:image');
+
+        image.attr({
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': imageData,
+            preserveAspectRatio: 'none',
+            x: 0,
+            y: 0,
+            width: canvas.width,
+            height: canvas.height
+        });
+    }
+
+    canvases.each(canvasToImage);
+};
