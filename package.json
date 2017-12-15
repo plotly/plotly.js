@@ -102,7 +102,7 @@
     "regl": "^1.3.0",
     "regl-error2d": "^2.0.3",
     "regl-line2d": "^2.1.0",
-    "regl-scatter2d": "^2.1.7",
+    "regl-scatter2d": "^2.1.8",
     "right-now": "^1.0.0",
     "robust-orientation": "^1.1.3",
     "sane-topojson": "^2.0.0",
