@@ -179,8 +179,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         }
     }
 
-    containerOut._separators = options.fullLayout.separators;
-
     // fill in categories
     containerOut._initialCategories = axType === 'category' ?
         orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :

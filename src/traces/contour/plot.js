@@ -421,7 +421,7 @@ exports.createLineClip = function(lineContainer, clipLinesForLabels, clips, uid)
 
 exports.labelFormatter = function(contours, colorbar, fullLayout) {
     if(contours.labelformat) {
-        return d3.format(contours.labelformat);
+        return fullLayout._d3locale.numberFormat(contours.labelformat);
     }
     else {
         var formatAxis;
@@ -431,7 +431,6 @@ exports.labelFormatter = function(contours, colorbar, fullLayout) {
         else {
             formatAxis = {
                 type: 'linear',
-                _separators: '.,',
                 _id: 'ycontour',
                 nticks: (contours.end - contours.start) / contours.size,
                 showexponent: 'all',

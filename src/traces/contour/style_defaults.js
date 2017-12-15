@@ -46,9 +46,5 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
         coerce('contours.labelformat');
     }
 
-    if(opts.hasHover !== false) {
-        coerce('zhoverformat');
-        // Needed for formatting of hoverlabel if format is not explicitly specified
-        traceOut._separators = layout.separators;
-    }
+    if(opts.hasHover !== false) coerce('zhoverformat');
 };
