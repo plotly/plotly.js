@@ -447,7 +447,7 @@ module.exports = function setConvert(ax, fullLayout) {
     ax._min = [];
     ax._max = [];
 
-    // Fropagate localization into the axis so that
+    // Propagate localization into the axis so that
     // methods in Axes can use it w/o having to pass fullLayout
     // Default (non-d3) number formatting uses separators directly
     // dates and d3-formatted numbers use the d3 locale

@@ -68,7 +68,7 @@ exports.register([
 // locales en and en-US are required for default behavior
 exports.register([
     require('./locale-en'),
-    require('./locale-en-US')
+    require('./locale-en-us')
 ]);
 
 // plot icons
