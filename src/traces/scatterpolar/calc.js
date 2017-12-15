@@ -39,15 +39,11 @@ module.exports = function calc(gd, trace) {
         var cdi = cd[i] = {};
 
         if(isNumeric(r) && isNumeric(theta)) {
-            var rad = cdi.rad = c2rad(theta);
-
             cdi.r = r;
             cdi.theta = theta;
-            cdi.x = r * Math.cos(rad);
-            cdi.y = r * Math.sin(rad);
+            cdi.rad = c2rad(theta);
         } else {
-            cdi.x = BADNUM;
-            cdi.y = BADNUM;
+            cdi.r = BADNUM;
         }
     }
 

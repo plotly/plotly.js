@@ -196,15 +196,13 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     _this.updateRadialAxis(fullLayout, polarLayout);
     _this.updateAngularAxis(fullLayout, polarLayout);
 
-    // TODO WAIT this does not work for radialaxis ranges that
-    // do not start at 0 !!!
-
-    var rMax = _this.rMax;
+    var radialRange = _this.radialAxis.range;
+    var rSpan = radialRange[1] - radialRange[0];
 
     var xaxis = _this.xaxis = {
         type: 'linear',
         _id: 'x',
-        range: [sectorBBox[0] * rMax, sectorBBox[2] * rMax],
+        range: [sectorBBox[0] * rSpan, sectorBBox[2] * rSpan],
         domain: xDomain2
     };
     Axes.setConvert(xaxis, fullLayout);
@@ -213,11 +211,14 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var yaxis = _this.yaxis = {
         type: 'linear',
         _id: 'y',
-        range: [sectorBBox[1] * rMax, sectorBBox[3] * rMax],
+        range: [sectorBBox[1] * rSpan, sectorBBox[3] * rSpan],
         domain: yDomain2
     };
     Axes.setConvert(yaxis, fullLayout);
     yaxis.setScale();
+
+    xaxis.isPtWithinRange = function(d) { return _this.isPtWithinSector(d); };
+    yaxis.isPtWithinRange + function() { return true; };
 
     layers.frontplot
         .call(Drawing.setTranslate, xOffset2, yOffset2)
@@ -271,9 +272,6 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     setScale(ax, radialLayout, fullLayout);
     Axes.doAutoRange(ax);
 
-    // save the max radius after autorange (useful for drawing angular axes)
-    _this.rMax = ax.range[1];
-
     // rotate auto tick labels by 180 if in quadrant II and III to make them
     // readable from left-to-right
     //
@@ -290,27 +288,29 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     Axes.doTicks(gd, ax, true);
 
-    layers.radialaxis.attr(
-        'transform',
-        strTranslate(cx, cy) + strRotate(-radialLayout.position)
-    );
+    if(ax.visible) {
+        layers.radialaxis.attr(
+            'transform',
+            strTranslate(cx, cy) + strRotate(-radialLayout.position)
+        );
 
-    // move all grid paths to about circle center,
-    // undo individual grid lines translations
-    layers.radialaxisgrid
-        .attr('transform', strTranslate(cx, cy))
-        .selectAll('path').attr('transform', null);
+        // move all grid paths to about circle center,
+        // undo individual grid lines translations
+        layers.radialaxisgrid
+            .attr('transform', strTranslate(cx, cy))
+            .selectAll('path').attr('transform', null);
 
-    layers.radialline.attr({
-        display: radialLayout.showline ? null : 'none',
-        x1: 0,
-        y1: 0,
-        x2: radius,
-        y2: 0,
-        transform: strTranslate(cx, cy) + strRotate(-radialLayout.position)
-    })
-    .attr('stroke-width', radialLayout.linewidth)
-    .call(Color.stroke, radialLayout.linecolor);
+        layers.radialline.attr({
+            display: radialLayout.showline ? null : 'none',
+            x1: 0,
+            y1: 0,
+            x2: radius,
+            y2: 0,
+            transform: strTranslate(cx, cy) + strRotate(-radialLayout.position)
+        })
+        .attr('stroke-width', radialLayout.linewidth)
+        .call(Color.stroke, radialLayout.linecolor);
+    }
 };
 
 proto.updateAngularAxis = function(fullLayout, polarLayout) {
@@ -318,8 +318,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var gd = _this.gd;
     var layers = _this.layers;
     var radius = _this.radius;
-    var radialAxis = _this.radialAxis;
-    var rMax = _this.rMax;
     var cx = _this.cx;
     var cy = _this.cy;
     var angularLayout = polarLayout.angularaxis;
@@ -379,8 +377,8 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     // (x,y) at max radius
     function rad2xy(rad) {
         return [
-            radialAxis.c2p(rMax * Math.cos(rad)),
-            radialAxis.c2p(rMax * Math.sin(rad))
+            _this.radius * Math.cos(rad),
+            _this.radius * Math.sin(rad)
         ];
     }
 
@@ -440,13 +438,15 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     Axes.doTicks(gd, ax, true);
 
-    layers.angularline.attr({
-        display: angularLayout.showline ? null : 'none',
-        d: pathSectorClosed(radius, sector),
-        transform: strTranslate(cx, cy)
-    })
-    .attr('stroke-width', angularLayout.linewidth)
-    .call(Color.stroke, angularLayout.linecolor);
+    if(ax.visible) {
+        layers.angularline.attr({
+            display: angularLayout.showline ? null : 'none',
+            d: pathSectorClosed(radius, sector),
+            transform: strTranslate(cx, cy)
+        })
+        .attr('stroke-width', angularLayout.linewidth)
+        .call(Color.stroke, angularLayout.linecolor);
+    }
 };
 
 proto.updateFx = function(fullLayout, polarLayout) {
@@ -638,7 +638,10 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     var radius = _this.radius;
     var cx = _this.cx;
     var cy = _this.cy;
-    var angle0 = deg2rad(polarLayout.radialaxis.position);
+    var radialLayout = polarLayout.radialaxis;
+    var angle0 = deg2rad(radialLayout.position);
+
+    if(!radialLayout.visible) return;
     var bl = 50;
     var bl2 = bl / 2;
     var radialDrag = dragBox.makeDragger(layers, 'radialdrag', 'move', -bl2, -bl2, bl, bl);
@@ -683,15 +686,27 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     dragElement.init(dragOpts);
 };
 
-proto.isPtWithinSector = function() {
+proto.isPtWithinSector = function(d) {
     var sector = this.sector;
+    var radialRange = this.radialAxis.range;
+    var r = d.r;
+    var deg = wrap360(rad2deg(d.rad));
 
-    if(isFullCircle(sector)) return true;
+    // TODO add calendar support
 
-    // check out https://stackoverflow.com/a/13675772/4068492
-    // for possible solution
-    // var deg = wrap360(rad2deg(d.rad));
-    return true;
+    // TODO does this handle all cases?
+    //
+    // this assumes that sector[0] < 360 always
+
+    return (
+        r >= radialRange[0] &&
+        r <= radialRange[1] &&
+        isFullCircle(sector) || (
+            sector[1] < 360 || deg > wrap360(sector[1]) ?
+                deg >= sector[0] && deg <= sector[1] :
+                deg <= wrap360(sector[1])
+        )
+    );
 };
 
 function setScale(ax, axLayout, fullLayout) {

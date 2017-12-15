@@ -338,6 +338,39 @@ describe('ternary plots', function() {
         .then(done);
     });
 
+    it('should be able to relayout axis tickfont attributes', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+
+        function _assert(family, color, size) {
+            var tick = d3.select('g.aaxis > g.ytick > text').node();
+
+            expect(tick.style['font-family']).toBe(family, 'font family');
+            expect(parseFloat(tick.style['font-size'])).toBe(size, 'font size');
+            expect(tick.style.fill).toBe(color, 'font color');
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('"Open Sans", verdana, arial, sans-serif', 'rgb(204, 204, 204)', 12);
+
+            return Plotly.relayout(gd, 'ternary.aaxis.tickfont.size', 5);
+        })
+        .then(function() {
+            _assert('"Open Sans", verdana, arial, sans-serif', 'rgb(204, 204, 204)', 5);
+
+            return Plotly.relayout(gd, 'ternary.aaxis.tickfont', {
+                family: 'Roboto',
+                color: 'red',
+                size: 20
+            });
+        })
+        .then(function() {
+            _assert('Roboto', 'rgb(255, 0, 0)', 20);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
     function countTernarySubplot() {
         return d3.selectAll('.ternary').size();
     }

@@ -11,6 +11,7 @@
 var colorAttrs = require('../../components/color/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var plotAttrs = require('../../plots/attributes');
+var domainAttrs = require('../../plots/domain_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -180,37 +181,8 @@ module.exports = {
     }),
 
     // position and shape
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'calc'},
-                {valType: 'number', min: 0, max: 1, editType: 'calc'}
-            ],
-            dflt: [0, 1],
-            editType: 'calc',
-            description: [
-                'Sets the horizontal domain of this pie trace',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'calc'},
-                {valType: 'number', min: 0, max: 1, editType: 'calc'}
-            ],
-            dflt: [0, 1],
-            editType: 'calc',
-            description: [
-                'Sets the vertical domain of this pie trace',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        editType: 'calc'
-    },
+    domain: domainAttrs({name: 'pie', trace: true, editType: 'calc'}),
+
     hole: {
         valType: 'number',
         role: 'style',

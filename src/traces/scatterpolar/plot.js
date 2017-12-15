@@ -10,20 +10,46 @@
 
 var Lib = require('../../lib');
 var scatterPlot = require('../scatter/plot');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function plot(subplot, moduleCalcData) {
-    var xa = subplot.xaxis;
-    var ya = subplot.yaxis;
-    var radius = subplot.radius;
+    var i, j;
 
     var plotinfo = {
-        xaxis: xa,
-        yaxis: ya,
+        xaxis: subplot.xaxis,
+        yaxis: subplot.yaxis,
         plot: subplot.framework,
         layerClipId: subplot.hasClipOnAxisFalse ? subplot.clipIds.circle : null
     };
 
+    var radialRange = subplot.radialAxis.range;
+
+    // map (r, theta) first to a 'geometric' r and then to (x,y)
+    // on-par with what scatterPlot expects.
+
+    for(i = 0; i < moduleCalcData.length; i++) {
+        for(j = 0; j < moduleCalcData[i].length; j++) {
+            var cdi = moduleCalcData[i][j];
+            var r = cdi.r;
+
+            if(r !== BADNUM) {
+                var rr = r - radialRange[0];
+                if(rr >= 0) {
+                    var rad = cdi.rad;
+                    cdi.x = rr * Math.cos(rad);
+                    cdi.y = rr * Math.sin(rad);
+                    continue;
+                }
+            }
+
+            cdi.x = BADNUM;
+            cdi.y = BADNUM;
+        }
+    }
+
     scatterPlot(subplot.graphDiv, plotinfo, moduleCalcData);
+
+    var radius = subplot.radius;
 
     function pt2deg(p) {
         return Lib.rad2deg(Math.atan2(radius - p[1], p[0] - radius));
@@ -32,11 +58,11 @@ module.exports = function plot(subplot, moduleCalcData) {
     // TODO
     // fix polygon testers for segments that wrap around themselves
     // about the origin.
-    for(var i = 0; i < moduleCalcData.length; i++) {
+    for(i = 0; i < moduleCalcData.length; i++) {
         var trace = moduleCalcData[i][0].trace;
 
         if(Array.isArray(trace._polygons)) {
-            for(var j = 0; j < trace._polygons.length; j++) {
+            for(j = 0; j < trace._polygons.length; j++) {
                 var pts = trace._polygons[j].pts.slice();
                 pts.pop();
 

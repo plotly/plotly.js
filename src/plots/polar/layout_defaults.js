@@ -65,7 +65,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         }
 
         coerceAxis('visible');
-        if(!axOut.visible) continue;
 
         setConvert(axOut, layoutOut);
 
@@ -83,10 +82,12 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 if(autoRange) coerceAxis('rangemode');
 
                 coerceAxis('range');
-                axOut.cleanRange();
+                axOut.cleanRange('range', {dfltRange: [0, 1]});
 
-                coerceAxis('side');
-                coerceAxis('position', sector[0]);
+                if(axOut.visible) {
+                    coerceAxis('side');
+                    coerceAxis('position', sector[0]);
+                }
                 break;
             case 'angularaxis':
                 if(axType === 'linear') {
@@ -105,7 +106,10 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 break;
         }
 
-        handleAxisStyleDefaults(axIn, axOut, coerceAxis, opts);
+        if(axOut.visible) {
+            handleAxisStyleDefaults(axIn, axOut, coerceAxis, opts);
+        }
+
         axOut._input = axIn;
     }
 }
