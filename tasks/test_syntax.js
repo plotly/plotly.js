@@ -6,6 +6,7 @@ var glob = require('glob');
 var madge = require('madge');
 var readLastLines = require('read-last-lines');
 var eslint = require('eslint');
+var trueCasePath = require('true-case-path');
 
 var constants = require('./util/constants');
 var srcGlob = path.join(constants.pathToSrc, '**/*.js');
@@ -55,6 +56,8 @@ function assertJasmineSuites() {
  * - check for header comment
  * - check that we don't have any features that break in IE
  * - check that we don't use getComputedStyle unexpectedly
+ * - check that require statements use lowercase (to match assertFileNames)
+ *   or match the case of the source file
  */
 function assertSrcContents() {
     var licenseSrc = constants.licenseSrc;
@@ -69,6 +72,9 @@ function assertSrcContents() {
 
     // Forbidden in IE in any context
     var IE_BLACK_LIST = ['classList'];
+
+    // require'd built-in modules
+    var BUILTINS = ['events'];
 
     var getComputedStyleCnt = 0;
 
@@ -100,7 +106,28 @@ function assertSrcContents() {
                 }
                 else if(node.type === 'Identifier' && node.source() === 'getComputedStyle') {
                     if(node.parent.source() !== 'window.getComputedStyle') {
-                        logs.push(file + ': getComputedStyle must be called as a `window` property.');
+                        logs.push(file + ' : getComputedStyle must be called as a `window` property.');
+                    }
+                }
+                else if(node.type === 'CallExpression' && node.callee.name === 'require') {
+                    var pathNode = node.arguments[0];
+                    var pathStr = pathNode.value;
+                    if(pathNode.type !== 'Literal') {
+                        logs.push(file + ' : You may only `require` literals.');
+                    }
+                    else if(BUILTINS.indexOf(pathStr) === -1) {
+                        // node version 8.9.0+ can use require.resolve(request, {paths: [...]})
+                        // and avoid this explicit conversion to the current location
+                        if(pathStr.charAt(0) === '.') {
+                            pathStr = path.relative(__dirname, path.join(path.dirname(file), pathStr));
+                        }
+                        var fullPath = require.resolve(pathStr);
+                        var casedPath = trueCasePath(fullPath);
+
+                        if(fullPath !== trueCasePath(fullPath)) {
+                            logs.push(file + ' : `require` path is not case-correct:\n' +
+                                fullPath + ' -> ' + casedPath);
+                        }
                     }
                 }
             });

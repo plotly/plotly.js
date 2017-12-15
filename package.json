@@ -144,6 +144,7 @@
     "read-last-lines": "^1.1.0",
     "requirejs": "^2.3.1",
     "through2": "^2.0.3",
+    "true-case-path": "^1.0.2",
     "watchify": "^3.9.0",
     "xml2js": "^0.4.16"
   }
