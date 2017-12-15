@@ -698,15 +698,20 @@ proto.isPtWithinSector = function(d) {
     //
     // this assumes that sector[0] < 360 always
 
+    var thetaStart = wrap360(sector[0]);
+    var thetaEnd = wrap360(sector[1]);
+    if(thetaStart > thetaEnd) thetaEnd += 360;
+    var nextTurnDeg = deg + 360;
+
     return (
         r >= radialRange[0] &&
         r <= radialRange[1] &&
         (isFullCircle(sector) || (
-            sector[1] < 360 || deg > wrap360(sector[1]) ?
-                deg >= sector[0] && deg <= sector[1] :
-                deg <= wrap360(sector[1])
-        ))
-    );
+        deg >= thetaStart &&
+        deg <= thetaEnd) || (
+        nextTurnDeg >= thetaStart &&
+        nextTurnDeg <= thetaEnd)
+    ));
 };
 
 function setScale(ax, axLayout, fullLayout) {

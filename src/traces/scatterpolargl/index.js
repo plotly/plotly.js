@@ -50,7 +50,6 @@ function plot(subplot, cdata) {
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
     var rRange = radialAxis.range;
-    var thetaRange = angularAxis.range;
 
     var scene = ScatterGl.scene(container, subplot);
     scene.clear();
@@ -62,25 +61,19 @@ function plot(subplot, cdata) {
         var stash = cd.t;
         var rArray = stash.r;
         var thetaArray = stash.theta;
-        var i, r, theta;
+        var i, r, theta, rad;
 
         // filter out by range
-        var newRadialArray = [];
-        var newThetaArray = [];
-
         for(i = 0; i < rArray.length; i++) {
             r = rArray[i], theta = thetaArray[i];
 
-            var rad = angularAxis.c2rad(theta, trace.thetaunit)
+            rad = angularAxis.c2rad(theta, trace.thetaunit);
 
-            if(subplot.isPtWithinSector({r: r, rad: rad})) {
-                newRadialArray.push(r);
-                newThetaArray.push(theta);
+            if(!subplot.isPtWithinSector({r: r, rad: rad})) {
+                rArray[i] = NaN;
+                thetaArray[i] = NaN;
             }
         }
-
-        rArray = newRadialArray;
-        thetaArray = newThetaArray;
 
         var count = rArray.length;
         var positions = new Array(count * 2), x = Array(count), y = Array(count);
@@ -94,7 +87,7 @@ function plot(subplot, cdata) {
             theta = thetaArray[i];
 
             if(isNumeric(r) && isNumeric(theta) && r >= 0) {
-                var rad = c2rad(theta);
+                rad = c2rad(theta);
 
                 x[i] = positions[i * 2] = r * Math.cos(rad);
                 y[i] = positions[i * 2 + 1] = r * Math.sin(rad);
