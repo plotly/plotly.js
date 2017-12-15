@@ -29,7 +29,6 @@ exports.layoutArrayContainers = [];
 exports.layoutArrayRegexes = [];
 exports.traceLayoutAttributes = {};
 exports.localeRegistry = {};
-exports.formatRegistry = {};
 
 /**
  * register a module as the handler for a trace type
@@ -344,7 +343,8 @@ exports.registerLocale = function(_module) {
 
     var locales = exports.localeRegistry;
 
-    var formats = exports.formatRegistry;
+    var localeObj = locales[locale];
+    if(!localeObj) locales[locale] = localeObj = {};
 
     // Should we use this dict for the base locale?
     // In case we're overwriting a previous dict for this locale, check
@@ -353,14 +353,17 @@ exports.registerLocale = function(_module) {
     // baseLocale already had a dict or not.
     // Same logic for dateFormats
     if(baseLocale !== locale) {
-        if(hasDict && locales[baseLocale] === locales[locale]) {
-            locales[baseLocale] = newDict;
+        var baseLocaleObj = locales[baseLocale];
+        if(!baseLocaleObj) locales[baseLocale] = baseLocaleObj = {};
+
+        if(hasDict && baseLocaleObj.dictionary === localeObj.dictionary) {
+            baseLocaleObj.dictionary = newDict;
         }
-        if(hasFormat && formats[baseLocale] === formats[locale]) {
-            formats[baseLocale] = newFormat;
+        if(hasFormat && baseLocaleObj.format === localeObj.format) {
+            baseLocaleObj.format = newFormat;
         }
     }
 
-    if(hasDict) locales[locale] = newDict;
-    if(hasFormat) formats[locale] = newFormat;
+    if(hasDict) localeObj.dictionary = newDict;
+    if(hasFormat) localeObj.format = newFormat;
 };

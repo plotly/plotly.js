@@ -604,14 +604,14 @@ function getD3FormatObj(gd) {
 
     // same as localize, look for format parts in each format spec in the chain
     for(var i = 0; i < 2; i++) {
-        var formats = gd._context.formats;
+        var locales = gd._context.locales;
         for(var j = 0; j < 2; j++) {
-            var formatj = formats[locale];
+            var formatj = (locales[locale] || {}).format;
             if(formatj) {
                 includeFormat(formatj);
                 if(formatDone) break;
             }
-            formats = Registry.formatRegistry;
+            locales = Registry.localeRegistry;
         }
 
         var baseLocale = locale.split('-')[0];
@@ -620,7 +620,7 @@ function getD3FormatObj(gd) {
     }
 
     // lastly pick out defaults from english (non-US, as DMY is so much more common)
-    if(!formatDone) includeFormat(Registry.formatRegistry.en);
+    if(!formatDone) includeFormat(Registry.localeRegistry.en.format);
 
     return formatObj;
 }

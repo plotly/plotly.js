@@ -21,13 +21,17 @@ module.exports = {
     // no interactivity, for export or image generation
     staticPlot: false,
 
-    // we can edit titles, move annotations, etc - sets all pieces of `edits`
-    // unless a separate `edits` config item overrides individual parts
+    /*
+     * we can edit titles, move annotations, etc - sets all pieces of `edits`
+     * unless a separate `edits` config item overrides individual parts
+     */
     editable: false,
     edits: {
-        // annotationPosition: the main anchor of the annotation, which is the
-        // text (if no arrow) or the arrow (which drags the whole thing leaving
-        // the arrow length & direction unchanged)
+        /*
+         * annotationPosition: the main anchor of the annotation, which is the
+         * text (if no arrow) or the arrow (which drags the whole thing leaving
+         * the arrow length & direction unchanged)
+         */
         annotationPosition: false,
         // just for annotations with arrows, change the length  and direction of the arrow
         annotationTail: false,
@@ -43,8 +47,10 @@ module.exports = {
         titleText: false
     },
 
-    // DO autosize once regardless of layout.autosize
-    // (use default width or height values otherwise)
+    /*
+     * DO autosize once regardless of layout.autosize
+     * (use default width or height values otherwise)
+     */
     autosizable: false,
 
     // set the length of the undo/redo queue
@@ -68,7 +74,10 @@ module.exports = {
     // enable axis pan/zoom drag handles
     showAxisDragHandles: true,
 
-    // enable direct range entry at the pan/zoom drag points (drag handles must be enabled above)
+    /*
+     * enable direct range entry at the pan/zoom drag points
+     * (drag handles must be enabled above)
+     */
     showAxisRangeEntryBoxes: true,
 
     // link to open this plot in plotly
@@ -86,18 +95,24 @@ module.exports = {
     // display the mode bar (true, false, or 'hover')
     displayModeBar: 'hover',
 
-    // remove mode bar button by name
-    // (see ./components/modebar/buttons.js for the list of names)
+    /*
+     * remove mode bar button by name
+     * (see ./components/modebar/buttons.js for the list of names)
+     */
     modeBarButtonsToRemove: [],
 
-    // add mode bar button using config objects
-    // (see ./components/modebar/buttons.js for list of arguments)
+    /*
+     * add mode bar button using config objects
+     * (see ./components/modebar/buttons.js for list of arguments)
+     */
     modeBarButtonsToAdd: [],
 
-    // fully custom mode bar buttons as nested array,
-    // where the outer arrays represents button groups, and
-    // the inner arrays have buttons config objects or names of default buttons
-    // (see ./components/modebar/buttons.js for more info)
+    /*
+     * fully custom mode bar buttons as nested array,
+     * where the outer arrays represents button groups, and
+     * the inner arrays have buttons config objects or names of default buttons
+     * (see ./components/modebar/buttons.js for more info)
+     */
     modeBarButtons: false,
 
     // add the plotly logo on the end of the mode bar
@@ -106,51 +121,65 @@ module.exports = {
     // increase the pixel ratio for Gl plot images
     plotGlPixelRatio: 2,
 
-    // background setting function
-    // 'transparent' sets the background `layout.paper_color`
-    // 'opaque' blends bg color with white ensuring an opaque background
-    // or any other custom function of gd
+    /*
+     * background setting function
+     * 'transparent' sets the background `layout.paper_color`
+     * 'opaque' blends bg color with white ensuring an opaque background
+     * or any other custom function of gd
+     */
     setBackground: 'transparent',
 
     // URL to topojson files used in geo charts
     topojsonURL: 'https://cdn.plot.ly/',
 
-    // Mapbox access token (required to plot mapbox trace types)
-    // If using an Mapbox Atlas server, set this option to '',
-    // so that plotly.js won't attempt to authenticate to the public Mapbox server.
+    /*
+     * Mapbox access token (required to plot mapbox trace types)
+     * If using an Mapbox Atlas server, set this option to '',
+     * so that plotly.js won't attempt to authenticate to the public Mapbox server.
+     */
     mapboxAccessToken: null,
 
-    // Turn all console logging on or off (errors will be thrown)
-    // This should ONLY be set via Plotly.setPlotConfig
-    // 0: no logs
-    // 1: warnings and errors, but not informational messages
-    // 2: verbose logs
+    /*
+     * Turn all console logging on or off (errors will be thrown)
+     * This should ONLY be set via Plotly.setPlotConfig
+     * 0: no logs
+     * 1: warnings and errors, but not informational messages
+     * 2: verbose logs
+     */
     logging: 1,
 
-    // Set global transform to be applied to all traces with no
-    // specification needed
+    /*
+     * Set global transform to be applied to all traces with no
+     * specification needed
+     */
     globalTransforms: [],
 
-    // Which localization should we use?
-    // Should be a string like 'en' or 'en-US'.
+    /*
+     * Which localization should we use?
+     * Should be a string like 'en' or 'en-US'.
+     */
     locale: 'en-US',
 
-    // Localization dictionaries
-    // Dictionaries can be provided either here (specific to one chart) or globally
-    // by registering them as modules (which contain dateFormat specs as well).
-    // Here `dictionaries` should be an object of objects
-    // {'da': {'Reset axes': 'Nulstil aksler', ...}, ...}
-    // When looking for a translation we look at these dictionaries first, then
-    // the ones registered as modules. If those fail, we strip off any
-    // regionalization ('en-US' -> 'en') and try each again
-    dictionaries: {},
-
-    // Localization specs for dates and numbers
-    // Each localization should be an object with keys matching most of d3.locale,
-    // see https://github.com/d3/d3-3.x-api-reference/blob/master/Localization.md
-    // {'da': {months: [...], shortMonths: [...], ...}, ...}
-    // Unlike d3.locale, every key is optional, we will fall back on English ('en').
-    // Currently `grouping` and `currency` are ignored for our automatic number
-    // formatting, but can be used in custom formats.
-    formats: {}
+    /*
+     * Localization definitions
+     * Locales can be provided either here (specific to one chart) or globally
+     * by registering them as modules.
+     * Should be an object of objects {locale: {dictionary: {...}, format: {...}}}
+     * {
+     *     da: {
+     *         dictionary: {'Reset axes': 'Nulstil aksler', ...},
+     *         format: {months: [...], shortMonths: [...]}
+     *     },
+     *     ...
+     * }
+     * All parts are optional. When looking for translation or format fields, we
+     * look first for an exact match in a config locale, then in a registered
+     * module. If those fail, we strip off any regionalization ('en-US' -> 'en')
+     * and try each (config, registry) again. The final fallback for translation
+     * is untranslated (which is US English) and for formats is the base English
+     * (the only consequence being the last fallback date format %x is DD/MM/YYYY
+     * instead of MM/DD/YYYY). Currently `grouping` and `currency` are ignored
+     * for our automatic number formatting, but can be used in custom formats.
+     */
+    locales: {}
 };

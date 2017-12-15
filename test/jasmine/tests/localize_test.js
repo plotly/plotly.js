@@ -13,32 +13,26 @@ describe('localization', function() {
     'use strict';
 
     var gd;
-    var preregisteredDicts;
-    var preregisteredFormats;
+    var preregisteredLocales;
 
     beforeEach(function() {
         gd = createGraphDiv();
 
-        // empty out any dictionaries we might register by default
-        preregisteredDicts = Registry.localeRegistry;
-        Registry.localeRegistry = {};
-
+        // empty out any locales we might register by default
         // we always need `en` format as it's the fallback
-        preregisteredFormats = Registry.formatRegistry;
-        Registry.formatRegistry = {en: preregisteredFormats.en};
+        preregisteredLocales = Registry.localeRegistry;
+        Registry.localeRegistry = {en: {format: preregisteredLocales.en.format}};
     });
 
     afterEach(function() {
         destroyGraphDiv();
-        Registry.localeRegistry = preregisteredDicts;
-        Registry.formatRegistry = preregisteredFormats;
+        Registry.localeRegistry = preregisteredLocales;
     });
 
-    function plot(locale, dicts, formats) {
+    function plot(locale, locales) {
         var config = {};
         if(locale) config.locale = locale;
-        if(dicts) config.dictionaries = dicts;
-        if(formats) config.formats = formats;
+        if(locales) config.locales = locales;
 
         return Plotly.newPlot(gd, [{x: ['2001-01-01', '2002-01-01'], y: [0.5, 3.5]}], {}, config);
     }
@@ -143,10 +137,7 @@ describe('localization', function() {
             format: {decimal: 'X', thousands: 'X', shortMonths: monthLetters, shortDays: dayLetters}
         });
 
-        plot('fr-QC',
-            {fr: ctx_fr.dictionary, 'fr-QC': ctx_fr_QC.dictionary},
-            {fr: ctx_fr.format, 'fr-QC': ctx_fr_QC.format}
-        )
+        plot('fr-QC', {fr: ctx_fr, 'fr-QC': ctx_fr_QC})
         .then(function() {
             expect(_(gd, 'a')).toBe('a-ctx-QC');
             expect(_(gd, 'b')).toBe('b-reg-QC');
@@ -168,7 +159,10 @@ describe('localization', function() {
     });
 
     it('does not generate an automatic base locale in context', function(done) {
-        plot('fr', {'fr-QC': {fries: 'poutine'}}, {'fr-QC': {decimal: '^', shortMonths: monthNums}})
+        plot('fr', {'fr-QC': {
+            dictionary: {fries: 'poutine'},
+            format: {decimal: '^', shortMonths: monthNums}
+        }})
         .then(function() {
             expect(_(gd, 'fries')).toBe('fries');
             expect(firstXLabel()).toBe('Jan 2001');
@@ -180,7 +174,6 @@ describe('localization', function() {
 
     it('allows registering dictionary and format separately without overwriting the other', function() {
         expect(Registry.localeRegistry.es).toBeUndefined();
-        expect(Registry.formatRegistry.es).toBeUndefined();
 
         var d1 = {I: 'Yo'};
         var f1 = {decimal: 'ñ'};
@@ -194,8 +187,8 @@ describe('localization', function() {
             format: f1
         });
 
-        expect(Registry.localeRegistry.es).toBe(d1);
-        expect(Registry.formatRegistry.es).toBe(f1);
+        expect(Registry.localeRegistry.es.dictionary).toBe(d1);
+        expect(Registry.localeRegistry.es.format).toBe(f1);
 
         Plotly.register({
             moduleType: 'locale',
@@ -203,8 +196,8 @@ describe('localization', function() {
             dictionary: d2
         });
 
-        expect(Registry.localeRegistry.es).toBe(d2);
-        expect(Registry.formatRegistry.es).toBe(f1);
+        expect(Registry.localeRegistry.es.dictionary).toBe(d2);
+        expect(Registry.localeRegistry.es.format).toBe(f1);
 
         Plotly.register({
             moduleType: 'locale',
@@ -212,12 +205,12 @@ describe('localization', function() {
             format: f2
         });
 
-        expect(Registry.localeRegistry.es).toBe(d2);
-        expect(Registry.formatRegistry.es).toBe(f2);
+        expect(Registry.localeRegistry.es.dictionary).toBe(d2);
+        expect(Registry.localeRegistry.es.format).toBe(f2);
     });
 
     it('uses number format for default but still supports explicit layout.separators', function(done) {
-        plot('da', null, {da: {decimal: 'D', thousands: 'T'}})
+        plot('da', {da: {format: {decimal: 'D', thousands: 'T'}}})
         .then(function() {
             expect(firstYLabel()).toBe('0D5');
             expect(gd._fullLayout.separators).toBe('DT');
