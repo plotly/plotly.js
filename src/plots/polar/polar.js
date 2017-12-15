@@ -217,6 +217,9 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     Axes.setConvert(yaxis, fullLayout);
     yaxis.setScale();
 
+    xaxis.isPtWithinRange = function(d) { return _this.isPtWithinSector(d); };
+    yaxis.isPtWithinRange + function() { return true; };
+
     layers.frontplot
         .call(Drawing.setTranslate, xOffset2, yOffset2)
         .call(Drawing.setClipUrl, _this.hasClipOnAxisFalse ? null : _this.clipIds.circle);
@@ -683,15 +686,27 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     dragElement.init(dragOpts);
 };
 
-proto.isPtWithinSector = function() {
+proto.isPtWithinSector = function(d) {
     var sector = this.sector;
+    var radialRange = this.radialAxis.range;
+    var r = d.r;
+    var deg = wrap360(rad2deg(d.rad));
 
-    if(isFullCircle(sector)) return true;
+    // TODO add calendar support
 
-    // check out https://stackoverflow.com/a/13675772/4068492
-    // for possible solution
-    // var deg = wrap360(rad2deg(d.rad));
-    return true;
+    // TODO does this handle all cases?
+    //
+    // this assumes that sector[0] < 360 always
+
+    return (
+        r >= radialRange[0] &&
+        r <= radialRange[1] &&
+        isFullCircle(sector) || (
+            sector[1] < 360 || deg > wrap360(sector[1]) ?
+                deg >= sector[0] && deg <= sector[1] :
+                deg <= wrap360(sector[1])
+        )
+    );
 };
 
 function setScale(ax, axLayout, fullLayout) {

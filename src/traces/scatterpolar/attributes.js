@@ -62,6 +62,7 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
 
     marker: scatterAttrs.marker,
+    // TODO maybe we should make the dflt *false* ??
     cliponaxis: scatterAttrs.cliponaxis,
 
     textposition: scatterAttrs.textposition,
