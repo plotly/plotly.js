@@ -6,7 +6,7 @@ var common = require('./util/common');
 var args = process.argv.slice(2);
 var argLocale = args[0];
 
-var pathToEn = path.join(constants.pathToLib, 'locale-en.js');
+var pathToEn = path.join(constants.pathToSrc, 'locale-en.js');
 var pathToWCRegions = path.join(__dirname, '../node_modules/world-calendars/dist/regional');
 
 if(!argLocale) {

@@ -160,7 +160,7 @@ describe('Test Plots', function() {
             layoutOut,
             expected;
 
-        var formatObj = require('@lib/locale-en').format;
+        var formatObj = require('@src/locale-en').format;
 
         function supplyLayoutDefaults(layoutIn, layoutOut) {
             layoutOut._dfltTitle = {
