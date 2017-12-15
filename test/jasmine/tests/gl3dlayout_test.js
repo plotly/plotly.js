@@ -18,7 +18,7 @@ describe('Test Gl3d layout defaults', function() {
         var supplyLayoutDefaults = Gl3d.supplyLayoutDefaults;
 
         beforeEach(function() {
-            layoutOut = { _basePlotModules: ['gl3d'] };
+            layoutOut = { _basePlotModules: ['gl3d'], _dfltTitle: {x: 'xxx', y: 'yyy', colorbar: 'cbbb'} };
 
             // needs a scene-ref in a trace in order to be detected
             fullData = [ { type: 'scatter3d', scene: 'scene' }];

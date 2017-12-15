@@ -1,12 +1,12 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
 var Table = require('@src/traces/table');
 var attributes = require('@src/traces/table/attributes');
 var cn = require('@src/traces/table/constants').cn;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var mockMulti = require('@mocks/table_latex_multitrace.json');
 
@@ -35,7 +35,7 @@ describe('table initialization tests', function() {
         it('should not coerce trace opacity', function() {
             var gd = Lib.extendDeep({}, mock1);
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
 
             expect(gd._fullData[0].opacity).toBeUndefined();
         });
@@ -50,7 +50,7 @@ describe('table initialization tests', function() {
                 color: 'blue'
             };
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
 
             var expected = {
                 family: 'Gravitas',

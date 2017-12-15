@@ -16,6 +16,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 
 describe('Test plot api', function() {
@@ -516,7 +517,7 @@ describe('Test plot api', function() {
                 subroutines[m].calls.reset();
             });
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
             Plots.doCalcdata(gd);
             return gd;
         }
@@ -576,7 +577,7 @@ describe('Test plot api', function() {
         });
 
         function mockDefaultsAndCalc(gd) {
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
             gd.calcdata = gd._fullData.map(function(trace) {
                 return [{x: 1, y: 1, trace: trace}];
             });

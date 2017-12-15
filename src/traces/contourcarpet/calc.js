@@ -8,10 +8,8 @@
 
 'use strict';
 
-var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var extendFlat = require('../../lib').extendFlat;
-var Registry = require('../../registry');
 var colorscaleCalc = require('../../components/colorscale/calc');
 var hasColumns = require('../heatmap/has_columns');
 var convertColumnData = require('../heatmap/convert_column_xyz');
@@ -126,18 +124,15 @@ function heatmappishCalc(gd, trace) {
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
     var carpet = trace.carpetTrace;
-    var aax = carpet.aaxis,
-        bax = carpet.baxis,
-        isContour = Registry.traceIs(trace, 'contour'),
-        zsmooth = isContour ? 'best' : trace.zsmooth,
-        a,
+    var aax = carpet.aaxis;
+    var bax = carpet.baxis;
+    var a,
         a0,
         da,
         b,
         b0,
         db,
-        z,
-        i;
+        z;
 
     // cancel minimum tick spacings (only applies to bars and boxes)
     aax._minDtick = 0;
@@ -156,40 +151,6 @@ function heatmappishCalc(gd, trace) {
 
     trace._emptypoints = findEmpties(z);
     trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);
-
-    function noZsmooth(msg) {
-        zsmooth = trace._input.zsmooth = trace.zsmooth = false;
-        Lib.notifier('cannot fast-zsmooth: ' + msg);
-    }
-
-    // check whether we really can smooth (ie all boxes are about the same size)
-    if(zsmooth === 'fast') {
-        if(aax.type === 'log' || bax.type === 'log') {
-            noZsmooth('log axis found');
-        }
-        else {
-            if(a.length) {
-                var avgda = (a[a.length - 1] - a[0]) / (a.length - 1),
-                    maxErrX = Math.abs(avgda / 100);
-                for(i = 0; i < a.length - 1; i++) {
-                    if(Math.abs(a[i + 1] - a[i] - avgda) > maxErrX) {
-                        noZsmooth('a scale is not linear');
-                        break;
-                    }
-                }
-            }
-            if(b.length && zsmooth === 'fast') {
-                var avgdy = (b[b.length - 1] - b[0]) / (b.length - 1),
-                    maxErrY = Math.abs(avgdy / 100);
-                for(i = 0; i < b.length - 1; i++) {
-                    if(Math.abs(b[i + 1] - b[i] - avgdy) > maxErrY) {
-                        noZsmooth('b scale is not linear');
-                        break;
-                    }
-                }
-            }
-        }
-    }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
     var xlen = maxRowLength(z),

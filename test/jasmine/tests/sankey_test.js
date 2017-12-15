@@ -4,7 +4,6 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var mock = require('@mocks/sankey_energy.json');
 var mockDark = require('@mocks/sankey_energy_dark.json');
-var Plots = require('@src/plots/plots');
 var Sankey = require('@src/traces/sankey');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -12,6 +11,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('sankey tests', function() {
 
@@ -87,7 +87,7 @@ describe('sankey tests', function() {
         it('should not coerce trace opacity', function() {
             var gd = Lib.extendDeep({}, mock);
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
 
             expect(gd._fullData[0].opacity).toBeUndefined();
         });
@@ -223,7 +223,7 @@ describe('sankey tests', function() {
         function _calc(trace) {
             var gd = { data: [trace] };
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
             var fullTrace = gd._fullData[0];
             Sankey.calc(gd, fullTrace);
             return fullTrace;
@@ -231,30 +231,19 @@ describe('sankey tests', function() {
 
         var base = { type: 'sankey' };
 
-        it('circularity is detected', function() {
+        describe('remove nodes if encountering circularity', function() {
+            var errors;
 
-            var errors = [];
-            spyOn(Lib, 'error').and.callFake(function(msg) {
-                errors.push(msg);
+            beforeEach(function() {
+                errors = [];
+                spyOn(Lib, 'error').and.callFake(function(msg) {
+                    errors.push(msg);
+                });
             });
 
-            _calc(Lib.extendDeep({}, base, {
-                node: {
-                    label: ['a', 'b', 'c']
-                },
-                link: {
-                    value: [1, 1, 1],
-                    source: [0, 1, 2],
-                    target: [1, 2, 0]
-                }
-            }));
-
-            expect(errors.length).toEqual(1);
-        });
-
-        describe('remove nodes if encountering circularity', function() {
-
             it('removing a single self-pointing node', function() {
+                expect(errors.length).toBe(0);
+
                 var fullTrace = _calc(Lib.extendDeep({}, base, {
                     node: {
                         label: ['a']
@@ -270,10 +259,12 @@ describe('sankey tests', function() {
                 expect(fullTrace.link.value).toEqual([], 'link value(s) removed');
                 expect(fullTrace.link.source).toEqual([], 'link source(s) removed');
                 expect(fullTrace.link.target).toEqual([], 'link target(s) removed');
-
+                expect(errors.length).toBe(1);
             });
 
             it('removing everything if detecting a circle', function() {
+                expect(errors.length).toBe(0);
+
                 var fullTrace = _calc(Lib.extendDeep({}, base, {
                     node: {
                         label: ['a', 'b', 'c', 'd', 'e']
@@ -289,7 +280,7 @@ describe('sankey tests', function() {
                 expect(fullTrace.link.value).toEqual([], 'link value(s) removed');
                 expect(fullTrace.link.source).toEqual([], 'link source(s) removed');
                 expect(fullTrace.link.target).toEqual([], 'link target(s) removed');
-
+                expect(errors.length).toBe(1);
             });
         });
     });
@@ -390,7 +381,7 @@ describe('sankey tests', function() {
                 _hover(404, 302);
 
                 assertLabel(
-                    ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
+                    ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
                     ['rgb(148, 103, 189)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                 );
             })
@@ -398,7 +389,7 @@ describe('sankey tests', function() {
                 _hover(450, 300);
 
                 assertLabel(
-                    ['Source: Solid', 'Target: Industry', '46TWh'],
+                    ['source: Solid', 'target: Industry', '46TWh'],
                     ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                 );
 
@@ -408,7 +399,7 @@ describe('sankey tests', function() {
                 _hover(404, 302);
 
                 assertLabel(
-                    ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
+                    ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
                     ['rgb(148, 103, 189)', 'rgb(255, 255, 255)', 13, 'Roboto', 'rgb(255, 255, 255)']
                 );
             })
@@ -416,7 +407,7 @@ describe('sankey tests', function() {
                 _hover(450, 300);
 
                 assertLabel(
-                    ['Source: Solid', 'Target: Industry', '46TWh'],
+                    ['source: Solid', 'target: Industry', '46TWh'],
                     ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Roboto', 'rgb(255, 255, 255)']
                 );
 
@@ -431,7 +422,7 @@ describe('sankey tests', function() {
                 _hover(404, 302);
 
                 assertLabel(
-                    ['Solid', 'Incoming flow count: 4', 'Outgoing flow count: 3', '447TWh'],
+                    ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
                     ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 20, 'Roboto', 'rgb(0, 0, 0)']
                 );
             })
@@ -439,7 +430,7 @@ describe('sankey tests', function() {
                 _hover(450, 300);
 
                 assertLabel(
-                    ['Source: Solid', 'Target: Industry', '46TWh'],
+                    ['source: Solid', 'target: Industry', '46TWh'],
                     ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 20, 'Roboto', 'rgb(0, 0, 0)']
                 );
             })
@@ -463,7 +454,7 @@ describe('sankey tests', function() {
                     _hover(450, 300);
 
                     assertLabel(
-                        ['Source: Solid', 'Target: Industry', '46TWh'],
+                        ['source: Solid', 'target: Industry', '46TWh'],
                         ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                     );
                 })

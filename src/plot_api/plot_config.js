@@ -122,9 +122,26 @@ module.exports = {
 
     // Turn all console logging on or off (errors will be thrown)
     // This should ONLY be set via Plotly.setPlotConfig
-    logging: false,
+    // 0: no logs
+    // 1: warnings and errors, but not informational messages
+    // 2: verbose logs
+    logging: 1,
 
     // Set global transform to be applied to all traces with no
     // specification needed
-    globalTransforms: []
+    globalTransforms: [],
+
+    // Which localization should we use?
+    // Should be a string like 'en' or 'en-US'.
+    locale: 'en-US',
+
+    // Localization dictionaries
+    // Dictionaries can be provided either here (specific to one chart) or globally
+    // by registering them as modules.
+    // Here `dictionaries` should be an object of objects
+    // {'da': {'Reset axes': 'Nulstil aksler', ...}, ...}
+    // When looking for a translation we look at these dictionaries first, then
+    // the ones registered as modules. If those fail, we strip off any
+    // regionalization ('en-US' -> 'en') and try each again
+    dictionaries: {}
 };

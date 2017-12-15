@@ -1,5 +1,4 @@
 var Plotly = require('@lib');
-var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var BADNUM = require('@src/constants/numerical').BADNUM;
 
@@ -14,6 +13,7 @@ var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var fail = require('../assets/fail_test');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('Test scattergeo defaults', function() {
     var traceIn,
@@ -90,11 +90,12 @@ describe('Test scattergeo calc', function() {
         var trace = Lib.extendFlat({}, base, opts);
         var gd = { data: [trace] };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
 
         var fullTrace = gd._fullData[0];
         return ScatterGeo.calc(gd, fullTrace).map(function(obj) {
             delete obj.i;
+            delete obj.t;
             return obj;
         });
     }
@@ -347,15 +348,15 @@ describe('scattergeo bad data', function() {
     afterEach(destroyGraphDiv);
 
     it('should not throw an error with bad locations', function(done) {
-        spyOn(Lib, 'warn');
+        spyOn(Lib, 'log');
         Plotly.newPlot(gd, [{
             locations: ['canada', 0, null, '', 'utopia'],
             locationmode: 'country names',
             type: 'scattergeo'
         }])
         .then(function() {
-            // only utopia warns - others are silently ignored
-            expect(Lib.warn).toHaveBeenCalledTimes(1);
+            // only utopia logs - others are silently ignored
+            expect(Lib.log).toHaveBeenCalledTimes(1);
         })
         .catch(fail)
         .then(done);

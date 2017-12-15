@@ -509,7 +509,8 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             });
 
             var strokewidth = options.arrowwidth,
-                arrowColor = options.arrowcolor;
+                arrowColor = options.arrowcolor,
+                arrowSide = options.arrowside;
 
             var arrowGroup = annGroup.append('g')
                 .style({opacity: Color.opacity(arrowColor)})
@@ -520,7 +521,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 .style('stroke-width', strokewidth + 'px')
                 .call(Color.stroke, Color.rgb(arrowColor));
 
-            drawArrowHead(arrow, 'end', options);
+            drawArrowHead(arrow, arrowSide, options);
 
             // the arrow dragger is a small square right at the head, then a line to the tail,
             // all expanded by a stroke width of 6px plus the arrow line width

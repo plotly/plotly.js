@@ -12,7 +12,7 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var logError = require('./loggers').error;
+var Loggers = require('./loggers');
 var mod = require('./mod');
 
 var constants = require('../constants/numerical');
@@ -340,7 +340,7 @@ exports.cleanDate = function(v, dflt, calendar) {
         // do not allow milliseconds (old) or jsdate objects (inherently
         // described as gregorian dates) with world calendars
         if(isWorldCalendar(calendar)) {
-            logError('JS Dates and milliseconds are incompatible with world calendars', v);
+            Loggers.error('JS Dates and milliseconds are incompatible with world calendars', v);
             return dflt;
         }
 
@@ -351,7 +351,7 @@ exports.cleanDate = function(v, dflt, calendar) {
         if(!v && dflt !== undefined) return dflt;
     }
     else if(!exports.isDateTime(v, calendar)) {
-        logError('unrecognized date', v);
+        Loggers.error('unrecognized date', v);
         return dflt;
     }
     return v;
@@ -551,7 +551,7 @@ exports.incrementMonth = function(ms, dMonth, calendar) {
             return (cDate.toJD() - EPOCHJD) * ONEDAY + timeMs;
         }
         catch(e) {
-            logError('invalid ms ' + ms + ' in calendar ' + calendar);
+            Loggers.error('invalid ms ' + ms + ' in calendar ' + calendar);
             // then keep going in gregorian even though the result will be 'Invalid'
         }
     }

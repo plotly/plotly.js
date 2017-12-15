@@ -1,7 +1,11 @@
+var path = require('path');
+var glob = require('glob');
+
 var constants = require('./util/constants');
 var common = require('./util/common');
 var _bundle = require('./util/browserify_wrapper');
 var makeSchema = require('./util/make_schema');
+var wrapLocale = require('./util/wrap_locale');
 /*
  * This script takes one argument
  *
@@ -33,6 +37,7 @@ _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
     pathToMinBundle: constants.pathToPlotlyDistMin
 });
 
+
 // Browserify the geo assets
 _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
     standalone: 'PlotlyGeoAssets'
@@ -51,5 +56,15 @@ constants.partialBundlePaths.forEach(function(pathObj) {
         standalone: 'Plotly',
         debug: DEV,
         pathToMinBundle: pathObj.distMin
+    });
+});
+
+// "Browserify" the locales
+var localeGlob = path.join(constants.pathToLib, 'locale-*.js');
+glob(localeGlob, function(err, files) {
+    files.forEach(function(file) {
+        var outName = 'plotly-' + path.basename(file);
+        var outPath = path.join(constants.pathToDist, outName);
+        wrapLocale(file, outPath);
     });
 });

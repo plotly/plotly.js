@@ -14,6 +14,7 @@ var tinycolor = require('tinycolor2');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var _ = Lib._;
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var setConvert = require('../cartesian/set_convert');
@@ -382,7 +383,7 @@ proto.drawAxes = function(doTitles) {
         Titles.draw(gd, 'a' + titlesuffix, {
             propContainer: aaxis,
             propName: _this.id + '.aaxis.title',
-            dfltName: 'Component A',
+            placeholder: _(gd, 'Click to enter Component A title'),
             attributes: {
                 x: _this.x0 + _this.w / 2,
                 y: _this.y0 - aaxis.titlefont.size / 3 - apad,
@@ -396,7 +397,7 @@ proto.drawAxes = function(doTitles) {
         Titles.draw(gd, 'b' + titlesuffix, {
             propContainer: baxis,
             propName: _this.id + '.baxis.title',
-            dfltName: 'Component B',
+            placeholder: _(gd, 'Click to enter Component B title'),
             attributes: {
                 x: _this.x0 - bpad,
                 y: _this.y0 + _this.h + baxis.titlefont.size * 0.83 + bpad,
@@ -407,7 +408,7 @@ proto.drawAxes = function(doTitles) {
         Titles.draw(gd, 'c' + titlesuffix, {
             propContainer: caxis,
             propName: _this.id + '.caxis.title',
-            dfltName: 'Component C',
+            placeholder: _(gd, 'Click to enter Component C title'),
             attributes: {
                 x: _this.x0 + _this.w + bpad,
                 y: _this.y0 + _this.h + caxis.titlefont.size * 0.83 + bpad,
@@ -588,7 +589,7 @@ proto.initInteractions = function() {
         Plotly.relayout(gd, attrs);
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Lib.notifier('Double-click to<br>zoom back out', 'long');
+            Lib.notifier(_(gd, 'Double-click to zoom back out'), 'long');
             SHOWZOOMOUTTIP = false;
         }
     }

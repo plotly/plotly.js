@@ -65,12 +65,12 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.lat = lonlat[1];
 
     pointData.color = getTraceColor(trace, di);
-    pointData.extraText = getExtraText(trace, di, geo.mockAxis);
+    pointData.extraText = getExtraText(trace, di, geo.mockAxis, cd[0].t.labels);
 
     return [pointData];
 };
 
-function getExtraText(trace, pt, axis) {
+function getExtraText(trace, pt, axis, labels) {
     var hoverinfo = pt.hi || trace.hoverinfo;
 
     var parts = hoverinfo === 'all' ?
@@ -92,9 +92,9 @@ function getExtraText(trace, pt, axis) {
     } else if(hasLon && hasLat) {
         text.push('(' + format(pt.lonlat[0]) + ', ' + format(pt.lonlat[1]) + ')');
     } else if(hasLon) {
-        text.push('lon: ' + format(pt.lonlat[0]));
+        text.push(labels.lon + format(pt.lonlat[0]));
     } else if(hasLat) {
-        text.push('lat: ' + format(pt.lonlat[1]));
+        text.push(labels.lat + format(pt.lonlat[1]));
     }
 
     if(hasText) {

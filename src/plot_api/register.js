@@ -40,6 +40,10 @@ module.exports = function register(_modules) {
                 registerComponentModule(newModule);
                 break;
 
+            case 'locale':
+                Registry.registerLocale(newModule);
+                break;
+
             default:
                 throw new Error('Invalid module was attempted to be registered!');
         }

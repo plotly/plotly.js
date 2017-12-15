@@ -568,7 +568,6 @@ function plotPolar(gd, data, layout) {
     var opacity = 1;
     var txt = gd._fullLayout.title;
     if(txt === '' || !txt) opacity = 0;
-    var placeholderText = 'Click to enter title';
 
     var titleLayout = function() {
         this.call(svgTextUtils.convertToTspans, gd);
@@ -580,6 +579,7 @@ function plotPolar(gd, data, layout) {
         .call(titleLayout);
 
     if(gd._context.edits.titleText) {
+        var placeholderText = Lib._(gd, 'Click to enter Plot title');
         if(!txt || txt === placeholderText) {
             opacity = 0.2;
             // placeholder is not going through convertToTspans

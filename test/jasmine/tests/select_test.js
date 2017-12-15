@@ -889,7 +889,7 @@ describe('Test select box and lasso per trace:', function() {
                 [[350, 200], [400, 250]],
                 function() {
                     assertPoints([['GBR', 26.507354205352502], ['IRL', 86.4125147625692]]);
-                    assertSelectedPoints({0: [54, 68]});
+                    assertSelectedPoints({0: [43, 54]});
                     assertRanges([[-19.11, 63.06], [7.31, 53.72]]);
                 },
                 [280, 190],
@@ -904,7 +904,7 @@ describe('Test select box and lasso per trace:', function() {
                 [[350, 200], [400, 200], [400, 250], [350, 250], [350, 200]],
                 function() {
                     assertPoints([['GBR', 26.507354205352502], ['IRL', 86.4125147625692]]);
-                    assertSelectedPoints({0: [54, 68]});
+                    assertSelectedPoints({0: [43, 54]});
                     assertLassoPoints([
                         [-19.11, 63.06], [5.50, 65.25], [7.31, 53.72], [-12.90, 51.70], [-19.11, 63.06]
                     ]);

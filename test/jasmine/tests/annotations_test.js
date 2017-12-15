@@ -98,6 +98,11 @@ describe('Test annotations', function() {
         });
 
         it('should clean *xclick* and *yclick* values', function() {
+            var errors = [];
+            spyOn(Loggers, 'error').and.callFake(function(msg) {
+                errors.push(msg);
+            });
+
             var layoutIn = {
                 annotations: [{
                     clicktoshow: 'onoff',
@@ -139,6 +144,17 @@ describe('Test annotations', function() {
             expect(layoutOut.annotations[1]._yclick).toBe(undefined, 'invalid date');
             expect(layoutOut.annotations[2]._xclick).toBe(2, 'log');
             expect(layoutOut.annotations[2]._yclick).toBe('A', 'category');
+            expect(errors.length).toBe(1);
+        });
+
+        it('should default to end for arrowside', function() {
+            var layoutIn = {
+                annotations: [{ showarrow: true, arrowhead: 2 }]
+            };
+
+            var out = _supply(layoutIn);
+
+            expect(out[0].arrowside).toEqual('end');
         });
     });
 });
@@ -567,7 +583,7 @@ describe('annotations autorange', function() {
 
     afterEach(destroyGraphDiv);
 
-    function assertRanges(x, y, x2, y2, x3, y3) {
+    function assertRanges(x, y, x2, y2, x3, y3, x4, y4) {
         var fullLayout = gd._fullLayout;
 
         var PREC = 1;
@@ -590,6 +606,8 @@ describe('annotations autorange', function() {
         expect(fullLayout.yaxis2.range).toBeCloseToArray(y2, PRECY2, 'yaxis2');
         expect(fullLayout.xaxis3.range).toBeCloseToArray(x3, PRECX3, 'xaxis3');
         expect(fullLayout.yaxis3.range).toBeCloseToArray(y3, PREC, 'yaxis3');
+        expect(fullLayout.xaxis4.range).toBeCloseToArray(x4, PRECX2, 'xaxis4');
+        expect(fullLayout.yaxis4.range).toBeCloseToArray(y4, PRECY2, 'yaxis4');
     }
 
     function assertVisible(indices) {
@@ -613,37 +631,42 @@ describe('annotations autorange', function() {
             assertRanges(
                 [0.91, 2.09], [0.91, 2.09],
                 ['2000-11-13', '2001-04-21'], [-0.069, 3.917],
-                [0.88, 2.05], [0.92, 2.08]
+                [0.88, 2.05], [0.92, 2.08],
+                [-1.38, 8.29], [-0.85, 5.14]
             );
-            assertVisible([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+            assertVisible([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]);
 
             return Plotly.relayout(gd, {
                 'annotations[0].visible': false,
                 'annotations[4].visible': false,
-                'annotations[8].visible': false
+                'annotations[8].visible': false,
+                'annotations[12].visible': false
             });
         })
         .then(function() {
             assertRanges(
                 [1.44, 2.02], [0.91, 2.09],
                 ['2001-01-18', '2001-03-27'], [-0.069, 3.917],
-                [1.44, 2.1], [0.92, 2.08]
+                [1.44, 2.1], [0.92, 2.08],
+                [1.41, 7.42], [-0.85, 5.14]
             );
-            assertVisible([1, 2, 3, 5, 6, 7, 9, 10, 11, 12, 13]);
+            assertVisible([1, 2, 3, 5, 6, 7, 9, 10, 11, 13, 14, 15, 16, 17]);
 
             return Plotly.relayout(gd, {
                 'annotations[2].visible': false,
                 'annotations[5].visible': false,
-                'annotations[9].visible': false
+                'annotations[9].visible': false,
+                'annotations[13].visible': false,
             });
         })
         .then(function() {
             assertRanges(
                 [1.44, 2.02], [0.99, 1.52],
                 ['2001-01-31 23:59:59.999', '2001-02-01 00:00:00.001'], [-0.069, 3.917],
-                [0.5, 2.5], [0.92, 2.08]
+                [0.5, 2.5], [0.92, 2.08],
+                [3, 5], [-0.85, 5.14]
             );
-            assertVisible([1, 3, 6, 7, 10, 11, 12, 13]);
+            assertVisible([1, 3, 6, 7, 10, 11, 14, 15, 16, 17]);
 
             return Plotly.relayout(gd, {
                 'annotations[0].visible': true,
@@ -651,16 +674,19 @@ describe('annotations autorange', function() {
                 'annotations[4].visible': true,
                 'annotations[5].visible': true,
                 'annotations[8].visible': true,
-                'annotations[9].visible': true
+                'annotations[9].visible': true,
+                'annotations[12].visible': true,
+                'annotations[13].visible': true
             });
         })
         .then(function() {
             assertRanges(
                 [0.91, 2.09], [0.91, 2.09],
                 ['2000-11-13', '2001-04-21'], [-0.069, 3.917],
-                [0.88, 2.05], [0.92, 2.08]
+                [0.88, 2.05], [0.92, 2.08],
+                [-1.38, 8.29], [-0.85, 5.14]
             );
-            assertVisible([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
+            assertVisible([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17]);
 
             // check that off-plot annotations are hidden - zoom in to
             // only one of the four on each subplot
@@ -670,17 +696,20 @@ describe('annotations autorange', function() {
                 'xaxis2.range': ['2001-01-15', '2001-02-15'],
                 'yaxis2.range': [0.9, 1.1],
                 'xaxis3.range': [1.9, 2.1],
-                'yaxis3.range': [1.4, 1.6]
+                'yaxis3.range': [1.4, 1.6],
+                'xaxis4.range': [3.9, 4.1],
+                'yaxis4.range': [0.9, 1.1]
             });
         })
         .then(function() {
             assertRanges([1.4, 1.6], [0.9, 1.1],
                 ['2001-01-15', '2001-02-15'], [0.9, 1.1],
-                [1.9, 2.1], [1.4, 1.6]
+                [1.9, 2.1], [1.4, 1.6],
+                [3.9, 4.1], [0.9, 1.1]
             );
             // only one annotation on each subplot, plus the two paper-referenced
             // are visible after zooming in
-            assertVisible([3, 7, 9, 12, 13]);
+            assertVisible([3, 7, 9, 15, 16, 17]);
         })
         .catch(failTest)
         .then(done);
@@ -703,7 +732,8 @@ describe('annotations autorange', function() {
                 [-1.09, 2.25], [0.84, 3.06],
                 // the other axes shouldn't change
                 ['2000-11-13', '2001-04-21'], [-0.069, 3.917],
-                [0.88, 2.05], [0.92, 2.08]
+                [0.88, 2.05], [0.92, 2.08],
+                [-1.38, 8.29], [-0.85, 5.14]
             );
         })
         .catch(failTest)

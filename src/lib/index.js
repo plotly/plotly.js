@@ -111,6 +111,8 @@ lib.clearThrottle = throttleModule.clear;
 
 lib.getGraphDiv = require('./get_graph_div');
 
+lib._ = require('./localize');
+
 lib.notifier = require('./notifier');
 
 lib.filterUnique = require('./filter_unique');

@@ -16,6 +16,7 @@ var Plotly = require('../plotly');
 var PlotSchema = require('../plot_api/plot_schema');
 var Registry = require('../registry');
 var Lib = require('../lib');
+var _ = Lib._;
 var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 
@@ -418,6 +419,25 @@ plots.supplyDefaults = function(gd) {
     // Create all the storage space for frames, but only if doesn't already exist
     if(!gd._transitionData) plots.createTransitionData(gd);
 
+    // So we only need to do this once (and since we have gd here)
+    // get the translated placeholder titles.
+    // These ones get used as default values so need to be known at supplyDefaults
+    // others keep their blank defaults but render the placeholder as desired later
+    // TODO: make these work the same way, only inserting the placeholder text at draw time?
+    // The challenge is that this has slightly different behavior right now in editable mode:
+    // using the placeholder as default makes this text permanently (but lightly) visible,
+    // but explicit '' for these titles gives you a placeholder that's hidden until you mouse
+    // over it - so you're not distracted by it if you really don't want a title, but if you do
+    // and you're new to plotly you may not be able to find it.
+    // When editable=false the two behave the same, no title is drawn.
+    newFullLayout._dfltTitle = {
+        plot: _(gd, 'Click to enter Plot title'),
+        x: _(gd, 'Click to enter X axis title'),
+        y: _(gd, 'Click to enter Y axis title'),
+        colorbar: _(gd, 'Click to enter Colorscale title')
+    };
+    newFullLayout._traceWord = _(gd, 'trace');
+
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
 
@@ -586,8 +606,8 @@ plots._hasPlotType = function(category) {
     var modules = this._modules || [];
 
     for(i = 0; i < modules.length; i++) {
-        var _ = modules[i];
-        if(_.categories && _.categories.indexOf(category) >= 0) {
+        var modulei = modules[i];
+        if(modulei.categories && modulei.categories.indexOf(category) >= 0) {
             return true;
         }
     }
@@ -992,7 +1012,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
 
     coerce('type');
     coerce('uid');
-    coerce('name', 'trace ' + traceInIndex);
+    coerce('name', layout._traceWord + ' ' + traceInIndex);
 
     // coerce subplot attributes of all registered subplot types
     var subplotTypes = Object.keys(subplotsRegistry);
@@ -1131,7 +1151,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 
     var globalFont = Lib.coerceFont(coerce, 'font');
 
-    coerce('title');
+    coerce('title', layoutOut._dfltTitle.plot);
 
     Lib.coerceFont(coerce, 'titlefont', {
         family: globalFont.family,

@@ -2362,7 +2362,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         Titles.draw(gd, axid + 'title', {
             propContainer: ax,
             propName: ax._name + '.title',
-            dfltName: axLetter.toUpperCase() + ' axis',
+            placeholder: fullLayout._dfltTitle[axLetter],
             avoid: avoid,
             transform: transform,
             attributes: {x: x, y: y, 'text-anchor': 'middle'}
@@ -2589,7 +2589,7 @@ function swapAxisGroup(gd, xIds, yIds) {
         if(allEqual) {
             if(coerceLinearX) layout[xFullAxes[0]._name].type = 'linear';
             if(coerceLinearY) layout[yFullAxes[0]._name].type = 'linear';
-            swapAxisAttrs(layout, keyi, xFullAxes, yFullAxes);
+            swapAxisAttrs(layout, keyi, xFullAxes, yFullAxes, gd._fullLayout._dfltTitle);
         }
     }
 
@@ -2603,7 +2603,7 @@ function swapAxisGroup(gd, xIds, yIds) {
     }
 }
 
-function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
+function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
     // in case the value is the default for either axis,
     // look at the first axis in each list and see if
     // this key's value is undefined
@@ -2613,11 +2613,11 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
         i;
     if(key === 'title') {
         // special handling of placeholder titles
-        if(xVal === 'Click to enter X axis title') {
-            xVal = 'Click to enter Y axis title';
+        if(xVal === dfltTitle.x) {
+            xVal = dfltTitle.y;
         }
-        if(yVal === 'Click to enter Y axis title') {
-            yVal = 'Click to enter X axis title';
+        if(yVal === dfltTitle.y) {
+            yVal = dfltTitle.x;
         }
     }
 

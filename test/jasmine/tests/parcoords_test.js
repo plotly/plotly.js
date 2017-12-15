@@ -8,6 +8,7 @@ var attributes = require('@src/traces/parcoords/attributes');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 // mock with two dimensions (one panel); special case, e.g. left and right panel is obv. the same
 var mock2 = require('@mocks/gl2d_parcoords_2.json');
@@ -33,7 +34,7 @@ describe('parcoords initialization tests', function() {
         it('should not coerce trace opacity', function() {
             var gd = Lib.extendDeep({}, mock1);
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
 
             expect(gd._fullData[0].opacity).toBeUndefined();
         });
@@ -46,7 +47,7 @@ describe('parcoords initialization tests', function() {
                 color: 'blue'
             };
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
 
             var expected = {
                 family: 'Gravitas',
@@ -169,7 +170,7 @@ describe('parcoords initialization tests', function() {
         function _calc(trace) {
             var gd = { data: [trace] };
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
 
             var fullTrace = gd._fullData[0];
             Parcoords.calc(gd, fullTrace);
