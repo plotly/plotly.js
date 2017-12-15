@@ -701,11 +701,11 @@ proto.isPtWithinSector = function(d) {
     return (
         r >= radialRange[0] &&
         r <= radialRange[1] &&
-        isFullCircle(sector) || (
+        (isFullCircle(sector) || (
             sector[1] < 360 || deg > wrap360(sector[1]) ?
                 deg >= sector[0] && deg <= sector[1] :
                 deg <= wrap360(sector[1])
-        )
+        ))
     );
 };
 

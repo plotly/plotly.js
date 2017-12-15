@@ -71,9 +71,9 @@ function plot(subplot, cdata) {
         for(i = 0; i < rArray.length; i++) {
             r = rArray[i], theta = thetaArray[i];
 
-            if(theta < 0) theta += 360;
+            var rad = angularAxis.c2rad(theta, trace.thetaunit)
 
-            if(r >= rRange[0] && r <= rRange[1] && theta >= thetaRange[0] && theta <= thetaRange[1]) {
+            if(subplot.isPtWithinSector({r: r, rad: rad})) {
                 newRadialArray.push(r);
                 newThetaArray.push(theta);
             }
@@ -90,10 +90,10 @@ function plot(subplot, cdata) {
         }
 
         for(i = 0; i < count; i++) {
-            r = rArray[i];
+            r = rArray[i] - rRange[0];
             theta = thetaArray[i];
 
-            if(isNumeric(r) && isNumeric(theta)) {
+            if(isNumeric(r) && isNumeric(theta) && r >= 0) {
                 var rad = c2rad(theta);
 
                 x[i] = positions[i * 2] = r * Math.cos(rad);
@@ -164,23 +164,24 @@ function hover(pointData, xval, yval, hovermode) {
 
     var subplot = pointData.subplot;
     var cdi = newPointData.cd[newPointData.index];
-
-    // augment pointData with r/theta param
-    cdi.r = rArray[newPointData.index];
-    cdi.theta = thetaArray[newPointData.index];
-
-    if(!subplot.isPtWithinSector(cdi)) return;
-
-    newPointData.xLabelVal = undefined;
-    newPointData.yLabelVal = undefined;
-
     var trace = newPointData.trace;
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
     var hoverinfo = cdi.hi || trace.hoverinfo;
     var parts = hoverinfo.split('+');
     var text = [];
-    var rad = angularAxis._c2rad(cdi.theta, trace.thetaunit);
+    var _rad = angularAxis.c2rad(cdi.theta, trace.thetaunit);
+
+    // augment pointData with r/theta param
+    cdi.r = rArray[newPointData.index];
+    cdi.theta = thetaArray[newPointData.index];
+    cdi.rad = angularAxis.c2rad(cdi.theta, trace.thetaunit);
+
+    if(!subplot.isPtWithinSector(cdi)) return;
+
+    newPointData.xLabelVal = undefined;
+    newPointData.yLabelVal = undefined;
+
 
     radialAxis._hovertitle = 'r';
     angularAxis._hovertitle = 'θ';
@@ -188,7 +189,7 @@ function hover(pointData, xval, yval, hovermode) {
     // show theta value in unit of angular axis
     var theta;
     if(angularAxis.type === 'linear' && trace.thetaunit !== angularAxis.thetaunit) {
-        theta = angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(rad) : rad;
+        theta = angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(_rad) : _rad;
     } else {
         theta = cdi.theta;
     }
