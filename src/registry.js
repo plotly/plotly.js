@@ -29,6 +29,7 @@ exports.layoutArrayContainers = [];
 exports.layoutArrayRegexes = [];
 exports.traceLayoutAttributes = {};
 exports.localeRegistry = {};
+exports.formatRegistry = {};
 
 /**
  * register a module as the handler for a trace type
@@ -328,23 +329,38 @@ function getTraceType(traceType) {
  *  the dictionary mapping input strings to localized strings
  *  generally the keys should be the literal input strings, but
  *  if default translations are provided you can use any string as a key.
+ * @param {object} module.format
+ *  a `d3.locale` format specifier for this locale
+ *  any omitted keys we'll fall back on en-US
  */
 exports.registerLocale = function(_module) {
     var locale = _module.name;
     var baseLocale = locale.split('-')[0];
 
     var newDict = _module.dictionary;
+    var newFormat = _module.format;
+    var hasDict = newDict && Object.keys(newDict).length;
+    var hasFormat = newFormat && Object.keys(newFormat).length;
 
     var locales = exports.localeRegistry;
+
+    var formats = exports.formatRegistry;
 
     // Should we use this dict for the base locale?
     // In case we're overwriting a previous dict for this locale, check
     // whether the base matches the full locale dict now. If we're not
     // overwriting, locales[locale] is undefined so this just checks if
     // baseLocale already had a dict or not.
-    if(baseLocale !== locale && locales[baseLocale] === locales[locale]) {
-        locales[baseLocale] = newDict;
+    // Same logic for dateFormats
+    if(baseLocale !== locale) {
+        if(hasDict && locales[baseLocale] === locales[locale]) {
+            locales[baseLocale] = newDict;
+        }
+        if(hasFormat && formats[baseLocale] === formats[locale]) {
+            formats[baseLocale] = newFormat;
+        }
     }
 
-    locales[locale] = newDict;
+    if(hasDict) locales[locale] = newDict;
+    if(hasFormat) formats[locale] = newFormat;
 };

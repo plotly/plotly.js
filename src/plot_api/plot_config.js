@@ -137,11 +137,20 @@ module.exports = {
 
     // Localization dictionaries
     // Dictionaries can be provided either here (specific to one chart) or globally
-    // by registering them as modules.
+    // by registering them as modules (which contain dateFormat specs as well).
     // Here `dictionaries` should be an object of objects
     // {'da': {'Reset axes': 'Nulstil aksler', ...}, ...}
     // When looking for a translation we look at these dictionaries first, then
     // the ones registered as modules. If those fail, we strip off any
     // regionalization ('en-US' -> 'en') and try each again
-    dictionaries: {}
+    dictionaries: {},
+
+    // Localization specs for dates and numbers
+    // Each localization should be an object with keys matching most of d3.locale,
+    // see https://github.com/d3/d3-3.x-api-reference/blob/master/Localization.md
+    // {'da': {months: [...], shortMonths: [...], ...}, ...}
+    // Unlike d3.locale, every key is optional, we will fall back on English ('en').
+    // Currently `grouping` and `currency` are ignored for our automatic number
+    // formatting, but can be used in custom formats.
+    formats: {}
 };
