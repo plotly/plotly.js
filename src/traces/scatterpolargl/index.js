@@ -63,6 +63,9 @@ function plot(subplot, cdata) {
         var thetaArray = stash.theta;
         var i, r, theta, rad;
 
+        var subRArray = rArray.slice();
+        var subThetaArray = thetaArray.slice();
+
         // filter out by range
         for(i = 0; i < rArray.length; i++) {
             r = rArray[i], theta = thetaArray[i];
@@ -70,8 +73,8 @@ function plot(subplot, cdata) {
             rad = angularAxis.c2rad(theta, trace.thetaunit);
 
             if(!subplot.isPtWithinSector({r: r, rad: rad})) {
-                rArray[i] = NaN;
-                thetaArray[i] = NaN;
+                subRArray[i] = NaN;
+                subThetaArray[i] = NaN;
             }
         }
 
@@ -83,8 +86,8 @@ function plot(subplot, cdata) {
         }
 
         for(i = 0; i < count; i++) {
-            r = rArray[i] - rRange[0];
-            theta = thetaArray[i];
+            r = subRArray[i] - rRange[0];
+            theta = subThetaArray[i];
 
             if(isNumeric(r) && isNumeric(theta) && r >= 0) {
                 rad = c2rad(theta);
