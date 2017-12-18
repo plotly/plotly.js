@@ -441,6 +441,8 @@ plots.supplyDefaults = function(gd) {
     };
     newFullLayout._traceWord = _(gd, 'trace');
 
+    var formatObj = getD3FormatObj(gd);
+
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
 
@@ -450,7 +452,7 @@ plots.supplyDefaults = function(gd) {
         var oldWidth = oldFullLayout.width,
             oldHeight = oldFullLayout.height;
 
-        plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
+        plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout, formatObj);
 
         if(!newLayout.width) newFullLayout.width = oldWidth;
         if(!newLayout.height) newFullLayout.height = oldHeight;
@@ -458,7 +460,7 @@ plots.supplyDefaults = function(gd) {
     else {
 
         // coerce the updated layout and autosize if needed
-        plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
+        plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout, formatObj);
 
         var missingWidthOrHeight = (!newLayout.width || !newLayout.height),
             autosize = newFullLayout.autosize,
@@ -474,6 +476,8 @@ plots.supplyDefaults = function(gd) {
             newLayout.height = newFullLayout.height;
         }
     }
+
+    newFullLayout._d3locale = getFormatter(formatObj, newFullLayout.separators);
 
     newFullLayout._initialAutoSizeIsDone = true;
 
@@ -564,6 +568,83 @@ function remapTransformedArrays(cd0, newTrace) {
         astr = arrayAttrs[i];
         Lib.nestedProperty(cd0.trace, astr).set(transformedArrayHash[astr]);
     }
+}
+
+var formatKeys = [
+    'days', 'shortDays', 'months', 'shortMonths', 'periods',
+    'dateTime', 'date', 'time',
+    'decimal', 'thousands', 'grouping', 'currency'
+];
+
+/**
+ * getD3FormatObj: use _context to get the d3.locale argument object.
+ * decimal and thousands can be overridden later by layout.separators
+ * grouping and currency are not presently used by our automatic number
+ * formatting system but can be used by custom formats.
+ *
+ * @returns {object} d3.locale format object
+ */
+function getD3FormatObj(gd) {
+    var locale = gd._context.locale;
+    if(!locale) locale === 'en-US';
+
+    var formatDone = false;
+    var formatObj = {};
+
+    function includeFormat(newFormat) {
+        var formatFinished = true;
+        for(var i = 0; i < formatKeys.length; i++) {
+            var formatKey = formatKeys[i];
+            if(!formatObj[formatKey]) {
+                if(newFormat[formatKey]) {
+                    formatObj[formatKey] = newFormat[formatKey];
+                }
+                else formatFinished = false;
+            }
+        }
+        if(formatFinished) formatDone = true;
+    }
+
+    // same as localize, look for format parts in each format spec in the chain
+    for(var i = 0; i < 2; i++) {
+        var locales = gd._context.locales;
+        for(var j = 0; j < 2; j++) {
+            var formatj = (locales[locale] || {}).format;
+            if(formatj) {
+                includeFormat(formatj);
+                if(formatDone) break;
+            }
+            locales = Registry.localeRegistry;
+        }
+
+        var baseLocale = locale.split('-')[0];
+        if(formatDone || baseLocale === locale) break;
+        locale = baseLocale;
+    }
+
+    // lastly pick out defaults from english (non-US, as DMY is so much more common)
+    if(!formatDone) includeFormat(Registry.localeRegistry.en.format);
+
+    return formatObj;
+}
+
+/**
+ * getFormatter: combine the final separators with the locale formatting object
+ * we pulled earlier to generate number and time formatters
+ * TODO: remove separators in v2, only use locale, so we don't need this step?
+ *
+ * @param {object} formatObj: d3.locale format object
+ * @param {string} separators: length-2 string to override decimal and thousands
+ *   separators in number formatting
+ *
+ * @returns {object} {numberFormat, timeFormat} d3 formatter factory functions
+ *   for numbers and time
+ */
+function getFormatter(formatObj, separators) {
+    formatObj.decimal = separators.charAt(0);
+    formatObj.thousands = separators.charAt(1);
+
+    return d3.locale(formatObj);
 }
 
 // Create storage for all of the data related to frames and transitions:
@@ -1147,7 +1228,7 @@ function applyTransforms(fullTrace, fullData, layout, fullLayout) {
     return dataOut;
 }
 
-plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
+plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     function coerce(attr, dflt) {
         return Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
     }
@@ -1186,7 +1267,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 
     coerce('paper_bgcolor');
 
-    coerce('separators');
+    coerce('separators', formatObj.decimal + formatObj.thousands);
     coerce('hidesources');
 
     coerce('colorway');

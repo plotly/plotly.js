@@ -147,12 +147,12 @@ module.exports = {
     separators: {
         valType: 'string',
         role: 'style',
-        dflt: '.,',
         editType: 'plot',
         description: [
             'Sets the decimal and thousand separators.',
-            'For example, *. * puts a \'.\' before decimals and',
-            'a space between thousands.'
+            'For example, *. * puts a \'.\' before decimals and a space',
+            'between thousands. In English locales, dflt is *.,* but',
+            'other locales may alter this default.'
         ].join(' ')
     },
     hidesources: {

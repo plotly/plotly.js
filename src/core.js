@@ -65,6 +65,12 @@ exports.register([
     require('./components/rangeselector')
 ]);
 
+// locales en and en-US are required for default behavior
+exports.register([
+    require('./locale-en'),
+    require('./locale-en-us')
+]);
+
 // plot icons
 exports.Icons = require('../build/ploticon');
 

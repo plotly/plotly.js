@@ -161,11 +161,13 @@ describe('Test Plots', function() {
             layoutOut,
             expected;
 
+        var formatObj = require('@src/locale-en').format;
+
         function supplyLayoutDefaults(layoutIn, layoutOut) {
             layoutOut._dfltTitle = {
                 plot: 'ppplot'
             };
-            return Plots.supplyLayoutGlobalDefaults(layoutIn, layoutOut);
+            return Plots.supplyLayoutGlobalDefaults(layoutIn, layoutOut, formatObj);
         }
 
         beforeEach(function() {
