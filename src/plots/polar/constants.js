@@ -15,15 +15,17 @@ module.exports = {
     axisNames: ['angularaxis', 'radialaxis'],
     axisName2dataArray: {angularaxis: 'theta', radialaxis: 'r'},
 
-    // TODO should radial axis be above frontplot by default?
     layerNames: [
         'draglayer',
         'plotbg',
         'backplot',
-        'grids',
-        'axes',
-        'lines',
-        'frontplot'
+        'angular-grid',
+        'radial-grid',
+        'frontplot',
+        'angular-axis',
+        'radial-axis',
+        'angular-line',
+        'radial-line'
     ],
 
     MINDRAG: 8,

@@ -29,8 +29,8 @@ var rad2deg = Lib.rad2deg;
 var wrap360 = Lib.wrap360;
 
 var constants = require('./constants');
+var layerNames = constants.layerNames;
 var MINDRAG = constants.MINDRAG;
-var axisNames = constants.axisNames;
 
 function Polar(gd, id) {
     this.id = id;
@@ -88,12 +88,26 @@ proto.plot = function(polarCalcData, fullLayout) {
     Plots.generalUpdatePerTraceModule(_this, polarCalcData, polarLayout);
 };
 
-proto.updateLayers = function() {
+proto.updateLayers = function(fullLayout, polarLayout) {
     var _this = this;
     var layers = _this.layers;
+    var radialLayout = polarLayout.radialaxis;
+    var angularLayout = polarLayout.angularaxis;
 
-    // TODO sort to implement 'radialaxis.layer' & 'angularaxis.layer
-    var layerData = constants.layerNames.slice();
+    var frontPlotIndex = layerNames.indexOf('frontplot');
+    var layerData = layerNames.slice(0, frontPlotIndex);
+
+    if(angularLayout.layer === 'below traces') layerData.push('angular-axis');
+    if(radialLayout.layer === 'below traces') layerData.push('radial-axis');
+    if(angularLayout.layer === 'below traces') layerData.push('angular-line');
+    if(radialLayout.layer === 'below traces') layerData.push('radial-line');
+
+    layerData.push('frontplot');
+
+    if(angularLayout.layer === 'above traces') layerData.push('angular-axis');
+    if(radialLayout.layer === 'above traces') layerData.push('radial-axis');
+    if(angularLayout.layer === 'above traces') layerData.push('angular-line');
+    if(radialLayout.layer === 'above traces') layerData.push('radial-line');
 
     var join = _this.framework.selectAll('.polarlayer')
         .data(layerData, String);
@@ -113,26 +127,15 @@ proto.updateLayers = function() {
                 case 'plotbg':
                     layers.bgcircle = sel.append('path');
                     break;
-                case 'grids':
-                    axisNames.forEach(function(d) {
-                        var k = d + 'grid';
-                        layers[k] = sel.append('g')
-                            .classed(k, true)
-                            .attr('fill', 'none');
-                    });
+                case 'radial-grid':
+                case 'angular-grid':
+                    sel.style('fill', 'none');
                     break;
-                case 'axes':
-                    axisNames.forEach(function(d) {
-                        layers[d] = sel.append('g').classed(d, true);
-                    });
+                case 'radial-line':
+                    sel.append('line').style('fill', 'none');
                     break;
-                case 'lines':
-                    layers.radialline = sel.append('line')
-                        .classed('radialline', true)
-                        .attr('fill', 'none');
-                    layers.angularline = sel.append('path')
-                        .classed('angularline', true)
-                        .attr('fill', 'none');
+                case 'angular-line':
+                    sel.append('path').style('fill', 'none');
                     break;
             }
         });
@@ -248,8 +251,8 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var a0 = wrap360(sector[0]);
 
     var ax = _this.radialAxis = Lib.extendFlat({}, radialLayout, {
-        _axislayer: layers.radialaxis,
-        _gridlayer: layers.radialaxisgrid,
+        _axislayer: layers['radial-axis'],
+        _gridlayer: layers['radial-grid'],
 
         // make this an 'x' axis to make positioning (especially rotation) easier
         _id: 'x',
@@ -289,18 +292,18 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     Axes.doTicks(gd, ax, true);
 
     if(ax.visible) {
-        layers.radialaxis.attr(
+        layers['radial-axis'].attr(
             'transform',
             strTranslate(cx, cy) + strRotate(-radialLayout.position)
         );
 
         // move all grid paths to about circle center,
         // undo individual grid lines translations
-        layers.radialaxisgrid
+        layers['radial-grid']
             .attr('transform', strTranslate(cx, cy))
             .selectAll('path').attr('transform', null);
 
-        layers.radialline.attr({
+        layers['radial-line'].select('line').attr({
             display: radialLayout.showline ? null : 'none',
             x1: 0,
             y1: 0,
@@ -324,8 +327,8 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var sector = polarLayout.sector;
 
     var ax = _this.angularAxis = Lib.extendFlat({}, angularLayout, {
-        _axislayer: layers.angularaxis,
-        _gridlayer: layers.angularaxisgrid,
+        _axislayer: layers['angular-axis'],
+        _gridlayer: layers['angular-grid'],
 
         // angular axes need *special* logic
         _id: 'angular',
@@ -439,7 +442,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     Axes.doTicks(gd, ax, true);
 
     if(ax.visible) {
-        layers.angularline.attr({
+        layers['angular-line'].select('path').attr({
             display: angularLayout.showline ? null : 'none',
             d: pathSectorClosed(radius, sector),
             transform: strTranslate(cx, cy)
@@ -669,8 +672,8 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         angle1 = rad2deg(Math.atan2(ay, ax));
 
         var transform = strTranslate(cx, cy) + strRotate(-angle1);
-        layers.radialaxis.attr('transform', transform);
-        layers.radialline.attr('transform', transform);
+        layers['radial-axis'].attr('transform', transform);
+        layers['radial-line'].select('line').attr('transform', transform);
     }
 
     function rotateDone() {

@@ -52,6 +52,7 @@ var axisTickAttr = overrideAll({
     tickangle: axesAttrs.tickangle,
     tickformat: axesAttrs.tickformat,
     tickformatstops: axesAttrs.tickformatstops,
+    layer: axesAttrs.layer
 }, 'plot', 'from-root');
 
 var radialAxisAttrs = {
@@ -107,10 +108,6 @@ var radialAxisAttrs = {
     // maybe just for radialaxis ??
     title: axesAttrs.title,
     titlefont: axesAttrs.titlefont,
-
-    // only applies to radial axis for now (i.e. for cliponaxis: false traces)
-    // but angular.layer could be a thing later
-    layer: axesAttrs.layer,
 
     hoverformat: axesAttrs.hoverformat,
 

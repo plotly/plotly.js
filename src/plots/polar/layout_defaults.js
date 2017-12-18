@@ -181,6 +181,8 @@ function handleAxisStyleDefaults(axIn, axOut, coerce, opts) {
         coerce('gridcolor', colorMix(dfltColor, opts.bgColor, 60).toRgbString());
         coerce('gridwidth');
     }
+
+    coerce('layer');
 }
 
 function setConvertAngular(ax) {
