@@ -226,63 +226,17 @@ function plotOne(gd, plotinfo, cd) {
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
-    var yi = ypx(0),
-        yb = [yi, yi],
-        xbi = xrev ? 0 : 1,
-        ybi = yrev ? 0 : 1,
-        // for collecting an average luminosity of the heatmap
-        pixcount = 0,
-        rcount = 0,
-        gcount = 0,
-        bcount = 0,
-        brickWithPadding,
-        xb,
-        j,
-        xi,
-        v,
-        row,
-        c;
+    var yi = ypx(0);
+    var yb = [yi, yi];
+    var xbi = xrev ? 0 : 1;
+    var ybi = yrev ? 0 : 1;
+    // for collecting an average luminosity of the heatmap
+    var pixcount = 0;
+    var rcount = 0;
+    var gcount = 0;
+    var bcount = 0;
 
-    function applyBrickPadding(trace, x0, x1, y0, y1, xIndex, xLength, yIndex, yLength) {
-        var padding = {
-                x0: x0,
-                x1: x1,
-                y0: y0,
-                y1: y1
-            },
-            xEdgeGap = trace.xgap * 2 / 3,
-            yEdgeGap = trace.ygap * 2 / 3,
-            xCenterGap = trace.xgap / 3,
-            yCenterGap = trace.ygap / 3;
-
-        if(yIndex === yLength - 1) { // top edge brick
-            padding.y1 = y1 - yEdgeGap;
-        }
-
-        if(xIndex === xLength - 1) { // right edge brick
-            padding.x0 = x0 + xEdgeGap;
-        }
-
-        if(yIndex === 0) { // bottom edge brick
-            padding.y0 = y0 + yEdgeGap;
-        }
-
-        if(xIndex === 0) { // left edge brick
-            padding.x1 = x1 - xEdgeGap;
-        }
-
-        if(xIndex > 0 && xIndex < xLength - 1) { // brick in the center along x
-            padding.x0 = x0 + xCenterGap;
-            padding.x1 = x1 - xCenterGap;
-        }
-
-        if(yIndex > 0 && yIndex < yLength - 1) { // brick in the center along y
-            padding.y0 = y0 + yCenterGap;
-            padding.y1 = y1 - yCenterGap;
-        }
-
-        return padding;
-    }
+    var xb, j, xi, v, row, c;
 
     function setColor(v, pixsize) {
         if(v !== undefined) {
@@ -401,6 +355,14 @@ function plotOne(gd, plotinfo, cd) {
 
         context.putImageData(imageData, 0, 0);
     } else { // zsmooth = false -> filling potentially large bricks works fastest with fillRect
+
+        // gaps do not need to be exact integers, but if they *are* we will get
+        // cleaner edges by rounding at least one edge
+        var xGap = trace.xgap;
+        var yGap = trace.ygap;
+        var xGapLeft = Math.floor(xGap / 2);
+        var yGapTop = Math.floor(yGap / 2);
+
         for(j = 0; j < m; j++) {
             row = z[j];
             yb.reverse();
@@ -421,20 +383,8 @@ function plotOne(gd, plotinfo, cd) {
                 c = setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
                 context.fillStyle = 'rgba(' + c.join(',') + ')';
 
-                brickWithPadding = applyBrickPadding(trace,
-                                                     xb[0],
-                                                     xb[1],
-                                                     yb[0],
-                                                     yb[1],
-                                                     i,
-                                                     n,
-                                                     j,
-                                                     m);
-
-                context.fillRect(brickWithPadding.x0,
-                                 brickWithPadding.y0,
-                                (brickWithPadding.x1 - brickWithPadding.x0),
-                                (brickWithPadding.y1 - brickWithPadding.y0));
+                context.fillRect(xb[0] + xGapLeft, yb[0] + yGapTop,
+                    xb[1] - xb[0] - xGap, yb[1] - yb[0] - yGap);
             }
         }
     }
