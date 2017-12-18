@@ -191,6 +191,7 @@ plots.getSubplotCalcData = function(calcData, type, subplotId) {
 // the text is at first, so it needs to draw it,
 // then wait a little, then draw it again
 plots.redrawText = function(gd) {
+    gd = Lib.getGraphDiv(gd);
 
     // do not work if polar is present
     if((gd.data && gd.data[0] && gd.data[0].r)) return;
@@ -211,6 +212,8 @@ plots.redrawText = function(gd) {
 
 // resize plot about the container size
 plots.resize = function(gd) {
+    gd = Lib.getGraphDiv(gd);
+
     return new Promise(function(resolve, reject) {
 
         function isHidden(gd) {
