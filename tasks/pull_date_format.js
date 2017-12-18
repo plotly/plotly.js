@@ -29,7 +29,7 @@ else {
 
 function pullOneLocale(locale) {
     var pathToInput = path.join(pathToWCRegions, locale + '.js');
-    var pathToOutput = path.join(constants.pathToLib, 'locale-' + locale.toLowerCase() + '.js');
+    var pathToOutput = path.join(constants.pathToLib, 'locales', locale.toLowerCase() + '.js');
 
     fs.readFile(pathToInput, 'utf8', function(err, wcCode) {
         if(err) {
