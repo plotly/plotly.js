@@ -2376,19 +2376,6 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         traceHash = {},
         i;
 
-    function filterVisible(calcDataIn) {
-        var calcDataOut = [];
-
-        for(var i = 0; i < calcDataIn.length; i++) {
-            var calcTrace = calcDataIn[i],
-                trace = calcTrace[0].trace;
-
-            if(trace.visible === true) calcDataOut.push(calcTrace);
-        }
-
-        return calcDataOut;
-    }
-
     // build up moduleName -> calcData hash
     for(i = 0; i < subplotCalcData.length; i++) {
         var calcTraces = subplotCalcData[i],
@@ -2428,7 +2415,7 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         var moduleCalcData = traceHash[moduleNames[i]],
             _module = moduleCalcData[0][0].trace._module;
 
-        _module.plot(subplot, filterVisible(moduleCalcData), subplotLayout);
+        _module.plot(subplot, Lib.filterVisible(moduleCalcData), subplotLayout);
     }
 
     // update moduleName -> calcData hash
