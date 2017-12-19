@@ -21,6 +21,7 @@ var dragElement = require('../../components/dragelement');
 var dragBox = require('../cartesian/dragbox');
 var Fx = require('../../components/fx');
 var prepSelect = require('../cartesian/select');
+var setCursor = require('../../lib/setcursor');
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 
@@ -159,7 +160,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var yLength = _this.yLength = gs.h * (yDomain[1] - yDomain[0]);
     // sector to plot
     var sector = _this.sector = polarLayout.sector;
-    var sectorBBox = computeSectorBBox(sector);
+    var sectorBBox = _this.sectorBBox = computeSectorBBox(sector);
     var dxSectorBBox = sectorBBox[2] - sectorBBox[0];
     var dySectorBBox = sectorBBox[3] - sectorBBox[1];
     // aspect ratios
@@ -641,10 +642,13 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     var radius = _this.radius;
     var cx = _this.cx;
     var cy = _this.cy;
+    var radialAxis = _this.radialAxis;
     var radialLayout = polarLayout.radialaxis;
     var angle0 = deg2rad(radialLayout.position);
+    var range0 = radialAxis.range.slice();
 
     if(!radialLayout.visible) return;
+
     var bl = 50;
     var bl2 = bl / 2;
     var radialDrag = dragBox.makeDragger(layers, 'radialdrag', 'move', -bl2, -bl2, bl, bl);
@@ -654,20 +658,40 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     radialDrag3.attr('transform', strTranslate(
         cx + (radius + bl2) * Math.cos(angle0),
         cy - (radius + bl2) * Math.sin(angle0)
-    ));
+    ))
+    .call(setCursor, 'crosshair');
 
-    var x0, y0, angle1;
+    var x0, y0, moveFn2, angle1, rng1;
 
-    function rotatePrep(evt, startX, startY) {
-        x0 = startX;
-        y0 = startY;
+    function moveFn(dx, dy) {
+        if(moveFn2) {
+            moveFn2(dx, dy);
+        } else {
+            var dvec = [dx, -dy];
+            var rvec = [Math.cos(angle0), Math.sin(angle0)];
+            var comp = Math.abs(Lib.dot(dvec, rvec) / Math.sqrt(Lib.dot(dvec, dvec)));
+
+            // mostly perpendicular motions rotate,
+            // mostly parallel motions re-range
+            if(!isNaN(comp)) {
+                moveFn2 = comp < 0.5 ? rotateMove : rerangeMove;
+            }
+        }
+    }
+
+    function doneFn() {
+        if(angle1) {
+            Plotly.relayout(gd, _this.id + '.radialaxis.position', angle1);
+        } else if(rng1) {
+            Plotly.relayout(gd, _this.id + '.radialaxis.range[1]', rng1);
+        }
     }
 
     function rotateMove(dx, dy) {
         var x1 = x0 + dx;
         var y1 = y0 + dy;
-        var ax = x1 - cx - bl;
-        var ay = cy - y1 + bl;
+        var ax = x1 - cx - bl2;
+        var ay = cy - y1 + bl2;
 
         angle1 = rad2deg(Math.atan2(ay, ax));
 
@@ -676,14 +700,48 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         layers['radial-line'].select('line').attr('transform', transform);
     }
 
-    function rotateDone() {
-        Plotly.relayout(gd, _this.id + '.radialaxis.position', angle1);
+    function rerangeMove(dx, dy) {
+        // project (dx, dy) unto unit radial axis vector
+        var dr = Lib.dot([dx, -dy], [Math.cos(angle0), Math.sin(angle0)]);
+        rng1 = range0[1] * (1 - dr / radius);
+        radialAxis.range[1] = rng1;
+
+        // TODO should we restrict updates to same sign as range0 ???
+
+        Axes.doTicks(gd, _this.radialAxis, true);
+        layers['radial-grid']
+            .attr('transform', strTranslate(cx, cy))
+            .selectAll('path').attr('transform', null);
+
+        var rSpan = rng1 - range0[0];
+        var sectorBBox = _this.sectorBBox;
+        _this.xaxis.range = [sectorBBox[0] * rSpan, sectorBBox[2] * rSpan];
+        _this.yaxis.range = [sectorBBox[1] * rSpan, sectorBBox[3] * rSpan];
+        _this.xaxis.setScale();
+        _this.yaxis.setScale();
+
+        for(var k in _this.traceHash) {
+            var moduleCalcData = _this.traceHash[k];
+            var moduleCalcDataVisible = Lib.filterVisible(moduleCalcData);
+            var _module = moduleCalcData[0][0].trace._module;
+
+            _module.plot(_this, moduleCalcDataVisible, polarLayout);
+            for(var i = 0; i < moduleCalcDataVisible.length; i++) {
+                _module.style(gd, moduleCalcDataVisible[i]);
+            }
+        }
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {
-        rotatePrep(evt, startX, startY);
-        dragOpts.moveFn = rotateMove;
-        dragOpts.doneFn = rotateDone;
+        moveFn2 = null;
+        angle1 = null;
+        rng1 = null;
+
+        x0 = startX;
+        y0 = startY;
+
+        dragOpts.moveFn = moveFn;
+        dragOpts.doneFn = doneFn;
     };
 
     dragElement.init(dragOpts);
