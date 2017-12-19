@@ -966,6 +966,44 @@ describe('hover info', function() {
             .then(done);
         });
     });
+
+    describe('overflowing hover labels', function() {
+        var trace = {y: [1, 2, 3], text: ['', 'a<br>b<br>c', '']};
+        var data = [trace, trace, trace, trace, trace, trace, trace];
+        var layout = {
+            width: 600, height: 600, showlegend: false,
+            margin: {l: 100, r: 100, t: 100, b: 100},
+            hovermode: 'x'
+        };
+
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, data, layout).then(done);
+        });
+
+        function labelCount() {
+            return d3.select(gd).selectAll('g.hovertext').size();
+        }
+
+        it('shows as many labels as will fit on the div, not on the subplot', function(done) {
+            _hoverNatural(gd, 200, 200);
+
+            expect(labelCount()).toBe(7);
+
+            Plotly.relayout(gd, {'yaxis.domain': [0.48, 0.52]})
+            .then(function() {
+                _hoverNatural(gd, 150, 200);
+                _hoverNatural(gd, 200, 200);
+
+                expect(labelCount()).toBe(7);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+    });
 });
 
 describe('hover info on stacked subplots', function() {

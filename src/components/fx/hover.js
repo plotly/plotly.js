@@ -452,7 +452,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     var hoverLabels = createHoverText(hoverData, labelOpts, gd);
 
-    hoverAvoidOverlaps(hoverData, rotateLabels ? 'xa' : 'ya');
+    hoverAvoidOverlaps(hoverData, rotateLabels ? 'xa' : 'ya', fullLayout);
 
     alignHoverText(hoverLabels, rotateLabels);
 
@@ -791,7 +791,7 @@ function createHoverText(hoverData, opts, gd) {
 // know what happens if the group spans all the way from one edge to
 // the other, though it hardly matters - there's just too much
 // information then.
-function hoverAvoidOverlaps(hoverData, ax) {
+function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
     var nummoves = 0,
 
         // make groups of touching points
@@ -804,8 +804,8 @@ function hoverAvoidOverlaps(hoverData, ax) {
                     pos: d.pos,
                     posref: d.posref,
                     size: d.by * (axis._id.charAt(0) === 'x' ? YFACTOR : 1) / 2,
-                    pmin: axis._offset,
-                    pmax: axis._offset + axis._length
+                    pmin: 0,
+                    pmax: (axis._id.charAt(0) === 'x' ? fullLayout.width : fullLayout.height)
                 }];
             })
             .sort(function(a, b) { return a[0].posref - b[0].posref; }),

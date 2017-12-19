@@ -223,11 +223,11 @@ describe('Test box hover:', function() {
             return fig;
         },
         nums: [
-            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0.2',
+            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0', 'min: 0.2',
             'q3: 0.6', 'max: 0.7', 'median: 0.45', 'min: 0.1', 'q3: 0.6', 'max: 0.9'
         ],
         name: [
-            '', 'kale', '', '', 'radishes', '',
+            '', 'kale', '', '', 'radishes', '', '',
             '', '', 'carrots', '', '', ''
         ],
         axis: 'day 1'
