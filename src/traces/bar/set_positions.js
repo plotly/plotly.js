@@ -227,6 +227,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
+        t.bardelta = minDiff;
     }
 
     // stack bars that only differ by rounding
@@ -277,6 +278,7 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
+        t.bardelta = minDiff;
     }
 
     // stack bars that only differ by rounding
