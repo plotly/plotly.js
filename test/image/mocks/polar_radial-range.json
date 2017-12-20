@@ -1732,7 +1732,13 @@
           1
         ]
       },
-      "radialaxis": {},
+      "radialaxis": {
+        "type": "log",
+        "range": [
+          0.5,
+          1.5
+        ]
+      },
       "angularaxis": {}
     },
     "polar4": {

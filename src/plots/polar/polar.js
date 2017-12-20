@@ -275,6 +275,8 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     setScale(ax, radialLayout, fullLayout);
     Axes.doAutoRange(ax);
+    radialLayout.range = ax.range.slice();
+    radialLayout._input.range = ax.range.slice();
 
     // rotate auto tick labels by 180 if in quadrant II and III to make them
     // readable from left-to-right
@@ -286,7 +288,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     // set special grid path function
     ax._gridpath = function(d) {
-        var r = ax.c2p(d.x);
+        var r = ax.r2p(d.x);
         return pathSector(r, sector);
     };
 
@@ -760,8 +762,9 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
 
 proto.isPtWithinSector = function(d) {
     var sector = this.sector;
-    var radialRange = this.radialAxis.range;
-    var r = d.r;
+    var radialAxis = this.radialAxis;
+    var radialRange = radialAxis.range;
+    var r = radialAxis.c2r(d.r);
 
     var s0 = wrap360(sector[0]);
     var s1 = wrap360(sector[1]);

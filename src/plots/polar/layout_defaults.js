@@ -49,7 +49,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         var axIn = contIn[axName] || {};
         var axOut = contOut[axName] = {};
-        axOut._name = axName;
+        axOut._id = axOut._name = axName;
 
         var dataAttr = constants.axisName2dataArray[axName];
         var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr);

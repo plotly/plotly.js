@@ -21,7 +21,8 @@ module.exports = function plot(subplot, moduleCalcData) {
         layerClipId: subplot.hasClipOnAxisFalse ? subplot.clipIds.circle : null
     };
 
-    var radialRange = subplot.radialAxis.range;
+    var radialAxis = subplot.radialAxis;
+    var radialRange = radialAxis.range;
 
     // map (r, theta) first to a 'geometric' r and then to (x,y)
     // on-par with what scatterPlot expects.
@@ -32,7 +33,9 @@ module.exports = function plot(subplot, moduleCalcData) {
             var r = cdi.r;
 
             if(r !== BADNUM) {
-                var rr = r - radialRange[0];
+                // convert to 'r' data to fit with mocked polar x/y axis
+                // which are always `type: 'linear'`
+                var rr = radialAxis.c2r(r) - radialRange[0];
                 if(rr >= 0) {
                     var rad = cdi.rad;
                     cdi.x = rr * Math.cos(rad);
