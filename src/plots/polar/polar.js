@@ -371,7 +371,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     else if(ax.type === 'category') {
         ax._tickFilter = function(d) {
             return _this.isPtWithinSector({
-                r: radius,
+                r: _this.radialAxis.range[1],
                 rad: ax.c2rad(d.x)
             });
         };
@@ -762,22 +762,23 @@ proto.isPtWithinSector = function(d) {
     var sector = this.sector;
     var radialRange = this.radialAxis.range;
     var r = d.r;
+
+    var s0 = wrap360(sector[0]);
+    var s1 = wrap360(sector[1]);
+    if(s0 > s1) s1 += 360;
+
     var deg = wrap360(rad2deg(d.rad));
+    var nextTurnDeg = deg + 360;
 
     // TODO add calendar support
-
-    // TODO does this handle all cases?
-    //
-    // this assumes that sector[0] < 360 always
 
     return (
         r >= radialRange[0] &&
         r <= radialRange[1] &&
-        (isFullCircle(sector) || (
-            sector[1] < 360 || deg > wrap360(sector[1]) ?
-                deg >= sector[0] && deg <= sector[1] :
-                deg <= wrap360(sector[1])
-        ))
+        (isFullCircle(sector) ||
+            (deg >= s0 && deg <= s1) ||
+            (nextTurnDeg >= s0 && nextTurnDeg <= s1)
+        )
     );
 };
 
