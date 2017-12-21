@@ -213,6 +213,7 @@ drawing.symbolNames = [];
 drawing.symbolFuncs = [];
 drawing.symbolNeedLines = {};
 drawing.symbolNoDot = {};
+drawing.symbolNoFill = {};
 drawing.symbolList = [];
 
 Object.keys(SYMBOLDEFS).forEach(function(k) {
@@ -230,6 +231,9 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     else {
         drawing.symbolList = drawing.symbolList.concat(
             [symDef.n + 200, k + '-dot', symDef.n + 300, k + '-open-dot']);
+    }
+    if(symDef.noFill) {
+        drawing.symbolNoFill[symDef.n] = true;
     }
 });
 var MAXSYMBOL = drawing.symbolNames.length,

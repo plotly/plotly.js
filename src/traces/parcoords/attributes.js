@@ -19,7 +19,6 @@ var extendDeepAll = extend.extendDeepAll;
 var extendFlat = extend.extendFlat;
 
 module.exports = {
-
     domain: {
         x: {
             valType: 'info_array',
@@ -136,6 +135,7 @@ module.exports = {
 
     line: extendFlat(
         // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
+
         // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
         extendDeepAll(
             colorAttributes('line', 'calc'),
@@ -153,7 +153,6 @@ module.exports = {
                         'The default value is false, so that `parcoords` colorscale can default to `Viridis`.'
                     ].join(' ')
                 }
-
             }
         ),
 

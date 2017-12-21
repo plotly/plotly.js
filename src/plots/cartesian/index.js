@@ -137,7 +137,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             }
         }
 
-        _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+        if(_module.plot) _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }
 }
 
@@ -145,13 +145,14 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldModules = oldFullLayout._modules || [],
         newModules = newFullLayout._modules || [];
 
-    var hadScatter, hasScatter, i;
+    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo;
+
 
     for(i = 0; i < oldModules.length; i++) {
         if(oldModules[i].name === 'scatter') {
             hadScatter = true;
-            break;
         }
+        break;
     }
 
     for(i = 0; i < newModules.length; i++) {
@@ -161,12 +162,26 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 
+    for(i = 0; i < oldModules.length; i++) {
+        if(oldModules[i].name === 'scattergl') {
+            hadGl = true;
+        }
+        break;
+    }
+
+    for(i = 0; i < newModules.length; i++) {
+        if(newModules[i].name === 'scattergl') {
+            hasGl = true;
+            break;
+        }
+    }
+
     if(hadScatter && !hasScatter) {
-        var oldPlots = oldFullLayout._plots,
-            ids = Object.keys(oldPlots || {});
+        oldPlots = oldFullLayout._plots;
+        ids = Object.keys(oldPlots || {});
 
         for(i = 0; i < ids.length; i++) {
-            var subplotInfo = oldPlots[ids[i]];
+            subplotInfo = oldPlots[ids[i]];
 
             if(subplotInfo.plot) {
                 subplotInfo.plot.select('g.scatterlayer')
@@ -179,6 +194,19 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             .select('g.scatterlayer')
             .selectAll('g.trace')
             .remove();
+    }
+
+    if(hadGl && !hasGl) {
+        oldPlots = oldFullLayout._plots;
+        ids = Object.keys(oldPlots || {});
+
+        for(i = 0; i < ids.length; i++) {
+            subplotInfo = oldPlots[ids[i]];
+
+            if(subplotInfo._scene) {
+                subplotInfo._scene.destroy();
+            }
+        }
     }
 
     var hadCartesian = (oldFullLayout._has && oldFullLayout._has('cartesian'));
@@ -222,7 +250,6 @@ exports.drawFramework = function(gd) {
         plotinfo.overlays = [];
 
         makeSubplotLayer(plotinfo);
-
         // fill in list of overlay subplots
         if(plotinfo.mainplot) {
             var mainplot = fullLayout._plots[plotinfo.mainplot];
