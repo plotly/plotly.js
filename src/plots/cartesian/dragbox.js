@@ -294,11 +294,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         removeZoombox(gd);
         dragTail(zoomMode);
-
-        if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long');
-            SHOWZOOMOUTTIP = false;
-        }
+        showDoubleClickNotifier(gd);
     }
 
     function dragDone(dragged, numClicks) {
@@ -950,6 +946,13 @@ function removeZoombox(gd) {
         .remove();
 }
 
+function showDoubleClickNotifier(gd) {
+    if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
+        Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long');
+        SHOWZOOMOUTTIP = false;
+    }
+}
+
 function isSelectOrLasso(dragmode) {
     return dragmode === 'lasso' || dragmode === 'select';
 }
@@ -1056,6 +1059,7 @@ module.exports = {
     transitionZoombox: transitionZoombox,
     removeZoombox: removeZoombox,
     clearSelect: clearSelect,
+    showDoubleClickNotifier: showDoubleClickNotifier,
 
     attachWheelEventHandler: attachWheelEventHandler
 };

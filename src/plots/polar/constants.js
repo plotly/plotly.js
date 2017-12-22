@@ -28,6 +28,10 @@ module.exports = {
         'radial-line'
     ],
 
+    radialDragBoxSize: 50,
+    cornerLen: 25,
+    cornerHalfWidth: 2,
+
     MINDRAG: 8,
-    MINZOOM: 20,
+    MINZOOM: 20
 };

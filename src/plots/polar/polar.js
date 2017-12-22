@@ -29,22 +29,20 @@ var deg2rad = Lib.deg2rad;
 var rad2deg = Lib.rad2deg;
 var wrap360 = Lib.wrap360;
 
+var setConvertAngular = require('./helpers').setConvertAngular;
 var constants = require('./constants');
-var layerNames = constants.layerNames;
-var MINDRAG = constants.MINDRAG;
 
 function Polar(gd, id) {
     this.id = id;
     this.gd = gd;
 
-    this.hasClipOnAxisFalse = null;
+    this._hasClipOnAxisFalse = null;
     this.traceHash = {};
     this.layers = {};
     this.clipPaths = {};
     this.clipIds = {};
 
     var fullLayout = gd._fullLayout;
-    var polarLayout = fullLayout[id];
     var clipIdBase = 'clip' + fullLayout._uid + id;
 
     this.clipIds.circle = clipIdBase + '-circle';
@@ -55,11 +53,8 @@ function Polar(gd, id) {
     this.framework = fullLayout._polarlayer.append('g')
         .attr('class', id);
 
-    this.viewInitial = {
-        x: polarLayout.x,
-        y: polarLayout.y,
-        zoom: polarLayout.zoom
-    };
+    // TODO should radialaxis angle be part of view initial?
+    this.viewInitial = {};
 }
 
 var proto = Polar.prototype;
@@ -73,12 +68,12 @@ proto.plot = function(polarCalcData, fullLayout) {
     var polarLayout = fullLayout[_this.id];
 
     // TODO maybe move to generalUpdatePerTraceModule ?
-    _this.hasClipOnAxisFalse = false;
+    _this._hasClipOnAxisFalse = false;
     for(var i = 0; i < polarCalcData.length; i++) {
         var trace = polarCalcData[i][0].trace;
 
         if(trace.cliponaxis === false) {
-            _this.hasClipOnAxisFalse = true;
+            _this._hasClipOnAxisFalse = true;
             break;
         }
     }
@@ -94,6 +89,7 @@ proto.updateLayers = function(fullLayout, polarLayout) {
     var layers = _this.layers;
     var radialLayout = polarLayout.radialaxis;
     var angularLayout = polarLayout.angularaxis;
+    var layerNames = constants.layerNames;
 
     var frontPlotIndex = layerNames.indexOf('frontplot');
     var layerData = layerNames.slice(0, frontPlotIndex);
@@ -225,8 +221,8 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     yaxis.isPtWithinRange + function() { return true; };
 
     layers.frontplot
-        .call(Drawing.setTranslate, xOffset2, yOffset2)
-        .call(Drawing.setClipUrl, _this.hasClipOnAxisFalse ? null : _this.clipIds.circle);
+        .attr('transform', strTranslate(xOffset2, yOffset2))
+        .call(Drawing.setClipUrl, _this._hasClipOnAxisFalse ? null : _this.clipIds.circle);
 
     layers.bgcircle.attr({
         d: pathSectorClosed(radius, sector),
@@ -277,6 +273,10 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     Axes.doAutoRange(ax);
     radialLayout.range = ax.range.slice();
     radialLayout._input.range = ax.range.slice();
+
+    if(!('radialaxis.range' in _this.viewInitial)) {
+        _this.viewInitial['radialaxis.range'] = ax.range.slice();
+    }
 
     // rotate auto tick labels by 180 if in quadrant II and III to make them
     // readable from left-to-right
@@ -329,6 +329,10 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var angularLayout = polarLayout.angularaxis;
     var sector = polarLayout.sector;
     var sectorInRad = sector.map(deg2rad);
+
+    if(!('angularaxis.position' in _this.viewInitial)) {
+        _this.viewInitial['angularaxis.position'] = angularLayout.position;
+    }
 
     var ax = _this.angularAxis = Lib.extendFlat({}, angularLayout, {
         _axislayer: layers['angular-axis'],
@@ -473,7 +477,7 @@ proto.updateFx = function(fullLayout, polarLayout) {
     }
 };
 
-proto.updateMainDrag = function(fullLayout) {
+proto.updateMainDrag = function(fullLayout, polarLayout) {
     var _this = this;
     var gd = _this.gd;
     var layers = _this.layers;
@@ -496,77 +500,179 @@ proto.updateMainDrag = function(fullLayout) {
         yaxes: [_this.yaxis]
     };
 
-    // use layout domain and offsets to shadow full subplot domain on 'zoom'
-    var pw = _this.xLength;
-    var ph = _this.yLength;
-    var xs = _this.xOffset;
-    var ys = _this.yOffset;
-    var x0, y0;
-    var box, path0, dimmed, lum;
-    var zb, corners;
+    var MINZOOM = constants.MINZOOM;
+    var clen = constants.cornerLen;
+    var chw = constants.cornerHalfWidth;
+    var radius = _this.radius;
+    var cx = _this.cx;
+    var cy = _this.cy;
+    var sector = polarLayout.sector;
 
-    function zoomPrep(evt, startX, startY) {
-        var bbox = mainDrag.getBoundingClientRect();
-        var polarLayoutNow = gd._fullLayout[_this.id];
-        x0 = startX - bbox.left;
-        y0 = startY - bbox.top;
-        box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
-        lum = tinycolor(polarLayoutNow.bgcolor).getLuminance();
-        path0 = 'M0,0H' + pw + 'V' + ph + 'H0V0';
+    //
+    var x0, y0;
+    //
+    var r0, r1;
+    //
+    var path0, dimmed, lum;
+    //
+    var zb, corners;
+    //
+    var angle0, angle1;
+    //
+    var a0;
+
+    // sector center in the main-drag coordinate system
+    var cxx = _this.cx - _this.xOffset2;
+    var cyy = _this.cy - _this.yOffset2;
+
+    function xy2r(x, y) {
+        var xx = x - cxx;
+        var yy = y - cyy;
+        return Math.sqrt(xx * xx + yy * yy);
+    }
+
+    function xy2a(x, y) {
+        return Math.atan2(cyy - y, x - cxx);
+    }
+
+    function ra2xy(r, a) {
+        return [r * Math.cos(a), r * Math.sin(-a)];
+    }
+
+    function zoomPrep() {
+        r0 = null;
+        r1 = null;
+        path0 = pathSectorClosed(radius, sector);
         dimmed = false;
 
-        zb = dragBox.makeZoombox(zoomlayer, lum, xs, ys, path0);
-        corners = dragBox.makeCorners(zoomlayer, xs, ys);
+        var polarLayoutNow = gd._fullLayout[_this.id];
+        lum = tinycolor(polarLayoutNow.bgcolor).getLuminance();
+
+        zb = dragBox.makeZoombox(zoomlayer, lum, cx, cy, path0);
+        zb.attr('fill-rule', 'evenodd');
+        corners = dragBox.makeCorners(zoomlayer, cx, cy);
         dragBox.clearSelect(zoomlayer);
     }
 
-    function zoomMove(dx0, dy0) {
-        var x1 = Math.max(0, Math.min(pw, dx0 + x0));
-        var y1 = Math.max(0, Math.min(ph, dy0 + y0));
-        var dx = Math.abs(x1 - x0);
-        var dy = Math.abs(y1 - y0);
+    function zoomMove(dx, dy) {
+        var x1 = x0 + dx;
+        var y1 = y0 + dy;
+        var rr0 = xy2r(x0, y0);
+        var rr1 = xy2r(x1, y1);
+        var drr = rr1 - rr0;
 
-        box.w = box.h = Math.max(dx, dy);
-        var delta = box.w / 2;
-
-        if(dx > dy) {
-            box.l = Math.min(x0, x1);
-            box.r = Math.max(x0, x1);
-            box.t = Math.min(y0, y1) - delta;
-            box.b = Math.min(y0, y1) + delta;
-        } else {
-            box.t = Math.min(y0, y1);
-            box.b = Math.max(y0, y1);
-            box.l = Math.min(x0, x1) - delta;
-            box.r = Math.max(x0, x1) + delta;
+        if(Math.abs(drr) < MINZOOM) {
+            if(drr > 0) rr0 = 0;
+            else if(drr < 0) rr0 = radius;
+            else return;
         }
 
-        dragBox.updateZoombox(zb, corners, box, path0, dimmed, lum);
-        corners.attr('d', dragBox.xyCorners(box));
+        r0 = Math.min(rr0, rr1);
+        r1 = Math.min(Math.max(rr0, rr1), radius);
+
+        zb.attr('d', path0 + pathSectorClosed(r1, sector) + pathSectorClosed(r0, sector));
+
+        var a = xy2a(x1, y1);
+        var da = clen / rr1 / 2;
+        var am = a - da;
+        var ap = a + da;
+        var rm = rr1 - chw;
+        var rp = rr1 + chw;
+
+        corners.attr('d',
+            'M' + ra2xy(rm, am) +
+            'A' + [rm, rm] + ' 0,0,0 ' + ra2xy(rm, ap) +
+            'L' + ra2xy(rp, ap) +
+            'A' + [rp, rp] + ' 0,0,1 ' + ra2xy(rp, am) +
+            'Z'
+        );
+
+        dragBox.transitionZoombox(zb, corners, dimmed, lum);
         dimmed = true;
     }
 
     function zoomDone(dragged, numClicks) {
-        if(Math.min(box.h, box.w) < MINDRAG * 2) {
-            if(numClicks === 2) doubleClick();
-            return dragBox.removeZoombox(gd);
-        }
-
         dragBox.removeZoombox(gd);
 
-        // var updateObj = {};
-        // var polarUpdateObj = updateObj[_this.id] = {};
-        // Plotly.relayout(gd, polarUpdateObj);
+        if(r0 === null || r1 === null) {
+            if(numClicks === 2) doubleClick();
+            return;
+        }
+
+        dragBox.showDoubleClickNotifier(gd);
+
+        var radialAxis = _this.radialAxis;
+        var radialRange = radialAxis.range;
+        var drange = radialRange[1] - radialRange[0];
+        var updateObj = {};
+        updateObj[_this.id + '.radialaxis.range'] = [
+            radialRange[0] + r0 * drange / radius,
+            radialRange[0] + r1 * drange / radius
+        ];
+
+        Plotly.relayout(gd, updateObj);
+    }
+
+    var sector0;
+
+    function panPrep() {
+        sector0 = fullLayout[_this.id].sector.slice();
+        angle0 = fullLayout[_this.id].angularaxis.position;
+        a0 = xy2a(x0, y0);
     }
 
     function panMove(dx, dy) {
-        var vb = [dx, dy, pw - dx, ph - dy];
-        updateByViewBox(vb);
+        var x1 = x0 + dx;
+        var y1 = y0 + dy;
+        var a1 = xy2a(x1, y1);
+        var dangle = rad2deg(a1 - a0);
+
+        angle1 = angle0 + dangle;
+
+        layers.frontplot.attr(
+            'transform',
+            strTranslate(_this.xOffset2, _this.yOffset2) +
+            strRotate([-dangle, _this.cx - _this.xOffset2, _this.cy - _this.yOffset2])
+        );
+
+        // not working out so well here below
+
+        if(_this._hasClipOnAxisFalse) {
+            _this.sector = [sector0[0] + dangle, sector0[1] + dangle];
+
+            // Gotta update sector???
+
+            layers.frontplot
+                .select('.scatterlayer').selectAll('.trace')
+                .call(Drawing.hideOutsideRangePoints, _this);
+        } else {
+            _this.clipPaths.circle.attr(
+                'transform',
+                strTranslate(cx - _this.xOffset2, cy - _this.yOffset2) +
+                strRotate(dangle)
+            );
+        }
+
+        var angularAxis = _this.angularAxis;
+        angularAxis.position = angle1;
+
+        // DOES NOT WORK !!
+        if(angularAxis.type === 'linear' && !isFullCircle(sector)) {
+            angularAxis.range = _this.sector
+                .map(deg2rad)
+                .map(angularAxis.unTransformRad)
+                .map(rad2deg);
+        }
+
+        setConvertAngular(angularAxis);
+        Axes.doTicks(gd, angularAxis, true);
     }
 
     function panDone(dragged, numClicks) {
         if(dragged) {
-            updateByViewBox([0, 0, pw, ph]);
+            var updateObj = {};
+            updateObj[_this.id + '.angularaxis.position'] = angle1;
+            Plotly.relayout(gd, updateObj);
         } else if(numClicks === 2) {
             doubleClick();
         }
@@ -576,38 +682,27 @@ proto.updateMainDrag = function(fullLayout) {
         // TODO
     }
 
-    function updateByViewBox(vb) {
-        var ax = _this.xaxis;
-        var xScaleFactor = vb[2] / ax._length;
-        var yScaleFactor = vb[3] / ax._length;
-        var clipDx = vb[0];
-        var clipDy = vb[1];
-
-        var plotDx = ax._offset - clipDx / xScaleFactor;
-        var plotDy = ax._offset - clipDy / yScaleFactor;
-
-        _this.framework
-            .call(Drawing.setTranslate, -plotDx, -plotDy);
-            // .call(Drawing.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
-
-        // maybe cache this at the plot step
-        var traceGroups = _this.framework.selectAll('.trace');
-
-        traceGroups.selectAll('.point')
-            .call(Drawing.setPointGroupScale, xScaleFactor, yScaleFactor);
-        traceGroups.selectAll('.textpoint')
-            .call(Drawing.setTextPointsScale, xScaleFactor, yScaleFactor);
-        traceGroups
-            .call(Drawing.hideOutsideRangePoints, _this);
-    }
-
     function doubleClick() {
         gd.emit('plotly_doubleclick', null);
-        // Plotly.relayout(gd, Lib.extendFlat({}, _this.viewInitial));
+
+        // TODO double once vs twice logic (autorange vs fixed range)
+
+        // TODO double click disable hover for some reason !?!?
+
+        var updateObj = {};
+        for(var k in _this.viewInitial) {
+            updateObj[_this.id + '.' + k] = _this.viewInitial[k];
+        }
+
+        Plotly.relayout(gd, updateObj);
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {
         var dragModeNow = gd._fullLayout.dragmode;
+
+        var bbox = mainDrag.getBoundingClientRect();
+        x0 = startX - bbox.left;
+        y0 = startY - bbox.top;
 
         switch(dragModeNow) {
             case 'zoom':
@@ -618,6 +713,7 @@ proto.updateMainDrag = function(fullLayout) {
             case 'pan':
                 dragOpts.moveFn = panMove;
                 dragOpts.doneFn = panDone;
+                panPrep(evt, startX, startY);
                 break;
             case 'select':
             case 'lasso':
@@ -662,7 +758,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
 
     if(!radialLayout.visible) return;
 
-    var bl = 50;
+    var bl = constants.radialDragBoxSize;
     var bl2 = bl / 2;
     var radialDrag = dragBox.makeDragger(layers, 'radialdrag', 'move', -bl2, -bl2, bl, bl);
     var radialDrag3 = d3.select(radialDrag);
@@ -687,7 +783,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
             // mostly perpendicular motions rotate,
             // mostly parallel motions re-range
             if(!isNaN(comp)) {
-                moveFn2 = comp < 0.5 ? rotateMove : rerangeMove;
+                moveFn2 = comp < 0.7 ? rotateMove : rerangeMove;
             }
         }
     }
@@ -755,6 +851,8 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
 
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;
+
+        dragBox.clearSelect(fullLayout._zoomlayer);
     };
 
     dragElement.init(dragOpts);

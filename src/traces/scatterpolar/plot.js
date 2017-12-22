@@ -18,7 +18,7 @@ module.exports = function plot(subplot, moduleCalcData) {
         xaxis: subplot.xaxis,
         yaxis: subplot.yaxis,
         plot: subplot.framework,
-        layerClipId: subplot.hasClipOnAxisFalse ? subplot.clipIds.circle : null
+        layerClipId: subplot._hasClipOnAxisFalse ? subplot.clipIds.circle : null
     };
 
     var radialAxis = subplot.radialAxis;
