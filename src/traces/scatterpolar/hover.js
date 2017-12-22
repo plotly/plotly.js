@@ -19,8 +19,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var newPointData = scatterPointData[0];
 
     // hovering on fill case
-    // TODO do we need to constrain the scatter point data further (like for
-    // ternary subplots) or not?
     if(newPointData.index === undefined) {
         return scatterPointData;
     }
