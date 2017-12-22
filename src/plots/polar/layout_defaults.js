@@ -24,6 +24,7 @@ var autoType = require('../cartesian/axis_autotype');
 var orderedCategories = require('../cartesian/ordered_categories');
 var setConvert = require('../cartesian/set_convert');
 
+var setConvertAngular = require('./helpers').setConvertAngular;
 var layoutAttributes = require('./layout_attributes');
 var constants = require('./constants');
 var axisNames = constants.axisNames;
@@ -47,9 +48,13 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     for(var i = 0; i < axisNames.length; i++) {
         axName = axisNames[i];
 
-        var axIn = contIn[axName] || {};
+        if(!Lib.isPlainObject(contIn[axName])) {
+            contIn[axName] = {};
+        }
+
+        var axIn = contIn[axName];
         var axOut = contOut[axName] = {};
-        axOut._name = axName;
+        axOut._id = axOut._name = axName;
 
         var dataAttr = constants.axisName2dataArray[axName];
         var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr);
@@ -121,12 +126,16 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
         var trace;
 
         for(var i = 0; i < subplotData.length; i++) {
-            trace = subplotData[i];
-            if(trace.visible) break;
+            if(subplotData[i].visible) {
+                trace = subplotData[i];
+                break;
+            }
         }
 
         // TODO add trace input calendar support
-        axOut.type = autoType(trace[dataAttr], 'gregorian');
+        if(trace) {
+            axOut.type = autoType(trace[dataAttr], 'gregorian');
+        }
 
         if(axOut.type === '-') {
             axOut.type = 'linear';
@@ -181,58 +190,8 @@ function handleAxisStyleDefaults(axIn, axOut, coerce, opts) {
         coerce('gridcolor', colorMix(dfltColor, opts.bgColor, 60).toRgbString());
         coerce('gridwidth');
     }
-}
 
-function setConvertAngular(ax) {
-    var dir = {clockwise: -1, counterclockwise: 1}[ax.direction];
-    var pos = Lib.deg2rad(ax.position);
-    var _c2rad;
-    var _rad2c;
-
-    if(ax.type === 'linear') {
-        _c2rad = function(v, unit) {
-            if(unit === 'degrees') return Lib.deg2rad(v);
-            return v;
-        };
-        _rad2c = function(v, unit) {
-            if(unit === 'degrees') return Lib.rad2deg(v);
-            return v;
-        };
-    }
-    else if(ax.type === 'category') {
-        _c2rad = function(v) {
-            return v * 2 * Math.PI / ax._categories.length;
-        };
-        _rad2c = function(v) {
-            return v * ax._categories.length / Math.PI / 2;
-        };
-    }
-    else if(ax.type === 'date') {
-        var period = ax.period || 365 * 24 * 60 * 60 * 1000;
-
-        _c2rad = function(v) {
-            return (v % period) * 2 * Math.PI / period;
-        };
-        _rad2c = function(v) {
-            return v * period / Math.PI / 2;
-        };
-    }
-
-    function transformRad(v) { return dir * v + pos; }
-    function unTransformRad(v) { return (v - pos) / dir; }
-
-    // use the shift 'sector' to get right tick labels for non-default
-    // angularaxis 'position' and/or 'direction'
-    ax.unTransformRad = unTransformRad;
-
-    // this version is used on hover
-    ax._c2rad = _c2rad;
-
-    ax.c2rad = function(v, unit) { return transformRad(_c2rad(v, unit)); };
-    ax.rad2c = function(v, unit) { return _rad2c(unTransformRad(v), unit); };
-
-    ax.c2deg = function(v, unit) { return Lib.rad2deg(ax.c2rad(v, unit)); };
-    ax.deg2c = function(v, unit) { return ax.rad2c(Lib.deg2rad(v), unit); };
+    coerce('layer');
 }
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {

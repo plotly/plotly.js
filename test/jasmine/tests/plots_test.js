@@ -7,6 +7,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var failTest = require('../assets/fail_test');
 
 describe('Test Plots', function() {
     'use strict';
@@ -369,7 +370,7 @@ describe('Test Plots', function() {
                 .then(done);
         });
 
-        afterEach(destroyGraphDiv);
+        afterAll(destroyGraphDiv);
 
         it('should resize the plot clip', function() {
             var uid = gd._fullLayout._uid;
@@ -385,6 +386,7 @@ describe('Test Plots', function() {
 
         it('should resize the main svgs', function() {
             var mainSvgs = document.getElementsByClassName('main-svg');
+            expect(mainSvgs.length).toBe(2);
 
             for(var i = 0; i < mainSvgs.length; i++) {
                 var svg = mainSvgs[i],
@@ -397,6 +399,9 @@ describe('Test Plots', function() {
         });
 
         it('should update the axis scales', function() {
+            var mainSvgs = document.getElementsByClassName('main-svg');
+            expect(mainSvgs.length).toBe(2);
+
             var fullLayout = gd._fullLayout,
                 plotinfo = fullLayout._plots.xy;
 
@@ -405,6 +410,18 @@ describe('Test Plots', function() {
 
             expect(plotinfo.xaxis._length).toEqual(240);
             expect(plotinfo.yaxis._length).toEqual(220);
+        });
+
+        it('should allow resizing by plot ID', function(done) {
+            var mainSvgs = document.getElementsByClassName('main-svg');
+            expect(mainSvgs.length).toBe(2);
+
+            expect(typeof gd.id).toBe('string');
+            expect(gd.id).toBeTruthy();
+
+            Plotly.Plots.resize(gd.id)
+            .catch(failTest)
+            .then(done);
         });
     });
 

@@ -192,6 +192,7 @@ plots.getSubplotCalcData = function(calcData, type, subplotId) {
 // the text is at first, so it needs to draw it,
 // then wait a little, then draw it again
 plots.redrawText = function(gd) {
+    gd = Lib.getGraphDiv(gd);
 
     // do not work if polar is present
     if((gd.data && gd.data[0] && gd.data[0].r)) return;
@@ -212,6 +213,8 @@ plots.redrawText = function(gd) {
 
 // resize plot about the container size
 plots.resize = function(gd) {
+    gd = Lib.getGraphDiv(gd);
+
     return new Promise(function(resolve, reject) {
 
         function isHidden(gd) {
@@ -2370,19 +2373,6 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         traceHash = {},
         i;
 
-    function filterVisible(calcDataIn) {
-        var calcDataOut = [];
-
-        for(var i = 0; i < calcDataIn.length; i++) {
-            var calcTrace = calcDataIn[i],
-                trace = calcTrace[0].trace;
-
-            if(trace.visible === true) calcDataOut.push(calcTrace);
-        }
-
-        return calcDataOut;
-    }
-
     // build up moduleName -> calcData hash
     for(i = 0; i < subplotCalcData.length; i++) {
         var calcTraces = subplotCalcData[i],
@@ -2422,7 +2412,7 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         var moduleCalcData = traceHash[moduleNames[i]],
             _module = moduleCalcData[0][0].trace._module;
 
-        _module.plot(subplot, filterVisible(moduleCalcData), subplotLayout);
+        _module.plot(subplot, Lib.filterVisible(moduleCalcData), subplotLayout);
     }
 
     // update moduleName -> calcData hash

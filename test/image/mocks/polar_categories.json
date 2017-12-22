@@ -35,6 +35,14 @@
       "theta": [45, 90, 180, 200, 300, 15, 20, 45],
       "fill": "toself",
       "subplot": "polar4"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "name": "angular categories (w/ extra category)",
+      "r": [5, 4, 2, 4, 5, 5],
+      "theta": ["b", "c", "d", "e", "a", "b"],
+      "fill": "toself"
     }
   ],
   "layout": {
@@ -62,6 +70,7 @@
         "x": [0.54, 1],
         "y": [0.56, 1]
       },
+      "sector": [150, 400],
       "radialaxis": {
         "position": -45
       },

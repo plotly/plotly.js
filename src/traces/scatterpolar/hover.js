@@ -57,7 +57,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 
     if(parts.indexOf('all') !== -1) parts = ['r', 'theta'];
-    if(parts.indexOf('r') !== -1) textPart(radialAxis, cdi.r);
+    if(parts.indexOf('r') !== -1) textPart(radialAxis, radialAxis.c2r(cdi.r));
     if(parts.indexOf('theta') !== -1) textPart(angularAxis, theta);
 
     newPointData.extraText = text.join('<br>');

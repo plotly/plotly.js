@@ -8,7 +8,6 @@
 
 'use strict';
 
-var Lib = require('../../lib');
 var scatterPlot = require('../scatter/plot');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
@@ -19,10 +18,11 @@ module.exports = function plot(subplot, moduleCalcData) {
         xaxis: subplot.xaxis,
         yaxis: subplot.yaxis,
         plot: subplot.framework,
-        layerClipId: subplot.hasClipOnAxisFalse ? subplot.clipIds.circle : null
+        layerClipId: subplot._hasClipOnAxisFalse ? subplot.clipIds.circle : null
     };
 
-    var radialRange = subplot.radialAxis.range;
+    var radialAxis = subplot.radialAxis;
+    var radialRange = radialAxis.range;
 
     // map (r, theta) first to a 'geometric' r and then to (x,y)
     // on-par with what scatterPlot expects.
@@ -33,7 +33,9 @@ module.exports = function plot(subplot, moduleCalcData) {
             var r = cdi.r;
 
             if(r !== BADNUM) {
-                var rr = r - radialRange[0];
+                // convert to 'r' data to fit with mocked polar x/y axis
+                // which are always `type: 'linear'`
+                var rr = radialAxis.c2r(r) - radialRange[0];
                 if(rr >= 0) {
                     var rad = cdi.rad;
                     cdi.x = rr * Math.cos(rad);
@@ -48,37 +50,4 @@ module.exports = function plot(subplot, moduleCalcData) {
     }
 
     scatterPlot(subplot.graphDiv, plotinfo, moduleCalcData);
-
-    var radius = subplot.radius;
-
-    function pt2deg(p) {
-        return Lib.rad2deg(Math.atan2(radius - p[1], p[0] - radius));
-    }
-
-    // TODO
-    // fix polygon testers for segments that wrap around themselves
-    // about the origin.
-    for(i = 0; i < moduleCalcData.length; i++) {
-        var trace = moduleCalcData[i][0].trace;
-
-        if(Array.isArray(trace._polygons)) {
-            for(j = 0; j < trace._polygons.length; j++) {
-                var pts = trace._polygons[j].pts.slice();
-                pts.pop();
-
-                var a0 = pt2deg(pts[0]);
-                for(var k = 1; k < pts.length; k++) {
-                    var a1 = pt2deg(pts[k]);
-                    var arc = Math.abs(a1 - a0);
-                    var arcWrapped = Math.abs(Lib.wrap360(a1) - Lib.wrap360(a0));
-
-                    if(arc !== arcWrapped) {
-                        // pts.push(radius, radius);
-                    }
-
-                    a0 = a1;
-                }
-            }
-        }
-    }
 };
