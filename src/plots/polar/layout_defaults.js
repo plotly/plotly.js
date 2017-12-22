@@ -47,7 +47,11 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     for(var i = 0; i < axisNames.length; i++) {
         axName = axisNames[i];
 
-        var axIn = contIn[axName] || {};
+        if(!Lib.isPlainObject(contIn[axName])) {
+            contIn[axName] = {};
+        }
+
+        var axIn = contIn[axName];
         var axOut = contOut[axName] = {};
         axOut._id = axOut._name = axName;
 
@@ -121,12 +125,16 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
         var trace;
 
         for(var i = 0; i < subplotData.length; i++) {
-            trace = subplotData[i];
-            if(trace.visible) break;
+            if(subplotData[i].visible) {
+                trace = subplotData[i];
+                break;
+            }
         }
 
         // TODO add trace input calendar support
-        axOut.type = autoType(trace[dataAttr], 'gregorian');
+        if(trace) {
+            axOut.type = autoType(trace[dataAttr], 'gregorian');
+        }
 
         if(axOut.type === '-') {
             axOut.type = 'linear';

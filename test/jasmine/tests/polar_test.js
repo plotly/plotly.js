@@ -56,8 +56,8 @@ describe('Test legacy polar plots logs:', function() {
 describe('Test polar plots defaults:', function() {
     var layoutOut;
 
-    function _supply(layoutIn) {
-        var fullData = [{
+    function _supply(layoutIn, fullData) {
+        fullData = fullData || [{
             type: 'scatterpolar',
             r: [],
             theta: [],
@@ -97,6 +97,21 @@ describe('Test polar plots defaults:', function() {
             }
         });
         expect(layoutOut.polar.angularaxis.thetaunit).toBeUndefined();
+    });
+
+    it('should not try to autotype visible false traces', function() {
+        _supply({
+            polar: {}
+        }, [{
+            type: 'scatterpolar',
+            visible: false,
+            r: ['2017-01-20', '2017-02-10', '2017-03-03'],
+            theta: ['a', 'b', 'c'],
+            subplot: 'polar'
+        }]);
+
+        expect(layoutOut.polar.radialaxis.type).toBe('linear', 'not date');
+        expect(layoutOut.polar.angularaxis.type).toBe('linear', 'not category');
     });
 });
 
