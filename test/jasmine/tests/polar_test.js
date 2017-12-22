@@ -177,4 +177,40 @@ describe('Test relayout on polar subplots:', function() {
         .then(done);
     });
 
+    it('should be able to relayout axis types', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+
+        Plotly.plot(gd, fig).then(function() {
+            return Plotly.relayout(gd, 'polar.radialaxis.type', 'log');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should be propagate angular settings down to tick labels', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var pos0 = [];
+        var pos1 = [];
+
+        Plotly.plot(gd, fig).then(function() {
+            d3.selectAll('.angulartick> text').each(function() {
+                var tx = d3.select(this);
+                pos0.push([tx.attr('x'), tx.attr('y')]);
+            });
+            return Plotly.relayout(gd, 'polar.angularaxis.position', 90);
+        })
+        .then(function() {
+            d3.selectAll('.angulartick> text').each(function() {
+                var tx = d3.select(this);
+                pos1.push([tx.attr('x'), tx.attr('y')]);
+            });
+
+            // if they're the same, the tick label position did not update
+            expect(pos1).not.toBeCloseTo2DArray(pos0);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });

@@ -2105,6 +2105,13 @@ axes.doTicks = function(gd, axid, skipTitle) {
             maxFontSize = Math.max(maxFontSize, d.fontSize);
         });
 
+        if(axid === 'angular') {
+            tickLabels.each(function(d) {
+                d3.select(this).select('text')
+                    .call(svgTextUtils.positionText, labelx(d), labely(d));
+            });
+        }
+
         function positionLabels(s, angle) {
             s.each(function(d) {
                 var anchor = labelanchor(angle, d);
