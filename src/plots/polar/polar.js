@@ -12,6 +12,7 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
 var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
@@ -218,7 +219,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     yaxis.setScale();
 
     xaxis.isPtWithinRange = function(d) { return _this.isPtWithinSector(d); };
-    yaxis.isPtWithinRange + function() { return true; };
+    yaxis.isPtWithinRange = function() { return true; };
 
     layers.frontplot
         .attr('transform', strTranslate(xOffset2, yOffset2))
@@ -397,10 +398,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     // (x,y) at max radius
     function rad2xy(rad) {
-        return [
-            radius * Math.cos(rad),
-            radius * Math.sin(rad)
-        ];
+        return [radius * Math.cos(rad), radius * Math.sin(rad)];
     }
 
     ax._transfn = function(d) {
@@ -506,24 +504,30 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     var radius = _this.radius;
     var cx = _this.cx;
     var cy = _this.cy;
+    var xOffset2 = _this.xOffset2;
+    var yOffset2 = _this.yOffset2;
     var sector = polarLayout.sector;
 
-    //
+    // mouse px position at drag start (0), move (1)
     var x0, y0;
-    //
+    // radial distance from circle center at drag start (0), move (1)
     var r0, r1;
-    //
+    // first (r1 - r0) dist greater than MINZOOM,
+    // determines whether 'small' zoomboxes get filled from center or outer edge
+    var drdir;
+    // zoombox persistent quantities
     var path0, dimmed, lum;
-    //
+    // zoombox, corners elements
     var zb, corners;
-    //
+    // angular axis angle offset at drag start (0), move (1)
     var angle0, angle1;
-    //
+    // copy of polar sector value at drag start
+    var sector0;
+    // angle about circle center at drag start
     var a0;
-
-    // sector center in the main-drag coordinate system
-    var cxx = _this.cx - _this.xOffset2;
-    var cyy = _this.cy - _this.yOffset2;
+    // circle center in the main-drag coordinate system
+    var cxx = cx - xOffset2;
+    var cyy = cy - yOffset2;
 
     function xy2r(x, y) {
         var xx = x - cxx;
@@ -542,6 +546,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     function zoomPrep() {
         r0 = null;
         r1 = null;
+        drdir = null;
         path0 = pathSectorClosed(radius, sector);
         dimmed = false;
 
@@ -559,34 +564,47 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         var y1 = y0 + dy;
         var rr0 = xy2r(x0, y0);
         var rr1 = xy2r(x1, y1);
+
         var drr = rr1 - rr0;
+        if(!drdir) drdir = drr;
 
         if(Math.abs(drr) < MINZOOM) {
-            if(drr > 0) rr0 = 0;
-            else if(drr < 0) rr0 = radius;
+            if(drdir > 0) rr0 = 0;
+            else if(drdir < 0) rr0 = radius;
             else return;
         }
 
         r0 = Math.min(rr0, rr1);
         r1 = Math.min(Math.max(rr0, rr1), radius);
 
-        zb.attr('d', path0 + pathSectorClosed(r1, sector) + pathSectorClosed(r0, sector));
+        var path1;
+        var cpath;
 
-        var a = xy2a(x1, y1);
-        var da = clen / rr1 / 2;
-        var am = a - da;
-        var ap = a + da;
-        var rm = rr1 - chw;
-        var rp = rr1 + chw;
+        if(r1 - r0 > MINZOOM) {
+            path1 = path0 + pathSectorClosed(r1, sector) + pathSectorClosed(r0, sector);
 
-        corners.attr('d',
-            'M' + ra2xy(rm, am) +
-            'A' + [rm, rm] + ' 0,0,0 ' + ra2xy(rm, ap) +
-            'L' + ra2xy(rp, ap) +
-            'A' + [rp, rp] + ' 0,0,1 ' + ra2xy(rp, am) +
-            'Z'
-        );
+            var a = xy2a(x1, y1);
+            var da = clen / rr1 / 2;
+            var am = a - da;
+            var ap = a + da;
+            var rb = Math.min(rr1, radius);
+            var rm = rb - chw;
+            var rp = rb + chw;
 
+            cpath = 'M' + ra2xy(rm, am) +
+                'A' + [rm, rm] + ' 0,0,0 ' + ra2xy(rm, ap) +
+                'L' + ra2xy(rp, ap) +
+                'A' + [rp, rp] + ' 0,0,1 ' + ra2xy(rp, am) +
+                'Z';
+        } else {
+            r0 = null;
+            r1 = null;
+            path1 = path0;
+            cpath = 'M0,0Z';
+        }
+
+        zb.attr('d', path1);
+        corners.attr('d', cpath);
         dragBox.transitionZoombox(zb, corners, dimmed, lum);
         dimmed = true;
     }
@@ -613,8 +631,6 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         Plotly.relayout(gd, updateObj);
     }
 
-    var sector0;
-
     function panPrep() {
         sector0 = fullLayout[_this.id].sector.slice();
         angle0 = fullLayout[_this.id].angularaxis.position;
@@ -629,36 +645,23 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
 
         angle1 = angle0 + dangle;
 
-        layers.frontplot.attr(
-            'transform',
-            strTranslate(_this.xOffset2, _this.yOffset2) +
-            strRotate([-dangle, _this.cx - _this.xOffset2, _this.cy - _this.yOffset2])
+        layers.frontplot.attr('transform',
+            strTranslate(xOffset2, yOffset2) + strRotate([-dangle, cxx, cyy])
         );
 
-        // not working out so well here below
-
-        if(_this._hasClipOnAxisFalse) {
-            _this.sector = [sector0[0] + dangle, sector0[1] + dangle];
-
-            // Gotta update sector???
-
-            layers.frontplot
-                .select('.scatterlayer').selectAll('.trace')
-                .call(Drawing.hideOutsideRangePoints, _this);
-        } else {
-            _this.clipPaths.circle.attr(
-                'transform',
-                strTranslate(cx - _this.xOffset2, cy - _this.yOffset2) +
-                strRotate(dangle)
-            );
-        }
+        _this.clipPaths.circle.attr('transform',
+            strTranslate(cxx, cyy) + strRotate(dangle)
+        );
 
         var angularAxis = _this.angularAxis;
         angularAxis.position = angle1;
 
-        // DOES NOT WORK !!
         if(angularAxis.type === 'linear' && !isFullCircle(sector)) {
-            angularAxis.range = _this.sector
+            // TODO must wrap360 or something to get just right
+            // on large pan
+            // or maybe a wrap180 ??
+
+            angularAxis.range = sector0
                 .map(deg2rad)
                 .map(angularAxis.unTransformRad)
                 .map(rad2deg);
@@ -666,6 +669,26 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
 
         setConvertAngular(angularAxis);
         Axes.doTicks(gd, angularAxis, true);
+
+        if(_this._hasClipOnAxisFalse && !isFullCircle(sector)) {
+            // mutate sector to trick isPtWithinSector
+            _this.sector = [sector0[0] - dangle, sector0[1] - dangle];
+
+            layers.frontplot
+                .select('.scatterlayer').selectAll('.trace')
+                .call(Drawing.hideOutsideRangePoints, _this);
+        }
+
+        for(var k in _this.traceHash) {
+            if(Registry.traceIs(k, 'gl')) {
+                var moduleCalcData = _this.traceHash[k];
+                var moduleCalcDataVisible = Lib.filterVisible(moduleCalcData);
+                var _module = moduleCalcData[0][0].trace._module;
+                var polarLayoutNow = gd._fullLayout[_this.id];
+
+                _module.plot(_this, moduleCalcDataVisible, polarLayoutNow);
+            }
+        }
     }
 
     function panDone(dragged, numClicks) {
@@ -684,10 +707,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
 
     function doubleClick() {
         gd.emit('plotly_doubleclick', null);
-
         // TODO double once vs twice logic (autorange vs fixed range)
-
-        // TODO double click disable hover for some reason !?!?
 
         var updateObj = {};
         for(var k in _this.viewInitial) {
@@ -833,10 +853,14 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
             var moduleCalcData = _this.traceHash[k];
             var moduleCalcDataVisible = Lib.filterVisible(moduleCalcData);
             var _module = moduleCalcData[0][0].trace._module;
+            var polarLayoutNow = gd._fullLayout[_this.id];
 
-            _module.plot(_this, moduleCalcDataVisible, polarLayout);
-            for(var i = 0; i < moduleCalcDataVisible.length; i++) {
-                _module.style(gd, moduleCalcDataVisible[i]);
+            _module.plot(_this, moduleCalcDataVisible, polarLayoutNow);
+
+            if(!Registry.traceIs(k, 'gl')) {
+                for(var i = 0; i < moduleCalcDataVisible.length; i++) {
+                    _module.style(gd, moduleCalcDataVisible[i]);
+                }
             }
         }
     }
