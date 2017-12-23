@@ -61,7 +61,7 @@ function plot(subplot, cdata) {
         var stash = cd.t;
         var rArray = stash.r;
         var thetaArray = stash.theta;
-        var i, r, theta, rad;
+        var i, r, rr, theta, rad;
 
         var subRArray = rArray.slice();
         var subThetaArray = thetaArray.slice();
@@ -69,7 +69,6 @@ function plot(subplot, cdata) {
         // filter out by range
         for(i = 0; i < rArray.length; i++) {
             r = rArray[i], theta = thetaArray[i];
-
             rad = angularAxis.c2rad(theta, trace.thetaunit);
 
             if(!subplot.isPtWithinSector({r: r, rad: rad})) {
@@ -86,14 +85,15 @@ function plot(subplot, cdata) {
         }
 
         for(i = 0; i < count; i++) {
-            r = subRArray[i] - rRange[0];
+            r = subRArray[i];
             theta = subThetaArray[i];
 
             if(isNumeric(r) && isNumeric(theta) && r >= 0) {
+                rr = radialAxis.c2r(r) - rRange[0];
                 rad = c2rad(theta);
 
-                x[i] = positions[i * 2] = r * Math.cos(rad);
-                y[i] = positions[i * 2 + 1] = r * Math.sin(rad);
+                x[i] = positions[i * 2] = rr * Math.cos(rad);
+                y[i] = positions[i * 2 + 1] = rr * Math.sin(rad);
             } else {
                 x[i] = y[i] = positions[i * 2] = positions[i * 2 + 1] = NaN;
             }
@@ -138,8 +138,8 @@ function plot(subplot, cdata) {
     return ScatterGl.plot(container, subplot, cdata);
 }
 
-
-function hover(pointData, xval, yval, hovermode) {
+// TODO dry up with ScatterPolar.hoverPoints
+function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd,
         stash = cd[0].t,
         rArray = stash.r,
@@ -179,7 +179,6 @@ function hover(pointData, xval, yval, hovermode) {
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
 
-
     radialAxis._hovertitle = 'r';
     angularAxis._hovertitle = 'θ';
 
@@ -218,7 +217,7 @@ module.exports = {
 
     calc: calc,
     plot: plot,
-    hoverPoints: hover,
+    hoverPoints: hoverPoints,
     style: ScatterGl.style,
     selectPoints: ScatterGl.selectPoints,
 
