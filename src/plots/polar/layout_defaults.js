@@ -173,8 +173,6 @@ function handleAxisStyleDefaults(axIn, axOut, coerce, opts) {
         coerce('tickformat');
     }
 
-    coerce('hoverformat');
-
     // TODO should use coerce2 pattern !!
 
     var showLine = coerce('showline');

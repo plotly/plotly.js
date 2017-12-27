@@ -36,6 +36,9 @@ var axisTickAttr = overrideAll({
     dtick: axesAttrs.dtick,
     tickvals: axesAttrs.tickvals,
     ticktext: axesAttrs.ticktext,
+    // TODO does not need 'inside' / 'outside' for radialaxis
+    // or maybe cut 'side' and have
+    // radialaxis.ticks: 'counterclockwise', 'clockwise', 'center', ''
     ticks: axesAttrs.ticks,
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,

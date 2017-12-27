@@ -213,4 +213,133 @@ describe('Test relayout on polar subplots:', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should be able to relayout angular ticks layout', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+
+        function check(cnt, expected) {
+            var ticks = d3.selectAll('path.angulartick');
+
+            expect(ticks.size()).toBe(cnt, '# of ticks');
+            ticks.each(function() {
+                expect(d3.select(this).attr('d')).toBe(expected);
+            });
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            check(8, 'M1.5,0h5');
+            return Plotly.relayout(gd, 'polar.angularaxis.ticks', 'inside');
+        })
+        .then(function() {
+            check(8, 'M-1.5,0h-5');
+            return Plotly.relayout(gd, 'polar.angularaxis.ticks', 'outside');
+        })
+        .then(function() {
+            check(8, 'M1.5,0h5');
+            return Plotly.relayout(gd, 'polar.angularaxis.ticks', '');
+        })
+        .then(function() {
+            check(0);
+            return Plotly.relayout(gd, 'polar.angularaxis.ticks', 'inside');
+        })
+        .then(function() {
+            check(8, 'M-1.5,0h-5');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should be able to toggle axis features', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+
+        function assertCnt(selector, expected, msg) {
+            var sel = d3.select(gd).selectAll(selector);
+            expect(sel.size()).toBe(expected, msg);
+        }
+
+        function assertDisplay(selector, expected, msg) {
+            var sel = d3.select(gd).selectAll(selector);
+
+            if(!sel.size()) fail(selector + ' not found');
+
+            sel.each(function() {
+                expect(d3.select(this).attr('display')).toBe(expected, msg);
+            });
+        }
+
+        function toggle(astr, vals, exps, selector, fn) {
+            return Plotly.relayout(gd, astr, vals[0]).then(function() {
+                fn(selector, exps[0], astr + ' ' + vals[0]);
+                return Plotly.relayout(gd, astr, vals[1]);
+            })
+            .then(function() {
+                fn(selector, exps[1], astr + ' ' + vals[1]);
+                return Plotly.relayout(gd, astr, vals[0]);
+            })
+            .then(function() {
+                fn(selector, exps[0], astr + ' ' + vals[0]);
+            });
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            return toggle(
+                'polar.radialaxis.showline',
+                [true, false], [null, 'none'],
+                '.radial-line > line', assertDisplay
+            );
+        })
+        .then(function() {
+            return toggle(
+                'polar.radialaxis.showgrid',
+                [true, false], [null, 'none'],
+                '.radial-grid', assertDisplay
+            );
+        })
+        .then(function() {
+            return toggle(
+                'polar.radialaxis.showticklabels',
+                [true, false], [6, 0],
+                '.radial-axis > .xtick > text', assertCnt
+            );
+        })
+        .then(function() {
+            return toggle(
+                'polar.radialaxis.ticks',
+                ['outside', ''], [6, 0],
+                '.radial-axis > path.xtick', assertCnt
+            );
+        })
+        .then(function() {
+            return toggle(
+                'polar.angularaxis.showline',
+                [true, false], [null, 'none'],
+                '.angular-line > path', assertDisplay
+            );
+        })
+        .then(function() {
+            return toggle(
+                'polar.angularaxis.showgrid',
+                [true, false], [8, 0],
+                '.angular-grid > path', assertCnt
+            );
+        })
+        .then(function() {
+            return toggle(
+                'polar.angularaxis.showticklabels',
+                [true, false], [8, 0],
+                '.angular-axis > .angulartick > text', assertCnt
+            );
+        })
+        .then(function() {
+            return toggle(
+                'polar.angularaxis.ticks',
+                ['outside', ''], [8, 0],
+                '.angular-axis > path.angulartick', assertCnt
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
 });

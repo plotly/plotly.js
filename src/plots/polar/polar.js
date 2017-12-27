@@ -56,6 +56,11 @@ function Polar(gd, id) {
 
     // TODO should radialaxis angle be part of view initial?
     this.viewInitial = {};
+
+    // unfortunately, we have to keep track of some axis tick settings
+    // so that we don't have to call Axes.doTicks with its special redraw flag
+    this.radialTickLayout = null;
+    this.angularTickLayout = null;
 }
 
 var proto = Polar.prototype;
@@ -94,18 +99,20 @@ proto.updateLayers = function(fullLayout, polarLayout) {
 
     var frontPlotIndex = layerNames.indexOf('frontplot');
     var layerData = layerNames.slice(0, frontPlotIndex);
+    var isAngularAxisBelowTraces = angularLayout.layer === 'below traces';
+    var isRadialAxisBelowTraces = radialLayout.layer === 'below traces';
 
-    if(angularLayout.layer === 'below traces') layerData.push('angular-axis');
-    if(radialLayout.layer === 'below traces') layerData.push('radial-axis');
-    if(angularLayout.layer === 'below traces') layerData.push('angular-line');
-    if(radialLayout.layer === 'below traces') layerData.push('radial-line');
+    if(isAngularAxisBelowTraces) layerData.push('angular-axis');
+    if(isRadialAxisBelowTraces) layerData.push('radial-axis');
+    if(isAngularAxisBelowTraces) layerData.push('angular-line');
+    if(isRadialAxisBelowTraces) layerData.push('radial-line');
 
     layerData.push('frontplot');
 
-    if(angularLayout.layer === 'above traces') layerData.push('angular-axis');
-    if(radialLayout.layer === 'above traces') layerData.push('radial-axis');
-    if(angularLayout.layer === 'above traces') layerData.push('angular-line');
-    if(radialLayout.layer === 'above traces') layerData.push('radial-line');
+    if(!isAngularAxisBelowTraces) layerData.push('angular-axis');
+    if(!isRadialAxisBelowTraces) layerData.push('radial-axis');
+    if(!isAngularAxisBelowTraces) layerData.push('angular-line');
+    if(!isRadialAxisBelowTraces) layerData.push('radial-line');
 
     var join = _this.framework.selectAll('.polarlayer')
         .data(layerData, String);
@@ -293,31 +300,34 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         return pathSector(r, sector);
     };
 
+    var newTickLayout = radialLayout.ticks + radialLayout.showticklabels;
+    if(_this.radialTickLayout !== newTickLayout) {
+        layers['radial-axis'].selectAll('.xtick').remove();
+        _this.radialTickLayout = newTickLayout;
+    }
+
     Axes.doTicks(gd, ax, true);
 
-    if(ax.visible) {
-        layers['radial-axis'].attr(
-            'transform',
-            strTranslate(cx, cy) + strRotate(-radialLayout.position)
-        );
+    updateElement(layers['radial-axis'], radialLayout.showticklabels || radialLayout.ticks, {
+        transform: strTranslate(cx, cy) + strRotate(-radialLayout.position)
+    });
 
-        // move all grid paths to about circle center,
-        // undo individual grid lines translations
-        layers['radial-grid']
-            .attr('transform', strTranslate(cx, cy))
-            .selectAll('path').attr('transform', null);
+    // move all grid paths to about circle center,
+    // undo individual grid lines translations
+    updateElement(layers['radial-grid'], radialLayout.showgrid, {
+        transform: strTranslate(cx, cy)
+    })
+    .selectAll('path').attr('transform', null);
 
-        layers['radial-line'].select('line').attr({
-            display: radialLayout.showline ? null : 'none',
-            x1: 0,
-            y1: 0,
-            x2: radius,
-            y2: 0,
-            transform: strTranslate(cx, cy) + strRotate(-radialLayout.position)
-        })
-        .attr('stroke-width', radialLayout.linewidth)
-        .call(Color.stroke, radialLayout.linecolor);
-    }
+    updateElement(layers['radial-line'].select('line'), radialLayout.showline, {
+        x1: 0,
+        y1: 0,
+        x2: radius,
+        y2: 0,
+        transform: strTranslate(cx, cy) + strRotate(-radialLayout.position)
+    })
+    .attr('stroke-width', radialLayout.linewidth)
+    .call(Color.stroke, radialLayout.linecolor);
 };
 
 proto.updateAngularAxis = function(fullLayout, polarLayout) {
@@ -421,7 +431,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         return 'M0,0L' + (-xy[0]) + ',' + xy[1];
     };
 
-    var offset4fontsize = (angularLayout.ticks !== 'outside' ? 1 : 0.5);
+    var offset4fontsize = (angularLayout.ticks !== 'outside' ? 0.7 : 0.5);
 
     ax._labelx = function(d) {
         var rad = c2rad(d);
@@ -455,17 +465,20 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             'middle';
     };
 
+    var newTickLayout = angularLayout.ticks + angularLayout.showticklabels;
+    if(_this.angularTickLayout !== newTickLayout) {
+        layers['angular-axis'].selectAll('.angulartick').remove();
+        _this.angularTickLayout = newTickLayout;
+    }
+
     Axes.doTicks(gd, ax, true);
 
-    if(ax.visible) {
-        layers['angular-line'].select('path').attr({
-            display: angularLayout.showline ? null : 'none',
-            d: pathSectorClosed(radius, sector),
-            transform: strTranslate(cx, cy)
-        })
-        .attr('stroke-width', angularLayout.linewidth)
-        .call(Color.stroke, angularLayout.linecolor);
-    }
+    updateElement(layers['angular-line'].select('path'), angularLayout.showline, {
+        d: pathSectorClosed(radius, sector),
+        transform: strTranslate(cx, cy)
+    })
+    .attr('stroke-width', angularLayout.linewidth)
+    .call(Color.stroke, angularLayout.linecolor);
 };
 
 proto.updateFx = function(fullLayout, polarLayout) {
@@ -998,6 +1011,16 @@ function pathSectorClosed(r, sector) {
 function isFullCircle(sector) {
     var arc = Math.abs(sector[1] - sector[0]);
     return arc === 360;
+}
+
+function updateElement(sel, showAttr, attrs) {
+    if(showAttr) {
+        sel.attr('display', null);
+        sel.attr(attrs);
+    } else if(sel) {
+        sel.attr('display', 'none');
+    }
+    return sel;
 }
 
 function strTranslate(x, y) {
