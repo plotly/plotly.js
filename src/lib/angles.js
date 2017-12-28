@@ -22,3 +22,8 @@ exports.wrap360 = function(deg) {
     var out = deg % 360;
     return out < 0 ? out + 360 : out;
 };
+
+exports.wrap180 = function(deg) {
+    if(Math.abs(deg) > 180) deg -= Math.round(deg / 360) * 360;
+    return deg;
+};

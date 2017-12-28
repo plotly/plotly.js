@@ -29,6 +29,7 @@ var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var deg2rad = Lib.deg2rad;
 var rad2deg = Lib.rad2deg;
 var wrap360 = Lib.wrap360;
+var wrap180 = Lib.wrap180;
 
 var setConvertAngular = require('./helpers').setConvertAngular;
 var constants = require('./constants');
@@ -587,13 +588,19 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             else return;
         }
 
+        var crossedOrigin = (
+            sign(x0 - cxx) * sign(x1 - cxx) === -1 &&
+            sign(cyy - y0) * sign(cyy - y1) === -1
+        );
+        if(crossedOrigin) rr0 = 0;
+
         r0 = Math.min(rr0, rr1);
         r1 = Math.min(Math.max(rr0, rr1), radius);
 
         var path1;
         var cpath;
 
-        if(r1 - r0 > MINZOOM) {
+        if(r1 - r0 > MINZOOM || crossedOrigin) {
             path1 = path0 + pathSectorClosed(r1, sector) + pathSectorClosed(r0, sector);
 
             var a = xy2a(x1, y1);
@@ -667,13 +674,9 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         );
 
         var angularAxis = _this.angularAxis;
-        angularAxis.position = angle1;
+        angularAxis.position = wrap180(angle1);
 
         if(angularAxis.type === 'linear' && !isFullCircle(sector)) {
-            // TODO must wrap360 or something to get just right
-            // on large pan
-            // or maybe a wrap180 ??
-
             angularAxis.range = sector0
                 .map(deg2rad)
                 .map(angularAxis.unTransformRad)
