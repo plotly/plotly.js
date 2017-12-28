@@ -47,15 +47,14 @@ module.exports = function calc(gd, trace) {
         }
     }
 
-    Axes.expand(radialAxis, rArray, {tozero: true});
-    calcMarkerSize(trace, len);
+    var ppad = calcMarkerSize(trace, len);
+    Axes.expand(radialAxis, rArray, {tozero: true, ppad: ppad});
 
     if(angularAxis.type !== 'linear') {
         angularAxis.autorange = true;
         Axes.expand(angularAxis, thetaArray);
     }
 
-    // TODO needs to bump auto ranges !!!
     calcColorscale(trace);
     arraysToCalcdata(cd, trace);
     calcSelection(cd, trace);
