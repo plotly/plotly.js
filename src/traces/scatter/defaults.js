@@ -57,6 +57,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var dfltHoverOn = [];
 
     if(subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
+        coerce('cliponaxis');
         coerce('marker.maxdisplayed');
         dfltHoverOn.push('points');
     }
@@ -74,8 +75,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
-
-    coerce('cliponaxis');
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

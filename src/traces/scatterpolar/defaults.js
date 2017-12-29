@@ -58,17 +58,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var dfltHoverOn = [];
 
     if(subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
-        // TODO update other scatter*/defaults
-        // cliponaxis has no effect on `mode: 'lines'` traces
         coerce('cliponaxis');
-
         coerce('marker.maxdisplayed');
         dfltHoverOn.push('points');
     }
 
     coerce('fill');
 
-    // TODO time for a subTypes.hasFill
     if(traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
         if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
