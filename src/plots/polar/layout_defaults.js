@@ -8,8 +8,6 @@
 
 'use strict';
 
-var colorMix = require('tinycolor2').mix;
-
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Plots = require('../plots');
@@ -20,6 +18,7 @@ var handleTickValueDefaults = require('../cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
 var handleCategoryOrderDefaults = require('../cartesian/category_order_defaults');
+var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
 var autoType = require('../cartesian/axis_autotype');
 var orderedCategories = require('../cartesian/ordered_categories');
 var setConvert = require('../cartesian/set_convert');
@@ -69,9 +68,16 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             handleCalendarDefaults(axIn, axOut, 'calendar', layoutOut.calendar);
         }
 
-        coerceAxis('visible');
-
+        var visible = coerceAxis('visible');
         setConvert(axOut, layoutOut);
+
+        var dfltColor;
+        var dfltFontColor;
+
+        if(visible) {
+            dfltColor = coerceAxis('color');
+            dfltFontColor = (dfltColor === axIn.color) ? dfltColor : opts.font.color;
+        }
 
         // We don't want to make downstream code call ax.setScale,
         // as both radial and angular axes don't have a set domain.
@@ -89,11 +95,13 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 coerceAxis('range');
                 axOut.cleanRange('range', {dfltRange: [0, 1]});
 
-                if(axOut.visible) {
+                if(visible) {
                     coerceAxis('side');
                     coerceAxis('position', sector[0]);
+
                 }
                 break;
+
             case 'angularaxis':
                 if(axType === 'linear') {
                     coerceAxis('thetaunit');
@@ -111,9 +119,41 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 break;
         }
 
-        if(axOut.visible) {
-            handleAxisStyleDefaults(axIn, axOut, coerceAxis, opts);
+        if(visible) {
+            handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
+            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
+                noHover: false,
+                tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
+            });
+            handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
+
+            var showTickLabels = coerceAxis('showticklabels');
+            if(showTickLabels) {
+                Lib.coerceFont(coerceAxis, 'tickfont', {
+                    family: opts.font.family,
+                    size: opts.font.size,
+                    color: dfltFontColor
+                });
+                coerceAxis('tickangle');
+                coerceAxis('tickformat');
+            }
+
+            handleLineGridDefaults(axIn, axOut, coerceAxis, {
+                dfltColor: dfltColor,
+                bgColor: opts.bgColor,
+                // default grid color is darker here (60%, vs cartesian default ~91%)
+                // because the grid is not square so the eye needs heavier cues to follow
+                blend: 60,
+                showLine: true,
+                showGrid: true,
+                noZeroLine: true,
+                attributes: layoutAttributes[axName]
+            });
+
+            coerceAxis('layer');
         }
+
+        coerceAxis('hoverformat');
 
         axOut._input = axIn;
     }
@@ -149,47 +189,6 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
     }
 
     return axOut.type;
-}
-
-function handleAxisStyleDefaults(axIn, axOut, coerce, opts) {
-    var dfltColor = coerce('color');
-    var dfltFontColor = (dfltColor === axIn.color) ? dfltColor : opts.font.color;
-
-    handleTickValueDefaults(axIn, axOut, coerce, axOut.type);
-    handleTickLabelDefaults(axIn, axOut, coerce, axOut.type, {
-        noHover: false,
-        tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
-    });
-    handleTickMarkDefaults(axIn, axOut, coerce, {outerTicks: true});
-
-    var showTickLabels = coerce('showticklabels');
-    if(showTickLabels) {
-        Lib.coerceFont(coerce, 'tickfont', {
-            family: opts.font.family,
-            size: opts.font.size,
-            color: dfltFontColor
-        });
-        coerce('tickangle');
-        coerce('tickformat');
-    }
-
-    // TODO should use coerce2 pattern !!
-
-    var showLine = coerce('showline');
-    if(showLine) {
-        coerce('linecolor', dfltColor);
-        coerce('linewidth');
-    }
-
-    var showGridLines = coerce('showgrid');
-    if(showGridLines) {
-        // default grid color is darker here (60%, vs cartesian default ~91%)
-        // because the grid is not square so the eye needs heavier cues to follow
-        coerce('gridcolor', colorMix(dfltColor, opts.bgColor, 60).toRgbString());
-        coerce('gridwidth');
-    }
-
-    coerce('layer');
 }
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
