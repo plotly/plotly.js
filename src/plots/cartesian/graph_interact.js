@@ -9,8 +9,6 @@
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-
 var Fx = require('../../components/fx');
 var dragElement = require('../../components/dragelement');
 
