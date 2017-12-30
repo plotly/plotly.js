@@ -1371,7 +1371,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
     }
 
     // ensure all cartesian axes have at least one subplot
-    if(layoutOut._has('cartesian') || layoutOut._has('gl2d')) {
+    if(layoutOut._has('cartesian')) {
         Cartesian.finalizeSubplots(layoutIn, layoutOut);
     }
 
