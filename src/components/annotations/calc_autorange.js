@@ -29,7 +29,7 @@ module.exports = function calcAutorange(gd) {
 
     for(var axId in annotationAxes) {
         var ax = Axes.getFromId(gd, axId);
-        if(ax.autorange) {
+        if(ax && ax.autorange) {
             return Lib.syncOrAsync([
                 draw,
                 annAutorange
