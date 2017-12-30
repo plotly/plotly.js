@@ -9,7 +9,6 @@
 'use strict';
 
 var Registry = require('../../registry');
-var Lib = require('../../lib');
 
 var constants = require('./constants');
 
@@ -40,53 +39,43 @@ exports.cleanId = function cleanId(id, axLetter) {
     return id.charAt(0) + axNum;
 };
 
-// get all axis object names
-// optionally restricted to only x or y or z by string axLetter
-// and optionally 2D axes only, not those inside 3D scenes
-function listNames(gd, axLetter, only2d) {
+// get all axis objects, as restricted in listNames
+exports.list = function(gd, axLetter, only2d) {
     var fullLayout = gd._fullLayout;
     if(!fullLayout) return [];
 
-    function filterAxis(obj, extra) {
-        var keys = Object.keys(obj),
-            axMatch = /^[xyz]axis[0-9]*/,
-            out = [];
+    var idList = exports.listIds(gd, axLetter);
+    var out = new Array(idList.length);
+    var i;
 
-        for(var i = 0; i < keys.length; i++) {
-            var k = keys[i];
-            if(axLetter && k.charAt(0) !== axLetter) continue;
-            if(axMatch.test(k)) out.push(extra + k);
+    for(i = 0; i < idList.length; i++) {
+        var idi = idList[i];
+        out[i] = fullLayout[idi.charAt(0) + 'axis' + idi.substr(1)];
+    }
+
+    if(!only2d) {
+        var sceneIds3D = fullLayout._subplots.gl3d || [];
+
+        for(i = 0; i < sceneIds3D.length; i++) {
+            var scene = fullLayout[sceneIds3D[i]];
+
+            if(axLetter) out.push(scene[axLetter + 'axis']);
+            else out.push(scene.xaxis, scene.yaxis, scene.zaxis);
         }
-
-        return out.sort();
     }
 
-    var names = filterAxis(fullLayout, '');
-    if(only2d) return names;
-
-    var sceneIds3D = fullLayout._subplots.gl3d || [];
-    for(var i = 0; i < sceneIds3D.length; i++) {
-        var sceneId = sceneIds3D[i];
-        names = names.concat(
-            filterAxis(fullLayout[sceneId], sceneId + '.')
-        );
-    }
-
-    return names;
-}
-
-// get all axis objects, as restricted in listNames
-exports.list = function(gd, axletter, only2d) {
-    return listNames(gd, axletter, only2d)
-        .map(function(axName) {
-            return Lib.nestedProperty(gd._fullLayout, axName).get();
-        });
+    return out;
 };
 
 // get all axis ids, optionally restricted by letter
 // this only makes sense for 2d axes
-exports.listIds = function(gd, axletter) {
-    return listNames(gd, axletter, true).map(exports.name2id);
+exports.listIds = function(gd, axLetter) {
+    var fullLayout = gd._fullLayout;
+    if(!fullLayout) return [];
+
+    var subplotLists = fullLayout._subplots;
+    if(axLetter) return subplotLists[axLetter + 'axis'];
+    return subplotLists.xaxis.concat(subplotLists.yaxis);
 };
 
 // get an axis object from its id 'x','x2' etc

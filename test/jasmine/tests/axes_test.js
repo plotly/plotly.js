@@ -1242,7 +1242,8 @@ describe('Test axes', function() {
                     xaxis: { range: [0, 0.5] },
                     yaxis: { range: [0, 0.5] },
                     xaxis2: { range: [0.5, 1] },
-                    yaxis2: { range: [0.5, 1] }
+                    yaxis2: { range: [0.5, 1] },
+                    _subplots: {xaxis: ['x', 'x2'], yaxis: ['y', 'y2'], cartesian: ['xy', 'x2y2']}
                 }
             };
         });
@@ -1318,7 +1319,7 @@ describe('Test axes', function() {
         it('returns array of axes, including the ones in scenes', function() {
             gd = {
                 _fullLayout: {
-                    _subplots: {gl3d: ['scene', 'scene2']},
+                    _subplots: {xaxis: [], yaxis: [], gl3d: ['scene', 'scene2']},
                     scene: {
                         xaxis: { _id: 'x' },
                         yaxis: { _id: 'y' },

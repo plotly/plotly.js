@@ -57,10 +57,10 @@ axes.getFromTrace = axisIds.getFromTrace;
  *     Only required if it's different from `dflt`
  */
 axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption) {
-    var axLetter = attr.charAt(attr.length - 1),
-        axlist = axes.listIds(gd, axLetter),
-        refAttr = attr + 'ref',
-        attrDef = {};
+    var axLetter = attr.charAt(attr.length - 1);
+    var axlist = gd._fullLayout._subplots[axLetter + 'axis'];
+    var refAttr = attr + 'ref';
+    var attrDef = {};
 
     if(!dflt) dflt = axlist[0] || extraOption;
     if(!extraOption) extraOption = dflt;

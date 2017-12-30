@@ -21,7 +21,10 @@ describe('Layout images', function() {
 
         beforeEach(function() {
             layoutIn = { images: [] };
-            layoutOut = { _has: Plots._hasPlotType };
+            layoutOut = {
+                _has: Plots._hasPlotType,
+                _subplots: {xaxis: [], yaxis: []}
+            };
         });
 
         it('should reject when there is no `source`', function() {
