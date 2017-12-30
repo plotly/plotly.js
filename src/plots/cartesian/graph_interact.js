@@ -107,7 +107,6 @@ module.exports = function initInteractions(gd) {
                 // the y position of the main x axis line
                 var y0 = xa._mainLinePosition;
                 if(xa.side === 'top') y0 -= DRAGGERSIZE;
-                // if(xa.anchor === 'free') y0 -= fullLayout._size.h * (1 - ya.domain[1]);
                 dragBox(gd, plotinfo, xa._offset + xa._length * 0.1, y0,
                     xa._length * 0.8, DRAGGERSIZE, '', 'ew');
                 dragBox(gd, plotinfo, xa._offset, y0,
@@ -120,7 +119,6 @@ module.exports = function initInteractions(gd) {
                 // the x position of the main y axis line
                 var x0 = ya._mainLinePosition;
                 if(ya.side !== 'right') x0 -= DRAGGERSIZE;
-                // if(ya.anchor === 'free') x0 -= fullLayout._size.w * xa.domain[0];
                 dragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.1,
                     DRAGGERSIZE, ya._length * 0.8, 'ns', '');
                 dragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.9,
