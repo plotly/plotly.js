@@ -253,19 +253,29 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             .remove();
     }
 
+    var oldSubplotList = oldFullLayout._subplots || {};
+    var newSubplotList = newFullLayout._subplots || {xaxis: [], yaxis: []};
+
+    // delete any titles we don't need anymore
+    // check if axis list has changed, and if so clear old titles
+    if(oldSubplotList.xaxis && oldSubplotList.yaxis) {
+        var oldAxIDs = oldSubplotList.xaxis.concat(oldSubplotList.yaxis);
+        var newAxIDs = newSubplotList.xaxis.concat(newSubplotList.yaxis);
+
+        for(i = 0; i < oldAxIDs.length; i++) {
+            if(newAxIDs.indexOf(oldAxIDs[i]) === -1) {
+                oldFullLayout._infolayer.selectAll('.g-' + oldAxIDs[i] + 'title').remove();
+            }
+        }
+    }
+
+    // if we've gotten rid of all cartesian traces, remove all the subplot svg items
     var hadCartesian = (oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = (newFullLayout._has && newFullLayout._has('cartesian'));
 
     if(hadCartesian && !hasCartesian) {
-        var subplotLayers = oldFullLayout._cartesianlayer.selectAll('.subplot');
-        var axIds = axisIds.listIds({ _fullLayout: oldFullLayout });
-
-        subplotLayers.call(purgeSubplotLayers, oldFullLayout);
+        purgeSubplotLayers(oldFullLayout._cartesianlayer.selectAll('.subplot'), oldFullLayout);
         oldFullLayout._defs.selectAll('.axesclip').remove();
-
-        for(i = 0; i < axIds.length; i++) {
-            oldFullLayout._infolayer.select('.' + axIds[i] + 'title').remove();
-        }
     }
 };
 

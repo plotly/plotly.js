@@ -675,7 +675,6 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
 plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var oldSubplots = oldFullLayout._plots || {};
     var newSubplots = newFullLayout._plots = {};
-    var oldSubplotList = oldFullLayout._subplots || {};
     var newSubplotList = newFullLayout._subplots;
 
     var mockGd = {
@@ -812,21 +811,6 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         }
         ax._mainSubplot = mainSubplotID || nextBestMainSubplotID;
     }
-
-    // and lastly, delete any titles we don't need anymore
-    // check if subplots have changed, and if so clear old titles
-    if(oldSubplotList.xaxis && oldSubplotList.yaxis) {
-        var oldAxIDs = oldSubplotList.xaxis.concat(oldSubplotList.yaxis);
-        var newAxIDs = newSubplotList.xaxis.concat(newSubplotList.yaxis);
-
-        for(i = 0; i < oldAxIDs.length; i++) {
-            if(newAxIDs.indexOf(oldAxIDs[i]) === -1) {
-                oldFullLayout._infolayer.selectAll('.g-' + oldAxIDs[i] + 'title').remove();
-            }
-        }
-    }
-
-
 };
 
 // This function clears any trace attributes with valType: color and
