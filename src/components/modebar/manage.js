@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Axes = require('../../plots/cartesian/axes');
+var axisIds = require('../../plots/cartesian/axis_ids');
 var scatterSubTypes = require('../../traces/scatter/subtypes');
 var Registry = require('../../registry');
 
@@ -150,17 +150,15 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
 }
 
 function areAllAxesFixed(fullLayout) {
-    var axList = Axes.list({_fullLayout: fullLayout}, null, true);
-    var allFixed = true;
+    var axList = axisIds.list({_fullLayout: fullLayout}, null, true);
 
     for(var i = 0; i < axList.length; i++) {
         if(!axList[i].fixedrange) {
-            allFixed = false;
-            break;
+            return false;
         }
     }
 
-    return allFixed;
+    return true;
 }
 
 // look for traces that support selection

@@ -11,7 +11,7 @@
 
 var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
-var Axes = require('../../plots/cartesian/axes');
+var axisIds = require('../../plots/cartesian/axis_ids');
 var Lib = require('../../lib');
 var downloadImage = require('../../snapshot/download');
 var Icons = require('../../../build/ploticon');
@@ -175,15 +175,15 @@ modeBarButtons.hoverCompareCartesian = {
 };
 
 function handleCartesian(gd, ev) {
-    var button = ev.currentTarget,
-        astr = button.getAttribute('data-attr'),
-        val = button.getAttribute('data-val') || true,
-        fullLayout = gd._fullLayout,
-        aobj = {},
-        axList = Axes.list(gd, null, true),
-        ax,
-        allEnabled = 'on',
-        i;
+    var button = ev.currentTarget;
+    var astr = button.getAttribute('data-attr');
+    var val = button.getAttribute('data-val') || true;
+    var fullLayout = gd._fullLayout;
+    var aobj = {};
+    var axList = axisIds.list(gd, null, true);
+    var allEnabled = 'on';
+
+    var ax, i;
 
     if(astr === 'zoom') {
         var mag = (val === 'in') ? 0.5 : 2,
@@ -562,11 +562,11 @@ modeBarButtons.toggleSpikelines = {
 };
 
 function setSpikelineVisibility(gd) {
-    var fullLayout = gd._fullLayout,
-        axList = Axes.list(gd, null, true),
-        ax,
-        axName,
-        aobj = {};
+    var fullLayout = gd._fullLayout;
+    var axList = axisIds.list(gd, null, true);
+    var aobj = {};
+
+    var ax, axName;
 
     for(var i = 0; i < axList.length; i++) {
         ax = axList[i];
