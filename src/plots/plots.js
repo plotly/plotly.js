@@ -436,10 +436,8 @@ function emptySubplotLists() {
         collectableSubplotTypes = [];
 
         var subplotsRegistry = Registry.subplotsRegistry;
-        var subplotTypes = Object.keys(subplotsRegistry);
 
-        for(i = 0; i < subplotTypes.length; i++) {
-            var subplotType = subplotTypes[i];
+        for(var subplotType in subplotsRegistry) {
             var subplotModule = subplotsRegistry[subplotType];
             var subplotAttr = subplotModule.attr;
 
@@ -690,9 +688,8 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     var i, j, id, ax;
 
     // sort subplot lists
-    var subplotTypes = Object.keys(newSubplotList);
-    for(i = 0; i < subplotTypes.length; i++) {
-        newSubplotList[subplotTypes[i]].sort(Lib.subplotSort);
+    for(var subplotType in newSubplotList) {
+        newSubplotList[subplotType].sort(Lib.subplotSort);
     }
 
     for(i = 0; i < ids.length; i++) {
@@ -1368,16 +1365,16 @@ function calculateReservedMargins(margins) {
 }
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, transitionData) {
-    var components = Object.keys(Registry.componentsRegistry);
+    var componentsRegistry = Registry.componentsRegistry;
     var basePlotModules = layoutOut._basePlotModules;
-    var i, _module;
+    var component, i, _module;
 
     var Cartesian = Registry.subplotsRegistry.cartesian;
 
     // check if any components need to add more base plot modules
     // that weren't captured by traces
-    for(i = 0; i < components.length; i++) {
-        _module = Registry.componentsRegistry[components[i]];
+    for(component in componentsRegistry) {
+        _module = componentsRegistry[component];
 
         if(_module.includeBasePlot) {
             _module.includeBasePlot(layoutIn, layoutOut);
@@ -1424,8 +1421,8 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
         }
     }
 
-    for(i = 0; i < components.length; i++) {
-        _module = Registry.componentsRegistry[components[i]];
+    for(component in componentsRegistry) {
+        _module = componentsRegistry[component];
 
         if(_module.supplyLayoutDefaults) {
             _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -1609,10 +1606,7 @@ plots.doAutoMargin = function(gd) {
         // now cycle through all the combinations of l and r
         // (and t and b) to find the required margins
 
-        var pmKeys = Object.keys(pm);
-
-        for(var i = 0; i < pmKeys.length; i++) {
-            var k1 = pmKeys[i];
+        for(var k1 in pm) {
 
             var pushleft = pm[k1].l || {},
                 pushbottom = pm[k1].b || {},
@@ -1621,9 +1615,7 @@ plots.doAutoMargin = function(gd) {
                 fb = pushbottom.val,
                 pb = pushbottom.size;
 
-            for(var j = 0; j < pmKeys.length; j++) {
-                var k2 = pmKeys[j];
-
+            for(var k2 in pm) {
                 if(isNumeric(pl) && pm[k2].r) {
                     var fr = pm[k2].r.val,
                         pr = pm[k2].r.size;
@@ -2472,31 +2464,24 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         }
     }
 
-    var moduleNamesOld = Object.keys(traceHashOld);
-    var moduleNames = Object.keys(traceHash);
-
     // when a trace gets deleted, make sure that its module's
     // plot method is called so that it is properly
     // removed from the DOM.
-    for(i = 0; i < moduleNamesOld.length; i++) {
-        var moduleName = moduleNamesOld[i];
+    for(var moduleNameOld in traceHashOld) {
 
-        if(moduleNames.indexOf(moduleName) === -1) {
-            var fakeCalcTrace = traceHashOld[moduleName][0],
+        if(!traceHash[moduleNameOld]) {
+            var fakeCalcTrace = traceHashOld[moduleNameOld][0],
                 fakeTrace = fakeCalcTrace[0].trace;
 
             fakeTrace.visible = false;
-            traceHash[moduleName] = [fakeCalcTrace];
+            traceHash[moduleNameOld] = [fakeCalcTrace];
         }
     }
 
-    // update list of module names to include 'fake' traces added above
-    moduleNames = Object.keys(traceHash);
-
     // call module plot method
-    for(i = 0; i < moduleNames.length; i++) {
-        var moduleCalcData = traceHash[moduleNames[i]],
-            _module = moduleCalcData[0][0].trace._module;
+    for(var moduleName in traceHash) {
+        var moduleCalcData = traceHash[moduleName];
+        var _module = moduleCalcData[0][0].trace._module;
 
         _module.plot(subplot, filterVisible(moduleCalcData), subplotLayout);
     }
