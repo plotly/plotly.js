@@ -946,19 +946,21 @@ describe('Test gl2d plots', function() {
     it('should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock);
 
+        _mock.data[0].line.width = 4;
+
         Plotly.plot(gd, _mock)
         .then(delay(20))
         .then(function() {
             return Plotly.restyle(gd, 'visible', 'legendonly');
         })
         .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 102)[0]).toBe(0);
 
             return Plotly.restyle(gd, 'visible', true);
         })
         .then(delay(20))
         .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 102)[0]).not.toBe(0);
 
             return Plotly.restyle(gd, 'visible', false);
         })
@@ -970,7 +972,7 @@ describe('Test gl2d plots', function() {
         })
         .then(delay(20))
         .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 102)[0]).not.toBe(0);
         })
         .then(done);
     });
@@ -1011,6 +1013,7 @@ describe('Test gl2d plots', function() {
                 yaxis: {range: [0, 16]}
             }
         )
+        .then(delay(20))
         .then(function() {
             var bBox = gd.getBoundingClientRect();
             centerX = bBox.left + 200;
@@ -1420,7 +1423,7 @@ describe('Test gl3d annotations', function() {
     }
 
     function assertAnnotationsXY(expectations, msg) {
-        var TOL = 2.5;
+        var TOL = 3.5;
         var anns = d3.selectAll('g.annotation-text-g');
 
         expect(anns.size()).toBe(expectations.length, msg);
