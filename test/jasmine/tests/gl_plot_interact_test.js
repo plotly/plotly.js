@@ -956,16 +956,19 @@ describe('Test gl2d plots', function() {
 
             return Plotly.restyle(gd, 'visible', true);
         })
+        .then(delay(20))
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
 
             return Plotly.restyle(gd, 'visible', false);
         })
+        .then(delay(20))
         .then(function() {
             expect(gd.querySelector('.gl-canvas-context')).not.toBe(null);
 
             return Plotly.restyle(gd, 'visible', true);
         })
+        .then(delay(20))
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
         })
@@ -1376,10 +1379,10 @@ describe('Test gl2d interactions', function() {
             dragmode: 'pan'
         })
         .then(function() {
-            assertAnnotation([327, 312]);
+            assertAnnotation([327, 315]);
 
             drag([250, 200], [200, 150]);
-            assertAnnotation([277, 262]);
+            assertAnnotation([277, 265]);
 
             return Plotly.relayout(gd, {
                 'xaxis.range': [1.5, 2.5],
