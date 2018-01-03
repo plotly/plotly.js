@@ -341,9 +341,12 @@ module.exports = function draw(gd, id) {
                 }
             }
 
-            container.selectAll('.cbfills,.cblines,.cbaxis')
+            container.selectAll('.cbfills,.cblines')
                 .attr('transform', 'translate(0,' +
                     Math.round(gs.h * (1 - cbAxisOut.domain[1])) + ')');
+
+            cbAxisOut._axislayer.attr('transform', 'translate(0,' +
+                Math.round(-gs.t) + ')');
 
             var fills = container.select('.cbfills')
                 .selectAll('rect.cbfill')
@@ -433,7 +436,7 @@ module.exports = function draw(gd, id) {
                                 selection: d3.select(gd).selectAll('g.' + cbAxisOut._id + 'tick'),
                                 side: opts.titleside,
                                 offsetLeft: gs.l,
-                                offsetTop: gs.t,
+                                offsetTop: 0,
                                 maxShift: fullLayout.width
                             },
                             attributes: {x: x, y: y, 'text-anchor': 'middle'},

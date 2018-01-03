@@ -10,7 +10,6 @@
 'use strict';
 
 var Lib = require('../lib');
-var Plots = require('../plots/plots');
 
 var extendFlat = Lib.extendFlat;
 var extendDeep = Lib.extendDeep;
@@ -101,8 +100,11 @@ module.exports = function clonePlot(graphObj, options) {
         }
     }
 
-    var sceneIds = Plots.getSubplotIds(newLayout, 'gl3d');
-
+    // TODO: does this scene modification really belong here?
+    // If we still need it, can it move into the gl3d module?
+    var sceneIds = Object.keys(newLayout).filter(function(key) {
+        return key.match(/^scene\d*$/);
+    });
     if(sceneIds.length) {
         var axesImageOverride = {};
         if(options.tileClass === 'thumbnail') {

@@ -134,7 +134,7 @@ module.exports = {
         description: 'Sets the color of paper where the graph is drawn.'
     },
     plot_bgcolor: {
-        // defined here, but set in Axes.supplyLayoutDefaults
+        // defined here, but set in cartesian.supplyLayoutDefaults
         // because it needs to know if there are (2D) axes or not
         valType: 'color',
         role: 'style',

@@ -149,7 +149,7 @@ describe('Plotly.toImage', function() {
         .then(function() { return Plotly.toImage(gd, {format: 'png', imageDataOnly: true}); })
         .then(function(d) {
             expect(d.indexOf('data:image/')).toBe(-1);
-            expect(d.length).toBeWithin(53660, 1e3, 'png image length');
+            expect(d.length).toBeWithin(54660, 3e3, 'png image length');
         })
         .then(function() { return Plotly.toImage(gd, {format: 'jpeg', imageDataOnly: true}); })
         .then(function(d) {
@@ -159,7 +159,7 @@ describe('Plotly.toImage', function() {
         .then(function() { return Plotly.toImage(gd, {format: 'svg', imageDataOnly: true}); })
         .then(function(d) {
             expect(d.indexOf('data:image/')).toBe(-1);
-            expect(d.length).toBeWithin(39485, 1e3, 'svg image length');
+            expect(d.length).toBeWithin(32062, 1e3, 'svg image length');
         })
         .then(function() { return Plotly.toImage(gd, {format: 'webp', imageDataOnly: true}); })
         .then(function(d) {

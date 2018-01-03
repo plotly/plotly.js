@@ -12,6 +12,7 @@
 var d3 = require('d3');
 var Lib = require('../../lib');
 var Plots = require('../plots');
+var getModuleCalcData = require('../get_data').getModuleCalcData;
 
 var axisIds = require('./axis_ids');
 var constants = require('./constants');
@@ -30,13 +31,92 @@ exports.attributes = require('./attributes');
 
 exports.layoutAttributes = require('./layout_attributes');
 
+exports.supplyLayoutDefaults = require('./layout_defaults');
+
 exports.transitionAxes = require('./transition_axes');
 
+exports.finalizeSubplots = function(layoutIn, layoutOut) {
+    var subplots = layoutOut._subplots;
+    var xList = subplots.xaxis;
+    var yList = subplots.yaxis;
+    var spSVG = subplots.cartesian;
+    var spAll = spSVG.concat(subplots.gl2d || []);
+    var allX = {};
+    var allY = {};
+    var i, xi, yi;
+
+    for(i = 0; i < spAll.length; i++) {
+        var parts = spAll[i].split('y');
+        allX[parts[0]] = 1;
+        allY['y' + parts[1]] = 1;
+    }
+
+    // check for x axes with no subplot, and make one from the anchor of that x axis
+    for(i = 0; i < xList.length; i++) {
+        xi = xList[i];
+        if(!allX[xi]) {
+            yi = (layoutIn[axisIds.id2name(xi)] || {}).anchor;
+            if(!constants.idRegex.y.test(yi)) yi = 'y';
+            spSVG.push(xi + yi);
+            spAll.push(xi + yi);
+
+            if(!allY[yi]) {
+                allY[yi] = 1;
+                Lib.pushUnique(yList, yi);
+            }
+        }
+    }
+
+    // same for y axes with no subplot
+    for(i = 0; i < yList.length; i++) {
+        yi = yList[i];
+        if(!allY[yi]) {
+            xi = (layoutIn[axisIds.id2name(yi)] || {}).anchor;
+            if(!constants.idRegex.x.test(xi)) xi = 'x';
+            spSVG.push(xi + yi);
+            spAll.push(xi + yi);
+
+            if(!allX[xi]) {
+                allX[xi] = 1;
+                Lib.pushUnique(xList, xi);
+            }
+        }
+    }
+
+    // finally, if we've gotten here we're supposed to show cartesian...
+    // so if there are NO subplots at all, make one from the first
+    // x & y axes in the input layout
+    if(!spAll.length) {
+        var keys = Object.keys(layoutIn);
+        xi = '';
+        yi = '';
+        for(i = 0; i < keys.length; i++) {
+            var ki = keys[i];
+            if(constants.attrRegex.test(ki)) {
+                var axLetter = ki.charAt(0);
+                if(axLetter === 'x') {
+                    if(!xi || (+ki.substr(5) < +xi.substr(5))) {
+                        xi = ki;
+                    }
+                }
+                else if(!yi || (+ki.substr(5) < +yi.substr(5))) {
+                    yi = ki;
+                }
+            }
+        }
+        xi = xi ? axisIds.name2id(xi) : 'x';
+        yi = yi ? axisIds.name2id(yi) : 'y';
+        xList.push(xi);
+        yList.push(yi);
+        spSVG.push(xi + yi);
+    }
+};
+
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
-    var fullLayout = gd._fullLayout,
-        subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
-        calcdata = gd.calcdata,
-        i;
+    var fullLayout = gd._fullLayout;
+    var subplots = fullLayout._subplots.cartesian;
+    var calcdata = gd.calcdata;
+    var i;
 
     // If traces is not provided, then it's a complete replot and missing
     // traces are removed
@@ -127,15 +207,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         if(_module.basePlotModule.name !== 'cartesian') continue;
 
         // plot all traces of this type on this subplot at once
-        var cdModule = [];
-        for(var k = 0; k < cdSubplot.length; k++) {
-            var cd = cdSubplot[k],
-                trace = cd[0].trace;
-
-            if((trace._module === _module) && (trace.visible === true)) {
-                cdModule.push(cd);
-            }
-        }
+        var cdModule = getModuleCalcData(cdSubplot, _module);
 
         _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }
@@ -181,19 +253,29 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             .remove();
     }
 
+    var oldSubplotList = oldFullLayout._subplots || {};
+    var newSubplotList = newFullLayout._subplots || {xaxis: [], yaxis: []};
+
+    // delete any titles we don't need anymore
+    // check if axis list has changed, and if so clear old titles
+    if(oldSubplotList.xaxis && oldSubplotList.yaxis) {
+        var oldAxIDs = oldSubplotList.xaxis.concat(oldSubplotList.yaxis);
+        var newAxIDs = newSubplotList.xaxis.concat(newSubplotList.yaxis);
+
+        for(i = 0; i < oldAxIDs.length; i++) {
+            if(newAxIDs.indexOf(oldAxIDs[i]) === -1) {
+                oldFullLayout._infolayer.selectAll('.g-' + oldAxIDs[i] + 'title').remove();
+            }
+        }
+    }
+
+    // if we've gotten rid of all cartesian traces, remove all the subplot svg items
     var hadCartesian = (oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = (newFullLayout._has && newFullLayout._has('cartesian'));
 
     if(hadCartesian && !hasCartesian) {
-        var subplotLayers = oldFullLayout._cartesianlayer.selectAll('.subplot');
-        var axIds = axisIds.listIds({ _fullLayout: oldFullLayout });
-
-        subplotLayers.call(purgeSubplotLayers, oldFullLayout);
+        purgeSubplotLayers(oldFullLayout._cartesianlayer.selectAll('.subplot'), oldFullLayout);
         oldFullLayout._defs.selectAll('.axesclip').remove();
-
-        for(i = 0; i < axIds.length; i++) {
-            oldFullLayout._infolayer.select('.' + axIds[i] + 'title').remove();
-        }
     }
 };
 
@@ -287,10 +369,8 @@ function makeSubplotLayer(plotinfo) {
         plotinfo.imagelayer = joinLayer(backLayer, 'g', 'imagelayer');
 
         plotinfo.gridlayer = joinLayer(plotgroup, 'g', 'gridlayer');
-        plotinfo.overgrid = joinLayer(plotgroup, 'g', 'overgrid');
 
         plotinfo.zerolinelayer = joinLayer(plotgroup, 'g', 'zerolinelayer');
-        plotinfo.overzero = joinLayer(plotgroup, 'g', 'overzero');
 
         joinLayer(plotgroup, 'path', 'xlines-below');
         joinLayer(plotgroup, 'path', 'ylines-below');
@@ -328,8 +408,8 @@ function makeSubplotLayer(plotinfo) {
         // their other components to the corresponding
         // extra groups of their main plots.
 
-        plotinfo.gridlayer = joinLayer(mainplotinfo.overgrid, 'g', id);
-        plotinfo.zerolinelayer = joinLayer(mainplotinfo.overzero, 'g', id);
+        plotinfo.gridlayer = mainplotinfo.gridlayer;
+        plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
 
         joinLayer(mainplotinfo.overlinesBelow, 'path', xId);
         joinLayer(mainplotinfo.overlinesBelow, 'path', yId);
@@ -349,6 +429,10 @@ function makeSubplotLayer(plotinfo) {
         plotinfo.xaxislayer = mainplotgroup.select('.overaxes-' + xLayer).select('.' + xId);
         plotinfo.yaxislayer = mainplotgroup.select('.overaxes-' + yLayer).select('.' + yId);
     }
+
+    joinLayer(plotinfo.gridlayer, 'g', plotinfo.xaxis._id, plotinfo.xaxis._id);
+    joinLayer(plotinfo.gridlayer, 'g', plotinfo.yaxis._id, plotinfo.yaxis._id);
+    plotinfo.gridlayer.selectAll('g').sort(axisIds.idSort);
 
     // common attributes for all subplots, overlays or not
 
@@ -403,9 +487,9 @@ function purgeSubplotLayers(layers, fullLayout) {
     }
 }
 
-function joinLayer(parent, nodeType, className) {
+function joinLayer(parent, nodeType, className, dataVal) {
     var layer = parent.selectAll('.' + className)
-        .data([0]);
+        .data([dataVal || 0]);
 
     layer.enter().append(nodeType)
         .classed(className, true);

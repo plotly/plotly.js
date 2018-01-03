@@ -9,26 +9,26 @@
 'use strict';
 
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-var Plots = require('../../plots/plots');
+var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var plot = require('./plot');
 var fxAttrs = require('../../components/fx/layout_attributes');
 
-exports.name = 'sankey';
+var SANKEY = 'sankey';
 
-exports.attr = 'type';
+exports.name = SANKEY;
 
 exports.baseLayoutAttrOverrides = overrideAll({
     hoverlabel: fxAttrs.hoverlabel
 }, 'plot', 'nested');
 
 exports.plot = function(gd) {
-    var calcData = Plots.getSubplotCalcData(gd.calcdata, 'sankey', 'sankey');
-    if(calcData.length) plot(gd, calcData);
+    var calcData = getModuleCalcData(gd.calcdata, SANKEY);
+    plot(gd, calcData);
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var hadPlot = (oldFullLayout._has && oldFullLayout._has('sankey'));
-    var hasPlot = (newFullLayout._has && newFullLayout._has('sankey'));
+    var hadPlot = (oldFullLayout._has && oldFullLayout._has(SANKEY));
+    var hasPlot = (newFullLayout._has && newFullLayout._has(SANKEY));
 
     if(hadPlot && !hasPlot) {
         oldFullLayout._paperdiv.selectAll('.sankey').remove();

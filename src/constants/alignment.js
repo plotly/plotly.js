@@ -38,5 +38,12 @@ module.exports = {
     // of the font, and according to wikipedia:
     //   an "average" font might have a cap height of 70% of the em
     // https://en.wikipedia.org/wiki/Em_(typography)#History
-    MID_SHIFT: 0.35
+    MID_SHIFT: 0.35,
+
+    OPPOSITE_SIDE: {
+        left: 'right',
+        right: 'left',
+        top: 'bottom',
+        bottom: 'top'
+    }
 };

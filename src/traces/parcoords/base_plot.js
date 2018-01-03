@@ -9,22 +9,22 @@
 'use strict';
 
 var d3 = require('d3');
-var Plots = require('../../plots/plots');
+var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var parcoordsPlot = require('./plot');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
-exports.name = 'parcoords';
+var PARCOORDS = 'parcoords';
 
-exports.attr = 'type';
+exports.name = PARCOORDS;
 
 exports.plot = function(gd) {
-    var calcData = Plots.getSubplotCalcData(gd.calcdata, 'parcoords', 'parcoords');
+    var calcData = getModuleCalcData(gd.calcdata, PARCOORDS);
     if(calcData.length) parcoordsPlot(gd, calcData);
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var hadParcoords = (oldFullLayout._has && oldFullLayout._has('parcoords'));
-    var hasParcoords = (newFullLayout._has && newFullLayout._has('parcoords'));
+    var hadParcoords = (oldFullLayout._has && oldFullLayout._has(PARCOORDS));
+    var hasParcoords = (newFullLayout._has && newFullLayout._has(PARCOORDS));
 
     if(hadParcoords && !hasParcoords) {
         oldFullLayout._paperdiv.selectAll('.parcoords').remove();

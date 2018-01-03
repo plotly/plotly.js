@@ -23,19 +23,19 @@ module.exports = function calcAutorange(gd) {
 
     var annotationAxes = {};
     annotationList.forEach(function(ann) {
-        annotationAxes[ann.xref] = true;
-        annotationAxes[ann.yref] = true;
+        annotationAxes[ann.xref] = 1;
+        annotationAxes[ann.yref] = 1;
     });
 
-    var autorangedAnnos = Axes.list(gd).filter(function(ax) {
-        return ax.autorange && annotationAxes[ax._id];
-    });
-    if(!autorangedAnnos.length) return;
-
-    return Lib.syncOrAsync([
-        draw,
-        annAutorange
-    ], gd);
+    for(var axId in annotationAxes) {
+        var ax = Axes.getFromId(gd, axId);
+        if(ax && ax.autorange) {
+            return Lib.syncOrAsync([
+                draw,
+                annAutorange
+            ], gd);
+        }
+    }
 };
 
 function annAutorange(gd) {

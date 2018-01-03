@@ -15,7 +15,9 @@ var m4FromQuat = require('gl-mat4/fromQuat');
 var Registry = require('../registry');
 var Lib = require('../lib');
 var Plots = require('../plots/plots');
-var Axes = require('../plots/cartesian/axes');
+var AxisIds = require('../plots/cartesian/axis_ids');
+var cleanId = AxisIds.cleanId;
+var getFromTrace = AxisIds.getFromTrace;
 var Color = require('../components/color');
 
 
@@ -45,38 +47,78 @@ exports.cleanLayout = function(layout) {
         if(!layout.yaxis) layout.yaxis = layout.yaxis1;
         delete layout.yaxis1;
     }
+    if(layout.scene1) {
+        if(!layout.scene) layout.scene = layout.scene1;
+        delete layout.scene1;
+    }
 
-    var axList = Axes.list({_fullLayout: layout});
-    for(i = 0; i < axList.length; i++) {
-        var ax = axList[i];
-        if(ax.anchor && ax.anchor !== 'free') {
-            ax.anchor = Axes.cleanId(ax.anchor);
-        }
-        if(ax.overlaying) ax.overlaying = Axes.cleanId(ax.overlaying);
+    var axisAttrRegex = (Plots.subplotsRegistry.cartesian || {}).attrRegex;
+    var sceneAttrRegex = (Plots.subplotsRegistry.gl3d || {}).attrRegex;
 
-        // old method of axis type - isdate and islog (before category existed)
-        if(!ax.type) {
-            if(ax.isdate) ax.type = 'date';
-            else if(ax.islog) ax.type = 'log';
-            else if(ax.isdate === false && ax.islog === false) ax.type = 'linear';
-        }
-        if(ax.autorange === 'withzero' || ax.autorange === 'tozero') {
-            ax.autorange = true;
-            ax.rangemode = 'tozero';
-        }
-        delete ax.islog;
-        delete ax.isdate;
-        delete ax.categories; // replaced by _categories
+    var keys = Object.keys(layout);
+    for(i = 0; i < keys.length; i++) {
+        var key = keys[i];
 
-        // prune empty domain arrays made before the new nestedProperty
-        if(emptyContainer(ax, 'domain')) delete ax.domain;
-
-        // autotick -> tickmode
-        if(ax.autotick !== undefined) {
-            if(ax.tickmode === undefined) {
-                ax.tickmode = ax.autotick ? 'auto' : 'linear';
+        // modifications to cartesian axes
+        if(axisAttrRegex && axisAttrRegex.test(key)) {
+            var ax = layout[key];
+            if(ax.anchor && ax.anchor !== 'free') {
+                ax.anchor = cleanId(ax.anchor);
             }
-            delete ax.autotick;
+            if(ax.overlaying) ax.overlaying = cleanId(ax.overlaying);
+
+            // old method of axis type - isdate and islog (before category existed)
+            if(!ax.type) {
+                if(ax.isdate) ax.type = 'date';
+                else if(ax.islog) ax.type = 'log';
+                else if(ax.isdate === false && ax.islog === false) ax.type = 'linear';
+            }
+            if(ax.autorange === 'withzero' || ax.autorange === 'tozero') {
+                ax.autorange = true;
+                ax.rangemode = 'tozero';
+            }
+            delete ax.islog;
+            delete ax.isdate;
+            delete ax.categories; // replaced by _categories
+
+            // prune empty domain arrays made before the new nestedProperty
+            if(emptyContainer(ax, 'domain')) delete ax.domain;
+
+            // autotick -> tickmode
+            if(ax.autotick !== undefined) {
+                if(ax.tickmode === undefined) {
+                    ax.tickmode = ax.autotick ? 'auto' : 'linear';
+                }
+                delete ax.autotick;
+            }
+        }
+
+        // modifications for 3D scenes
+        else if(sceneAttrRegex && sceneAttrRegex.test(key)) {
+            var scene = layout[key];
+
+            // clean old Camera coords
+            var cameraposition = scene.cameraposition;
+
+            if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
+                var rotation = cameraposition[0],
+                    center = cameraposition[1],
+                    radius = cameraposition[2],
+                    mat = m4FromQuat([], rotation),
+                    eye = [];
+
+                for(j = 0; j < 3; ++j) {
+                    eye[j] = center[j] + radius * mat[2 + 4 * j];
+                }
+
+                scene.camera = {
+                    eye: {x: eye[0], y: eye[1], z: eye[2]},
+                    center: {x: center[0], y: center[1], z: center[2]},
+                    up: {x: mat[1], y: mat[5], z: mat[9]}
+                };
+
+                delete scene.cameraposition;
+            }
         }
     }
 
@@ -139,43 +181,6 @@ exports.cleanLayout = function(layout) {
      */
     if(layout.dragmode === 'rotate') layout.dragmode = 'orbit';
 
-    // cannot have scene1, numbering goes scene, scene2, scene3...
-    if(layout.scene1) {
-        if(!layout.scene) layout.scene = layout.scene1;
-        delete layout.scene1;
-    }
-
-    /*
-     * Clean up Scene layouts
-     */
-    var sceneIds = Plots.getSubplotIds(layout, 'gl3d');
-    for(i = 0; i < sceneIds.length; i++) {
-        var scene = layout[sceneIds[i]];
-
-        // clean old Camera coords
-        var cameraposition = scene.cameraposition;
-
-        if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
-            var rotation = cameraposition[0],
-                center = cameraposition[1],
-                radius = cameraposition[2],
-                mat = m4FromQuat([], rotation),
-                eye = [];
-
-            for(j = 0; j < 3; ++j) {
-                eye[j] = center[i] + radius * mat[2 + 4 * j];
-            }
-
-            scene.camera = {
-                eye: {x: eye[0], y: eye[1], z: eye[2]},
-                center: {x: center[0], y: center[1], z: center[2]},
-                up: {x: mat[1], y: mat[5], z: mat[9]}
-            };
-
-            delete scene.cameraposition;
-        }
-    }
-
     // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
     // supported, but new tinycolor does not because they're not valid css
     Color.clean(layout);
@@ -187,7 +192,7 @@ function cleanAxRef(container, attr) {
     var valIn = container[attr],
         axLetter = attr.charAt(0);
     if(valIn && valIn !== 'paper') {
-        container[attr] = Axes.cleanId(valIn, axLetter);
+        container[attr] = cleanId(valIn, axLetter);
     }
 }
 
@@ -268,8 +273,8 @@ exports.cleanData = function(data, existingData) {
         }
 
         // axis ids x1 -> x, y1-> y
-        if(trace.xaxis) trace.xaxis = Axes.cleanId(trace.xaxis, 'x');
-        if(trace.yaxis) trace.yaxis = Axes.cleanId(trace.yaxis, 'y');
+        if(trace.xaxis) trace.xaxis = cleanId(trace.xaxis, 'x');
+        if(trace.yaxis) trace.yaxis = cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
         if(Registry.traceIs(trace, 'gl3d') && trace.scene) {
@@ -529,7 +534,7 @@ exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
     for(var i = 0; i < traces.length; i++) {
         var trace = gd._fullData[i];
         for(var j = 0; j < 3; j++) {
-            var ax = Axes.getFromTrace(gd, trace, axLetters[j]);
+            var ax = getFromTrace(gd, trace, axLetters[j]);
 
             // do not clear log type - that's never an auto result so must have been intentional
             if(ax && ax.type !== 'log') {
