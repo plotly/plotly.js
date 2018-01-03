@@ -380,7 +380,7 @@ proto.drawAxes = function(doTitles) {
         var apad = Math.max(aaxis.showticklabels ? aaxis.tickfont.size / 2 : 0,
             (caxis.showticklabels ? caxis.tickfont.size * 0.75 : 0) +
             (caxis.ticks === 'outside' ? caxis.ticklen * 0.87 : 0));
-        Titles.draw(gd, 'a' + titlesuffix, {
+        _this.layers['a-title'] = Titles.draw(gd, 'a' + titlesuffix, {
             propContainer: aaxis,
             propName: _this.id + '.aaxis.title',
             placeholder: _(gd, 'Click to enter Component A title'),
@@ -391,10 +391,11 @@ proto.drawAxes = function(doTitles) {
             }
         });
 
+
         var bpad = (baxis.showticklabels ? baxis.tickfont.size : 0) +
             (baxis.ticks === 'outside' ? baxis.ticklen : 0) + 3;
 
-        Titles.draw(gd, 'b' + titlesuffix, {
+        _this.layers['b-title'] = Titles.draw(gd, 'b' + titlesuffix, {
             propContainer: baxis,
             propName: _this.id + '.baxis.title',
             placeholder: _(gd, 'Click to enter Component B title'),
@@ -405,7 +406,7 @@ proto.drawAxes = function(doTitles) {
             }
         });
 
-        Titles.draw(gd, 'c' + titlesuffix, {
+        _this.layers['c-title'] = Titles.draw(gd, 'c' + titlesuffix, {
             propContainer: caxis,
             propName: _this.id + '.caxis.title',
             placeholder: _(gd, 'Click to enter Component C title'),

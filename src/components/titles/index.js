@@ -51,6 +51,8 @@ var numStripRE = / [XY][0-9]* /;
  *          offset - shift up/down in the rotated frame (unused?)
  *      containerGroup - if an svg <g> element already exists to hold this
  *          title, include here. Otherwise it will go in fullLayout._infolayer
+ *
+ *  @return {selection} d3 selection of title container group
  */
 Titles.draw = function(gd, titleClass, options) {
     var cont = options.propContainer;
@@ -111,7 +113,7 @@ Titles.draw = function(gd, titleClass, options) {
         .attr('class', titleClass);
     el.exit().remove();
 
-    if(!elShouldExist) return;
+    if(!elShouldExist) return group;
 
     function titleLayout(titleEl) {
         Lib.syncOrAsync([drawTitle, scootTitle], titleEl);
@@ -236,4 +238,6 @@ Titles.draw = function(gd, titleClass, options) {
             });
     }
     el.classed('js-placeholder', isplaceholder);
+
+    return group;
 };

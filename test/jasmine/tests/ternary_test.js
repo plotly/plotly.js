@@ -59,12 +59,20 @@ describe('ternary plots', function() {
         });
 
         it('should be able to delete and add traces', function(done) {
+            function checkTitles(cnt) {
+                expect(d3.selectAll('.g-atitle').size()).toBe(cnt, 'aaxis title');
+                expect(d3.selectAll('.g-btitle').size()).toBe(cnt, 'baxis title');
+                expect(d3.selectAll('.g-ctitle').size()).toBe(cnt, 'caxis title');
+            }
+
             expect(countTernarySubplot()).toEqual(1);
             expect(countTraces('scatter')).toEqual(1);
+            checkTitles(1);
 
             Plotly.deleteTraces(gd, [0]).then(function() {
                 expect(countTernarySubplot()).toEqual(0);
                 expect(countTraces('scatter')).toEqual(0);
+                checkTitles(0);
 
                 var trace = Lib.extendDeep({}, mock.data[0]);
 
@@ -72,6 +80,7 @@ describe('ternary plots', function() {
             }).then(function() {
                 expect(countTernarySubplot()).toEqual(1);
                 expect(countTraces('scatter')).toEqual(1);
+                checkTitles(1);
 
                 var trace = Lib.extendDeep({}, mock.data[0]);
 
@@ -79,11 +88,13 @@ describe('ternary plots', function() {
             }).then(function() {
                 expect(countTernarySubplot()).toEqual(1);
                 expect(countTraces('scatter')).toEqual(2);
+                checkTitles(1);
 
                 return Plotly.deleteTraces(gd, [0]);
             }).then(function() {
                 expect(countTernarySubplot()).toEqual(1);
                 expect(countTraces('scatter')).toEqual(1);
+                checkTitles(1);
 
                 done();
             });
