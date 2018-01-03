@@ -966,6 +966,44 @@ describe('hover info', function() {
             .then(done);
         });
     });
+
+    describe('overflowing hover labels', function() {
+        var trace = {y: [1, 2, 3], text: ['', 'a<br>b<br>c', '']};
+        var data = [trace, trace, trace, trace, trace, trace, trace];
+        var layout = {
+            width: 600, height: 600, showlegend: false,
+            margin: {l: 100, r: 100, t: 100, b: 100},
+            hovermode: 'x'
+        };
+
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, data, layout).then(done);
+        });
+
+        function labelCount() {
+            return d3.select(gd).selectAll('g.hovertext').size();
+        }
+
+        it('shows as many labels as will fit on the div, not on the subplot', function(done) {
+            _hoverNatural(gd, 200, 200);
+
+            expect(labelCount()).toBe(7);
+
+            Plotly.relayout(gd, {'yaxis.domain': [0.48, 0.52]})
+            .then(function() {
+                _hoverNatural(gd, 150, 200);
+                _hoverNatural(gd, 200, 200);
+
+                expect(labelCount()).toBe(7);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+    });
 });
 
 describe('hover info on stacked subplots', function() {
@@ -1066,6 +1104,43 @@ describe('hover info on stacked subplots', function() {
                 axis: '0'
             });
         });
+    });
+});
+
+
+describe('hover on many lines+bars', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    it('shows hover info for both traces', function(done) {
+        // see https://github.com/plotly/plotly.js/issues/780
+        var values = new Array(1000);
+        var values2 = new Array(values.length);
+        for(var i = 0; i < values.length; i++) {
+            values[i] = i;
+            values2[i] = i * 2;
+        }
+
+        var gd = createGraphDiv();
+        Plotly.newPlot(gd, [
+            {y: values2},
+            {y: values, type: 'bar'}
+        ], {
+            width: 400,
+            height: 400,
+            margin: {l: 100, r: 100, t: 100, b: 100}
+        })
+        .then(function() {
+            Lib.clearThrottle();
+            mouseEvent('mousemove', 200, 100);
+            Lib.clearThrottle();
+
+            expect(d3.select(gd).selectAll('g.hovertext').size()).toBe(2);
+            expect(d3.select(gd).selectAll('g.axistext').size()).toBe(1);
+        })
+        .catch(fail)
+        .then(done);
     });
 });
 
@@ -1236,7 +1311,7 @@ describe('hover updates', function() {
 
     afterEach(destroyGraphDiv);
 
-    function assertLabelsCorrect(mousePos, labelPos, labelText) {
+    function assertLabelsCorrect(mousePos, labelPos, labelText, msg) {
         return new Promise(function(resolve) {
             if(mousePos) {
                 mouseEvent('mousemove', mousePos[0], mousePos[1]);
@@ -1245,14 +1320,14 @@ describe('hover updates', function() {
             setTimeout(function() {
                 var hoverText = d3.selectAll('g.hovertext');
                 if(labelPos) {
-                    expect(hoverText.size()).toEqual(1);
-                    expect(hoverText.text()).toEqual(labelText);
+                    expect(hoverText.size()).toBe(1, msg);
+                    expect(hoverText.text()).toBe(labelText, msg);
 
                     var transformParts = hoverText.attr('transform').split('(');
-                    expect(transformParts[0]).toEqual('translate');
+                    expect(transformParts[0]).toBe('translate', msg);
                     var transformCoords = transformParts[1].split(')')[0].split(',');
-                    expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1, labelText + ':x');
-                    expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1, labelText + ':y');
+                    expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1, labelText + ':x ' + msg);
+                    expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1, labelText + ':y ' + msg);
                 } else {
                     expect(hoverText.size()).toEqual(0);
                 }
@@ -1280,7 +1355,7 @@ describe('hover updates', function() {
         var gd = createGraphDiv();
         Plotly.plot(gd, mock).then(function() {
             // The label text gets concatenated together when queried. Such is life.
-            return assertLabelsCorrect([100, 100], [103, 100], 'trace 00.5');
+            return assertLabelsCorrect([100, 100], [103, 100], 'trace 00.5', 'animation/update 0');
         }).then(function() {
             return Plotly.animate(gd, [{
                 data: [{x: [0], y: [0]}, {x: [0.5], y: [0.5]}],
@@ -1289,25 +1364,25 @@ describe('hover updates', function() {
         }).then(function() {
             // No mouse event this time. Just change the data and check the label.
             // Ditto on concatenation. This is "trace 1" + "0.5"
-            return assertLabelsCorrect(null, [103, 100], 'trace 10.5');
+            return assertLabelsCorrect(null, [103, 100], 'trace 10.5', 'animation/update 1');
         }).then(function() {
             // Restyle to move the point out of the window:
             return Plotly.relayout(gd, {'xaxis.range': [2, 3]});
         }).then(function() {
             // Assert label removed:
-            return assertLabelsCorrect(null, null);
+            return assertLabelsCorrect(null, null, null, 'animation/update 2');
         }).then(function() {
             // Move back to the original xaxis range:
             return Plotly.relayout(gd, {'xaxis.range': [0, 1]});
         }).then(function() {
             // Assert label restored:
-            return assertLabelsCorrect(null, [103, 100], 'trace 10.5');
+            return assertLabelsCorrect(null, [103, 100], 'trace 10.5', 'animation/update 3');
         }).catch(fail).then(done);
     });
 
     it('should not trigger infinite loop of plotly_unhover events', function(done) {
         var gd = createGraphDiv();
-        var colors0 = ['#00000', '#00000', '#00000', '#00000', '#00000', '#00000', '#00000'];
+        var colors0 = ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000'];
 
         function unhover() {
             return new Promise(function(resolve) {
@@ -1327,7 +1402,7 @@ describe('hover updates', function() {
             y: [1, 2, 3, 2, 3, 4, 3],
             marker: {
                 size: 16,
-                colors: colors0.slice()
+                color: colors0.slice()
             }
         }])
         .then(function() {
@@ -1345,14 +1420,14 @@ describe('hover updates', function() {
                 Plotly.restyle(gd, 'marker.color', [colors0.slice()]);
             });
 
-            return assertLabelsCorrect([351, 251], [358, 272], '2');
+            return assertLabelsCorrect([351, 251], [358, 272], '2', 'events 0');
         })
         .then(unhover)
         .then(function() {
             expect(hoverCnt).toEqual(1);
             expect(unHoverCnt).toEqual(1);
 
-            return assertLabelsCorrect([400, 200], [435, 198], '3');
+            return assertLabelsCorrect([420, 100], [435, 198], '3', 'events 1');
         })
         .then(unhover)
         .then(function() {

@@ -1,1 +1,0 @@
-Plotly.register({moduleType:"locale",name:"en-US",dictionary:{"Click to enter Colorscale title":"Click to enter Colorscale title"}});

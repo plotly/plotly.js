@@ -39,7 +39,7 @@ describe('ModeBar', function() {
                 modeBarButtonsToRemove: [],
                 modeBarButtonsToAdd: [],
                 locale: 'en',
-                dictionaries: {}
+                locales: {}
             }
         };
     }

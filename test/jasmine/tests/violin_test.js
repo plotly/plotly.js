@@ -296,13 +296,12 @@ describe('Test violin hover:', function() {
         },
         nums: [
             'q3: 0.6', 'median: 0.45', 'q3: 0.6', 'max: 1', 'y: 0.9266848, kde: 0.383',
-            'median: 0.55', 'max: 0.7', 'y: 0.9266848, kde: 0.182',
-            'median: 0.45', 'q3: 0.6', 'max: 0.9', 'y: 0.9266848, kde: 0.435',
-            'q3: 0.6', 'max: 0.9'
+            'median: 0.55', 'min: 0', 'q1: 0.3', 'min: 0.2', 'max: 0.7', 'y: 0.9266848, kde: 0.182',
+            'median: 0.45', 'min: 0.1', 'q3: 0.6', 'max: 0.9', 'y: 0.9266848, kde: 0.435'
         ],
         name: [
-            '', 'kale', '', '', '', 'radishes', '',
-            '', 'carrots', '', '', ''
+            '', 'kale', '', '', '', 'radishes', '', '', '', '',
+            '', 'carrots', '', '', '', ''
         ],
         axis: 'day 1'
     }, {
