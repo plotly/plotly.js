@@ -1123,7 +1123,9 @@ ScatterGl.selectPoints = function select(searchInfo, polygon) {
         trace = cd[0].trace,
         stash = cd[0].t,
         x = stash.x,
-        y = stash.y;
+        y = stash.y,
+        rawx = stash.rawx,
+        rawy = stash.rawy;
 
     var scene = stash.scene;
 
@@ -1142,8 +1144,8 @@ ScatterGl.selectPoints = function select(searchInfo, polygon) {
                 els.push(i);
                 selection.push({
                     pointNumber: i,
-                    x: x[i],
-                    y: y[i]
+                    x: rawx ? rawx[i] : x[i],
+                    y: rawy ? rawy[i] : y[i]
                 });
             }
             else {
