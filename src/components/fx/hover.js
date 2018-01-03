@@ -519,7 +519,7 @@ function createHoverText(hoverData, opts, gd) {
     var i, traceHoverinfo;
     for(i = 0; i < hoverData.length; i++) {
         traceHoverinfo = hoverData[i].hoverinfo || hoverData[i].trace.hoverinfo;
-        var parts = traceHoverinfo.split('+');
+        var parts = Array.isArray(traceHoverinfo) ? traceHoverinfo : traceHoverinfo.split('+');
         if(parts.indexOf('all') === -1 &&
             parts.indexOf(hovermode) === -1) {
             showCommonLabel = false;
@@ -1077,8 +1077,9 @@ function cleanPoint(d, hovermode) {
     }
 
     var infomode = d.hoverinfo || d.trace.hoverinfo;
+
     if(infomode !== 'all') {
-        infomode = infomode.split('+');
+        infomode = Array.isArray(infomode) ? infomode : infomode.split('+');
         if(infomode.indexOf('x') === -1) d.xLabel = undefined;
         if(infomode.indexOf('y') === -1) d.yLabel = undefined;
         if(infomode.indexOf('z') === -1) d.zLabel = undefined;

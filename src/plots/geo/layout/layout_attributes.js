@@ -9,6 +9,7 @@
 'use strict';
 
 var colorAttrs = require('../../../components/color/attributes');
+var domainAttrs = require('../../domain_attributes');
 var constants = require('../constants');
 var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 
@@ -65,40 +66,14 @@ var geoAxesAttrs = {
 };
 
 module.exports = overrideAll({
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the maximum horizontal domain of this map',
-                '(in plot fraction).',
-                'Note that geo subplots are constrained by domain.',
-                'In general, when `projection.scale` is set to 1.',
-                'a map will fit either its x or y domain, but not both. '
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the maximum vertical domain of this map',
-                '(in plot fraction).',
-                'Note that geo subplots are constrained by domain.',
-                'In general, when `projection.scale` is set to 1.',
-                'a map will fit either its x or y domain, but not both. '
-            ].join(' ')
-        }
-    },
+    domain: domainAttrs({name: 'geo'}, {
+        description: [
+            'Note that geo subplots are constrained by domain.',
+            'In general, when `projection.scale` is set to 1.',
+            'a map will fit either its x or y domain, but not both. '
+        ].join(' ')
+    }),
+
     resolution: {
         valType: 'enumerated',
         values: [110, 50],

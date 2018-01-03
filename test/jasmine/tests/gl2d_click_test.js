@@ -194,6 +194,7 @@ describe('Test hover and click interactions', function() {
             }
         };
         _mock.data[0].hoverinfo = _mock.data[0].x.map(function(_, i) { return i % 2 ? 'y' : 'x'; });
+
         _mock.data[0].hoverlabel = {
             bgcolor: 'blue',
             bordercolor: _mock.data[0].x.map(function(_, i) { return i % 2 ? 'red' : 'green'; })
@@ -357,11 +358,11 @@ describe('Test hover and click interactions', function() {
             y: 18,
             curveNumber: 2,
             pointNumber: 0,
-            bgcolor: 'rgb(255, 127, 14)',
-            bordercolor: 'rgb(68, 68, 68)',
+            bgcolor: 'rgb(44, 160, 44)',
+            bordercolor: 'rgb(255, 255, 255)',
             fontSize: 13,
             fontFamily: 'Arial',
-            fontColor: 'rgb(68, 68, 68)'
+            fontColor: 'rgb(255, 255, 255)'
         }, {
             msg: 'scattergl after visibility restyle'
         });
@@ -405,11 +406,11 @@ describe('Test hover and click interactions', function() {
             y: 18,
             curveNumber: 2,
             pointNumber: 0,
-            bgcolor: 'rgb(255, 127, 14)',
-            bordercolor: 'rgb(68, 68, 68)',
+            bgcolor: 'rgb(44, 160, 44)',
+            bordercolor: 'rgb(255, 255, 255)',
             fontSize: 13,
             fontFamily: 'Arial',
-            fontColor: 'rgb(68, 68, 68)'
+            fontColor: 'rgb(255, 255, 255)'
         }, {
             msg: 'scattergl fancy after visibility restyle'
         });
@@ -464,9 +465,10 @@ describe('@noCI Test gl2d lasso/select:', function() {
     });
 
     var gd;
-    var selectPath = [[93, 193], [143, 193]];
+    var selectPath = [[97, 193], [107, 193]];
+    var selectPath2 = [[97, 193], [147, 193]];
     var lassoPath = [[316, 171], [318, 239], [335, 243], [328, 169]];
-    var lassoPath2 = [[93, 193], [143, 193], [143, 500], [93, 500], [93, 193]];
+    var lassoPath2 = [[97, 193], [107, 293], [107, 500], [97, 500], [97, 193]];
 
     afterEach(function() {
         Plotly.purge(gd);
@@ -508,9 +510,6 @@ describe('@noCI Test gl2d lasso/select:', function() {
         });
     }
 
-    function countGlObjects() {
-        return gd._fullLayout._plots.xy._scene2d.glplot.objects.length;
-    }
 
     it('should work under fast mode with *select* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFast);
@@ -520,19 +519,19 @@ describe('@noCI Test gl2d lasso/select:', function() {
         Plotly.plot(gd, _mock)
         .then(delay(100))
         .then(function() {
-            expect(countGlObjects()).toBe(1, 'has on gl-scatter2d object');
+            expect(gd._fullLayout._plots.xy._scene.select2d).not.toBe(undefined, 'scatter2d renderer');
 
             return select(selectPath);
         })
         .then(function(eventData) {
             assertEventData(eventData, {
                 points: [
-                    {x: 3.911, y: 0.401},
-                    {x: 5.34, y: 0.403},
-                    {x: 6.915, y: 0.411}
+                    {pointNumber: 25, x: 1.425, y: 0.538},
+                    {pointNumber: 26, x: 1.753, y: 0.5},
+                    {pointNumber: 27, x: 2.22, y: 0.45}
                 ]
             });
-            expect(countGlObjects()).toBe(2, 'adds a dimmed gl-scatter2d objects');
+
         })
         .catch(fail)
         .then(done);
@@ -546,19 +545,16 @@ describe('@noCI Test gl2d lasso/select:', function() {
         Plotly.plot(gd, _mock)
         .then(delay(100))
         .then(function() {
-            expect(countGlObjects()).toBe(1);
-
             return select(lassoPath2);
         })
         .then(function(eventData) {
             assertEventData(eventData, {
                 points: [
-                    {x: 3.911, y: 0.401},
-                    {x: 5.34, y: 0.403},
-                    {x: 6.915, y: 0.411}
+                    {pointNumber: 25, x: 1.425, y: 0.538},
+                    {pointNumber: 26, x: 1.753, y: 0.5},
+                    {pointNumber: 27, x: 2.22, y: 0.45}
                 ]
             });
-            expect(countGlObjects()).toBe(2);
         })
         .catch(fail)
         .then(done);
@@ -572,15 +568,12 @@ describe('@noCI Test gl2d lasso/select:', function() {
         Plotly.plot(gd, _mock)
         .then(delay(100))
         .then(function() {
-            expect(countGlObjects()).toBe(2, 'has a gl-line2d and a gl-scatter2d-sdf');
-
-            return select(selectPath);
+            return select(selectPath2);
         })
         .then(function(eventData) {
             assertEventData(eventData, {
                 points: [{x: 0.004, y: 12.5}]
             });
-            expect(countGlObjects()).toBe(2, 'only changes colors of gl-scatter2d-sdf object');
         })
         .catch(fail)
         .then(done);
@@ -594,15 +587,12 @@ describe('@noCI Test gl2d lasso/select:', function() {
         Plotly.plot(gd, _mock)
         .then(delay(100))
         .then(function() {
-            expect(countGlObjects()).toBe(2, 'has a gl-line2d and a gl-scatter2d-sdf');
-
             return select(lassoPath);
         })
         .then(function(eventData) {
             assertEventData(eventData, {
                 points: [{ x: 0.099, y: 2.75 }]
             });
-            expect(countGlObjects()).toBe(2, 'only changes colors of gl-scatter2d-sdf object');
         })
         .catch(fail)
         .then(done);

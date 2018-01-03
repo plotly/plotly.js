@@ -1,0 +1,25 @@
+{
+  "data": [{
+    "type": "scatterpolar",
+    "mode": "lines",
+    "r": [ 3, 3, 4, 3 ],
+    "theta": [ 0, 45, 0, 0 ],
+    "fill": "toself",
+    "hoveron": "fills"
+  }, {
+    "type": "scatterpolar",
+    "mode": "lines",
+    "r": [ 2, 2, 2, 2, 4, 2],
+    "theta": [ 0, 90, 180, 270, 350, 360 ],
+    "fill": "toself",
+    "hoveron": "fills"
+  }],
+  "layout": {
+    "polar": {
+      "radialaxis": {
+        "range": [0, 5]
+      }
+    },
+    "showlegend": false
+  }
+}

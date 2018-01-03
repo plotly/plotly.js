@@ -162,6 +162,7 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
+
 /**
  * Get calcdata traces(s) associated with a given subplot
  *
@@ -676,7 +677,6 @@ plots.createTransitionData = function(gd) {
 // or trace has a category
 plots._hasPlotType = function(category) {
     // check plot
-
     var basePlotModules = this._basePlotModules || [];
     var i;
 
@@ -784,10 +784,6 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
         if(oldSubplot) {
             plotinfo = newSubplots[id] = oldSubplot;
-
-            if(plotinfo._scene2d) {
-                plotinfo._scene2d.updateRefs(newFullLayout);
-            }
 
             if(plotinfo.xaxis.layer !== xaxis.layer) {
                 plotinfo.xlines.attr('d', null);
@@ -918,7 +914,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
         var _module = fullTrace._module;
         if(!_module) return;
-
         Lib.pushUnique(modules, _module);
         Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
 
@@ -964,7 +959,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
             }
         }
         else {
-
             // add identify refs for consistency with transformed traces
             fullTrace._fullInput = fullTrace;
             fullTrace._expandedInput = fullTrace;
@@ -1104,7 +1098,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
         var subplotType = subplotTypes[i];
 
         // done below (only when visible is true)
-        // TODO unified this pattern
+        // TODO unify this pattern
         if(['cartesian', 'gl2d'].indexOf(subplotType) !== -1) continue;
 
         var attr = subplotsRegistry[subplotType].attr;
@@ -1112,12 +1106,13 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
         if(attr) coerceSubplotAttr(subplotType, attr);
     }
 
+
+    var _module = plots.getModule(traceOut);
+    traceOut._module = _module;
+
     if(visible) {
         coerce('customdata');
         coerce('ids');
-
-        var _module = plots.getModule(traceOut);
-        traceOut._module = _module;
 
         if(plots.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
@@ -1150,7 +1145,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOutIndex, layout, traceInInde
             traceOut.visible = !!traceOut.visible;
         }
 
-        if(_module && _module.selectPoints && traceOut.type !== 'scattergl') {
+        if(_module && _module.selectPoints) {
             coerce('selectedpoints');
         }
 
@@ -1430,7 +1425,6 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 // Remove all plotly attributes from a div so it can be replotted fresh
 // TODO: these really need to be encapsulated into a much smaller set...
 plots.purge = function(gd) {
-
     // note: we DO NOT remove _context because it doesn't change when we insert
     // a new plot, and may have been set outside of our scope.
 
@@ -1505,11 +1499,21 @@ plots.purge = function(gd) {
 
 plots.style = function(gd) {
     var _modules = gd._fullLayout._modules;
+    var styleModules = [];
+    var i;
 
-    for(var i = 0; i < _modules.length; i++) {
+    // some trace modules reuse the same style method,
+    // make sure to not unnecessary call them multiple times.
+
+    for(i = 0; i < _modules.length; i++) {
         var _module = _modules[i];
+        if(_module.style) {
+            Lib.pushUnique(styleModules, _module.style);
+        }
+    }
 
-        if(_module.style) _module.style(gd);
+    for(i = 0; i < styleModules.length; i++) {
+        styleModules[i](gd);
     }
 };
 
@@ -2330,6 +2334,16 @@ plots.doCalcdata = function(gd, traces) {
         trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
     }
 
+    // TODO maybe move this to Axes.list ??
+    // or better yet, make a more general Axes.list
+    var polarIds = plots.getSubplotIds(fullLayout, 'polar');
+    for(i = 0; i < polarIds.length; i++) {
+        axList.push(
+            fullLayout[polarIds[i]].radialaxis,
+            fullLayout[polarIds[i]].angularaxis
+        );
+    }
+
     initCategories(axList);
 
     var hasCalcTransform = false;
@@ -2440,19 +2454,6 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         traceHash = {},
         i;
 
-    function filterVisible(calcDataIn) {
-        var calcDataOut = [];
-
-        for(var i = 0; i < calcDataIn.length; i++) {
-            var calcTrace = calcDataIn[i],
-                trace = calcTrace[0].trace;
-
-            if(trace.visible === true) calcDataOut.push(calcTrace);
-        }
-
-        return calcDataOut;
-    }
-
     // build up moduleName -> calcData hash
     for(i = 0; i < subplotCalcData.length; i++) {
         var calcTraces = subplotCalcData[i],
@@ -2492,7 +2493,7 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         var moduleCalcData = traceHash[moduleNames[i]],
             _module = moduleCalcData[0][0].trace._module;
 
-        _module.plot(subplot, filterVisible(moduleCalcData), subplotLayout);
+        _module.plot(subplot, Lib.filterVisible(moduleCalcData), subplotLayout);
     }
 
     // update moduleName -> calcData hash

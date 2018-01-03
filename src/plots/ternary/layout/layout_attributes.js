@@ -9,39 +9,13 @@
 'use strict';
 
 var colorAttrs = require('../../../components/color/attributes');
+var domainAttrs = require('../../domain_attributes');
 var ternaryAxesAttrs = require('./axis_attributes');
 var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 
-
 module.exports = overrideAll({
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the horizontal domain of this subplot',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the vertical domain of this subplot',
-                '(in plot fraction).'
-            ].join(' ')
-        }
-    },
+    domain: domainAttrs({name: 'ternary'}),
+
     bgcolor: {
         valType: 'color',
         role: 'style',

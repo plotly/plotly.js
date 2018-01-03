@@ -26,10 +26,5 @@ module.exports = function plot(ternary, moduleCalcData) {
         layerClipId: ternary._hasClipOnAxisFalse ? ternary.clipIdRelative : null
     };
 
-    // add ref to ternary subplot object in fullData traces
-    for(var i = 0; i < moduleCalcData.length; i++) {
-        moduleCalcData[i][0].trace._ternary = ternary;
-    }
-
     scatterPlot(ternary.graphDiv, plotinfo, moduleCalcData);
 };

@@ -1,0 +1,44 @@
+{
+  "data": [
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "name": "",
+      "r": [5, 4, 2, 4, 3],
+      "theta": ["2017-01-01", "2017-04-01", "2017-08-01", "2017-12-01", "2018-01-01"],
+      "line": {
+        "shape": "spline"
+      }
+    }, 
+    {
+      "mode": "lines+markers",
+      "name": "",
+      "x": [5, 4, 2, 4, 3],
+      "y": ["2017-01-01", "2017-04-01", "2017-08-01", "2017-12-01", "2018-01-01"],
+      "line": {
+        "shape": "spline"
+      }
+    }
+  ],
+  "layout": {
+    "polar": {
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0.54, 1]
+      }
+    },
+    "yaxis": {
+      "domain": [0, 0.46]
+    },
+    "legend": {
+      "x": 0.5,
+      "y": -0.05,
+      "xanchor": "center",
+      "yanchor": "top"
+    },
+    "hovermode": "closest",
+    "width": 550,
+    "height": 550,
+    "margin": {"l": 80, "r": 40, "b": 60, "t": 20, "pad": 0}
+  }
+}

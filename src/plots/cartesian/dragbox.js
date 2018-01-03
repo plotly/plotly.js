@@ -45,7 +45,7 @@ var SHOWZOOMOUTTIP = true;
 //          's' - bottom only
 //          'ns' - top and bottom together, difference unchanged
 //      ew - same for horizontal axis
-module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
+function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // mouseDown stores ms of first mousedown event in the last
     // DBLCLICKDELAY ms on the drag bars
     // numClicks stores how many mousedowns have been seen
@@ -294,11 +294,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         removeZoombox(gd);
         dragTail(zoomMode);
-
-        if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long');
-            SHOWZOOMOUTTIP = false;
-        }
+        showDoubleClickNotifier(gd);
     }
 
     function dragDone(dragged, numClicks) {
@@ -439,9 +435,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // everything but the corners gets wheel zoom
     if(ns.length * ew.length !== 1) {
-        // still seems to be some confusion about onwheel vs onmousewheel...
-        if(dragger.onwheel !== undefined) dragger.onwheel = zoomWheel;
-        else if(dragger.onmousewheel !== undefined) dragger.onmousewheel = zoomWheel;
+        attachWheelEventHandler(dragger, zoomWheel);
     }
 
     // plotDrag: move the plot in response to a drag
@@ -759,7 +753,9 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
 
             // don't scale at all if neither axis is scalable here
-            if(!xScaleFactor2 && !yScaleFactor2) continue;
+            if(!xScaleFactor2 && !yScaleFactor2) {
+                continue;
+            }
 
             // but if only one is, reset the other axis scaling
             if(!xScaleFactor2) xScaleFactor2 = 1;
@@ -792,7 +788,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     return dragger;
-};
+}
 
 function makeDragger(plotinfo, dragClass, cursor, x, y, w, h) {
     var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
@@ -931,6 +927,10 @@ function updateZoombox(zb, corners, box, path0, dimmed, lum) {
     zb.attr('d',
         path0 + 'M' + (box.l) + ',' + (box.t) + 'v' + (box.h) +
         'h' + (box.w) + 'v-' + (box.h) + 'h-' + (box.w) + 'Z');
+    transitionZoombox(zb, corners, dimmed, lum);
+}
+
+function transitionZoombox(zb, corners, dimmed, lum) {
     if(!dimmed) {
         zb.transition()
             .style('fill', lum > 0.2 ? 'rgba(0,0,0,0.4)' :
@@ -946,6 +946,13 @@ function removeZoombox(gd) {
     d3.select(gd)
         .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
         .remove();
+}
+
+function showDoubleClickNotifier(gd) {
+    if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
+        Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long');
+        SHOWZOOMOUTTIP = false;
+    }
 }
 
 function isSelectOrLasso(dragmode) {
@@ -1035,3 +1042,26 @@ function calcLinks(constraintGroups, xIDs, yIDs) {
         xy: isSubplotConstrained
     };
 }
+
+// still seems to be some confusion about onwheel vs onmousewheel...
+function attachWheelEventHandler(element, handler) {
+    if(element.onwheel !== undefined) element.onwheel = handler;
+    else if(element.onmousewheel !== undefined) element.onmousewheel = handler;
+}
+
+module.exports = {
+    makeDragBox: makeDragBox,
+
+    makeDragger: makeDragger,
+    makeZoombox: makeZoombox,
+    makeCorners: makeCorners,
+
+    updateZoombox: updateZoombox,
+    xyCorners: xyCorners,
+    transitionZoombox: transitionZoombox,
+    removeZoombox: removeZoombox,
+    clearSelect: clearSelect,
+    showDoubleClickNotifier: showDoubleClickNotifier,
+
+    attachWheelEventHandler: attachWheelEventHandler
+};

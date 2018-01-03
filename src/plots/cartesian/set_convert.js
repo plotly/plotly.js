@@ -276,14 +276,16 @@ module.exports = function setConvert(ax, fullLayout) {
      * optional param rangeAttr: operate on a different attribute, like
      * ax._r, rather than ax.range
      */
-    ax.cleanRange = function(rangeAttr) {
+    ax.cleanRange = function(rangeAttr, opts) {
+        if(!opts) opts = {};
         if(!rangeAttr) rangeAttr = 'range';
-        var range = Lib.nestedProperty(ax, rangeAttr).get(),
-            i, dflt;
+
+        var range = Lib.nestedProperty(ax, rangeAttr).get();
+        var i, dflt;
 
         if(ax.type === 'date') dflt = Lib.dfltRange(ax.calendar);
         else if(axLetter === 'y') dflt = constants.DFLTRANGEY;
-        else dflt = constants.DFLTRANGEX;
+        else dflt = opts.dfltRange || constants.DFLTRANGEX;
 
         // make sure we don't later mutate the defaults
         dflt = dflt.slice();
