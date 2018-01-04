@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,9 +10,9 @@
 
 var Lib = require('../../lib');
 var Color = require('../../components/color');
-var Plots = require('../plots');
 var Registry = require('../../registry');
 var handleSubplotDefaults = require('../subplot_defaults');
+var getSubplotData = require('../get_data').getSubplotData;
 
 var handleTickValueDefaults = require('../cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../cartesian/tick_mark_defaults');
@@ -35,7 +35,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     var sector = coerce('sector');
 
     // could optimize, subplotData is not always needed!
-    var subplotData = Plots.getSubplotData(opts.fullData, constants.name, opts.id);
+    var subplotData = getSubplotData(opts.fullData, constants.name, opts.id);
     var layoutOut = opts.layoutOut;
     var axName;
 

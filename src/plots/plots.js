@@ -2322,9 +2322,8 @@ plots.doCalcdata = function(gd, traces) {
         trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
     }
 
-    // TODO maybe move this to Axes.list ??
-    // or better yet, make a more general Axes.list
-    var polarIds = plots.getSubplotIds(fullLayout, 'polar');
+    // add polar axes to axis list
+    var polarIds = fullLayout._subplots.polar || [];
     for(i = 0; i < polarIds.length; i++) {
         axList.push(
             fullLayout[polarIds[i]].radialaxis,

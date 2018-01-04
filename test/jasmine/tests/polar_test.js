@@ -65,7 +65,8 @@ describe('Test polar plots defaults:', function() {
         }];
 
         layoutOut = {
-            font: {color: 'red'}
+            font: {color: 'red'},
+            _subplots: {polar: ['polar']}
         };
 
         Polar.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
@@ -338,7 +339,7 @@ describe('Test relayout on polar subplots:', function() {
             return toggle(
                 'polar.angularaxis.showgrid',
                 [true, false], [8, 0],
-                '.angular-grid > path', assertCnt
+                '.angular-grid > .angular > path', assertCnt
             );
         })
         .then(function() {
@@ -418,6 +419,8 @@ describe('Test relayout on polar subplots:', function() {
     it('should clean up its framework, clip paths and info layers when getting deleted', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var traces = Lib.extendDeep([], fig.data);
+        var inds = traces.map(function(_, i) { return i; });
 
         function _assert(exp) {
             expect(d3.selectAll('g.polar').size()).toBe(exp.subplot, '# subplot layer');
@@ -433,12 +436,12 @@ describe('Test relayout on polar subplots:', function() {
         Plotly.plot(gd, fig).then(function() {
             _assert({subplot: 1, clip: 1, rtitle: 1});
 
-            return Plotly.restyle(gd, 'visible', false);
+            return Plotly.deleteTraces(gd, inds);
         })
         .then(function() {
             _assert({subplot: 0, clip: 0, rtitle: 0});
 
-            return Plotly.restyle(gd, 'visible', true);
+            return Plotly.addTraces(gd, traces);
         })
         .then(function() {
             _assert({subplot: 1, clip: 1, rtitle: 1});

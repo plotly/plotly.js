@@ -8,7 +8,7 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
+var getSubplotCalcData = require('../get_data').getSubplotCalcData;
 var counterRegex = require('../../lib').counterRegex;
 
 var createPolar = require('./polar');
@@ -35,11 +35,11 @@ attributes[attr] = {
 function plot(gd) {
     var fullLayout = gd._fullLayout;
     var calcData = gd.calcdata;
-    var subplotIds = Plots.getSubplotIds(fullLayout, name);
+    var subplotIds = fullLayout._subplots[name];
 
     for(var i = 0; i < subplotIds.length; i++) {
         var id = subplotIds[i];
-        var subplotCalcData = Plots.getSubplotCalcData(calcData, name, id);
+        var subplotCalcData = getSubplotCalcData(calcData, name, id);
         var subplot = fullLayout[id]._subplot;
 
         if(!subplot) {
@@ -52,7 +52,7 @@ function plot(gd) {
 }
 
 function clean(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldIds = Plots.getSubplotIds(oldFullLayout, name);
+    var oldIds = oldFullLayout._subplots[name] || [];
 
     for(var i = 0; i < oldIds.length; i++) {
         var id = oldIds[i];

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -136,8 +136,12 @@ proto.updateLayers = function(fullLayout, polarLayout) {
                     layers.bgcircle = sel.append('path');
                     break;
                 case 'radial-grid':
+                    sel.style('fill', 'none');
+                    sel.append('g').classed('x', 1);
+                    break;
                 case 'angular-grid':
                     sel.style('fill', 'none');
+                    sel.append('g').classed('angular', 1);
                     break;
                 case 'radial-line':
                     sel.append('line').style('fill', 'none');
@@ -301,6 +305,11 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     if(ax.tickangle === 'auto' && (a0 > 90 && a0 <= 270)) {
         ax.tickangle = 180;
     }
+
+    // easier to set rotate angle with custom translate function
+    ax._transfn = function(d) {
+        return 'translate(' + ax.l2p(d.x) + ',0)';
+    };
 
     // set special grid path function
     ax._gridpath = function(d) {
