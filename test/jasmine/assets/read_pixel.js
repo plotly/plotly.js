@@ -3,8 +3,8 @@
 module.exports = function(canvas, x, y, w, h) {
     if(!canvas) return null;
 
-    if (!w) w = 1;
-    if (!h) h = 1;
+    if(!w) w = 1;
+    if(!h) h = 1;
 
     var gl = canvas.getContext('webgl');
 
