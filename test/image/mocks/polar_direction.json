@@ -25,7 +25,7 @@
         "size": 8
       },
       "subplot": "polar",
-      "text": "sector: 0->360<br>position: -90<br>direction: clockwise"
+      "text": "sector: 0->360<br>rotation: -90<br>direction: clockwise"
     },
     {
       "type": "scatterpolar",
@@ -52,7 +52,7 @@
         "size": 8
       },
       "subplot": "polar2",
-      "text": "sector: 0->360<br>position: 90<br>direction: clockwise"
+      "text": "sector: 0->360<br>rotation: 90<br>direction: clockwise"
     },
     {
       "type": "scatterpolar",
@@ -79,7 +79,7 @@
         "size": 8
       },
       "subplot": "polar3",
-      "text": "sector: 45->135<br>position: 90<br>direction: clockwise"
+      "text": "sector: 45->135<br>rotation: 90<br>direction: clockwise"
     },
     {
       "type": "scatterpolar",
@@ -106,7 +106,7 @@
         "size": 8
       },
       "subplot": "polar4",
-      "text": "sector: 135->225<br>position: 90<br>direction: clockwise"
+      "text": "sector: 135->225<br>rotation: 90<br>direction: clockwise"
     },
     {
       "type": "scatterpolar",
@@ -133,7 +133,7 @@
         "size": 8
       },
       "subplot": "polar5",
-      "text": "sector: 135->225<br>position: 90<br>direction: counterclockwise"
+      "text": "sector: 135->225<br>rotation: 90<br>direction: counterclockwise"
     },
     {
       "type": "scatterpolar",
@@ -160,7 +160,7 @@
         "size": 8
       },
       "subplot": "polar6",
-      "text": "sector: 45->135<br>position: 90<br>direction: counterclockwise"
+      "text": "sector: 45->135<br>rotation: 90<br>direction: counterclockwise"
     },
     {
       "type": "scatterpolar",
@@ -187,7 +187,7 @@
         "size": 8
       },
       "subplot": "polar7",
-      "text": "sector: 0->360<br>position: 90<br>direction: counterclockwise"
+      "text": "sector: 0->360<br>rotation: 90<br>direction: counterclockwise"
     },
     {
       "type": "scatterpolar",
@@ -214,7 +214,7 @@
         "size": 8
       },
       "subplot": "polar8",
-      "text": "sector: 0->360<br>position: 0<br>direction: clockwise"
+      "text": "sector: 0->360<br>rotation: 0<br>direction: clockwise"
     },
     {
       "type": "scatterpolar",
@@ -241,7 +241,7 @@
         "size": 8
       },
       "subplot": "polar9",
-      "text": "sector: 0->360<br>position: 0<br>direction: counterclockwise"
+      "text": "sector: 0->360<br>rotation: 0<br>direction: counterclockwise"
     }
   ],
   "layout": {
@@ -278,7 +278,7 @@
         "tickfont": {
           "size": 8
         },
-        "position": -90,
+        "rotation": -90,
         "direction": "clockwise"
       }
     },
@@ -306,7 +306,7 @@
         "tickfont": {
           "size": 8
         },
-        "position": 90,
+        "rotation": 90,
         "direction": "clockwise"
       }
     },
@@ -334,7 +334,7 @@
         "tickfont": {
           "size": 8
         },
-        "position": 90,
+        "rotation": 90,
         "direction": "clockwise"
       }
     },
@@ -362,7 +362,7 @@
         "tickfont": {
           "size": 8
         },
-        "position": 90,
+        "rotation": 90,
         "direction": "clockwise"
       }
     },
@@ -390,7 +390,7 @@
         "tickfont": {
           "size": 8
         },
-        "position": 90,
+        "rotation": 90,
         "direction": "counterclockwise"
       }
     },
@@ -418,7 +418,7 @@
         "tickfont": {
           "size": 8
         },
-        "position": 90,
+        "rotation": 90,
         "direction": "counterclockwise"
       }
     },
@@ -446,7 +446,7 @@
         "tickfont": {
           "size": 8
         },
-        "position": 90,
+        "rotation": 90,
         "direction": "counterclockwise"
       }
     },
@@ -474,7 +474,7 @@
         "tickfont": {
           "size": 8
         },
-        "position": 0,
+        "rotation": 0,
         "direction": "clockwise"
       }
     },
@@ -502,7 +502,7 @@
         "tickfont": {
           "size": 8
         },
-        "position": 0,
+        "rotation": 0,
         "direction": "counterclockwise"
       }
     }

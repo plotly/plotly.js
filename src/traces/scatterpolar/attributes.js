@@ -14,13 +14,7 @@ var plotAttrs = require('../../plots/attributes');
 var lineAttrs = scatterAttrs.line;
 
 module.exports = {
-    // TODO is this correct?
-    // `dflt: 'markers' matches the scattergeo, scattermapbox types,
-    // scatter, scattergl, scatterternary, scattercarpet use a special 'line' vs 'markers+lines' logic
-    // while scatter3d has a hard 'markers+lines' default
-    mode: extendFlat({}, scatterAttrs.mode, {
-        dflt: 'markers'
-    }),
+    mode: scatterAttrs.mode,
 
     r: {
         valType: 'data_array',
@@ -40,11 +34,11 @@ module.exports = {
         dflt: 'degrees',
         role: 'info',
         editType: 'calc+clearAxisTypes',
-        description: 'Sets the unit of input *theta* values.'
+        description: [
+            'Sets the unit of input *theta* values.',
+            'Has an effect only when on *linear* angular axes.'
+        ].join(' ')
     },
-
-    // TODO not sure r0,  dr, theta0, dtheta
-    // would make sense here?
 
     text: scatterAttrs.text,
     hovertext: scatterAttrs.hovertext,
@@ -62,8 +56,7 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
 
     marker: scatterAttrs.marker,
-    // TODO maybe we should make the dflt *false* ??
-    cliponaxis: scatterAttrs.cliponaxis,
+    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, {dflt: false}),
 
     textposition: scatterAttrs.textposition,
     textfont: scatterAttrs.textfont,

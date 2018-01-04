@@ -32,7 +32,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     var bgColor = coerce('bgcolor');
     opts.bgColor = Color.combine(bgColor, opts.paper_bgcolor);
 
-    // TODO sanitize sector similar to 'range'
     var sector = coerce('sector');
 
     // could optimize, subplotData is not always needed!
@@ -102,7 +101,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
                 if(visible) {
                     coerceAxis('side');
-                    coerceAxis('position', sector[0]);
+                    coerceAxis('angle', sector[0]);
 
                     coerceAxis('title');
                     Lib.coerceFont(coerceAxis, 'titlefont', {
@@ -120,11 +119,10 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     coerceAxis('period');
                 }
 
-                // TODO maybe non-linear axis
-                // should get direction: 'clockwise' + position: 90
-                // by default??
+                // TODO maybe by default: non-linear axis
+                // should get direction: 'clockwise' + rotation: 90
                 coerceAxis('direction');
-                coerceAxis('position');
+                coerceAxis('rotation');
 
                 setConvertAngular(axOut);
                 break;

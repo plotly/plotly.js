@@ -71,13 +71,13 @@ describe('Test polar plots defaults:', function() {
         Polar.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
     }
 
-    it('should default *radialaxis.position* to first sector angle', function() {
+    it('should default *radialaxis.angle* to first sector angle', function() {
         _supply({
             polar: {
                 sector: [45, 135]
             }
         });
-        expect(layoutOut.polar.radialaxis.position).toBe(45);
+        expect(layoutOut.polar.radialaxis.angle).toBe(45);
     });
 
     it('should coerce *angularaxis.thetaunit* only for linear angular axes', function() {
@@ -215,7 +215,7 @@ describe('Test relayout on polar subplots:', function() {
                 var tx = d3.select(this);
                 pos0.push([tx.attr('x'), tx.attr('y')]);
             });
-            return Plotly.relayout(gd, 'polar.angularaxis.position', 90);
+            return Plotly.relayout(gd, 'polar.angularaxis.rotation', 90);
         })
         .then(function() {
             d3.selectAll('.angulartick> text').each(function() {

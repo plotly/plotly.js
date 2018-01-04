@@ -23,22 +23,19 @@ var axisLineGridAttr = overrideAll({
     gridcolor: axesAttrs.gridcolor,
     gridwidth: axesAttrs.gridwidth
 
-    // should we add zeroline* attributes?
-    // might be useful on radial axes where range is negative and positive
+    // TODO add spike* attributes down the road
 
-    // we could add spike* attributes down the road
+    // should we add zeroline* attributes?
+
 }, 'plot', 'from-root');
 
-var axisTickAttr = overrideAll({
+var axisTickAttrs = overrideAll({
     tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
     tickvals: axesAttrs.tickvals,
     ticktext: axesAttrs.ticktext,
-    // TODO does not need 'inside' / 'outside' for radialaxis
-    // or maybe cut 'side' and have
-    // radialaxis.ticks: 'counterclockwise', 'clockwise', 'center', ''
     ticks: axesAttrs.ticks,
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
@@ -62,11 +59,6 @@ var radialAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
     type: axesAttrs.type,
 
-    // You thought maybe that range should only be a 'max' instead
-    // as it always starts at 0? But, looks like off-zero cutout polar chart are
-    // a thing:
-    // -> mpl allow radial ranges to start off 0
-    // -> same for matlab: https://www.mathworks.com/help/matlab/ref/rlim.html
     autorange: axesAttrs.autorange,
     rangemode: {
         valType: 'enumerated',
@@ -88,13 +80,7 @@ var radialAxisAttrs = {
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,
 
-    // position (name analogous to xaxis.position),
-    // or maybe something more specific e.g. angle angleoffset?
-    //
-    // (should this support any data coordinate system?)
-    // I think it is more intuitive to set this as just an angle!
-    // Thoughts?
-    position: {
+    angle: {
         valType: 'angle',
         editType: 'plot',
         role: 'info',
@@ -108,9 +94,9 @@ var radialAxisAttrs = {
 
     side: {
         valType: 'enumerated',
-        // maybe 'clockwise' and 'counterclockwise' would be best here
-        values: ['left', 'right'],
-        dflt: 'right',
+        // TODO add 'center' for `showline: false` radial axes
+        values: ['clockwise', 'counterclockwise'],
+        dflt: 'clockwise',
         editType: 'plot',
         role: 'info',
         description: [
@@ -118,6 +104,7 @@ var radialAxisAttrs = {
             'the tick and tick labels appear.'
         ].join(' ')
     },
+
 
     title: extendFlat({}, axesAttrs.title, {editType: 'plot', dflt: ''}),
     titlefont: overrideAll(axesAttrs.titlefont, 'plot', 'from-root'),
@@ -146,10 +133,10 @@ var radialAxisAttrs = {
 extendFlat(
     radialAxisAttrs,
 
-    // N.B. the radialaxis grid lines are circular,
+    // N.B. radialaxis grid lines are circular,
     // but radialaxis lines are straight from circle center to outer bound
     axisLineGridAttr,
-    axisTickAttr
+    axisTickAttrs
 );
 
 var angularAxisAttrs = {
@@ -168,8 +155,8 @@ var angularAxisAttrs = {
         description: [
             'Sets the angular axis type.',
             'If *linear*, set `thetaunit` to determine the unit in which axis value are shown.',
-            'If *date*, set `period` to determine the wrap around period.',
-            'If *category, set `period` to determine the number of integer coordinates around polar axis.'
+            'If *date*, use `period` to set the unit of time that determines a complete rotation',
+            'If *category, use `period` to set the number of integer coordinates around polar axis.'
         ].join(' ')
     },
 
@@ -213,7 +200,7 @@ var angularAxisAttrs = {
     direction: {
         valType: 'enumerated',
         values: ['counterclockwise', 'clockwise'],
-        // we could make the default 'clockwise' for date axes ...
+        // we could make the default 'clockwise' for category and date angular axes
         dflt: 'counterclockwise',
         role: 'info',
         editType: 'calc',
@@ -222,14 +209,9 @@ var angularAxisAttrs = {
         ].join(' ')
     },
 
-    // matlab uses thetaZeroLocation: 'North', 'West', 'East', 'South'
-    // mpl uses set_theta_zero_location('W', offset=10)
-    //
-    // position is analogous to yaxis.position, but as an angle (going
-    // counterclockwise about cartesian y=0.
-    position: {
+    rotation: {
         valType: 'angle',
-        // we could maybe make `position: 90` by default for category and date angular axes.
+        // we could maybe make `rotation: 90` by default for category and date angular axes
         dflt: 0,
         editType: 'calc',
         role: 'info',
@@ -238,7 +220,7 @@ var angularAxisAttrs = {
             'Note that by default, polar subplots are orientation such that the theta=0',
             'corresponds to a line pointing right (like what mathematicians prefer).',
             'For example to make the angular axis start from the North (like on a compass),',
-            'set `angularaxis.position` to *90*.'
+            'set `angularaxis.rotation` to *90*.'
         ].join(' ')
     },
 
@@ -250,39 +232,25 @@ var angularAxisAttrs = {
 extendFlat(
     angularAxisAttrs,
 
-    // N.B. the angular grid lines are straight lines from circle center to outer bound
+    // N.B. angular grid lines are straight lines from circle center to outer bound
     // the angular line is circular bounding the polar plot area.
     axisLineGridAttr,
-    // Note that ticksuffix defaults to '°' for angular axes with `thetaunit: 'degrees'`
-    axisTickAttr
+
+    // N.B. ticksuffix defaults to '°' for angular axes with `thetaunit: 'degrees'`
+    axisTickAttrs
 );
 
 module.exports = {
-    // AJ and I first thought about a x/y/zoom system for paper-based zooming
-    // but I came to think that sector span + radial axis range
-    // zooming will be better
-    //
-    // TODO confirm with team.
+    // TODO for x/y/zoom system for paper-based zooming:
     // x: {},
     // y: {},
     // zoom: {},
 
     domain: domainAttrs({name: 'polar', editType: 'plot'}),
 
-    // Maybe this should angularaxis.range correspond to
-    // angular span of the drawing area?
-    //
-    // matlab's angular equivalent to 'range' bounds the drawing area
-    // (partial circles as they call it)
-    // https://www.mathworks.com/help/matlab/ref/thetalim.html
-    //
-    // as this attribute would be best set in (absolute) angles,
-    // I think this should be set outside of angularaxis e.g
-    // as polar.sector: [0, 180]
     sector: {
         valType: 'info_array',
         items: [
-            // or be more strict -> `valType: 'angle' with `dflt: [0, 360]`
             {valType: 'number', editType: 'plot'},
             {valType: 'number', editType: 'plot'}
         ],

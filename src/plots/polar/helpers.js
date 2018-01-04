@@ -12,7 +12,7 @@ var Lib = require('../../lib');
 
 exports.setConvertAngular = function setConvertAngular(ax) {
     var dir = {clockwise: -1, counterclockwise: 1}[ax.direction];
-    var pos = Lib.deg2rad(ax.position);
+    var rot = Lib.deg2rad(ax.rotation);
     var _c2rad;
     var _rad2c;
 
@@ -45,11 +45,11 @@ exports.setConvertAngular = function setConvertAngular(ax) {
         };
     }
 
-    function transformRad(v) { return dir * v + pos; }
-    function unTransformRad(v) { return (v - pos) / dir; }
+    function transformRad(v) { return dir * v + rot; }
+    function unTransformRad(v) { return (v - rot) / dir; }
 
     // use the shift 'sector' to get right tick labels for non-default
-    // angularaxis 'position' and/or 'direction'
+    // angularaxis 'rotation' and/or 'direction'
     ax.unTransformRad = unTransformRad;
 
     // this version is used on hover

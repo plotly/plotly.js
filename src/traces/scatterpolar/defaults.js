@@ -16,6 +16,7 @@ var handleLineDefaults = require('../scatter/line_defaults');
 var handleLineShapeDefaults = require('../scatter/line_shape_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
+var PTS_LINESONLY = require('../scatter/constants').PTS_LINESONLY;
 
 var attributes = require('./attributes');
 
@@ -37,7 +38,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(len < theta.length) traceOut.theta = theta.slice(0, len);
 
     coerce('thetaunit');
-    coerce('mode');
+    coerce('mode', len < PTS_LINESONLY ? 'lines+markers' : 'lines');
     coerce('text');
     coerce('hovertext');
 

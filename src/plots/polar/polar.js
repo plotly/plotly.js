@@ -267,8 +267,8 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         _id: 'x',
         _pos: 0,
 
-        // radialaxis uses 'top'/'bottom' -> convert to 'x' axis equivalent
-        side: {left: 'top', right: 'bottom'}[radialLayout.side],
+        // convert to 'x' axis equivalent
+        side: {counterclockwise: 'top', clockwise: 'bottom'}[radialLayout.side],
 
         // spans length 1 radius
         domain: [0, radius / gs.w],
@@ -313,7 +313,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     Axes.doTicks(gd, ax, true);
 
     updateElement(layers['radial-axis'], radialLayout.showticklabels || radialLayout.ticks, {
-        transform: strTranslate(cx, cy) + strRotate(-radialLayout.position)
+        transform: strTranslate(cx, cy) + strRotate(-radialLayout.angle)
     });
 
     // move all grid paths to about circle center,
@@ -328,7 +328,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         y1: 0,
         x2: radius,
         y2: 0,
-        transform: strTranslate(cx, cy) + strRotate(-radialLayout.position)
+        transform: strTranslate(cx, cy) + strRotate(-radialLayout.angle)
     })
     .attr('stroke-width', radialLayout.linewidth)
     .call(Color.stroke, radialLayout.linecolor);
@@ -343,7 +343,7 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
     var radialLayout = polarLayout.radialaxis;
     var titleClass = _this.id + 'title';
 
-    var angle = _angle !== undefined ? _angle : radialLayout.position;
+    var angle = _angle !== undefined ? _angle : radialLayout.angle;
     var angleRad = deg2rad(angle);
     var cosa = Math.cos(angleRad);
     var sina = Math.sin(angleRad);
@@ -352,7 +352,7 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
     if(radialLayout.title) {
         var h = Drawing.bBox(_this.layers['radial-axis'].node()).height;
         var ts = radialLayout.titlefont.size;
-        pad = radialLayout.side === 'left' ?
+        pad = radialLayout.side === 'counterclockwise' ?
             -h - ts * 0.4 :
             h + ts * 0.8;
     }
@@ -381,8 +381,8 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var sector = polarLayout.sector;
     var sectorInRad = sector.map(deg2rad);
 
-    if(!('angularaxis.position' in _this.viewInitial)) {
-        _this.viewInitial['angularaxis.position'] = angularLayout.position;
+    if(!('angularaxis.rotation' in _this.viewInitial)) {
+        _this.viewInitial['angularaxis.rotation'] = angularLayout.rotation;
     }
 
     var ax = _this.angularAxis = Lib.extendFlat({}, angularLayout, {
@@ -406,7 +406,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     });
 
     // Set the angular range in degrees to make auto-tick computation cleaner,
-    // changing position/direction should not affect the angular tick labels.
+    // changing rotation/direction should not affect the angular tick labels.
     if(ax.type === 'linear') {
         ax.autorange = false;
 
@@ -572,8 +572,8 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     var path0, dimmed, lum;
     // zoombox, corners elements
     var zb, corners;
-    // angular axis angle offset at drag start (0), move (1)
-    var angle0, angle1;
+    // angular axis angle rotation at drag start (0), move (1)
+    var rot0, rot1;
     // copy of polar sector value at drag start
     var sector0;
     // angle about circle center at drag start
@@ -692,7 +692,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
 
     function panPrep() {
         sector0 = fullLayout[_this.id].sector.slice();
-        angle0 = fullLayout[_this.id].angularaxis.position;
+        rot0 = fullLayout[_this.id].angularaxis.rotation;
         a0 = xy2a(x0, y0);
     }
 
@@ -700,20 +700,19 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         var x1 = x0 + dx;
         var y1 = y0 + dy;
         var a1 = xy2a(x1, y1);
-        var dangle = rad2deg(a1 - a0);
-
-        angle1 = angle0 + dangle;
+        var da = rad2deg(a1 - a0);
+        rot1 = rot0 + da;
 
         layers.frontplot.attr('transform',
-            strTranslate(xOffset2, yOffset2) + strRotate([-dangle, cxx, cyy])
+            strTranslate(xOffset2, yOffset2) + strRotate([-da, cxx, cyy])
         );
 
         _this.clipPaths.circle.select('circle').attr('transform',
-            strTranslate(cxx, cyy) + strRotate(dangle)
+            strTranslate(cxx, cyy) + strRotate(da)
         );
 
         var angularAxis = _this.angularAxis;
-        angularAxis.position = wrap180(angle1);
+        angularAxis.rotation = wrap180(rot1);
 
         if(angularAxis.type === 'linear' && !isFullCircle(sector)) {
             angularAxis.range = sector0
@@ -727,7 +726,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
 
         if(_this._hasClipOnAxisFalse && !isFullCircle(sector)) {
             // mutate sector to trick isPtWithinSector
-            _this.sector = [sector0[0] - dangle, sector0[1] - dangle];
+            _this.sector = [sector0[0] - da, sector0[1] - da];
 
             layers.frontplot
                 .select('.scatterlayer').selectAll('.trace')
@@ -749,7 +748,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     function panDone(dragged, numClicks) {
         if(dragged) {
             var updateObj = {};
-            updateObj[_this.id + '.angularaxis.position'] = angle1;
+            updateObj[_this.id + '.angularaxis.rotation'] = rot1;
             Plotly.relayout(gd, updateObj);
         } else if(numClicks === 2) {
             doubleClick();
@@ -828,7 +827,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     var cy = _this.cy;
     var radialAxis = _this.radialAxis;
     var radialLayout = polarLayout.radialaxis;
-    var angle0 = deg2rad(radialLayout.position);
+    var angle0 = deg2rad(radialLayout.angle);
     var range0 = radialAxis.range.slice();
     var drange = range0[1] - range0[0];
 
@@ -866,7 +865,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
 
     function doneFn() {
         if(angle1 !== null) {
-            Plotly.relayout(gd, _this.id + '.radialaxis.position', angle1);
+            Plotly.relayout(gd, _this.id + '.radialaxis.angle', angle1);
         } else if(rng1 !== null) {
             Plotly.relayout(gd, _this.id + '.radialaxis.range[1]', rng1);
         }
@@ -988,7 +987,9 @@ function setScale(ax, axLayout, fullLayout) {
 }
 
 function strTickLayout(axLayout) {
-    return axLayout.ticks + String(axLayout.ticklen) + String(axLayout.showticklabels);
+    var out = axLayout.ticks + String(axLayout.ticklen) + String(axLayout.showticklabels);
+    if('side' in axLayout) out += axLayout.side;
+    return out;
 }
 
 // Finds the bounding box of a given circle sector,

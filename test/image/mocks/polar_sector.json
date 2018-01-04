@@ -2,7 +2,6 @@
   "data": [
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -26,12 +25,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -55,12 +52,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar2"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -84,12 +79,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar3"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -113,12 +106,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar4"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -142,12 +133,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar5"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -171,12 +160,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar6"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -200,12 +187,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar7"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -229,12 +214,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar8"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -258,12 +241,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar9"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -287,12 +268,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar10"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -316,12 +295,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar11"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -345,12 +322,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar12"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -374,12 +349,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar13"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -403,12 +376,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar14"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -432,12 +403,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar15"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -461,12 +430,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar16"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -490,12 +457,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar17"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -519,12 +484,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar18"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -548,12 +511,10 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar19"
     },
     {
       "type": "scatterpolar",
-      "mode": "lines+markers",
       "r": [
         1,
         2,
@@ -577,7 +538,6 @@
         "color": "#b15928",
         "size": 10
       },
-      "cliponaxis": false,
       "subplot": "polar20"
     }
   ],

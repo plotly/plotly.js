@@ -690,7 +690,6 @@
       "bgcolor": "rgb(255, 255, 255)",
       "radialaxis": {
         "range": [0, 1.1],
-        "side": "right",
         "tickangle": 45,
         "tick0": 0,
         "dtick": 0.1

@@ -25,7 +25,6 @@
       "size": [20, 15, 10]
     },
     "textposition": "top left",
-    "cliponaxis": false,
     "subplot": "polar2"
   }],
 
@@ -42,7 +41,7 @@
           "size": 20,
           "color": "blue"
         },
-        "position": -45
+        "angle": -45
       }
     },
     "polar2": {
@@ -57,7 +56,7 @@
           "size": 10,
           "color": "orange"
         },
-        "position": 45
+        "angle": 45
       }
     }
   }

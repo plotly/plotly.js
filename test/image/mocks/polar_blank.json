@@ -30,7 +30,7 @@
       },
       "radialaxis": {
         "title": "blank",
-        "position": 180
+        "angle": 180
       }
     },
     "polar2": {
@@ -58,7 +58,7 @@
       },
       "radialaxis": {
         "title": "blank",
-        "side": "left"
+        "side": "counterclockwise"
       },
       "angularaxis": {"visible": false}
     },

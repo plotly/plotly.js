@@ -135,8 +135,7 @@
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "cliponaxis": false
+      }
     },
     {
       "type": "scatterpolar",
@@ -273,8 +272,7 @@
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "cliponaxis": false
+      }
     },
     {
       "type": "scatterpolar",
@@ -411,8 +409,7 @@
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "cliponaxis": false
+      }
     },
     {
       "type": "scatterpolar",
@@ -549,8 +546,7 @@
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "cliponaxis": false
+      }
     },
     {
       "type": "scatterpolar",
@@ -687,8 +683,7 @@
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "cliponaxis": false
+      }
     },
     {
       "type": "scatterpolar",
@@ -825,8 +820,7 @@
           "color": "white"
         },
         "opacity": 0.7
-      },
-      "cliponaxis": false
+      }
     }
   ],
   "layout": {
@@ -843,7 +837,7 @@
         "layer": "below traces"
       },
       "radialaxis": {
-        "side": "left",
+        "side": "counterclockwise",
         "showline": true,
         "linewidth": 2,
         "tickwidth": 2,
