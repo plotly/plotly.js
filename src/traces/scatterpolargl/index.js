@@ -132,10 +132,6 @@ function plot(subplot, cdata) {
         stash.positions = positions;
         stash.count = count;
         stash.tree = kdtree(positions, 512);
-        // var ids = stash.ids = Array(count);
-        // for(i = 0; i < count; i++) {
-        //     ids[i] = i;
-        // }
     });
 
     return ScatterGl.plot(container, subplot, cdata);

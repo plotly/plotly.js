@@ -911,6 +911,10 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
                     scene.scatter2d.update(scene.unselectedOptions);
                 }
             }
+            else {
+                // update selection positions, since they may have changed by panning or alike
+                scene.select2d.update(scene.selectedOptions);
+            }
 
             // form unselected batch
             if(trace.selectedpoints && !scene.unselectBatch[stash.index]) {
