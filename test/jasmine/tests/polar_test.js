@@ -113,6 +113,22 @@ describe('Test polar plots defaults:', function() {
         expect(layoutOut.polar.radialaxis.type).toBe('linear', 'not date');
         expect(layoutOut.polar.angularaxis.type).toBe('linear', 'not category');
     });
+
+    it('should propagate axis *color* settings', function() {
+        _supply({
+            polar: {
+                angularaxis: {color: 'red'},
+                radialaxis: {color: 'blue'}
+            }
+        });
+
+        expect(layoutOut.polar.angularaxis.linecolor).toBe('red');
+        expect(layoutOut.polar.angularaxis.gridcolor).toBe('rgb(255, 153, 153)', 'blend by 60% with bgcolor');
+
+        expect(layoutOut.polar.radialaxis.titlefont.color).toBe('blue');
+        expect(layoutOut.polar.radialaxis.linecolor).toBe('blue');
+        expect(layoutOut.polar.radialaxis.gridcolor).toBe('rgb(153, 153, 255)', 'blend by 60% with bgcolor');
+    });
 });
 
 describe('Test relayout on polar subplots:', function() {
@@ -399,4 +415,35 @@ describe('Test relayout on polar subplots:', function() {
         .then(done);
     });
 
+    it('should clean up its framework, clip paths and info layers when getting deleted', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+
+        function _assert(exp) {
+            expect(d3.selectAll('g.polar').size()).toBe(exp.subplot, '# subplot layer');
+            expect(d3.selectAll('g.g-polartitle').size()).toBe(exp.rtitle, '# radial title');
+
+            var clipCnt = 0;
+            d3.selectAll('clipPath').each(function() {
+                if(/polar-circle$/.test(this.id)) clipCnt++;
+            });
+            expect(clipCnt).toBe(exp.clip, '# clip paths');
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert({subplot: 1, clip: 1, rtitle: 1});
+
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            _assert({subplot: 0, clip: 0, rtitle: 0});
+
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            _assert({subplot: 1, clip: 1, rtitle: 1});
+        })
+        .catch(fail)
+        .then(done);
+    });
 });

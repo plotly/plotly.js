@@ -51,8 +51,8 @@ function Polar(gd, id) {
 
     this.clipIds.circle = clipIdBase + '-circle';
     this.clipPaths.circle = fullLayout._clips.append('clipPath')
-        .attr('id', this.clipIds.circle)
-        .append('path');
+        .attr('id', this.clipIds.circle);
+    this.clipPaths.circle.append('path');
 
     this.framework = fullLayout._polarlayer.append('g')
         .attr('class', id);
@@ -242,7 +242,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     })
     .call(Color.fill, polarLayout.bgcolor);
 
-    _this.clipPaths.circle
+    _this.clipPaths.circle.select('path')
         .attr('d', pathSectorClosed(radius, sector))
         .attr('transform', strTranslate(cx - xOffset2, cy - yOffset2));
 };
@@ -304,7 +304,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         return pathSector(r, sector);
     };
 
-    var newTickLayout = radialLayout.ticks + radialLayout.showticklabels;
+    var newTickLayout = strTickLayout(radialLayout);
     if(_this.radialTickLayout !== newTickLayout) {
         layers['radial-axis'].selectAll('.xtick').remove();
         _this.radialTickLayout = newTickLayout;
@@ -505,7 +505,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             'middle';
     };
 
-    var newTickLayout = angularLayout.ticks + angularLayout.showticklabels;
+    var newTickLayout = strTickLayout(angularLayout);
     if(_this.angularTickLayout !== newTickLayout) {
         layers['angular-axis'].selectAll('.angulartick').remove();
         _this.angularTickLayout = newTickLayout;
@@ -708,7 +708,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             strTranslate(xOffset2, yOffset2) + strRotate([-dangle, cxx, cyy])
         );
 
-        _this.clipPaths.circle.attr('transform',
+        _this.clipPaths.circle.select('circle').attr('transform',
             strTranslate(cxx, cyy) + strRotate(dangle)
         );
 
@@ -985,6 +985,10 @@ function setScale(ax, axLayout, fullLayout) {
     ax._max = axLayout._max;
 
     ax.setScale();
+}
+
+function strTickLayout(axLayout) {
+    return axLayout.ticks + String(axLayout.ticklen) + String(axLayout.showticklabels);
 }
 
 // Finds the bounding box of a given circle sector,
