@@ -8,7 +8,7 @@ var Plots = require('@src/plots/plots');
 module.exports = function supplyDefaults(gd) {
     if(!gd._context) gd._context = {};
     if(!gd._context.locale) gd._context.locale = 'en';
-    if(!gd._context.dictionaries) gd._context.dictionaries = {};
+    if(!gd._context.locales) gd._context.locales = {};
 
     Plots.supplyDefaults(gd);
 };

@@ -25,6 +25,11 @@ describe('Test annotations', function() {
         function _supply(layoutIn, layoutOut) {
             layoutOut = layoutOut || {};
             layoutOut._has = Plots._hasPlotType.bind(layoutOut);
+            layoutOut._subplots = {xaxis: ['x', 'x2'], yaxis: ['y', 'y2']};
+            ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(axName) {
+                if(!layoutOut[axName]) layoutOut[axName] = {type: 'linear', range: [0, 1]};
+                Axes.setConvert(layoutOut[axName]);
+            });
 
             Annotations.supplyLayoutDefaults(layoutIn, layoutOut);
 
@@ -89,7 +94,6 @@ describe('Test annotations', function() {
             var layoutOut = {
                 xaxis: { type: 'date', range: ['2000-01-01', '2016-01-01'] }
             };
-            Axes.setConvert(layoutOut.xaxis);
 
             _supply(layoutIn, layoutOut);
 
@@ -131,10 +135,6 @@ describe('Test annotations', function() {
                 xaxis2: {type: 'log', range: [1, 2]},
                 yaxis2: {type: 'category', range: [0, 1]}
             };
-
-            ['xaxis', 'xaxis2', 'yaxis', 'yaxis2'].forEach(function(k) {
-                Axes.setConvert(layoutOut[k]);
-            });
 
             _supply(layoutIn, layoutOut);
 
@@ -721,8 +721,8 @@ describe('annotations autorange', function() {
                 text: 'LT',
                 x: -1,
                 y: 3,
-                xref: 'x5', // will be converted to 'x' and xaxis should autorange
-                yref: 'y5', // same 'y' -> yaxis
+                xref: 'xq', // will be converted to 'x' and xaxis should autorange
+                yref: 'yz', // same 'y' -> yaxis
                 ax: 50,
                 ay: 50
             }});

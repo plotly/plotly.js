@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -320,23 +320,42 @@ function getTraceType(traceType) {
  *  the dictionary mapping input strings to localized strings
  *  generally the keys should be the literal input strings, but
  *  if default translations are provided you can use any string as a key.
+ * @param {object} module.format
+ *  a `d3.locale` format specifier for this locale
+ *  any omitted keys we'll fall back on en-US
  */
 exports.registerLocale = function(_module) {
     var locale = _module.name;
     var baseLocale = locale.split('-')[0];
 
     var newDict = _module.dictionary;
+    var newFormat = _module.format;
+    var hasDict = newDict && Object.keys(newDict).length;
+    var hasFormat = newFormat && Object.keys(newFormat).length;
 
     var locales = exports.localeRegistry;
+
+    var localeObj = locales[locale];
+    if(!localeObj) locales[locale] = localeObj = {};
 
     // Should we use this dict for the base locale?
     // In case we're overwriting a previous dict for this locale, check
     // whether the base matches the full locale dict now. If we're not
     // overwriting, locales[locale] is undefined so this just checks if
     // baseLocale already had a dict or not.
-    if(baseLocale !== locale && locales[baseLocale] === locales[locale]) {
-        locales[baseLocale] = newDict;
+    // Same logic for dateFormats
+    if(baseLocale !== locale) {
+        var baseLocaleObj = locales[baseLocale];
+        if(!baseLocaleObj) locales[baseLocale] = baseLocaleObj = {};
+
+        if(hasDict && baseLocaleObj.dictionary === localeObj.dictionary) {
+            baseLocaleObj.dictionary = newDict;
+        }
+        if(hasFormat && baseLocaleObj.format === localeObj.format) {
+            baseLocaleObj.format = newFormat;
+        }
     }
 
-    locales[locale] = newDict;
+    if(hasDict) localeObj.dictionary = newDict;
+    if(hasFormat) localeObj.format = newFormat;
 };

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -156,6 +156,9 @@ proto.updateLayers = function(ternaryLayout) {
             } else if(d === 'grids') {
                 grids.forEach(function(d) {
                     layers[d] = s.append('g').classed('grid ' + d, true);
+
+                    var fictID = (d === 'bgrid') ? 'x' : 'y';
+                    layers[d].append('g').classed(fictID, true);
                 });
             }
         });
@@ -318,16 +321,19 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
 
     // TODO: shift axes to accommodate linewidth*sin(30) tick mark angle
 
-    var bTransform = 'translate(' + x0 + ',' + (y0 + h) + ')';
+    // TODO: there's probably an easier way to handle these translations/offsets now...
+    var bTransform = 'translate(' + (x0 - baxis._offset) + ',' + (y0 + h) + ')';
 
     _this.layers.baxis.attr('transform', bTransform);
     _this.layers.bgrid.attr('transform', bTransform);
 
-    var aTransform = 'translate(' + (x0 + w / 2) + ',' + y0 + ')rotate(30)';
+    var aTransform = 'translate(' + (x0 + w / 2) + ',' + y0 +
+        ')rotate(30)translate(0,-' + aaxis._offset + ')';
     _this.layers.aaxis.attr('transform', aTransform);
     _this.layers.agrid.attr('transform', aTransform);
 
-    var cTransform = 'translate(' + (x0 + w / 2) + ',' + y0 + ')rotate(-30)';
+    var cTransform = 'translate(' + (x0 + w / 2) + ',' + y0 +
+        ')rotate(-30)translate(0,-' + caxis._offset + ')';
     _this.layers.caxis.attr('transform', cTransform);
     _this.layers.cgrid.attr('transform', cTransform);
 

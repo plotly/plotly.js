@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,7 +17,7 @@ var Registry = require('../registry');
  * @param {object} gd: the graphDiv for context
  *  gd._context.locale determines the language (& optional region/country)
  *  the dictionary for each locale may either be supplied in
- *  gd._context.dictionaries or globally via Plotly.register
+ *  gd._context.locales or globally via Plotly.register
  * @param {string} s: the string to translate
  */
 module.exports = function localize(gd, s) {
@@ -35,14 +35,14 @@ module.exports = function localize(gd, s) {
      * fall back on the base.
      */
     for(var i = 0; i < 2; i++) {
-        var dicts = gd._context.dictionaries;
+        var locales = gd._context.locales;
         for(var j = 0; j < 2; j++) {
-            var dict = dicts[locale];
+            var dict = (locales[locale] || {}).dictionary;
             if(dict) {
                 var out = dict[s];
                 if(out) return out;
             }
-            dicts = Registry.localeRegistry;
+            locales = Registry.localeRegistry;
         }
 
         var baseLocale = locale.split('-')[0];

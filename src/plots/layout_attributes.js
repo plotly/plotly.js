@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -134,7 +134,7 @@ module.exports = {
         description: 'Sets the color of paper where the graph is drawn.'
     },
     plot_bgcolor: {
-        // defined here, but set in Axes.supplyLayoutDefaults
+        // defined here, but set in cartesian.supplyLayoutDefaults
         // because it needs to know if there are (2D) axes or not
         valType: 'color',
         role: 'style',
@@ -147,12 +147,12 @@ module.exports = {
     separators: {
         valType: 'string',
         role: 'style',
-        dflt: '.,',
         editType: 'plot',
         description: [
             'Sets the decimal and thousand separators.',
-            'For example, *. * puts a \'.\' before decimals and',
-            'a space between thousands.'
+            'For example, *. * puts a \'.\' before decimals and a space',
+            'between thousands. In English locales, dflt is *.,* but',
+            'other locales may alter this default.'
         ].join(' ')
     },
     hidesources: {

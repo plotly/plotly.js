@@ -17,6 +17,7 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 | `type: bug` | bug report confirmed by a plotly team member |
 | `type: regression` | bug that introduced a change in behavior from one version to the next |
 | `type: feature` | planned feature additions |
+| `type: translation` | localization-related tasks |
 | `type: performance` | performance related tasks |
 | `type: maintenance` | source code cleanup resulting in no enhancement for users |
 | `type: documentation` | API doc or attribute description improvements |

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -421,7 +421,7 @@ exports.createLineClip = function(lineContainer, clipLinesForLabels, clips, uid)
 
 exports.labelFormatter = function(contours, colorbar, fullLayout) {
     if(contours.labelformat) {
-        return d3.format(contours.labelformat);
+        return fullLayout._d3locale.numberFormat(contours.labelformat);
     }
     else {
         var formatAxis;
@@ -431,7 +431,6 @@ exports.labelFormatter = function(contours, colorbar, fullLayout) {
         else {
             formatAxis = {
                 type: 'linear',
-                _separators: '.,',
                 _id: 'ycontour',
                 nticks: (contours.end - contours.start) / contours.size,
                 showexponent: 'all',

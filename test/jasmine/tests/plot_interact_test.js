@@ -5,6 +5,7 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 
 // This suite is more of a test of the structure of interaction elements on
 // various plot types. Tests of actual mouse interactions on cartesian plots
@@ -111,12 +112,13 @@ describe('Test plot structure', function() {
                     return Plotly.relayout(gd, {xaxis: null, yaxis: null});
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(0);
-                    expect(countSubplots()).toEqual(0);
-                    expect(countClipPaths()).toEqual(0);
-                    expect(countDraggers()).toEqual(0);
-
-                    done();
-                });
+                    // we still make one empty cartesian subplot if no other subplots are described
+                    expect(countSubplots()).toEqual(1);
+                    expect(countClipPaths()).toEqual(4);
+                    expect(countDraggers()).toEqual(1);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
             it('should restore layout axes when they get deleted', function(done) {
@@ -156,9 +158,9 @@ describe('Test plot structure', function() {
                     expect(countSubplots()).toEqual(1);
                     expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
                     expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
 
@@ -273,46 +275,88 @@ describe('Test plot structure', function() {
                         .then(done);
                 });
 
+                function assertClassCount(container3, msg, classes) {
+                    Object.keys(classes).forEach(function(cls) {
+                        expect(container3.selectAll('.' + cls).size())
+                            .toBe(classes[cls], msg + ': ' + cls);
+                    });
+                }
+
                 it('should be removed of traces in sequence', function(done) {
                     expect(countSubplots()).toEqual(4);
                     assertHeatmapNodes(4);
                     assertContourNodes(2);
                     expect(countColorBars()).toEqual(1);
+                    assertClassCount(gd._fullLayout._infolayer, 'initial', {
+                        'g-gtitle': 1,
+                        'g-xtitle': 1,
+                        'g-x2title': 1,
+                        'g-ytitle': 1,
+                        'g-y2title': 1
+                    });
 
                     Plotly.deleteTraces(gd, [0]).then(function() {
-                        expect(countSubplots()).toEqual(4);
-                        expect(countClipPaths()).toEqual(12);
-                        expect(countDraggers()).toEqual(4);
-                        assertHeatmapNodes(3);
-                        assertContourNodes(2);
-                        expect(countColorBars()).toEqual(0);
-
-                        return Plotly.deleteTraces(gd, [0]);
-                    }).then(function() {
-                        expect(countSubplots()).toEqual(4);
-                        expect(countClipPaths()).toEqual(12);
-                        expect(countDraggers()).toEqual(4);
-                        assertHeatmapNodes(2);
-                        assertContourNodes(2);
-                        expect(countColorBars()).toEqual(0);
-
-                        return Plotly.deleteTraces(gd, [0]);
-                    }).then(function() {
-                        expect(countSubplots()).toEqual(4);
-                        expect(countClipPaths()).toEqual(12);
-                        expect(countDraggers()).toEqual(4);
-                        assertHeatmapNodes(1);
-                        assertContourNodes(1);
-                        expect(countColorBars()).toEqual(0);
-
-                        return Plotly.deleteTraces(gd, [0]);
-                    }).then(function() {
                         expect(countSubplots()).toEqual(3);
                         expect(countClipPaths()).toEqual(11);
                         expect(countDraggers()).toEqual(3);
+                        assertHeatmapNodes(3);
+                        assertContourNodes(2);
+                        expect(countColorBars()).toEqual(0);
+                        assertClassCount(gd._fullLayout._infolayer, '1 down', {
+                            'g-gtitle': 1,
+                            'g-xtitle': 1,
+                            'g-x2title': 1,
+                            'g-ytitle': 1,
+                            'g-y2title': 1
+                        });
+
+                        return Plotly.deleteTraces(gd, [0]);
+                    }).then(function() {
+                        expect(countSubplots()).toEqual(2);
+                        expect(countClipPaths()).toEqual(7);
+                        expect(countDraggers()).toEqual(2);
+                        assertHeatmapNodes(2);
+                        assertContourNodes(2);
+                        expect(countColorBars()).toEqual(0);
+                        assertClassCount(gd._fullLayout._infolayer, '2 down', {
+                            'g-gtitle': 1,
+                            'g-xtitle': 1,
+                            'g-x2title': 1,
+                            'g-ytitle': 0,
+                            'g-y2title': 1
+                        });
+
+                        return Plotly.deleteTraces(gd, [0]);
+                    }).then(function() {
+                        expect(countSubplots()).toEqual(1);
+                        expect(countClipPaths()).toEqual(4);
+                        expect(countDraggers()).toEqual(1);
+                        assertHeatmapNodes(1);
+                        assertContourNodes(1);
+                        expect(countColorBars()).toEqual(0);
+                        assertClassCount(gd._fullLayout._infolayer, '3 down', {
+                            'g-gtitle': 1,
+                            'g-xtitle': 0,
+                            'g-x2title': 1,
+                            'g-ytitle': 0,
+                            'g-y2title': 1
+                        });
+
+                        return Plotly.deleteTraces(gd, [0]);
+                    }).then(function() {
+                        expect(countSubplots()).toEqual(1);
+                        expect(countClipPaths()).toEqual(4);
+                        expect(countDraggers()).toEqual(1);
                         assertHeatmapNodes(0);
                         assertContourNodes(0);
                         expect(countColorBars()).toEqual(0);
+                        assertClassCount(gd._fullLayout._infolayer, 'all gone', {
+                            'g-gtitle': 1,
+                            'g-xtitle': 1,
+                            'g-x2title': 0,
+                            'g-ytitle': 1,
+                            'g-y2title': 0
+                        });
 
                         var update = {
                             xaxis: null,
@@ -323,15 +367,22 @@ describe('Test plot structure', function() {
 
                         return Plotly.relayout(gd, update);
                     }).then(function() {
-                        expect(countSubplots()).toEqual(0);
-                        expect(countClipPaths()).toEqual(0);
-                        expect(countDraggers()).toEqual(0);
+                        expect(countSubplots()).toEqual(1);
+                        expect(countClipPaths()).toEqual(4);
+                        expect(countDraggers()).toEqual(1);
                         assertHeatmapNodes(0);
                         assertContourNodes(0);
                         expect(countColorBars()).toEqual(0);
-
-                        done();
-                    });
+                        assertClassCount(gd._fullLayout._infolayer, 'cleared layout axes', {
+                            'g-gtitle': 1,
+                            'g-xtitle': 1,
+                            'g-x2title': 0,
+                            'g-ytitle': 1,
+                            'g-y2title': 0
+                        });
+                    })
+                    .catch(failTest)
+                    .then(done);
                 });
 
             });
@@ -388,10 +439,10 @@ describe('Test plot structure', function() {
 
                 Plotly.deleteTraces(gd, [0]).then(function() {
                     expect(countPieTraces()).toEqual(0);
-                    expect(countSubplots()).toEqual(0);
-
-                    done();
-                });
+                    expect(countSubplots()).toEqual(1);
+                })
+                .catch(failTest)
+                .then(done);
             });
 
             it('should be able to be restyled to a bar chart and back', function(done) {
@@ -409,9 +460,9 @@ describe('Test plot structure', function() {
                     expect(countPieTraces()).toEqual(1);
                     expect(countBarTraces()).toEqual(0);
                     expect(countSubplots()).toEqual(0);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
 
             });
         });
@@ -503,9 +554,9 @@ describe('plot svg clip paths', function() {
                 expect(cp.substring(0, 5)).toEqual('url(#');
                 expect(cp.substring(cp.length - 1)).toEqual(')');
             });
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should set clip path url to ids appended to window url', function(done) {
@@ -531,7 +582,8 @@ describe('plot svg clip paths', function() {
             });
 
             base.remove();
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

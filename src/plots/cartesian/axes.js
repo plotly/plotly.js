@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -34,9 +34,6 @@ var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 
 var axes = module.exports = {};
 
-axes.layoutAttributes = require('./layout_attributes');
-axes.supplyLayoutDefaults = require('./layout_defaults');
-
 axes.setConvert = require('./set_convert');
 var autoType = require('./axis_autotype');
 
@@ -60,10 +57,10 @@ axes.getFromTrace = axisIds.getFromTrace;
  *     Only required if it's different from `dflt`
  */
 axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption) {
-    var axLetter = attr.charAt(attr.length - 1),
-        axlist = axes.listIds(gd, axLetter),
-        refAttr = attr + 'ref',
-        attrDef = {};
+    var axLetter = attr.charAt(attr.length - 1);
+    var axlist = gd._fullLayout._subplots[axLetter + 'axis'];
+    var refAttr = attr + 'ref';
+    var attrDef = {};
 
     if(!dflt) dflt = axlist[0] || extraOption;
     if(!extraOption) extraOption = dflt;
@@ -1298,7 +1295,7 @@ function formatDate(ax, out, hover, extraPrecision) {
         else tr = {y: 'm', m: 'd', d: 'M', M: 'S', S: 4}[tr];
     }
 
-    var dateStr = Lib.formatDate(out.x, fmt, tr, ax.calendar),
+    var dateStr = Lib.formatDate(out.x, fmt, tr, ax._dateFormat, ax.calendar),
         headStr;
 
     var splitIndex = dateStr.indexOf('\n');
@@ -1536,7 +1533,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         if(ax.hoverformat) tickformat = ax.hoverformat;
     }
 
-    if(tickformat) return d3.format(tickformat)(v).replace(/-/g, MINUS_SIGN);
+    if(tickformat) return ax._numFormat(tickformat)(v).replace(/-/g, MINUS_SIGN);
 
     // 'epsilon' - rounding increment
     var e = Math.pow(10, -tickRound) / 2;
@@ -1686,95 +1683,25 @@ axes.getTickFormat = function(ax) {
     return tickstop ? tickstop.value : ax.tickformat;
 };
 
-axes.subplotMatch = /^x([0-9]*)y([0-9]*)$/;
-
-// getSubplots - extract all combinations of axes we need to make plots for
+// getSubplots - extract all subplot IDs we need
 // as an array of items like 'xy', 'x2y', 'x2y2'...
 // sorted by x (x,x2,x3...) then y
 // optionally restrict to only subplots containing axis object ax
-// looks both for combinations of x and y found in the data
-// and at axes and their anchors
 axes.getSubplots = function(gd, ax) {
-    var subplots = [];
-    var i, j, sp;
+    var subplotObj = gd._fullLayout._subplots;
+    var allSubplots = subplotObj.cartesian.concat(subplotObj.gl2d || []);
 
-    // look for subplots in the data
-    var data = gd._fullData || gd.data || [];
+    var out = ax ? axes.findSubplotsWithAxis(allSubplots, ax) : allSubplots;
 
-    for(i = 0; i < data.length; i++) {
-        var trace = data[i];
+    out.sort(function(a, b) {
+        var aParts = a.substr(1).split('y');
+        var bParts = b.substr(1).split('y');
 
-        if(trace.visible === false || trace.visible === 'legendonly' ||
-            !(Registry.traceIs(trace, 'cartesian') || Registry.traceIs(trace, 'gl2d'))
-        ) continue;
-
-        var xId = trace.xaxis || 'x',
-            yId = trace.yaxis || 'y';
-        sp = xId + yId;
-
-        if(subplots.indexOf(sp) === -1) subplots.push(sp);
-    }
-
-    // look for subplots in the axes/anchors, so that we at least draw all axes
-    var axesList = axes.list(gd, '', true);
-
-    function hasAx2(sp, ax2) {
-        return sp.indexOf(ax2._id) !== -1;
-    }
-
-    for(i = 0; i < axesList.length; i++) {
-        var ax2 = axesList[i],
-            ax2Letter = ax2._id.charAt(0),
-            ax3Id = (ax2.anchor === 'free') ?
-                ((ax2Letter === 'x') ? 'y' : 'x') :
-                ax2.anchor,
-            ax3 = axes.getFromId(gd, ax3Id);
-
-        // look if ax2 is already represented in the data
-        var foundAx2 = false;
-        for(j = 0; j < subplots.length; j++) {
-            if(hasAx2(subplots[j], ax2)) {
-                foundAx2 = true;
-                break;
-            }
-        }
-
-        // ignore free axes that already represented in the data
-        if(ax2.anchor === 'free' && foundAx2) continue;
-
-        // ignore anchor-less axes
-        if(!ax3) continue;
-
-        sp = (ax2Letter === 'x') ?
-            ax2._id + ax3._id :
-            ax3._id + ax2._id;
-
-        if(subplots.indexOf(sp) === -1) subplots.push(sp);
-    }
-
-    // filter invalid subplots
-    var spMatch = axes.subplotMatch,
-        allSubplots = [];
-
-    for(i = 0; i < subplots.length; i++) {
-        sp = subplots[i];
-        if(spMatch.test(sp)) allSubplots.push(sp);
-    }
-
-    // sort the subplot ids
-    allSubplots.sort(function(a, b) {
-        var aMatch = a.match(spMatch),
-            bMatch = b.match(spMatch);
-
-        if(aMatch[1] === bMatch[1]) {
-            return +(aMatch[2] || 1) - (bMatch[2] || 1);
-        }
-
-        return +(aMatch[1]||0) - (bMatch[1]||0);
+        if(aParts[0] === bParts[0]) return +aParts[1] - +bParts[1];
+        return +aParts[0] - +bParts[0];
     });
 
-    if(ax) return axes.findSubplotsWithAxis(allSubplots, ax);
-    return allSubplots;
+    return out;
 };
 
 // find all subplots with axis 'ax'
@@ -1932,7 +1859,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     if(axLetter === 'x') {
         sides = ['bottom', 'top'];
         transfn = ax._transfn || function(d) {
-            return 'translate(' + ax.l2p(d.x) + ',0)';
+            return 'translate(' + (ax._offset + ax.l2p(d.x)) + ',0)';
         };
         tickpathfn = function(shift, len) {
             if(ax._counterangle) {
@@ -1945,7 +1872,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     else if(axLetter === 'y') {
         sides = ['left', 'right'];
         transfn = ax._transfn || function(d) {
-            return 'translate(0,' + ax.l2p(d.x) + ')';
+            return 'translate(0,' + (ax._offset + ax.l2p(d.x)) + ')';
         };
         tickpathfn = function(shift, len) {
             if(ax._counterangle) {
@@ -2387,13 +2314,15 @@ axes.doTicks = function(gd, axid, skipTitle) {
     }
 
     function drawGrid(plotinfo, counteraxis, subplot) {
-        var gridcontainer = plotinfo.gridlayer,
-            zlcontainer = plotinfo.zerolinelayer,
-            gridvals = plotinfo['hidegrid' + axLetter] ? [] : valsClipped,
-            gridpath = ax._gridpath ||
-                'M0,0' + ((axLetter === 'x') ? 'v' : 'h') + counteraxis._length,
-            grid = gridcontainer.selectAll('path.' + gcls)
-                .data((ax.showgrid === false) ? [] : gridvals, datafn);
+        var gridcontainer = plotinfo.gridlayer.selectAll('.' + axid);
+        var zlcontainer = plotinfo.zerolinelayer;
+        var gridvals = plotinfo['hidegrid' + axLetter] ? [] : valsClipped;
+        var gridpath = ax._gridpath || ((axLetter === 'x' ?
+                ('M0,' + counteraxis._offset + 'v') :
+                ('M' + counteraxis._offset + ',0h')
+            ) + counteraxis._length);
+        var grid = gridcontainer.selectAll('path.' + gcls)
+            .data((ax.showgrid === false) ? [] : gridvals, datafn);
         grid.enter().append('path').classed(gcls, 1)
             .classed('crisp', 1)
             .attr('d', gridpath)
@@ -2423,10 +2352,18 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 (ax.type === 'linear' || ax.type === '-') && gridvals.length &&
                 (hasBarsOrFill || clipEnds({x: 0}) || !ax.showline);
             var zl = zlcontainer.selectAll('path.' + zcls)
-                .data(showZl ? [{x: 0}] : []);
+                .data(showZl ? [{x: 0, id: axid}] : []);
             zl.enter().append('path').classed(zcls, 1).classed('zl', 1)
                 .classed('crisp', 1)
-                .attr('d', gridpath);
+                .attr('d', gridpath)
+                .each(function() {
+                    // use the fact that only one element can enter to trigger a sort.
+                    // If several zerolines enter at the same time we will sort once per,
+                    // but generally this should be a minimal overhead.
+                    zlcontainer.selectAll('path').sort(function(da, db) {
+                        return axisIds.idSort(da.id, db.id);
+                    });
+                });
             zl.attr('transform', transfn)
                 .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
                 .style('stroke-width', zeroLineWidth + 'px');
@@ -2445,54 +2382,59 @@ axes.doTicks = function(gd, axid, skipTitle) {
         }
         return drawLabels(ax._axislayer, ax._pos);
     }
-    else {
+    else if(fullLayout._has('cartesian')) {
         subplots = axes.getSubplots(gd, ax);
-        var alldone = subplots.map(function(subplot) {
+
+        // keep track of which subplots (by main conteraxis) we've already
+        // drawn grids for, so we don't overdraw overlaying subplots
+        var finishedGrids = {};
+
+        subplots.map(function(subplot) {
+            var plotinfo = fullLayout._plots[subplot];
+            var counterAxis = plotinfo[counterLetter + 'axis'];
+
+            var mainCounterID = counterAxis._mainAxis._id;
+            if(finishedGrids[mainCounterID]) return;
+            finishedGrids[mainCounterID] = 1;
+
+            drawGrid(plotinfo, counterAxis, subplot);
+        });
+
+        var mainSubplot = ax._mainSubplot;
+        var mainPlotinfo = fullLayout._plots[mainSubplot];
+        var tickSubplots = [];
+
+        if(ax.ticks) {
+            var mainSign = ticksign[2];
+            var tickpath = tickpathfn(ax._mainLinePosition + pad * mainSign, mainSign * ax.ticklen);
+            if(ax._anchorAxis && ax.mirror && ax.mirror !== true) {
+                tickpath += tickpathfn(ax._mainMirrorPosition - pad * mainSign, -mainSign * ax.ticklen);
+            }
+            drawTicks(mainPlotinfo[axLetter + 'axislayer'], tickpath);
+
+            tickSubplots = Object.keys(ax._linepositions);
+        }
+
+        tickSubplots.map(function(subplot) {
             var plotinfo = fullLayout._plots[subplot];
 
-            if(!fullLayout._has('cartesian')) return;
+            var container = plotinfo[axLetter + 'axislayer'];
 
-            var container = plotinfo[axLetter + 'axislayer'],
+            // [bottom or left, top or right]
+            // free and main are handled above
+            var linepositions = ax._linepositions[subplot] || [];
 
-                // [bottom or left, top or right, free, main]
-                linepositions = ax._linepositions[subplot] || [],
-                counteraxis = plotinfo[counterLetter + 'axis'],
-                mainSubplot = counteraxis._id === ax.anchor,
-                ticksides = [false, false, false],
-                tickpath = '';
-
-            // ticks
-            if(ax.mirror === 'allticks') ticksides = [true, true, false];
-            else if(mainSubplot) {
-                if(ax.mirror === 'ticks') ticksides = [true, true, false];
-                else ticksides[sides.indexOf(axside)] = true;
-            }
-            if(ax.mirrors) {
-                for(i = 0; i < 2; i++) {
-                    var thisMirror = ax.mirrors[counteraxis._id + sides[i]];
-                    if(thisMirror === 'ticks' || thisMirror === 'labels') {
-                        ticksides[i] = true;
-                    }
-                }
+            function tickPathSide(sidei) {
+                var tsign = ticksign[sidei];
+                return tickpathfn(linepositions[sidei] + pad * tsign, tsign * ax.ticklen);
             }
 
-            // free axis ticks
-            if(linepositions[2] !== undefined) ticksides[2] = true;
+            drawTicks(container, tickPathSide(0) + tickPathSide(1));
+        });
 
-            ticksides.forEach(function(showside, sidei) {
-                var pos = linepositions[sidei],
-                    tsign = ticksign[sidei];
-                if(showside && isNumeric(pos)) {
-                    tickpath += tickpathfn(pos + pad * tsign, tsign * ax.ticklen);
-                }
-            });
+        var mainContainer = mainPlotinfo[axLetter + 'axislayer'];
 
-            drawTicks(container, tickpath);
-            drawGrid(plotinfo, counteraxis, subplot);
-            return drawLabels(container, linepositions[3]);
-        }).filter(function(onedone) { return onedone && onedone.then; });
-
-        return alldone.length ? Promise.all(alldone) : 0;
+        return drawLabels(mainContainer, ax._mainLinePosition);
     }
 };
 

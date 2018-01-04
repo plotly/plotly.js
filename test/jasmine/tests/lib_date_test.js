@@ -7,6 +7,8 @@ var calComponent = require('@src/components/calendars');
 // use only the parts of world-calendars that we've imported for our tests
 var calendars = require('@src/components/calendars/calendars');
 
+var utcFormat = require('d3').time.format.utc;
+
 describe('dates', function() {
     'use strict';
 
@@ -308,7 +310,7 @@ describe('dates', function() {
                 expect(Lib.dateTime2ms(canonicalTick[calendar], calendar)).toBeDefined(calendar);
                 var sunday = Lib.dateTime2ms(canonicalSunday[calendar], calendar);
                 // convert back implicitly with gregorian calendar
-                expect(Lib.formatDate(sunday, '%A')).toBe('Sunday', calendar);
+                expect(Lib.formatDate(sunday, '%A', null, utcFormat)).toBe('Sunday', calendar);
 
                 expect(Lib.dateTime2ms(dfltRange[calendar][0], calendar)).toBeDefined(calendar);
                 expect(Lib.dateTime2ms(dfltRange[calendar][1], calendar)).toBeDefined(calendar);
@@ -480,7 +482,7 @@ describe('dates', function() {
     describe('formatDate', function() {
         function assertFormatRounds(ms, calendar, results) {
             ['y', 'm', 'd', 'M', 'S', 1, 2, 3, 4].forEach(function(tr, i) {
-                expect(Lib.formatDate(ms, '', tr, calendar))
+                expect(Lib.formatDate(ms, '', tr, utcFormat, calendar))
                     .toBe(results[i], calendar);
             });
         }
@@ -551,11 +553,11 @@ describe('dates', function() {
                     expectedCoptic = v[2];
 
                 // tickround is irrelevant here...
-                expect(Lib.formatDate(ms, fmt, 'y'))
+                expect(Lib.formatDate(ms, fmt, 'y', utcFormat))
                     .toBe(expectedGregorian, fmt);
-                expect(Lib.formatDate(ms, fmt, 4, 'gregorian'))
+                expect(Lib.formatDate(ms, fmt, 4, utcFormat, 'gregorian'))
                     .toBe(expectedGregorian, fmt);
-                expect(Lib.formatDate(ms, fmt, 'y', 'coptic'))
+                expect(Lib.formatDate(ms, fmt, 'y', utcFormat, 'coptic'))
                     .toBe(expectedCoptic, fmt);
             });
         });
@@ -588,25 +590,25 @@ describe('dates', function() {
             ]);
 
             // and using the custom format machinery
-            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f'))
+            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f', null, utcFormat))
                 .toBe('1969-12-31 23:59:59.9999');
-            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f', null, 'coptic'))
+            expect(Lib.formatDate(-0.1, '%Y-%m-%d %H:%M:%S.%f', null, utcFormat, 'coptic'))
                 .toBe('1686-04-22 23:59:59.9999');
 
         });
 
         it('should remove extra fractional second zeros', function() {
-            expect(Lib.formatDate(0.1, '', 4)).toBe('00:00:00.0001\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 3)).toBe('00:00:00\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 0)).toBe('00:00:00\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 'S')).toBe('00:00:00\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 3, 'coptic'))
+            expect(Lib.formatDate(0.1, '', 4, utcFormat)).toBe('00:00:00.0001\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 3, utcFormat)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 0, utcFormat)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 'S', utcFormat)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 3, utcFormat, 'coptic'))
                 .toBe('00:00:00\nKoi 23, 1686');
 
             // because the decimal point is explicitly part of the format
             // string here, we can't remove it OR the very first zero after it.
-            expect(Lib.formatDate(0.1, '%S.%f')).toBe('00.0001');
-            expect(Lib.formatDate(0.1, '%S.%3f')).toBe('00.0');
+            expect(Lib.formatDate(0.1, '%S.%f', null, utcFormat)).toBe('00.0001');
+            expect(Lib.formatDate(0.1, '%S.%3f', null, utcFormat)).toBe('00.0');
         });
 
     });

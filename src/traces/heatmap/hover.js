@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -29,7 +29,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         zmask = cd0.zmask,
         range = [trace.zmin, trace.zmax],
         zhoverformat = trace.zhoverformat,
-        _separators = trace._separators,
         x2 = x,
         y2 = y,
         xl,
@@ -109,7 +108,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         type: 'linear',
         range: range,
         hoverformat: zhoverformat,
-        _separators: _separators
+        _separators: xa._separators,
+        _numFormat: xa._numFormat
     };
     var zLabelObj = Axes.tickText(dummyAx, zVal, 'hover');
     zLabel = zLabelObj.text;

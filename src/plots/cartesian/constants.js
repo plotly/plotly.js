@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -28,6 +28,9 @@ module.exports = {
     // id2name, name2id, and cleanId accept "x1" etc
     AX_ID_PATTERN: /^[xyz][0-9]*$/,
     AX_NAME_PATTERN: /^[xyz]axis[0-9]*$/,
+
+    // and for 2D subplots
+    SUBPLOT_PATTERN: /^x([0-9]*)y([0-9]*)$/,
 
     // pixels to move mouse before you stop clamping to starting point
     MINDRAG: 8,

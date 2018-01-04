@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -63,6 +63,12 @@ exports.register([
     require('./components/sliders'),
     require('./components/rangeslider'),
     require('./components/rangeselector')
+]);
+
+// locales en and en-US are required for default behavior
+exports.register([
+    require('./locale-en'),
+    require('./locale-en-us')
 ]);
 
 // plot icons

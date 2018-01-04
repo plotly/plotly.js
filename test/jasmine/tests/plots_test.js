@@ -7,6 +7,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var failTest = require('../assets/fail_test');
 
 describe('Test Plots', function() {
     'use strict';
@@ -160,11 +161,13 @@ describe('Test Plots', function() {
             layoutOut,
             expected;
 
+        var formatObj = require('@src/locale-en').format;
+
         function supplyLayoutDefaults(layoutIn, layoutOut) {
             layoutOut._dfltTitle = {
                 plot: 'ppplot'
             };
-            return Plots.supplyLayoutGlobalDefaults(layoutIn, layoutOut);
+            return Plots.supplyLayoutGlobalDefaults(layoutIn, layoutOut, formatObj);
         }
 
         beforeEach(function() {
@@ -221,7 +224,7 @@ describe('Test Plots', function() {
 
     describe('Plots.supplyTraceDefaults', function() {
         var supplyTraceDefaults = Plots.supplyTraceDefaults,
-            layout = {};
+            layout = {_subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}};
 
         var traceIn, traceOut;
 
@@ -266,93 +269,6 @@ describe('Test Plots', function() {
         });
     });
 
-    describe('Plots.getSubplotIds', function() {
-        var getSubplotIds = Plots.getSubplotIds;
-
-        it('returns scene ids in order', function() {
-            var layout = {
-                scene2: {},
-                scene: {},
-                scene3: {}
-            };
-
-            expect(getSubplotIds(layout, 'gl3d'))
-                .toEqual(['scene', 'scene2', 'scene3']);
-
-            expect(getSubplotIds(layout, 'cartesian'))
-                .toEqual([]);
-            expect(getSubplotIds(layout, 'geo'))
-                .toEqual([]);
-            expect(getSubplotIds(layout, 'no-valid-subplot-type'))
-                .toEqual([]);
-        });
-
-        it('returns geo ids in order', function() {
-            var layout = {
-                geo2: {},
-                geo: {},
-                geo3: {}
-            };
-
-            expect(getSubplotIds(layout, 'geo'))
-                .toEqual(['geo', 'geo2', 'geo3']);
-
-            expect(getSubplotIds(layout, 'cartesian'))
-                .toEqual([]);
-            expect(getSubplotIds(layout, 'gl3d'))
-                .toEqual([]);
-            expect(getSubplotIds(layout, 'no-valid-subplot-type'))
-                .toEqual([]);
-        });
-
-        it('returns cartesian ids', function() {
-            var layout = {
-                _has: Plots._hasPlotType,
-                _plots: { xy: {}, x2y2: {} }
-            };
-
-            expect(getSubplotIds(layout, 'cartesian'))
-                .toEqual([]);
-
-            layout._basePlotModules = [{ name: 'cartesian' }];
-            expect(getSubplotIds(layout, 'cartesian'))
-                .toEqual(['xy', 'x2y2']);
-            expect(getSubplotIds(layout, 'gl2d'))
-                .toEqual([]);
-
-            layout._basePlotModules = [{ name: 'gl2d' }];
-            expect(getSubplotIds(layout, 'gl2d'))
-                .toEqual(['xy', 'x2y2']);
-            expect(getSubplotIds(layout, 'cartesian'))
-                .toEqual([]);
-
-        });
-    });
-
-    describe('Plots.findSubplotIds', function() {
-        var findSubplotIds = Plots.findSubplotIds;
-        var ids;
-
-        it('should return subplots ids found in the data', function() {
-            var data = [{
-                type: 'scatter3d',
-                scene: 'scene'
-            }, {
-                type: 'surface',
-                scene: 'scene2'
-            }, {
-                type: 'choropleth',
-                geo: 'geo'
-            }];
-
-            ids = findSubplotIds(data, 'geo');
-            expect(ids).toEqual(['geo']);
-
-            ids = findSubplotIds(data, 'gl3d');
-            expect(ids).toEqual(['scene', 'scene2']);
-        });
-    });
-
     describe('Plots.resize', function() {
         var gd;
 
@@ -369,7 +285,7 @@ describe('Test Plots', function() {
                 .then(done);
         });
 
-        afterEach(destroyGraphDiv);
+        afterAll(destroyGraphDiv);
 
         it('should resize the plot clip', function() {
             var uid = gd._fullLayout._uid;
@@ -385,6 +301,7 @@ describe('Test Plots', function() {
 
         it('should resize the main svgs', function() {
             var mainSvgs = document.getElementsByClassName('main-svg');
+            expect(mainSvgs.length).toBe(2);
 
             for(var i = 0; i < mainSvgs.length; i++) {
                 var svg = mainSvgs[i],
@@ -397,6 +314,9 @@ describe('Test Plots', function() {
         });
 
         it('should update the axis scales', function() {
+            var mainSvgs = document.getElementsByClassName('main-svg');
+            expect(mainSvgs.length).toBe(2);
+
             var fullLayout = gd._fullLayout,
                 plotinfo = fullLayout._plots.xy;
 
@@ -405,6 +325,18 @@ describe('Test Plots', function() {
 
             expect(plotinfo.xaxis._length).toEqual(240);
             expect(plotinfo.yaxis._length).toEqual(220);
+        });
+
+        it('should allow resizing by plot ID', function(done) {
+            var mainSvgs = document.getElementsByClassName('main-svg');
+            expect(mainSvgs.length).toBe(2);
+
+            expect(typeof gd.id).toBe('string');
+            expect(gd.id).toBeTruthy();
+
+            Plotly.Plots.resize(gd.id)
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -577,7 +509,9 @@ describe('Test Plots', function() {
         });
     });
 
-    describe('Plots.getSubplotCalcData', function() {
+    describe('getSubplotCalcData', function() {
+        var getSubplotCalcData = require('@src/plots/get_data').getSubplotCalcData;
+
         var trace0 = { geo: 'geo2' };
         var trace1 = { subplot: 'ternary10' };
         var trace2 = { subplot: 'ternary10' };
@@ -589,22 +523,22 @@ describe('Test Plots', function() {
         ];
 
         it('should extract calcdata traces associated with subplot (1)', function() {
-            var out = Plots.getSubplotCalcData(cd, 'geo', 'geo2');
+            var out = getSubplotCalcData(cd, 'geo', 'geo2');
             expect(out).toEqual([[{ trace: trace0 }]]);
         });
 
         it('should extract calcdata traces associated with subplot (2)', function() {
-            var out = Plots.getSubplotCalcData(cd, 'ternary', 'ternary10');
+            var out = getSubplotCalcData(cd, 'ternary', 'ternary10');
             expect(out).toEqual([[{ trace: trace1 }], [{ trace: trace2 }]]);
         });
 
         it('should return [] when no calcdata traces where found', function() {
-            var out = Plots.getSubplotCalcData(cd, 'geo', 'geo');
+            var out = getSubplotCalcData(cd, 'geo', 'geo');
             expect(out).toEqual([]);
         });
 
         it('should return [] when subplot type is invalid', function() {
-            var out = Plots.getSubplotCalcData(cd, 'non-sense', 'geo2');
+            var out = getSubplotCalcData(cd, 'non-sense', 'geo2');
             expect(out).toEqual([]);
         });
     });
@@ -781,6 +715,136 @@ describe('Test Plots', function() {
                 // N.B. Drawing.pointStyle would be called 9 times w/o
                 // some special Plots.style logic.
                 expect(Drawing.pointStyle).toHaveBeenCalledTimes(3);
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
+
+    describe('subplot cleaning logic', function() {
+        var gd;
+
+        beforeEach(function() { gd = createGraphDiv(); });
+
+        afterEach(destroyGraphDiv);
+
+        function assertCartesian(subplotsSVG, subplotsGL2D, msg) {
+            var subplotsAll = subplotsSVG.concat(subplotsGL2D);
+            var subplots3 = d3.select(gd).selectAll('.cartesianlayer .subplot');
+            expect(subplots3.size()).toBe(subplotsAll.length, msg);
+
+            subplotsAll.forEach(function(subplot) {
+                expect(d3.select(gd).selectAll('.cartesianlayer .subplot.' + subplot).size())
+                    .toBe(1, msg + ' - ' + subplot);
+            });
+
+            subplotsSVG.forEach(function(subplot) {
+                expect((gd._fullLayout._plots[subplot] || {})._scene2d)
+                    .toBeUndefined(msg + ' - cartesian ' + subplot);
+            });
+
+            subplotsGL2D.forEach(function(subplot) {
+                expect((gd._fullLayout._plots[subplot] || {})._scene2d)
+                    .toBeDefined(msg + ' - gl2d ' + subplot);
+            });
+        }
+
+        var subplotSelectors = {
+            gl3d: '.gl-container>div[id^="scene"]',
+            geo: '.geolayer>g',
+            mapbox: '.mapboxgl-map',
+            parcoords: '.parcoords-line-layers',
+            pie: '.pielayer .trace',
+            sankey: '.sankey',
+            ternary: '.ternarylayer>g'
+        };
+
+        function assertSubplot(type, n, msg) {
+            expect(d3.select(gd).selectAll(subplotSelectors[type]).size())
+                .toBe(n, msg + ' - ' + type);
+        }
+
+        // opts.cartesian and opts.gl2d should be arrays of subplot ids ('xy', 'x2y2' etc)
+        // others should be counts: gl3d, geo, mapbox, parcoords, pie, ternary
+        // if omitted, that subplot type is assumed to not exist
+        function assertSubplots(opts, msg) {
+            msg = msg || '';
+            assertCartesian(opts.cartesian || [], opts.gl2d || [], msg);
+            Object.keys(subplotSelectors).forEach(function(type) {
+                assertSubplot(type, opts[type] || 0, msg);
+            });
+        }
+
+        var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
+
+        it('makes at least a blank cartesian subplot', function(done) {
+            Plotly.newPlot(gd, [], {})
+            .then(function() {
+                assertSubplots({cartesian: ['xy']}, 'totally blank');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('uses the first x & y axes it finds in making a blank cartesian subplot', function(done) {
+            Plotly.newPlot(gd, [], {xaxis3: {}, yaxis4: {}})
+            .then(function() {
+                assertSubplots({cartesian: ['x3y4']}, 'blank with axis objects');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('shows expected cartesian subplots from visible traces and components', function(done) {
+            Plotly.newPlot(gd, [
+                {y: [1, 2]}
+            ], {
+                // strange case: x2 is anchored to y2, so we show y2
+                // even though no trace or component references it, only x2
+                annotations: [{xref: 'x2', yref: 'paper'}],
+                xaxis2: {anchor: 'y2'},
+                images: [{xref: 'x3', yref: 'y3', source: jsLogo}],
+                shapes: [{xref: 'x5', yref: 'y5'}]
+            })
+            .then(function() {
+                assertSubplots({cartesian: ['xy', 'x2y2', 'x3y3', 'x5y5']}, 'visible components');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('shows expected cartesian subplots from invisible traces and components', function(done) {
+            Plotly.newPlot(gd, [
+                {y: [1, 2], visible: false}
+            ], {
+                // strange case: x2 is anchored to y2, so we show y2
+                // even though no trace or component references it, only x2
+                annotations: [{xref: 'x2', yref: 'paper', visible: false}],
+                xaxis2: {anchor: 'y2'},
+                images: [{xref: 'x3', yref: 'y3', source: jsLogo, visible: false}],
+                shapes: [{xref: 'x5', yref: 'y5', visible: false}]
+            })
+            .then(function() {
+                assertSubplots({cartesian: ['xy', 'x2y2', 'x3y3', 'x5y5']}, 'invisible components');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('ignores unused axis and subplot objects', function(done) {
+            Plotly.plot('graph', [{
+                type: 'pie',
+                values: [1]
+            }], {
+                xaxis: {},
+                yaxis: {},
+                scene: {},
+                geo: {},
+                ternary: {},
+                mapbox: {}
+            })
+            .then(function() {
+                assertSubplots({pie: 1}, 'just pie');
             })
             .catch(fail)
             .then(done);

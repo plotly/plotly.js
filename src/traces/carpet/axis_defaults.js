@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -178,8 +178,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
             delete containerOut.minorgridcolor;
         }
     }
-
-    containerOut._separators = options.fullLayout.separators;
 
     // fill in categories
     containerOut._initialCategories = axType === 'category' ?

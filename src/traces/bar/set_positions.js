@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -227,6 +227,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
+        t.bardelta = minDiff;
     }
 
     // stack bars that only differ by rounding
@@ -277,6 +278,7 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
+        t.bardelta = minDiff;
     }
 
     // stack bars that only differ by rounding

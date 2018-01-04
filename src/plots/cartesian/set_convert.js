@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -449,9 +449,19 @@ module.exports = function setConvert(ax, fullLayout) {
     ax._min = [];
     ax._max = [];
 
-    // copy ref to fullLayout.separators so that
+    // Propagate localization into the axis so that
     // methods in Axes can use it w/o having to pass fullLayout
+    // Default (non-d3) number formatting uses separators directly
+    // dates and d3-formatted numbers use the d3 locale
+    // Fall back on default format for dummy axes that don't care about formatting
+    var locale = fullLayout._d3locale;
+    if(ax.type === 'date') {
+        ax._dateFormat = locale ? locale.timeFormat.utc : d3.time.format.utc;
+    }
+    // occasionally we need _numFormat to pass through
+    // even though it won't be needed by this axis
     ax._separators = fullLayout.separators;
+    ax._numFormat = locale ? locale.numberFormat : d3.format;
 
     // and for bar charts and box plots: reset forced minimum tick spacing
     delete ax._minDtick;

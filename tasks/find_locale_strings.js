@@ -13,6 +13,8 @@ var EXIT_CODE = 0;
 
 var localizeRE = /(^|[\.])(_|localize)$/;
 
+var noOutput = process.argv.indexOf('--no-output') !== -1;
+
 // main
 findLocaleStrings();
 
@@ -70,11 +72,16 @@ function findLocaleStrings() {
         }
 
         if(!EXIT_CODE) {
-            var strings = Object.keys(dict).sort().map(function(k) {
-                return k + spaces(maxLen - k.length) + '  // ' + dict[k];
-            }).join('\n');
-            common.writeFile(constants.pathToTranslationKeys, strings);
-            console.log('ok find_locale_strings');
+            if(noOutput) {
+                console.log('ok find_locale_strings - no output requested.');
+            }
+            else {
+                var strings = Object.keys(dict).sort().map(function(k) {
+                    return k + spaces(maxLen - k.length) + '  // ' + dict[k];
+                }).join('\n');
+                common.writeFile(constants.pathToTranslationKeys, strings);
+                console.log('ok find_locale_strings - wrote new key file.');
+            }
         }
     });
 }

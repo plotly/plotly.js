@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,6 @@
 'use strict';
 
 var Lib = require('../lib');
-var Plots = require('./plots');
 
 
 /**
@@ -41,13 +40,13 @@ var Plots = require('./plots');
  * }
  */
 module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, opts) {
-    var subplotType = opts.type,
-        subplotAttributes = opts.attributes,
-        handleDefaults = opts.handleDefaults,
-        partition = opts.partition || 'x';
+    var subplotType = opts.type;
+    var subplotAttributes = opts.attributes;
+    var handleDefaults = opts.handleDefaults;
+    var partition = opts.partition || 'x';
 
-    var ids = Plots.findSubplotIds(fullData, subplotType),
-        idsLength = ids.length;
+    var ids = layoutOut._subplots[subplotType];
+    var idsLength = ids.length;
 
     var subplotLayoutIn, subplotLayoutOut;
 

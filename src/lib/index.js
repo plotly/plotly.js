@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -863,4 +863,30 @@ lib.templateString = function(string, obj) {
         getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
         return getterCache[key]() || '';
     });
+};
+
+/*
+ * alphanumeric string sort, tailored for subplot IDs like scene2, scene10, x10y13 etc
+ */
+var char0 = 48;
+var char9 = 57;
+lib.subplotSort = function(a, b) {
+    var l = Math.min(a.length, b.length) + 1;
+    var numA = 0;
+    var numB = 0;
+    for(var i = 0; i < l; i++) {
+        var charA = a.charCodeAt(i) || 0;
+        var charB = b.charCodeAt(i) || 0;
+        var isNumA = charA >= char0 && charA <= char9;
+        var isNumB = charB >= char0 && charB <= char9;
+
+        if(isNumA) numA = 10 * numA + charA - char0;
+        if(isNumB) numB = 10 * numB + charB - char0;
+
+        if(!isNumA || !isNumB) {
+            if(numA !== numB) return numA - numB;
+            if(charA !== charB) return charA - charB;
+        }
+    }
+    return numB - numA;
 };
