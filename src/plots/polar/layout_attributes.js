@@ -68,9 +68,21 @@ var radialAxisAttrs = {
     // -> mpl allow radial ranges to start off 0
     // -> same for matlab: https://www.mathworks.com/help/matlab/ref/rlim.html
     autorange: axesAttrs.autorange,
-    // might make 'nonnegative' the default,
-    // or add a special polar algo.
-    rangemode: axesAttrs.rangemode,
+    rangemode: {
+        valType: 'enumerated',
+        values: ['tozero', 'nonnegative', 'normal'],
+        dflt: 'tozero',
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'If *tozero*`, the range extends to 0,',
+            'regardless of the input data',
+            'If *nonnegative*, the range is non-negative,',
+            'regardless of the input data.',
+            'If *normal*, the range is computed in relation to the extrema',
+            'of the input data (same behavior as for cartesian axes).'
+        ].join(' ')
+    },
     range: axesAttrs.range,
 
     categoryorder: axesAttrs.categoryorder,

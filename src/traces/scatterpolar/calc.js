@@ -48,7 +48,7 @@ module.exports = function calc(gd, trace) {
     }
 
     var ppad = calcMarkerSize(trace, len);
-    Axes.expand(radialAxis, rArray, {tozero: true, ppad: ppad});
+    Axes.expand(radialAxis, rArray, {ppad: ppad});
 
     if(angularAxis.type !== 'linear') {
         angularAxis.autorange = true;

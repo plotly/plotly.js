@@ -791,6 +791,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     var radialLayout = polarLayout.radialaxis;
     var angle0 = deg2rad(radialLayout.position);
     var range0 = radialAxis.range.slice();
+    var drange = range0[1] - range0[0];
 
     if(!radialLayout.visible) return;
 
@@ -825,9 +826,9 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     }
 
     function doneFn() {
-        if(angle1) {
+        if(angle1 !== null) {
             Plotly.relayout(gd, _this.id + '.radialaxis.position', angle1);
-        } else if(rng1) {
+        } else if(rng1 !== null) {
             Plotly.relayout(gd, _this.id + '.radialaxis.range[1]', rng1);
         }
     }
@@ -843,15 +844,20 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         var transform = strTranslate(cx, cy) + strRotate(-angle1);
         layers['radial-axis'].attr('transform', transform);
         layers['radial-line'].select('line').attr('transform', transform);
+
+        var fullLayoutNow = _this.gd._fullLayout;
+        var polarLayoutNow = fullLayoutNow[_this.id];
+        _this.updateRadialAxisTitle(fullLayoutNow, polarLayoutNow, angle1);
     }
 
     function rerangeMove(dx, dy) {
         // project (dx, dy) unto unit radial axis vector
         var dr = Lib.dot([dx, -dy], [Math.cos(angle0), Math.sin(angle0)]);
-        rng1 = range0[1] * (1 - dr / radius);
-        radialAxis.range[1] = rng1;
+        var rprime = range0[1] - drange * dr / radius * 0.75;
 
-        // TODO should we restrict updates to same sign as range0 ???
+        // make sure new range[1] does not change the range[0] -> range[1] sign
+        if((drange > 0) !== (rprime > range0[0])) return;
+        rng1 = radialAxis.range[1] = rprime;
 
         Axes.doTicks(gd, _this.radialAxis, true);
         layers['radial-grid']
@@ -911,11 +917,19 @@ proto.isPtWithinSector = function(d) {
     var deg = wrap360(rad2deg(d.rad));
     var nextTurnDeg = deg + 360;
 
+    var r0, r1;
+    if(radialRange[1] >= radialRange[0]) {
+        r0 = radialRange[0];
+        r1 = radialRange[1];
+    } else {
+        r0 = radialRange[1];
+        r1 = radialRange[0];
+    }
+
     // TODO add calendar support
 
     return (
-        r >= radialRange[0] &&
-        r <= radialRange[1] &&
+        (r >= r0 && r <= r1) &&
         (isFullCircle(sector) ||
             (deg >= s0 && deg <= s1) ||
             (nextTurnDeg >= s0 && nextTurnDeg <= s1)

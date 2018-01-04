@@ -83,14 +83,19 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         // as both radial and angular axes don't have a set domain.
         // Furthermore, angular axes don't have a set range.
         //
-        // Mocked domains and ranges are set by the polar subplot instances.
-        // By setting, _m to 1 here, we make Axes.expand think that range[1] > range[0].
+        // Mocked domains and ranges are set by the polar subplot instances,
+        // but Axes.expand uses the sign of _m to determine which padding value
+        // to use.
+        //
+        // By setting, _m to 1 here, we make Axes.expand think that range[1] > range[0],
+        // and vice-versa for `autorange: 'reversed'` below.
         axOut._m = 1;
 
         switch(axName) {
             case 'radialaxis':
                 var autoRange = coerceAxis('autorange', !axOut.isValidRange(axIn.range));
                 if(autoRange) coerceAxis('rangemode');
+                if(autoRange === 'reversed') axOut._m = -1;
 
                 coerceAxis('range');
                 axOut.cleanRange('range', {dfltRange: [0, 1]});
