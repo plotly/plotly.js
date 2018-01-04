@@ -21,11 +21,13 @@ var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
 var dragBox = require('../cartesian/dragbox');
 var Fx = require('../../components/fx');
+var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select');
 var setCursor = require('../../lib/setcursor');
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 
+var _ = Lib._;
 var deg2rad = Lib.deg2rad;
 var rad2deg = Lib.rad2deg;
 var wrap360 = Lib.wrap360;
@@ -203,6 +205,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var cy = _this.cy = yOffset2 + radius * sectorBBox[3];
 
     _this.updateRadialAxis(fullLayout, polarLayout);
+    _this.updateRadialAxisTitle(fullLayout, polarLayout);
     _this.updateAngularAxis(fullLayout, polarLayout);
 
     var radialRange = _this.radialAxis.range;
@@ -329,6 +332,42 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     })
     .attr('stroke-width', radialLayout.linewidth)
     .call(Color.stroke, radialLayout.linecolor);
+};
+
+proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
+    var _this = this;
+    var gd = _this.gd;
+    var radius = _this.radius;
+    var cx = _this.cx;
+    var cy = _this.cy;
+    var radialLayout = polarLayout.radialaxis;
+    var titleClass = _this.id + 'title';
+
+    var angle = _angle !== undefined ? _angle : radialLayout.position;
+    var angleRad = deg2rad(angle);
+    var cosa = Math.cos(angleRad);
+    var sina = Math.sin(angleRad);
+
+    var pad = 0;
+    if(radialLayout.title) {
+        var h = Drawing.bBox(_this.layers['radial-axis'].node()).height;
+        var ts = radialLayout.titlefont.size;
+        pad = radialLayout.side === 'left' ?
+            -h - ts * 0.4 :
+            h + ts * 0.8;
+    }
+
+    _this.layers['radial-axis-title'] = Titles.draw(gd, titleClass, {
+        propContainer: radialLayout,
+        propName: _this.id + '.radialaxis.title',
+        placeholder: _(gd, 'Click to enter radial axis title'),
+        attributes: {
+            x: cx + (radius / 2) * cosa + pad * sina,
+            y: cy - (radius / 2) * sina + pad * cosa,
+            'text-anchor': 'middle'
+        },
+        transform: {rotate: -angle}
+    });
 };
 
 proto.updateAngularAxis = function(fullLayout, polarLayout) {

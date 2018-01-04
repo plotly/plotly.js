@@ -34,12 +34,30 @@
     "polar": {
       "domain": {
         "x": [0, 0.44]
-
+      },
+      "radialaxis": {
+        "showgrid": false,
+        "title": "1st subplot",
+        "titlefont": {
+          "size": 20,
+          "color": "blue"
+        },
+        "position": -45
       }
     },
     "polar2": {
       "domain": {
         "x": [0.56, 1]
+      },
+      "radialaxis": {
+        "range": [0, 4.7],
+        "showgrid": false,
+        "title": "2nd subplot",
+        "titlefont": {
+          "size": 10,
+          "color": "orange"
+        },
+        "position": 45
       }
     }
   }

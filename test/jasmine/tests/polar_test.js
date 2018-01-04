@@ -342,4 +342,61 @@ describe('Test relayout on polar subplots:', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should be able to restyle radial axis title', function(done) {
+        var gd = createGraphDiv();
+        var lastBBox;
+
+        function assertTitle(content, didBBoxChanged) {
+            var radialAxisTitle = d3.select('g.g-polartitle');
+            var txt = radialAxisTitle.select('text');
+            var bb = radialAxisTitle.node().getBBox();
+            var newBBox = [bb.x, bb.y, bb.width, bb.height];
+
+            if(content === '') {
+                expect(txt.size()).toBe(0, 'cleared <text>');
+            } else {
+                expect(txt.text()).toBe(content, 'radial axis title');
+            }
+
+            expect(newBBox).negateIf(didBBoxChanged).toEqual(lastBBox, 'did bbox change');
+            lastBBox = newBBox;
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatterpolar',
+            r: [1, 2, 3],
+            theta: [10, 20, 30]
+        }], {
+            polar: {
+                radialaxis: {title: 'yo'}
+            }
+        })
+        .then(function() {
+            assertTitle('yo', true);
+            return Plotly.relayout(gd, 'polar.radialaxis.title', '');
+        })
+        .then(function() {
+            assertTitle('', true);
+            return Plotly.relayout(gd, 'polar.radialaxis.title', 'yo2');
+        })
+        .then(function() {
+            assertTitle('yo2', true);
+            return Plotly.relayout(gd, 'polar.radialaxis.ticklen', 20);
+        })
+        .then(function() {
+            assertTitle('yo2', true);
+            return Plotly.relayout(gd, 'polar.radialaxis.titlefont.color', 'red');
+        })
+        .then(function() {
+            assertTitle('yo2', false);
+            return Plotly.relayout(gd, 'title', 'dummy');
+        })
+        .then(function() {
+            assertTitle('yo2', false);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
 });

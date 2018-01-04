@@ -119,10 +119,9 @@ var radialAxisAttrs = {
         ].join(' ')
     },
 
-    // not sure about these
-    // maybe just for radialaxis ??
-    title: axesAttrs.title,
-    titlefont: axesAttrs.titlefont,
+    title: extendFlat({}, axesAttrs.title, {editType: 'plot', dflt: ''}),
+    titlefont: overrideAll(axesAttrs.titlefont, 'plot', 'from-root'),
+    // might need a 'titleside' and even 'titledirection' down the road
 
     hoverformat: axesAttrs.hoverformat,
 

@@ -104,6 +104,12 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     coerceAxis('side');
                     coerceAxis('position', sector[0]);
 
+                    coerceAxis('title');
+                    Lib.coerceFont(coerceAxis, 'titlefont', {
+                        family: opts.font.family,
+                        size: Math.round(opts.font.size * 1.2),
+                        color: dfltFontColor
+                    });
                 }
                 break;
 

@@ -60,6 +60,7 @@ function clean(newFullData, newFullLayout, oldFullData, oldFullLayout) {
 
         if(!newFullLayout[id] && !!oldSubplot) {
             oldSubplot.framework.remove();
+            oldSubplot.layers['radial-axis-title'].remove();
 
             for(var k in oldSubplot.clipPaths) {
                 oldSubplot.clipPaths[k].remove();
