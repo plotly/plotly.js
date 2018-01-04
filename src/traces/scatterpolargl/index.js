@@ -107,6 +107,9 @@ function plot(subplot, cdata) {
         if(options.line && !scene.line2d) scene.line2d = true;
         if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
 
+        // bring positions to selected/unselected options
+        options.selected.positions = options.unselected.positions = options.marker.positions;
+
         // save scene options batch
         scene.lineOptions.push(options.line);
         scene.errorXOptions.push(options.errorX);
