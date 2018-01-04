@@ -245,6 +245,10 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     _this.clipPaths.circle.select('path')
         .attr('d', pathSectorClosed(radius, sector))
         .attr('transform', strTranslate(cx - xOffset2, cy - yOffset2));
+
+    // remove crispEdges - all the off-square angles in polar plots
+    // make these counterproductive.
+    _this.framework.selectAll('.crisp').classed('crisp', 0);
 };
 
 proto.updateRadialAxis = function(fullLayout, polarLayout) {
