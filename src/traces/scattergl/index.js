@@ -595,15 +595,27 @@ ScatterGl.scene = function getScene(container, subplot) {
 
         // make sure canvas is clear
         scene.clear = function clear() {
-            var vpSize = layout._size, width = layout.width, height = layout.height;
-            var vp = [
-                vpSize.l,
-                vpSize.b,
-                (width - vpSize.r),
-                (height - vpSize.t)
-            ];
+            var vpSize = layout._size, width = layout.width, height = layout.height, vp, gl, regl;
+            var xaxis = subplot.xaxis;
+            var yaxis = subplot.yaxis;
 
-            var gl, regl;
+            // multisubplot case
+            if(xaxis && xaxis.domain && yaxis && yaxis.domain) {
+                vp = [
+                    vpSize.l + xaxis.domain[0] * vpSize.w,
+                    vpSize.b + yaxis.domain[0] * vpSize.h,
+                    (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
+                    (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
+                ];
+            }
+            else {
+                vp = [
+                    vpSize.l,
+                    vpSize.b,
+                    (width - vpSize.r),
+                    (height - vpSize.t)
+                ];
+            }
 
             if(scene.select2d) {
                 regl = scene.select2d.regl;
