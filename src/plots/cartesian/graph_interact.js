@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,8 +8,6 @@
 
 
 'use strict';
-
-var isNumeric = require('fast-isnumeric');
 
 var Fx = require('../../components/fx');
 var dragElement = require('../../components/dragelement');
@@ -38,25 +36,17 @@ module.exports = function initInteractions(gd) {
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
 
-        var xa = plotinfo.xaxis,
-            ya = plotinfo.yaxis,
-
-            // the y position of the main x axis line
-            y0 = (xa._linepositions[subplot] || [])[3],
-
-            // the x position of the main y axis line
-            x0 = (ya._linepositions[subplot] || [])[3];
+        var xa = plotinfo.xaxis;
+        var ya = plotinfo.yaxis;
 
         var DRAGGERSIZE = constants.DRAGGERSIZE;
-        if(isNumeric(y0) && xa.side === 'top') y0 -= DRAGGERSIZE;
-        if(isNumeric(x0) && ya.side !== 'right') x0 -= DRAGGERSIZE;
 
         // main and corner draggers need not be repeated for
         // overlaid subplots - these draggers drag them all
         if(!plotinfo.mainplot) {
             // main dragger goes over the grids and data, so we use its
             // mousemove events for all data hover effects
-            var maindrag = dragBox(gd, plotinfo, 0, 0,
+            var maindrag = dragBox(gd, plotinfo, xa._offset, ya._offset,
                 xa._length, ya._length, 'ns', 'ew');
 
             maindrag.onmousemove = function(evt) {
@@ -100,36 +90,40 @@ module.exports = function initInteractions(gd) {
 
             // corner draggers
             if(gd._context.showAxisDragHandles) {
-                dragBox(gd, plotinfo, -DRAGGERSIZE, -DRAGGERSIZE,
+                dragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset - DRAGGERSIZE,
                     DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');
-                dragBox(gd, plotinfo, xa._length, -DRAGGERSIZE,
+                dragBox(gd, plotinfo, xa._offset + xa._length, ya._offset - DRAGGERSIZE,
                     DRAGGERSIZE, DRAGGERSIZE, 'n', 'e');
-                dragBox(gd, plotinfo, -DRAGGERSIZE, ya._length,
+                dragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset + ya._length,
                     DRAGGERSIZE, DRAGGERSIZE, 's', 'w');
-                dragBox(gd, plotinfo, xa._length, ya._length,
+                dragBox(gd, plotinfo, xa._offset + xa._length, ya._offset + ya._length,
                     DRAGGERSIZE, DRAGGERSIZE, 's', 'e');
             }
         }
         if(gd._context.showAxisDragHandles) {
             // x axis draggers - if you have overlaid plots,
             // these drag each axis separately
-            if(isNumeric(y0)) {
-                if(xa.anchor === 'free') y0 -= fullLayout._size.h * (1 - ya.domain[1]);
-                dragBox(gd, plotinfo, xa._length * 0.1, y0,
+            if(subplot === xa._mainSubplot) {
+                // the y position of the main x axis line
+                var y0 = xa._mainLinePosition;
+                if(xa.side === 'top') y0 -= DRAGGERSIZE;
+                dragBox(gd, plotinfo, xa._offset + xa._length * 0.1, y0,
                     xa._length * 0.8, DRAGGERSIZE, '', 'ew');
-                dragBox(gd, plotinfo, 0, y0,
+                dragBox(gd, plotinfo, xa._offset, y0,
                     xa._length * 0.1, DRAGGERSIZE, '', 'w');
-                dragBox(gd, plotinfo, xa._length * 0.9, y0,
+                dragBox(gd, plotinfo, xa._offset + xa._length * 0.9, y0,
                     xa._length * 0.1, DRAGGERSIZE, '', 'e');
             }
             // y axis draggers
-            if(isNumeric(x0)) {
-                if(ya.anchor === 'free') x0 -= fullLayout._size.w * xa.domain[0];
-                dragBox(gd, plotinfo, x0, ya._length * 0.1,
+            if(subplot === ya._mainSubplot) {
+                // the x position of the main y axis line
+                var x0 = ya._mainLinePosition;
+                if(ya.side !== 'right') x0 -= DRAGGERSIZE;
+                dragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.1,
                     DRAGGERSIZE, ya._length * 0.8, 'ns', '');
-                dragBox(gd, plotinfo, x0, ya._length * 0.9,
+                dragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.9,
                     DRAGGERSIZE, ya._length * 0.1, 's', '');
-                dragBox(gd, plotinfo, x0, 0,
+                dragBox(gd, plotinfo, x0, ya._offset,
                     DRAGGERSIZE, ya._length * 0.1, 'n', '');
             }
         }

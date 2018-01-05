@@ -8,8 +8,10 @@ var Color = require('@src/components/color');
 var tinycolor = require('tinycolor2');
 
 var handleTickValueDefaults = require('@src/plots/cartesian/tick_value_defaults');
+var Cartesian = require('@src/plots/cartesian');
 var Axes = require('@src/plots/cartesian/axes');
 var Fx = require('@src/components/fx');
+var supplyLayoutDefaults = require('@src/plots/cartesian/layout_defaults');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -180,12 +182,11 @@ describe('Test axes', function() {
             layoutOut = {
                 _has: Plots._hasPlotType,
                 _basePlotModules: [],
-                _dfltTitle: {x: 'x', y: 'y'}
+                _dfltTitle: {x: 'x', y: 'y'},
+                _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
             };
             fullData = [];
         });
-
-        var supplyLayoutDefaults = Axes.supplyLayoutDefaults;
 
         it('should set undefined linewidth/linecolor if linewidth, linecolor or showline is not supplied', function() {
             layoutIn = {
@@ -269,69 +270,6 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis.zerolinecolor).toBe(undefined);
         });
 
-        it('should detect orphan axes (lone axes case)', function() {
-            layoutIn = {
-                xaxis: {},
-                yaxis: {}
-            };
-            fullData = [];
-
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._basePlotModules[0].name).toEqual('cartesian');
-        });
-
-        it('should detect orphan axes (gl2d trace conflict case)', function() {
-            layoutIn = {
-                xaxis: {},
-                yaxis: {}
-            };
-            fullData = [{
-                type: 'scattergl',
-                xaxis: 'x',
-                yaxis: 'y'
-            }];
-
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._basePlotModules[0].name).toEqual('cartesian');
-        });
-
-        it('should detect orphan axes (gl2d + cartesian case)', function() {
-            layoutIn = {
-                xaxis2: {},
-                yaxis2: {}
-            };
-            fullData = [{
-                type: 'scattergl',
-                xaxis: 'x',
-                yaxis: 'y'
-            }];
-
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._basePlotModules[0].name).toEqual('cartesian');
-        });
-
-        it('should detect orphan axes (gl3d present case)', function() {
-            layoutIn = {
-                xaxis: {},
-                yaxis: {}
-            };
-            layoutOut._basePlotModules = [ { name: 'gl3d' }];
-
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._basePlotModules).toEqual([ { name: 'gl3d' }]);
-        });
-
-        it('should detect orphan axes (geo present case)', function() {
-            layoutIn = {
-                xaxis: {},
-                yaxis: {}
-            };
-            layoutOut._basePlotModules = [ { name: 'geo' }];
-
-            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._basePlotModules).toEqual([ { name: 'geo' }]);
-        });
-
         it('should use \'axis.color\' as default for \'axis.titlefont.color\'', function() {
             layoutIn = {
                 xaxis: { color: 'red' },
@@ -339,7 +277,9 @@ describe('Test axes', function() {
                 yaxis2: { titlefont: { color: 'yellow' } }
             };
 
-            layoutOut.font = { color: 'blue' },
+            layoutOut.font = { color: 'blue' };
+            layoutOut._subplots.cartesian.push('xy2');
+            layoutOut._subplots.yaxis.push('y2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.titlefont.color).toEqual('red');
@@ -353,6 +293,8 @@ describe('Test axes', function() {
                 yaxis: { linecolor: 'blue' },
                 yaxis2: { showline: true }
             };
+            layoutOut._subplots.cartesian.push('xy2');
+            layoutOut._subplots.yaxis.push('y2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.linecolor).toEqual('red');
@@ -366,6 +308,8 @@ describe('Test axes', function() {
                 yaxis: { zerolinecolor: 'blue' },
                 yaxis2: { showzeroline: true }
             };
+            layoutOut._subplots.cartesian.push('xy2');
+            layoutOut._subplots.yaxis.push('y2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.zerolinecolor).toEqual('red');
@@ -381,6 +325,8 @@ describe('Test axes', function() {
                 yaxis: { gridcolor: 'blue' },
                 yaxis2: { showgrid: true }
             };
+            layoutOut._subplots.cartesian.push('xy2');
+            layoutOut._subplots.yaxis.push('y2');
 
             var bgColor = Color.combine('yellow', 'green'),
                 frac = 100 * (0xe - 0x4) / (0xf - 0x4);
@@ -429,6 +375,8 @@ describe('Test axes', function() {
                 yaxis2: { range: [1, 'b'] },
                 yaxis3: { range: [null, {}] }
             };
+            layoutOut._subplots.cartesian.push('x2y2', 'xy3');
+            layoutOut._subplots.yaxis.push('x2', 'y2', 'y3');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -444,6 +392,8 @@ describe('Test axes', function() {
                 yaxis: { range: ['1', 2] },
                 yaxis2: { range: [1, '2'] }
             };
+            layoutOut._subplots.cartesian.push('x2y2');
+            layoutOut._subplots.yaxis.push('x2', 'y2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -465,6 +415,8 @@ describe('Test axes', function() {
                 xaxis4: {scaleanchor: 'y3', scaleratio: 7},
                 xaxis5: {scaleanchor: 'y3', scaleratio: 9}
             };
+            layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y3', 'x5y3');
+            layoutOut._subplots.yaxis.push('x2', 'x3', 'x4', 'x5', 'y2', 'y3');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -496,6 +448,8 @@ describe('Test axes', function() {
                 xaxis4: {scaleanchor: 'x', scaleratio: 13}, // x<->x is OK now
                 yaxis4: {scaleanchor: 'y', scaleratio: 17}, // y<->y is OK now
             };
+            layoutOut._subplots.cartesian.push('x2y2', 'x3y3', 'x4y4');
+            layoutOut._subplots.yaxis.push('x2', 'x3', 'x4', 'y2', 'y3', 'y4');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -521,6 +475,8 @@ describe('Test axes', function() {
                 yaxis: {scaleanchor: 'x4', scaleratio: 3}, // doesn't exist
                 xaxis2: {scaleanchor: 'yaxis', scaleratio: 5} // must be an id, not a name
             };
+            layoutOut._subplots.cartesian.push('x2y');
+            layoutOut._subplots.yaxis.push('x2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -540,6 +496,8 @@ describe('Test axes', function() {
                 xaxis2: {type: 'date', scaleanchor: 'y', scaleratio: 3},
                 yaxis2: {type: 'category', scaleanchor: 'x2', scaleratio: 5}
             };
+            layoutOut._subplots.cartesian.push('x2y2');
+            layoutOut._subplots.yaxis.push('x2', 'y2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -562,6 +520,8 @@ describe('Test axes', function() {
                 xaxis2: {},
                 yaxis2: {scaleanchor: 'x', scaleratio: 5}
             };
+            layoutOut._subplots.cartesian.push('x2y2');
+            layoutOut._subplots.yaxis.push('x2', 'y2');
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
@@ -1089,7 +1049,7 @@ describe('Test axes', function() {
     describe('handleTickValueDefaults', function() {
         function mockSupplyDefaults(axIn, axOut, axType) {
             function coerce(attr, dflt) {
-                return Lib.coerce(axIn, axOut, Axes.layoutAttributes, attr, dflt);
+                return Lib.coerce(axIn, axOut, Cartesian.layoutAttributes, attr, dflt);
             }
 
             handleTickValueDefaults(axIn, axOut, coerce, axType);
@@ -1282,7 +1242,8 @@ describe('Test axes', function() {
                     xaxis: { range: [0, 0.5] },
                     yaxis: { range: [0, 0.5] },
                     xaxis2: { range: [0.5, 1] },
-                    yaxis2: { range: [0.5, 1] }
+                    yaxis2: { range: [0.5, 1] },
+                    _subplots: {xaxis: ['x', 'x2'], yaxis: ['y', 'y2'], cartesian: ['xy', 'x2y2']}
                 }
             };
         });
@@ -1344,6 +1305,7 @@ describe('Test axes', function() {
         it('returns array of axes in fullLayout', function() {
             gd = {
                 _fullLayout: {
+                    _subplots: {xaxis: ['x'], yaxis: ['y', 'y2']},
                     xaxis: { _id: 'x' },
                     yaxis: { _id: 'y' },
                     yaxis2: { _id: 'y2' }
@@ -1357,6 +1319,7 @@ describe('Test axes', function() {
         it('returns array of axes, including the ones in scenes', function() {
             gd = {
                 _fullLayout: {
+                    _subplots: {xaxis: [], yaxis: [], gl3d: ['scene', 'scene2']},
                     scene: {
                         xaxis: { _id: 'x' },
                         yaxis: { _id: 'y' },
@@ -1380,6 +1343,7 @@ describe('Test axes', function() {
         it('returns array of axes, excluding the ones in scenes with only2d option', function() {
             gd = {
                 _fullLayout: {
+                    _subplots: {xaxis: ['x2'], yaxis: ['y2'], gl3d: ['scene']},
                     scene: {
                         xaxis: { _id: 'x' },
                         yaxis: { _id: 'y' },
@@ -1397,11 +1361,11 @@ describe('Test axes', function() {
         it('returns array of axes, of particular ax letter with axLetter option', function() {
             gd = {
                 _fullLayout: {
+                    _subplots: {xaxis: ['x2'], yaxis: ['y2'], gl3d: ['scene']},
                     scene: {
-                        xaxis: { _id: 'x' },
+                        xaxis: { _id: 'x', _thisIs3d: true },
                         yaxis: { _id: 'y' },
-                        zaxis: { _id: 'z'
-                        }
+                        zaxis: { _id: 'z' }
                     },
                     xaxis2: { _id: 'x2' },
                     yaxis2: { _id: 'y2' }
@@ -1409,54 +1373,28 @@ describe('Test axes', function() {
             };
 
             expect(listFunc(gd, 'x'))
-                .toEqual([{ _id: 'x2' }, { _id: 'x' }]);
+                .toEqual([{ _id: 'x2' }, { _id: 'x', _thisIs3d: true }]);
         });
 
     });
 
     describe('getSubplots', function() {
         var getSubplots = Axes.getSubplots;
-        var gd;
-
-        it('returns list of subplots ids (from data only)', function() {
-            gd = {
-                data: [
-                    { type: 'scatter' },
-                    { type: 'scattergl', xaxis: 'x2', yaxis: 'y2' }
-                ]
-            };
-
-            expect(getSubplots(gd))
-                .toEqual(['xy', 'x2y2']);
-        });
-
-        it('returns list of subplots ids (from fullLayout only)', function() {
-            gd = {
-                _fullLayout: {
-                    xaxis: { _id: 'x', anchor: 'y' },
-                    yaxis: { _id: 'y', anchor: 'x' },
-                    xaxis2: { _id: 'x2', anchor: 'y2' },
-                    yaxis2: { _id: 'y2', anchor: 'x2' }
+        var gd = {
+            _fullLayout: {
+                _subplots: {
+                    cartesian: ['x2y2'],
+                    gl2d: ['xy']
                 }
-            };
+            }
+        };
 
+        it('returns only what was prepopulated in fullLayout._subplots', function() {
             expect(getSubplots(gd))
                 .toEqual(['xy', 'x2y2']);
         });
 
         it('returns list of subplots ids of particular axis with ax option', function() {
-            gd = {
-                data: [
-                    { type: 'scatter' },
-                    { type: 'scattergl', xaxis: 'x3', yaxis: 'y3' }
-                ],
-                _fullLayout: {
-                    xaxis2: { _id: 'x2', anchor: 'y2' },
-                    yaxis2: { _id: 'y2', anchor: 'x2' },
-                    yaxis3: { _id: 'y3', anchor: 'free' }
-                }
-            };
-
             expect(getSubplots(gd, { _id: 'x' }))
                 .toEqual(['xy']);
         });

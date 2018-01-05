@@ -10,6 +10,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var failTest = require('../assets/fail_test');
 
 
 describe('heatmap supplyDefaults', function() {
@@ -21,7 +22,8 @@ describe('heatmap supplyDefaults', function() {
     var defaultColor = '#444',
         layout = {
             font: Plots.layoutAttributes.font,
-            _dfltTitle: {colorbar: 'cb'}
+            _dfltTitle: {colorbar: 'cb'},
+            _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
         };
 
     var supplyDefaults = Heatmap.supplyDefaults;
@@ -542,52 +544,25 @@ describe('heatmap plot', function() {
             argumentsWithoutPadding = getContextStub.fillRect.calls.allArgs().slice(0);
             return Plotly.plot(gd, mockWithPadding.data, mockWithPadding.layout);
         }).then(function() {
-            var centerXGap = mockWithPadding.data[0].xgap / 3;
-            var centerYGap = mockWithPadding.data[0].ygap / 3;
-            var edgeXGap = mockWithPadding.data[0].xgap * 2 / 3;
-            var edgeYGap = mockWithPadding.data[0].ygap * 2 / 3;
+            var xGap = mockWithPadding.data[0].xgap;
+            var yGap = mockWithPadding.data[0].ygap;
+            var xGapLeft = xGap / 2;
+            var yGapTop = yGap / 2;
 
-            argumentsWithPadding = getContextStub.fillRect.calls.allArgs().slice(getContextStub.fillRect.calls.allArgs().length - 9);
-            expect(argumentsWithPadding).toEqual([
-                [argumentsWithoutPadding[0][0],
-                    argumentsWithoutPadding[0][1] + edgeYGap,
-                    argumentsWithoutPadding[0][2] - edgeXGap,
-                    argumentsWithoutPadding[0][3] - edgeYGap],
-                [argumentsWithoutPadding[1][0] + centerXGap,
-                    argumentsWithoutPadding[1][1] + edgeYGap,
-                    argumentsWithoutPadding[1][2] - edgeXGap,
-                    argumentsWithoutPadding[1][3] - edgeYGap],
-                [argumentsWithoutPadding[2][0] + edgeXGap,
-                    argumentsWithoutPadding[2][1] + edgeYGap,
-                    argumentsWithoutPadding[2][2] - edgeXGap,
-                    argumentsWithoutPadding[2][3] - edgeYGap],
-                [argumentsWithoutPadding[3][0],
-                    argumentsWithoutPadding[3][1] + centerYGap,
-                    argumentsWithoutPadding[3][2] - edgeXGap,
-                    argumentsWithoutPadding[3][3] - edgeYGap],
-                [argumentsWithoutPadding[4][0] + centerXGap,
-                    argumentsWithoutPadding[4][1] + centerYGap,
-                    argumentsWithoutPadding[4][2] - edgeXGap,
-                    argumentsWithoutPadding[4][3] - edgeYGap],
-                [argumentsWithoutPadding[5][0] + edgeXGap,
-                    argumentsWithoutPadding[5][1] + centerYGap,
-                    argumentsWithoutPadding[5][2] - edgeXGap,
-                    argumentsWithoutPadding[5][3] - edgeYGap],
-                [argumentsWithoutPadding[6][0],
-                    argumentsWithoutPadding[6][1],
-                    argumentsWithoutPadding[6][2] - edgeXGap,
-                    argumentsWithoutPadding[6][3] - edgeYGap],
-                [argumentsWithoutPadding[7][0] + centerXGap,
-                    argumentsWithoutPadding[7][1],
-                    argumentsWithoutPadding[7][2] - edgeXGap,
-                    argumentsWithoutPadding[7][3] - edgeYGap],
-                [argumentsWithoutPadding[8][0] + edgeXGap,
-                    argumentsWithoutPadding[8][1],
-                    argumentsWithoutPadding[8][2] - edgeXGap,
-                    argumentsWithoutPadding[8][3] - edgeYGap
-                ]]);
-            done();
-        });
+            argumentsWithPadding = getContextStub.fillRect.calls.allArgs()
+                .slice(getContextStub.fillRect.calls.allArgs().length - 25);
+
+            expect(argumentsWithPadding.length).toBe(25);
+
+            argumentsWithPadding.forEach(function(args, i) {
+                expect(args[0]).toBe(argumentsWithoutPadding[i][0] + xGapLeft, i);
+                expect(args[1]).toBe(argumentsWithoutPadding[i][1] + yGapTop, i);
+                expect(args[2]).toBe(argumentsWithoutPadding[i][2] - xGap, i);
+                expect(args[3]).toBe(argumentsWithoutPadding[i][3] - yGap, i);
+            });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 

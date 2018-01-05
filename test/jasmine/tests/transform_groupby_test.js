@@ -9,6 +9,15 @@ var customAssertions = require('../assets/custom_assertions');
 var assertDims = customAssertions.assertDims;
 var assertStyle = customAssertions.assertStyle;
 
+
+function supplyDataDefaults(dataIn, dataOut) {
+    return Plots.supplyDataDefaults(dataIn, dataOut, {}, {
+        _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
+        _modules: [],
+        _basePlotModules: []
+    });
+}
+
 describe('groupby', function() {
 
     describe('one-to-many transforms:', function() {
@@ -261,7 +270,7 @@ describe('groupby', function() {
                 ]
             }];
 
-            Plots.supplyDataDefaults(dataIn, dataOut, {}, {});
+            supplyDataDefaults(dataIn, dataOut);
 
             for(var i = 0; i < dataOut.length; i++) {
                 uniqueColors[dataOut[i].marker.color] = true;
@@ -717,7 +726,7 @@ describe('groupby', function() {
                 ]
             }];
 
-            Plots.supplyDataDefaults(dataIn, dataOut, {}, {});
+            supplyDataDefaults(dataIn, dataOut);
 
             for(var i = 0; i < dataOut.length; i++) {
                 colors.push(dataOut[i].marker.color);

@@ -25,12 +25,13 @@ describe('ModeBar', function() {
         return parent;
     }
 
-    function getMockGraphInfo() {
+    function getMockGraphInfo(xaxes, yaxes) {
         return {
             _fullLayout: {
                 dragmode: 'zoom',
                 _paperdiv: d3.select(getMockContainerTree()),
-                _has: Plots._hasPlotType
+                _has: Plots._hasPlotType,
+                _subplots: {xaxis: xaxes || [], yaxis: yaxes || []}
             },
             _fullData: [],
             _context: {
@@ -39,7 +40,7 @@ describe('ModeBar', function() {
                 modeBarButtonsToRemove: [],
                 modeBarButtonsToAdd: [],
                 locale: 'en',
-                dictionaries: {}
+                locales: {}
             }
         };
     }
@@ -188,7 +189,7 @@ describe('ModeBar', function() {
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
-            var gd = getMockGraphInfo();
+            var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
 
@@ -206,7 +207,7 @@ describe('ModeBar', function() {
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
-            var gd = getMockGraphInfo();
+            var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
             gd._fullData = [{
@@ -230,7 +231,7 @@ describe('ModeBar', function() {
                 ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
-            var gd = getMockGraphInfo();
+            var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
             gd._fullData = [{
@@ -364,7 +365,7 @@ describe('ModeBar', function() {
                 ['hoverClosestGl2d']
             ]);
 
-            var gd = getMockGraphInfo();
+            var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullLayout._basePlotModules = [{ name: 'gl2d' }];
             gd._fullLayout.xaxis = {fixedrange: false};
 
@@ -427,7 +428,7 @@ describe('ModeBar', function() {
                 ['toggleHover']
             ]);
 
-            var gd = getMockGraphInfo();
+            var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullData = [{
                 type: 'scatter',
                 visible: true,
@@ -569,7 +570,7 @@ describe('ModeBar', function() {
 
         // gives 11 buttons in 5 groups by default
         function setupGraphInfo() {
-            var gd = getMockGraphInfo();
+            var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
             return gd;

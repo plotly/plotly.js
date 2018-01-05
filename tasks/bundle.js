@@ -60,10 +60,10 @@ constants.partialBundlePaths.forEach(function(pathObj) {
 });
 
 // "Browserify" the locales
-var localeGlob = path.join(constants.pathToLib, 'locale-*.js');
+var localeGlob = path.join(constants.pathToLib, 'locales', '*.js');
 glob(localeGlob, function(err, files) {
     files.forEach(function(file) {
-        var outName = 'plotly-' + path.basename(file);
+        var outName = 'plotly-locale-' + path.basename(file);
         var outPath = path.join(constants.pathToDist, outName);
         wrapLocale(file, outPath);
     });

@@ -18,7 +18,11 @@ describe('Test Gl3d layout defaults', function() {
         var supplyLayoutDefaults = Gl3d.supplyLayoutDefaults;
 
         beforeEach(function() {
-            layoutOut = { _basePlotModules: ['gl3d'], _dfltTitle: {x: 'xxx', y: 'yyy', colorbar: 'cbbb'} };
+            layoutOut = {
+                _basePlotModules: ['gl3d'],
+                _dfltTitle: {x: 'xxx', y: 'yyy', colorbar: 'cbbb'},
+                _subplots: {gl3d: ['scene']}
+            };
 
             // needs a scene-ref in a trace in order to be detected
             fullData = [ { type: 'scatter3d', scene: 'scene' }];
@@ -239,6 +243,7 @@ describe('Test Gl3d layout defaults', function() {
 
         it('should add scene data-only scenes into layoutIn (converse)', function() {
             layoutIn = {};
+            layoutOut._subplots.gl3d = [];
             fullData = [{ type: 'scatter' }];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);

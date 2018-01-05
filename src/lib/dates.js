@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -367,7 +367,7 @@ exports.cleanDate = function(v, dflt, calendar) {
  * %{n}f where n is the max number of digits of fractional seconds
  */
 var fracMatch = /%\d?f/g;
-function modDateFormat(fmt, x, calendar) {
+function modDateFormat(fmt, x, formatter, calendar) {
 
     fmt = fmt.replace(fracMatch, function(match) {
         var digits = Math.min(+(match.charAt(1)) || 6, 6),
@@ -387,7 +387,7 @@ function modDateFormat(fmt, x, calendar) {
             return 'Invalid';
         }
     }
-    return utcFormat(fmt)(d);
+    return formatter(fmt)(d);
 }
 
 /*
@@ -433,10 +433,12 @@ function formatTime(x, tr) {
     return timeStr;
 }
 
-var yearFormat = utcFormat('%Y'),
-    monthFormat = utcFormat('%b %Y'),
-    dayFormat = utcFormat('%b %-d'),
-    yearMonthDayFormat = utcFormat('%b %-d, %Y');
+// TODO: do these strings need to be localized?
+// ie this gives "Dec 13, 2017" but some languages may want eg "13-Dec 2017"
+var yearFormatD3 = '%Y';
+var monthFormatD3 = '%b %Y';
+var dayFormatD3 = '%b %-d';
+var yearMonthDayFormatD3 = '%b %-d, %Y';
 
 function yearFormatWorld(cDate) { return cDate.formatDate('yyyy'); }
 function monthFormatWorld(cDate) { return cDate.formatDate('M yyyy'); }
@@ -450,6 +452,8 @@ function yearMonthDayFormatWorld(cDate) { return cDate.formatDate('M d, yyyy'); 
  *   fmt: optional, an explicit format string (d3 format, even for world calendars)
  *   tr: tickround ('y', 'm', 'd', 'M', 'S', or # digits)
  *      used if no explicit fmt is provided
+ *   formatter: locale-aware d3 date formatter for standard gregorian calendars
+ *      should be the result of exports.getD3DateFormat(gd)
  *   calendar: optional string, the world calendar system to use
  *
  * returns the date/time as a string, potentially with the leading portion
@@ -458,13 +462,13 @@ function yearMonthDayFormatWorld(cDate) { return cDate.formatDate('M d, yyyy'); 
  * the axis may choose to strip things after it when they don't change from
  * one tick to the next (as it does with automatic formatting)
  */
-exports.formatDate = function(x, fmt, tr, calendar) {
+exports.formatDate = function(x, fmt, tr, formatter, calendar) {
     var headStr,
         dateStr;
 
     calendar = isWorldCalendar(calendar) && calendar;
 
-    if(fmt) return modDateFormat(fmt, x, calendar);
+    if(fmt) return modDateFormat(fmt, x, formatter, calendar);
 
     if(calendar) {
         try {
@@ -488,14 +492,14 @@ exports.formatDate = function(x, fmt, tr, calendar) {
     else {
         var d = new Date(Math.floor(x + 0.05));
 
-        if(tr === 'y') dateStr = yearFormat(d);
-        else if(tr === 'm') dateStr = monthFormat(d);
+        if(tr === 'y') dateStr = formatter(yearFormatD3)(d);
+        else if(tr === 'm') dateStr = formatter(monthFormatD3)(d);
         else if(tr === 'd') {
-            headStr = yearFormat(d);
-            dateStr = dayFormat(d);
+            headStr = formatter(yearFormatD3)(d);
+            dateStr = formatter(dayFormatD3)(d);
         }
         else {
-            headStr = yearMonthDayFormat(d);
+            headStr = formatter(yearMonthDayFormatD3)(d);
             dateStr = formatTime(x, tr);
         }
     }

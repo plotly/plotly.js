@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,21 +8,21 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
+var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var tablePlot = require('./plot');
 
-exports.name = 'table';
+var TABLE = 'table';
 
-exports.attr = 'type';
+exports.name = TABLE;
 
 exports.plot = function(gd) {
-    var calcData = Plots.getSubplotCalcData(gd.calcdata, 'table', 'table');
+    var calcData = getModuleCalcData(gd.calcdata, TABLE);
     if(calcData.length) tablePlot(gd, calcData);
 };
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var hadTable = (oldFullLayout._has && oldFullLayout._has('table'));
-    var hasTable = (newFullLayout._has && newFullLayout._has('table'));
+    var hadTable = (oldFullLayout._has && oldFullLayout._has(TABLE));
+    var hasTable = (newFullLayout._has && newFullLayout._has(TABLE));
 
     if(hadTable && !hasTable) {
         oldFullLayout._paperdiv.selectAll('.table').remove();

@@ -37,7 +37,7 @@
     "test-image": "node tasks/test_image.js",
     "test-image-gl2d": "node tasks/test_image.js gl2d_* --queue",
     "test-export": "node tasks/test_export.js",
-    "test-syntax": "node tasks/test_syntax.js && npm run find-strings",
+    "test-syntax": "node tasks/test_syntax.js && npm run find-strings -- --no-output",
     "test-bundle": "node tasks/test_bundle.js",
     "test": "npm run test-jasmine && npm run test-bundle && npm run test-image && npm run test-image-gl2d && npm run test-syntax && npm run lint",
     "start-test_dashboard": "node devtools/test_dashboard/server.js",
@@ -151,6 +151,7 @@
     "read-last-lines": "^1.1.0",
     "requirejs": "^2.3.1",
     "through2": "^2.0.3",
+    "true-case-path": "^1.0.2",
     "watchify": "^3.9.0",
     "xml2js": "^0.4.16"
   }

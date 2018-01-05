@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -21,6 +21,7 @@ var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
 var initInteractions = require('../plots/cartesian/graph_interact');
 var cartesianConstants = require('../plots/cartesian/constants');
+var alignmentConstants = require('../constants/alignment');
 
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, exports.lsInner], gd);
@@ -53,8 +54,44 @@ exports.lsInner = function(gd) {
     var hasSVGCartesian = fullLayout._has('cartesian');
     var i;
 
-    // clear axis line positions, to be set in the subplot loop below
-    for(i = 0; i < axList.length; i++) axList[i]._linepositions = {};
+    function getLinePosition(ax, counterAx, side) {
+        var lwHalf = ax._lw / 2;
+
+        if(ax._id.charAt(0) === 'x') {
+            if(!counterAx) return gs.t + gs.h * (1 - (ax.position || 0)) + (lwHalf % 1);
+            else if(side === 'top') return counterAx._offset - pad - lwHalf;
+            return counterAx._offset + counterAx._length + pad + lwHalf;
+        }
+
+        if(!counterAx) return gs.l + gs.w * (ax.position || 0) + (lwHalf % 1);
+        else if(side === 'right') return counterAx._offset + counterAx._length + pad + lwHalf;
+        return counterAx._offset - pad - lwHalf;
+    }
+
+    // some preparation of axis position info
+    for(i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+
+        // reset scale in case the margins have changed
+        ax.setScale();
+
+        var counterAx = ax._anchorAxis;
+
+        // clear axis line positions, to be set in the subplot loop below
+        ax._linepositions = {};
+
+        // stash crispRounded linewidth so we don't need to pass gd all over the place
+        ax._lw = Drawing.crispRound(gd, ax.linewidth, 1);
+
+        // figure out the main axis line and main mirror line position.
+        // it's easier to follow the logic if we handle these separately from
+        // ax._linepositions, which are really only used by mirror=allticks
+        // for the non-main-subplot ticks.
+        ax._mainLinePosition = getLinePosition(ax, counterAx, ax.side);
+        ax._mainMirrorPosition = (ax.mirror && counterAx) ?
+            getLinePosition(ax, counterAx,
+                alignmentConstants.OPPOSITE_SIDE[ax.side]) : null;
+    }
 
     fullLayout._paperdiv
         .style({
@@ -129,15 +166,10 @@ exports.lsInner = function(gd) {
         fullLayout._plots[subplot].bg = d3.select(this);
     });
 
-    var freeFinished = {};
     subplotSelection.each(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
         var xa = plotinfo.xaxis;
         var ya = plotinfo.yaxis;
-
-        // reset scale in case the margins have changed
-        xa.setScale();
-        ya.setScale();
 
         if(plotinfo.bg && hasSVGCartesian) {
             plotinfo.bg
@@ -193,18 +225,38 @@ exports.lsInner = function(gd) {
         // to DRY up Drawing.setClipUrl calls downstream
         plotinfo.layerClipId = layerClipId;
 
-        var xIsFree = !xa._anchorAxis;
-        var showFreeX = xIsFree && !freeFinished[xa._id];
-        var showBottom = shouldShowLine(xa, ya, 'bottom');
-        var showTop = shouldShowLine(xa, ya, 'top');
+        // figure out extra axis line and tick positions as needed
+        if(!hasSVGCartesian) return;
 
-        var yIsFree = !ya._anchorAxis;
-        var showFreeY = yIsFree && !freeFinished[ya._id];
-        var showLeft = shouldShowLine(ya, xa, 'left');
-        var showRight = shouldShowLine(ya, xa, 'right');
+        var xLinesXLeft, xLinesXRight, xLinesYBottom, xLinesYTop,
+            leftYLineWidth, rightYLineWidth;
+        var yLinesYBottom, yLinesYTop, yLinesXLeft, yLinesXRight,
+            connectYBottom, connectYTop;
+        var extraSubplot;
 
-        var xlw = Drawing.crispRound(gd, xa.linewidth, 1);
-        var ylw = Drawing.crispRound(gd, ya.linewidth, 1);
+        function xLinePath(y) {
+            return 'M' + xLinesXLeft + ',' + y + 'H' + xLinesXRight;
+        }
+
+        function xLinePathFree(y) {
+            return 'M' + xa._offset + ',' + y + 'h' + xa._length;
+        }
+
+        function yLinePath(x) {
+            return 'M' + x + ',' + yLinesYTop + 'V' + yLinesYBottom;
+        }
+
+        function yLinePathFree(x) {
+            return 'M' + x + ',' + ya._offset + 'v' + ya._length;
+        }
+
+        function mainPath(ax, pathFn, pathFnFree) {
+            if(!ax.showline || subplot !== ax._mainSubplot) return '';
+            if(!ax._anchorAxis) return pathFnFree(ax._mainLinePosition);
+            var out = pathFn(ax._mainLinePosition);
+            if(ax.mirror) out += pathFn(ax._mainMirrorPosition);
+            return out;
+        }
 
         /*
          * x lines get longer where they meet y lines, to make a crisp corner.
@@ -220,15 +272,33 @@ exports.lsInner = function(gd) {
          *    -----
          *     x2
          */
-        var leftYLineWidth = findCounterAxisLineWidth(gd, xa, ylw, showLeft, 'left', axList);
-        var xLinesXLeft = (!xIsFree && leftYLineWidth) ?
-            (-pad - leftYLineWidth) : 0;
-        var rightYLineWidth = findCounterAxisLineWidth(gd, xa, ylw, showRight, 'right', axList);
-        var xLinesXRight = xa._length + ((!xIsFree && rightYLineWidth) ?
-            (pad + rightYLineWidth) : 0);
-        var xLinesYFree = gs.h * (1 - (xa.position || 0)) + ((xlw / 2) % 1);
-        var xLinesYBottom = ya._length + pad + xlw / 2;
-        var xLinesYTop = -pad - xlw / 2;
+        if(shouldShowLinesOrTicks(xa, subplot)) {
+            leftYLineWidth = findCounterAxisLineWidth(xa, 'left', ya, axList);
+            xLinesXLeft = xa._offset - (leftYLineWidth ? (pad + leftYLineWidth) : 0);
+            rightYLineWidth = findCounterAxisLineWidth(xa, 'right', ya, axList);
+            xLinesXRight = xa._offset + xa._length + (rightYLineWidth ? (pad + rightYLineWidth) : 0);
+            xLinesYBottom = getLinePosition(xa, ya, 'bottom');
+            xLinesYTop = getLinePosition(xa, ya, 'top');
+
+            // save axis line positions for extra ticks to reference
+            // each subplot that gets ticks from "allticks" gets an entry:
+            //    [left or bottom, right or top]
+            extraSubplot = (!xa._anchorAxis || subplot !== xa._mainSubplot);
+            if(extraSubplot && xa.ticks && xa.mirror === 'allticks') {
+                xa._linepositions[subplot] = [xLinesYBottom, xLinesYTop];
+            }
+
+            var xPath = mainPath(xa, xLinePath, xLinePathFree);
+            if(extraSubplot && xa.showline && (xa.mirror === 'all' || xa.mirror === 'allticks')) {
+                xPath += xLinePath(xLinesYBottom) + xLinePath(xLinesYTop);
+            }
+
+            plotinfo.xlines
+                .attr('d', xPath || 'M0,0')
+                .style('stroke-width', xa._lw + 'px')
+                .call(Color.stroke, xa.showline ?
+                    xa.linecolor : 'rgba(0,0,0,0)');
+        }
 
         /*
          * y lines that meet x axes get longer only by margin.pad, because
@@ -241,105 +311,30 @@ exports.lsInner = function(gd) {
          *       |
          *       +-----
          */
-        var connectYBottom = !yIsFree && findCounterAxisLineWidth(
-                gd, ya, xlw, showBottom, 'bottom', axList);
-        var yLinesYBottom = ya._length + (connectYBottom ? pad : 0);
-        var connectYTop = !yIsFree && findCounterAxisLineWidth(
-                gd, ya, xlw, showTop, 'top', axList);
-        var yLinesYTop = connectYTop ? -pad : 0;
-        var yLinesXFree = gs.w * (ya.position || 0) + ((ylw / 2) % 1);
-        var yLinesXLeft = -pad - ylw / 2;
-        var yLinesXRight = xa._length + pad + ylw / 2;
+        if(shouldShowLinesOrTicks(ya, subplot)) {
+            connectYBottom = findCounterAxisLineWidth(ya, 'bottom', xa, axList);
+            yLinesYBottom = ya._offset + ya._length + (connectYBottom ? pad : 0);
+            connectYTop = findCounterAxisLineWidth(ya, 'top', xa, axList);
+            yLinesYTop = ya._offset - (connectYTop ? pad : 0);
+            yLinesXLeft = getLinePosition(ya, xa, 'left');
+            yLinesXRight = getLinePosition(ya, xa, 'right');
 
-        function xLinePath(y, showThis) {
-            if(!showThis) return '';
-            return 'M' + xLinesXLeft + ',' + y + 'H' + xLinesXRight;
-        }
+            extraSubplot = (!ya._anchorAxis || subplot !== xa._mainSubplot);
+            if(extraSubplot && ya.ticks && ya.mirror === 'allticks') {
+                ya._linepositions[subplot] = [yLinesXLeft, yLinesXRight];
+            }
 
-        function yLinePath(x, showThis) {
-            if(!showThis) return '';
-            return 'M' + x + ',' + yLinesYTop + 'V' + yLinesYBottom;
-        }
+            var yPath = mainPath(ya, yLinePath, yLinePathFree);
+            if(extraSubplot && ya.showline && (ya.mirror === 'all' || ya.mirror === 'allticks')) {
+                yPath += yLinePath(yLinesXLeft) + yLinePath(yLinesXRight);
+            }
 
-        // save axis line positions for ticks, draggers, etc to reference
-        // each subplot gets an entry:
-        //    [left or bottom, right or top, free, main]
-        // main is the position at which to draw labels and draggers, if any
-        xa._linepositions[subplot] = [
-            showBottom ? xLinesYBottom : undefined,
-            showTop ? xLinesYTop : undefined,
-            showFreeX ? xLinesYFree : undefined
-        ];
-        if(xa._anchorAxis === ya) {
-            xa._linepositions[subplot][3] = xa.side === 'top' ?
-                xLinesYTop : xLinesYBottom;
-        }
-        else if(showFreeX) {
-            xa._linepositions[subplot][3] = xLinesYFree;
-        }
-
-        ya._linepositions[subplot] = [
-            showLeft ? yLinesXLeft : undefined,
-            showRight ? yLinesXRight : undefined,
-            showFreeY ? yLinesXFree : undefined
-        ];
-        if(ya._anchorAxis === xa) {
-            ya._linepositions[subplot][3] = ya.side === 'right' ?
-                yLinesXRight : yLinesXLeft;
-        }
-        else if(showFreeY) {
-            ya._linepositions[subplot][3] = yLinesXFree;
-        }
-
-        // translate all the extra stuff to have the
-        // same origin as the plot area or axes
-        var origin = 'translate(' + xa._offset + ',' + ya._offset + ')';
-        var originX = origin;
-        var originY = origin;
-        if(showFreeX) {
-            originX = 'translate(' + xa._offset + ',' + gs.t + ')';
-            xLinesYTop += ya._offset - gs.t;
-            xLinesYBottom += ya._offset - gs.t;
-        }
-        if(showFreeY) {
-            originY = 'translate(' + gs.l + ',' + ya._offset + ')';
-            yLinesXLeft += xa._offset - gs.l;
-            yLinesXRight += xa._offset - gs.l;
-        }
-
-        if(hasSVGCartesian) {
-            plotinfo.xlines
-                .attr('transform', originX)
-                .attr('d', (
-                    xLinePath(xLinesYBottom, showBottom) +
-                    xLinePath(xLinesYTop, showTop) +
-                    xLinePath(xLinesYFree, showFreeX)) ||
-                    // so it doesn't barf with no lines shown
-                    'M0,0')
-                .style('stroke-width', xlw + 'px')
-                .call(Color.stroke, xa.showline ?
-                    xa.linecolor : 'rgba(0,0,0,0)');
             plotinfo.ylines
-                .attr('transform', originY)
-                .attr('d', (
-                    yLinePath(yLinesXLeft, showLeft) +
-                    yLinePath(yLinesXRight, showRight) +
-                    yLinePath(yLinesXFree, showFreeY)) ||
-                    'M0,0')
-                .style('stroke-width', ylw + 'px')
+                .attr('d', yPath || 'M0,0')
+                .style('stroke-width', ya._lw + 'px')
                 .call(Color.stroke, ya.showline ?
                     ya.linecolor : 'rgba(0,0,0,0)');
         }
-
-        plotinfo.xaxislayer.attr('transform', originX);
-        plotinfo.yaxislayer.attr('transform', originY);
-        plotinfo.gridlayer.attr('transform', origin);
-        plotinfo.zerolinelayer.attr('transform', origin);
-        plotinfo.draglayer.attr('transform', origin);
-
-        // mark free axes as displayed, so we don't draw them again
-        if(showFreeX) freeFinished[xa._id] = 1;
-        if(showFreeY) freeFinished[ya._id] = 1;
     });
 
     Plotly.Axes.makeClipPaths(gd);
@@ -349,60 +344,52 @@ exports.lsInner = function(gd) {
     return gd._promises.length && Promise.all(gd._promises);
 };
 
-function shouldShowLine(ax, counterAx, side) {
-    return (ax._anchorAxis === counterAx && (ax.mirror || ax.side === side)) ||
-        ax.mirror === 'all' || ax.mirror === 'allticks' ||
-        (ax.mirrors && ax.mirrors[counterAx._id + side]);
+function shouldShowLinesOrTicks(ax, subplot) {
+    return (ax.ticks || ax.showline) &&
+        (subplot === ax._mainSubplot || ax.mirror === 'all' || ax.mirror === 'allticks');
 }
 
-function findCounterAxes(gd, ax, axList) {
-    var counterAxes = [];
-    var anchorAx = ax._anchorAxis;
-    if(anchorAx) {
-        var counterMain = anchorAx._mainAxis;
-        if(counterAxes.indexOf(counterMain) === -1) {
-            counterAxes.push(counterMain);
-            for(var i = 0; i < axList.length; i++) {
-                if(axList[i].overlaying === counterMain._id &&
-                    counterAxes.indexOf(axList[i]) === -1
-                ) {
-                    counterAxes.push(axList[i]);
-                }
-            }
-        }
+/*
+ * should we draw a line on counterAx at this side of ax?
+ * It's assumed that counterAx is known to overlay the subplot we're working on
+ * but it may not be its main axis.
+ */
+function shouldShowLineThisSide(ax, side, counterAx) {
+    // does counterAx get a line at all?
+    if(!counterAx.showline || !counterAx._lw) return false;
+
+    // are we drawing *all* lines for counterAx?
+    if(counterAx.mirror === 'all' || counterAx.mirror === 'allticks') return true;
+
+    var anchorAx = counterAx._anchorAxis;
+
+    // is this a free axis? free axes can only have a subplot side-line with all(ticks)? mirroring
+    if(!anchorAx) return false;
+
+    // in order to handle cases where the user forgot to anchor this axis correctly
+    // (because its default anchor has the same domain on the relevant end)
+    // check whether the relevant position is the same.
+    var sideIndex = alignmentConstants.FROM_BL[side];
+    if(counterAx.side === side) {
+        return anchorAx.domain[sideIndex] === ax.domain[sideIndex];
     }
-    return counterAxes;
+    return counterAx.mirror && anchorAx.domain[1 - sideIndex] === ax.domain[1 - sideIndex];
 }
 
-function findLineWidth(gd, axes, side) {
-    for(var i = 0; i < axes.length; i++) {
-        var ax = axes[i];
-        var anchorAx = ax._anchorAxis;
-        if(anchorAx && shouldShowLine(ax, anchorAx, side)) {
-            return Drawing.crispRound(gd, ax.linewidth);
-        }
+/*
+ * Is there another axis intersecting `side` end of `ax`?
+ * First look at `counterAx` (the axis for this subplot),
+ * then at all other potential counteraxes on or overlaying this subplot.
+ * Take the line width from the first one that has a line.
+ */
+function findCounterAxisLineWidth(ax, side, counterAx, axList) {
+    if(shouldShowLineThisSide(ax, side, counterAx)) {
+        return counterAx._lw;
     }
-}
-
-function findCounterAxisLineWidth(gd, ax, subplotCounterLineWidth,
-        subplotCounterIsShown, side, axList) {
-    if(subplotCounterIsShown) return subplotCounterLineWidth;
-
-    var i;
-
-    // find all counteraxes for this one, then of these, find the
-    // first one that has a visible line on this side
-    var mainAxis = ax._mainAxis;
-    var counterAxes = findCounterAxes(gd, mainAxis, axList);
-
-    var lineWidth = findLineWidth(gd, counterAxes, side);
-    if(lineWidth) return lineWidth;
-
-    for(i = 0; i < axList.length; i++) {
-        if(axList[i].overlaying === mainAxis._id) {
-            counterAxes = findCounterAxes(gd, axList[i], axList);
-            lineWidth = findLineWidth(gd, counterAxes, side);
-            if(lineWidth) return lineWidth;
+    for(var i = 0; i < axList.length; i++) {
+        var axi = axList[i];
+        if(axi._mainAxis === counterAx._mainAxis && shouldShowLineThisSide(ax, side, axi)) {
+            return axi._lw;
         }
     }
     return 0;
@@ -502,12 +489,12 @@ exports.doModeBar = function(gd) {
 };
 
 exports.doCamera = function(gd) {
-    var fullLayout = gd._fullLayout,
-        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
+    var fullLayout = gd._fullLayout;
+    var sceneIds = fullLayout._subplots.gl3d;
 
     for(var i = 0; i < sceneIds.length; i++) {
-        var sceneLayout = fullLayout[sceneIds[i]],
-            scene = sceneLayout._scene;
+        var sceneLayout = fullLayout[sceneIds[i]];
+        var scene = sceneLayout._scene;
 
         scene.setCamera(sceneLayout.camera);
     }

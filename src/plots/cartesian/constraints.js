@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,7 +19,7 @@ var FROM_BL = require('../../constants/alignment').FROM_BL;
 
 exports.enforce = function enforceAxisConstraints(gd) {
     var fullLayout = gd._fullLayout;
-    var constraintGroups = fullLayout._axisConstraintGroups;
+    var constraintGroups = fullLayout._axisConstraintGroups || [];
 
     var i, j, axisID, ax, normScale, mode, factor;
 

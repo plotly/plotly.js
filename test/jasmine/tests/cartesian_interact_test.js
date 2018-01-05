@@ -240,8 +240,8 @@ describe('axis zoom/pan and main plot zoom', function() {
         return Plotly.newPlot(gd, data, layout, config)
         .then(checkRanges({}, 'initial'))
         .then(function() {
-            expect(Object.keys(gd._fullLayout._plots))
-                .toEqual(['xy', 'xy2', 'x2y', 'x3y3']);
+            expect(Object.keys(gd._fullLayout._plots).sort())
+                .toEqual(['xy', 'xy2', 'x2y', 'x3y3'].sort());
 
             // nsew, n, ns, s, w, ew, e, ne, nw, se, sw
             expect(document.querySelectorAll('.drag[data-subplot="xy"]').length).toBe(11);

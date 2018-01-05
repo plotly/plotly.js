@@ -1522,7 +1522,7 @@ function mockBarPlot(dataWithoutTraceType, layout) {
         data: dataWithTraceType,
         layout: layout || {},
         calcdata: [],
-        _context: {locale: 'en', dictionaries: {}}
+        _context: {locale: 'en', locales: {}}
     };
 
     supplyAllDefaults(gd);
