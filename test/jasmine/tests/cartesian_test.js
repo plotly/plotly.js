@@ -281,13 +281,15 @@ describe('subplot creation / deletion:', function() {
 
     it('should clear orphan subplot when adding traces to blank graph', function(done) {
 
-        function assertCartesianSubplot(len) {
+        function assertOrphanSubplot(len) {
             expect(d3.select('.subplot.xy').size()).toEqual(len);
-            expect(d3.select('.subplot.x2y2').size()).toEqual(len);
-            expect(d3.select('.x2title').size()).toEqual(len);
-            expect(d3.select('.x2title').size()).toEqual(len);
             expect(d3.select('.ytitle').size()).toEqual(len);
             expect(d3.select('.ytitle').size()).toEqual(len);
+
+            // we only make one orphan subplot now
+            expect(d3.select('.subplot.x2y2').size()).toEqual(0);
+            expect(d3.select('.x2title').size()).toEqual(0);
+            expect(d3.select('.x2title').size()).toEqual(0);
         }
 
         Plotly.plot(gd, [], {
@@ -297,7 +299,7 @@ describe('subplot creation / deletion:', function() {
             yaxis2: { title: 'Y2', anchor: 'x2' }
         })
         .then(function() {
-            assertCartesianSubplot(1);
+            assertOrphanSubplot(1);
 
             return Plotly.addTraces(gd, [{
                 type: 'scattergeo',
@@ -306,7 +308,7 @@ describe('subplot creation / deletion:', function() {
             }]);
         })
         .then(function() {
-            assertCartesianSubplot(0);
+            assertOrphanSubplot(0);
         })
         .catch(failTest)
         .then(done);
@@ -485,11 +487,11 @@ describe('subplot creation / deletion:', function() {
             var info = d3.select('.infolayer');
 
             expect(g.selectAll('.xtick').size()).toBe(xaxis[0], 'x tick cnt');
-            expect(g.selectAll('.gridlayer > .xgrid').size()).toBe(xaxis[1], 'x gridline cnt');
+            expect(g.selectAll('.gridlayer .xgrid').size()).toBe(xaxis[1], 'x gridline cnt');
             expect(info.selectAll('.g-xtitle').size()).toBe(xaxis[2], 'x title cnt');
 
             expect(g.selectAll('.ytick').size()).toBe(yaxis[0], 'y tick cnt');
-            expect(g.selectAll('.gridlayer > .ygrid').size()).toBe(yaxis[1], 'y gridline cnt');
+            expect(g.selectAll('.gridlayer .ygrid').size()).toBe(yaxis[1], 'y gridline cnt');
             expect(info.selectAll('.g-ytitle').size()).toBe(yaxis[2], 'y title cnt');
         }
 

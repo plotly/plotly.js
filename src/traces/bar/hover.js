@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -18,13 +18,14 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var t = cd[0].t;
+    var isClosest = (hovermode === 'closest');
 
     var posVal, sizeVal, posLetter, sizeLetter, dx, dy;
 
     function thisBarMinPos(di) { return di[posLetter] - di.w / 2; }
     function thisBarMaxPos(di) { return di[posLetter] + di.w / 2; }
 
-    var minPos = (hovermode === 'closest') ?
+    var minPos = isClosest ?
         thisBarMinPos :
         function(di) {
             /*
@@ -32,14 +33,20 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
              * Nearly always it's the group that matters, but in case the bar
              * was explicitly set wider than its group we'd better accept the
              * whole bar.
+             *
+             * use `bardelta` instead of `bargroupwidth` so we accept hover
+             * in the gap. That way hover doesn't flash on and off as you
+             * mouse over the plot in compare modes.
+             * In 'closest' mode though the flashing seems inevitable,
+             * without far more complex logic
              */
-            return Math.min(thisBarMinPos(di), di.p - t.bargroupwidth / 2);
+            return Math.min(thisBarMinPos(di), di.p - t.bardelta / 2);
         };
 
-    var maxPos = (hovermode === 'closest') ?
+    var maxPos = isClosest ?
         thisBarMaxPos :
         function(di) {
-            return Math.max(thisBarMaxPos(di), di.p + t.bargroupwidth / 2);
+            return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
         };
 
     function positionFn(di) {
@@ -78,6 +85,18 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     // skip the rest (for this trace) if we didn't find a close point
     if(pointData.index === false) return;
+
+    // if we get here and we're not in 'closest' mode, push min/max pos back
+    // onto the group - even though that means occasionally the mouse will be
+    // over the hover label.
+    if(!isClosest) {
+        minPos = function(di) {
+            return Math.min(thisBarMinPos(di), di.p - t.bargroupwidth / 2);
+        };
+        maxPos = function(di) {
+            return Math.max(thisBarMaxPos(di), di.p + t.bargroupwidth / 2);
+        };
+    }
 
     // the closest data point
     var index = pointData.index;

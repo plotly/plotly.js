@@ -378,7 +378,8 @@ describe('ternary defaults', function() {
 
     beforeEach(function() {
         layoutOut = {
-            font: { color: 'red' }
+            font: { color: 'red' },
+            _subplots: {ternary: ['ternary']}
         };
 
         // needs a ternary-ref in a trace in order to be detected

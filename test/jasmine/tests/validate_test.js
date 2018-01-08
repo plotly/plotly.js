@@ -177,7 +177,11 @@ describe('Plotly.validate', function() {
     });
 
     it('should work with isLinkedToArray attributes', function() {
-        var out = Plotly.validate([], {
+        var out = Plotly.validate([
+            {y: [1, 2]},
+            {y: [1, 2], xaxis: 'x2'},
+            {y: [1, 2], xaxis: 'x3'}
+        ], {
             annotations: [{
                 text: 'some text'
             }, {
@@ -394,7 +398,10 @@ describe('Plotly.validate', function() {
     });
 
     it('should catch input errors for attribute with dynamic defaults', function() {
-        var out = Plotly.validate([], {
+        var out = Plotly.validate([
+            {y: [1, 2]},
+            {y: [1, 2], xaxis: 'x2', yaxis: 'y2'}
+        ], {
             xaxis: {
                 constrain: 'domain',
                 constraintoward: 'bottom'

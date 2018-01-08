@@ -12,6 +12,11 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 describe('Test sort transform defaults:', function() {
     function _supply(trace, layout) {
         layout = layout || {};
+        Lib.extendDeep(layout, {
+            _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
+            _modules: [],
+            _basePlotModules: []
+        });
         return Plots.supplyTraceDefaults(trace, 0, layout);
     }
 

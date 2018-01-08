@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,6 +17,7 @@ module.exports = {
 
     layoutAttributes: require('./attributes'),
     supplyLayoutDefaults: require('./defaults'),
+    includeBasePlot: require('../../plots/cartesian/include_components')('shapes'),
 
     calcAutorange: require('./calc_autorange'),
     draw: drawModule.draw,

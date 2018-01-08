@@ -12,10 +12,24 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var assertDims = customAssertions.assertDims;
 var assertStyle = customAssertions.assertStyle;
 
+var mockFullLayout = {
+    _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
+    _modules: [],
+    _basePlotModules: [],
+    _has: function() {},
+    _dfltTitle: {x: 'xxx', y: 'yyy'}
+};
+
+
 describe('general transforms:', function() {
     'use strict';
 
-    var fullLayout = { _transformModules: [] };
+    var fullLayout = {
+        _transformModules: [],
+        _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
+        _modules: [],
+        _basePlotModules: []
+    };
 
     var traceIn, traceOut;
 
@@ -60,7 +74,7 @@ describe('general transforms:', function() {
         expect(traceOut.y).toBe(traceIn.y);
     });
 
-    it('supplyTraceDefaults should honored global transforms', function() {
+    it('supplyTraceDefaults should honor global transforms', function() {
         traceIn = {
             y: [2, 1, 2],
             transforms: [{
@@ -75,7 +89,10 @@ describe('general transforms:', function() {
             _transformModules: [],
             _globalTransforms: [{
                 type: 'filter'
-            }]
+            }],
+            _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
+            _modules: [],
+            _basePlotModules: []
         };
 
         traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
@@ -117,7 +134,7 @@ describe('general transforms:', function() {
         }];
 
         var dataOut = [];
-        Plots.supplyDataDefaults(dataIn, dataOut, {}, []);
+        Plots.supplyDataDefaults(dataIn, dataOut, {}, mockFullLayout);
 
         var msg;
 
@@ -180,18 +197,24 @@ describe('user-defined transforms:', function() {
         var transformIn = { type: 'fake' };
         var transformOut = {};
 
+        var calledSupplyDefaults = false;
+        var calledTransform = false;
+        var calledSupplyLayoutDefaults = false;
+
         var dataIn = [{
             transforms: [transformIn]
         }];
 
-        var fullData = [],
-            layout = {},
-            fullLayout = { _has: function() {} },
-            transitionData = {};
+        var fullData = [];
+        var layout = {};
+        var fullLayout = Lib.extendDeep({}, mockFullLayout);
+        var transitionData = {};
 
         function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
             expect(_transformIn).toBe(transformIn);
             expect(_layout).toBe(fullLayout);
+
+            calledSupplyDefaults = true;
 
             return transformOut;
         }
@@ -203,6 +226,8 @@ describe('user-defined transforms:', function() {
             expect(opts.layout).toBe(layout);
             expect(opts.fullLayout).toBe(fullLayout);
 
+            calledTransform = true;
+
             return dataOut;
         }
 
@@ -211,6 +236,8 @@ describe('user-defined transforms:', function() {
             expect(_fullLayout).toBe(fullLayout);
             expect(_fullData).toBe(fullData);
             expect(_transitionData).toBe(transitionData);
+
+            calledSupplyLayoutDefaults = true;
         }
 
         var fakeTransformModule = {
@@ -226,6 +253,9 @@ describe('user-defined transforms:', function() {
         Plots.supplyDataDefaults(dataIn, fullData, layout, fullLayout);
         Plots.supplyLayoutModuleDefaults(layout, fullLayout, fullData, transitionData);
         delete Plots.transformsRegistry.fake;
+        expect(calledSupplyDefaults).toBe(true);
+        expect(calledTransform).toBe(true);
+        expect(calledSupplyLayoutDefaults).toBe(true);
     });
 
 });
