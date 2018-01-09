@@ -456,7 +456,6 @@ proto.initInteractions = function() {
             xaxis: _this.xaxis,
             yaxis: _this.yaxis
         },
-        doubleclick: doubleClick,
         subplot: _this.id,
         prepFn: function(e, startX, startY) {
             // these aren't available yet when initInteractions
@@ -486,6 +485,19 @@ proto.initInteractions = function() {
             else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
+        },
+        clickFn: function(numClicks, evt) {
+            removeZoombox(gd);
+
+            if(numClicks === 2) {
+                var attrs = {};
+                attrs[_this.id + '.aaxis.min'] = 0;
+                attrs[_this.id + '.baxis.min'] = 0;
+                attrs[_this.id + '.caxis.min'] = 0;
+                gd.emit('plotly_doubleclick', null);
+                Plotly.relayout(gd, attrs);
+            }
+            Fx.click(gd, evt, _this.id);
         }
     };
 
@@ -578,14 +590,10 @@ proto.initInteractions = function() {
         }
     }
 
-    function zoomDone(dragged, numClicks) {
-        if(mins === mins0) {
-            if(numClicks === 2) doubleClick();
-
-            return removeZoombox(gd);
-        }
-
+    function zoomDone() {
         removeZoombox(gd);
+
+        if(mins === mins0) return;
 
         var attrs = {};
         attrs[_this.id + '.aaxis.min'] = mins.a;
@@ -665,16 +673,13 @@ proto.initInteractions = function() {
         }
     }
 
-    function dragDone(dragged, numClicks) {
-        if(dragged) {
-            var attrs = {};
-            attrs[_this.id + '.aaxis.min'] = mins.a;
-            attrs[_this.id + '.baxis.min'] = mins.b;
-            attrs[_this.id + '.caxis.min'] = mins.c;
+    function dragDone() {
+        var attrs = {};
+        attrs[_this.id + '.aaxis.min'] = mins.a;
+        attrs[_this.id + '.baxis.min'] = mins.b;
+        attrs[_this.id + '.caxis.min'] = mins.c;
 
-            Plotly.relayout(gd, attrs);
-        }
-        else if(numClicks === 2) doubleClick();
+        Plotly.relayout(gd, attrs);
     }
 
     function clearSelect() {
@@ -682,15 +687,6 @@ proto.initInteractions = function() {
         // here. The selection itself will be removed when the plot redraws
         // at the end.
         zoomContainer.selectAll('.select-outline').remove();
-    }
-
-    function doubleClick() {
-        var attrs = {};
-        attrs[_this.id + '.aaxis.min'] = 0;
-        attrs[_this.id + '.baxis.min'] = 0;
-        attrs[_this.id + '.caxis.min'] = 0;
-        gd.emit('plotly_doubleclick', null);
-        Plotly.relayout(gd, attrs);
     }
 
     // finally, set up hover and click
@@ -706,10 +702,6 @@ proto.initInteractions = function() {
         if(gd._dragging) return;
 
         dragElement.unhover(gd, evt);
-    };
-
-    dragger.onclick = function(evt) {
-        Fx.click(gd, evt, _this.id);
     };
 
     dragElement.init(dragOptions);

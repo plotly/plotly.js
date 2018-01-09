@@ -475,6 +475,8 @@ describe('Test event property of interactions on a ternary plot:', function() {
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
 
+            futureData = undefined;
+
             gd.on('plotly_click', function(data) {
                 futureData = data;
             });
@@ -496,68 +498,90 @@ describe('Test event property of interactions on a ternary plot:', function() {
                 'xaxis', 'yaxis', 'a', 'b', 'c'
             ]);
 
-            expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
-            expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
-            expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-            expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
-            expect(typeof pt.xaxis).toEqual(typeof {}, 'points[0].xaxis');
-            expect(typeof pt.yaxis).toEqual(typeof {}, 'points[0].yaxis');
-            expect(pt.a).toEqual(0.5, 'points[0].a');
-            expect(pt.b).toEqual(0.25, 'points[0].b');
-            expect(pt.c).toEqual(0.25, 'points[0].c');
+            expect(pt.curveNumber).toBe(0, 'points[0].curveNumber');
+            expect(typeof pt.data).toBe(typeof {}, 'points[0].data');
+            expect(typeof pt.fullData).toBe(typeof {}, 'points[0].fullData');
+            expect(pt.pointNumber).toBe(0, 'points[0].pointNumber');
+            expect(typeof pt.xaxis).toBe(typeof {}, 'points[0].xaxis');
+            expect(typeof pt.yaxis).toBe(typeof {}, 'points[0].yaxis');
+            expect(pt.a).toBe(0.5, 'points[0].a');
+            expect(pt.b).toBe(0.25, 'points[0].b');
+            expect(pt.c).toBe(0.25, 'points[0].c');
 
-            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
-            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+            expect(evt.clientX).toBe(pointPos[0], 'event.clientX');
+            expect(evt.clientY).toBe(pointPos[1], 'event.clientY');
         });
     });
 
     describe('modified click events', function() {
-        var clickOpts = {
-                altKey: true,
-                ctrlKey: true,
-                metaKey: true,
-                shiftKey: true
-            },
-            futureData;
+        var futureData;
 
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+
+            futureData = undefined;
 
             gd.on('plotly_click', function(data) {
                 futureData = data;
             });
         });
 
-        it('should not be trigged when not on data points', function() {
-            click(blankPos[0], blankPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
-        });
+        var modClickOpts = {
+            altKey: true,
+            ctrlKey: true, // this makes it effectively into a right-click
+            metaKey: true,
+            shiftKey: true,
+            button: 0,
+            cancelContext: true
+        };
+        var rightClickOpts = {
+            altKey: false,
+            ctrlKey: false,
+            metaKey: false,
+            shiftKey: false,
+            button: 2,
+            cancelContext: true
+        };
 
-        it('should contain the correct fields', function() {
-            click(pointPos[0], pointPos[1], clickOpts);
+        [modClickOpts, rightClickOpts].forEach(function(clickOpts, i) {
+            it('should not be triggered when not on data points', function() {
+                click(blankPos[0], blankPos[1], clickOpts);
+                expect(futureData === undefined).toBe(true, i);
+            });
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            it('should not be triggered when not canceling context', function() {
+                click(pointPos[0], pointPos[1], Lib.extendFlat({}, clickOpts, {cancelContext: false}));
+                expect(futureData === undefined).toBe(true, i);
+            });
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                'xaxis', 'yaxis', 'a', 'b', 'c'
-            ]);
+            it('should contain the correct fields', function() {
+                click(pointPos[0], pointPos[1], clickOpts);
 
-            expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
-            expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
-            expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-            expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
-            expect(typeof pt.xaxis).toEqual(typeof {}, 'points[0].xaxis');
-            expect(typeof pt.yaxis).toEqual(typeof {}, 'points[0].yaxis');
-            expect(pt.a).toEqual(0.5, 'points[0].a');
-            expect(pt.b).toEqual(0.25, 'points[0].b');
-            expect(pt.c).toEqual(0.25, 'points[0].c');
+                var pt = futureData.points[0];
+                var evt = futureData.event;
 
-            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
-            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
-            Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
-                expect(evt[opt]).toEqual(clickOpts[opt], 'event.' + opt);
+                expect(Object.keys(pt)).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                    'xaxis', 'yaxis', 'a', 'b', 'c'
+                ]);
+
+                expect(pt.curveNumber).toBe(0, 'points[0].curveNumber: ' + i);
+                expect(typeof pt.data).toBe(typeof {}, 'points[0].data: ' + i);
+                expect(typeof pt.fullData).toBe(typeof {}, 'points[0].fullData: ' + i);
+                expect(pt.pointNumber).toBe(0, 'points[0].pointNumber: ' + i);
+                expect(typeof pt.xaxis).toBe(typeof {}, 'points[0].xaxis: ' + i);
+                expect(typeof pt.yaxis).toBe(typeof {}, 'points[0].yaxis: ' + i);
+                expect(pt.a).toBe(0.5, 'points[0].a: ' + i);
+                expect(pt.b).toBe(0.25, 'points[0].b: ' + i);
+                expect(pt.c).toBe(0.25, 'points[0].c: ' + i);
+
+                expect(evt.clientX).toBe(pointPos[0], 'event.clientX: ' + i);
+                expect(evt.clientY).toBe(pointPos[1], 'event.clientY: ' + i);
+                Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
+                    if(opt !== 'cancelContext') {
+                        expect(evt[opt]).toBe(clickOpts[opt], 'event.' + opt + ': ' + i);
+                    }
+                });
             });
         });
     });

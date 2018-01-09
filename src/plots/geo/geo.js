@@ -411,17 +411,16 @@ proto.updateFx = function(fullLayout, geoLayout) {
             },
             xaxes: [_this.xaxis],
             yaxes: [_this.yaxis],
-            subplot: _this.id
+            subplot: _this.id,
+            clickFn: function(numClicks) {
+                if(numClicks === 2) {
+                    fullLayout._zoomlayer.selectAll('.select-outline').remove();
+                }
+            }
         };
 
         dragOptions.prepFn = function(e, startX, startY) {
             prepSelect(e, startX, startY, dragOptions, dragMode);
-        };
-
-        dragOptions.doneFn = function(dragged, numClicks) {
-            if(numClicks === 2) {
-                fullLayout._zoomlayer.selectAll('.select-outline').remove();
-            }
         };
 
         dragElement.init(dragOptions);
@@ -445,6 +444,10 @@ proto.updateFx = function(fullLayout, geoLayout) {
     });
 
     bgRect.on('click', function() {
+        // TODO: like pie and mapbox, this doesn't support right-click
+        // actually this one is worse, as right-click starts a pan, or leaves
+        // select in a weird state.
+        // Also, only tangentially related, we should cancel hover during pan
         Fx.click(gd, d3.event);
     });
 };

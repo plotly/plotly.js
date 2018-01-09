@@ -1183,8 +1183,44 @@ describe('annotation effects', function() {
         .then(done);
     });
 
+    function _click(pos, opts) {
+        return new Promise(function(resolve) {
+            click(pos[0], pos[1], opts);
+
+            setTimeout(function() {
+                resolve();
+            }, DBLCLICKDELAY * 1.1);
+        });
+    }
+
+    var pos0Head, pos0, pos1, pos2Head, pos2, clickData;
+
+    function assertClickData(data) {
+        expect(clickData.length).toBe(data.length);
+        expect(clickData).toEqual(data);
+        clickData.splice(0, clickData.length);
+    }
+
+    function initClickTests() {
+        var gdBB = gd.getBoundingClientRect();
+        pos0Head = [gdBB.left + 200, gdBB.top + 200];
+        pos0 = [pos0Head[0], pos0Head[1] - 40];
+        pos1 = [gdBB.left + 160, gdBB.top + 340];
+        pos2Head = [gdBB.left + 340, gdBB.top + 160];
+        pos2 = [pos2Head[0], pos2Head[1] - 40];
+
+        clickData = [];
+
+        gd.on('plotly_clickannotation', function(evt) {
+            expect(evt.event).toEqual(jasmine.objectContaining({type: 'click'}));
+            evt.button = evt.event.button;
+            if(evt.event.ctrlKey) evt.ctrlKey = true;
+            delete evt.event;
+            clickData.push(evt);
+        });
+    }
+
     it('should register clicks and show hover effects on the text box only', function(done) {
-        var gdBB, pos0Head, pos0, pos1, pos2Head, pos2, clickData;
 
         function assertHoverLabel(pos, text, msg) {
             return new Promise(function(resolve) {
@@ -1225,44 +1261,17 @@ describe('annotation effects', function() {
             return p;
         }
 
-        function _click(pos) {
-            return new Promise(function(resolve) {
-                click(pos[0], pos[1]);
-
-                setTimeout(function() {
-                    resolve();
-                }, DBLCLICKDELAY * 1.1);
-            });
-        }
-
-        function assertClickData(data) {
-            expect(clickData).toEqual(data);
-            clickData.splice(0, clickData.length);
-        }
-
         makePlot([
             {x: 50, y: 50, text: 'hi', width: 50, height: 40, ax: 0, ay: -40, xshift: -50, yshift: 50},
             {x: 20, y: 20, text: 'bye', height: 40, showarrow: false},
             {x: 80, y: 80, text: 'why?', ax: 0, ay: -40}
         ], {}) // turn off the default editable: true
         .then(function() {
-            clickData = [];
-            gd.on('plotly_clickannotation', function(evt) {
-                expect(evt.event).toEqual(jasmine.objectContaining({type: 'click'}));
-                delete evt.event;
-                clickData.push(evt);
-            });
-
-            gdBB = gd.getBoundingClientRect();
-            pos0Head = [gdBB.left + 200, gdBB.top + 200];
-            pos0 = [pos0Head[0], pos0Head[1] - 40];
-            pos1 = [gdBB.left + 160, gdBB.top + 340];
-            pos2Head = [gdBB.left + 340, gdBB.top + 160];
-            pos2 = [pos2Head[0], pos2Head[1] - 40];
+            initClickTests();
 
             return assertHoverLabels([[pos0, ''], [pos1, ''], [pos2, '']]);
         })
-        // not going to register either of these because captureevents is off
+        // not going to register any of these because captureevents is off
         .then(function() { return _click(pos1); })
         .then(function() { return _click(pos2Head); })
         .then(function() {
@@ -1281,7 +1290,8 @@ describe('annotation effects', function() {
             assertClickData([{
                 index: 1,
                 annotation: gd.layout.annotations[1],
-                fullAnnotation: gd._fullLayout.annotations[1]
+                fullAnnotation: gd._fullLayout.annotations[1],
+                button: 0
             }]);
 
             expect(gd._fullLayout.annotations[0].hoverlabel).toBeUndefined();
@@ -1305,7 +1315,8 @@ describe('annotation effects', function() {
             assertClickData([{
                 index: 0,
                 annotation: gd.layout.annotations[0],
-                fullAnnotation: gd._fullLayout.annotations[0]
+                fullAnnotation: gd._fullLayout.annotations[0],
+                button: 0
             }]);
 
             return Plotly.relayout(gd, {
@@ -1326,6 +1337,42 @@ describe('annotation effects', function() {
 
             return assertHoverLabels([[pos0, 'bananas'], [pos1, 'chicken'], [pos2, '']],
                 '0 and 1');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    // Currently annotations do *not* support right-click.
+    // TODO: if we integrated this with dragElement rather than
+    // annTextGroupInner.on('click') they could support right-click.
+    it('does not collect right-click or ctrl-click', function(done) {
+        var rightClick = {button: 2, cancelContext: true};
+        var ctrlClick = {ctrlKey: true, cancelContext: true};
+        makePlot([
+            {x: 50, y: 50, text: 'hi', width: 50, height: 40, ax: 0, ay: -40, xshift: -50, yshift: 50, hovertext: 'bananas'},
+            {x: 20, y: 20, text: 'bye', height: 40, showarrow: false, captureevents: true},
+            {x: 80, y: 80, text: 'why?', ax: 0, ay: -40, captureevents: true}
+        ], {}) // turn off the default editable: true
+        .then(initClickTests)
+        .then(function() { return _click(pos1, rightClick); })
+        .then(function() { return _click(pos2Head, rightClick); })
+        .then(function() { return _click(pos1, ctrlClick); })
+        .then(function() { return _click(pos2Head, ctrlClick); })
+        .then(function() { return _click(pos0, rightClick); })
+        .then(function() { return _click(pos0, ctrlClick); })
+        .then(function() {
+            assertClickData([]);
+
+            // sanity check that we still get left clicks
+            return _click(pos1);
+        })
+        .then(function() {
+            assertClickData([{
+                index: 1,
+                annotation: gd.layout.annotations[1],
+                fullAnnotation: gd._fullLayout.annotations[1],
+                button: 0
+            }]);
         })
         .catch(failTest)
         .then(done);

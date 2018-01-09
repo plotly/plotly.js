@@ -177,6 +177,11 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     });
 
     map.on('click', function(evt) {
+        // TODO: this does not support right-click. If we want to support it, we
+        // would likely need to change mapbox to use dragElement instead of straight
+        // mapbox event binding. Or perhaps better, make a simple wrapper with the
+        // right mousedown, mousemove, and mouseup handlers just for a left/right click
+        // pie would use this too.
         Fx.click(gd, evt.originalEvent);
     });
 
@@ -387,12 +392,6 @@ proto.updateFx = function(fullLayout) {
 
         dragOptions.prepFn = function(e, startX, startY) {
             prepSelect(e, startX, startY, dragOptions, dragMode);
-        };
-
-        dragOptions.doneFn = function(dragged, numClicks) {
-            if(numClicks === 2) {
-                fullLayout._zoomlayer.selectAll('.select-outline').remove();
-            }
         };
 
         dragElement.init(dragOptions);
