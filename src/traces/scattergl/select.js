@@ -23,6 +23,9 @@ module.exports = function selectPoints(searchInfo, polygon) {
         y;
 
     var glTrace = cd[0]._glTrace;
+
+    if(!glTrace) return;
+
     var scene = glTrace.scene;
 
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
