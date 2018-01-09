@@ -118,6 +118,7 @@ proto.makeFramework = function() {
 
         var gl = getContext({
             canvas: liveCanvas,
+            preserveDrawingBuffer: true,
             premultipliedAlpha: true
         });
 
