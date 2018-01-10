@@ -847,16 +847,20 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     var bl = constants.radialDragBoxSize;
     var bl2 = bl / 2;
     var radialDrag = dragBox.makeDragger(layers, 'radialdrag', 'move', -bl2, -bl2, bl, bl);
-    var radialDrag3 = d3.select(radialDrag);
     var dragOpts = {element: radialDrag, gd: gd};
+    var tx = cx + (radius + bl2) * Math.cos(angle0);
+    var ty = cy - (radius + bl2) * Math.sin(angle0);
 
-    radialDrag3.attr('transform', strTranslate(
-        cx + (radius + bl2) * Math.cos(angle0),
-        cy - (radius + bl2) * Math.sin(angle0)
-    ))
-    .call(setCursor, 'crosshair');
+    d3.select(radialDrag)
+        .attr('transform', strTranslate(tx, ty))
+        .call(setCursor, 'crosshair');
 
-    var x0, y0, moveFn2, angle1, rng1;
+    // move function (either rotate or rerange flavor)
+    var moveFn2;
+    // rotate angle on done
+    var angle1;
+    // rerange range[1] on done
+    var rng1;
 
     function moveFn(dx, dy) {
         if(moveFn2) {
@@ -869,7 +873,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
             // mostly perpendicular motions rotate,
             // mostly parallel motions re-range
             if(!isNaN(comp)) {
-                moveFn2 = comp < 0.7 ? rotateMove : rerangeMove;
+                moveFn2 = comp < 0.5 ? rotateMove : rerangeMove;
             }
         }
     }
@@ -883,12 +887,10 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     }
 
     function rotateMove(dx, dy) {
-        var x1 = x0 + dx;
-        var y1 = y0 + dy;
-        var ax = x1 - cx - bl2;
-        var ay = cy - y1 + bl2;
+        var x1 = tx + dx;
+        var y1 = ty + dy;
 
-        angle1 = rad2deg(Math.atan2(ay, ax));
+        angle1 = rad2deg(Math.atan2(cy - y1, x1 - cx));
 
         var transform = strTranslate(cx, cy) + strRotate(-angle1);
         layers['radial-axis'].attr('transform', transform);
@@ -936,13 +938,10 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         }
     }
 
-    dragOpts.prepFn = function(evt, startX, startY) {
+    dragOpts.prepFn = function() {
         moveFn2 = null;
         angle1 = null;
         rng1 = null;
-
-        x0 = startX;
-        y0 = startY;
 
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;
