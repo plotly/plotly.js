@@ -70,7 +70,7 @@ module.exports = overrideAll({
         description: [
             'Note that geo subplots are constrained by domain.',
             'In general, when `projection.scale` is set to 1.',
-            'a map will fit either its x or y domain, but not both. '
+            'a map will fit either its x or y domain, but not both.'
         ].join(' ')
     }),
 

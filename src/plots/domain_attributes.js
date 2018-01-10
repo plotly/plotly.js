@@ -44,27 +44,28 @@ module.exports = function(opts, extra) {
         dflt: [0, 1]
     };
 
-    var namePart = opts.name || '';
-    var contPart = opts.trace ? 'trace' : 'subplot';
+    var namePart = opts.name ? opts.name + ' ' : '';
+    var contPart = opts.trace ? 'trace ' : 'subplot ';
+    var descPart = extra.description ? ' ' + extra.description : '';
 
     return {
         x: extendFlat({}, base, {
             description: [
-                'Sets the horizontal domain of this',
+                'Sets the horizontal domain of this ',
                 namePart,
                 contPart,
                 '(in plot fraction).',
-                extra.description
-            ].join(' ')
+                descPart
+            ].join('')
         }),
         y: extendFlat({}, base, {
             description: [
-                'Sets the vertical domain of this',
+                'Sets the vertical domain of this ',
                 namePart,
                 contPart,
                 '(in plot fraction).',
-                extra.description
-            ].join(' ')
+                descPart
+            ].join('')
         }),
         editType: opts.editType
     };
