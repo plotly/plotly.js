@@ -48,6 +48,10 @@ module.exports = function plot(subplot, moduleCalcData) {
                     cdi.x = rr * Math.cos(rad);
                     cdi.y = rr * Math.sin(rad);
                     continue;
+                } else {
+                    // flag for scatter/line_points.js
+                    // to extend line (and fills) into center
+                    cdi.intoCenter = [subplot.cxx, subplot.cyy];
                 }
             }
 

@@ -203,10 +203,12 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var yOffset2 = _this.yOffset2 = gs.t + gs.h * (1 - yDomain2[1]);
     // circle radius in px
     var radius = _this.radius = xLength2 / dxSectorBBox;
-    // circle center position x position in px
+    // circle center position in px
     var cx = _this.cx = xOffset2 - radius * sectorBBox[0];
-    // circle center position y position in px
     var cy = _this.cy = yOffset2 + radius * sectorBBox[3];
+    // circle center in the coordinate system of plot area
+    var cxx = _this.cxx = cx - xOffset2;
+    var cyy = _this.cyy = cy - yOffset2;
 
     _this.updateRadialAxis(fullLayout, polarLayout);
     _this.updateRadialAxisTitle(fullLayout, polarLayout);
@@ -248,7 +250,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
 
     _this.clipPaths.circle.select('path')
         .attr('d', pathSectorClosed(radius, sector))
-        .attr('transform', strTranslate(cx - xOffset2, cy - yOffset2));
+        .attr('transform', strTranslate(cxx, cyy));
 
     // remove crispEdges - all the off-square angles in polar plots
     // make these counterproductive.
@@ -567,6 +569,8 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     var radius = _this.radius;
     var cx = _this.cx;
     var cy = _this.cy;
+    var cxx = _this.cxx;
+    var cyy = _this.cyy;
     var xOffset2 = _this.xOffset2;
     var yOffset2 = _this.yOffset2;
     var sector = polarLayout.sector;
@@ -588,9 +592,6 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     var sector0;
     // angle about circle center at drag start
     var a0;
-    // circle center in the main-drag coordinate system
-    var cxx = cx - xOffset2;
-    var cyy = cy - yOffset2;
 
     function xy2r(x, y) {
         var xx = x - cxx;
