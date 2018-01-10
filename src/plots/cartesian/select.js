@@ -273,6 +273,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 updateSelectedState(gd, searchTraces);
                 gd.emit('plotly_deselect', null);
             }
+            else {
+                // TODO: remove in v2 - this was probably never intended to work as it does,
+                // but in case anyone depends on it we don't want to break it now.
+                gd.emit('plotly_selected', undefined);
+            }
         });
     };
 

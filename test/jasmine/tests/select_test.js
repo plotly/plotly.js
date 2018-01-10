@@ -96,13 +96,16 @@ function assertEventCounts(selecting, selected, deselect, msg) {
     expect(deselectCnt).toBe(deselect, 'plotly_deselect call count: ' + msg);
 }
 
+// TODO: in v2, when we get rid of the `plotly_selected->undefined` event, these will
+// change to BOXEVENTS = [1, 1, 1], LASSOEVENTS = [4, 1, 1]. See also _run down below
+//
 // events for box or lasso select mouse moves then a doubleclick
 var NOEVENTS = [0, 0, 0];
 // deselect used to give an extra plotly_selected event on the first click
 // with undefined event data - but now that's gone, since `clickFn` handles this.
-var BOXEVENTS = [1, 1, 1];
+var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
-var LASSOEVENTS = [4, 1, 1];
+var LASSOEVENTS = [4, 2, 1];
 
 describe('Test select box and lasso in general:', function() {
     var mock = require('@mocks/14.json');
@@ -643,7 +646,11 @@ describe('Test select box and lasso per trace:', function() {
         return (eventCounts[0] ? selectedPromise : Promise.resolve())
             .then(afterDragFn)
             .then(function() {
-                assertEventCounts(eventCounts[0], eventCounts[1], 0, msg + ' (before dblclick)');
+                // TODO: in v2 when we remove the `plotly_selecting->undefined` the Math.max(...)
+                // in the middle here will turn into just eventCounts[1].
+                // It's just here because one of the selected events is generated during
+                // doubleclick so hasn't happened yet when we're testing this.
+                assertEventCounts(eventCounts[0], Math.max(0, eventCounts[1] - 1), 0, msg + ' (before dblclick)');
                 return doubleClick(dblClickPos[0], dblClickPos[1]);
             })
             .then(eventCounts[2] ? deselectPromise : Promise.resolve())
