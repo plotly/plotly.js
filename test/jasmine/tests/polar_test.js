@@ -148,6 +148,21 @@ describe('Test polar plots defaults:', function() {
         expect(layoutOut.polar.angularaxis.direction).toBe('clockwise');
         expect(layoutOut.polar.angularaxis.rotation).toBe(90);
     });
+
+    it('(for now) should log message when detecting *date* angular axes and fallback to *linear*', function() {
+        spyOn(Lib, 'log');
+
+        _supply({}, [{
+            type: 'scatterpolar',
+            r: [1, 2],
+            theta: ['2017-01-01', '2018-01-01'],
+            visible: true,
+            subplot: 'polar'
+        }]);
+
+        expect(Lib.log).toHaveBeenCalledWith('Polar plots do not support date angular axes yet.');
+        expect(layoutOut.polar.angularaxis.type).toBe('linear');
+    });
 });
 
 describe('Test relayout on polar subplots:', function() {

@@ -147,15 +147,15 @@ var angularAxisAttrs = {
         // to make clear that axis here is periodic and more tightly match
         // `thetaunit`?
         //
+        // skip 'date' for first push
         // no 'log' for now
-        values: ['-', 'linear', 'date', 'category'],
+        values: ['-', 'linear', 'category'],
         dflt: '-',
         role: 'info',
         editType: 'calc',
         description: [
             'Sets the angular axis type.',
             'If *linear*, set `thetaunit` to determine the unit in which axis value are shown.',
-            'If *date*, use `period` to set the unit of time that determines a complete rotation',
             'If *category, use `period` to set the number of integer coordinates around polar axis.'
         ].join(' ')
     },
@@ -176,17 +176,16 @@ var angularAxisAttrs = {
     },
 
     period: {
-        valType: 'any',
+        valType: 'number',
         editType: 'calc',
+        min: 0,
         role: 'info',
-        description: ''
-
-        // 360 / 2*pi for linear (might not need to set it)
-        // and to full range for other types
-
-        // 'period' is the angular equivalent to 'range'
-
-        // similar to dtick, one way to achieve e.g.:
+        description: [
+            'Set the angular period.',
+            'Has an effect only when `angularaxis.type` is *category*.',
+        ].join(' ')
+        // Examples for date axes:
+        //
         // - period that equals the timeseries length
         //  http://flowingdata.com/2017/01/24/one-dataset-visualized-25-ways/18-polar-coordinates/
         // - and 1-year periods (focusing on seasonal change0

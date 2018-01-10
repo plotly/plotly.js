@@ -10,7 +10,6 @@
 
 var Lib = require('../../lib');
 var Color = require('../../components/color');
-var Registry = require('../../registry');
 var handleSubplotDefaults = require('../subplot_defaults');
 var getSubplotData = require('../get_data').getSubplotData;
 
@@ -62,11 +61,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             orderedCategories(dataAttr, axOut.categoryorder, axOut.categoryarray, subplotData) :
             [];
 
-        if(axType === 'date') {
-            var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
-            handleCalendarDefaults(axIn, axOut, 'calendar', layoutOut.calendar);
-        }
-
         var visible = coerceAxis('visible');
         setConvert(axOut, layoutOut);
 
@@ -113,6 +107,26 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 break;
 
             case 'angularaxis':
+                // We do not support 'true' date angular axes yet,
+                // users can still plot dates on angular axes by setting
+                // `angularaxis.type: 'category'`.
+                //
+                // Here, if a date angular axes is detected, we make
+                // all its corresponding traces invisible, so that
+                // when we do add support for data angular axes, the new
+                // behavior won't conflict with existing behavior
+                if(axType === 'date') {
+                    Lib.log('Polar plots do not support date angular axes yet.');
+
+                    for(var j = 0; j < subplotData.length; j++) {
+                        subplotData[j].visible = false;
+                    }
+
+                    // turn this into a 'dummy' linear axis so that
+                    // the subplot still renders ok
+                    axType = axIn.type = axOut.type = 'linear';
+                }
+
                 if(axType === 'linear') {
                     coerceAxis('thetaunit');
                 } else {
@@ -179,7 +193,6 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
             }
         }
 
-        // TODO add trace input calendar support
         if(trace) {
             axOut.type = autoType(trace[dataAttr], 'gregorian');
         }

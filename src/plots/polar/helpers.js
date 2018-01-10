@@ -16,6 +16,12 @@ exports.setConvertAngular = function setConvertAngular(ax) {
     var _c2rad;
     var _rad2c;
 
+    function getTotalNumberOfCategories() {
+        return ax.period ?
+            Math.max(ax.period, ax._categories.length) :
+            ax._categories.length;
+    }
+
     if(ax.type === 'linear') {
         _c2rad = function(v, unit) {
             if(unit === 'degrees') return Lib.deg2rad(v);
@@ -28,20 +34,12 @@ exports.setConvertAngular = function setConvertAngular(ax) {
     }
     else if(ax.type === 'category') {
         _c2rad = function(v) {
-            return v * 2 * Math.PI / ax._categories.length;
+            var tot = getTotalNumberOfCategories();
+            return v * 2 * Math.PI / tot;
         };
         _rad2c = function(v) {
-            return v * ax._categories.length / Math.PI / 2;
-        };
-    }
-    else if(ax.type === 'date') {
-        var period = ax.period || 365 * 24 * 60 * 60 * 1000;
-
-        _c2rad = function(v) {
-            return (v % period) * 2 * Math.PI / period;
-        };
-        _rad2c = function(v) {
-            return v * period / Math.PI / 2;
+            var tot = getTotalNumberOfCategories();
+            return v * tot / Math.PI / 2;
         };
     }
 

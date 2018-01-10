@@ -446,9 +446,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             });
         };
     }
-    else if(ax.type === 'date') {
-        // ..
-    }
 
     setScale(ax, angularLayout, fullLayout);
     Axes.doAutoRange(ax);
@@ -976,8 +973,6 @@ proto.isPtWithinSector = function(d) {
         r0 = radialRange[1];
         r1 = radialRange[0];
     }
-
-    // TODO add calendar support
 
     return (
         (r >= r0 && r <= r1) &&

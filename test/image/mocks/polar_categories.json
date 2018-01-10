@@ -50,7 +50,8 @@
         "angle": 45
       },
       "angularaxis": {
-        "direction": "clockwise"
+        "direction": "clockwise",
+        "period": 6
       }
     },
     "polar2": {
