@@ -84,10 +84,6 @@ module.exports = function initInteractions(gd) {
                 dragElement.unhover(gd, evt);
             };
 
-            maindrag.onclick = function(evt) {
-                Fx.click(gd, evt, subplot);
-            };
-
             // corner draggers
             if(gd._context.showAxisDragHandles) {
                 dragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset - DRAGGERSIZE,

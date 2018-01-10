@@ -257,12 +257,12 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         );
     };
 
-    dragOptions.doneFn = function(dragged, numclicks) {
+    dragOptions.clickFn = function(numClicks) {
         corners.remove();
 
         throttle.done(throttleID).then(function() {
             throttle.clear(throttleID);
-            if(!dragged && numclicks === 2) {
+            if(numClicks === 2) {
                 // clear selection on doubleclick
                 outlines.remove();
                 for(i = 0; i < searchTraces.length; i++) {
@@ -274,8 +274,19 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 gd.emit('plotly_deselect', null);
             }
             else {
-                dragOptions.gd.emit('plotly_selected', eventData);
+                // TODO: remove in v2 - this was probably never intended to work as it does,
+                // but in case anyone depends on it we don't want to break it now.
+                gd.emit('plotly_selected', undefined);
             }
+        });
+    };
+
+    dragOptions.doneFn = function() {
+        corners.remove();
+
+        throttle.done(throttleID).then(function() {
+            throttle.clear(throttleID);
+            dragOptions.gd.emit('plotly_selected', eventData);
 
             if(currentPolygon && dragOptions.polygons) {
                 // save last polygons
