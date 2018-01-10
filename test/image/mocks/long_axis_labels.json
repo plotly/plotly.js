@@ -1,0 +1,37 @@
+{
+    "data": [{
+        "type": "scatter",
+        "name": "loooooong x",
+        "x": [
+            "short label 1", "loooooong label 1",
+            "short label 2", "loooooong label 2",
+            "short label 3", "loooooong label 3",
+            "short label 4", "loooooong label 4",
+            "short label 5", "loooooong label 5"
+        ],
+        "y": [
+            "short label 1", "loooooong label 1",
+            "short label 2", "loooooong label 2",
+            "short label 3", "loooooong label 3",
+            "short label 4", "loooooong label 4",
+            "short label 5", "loooooong label 5"
+          ]
+    },
+    {
+        "yaxis": "y2",
+        "type": "scatter",
+        "name": "loooooong y",
+        "x":["looooooooooooonger"],
+        "y":["loooooonger"]
+    }
+  ],
+    "layout": {
+      "xaxis": {"title": "X Axis Title", "titlefont": {"size": 80}},
+      "yaxis": {"title": "Y Axis Title", "titlefont": {"size": 40}},
+      "yaxis2": {
+        "title": "Y2 Axis Title",
+        "overlaying": "y",
+        "side": "right"
+      }
+      }
+}

@@ -11,6 +11,7 @@
 
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+var Plots = require('../../plots/plots');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -2100,10 +2101,23 @@ axes.doTicks = function(gd, axid, skipTitle) {
             }
         }
 
+        function doAutoMargins() {
+            var marginPush = ax.titlefont.size + 15 +
+                (axLetter === 'x' ? ax._boundingBox.height : ax._boundingBox.width);
+
+            if(!ax._marginPush || ax._marginPush < marginPush) {
+                ax._marginPush = marginPush;
+                var pushParams = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+                pushParams[ax.side[0]] = marginPush;
+                Plots.autoMargin(gd, ax._name, pushParams);
+            }
+        }
+
         var done = Lib.syncOrAsync([
             allLabelsReady,
             fixLabelOverlaps,
-            calcBoundingBox
+            calcBoundingBox,
+            doAutoMargins
         ]);
         if(done && done.then) gd._promises.push(done);
         return done;
