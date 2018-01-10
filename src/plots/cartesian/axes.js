@@ -1426,7 +1426,6 @@ function formatLinear(ax, out, hover, extraPrecision, hideexp) {
 
 function formatAngle(ax, out, hover, extraPrecision, hideexp) {
     if(ax.thetaunit === 'radians' && !hover) {
-        var isNeg = out.x < 0;
         var num = out.x / 180;
 
         if(num === 0) {
@@ -1434,20 +1433,26 @@ function formatAngle(ax, out, hover, extraPrecision, hideexp) {
         } else {
             var frac = num2frac(num);
 
-            if(frac[1] === 1) {
-                if(frac[0] === 1) out.text = 'π';
-                else out.text = frac[0] + 'π';
+            if(frac[1] >= 100) {
+                out.text = numFormat(Lib.deg2rad(out.x), ax, hideexp, extraPrecision);
             } else {
-                out.text = [
-                    '<sup>', frac[0], '</sup>',
-                    '⁄',
-                    '<sub>', frac[1], '</sub>',
-                    'π'
-                ].join('');
+                var isNeg = out.x < 0;
+
+                if(frac[1] === 1) {
+                    if(frac[0] === 1) out.text = 'π';
+                    else out.text = frac[0] + 'π';
+                } else {
+                    out.text = [
+                        '<sup>', frac[0], '</sup>',
+                        '⁄',
+                        '<sub>', frac[1], '</sub>',
+                        'π'
+                    ].join('');
+                }
+
+                if(isNeg) out.text = MINUS_SIGN + out.text;
             }
         }
-
-        if(isNeg) out.text = MINUS_SIGN + out.text;
     } else {
         out.text = numFormat(out.x, ax, hideexp, extraPrecision);
     }
