@@ -130,6 +130,24 @@ describe('Test polar plots defaults:', function() {
         expect(layoutOut.polar.radialaxis.linecolor).toBe('blue');
         expect(layoutOut.polar.radialaxis.gridcolor).toBe('rgb(153, 153, 255)', 'blend by 60% with bgcolor');
     });
+
+    it('should default *rotation* to 90 when clockwise *direction*', function() {
+        _supply({
+            polar: {}
+        });
+
+        expect(layoutOut.polar.angularaxis.direction).toBe('counterclockwise');
+        expect(layoutOut.polar.angularaxis.rotation).toBe(0);
+
+        _supply({
+            polar: {
+                angularaxis: {direction: 'clockwise'}
+            }
+        });
+
+        expect(layoutOut.polar.angularaxis.direction).toBe('clockwise');
+        expect(layoutOut.polar.angularaxis.rotation).toBe(90);
+    });
 });
 
 describe('Test relayout on polar subplots:', function() {

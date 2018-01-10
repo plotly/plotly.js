@@ -48,6 +48,9 @@
       },
       "radialaxis": {
         "angle": 45
+      },
+      "angularaxis": {
+        "direction": "clockwise"
       }
     },
     "polar2": {

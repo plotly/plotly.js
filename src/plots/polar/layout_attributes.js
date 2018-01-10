@@ -200,7 +200,6 @@ var angularAxisAttrs = {
     direction: {
         valType: 'enumerated',
         values: ['counterclockwise', 'clockwise'],
-        // we could make the default 'clockwise' for category and date angular axes
         dflt: 'counterclockwise',
         role: 'info',
         editType: 'calc',
@@ -211,16 +210,15 @@ var angularAxisAttrs = {
 
     rotation: {
         valType: 'angle',
-        // we could maybe make `rotation: 90` by default for category and date angular axes
-        dflt: 0,
         editType: 'calc',
         role: 'info',
         description: [
             'Sets that start position (in degrees) of the angular axis',
-            'Note that by default, polar subplots are orientation such that the theta=0',
-            'corresponds to a line pointing right (like what mathematicians prefer).',
-            'For example to make the angular axis start from the North (like on a compass),',
-            'set `angularaxis.rotation` to *90*.'
+            'By default, polar subplots will `direction` set to *counterclockwise*',
+            'get a `rotation` of *0*',
+            'which corresponds to due East (like what mathematicians prefer).',
+            'In turn, polar with `direction` set to *clockwise* get a rotation of *90*',
+            'which corresponds to due North (like on a compass),'
         ].join(' ')
     },
 

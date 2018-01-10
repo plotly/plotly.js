@@ -119,10 +119,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     coerceAxis('period');
                 }
 
-                // TODO maybe by default: non-linear axis
-                // should get direction: 'clockwise' + rotation: 90
-                coerceAxis('direction');
-                coerceAxis('rotation');
+                var direction = coerceAxis('direction');
+                coerceAxis('rotation', {counterclockwise: 0, clockwise: 90}[direction]);
 
                 setConvertAngular(axOut);
                 break;
