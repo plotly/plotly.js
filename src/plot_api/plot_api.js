@@ -1944,6 +1944,12 @@ function _relayout(gd, aobj) {
                     ax.range = (ax.range[1] > ax.range[0]) ? [1, 2] : [2, 1];
                 }
 
+                // clear polar view initial stash for radial range so that
+                // value get recomputed in correct units
+                if(fullLayout._subplots.polar && fullLayout[p.parts[0]]) {
+                    delete fullLayout[p.parts[0]]._subplot.viewInitial['radialaxis.range'];
+                }
+
                 // Annotations and images also need to convert to/from linearized coords
                 // Shapes do not need this :)
                 Registry.getComponentMethod('annotations', 'convertCoords')(gd, parentFull, vi, doextra);

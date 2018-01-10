@@ -232,7 +232,20 @@ describe('Test relayout on polar subplots:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
         Plotly.plot(gd, fig).then(function() {
+            expect(gd._fullLayout.polar._subplot.viewInitial['radialaxis.range'])
+                .toBeCloseToArray([0, 11.225]);
+
             return Plotly.relayout(gd, 'polar.radialaxis.type', 'log');
+        })
+        .then(function() {
+            expect(gd._fullLayout.polar._subplot.viewInitial['radialaxis.range'])
+                .toBeCloseToArray([-0.53, 1.158]);
+
+            return Plotly.relayout(gd, 'polar.radialaxis.type', 'linear');
+        })
+        .then(function() {
+            expect(gd._fullLayout.polar._subplot.viewInitial['radialaxis.range'])
+                .toBeCloseToArray([0, 11.225]);
         })
         .catch(fail)
         .then(done);
