@@ -211,11 +211,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
         dragOptions.moveFn = (dragMode === 'move') ? moveShape : resizeShape;
     }
 
-    function endDrag(dragged) {
+    function endDrag() {
         setCursor(shapePath);
-        if(dragged) {
-            Plotly.relayout(gd, update);
-        }
+        Plotly.relayout(gd, update);
     }
 
     function moveShape(dx, dy) {

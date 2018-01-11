@@ -18,6 +18,7 @@ var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
+var Fx = require('../../components/fx');
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../../components/dragelement');
 var FROM_TL = require('../../constants/alignment').FROM_TL;
@@ -52,22 +53,13 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // within DBLCLICKDELAY so we can check for click or doubleclick events
     // dragged stores whether a drag has occurred, so we don't have to
     // redraw unnecessarily, ie if no move bigger than MINDRAG or MINZOOM px
-    var fullLayout = gd._fullLayout,
-        zoomlayer = gd._fullLayout._zoomlayer,
-        isMainDrag = (ns + ew === 'nsew'),
-        subplots,
-        xa,
-        ya,
-        xs,
-        ys,
-        pw,
-        ph,
-        xActive,
-        yActive,
-        cursor,
-        isSubplotConstrained,
-        xaLinked,
-        yaLinked;
+    var fullLayout = gd._fullLayout;
+    var zoomlayer = gd._fullLayout._zoomlayer;
+    var isMainDrag = (ns + ew === 'nsew');
+    var singleEnd = (ns + ew).length === 1;
+
+    var subplots, xa, ya, xs, ys, pw, ph, xActive, yActive, cursor,
+        isSubplotConstrained, xaLinked, yaLinked;
 
     function recomputeAxisLists() {
         xa = [plotinfo.xaxis];
@@ -165,13 +157,57 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
             else if(dragModeNow === 'pan') {
                 dragOptions.moveFn = plotDrag;
-                dragOptions.doneFn = dragDone;
+                dragOptions.doneFn = dragTail;
                 clearSelect(zoomlayer);
             }
             else if(isSelectOrLasso(dragModeNow)) {
                 dragOptions.xaxes = xa;
                 dragOptions.yaxes = ya;
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
+            }
+        },
+        clickFn: function(numClicks, evt) {
+            removeZoombox(gd);
+
+            if(numClicks === 2 && !singleEnd) doubleClick();
+
+            if(isMainDrag) {
+                Fx.click(gd, evt, plotinfo.id);
+            }
+            else if(numClicks === 1 && singleEnd) {
+                var ax = ns ? ya[0] : xa[0],
+                    end = (ns === 's' || ew === 'w') ? 0 : 1,
+                    attrStr = ax._name + '.range[' + end + ']',
+                    initialText = getEndText(ax, end),
+                    hAlign = 'left',
+                    vAlign = 'middle';
+
+                if(ax.fixedrange) return;
+
+                if(ns) {
+                    vAlign = (ns === 'n') ? 'top' : 'bottom';
+                    if(ax.side === 'right') hAlign = 'right';
+                }
+                else if(ew === 'e') hAlign = 'right';
+
+                if(gd._context.showAxisRangeEntryBoxes) {
+                    d3.select(dragger)
+                        .call(svgTextUtils.makeEditable, {
+                            gd: gd,
+                            immediate: true,
+                            background: fullLayout.paper_bgcolor,
+                            text: String(initialText),
+                            fill: ax.tickfont ? ax.tickfont.color : '#444',
+                            horizontalAlign: hAlign,
+                            verticalAlign: vAlign
+                        })
+                        .on('edit', function(text) {
+                            var v = ax.d2r(text);
+                            if(v !== undefined) {
+                                Plotly.relayout(gd, attrStr, v);
+                            }
+                        });
+                }
             }
         }
     };
@@ -281,10 +317,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dimmed = true;
     }
 
-    function zoomDone(dragged, numClicks) {
+    function zoomDone() {
+        // more strict than dragged, which allows you to come back to where you started
+        // and still count as dragged
         if(Math.min(box.h, box.w) < MINDRAG * 2) {
-            if(numClicks === 2) doubleClick();
-
             return removeZoombox(gd);
         }
 
@@ -293,49 +329,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(zoomMode === 'xy' || zoomMode === 'y') zoomAxRanges(ya, (ph - box.b) / ph, (ph - box.t) / ph, updates, yaLinked);
 
         removeZoombox(gd);
-        dragTail(zoomMode);
+        dragTail();
         showDoubleClickNotifier(gd);
-    }
-
-    function dragDone(dragged, numClicks) {
-        var singleEnd = (ns + ew).length === 1;
-        if(dragged) dragTail();
-        else if(numClicks === 2 && !singleEnd) doubleClick();
-        else if(numClicks === 1 && singleEnd) {
-            var ax = ns ? ya[0] : xa[0],
-                end = (ns === 's' || ew === 'w') ? 0 : 1,
-                attrStr = ax._name + '.range[' + end + ']',
-                initialText = getEndText(ax, end),
-                hAlign = 'left',
-                vAlign = 'middle';
-
-            if(ax.fixedrange) return;
-
-            if(ns) {
-                vAlign = (ns === 'n') ? 'top' : 'bottom';
-                if(ax.side === 'right') hAlign = 'right';
-            }
-            else if(ew === 'e') hAlign = 'right';
-
-            if(gd._context.showAxisRangeEntryBoxes) {
-                d3.select(dragger)
-                    .call(svgTextUtils.makeEditable, {
-                        gd: gd,
-                        immediate: true,
-                        background: fullLayout.paper_bgcolor,
-                        text: String(initialText),
-                        fill: ax.tickfont ? ax.tickfont.color : '#444',
-                        horizontalAlign: hAlign,
-                        verticalAlign: vAlign
-                    })
-                    .on('edit', function(text) {
-                        var v = ax.d2r(text);
-                        if(v !== undefined) {
-                            Plotly.relayout(gd, attrStr, v);
-                        }
-                    });
-            }
-        }
     }
 
     // scroll zoom, on all draggers except corners
@@ -648,9 +643,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     // dragTail - finish a drag event with a redraw
-    function dragTail(zoommode) {
-        if(zoommode === undefined) zoommode = (ew ? 'x' : '') + (ns ? 'y' : '');
-
+    function dragTail() {
         // put the subplot viewboxes back to default (Because we're going to)
         // be repositioning the data in the relayout. But DON'T call
         // ticksAndAnnotations again - it's unnecessary and would overwrite `updates`

@@ -477,16 +477,22 @@ describe('Test event data of interactions on a pie plot:', function() {
             expect(futureData).toBe(undefined);
         });
 
-        it('should contain the correct fields', function() {
+        it('does not respond to right-click', function() {
             click(pointPos[0], pointPos[1], clickOpts);
-            expect(futureData.points.length).toEqual(1);
+            expect(futureData).toBe(undefined);
 
-            checkEventData(futureData);
+            // TODO: 'should contain the correct fields'
+            // This test passed previously, but only because assets/click
+            // incorrectly generated a click event for right click. It never
+            // worked in reality.
+            // expect(futureData.points.length).toEqual(1);
 
-            var evt = futureData.event;
-            Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
-                expect(evt[opt]).toEqual(clickOpts[opt], 'event.' + opt);
-            });
+            // checkEventData(futureData);
+
+            // var evt = futureData.event;
+            // Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
+            //     expect(evt[opt]).toEqual(clickOpts[opt], 'event.' + opt);
+            // });
         });
     });
 

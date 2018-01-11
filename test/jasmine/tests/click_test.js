@@ -45,11 +45,12 @@ describe('Test click interactions:', function() {
 
     var mockCopy, gd;
 
-    var pointPos = [344, 216],
-        blankPos = [63, 356];
+    var pointPos = [344, 216];
+    var blankPos = [63, 356];
+    var marginPos = [100, 50];
 
-    var autoRangeX = [-3.011967491973726, 2.1561305597186564],
-        autoRangeY = [-0.9910086301469277, 1.389382716298284];
+    var autoRangeX = [-3.011967491973726, 2.1561305597186564];
+    var autoRangeY = [-0.9910086301469277, 1.389382716298284];
 
     beforeEach(function() {
         gd = createGraphDiv();
@@ -65,24 +66,62 @@ describe('Test click interactions:', function() {
     }
 
     describe('click events', function() {
-        var futureData;
+        var futureData, clickPassthroughs, contextPassthroughs;
 
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
 
+            futureData = undefined;
+            clickPassthroughs = 0;
+            contextPassthroughs = 0;
+
             gd.on('plotly_click', function(data) {
                 futureData = data;
             });
+
+            gd.addEventListener('click', function() {
+                clickPassthroughs++;
+            });
+            gd.addEventListener('contextmenu', function() {
+                contextPassthroughs++;
+            });
         });
 
-        it('should not be trigged when not on data points', function() {
+        // Later we want to emit plotly events for clicking in the graph but not on data
+        // showing the axis values you clicked on. But at the moment these events
+        // pass through to event handlers attached to gd.
+        it('should not be triggered when not on data points', function() {
             click(blankPos[0], blankPos[1]);
             expect(futureData).toBe(undefined);
+            // this is a weird one - in the real case the original click never
+            // happens, it gets canceled by preventDefault in mouseup, but we
+            // add our own synthetic click.
+            // But assets/click doesn't know not to generate a click event, so
+            // here we get both. I don't see a good way to avoid this, but also
+            // there's something nice about this showing that we do indeed
+            // generate the synthetic click event.
+            // TODO: do we actually want this synthetic event, now that dragElement
+            // has `clickFn` to explicitly manage clicks too? Perhaps leave it in
+            // for now, in case either 1) users want to catch all clicks on gd, or
+            // 2) we have a component still using on('click') instead of `clickFn`
+            expect(clickPassthroughs).toBe(2);
+            expect(contextPassthroughs).toBe(0);
+        });
+
+        // Margin clicks will probably always pass through to gd, right?
+        // Any reason we should handle these?
+        it('should not be triggered when in the margin', function() {
+            click(marginPos[0], marginPos[1]);
+            expect(futureData).toBe(undefined);
+            expect(clickPassthroughs).toBe(1);
+            expect(contextPassthroughs).toBe(0);
         });
 
         it('should contain the correct fields', function() {
             click(pointPos[0], pointPos[1]);
             expect(futureData.points.length).toEqual(1);
+            expect(clickPassthroughs).toBe(2);
+            expect(contextPassthroughs).toBe(0);
 
             var pt = futureData.points[0];
             expect(Object.keys(pt)).toEqual([
@@ -98,49 +137,79 @@ describe('Test click interactions:', function() {
             expect(evt.clientX).toEqual(pointPos[0]);
             expect(evt.clientY).toEqual(pointPos[1]);
         });
-    });
 
-    describe('modified click events', function() {
-        var clickOpts = {
-                altKey: true,
-                ctrlKey: true,
-                metaKey: true,
-                shiftKey: true
-            },
-            futureData;
+        var modClickOpts = {
+            altKey: true,
+            ctrlKey: true, // this makes it effectively into a right-click
+            metaKey: true,
+            shiftKey: true,
+            button: 0,
+            cancelContext: true
+        };
+        var rightClickOpts = {
+            altKey: false,
+            ctrlKey: false,
+            metaKey: false,
+            shiftKey: false,
+            button: 2,
+            cancelContext: true
+        };
 
-        beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
-
-            gd.on('plotly_click', function(data) {
-                futureData = data;
+        [modClickOpts, rightClickOpts].forEach(function(clickOpts, i) {
+            it('should not be triggered when not on data points', function() {
+                click(blankPos[0], blankPos[1], clickOpts);
+                expect(futureData === undefined).toBe(true, i);
+                expect(clickPassthroughs).toBe(0, i);
+                expect(contextPassthroughs).toBe(0, i);
             });
-        });
 
-        it('should not be trigged when not on data points', function() {
-            click(blankPos[0], blankPos[1], clickOpts);
-            expect(futureData).toBe(undefined);
-        });
+            it('should not be triggered when in the margin', function() {
+                click(marginPos[0], marginPos[1], clickOpts);
+                expect(futureData === undefined).toBe(true, i);
+                expect(clickPassthroughs).toBe(0, i);
+                expect(contextPassthroughs).toBe(0, i);
+            });
 
-        it('should contain the correct fields', function() {
-            click(pointPos[0], pointPos[1], clickOpts);
-            expect(futureData.points.length).toEqual(1);
+            it('should not be triggered if you dont cancel contextmenu', function() {
+                click(pointPos[0], pointPos[1], Lib.extendFlat({}, clickOpts, {cancelContext: false}));
+                expect(futureData === undefined).toBe(true, i);
+                expect(clickPassthroughs).toBe(0, i);
+                expect(contextPassthroughs).toBe(1, i);
+            });
 
-            var pt = futureData.points[0];
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                'x', 'y', 'xaxis', 'yaxis'
-            ]);
-            expect(pt.curveNumber).toEqual(0);
-            expect(pt.pointNumber).toEqual(11);
-            expect(pt.x).toEqual(0.125);
-            expect(pt.y).toEqual(2.125);
+            // Testing the specific behavior that some users depend on
+            // See https://github.com/plotly/plotly.js/issues/2101
+            // If and only if you cancel contextmenu, by doing something like:
+            //
+            //   gd.addEventListener('contextmenu', function(e) { e.preventDefault(); })
+            //
+            // then we pass right-click on data points through to plotly_click events.
+            // Devs using this need to be aware then to check eventData.event
+            // and figure out if it had a button or ctrlKey etc.
+            it('should contain the correct fields', function() {
+                click(pointPos[0], pointPos[1], clickOpts);
+                expect(futureData.points.length).toBe(1, i);
+                expect(clickPassthroughs).toBe(0, i);
+                expect(contextPassthroughs).toBe(0, i);
 
-            var evt = futureData.event;
-            expect(evt.clientX).toEqual(pointPos[0]);
-            expect(evt.clientY).toEqual(pointPos[1]);
-            Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
-                expect(evt[opt]).toEqual(clickOpts[opt], opt);
+                var pt = futureData.points[0];
+                expect(Object.keys(pt)).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                    'x', 'y', 'xaxis', 'yaxis'
+                ]);
+                expect(pt.curveNumber).toEqual(0);
+                expect(pt.pointNumber).toEqual(11);
+                expect(pt.x).toEqual(0.125);
+                expect(pt.y).toEqual(2.125);
+
+                var evt = futureData.event;
+                expect(evt.clientX).toEqual(pointPos[0]);
+                expect(evt.clientY).toEqual(pointPos[1]);
+                Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
+                    if(opt !== 'cancelContext') {
+                        expect(evt[opt]).toBe(clickOpts[opt], opt + ': ' + i);
+                    }
+                });
             });
         });
     });

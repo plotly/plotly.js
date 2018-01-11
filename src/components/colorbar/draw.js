@@ -584,10 +584,10 @@ module.exports = function draw(gd, id) {
                         opts.xanchor, opts.yanchor);
                     setCursor(container, csr);
                 },
-                doneFn: function(dragged) {
+                doneFn: function() {
                     setCursor(container);
 
-                    if(dragged && xf !== undefined && yf !== undefined) {
+                    if(xf !== undefined && yf !== undefined) {
                         Plotly.restyle(gd,
                             {'colorbar.x': xf, 'colorbar.y': yf},
                             getTrace().index);
