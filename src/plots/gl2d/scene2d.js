@@ -13,7 +13,7 @@ var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../components/fx');
 
-var createPlot2D = require('../../../../gl-plot2d');
+var createPlot2D = require('gl-plot2d');
 var createSpikes = require('gl-spikes2d');
 var createSelectBox = require('gl-select-box');
 var getContext = require('webgl-context');
