@@ -116,11 +116,14 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var allAxesFixed = areAllAxesFixed(fullLayout),
         dragModeGroup = [];
 
-    if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary || hasPolar) {
+    if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     }
     if(hasMapbox || hasGeo) {
         dragModeGroup = ['pan2d'];
+    }
+    if(hasPolar) {
+        dragModeGroup = ['zoom2d'];
     }
     if(isSelectable(fullData)) {
         dragModeGroup.push('select2d');

@@ -29,6 +29,7 @@ module.exports = {
     ],
 
     radialDragBoxSize: 50,
+    angularDragBoxSize: 30,
     cornerLen: 25,
     cornerHalfWidth: 2,
 

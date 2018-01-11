@@ -702,7 +702,6 @@
       }
     },
     "showlegend": false,
-    "paper_bgcolor": "rgb(255, 255, 255)",
-    "dragmode": "pan"
+    "paper_bgcolor": "rgb(255, 255, 255)"
   }
 }

@@ -109,7 +109,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     recomputeAxisLists();
 
-    var dragger = makeDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
+    var dragger = makeRectDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
 
     // still need to make the element if the axes are disabled
     // but nuke its events (except for maindrag which needs them for hover)
@@ -781,19 +781,24 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     return dragger;
 }
 
-function makeDragger(plotinfo, dragClass, cursor, x, y, w, h) {
+function makeDragger(plotinfo, nodeName, dragClass, cursor) {
     var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
 
-    dragger3.enter().append('rect')
+    dragger3.enter().append(nodeName)
         .classed('drag', true)
         .classed(dragClass, true)
         .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
 
-    dragger3.call(Drawing.setRect, x, y, w, h)
-        .call(setCursor, cursor);
+    dragger3.call(setCursor, cursor);
 
     return dragger3.node();
+}
+
+function makeRectDragger(plotinfo, dragClass, cursor, x, y, w, h) {
+    var dragger = makeDragger(plotinfo, 'rect', dragClass, cursor);
+    d3.select(dragger).call(Drawing.setRect, x, y, w, h);
+    return dragger;
 }
 
 function isDirectionActive(axList, activeVal) {
@@ -1044,6 +1049,7 @@ module.exports = {
     makeDragBox: makeDragBox,
 
     makeDragger: makeDragger,
+    makeRectDragger: makeRectDragger,
     makeZoombox: makeZoombox,
     makeCorners: makeCorners,
 
