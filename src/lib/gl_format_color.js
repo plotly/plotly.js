@@ -10,7 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var rgba = require('color-rgba');
+var rgba = require('color-normalize');
 
 var Colorscale = require('../components/colorscale');
 var colorDflt = require('../components/color/attributes').defaultLine;

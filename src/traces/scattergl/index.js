@@ -25,6 +25,7 @@ var linkTraces = require('../scatter/link_traces');
 var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
+var rgba = require('color-normalize');
 var svgSdf = require('svg-path-sdf');
 var createRegl = require('regl');
 var fillHoverText = require('../scatter/fill_hover_text');
@@ -405,6 +406,7 @@ ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positi
         if(!multiMarker) {
             isOpen = /-open/.test(markerOpts.symbol);
         }
+
         // prepare colors
         if(multiMarker || Array.isArray(markerOpts.color) || Array.isArray(markerOpts.line.color) || Array.isArray(markerOpts.line) || Array.isArray(markerOpts.opacity)) {
             markerOptions.colors = new Array(count);
@@ -445,15 +447,17 @@ ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positi
             markerOptions.opacity = trace.opacity;
         }
         else {
-            markerOptions.color = markerOpts.color;
-            markerOptions.borderColor = markerOpts.line.color;
-            markerOptions.opacity = trace.opacity * markerOpts.opacity;
-
             if(isOpen) {
-                markerOptions.borderColor = markerOptions.color.slice();
-                markerOptions.color = markerOptions.color.slice();
+                markerOptions.color = rgba(markerOpts.color, 'uint8');
                 markerOptions.color[3] = 0;
+                markerOptions.borderColor = rgba(markerOpts.color, 'uint8');
             }
+            else {
+                markerOptions.color = rgba(markerOpts.color, 'uint8');
+                markerOptions.borderColor = rgba(markerOpts.line.color, 'uint8');
+            }
+
+            markerOptions.opacity = trace.opacity * markerOpts.opacity;
         }
 
         // prepare markers
