@@ -547,6 +547,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     var layers = _this.layers;
     var zoomlayer = fullLayout._zoomlayer;
     var MINZOOM = constants.MINZOOM;
+    var OFFEDGE = constants.OFFEDGE;
     var radius = _this.radius;
     var cx = _this.cx;
     var cy = _this.cy;
@@ -576,9 +577,6 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     var x0, y0;
     // radial distance from circle center at drag start (0), move (1)
     var r0, r1;
-    // first (r1 - r0) dist greater than MINZOOM,
-    // determines whether 'small' zoomboxes get filled from center or outer edge
-    var drdir;
     // zoombox persistent quantities
     var path0, dimmed, lum;
     // zoombox, corners elements
@@ -598,10 +596,29 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         return [r * Math.cos(a), r * Math.sin(-a)];
     }
 
+    function pathCorner(r, a) {
+        var clen = constants.cornerLen;
+        var chw = constants.cornerHalfWidth;
+
+        if(r === 0) return pathSectorClosed(2 * chw, sector);
+
+        var da = clen / r / 2;
+        var am = a - da;
+        var ap = a + da;
+        var rb = Math.max(0, Math.min(r, radius));
+        var rm = rb - chw;
+        var rp = rb + chw;
+
+        return 'M' + ra2xy(rm, am) +
+            'A' + [rm, rm] + ' 0,0,0 ' + ra2xy(rm, ap) +
+            'L' + ra2xy(rp, ap) +
+            'A' + [rp, rp] + ' 0,0,1 ' + ra2xy(rp, am) +
+            'Z';
+    }
+
     function zoomPrep() {
         r0 = null;
         r1 = null;
-        drdir = null;
         path0 = pathSectorClosed(radius, sector);
         dimmed = false;
 
@@ -618,45 +635,34 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         var x1 = x0 + dx;
         var y1 = y0 + dy;
         var rr0 = xy2r(x0, y0);
-        var rr1 = xy2r(x1, y1);
+        var rr1 = Math.min(xy2r(x1, y1), radius);
+        var a0 = xy2a(x0, y0);
+        var a1 = xy2a(x1, y1);
 
-        var drr = rr1 - rr0;
-        if(!drdir) drdir = drr;
-
-        if(Math.abs(drr) < MINZOOM) {
-            if(drdir > 0) rr0 = 0;
-            else if(drdir < 0) rr0 = radius;
-            else return;
-        }
-
-        var crossedOrigin = (
-            sign(x0 - cxx) * sign(x1 - cxx) === -1 &&
-            sign(cyy - y0) * sign(cyy - y1) === -1
-        );
-        if(crossedOrigin) rr0 = 0;
-
-        r0 = Math.min(rr0, rr1);
-        r1 = Math.min(Math.max(rr0, rr1), radius);
+        // starting or ending drag near center (outer edge),
+        // clamps radial distance at origin (at r=radius)
+        if(rr0 < OFFEDGE) rr0 = 0;
+        else if((radius - rr0) < OFFEDGE) rr0 = radius;
+        else if(rr1 < OFFEDGE) rr1 = 0;
+        else if((radius - rr1) < OFFEDGE) rr1 = radius;
 
         var path1;
         var cpath;
 
-        if(r1 - r0 > MINZOOM || crossedOrigin) {
+        if(Math.abs(rr1 - rr0) > MINZOOM) {
+            // make sure r0 < r1,
+            // to get correct fill pattern in path1 below
+            if(rr0 < rr1) {
+                r0 = rr0;
+                r1 = rr1;
+            } else {
+                r0 = rr1;
+                r1 = rr0;
+                a1 = [a0, a0 = a1][0]; // swap a0 and a1
+            }
+
             path1 = path0 + pathSectorClosed(r1, sector) + pathSectorClosed(r0, sector);
-
-            var a = xy2a(x1, y1);
-            var da = clen / rr1 / 2;
-            var am = a - da;
-            var ap = a + da;
-            var rb = Math.min(rr1, radius);
-            var rm = rb - chw;
-            var rp = rb + chw;
-
-            cpath = 'M' + ra2xy(rm, am) +
-                'A' + [rm, rm] + ' 0,0,0 ' + ra2xy(rm, ap) +
-                'L' + ra2xy(rp, ap) +
-                'A' + [rp, rp] + ' 0,0,1 ' + ra2xy(rp, am) +
-                'Z';
+            cpath = pathCorner(r0, a0) + pathCorner(r1, a1);
         } else {
             r0 = null;
             r1 = null;

@@ -33,6 +33,9 @@ module.exports = {
     cornerLen: 25,
     cornerHalfWidth: 2,
 
-    MINDRAG: 8,
-    MINZOOM: 20
+    // smallest radial distance [px] allowed for a zoombox
+    MINZOOM: 20,
+    // distance [px] off (r=0) or (r=radius) where we transition
+    // from single-sided to two-sided radial zoom
+    OFFEDGE: 20
 };
