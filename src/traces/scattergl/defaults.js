@@ -27,6 +27,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    var isOpen = traceIn.marker ? /-open/.test(traceIn.marker.symbol) : false;
+    var isBubble = subTypes.isBubble(traceIn);
+
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
@@ -45,6 +48,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
         dfltHoverOn.push('points');
     }
 
