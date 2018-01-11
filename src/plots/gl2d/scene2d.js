@@ -118,6 +118,7 @@ proto.makeFramework = function() {
 
         var gl = getContext({
             canvas: liveCanvas,
+            preserveDrawingBuffer: true,
             premultipliedAlpha: true
         });
 
@@ -181,19 +182,23 @@ proto.toImage = function(format) {
     if(!format) format = 'png';
 
     this.stopped = true;
+
     if(this.staticPlot) this.container.appendChild(STATIC_CANVAS);
 
     // update canvas size
     this.updateSize(this.canvas);
 
-    // force redraw
-    this.glplot.setDirty();
-    this.glplot.draw();
 
     // grab context and yank out pixels
     var gl = this.glplot.gl,
         w = gl.drawingBufferWidth,
         h = gl.drawingBufferHeight;
+
+    // force redraw
+    gl.clearColor(1, 1, 1, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    this.glplot.setDirty();
+    this.glplot.draw();
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
