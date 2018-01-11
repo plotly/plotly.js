@@ -9,7 +9,7 @@ Click to enter X axis title                            // plots/plots.js:301
 Click to enter Y axis title                            // plots/plots.js:302
 Compare data on hover                                  // components/modebar/buttons.js:167
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:90
-Double-click to zoom back out                          // plots/cartesian/dragbox.js:299
+Double-click to zoom back out                          // plots/cartesian/dragbox.js:335
 Download plot as a png                                 // components/modebar/buttons.js:52
 Edit in Chart Studio                                   // components/modebar/buttons.js:76
 IE only supports svg.  Changing format to svg.         // components/modebar/buttons.js:60
