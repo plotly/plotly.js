@@ -13,7 +13,7 @@ var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../components/fx');
 
-var createPlot2D = require('gl-plot2d');
+var createPlot2D = require('../../../../gl-plot2d');
 var createSpikes = require('gl-spikes2d');
 var createSelectBox = require('gl-select-box');
 var getContext = require('webgl-context');
@@ -182,19 +182,23 @@ proto.toImage = function(format) {
     if(!format) format = 'png';
 
     this.stopped = true;
+
     if(this.staticPlot) this.container.appendChild(STATIC_CANVAS);
 
     // update canvas size
     this.updateSize(this.canvas);
 
-    // force redraw
-    this.glplot.setDirty();
-    this.glplot.draw();
 
     // grab context and yank out pixels
     var gl = this.glplot.gl,
         w = gl.drawingBufferWidth,
         h = gl.drawingBufferHeight;
+
+    // force redraw
+    gl.clearColor(1, 1, 1, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    this.glplot.setDirty();
+    this.glplot.draw();
 
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
