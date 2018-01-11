@@ -679,13 +679,10 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         dimmed = true;
     }
 
-    function zoomDone(dragged, numClicks) {
+    function zoomDone() {
         dragBox.removeZoombox(gd);
 
-        if(r0 === null || r1 === null) {
-            if(numClicks === 2) doubleClick();
-            return;
-        }
+        if(r0 === null || r1 === null) return;
 
         dragBox.showDoubleClickNotifier(gd);
 
@@ -756,30 +753,14 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         }
     }
 
-    function panDone(dragged, numClicks) {
-        if(dragged) {
-            var updateObj = {};
-            updateObj[_this.id + '.angularaxis.rotation'] = rot1;
-            Plotly.relayout(gd, updateObj);
-        } else if(numClicks === 2) {
-            doubleClick();
-        }
+    function panDone() {
+        var updateObj = {};
+        updateObj[_this.id + '.angularaxis.rotation'] = rot1;
+        Plotly.relayout(gd, updateObj);
     }
 
     function zoomWheel() {
         // TODO
-    }
-
-    function doubleClick() {
-        gd.emit('plotly_doubleclick', null);
-        // TODO double once vs twice logic (autorange vs fixed range)
-
-        var updateObj = {};
-        for(var k in _this.viewInitial) {
-            updateObj[_this.id + '.' + k] = _this.viewInitial[k];
-        }
-
-        Plotly.relayout(gd, updateObj);
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {
@@ -807,6 +788,23 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         }
     };
 
+    dragOpts.clickFn = function(numClicks, evt) {
+        dragBox.removeZoombox(gd);
+
+        // TODO double once vs twice logic (autorange vs fixed range)
+        if(numClicks === 2) {
+            var updateObj = {};
+            for(var k in _this.viewInitial) {
+                updateObj[_this.id + '.' + k] = _this.viewInitial[k];
+            }
+
+            gd.emit('plotly_doubleclick', null);
+            Plotly.relayout(gd, updateObj);
+        }
+
+        Fx.click(gd, evt, _this.id);
+    };
+
     mainDrag.onmousemove = function(evt) {
         Fx.hover(gd, evt, _this.id);
         gd._fullLayout._lasthover = mainDrag;
@@ -816,10 +814,6 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     mainDrag.onmouseout = function(evt) {
         if(gd._dragging) return;
         dragElement.unhover(gd, evt);
-    };
-
-    mainDrag.onclick = function(evt) {
-        Fx.click(gd, evt, _this.id);
     };
 
     if(gd._context.scaleZoom) {

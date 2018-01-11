@@ -7,6 +7,9 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
+var mouseEvent = require('../assets/mouse_event');
+var click = require('../assets/click');
+var doubleClick = require('../assets/double_click');
 
 describe('Test legacy polar plots logs:', function() {
     var gd;
@@ -491,6 +494,156 @@ describe('Test relayout on polar subplots:', function() {
         })
         .then(function() {
             _assert({subplot: 1, clip: 1, rtitle: 1});
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
+
+describe('Test polar interactions:', function() {
+    var gd;
+    var eventData;
+    var eventCnts;
+
+    var eventNames = [
+        'plotly_hover', 'plotly_unhover',
+        'plotly_click', 'plotly_doubleclick',
+        'plotly_relayout'
+    ];
+
+    beforeEach(function() {
+        eventData = '';
+        eventCnts = {};
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _plot(fig) {
+        return Plotly.plot(gd, fig).then(function() {
+            eventNames.forEach(function(k) {
+                eventCnts[k] = 0;
+                gd.on(k, function(d) {
+                    eventData = d;
+                    eventCnts[k]++;
+                    Lib.clearThrottle();
+                });
+            });
+        });
+    }
+
+    function assertEventPointData(expected, msg) {
+        var actual = eventData.points || [];
+
+        expect(actual.length)
+            .toBe(expected.length, msg + ' same number of pts');
+
+        expected.forEach(function(e, i) {
+            var a = actual[i];
+            var m = msg + ' (pt ' + i + ')';
+
+            for(var k in e) {
+                expect(a[k]).toBeCloseTo(e[k], 1, m + ' ' + k);
+            }
+        });
+    }
+
+    function assertEventCnt(expected, msg) {
+        eventNames.forEach(function(k) {
+            var m = msg + ' event cnt for ' + k;
+
+            if(k in expected) {
+                expect(eventCnts[k]).toBe(expected[k], m);
+            } else {
+                expect(eventCnts[k]).toBe(0, m);
+            }
+        });
+    }
+
+    function _hover(pos) {
+        eventData = '';
+        mouseEvent('mousemove', pos[0], pos[1]);
+    }
+
+    function _unhover(pos) {
+        eventData = '';
+        mouseEvent('mouseout', pos[0], pos[1]);
+    }
+
+    function _click(pos) {
+        eventData = '';
+        gd._mouseDownTime = 0;
+        click(pos[0], pos[1]);
+    }
+
+    function _doubleClick(pos) {
+        gd._mouseDownTime = 0;
+        eventData = '';
+        return doubleClick(pos[0], pos[1]);
+    }
+
+    it('should trigger hover/unhover/click/doubleclick events', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var ptPos = [250, 200];
+        var blankPos = [200, 120];
+        var marginPos = [20, 20];
+
+        function _assert(ptExpectation, cntExpecation, msg) {
+            if(Array.isArray(ptExpectation)) {
+                assertEventPointData(ptExpectation, msg);
+            } else {
+                expect(eventData).toBe(ptExpectation, msg);
+            }
+            assertEventCnt(cntExpecation, msg);
+        }
+
+        _plot(fig)
+        .then(function() { _hover(ptPos); })
+        .then(function() {
+            _assert([{
+                r: 3.26,
+                theta: 68.08
+            }], {
+                plotly_hover: 1
+            }, 'after hover on pt');
+        })
+        .then(function() { _unhover(blankPos);})
+        .then(function() {
+            _assert([{
+                r: 3.26,
+                theta: 68.08
+            }], {
+                plotly_hover: 1,
+                plotly_unhover: 1
+            }, 'after unhover off pt');
+        })
+        .then(function() { _hover(marginPos);})
+        .then(function() {
+            _assert('', {
+                plotly_hover: 1,
+                plotly_unhover: 1,
+            }, 'after hovering in margin');
+        })
+        .then(function() { _click(ptPos); })
+        .then(function() {
+            _assert([{
+                r: 3.26,
+                theta: 68.08
+            }], {
+                plotly_hover: 2,
+                plotly_unhover: 1,
+                plotly_click: 1
+            }, 'after click');
+        })
+        .then(function() { return _doubleClick(ptPos); })
+        .then(function() {
+            assertEventCnt({
+                plotly_hover: 2,
+                plotly_unhover: 1,
+                plotly_click: 3,
+                plotly_doubleclick: 1,
+                plotly_relayout: 1
+            }, 'after doubleclick');
         })
         .catch(fail)
         .then(done);
