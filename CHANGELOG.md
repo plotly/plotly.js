@@ -10,6 +10,55 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.32.0] -- 2018-01-11
+
+### Added
+
+- Add localization machinery including an official German translation (locale `de`) [#2195, #2207, #2210, #2232, #2217]
+- Add `violin` trace type [#2116]
+- Add `selected` and `unselected` attribute containers to customize selection states [#2135]
+- Add support for multi-selections [#2140]
+- Add layout `colorway` to custom the trace-to-trace color sequence [#2156]
+- Add `tickformatstops` to set tick format per cartesian axis range [#1965]
+- Add hover labels and selections to box points [#2094]
+- Histogram events & bin hover label improvements [#2113]
+- Add support for aggregation in `pie` traces [#2117]
+- Add annotations `startarrowhead`, `arrowside`, `startarrowsize` and `startstandoff` attributes [#2164]
+- Add `zhoverformat` to format `z` values in `heatmap`, `contour` and 2d histogram traces [#2106, #2127]
+- Add `marker.opacity` to bar traces [#2163]
+- Add `Cividis` colorscale [#2178]
+- Implement transform inverse mapping [#2126, #2162]
+
+### Changed
+
+- Selections are now persistent [#2135]
+- Make subplot initialization and removal more robust and consistent [#2227]
+- Share WebGL context between `gl2d` and `parcoords` subplots [#2159, #2238]
+- Rename _Save and edit plot in cloud_ mode bar button _Edit in Chart Studio_ [#2183]
+- Minify bundles using `minify-stream` instead of UglifyJS2 [#2187]
+- Update header for new year 2018 [#2231]
+- Remove `type="text/javascript"` from `<script>` tags present in our docs and test utilities [#2217]
+
+### Fixed
+
+- Fix right-click handling [#2241]
+- Miscellaneous fixes for `table` traces [#2107, #2182]
+- Fix horizontal legend items alignment edge case [#2149]
+- Fix shape and updatemenu layering [#2121]
+- Fix bar with error bar with set `ids` edge case [#2169]
+- Fix `cliponaxis: false` for non linear cartesian axes [#2177]
+- Fix heatmap non-uniform brick gaps problem [#2213]
+- Fix choropleth selection when `visible: false` trace are present on graph [#2099, #2109]
+- Fix yet another contour drawing bug [#2091]
+- Clean up pie event data [#2117]
+- Fix scatter + bar hover edge cases [#2218]
+- Allow hover labels to extend to edges of graph area [#2215]
+- Harden location-to-feature against non-string country names for geo subplot [#2122]
+- Remove obsolete `smith` attribute from plot schema [#2093]
+- Fix colorbar class name [#2139]
+- Make `Plotly.Plots.resize` accept graph ids (as well as graph divs) [#2212]
+
+
 ## [1.31.2] -- 2017-10-23
 
 ### Fixed
