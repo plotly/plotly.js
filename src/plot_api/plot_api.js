@@ -1946,7 +1946,11 @@ function _relayout(gd, aobj) {
 
                 // clear polar view initial stash for radial range so that
                 // value get recomputed in correct units
-                if(Array.isArray(fullLayout._subplots.polar) && fullLayout._subplots.polar.length && fullLayout[p.parts[0]]) {
+                if(Array.isArray(fullLayout._subplots.polar) &&
+                    fullLayout._subplots.polar.length &&
+                    fullLayout[p.parts[0]] &&
+                    p.parts[1] === 'radialaxis'
+                ) {
                     delete fullLayout[p.parts[0]]._subplot.viewInitial['radialaxis.range'];
                 }
 

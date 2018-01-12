@@ -213,7 +213,7 @@ var angularAxisAttrs = {
         role: 'info',
         description: [
             'Sets that start position (in degrees) of the angular axis',
-            'By default, polar subplots will `direction` set to *counterclockwise*',
+            'By default, polar subplots with `direction` set to *counterclockwise*',
             'get a `rotation` of *0*',
             'which corresponds to due East (like what mathematicians prefer).',
             'In turn, polar with `direction` set to *clockwise* get a rotation of *90*',

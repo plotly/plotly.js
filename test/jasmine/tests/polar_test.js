@@ -237,17 +237,23 @@ describe('Test relayout on polar subplots:', function() {
         Plotly.plot(gd, fig).then(function() {
             expect(gd._fullLayout.polar._subplot.viewInitial['radialaxis.range'])
                 .toBeCloseToArray([0, 11.225]);
+            expect(gd._fullLayout.polar.radialaxis.range)
+                .toBeCloseToArray([0, 11.225]);
 
             return Plotly.relayout(gd, 'polar.radialaxis.type', 'log');
         })
         .then(function() {
             expect(gd._fullLayout.polar._subplot.viewInitial['radialaxis.range'])
                 .toBeCloseToArray([-0.53, 1.158]);
+            expect(gd._fullLayout.polar.radialaxis.range)
+                .toBeCloseToArray([-0.53, 1.158]);
 
             return Plotly.relayout(gd, 'polar.radialaxis.type', 'linear');
         })
         .then(function() {
             expect(gd._fullLayout.polar._subplot.viewInitial['radialaxis.range'])
+                .toBeCloseToArray([0, 11.225]);
+            expect(gd._fullLayout.polar.radialaxis.range)
                 .toBeCloseToArray([0, 11.225]);
         })
         .catch(fail)
@@ -570,10 +576,10 @@ describe('Test polar interactions:', function() {
         mouseEvent('mouseout', pos[0], pos[1]);
     }
 
-    function _click(pos) {
+    function _click(pos, opts) {
         eventData = '';
         gd._mouseDownTime = 0;
-        click(pos[0], pos[1]);
+        click(pos[0], pos[1], opts);
     }
 
     function _doubleClick(pos) {
@@ -581,6 +587,24 @@ describe('Test polar interactions:', function() {
         eventData = '';
         return doubleClick(pos[0], pos[1]);
     }
+
+    var modClickOpts = {
+        altKey: true,
+        ctrlKey: true, // this makes it effectively into a right-click
+        metaKey: true,
+        shiftKey: true,
+        button: 0,
+        cancelContext: true
+    };
+
+    var rightClickOpts = {
+        altKey: false,
+        ctrlKey: false,
+        metaKey: false,
+        shiftKey: false,
+        button: 2,
+        cancelContext: true
+    };
 
     it('should trigger hover/unhover/click/doubleclick events', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
@@ -644,6 +668,32 @@ describe('Test polar interactions:', function() {
                 plotly_doubleclick: 1,
                 plotly_relayout: 1
             }, 'after doubleclick');
+        })
+        .then(function() { _click(ptPos, modClickOpts); })
+        .then(function() {
+            _assert([{
+                r: 3.26,
+                theta: 68.08
+            }], {
+                plotly_hover: 2,
+                plotly_unhover: 1,
+                plotly_click: 4,
+                plotly_doubleclick: 1,
+                plotly_relayout: 1
+            }, 'after modified click');
+        })
+        .then(function() { _click(ptPos, rightClickOpts); })
+        .then(function() {
+            _assert([{
+                r: 3.26,
+                theta: 68.08
+            }], {
+                plotly_hover: 2,
+                plotly_unhover: 1,
+                plotly_click: 5,
+                plotly_doubleclick: 1,
+                plotly_relayout: 1
+            }, 'after right click');
         })
         .catch(fail)
         .then(done);

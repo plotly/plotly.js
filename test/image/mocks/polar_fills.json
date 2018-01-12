@@ -21,6 +21,14 @@
     "fill": "toself",
     "hoveron": "fills",
     "subplot": "polar2"
+  }, {
+    "type": "scatterpolar",
+    "mode": "markers",
+    "r": [5, 1, 1.5, 4, 5],
+    "theta": [0, 270, 180, 90, 0],
+    "fill": "toself",
+    "hoveron": "fills",
+    "subplot": "polar2"
   }],
   "layout": {
     "polar": {
