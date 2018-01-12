@@ -274,9 +274,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         if(hasUserCalledHover) {
             if('xpx' in evt) xpx = evt.xpx;
             else xpx = xaArray[0]._length / 2;
+            if(!('offsetX' in evt)) evt.offsetX = xpx + xaArray[0]._offset;
 
             if('ypx' in evt) ypx = evt.ypx;
             else ypx = yaArray[0]._length / 2;
+            if(!('offsetY' in evt)) evt.offsetY = ypx + yaArray[0]._offset;
         }
         else {
             // fire the beforehover event and quit if it returns false
@@ -419,7 +421,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             if(hoverData.length === 0) {
                 pointData.distance = spikedistance;
                 pointData.index = false;
-                var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest');
+                var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', fullLayout._hoverlayer);
                 if(closestPoints) {
                     var tmpPoint;
                     var closestVPoints = closestPoints.filter(function(point) {
@@ -1247,10 +1249,11 @@ function createSpikelines(closestPoints, opts) {
 
         if(ySnap === 'cursor') {
             hLinePointY = evt.offsetY;
+            hLinePointX = evt.offsetX;
         } else {
             hLinePointY = ya._offset + (hLinePoint.y0 + hLinePoint.y1) / 2;
+            hLinePointX = xa._offset + (hLinePoint.x0 + hLinePoint.x1) / 2;
         }
-        hLinePointX = xa._offset + (hLinePoint.x0 + hLinePoint.x1) / 2;
         var dfltHLineColor = tinycolor.readability(hLinePoint.color, contrastColor) < 1.5 ?
             Color.contrast(contrastColor) : hLinePoint.color;
         var yMode = ya.spikemode,
@@ -1322,12 +1325,13 @@ function createSpikelines(closestPoints, opts) {
 
         if(xSnap === 'cursor') {
             vLinePointX = evt.offsetX;
+            vLinePointY = evt.offsetY;
         } else {
             vLinePointX = xa._offset + (vLinePoint.x0 + vLinePoint.x1) / 2;
+            vLinePointY = ya._offset + (vLinePoint.y0 + vLinePoint.y1) / 2;
         }
-        vLinePointY = ya._offset + (vLinePoint.y0 + vLinePoint.y1) / 2;
         var dfltVLineColor = tinycolor.readability(vLinePoint.color, contrastColor) < 1.5 ?
-            Color.contrast(contrastColor) : vLinePoint.color;
+        Color.contrast(contrastColor) : vLinePoint.color;
         var xMode = xa.spikemode,
             xThickness = xa.spikethickness,
             xColor = xa.spikecolor || dfltVLineColor,

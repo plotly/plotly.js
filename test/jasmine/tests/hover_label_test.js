@@ -1842,7 +1842,17 @@ describe('hover distance', function() {
             });
         });
 
-        it('responds to hoverdistance change', function() {
+        it('responds to hoverdistance change part 1', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 450, ypx: 155 };
+            gd._fullLayout.hoverdistance = 10;
+
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata).toEqual(undefined);
+        });
+
+        it('responds to hoverdistance change part 2', function() {
             var gd = document.getElementById('graph');
             var evt = { xpx: 450, ypx: 155 };
             gd._fullLayout.hoverdistance = 30;
@@ -1857,7 +1867,8 @@ describe('hover distance', function() {
             expect(hoverTrace.y).toEqual(3);
 
             assertHoverLabelContent({
-                nums: '(2, 3)',
+                nums: '3',
+                axis: '2',
                 name: 'trace 0'
             });
         });

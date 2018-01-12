@@ -135,7 +135,37 @@ describe('spikeline', function() {
             .then(done);
         });
 
-        it('automatically switch between toaxis and across spikemodes on switching the hovermodes', function(done) {
+        it('draws lines and markers on enabled axes in the spikesnap "cursor" mode', function(done) {
+            gd = createGraphDiv();
+            var _mock = makeMock('toaxis', 'x');
+
+            _mock.layout.xaxis.spikesnap = 'cursor';
+            _mock.layout.yaxis.spikesnap = 'cursor';
+            _mock.layout.xaxis2.spikesnap = 'cursor';
+
+            Plotly.plot(gd, _mock)
+            .then(function() {
+                _set_spikedistance(200);
+            })
+            .then(function() {
+                _hover({xpx: 120, ypx: 180}, 'xy');
+                _assert(
+                    [[200, 401, 200, 280], [200, 401, 200, 280], [80, 280, 200, 280], [80, 280, 200, 280]],
+                    [[83, 280]]
+                );
+            })
+            .then(function() {
+                _hover({xpx: 31, ypx: 41}, 'x2y2');
+                _assert(
+                    [[682, 220, 682, 156], [682, 220, 682, 156]],
+                    []
+                );
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('doesn\'t switch between toaxis and across spikemodes on switching the hovermodes', function(done) {
             gd = createGraphDiv();
             var _mock = makeMock('toaxis', 'closest');
 
@@ -159,23 +189,6 @@ describe('spikeline', function() {
             .then(function() {
                 _hover({xval: 2, yval: 3}, 'xy');
                 _assert(
-                    [[557, 100, 557, 401], [557, 100, 557, 401], [80, 250, 1033, 250], [80, 250, 1033, 250]],
-                    [[83, 250]]
-                );
-            })
-            .then(function() {
-                _hover({xval: 30, yval: 40}, 'x2y2');
-                _assert(
-                    [[820, 115, 820, 220], [820, 115, 820, 220]],
-                    []
-                );
-            })
-            .then(function() {
-                _set_hovermode('closest');
-            })
-            .then(function() {
-                _hover({xval: 2, yval: 3}, 'xy');
-                _assert(
                     [[557, 401, 557, 250], [557, 401, 557, 250], [80, 250, 557, 250], [80, 250, 557, 250]],
                     [[83, 250]]
                 );
@@ -191,7 +204,7 @@ describe('spikeline', function() {
             .then(done);
         });
 
-        it('increase the range of search for points to draw the spikelines', function(done) {
+        it('increase the range of search for points to draw the spikelines on spikedistance change', function(done) {
             gd = createGraphDiv();
             var _mock = makeMock('toaxis', 'closest');
 
