@@ -6,7 +6,8 @@
     "theta": [0, 45, 180],
     "text": ["A0", "B0", "C0"],
     "hovertext": ["hover A0", "hover B0", "hover C0"],
-    "line": { "shape": "spline" },
+    "line": {"shape": "spline"},
+    "marker": {"symbol": "square", "size": 15},
     "textfont": {
       "color": ["red", "green", "blue"],
       "size": 20
@@ -19,7 +20,8 @@
     "theta": [-0, -45, -180],
     "text": ["A1", "B1", "C1"],
     "hovertext": ["hover A1", "hover B1", "hover C1"],
-    "line": { "shape": "spline" },
+    "line": {"shape": "spline"},
+    "marker": {"symbol": "square", "size": 15},
     "textfont": {
       "color": "green",
       "size": [20, 15, 10]

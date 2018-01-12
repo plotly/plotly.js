@@ -89,8 +89,8 @@ proto.plot = function(polarCalcData, fullLayout) {
 
     _this.updateLayers(fullLayout, polarLayout);
     _this.updateLayout(fullLayout, polarLayout);
-    _this.updateFx(fullLayout, polarLayout);
     Plots.generalUpdatePerTraceModule(_this, polarCalcData, polarLayout);
+    _this.updateFx(fullLayout, polarLayout);
 };
 
 proto.updateLayers = function(fullLayout, polarLayout) {
@@ -891,6 +891,11 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
         return Math.atan2(cyy - y, x - cxx);
     }
 
+    // scatter trace, points and textpoints selections
+    var scatterTraces = layers.frontplot.select('.scatterlayer').selectAll('.trace');
+    var scatterPoints = scatterTraces.selectAll('.point');
+    var scatterTextPoints = scatterTraces.selectAll('.textpoint');
+
     // mouse px position at drag start (0), move (1)
     var x0, y0;
     // angular axis angle rotation at drag start (0), move (1)
@@ -911,9 +916,19 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
             strTranslate(_this.xOffset2, _this.yOffset2) + strRotate([-da, cxx, cyy])
         );
 
-        _this.clipPaths.circle.select('path').attr('transform',
-            strTranslate(cxx, cyy) + strRotate(da)
-        );
+        // 'un-rotate' marker and text points
+        scatterPoints.each(function() {
+            var sel = d3.select(this);
+            var xy = Drawing.getTranslate(sel);
+            sel.attr('transform', strTranslate(xy.x, xy.y) + strRotate([da]));
+        });
+        scatterTextPoints.each(function() {
+            var sel = d3.select(this);
+            var tx = sel.select('text');
+            var xy = Drawing.getTranslate(sel);
+            // N.B rotate -> translate ordering matters
+            sel.attr('transform', strRotate([da, tx.attr('x'), tx.attr('y')]) + strTranslate(xy.x, xy.y));
+        });
 
         var angularAxis = _this.angularAxis;
         angularAxis.rotation = wrap180(rot1);
@@ -931,10 +946,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
         if(_this._hasClipOnAxisFalse && !isFullCircle(sector)) {
             // mutate sector to trick isPtWithinSector
             _this.sector = [sector0[0] - da, sector0[1] - da];
-
-            layers.frontplot
-                .select('.scatterlayer').selectAll('.trace')
-                .call(Drawing.hideOutsideRangePoints, _this);
+            scatterTraces.call(Drawing.hideOutsideRangePoints, _this);
         }
 
         for(var k in _this.traceHash) {
@@ -950,6 +962,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
     }
 
     function doneFn() {
+        scatterTextPoints.select('text').attr('transform', null);
         var updateObj = {};
         updateObj[_this.id + '.angularaxis.rotation'] = rot1;
         Plotly.relayout(gd, updateObj);
