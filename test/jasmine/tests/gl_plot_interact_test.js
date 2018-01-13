@@ -861,10 +861,10 @@ describe('Test gl2d plots', function() {
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
         var originalX = [-0.3037383177570093, 5.303738317757009];
-        var originalY = [-0.5532219548705213, 6.191112269783224];
-        var newX = [-0.5373831775700935, 5.070093457943925];
-        var newY = [-1.7575673521301185, 4.986766872523626];
-        var precision = 5;
+        var originalY = [-0.5, 6.1];
+        var newX = [-0.5, 5];
+        var newY = [-1.7, 4.95];
+        var precision = 1;
 
         Plotly.plot(gd, _mock)
         .then(delay(20))
@@ -952,7 +952,7 @@ describe('Test gl2d plots', function() {
             return Plotly.restyle(gd, 'visible', 'legendonly');
         })
         .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).toBe(0);
+            expect(gd.querySelector('.gl-canvas-context')).toBe(null);
 
             return Plotly.restyle(gd, 'visible', true);
         })
@@ -962,7 +962,7 @@ describe('Test gl2d plots', function() {
             return Plotly.restyle(gd, 'visible', false);
         })
         .then(function() {
-            expect(gd.querySelector('.gl-canvas-context')).not.toBe(null);
+            expect(gd.querySelector('.gl-canvas-context')).toBe(null);
 
             return Plotly.restyle(gd, 'visible', true);
         })
@@ -1087,8 +1087,8 @@ describe('Test gl2d plots', function() {
             });
         })
         .then(function() {
-            expect(gd.layout.xaxis.range).toBeCloseToArray([-8.091954022988505, 24.091954022988503], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([-0.04597701149425282, 16.04597701149425], 3);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-7.6, 23.6], 1);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([0.2, 15.8], 1);
         })
         .catch(fail)
         .then(done);
@@ -1360,8 +1360,8 @@ describe('Test gl2d interactions', function() {
             var ann = d3.select('g.annotation-text-g').select('g');
             var translate = Drawing.getTranslate(ann);
 
-            expect(translate.x).toBeWithin(xy[0], 3.5);
-            expect(translate.y).toBeWithin(xy[1], 3.5);
+            expect(translate.x).toBeWithin(xy[0], 4.5);
+            expect(translate.y).toBeWithin(xy[1], 4.5);
         }
 
         Plotly.plot(gd, [{
