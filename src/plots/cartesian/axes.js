@@ -821,7 +821,6 @@ axes.calcTicks = function calcTicks(ax) {
     }
 
     // If same angle over a full circle, the last tick vals is a duplicate.
-    //
     // TODO must do something similar for angular date axes.
     if(ax._id === 'angular' && Math.abs(rng[1] - rng[0]) === 360) {
         vals.pop();
@@ -895,9 +894,7 @@ var roundBase10 = [2, 5, 10],
     // these don't have to be exact, just close enough to round to the right value
     roundLog1 = [-0.046, 0, 0.301, 0.477, 0.602, 0.699, 0.778, 0.845, 0.903, 0.954, 1],
     roundLog2 = [-0.301, 0, 0.301, 0.699, 1],
-    // TODO
-    // maybe [1, 2, 5, 10, 15, 30, 45, 90, 180] would give better results
-    // on thin polar sectors?
+    // N.B. `thetaunit; 'radians' angular axes must be converted to degrees
     roundAngles = [15, 30, 45, 90, 180];
 
 function roundDTick(roughDTick, base, roundingSet) {
@@ -995,7 +992,7 @@ axes.autoTicks = function(ax, roughDTick) {
     }
     else if(ax._id === 'angular') {
         ax.tick0 = 0;
-        base = getBase(1);
+        base = 1;
         ax.dtick = roundDTick(roughDTick, base, roundAngles);
     }
     else {

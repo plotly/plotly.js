@@ -74,11 +74,9 @@ proto.plot = function(polarCalcData, fullLayout) {
     var _this = this;
     var polarLayout = fullLayout[_this.id];
 
-    // TODO maybe move to generalUpdatePerTraceModule ?
     _this._hasClipOnAxisFalse = false;
     for(var i = 0; i < polarCalcData.length; i++) {
         var trace = polarCalcData[i][0].trace;
-
         if(trace.cliponaxis === false) {
             _this._hasClipOnAxisFalse = true;
             break;

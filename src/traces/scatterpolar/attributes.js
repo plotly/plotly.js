@@ -77,7 +77,7 @@ module.exports = {
     }),
     fillcolor: scatterAttrs.fillcolor,
 
-    // TODO (probably not for first push)
+    // TODO error bars
     // https://stackoverflow.com/a/26597487/4068492
     // error_x (error_r, error_theta)
     // error_y

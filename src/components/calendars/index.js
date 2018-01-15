@@ -240,8 +240,7 @@ module.exports = {
                 zaxis: {calendar: axisAttrs}
             },
             polar: {
-                radialaxis: {calendar: axisAttrs},
-                angularaxis: {calendar: axisAttrs}
+                radialaxis: {calendar: axisAttrs}
             }
         },
         transforms: {
