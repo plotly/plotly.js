@@ -434,9 +434,14 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // everything but the corners gets wheel zoom
     if(ns.length * ew.length !== 1) {
-        // still seems to be some confusion about onwheel vs onmousewheel...
-        if(dragger.onwheel !== undefined) dragger.onwheel = zoomWheel;
-        else if(dragger.onmousewheel !== undefined) dragger.onmousewheel = zoomWheel;
+        var wheelEventName = dragger.onwheel !== undefined ? 'wheel' : 'mousewheel';
+
+        if(dragger._onwheel) {
+            dragger.removeEventListener(wheelEventName, dragger._onwheel);
+        }
+        dragger._onwheel = zoomWheel;
+
+        dragger.addEventListener(wheelEventName, zoomWheel, {passive: false});
     }
 
     // plotDrag: move the plot in response to a drag

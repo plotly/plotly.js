@@ -97,7 +97,12 @@ dragElement.init = function init(options) {
     element.style.pointerEvents = 'all';
 
     element.onmousedown = onStart;
-    element.ontouchstart = onStart;
+
+    if(element._ontouchstart) {
+        element.removeEventListener('touchstart', element._ontouchstart);
+    }
+    element._ontouchstart = onStart;
+    element.addEventListener('touchstart', onStart, {passive: false});
 
     function onStart(e) {
         // make dragging and dragged into properties of gd
