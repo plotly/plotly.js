@@ -495,11 +495,11 @@ ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positi
             // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
             if(Array.isArray(markerOpts.line.width)) {
                 for(i = 0; i < count; ++i) {
-                    borderSizes[i] = markerOpts.line.width[i] * 0.5;
+                    borderSizes[i] = markerSizeFunc(markerOpts.line.width[i]);
                 }
             }
             else {
-                size = markerSizeFunc(markerOpts.line.width) * 0.5;
+                size = markerSizeFunc(markerOpts.line.width);
                 for(i = 0; i < count; ++i) {
                     borderSizes[i] = size;
                 }
@@ -507,7 +507,7 @@ ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positi
         }
         else {
             size = markerOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
-            markerOptions.borderSizes = markerOpts.line.width * 0.5;
+            markerOptions.borderSizes = markerSizeFunc(markerOpts.line.width);
         }
 
         return markerOptions;
