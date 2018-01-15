@@ -45,6 +45,7 @@ function Polar(gd, id) {
     this.layers = {};
     this.clipPaths = {};
     this.clipIds = {};
+    this.viewInitial = {};
 
     var fullLayout = gd._fullLayout;
     var clipIdBase = 'clip' + fullLayout._uid + id;
@@ -56,9 +57,6 @@ function Polar(gd, id) {
 
     this.framework = fullLayout._polarlayer.append('g')
         .attr('class', id);
-
-    // TODO should radialaxis angle be part of view initial?
-    this.viewInitial = {};
 
     // unfortunately, we have to keep track of some axis tick settings
     // so that we don't have to call Axes.doTicks with its special redraw flag
@@ -117,11 +115,11 @@ proto.updateLayers = function(fullLayout, polarLayout) {
     if(!isAngularAxisBelowTraces) layerData.push('angular-line');
     if(!isRadialAxisBelowTraces) layerData.push('radial-line');
 
-    var join = _this.framework.selectAll('.polarlayer')
+    var join = _this.framework.selectAll('.polarsublayer')
         .data(layerData, String);
 
     join.enter().append('g')
-        .attr('class', function(d) { return 'polarlayer ' + d;})
+        .attr('class', function(d) { return 'polarsublayer ' + d;})
         .each(function(d) {
             var sel = layers[d] = d3.select(this);
 
@@ -269,6 +267,8 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var sector = polarLayout.sector;
     var a0 = wrap360(sector[0]);
 
+    _this.fillViewInitialKey('radialaxis.angle', radialLayout.angle);
+
     var ax = _this.radialAxis = Lib.extendFlat({}, radialLayout, {
         _axislayer: layers['radial-axis'],
         _gridlayer: layers['radial-grid'],
@@ -295,10 +295,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     Axes.doAutoRange(ax);
     radialLayout.range = ax.range.slice();
     radialLayout._input.range = ax.range.slice();
-
-    if(!('radialaxis.range' in _this.viewInitial)) {
-        _this.viewInitial['radialaxis.range'] = ax.range.slice();
-    }
+    _this.fillViewInitialKey('radialaxis.range', ax.range.slice());
 
     // rotate auto tick labels by 180 if in quadrant II and III to make them
     // readable from left-to-right
@@ -396,9 +393,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var sector = polarLayout.sector;
     var sectorInRad = sector.map(deg2rad);
 
-    if(!('angularaxis.rotation' in _this.viewInitial)) {
-        _this.viewInitial['angularaxis.rotation'] = angularLayout.rotation;
-    }
+    _this.fillViewInitialKey('angularaxis.rotation', angularLayout.rotation);
 
     var ax = _this.angularAxis = Lib.extendFlat({}, angularLayout, {
         _axislayer: layers['angular-axis'],
@@ -1016,6 +1011,12 @@ proto.isPtWithinSector = function(d) {
             (nextTurnDeg >= s0 && nextTurnDeg <= s1)
         )
     );
+};
+
+proto.fillViewInitialKey = function(key, val) {
+    if(!(key in this.viewInitial)) {
+        this.viewInitial[key] = val;
+    }
 };
 
 function setScale(ax, axLayout, fullLayout) {
