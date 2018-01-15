@@ -833,567 +833,6 @@ describe('Test gl3d relayout calls', function() {
     });
 });
 
-describe('Test gl2d plots', function() {
-    var gd;
-
-    var mock = require('@mocks/gl2d_10.json');
-
-    beforeEach(function() {
-        gd = createGraphDiv();
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
-    });
-
-    afterEach(function() {
-        Plotly.purge(gd);
-        destroyGraphDiv();
-    });
-
-    function mouseTo(p0, p1) {
-        mouseEvent('mousemove', p0[0], p0[1]);
-        mouseEvent('mousedown', p0[0], p0[1], { buttons: 1 });
-        mouseEvent('mousemove', p1[0], p1[1], { buttons: 1 });
-        mouseEvent('mouseup', p1[0], p1[1]);
-    }
-
-    it('should respond to drag interactions', function(done) {
-        var _mock = Lib.extendDeep({}, mock);
-
-        var relayoutCallback = jasmine.createSpy('relayoutCallback');
-
-        var originalX = [-0.3037383177570093, 5.303738317757009];
-        var originalY = [-0.5, 6.1];
-        var newX = [-0.5, 5];
-        var newY = [-1.7, 4.95];
-        var precision = 1;
-
-        Plotly.plot(gd, _mock)
-        .then(delay(20))
-        .then(function() {
-            expect(gd.layout.xaxis.autorange).toBe(true);
-            expect(gd.layout.yaxis.autorange).toBe(true);
-            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-            // Switch to pan mode
-            var buttonPan = selectButton(gd._fullLayout._modeBar, 'pan2d');
-            expect(buttonPan.isActive()).toBe(false, 'initially, zoom is active');
-            buttonPan.click();
-            expect(buttonPan.isActive()).toBe(true, 'switched on dragmode');
-
-            // Switching mode must not change visible range
-            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-        })
-        .then(delay(200))
-        .then(function() {
-            gd.on('plotly_relayout', relayoutCallback);
-
-            // Drag scene along the X axis
-            mouseTo([200, 200], [220, 200]);
-
-            expect(gd.layout.xaxis.autorange).toBe(false);
-            expect(gd.layout.yaxis.autorange).toBe(false);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-            // Drag scene back along the X axis
-            mouseTo([220, 200], [200, 200]);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-            // Drag scene along the Y axis
-            mouseTo([200, 200], [200, 150]);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
-
-            // Drag scene back along the Y axis
-            mouseTo([200, 150], [200, 200]);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-            // Drag scene along both the X and Y axis
-            mouseTo([200, 200], [220, 150]);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
-
-            // Drag scene back along the X and Y axis
-            mouseTo([220, 150], [200, 200]);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-        })
-        .then(delay(200))
-        .then(function() {
-            // callback count expectation: X and back; Y and back; XY and back
-            expect(relayoutCallback).toHaveBeenCalledTimes(6);
-
-            // a callback value structure and contents check
-            expect(relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({
-                'xaxis.range[0]': jasmine.any(Number),
-                'xaxis.range[1]': jasmine.any(Number),
-                'yaxis.range[0]': jasmine.any(Number),
-                'yaxis.range[1]': jasmine.any(Number)
-            }));
-        })
-        .then(done);
-    });
-
-    it('should be able to toggle visibility', function(done) {
-        var _mock = Lib.extendDeep({}, mock);
-
-        Plotly.plot(gd, _mock)
-        .then(delay(20))
-        .then(function() {
-            return Plotly.restyle(gd, 'visible', 'legendonly');
-        })
-        .then(function() {
-            expect(gd.querySelector('.gl-canvas-context')).toBe(null);
-
-            return Plotly.restyle(gd, 'visible', true);
-        })
-        .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
-
-            return Plotly.restyle(gd, 'visible', false);
-        })
-        .then(function() {
-            expect(gd.querySelector('.gl-canvas-context')).toBe(null);
-
-            return Plotly.restyle(gd, 'visible', true);
-        })
-        .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('should be able to toggle from svg to gl', function(done) {
-        Plotly.plot(gd, [{
-            y: [1, 2, 1],
-        }])
-        .then(function() {
-            expect(countCanvases()).toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
-
-            return Plotly.restyle(gd, 'type', 'scattergl');
-        })
-        .then(function() {
-            expect(countCanvases()).toBe(3);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
-
-            return Plotly.restyle(gd, 'type', 'scatter');
-        })
-        .then(function() {
-            expect(countCanvases()).toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('supports 1D and 2D Zoom', function(done) {
-        var centerX, centerY;
-        Plotly.newPlot(gd,
-            [{type: 'scattergl', x: [1, 15], y: [1, 15]}],
-            {
-                width: 400,
-                height: 400,
-                margin: {t: 100, b: 100, l: 100, r: 100},
-                xaxis: {range: [0, 16]},
-                yaxis: {range: [0, 16]}
-            }
-        )
-        .then(function() {
-            var bBox = gd.getBoundingClientRect();
-            centerX = bBox.left + 200;
-            centerY = bBox.top + 200;
-
-            // 2D
-            mouseTo([centerX - 50, centerY], [centerX + 50, centerY + 50]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([4, 12], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([4, 8], 3);
-
-            // x only
-            mouseTo([centerX - 50, centerY], [centerX, centerY + 5]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([4, 8], 3);
-
-            // y only
-            mouseTo([centerX, centerY - 50], [centerX - 5, centerY + 50]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([5, 7], 3);
-
-            // no change - too small
-            mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 16], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('supports axis constraints with zoom', function(done) {
-        var centerX, centerY;
-        Plotly.newPlot(gd,
-            [{type: 'scattergl', x: [1, 15], y: [1, 15]}],
-            {
-                width: 400,
-                height: 400,
-                margin: {t: 100, b: 100, l: 100, r: 100},
-                xaxis: {range: [0, 16]},
-                yaxis: {range: [0, 16]}
-            }
-        )
-        .then(function() {
-            var bBox = gd.getBoundingClientRect();
-            centerX = bBox.left + 200;
-            centerY = bBox.top + 200;
-
-            return Plotly.relayout(gd, {
-                'yaxis.scaleanchor': 'x',
-                'yaxis.scaleratio': 2
-            });
-        })
-        .then(function() {
-            // x range is adjusted to fit constraint
-            expect(gd.layout.xaxis.range).toBeCloseToArray([-8, 24], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
-
-            // now there should only be 2D zooming
-            // dy>>dx
-            mouseTo([centerX, centerY], [centerX - 1, centerY - 50]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 8], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([8, 12], 3);
-
-            // dx>>dy
-            mouseTo([centerX, centerY], [centerX + 50, centerY + 1]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([4, 6], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([9, 10], 3);
-
-            // no change - too small
-            mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([-8, 24], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
-
-            return Plotly.relayout(gd, {
-                'xaxis.autorange': true,
-                'yaxis.autorange': true
-            });
-        })
-        .then(function() {
-            expect(gd.layout.xaxis.range).toBeCloseToArray([-7.6, 23.6], 1);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([0.2, 15.8], 1);
-        })
-        .catch(fail)
-        .then(done);
-    });
-
-    it('should change plot type with incomplete data', function(done) {
-        Plotly.plot(gd, [{}]);
-        expect(function() {
-            Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
-        }).not.toThrow();
-
-        expect(function() {
-            Plotly.restyle(gd, {y: [[1]]}, 0);
-        }).not.toThrow();
-
-        done();
-    });
-});
-
-describe('Test removal of gl contexts', function() {
-    var gd;
-
-    beforeEach(function() {
-        gd = createGraphDiv();
-    });
-
-    afterEach(destroyGraphDiv);
-
-    it('Plots.cleanPlot should remove gl context from the graph div of a gl3d plot', function(done) {
-        Plotly.plot(gd, [{
-            type: 'scatter3d',
-            x: [1, 2, 3],
-            y: [2, 1, 3],
-            z: [3, 2, 1]
-        }])
-        .then(function() {
-            expect(gd._fullLayout.scene._scene.glplot).toBeDefined();
-
-            Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
-            expect(gd._fullLayout.scene._scene.glplot).toBe(null);
-        })
-        .then(done);
-    });
-
-    it('Plots.cleanPlot should remove gl context from the graph div of a gl2d plot', function(done) {
-        Plotly.plot(gd, [{
-            type: 'scattergl',
-            x: [1, 2, 3],
-            y: [2, 1, 3]
-        }])
-        .then(function() {
-            expect(gd._fullLayout._plots.xy._scene).toBeDefined();
-            Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
-
-            expect(gd._fullLayout._plots.xy._scene).toBeUndefined();
-        })
-        .then(done);
-    });
-
-    it('Plotly.newPlot should remove gl context from the graph div of a gl3d plot', function(done) {
-        var firstGlplotObject, firstGlContext, firstCanvas;
-
-        Plotly.plot(gd, [{
-            type: 'scatter3d',
-            x: [1, 2, 3],
-            y: [2, 1, 3],
-            z: [3, 2, 1]
-        }])
-        .then(function() {
-            firstGlplotObject = gd._fullLayout.scene._scene.glplot;
-            firstGlContext = firstGlplotObject.gl;
-            firstCanvas = firstGlContext.canvas;
-
-            expect(firstGlplotObject).toBeDefined();
-
-            return Plotly.newPlot(gd, [{
-                type: 'scatter3d',
-                x: [2, 1, 3],
-                y: [1, 2, 3],
-                z: [2, 1, 3]
-            }], {});
-        })
-        .then(function() {
-            var secondGlplotObject = gd._fullLayout.scene._scene.glplot;
-            var secondGlContext = secondGlplotObject.gl;
-            var secondCanvas = secondGlContext.canvas;
-
-            expect(secondGlplotObject).not.toBe(firstGlplotObject);
-            expect(firstGlplotObject.gl === null);
-            expect(secondGlContext instanceof WebGLRenderingContext);
-            expect(secondGlContext).not.toBe(firstGlContext);
-
-            // The same canvas can't possibly be reassinged a new WebGL context, but let's leave room
-            // for the implementation to make the context get lost and have the old canvas stick around
-            // in a disused state.
-            expect(
-                firstCanvas.parentNode === null ||
-                firstCanvas !== secondCanvas && firstGlContext.isContextLost()
-            );
-        })
-        .then(done);
-    });
-
-    it('Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
-        var firstGlplotObject, firstGlContext, firstCanvas;
-
-        Plotly.plot(gd, [{
-            type: 'scattergl',
-            x: [1, 2, 3],
-            y: [2, 1, 3]
-        }])
-        .then(function() {
-            firstGlplotObject = gd._fullLayout._plots.xy._scene;
-            firstGlContext = firstGlplotObject.scatter2d.gl;
-            firstCanvas = firstGlContext.canvas;
-
-            expect(firstGlplotObject).toBeDefined();
-            expect(firstGlContext).toBeDefined();
-            expect(firstGlContext instanceof WebGLRenderingContext);
-
-            return Plotly.newPlot(gd, [{
-                type: 'scattergl',
-                x: [1, 2, 3],
-                y: [2, 1, 3]
-            }], {});
-        })
-        .then(function() {
-            var secondGlplotObject = gd._fullLayout._plots.xy._scene;
-            var secondGlContext = secondGlplotObject.scatter2d.gl;
-            var secondCanvas = secondGlContext.canvas;
-
-            expect(Object.keys(gd._fullLayout._plots).length === 1);
-            expect(secondGlplotObject).not.toBe(firstGlplotObject);
-            expect(firstGlplotObject.gl === null);
-            expect(secondGlContext instanceof WebGLRenderingContext);
-            expect(secondGlContext).not.toBe(firstGlContext);
-
-            expect(
-                firstCanvas.parentNode === null ||
-                firstCanvas !== secondCanvas && firstGlContext.isContextLost()
-            );
-        })
-        .then(done);
-    });
-});
-
-describe('Test gl plot side effects', function() {
-    var gd;
-
-    beforeEach(function() {
-        gd = createGraphDiv();
-    });
-
-    afterEach(function() {
-        Plotly.purge(gd);
-        destroyGraphDiv();
-    });
-
-    it('should not draw the rangeslider', function(done) {
-        var data = [{
-            x: [1, 2, 3],
-            y: [2, 3, 4],
-            type: 'scattergl'
-        }, {
-            x: [1, 2, 3],
-            y: [2, 3, 4],
-            type: 'scatter'
-        }];
-
-        var layout = {
-            xaxis: { rangeslider: { visible: true } }
-        };
-
-        Plotly.plot(gd, data, layout).then(function() {
-            var rangeSlider = document.getElementsByClassName('range-slider')[0];
-            expect(rangeSlider).not.toBeDefined();
-        })
-        .then(done);
-    });
-
-    it('should be able to replot from a blank graph', function(done) {
-
-        function countCanvases(cnt) {
-            var nodes = d3.selectAll('canvas');
-            expect(nodes.size()).toEqual(cnt);
-        }
-
-        var data = [{
-            type: 'scattergl',
-            x: [1, 2, 3],
-            y: [2, 1, 2]
-        }];
-
-        Plotly.plot(gd, [])
-        .then(function() {
-            countCanvases(0);
-
-            return Plotly.plot(gd, data);
-        })
-        .then(function() {
-            countCanvases(3);
-
-            return Plotly.purge(gd);
-        })
-        .then(function() {
-            countCanvases(0);
-
-            return Plotly.plot(gd, data);
-        })
-        .then(function() {
-            countCanvases(3);
-
-            return Plotly.deleteTraces(gd, [0]);
-        })
-        .then(function() {
-            countCanvases(0);
-
-            return Plotly.purge(gd);
-        })
-        .then(done);
-    });
-
-    it('should be able to switch trace type', function(done) {
-        Plotly.newPlot(gd, [{
-            type: 'parcoords',
-            x: [1, 2, 3],
-            y: [2, 1, 2],
-            dimensions: [
-                {
-                    constraintrange: [200, 700],
-                    label: 'Block height',
-                    values: [321, 534, 542, 674, 31, 674, 124, 246, 456, 743]
-                }
-            ]
-        }])
-        .then(function() {
-            expect(d3.selectAll('canvas').size()).toEqual(3);
-
-            return Plotly.restyle(gd, 'type', 'scatter');
-        })
-        .then(function() {
-            expect(d3.selectAll('canvas').size()).toEqual(0);
-        })
-        .then(done);
-    });
-});
-
-describe('Test gl2d interactions', function() {
-    var gd;
-
-    beforeEach(function() {
-        gd = createGraphDiv();
-    });
-
-    afterEach(function() {
-        Plotly.purge(gd);
-        destroyGraphDiv();
-    });
-
-    it('data-referenced annotations should update on drag', function(done) {
-        function drag(start, end) {
-            mouseEvent('mousemove', start[0], start[1]);
-            mouseEvent('mousedown', start[0], start[1], { buttons: 1 });
-            mouseEvent('mousemove', end[0], end[1], { buttons: 1 });
-            mouseEvent('mouseup', end[0], end[1]);
-        }
-
-        function assertAnnotation(xy) {
-            var ann = d3.select('g.annotation-text-g').select('g');
-            var translate = Drawing.getTranslate(ann);
-
-            expect(translate.x).toBeWithin(xy[0], 4.5);
-            expect(translate.y).toBeWithin(xy[1], 4.5);
-        }
-
-        Plotly.plot(gd, [{
-            type: 'scattergl',
-            x: [1, 2, 3],
-            y: [2, 1, 2]
-        }], {
-            annotations: [{
-                x: 2,
-                y: 1,
-                text: 'text'
-            }],
-            dragmode: 'pan'
-        })
-        .then(function() {
-            assertAnnotation([327, 312]);
-
-            drag([250, 200], [200, 150]);
-            assertAnnotation([277, 262]);
-
-            return Plotly.relayout(gd, {
-                'xaxis.range': [1.5, 2.5],
-                'yaxis.range': [1, 1.5]
-            });
-        })
-        .then(function() {
-            assertAnnotation([327, 331]);
-        })
-        .then(done);
-    });
-});
-
 describe('Test gl3d annotations', function() {
     var gd;
 
@@ -1768,6 +1207,567 @@ describe('Test gl3d annotations', function() {
             });
         })
         .catch(fail)
+        .then(done);
+    });
+});
+
+describe('Test removal of gl contexts', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('Plots.cleanPlot should remove gl context from the graph div of a gl3d plot', function(done) {
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [2, 1, 3],
+            z: [3, 2, 1]
+        }])
+        .then(function() {
+            expect(gd._fullLayout.scene._scene.glplot).toBeDefined();
+
+            Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
+            expect(gd._fullLayout.scene._scene.glplot).toBe(null);
+        })
+        .then(done);
+    });
+
+    it('Plots.cleanPlot should remove gl context from the graph div of a gl2d plot', function(done) {
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            x: [1, 2, 3],
+            y: [2, 1, 3]
+        }])
+        .then(function() {
+            expect(gd._fullLayout._plots.xy._scene).toBeDefined();
+            Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
+
+            expect(gd._fullLayout._plots.xy._scene).toBeUndefined();
+        })
+        .then(done);
+    });
+
+    it('Plotly.newPlot should remove gl context from the graph div of a gl3d plot', function(done) {
+        var firstGlplotObject, firstGlContext, firstCanvas;
+
+        Plotly.plot(gd, [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [2, 1, 3],
+            z: [3, 2, 1]
+        }])
+        .then(function() {
+            firstGlplotObject = gd._fullLayout.scene._scene.glplot;
+            firstGlContext = firstGlplotObject.gl;
+            firstCanvas = firstGlContext.canvas;
+
+            expect(firstGlplotObject).toBeDefined();
+
+            return Plotly.newPlot(gd, [{
+                type: 'scatter3d',
+                x: [2, 1, 3],
+                y: [1, 2, 3],
+                z: [2, 1, 3]
+            }], {});
+        })
+        .then(function() {
+            var secondGlplotObject = gd._fullLayout.scene._scene.glplot;
+            var secondGlContext = secondGlplotObject.gl;
+            var secondCanvas = secondGlContext.canvas;
+
+            expect(secondGlplotObject).not.toBe(firstGlplotObject);
+            expect(firstGlplotObject.gl === null);
+            expect(secondGlContext instanceof WebGLRenderingContext);
+            expect(secondGlContext).not.toBe(firstGlContext);
+
+            // The same canvas can't possibly be reassinged a new WebGL context, but let's leave room
+            // for the implementation to make the context get lost and have the old canvas stick around
+            // in a disused state.
+            expect(
+                firstCanvas.parentNode === null ||
+                firstCanvas !== secondCanvas && firstGlContext.isContextLost()
+            );
+        })
+        .then(done);
+    });
+
+    it('Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
+        var firstGlplotObject, firstGlContext, firstCanvas;
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            x: [1, 2, 3],
+            y: [2, 1, 3]
+        }])
+        .then(function() {
+            firstGlplotObject = gd._fullLayout._plots.xy._scene;
+            firstGlContext = firstGlplotObject.scatter2d.gl;
+            firstCanvas = firstGlContext.canvas;
+
+            expect(firstGlplotObject).toBeDefined();
+            expect(firstGlContext).toBeDefined();
+            expect(firstGlContext instanceof WebGLRenderingContext);
+
+            return Plotly.newPlot(gd, [{
+                type: 'scattergl',
+                x: [1, 2, 3],
+                y: [2, 1, 3]
+            }], {});
+        })
+        .then(function() {
+            var secondGlplotObject = gd._fullLayout._plots.xy._scene;
+            var secondGlContext = secondGlplotObject.scatter2d.gl;
+            var secondCanvas = secondGlContext.canvas;
+
+            expect(Object.keys(gd._fullLayout._plots).length === 1);
+            expect(secondGlplotObject).not.toBe(firstGlplotObject);
+            expect(firstGlplotObject.gl === null);
+            expect(secondGlContext instanceof WebGLRenderingContext);
+            expect(secondGlContext).not.toBe(firstGlContext);
+
+            expect(
+                firstCanvas.parentNode === null ||
+                firstCanvas !== secondCanvas && firstGlContext.isContextLost()
+            );
+        })
+        .then(done);
+    });
+});
+
+describe('Test gl plot side effects', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('should not draw the rangeslider', function(done) {
+        var data = [{
+            x: [1, 2, 3],
+            y: [2, 3, 4],
+            type: 'scattergl'
+        }, {
+            x: [1, 2, 3],
+            y: [2, 3, 4],
+            type: 'scatter'
+        }];
+
+        var layout = {
+            xaxis: { rangeslider: { visible: true } }
+        };
+
+        Plotly.plot(gd, data, layout).then(function() {
+            var rangeSlider = document.getElementsByClassName('range-slider')[0];
+            expect(rangeSlider).not.toBeDefined();
+        })
+        .then(done);
+    });
+
+    it('should be able to replot from a blank graph', function(done) {
+
+        function countCanvases(cnt) {
+            var nodes = d3.selectAll('canvas');
+            expect(nodes.size()).toEqual(cnt);
+        }
+
+        var data = [{
+            type: 'scattergl',
+            x: [1, 2, 3],
+            y: [2, 1, 2]
+        }];
+
+        Plotly.plot(gd, [])
+        .then(function() {
+            countCanvases(0);
+
+            return Plotly.plot(gd, data);
+        })
+        .then(function() {
+            countCanvases(3);
+
+            return Plotly.purge(gd);
+        })
+        .then(function() {
+            countCanvases(0);
+
+            return Plotly.plot(gd, data);
+        })
+        .then(function() {
+            countCanvases(3);
+
+            return Plotly.deleteTraces(gd, [0]);
+        })
+        .then(function() {
+            countCanvases(0);
+
+            return Plotly.purge(gd);
+        })
+        .then(done);
+    });
+
+    it('should be able to switch trace type', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'parcoords',
+            x: [1, 2, 3],
+            y: [2, 1, 2],
+            dimensions: [
+                {
+                    constraintrange: [200, 700],
+                    label: 'Block height',
+                    values: [321, 534, 542, 674, 31, 674, 124, 246, 456, 743]
+                }
+            ]
+        }])
+        .then(function() {
+            expect(d3.selectAll('canvas').size()).toEqual(3);
+
+            return Plotly.restyle(gd, 'type', 'scatter');
+        })
+        .then(function() {
+            expect(d3.selectAll('canvas').size()).toEqual(0);
+        })
+        .then(done);
+    });
+});
+
+describe('Test gl2d plots', function() {
+    var gd;
+
+    var mock = require('@mocks/gl2d_10.json');
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function mouseTo(p0, p1) {
+        mouseEvent('mousemove', p0[0], p0[1]);
+        mouseEvent('mousedown', p0[0], p0[1], { buttons: 1 });
+        mouseEvent('mousemove', p1[0], p1[1], { buttons: 1 });
+        mouseEvent('mouseup', p1[0], p1[1]);
+    }
+
+    it('should respond to drag interactions', function(done) {
+        var _mock = Lib.extendDeep({}, mock);
+
+        var relayoutCallback = jasmine.createSpy('relayoutCallback');
+
+        var originalX = [-0.3037383177570093, 5.303738317757009];
+        var originalY = [-0.5, 6.1];
+        var newX = [-0.5, 5];
+        var newY = [-1.7, 4.95];
+        var precision = 1;
+
+        Plotly.plot(gd, _mock)
+        .then(delay(20))
+        .then(function() {
+            expect(gd.layout.xaxis.autorange).toBe(true);
+            expect(gd.layout.yaxis.autorange).toBe(true);
+            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+
+            // Switch to pan mode
+            var buttonPan = selectButton(gd._fullLayout._modeBar, 'pan2d');
+            expect(buttonPan.isActive()).toBe(false, 'initially, zoom is active');
+            buttonPan.click();
+            expect(buttonPan.isActive()).toBe(true, 'switched on dragmode');
+
+            // Switching mode must not change visible range
+            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+        })
+        .then(delay(200))
+        .then(function() {
+            gd.on('plotly_relayout', relayoutCallback);
+
+            // Drag scene along the X axis
+            mouseTo([200, 200], [220, 200]);
+
+            expect(gd.layout.xaxis.autorange).toBe(false);
+            expect(gd.layout.yaxis.autorange).toBe(false);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+
+            // Drag scene back along the X axis
+            mouseTo([220, 200], [200, 200]);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+
+            // Drag scene along the Y axis
+            mouseTo([200, 200], [200, 150]);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
+
+            // Drag scene back along the Y axis
+            mouseTo([200, 150], [200, 200]);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+
+            // Drag scene along both the X and Y axis
+            mouseTo([200, 200], [220, 150]);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
+
+            // Drag scene back along the X and Y axis
+            mouseTo([220, 150], [200, 200]);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+        })
+        .then(delay(200))
+        .then(function() {
+            // callback count expectation: X and back; Y and back; XY and back
+            expect(relayoutCallback).toHaveBeenCalledTimes(6);
+
+            // a callback value structure and contents check
+            expect(relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({
+                'xaxis.range[0]': jasmine.any(Number),
+                'xaxis.range[1]': jasmine.any(Number),
+                'yaxis.range[0]': jasmine.any(Number),
+                'yaxis.range[1]': jasmine.any(Number)
+            }));
+        })
+        .then(done);
+    });
+
+    it('should be able to toggle visibility', function(done) {
+        var _mock = Lib.extendDeep({}, mock);
+
+        Plotly.plot(gd, _mock)
+        .then(delay(20))
+        .then(function() {
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        })
+        .then(function() {
+            expect(gd.querySelector('.gl-canvas-context')).toBe(null);
+
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
+
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            expect(gd.querySelector('.gl-canvas-context')).toBe(null);
+
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should be able to toggle from svg to gl', function(done) {
+        Plotly.plot(gd, [{
+            y: [1, 2, 1],
+        }])
+        .then(function() {
+            expect(countCanvases()).toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+
+            return Plotly.restyle(gd, 'type', 'scattergl');
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(3);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+
+            return Plotly.restyle(gd, 'type', 'scatter');
+        })
+        .then(function() {
+            expect(countCanvases()).toBe(0);
+            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('supports 1D and 2D Zoom', function(done) {
+        var centerX, centerY;
+        Plotly.newPlot(gd,
+            [{type: 'scattergl', x: [1, 15], y: [1, 15]}],
+            {
+                width: 400,
+                height: 400,
+                margin: {t: 100, b: 100, l: 100, r: 100},
+                xaxis: {range: [0, 16]},
+                yaxis: {range: [0, 16]}
+            }
+        )
+        .then(function() {
+            var bBox = gd.getBoundingClientRect();
+            centerX = bBox.left + 200;
+            centerY = bBox.top + 200;
+
+            // 2D
+            mouseTo([centerX - 50, centerY], [centerX + 50, centerY + 50]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([4, 12], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([4, 8], 3);
+
+            // x only
+            mouseTo([centerX - 50, centerY], [centerX, centerY + 5]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([4, 8], 3);
+
+            // y only
+            mouseTo([centerX, centerY - 50], [centerX - 5, centerY + 50]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([5, 7], 3);
+
+            // no change - too small
+            mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 16], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('supports axis constraints with zoom', function(done) {
+        var centerX, centerY;
+        Plotly.newPlot(gd,
+            [{type: 'scattergl', x: [1, 15], y: [1, 15]}],
+            {
+                width: 400,
+                height: 400,
+                margin: {t: 100, b: 100, l: 100, r: 100},
+                xaxis: {range: [0, 16]},
+                yaxis: {range: [0, 16]}
+            }
+        )
+        .then(function() {
+            var bBox = gd.getBoundingClientRect();
+            centerX = bBox.left + 200;
+            centerY = bBox.top + 200;
+
+            return Plotly.relayout(gd, {
+                'yaxis.scaleanchor': 'x',
+                'yaxis.scaleratio': 2
+            });
+        })
+        .then(function() {
+            // x range is adjusted to fit constraint
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-8, 24], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
+
+            // now there should only be 2D zooming
+            // dy>>dx
+            mouseTo([centerX, centerY], [centerX - 1, centerY - 50]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 8], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([8, 12], 3);
+
+            // dx>>dy
+            mouseTo([centerX, centerY], [centerX + 50, centerY + 1]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([4, 6], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([9, 10], 3);
+
+            // no change - too small
+            mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-8, 24], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
+
+            return Plotly.relayout(gd, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        })
+        .then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-7.6, 23.6], 1);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([0.2, 15.8], 1);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should change plot type with incomplete data', function(done) {
+        Plotly.plot(gd, [{}]);
+        expect(function() {
+            Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
+        }).not.toThrow();
+
+        expect(function() {
+            Plotly.restyle(gd, {y: [[1]]}, 0);
+        }).not.toThrow();
+
+        done();
+    });
+});
+
+describe('Test gl2d interactions', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('data-referenced annotations should update on drag', function(done) {
+        function drag(start, end) {
+            mouseEvent('mousemove', start[0], start[1]);
+            mouseEvent('mousedown', start[0], start[1], { buttons: 1 });
+            mouseEvent('mousemove', end[0], end[1], { buttons: 1 });
+            mouseEvent('mouseup', end[0], end[1]);
+        }
+
+        function assertAnnotation(xy) {
+            var ann = d3.select('g.annotation-text-g').select('g');
+            var translate = Drawing.getTranslate(ann);
+
+            expect(translate.x).toBeWithin(xy[0], 4.5);
+            expect(translate.y).toBeWithin(xy[1], 4.5);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            x: [1, 2, 3],
+            y: [2, 1, 2]
+        }], {
+            annotations: [{
+                x: 2,
+                y: 1,
+                text: 'text'
+            }],
+            dragmode: 'pan'
+        })
+        .then(function() {
+            assertAnnotation([327, 312]);
+
+            drag([250, 200], [200, 150]);
+            assertAnnotation([277, 262]);
+
+            return Plotly.relayout(gd, {
+                'xaxis.range': [1.5, 2.5],
+                'yaxis.range': [1, 1.5]
+            });
+        })
+        .then(function() {
+            assertAnnotation([327, 331]);
+        })
         .then(done);
     });
 });
