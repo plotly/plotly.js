@@ -1549,7 +1549,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should be able to toggle visibility', function(done) {
+    it('@noCI should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock);
 
         Plotly.plot(gd, _mock)
