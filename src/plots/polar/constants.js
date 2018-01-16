@@ -33,6 +33,8 @@ module.exports = {
     cornerLen: 25,
     cornerHalfWidth: 2,
 
+    // pixels to move mouse before you stop clamping to starting point
+    MINDRAG: 8,
     // smallest radial distance [px] allowed for a zoombox
     MINZOOM: 20,
     // distance [px] off (r=0) or (r=radius) where we transition

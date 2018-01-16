@@ -858,9 +858,13 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         dragBox.clearSelect(fullLayout._zoomlayer);
     };
 
-    // decrease min drag value to be able to catch smaller dx/dy that
-    // can determine rotateMove vs rerangeMove
-    dragOpts.minDrag = 2;
+    dragOpts.clampFn = function(dx, dy) {
+        if(Math.sqrt(dx * dx + dy * dy) < constants.MINDRAG) {
+            dx = 0;
+            dy = 0;
+        }
+        return [dx, dy];
+    };
 
     dragElement.init(dragOpts);
 };
