@@ -528,9 +528,9 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
 proto.updateFx = function(fullLayout, polarLayout) {
     if(!this.gd._context.staticPlot) {
-        this.updateMainDrag(fullLayout, polarLayout);
         this.updateAngularDrag(fullLayout, polarLayout);
         this.updateRadialDrag(fullLayout, polarLayout);
+        this.updateMainDrag(fullLayout, polarLayout);
     }
 };
 
@@ -858,6 +858,10 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         dragBox.clearSelect(fullLayout._zoomlayer);
     };
 
+    // decrease min drag value to be able to catch smaller dx/dy that
+    // can determine rotateMove vs rerangeMove
+    dragOpts.minDrag = 2;
+
     dragElement.init(dragOpts);
 };
 
@@ -871,17 +875,18 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
     var cxx = _this.cxx;
     var cyy = _this.cyy;
     var sector = polarLayout.sector;
+    var dbs = constants.angularDragBoxSize;
 
     var angularDrag = dragBox.makeDragger(layers, 'path', 'angulardrag', 'move');
     var dragOpts = {element: angularDrag, gd: gd};
 
     d3.select(angularDrag)
-        .attr('d', pathAnnulus(radius, radius + constants.angularDragBoxSize, sector))
+        .attr('d', pathAnnulus(radius, radius + dbs, sector))
         .attr('transform', strTranslate(cx, cy))
         .call(setCursor, 'move');
 
     function xy2a(x, y) {
-        return Math.atan2(cyy - y, x - cxx);
+        return Math.atan2(cyy + dbs - y, x - cxx - dbs);
     }
 
     // scatter trace, points and textpoints selections
@@ -907,6 +912,10 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
 
         layers.frontplot.attr('transform',
             strTranslate(_this.xOffset2, _this.yOffset2) + strRotate([-da, cxx, cyy])
+        );
+
+        _this.clipPaths.circle.select('path').attr('transform',
+            strTranslate(cxx, cyy) + strRotate(da)
         );
 
         // 'un-rotate' marker and text points
@@ -1111,29 +1120,42 @@ function pathSectorClosed(r, sector) {
         (isFullCircle(sector) ? '' : 'L0,0Z');
 }
 
-// inspired by https://gist.github.com/buschtoens/4190516
-function pathAnnulus(r0, r1, _sector) {
-    var sector = _sector.slice();
-    var s0 = deg2rad(sector[0]);
-    var s1 = deg2rad(sector[1]);
-
-    // make a small cut on full sectors so that the
-    // inner region isn't filled
-    if(isFullCircle(sector)) s1 -= 1e-3;
-
-    var p00 = [r0 * Math.cos(s0), -r0 * Math.sin(s0)];
-    var p01 = [r0 * Math.cos(s1), -r0 * Math.sin(s1)];
-    var p10 = [r1 * Math.cos(s0), -r1 * Math.sin(s0)];
-    var p11 = [r1 * Math.cos(s1), -r1 * Math.sin(s1)];
-
+// TODO recycle this routine with the ones used for pie traces.
+function pathAnnulus(r0, r1, sector) {
     var largeArc = Math.abs(sector[1] - sector[0]) <= 180 ? 0 : 1;
+    // sector angle at [s]tart, [m]iddle and [e]nd
+    var ss, sm, se;
 
-    return 'M' + p00 +
-        'L' + p10 +
-        'A' + [r1, r1] + ' ' + [0, largeArc, 0] + ' ' + p11 +
-        'L' + p01 +
-        'A' + [r0, r0] + ' ' + [0, largeArc, 1] + ' ' + p00 +
-        'Z';
+    function pt(r, s) {
+        return [r * Math.cos(s), -r * Math.sin(s)];
+    }
+
+    function arc(r, s, cw) {
+        return 'A' + [r, r] + ' ' + [0, largeArc, cw] + ' ' + pt(r, s);
+    }
+
+    if(isFullCircle(sector)) {
+        ss = 0;
+        se = 2 * Math.PI;
+        sm = Math.PI;
+        return 'M' + pt(r0, ss) +
+            arc(r0, sm, 0) +
+            arc(r0, se, 0) +
+            'Z' +
+            'M' + pt(r1, ss) +
+            arc(r1, sm, 1) +
+            arc(r1, se, 1) +
+            'Z';
+    } else {
+        ss = deg2rad(sector[0]);
+        se = deg2rad(sector[1]);
+        return 'M' + pt(r0, ss) +
+            'L' + pt(r1, ss) +
+            arc(r1, se, 0) +
+            'L' + pt(r0, se) +
+            arc(r0, ss, 1) +
+            'Z';
+    }
 }
 
 function isFullCircle(sector) {

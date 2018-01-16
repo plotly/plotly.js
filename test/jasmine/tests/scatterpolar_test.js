@@ -86,7 +86,7 @@ describe('Test scatterpolar hover:', function() {
         nums: 'r: 4.022892\nθ: 2.239991',
         name: 'Trial 3'
     }, {
-        desc: 'on work on log radial axis',
+        desc: 'on log radial axis',
         patch: function(fig) {
             fig.layout.polar.radialaxis.type = 'log';
             return fig;

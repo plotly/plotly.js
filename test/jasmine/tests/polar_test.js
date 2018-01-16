@@ -922,12 +922,12 @@ describe('Test polar interactions:', function() {
         .then(_assertBase)
         .then(function() { return _drag(dragPos0, [-20, -20]); })
         .then(function() {
-            _assert(7.7, 'move counterclockwise');
+            _assert(9.9, 'move counterclockwise');
         })
         .then(_reset)
         .then(function() { return _drag(dragPos0, [20, 20]); })
         .then(function() {
-            _assert(-6.3, 'move clockwise');
+            _assert(-8.4, 'move clockwise');
         })
         .then(_reset)
         .then(function() {
