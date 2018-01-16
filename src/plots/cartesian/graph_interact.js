@@ -13,7 +13,7 @@ var Fx = require('../../components/fx');
 var dragElement = require('../../components/dragelement');
 
 var constants = require('./constants');
-var dragBox = require('./dragbox');
+var makeDragBox = require('./dragbox').makeDragBox;
 
 module.exports = function initInteractions(gd) {
     var fullLayout = gd._fullLayout;
@@ -46,7 +46,7 @@ module.exports = function initInteractions(gd) {
         if(!plotinfo.mainplot) {
             // main dragger goes over the grids and data, so we use its
             // mousemove events for all data hover effects
-            var maindrag = dragBox(gd, plotinfo, xa._offset, ya._offset,
+            var maindrag = makeDragBox(gd, plotinfo, xa._offset, ya._offset,
                 xa._length, ya._length, 'ns', 'ew');
 
             maindrag.onmousemove = function(evt) {
@@ -86,13 +86,13 @@ module.exports = function initInteractions(gd) {
 
             // corner draggers
             if(gd._context.showAxisDragHandles) {
-                dragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset - DRAGGERSIZE,
+                makeDragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset - DRAGGERSIZE,
                     DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');
-                dragBox(gd, plotinfo, xa._offset + xa._length, ya._offset - DRAGGERSIZE,
+                makeDragBox(gd, plotinfo, xa._offset + xa._length, ya._offset - DRAGGERSIZE,
                     DRAGGERSIZE, DRAGGERSIZE, 'n', 'e');
-                dragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset + ya._length,
+                makeDragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset + ya._length,
                     DRAGGERSIZE, DRAGGERSIZE, 's', 'w');
-                dragBox(gd, plotinfo, xa._offset + xa._length, ya._offset + ya._length,
+                makeDragBox(gd, plotinfo, xa._offset + xa._length, ya._offset + ya._length,
                     DRAGGERSIZE, DRAGGERSIZE, 's', 'e');
             }
         }
@@ -103,11 +103,11 @@ module.exports = function initInteractions(gd) {
                 // the y position of the main x axis line
                 var y0 = xa._mainLinePosition;
                 if(xa.side === 'top') y0 -= DRAGGERSIZE;
-                dragBox(gd, plotinfo, xa._offset + xa._length * 0.1, y0,
+                makeDragBox(gd, plotinfo, xa._offset + xa._length * 0.1, y0,
                     xa._length * 0.8, DRAGGERSIZE, '', 'ew');
-                dragBox(gd, plotinfo, xa._offset, y0,
+                makeDragBox(gd, plotinfo, xa._offset, y0,
                     xa._length * 0.1, DRAGGERSIZE, '', 'w');
-                dragBox(gd, plotinfo, xa._offset + xa._length * 0.9, y0,
+                makeDragBox(gd, plotinfo, xa._offset + xa._length * 0.9, y0,
                     xa._length * 0.1, DRAGGERSIZE, '', 'e');
             }
             // y axis draggers
@@ -115,11 +115,11 @@ module.exports = function initInteractions(gd) {
                 // the x position of the main y axis line
                 var x0 = ya._mainLinePosition;
                 if(ya.side !== 'right') x0 -= DRAGGERSIZE;
-                dragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.1,
+                makeDragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.1,
                     DRAGGERSIZE, ya._length * 0.8, 'ns', '');
-                dragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.9,
+                makeDragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.9,
                     DRAGGERSIZE, ya._length * 0.1, 's', '');
-                dragBox(gd, plotinfo, x0, ya._offset,
+                makeDragBox(gd, plotinfo, x0, ya._offset,
                     DRAGGERSIZE, ya._length * 0.1, 'n', '');
             }
         }
