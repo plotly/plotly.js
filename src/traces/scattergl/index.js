@@ -744,6 +744,8 @@ function getSymbolSdf(symbol) {
 
 
 ScatterGl.plot = function plot(container, subplot, cdata) {
+    if(!cdata.length) return;
+
     var layout = container._fullLayout;
     var stash = cdata[0][0].t;
     var scene = stash.scene;
