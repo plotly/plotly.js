@@ -233,6 +233,8 @@ ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positi
     var count = positions.length / 2;
     var markerOpts = trace.marker;
     var i, ptrX = 0, ptrY = 0;
+    var xaxis = Axes.getFromId(container, trace.xaxis);
+    var yaxis = Axes.getFromId(container, trace.yaxis);
 
     var hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
 
@@ -263,18 +265,26 @@ ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positi
         errorXOptions.positions = positions;
         var errorsX = new Float64Array(4 * count);
 
-        for(i = 0; i < count; ++i) {
-            errorsX[ptrX++] = positions[i * 2] - errorVals[i].xs || 0;
-            errorsX[ptrX++] = errorVals[i].xh - positions[i * 2] || 0;
-            errorsX[ptrX++] = 0;
-            errorsX[ptrX++] = 0;
+        if(xaxis.type === 'log') {
+            for(i = 0; i < count; ++i) {
+                errorsX[ptrX++] = positions[i * 2] - xaxis.d2l(errorVals[i].xs) || 0;
+                errorsX[ptrX++] = xaxis.d2l(errorVals[i].xh) - positions[i * 2] || 0;
+                errorsX[ptrX++] = 0;
+                errorsX[ptrX++] = 0;
+            }
+        } else {
+            for(i = 0; i < count; ++i) {
+                errorsX[ptrX++] = positions[i * 2] - errorVals[i].xs || 0;
+                errorsX[ptrX++] = errorVals[i].xh - positions[i * 2] || 0;
+                errorsX[ptrX++] = 0;
+                errorsX[ptrX++] = 0;
+            }
         }
 
         if(trace.error_x.copy_ystyle) {
             trace.error_x = trace.error_y;
         }
 
-        errorXOptions.positions = positions;
         errorXOptions.errors = errorsX;
         errorXOptions.capSize = trace.error_x.width * 2;
         errorXOptions.lineWidth = trace.error_x.thickness;
@@ -286,14 +296,22 @@ ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positi
         errorYOptions.positions = positions;
         var errorsY = new Float64Array(4 * count);
 
-        for(i = 0; i < count; ++i) {
-            errorsY[ptrY++] = 0;
-            errorsY[ptrY++] = 0;
-            errorsY[ptrY++] = positions[i * 2 + 1] - errorVals[i].ys || 0;
-            errorsY[ptrY++] = errorVals[i].yh - positions[i * 2 + 1] || 0;
+        if(yaxis.type === 'log') {
+            for(i = 0; i < count; ++i) {
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = positions[i * 2 + 1] - yaxis.d2l(errorVals[i].ys) || 0;
+                errorsY[ptrY++] = yaxis.d2l(errorVals[i].yh) - positions[i * 2 + 1] || 0;
+            }
+        } else {
+            for(i = 0; i < count; ++i) {
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = positions[i * 2 + 1] - errorVals[i].ys || 0;
+                errorsY[ptrY++] = errorVals[i].yh - positions[i * 2 + 1] || 0;
+            }
         }
 
-        errorYOptions.positions = positions;
         errorYOptions.errors = errorsY;
         errorYOptions.capSize = trace.error_y.width * 2;
         errorYOptions.lineWidth = trace.error_y.thickness;
