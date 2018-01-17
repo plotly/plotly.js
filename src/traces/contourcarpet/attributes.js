@@ -41,16 +41,8 @@ module.exports = extendFlat({}, {
     atype: heatmapAttrs.xtype,
     btype: heatmapAttrs.ytype,
 
-    mode: {
-        valType: 'flaglist',
-        flags: ['lines', 'fill'],
-        extras: ['none'],
-        role: 'info',
-        editType: 'calc',
-        description: ['The mode.'].join(' ')
-    },
-
-    connectgaps: heatmapAttrs.connectgaps,
+    // unimplemented - looks like connectgaps is implied true
+    // connectgaps: heatmapAttrs.connectgaps,
 
     fillcolor: {
         valType: 'color',
