@@ -221,6 +221,84 @@ describe('Test hover and click interactions', function() {
         .then(done);
     });
 
+    it('should output correct event data for scattergl in *select* dragmode', function(done) {
+        var _mock = Lib.extendDeep({}, mock1);
+
+        _mock.layout.dragmode = 'select';
+
+        _mock.layout.hoverlabel = {
+            font: {
+                size: 20,
+                color: 'yellow'
+            }
+        };
+        _mock.data[0].hoverinfo = _mock.data[0].x.map(function(_, i) { return i % 2 ? 'y' : 'x'; });
+
+        _mock.data[0].hoverlabel = {
+            bgcolor: 'blue',
+            bordercolor: _mock.data[0].x.map(function(_, i) { return i % 2 ? 'red' : 'green'; })
+        };
+
+        var run = makeRunner([634, 321], {
+            x: 15.772,
+            y: 0.387,
+            label: ['0.387', null],
+            curveNumber: 0,
+            pointNumber: 33,
+            bgcolor: 'rgb(0, 0, 255)',
+            bordercolor: 'rgb(255, 0, 0)',
+            fontSize: 20,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(255, 255, 0)'
+        }, {
+            msg: 'scattergl'
+        });
+
+        Plotly.plot(gd, _mock)
+        .then(run)
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should output correct event data for scattergl in *lasso* dragmode', function(done) {
+        var _mock = Lib.extendDeep({}, mock1);
+
+        _mock.layout.dragmode = 'lasso';
+
+        _mock.layout.hoverlabel = {
+            font: {
+                size: 20,
+                color: 'yellow'
+            }
+        };
+        _mock.data[0].hoverinfo = _mock.data[0].x.map(function(_, i) { return i % 2 ? 'y' : 'x'; });
+
+        _mock.data[0].hoverlabel = {
+            bgcolor: 'blue',
+            bordercolor: _mock.data[0].x.map(function(_, i) { return i % 2 ? 'red' : 'green'; })
+        };
+
+        var run = makeRunner([634, 321], {
+            x: 15.772,
+            y: 0.387,
+            label: ['0.387', null],
+            curveNumber: 0,
+            pointNumber: 33,
+            bgcolor: 'rgb(0, 0, 255)',
+            bordercolor: 'rgb(255, 0, 0)',
+            fontSize: 20,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(255, 255, 0)'
+        }, {
+            msg: 'scattergl'
+        });
+
+        Plotly.plot(gd, _mock)
+        .then(run)
+        .catch(fail)
+        .then(done);
+    });
+
     it('should output correct event data for scattergl with hoverinfo: \'none\'', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
         _mock.data[0].hoverinfo = 'none';

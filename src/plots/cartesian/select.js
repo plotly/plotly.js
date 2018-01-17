@@ -14,6 +14,7 @@ var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var color = require('../../components/color');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
+var Fx = require('../../components/fx');
 
 var axes = require('./axes');
 var constants = require('./constants');
@@ -258,7 +259,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         );
     };
 
-    dragOptions.clickFn = function(numClicks) {
+    dragOptions.clickFn = function(numClicks, evt) {
         corners.remove();
 
         throttle.done(throttleID).then(function() {
@@ -279,6 +280,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 // but in case anyone depends on it we don't want to break it now.
                 gd.emit('plotly_selected', undefined);
             }
+
+            Fx.click(gd, evt);
         });
     };
 
