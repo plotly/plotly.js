@@ -861,11 +861,39 @@ describe('ModeBar', function() {
             });
 
             describe('button toggleSpikelines', function() {
+                it('should not change layout hovermode', function() {
+                    expect(gd._fullLayout.hovermode).toBe('x');
+                    assertActive(hovermodeButtons, buttonCompare);
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout.hovermode).toBe('x');
+                    assertActive(hovermodeButtons, buttonCompare);
+                });
                 it('should makes spikelines visible', function() {
                     buttonToggle.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
 
                     buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+                });
+                it('should not become disabled when hovermode is switched off closest', function() {
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonCompare.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+                });
+                it('should keep the state on changing the hovermode', function() {
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonCompare.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('on');
+
+                    buttonToggle.click();
+                    expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
+
+                    buttonClosest.click();
                     expect(gd._fullLayout._cartesianSpikesEnabled).toBe('off');
                 });
             });
