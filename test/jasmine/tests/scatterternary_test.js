@@ -332,7 +332,8 @@ describe('scatterternary hover', function() {
             cd: cd[0],
             trace: cd[0][0].trace,
             xa: ternary.xaxis,
-            ya: ternary.yaxis
+            ya: ternary.yaxis,
+            subplot: ternary
         };
 
         return ScatterTernary.hoverPoints(pointData, xval, yval, hovermode);

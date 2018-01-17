@@ -10,9 +10,9 @@
 'use strict';
 
 var gl3dAxisAttrs = require('./axis_attributes');
+var domainAttrs = require('../../domain_attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
 var counterRegex = require('../../../lib').counterRegex;
-
 
 function makeCameraVector(x, y, z) {
     return {
@@ -74,37 +74,7 @@ module.exports = {
         }),
         editType: 'camera'
     },
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'plot'},
-                {valType: 'number', min: 0, max: 1, editType: 'plot'}
-            ],
-            dflt: [0, 1],
-            editType: 'plot',
-            description: [
-                'Sets the horizontal domain of this scene',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'plot'},
-                {valType: 'number', min: 0, max: 1, editType: 'plot'}
-            ],
-            dflt: [0, 1],
-            editType: 'plot',
-            description: [
-                'Sets the vertical domain of this scene',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        editType: 'plot'
-    },
+    domain: domainAttrs({name: 'scene', editType: 'plot'}),
     aspectmode: {
         valType: 'enumerated',
         role: 'info',

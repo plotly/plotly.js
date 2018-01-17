@@ -81,6 +81,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var hasGL2D = fullLayout._has('gl2d');
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
+    var hasPolar = fullLayout._has('polar');
 
     var groups = [];
 
@@ -120,6 +121,9 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     }
     if(hasMapbox || hasGeo) {
         dragModeGroup = ['pan2d'];
+    }
+    if(hasPolar) {
+        dragModeGroup = ['zoom2d'];
     }
     if(isSelectable(fullData)) {
         dragModeGroup.push('select2d');

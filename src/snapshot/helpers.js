@@ -19,9 +19,12 @@ exports.getDelay = function(fullLayout) {
 };
 
 exports.getRedrawFunc = function(gd) {
+    var fullLayout = gd._fullLayout || {};
+    var hasPolar = fullLayout._has && fullLayout._has('polar');
+    var hasLegacyPolar = !hasPolar && gd.data && gd.data[0] && gd.data[0].r;
 
-    // do not work if polar is present
-    if((gd.data && gd.data[0] && gd.data[0].r)) return;
+    // do not work for legacy polar
+    if(hasLegacyPolar) return;
 
     return function() {
         (gd.calcdata || []).forEach(function(d) {

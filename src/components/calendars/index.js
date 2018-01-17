@@ -238,6 +238,9 @@ module.exports = {
                 // from yaxis if they only apply to x (rangeselector/rangeslider)
                 yaxis: {calendar: axisAttrs},
                 zaxis: {calendar: axisAttrs}
+            },
+            polar: {
+                radialaxis: {calendar: axisAttrs}
             }
         },
         transforms: {

@@ -11,12 +11,10 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Axes = require('../../plots/cartesian/axes');
-
-var subTypes = require('../scatter/subtypes');
 var calcColorscale = require('../scatter/colorscale_calc');
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
+var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 
 var dataArrays = ['a', 'b', 'c'];
 var arraysToFill = {a: ['b', 'c'], b: ['a', 'c'], c: ['a', 'b']};
@@ -72,22 +70,7 @@ module.exports = function calc(gd, trace) {
         else cd[i] = {x: false, y: false};
     }
 
-    // fill in some extras
-    var marker, s;
-    if(subTypes.hasMarkers(trace)) {
-        // Treat size like x or y arrays --- Run d2c
-        // this needs to go before ppad computation
-        marker = trace.marker;
-        s = marker.size;
-
-        if(Array.isArray(s)) {
-            var ax = {type: 'linear'};
-            Axes.setConvert(ax);
-            s = ax.makeCalcdata(trace.marker, 'size');
-            if(s.length > serieslen) s.splice(serieslen, s.length - serieslen);
-        }
-    }
-
+    calcMarkerSize(trace, serieslen);
     calcColorscale(trace);
     arraysToCalcdata(cd, trace);
     calcSelection(cd, trace);

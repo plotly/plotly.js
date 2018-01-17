@@ -51,6 +51,8 @@ var numStripRE = / [XY][0-9]* /;
  *          offset - shift up/down in the rotated frame (unused?)
  *      containerGroup - if an svg <g> element already exists to hold this
  *          title, include here. Otherwise it will go in fullLayout._infolayer
+ *
+ *  @return {selection} d3 selection of title container group
  */
 Titles.draw = function(gd, titleClass, options) {
     var cont = options.propContainer;
@@ -63,13 +65,14 @@ Titles.draw = function(gd, titleClass, options) {
     var group = options.containerGroup;
 
     var fullLayout = gd._fullLayout;
-    var font = cont.titlefont.family;
-    var fontSize = cont.titlefont.size;
-    var fontColor = cont.titlefont.color;
+    var titlefont = cont.titlefont || {};
+    var font = titlefont.family;
+    var fontSize = titlefont.size;
+    var fontColor = titlefont.color;
 
     var opacity = 1;
     var isplaceholder = false;
-    var txt = cont.title.trim();
+    var txt = (cont.title || '').trim();
 
     // only make this title editable if we positively identify its property
     // as one that has editing enabled.
@@ -111,17 +114,28 @@ Titles.draw = function(gd, titleClass, options) {
         .attr('class', titleClass);
     el.exit().remove();
 
-    if(!elShouldExist) return;
+    if(!elShouldExist) return group;
 
     function titleLayout(titleEl) {
         Lib.syncOrAsync([drawTitle, scootTitle], titleEl);
     }
 
     function drawTitle(titleEl) {
-        titleEl.attr('transform', transform ?
-            'rotate(' + [transform.rotate, attributes.x, attributes.y] +
-                ') translate(0, ' + transform.offset + ')' :
-            null);
+        var transformVal;
+
+        if(transform) {
+            transformVal = '';
+            if(transform.rotate) {
+                transformVal += 'rotate(' + [transform.rotate, attributes.x, attributes.y] + ')';
+            }
+            if(transform.offset) {
+                transformVal += 'translate(0, ' + transform.offset + ')';
+            }
+        } else {
+            transformVal = null;
+        }
+
+        titleEl.attr('transform', transformVal);
 
         titleEl.style({
             'font-family': font,
@@ -236,4 +250,6 @@ Titles.draw = function(gd, titleClass, options) {
             });
     }
     el.classed('js-placeholder', isplaceholder);
+
+    return group;
 };

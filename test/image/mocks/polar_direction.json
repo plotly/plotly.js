@@ -1,0 +1,510 @@
+{
+  "data": [
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        360
+      ],
+      "line": {
+        "color": "#ff66ab"
+      },
+      "marker": {
+        "color": "#8090c7",
+        "symbol": "square",
+        "size": 8
+      },
+      "subplot": "polar",
+      "text": "sector: 0->360<br>rotation: -90<br>direction: clockwise"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        360
+      ],
+      "line": {
+        "color": "#ff66ab"
+      },
+      "marker": {
+        "color": "#8090c7",
+        "symbol": "square",
+        "size": 8
+      },
+      "subplot": "polar2",
+      "text": "sector: 0->360<br>rotation: 90<br>direction: clockwise"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        360
+      ],
+      "line": {
+        "color": "#ff66ab"
+      },
+      "marker": {
+        "color": "#8090c7",
+        "symbol": "square",
+        "size": 8
+      },
+      "subplot": "polar3",
+      "text": "sector: 45->135<br>rotation: 90<br>direction: clockwise"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        360
+      ],
+      "line": {
+        "color": "#ff66ab"
+      },
+      "marker": {
+        "color": "#8090c7",
+        "symbol": "square",
+        "size": 8
+      },
+      "subplot": "polar4",
+      "text": "sector: 135->225<br>rotation: 90<br>direction: clockwise"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        360
+      ],
+      "line": {
+        "color": "#ff66ab"
+      },
+      "marker": {
+        "color": "#8090c7",
+        "symbol": "square",
+        "size": 8
+      },
+      "subplot": "polar5",
+      "text": "sector: 135->225<br>rotation: 90<br>direction: counterclockwise"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        360
+      ],
+      "line": {
+        "color": "#ff66ab"
+      },
+      "marker": {
+        "color": "#8090c7",
+        "symbol": "square",
+        "size": 8
+      },
+      "subplot": "polar6",
+      "text": "sector: 45->135<br>rotation: 90<br>direction: counterclockwise"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        360
+      ],
+      "line": {
+        "color": "#ff66ab"
+      },
+      "marker": {
+        "color": "#8090c7",
+        "symbol": "square",
+        "size": 8
+      },
+      "subplot": "polar7",
+      "text": "sector: 0->360<br>rotation: 90<br>direction: counterclockwise"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        360
+      ],
+      "line": {
+        "color": "#ff66ab"
+      },
+      "marker": {
+        "color": "#8090c7",
+        "symbol": "square",
+        "size": 8
+      },
+      "subplot": "polar8",
+      "text": "sector: 0->360<br>rotation: 0<br>direction: clockwise"
+    },
+    {
+      "type": "scatterpolar",
+      "mode": "lines+markers",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        360
+      ],
+      "line": {
+        "color": "#ff66ab"
+      },
+      "marker": {
+        "color": "#8090c7",
+        "symbol": "square",
+        "size": 8
+      },
+      "subplot": "polar9",
+      "text": "sector: 0->360<br>rotation: 0<br>direction: counterclockwise"
+    }
+  ],
+  "layout": {
+    "margin": {
+      "l": 40,
+      "r": 40,
+      "t": 40,
+      "b": 40
+    },
+    "width": 600,
+    "height": 800,
+    "showlegend": false,
+    "polar": {
+      "sector": [
+        0,
+        360
+      ],
+      "domain": {
+        "x": [
+          0,
+          0.3
+        ],
+        "y": [
+          0.6833333333333333,
+          1
+        ]
+      },
+      "radialaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        },
+        "rotation": -90,
+        "direction": "clockwise"
+      }
+    },
+    "polar2": {
+      "sector": [
+        0,
+        360
+      ],
+      "domain": {
+        "x": [
+          0,
+          0.3
+        ],
+        "y": [
+          0.35,
+          0.6499999999999999
+        ]
+      },
+      "radialaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        },
+        "rotation": 90,
+        "direction": "clockwise"
+      }
+    },
+    "polar3": {
+      "sector": [
+        45,
+        135
+      ],
+      "domain": {
+        "x": [
+          0,
+          0.3
+        ],
+        "y": [
+          0,
+          0.31666666666666665
+        ]
+      },
+      "radialaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        },
+        "rotation": 90,
+        "direction": "clockwise"
+      }
+    },
+    "polar4": {
+      "sector": [
+        135,
+        225
+      ],
+      "domain": {
+        "x": [
+          0.36666666666666664,
+          0.6333333333333333
+        ],
+        "y": [
+          0.6833333333333333,
+          1
+        ]
+      },
+      "radialaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        },
+        "rotation": 90,
+        "direction": "clockwise"
+      }
+    },
+    "polar5": {
+      "sector": [
+        135,
+        225
+      ],
+      "domain": {
+        "x": [
+          0.36666666666666664,
+          0.6333333333333333
+        ],
+        "y": [
+          0.35,
+          0.6499999999999999
+        ]
+      },
+      "radialaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        },
+        "rotation": 90,
+        "direction": "counterclockwise"
+      }
+    },
+    "polar6": {
+      "sector": [
+        45,
+        135
+      ],
+      "domain": {
+        "x": [
+          0.36666666666666664,
+          0.6333333333333333
+        ],
+        "y": [
+          0,
+          0.31666666666666665
+        ]
+      },
+      "radialaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        },
+        "rotation": 90,
+        "direction": "counterclockwise"
+      }
+    },
+    "polar7": {
+      "sector": [
+        0,
+        360
+      ],
+      "domain": {
+        "x": [
+          0.7,
+          1
+        ],
+        "y": [
+          0.6833333333333333,
+          1
+        ]
+      },
+      "radialaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        },
+        "rotation": 90,
+        "direction": "counterclockwise"
+      }
+    },
+    "polar8": {
+      "sector": [
+        0,
+        360
+      ],
+      "domain": {
+        "x": [
+          0.7,
+          1
+        ],
+        "y": [
+          0.35,
+          0.6499999999999999
+        ]
+      },
+      "radialaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        },
+        "rotation": 0,
+        "direction": "clockwise"
+      }
+    },
+    "polar9": {
+      "sector": [
+        0,
+        360
+      ],
+      "domain": {
+        "x": [
+          0.7,
+          1
+        ],
+        "y": [
+          0,
+          0.31666666666666665
+        ]
+      },
+      "radialaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        },
+        "rotation": 0,
+        "direction": "counterclockwise"
+      }
+    }
+  }
+}

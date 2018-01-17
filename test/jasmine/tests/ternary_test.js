@@ -59,12 +59,20 @@ describe('ternary plots', function() {
         });
 
         it('should be able to delete and add traces', function(done) {
+            function checkTitles(cnt) {
+                expect(d3.selectAll('.g-atitle').size()).toBe(cnt, 'aaxis title');
+                expect(d3.selectAll('.g-btitle').size()).toBe(cnt, 'baxis title');
+                expect(d3.selectAll('.g-ctitle').size()).toBe(cnt, 'caxis title');
+            }
+
             expect(countTernarySubplot()).toEqual(1);
             expect(countTraces('scatter')).toEqual(1);
+            checkTitles(1);
 
             Plotly.deleteTraces(gd, [0]).then(function() {
                 expect(countTernarySubplot()).toEqual(0);
                 expect(countTraces('scatter')).toEqual(0);
+                checkTitles(0);
 
                 var trace = Lib.extendDeep({}, mock.data[0]);
 
@@ -72,6 +80,7 @@ describe('ternary plots', function() {
             }).then(function() {
                 expect(countTernarySubplot()).toEqual(1);
                 expect(countTraces('scatter')).toEqual(1);
+                checkTitles(1);
 
                 var trace = Lib.extendDeep({}, mock.data[0]);
 
@@ -79,11 +88,13 @@ describe('ternary plots', function() {
             }).then(function() {
                 expect(countTernarySubplot()).toEqual(1);
                 expect(countTraces('scatter')).toEqual(2);
+                checkTitles(1);
 
                 return Plotly.deleteTraces(gd, [0]);
             }).then(function() {
                 expect(countTernarySubplot()).toEqual(1);
                 expect(countTraces('scatter')).toEqual(1);
+                checkTitles(1);
 
                 done();
             });
@@ -333,6 +344,39 @@ describe('ternary plots', function() {
         })
         .then(function() {
             _assert(dflt);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should be able to relayout axis tickfont attributes', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+
+        function _assert(family, color, size) {
+            var tick = d3.select('g.aaxis > g.ytick > text').node();
+
+            expect(tick.style['font-family']).toBe(family, 'font family');
+            expect(parseFloat(tick.style['font-size'])).toBe(size, 'font size');
+            expect(tick.style.fill).toBe(color, 'font color');
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('"Open Sans", verdana, arial, sans-serif', 'rgb(204, 204, 204)', 12);
+
+            return Plotly.relayout(gd, 'ternary.aaxis.tickfont.size', 5);
+        })
+        .then(function() {
+            _assert('"Open Sans", verdana, arial, sans-serif', 'rgb(204, 204, 204)', 5);
+
+            return Plotly.relayout(gd, 'ternary.aaxis.tickfont', {
+                family: 'Roboto',
+                color: 'red',
+                size: 20
+            });
+        })
+        .then(function() {
+            _assert('Roboto', 'rgb(255, 0, 0)', 20);
         })
         .catch(fail)
         .then(done);

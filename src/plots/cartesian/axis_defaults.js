@@ -6,23 +6,19 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
-
-var colorMix = require('tinycolor2').mix;
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var lightFraction = require('../../components/color/attributes').lightFraction;
 
 var layoutAttributes = require('./layout_attributes');
 var handleTickValueDefaults = require('./tick_value_defaults');
 var handleTickMarkDefaults = require('./tick_mark_defaults');
 var handleTickLabelDefaults = require('./tick_label_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
+var handleLineGridDefaults = require('./line_grid_defaults');
 var setConvert = require('./set_convert');
 var orderedCategories = require('./ordered_categories');
-
 
 /**
  * options: object containing:
@@ -39,10 +35,6 @@ var orderedCategories = require('./ordered_categories');
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
     var font = options.font || {};
-
-    function coerce2(attr, dflt) {
-        return Lib.coerce2(containerIn, containerOut, layoutAttributes, attr, dflt);
-    }
 
     var visible = coerce('visible', !options.cheateronly);
 
@@ -84,35 +76,14 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
+    handleLineGridDefaults(containerIn, containerOut, coerce, {
+        dfltColor: dfltColor,
+        bgColor: options.bgColor,
+        showGrid: options.showGrid,
+        attributes: layoutAttributes
+    });
 
-    var lineColor = coerce2('linecolor', dfltColor),
-        lineWidth = coerce2('linewidth'),
-        showLine = coerce('showline', !!lineColor || !!lineWidth);
-
-    if(!showLine) {
-        delete containerOut.linecolor;
-        delete containerOut.linewidth;
-    }
-
-    if(showLine || containerOut.ticks) coerce('mirror');
-
-    var gridColor = coerce2('gridcolor', colorMix(dfltColor, options.bgColor, lightFraction).toRgbString()),
-        gridWidth = coerce2('gridwidth'),
-        showGridLines = coerce('showgrid', options.showGrid || !!gridColor || !!gridWidth);
-
-    if(!showGridLines) {
-        delete containerOut.gridcolor;
-        delete containerOut.gridwidth;
-    }
-
-    var zeroLineColor = coerce2('zerolinecolor', dfltColor),
-        zeroLineWidth = coerce2('zerolinewidth'),
-        showZeroLine = coerce('zeroline', options.showGrid || !!zeroLineColor || !!zeroLineWidth);
-
-    if(!showZeroLine) {
-        delete containerOut.zerolinecolor;
-        delete containerOut.zerolinewidth;
-    }
+    if(containerOut.showline || containerOut.ticks) coerce('mirror');
 
     return containerOut;
 };

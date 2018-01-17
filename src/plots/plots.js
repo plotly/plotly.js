@@ -1492,11 +1492,21 @@ plots.purge = function(gd) {
 
 plots.style = function(gd) {
     var _modules = gd._fullLayout._modules;
+    var styleModules = [];
+    var i;
 
-    for(var i = 0; i < _modules.length; i++) {
+    // some trace modules reuse the same style method,
+    // make sure to not unnecessary call them multiple times.
+
+    for(i = 0; i < _modules.length; i++) {
         var _module = _modules[i];
+        if(_module.style) {
+            Lib.pushUnique(styleModules, _module.style);
+        }
+    }
 
-        if(_module.style) _module.style(gd);
+    for(i = 0; i < styleModules.length; i++) {
+        styleModules[i](gd);
     }
 };
 
@@ -2312,6 +2322,15 @@ plots.doCalcdata = function(gd, traces) {
         trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
     }
 
+    // add polar axes to axis list
+    var polarIds = fullLayout._subplots.polar || [];
+    for(i = 0; i < polarIds.length; i++) {
+        axList.push(
+            fullLayout[polarIds[i]].radialaxis,
+            fullLayout[polarIds[i]].angularaxis
+        );
+    }
+
     initCategories(axList);
 
     var hasCalcTransform = false;
@@ -2422,19 +2441,6 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         traceHash = {},
         i;
 
-    function filterVisible(calcDataIn) {
-        var calcDataOut = [];
-
-        for(var i = 0; i < calcDataIn.length; i++) {
-            var calcTrace = calcDataIn[i],
-                trace = calcTrace[0].trace;
-
-            if(trace.visible === true) calcDataOut.push(calcTrace);
-        }
-
-        return calcDataOut;
-    }
-
     // build up moduleName -> calcData hash
     for(i = 0; i < subplotCalcData.length; i++) {
         var calcTraces = subplotCalcData[i],
@@ -2467,7 +2473,7 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         var moduleCalcData = traceHash[moduleName];
         var _module = moduleCalcData[0][0].trace._module;
 
-        _module.plot(subplot, filterVisible(moduleCalcData), subplotLayout);
+        _module.plot(subplot, Lib.filterVisible(moduleCalcData), subplotLayout);
     }
 
     // update moduleName -> calcData hash

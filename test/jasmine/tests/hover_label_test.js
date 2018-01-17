@@ -1270,6 +1270,36 @@ describe('hover on fill', function() {
         }).then(done);
     });
 
+    it('should always show one label in the right place (symmetric fill edge case)', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            x: [6, 7, 8, 7, 6],
+            y: [5, 4, 5, 6, 5],
+            fill: 'tonext',
+            hoveron: 'fills'
+        }], {
+            width: 500,
+            height: 500,
+            margin: {l: 50, t: 50, r: 50, b: 50}
+        })
+        .then(function() {
+            return assertLabelsCorrect([200, 200], [73.75, 250], 'trace 0');
+        })
+        .then(function() {
+            return Plotly.restyle(gd, {
+                x: [[6, 7, 8, 7]],
+                y: [[5, 4, 5, 6]]
+            });
+        })
+        .then(function() {
+            // gives same results w/o closing point
+            return assertLabelsCorrect([200, 200], [73.75, 250], 'trace 0');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
     it('should work for scatterternary too', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
         var gd = createGraphDiv();
