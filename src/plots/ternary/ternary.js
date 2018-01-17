@@ -64,7 +64,7 @@ proto.plot = function(ternaryCalcData, fullLayout) {
 
     _this.updateLayers(ternaryLayout);
     _this.adjustLayout(ternaryLayout, graphSize);
-    Plots.generalUpdatePerTraceModule(_this, ternaryCalcData, ternaryLayout);
+    Plots.generalUpdatePerTraceModule(_this.graphDiv, _this, ternaryCalcData, ternaryLayout);
     _this.layers.plotbg.select('path').call(Color.fill, ternaryLayout.bgcolor);
 };
 

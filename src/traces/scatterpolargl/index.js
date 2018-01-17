@@ -29,9 +29,6 @@ function calc(container, trace) {
     stash.r = rArray;
     stash.theta = thetaArray;
 
-    // FIXME: remove this once .plot API gets compatible w/others
-    stash.container = container;
-
     Axes.expand(radialAxis, rArray, {tozero: true});
 
     if(angularAxis.type !== 'linear') {
@@ -42,10 +39,7 @@ function calc(container, trace) {
     return [{x: false, y: false, t: stash, trace: trace}];
 }
 
-
-function plot(subplot, cdata) {
-    var stash = cdata[0][0].t;
-    var container = stash.container;
+function plot(container, subplot, cdata) {
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
     var rRange = radialAxis.range;

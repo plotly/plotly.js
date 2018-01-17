@@ -546,10 +546,11 @@ describe('Test Plots', function() {
     describe('Plots.generalUpdatePerTraceModule', function() {
 
         function _update(subplotCalcData, traceHashOld) {
+            var gd = {};
             var subplot = { traceHash: traceHashOld || {} };
             var calcDataPerModule = [];
 
-            var plot = function(_, moduleCalcData) {
+            var plot = function(gd, subplot, moduleCalcData) {
                 calcDataPerModule.push(moduleCalcData);
             };
 
@@ -557,7 +558,7 @@ describe('Test Plots', function() {
                 calcTrace[0].trace._module = { plot: plot };
             });
 
-            Plots.generalUpdatePerTraceModule(subplot, subplotCalcData, {});
+            Plots.generalUpdatePerTraceModule(gd, subplot, subplotCalcData, {});
 
             return {
                 traceHash: subplot.traceHash,

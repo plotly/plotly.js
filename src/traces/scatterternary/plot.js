@@ -11,8 +11,7 @@
 
 var scatterPlot = require('../scatter/plot');
 
-
-module.exports = function plot(ternary, moduleCalcData) {
+module.exports = function plot(gd, ternary, moduleCalcData) {
     var plotContainer = ternary.plotContainer;
 
     // remove all nodes inside the scatter layer
@@ -26,5 +25,5 @@ module.exports = function plot(ternary, moduleCalcData) {
         layerClipId: ternary._hasClipOnAxisFalse ? ternary.clipIdRelative : null
     };
 
-    scatterPlot(ternary.graphDiv, plotinfo, moduleCalcData);
+    scatterPlot(gd, plotinfo, moduleCalcData);
 };

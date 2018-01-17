@@ -85,7 +85,7 @@ proto.plot = function(polarCalcData, fullLayout) {
 
     _this.updateLayers(fullLayout, polarLayout);
     _this.updateLayout(fullLayout, polarLayout);
-    Plots.generalUpdatePerTraceModule(_this, polarCalcData, polarLayout);
+    Plots.generalUpdatePerTraceModule(_this.gd, _this, polarCalcData, polarLayout);
     _this.updateFx(fullLayout, polarLayout);
 };
 
@@ -837,7 +837,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
             var _module = moduleCalcData[0][0].trace._module;
             var polarLayoutNow = gd._fullLayout[_this.id];
 
-            _module.plot(_this, moduleCalcDataVisible, polarLayoutNow);
+            _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
 
             if(!Registry.traceIs(k, 'gl')) {
                 for(var i = 0; i < moduleCalcDataVisible.length; i++) {
@@ -962,7 +962,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
                 var _module = moduleCalcData[0][0].trace._module;
                 var polarLayoutNow = gd._fullLayout[_this.id];
 
-                _module.plot(_this, moduleCalcDataVisible, polarLayoutNow);
+                _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
             }
         }
     }

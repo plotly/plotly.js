@@ -140,7 +140,7 @@ proto.update = function(geoCalcData, fullLayout) {
     this.updateDims(fullLayout, geoLayout);
     this.updateFx(fullLayout, geoLayout);
 
-    Plots.generalUpdatePerTraceModule(this, geoCalcData, geoLayout);
+    Plots.generalUpdatePerTraceModule(this.graphDiv, this, geoCalcData, geoLayout);
 
     var scatterLayer = this.layers.frontplot.select('.scatterlayer');
     this.dataPoints.point = scatterLayer.selectAll('.point');

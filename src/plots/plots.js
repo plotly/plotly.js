@@ -2428,10 +2428,10 @@ plots.rehover = function(gd) {
     }
 };
 
-plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLayout) {
-    var traceHashOld = subplot.traceHash,
-        traceHash = {},
-        i;
+plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subplotLayout) {
+    var traceHashOld = subplot.traceHash;
+    var traceHash = {};
+    var i;
 
     // build up moduleName -> calcData hash
     for(i = 0; i < subplotCalcData.length; i++) {
@@ -2450,7 +2450,6 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
     // plot method is called so that it is properly
     // removed from the DOM.
     for(var moduleNameOld in traceHashOld) {
-
         if(!traceHash[moduleNameOld]) {
             var fakeCalcTrace = traceHashOld[moduleNameOld][0],
                 fakeTrace = fakeCalcTrace[0].trace;
@@ -2465,7 +2464,7 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         var moduleCalcData = traceHash[moduleName];
         var _module = moduleCalcData[0][0].trace._module;
 
-        _module.plot(subplot, Lib.filterVisible(moduleCalcData), subplotLayout);
+        _module.plot(gd, subplot, Lib.filterVisible(moduleCalcData), subplotLayout);
     }
 
     // update moduleName -> calcData hash

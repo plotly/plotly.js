@@ -11,7 +11,7 @@
 var scatterPlot = require('../scatter/plot');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-module.exports = function plot(subplot, moduleCalcData) {
+module.exports = function plot(gd, subplot, moduleCalcData) {
     var i, j;
 
     var plotinfo = {
@@ -60,5 +60,5 @@ module.exports = function plot(subplot, moduleCalcData) {
         }
     }
 
-    scatterPlot(subplot.graphDiv, plotinfo, moduleCalcData);
+    scatterPlot(gd, plotinfo, moduleCalcData);
 };
