@@ -30,7 +30,6 @@ var svgSdf = require('svg-path-sdf');
 var createRegl = require('regl');
 var fillHoverText = require('../scatter/fill_hover_text');
 var isNumeric = require('fast-isnumeric');
-var Scatter = require('../scatter');
 
 var MAXDIST = Fx.constants.MAXDIST;
 var SYMBOL_SDF_SIZE = 200;
@@ -41,27 +40,7 @@ var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 var TOO_MANY_POINTS = 1e5;
 var DOT_RE = /-dot/;
 
-
-var ScatterGl = module.exports = {};
-
-ScatterGl.name = 'scattergl';
-ScatterGl.categories = ['gl', 'regl', 'cartesian', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'];
-ScatterGl.attributes = require('./attributes');
-ScatterGl.supplyDefaults = require('./defaults');
-ScatterGl.cleanData = Scatter.cleanData;
-ScatterGl.arraysToCalcdata = Scatter.arraysToCalcdata;
-ScatterGl.colorbar = Scatter.colorbar;
-ScatterGl.meta = Scatter.meta;
-ScatterGl.animatable = true;
-ScatterGl.hasLines = subTypes.hasLines;
-ScatterGl.hasMarkers = subTypes.hasMarkers;
-ScatterGl.hasText = subTypes.hasText;
-ScatterGl.isBubble = subTypes.isBubble;
-ScatterGl.moduleType = 'trace';
-ScatterGl.basePlotModule = require('../../plots/cartesian');
-
-
-ScatterGl.calc = function calc(container, trace) {
+function calc(container, trace) {
     var layout = container._fullLayout;
     var positions;
     var stash = {};
@@ -146,7 +125,7 @@ ScatterGl.calc = function calc(container, trace) {
 
     calcColorscales(trace);
 
-    var options = ScatterGl.sceneOptions(container, subplot, trace, positions);
+    var options = sceneOptions(container, subplot, trace, positions);
 
     // expanding axes is separate from options
     if(!options.markers) {
@@ -195,7 +174,7 @@ ScatterGl.calc = function calc(container, trace) {
     }
 
     // create scene
-    var scene = ScatterGl.scene(container, subplot);
+    var scene = sceneUpdate(container, subplot);
 
     // set flags to create scene renderers
     if(options.fill && !scene.fill2d) scene.fill2d = true;
@@ -224,11 +203,10 @@ ScatterGl.calc = function calc(container, trace) {
     stash.count = count;
 
     return [{x: false, y: false, t: stash, trace: trace}];
-};
-
+}
 
 // create scene options
-ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positions) {
+function sceneOptions(container, subplot, trace, positions) {
     var layout = container._fullLayout;
     var count = positions.length / 2;
     var markerOpts = trace.marker;
@@ -540,11 +518,10 @@ ScatterGl.sceneOptions = function sceneOptions(container, subplot, trace, positi
         selected: selectedOptions,
         unselected: unselectedOptions
     };
-};
-
+}
 
 // make sure scene exists on subplot, return it
-ScatterGl.scene = function getScene(container, subplot) {
+function sceneUpdate(container, subplot) {
     var scene = subplot._scene;
     var layout = container._fullLayout;
 
@@ -707,8 +684,7 @@ ScatterGl.scene = function getScene(container, subplot) {
     }
 
     return scene;
-};
-
+}
 
 function getSymbolSdf(symbol) {
     if(symbol === 'circle') return null;
@@ -742,8 +718,7 @@ function getSymbolSdf(symbol) {
     return symbolSdf || null;
 }
 
-
-ScatterGl.plot = function plot(container, subplot, cdata) {
+function plot(container, subplot, cdata) {
     if(!cdata.length) return;
 
     var layout = container._fullLayout;
@@ -1006,10 +981,9 @@ ScatterGl.plot = function plot(container, subplot, cdata) {
     scene.draw();
 
     return;
-};
+}
 
-
-ScatterGl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
+function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd,
         stash = cd[0].t,
         trace = cd[0].trace,
@@ -1157,10 +1131,9 @@ ScatterGl.hoverPoints = function hover(pointData, xval, yval, hovermode) {
     ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];
-};
+}
 
-
-ScatterGl.selectPoints = function select(searchInfo, polygon) {
+function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd,
         selection = [],
         trace = cd[0].trace,
@@ -1213,14 +1186,43 @@ ScatterGl.selectPoints = function select(searchInfo, polygon) {
     scene.unselectBatch[stash.index] = unels;
 
     return selection;
-};
+}
 
-
-ScatterGl.style = function style(gd, cd) {
+function style(gd, cd) {
     if(cd) {
         var stash = cd[0].t;
         var scene = stash.scene;
         scene.clear();
         scene.draw();
+    }
+}
+
+module.exports = {
+    moduleType: 'trace',
+    name: 'scattergl',
+    basePlotModule: require('../../plots/cartesian'),
+    categories: ['gl', 'regl', 'cartesian', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'],
+
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    cleanData: require('../scatter/clean_data'),
+    colorbar: require('../scatter/colorbar'),
+    calc: calc,
+    plot: plot,
+    hoverPoints: hoverPoints,
+    style: style,
+    selectPoints: selectPoints,
+
+    sceneOptions: sceneOptions,
+    sceneUpdate: sceneUpdate,
+
+    meta: {
+        hrName: 'scatter_gl',
+        description: [
+            'The data visualized as scatter point or lines is set in `x` and `y`',
+            'using the WebGL plotting engine.',
+            'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+            'to a numerical arrays.'
+        ].join(' ')
     }
 };

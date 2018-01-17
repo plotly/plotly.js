@@ -51,7 +51,7 @@ function plot(subplot, cdata) {
     var angularAxis = subplot.angularAxis;
     var rRange = radialAxis.range;
 
-    var scene = ScatterGl.scene(container, subplot);
+    var scene = ScatterGl.sceneUpdate(container, subplot);
     scene.clear();
 
     cdata.forEach(function(cdscatter, traceIndex) {
