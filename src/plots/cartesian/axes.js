@@ -398,7 +398,7 @@ axes.saveRangeInitial = function(gd, overwrite) {
 axes.saveShowSpikeInitial = function(gd, overwrite) {
     var axList = axes.list(gd, '', true),
         hasOneAxisChanged = false,
-        allEnabled = 'on';
+        allSpikesEnabled = 'on';
 
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
@@ -415,11 +415,11 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
             hasOneAxisChanged = true;
         }
 
-        if(allEnabled === 'on' && !ax.showspikes) {
-            allEnabled = 'off';
+        if(allSpikesEnabled === 'on' && !ax.showspikes) {
+            allSpikesEnabled = 'off';
         }
     }
-    gd._fullLayout._cartesianSpikesEnabled = allEnabled;
+    gd._fullLayout._cartesianSpikesEnabled = allSpikesEnabled;
     return hasOneAxisChanged;
 };
 
@@ -2168,7 +2168,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                         top: pos,
                         bottom: pos,
                         left: ax._offset,
-                        rigth: ax._offset + ax._length,
+                        right: ax._offset + ax._length,
                         width: ax._length,
                         height: 0
                     };
