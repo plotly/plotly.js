@@ -40,24 +40,24 @@ module.exports = {
     },
     hoverdistance: {
         valType: 'integer',
-        min: 0,
+        min: -1,
         dflt: 20,
-        role: 'style',
+        role: 'info',
         editType: 'none',
         description: [
-            'Sets the default distance (in points) to look for data',
-            'to add hover labels (zero means no cutoff)'
+            'Sets the default distance (in pixels) to look for data',
+            'to add hover labels (-1 means no cutoff, 0 means no looking for data)'
         ].join(' ')
     },
     spikedistance: {
         valType: 'integer',
-        min: 0,
+        min: -1,
         dflt: 20,
-        role: 'style',
+        role: 'info',
         editType: 'none',
         description: [
-            'Sets the default distance (in points) to look for data to draw',
-            'spikelines to (zero means no cutoff).'
+            'Sets the default distance (in pixels) to look for data to draw',
+            'spikelines to (-1 means no cutoff, 0 means no looking for data).'
         ].join(' ')
     },
     hoverlabel: {

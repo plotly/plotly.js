@@ -1768,7 +1768,7 @@ describe('hover distance', function() {
         it('responds to hoverdistance change', function() {
             var gd = document.getElementById('graph');
             var evt = { xpx: 475, ypx: 180 };
-            gd._fullLayout.hoverdistance = 30;
+            Plotly.relayout(gd, 'hoverdistance', 30);
 
             Fx.hover('graph', evt, 'xy');
 
@@ -1785,11 +1785,11 @@ describe('hover distance', function() {
             });
         });
 
-        it('correctly responds to setting the hoverdistance to 0 by increasing ' +
+        it('correctly responds to setting the hoverdistance to -1 by increasing ' +
             'the range of search for points to hover to Infinity', function() {
             var gd = document.getElementById('graph');
             var evt = { xpx: 475, ypx: 180 };
-            gd._fullLayout.hoverdistance = 0;
+            Plotly.relayout(gd, 'hoverdistance', -1);
 
             Fx.hover('graph', evt, 'xy');
 
@@ -1842,20 +1842,20 @@ describe('hover distance', function() {
             });
         });
 
-        it('responds to hoverdistance change part 1', function() {
+        it('responds to hoverdistance change from 10 to 30 (part 1)', function() {
             var gd = document.getElementById('graph');
             var evt = { xpx: 450, ypx: 155 };
-            gd._fullLayout.hoverdistance = 10;
+            Plotly.relayout(gd, 'hoverdistance', 10);
 
             Fx.hover('graph', evt, 'xy');
 
             expect(gd._hoverdata).toEqual(undefined);
         });
 
-        it('responds to hoverdistance change part 2', function() {
+        it('responds to hoverdistance change from 10 to 30 (part 2)', function() {
             var gd = document.getElementById('graph');
             var evt = { xpx: 450, ypx: 155 };
-            gd._fullLayout.hoverdistance = 30;
+            Plotly.relayout(gd, 'hoverdistance', 30);
 
             Fx.hover('graph', evt, 'xy');
 
@@ -1873,11 +1873,49 @@ describe('hover distance', function() {
             });
         });
 
-        it('correctly responds to setting the hoverdistance to 0 by increasing ' +
-            'the range of search for points to hover to Infinity', function() {
+        it('responds to hoverdistance change from default to 0 (part 1)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 475, ypx: 155 };
+            Fx.hover('graph', evt, 'xy');
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(1);
+            expect(hoverTrace.x).toEqual(2);
+            expect(hoverTrace.y).toEqual(3);
+
+            assertHoverLabelContent({
+                nums: '3',
+                axis: '2',
+                name: 'trace 0'
+            });
+        });
+
+        it('responds to hoverdistance change from default to 0 (part 2)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 475, ypx: 155 };
+            Plotly.relayout(gd, 'hoverdistance', 0);
+
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata).toEqual(undefined);
+        });
+
+        it('responds to setting the hoverdistance to -1 by increasing ' +
+        'the range of search for points to hover to Infinity (part 1)', function() {
             var gd = document.getElementById('graph');
             var evt = { xpx: 450, ypx: 155 };
-            gd._fullLayout.hoverdistance = 0;
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata).toEqual(undefined);
+        });
+
+        it('responds to setting the hoverdistance to -1 by increasing ' +
+            'the range of search for points to hover to Infinity (part 2)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 450, ypx: 155 };
+            Plotly.relayout(gd, 'hoverdistance', -1);
 
             Fx.hover('graph', evt, 'xy');
 

@@ -89,6 +89,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         return Lib.coerce(axLayoutIn, axLayoutOut, layoutAttributes, attr, dflt);
     }
 
+    function coerce2(attr, dflt) {
+        return Lib.coerce2(axLayoutIn, axLayoutOut, layoutAttributes, attr, dflt);
+    }
+
     function getCounterAxes(axLetter) {
         return (axLetter === 'x') ? yIds : xIds;
     }
@@ -139,13 +143,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
-        var showSpikes = coerce('showspikes');
-        if(showSpikes) {
-            coerce('spikecolor');
-            coerce('spikethickness');
-            coerce('spikedash');
-            coerce('spikemode');
-            coerce('spikesnap');
+        var spikecolor = coerce2('spikecolor'),
+            spikethickness = coerce2('spikethickness'),
+            spikedash = coerce2('spikedash'),
+            spikemode = coerce2('spikemode'),
+            spikesnap = coerce2('spikesnap'),
+            showSpikes = coerce('showspikes', !!spikecolor || !!spikethickness || !!spikedash || !!spikemode || !!spikesnap);
+
+        if(!showSpikes) {
+            delete axLayoutOut.spikecolor;
+            delete axLayoutOut.spikethickness;
+            delete axLayoutOut.spikedash;
+            delete axLayoutOut.spikemode;
+            delete axLayoutOut.spikesnap;
         }
 
         var positioningOptions = {

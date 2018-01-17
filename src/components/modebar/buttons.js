@@ -181,7 +181,7 @@ function handleCartesian(gd, ev) {
     var fullLayout = gd._fullLayout;
     var aobj = {};
     var axList = axisIds.list(gd, null, true);
-    var allEnabled = 'on';
+    var allSpikesEnabled = 'on';
 
     var ax, i;
 
@@ -209,8 +209,8 @@ function handleCartesian(gd, ev) {
                     }
                     if(ax._showSpikeInitial !== undefined) {
                         aobj[axName + '.showspikes'] = ax._showSpikeInitial;
-                        if(allEnabled === 'on' && !ax._showSpikeInitial) {
-                            allEnabled = 'off';
+                        if(allSpikesEnabled === 'on' && !ax._showSpikeInitial) {
+                            allSpikesEnabled = 'off';
                         }
                     }
                 }
@@ -230,7 +230,7 @@ function handleCartesian(gd, ev) {
                 }
             }
         }
-        fullLayout._cartesianSpikesEnabled = allEnabled;
+        fullLayout._cartesianSpikesEnabled = allSpikesEnabled;
     }
     else {
         // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
@@ -240,11 +240,11 @@ function handleCartesian(gd, ev) {
         } else if(astr === 'hovermode' && val === 'closest') {
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
-                if(allEnabled === 'on' && !ax.showspikes) {
-                    allEnabled = 'off';
+                if(allSpikesEnabled === 'on' && !ax.showspikes) {
+                    allSpikesEnabled = 'off';
                 }
             }
-            fullLayout._cartesianSpikesEnabled = allEnabled;
+            fullLayout._cartesianSpikesEnabled = allSpikesEnabled;
         }
 
         aobj[astr] = val;
@@ -566,7 +566,7 @@ function setSpikelineVisibility(gd) {
     for(var i = 0; i < axList.length; i++) {
         ax = axList[i];
         axName = ax._name;
-        aobj[axName + '.showspikes'] = fullLayout._cartesianSpikesEnabled === 'on' ? true : false;
+        aobj[axName + '.showspikes'] = fullLayout._cartesianSpikesEnabled === 'on' ? true : ax._showSpikeInitial;
     }
 
     return aobj;

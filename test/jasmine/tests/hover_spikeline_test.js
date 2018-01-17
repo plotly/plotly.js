@@ -34,11 +34,11 @@ describe('spikeline', function() {
         }
 
         function _set_hovermode(hovermode) {
-            gd._fullLayout.hovermode = hovermode;
+            return Plotly.relayout(gd, 'hovermode', hovermode);
         }
 
         function _set_spikedistance(spikedistance) {
-            gd._fullLayout.spikedistance = spikedistance;
+            return Plotly.relayout(gd, 'spikedistance', spikedistance);
         }
 
         function _assert(lineExpect, circleExpect) {
@@ -243,8 +243,8 @@ describe('spikeline', function() {
             .then(done);
         });
 
-        it('correctly responds to setting the hoverdistance to 0 by increasing ' +
-            'the range of search for points to hover to Infinity', function(done) {
+        it('correctly responds to setting the spikedistance to -1 by increasing ' +
+            'the range of search for points to draw the spikelines to Infinity', function(done) {
             gd = createGraphDiv();
             var _mock = makeMock('toaxis', 'closest');
 
@@ -263,7 +263,7 @@ describe('spikeline', function() {
                 );
             })
             .then(function() {
-                _set_spikedistance(0);
+                _set_spikedistance(-1);
             })
             .then(function() {
                 _hover({xval: 1.6, yval: 2.6}, 'xy');
@@ -276,6 +276,46 @@ describe('spikeline', function() {
                 _hover({xval: 26, yval: 36}, 'x2y2');
                 _assert(
                     [[820, 220, 820, 167], [820, 220, 820, 167]],
+                    []
+                );
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('correctly responds to setting the spikedistance to 0 by disabling ' +
+            'the search for points to draw the spikelines', function(done) {
+            gd = createGraphDiv();
+            var _mock = makeMock('toaxis', 'closest');
+
+            Plotly.plot(gd, _mock).then(function() {
+                _hover({xval: 2, yval: 3}, 'xy');
+                _assert(
+                    [[557, 401, 557, 250], [557, 401, 557, 250], [80, 250, 557, 250], [80, 250, 557, 250]],
+                    [[83, 250]]
+                );
+            })
+            .then(function() {
+                _hover({xval: 30, yval: 40}, 'x2y2');
+                _assert(
+                    [[820, 220, 820, 167], [820, 220, 820, 167]],
+                    []
+                );
+            })
+            .then(function() {
+                _set_spikedistance(0);
+            })
+            .then(function() {
+                _hover({xval: 2, yval: 3}, 'xy');
+                _assert(
+                    [],
+                    []
+                );
+            })
+            .then(function() {
+                _hover({xval: 30, yval: 40}, 'x2y2');
+                _assert(
+                    [],
                     []
                 );
             })

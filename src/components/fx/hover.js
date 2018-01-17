@@ -208,8 +208,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         return dragElement.unhoverRaw(gd, evt);
     }
 
-    var hoverdistance = fullLayout.hoverdistance === 0 ? Infinity : fullLayout.hoverdistance;
-    var spikedistance = fullLayout.spikedistance === 0 ? Infinity : fullLayout.spikedistance;
+    var hoverdistance = fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance;
+    var spikedistance = fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance;
 
         // hoverData: the set of candidate points we've found to highlight
     var hoverData = [],
@@ -268,17 +268,18 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
         // [x|y]px: the pixels (from top left) of the mouse location
         // on the currently selected plot area
+        // add pointerX|Y property for drawing the spikes in spikesnap 'cursor' situation
         var hasUserCalledHover = !evt.target,
             xpx, ypx;
 
         if(hasUserCalledHover) {
             if('xpx' in evt) xpx = evt.xpx;
             else xpx = xaArray[0]._length / 2;
-            if(!('offsetX' in evt)) evt.offsetX = xpx + xaArray[0]._offset;
+            evt.pointerX = xpx + xaArray[0]._offset;
 
             if('ypx' in evt) ypx = evt.ypx;
             else ypx = yaArray[0]._length / 2;
-            if(!('offsetY' in evt)) evt.offsetY = ypx + yaArray[0]._offset;
+            evt.pointerY = ypx + yaArray[0]._offset;
         }
         else {
             // fire the beforehover event and quit if it returns false
@@ -298,6 +299,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             if(xpx < 0 || xpx > dbb.width || ypx < 0 || ypx > dbb.height) {
                 return dragElement.unhoverRaw(gd, evt);
             }
+            evt.pointerX = evt.offsetX;
+            evt.pointerY = evt.offsetY;
         }
 
         if('xval' in evt) xvalArray = helpers.flat(subplots, evt.xval);
@@ -391,21 +394,23 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             yval = yvalArray[subploti];
         }
 
-        // Now find the points.
-        if(trace._module && trace._module.hoverPoints) {
-            var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
-            if(newPoints) {
-                var newPoint;
-                for(var newPointNum = 0; newPointNum < newPoints.length; newPointNum++) {
-                    newPoint = newPoints[newPointNum];
-                    if(isNumeric(newPoint.x0) && isNumeric(newPoint.y0)) {
-                        hoverData.push(cleanPoint(newPoint, hovermode));
+        // Now if there is range to look in, find the points to hover.
+        if(hoverdistance !== 0) {
+            if(trace._module && trace._module.hoverPoints) {
+                var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
+                if(newPoints) {
+                    var newPoint;
+                    for(var newPointNum = 0; newPointNum < newPoints.length; newPointNum++) {
+                        newPoint = newPoints[newPointNum];
+                        if(isNumeric(newPoint.x0) && isNumeric(newPoint.y0)) {
+                            hoverData.push(cleanPoint(newPoint, hovermode));
+                        }
                     }
                 }
             }
-        }
-        else {
-            Lib.log('Unrecognized trace type in hover:', trace);
+            else {
+                Lib.log('Unrecognized trace type in hover:', trace);
+            }
         }
 
         // in closest mode, remove any existing (farther) points
@@ -415,9 +420,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             distance = hoverData[0].distance;
         }
 
-        // Now look for the points to draw the spikelines
+        // Now if there is range to look in, find the points to draw the spikelines
         // Do it only if there is no hoverData
-        if(fullLayout._has('cartesian')) {
+        if(fullLayout._has('cartesian') && (spikedistance !== 0)) {
             if(hoverData.length === 0) {
                 pointData.distance = spikedistance;
                 pointData.index = false;
@@ -430,7 +435,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                     if(closestVPoints.length) {
                         var closestVPt = closestVPoints[0];
                         if(isNumeric(closestVPt.x0) && isNumeric(closestVPt.y0)) {
-                            tmpPoint = clearClosestPoint(closestVPt);
+                            tmpPoint = fillClosestPoint(closestVPt);
                             if(!spikePoints.vLinePoint || (spikePoints.vLinePoint.distance > tmpPoint.distance)) {
                                 spikePoints.vLinePoint = tmpPoint;
                             }
@@ -443,7 +448,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                     if(closestHPoints.length) {
                         var closestHPt = closestHPoints[0];
                         if(isNumeric(closestHPt.x0) && isNumeric(closestHPt.y0)) {
-                            tmpPoint = clearClosestPoint(closestHPt);
+                            tmpPoint = fillClosestPoint(closestHPt);
                             if(!spikePoints.hLinePoint || (spikePoints.hLinePoint.distance > tmpPoint.distance)) {
                                 spikePoints.hLinePoint = tmpPoint;
                             }
@@ -463,7 +468,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 xpx = xa.c2p(xval),
                 ypx = ya.c2p(yval),
                 dxy = function(point) {
-                    var rad = Math.max(3, point.mrc || 0),
+                    var rad = point.kink,
                         dx = (point.x1 + point.x0) / 2 - xpx,
                         dy = (point.y1 + point.y0) / 2 - ypx;
                     return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
@@ -486,7 +491,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         return resultPoint;
     }
 
-    function clearClosestPoint(point) {
+    function fillClosestPoint(point) {
         if(!point) return null;
         return {
             xa: point.xa,
@@ -502,7 +507,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         };
     }
 
-    // if hoverData is empty check for the spikes to draw and quit if there are none
     var spikelineOpts = {
         fullLayout: fullLayout,
         container: fullLayout._hoverlayer,
@@ -516,22 +520,24 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         };
     gd._spikepoints = newspikepoints;
 
-    if(fullLayout._has('cartesian')) {
+    // Now if it is not restricted by spikedistance option, set the points to draw the spikelines
+    if(fullLayout._has('cartesian') && (spikedistance !== 0)) {
         if(hoverData.length !== 0) {
             var tmpHPointData = hoverData.filter(function(point) {
                 return point.ya.showspikes;
             });
             var tmpHPoint = selectClosestPoint(tmpHPointData, spikedistance);
-            spikePoints.hLinePoint = clearClosestPoint(tmpHPoint);
+            spikePoints.hLinePoint = fillClosestPoint(tmpHPoint);
 
             var tmpVPointData = hoverData.filter(function(point) {
                 return point.xa.showspikes;
             });
             var tmpVPoint = selectClosestPoint(tmpVPointData, spikedistance);
-            spikePoints.vLinePoint = clearClosestPoint(tmpVPoint);
+            spikePoints.vLinePoint = fillClosestPoint(tmpVPoint);
         }
     }
 
+    // if hoverData is empty check for the spikes to draw and quit if there are none
     if(hoverData.length === 0) {
         var result = dragElement.unhoverRaw(gd, evt);
         if(fullLayout._has('cartesian') && ((spikePoints.hLinePoint !== null) || (spikePoints.vLinePoint !== null))) {
@@ -1228,8 +1234,8 @@ function createSpikelines(closestPoints, opts) {
     var xa,
         ya;
 
-    var showY = closestPoints.hLinePoint ? true : false;
-    var showX = closestPoints.vLinePoint ? true : false;
+    var showY = !!closestPoints.hLinePoint;
+    var showX = !!closestPoints.vLinePoint;
 
     // Remove old spikeline items
     container.selectAll('.spikeline').remove();
@@ -1248,11 +1254,11 @@ function createSpikelines(closestPoints, opts) {
         var ySnap = ya.spikesnap;
 
         if(ySnap === 'cursor') {
-            hLinePointY = evt.offsetY;
-            hLinePointX = evt.offsetX;
+            hLinePointX = evt.pointerX;
+            hLinePointY = evt.pointerY;
         } else {
-            hLinePointY = ya._offset + (hLinePoint.y0 + hLinePoint.y1) / 2;
             hLinePointX = xa._offset + (hLinePoint.x0 + hLinePoint.x1) / 2;
+            hLinePointY = ya._offset + (hLinePoint.y0 + hLinePoint.y1) / 2;
         }
         var dfltHLineColor = tinycolor.readability(hLinePoint.color, contrastColor) < 1.5 ?
             Color.contrast(contrastColor) : hLinePoint.color;
@@ -1324,8 +1330,8 @@ function createSpikelines(closestPoints, opts) {
         var xSnap = xa.spikesnap;
 
         if(xSnap === 'cursor') {
-            vLinePointX = evt.offsetX;
-            vLinePointY = evt.offsetY;
+            vLinePointX = evt.pointerX;
+            vLinePointY = evt.pointerY;
         } else {
             vLinePointX = xa._offset + (vLinePoint.x0 + vLinePoint.x1) / 2;
             vLinePointY = ya._offset + (vLinePoint.y0 + vLinePoint.y1) / 2;
@@ -1408,7 +1414,7 @@ function hoverChanged(gd, evt, oldhoverdata) {
 }
 
 function spikesChanged(gd, oldspikepoints) {
-    // don't emit any events if nothing changed
+    // don't relayout the plot because of new spikelines if spikelines points didn't change
     if(!oldspikepoints) return true;
     if(oldspikepoints.vLinePoint !== gd._spikepoints.vLinePoint ||
         oldspikepoints.hLinePoint !== gd._spikepoints.hLinePoint
