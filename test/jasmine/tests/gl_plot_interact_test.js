@@ -1620,6 +1620,11 @@ describe('Test gl2d plots', function() {
             centerX = bBox.left + 200;
             centerY = bBox.top + 200;
 
+            // no change - too small
+            mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 16], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
+
             // 2D
             mouseTo([centerX - 50, centerY], [centerX + 50, centerY + 50]);
             expect(gd.layout.xaxis.range).toBeCloseToArray([4, 12], 3);
@@ -1634,11 +1639,6 @@ describe('Test gl2d plots', function() {
             mouseTo([centerX, centerY - 50], [centerX - 5, centerY + 50]);
             expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
             expect(gd.layout.yaxis.range).toBeCloseToArray([5, 7], 3);
-
-            // no change - too small
-            mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 16], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
         })
         .catch(fail)
         .then(done);
@@ -1671,6 +1671,11 @@ describe('Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([-8, 24], 3);
             expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
 
+            // no change - too small
+            mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-8, 24], 3);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
+
             // now there should only be 2D zooming
             // dy>>dx
             mouseTo([centerX, centerY], [centerX - 1, centerY - 50]);
@@ -1681,11 +1686,6 @@ describe('Test gl2d plots', function() {
             mouseTo([centerX, centerY], [centerX + 50, centerY + 1]);
             expect(gd.layout.xaxis.range).toBeCloseToArray([4, 6], 3);
             expect(gd.layout.yaxis.range).toBeCloseToArray([9, 10], 3);
-
-            // no change - too small
-            mouseTo([centerX, centerY], [centerX - 5, centerY + 5]);
-            expect(gd.layout.xaxis.range).toBeCloseToArray([-8, 24], 3);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([0, 16], 3);
 
             return Plotly.relayout(gd, {
                 'xaxis.autorange': true,
