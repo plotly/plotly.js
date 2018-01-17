@@ -8,12 +8,14 @@
 
 'use strict';
 
-var ScatterGl = require('../scattergl');
+var kdtree = require('kdgrass');
 var isNumeric = require('fast-isnumeric');
+
+var ScatterGl = require('../scattergl');
 var calcColorscales = require('../scatter/colorscale_calc');
 var Axes = require('../../plots/cartesian/axes');
-var kdtree = require('kdgrass');
-var Lib = require('../../lib');
+var makeHoverPointText = require('../scatterpolar/hover').makeHoverPointText;
+var subTypes = require('../scatter/subtypes');
 
 function calc(container, trace) {
     var layout = container._fullLayout;
@@ -101,7 +103,9 @@ function plot(container, subplot, cdata) {
         if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
 
         // bring positions to selected/unselected options
-        options.selected.positions = options.unselected.positions = options.marker.positions;
+        if(subTypes.hasMarkers(trace)) {
+            options.selected.positions = options.unselected.positions = options.marker.positions;
+        }
 
         // save scene options batch
         scene.lineOptions.push(options.line);
@@ -130,67 +134,36 @@ function plot(container, subplot, cdata) {
     return ScatterGl.plot(container, subplot, cdata);
 }
 
-// TODO dry up with ScatterPolar.hoverPoints
 function hoverPoints(pointData, xval, yval, hovermode) {
-    var cd = pointData.cd,
-        stash = cd[0].t,
-        rArray = stash.r,
-        thetaArray = stash.theta;
+    var cd = pointData.cd;
+    var stash = cd[0].t;
+    var rArray = stash.r;
+    var thetaArray = stash.theta;
 
     var scatterPointData = ScatterGl.hoverPoints(pointData, xval, yval, hovermode);
-
     if(!scatterPointData || scatterPointData[0].index === false) return;
 
     var newPointData = scatterPointData[0];
 
-    // hovering on fill case
-    // TODO do we need to constrain the scatter point data further (like for
-    // ternary subplots) or not?
     if(newPointData.index === undefined) {
         return scatterPointData;
     }
 
     var subplot = pointData.subplot;
+    var angularAxis = subplot.angularAxis;
     var cdi = newPointData.cd[newPointData.index];
     var trace = newPointData.trace;
-    var radialAxis = subplot.radialAxis;
-    var angularAxis = subplot.angularAxis;
-    var hoverinfo = cdi.hi || trace.hoverinfo;
-    var parts = hoverinfo.split('+');
-    var text = [];
 
     // augment pointData with r/theta param
     cdi.r = rArray[newPointData.index];
     cdi.theta = thetaArray[newPointData.index];
     cdi.rad = angularAxis.c2rad(cdi.theta, trace.thetaunit);
 
-    var _rad = angularAxis.c2rad(cdi.theta, trace.thetaunit);
-
     if(!subplot.isPtWithinSector(cdi)) return;
 
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
-
-    radialAxis._hovertitle = 'r';
-    angularAxis._hovertitle = 'θ';
-
-    // show theta value in unit of angular axis
-    var theta;
-    if(angularAxis.type === 'linear' && trace.thetaunit !== angularAxis.thetaunit) {
-        theta = angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(_rad) : _rad;
-    } else {
-        theta = cdi.theta;
-    }
-
-    function textPart(ax, val) {
-        text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
-    }
-
-    if(parts.indexOf('all') !== -1) parts = ['r', 'theta'];
-    if(parts.indexOf('r') !== -1) textPart(radialAxis, cdi.r);
-    if(parts.indexOf('theta') !== -1) textPart(angularAxis, theta);
-
-    newPointData.extraText = text.join('<br>');
+    newPointData.extraText = makeHoverPointText(cdi, trace, subplot);
 
     return scatterPointData;
 }
