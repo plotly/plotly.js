@@ -15,7 +15,6 @@ var Axes = require('../../plots/cartesian/axes');
 var kdtree = require('kdgrass');
 var Lib = require('../../lib');
 
-
 function calc(container, trace) {
     var layout = container._fullLayout;
     var subplotId = trace.subplot;
@@ -202,17 +201,14 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     return scatterPointData;
 }
 
-
 module.exports = {
     moduleType: 'trace',
     name: 'scatterpolargl',
     basePlotModule: require('../../plots/polar'),
     categories: ['gl', 'regl', 'polar', 'symbols', 'markerColorscale', 'showLegend', 'scatter-like'],
 
-    // TODO scatterpolargl won't support text
-    // should have its own attributes and defaults
-    attributes: require('../scatterpolar/attributes'),
-    supplyDefaults: require('../scatterpolar/defaults'),
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
 
     calc: calc,
     plot: plot,
@@ -223,13 +219,10 @@ module.exports = {
     meta: {
         hrName: 'scatter_polar_gl',
         description: [
-            '!!! GL VERSION OF SCATTERPOLAR !!!',
-
-            'The scatterpolar trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
-            'in polar coordinates.',
+            'The scatterpolargl trace type encompasses line charts, scatter charts, and bubble charts',
+            'in polar coordinates using the WebGL plotting engine.',
             'The data visualized as scatter point or lines is set in',
-            '`r` (radial) and `theta` (angular). coordintes',
-            'Text (appearing either on the chart or on hover only) is via `text`.',
+            '`r` (radial) and `theta` (angular) coordinates',
             'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
             'to numerical arrays.'
         ].join(' ')
