@@ -12,7 +12,6 @@ var parcoords = require('./parcoords');
 var createRegl = require('regl');
 
 module.exports = function plot(gd, cdparcoords) {
-
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
     var root = fullLayout._paperdiv;

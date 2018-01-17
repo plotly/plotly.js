@@ -49,7 +49,6 @@ plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
 plots.manageCommandObserver = commandModule.manageCommandObserver;
 plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
 
-
 // in some cases the browser doesn't seem to know how big
 // the text is at first, so it needs to draw it,
 // then wait a little, then draw it again
@@ -586,7 +585,6 @@ plots.createTransitionData = function(gd) {
 // or trace has a category
 plots._hasPlotType = function(category) {
     // check plot
-
     var basePlotModules = this._basePlotModules || [];
     var i;
 
@@ -700,10 +698,6 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
         if(oldSubplot) {
             plotinfo = newSubplots[id] = oldSubplot;
-
-            if(plotinfo._scene2d) {
-                plotinfo._scene2d.updateRefs(newFullLayout);
-            }
 
             if(plotinfo.xaxis.layer !== xaxis.layer) {
                 plotinfo.xlines.attr('d', null);
@@ -928,7 +922,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
             }
         }
         else {
-
             // add identify refs for consistency with transformed traces
             fullTrace._fullInput = fullTrace;
             fullTrace._expandedInput = fullTrace;
@@ -1122,7 +1115,7 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
             traceOut.visible = !!traceOut.visible;
         }
 
-        if(_module && _module.selectPoints && traceOut.type !== 'scattergl') {
+        if(_module && _module.selectPoints) {
             coerce('selectedpoints');
         }
 
@@ -1417,7 +1410,6 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 // Remove all plotly attributes from a div so it can be replotted fresh
 // TODO: these really need to be encapsulated into a much smaller set...
 plots.purge = function(gd) {
-
     // note: we DO NOT remove _context because it doesn't change when we insert
     // a new plot, and may have been set outside of our scope.
 
