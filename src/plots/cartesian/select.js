@@ -225,7 +225,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             var ppts = mergedPolygons[i];
             paths.push(ppts.join('L') + 'L' + ppts[0]);
         }
-        outlines.attr('d', 'M' + paths.join('M') + 'Z');
+        outlines.attr('d', 'M' + paths.join('M') + 'Z')
+                .attr('transform', 'translate(' + xs + ', ' + ys + ')');
 
         throttle.throttle(
             throttleID,
