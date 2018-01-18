@@ -387,6 +387,14 @@ module.exports = {
             'plotted on'
         ].join(' ')
     },
+    spikesnap: {
+        valType: 'enumerated',
+        values: ['data', 'cursor'],
+        dflt: 'data',
+        role: 'style',
+        editType: 'none',
+        description: 'Determines whether spikelines are stuck to the cursor or to the closest datapoints.'
+    },
     tickfont: fontAttrs({
         editType: 'ticks',
         description: 'Sets the tick font.'

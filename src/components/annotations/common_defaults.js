@@ -24,7 +24,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     var borderWidth = coerce('borderwidth');
     var showArrow = coerce('showarrow');
 
-    coerce('text', showArrow ? ' ' : 'new text');
+    coerce('text', showArrow ? ' ' : fullLayout._dfltTitle.annotation);
     coerce('textangle');
     Lib.coerceFont(coerce, 'font', fullLayout.font);
 

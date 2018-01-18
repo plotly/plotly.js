@@ -79,7 +79,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
                 y0: yc - rad,
                 y1: yc + rad,
-                yLabelVal: di.y
+                yLabelVal: di.y,
+
+                kink: Math.max(minRad, di.mrc || 0)
             });
 
             fillHoverText(di, trace, pointData);

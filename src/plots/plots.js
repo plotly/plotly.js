@@ -300,7 +300,8 @@ plots.supplyDefaults = function(gd) {
         plot: _(gd, 'Click to enter Plot title'),
         x: _(gd, 'Click to enter X axis title'),
         y: _(gd, 'Click to enter Y axis title'),
-        colorbar: _(gd, 'Click to enter Colorscale title')
+        colorbar: _(gd, 'Click to enter Colorscale title'),
+        annotation: _(gd, 'new text')
     };
     newFullLayout._traceWord = _(gd, 'trace');
 
