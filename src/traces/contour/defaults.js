@@ -23,6 +23,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    function coerce2(attr) {
+        return Lib.coerce2(traceIn, traceOut, attributes, attr);
+    }
+
     var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
     if(!len) {
         traceOut.visible = false;
@@ -32,6 +36,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('connectgaps', hasColumns(traceOut));
 
-    handleContoursDefaults(traceIn, traceOut, coerce);
+    handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };

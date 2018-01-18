@@ -9,7 +9,8 @@
 'use strict';
 
 module.exports = {
-    INEQUALITY_OPS: ['=', '<', '>=', '>', '<='],
+    COMPARISON_OPS: ['=', '!=', '<', '>=', '>', '<='],
+    COMPARISON_OPS2: ['=', '<', '>=', '>', '<='],
     INTERVAL_OPS: ['[]', '()', '[)', '(]', '][', ')(', '](', ')['],
     SET_OPS: ['{}', '}{']
 };

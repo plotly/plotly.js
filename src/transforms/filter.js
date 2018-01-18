@@ -13,9 +13,10 @@ var Registry = require('../registry');
 var Axes = require('../plots/cartesian/axes');
 var pointsAccessorFunction = require('./helpers').pointsAccessorFunction;
 
-var COMPARISON_OPS = ['=', '!=', '<', '>=', '>', '<='];
-var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
-var SET_OPS = ['{}', '}{'];
+var filterOps = require('../constants/filter_ops');
+var COMPARISON_OPS = filterOps.COMPARISON_OPS;
+var INTERVAL_OPS = filterOps.INTERVAL_OPS;
+var SET_OPS = filterOps.SET_OPS;
 
 exports.moduleType = 'transform';
 

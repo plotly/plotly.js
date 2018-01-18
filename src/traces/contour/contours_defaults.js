@@ -8,12 +8,9 @@
 
 'use strict';
 
-var Lib = require('../../lib');
-var attributes = require('./attributes');
-
-module.exports = function handleContourDefaults(traceIn, traceOut, coerce) {
-    var contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start');
-    var contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end');
+module.exports = function handleContourDefaults(traceIn, traceOut, coerce, coerce2) {
+    var contourStart = coerce2('contours.start');
+    var contourEnd = coerce2('contours.end');
     var missingEnd = (contourStart === false) || (contourEnd === false);
 
     // normally we only need size if autocontour is off. But contour.calc

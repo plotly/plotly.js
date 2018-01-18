@@ -66,7 +66,7 @@ module.exports = function style(s, gd) {
 
         if(trace && trace._module && trace._module.name === 'contourcarpet') {
             showLine = trace.contours.showlines;
-            showFill = trace.contours.coloring === 'fill';
+            showFill = trace.contours.coloring === 'fill' || trace.contours.type === 'constraint';
         }
 
         var fill = d3.select(this).select('.legendfill').selectAll('path')
