@@ -44,8 +44,22 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         yAxisIds = dragOptions.yaxes.map(getAxId),
         allAxes = dragOptions.xaxes.concat(dragOptions.yaxes),
         filterPoly, testPoly, mergedPolygons, currentPolygon,
-        subtract = e.altKey;
+        subtract = e.altKey,
+        priorSubplotTarget = dragOptions.gd._priorSubplotTarget;
 
+    if (priorSubplotTarget && plotinfo.id != priorSubplotTarget.id){
+
+        for(i = 0; i < priorSubplotTarget.traces.length; i++) {
+            searchInfo = priorSubplotTarget.traces[i];
+            searchInfo.selectPoints(searchInfo, false);
+        }
+
+        updateSelectedState(gd, priorSubplotTarget.traces);
+        priorSubplotTarget = {};
+        plotinfo.selection = {};
+        plotinfo.selection.polygons = dragOptions.polygons = [];
+        plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
+    }
 
     // take over selection polygons from prev mode, if any
     if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
@@ -67,9 +81,10 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
     outlines.enter()
         .append('path')
-        .attr('class', function(d) { return 'select-outline select-outline-' + d; })
-        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
-        .attr('d', path0 + 'Z');
+        .attr('class', function(d) { return 'select-outline select-outline-' + d; });
+        
+    outlines.attr('transform', 'translate(' + xs + ', ' + ys + ')')
+            .attr('d', path0 + 'Z');
 
     var corners = zoomLayer.append('path')
         .attr('class', 'zoombox-corners')
@@ -225,8 +240,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             var ppts = mergedPolygons[i];
             paths.push(ppts.join('L') + 'L' + ppts[0]);
         }
-        outlines.attr('d', 'M' + paths.join('M') + 'Z')
-                .attr('transform', 'translate(' + xs + ', ' + ys + ')');
+        outlines.attr('d', 'M' + paths.join('M') + 'Z');
 
         throttle.throttle(
             throttleID,
@@ -288,6 +302,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         throttle.done(throttleID).then(function() {
             throttle.clear(throttleID);
             dragOptions.gd.emit('plotly_selected', eventData);
+            dragOptions.gd._priorSubplotTarget = {id: plotinfo.id, traces:searchTraces};
 
             if(currentPolygon && dragOptions.polygons) {
                 // save last polygons
