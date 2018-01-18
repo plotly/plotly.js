@@ -10,6 +10,39 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.33.0] -- 2018-01-18
+
+### Added
+- Completely rewritten `scattergl` trace type using `regl` [#2258]
+- Completely rewritten polar chart renderer accompanied by new
+  `scatterpolar` and `scatterpolargl` trace types [#2200]
+- Add the ability to draw layout images and layout shapes on subplot
+  with `scattergl` traces [#2258]
+- Add `fill` capabilities to `scattergl` traces [#2258]
+- Add `spikedistance`, `hoverdistance` and `skipsnap` for more customizable
+  spikes and hover behavior on cartesian subplots [#2247]
+- Add official Spanish translation (locale `es`) [#2249]
+- Add official French translation (locale `fr`) [#2252]
+- Add locale machinery to annotation _new text_ placeholder [#2257]
+
+### Changed
+- Old polar trace types (`scatter` with `(r,t)` coordinates,
+  `bar` with `(r,t)` coordinates and `area`) are now deprecated.
+
+### Fixed
+
+- Fix `gl2d` tick label on pan interaction regression [#2258]
+- Fix `candlestick` hover label regression (bug introduced in v1.32.0) [#2264]
+- Fix several `gl2d` axis related bugs with new regl-based `scattergl` [#2258]
+  See full list under the On-par gl2d milestone https://github.com/plotly/plotly.js/milestone/3
+- Fix several polar bugs with `scatterpolar` [#2200].
+  See full list under the On-par polar milestone https://github.com/plotly/plotly.js/milestone/2
+- Fix `scattergl` marker.colorscale handling [#2258]
+- Fix ternary relayout calls involving axis tick styles and titles [#2200]
+- Fix decimal and thousands settings in `de` locale [#2246]
+- Make scroll handler _passive_, removing those annoying console warnings [#2251]
+
+
 ## [1.32.0] -- 2018-01-11
 
 ### Added
