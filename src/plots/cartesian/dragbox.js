@@ -34,6 +34,8 @@ var constants = require('./constants');
 var MINDRAG = constants.MINDRAG;
 var MINZOOM = constants.MINZOOM;
 
+var supportsPassive = Lib.eventListenerOptionsSupported();
+
 // flag for showing "doubleclick to zoom out" only at the beginning
 var SHOWZOOMOUTTIP = true;
 
@@ -1041,8 +1043,20 @@ function calcLinks(constraintGroups, xIDs, yIDs) {
 
 // still seems to be some confusion about onwheel vs onmousewheel...
 function attachWheelEventHandler(element, handler) {
-    if(element.onwheel !== undefined) element.onwheel = handler;
-    else if(element.onmousewheel !== undefined) element.onmousewheel = handler;
+    if(!supportsPassive) {
+        if(element.onwheel !== undefined) element.onwheel = handler;
+        else if(element.onmousewheel !== undefined) element.onmousewheel = handler;
+    }
+    else {
+        var wheelEventName = element.onwheel !== undefined ? 'wheel' : 'mousewheel';
+
+        if(element._onwheel) {
+            element.removeEventListener(wheelEventName, element._onwheel);
+        }
+        element._onwheel = handler;
+
+        element.addEventListener(wheelEventName, handler, {passive: false});
+    }
 }
 
 module.exports = {
