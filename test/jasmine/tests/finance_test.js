@@ -384,7 +384,7 @@ describe('finance charts calc transforms:', function() {
         return calcTrace[0].trace;
     }
 
-    function _calc(data, layout) {
+    function _calcRaw(data, layout) {
         var gd = {
             data: data,
             layout: layout || {}
@@ -392,8 +392,11 @@ describe('finance charts calc transforms:', function() {
 
         supplyAllDefaults(gd);
         Plots.doCalcdata(gd);
+        return gd.calcdata;
+    }
 
-        return gd.calcdata.map(calcDatatoTrace);
+    function _calc(data, layout) {
+        return _calcRaw(data, layout).map(calcDatatoTrace);
     }
 
     // add some points that shouldn't make it into calcdata because
@@ -757,6 +760,15 @@ describe('finance charts calc transforms:', function() {
             1, 1, 1, 1, 1, 1,
             2, 2, 2, 2, 2, 2
         ]);
+    });
+
+    it('should not include box hover labels prefix in candlestick calcdata', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'candlestick',
+        });
+        var out = _calcRaw([trace0]);
+
+        expect(out[0][0].t.labels).toBeUndefined();
     });
 });
 
