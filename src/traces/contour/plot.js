@@ -20,7 +20,9 @@ var setConvert = require('../../plots/cartesian/set_convert');
 var heatmapPlot = require('../heatmap/plot');
 var makeCrossings = require('./make_crossings');
 var findAllPaths = require('./find_all_paths');
-var endPlus = require('./end_plus');
+var emptyPathinfo = require('./empty_pathinfo');
+var convertToConstraints = require('./convert_to_constraints');
+var closeBoundaries = require('./close_boundaries');
 var constants = require('./constants');
 var costConstants = constants.LABELOPTIMIZER;
 
@@ -81,48 +83,20 @@ function plotOne(gd, plotinfo, cd) {
             [leftedge, bottomedge]
         ];
 
+    var fillPathinfo = pathinfo;
+    if(contours.type === 'constraint') {
+        fillPathinfo = convertToConstraints(pathinfo, contours.operation);
+        closeBoundaries(fillPathinfo, contours.operation, perimeter, trace);
+    }
+
     // draw everything
     var plotGroup = exports.makeContourGroup(plotinfo, cd, id);
     makeBackground(plotGroup, perimeter, contours);
-    makeFills(plotGroup, pathinfo, perimeter, contours);
+    makeFills(plotGroup, fillPathinfo, perimeter, contours);
     makeLinesAndLabels(plotGroup, pathinfo, gd, cd[0], contours, perimeter);
     clipGaps(plotGroup, plotinfo, fullLayout._clips, cd[0], perimeter);
 }
 
-function emptyPathinfo(contours, plotinfo, cd0) {
-    var cs = contours.size,
-        pathinfo = [],
-        end = endPlus(contours);
-
-    for(var ci = contours.start; ci < end; ci += cs) {
-        pathinfo.push({
-            level: ci,
-            // all the cells with nontrivial marching index
-            crossings: {},
-            // starting points on the edges of the lattice for each contour
-            starts: [],
-            // all unclosed paths (may have less items than starts,
-            // if a path is closed by rounding)
-            edgepaths: [],
-            // all closed paths
-            paths: [],
-            // store axes so we can convert to px
-            xaxis: plotinfo.xaxis,
-            yaxis: plotinfo.yaxis,
-            // full data arrays to use for interpolation
-            x: cd0.x,
-            y: cd0.y,
-            z: cd0.z,
-            smoothing: cd0.trace.line.smoothing
-        });
-
-        if(pathinfo.length > 1000) {
-            Lib.warn('Too many contours, clipping at 1000', contours);
-            break;
-        }
-    }
-    return pathinfo;
-}
 exports.makeContourGroup = function(plotinfo, cd, id) {
     var plotgroup = plotinfo.plot.select('.maplayer')
         .selectAll('g.contour.' + id)
@@ -157,7 +131,7 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
         .classed('contourfill', true);
 
     var fillitems = fillgroup.selectAll('path')
-        .data(contours.coloring === 'fill' ? pathinfo : []);
+        .data(contours.coloring === 'fill' || (contours.type === 'constraint' && contours.operation !== '=') ? pathinfo : []);
     fillitems.enter().append('path');
     fillitems.exit().remove();
     fillitems.each(function(pi) {
@@ -173,10 +147,23 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
     });
 }
 
+function initFullPath(pi, perimeter) {
+    var prefixBoundary = pi.prefixBoundary;
+    if(prefixBoundary === undefined) {
+        var edgeVal2 = Math.min(pi.z[0][0], pi.z[0][1]);
+        prefixBoundary = (!pi.edgepaths.length && edgeVal2 > pi.level);
+    }
+
+    if(prefixBoundary) {
+        // TODO: why does ^^ not work for constraints?
+        // pi.prefixBoundary gets set by closeBoundaries
+        return 'M' + perimeter.join('L') + 'Z';
+    }
+    return '';
+}
+
 function joinAllPaths(pi, perimeter) {
-    var edgeVal2 = Math.min(pi.z[0][0], pi.z[0][1]),
-        fullpath = (pi.edgepaths.length || edgeVal2 <= pi.level) ?
-            '' : ('M' + perimeter.join('L') + 'Z'),
+    var fullpath = initFullPath(pi, perimeter),
         i = 0,
         startsleft = pi.edgepaths.map(function(v, i) { return i; }),
         newloop = true,
@@ -432,10 +419,26 @@ exports.labelFormatter = function(contours, colorbar, fullLayout) {
             formatAxis = {
                 type: 'linear',
                 _id: 'ycontour',
-                nticks: (contours.end - contours.start) / contours.size,
-                showexponent: 'all',
-                range: [contours.start, contours.end]
+                showexponent: 'all'
             };
+
+            if(contours.type === 'constraint') {
+                var value = contours.value;
+                if(Array.isArray(value)) {
+                    formatAxis.range = [value[0], value[value.length - 1]];
+                }
+                else formatAxis.range = [value, value];
+
+                if(formatAxis.range[0] === formatAxis.range[1]) {
+                    formatAxis.range[1] += formatAxis.range[0] || 1;
+                }
+                formatAxis.nticks = 1000;
+            }
+            else {
+                formatAxis.range = [contours.start, contours.end];
+                formatAxis.nticks = (contours.end - contours.start) / contours.size;
+            }
+
             setConvert(formatAxis, fullLayout);
             Axes.calcTicks(formatAxis);
             formatAxis._tmin = null;

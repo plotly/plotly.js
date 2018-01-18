@@ -11,9 +11,11 @@
 module.exports = function(pathinfo, operation, perimeter, trace) {
     // Abandon all hope, ye who enter here.
     var i, v1, v2;
-    var na = trace.a.length;
-    var nb = trace.b.length;
-    var z = trace.z;
+    var pi0 = pathinfo[0];
+    var na = pi0.x.length;
+    var nb = pi0.y.length;
+    var z = pi0.z;
+    var contours = trace.contours;
 
     var boundaryMax = -Infinity;
     var boundaryMin = Infinity;
@@ -32,36 +34,35 @@ module.exports = function(pathinfo, operation, perimeter, trace) {
         boundaryMax = Math.max(boundaryMax, z[nb - 1][i]);
     }
 
+    pi0.prefixBoundary = false;
+
     switch(operation) {
         case '>':
         case '>=':
-            if(trace.contours.value > boundaryMax) {
-                pathinfo[0].prefixBoundary = true;
+            if(contours.value > boundaryMax) {
+                pi0.prefixBoundary = true;
             }
             break;
         case '<':
         case '<=':
-            if(trace.contours.value < boundaryMin) {
-                pathinfo[0].prefixBoundary = true;
+            if(contours.value < boundaryMin) {
+                pi0.prefixBoundary = true;
             }
             break;
         case '[]':
         case '()':
-            v1 = Math.min.apply(null, trace.contours.value);
-            v2 = Math.max.apply(null, trace.contours.value);
-            if(v2 < boundaryMin) {
-                pathinfo[0].prefixBoundary = true;
-            }
-            if(v1 > boundaryMax) {
-                pathinfo[0].prefixBoundary = true;
+            v1 = Math.min.apply(null, contours.value);
+            v2 = Math.max.apply(null, contours.value);
+            if(v2 < boundaryMin || v1 > boundaryMax) {
+                pi0.prefixBoundary = true;
             }
             break;
         case '][':
         case ')(':
-            v1 = Math.min.apply(null, trace.contours.value);
-            v2 = Math.max.apply(null, trace.contours.value);
+            v1 = Math.min.apply(null, contours.value);
+            v2 = Math.max.apply(null, contours.value);
             if(v1 < boundaryMin && v2 > boundaryMax) {
-                pathinfo[0].prefixBoundary = true;
+                pi0.prefixBoundary = true;
             }
             break;
     }

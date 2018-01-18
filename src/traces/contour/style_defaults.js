@@ -10,11 +10,11 @@
 'use strict';
 
 var colorscaleDefaults = require('../../components/colorscale/defaults');
-var Lib = require('../../lib');
+// var Lib = require('../../lib');
+var handleLabelDefaults = require('./label_defaults');
 
 
 module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout, opts) {
-    if(!opts) opts = {};
     var coloring = coerce('contours.coloring');
 
     var showLines;
@@ -22,12 +22,10 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
     if(coloring === 'fill') showLines = coerce('contours.showlines');
 
     if(showLines !== false) {
-        if(coloring !== 'lines') lineColor = coerce('line.color', opts.defaultColor || '#000');
-        coerce('line.width', opts.defaultWidth === undefined ? 0.5 : opts.defaultWidth);
+        if(coloring !== 'lines') lineColor = coerce('line.color', '#000');
+        coerce('line.width', 0.5);
         coerce('line.dash');
     }
-
-    coerce('line.smoothing');
 
     if(coloring !== 'none') {
         colorscaleDefaults(
@@ -35,16 +33,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
         );
     }
 
-    var showLabels = coerce('contours.showlabels');
-    if(showLabels) {
-        var globalFont = layout.font;
-        Lib.coerceFont(coerce, 'contours.labelfont', {
-            family: globalFont.family,
-            size: globalFont.size,
-            color: lineColor
-        });
-        coerce('contours.labelformat');
-    }
+    coerce('line.smoothing');
 
-    if(opts.hasHover !== false) coerce('zhoverformat');
+    handleLabelDefaults(coerce, layout, lineColor, opts);
 };

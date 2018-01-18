@@ -13,14 +13,10 @@ var Lib = require('../../lib');
 
 var handleXYZDefaults = require('../heatmap/xyz_defaults');
 var attributes = require('./attributes');
+var handleConstraintDefaults = require('../contour/constraint_defaults');
 var handleContoursDefaults = require('../contour/contours_defaults');
 var handleStyleDefaults = require('../contour/style_defaults');
-// var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var plotAttributes = require('../../plots/attributes');
-var supplyConstraintDefaults = require('./constraint_value_defaults');
-var Color = require('../../components/color');
-var addOpacity = Color.addOpacity;
-var opacity = Color.opacity;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -49,7 +45,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // attribute name to match the property name -- except '_a' !== 'a' so that is not
     // straightforward.
     if(traceIn.a && traceIn.b) {
-        var showLines, lineColor, fillColor;
 
         var len = handleXYZDefaults(traceIn, traceOut, coerce, layout, 'a', 'b');
 
@@ -61,61 +56,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('text');
         var isConstraint = (coerce('contours.type') === 'constraint');
 
-        var contours = traceOut.contours;
-
         // Unimplemented:
         // coerce('connectgaps', hasColumns(traceOut));
 
         // Override the trace-level showlegend default with a default that takes
         // into account whether this is a constraint or level contours:
-        Lib.coerce(traceIn, traceOut, plotAttributes, 'showlegend', isConstraint);
+        if(isConstraint) Lib.coerce(traceIn, traceOut, plotAttributes, 'showlegend');
+        else delete traceOut.showlegend;
 
         if(isConstraint) {
-            var operation = coerce('contours.operation');
-
-            supplyConstraintDefaults(coerce, contours);
-
-            if(operation === '=') {
-                showLines = contours.showlines = true;
-                lineColor = coerce('line.color', defaultColor);
-                coerce('line.width', 2);
-                coerce('line.dash');
-            }
-            else {
-                showLines = coerce('contours.showlines');
-                fillColor = coerce('fillcolor', addOpacity(
-                    (traceIn.line || {}).color || defaultColor, 0.5
-                ));
-            }
-
-            coerce('line.smoothing');
-
-            var showLabels = coerce('contours.showlabels');
-            if(showLabels) {
-                var globalFont = layout.font;
-                Lib.coerceFont(coerce, 'contours.labelfont', {
-                    family: globalFont.family,
-                    size: globalFont.size,
-                    color: lineColor
-                });
-                coerce('contours.labelformat');
-            }
-
-            if(showLines) {
-                var lineDfltColor = fillColor && opacity(fillColor) ?
-                    addOpacity(traceOut.fillcolor, 1) :
-                    defaultColor;
-                lineColor = coerce('line.color', lineDfltColor);
-                coerce('line.width', 2);
-                coerce('line.dash');
-            }
-
-            // TODO: These should be deleted in accordance with toolpanel convention, but
-            // we can't because we require them so that it magically makes the contour
-            // parts of the code happy:
-            // delete traceOut.contours.start;
-            // delete traceOut.contours.end;
-            // delete traceOut.contours.size;
+            handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor, {hasHover: false});
         } else {
             handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
             handleStyleDefaults(traceIn, traceOut, coerce, layout, {hasHover: false});

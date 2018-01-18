@@ -13,9 +13,11 @@ var Lib = require('../../lib');
 
 var hasColumns = require('../heatmap/has_columns');
 var handleXYZDefaults = require('../heatmap/xyz_defaults');
+var handleConstraintDefaults = require('./constraint_defaults');
 var handleContoursDefaults = require('./contours_defaults');
 var handleStyleDefaults = require('./style_defaults');
 var attributes = require('./attributes');
+var plotAttributes = require('../../plots/attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -34,8 +36,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
+    var isConstraint = (coerce('contours.type') === 'constraint');
     coerce('connectgaps', hasColumns(traceOut));
 
-    handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
-    handleStyleDefaults(traceIn, traceOut, coerce, layout);
+    // Override the trace-level showlegend default with a default that takes
+    // into account whether this is a constraint or level contours:
+    if(isConstraint) Lib.coerce(traceIn, traceOut, plotAttributes, 'showlegend');
+    else delete traceOut.showlegend;
+
+    if(isConstraint) {
+        handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor);
+    }
+    else {
+        handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
+        handleStyleDefaults(traceIn, traceOut, coerce, layout);
+    }
 };

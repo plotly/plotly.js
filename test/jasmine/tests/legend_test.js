@@ -385,10 +385,17 @@ describe('legend helpers:', function() {
         var legendGetsTrace = helpers.legendGetsTrace;
 
         it('should return true when trace is visible and supports legend', function() {
-            expect(legendGetsTrace({ visible: true, type: 'bar' })).toBe(true);
-            expect(legendGetsTrace({ visible: false, type: 'bar' })).toBe(false);
-            expect(legendGetsTrace({ visible: true, type: 'contour' })).toBe(false);
-            expect(legendGetsTrace({ visible: false, type: 'contour' })).toBe(false);
+            expect(legendGetsTrace({ visible: true, showlegend: true })).toBe(true);
+            expect(legendGetsTrace({ visible: false, showlegend: true })).toBe(false);
+            expect(legendGetsTrace({ visible: 'legendonly', showlegend: true })).toBe(true);
+
+            expect(legendGetsTrace({ visible: true, showlegend: false })).toBe(true);
+            expect(legendGetsTrace({ visible: false, showlegend: false })).toBe(false);
+            expect(legendGetsTrace({ visible: 'legendonly', showlegend: false })).toBe(true);
+
+            expect(legendGetsTrace({ visible: true })).toBe(false);
+            expect(legendGetsTrace({ visible: false })).toBe(false);
+            expect(legendGetsTrace({ visible: 'legendonly' })).toBe(false);
         });
     });
 

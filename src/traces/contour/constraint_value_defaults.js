@@ -9,7 +9,7 @@
 
 'use strict';
 
-var constraintMapping = require('./constraint_mapping');
+// var constraintMapping = require('./constraint_mapping');
 var isNumeric = require('fast-isnumeric');
 
 module.exports = function(coerce, contours) {
@@ -50,10 +50,4 @@ module.exports = function(coerce, contours) {
             }
         }
     }
-
-    var map = constraintMapping[contours.operation](contours.value);
-
-    contours.start = map.start;
-    contours.end = map.end;
-    contours.size = map.size;
 };
