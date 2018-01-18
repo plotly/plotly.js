@@ -520,6 +520,7 @@ describe('Test polar interactions:', function() {
     ];
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
         eventData = '';
         eventCnts = {};
         gd = createGraphDiv();
@@ -528,7 +529,7 @@ describe('Test polar interactions:', function() {
     afterEach(destroyGraphDiv);
 
     function _plot(fig) {
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             eventNames.forEach(function(k) {
                 eventCnts[k] = 0;
                 gd.on(k, function(d) {
@@ -701,8 +702,11 @@ describe('Test polar interactions:', function() {
         .then(done);
     });
 
-    it('should response to drag interactions on plot area', function(done) {
+    it('@noCI should response to drag interactions on plot area', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+
+        // to avoid dragging on hover labels
+        fig.layout.hovermode = false;
 
         // adjust margins so that middle of plot area is at 300x300
         // with its middle at [200,200]
@@ -741,14 +745,16 @@ describe('Test polar interactions:', function() {
         }
 
         function _reset() {
-            return _doubleClick(mid).then(function() {
-                relayoutNumber++;
-                resetNumber++;
+            return delay(100)()
+                .then(function() { return _doubleClick(mid); })
+                .then(function() {
+                    relayoutNumber++;
+                    resetNumber++;
 
-                var extra = '(reset ' + resetNumber + ')';
-                _assertBase(extra);
-                expect(eventCnts.plotly_doubleclick).toBe(resetNumber, 'doubleclick event #' + extra);
-            });
+                    var extra = '(reset ' + resetNumber + ')';
+                    _assertBase(extra);
+                    expect(eventCnts.plotly_doubleclick).toBe(resetNumber, 'doubleclick event #' + extra);
+                });
         }
 
         _plot(fig)
@@ -787,8 +793,11 @@ describe('Test polar interactions:', function() {
         .then(done);
     });
 
-    it('should response to drag interactions on radial drag area', function(done) {
+    it('@noCI should response to drag interactions on radial drag area', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+
+        // to avoid dragging on hover labels
+        fig.layout.hovermode = false;
 
         // adjust margins so that middle of plot area is at 300x300
         // with its middle at [200,200]
@@ -803,18 +812,7 @@ describe('Test polar interactions:', function() {
         // to activate the radial drag mode
         function _drag(p0, dp) {
             var node = d3.select('.polar > .draglayer > .radialdrag').node();
-            var p1 = [p0[0] + dp[0] / 2, p0[1] + dp[1] / 2];
-            var p2 = [p0[0] + dp[0], p0[1] + dp[1]];
-
-            mouseEvent('mousemove', p0[0], p0[1], {element: node});
-            mouseEvent('mousedown', p0[0], p0[1], {element: node});
-
-            return delay(250)()
-                .then(function() { mouseEvent('mousemove', p1[0], p1[1], {element: document}); })
-                .then(delay(50))
-                .then(function() { mouseEvent('mousemove', p2[0], p2[1], {element: document}); })
-                .then(function() { mouseEvent('mouseup', p2[0], p2[1], {element: document}); })
-                .then(delay(50));
+            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
         }
 
         function _assert(rng, angle, evtRng1, evtAngle, msg) {
@@ -839,13 +837,15 @@ describe('Test polar interactions:', function() {
         }
 
         function _reset() {
-            return _doubleClick([200, 200]).then(function() {
-                resetNumber++;
+            return delay(100)()
+                .then(function() { return _doubleClick([200, 200]); })
+                .then(function() {
+                    resetNumber++;
 
-                var extra = '(reset ' + resetNumber + ')';
-                _assertBase(extra);
-                expect(eventCnts.plotly_doubleclick).toBe(resetNumber, 'doubleclick event #' + extra);
-            });
+                    var extra = '(reset ' + resetNumber + ')';
+                    _assertBase(extra);
+                    expect(eventCnts.plotly_doubleclick).toBe(resetNumber, 'doubleclick event #' + extra);
+                });
         }
 
         _plot(fig)
@@ -877,8 +877,11 @@ describe('Test polar interactions:', function() {
         .then(done);
     });
 
-    it('should response to drag interactions on angular drag area', function(done) {
+    it('@noCI should response to drag interactions on angular drag area', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+
+        // to avoid dragging on hover labels
+        fig.layout.hovermode = false;
 
         // adjust margins so that middle of plot area is at 300x300
         // with its middle at [200,200]
@@ -909,13 +912,15 @@ describe('Test polar interactions:', function() {
         }
 
         function _reset() {
-            return _doubleClick([200, 200]).then(function() {
-                resetNumber++;
+            return delay(100)()
+                .then(function() { return _doubleClick([200, 200]); })
+                .then(function() {
+                    resetNumber++;
 
-                var extra = '(reset ' + resetNumber + ')';
-                _assertBase(extra);
-                expect(eventCnts.plotly_doubleclick).toBe(resetNumber, 'doubleclick event #' + extra);
-            });
+                    var extra = '(reset ' + resetNumber + ')';
+                    _assertBase(extra);
+                    expect(eventCnts.plotly_doubleclick).toBe(resetNumber, 'doubleclick event #' + extra);
+                });
         }
 
         _plot(fig)

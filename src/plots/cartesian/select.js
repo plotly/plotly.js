@@ -14,6 +14,7 @@ var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var color = require('../../components/color');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
+var Fx = require('../../components/fx');
 
 var axes = require('./axes');
 var constants = require('./constants');
@@ -62,12 +63,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     if(mode === 'lasso') {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
-
-    var outlines = zoomLayer.selectAll('path.select-outline').data([1, 2]);
+    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1, 2]);
 
     outlines.enter()
         .append('path')
-        .attr('class', function(d) { return 'select-outline select-outline-' + d; })
+        .attr('class', function(d) { return 'select-outline select-outline-' + d + ' select-outline-' + plotinfo.id; })
         .attr('transform', 'translate(' + xs + ', ' + ys + ')')
         .attr('d', path0 + 'Z');
 
@@ -148,7 +148,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 }
             };
         } else {
-            fillRangeItems = function(eventData, currentPolygon, filterPoly) {
+            fillRangeItems = function(eventData, poly, filterPoly) {
                 var dataPts = eventData.lassoPoints = {};
 
                 for(i = 0; i < allAxes.length; i++) {
@@ -225,7 +225,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             var ppts = mergedPolygons[i];
             paths.push(ppts.join('L') + 'L' + ppts[0]);
         }
-        outlines.attr('d', 'M' + paths.join('M') + 'Z');
+        outlines
+            .attr('d', 'M' + paths.join('M') + 'Z');
 
         throttle.throttle(
             throttleID,
@@ -233,14 +234,15 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             function() {
                 selection = [];
 
-                var traceSelections = [], traceSelection;
+                var thisSelection, traceSelections = [], traceSelection;
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 
                     traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
                     traceSelections.push(traceSelection);
 
-                    var thisSelection = fillSelectionItem(traceSelection, searchInfo);
+                    thisSelection = fillSelectionItem(traceSelection, searchInfo);
+
                     if(selection.length) {
                         for(var j = 0; j < thisSelection.length; j++) {
                             selection.push(thisSelection[j]);
@@ -257,7 +259,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         );
     };
 
-    dragOptions.clickFn = function(numClicks) {
+    dragOptions.clickFn = function(numClicks, evt) {
         corners.remove();
 
         throttle.done(throttleID).then(function() {
@@ -278,6 +280,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 // but in case anyone depends on it we don't want to break it now.
                 gd.emit('plotly_selected', undefined);
             }
+
+            Fx.click(gd, evt);
         });
     };
 
@@ -319,8 +323,8 @@ function updateSelectedState(gd, searchTraces, eventData) {
             var fullData = pt.fullData;
 
             if(pt.pointIndices) {
-                data.selectedpoints = data.selectedpoints.concat(pt.pointIndices);
-                fullData.selectedpoints = fullData.selectedpoints.concat(pt.pointIndices);
+                [].push.apply(data.selectedpoints, pt.pointIndices);
+                [].push.apply(fullData.selectedpoints, pt.pointIndices);
             } else {
                 data.selectedpoints.push(pt.pointIndex);
                 fullData.selectedpoints.push(pt.pointIndex);
@@ -332,6 +336,11 @@ function updateSelectedState(gd, searchTraces, eventData) {
             trace = searchTraces[i].cd[0].trace;
             delete trace.selectedpoints;
             delete trace._input.selectedpoints;
+
+            // delete scattergl selection
+            if(searchTraces[i].cd[0].t && searchTraces[i].cd[0].t.scene) {
+                searchTraces[i].cd[0].t.scene.clearSelect();
+            }
         }
     }
 

@@ -223,16 +223,11 @@ Plotly.plot = function(gd, data, layout, config) {
                     'left': 0,
                     'width': '100%',
                     'height': '100%',
-                    'overflow': 'visible'
+                    'overflow': 'visible',
+                    'pointer-events': 'none'
                 })
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
-
-            fullLayout._glcanvas.filter(function(d) {
-                return !d.pick;
-            }).style({
-                'pointer-events': 'none'
-            });
         }
 
         return Lib.syncOrAsync([
@@ -2817,6 +2812,7 @@ function makePlotFramework(gd) {
     // FIXME: parcoords reuses this object, not the best pattern
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
         .data([{}]);
+
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
 

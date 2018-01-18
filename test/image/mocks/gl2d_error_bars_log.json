@@ -1,0 +1,10 @@
+{
+    "data": [{
+      "type": "scattergl",
+      "y": [10, 2e4, 5e6],
+      "error_y": {"array": [5, 1e4, 4e6]}
+    }],
+    "layout": {
+      "yaxis": {"type": "log"}
+    }
+}

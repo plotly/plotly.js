@@ -19,7 +19,7 @@ var geoJsonUtils = require('../../lib/geojson_utils');
 var subTypes = require('../scatter/subtypes');
 var style = require('./style');
 
-module.exports = function plot(geo, calcData) {
+module.exports = function plot(gd, geo, calcData) {
     for(var i = 0; i < calcData.length; i++) {
         calcGeoJSON(calcData[i], geo.topojson);
     }
@@ -79,7 +79,7 @@ module.exports = function plot(geo, calcData) {
         }
 
         // call style here within topojson request callback
-        style(geo.graphDiv, calcTrace);
+        style(gd, calcTrace);
     });
 };
 

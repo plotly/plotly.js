@@ -748,7 +748,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
 
             // don't scale at all if neither axis is scalable here
-            if(!xScaleFactor2 && !yScaleFactor2) continue;
+            if(!xScaleFactor2 && !yScaleFactor2) {
+                continue;
+            }
 
             // but if only one is, reset the other axis scaling
             if(!xScaleFactor2) xScaleFactor2 = 1;

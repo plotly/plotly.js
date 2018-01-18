@@ -305,6 +305,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         .filter(function(d) {
             return d.pick;
         })
+        .style('pointer-events', 'auto')
         .on('mousemove', function(d) {
             if(linePickActive && d.lineLayer && callbacks && callbacks.hover) {
                 var event = d3.event;

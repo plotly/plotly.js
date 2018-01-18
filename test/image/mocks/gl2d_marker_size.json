@@ -1,0 +1,75 @@
+{
+  "data": [
+    {
+      "type": "scattergl",
+      "y": [5, 5, 5, 5],
+      "x": [1, 2, 3, 4],
+      "mode": "markers",
+      "marker": {
+        "color": "rgba(156, 165, 196, 0.8)",
+        "line": {
+          "color": "rgba(0, 0, 0, 0.8)",
+          "width": 5
+        },
+        "symbol": ["circle", "circle-cross-open", "circle-cross", "circle-open"],
+        "size": [20, 20, 20, 20]
+      }
+    },
+    {
+      "type": "scattergl",
+      "y": [10, 10, 10, 10],
+      "x": [1, 2, 3, 4],
+      "mode": "markers",
+      "marker": {
+        "color": "rgba(156, 165, 196, 0.8)",
+        "line": {
+          "color": "rgba(0, 0, 0, 0.8)",
+          "width": 5
+        },
+        "symbol": ["circle", "circle-cross-open", "circle-cross", "circle-open"],
+        "size": 20
+      }
+    },
+    {
+      "type": "scattergl",
+      "y": [15, 15, 15, 15],
+      "x": [1, 2, 3, 4],
+      "mode": "markers",
+      "marker": {
+        "color": "rgba(156, 165, 196, 0.8)",
+        "line": {
+          "color": "rgba(0, 0, 0, 0.8)",
+          "width": [5, 5, 5, 5]
+        },
+        "symbol": ["circle", "circle-cross-open", "circle-cross", "circle-open"],
+        "size": 20
+      }
+    },
+    {
+      "type": "scattergl",
+      "y": [20, 20, 20, 20],
+      "x": [1, 2, 3, 4],
+      "mode": "markers",
+      "marker": {
+        "color": "rgba(156, 165, 196, 0.8)",
+        "line": {
+          "color": "rgba(0, 0, 0, 0.8)",
+          "width": [5, 5, 5, 5]
+        },
+        "symbol": ["circle", "circle-cross-open", "circle-cross", "circle-open"],
+        "size": [20, 20, 20, 20]
+      }
+    }
+  ],
+  "layout": {
+    "margin": {
+      "l": 60,
+      "r": 60,
+      "b": 60,
+      "t": 60
+    },
+    "height": 400,
+    "width": 480,
+    "showlegend": false
+  }
+}
