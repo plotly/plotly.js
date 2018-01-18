@@ -997,16 +997,21 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     // FIXME: make sure this is a proper way to calc search radius
     if(stash.tree) {
+        var xl = xa.p2c(xpx - MAXDIST),
+            xr = xa.p2c(xpx + MAXDIST),
+            yl = ya.p2c(ypx - MAXDIST),
+            yr = ya.p2c(ypx + MAXDIST);
+
         if(hovermode === 'x') {
             ids = stash.tree.range(
-                xa.p2c(xpx - MAXDIST), ya._rl[0],
-                xa.p2c(xpx + MAXDIST), ya._rl[1]
+                Math.min(xl, xr), Math.min(ya._rl[0], ya._rl[1]),
+                Math.max(xl, xr), Math.max(ya._rl[0], ya._rl[1])
             );
         }
         else {
             ids = stash.tree.range(
-                xa.p2c(xpx - MAXDIST), ya.p2c(ypx + MAXDIST),
-                xa.p2c(xpx + MAXDIST), ya.p2c(ypx - MAXDIST)
+                Math.min(xl, xr), Math.min(yl, yr),
+                Math.max(xl, xr), Math.max(yl, yr)
             );
         }
     }
