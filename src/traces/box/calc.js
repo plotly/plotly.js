@@ -136,6 +136,11 @@ module.exports = function calc(gd, trace) {
             }
         };
 
+        // don't show labels in candlestick hover labels
+        if(trace._fullInput && trace._fullInput.type === 'candlestick') {
+            delete cd[0].t.labels;
+        }
+
         fullLayout[numKey]++;
         return cd;
     } else {
