@@ -5,9 +5,9 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var failTest = require('../assets/fail_test');
-
 
 describe('Test Plots', function() {
     'use strict';
@@ -669,6 +669,55 @@ describe('Test Plots', function() {
                 destroyGraphDiv();
                 done();
             });
+        });
+    });
+
+    describe('Plots.style', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should call reused style modules only once per graph', function(done) {
+            var Drawing = require('@src/components/drawing');
+
+            Plotly.plot(gd, [{
+                mode: 'markers',
+                y: [1, 2, 1]
+            }, {
+                type: 'scatterternary',
+                mode: 'markers',
+                a: [1, 2, 3],
+                b: [2, 1, 3],
+                c: [3, 2, 1]
+            }, {
+                type: 'scatterpolar',
+                mode: 'markers',
+                r: [1, 2, 3],
+                theta: [0, 90, 120]
+            }])
+            .then(function() {
+                expect(gd._fullLayout._modules.length).toBe(3);
+
+                // A routine that gets called inside Scatter.style,
+                // once per trace.
+                //
+                // Start spying on it here, so that calls outside of
+                // Plots.style are ignored.
+                spyOn(Drawing, 'pointStyle');
+
+                return Plots.style(gd);
+            })
+            .then(function() {
+                // N.B. Drawing.pointStyle would be called 9 times w/o
+                // some special Plots.style logic.
+                expect(Drawing.pointStyle).toHaveBeenCalledTimes(3);
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 

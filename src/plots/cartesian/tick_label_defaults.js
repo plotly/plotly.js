@@ -21,7 +21,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
     var tickPrefix = coerce('tickprefix');
     if(tickPrefix) coerce('showtickprefix', showAttrDflt);
 
-    var tickSuffix = coerce('ticksuffix');
+    var tickSuffix = coerce('ticksuffix', options.tickSuffixDflt);
     if(tickSuffix) coerce('showticksuffix', showAttrDflt);
 
     var showTickLabels = coerce('showticklabels');

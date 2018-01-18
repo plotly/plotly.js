@@ -867,6 +867,44 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('should work on scatterpolar traces', function(done) {
+        var assertPoints = makeAssertPoints(['r', 'theta']);
+        var assertSelectedPoints = makeAssertSelectedPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/polar_subplots'));
+        fig.layout.width = 800;
+        fig.layout.dragmode = 'select';
+        addInvisible(fig);
+
+        Plotly.plot(gd, fig).then(function() {
+            return _run(
+                [[150, 150], [350, 250]],
+                function() {
+                    assertPoints([[1, 0], [2, 45]]);
+                    assertSelectedPoints({0: [0, 1]});
+                },
+                [200, 200],
+                BOXEVENTS, 'scatterpolar select'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run(
+                [[150, 150], [350, 150], [350, 250], [150, 250], [150, 150]],
+                function() {
+                    assertPoints([[1, 0], [2, 45]]);
+                    assertSelectedPoints({0: [0, 1]});
+                },
+                [200, 200],
+                LASSOEVENTS, 'scatterpolar lasso'
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
+
     it('should work on choropleth traces', function(done) {
         var assertPoints = makeAssertPoints(['location', 'z']);
         var assertSelectedPoints = makeAssertSelectedPoints();
