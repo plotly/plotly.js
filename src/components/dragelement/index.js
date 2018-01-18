@@ -27,6 +27,8 @@ var unhover = require('./unhover');
 dragElement.unhover = unhover.wrapped;
 dragElement.unhoverRaw = unhover.raw;
 
+var supportsPassive = Lib.eventListenerOptionsSupported();
+
 /**
  * Abstracts click & drag interactions
  *
@@ -102,11 +104,16 @@ dragElement.init = function init(options) {
 
     element.onmousedown = onStart;
 
-    if(element._ontouchstart) {
-        element.removeEventListener('touchstart', element._ontouchstart);
+    if(!supportsPassive) {
+        element.ontouchstart = onStart;
     }
-    element._ontouchstart = onStart;
-    element.addEventListener('touchstart', onStart, {passive: false});
+    else {
+        if(element._ontouchstart) {
+            element.removeEventListener('touchstart', element._ontouchstart);
+        }
+        element._ontouchstart = onStart;
+        element.addEventListener('touchstart', onStart, {passive: false});
+    }
 
     function _clampFn(dx, dy, minDrag) {
         if(Math.abs(dx) < minDrag) dx = 0;
