@@ -35,7 +35,7 @@ module.exports = {
         currency: ['$', ''],
         year: '%Y',
         month: '%b %Y',
-        dayMonth: '%b %e',
-        dayMonthYear: '%b %e, %Y'
+        dayMonth: '%b %-d',
+        dayMonthYear: '%b %-d, %Y'
     }
 };
