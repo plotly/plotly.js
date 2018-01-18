@@ -434,28 +434,6 @@ function formatTime(x, tr) {
 }
 
 /*
- * formatWorld: format a calendar date using the d3 format syntax.
- *
- *   cDate: the date to format
- *   d3Format: the d3 format
- *
- * returns the formatted date
- */
-function formatWorld(cDate, d3Format) {
-    var d3ToC = [
-        {d3: '%Y', c: 'yyyy'},
-        {d3: '%b', c: 'M'},
-        {d3: '%-d', c: 'd'},
-        {d3: '%e', c: 'd'}
-    ];
-    var calendarFormat = d3Format;
-    for (var i = 0; i < d3ToC.length; i++) {
-        calendarFormat = calendarFormat.replace(new RegExp(d3ToC[i].d3,"g"), d3ToC[i].c);
-    }
-    return cDate.formatDate(calendarFormat);
-}
-
-/*
  * formatDate: turn a date into tick or hover label text.
  *
  *   x: milliseconds, the value to convert
@@ -473,48 +451,20 @@ function formatWorld(cDate, d3Format) {
  * one tick to the next (as it does with automatic formatting)
  */
 exports.formatDate = function(x, fmt, tr, formatter, calendar, extraFormat) {
-    var headStr,
-        dateStr;
-
     calendar = isWorldCalendar(calendar) && calendar;
 
-    if(fmt) return modDateFormat(fmt, x, formatter, calendar);
-
-    if(calendar) {
-        try {
-            var dateJD = Math.floor((x + 0.05) / ONEDAY) + EPOCHJD,
-                cDate = Registry.getComponentMethod('calendars', 'getCal')(calendar)
-                    .fromJD(dateJD);
-
-            if(tr === 'y') dateStr = formatWorld(cDate, extraFormat.year);
-            else if(tr === 'm') dateStr = formatWorld(cDate, extraFormat.month);
-            else if(tr === 'd') {
-                headStr = formatWorld(cDate, extraFormat.year);
-                dateStr = formatWorld(cDate, extraFormat.dayMonth);
-            }
-            else {
-                headStr = formatWorld(cDate, extraFormat.dayMonthYear);
-                dateStr = formatTime(x, tr);
-            }
-        }
-        catch(e) { return 'Invalid'; }
-    }
-    else {
-        var d = new Date(Math.floor(x + 0.05));
-
-        if(tr === 'y') dateStr = formatter(extraFormat.year)(d);
-        else if(tr === 'm') dateStr = formatter(extraFormat.month)(d);
+    if(!fmt) {
+        if(tr === 'y') fmt = extraFormat.year;
+        else if(tr === 'm') fmt = extraFormat.month;
         else if(tr === 'd') {
-            headStr = formatter(extraFormat.year)(d);
-            dateStr = formatter(extraFormat.dayMonth)(d);
+            fmt = extraFormat.dayMonth + '\n' + extraFormat.year;
         }
         else {
-            headStr = formatter(extraFormat.dayMonthYear)(d);
-            dateStr = formatTime(x, tr);
+            return formatTime(x, tr) + '\n' + modDateFormat(extraFormat.dayMonthYear, x, formatter, calendar);
         }
     }
 
-    return dateStr + (headStr ? '\n' + headStr : '');
+    return modDateFormat(fmt, x, formatter, calendar);
 };
 
 /*
