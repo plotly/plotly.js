@@ -122,6 +122,41 @@ A repo that demonstrates how to build plotly.js with Webpack can be found [here]
 ...
 ```
 
+#### Building plotly.js with Angular CLI
+
+Currently Angular CLI use Webpack under the hood to bundle and build your Angular application.
+Sadly it doesn't allow to override its Webpack config, and therefore to use the plugin mentioned in [Building plotly.js with Webpack](#building-plotly.js-with-webpack).
+Without this plugin your build will fail when it tries to build glslify for GLSL plots.
+
+Currently 2 solutions exists to circumvent this issue :
+1) If you need to use GLSL plots, you can create a Webpack config from your Angular CLI projet with [ng eject](https://github.com/angular/angular-cli/wiki/eject).
+This will allow you to follow the instructions regarding Webpack.
+2) If you don't need to use GLSL plots, you can make a custom build containing only the required modules for your plots.
+The clean way to do it with Angular CLI is not the method described in [Modules](#modules) but the following :
+```typescript
+// in the Component you want to create a graph
+import * as Plotly from 'plotly.js';
+```
+
+```json
+// in src/tsconfig.app.json
+...
+    "compilerOptions": {
+        ...
+        "paths": {
+            "plotly.js": [
+                // List here the modules you want to import
+                // this exemple is enough for scatter plots
+                "../node_modules/plotly.js/lib/core.js",
+                "../node_modules/plotly.js/lib/scatter.js"
+            ]
+        }
+        ...
+    }
+...
+
+```
+
 ## Bugs and feature requests
 
 Have a bug or a feature request? Please first read the [issues guidelines](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md#opening-issues).
