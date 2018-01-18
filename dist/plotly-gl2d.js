@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.32.0
+* plotly.js (gl2d) v1.33.0
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -69,7 +69,7 @@ for(var selector in rules) {
     Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/lib":362}],2:[function(require,module,exports){
+},{"../src/lib":371}],2:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -208,7 +208,7 @@ module.exports = {
 
 module.exports = require('../src/traces/contourgl');
 
-},{"../src/traces/contourgl":468}],4:[function(require,module,exports){
+},{"../src/traces/contourgl":478}],4:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -221,7 +221,7 @@ module.exports = require('../src/traces/contourgl');
 
 module.exports = require('../src/core');
 
-},{"../src/core":346}],5:[function(require,module,exports){
+},{"../src/core":354}],5:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -234,7 +234,7 @@ module.exports = require('../src/core');
 
 module.exports = require('../src/traces/heatmapgl');
 
-},{"../src/traces/heatmapgl":484}],6:[function(require,module,exports){
+},{"../src/traces/heatmapgl":494}],6:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -270,7 +270,7 @@ module.exports = Plotly;
 
 module.exports = require('../src/traces/parcoords');
 
-},{"../src/traces/parcoords":497}],8:[function(require,module,exports){
+},{"../src/traces/parcoords":507}],8:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -283,7 +283,7 @@ module.exports = require('../src/traces/parcoords');
 
 module.exports = require('../src/traces/pointcloud');
 
-},{"../src/traces/pointcloud":506}],9:[function(require,module,exports){
+},{"../src/traces/pointcloud":516}],9:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -296,7 +296,76 @@ module.exports = require('../src/traces/pointcloud');
 
 module.exports = require('../src/traces/scattergl');
 
-},{"../src/traces/scattergl":538}],10:[function(require,module,exports){
+},{"../src/traces/scattergl":546}],10:[function(require,module,exports){
+
+module.exports = absolutize
+
+/**
+ * redefine `path` with absolute coordinates
+ *
+ * @param {Array} path
+ * @return {Array}
+ */
+
+function absolutize(path){
+	var startX = 0
+	var startY = 0
+	var x = 0
+	var y = 0
+
+	return path.map(function(seg){
+		seg = seg.slice()
+		var type = seg[0]
+		var command = type.toUpperCase()
+
+		// is relative
+		if (type != command) {
+			seg[0] = command
+			switch (type) {
+				case 'a':
+					seg[6] += x
+					seg[7] += y
+					break
+				case 'v':
+					seg[1] += y
+					break
+				case 'h':
+					seg[1] += x
+					break
+				default:
+					for (var i = 1; i < seg.length;) {
+						seg[i++] += x
+						seg[i++] += y
+					}
+			}
+		}
+
+		// update cursor state
+		switch (command) {
+			case 'Z':
+				x = startX
+				y = startY
+				break
+			case 'H':
+				x = seg[1]
+				break
+			case 'V':
+				y = seg[1]
+				break
+			case 'M':
+				x = startX = seg[1]
+				y = startY = seg[2]
+				break
+			default:
+				x = seg[seg.length - 2]
+				y = seg[seg.length - 1]
+		}
+
+		return seg
+	})
+}
+
+},{}],11:[function(require,module,exports){
 var padLeft = require('pad-left')
 
 module.exports = addLineNumbers
@@ -314,7 +383,7 @@ function addLineNumbers (string, start, delim) {
   }).join('\n')
 }
 
-},{"pad-left":166}],11:[function(require,module,exports){
+},{"pad-left":157}],12:[function(require,module,exports){
 'use strict'
 
 module.exports = normalize;
@@ -342,7 +411,7 @@ function normalize (arr, dim) {
 	return bounds;
 }
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict'
 
 var getBounds = require('array-bounds')
@@ -376,7 +445,7 @@ function normalize (arr, dim, bounds) {
 		else {
 			var range = max - min
 			for (i = offset; i < l; i+=dim) {
-				arr[i] = (arr[i] - min) / range
+				arr[i] = range === 0 ? .5 : (arr[i] - min) / range
 			}
 		}
 	}
@@ -384,12 +453,506 @@ function normalize (arr, dim, bounds) {
 	return arr;
 }
 
-},{"array-bounds":11}],13:[function(require,module,exports){
+},{"array-bounds":12}],14:[function(require,module,exports){
+(function (global){
+'use strict';
+
+// compare and isBuffer taken from https://github.com/feross/buffer/blob/680e9e5e488f22aac27599a57dc844a6315928dd/index.js
+// original notice:
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * @license  MIT
+ */
+function compare(a, b) {
+  if (a === b) {
+    return 0;
+  }
+
+  var x = a.length;
+  var y = b.length;
+
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i];
+      y = b[i];
+      break;
+    }
+  }
+
+  if (x < y) {
+    return -1;
+  }
+  if (y < x) {
+    return 1;
+  }
+  return 0;
+}
+function isBuffer(b) {
+  if (global.Buffer && typeof global.Buffer.isBuffer === 'function') {
+    return global.Buffer.isBuffer(b);
+  }
+  return !!(b != null && b._isBuffer);
+}
+
+// based on node assert, original notice:
+
+// http://wiki.commonjs.org/wiki/Unit_Testing/1.0
+//
+// THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
+//
+// Originally from narwhal.js (http://narwhaljs.org)
+// Copyright (c) 2009 Thomas Robinson <280north.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the 'Software'), to
+// deal in the Software without restriction, including without limitation the
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+// sell copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+// ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+// WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var util = require('util/');
+var hasOwn = Object.prototype.hasOwnProperty;
+var pSlice = Array.prototype.slice;
+var functionsHaveNames = (function () {
+  return function foo() {}.name === 'foo';
+}());
+function pToString (obj) {
+  return Object.prototype.toString.call(obj);
+}
+function isView(arrbuf) {
+  if (isBuffer(arrbuf)) {
+    return false;
+  }
+  if (typeof global.ArrayBuffer !== 'function') {
+    return false;
+  }
+  if (typeof ArrayBuffer.isView === 'function') {
+    return ArrayBuffer.isView(arrbuf);
+  }
+  if (!arrbuf) {
+    return false;
+  }
+  if (arrbuf instanceof DataView) {
+    return true;
+  }
+  if (arrbuf.buffer && arrbuf.buffer instanceof ArrayBuffer) {
+    return true;
+  }
+  return false;
+}
+// 1. The assert module provides functions that throw
+// AssertionError's when particular conditions are not met. The
+// assert module must conform to the following interface.
+
+var assert = module.exports = ok;
+
+// 2. The AssertionError is defined in assert.
+// new assert.AssertionError({ message: message,
+//                             actual: actual,
+//                             expected: expected })
+
+var regex = /\s*function\s+([^\(\s]*)\s*/;
+// based on https://github.com/ljharb/function.prototype.name/blob/adeeeec8bfcc6068b187d7d9fb3d5bb1d3a30899/implementation.js
+function getName(func) {
+  if (!util.isFunction(func)) {
+    return;
+  }
+  if (functionsHaveNames) {
+    return func.name;
+  }
+  var str = func.toString();
+  var match = str.match(regex);
+  return match && match[1];
+}
+assert.AssertionError = function AssertionError(options) {
+  this.name = 'AssertionError';
+  this.actual = options.actual;
+  this.expected = options.expected;
+  this.operator = options.operator;
+  if (options.message) {
+    this.message = options.message;
+    this.generatedMessage = false;
+  } else {
+    this.message = getMessage(this);
+    this.generatedMessage = true;
+  }
+  var stackStartFunction = options.stackStartFunction || fail;
+  if (Error.captureStackTrace) {
+    Error.captureStackTrace(this, stackStartFunction);
+  } else {
+    // non v8 browsers so we can have a stacktrace
+    var err = new Error();
+    if (err.stack) {
+      var out = err.stack;
+
+      // try to strip useless frames
+      var fn_name = getName(stackStartFunction);
+      var idx = out.indexOf('\n' + fn_name);
+      if (idx >= 0) {
+        // once we have located the function frame
+        // we need to strip out everything before it (and its line)
+        var next_line = out.indexOf('\n', idx + 1);
+        out = out.substring(next_line + 1);
+      }
+
+      this.stack = out;
+    }
+  }
+};
+
+// assert.AssertionError instanceof Error
+util.inherits(assert.AssertionError, Error);
+
+function truncate(s, n) {
+  if (typeof s === 'string') {
+    return s.length < n ? s : s.slice(0, n);
+  } else {
+    return s;
+  }
+}
+function inspect(something) {
+  if (functionsHaveNames || !util.isFunction(something)) {
+    return util.inspect(something);
+  }
+  var rawname = getName(something);
+  var name = rawname ? ': ' + rawname : '';
+  return '[Function' +  name + ']';
+}
+function getMessage(self) {
+  return truncate(inspect(self.actual), 128) + ' ' +
+         self.operator + ' ' +
+         truncate(inspect(self.expected), 128);
+}
+
+// At present only the three keys mentioned above are used and
+// understood by the spec. Implementations or sub modules can pass
+// other keys to the AssertionError's constructor - they will be
+// ignored.
+
+// 3. All of the following functions must throw an AssertionError
+// when a corresponding condition is not met, with a message that
+// may be undefined if not provided.  All assertion methods provide
+// both the actual and expected values to the assertion error for
+// display purposes.
+
+function fail(actual, expected, message, operator, stackStartFunction) {
+  throw new assert.AssertionError({
+    message: message,
+    actual: actual,
+    expected: expected,
+    operator: operator,
+    stackStartFunction: stackStartFunction
+  });
+}
+
+// EXTENSION! allows for well behaved errors defined elsewhere.
+assert.fail = fail;
+
+// 4. Pure assertion tests whether a value is truthy, as determined
+// by !!guard.
+// assert.ok(guard, message_opt);
+// This statement is equivalent to assert.equal(true, !!guard,
+// message_opt);. To test strictly for the value true, use
+// assert.strictEqual(true, guard, message_opt);.
+
+function ok(value, message) {
+  if (!value) fail(value, true, message, '==', assert.ok);
+}
+assert.ok = ok;
+
+// 5. The equality assertion tests shallow, coercive equality with
+// ==.
+// assert.equal(actual, expected, message_opt);
+
+assert.equal = function equal(actual, expected, message) {
+  if (actual != expected) fail(actual, expected, message, '==', assert.equal);
+};
+
+// 6. The non-equality assertion tests for whether two objects are not equal
+// with != assert.notEqual(actual, expected, message_opt);
+
+assert.notEqual = function notEqual(actual, expected, message) {
+  if (actual == expected) {
+    fail(actual, expected, message, '!=', assert.notEqual);
+  }
+};
+
+// 7. The equivalence assertion tests a deep equality relation.
+// assert.deepEqual(actual, expected, message_opt);
+
+assert.deepEqual = function deepEqual(actual, expected, message) {
+  if (!_deepEqual(actual, expected, false)) {
+    fail(actual, expected, message, 'deepEqual', assert.deepEqual);
+  }
+};
+
+assert.deepStrictEqual = function deepStrictEqual(actual, expected, message) {
+  if (!_deepEqual(actual, expected, true)) {
+    fail(actual, expected, message, 'deepStrictEqual', assert.deepStrictEqual);
+  }
+};
+
+function _deepEqual(actual, expected, strict, memos) {
+  // 7.1. All identical values are equivalent, as determined by ===.
+  if (actual === expected) {
+    return true;
+  } else if (isBuffer(actual) && isBuffer(expected)) {
+    return compare(actual, expected) === 0;
+
+  // 7.2. If the expected value is a Date object, the actual value is
+  // equivalent if it is also a Date object that refers to the same time.
+  } else if (util.isDate(actual) && util.isDate(expected)) {
+    return actual.getTime() === expected.getTime();
+
+  // 7.3 If the expected value is a RegExp object, the actual value is
+  // equivalent if it is also a RegExp object with the same source and
+  // properties (`global`, `multiline`, `lastIndex`, `ignoreCase`).
+  } else if (util.isRegExp(actual) && util.isRegExp(expected)) {
+    return actual.source === expected.source &&
+           actual.global === expected.global &&
+           actual.multiline === expected.multiline &&
+           actual.lastIndex === expected.lastIndex &&
+           actual.ignoreCase === expected.ignoreCase;
+
+  // 7.4. Other pairs that do not both pass typeof value == 'object',
+  // equivalence is determined by ==.
+  } else if ((actual === null || typeof actual !== 'object') &&
+             (expected === null || typeof expected !== 'object')) {
+    return strict ? actual === expected : actual == expected;
+
+  // If both values are instances of typed arrays, wrap their underlying
+  // ArrayBuffers in a Buffer each to increase performance
+  // This optimization requires the arrays to have the same type as checked by
+  // Object.prototype.toString (aka pToString). Never perform binary
+  // comparisons for Float*Arrays, though, since e.g. +0 === -0 but their
+  // bit patterns are not identical.
+  } else if (isView(actual) && isView(expected) &&
+             pToString(actual) === pToString(expected) &&
+             !(actual instanceof Float32Array ||
+               actual instanceof Float64Array)) {
+    return compare(new Uint8Array(actual.buffer),
+                   new Uint8Array(expected.buffer)) === 0;
+
+  // 7.5 For all other Object pairs, including Array objects, equivalence is
+  // determined by having the same number of owned properties (as verified
+  // with Object.prototype.hasOwnProperty.call), the same set of keys
+  // (although not necessarily the same order), equivalent values for every
+  // corresponding key, and an identical 'prototype' property. Note: this
+  // accounts for both named and indexed properties on Arrays.
+  } else if (isBuffer(actual) !== isBuffer(expected)) {
+    return false;
+  } else {
+    memos = memos || {actual: [], expected: []};
+
+    var actualIndex = memos.actual.indexOf(actual);
+    if (actualIndex !== -1) {
+      if (actualIndex === memos.expected.indexOf(expected)) {
+        return true;
+      }
+    }
+
+    memos.actual.push(actual);
+    memos.expected.push(expected);
+
+    return objEquiv(actual, expected, strict, memos);
+  }
+}
+
+function isArguments(object) {
+  return Object.prototype.toString.call(object) == '[object Arguments]';
+}
+
+function objEquiv(a, b, strict, actualVisitedObjects) {
+  if (a === null || a === undefined || b === null || b === undefined)
+    return false;
+  // if one is a primitive, the other must be same
+  if (util.isPrimitive(a) || util.isPrimitive(b))
+    return a === b;
+  if (strict && Object.getPrototypeOf(a) !== Object.getPrototypeOf(b))
+    return false;
+  var aIsArgs = isArguments(a);
+  var bIsArgs = isArguments(b);
+  if ((aIsArgs && !bIsArgs) || (!aIsArgs && bIsArgs))
+    return false;
+  if (aIsArgs) {
+    a = pSlice.call(a);
+    b = pSlice.call(b);
+    return _deepEqual(a, b, strict);
+  }
+  var ka = objectKeys(a);
+  var kb = objectKeys(b);
+  var key, i;
+  // having the same number of owned properties (keys incorporates
+  // hasOwnProperty)
+  if (ka.length !== kb.length)
+    return false;
+  //the same set of keys (although not necessarily the same order),
+  ka.sort();
+  kb.sort();
+  //~~~cheap key test
+  for (i = ka.length - 1; i >= 0; i--) {
+    if (ka[i] !== kb[i])
+      return false;
+  }
+  //equivalent values for every corresponding key, and
+  //~~~possibly expensive deep test
+  for (i = ka.length - 1; i >= 0; i--) {
+    key = ka[i];
+    if (!_deepEqual(a[key], b[key], strict, actualVisitedObjects))
+      return false;
+  }
+  return true;
+}
+
+// 8. The non-equivalence assertion tests for any deep inequality.
+// assert.notDeepEqual(actual, expected, message_opt);
+
+assert.notDeepEqual = function notDeepEqual(actual, expected, message) {
+  if (_deepEqual(actual, expected, false)) {
+    fail(actual, expected, message, 'notDeepEqual', assert.notDeepEqual);
+  }
+};
+
+assert.notDeepStrictEqual = notDeepStrictEqual;
+function notDeepStrictEqual(actual, expected, message) {
+  if (_deepEqual(actual, expected, true)) {
+    fail(actual, expected, message, 'notDeepStrictEqual', notDeepStrictEqual);
+  }
+}
+
+
+// 9. The strict equality assertion tests strict equality, as determined by ===.
+// assert.strictEqual(actual, expected, message_opt);
+
+assert.strictEqual = function strictEqual(actual, expected, message) {
+  if (actual !== expected) {
+    fail(actual, expected, message, '===', assert.strictEqual);
+  }
+};
+
+// 10. The strict non-equality assertion tests for strict inequality, as
+// determined by !==.  assert.notStrictEqual(actual, expected, message_opt);
+
+assert.notStrictEqual = function notStrictEqual(actual, expected, message) {
+  if (actual === expected) {
+    fail(actual, expected, message, '!==', assert.notStrictEqual);
+  }
+};
+
+function expectedException(actual, expected) {
+  if (!actual || !expected) {
+    return false;
+  }
+
+  if (Object.prototype.toString.call(expected) == '[object RegExp]') {
+    return expected.test(actual);
+  }
+
+  try {
+    if (actual instanceof expected) {
+      return true;
+    }
+  } catch (e) {
+    // Ignore.  The instanceof check doesn't work for arrow functions.
+  }
+
+  if (Error.isPrototypeOf(expected)) {
+    return false;
+  }
+
+  return expected.call({}, actual) === true;
+}
+
+function _tryBlock(block) {
+  var error;
+  try {
+    block();
+  } catch (e) {
+    error = e;
+  }
+  return error;
+}
+
+function _throws(shouldThrow, block, expected, message) {
+  var actual;
+
+  if (typeof block !== 'function') {
+    throw new TypeError('"block" argument must be a function');
+  }
+
+  if (typeof expected === 'string') {
+    message = expected;
+    expected = null;
+  }
+
+  actual = _tryBlock(block);
+
+  message = (expected && expected.name ? ' (' + expected.name + ').' : '.') +
+            (message ? ' ' + message : '.');
+
+  if (shouldThrow && !actual) {
+    fail(actual, expected, 'Missing expected exception' + message);
+  }
+
+  var userProvidedMessage = typeof message === 'string';
+  var isUnwantedException = !shouldThrow && util.isError(actual);
+  var isUnexpectedException = !shouldThrow && actual && !expected;
+
+  if ((isUnwantedException &&
+      userProvidedMessage &&
+      expectedException(actual, expected)) ||
+      isUnexpectedException) {
+    fail(actual, expected, 'Got unwanted exception' + message);
+  }
+
+  if ((shouldThrow && actual && expected &&
+      !expectedException(actual, expected)) || (!shouldThrow && actual)) {
+    throw actual;
+  }
+}
+
+// 11. Expected to throw an error:
+// assert.throws(block, Error_opt, message_opt);
+
+assert.throws = function(block, /*optional*/error, /*optional*/message) {
+  _throws(true, block, error, message);
+};
+
+// EXTENSION! This is annoying to write outside this module.
+assert.doesNotThrow = function(block, /*optional*/error, /*optional*/message) {
+  _throws(false, block, error, message);
+};
+
+assert.ifError = function(err) { if (err) throw err; };
+
+var objectKeys = Object.keys || function (obj) {
+  var keys = [];
+  for (var key in obj) {
+    if (hasOwn.call(obj, key)) keys.push(key);
+  }
+  return keys;
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"util/":224}],15:[function(require,module,exports){
 module.exports = function _atob(str) {
   return atob(str)
 }
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -402,7 +965,7 @@ function add(a, b) {
     a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":24}],15:[function(require,module,exports){
+},{"./lib/rationalize":26}],17:[function(require,module,exports){
 'use strict'
 
 module.exports = cmp
@@ -411,7 +974,7 @@ function cmp(a, b) {
     return a[0].mul(b[1]).cmp(b[0].mul(a[1]))
 }
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -422,7 +985,7 @@ function div(a, b) {
   return rationalize(a[0].mul(b[1]), a[1].mul(b[0]))
 }
 
-},{"./lib/rationalize":24}],17:[function(require,module,exports){
+},{"./lib/rationalize":26}],19:[function(require,module,exports){
 'use strict'
 
 var isRat = require('./is-rat')
@@ -484,7 +1047,7 @@ function makeRational(numer, denom) {
   return rationalize(a, b)
 }
 
-},{"./div":16,"./is-rat":18,"./lib/is-bn":22,"./lib/num-to-bn":23,"./lib/rationalize":24,"./lib/str-to-bn":25}],18:[function(require,module,exports){
+},{"./div":18,"./is-rat":20,"./lib/is-bn":24,"./lib/num-to-bn":25,"./lib/rationalize":26,"./lib/str-to-bn":27}],20:[function(require,module,exports){
 'use strict'
 
 var isBN = require('./lib/is-bn')
@@ -495,7 +1058,7 @@ function isRat(x) {
   return Array.isArray(x) && x.length === 2 && isBN(x[0]) && isBN(x[1])
 }
 
-},{"./lib/is-bn":22}],19:[function(require,module,exports){
+},{"./lib/is-bn":24}],21:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -506,7 +1069,7 @@ function sign (x) {
   return x.cmp(new BN(0))
 }
 
-},{"bn.js":32}],20:[function(require,module,exports){
+},{"bn.js":35}],22:[function(require,module,exports){
 'use strict'
 
 var sign = require('./bn-sign')
@@ -531,7 +1094,7 @@ function bn2num(b) {
   return sign(b) * out
 }
 
-},{"./bn-sign":19}],21:[function(require,module,exports){
+},{"./bn-sign":21}],23:[function(require,module,exports){
 'use strict'
 
 var db = require('double-bits')
@@ -552,7 +1115,7 @@ function ctzNumber(x) {
   return h + 32
 }
 
-},{"bit-twiddle":31,"double-bits":63}],22:[function(require,module,exports){
+},{"bit-twiddle":33,"double-bits":68}],24:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -565,7 +1128,7 @@ function isBN(x) {
   return x && typeof x === 'object' && Boolean(x.words)
 }
 
-},{"bn.js":32}],23:[function(require,module,exports){
+},{"bn.js":35}],25:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -582,7 +1145,7 @@ function num2bn(x) {
   }
 }
 
-},{"bn.js":32,"double-bits":63}],24:[function(require,module,exports){
+},{"bn.js":35,"double-bits":68}],26:[function(require,module,exports){
 'use strict'
 
 var num2bn = require('./num-to-bn')
@@ -610,7 +1173,7 @@ function rationalize(numer, denom) {
   return [ numer, denom ]
 }
 
-},{"./bn-sign":19,"./num-to-bn":23}],25:[function(require,module,exports){
+},{"./bn-sign":21,"./num-to-bn":25}],27:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -621,7 +1184,7 @@ function str2BN(x) {
   return new BN(x)
 }
 
-},{"bn.js":32}],26:[function(require,module,exports){
+},{"bn.js":35}],28:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -632,7 +1195,7 @@ function mul(a, b) {
   return rationalize(a[0].mul(b[0]), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":24}],27:[function(require,module,exports){
+},{"./lib/rationalize":26}],29:[function(require,module,exports){
 'use strict'
 
 var bnsign = require('./lib/bn-sign')
@@ -643,7 +1206,7 @@ function sign(x) {
   return bnsign(x[0]) * bnsign(x[1])
 }
 
-},{"./lib/bn-sign":19}],28:[function(require,module,exports){
+},{"./lib/bn-sign":21}],30:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -654,7 +1217,7 @@ function sub(a, b) {
   return rationalize(a[0].mul(b[1]).sub(a[1].mul(b[0])), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":24}],29:[function(require,module,exports){
+},{"./lib/rationalize":26}],31:[function(require,module,exports){
 'use strict'
 
 var bn2num = require('./lib/bn-to-num')
@@ -692,7 +1255,7 @@ function roundRat (f) {
   }
 }
 
-},{"./lib/bn-to-num":20,"./lib/ctz":21}],30:[function(require,module,exports){
+},{"./lib/bn-to-num":22,"./lib/ctz":23}],32:[function(require,module,exports){
 "use strict"
 
 function compileSearch(funcName, predicate, reversed, extraArgs, useNdarray, earlyOut) {
@@ -754,7 +1317,7 @@ module.exports = {
   eq: compileBoundsSearch("-", true, "EQ", true)
 }
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -960,7 +1523,145 @@ exports.nextCombination = function(v) {
 }
 
 
-},{}],32:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
+'use strict'
+
+var clamp = require('clamp')
+
+module.exports = calcSDF
+
+var INF = 1e20;
+
+function calcSDF(src, options) {
+    if (!options) options = {}
+
+    var cutoff = options.cutoff == null ? 0.25 : options.cutoff
+    var radius = options.radius == null ? 8 : options.radius
+    var channel = options.channel || 0
+    var w, h, size, data, intData, stride, ctx, canvas, imgData, i, l
+
+    // handle image container
+    if (ArrayBuffer.isView(src) || Array.isArray(src)) {
+        if (!options.width || !options.height) throw Error('For raw data width and height should be provided by options')
+        w = options.width, h = options.height
+        data = src
+
+        if (!options.stride) stride = Math.floor(src.length / w / h)
+        else stride = options.stride
+    }
+    else {
+        if (window.HTMLCanvasElement && src instanceof window.HTMLCanvasElement) {
+            canvas = src
+            ctx = canvas.getContext('2d')
+            w = canvas.width, h = canvas.height
+            imgData = ctx.getImageData(0, 0, w, h)
+            data = imgData.data
+            stride = 4
+        }
+        else if (window.CanvasRenderingContext2D && src instanceof window.CanvasRenderingContext2D) {
+            canvas = src.canvas
+            ctx = src
+            w = canvas.width, h = canvas.height
+            imgData = ctx.getImageData(0, 0, w, h)
+            data = imgData.data
+            stride = 4
+        }
+        else if (window.ImageData && src instanceof window.ImageData) {
+            imgData = src
+            w = src.width, h = src.height
+            data = imgData.data
+            stride = 4
+        }
+    }
+
+    size = Math.max(w, h)
+
+    //convert int data to floats
+    if ((window.Uint8ClampedArray && data instanceof window.Uint8ClampedArray) || (window.Uint8Array && data instanceof window.Uint8Array)) {
+        intData = data
+        data = Array(w*h)
+
+        for (i = 0, l = intData.length; i < l; i++) {
+            data[i] = intData[i*stride + channel] / 255
+        }
+    }
+    else {
+        if (stride !== 1) throw Error('Raw data can have only 1 value per pixel')
+    }
+
+    // temporary arrays for the distance transform
+    var gridOuter = Array(w * h)
+    var gridInner = Array(w * h)
+    var f = Array(size)
+    var d = Array(size)
+    var z = Array(size + 1)
+    var v = Array(size)
+
+    for (i = 0, l = w * h; i < l; i++) {
+        var a = data[i]
+        gridOuter[i] = a === 1 ? 0 : a === 0 ? INF : Math.pow(Math.max(0, 0.5 - a), 2)
+        gridInner[i] = a === 1 ? INF : a === 0 ? 0 : Math.pow(Math.max(0, a - 0.5), 2)
+    }
+
+    edt(gridOuter, w, h, f, d, v, z)
+    edt(gridInner, w, h, f, d, v, z)
+
+    var dist = window.Float32Array ? new Float32Array(w * h) : new Array(w * h)
+
+    for (i = 0, l = w*h; i < l; i++) {
+        dist[i] = clamp(1 - ( (gridOuter[i] - gridInner[i]) / radius + cutoff), 0, 1)
+    }
+
+    return dist
+}
+
+// 2D Euclidean distance transform by Felzenszwalb & Huttenlocher https://cs.brown.edu/~pff/dt/
+function edt(data, width, height, f, d, v, z) {
+    for (var x = 0; x < width; x++) {
+        for (var y = 0; y < height; y++) {
+            f[y] = data[y * width + x]
+        }
+        edt1d(f, d, v, z, height)
+        for (y = 0; y < height; y++) {
+            data[y * width + x] = d[y]
+        }
+    }
+    for (y = 0; y < height; y++) {
+        for (x = 0; x < width; x++) {
+            f[x] = data[y * width + x]
+        }
+        edt1d(f, d, v, z, width)
+        for (x = 0; x < width; x++) {
+            data[y * width + x] = Math.sqrt(d[x])
+        }
+    }
+}
+
+// 1D squared distance transform
+function edt1d(f, d, v, z, n) {
+    v[0] = 0;
+    z[0] = -INF
+    z[1] = +INF
+
+    for (var q = 1, k = 0; q < n; q++) {
+        var s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k])
+        while (s <= z[k]) {
+            k--
+            s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k])
+        }
+        k++
+        v[k] = q
+        z[k] = s
+        z[k + 1] = +INF
+    }
+
+    for (q = 0, k = 0; q < n; q++) {
+        while (z[k + 1] < q) k++
+        d[q] = (q - v[k]) * (q - v[k]) + f[v[k]]
+    }
+}
+
+},{"clamp":51}],35:[function(require,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -4389,7 +5090,7 @@ exports.nextCombination = function(v) {
   };
 })(typeof module === 'undefined' || module, this);
 
-},{}],33:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict'
 
 module.exports = boxIntersectWrapper
@@ -4528,7 +5229,7 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":35,"./lib/sweep":39,"typedarray-pool":213}],34:[function(require,module,exports){
+},{"./lib/intersect":38,"./lib/sweep":42,"typedarray-pool":218}],37:[function(require,module,exports){
 'use strict'
 
 var DIMENSION   = 'd'
@@ -4673,7 +5374,7 @@ function bruteForcePlanner(full) {
 
 exports.partial = bruteForcePlanner(false)
 exports.full    = bruteForcePlanner(true)
-},{}],35:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict'
 
 module.exports = boxIntersectIter
@@ -5168,7 +5869,7 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":34,"./median":36,"./partition":37,"./sweep":39,"bit-twiddle":31,"typedarray-pool":213}],36:[function(require,module,exports){
+},{"./brute":37,"./median":39,"./partition":40,"./sweep":42,"bit-twiddle":33,"typedarray-pool":218}],39:[function(require,module,exports){
 'use strict'
 
 module.exports = findMedian
@@ -5311,7 +6012,7 @@ function findMedian(d, axis, start, end, boxes, ids) {
     start, mid, boxes, ids,
     boxes[elemSize*mid+axis])
 }
-},{"./partition":37}],37:[function(require,module,exports){
+},{"./partition":40}],40:[function(require,module,exports){
 'use strict'
 
 module.exports = genPartition
@@ -5332,7 +6033,7 @@ function genPartition(predicate, args) {
         .replace('$', predicate))
   return Function.apply(void 0, fargs)
 }
-},{}],38:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 'use strict';
 
 //This code is extracted from ndarray-sort
@@ -5569,7 +6270,7 @@ function quickSort(left, right, data) {
     quickSort(less, great, data);
   }
 }
-},{}],39:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict'
 
 module.exports = {
@@ -6004,7 +6705,7 @@ red_loop:
     }
   }
 }
-},{"./sort":38,"bit-twiddle":31,"typedarray-pool":213}],40:[function(require,module,exports){
+},{"./sort":41,"bit-twiddle":33,"typedarray-pool":218}],43:[function(require,module,exports){
 /*!
  * The buffer module from node.js, for the browser.
  *
@@ -7712,7 +8413,7 @@ function numberIsNaN (obj) {
   return obj !== obj // eslint-disable-line no-self-compare
 }
 
-},{"base64-js":41,"ieee754":150}],41:[function(require,module,exports){
+},{"base64-js":44,"ieee754":137}],44:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -7828,7 +8529,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],42:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict'
 
 var monotoneTriangulate = require('./lib/monotone')
@@ -7912,7 +8613,7 @@ function cdt2d(points, edges, options) {
   }
 }
 
-},{"./lib/delaunay":43,"./lib/filter":44,"./lib/monotone":45,"./lib/triangulation":46}],43:[function(require,module,exports){
+},{"./lib/delaunay":46,"./lib/filter":47,"./lib/monotone":48,"./lib/triangulation":49}],46:[function(require,module,exports){
 'use strict'
 
 var inCircle = require('robust-in-sphere')[4]
@@ -8029,7 +8730,7 @@ function delaunayRefine(points, triangulation) {
   }
 }
 
-},{"binary-search-bounds":47,"robust-in-sphere":189}],44:[function(require,module,exports){
+},{"binary-search-bounds":50,"robust-in-sphere":188}],47:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -8211,7 +8912,7 @@ function classifyFaces(triangulation, target, infinity) {
   return result
 }
 
-},{"binary-search-bounds":47}],45:[function(require,module,exports){
+},{"binary-search-bounds":50}],48:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -8400,7 +9101,7 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":47,"robust-orientation":190}],46:[function(require,module,exports){
+},{"binary-search-bounds":50,"robust-orientation":189}],49:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -8506,7 +9207,7 @@ function createTriangulation(numVerts, edges) {
   return new Triangulation(stars, edges)
 }
 
-},{"binary-search-bounds":47}],47:[function(require,module,exports){
+},{"binary-search-bounds":50}],50:[function(require,module,exports){
 "use strict"
 
 function compileSearch(funcName, predicate, reversed, extraArgs, earlyOut) {
@@ -8560,7 +9261,7 @@ module.exports = {
   eq: compileBoundsSearch("-", true, "EQ", true)
 }
 
-},{}],48:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 module.exports = clamp
 
 function clamp(value, min, max) {
@@ -8569,7 +9270,7 @@ function clamp(value, min, max) {
     : (value < max ? max : value > min ? min : value)
 }
 
-},{}],49:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 'use strict'
 
 module.exports = cleanPSLG
@@ -8952,7 +9653,7 @@ function cleanPSLG (points, edges, colors) {
   return modified
 }
 
-},{"./lib/rat-seg-intersect":50,"big-rat":17,"big-rat/cmp":15,"big-rat/to-float":29,"box-intersect":33,"nextafter":164,"rat-vec":184,"robust-segment-intersect":193,"union-find":214}],50:[function(require,module,exports){
+},{"./lib/rat-seg-intersect":53,"big-rat":19,"big-rat/cmp":17,"big-rat/to-float":31,"box-intersect":36,"nextafter":154,"rat-vec":177,"robust-segment-intersect":192,"union-find":219}],53:[function(require,module,exports){
 'use strict'
 
 module.exports = solveIntersection
@@ -8996,7 +9697,7 @@ function solveIntersection (a, b, c, d) {
   return r
 }
 
-},{"big-rat/div":16,"big-rat/mul":26,"big-rat/sign":27,"big-rat/sub":28,"rat-vec/add":183,"rat-vec/muls":185,"rat-vec/sub":186}],51:[function(require,module,exports){
+},{"big-rat/div":18,"big-rat/mul":28,"big-rat/sign":29,"big-rat/sub":30,"rat-vec/add":176,"rat-vec/muls":178,"rat-vec/sub":179}],54:[function(require,module,exports){
 /** @module  color-id */
 
 'use strict'
@@ -9045,7 +9746,7 @@ function fromNumber (n, normalized) {
 	return [r/255, g/255, b/255, a/255]
 }
 
-},{"clamp":48}],52:[function(require,module,exports){
+},{"clamp":51}],55:[function(require,module,exports){
 'use strict'
 
 module.exports = {
@@ -9199,7 +9900,76 @@ module.exports = {
 	"yellowgreen": [154, 205, 50]
 };
 
-},{}],53:[function(require,module,exports){
+},{}],56:[function(require,module,exports){
+/** @module  color-rgba */
+
+'use strict'
+
+var rgba = require('color-rgba')
+var clamp = require('clamp')
+var dtype = require('dtype')
+
+module.exports = function normalize (color, type) {
+	if (type === 'float' || !type) type = 'array'
+	if (type === 'uint') type = 'uint8'
+	if (type === 'uint_clamped') type = 'uint8_clamped'
+	var Ctor = dtype(type)
+	var output = new Ctor(4)
+
+	//same class does not change values
+	if (color instanceof Ctor) {
+		if (Array.isArray(color)) {
+			return color.slice()
+		}
+
+		output.set(color)
+
+		return output
+	}
+
+	var normalize = type !== 'uint8' && type !== 'uint8_clamped'
+
+	//consider uint8 array as 0..255 channel values
+	if (color instanceof Uint8Array || color instanceof Uint8ClampedArray) {
+		output[0] = color[0]
+		output[1] = color[1]
+		output[2] = color[2]
+		output[3] = color[3] != null ? color[3] : 255
+		if (normalize) {
+			output[0] /= 255
+			output[1] /= 255
+			output[2] /= 255
+			output[3] /= 255
+		}
+
+		return output
+	}
+
+	//attempt to parse non-array arguments
+	if (!color.length || typeof color === 'string') {
+		color = rgba(color)
+		color[0] /= 255
+		color[1] /= 255
+		color[2] /= 255
+	}
+
+	//consider every other array type as 0..1 float values
+	if (!normalize) {
+		output[0] = clamp(Math.round(color[0] * 255), 0, 255)
+		output[1] = clamp(Math.round(color[1] * 255), 0, 255)
+		output[2] = clamp(Math.round(color[2] * 255), 0, 255)
+		output[3] = color[3] == null ? 255 : clamp(Math.floor(color[3] * 255), 0, 255)
+	} else {
+		output[0] = color[0]
+		output[1] = color[1]
+		output[2] = color[2]
+		output[3] = color[3] != null ? color[3] : 1
+	}
+
+	return output
+}
+
+},{"clamp":51,"color-rgba":58,"dtype":70}],57:[function(require,module,exports){
 (function (global){
 /**
  * @module color-parse
@@ -9207,13 +9977,11 @@ module.exports = {
 
 'use strict'
 
+var names = require('color-name')
+var isObject = require('is-plain-obj')
+var defined = require('defined')
 
-module.exports = parse;
-
-
-var names = require('color-name');
-var isObject = require('is-plain-obj');
-
+module.exports = parse
 
 /**
  * Base hues
@@ -9227,8 +9995,7 @@ var baseHues = {
 	green: 180,
 	blue: 240,
 	purple: 300
-};
-
+}
 
 /**
  * Parse color from the string passed
@@ -9236,28 +10003,28 @@ var baseHues = {
  * @return {Object} A space indicator `space`, an array `values` and `alpha`
  */
 function parse (cstr) {
-	var m, parts = [], alpha = 1, space;
+	var m, parts = [], alpha = 1, space
 
 	if (typeof cstr === 'string') {
 		//keyword
 		if (names[cstr]) {
-			parts = names[cstr].slice();
+			parts = names[cstr].slice()
 			space = 'rgb'
 		}
 
 		//reserved words
 		else if (cstr === 'transparent') {
-			alpha = 0;
+			alpha = 0
 			space = 'rgb'
 			parts = [0,0,0]
 		}
 
 		//hex
 		else if (/^#[A-Fa-f0-9]+$/.test(cstr)) {
-			var base = cstr.slice(1);
-			var size = base.length;
-			var isShort = size <= 4;
-			alpha = 1;
+			var base = cstr.slice(1)
+			var size = base.length
+			var isShort = size <= 4
+			alpha = 1
 
 			if (isShort) {
 				parts = [
@@ -9280,105 +10047,107 @@ function parse (cstr) {
 				}
 			}
 
-			if (!parts[0]) parts[0] = 0;
-			if (!parts[1]) parts[1] = 0;
-			if (!parts[2]) parts[2] = 0;
+			if (!parts[0]) parts[0] = 0
+			if (!parts[1]) parts[1] = 0
+			if (!parts[2]) parts[2] = 0
 
 			space = 'rgb'
 		}
 
 		//color space
 		else if (m = /^((?:rgb|hs[lvb]|hwb|cmyk?|xy[zy]|gray|lab|lchu?v?|[ly]uv|lms)a?)\s*\(([^\)]*)\)/.exec(cstr)) {
-			var name = m[1];
-			var base = name.replace(/a$/, '');
-			space = base;
-			var size = base === 'cmyk' ? 4 : base === 'gray' ? 1 : 3;
+			var name = m[1]
+			var base = name.replace(/a$/, '')
+			space = base
+			var size = base === 'cmyk' ? 4 : base === 'gray' ? 1 : 3
 			parts = m[2].trim()
 				.split(/\s*,\s*/)
 				.map(function (x, i) {
 					//<percentage>
 					if (/%$/.test(x)) {
 						//alpha
-						if (i === size)	return parseFloat(x) / 100;
+						if (i === size)	return parseFloat(x) / 100
 						//rgb
-						if (base === 'rgb') return parseFloat(x) * 255 / 100;
-						return parseFloat(x);
+						if (base === 'rgb') return parseFloat(x) * 255 / 100
+						return parseFloat(x)
 					}
 					//hue
 					else if (base[i] === 'h') {
 						//<deg>
 						if (/deg$/.test(x)) {
-							return parseFloat(x);
+							return parseFloat(x)
 						}
 						//<base-hue>
 						else if (baseHues[x] !== undefined) {
-							return baseHues[x];
+							return baseHues[x]
 						}
 					}
-					return parseFloat(x);
-				});
+					return parseFloat(x)
+				})
 
-			if (name === base) parts.push(1);
-			alpha = parts[size] === undefined ? 1 : parts[size];
-			parts = parts.slice(0, size);
+			if (name === base) parts.push(1)
+			alpha = parts[size] === undefined ? 1 : parts[size]
+			parts = parts.slice(0, size)
 		}
 
 		//named channels case
 		else if (cstr.length > 10 && /[0-9](?:\s|\/)/.test(cstr)) {
 			parts = cstr.match(/([0-9]+)/g).map(function (value) {
-				return parseFloat(value);
-			});
+				return parseFloat(value)
+			})
 
-			space = cstr.match(/([a-z])/ig).join('').toLowerCase();
+			space = cstr.match(/([a-z])/ig).join('').toLowerCase()
 		}
 	}
 
 	//numeric case
 	else if (typeof cstr === 'number') {
 		space = 'rgb'
-		parts = [cstr >>> 16, (cstr & 0x00ff00) >>> 8, cstr & 0x0000ff];
+		parts = [cstr >>> 16, (cstr & 0x00ff00) >>> 8, cstr & 0x0000ff]
 	}
 
 	//object case - detects css cases of rgb and hsl
 	else if (isObject(cstr)) {
-		if (cstr.r != null) {
-			parts = [cstr.r, cstr.g, cstr.b];
+		var r = defined(cstr.r, cstr.red, cstr.R, null)
+
+		if (r !== null) {
 			space = 'rgb'
+			parts = [
+				r,
+				defined(cstr.g, cstr.green, cstr.G),
+				defined(cstr.b, cstr.blue, cstr.B)
+			]
 		}
-		else if (cstr.red != null) {
-			parts = [cstr.red, cstr.green, cstr.blue];
-			space = 'rgb'
-		}
-		else if (cstr.h != null) {
-			parts = [cstr.h, cstr.s, cstr.l];
-			space = 'hsl';
-		}
-		else if (cstr.hue != null) {
-			parts = [cstr.hue, cstr.saturation, cstr.lightness];
-			space = 'hsl';
+		else {
+			space = 'hsl'
+			parts = [
+				defined(cstr.h, cstr.hue, cstr.H),
+				defined(cstr.s, cstr.saturation, cstr.S),
+				defined(cstr.l, cstr.lightness, cstr.L, cstr.b, cstr.brightness)
+			]
 		}
 
-		if (cstr.a != null) alpha = cstr.a;
-		else if (cstr.alpha != null) alpha = cstr.alpha;
-		else if (cstr.opacity != null) alpha = cstr.opacity / 100;
+		alpha = defined(cstr.a, cstr.alpha, cstr.opacity, 1)
+
+		if (cstr.opacity != null) alpha /= 100
 	}
 
 	//array
 	else if (Array.isArray(cstr) || global.ArrayBuffer && ArrayBuffer.isView && ArrayBuffer.isView(cstr)) {
-		parts = [cstr[0], cstr[1], cstr[2]];
+		parts = [cstr[0], cstr[1], cstr[2]]
 		space = 'rgb'
-		alpha = cstr.length === 4 ? cstr[3] : 1;
+		alpha = cstr.length === 4 ? cstr[3] : 1
 	}
 
 	return {
 		space: space,
 		values: parts,
 		alpha: alpha
-	};
+	}
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"color-name":52,"is-plain-obj":156}],54:[function(require,module,exports){
+},{"color-name":55,"defined":67,"is-plain-obj":144}],58:[function(require,module,exports){
 /** @module  color-rgba */
 
 'use strict'
@@ -9387,28 +10156,23 @@ var parse = require('color-parse')
 var hsl = require('color-space/hsl')
 var clamp = require('clamp')
 
-module.exports = function rgba (color, normalize) {
-	if (Array.isArray(color)) return color;
+module.exports = function rgba (color) {
+	var values, i, l
 
-	if (normalize == null) normalize = true
+	if (typeof color !== 'string') throw Error('Argument should be a string')
 
-	var parsed = parse(color);
+	//attempt to parse non-array arguments
+	var parsed = parse(color)
 
-	if (!parsed.space) return [];
+	if (!parsed.space) return []
 
-	var values = parsed.values, i, l = values.length;
-	for (i = 0; i < l; i++) {
-		values[i] = clamp(values[i], 0, 255)
-	}
+	values = Array(3)
+	values[0] = clamp(parsed.values[0], 0, 255)
+	values[1] = clamp(parsed.values[1], 0, 255)
+	values[2] = clamp(parsed.values[2], 0, 255)
 
 	if (parsed.space[0] === 'h') {
 		values = hsl.rgb(values)
-	}
-
-	if (normalize) {
-		for (i = 0; i < l; i++) {
-			values[i] /= 255
-		}
 	}
 
 	values.push(clamp(parsed.alpha, 0, 1))
@@ -9416,8 +10180,7 @@ module.exports = function rgba (color, normalize) {
 	return values
 }
 
-
-},{"clamp":48,"color-parse":53,"color-space/hsl":55}],55:[function(require,module,exports){
+},{"clamp":51,"color-parse":57,"color-space/hsl":59}],59:[function(require,module,exports){
 /**
  * @module color-space/hsl
  */
@@ -9526,7 +10289,7 @@ rgb.hsl = function(rgb) {
 	return [h, s * 100, l * 100];
 };
 
-},{"./rgb":56}],56:[function(require,module,exports){
+},{"./rgb":60}],60:[function(require,module,exports){
 /**
  * RGB space.
  *
@@ -9542,7 +10305,7 @@ module.exports = {
 	alias: ['RGB']
 };
 
-},{}],57:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 "use strict"
 
 module.exports = compareAngle
@@ -9628,7 +10391,7 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":190,"robust-product":191,"robust-sum":195,"signum":196,"two-sum":212}],58:[function(require,module,exports){
+},{"robust-orientation":189,"robust-product":190,"robust-sum":194,"signum":195,"two-sum":217}],62:[function(require,module,exports){
 "use strict"
 
 var createThunk = require("./lib/thunk.js")
@@ -9739,7 +10502,7 @@ function compileCwise(user_args) {
 
 module.exports = compileCwise
 
-},{"./lib/thunk.js":60}],59:[function(require,module,exports){
+},{"./lib/thunk.js":64}],63:[function(require,module,exports){
 "use strict"
 
 var uniq = require("uniq")
@@ -10099,7 +10862,7 @@ function generateCWiseOp(proc, typesig) {
 }
 module.exports = generateCWiseOp
 
-},{"uniq":215}],60:[function(require,module,exports){
+},{"uniq":220}],64:[function(require,module,exports){
 "use strict"
 
 // The function below is called when constructing a cwise function object, and does the following:
@@ -10187,9 +10950,9 @@ function createThunk(proc) {
 
 module.exports = createThunk
 
-},{"./compile.js":59}],61:[function(require,module,exports){
+},{"./compile.js":63}],65:[function(require,module,exports){
 module.exports = require("cwise-compiler")
-},{"cwise-compiler":58}],62:[function(require,module,exports){
+},{"cwise-compiler":62}],66:[function(require,module,exports){
 !function() {
   var d3 = {
     version: "3.5.17"
@@ -19744,7 +20507,14 @@ module.exports = require("cwise-compiler")
   });
   if (typeof define === "function" && define.amd) this.d3 = d3, define(d3); else if (typeof module === "object" && module.exports) module.exports = d3; else this.d3 = d3;
 }();
-},{}],63:[function(require,module,exports){
+},{}],67:[function(require,module,exports){
+module.exports = function () {
+    for (var i = 0; i < arguments.length; i++) {
+        if (arguments[i] !== undefined) return arguments[i];
+    }
+};
+
+},{}],68:[function(require,module,exports){
 (function (Buffer){
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
@@ -19848,7 +20618,59 @@ module.exports.denormalized = function(n) {
   return !(hi & 0x7ff00000)
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":40}],64:[function(require,module,exports){
+},{"buffer":43}],69:[function(require,module,exports){
+var abs = require('abs-svg-path')
+var normalize = require('normalize-svg-path')
+
+var methods = {
+  'M': 'moveTo',
+  'C': 'bezierCurveTo'
+}
+
+module.exports = function(context, segments) {
+  context.beginPath()
+
+  // Make path easy to reproduce.
+  normalize(abs(segments)).forEach(
+    function(segment) {
+      var command = segment[0]
+      var args = segment.slice(1)
+
+      // Convert the path command to a context method.
+      context[methods[command]].apply(context, args)
+    }
+  )
+
+  context.closePath()
+}
+
+},{"abs-svg-path":10,"normalize-svg-path":155}],70:[function(require,module,exports){
+module.exports = function(dtype) {
+  switch (dtype) {
+    case 'int8':
+      return Int8Array
+    case 'int16':
+      return Int16Array
+    case 'int32':
+      return Int32Array
+    case 'uint8':
+      return Uint8Array
+    case 'uint16':
+      return Uint16Array
+    case 'uint32':
+      return Uint32Array
+    case 'float32':
+      return Float32Array
+    case 'float64':
+      return Float64Array
+    case 'array':
+      return Array
+    case 'uint8_clamped':
+      return Uint8ClampedArray
+  }
+}
+
+},{}],71:[function(require,module,exports){
 "use strict"
 
 function dupe_array(count, value, i) {
@@ -19898,7 +20720,653 @@ function dupe(count, value) {
 }
 
 module.exports = dupe
-},{}],65:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
+'use strict';
+
+module.exports = earcut;
+
+function earcut(data, holeIndices, dim) {
+
+    dim = dim || 2;
+
+    var hasHoles = holeIndices && holeIndices.length,
+        outerLen = hasHoles ? holeIndices[0] * dim : data.length,
+        outerNode = linkedList(data, 0, outerLen, dim, true),
+        triangles = [];
+
+    if (!outerNode) return triangles;
+
+    var minX, minY, maxX, maxY, x, y, size;
+
+    if (hasHoles) outerNode = eliminateHoles(data, holeIndices, outerNode, dim);
+
+    // if the shape is not too simple, we'll use z-order curve hash later; calculate polygon bbox
+    if (data.length > 80 * dim) {
+        minX = maxX = data[0];
+        minY = maxY = data[1];
+
+        for (var i = dim; i < outerLen; i += dim) {
+            x = data[i];
+            y = data[i + 1];
+            if (x < minX) minX = x;
+            if (y < minY) minY = y;
+            if (x > maxX) maxX = x;
+            if (y > maxY) maxY = y;
+        }
+
+        // minX, minY and size are later used to transform coords into integers for z-order calculation
+        size = Math.max(maxX - minX, maxY - minY);
+    }
+
+    earcutLinked(outerNode, triangles, dim, minX, minY, size);
+
+    return triangles;
+}
+
+// create a circular doubly linked list from polygon points in the specified winding order
+function linkedList(data, start, end, dim, clockwise) {
+    var i, last;
+
+    if (clockwise === (signedArea(data, start, end, dim) > 0)) {
+        for (i = start; i < end; i += dim) last = insertNode(i, data[i], data[i + 1], last);
+    } else {
+        for (i = end - dim; i >= start; i -= dim) last = insertNode(i, data[i], data[i + 1], last);
+    }
+
+    if (last && equals(last, last.next)) {
+        removeNode(last);
+        last = last.next;
+    }
+
+    return last;
+}
+
+// eliminate colinear or duplicate points
+function filterPoints(start, end) {
+    if (!start) return start;
+    if (!end) end = start;
+
+    var p = start,
+        again;
+    do {
+        again = false;
+
+        if (!p.steiner && (equals(p, p.next) || area(p.prev, p, p.next) === 0)) {
+            removeNode(p);
+            p = end = p.prev;
+            if (p === p.next) return null;
+            again = true;
+
+        } else {
+            p = p.next;
+        }
+    } while (again || p !== end);
+
+    return end;
+}
+
+// main ear slicing loop which triangulates a polygon (given as a linked list)
+function earcutLinked(ear, triangles, dim, minX, minY, size, pass) {
+    if (!ear) return;
+
+    // interlink polygon nodes in z-order
+    if (!pass && size) indexCurve(ear, minX, minY, size);
+
+    var stop = ear,
+        prev, next;
+
+    // iterate through ears, slicing them one by one
+    while (ear.prev !== ear.next) {
+        prev = ear.prev;
+        next = ear.next;
+
+        if (size ? isEarHashed(ear, minX, minY, size) : isEar(ear)) {
+            // cut off the triangle
+            triangles.push(prev.i / dim);
+            triangles.push(ear.i / dim);
+            triangles.push(next.i / dim);
+
+            removeNode(ear);
+
+            // skipping the next vertice leads to less sliver triangles
+            ear = next.next;
+            stop = next.next;
+
+            continue;
+        }
+
+        ear = next;
+
+        // if we looped through the whole remaining polygon and can't find any more ears
+        if (ear === stop) {
+            // try filtering points and slicing again
+            if (!pass) {
+                earcutLinked(filterPoints(ear), triangles, dim, minX, minY, size, 1);
+
+            // if this didn't work, try curing all small self-intersections locally
+            } else if (pass === 1) {
+                ear = cureLocalIntersections(ear, triangles, dim);
+                earcutLinked(ear, triangles, dim, minX, minY, size, 2);
+
+            // as a last resort, try splitting the remaining polygon into two
+            } else if (pass === 2) {
+                splitEarcut(ear, triangles, dim, minX, minY, size);
+            }
+
+            break;
+        }
+    }
+}
+
+// check whether a polygon node forms a valid ear with adjacent nodes
+function isEar(ear) {
+    var a = ear.prev,
+        b = ear,
+        c = ear.next;
+
+    if (area(a, b, c) >= 0) return false; // reflex, can't be an ear
+
+    // now make sure we don't have other points inside the potential ear
+    var p = ear.next.next;
+
+    while (p !== ear.prev) {
+        if (pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+            area(p.prev, p, p.next) >= 0) return false;
+        p = p.next;
+    }
+
+    return true;
+}
+
+function isEarHashed(ear, minX, minY, size) {
+    var a = ear.prev,
+        b = ear,
+        c = ear.next;
+
+    if (area(a, b, c) >= 0) return false; // reflex, can't be an ear
+
+    // triangle bbox; min & max are calculated like this for speed
+    var minTX = a.x < b.x ? (a.x < c.x ? a.x : c.x) : (b.x < c.x ? b.x : c.x),
+        minTY = a.y < b.y ? (a.y < c.y ? a.y : c.y) : (b.y < c.y ? b.y : c.y),
+        maxTX = a.x > b.x ? (a.x > c.x ? a.x : c.x) : (b.x > c.x ? b.x : c.x),
+        maxTY = a.y > b.y ? (a.y > c.y ? a.y : c.y) : (b.y > c.y ? b.y : c.y);
+
+    // z-order range for the current triangle bbox;
+    var minZ = zOrder(minTX, minTY, minX, minY, size),
+        maxZ = zOrder(maxTX, maxTY, minX, minY, size);
+
+    // first look for points inside the triangle in increasing z-order
+    var p = ear.nextZ;
+
+    while (p && p.z <= maxZ) {
+        if (p !== ear.prev && p !== ear.next &&
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+            area(p.prev, p, p.next) >= 0) return false;
+        p = p.nextZ;
+    }
+
+    // then look for points in decreasing z-order
+    p = ear.prevZ;
+
+    while (p && p.z >= minZ) {
+        if (p !== ear.prev && p !== ear.next &&
+            pointInTriangle(a.x, a.y, b.x, b.y, c.x, c.y, p.x, p.y) &&
+            area(p.prev, p, p.next) >= 0) return false;
+        p = p.prevZ;
+    }
+
+    return true;
+}
+
+// go through all polygon nodes and cure small local self-intersections
+function cureLocalIntersections(start, triangles, dim) {
+    var p = start;
+    do {
+        var a = p.prev,
+            b = p.next.next;
+
+        if (!equals(a, b) && intersects(a, p, p.next, b) && locallyInside(a, b) && locallyInside(b, a)) {
+
+            triangles.push(a.i / dim);
+            triangles.push(p.i / dim);
+            triangles.push(b.i / dim);
+
+            // remove two nodes involved
+            removeNode(p);
+            removeNode(p.next);
+
+            p = start = b;
+        }
+        p = p.next;
+    } while (p !== start);
+
+    return p;
+}
+
+// try splitting polygon into two and triangulate them independently
+function splitEarcut(start, triangles, dim, minX, minY, size) {
+    // look for a valid diagonal that divides the polygon into two
+    var a = start;
+    do {
+        var b = a.next.next;
+        while (b !== a.prev) {
+            if (a.i !== b.i && isValidDiagonal(a, b)) {
+                // split the polygon in two by the diagonal
+                var c = splitPolygon(a, b);
+
+                // filter colinear points around the cuts
+                a = filterPoints(a, a.next);
+                c = filterPoints(c, c.next);
+
+                // run earcut on each half
+                earcutLinked(a, triangles, dim, minX, minY, size);
+                earcutLinked(c, triangles, dim, minX, minY, size);
+                return;
+            }
+            b = b.next;
+        }
+        a = a.next;
+    } while (a !== start);
+}
+
+// link every hole into the outer loop, producing a single-ring polygon without holes
+function eliminateHoles(data, holeIndices, outerNode, dim) {
+    var queue = [],
+        i, len, start, end, list;
+
+    for (i = 0, len = holeIndices.length; i < len; i++) {
+        start = holeIndices[i] * dim;
+        end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
+        list = linkedList(data, start, end, dim, false);
+        if (list === list.next) list.steiner = true;
+        queue.push(getLeftmost(list));
+    }
+
+    queue.sort(compareX);
+
+    // process holes from left to right
+    for (i = 0; i < queue.length; i++) {
+        eliminateHole(queue[i], outerNode);
+        outerNode = filterPoints(outerNode, outerNode.next);
+    }
+
+    return outerNode;
+}
+
+function compareX(a, b) {
+    return a.x - b.x;
+}
+
+// find a bridge between vertices that connects hole with an outer ring and and link it
+function eliminateHole(hole, outerNode) {
+    outerNode = findHoleBridge(hole, outerNode);
+    if (outerNode) {
+        var b = splitPolygon(outerNode, hole);
+        filterPoints(b, b.next);
+    }
+}
+
+// David Eberly's algorithm for finding a bridge between hole and outer polygon
+function findHoleBridge(hole, outerNode) {
+    var p = outerNode,
+        hx = hole.x,
+        hy = hole.y,
+        qx = -Infinity,
+        m;
+
+    // find a segment intersected by a ray from the hole's leftmost point to the left;
+    // segment's endpoint with lesser x will be potential connection point
+    do {
+        if (hy <= p.y && hy >= p.next.y) {
+            var x = p.x + (hy - p.y) * (p.next.x - p.x) / (p.next.y - p.y);
+            if (x <= hx && x > qx) {
+                qx = x;
+                if (x === hx) {
+                    if (hy === p.y) return p;
+                    if (hy === p.next.y) return p.next;
+                }
+                m = p.x < p.next.x ? p : p.next;
+            }
+        }
+        p = p.next;
+    } while (p !== outerNode);
+
+    if (!m) return null;
+
+    if (hx === qx) return m.prev; // hole touches outer segment; pick lower endpoint
+
+    // look for points inside the triangle of hole point, segment intersection and endpoint;
+    // if there are no points found, we have a valid connection;
+    // otherwise choose the point of the minimum angle with the ray as connection point
+
+    var stop = m,
+        mx = m.x,
+        my = m.y,
+        tanMin = Infinity,
+        tan;
+
+    p = m.next;
+
+    while (p !== stop) {
+        if (hx >= p.x && p.x >= mx &&
+                pointInTriangle(hy < my ? hx : qx, hy, mx, my, hy < my ? qx : hx, hy, p.x, p.y)) {
+
+            tan = Math.abs(hy - p.y) / (hx - p.x); // tangential
+
+            if ((tan < tanMin || (tan === tanMin && p.x > m.x)) && locallyInside(p, hole)) {
+                m = p;
+                tanMin = tan;
+            }
+        }
+
+        p = p.next;
+    }
+
+    return m;
+}
+
+// interlink polygon nodes in z-order
+function indexCurve(start, minX, minY, size) {
+    var p = start;
+    do {
+        if (p.z === null) p.z = zOrder(p.x, p.y, minX, minY, size);
+        p.prevZ = p.prev;
+        p.nextZ = p.next;
+        p = p.next;
+    } while (p !== start);
+
+    p.prevZ.nextZ = null;
+    p.prevZ = null;
+
+    sortLinked(p);
+}
+
+// Simon Tatham's linked list merge sort algorithm
+// http://www.chiark.greenend.org.uk/~sgtatham/algorithms/listsort.html
+function sortLinked(list) {
+    var i, p, q, e, tail, numMerges, pSize, qSize,
+        inSize = 1;
+
+    do {
+        p = list;
+        list = null;
+        tail = null;
+        numMerges = 0;
+
+        while (p) {
+            numMerges++;
+            q = p;
+            pSize = 0;
+            for (i = 0; i < inSize; i++) {
+                pSize++;
+                q = q.nextZ;
+                if (!q) break;
+            }
+
+            qSize = inSize;
+
+            while (pSize > 0 || (qSize > 0 && q)) {
+
+                if (pSize === 0) {
+                    e = q;
+                    q = q.nextZ;
+                    qSize--;
+                } else if (qSize === 0 || !q) {
+                    e = p;
+                    p = p.nextZ;
+                    pSize--;
+                } else if (p.z <= q.z) {
+                    e = p;
+                    p = p.nextZ;
+                    pSize--;
+                } else {
+                    e = q;
+                    q = q.nextZ;
+                    qSize--;
+                }
+
+                if (tail) tail.nextZ = e;
+                else list = e;
+
+                e.prevZ = tail;
+                tail = e;
+            }
+
+            p = q;
+        }
+
+        tail.nextZ = null;
+        inSize *= 2;
+
+    } while (numMerges > 1);
+
+    return list;
+}
+
+// z-order of a point given coords and size of the data bounding box
+function zOrder(x, y, minX, minY, size) {
+    // coords are transformed into non-negative 15-bit integer range
+    x = 32767 * (x - minX) / size;
+    y = 32767 * (y - minY) / size;
+
+    x = (x | (x << 8)) & 0x00FF00FF;
+    x = (x | (x << 4)) & 0x0F0F0F0F;
+    x = (x | (x << 2)) & 0x33333333;
+    x = (x | (x << 1)) & 0x55555555;
+
+    y = (y | (y << 8)) & 0x00FF00FF;
+    y = (y | (y << 4)) & 0x0F0F0F0F;
+    y = (y | (y << 2)) & 0x33333333;
+    y = (y | (y << 1)) & 0x55555555;
+
+    return x | (y << 1);
+}
+
+// find the leftmost node of a polygon ring
+function getLeftmost(start) {
+    var p = start,
+        leftmost = start;
+    do {
+        if (p.x < leftmost.x) leftmost = p;
+        p = p.next;
+    } while (p !== start);
+
+    return leftmost;
+}
+
+// check if a point lies within a convex triangle
+function pointInTriangle(ax, ay, bx, by, cx, cy, px, py) {
+    return (cx - px) * (ay - py) - (ax - px) * (cy - py) >= 0 &&
+           (ax - px) * (by - py) - (bx - px) * (ay - py) >= 0 &&
+           (bx - px) * (cy - py) - (cx - px) * (by - py) >= 0;
+}
+
+// check if a diagonal between two polygon nodes is valid (lies in polygon interior)
+function isValidDiagonal(a, b) {
+    return a.next.i !== b.i && a.prev.i !== b.i && !intersectsPolygon(a, b) &&
+           locallyInside(a, b) && locallyInside(b, a) && middleInside(a, b);
+}
+
+// signed area of a triangle
+function area(p, q, r) {
+    return (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+}
+
+// check if two points are equal
+function equals(p1, p2) {
+    return p1.x === p2.x && p1.y === p2.y;
+}
+
+// check if two segments intersect
+function intersects(p1, q1, p2, q2) {
+    if ((equals(p1, q1) && equals(p2, q2)) ||
+        (equals(p1, q2) && equals(p2, q1))) return true;
+    return area(p1, q1, p2) > 0 !== area(p1, q1, q2) > 0 &&
+           area(p2, q2, p1) > 0 !== area(p2, q2, q1) > 0;
+}
+
+// check if a polygon diagonal intersects any polygon segments
+function intersectsPolygon(a, b) {
+    var p = a;
+    do {
+        if (p.i !== a.i && p.next.i !== a.i && p.i !== b.i && p.next.i !== b.i &&
+                intersects(p, p.next, a, b)) return true;
+        p = p.next;
+    } while (p !== a);
+
+    return false;
+}
+
+// check if a polygon diagonal is locally inside the polygon
+function locallyInside(a, b) {
+    return area(a.prev, a, a.next) < 0 ?
+        area(a, b, a.next) >= 0 && area(a, a.prev, b) >= 0 :
+        area(a, b, a.prev) < 0 || area(a, a.next, b) < 0;
+}
+
+// check if the middle point of a polygon diagonal is inside the polygon
+function middleInside(a, b) {
+    var p = a,
+        inside = false,
+        px = (a.x + b.x) / 2,
+        py = (a.y + b.y) / 2;
+    do {
+        if (((p.y > py) !== (p.next.y > py)) && (px < (p.next.x - p.x) * (py - p.y) / (p.next.y - p.y) + p.x))
+            inside = !inside;
+        p = p.next;
+    } while (p !== a);
+
+    return inside;
+}
+
+// link two polygon vertices with a bridge; if the vertices belong to the same ring, it splits polygon into two;
+// if one belongs to the outer ring and another to a hole, it merges it into a single ring
+function splitPolygon(a, b) {
+    var a2 = new Node(a.i, a.x, a.y),
+        b2 = new Node(b.i, b.x, b.y),
+        an = a.next,
+        bp = b.prev;
+
+    a.next = b;
+    b.prev = a;
+
+    a2.next = an;
+    an.prev = a2;
+
+    b2.next = a2;
+    a2.prev = b2;
+
+    bp.next = b2;
+    b2.prev = bp;
+
+    return b2;
+}
+
+// create a node and optionally link it with previous one (in a circular doubly linked list)
+function insertNode(i, x, y, last) {
+    var p = new Node(i, x, y);
+
+    if (!last) {
+        p.prev = p;
+        p.next = p;
+
+    } else {
+        p.next = last.next;
+        p.prev = last;
+        last.next.prev = p;
+        last.next = p;
+    }
+    return p;
+}
+
+function removeNode(p) {
+    p.next.prev = p.prev;
+    p.prev.next = p.next;
+
+    if (p.prevZ) p.prevZ.nextZ = p.nextZ;
+    if (p.nextZ) p.nextZ.prevZ = p.prevZ;
+}
+
+function Node(i, x, y) {
+    // vertice index in coordinates array
+    this.i = i;
+
+    // vertex coordinates
+    this.x = x;
+    this.y = y;
+
+    // previous and next vertice nodes in a polygon ring
+    this.prev = null;
+    this.next = null;
+
+    // z-order curve value
+    this.z = null;
+
+    // previous and next nodes in z-order
+    this.prevZ = null;
+    this.nextZ = null;
+
+    // indicates whether this is a steiner point
+    this.steiner = false;
+}
+
+// return a percentage difference between the polygon area and its triangulation area;
+// used to verify correctness of triangulation
+earcut.deviation = function (data, holeIndices, dim, triangles) {
+    var hasHoles = holeIndices && holeIndices.length;
+    var outerLen = hasHoles ? holeIndices[0] * dim : data.length;
+
+    var polygonArea = Math.abs(signedArea(data, 0, outerLen, dim));
+    if (hasHoles) {
+        for (var i = 0, len = holeIndices.length; i < len; i++) {
+            var start = holeIndices[i] * dim;
+            var end = i < len - 1 ? holeIndices[i + 1] * dim : data.length;
+            polygonArea -= Math.abs(signedArea(data, start, end, dim));
+        }
+    }
+
+    var trianglesArea = 0;
+    for (i = 0; i < triangles.length; i += 3) {
+        var a = triangles[i] * dim;
+        var b = triangles[i + 1] * dim;
+        var c = triangles[i + 2] * dim;
+        trianglesArea += Math.abs(
+            (data[a] - data[c]) * (data[b + 1] - data[a + 1]) -
+            (data[a] - data[b]) * (data[c + 1] - data[a + 1]));
+    }
+
+    return polygonArea === 0 && trianglesArea === 0 ? 0 :
+        Math.abs((trianglesArea - polygonArea) / polygonArea);
+};
+
+function signedArea(data, start, end, dim) {
+    var sum = 0;
+    for (var i = start, j = end - dim; i < end; i += dim) {
+        sum += (data[j] - data[i]) * (data[i + 1] + data[j + 1]);
+        j = i;
+    }
+    return sum;
+}
+
+// turn a polygon in a multi-dimensional array form (e.g. as in GeoJSON) into a form Earcut accepts
+earcut.flatten = function (data) {
+    var dim = data[0][0].length,
+        result = {vertices: [], holes: [], dimensions: dim},
+        holeIndex = 0;
+
+    for (var i = 0; i < data.length; i++) {
+        for (var j = 0; j < data[i].length; j++) {
+            for (var d = 0; d < dim; d++) result.vertices.push(data[i][j][d]);
+        }
+        if (i > 0) {
+            holeIndex += data[i - 1].length;
+            result.holes.push(holeIndex);
+        }
+    }
+    return result;
+};
+
+},{}],73:[function(require,module,exports){
 "use strict"
 
 module.exports = edgeToAdjacency
@@ -19932,7 +21400,7 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":215}],66:[function(require,module,exports){
+},{"uniq":220}],74:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -21089,7 +22557,7 @@ return Promise;
 })));
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":182}],67:[function(require,module,exports){
+},{"_process":175}],75:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -21393,7 +22861,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],68:[function(require,module,exports){
+},{}],76:[function(require,module,exports){
 /**
  * inspired by is-number <https://github.com/jonschlinkert/is-number>
  * but significantly simplified and sped up by ignoring number and string constructors
@@ -21450,166 +22918,54 @@ module.exports = function(n) {
     return n - n < 1;
 };
 
-},{}],69:[function(require,module,exports){
-/**
- * @module  font-atlas-sdf
- */
+},{}],77:[function(require,module,exports){
+/*eslint new-cap:0*/
+var dtype = require('dtype')
+module.exports = flattenVertexData
+function flattenVertexData (data, output, offset) {
+  if (!data) throw new TypeError('must specify data as first parameter')
+  offset = +(offset || 0) | 0
 
-'use strict'
+  if (Array.isArray(data) && Array.isArray(data[0])) {
+    var dim = data[0].length
+    var length = data.length * dim
 
-var SDF = require('tiny-sdf')
-var optical = require('optical-properties')
+    // no output specified, create a new typed array
+    if (!output || typeof output === 'string') {
+      output = new (dtype(output || 'float32'))(length + offset)
+    }
 
-module.exports = atlas
+    var dstLength = output.length - offset
+    if (length !== dstLength) {
+      throw new Error('source length ' + length + ' (' + dim + 'x' + data.length + ')' +
+        ' does not match destination length ' + dstLength)
+    }
 
+    for (var i = 0, k = offset; i < data.length; i++) {
+      for (var j = 0; j < dim; j++) {
+        output[k++] = data[i][j]
+      }
+    }
+  } else {
+    if (!output || typeof output === 'string') {
+      // no output, create a new one
+      var Ctor = dtype(output || 'float32')
+      if (offset === 0) {
+        output = new Ctor(data)
+      } else {
+        output = new Ctor(data.length + offset)
+        output.set(data, offset)
+      }
+    } else {
+      // store output in existing array
+      output.set(data, offset)
+    }
+  }
 
-function atlas(options) {
-	options = options || {}
-
-	var canvas = options.canvas || document.createElement('canvas')
-	var family = options.family || 'sans-serif'
-	var shape = options.shape || [512, 512]
-	var step = options.step || [32, 32]
-	var size = parseFloat(options.size) || 16
-	var chars = options.chars || [32, 126]
-	var bufferSize = Math.floor((step[0] - size)/2)
-	var radius = options.radius || bufferSize*1.5
-	var sdf = new SDF(size, bufferSize, radius, 0, family)
-	var vAlign = options.align == null ? 'optical' : options.align
-	var fit = options.fit == null || options.fit == true ? .5 : options.fit
-	var i, j
-
-	if (!Array.isArray(chars)) {
-		chars = String(chars).split('')
-	}
-	else if (
-		chars.length === 2
-		&& typeof chars[0] === 'number'
-		&& typeof chars[1] === 'number'
-	) {
-		var newchars = []
-
-		for (i = chars[0], j = 0; i <= chars[1]; i++) {
-			newchars[j++] = String.fromCharCode(i)
-		}
-
-		chars = newchars
-	}
-
-	shape = shape.slice()
-	canvas.width  = shape[0]
-	canvas.height = shape[1]
-
-	var ctx = canvas.getContext('2d')
-
-	ctx.fillStyle = '#000'
-	ctx.fillRect(0, 0, canvas.width, canvas.height)
-	ctx.textBaseline = 'middle'
-
-	var w = step[0], h = step[1]
-	var x = 0
-	var y = 0
-	var ratio = size/h
-	var len = Math.min(chars.length, Math.floor(shape[0]/w) * Math.ceil(shape[1]/h))
-
-	// hack tiny-sdf to render centered
-	//FIXME: get rif of it by [possibly] PR to tiny-sdf
-	var align = sdf.ctx.textAlign
-	var buffer = sdf.buffer
-	var middle = sdf.middle
-
-	sdf.ctx.textAlign = 'center'
-	sdf.buffer = sdf.size/2
-
-	for (i = 0; i < len; i++) {
-		if (!chars[i]) continue;
-
-		var props = getProps(chars[i], family, ratio)
-		var scale = 1, diff = [0, 0]
-
-		//hack tinysdf char-draw method
-		if (fit) {
-			var fitRatio = fit
-			if (Array.isArray(fit)) {
-				fitRatio = fit[i]
-			}
-			var vert = (props.bounds[3]-props.bounds[1])*.5
-			var horiz = (props.bounds[2]-props.bounds[0])*.5
-			var maxSide = Math.max( vert , horiz )
-			var diag = Math.sqrt(vert*vert + horiz*horiz)
-			var maxDist = props.radius*.333 + maxSide*.333 + diag*.333
-
-			scale = h*fitRatio / (maxDist*h*2)
-			sdf.ctx.font = size*scale + 'px ' + family;
-		}
-		else {
-			sdf.ctx.font = size + 'px ' + family;
-		}
-
-		if (vAlign) {
-			if (vAlign === 'optical' || vAlign === true) {
-				diff = [
-					w*.5 - w*props.center[0],
-					h*.5 - h*props.center[1]
-				]
-			}
-			else {
-				diff = [
-					w*.5 - w*(props.bounds[2] + props.bounds[0])*.5,
-					h*.5 - h*(props.bounds[3] + props.bounds[1])*.5
-				]
-			}
-			sdf.middle = middle + diff[1]*scale
-		}
-
-		//calc sdf
-		var data = sdf.draw(chars[i])
-
-		// ctx.putImageData(data, x + diff[0]*scale, y + diff[1]*scale, 0, -diff[1]*scale, data.width, data.height)
-		ctx.putImageData(data, x + diff[0]*scale, y)
-
-		x += step[0]
-		if (x > shape[0] - step[0]) {
-			x = 0
-			y += step[1]
-		}
-	}
-
-	// unhack tiny-sdf
-	sdf.ctx.textAlign = align
-	sdf.buffer = buffer
-	sdf.middle = middle
-
-	return canvas
+  return output
 }
 
-var cache = {}
-function getProps(char, family, ratio) {
-	if (cache[family] && cache[family][char]) return cache[family][char]
-
-	var propsSize = 200
-	var propsFs = propsSize * ratio
-	var props = optical(char, {size: propsSize, fontSize: propsFs, fontFamily: family})
-
-	if (!cache[family]) cache[family] = {}
-
-	var relProps = {
-		center: [
-			props.center[0]/propsSize,
-			props.center[1]/propsSize
-		],
-		bounds: props.bounds.map(function (v) {
-			return v/propsSize
-		}),
-		radius: props.radius/propsSize
-	}
-
-	cache[family][char] = relProps
-
-	return relProps
-}
-
-},{"optical-properties":165,"tiny-sdf":207}],70:[function(require,module,exports){
+},{"dtype":70}],78:[function(require,module,exports){
 "use strict"
 
 module.exports = createRBTree
@@ -22606,7 +23962,7 @@ function defaultCompare(a, b) {
 function createRBTree(compare) {
   return new RedBlackTree(compare || defaultCompare, null)
 }
-},{}],71:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 // transliterated from the python snippet here:
 // http://en.wikipedia.org/wiki/Lanczos_approximation
 
@@ -22675,7 +24031,7 @@ module.exports = function gamma (z) {
 
 module.exports.log = lngamma;
 
-},{}],72:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 module.exports = getCanvasContext
 function getCanvasContext (type, opts) {
   if (typeof type !== 'string') {
@@ -22715,7 +24071,7 @@ function getCanvasContext (type, opts) {
   return (gl || null) // ensure null on fail
 }
 
-},{}],73:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -22869,7 +24225,7 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":163,"ndarray-ops":162,"typedarray-pool":213}],74:[function(require,module,exports){
+},{"ndarray":153,"ndarray-ops":152,"typedarray-pool":218}],82:[function(require,module,exports){
 module.exports = {
   0: 'NONE',
   1: 'ONE',
@@ -23169,14 +24525,14 @@ module.exports = {
   37444: 'BROWSER_DEFAULT_WEBGL'
 }
 
-},{}],75:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 var gl10 = require('./1.0/numbers')
 
 module.exports = function lookupConstant (number) {
   return gl10[number]
 }
 
-},{"./1.0/numbers":74}],76:[function(require,module,exports){
+},{"./1.0/numbers":82}],84:[function(require,module,exports){
 'use strict'
 
 module.exports = createContour2D
@@ -23599,7 +24955,7 @@ function createContour2D (plot, options) {
   return contours
 }
 
-},{"./lib/shaders":77,"binary-search-bounds":78,"cdt2d":42,"clean-pslg":49,"gl-buffer":73,"gl-shader":132,"iota-array":153,"ndarray":163,"surface-nets":205}],77:[function(require,module,exports){
+},{"./lib/shaders":85,"binary-search-bounds":86,"cdt2d":45,"clean-pslg":52,"gl-buffer":81,"gl-shader":119,"iota-array":140,"ndarray":153,"surface-nets":206}],85:[function(require,module,exports){
 'use strict'
 
 
@@ -23610,282 +24966,9 @@ module.exports = {
   fillVertex: "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 color;\n\nuniform mat3 viewTransform;\n\nvarying vec4 fragColor;\n\nvoid main() {\n  fragColor = color;\n  vec3 vPosition = viewTransform * vec3(position, 1.0);\n  gl_Position = vec4(vPosition.xy, 0, vPosition.z);\n}\n"
 }
 
-},{}],78:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],79:[function(require,module,exports){
-'use strict'
-
-var createShader = require('gl-shader')
-var createBuffer = require('gl-buffer')
-var pool = require('typedarray-pool')
-var shaders = require('./lib/shaders')
-
-module.exports = createError2D
-
-var WEIGHTS = [
-  // x-error bar
-  [1, 0, 0, 1, 0, 0],
-  [1, 0, 0, -1, 0, 0],
-  [-1, 0, 0, -1, 0, 0],
-
-  [-1, 0, 0, -1, 0, 0],
-  [-1, 0, 0, 1, 0, 0],
-  [1, 0, 0, 1, 0, 0],
-
-  // x-error right cap
-  [1, 0, -1, 0, 0, 1],
-  [1, 0, -1, 0, 0, -1],
-  [1, 0, 1, 0, 0, -1],
-
-  [1, 0, 1, 0, 0, -1],
-  [1, 0, 1, 0, 0, 1],
-  [1, 0, -1, 0, 0, 1],
-
-  // x-error left cap
-  [-1, 0, -1, 0, 0, 1],
-  [-1, 0, -1, 0, 0, -1],
-  [-1, 0, 1, 0, 0, -1],
-
-  [-1, 0, 1, 0, 0, -1],
-  [-1, 0, 1, 0, 0, 1],
-  [-1, 0, -1, 0, 0, 1],
-
-  // y-error bar
-  [0, 1, 1, 0, 0, 0],
-  [0, 1, -1, 0, 0, 0],
-  [0, -1, -1, 0, 0, 0],
-
-  [0, -1, -1, 0, 0, 0],
-  [0, 1, 1, 0, 0, 0],
-  [0, -1, 1, 0, 0, 0],
-
-  // y-error top cap
-  [0, 1, 0, -1, 1, 0],
-  [0, 1, 0, -1, -1, 0],
-  [0, 1, 0, 1, -1, 0],
-
-  [0, 1, 0, 1, 1, 0],
-  [0, 1, 0, -1, 1, 0],
-  [0, 1, 0, 1, -1, 0],
-
-  // y-error bottom cap
-  [0, -1, 0, -1, 1, 0],
-  [0, -1, 0, -1, -1, 0],
-  [0, -1, 0, 1, -1, 0],
-
-  [0, -1, 0, 1, 1, 0],
-  [0, -1, 0, -1, 1, 0],
-  [0, -1, 0, 1, -1, 0]
-]
-
-function GLError2D (plot, shader, bufferHi, bufferLo) {
-  this.plot = plot
-
-  this.shader = shader
-  this.bufferHi = bufferHi
-  this.bufferLo = bufferLo
-
-  this.bounds = [Infinity, Infinity, -Infinity, -Infinity]
-
-  this.numPoints = 0
-
-  this.color = [0, 0, 0, 1]
-}
-
-var proto = GLError2D.prototype
-
-proto.draw = (function () {
-  var SCALE_HI = new Float32Array([0, 0])
-  var SCALE_LO = new Float32Array([0, 0])
-  var TRANSLATE_HI = new Float32Array([0, 0])
-  var TRANSLATE_LO = new Float32Array([0, 0])
-
-  var PIXEL_SCALE = [1, 1]
-
-  return function () {
-    var plot = this.plot
-    var shader = this.shader
-    var bounds = this.bounds
-    var numPoints = this.numPoints
-
-    if (!numPoints) {
-      return
-    }
-
-    var gl = plot.gl
-    var dataBox = plot.dataBox
-    var viewBox = plot.viewBox
-    var pixelRatio = plot.pixelRatio
-
-    var boundX = bounds[2] - bounds[0]
-    var boundY = bounds[3] - bounds[1]
-    var dataX = dataBox[2] - dataBox[0]
-    var dataY = dataBox[3] - dataBox[1]
-
-    var scaleX = 2 * boundX / dataX
-    var scaleY = 2 * boundY / dataY
-    var translateX = (bounds[0] - dataBox[0] - 0.5 * dataX) / boundX
-    var translateY = (bounds[1] - dataBox[1] - 0.5 * dataY) / boundY
-
-    SCALE_HI[0] = scaleX
-    SCALE_HI[1] = scaleY
-    SCALE_LO[0] = scaleX - SCALE_HI[0]
-    SCALE_LO[1] = scaleY - SCALE_HI[1]
-    TRANSLATE_HI[0] = translateX
-    TRANSLATE_HI[1] = translateY
-    TRANSLATE_LO[0] = translateX - TRANSLATE_HI[0]
-    TRANSLATE_LO[1] = translateY - TRANSLATE_HI[1]
-
-    var screenX = viewBox[2] - viewBox[0]
-    var screenY = viewBox[3] - viewBox[1]
-
-    PIXEL_SCALE[0] = 2.0 * pixelRatio / screenX
-    PIXEL_SCALE[1] = 2.0 * pixelRatio / screenY
-
-    shader.bind()
-
-    shader.uniforms.scaleHi = SCALE_HI
-    shader.uniforms.scaleLo = SCALE_LO
-    shader.uniforms.translateHi = TRANSLATE_HI
-    shader.uniforms.translateLo = TRANSLATE_LO
-    shader.uniforms.pixelScale = PIXEL_SCALE
-    shader.uniforms.color = this.color
-
-    this.bufferLo.bind()
-    shader.attributes.positionLo.pointer(gl.FLOAT, false, 16, 0)
-
-    this.bufferHi.bind()
-    shader.attributes.positionHi.pointer(gl.FLOAT, false, 16, 0)
-
-    shader.attributes.pixelOffset.pointer(gl.FLOAT, false, 16, 8)
-
-    gl.drawArrays(gl.TRIANGLES, 0, numPoints * WEIGHTS.length)
-  }
-})()
-
-proto.drawPick = function (offset) { return offset }
-proto.pick = function () {
-  return null
-}
-
-proto.update = function (options) {
-  options = options || {}
-
-  var i, x, y
-
-  var positions = options.positions || []
-  var errors = options.errors || []
-
-  var lineWidth = 1
-  if ('lineWidth' in options) {
-    lineWidth = +options.lineWidth
-  }
-
-  var capSize = 5
-  if ('capSize' in options) {
-    capSize = +options.capSize
-  }
-
-  this.color = (options.color || [0, 0, 0, 1]).slice()
-
-  var bounds = this.bounds = [Infinity, Infinity, -Infinity, -Infinity]
-
-  var numPoints = this.numPoints = positions.length >> 1
-  for (i = 0; i < numPoints; ++i) {
-    x = positions[i * 2]
-    y = positions[i * 2 + 1]
-
-    bounds[0] = Math.min(x, bounds[0])
-    bounds[1] = Math.min(y, bounds[1])
-    bounds[2] = Math.max(x, bounds[2])
-    bounds[3] = Math.max(y, bounds[3])
-  }
-  if (bounds[2] === bounds[0]) {
-    bounds[2] += 1
-  }
-  if (bounds[3] === bounds[1]) {
-    bounds[3] += 1
-  }
-  var sx = 1.0 / (bounds[2] - bounds[0])
-  var sy = 1.0 / (bounds[3] - bounds[1])
-  var tx = bounds[0]
-  var ty = bounds[1]
-
-  var bufferData = pool.mallocFloat64(numPoints * WEIGHTS.length * 4)
-  var bufferDataHi = pool.mallocFloat32(numPoints * WEIGHTS.length * 4)
-  var bufferDataLo = pool.mallocFloat32(numPoints * WEIGHTS.length * 4)
-  var ptr = 0
-  for (i = 0; i < numPoints; ++i) {
-    x = positions[2 * i]
-    y = positions[2 * i + 1]
-    var ex0 = errors[4 * i]
-    var ex1 = errors[4 * i + 1]
-    var ey0 = errors[4 * i + 2]
-    var ey1 = errors[4 * i + 3]
-
-    for (var j = 0; j < WEIGHTS.length; ++j) {
-      var w = WEIGHTS[j]
-
-      var dx = w[0]
-      var dy = w[1]
-
-      if (dx < 0) {
-        dx *= ex0
-      } else if (dx > 0) {
-        dx *= ex1
-      }
-
-      if (dy < 0) {
-        dy *= ey0
-      } else if (dy > 0) {
-        dy *= ey1
-      }
-
-      bufferData[ptr++] = sx * ((x - tx) + dx)
-      bufferData[ptr++] = sy * ((y - ty) + dy)
-      bufferData[ptr++] = lineWidth * w[2] + (capSize + lineWidth) * w[4]
-      bufferData[ptr++] = lineWidth * w[3] + (capSize + lineWidth) * w[5]
-    }
-  }
-  for(i = 0; i < bufferData.length; i++) {
-    bufferDataHi[i] = bufferData[i]
-    bufferDataLo[i] = bufferData[i] - bufferDataHi[i]
-  }
-  this.bufferHi.update(bufferDataHi)
-  this.bufferLo.update(bufferDataLo)
-  pool.free(bufferData)
-}
-
-proto.dispose = function () {
-  this.plot.removeObject(this)
-  this.shader.dispose()
-  this.bufferHi.dispose()
-  this.bufferLo.dispose()
-}
-
-function createError2D (plot, options) {
-  var shader = createShader(plot.gl, shaders.vertex, shaders.fragment)
-  var bufferHi = createBuffer(plot.gl)
-  var bufferLo = createBuffer(plot.gl)
-
-  var errorBars = new GLError2D(plot, shader, bufferHi, bufferLo)
-
-  errorBars.update(options)
-
-  plot.addObject(errorBars)
-
-  return errorBars
-}
-
-},{"./lib/shaders":80,"gl-buffer":73,"gl-shader":132,"typedarray-pool":213}],80:[function(require,module,exports){
-
-
-module.exports = {
-  vertex: "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 positionHi;\nattribute vec2 positionLo;\nattribute vec2 pixelOffset;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo, pixelScale;\n\nvec2 project(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return (posHi + trHi) * scHi\n       + (posLo + trLo) * scHi\n       + (posHi + trHi) * scLo\n       + (posLo + trLo) * scLo;\n}\n\nvoid main() {\n  vec3 scrPosition = vec3(\n         project(scaleHi, translateHi, scaleLo, translateLo, positionHi, positionLo),\n         1);\n  gl_Position = vec4(\n    scrPosition.xy + scrPosition.z * pixelScale * pixelOffset,\n    0,\n    scrPosition.z);\n}\n",
-  fragment: "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}\n"
-}
-
-},{}],81:[function(require,module,exports){
+},{}],86:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"dup":50}],87:[function(require,module,exports){
 'use strict'
 
 var createTexture = require('gl-texture2d')
@@ -24352,7 +25435,7 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":140}],82:[function(require,module,exports){
+},{"gl-texture2d":127}],88:[function(require,module,exports){
 
 var sprintf = require('sprintf-js').sprintf;
 var glConstants = require('gl-constants/lookup');
@@ -24407,7 +25490,7 @@ function formatCompilerError(errLog, src, type) {
 }
 
 
-},{"add-line-numbers":10,"gl-constants/lookup":75,"glsl-shader-name":141,"sprintf-js":203}],83:[function(require,module,exports){
+},{"add-line-numbers":11,"gl-constants/lookup":83,"glsl-shader-name":128,"sprintf-js":204}],89:[function(require,module,exports){
 'use strict'
 
 module.exports = createHeatmap2D
@@ -24725,7 +25808,7 @@ function createHeatmap2D (plot, options) {
   return heatmap
 }
 
-},{"./lib/shaders":84,"binary-search-bounds":85,"gl-buffer":73,"gl-shader":132,"iota-array":153,"typedarray-pool":213}],84:[function(require,module,exports){
+},{"./lib/shaders":90,"binary-search-bounds":91,"gl-buffer":81,"gl-shader":119,"iota-array":140,"typedarray-pool":218}],90:[function(require,module,exports){
 'use strict'
 
 
@@ -24737,533 +25820,9 @@ module.exports = {
   pickVertex:   "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\nattribute vec2 weight;\n\nuniform vec2 shape;\nuniform mat3 viewTransform;\n\nvarying vec4 fragId;\nvarying vec2 vWeight;\n\nvoid main() {\n  vWeight = weight;\n\n  fragId = pickId;\n\n  vec3 vPosition = viewTransform * vec3( position + (weight-.5)/(shape-1.) , 1.0);\n  gl_Position = vec4(vPosition.xy, 0, vPosition.z);\n}\n"
 }
 
-},{}],85:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],86:[function(require,module,exports){
-
-
-exports.lineVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo, dHi, dLo;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo, screenShape;\nuniform float width;\n\nvarying vec2 direction;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return (posHi + trHi) * scHi\n       + (posLo + trLo) * scHi\n       + (posHi + trHi) * scLo\n       + (posLo + trLo) * scLo;\n}\n\n\nvec2 project_2_1(vec2 scHi, vec2 scLo, vec2 posHi, vec2 posLo) {\n  return scHi * posHi\n       + scLo * posHi\n       + scHi * posLo\n       + scLo * posLo;\n}\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  vec2 dir = project_2_1(scaleHi, scaleLo, dHi, dLo);\n  vec2 n = 0.5 * width * normalize(screenShape.yx * vec2(dir.y, -dir.x)) / screenShape.xy;\n  vec2 tangent = normalize(screenShape.xy * dir);\n  if(dir.x < 0.0 || (dir.x == 0.0 && dir.y < 0.0)) {\n    direction = -tangent;\n  } else {\n    direction = tangent;\n  }\n  gl_Position = vec4(p + n, 0.0, 1.0);\n}"
-exports.lineFragment  = "precision highp float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nuniform vec2 screenShape;\nuniform sampler2D dashPattern;\nuniform float dashLength;\n\nvarying vec2 direction;\n\nvoid main() {\n  float t = fract(dot(direction, gl_FragCoord.xy) / dashLength);\n  vec4 pcolor = color * texture2D(dashPattern, vec2(t, 0.0)).r;\n  gl_FragColor = vec4(pcolor.rgb * pcolor.a, pcolor.a);\n}"
-exports.mitreVertex   = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo;\nuniform float radius;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return (posHi + trHi) * scHi\n       + (posLo + trLo) * scHi\n       + (posHi + trHi) * scLo\n       + (posLo + trLo) * scLo;\n}\n\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  gl_Position = vec4(p, 0.0, 1.0);\n  gl_PointSize = radius;\n}"
-exports.mitreFragment = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  if(length(gl_PointCoord.xy - 0.5) > 0.25) {\n    discard;\n  }\n  gl_FragColor = vec4(color.rgb, color.a);\n}"
-exports.pickVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo, dHi;\nattribute vec4 pick0, pick1;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo, screenShape;\nuniform float width;\n\nvarying vec4 pickA, pickB;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return (posHi + trHi) * scHi\n       + (posLo + trLo) * scHi\n       + (posHi + trHi) * scLo\n       + (posLo + trLo) * scLo;\n}\n\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  vec2 n = width * normalize(screenShape.yx * vec2(dHi.y, -dHi.x)) / screenShape.xy;\n  gl_Position = vec4(p + n, 0, 1);\n  pickA = pick0;\n  pickB = pick1;\n}"
-exports.pickFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 pickOffset;\n\nvarying vec4 pickA, pickB;\n\nvoid main() {\n  vec4 fragId = vec4(pickA.xyz, 0.0);\n  if(pickB.w > pickA.w) {\n    fragId.xyz = pickB.xyz;\n  }\n\n  fragId += pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  gl_FragColor = fragId / 255.0;\n}"
-exports.fillVertex    = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aHi, aLo, dHi;\n\nuniform vec2 scaleHi, translateHi, scaleLo, translateLo, projectAxis;\nuniform float projectValue, depth;\n\n\nvec2 project_1_0(vec2 scHi, vec2 trHi, vec2 scLo, vec2 trLo, vec2 posHi, vec2 posLo) {\n  return (posHi + trHi) * scHi\n       + (posLo + trLo) * scHi\n       + (posHi + trHi) * scLo\n       + (posLo + trLo) * scLo;\n}\n\n\nvoid main() {\n  vec2 p = project_1_0(scaleHi, translateHi, scaleLo, translateLo, aHi, aLo);\n  if(dHi.y < 0.0 || (dHi.y == 0.0 && dHi.x < 0.0)) {\n    if(dot(p, projectAxis) < projectValue) {\n      p = p * (1.0 - abs(projectAxis)) + projectAxis * projectValue;\n    }\n  }\n  gl_Position = vec4(p, depth, 1);\n}"
-exports.fillFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}"
-},{}],87:[function(require,module,exports){
-'use strict'
-
-module.exports = createLinePlot
-
-var createShader = require('gl-shader')
-var createBuffer = require('gl-buffer')
-var createTexture = require('gl-texture2d')
-var ndarray = require('ndarray')
-var pool = require('typedarray-pool')
-
-var SHADERS = require('./lib/shaders')
-
-function GLLine2D(
-  plot,
-  dashPattern,
-  lineBufferHi,
-  lineBufferLo,
-  pickBuffer,
-  lineShader,
-  mitreShader,
-  fillShader,
-  pickShader) {
-
-  this.plot         = plot
-  this.dashPattern  = dashPattern
-  this.lineBufferHi = lineBufferHi
-  this.lineBufferLo = lineBufferLo
-  this.pickBuffer   = pickBuffer
-  this.lineShader   = lineShader
-  this.mitreShader  = mitreShader
-  this.fillShader   = fillShader
-  this.pickShader   = pickShader
-  this.usingDashes  = false
-
-  this.bounds     = [Infinity, Infinity, -Infinity, -Infinity]
-  this.width      = 1
-  this.color      = [0, 0, 1, 1]
-
-  //Fill to axes
-  this.fill       = [false, false, false, false]
-  this.fillColor  = [
-    [0, 0, 0, 1],
-    [0, 0, 0, 1],
-    [0, 0, 0, 1],
-    [0, 0, 0, 1]
-  ]
-
-  this.data       = null
-  this.numPoints  = 0
-  this.vertCount  = 0
-
-  this.pickOffset = 0
-}
-
-var proto = GLLine2D.prototype
-
-proto.setProjectionModel = (function() {
-
-  var pm = {
-    scaleHi: new Float32Array([0, 0]),
-    scaleLo: new Float32Array([0, 0]),
-    translateHi: new Float32Array([0, 0]),
-    translateLo: new Float32Array([0, 0]),
-    screenShape: [0, 0]
-  }
-
-  return function() {
-
-    var bounds  = this.bounds
-    var viewBox = this.plot.viewBox
-    var dataBox = this.plot.dataBox
-
-    var boundX  = bounds[2] - bounds[0]
-    var boundY  = bounds[3] - bounds[1]
-    var dataX   = dataBox[2] - dataBox[0]
-    var dataY   = dataBox[3] - dataBox[1]
-    var screenX = viewBox[2] - viewBox[0]
-    var screenY = viewBox[3] - viewBox[1]
-
-    var scaleX = 2 * boundX / dataX
-    var scaleY = 2 * boundY / dataY
-    var translateX = (bounds[0] - dataBox[0] - 0.5 * dataX) / boundX
-    var translateY = (bounds[1] - dataBox[1] - 0.5 * dataY) / boundY
-
-    pm.scaleHi[0]     = scaleX
-    pm.scaleHi[1]     = scaleY
-    pm.scaleLo[0]     = scaleX - pm.scaleHi[0]
-    pm.scaleLo[1]     = scaleY - pm.scaleHi[1]
-    pm.translateHi[0] = translateX
-    pm.translateHi[1] = translateY
-    pm.translateLo[0] = translateX - pm.translateHi[0]
-    pm.translateLo[1] = translateY - pm.translateHi[1]
-
-    pm.screenShape[0] = screenX
-    pm.screenShape[1] = screenY
-
-    return pm
-  }
-})()
-
-proto.setProjectionUniforms = function(uniforms, projectionModel) {
-  uniforms.scaleHi = projectionModel.scaleHi
-  uniforms.scaleLo = projectionModel.scaleLo
-  uniforms.translateHi = projectionModel.translateHi
-  uniforms.translateLo = projectionModel.translateLo
-  uniforms.screenShape = projectionModel.screenShape
-}
-
-proto.draw = (function() {
-
-  var PX_AXIS = [1, 0]
-  var NX_AXIS = [-1, 0]
-  var PY_AXIS = [0, 1]
-  var NY_AXIS = [0, -1]
-
-  return function() {
-    var count = this.vertCount
-
-    if(!count) {
-      return
-    }
-
-    var projectionModel = this.setProjectionModel()
-
-    var plot       = this.plot
-    var width      = this.width
-    var gl         = plot.gl
-    var pixelRatio = plot.pixelRatio
-
-    var color     = this.color
-
-    var fillAttributes = this.fillShader.attributes
-
-    this.lineBufferLo.bind()
-    fillAttributes.aLo.pointer(gl.FLOAT, false, 16, 0)
-
-    this.lineBufferHi.bind()
-
-    var fill = this.fill
-
-    if(fill[0] || fill[1] || fill[2] || fill[3]) {
-
-      var fillShader = this.fillShader
-      fillShader.bind()
-
-      var fillUniforms = fillShader.uniforms
-      this.setProjectionUniforms(fillUniforms, projectionModel)
-      fillUniforms.depth = plot.nextDepthValue()
-
-      fillAttributes.aHi.pointer(gl.FLOAT, false, 16, 0)
-      fillAttributes.dHi.pointer(gl.FLOAT, false, 16, 8)
-
-      gl.depthMask(true)
-      gl.enable(gl.DEPTH_TEST)
-
-      var fillColor = this.fillColor
-      if(fill[0]) {
-        fillUniforms.color        = fillColor[0]
-        fillUniforms.projectAxis  = NX_AXIS
-        fillUniforms.projectValue = 1
-        gl.drawArrays(gl.TRIANGLES, 0, count)
-      }
-
-      if(fill[1]) {
-        fillUniforms.color        = fillColor[1]
-        fillUniforms.projectAxis  = NY_AXIS
-        fillUniforms.projectValue = 1
-        gl.drawArrays(gl.TRIANGLES, 0, count)
-      }
-
-      if(fill[2]) {
-        fillUniforms.color        = fillColor[2]
-        fillUniforms.projectAxis  = PX_AXIS
-        fillUniforms.projectValue = 1
-        gl.drawArrays(gl.TRIANGLES, 0, count)
-      }
-
-      if(fill[3]) {
-        fillUniforms.color        = fillColor[3]
-        fillUniforms.projectAxis  = PY_AXIS
-        fillUniforms.projectValue = 1
-        gl.drawArrays(gl.TRIANGLES, 0, count)
-      }
-
-      gl.depthMask(false)
-      gl.disable(gl.DEPTH_TEST)
-    }
-
-    var shader = this.lineShader
-    shader.bind()
-
-    this.lineBufferLo.bind()
-    shader.attributes.aLo.pointer(gl.FLOAT, false, 16, 0)
-    shader.attributes.dLo.pointer(gl.FLOAT, false, 16, 8)
-
-    this.lineBufferHi.bind()
-
-    var uniforms = shader.uniforms
-    this.setProjectionUniforms(uniforms, projectionModel)
-    uniforms.color  = color
-    uniforms.width  = width * pixelRatio
-    uniforms.dashPattern = this.dashPattern.bind()
-    uniforms.dashLength = this.dashLength * pixelRatio
-
-    var attributes = shader.attributes
-    attributes.aHi.pointer(gl.FLOAT, false, 16, 0)
-    attributes.dHi.pointer(gl.FLOAT, false, 16, 8)
-
-    gl.drawArrays(gl.TRIANGLES, 0, count)
-
-    //Draw mitres
-    if(width > 2 && !this.usingDashes) {
-      var mshader = this.mitreShader
-
-      this.lineBufferLo.bind()
-      mshader.attributes.aLo.pointer(gl.FLOAT, false, 48, 0)
-
-      this.lineBufferHi.bind()
-      mshader.bind()
-
-      var muniforms = mshader.uniforms
-      this.setProjectionUniforms(muniforms, projectionModel)
-      muniforms.color  = color
-      muniforms.radius = width * pixelRatio
-
-      mshader.attributes.aHi.pointer(gl.FLOAT, false, 48, 0)
-      gl.drawArrays(gl.POINTS, 0, (count / 3) | 0)
-    }
-  }
-})()
-
-proto.drawPick = (function() {
-
-  var PICK_OFFSET = [0, 0, 0, 0]
-
-  return function(pickOffset) {
-
-    var count      = this.vertCount
-    var numPoints  = this.numPoints
-
-    this.pickOffset = pickOffset
-    if(!count) {
-      return pickOffset + numPoints
-    }
-
-    var projectionModel = this.setProjectionModel()
-
-    var plot       = this.plot
-    var width      = this.width
-    var gl         = plot.gl
-    var pixelRatio = plot.pickPixelRatio
-
-    var shader     = this.pickShader
-    var pickBuffer = this.pickBuffer
-
-    PICK_OFFSET[0] =  pickOffset         & 0xff
-    PICK_OFFSET[1] = (pickOffset >>> 8)  & 0xff
-    PICK_OFFSET[2] = (pickOffset >>> 16) & 0xff
-    PICK_OFFSET[3] =  pickOffset >>> 24
-
-    shader.bind()
-
-    var uniforms = shader.uniforms
-    this.setProjectionUniforms(uniforms, projectionModel)
-    uniforms.width       = width * pixelRatio
-    uniforms.pickOffset  = PICK_OFFSET
-
-    var attributes = shader.attributes
-
-    this.lineBufferHi.bind()
-    attributes.aHi.pointer(gl.FLOAT, false, 16, 0)
-    attributes.dHi.pointer(gl.FLOAT, false, 16, 8)
-
-    this.lineBufferLo.bind()
-    attributes.aLo.pointer(gl.FLOAT, false, 16, 0)
-
-    //attributes.dLo.pointer(gl.FLOAT, false, 16, 8)
-
-    pickBuffer.bind()
-    attributes.pick0.pointer(gl.UNSIGNED_BYTE, false, 8, 0)
-    attributes.pick1.pointer(gl.UNSIGNED_BYTE, false, 8, 4)
-
-    gl.drawArrays(gl.TRIANGLES, 0, count)
-
-    return pickOffset + numPoints
-  }
-})()
-
-proto.pick = function(x, y, value) {
-  var pickOffset = this.pickOffset
-  var pointCount = this.numPoints
-  if(value < pickOffset || value >= pickOffset + pointCount) {
-    return null
-  }
-  var pointId = value - pickOffset
-  var points = this.data
-  return {
-    object:    this,
-    pointId:   pointId,
-    dataCoord: [points[2 * pointId], points[2 * pointId + 1]]
-  }
-}
-
-function deepCopy(arr) {
-  return arr.map(function(x) {
-    return x.slice()
-  })
-}
-
-proto.update = function(options) {
-  options = options || {}
-
-  var gl = this.plot.gl
-  var i, j, ptr, ax, ay
-
-  this.color = (options.color || [0, 0, 1, 1]).slice()
-  this.width = +(options.width || 1)
-  this.fill = (options.fill || [false, false, false, false]).slice()
-  this.fillColor = deepCopy(options.fillColor || [
-      [0, 0, 0, 1],
-      [0, 0, 0, 1],
-      [0, 0, 0, 1],
-      [0, 0, 0, 1]
-    ])
-
-  var dashes = options.dashes || [1]
-  var dashLength = 0
-  for(i = 0; i < dashes.length; ++i) {
-    dashLength += dashes[i]
-  }
-  var dashData = pool.mallocUint8(dashLength)
-  ptr = 0
-  var fillColor = 255
-  for(i = 0; i < dashes.length; ++i) {
-    for(j = 0; j < dashes[i]; ++j) {
-      dashData[ptr++] = fillColor
-    }
-    fillColor ^= 255
-  }
-  this.dashPattern.dispose()
-  this.usingDashes = dashes.length > 1
-
-  this.dashPattern = createTexture(gl, ndarray(dashData, [dashLength, 1, 4], [1, 0, 0]))
-  this.dashPattern.minFilter = gl.NEAREST
-  this.dashPattern.magFilter = gl.NEAREST
-  this.dashLength = dashLength
-  pool.free(dashData)
-
-  var data = options.positions
-  this.data = data
-
-  var bounds = this.bounds
-  bounds[0] = bounds[1] = Infinity
-  bounds[2] = bounds[3] = -Infinity
-
-  var numPoints = this.numPoints = data.length >>> 1
-  if(numPoints === 0) {
-    return
-  }
-
-  for(i = 0; i < numPoints; ++i) {
-    ax = data[2 * i]
-    ay = data[2 * i + 1]
-
-    if (isNaN(ax) || isNaN(ay)) {
-      continue
-    }
-
-    bounds[0] = Math.min(bounds[0], ax)
-    bounds[1] = Math.min(bounds[1], ay)
-    bounds[2] = Math.max(bounds[2], ax)
-    bounds[3] = Math.max(bounds[3], ay)
-  }
-
-  if(bounds[0] === bounds[2]) bounds[2] += 1
-  if(bounds[3] === bounds[1]) bounds[3] += 1
-
-  //Generate line data
-  var lineData    = pool.mallocFloat64(24 * (numPoints - 1))
-  var lineDataHi  = pool.mallocFloat32(24 * (numPoints - 1))
-  var lineDataLo  = pool.mallocFloat32(24 * (numPoints - 1))
-  var pickData    = pool.mallocUint32(12 * (numPoints - 1))
-  var lineDataPtr = lineDataHi.length
-  var pickDataPtr = pickData.length
-  ptr = numPoints
-
-  var count = 0
-
-  while(ptr > 1) {
-    var id = --ptr
-    ax = data[2 * ptr]
-    ay = data[2 * ptr + 1]
-
-    var next = id - 1
-    var bx = data[2 * next]
-    var by = data[2 * next + 1]
-
-    if (isNaN(ax) || isNaN(ay) || isNaN(bx) || isNaN(by)) {
-      continue
-    }
-
-    count += 1
-
-    ax = (ax - bounds[0]) / (bounds[2] - bounds[0])
-    ay = (ay - bounds[1]) / (bounds[3] - bounds[1])
-
-    bx = (bx - bounds[0]) / (bounds[2] - bounds[0])
-    by = (by - bounds[1]) / (bounds[3] - bounds[1])
-
-    var dx = bx - ax
-    var dy = by - ay
-
-    var akey0 = id       | (1 << 24)
-    var akey1 = (id - 1)
-    var bkey0 = id
-    var bkey1 = (id - 1) | (1 << 24)
-
-    lineData[--lineDataPtr] = -dy
-    lineData[--lineDataPtr] = -dx
-    lineData[--lineDataPtr] = ay
-    lineData[--lineDataPtr] = ax
-    pickData[--pickDataPtr] = akey0
-    pickData[--pickDataPtr] = akey1
-
-    lineData[--lineDataPtr] = dy
-    lineData[--lineDataPtr] = dx
-    lineData[--lineDataPtr] = by
-    lineData[--lineDataPtr] = bx
-    pickData[--pickDataPtr] = bkey0
-    pickData[--pickDataPtr] = bkey1
-
-    lineData[--lineDataPtr] = -dy
-    lineData[--lineDataPtr] = -dx
-    lineData[--lineDataPtr] = by
-    lineData[--lineDataPtr] = bx
-    pickData[--pickDataPtr] = bkey0
-    pickData[--pickDataPtr] = bkey1
-
-    lineData[--lineDataPtr] = dy
-    lineData[--lineDataPtr] = dx
-    lineData[--lineDataPtr] = by
-    lineData[--lineDataPtr] = bx
-    pickData[--pickDataPtr] = bkey0
-    pickData[--pickDataPtr] = bkey1
-
-    lineData[--lineDataPtr] = -dy
-    lineData[--lineDataPtr] = -dx
-    lineData[--lineDataPtr] = ay
-    lineData[--lineDataPtr] = ax
-    pickData[--pickDataPtr] = akey0
-    pickData[--pickDataPtr] = akey1
-
-    lineData[--lineDataPtr] = dy
-    lineData[--lineDataPtr] = dx
-    lineData[--lineDataPtr] = ay
-    lineData[--lineDataPtr] = ax
-    pickData[--pickDataPtr] = akey0
-    pickData[--pickDataPtr] = akey1
-  }
-
-  for(i = 0; i < lineData.length; i++) {
-    lineDataHi[i] = lineData[i]
-    lineDataLo[i] = lineData[i] - lineDataHi[i]
-  }
-
-  this.vertCount = 6 * count
-  this.lineBufferHi.update(lineDataHi.subarray(lineDataPtr))
-  this.lineBufferLo.update(lineDataLo.subarray(lineDataPtr))
-  this.pickBuffer.update(pickData.subarray(pickDataPtr))
-
-  pool.free(lineData)
-  pool.free(lineDataHi)
-  pool.free(lineDataLo)
-  pool.free(pickData)
-}
-
-proto.dispose = function() {
-  this.plot.removeObject(this)
-  this.lineBufferLo.dispose()
-  this.lineBufferHi.dispose()
-  this.pickBuffer.dispose()
-  this.lineShader.dispose()
-  this.mitreShader.dispose()
-  this.fillShader.dispose()
-  this.pickShader.dispose()
-  this.dashPattern.dispose()
-}
-
-function createLinePlot(plot, options) {
-  var gl = plot.gl
-  var lineBufferHi = createBuffer(gl)
-  var lineBufferLo = createBuffer(gl)
-  var pickBuffer   = createBuffer(gl)
-  var dashPattern  = createTexture(gl, [1, 1])
-  var lineShader   = createShader(gl, SHADERS.lineVertex,  SHADERS.lineFragment)
-  var mitreShader  = createShader(gl, SHADERS.mitreVertex, SHADERS.mitreFragment)
-  var fillShader   = createShader(gl, SHADERS.fillVertex,  SHADERS.fillFragment)
-  var pickShader   = createShader(gl, SHADERS.pickVertex,  SHADERS.pickFragment)
-  var linePlot     = new GLLine2D(
-    plot,
-    dashPattern,
-    lineBufferHi,
-    lineBufferLo,
-    pickBuffer,
-    lineShader,
-    mitreShader,
-    fillShader,
-    pickShader)
-  plot.addObject(linePlot)
-  linePlot.update(options)
-  return linePlot
-}
-},{"./lib/shaders":86,"gl-buffer":73,"gl-shader":132,"gl-texture2d":140,"ndarray":163,"typedarray-pool":213}],88:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"dup":50}],92:[function(require,module,exports){
 module.exports = fromQuat;
 
 /**
@@ -25311,7 +25870,7 @@ function fromQuat(out, q) {
 
     return out;
 };
-},{}],89:[function(require,module,exports){
+},{}],93:[function(require,module,exports){
 'use strict'
 
 module.exports = createBoxes
@@ -25374,7 +25933,7 @@ function createBoxes(plot) {
   return new Boxes(plot, vbo, shader)
 }
 
-},{"./shaders":92,"gl-buffer":73,"gl-shader":95}],90:[function(require,module,exports){
+},{"./shaders":96,"gl-buffer":81,"gl-shader":99}],94:[function(require,module,exports){
 'use strict'
 
 module.exports = createGrid
@@ -25621,7 +26180,7 @@ function createGrid(plot) {
   return grid
 }
 
-},{"./shaders":92,"binary-search-bounds":94,"gl-buffer":73,"gl-shader":95}],91:[function(require,module,exports){
+},{"./shaders":96,"binary-search-bounds":98,"gl-buffer":81,"gl-shader":99}],95:[function(require,module,exports){
 'use strict'
 
 module.exports = createLines
@@ -25686,7 +26245,7 @@ function createLines(plot) {
   return lines
 }
 
-},{"./shaders":92,"gl-buffer":73,"gl-shader":95}],92:[function(require,module,exports){
+},{"./shaders":96,"gl-buffer":81,"gl-shader":99}],96:[function(require,module,exports){
 'use strict'
 
 
@@ -25704,7 +26263,7 @@ module.exports = {
   tickVert: "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale, screenOffset, tickScale;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  gl_Position = vec4(pos + tickScale*dataCoord.yz + screenOffset, 0, 1);\n}\n"
 }
 
-},{}],93:[function(require,module,exports){
+},{}],97:[function(require,module,exports){
 'use strict'
 
 module.exports = createTextElements
@@ -25982,9 +26541,9 @@ function createTextElements(plot) {
   return text
 }
 
-},{"./shaders":92,"binary-search-bounds":94,"gl-buffer":73,"gl-shader":95,"text-cache":206}],94:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],95:[function(require,module,exports){
+},{"./shaders":96,"binary-search-bounds":98,"gl-buffer":81,"gl-shader":99,"text-cache":211}],98:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"dup":50}],99:[function(require,module,exports){
 'use strict'
 
 var createUniformWrapper   = require('./lib/create-uniforms')
@@ -26250,7 +26809,7 @@ function createShader(
 
 module.exports = createShader
 
-},{"./lib/GLError":96,"./lib/create-attributes":97,"./lib/create-uniforms":98,"./lib/reflect":99,"./lib/runtime-reflect":100,"./lib/shader-cache":101}],96:[function(require,module,exports){
+},{"./lib/GLError":100,"./lib/create-attributes":101,"./lib/create-uniforms":102,"./lib/reflect":103,"./lib/runtime-reflect":104,"./lib/shader-cache":105}],100:[function(require,module,exports){
 function GLError (rawError, shortMessage, longMessage) {
     this.shortMessage = shortMessage || ''
     this.longMessage = longMessage || ''
@@ -26265,7 +26824,7 @@ GLError.prototype.name = 'GLError'
 GLError.prototype.constructor = GLError
 module.exports = GLError
 
-},{}],97:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 'use strict'
 
 module.exports = createAttributeWrapper
@@ -26530,7 +27089,7 @@ function createAttributeWrapper(
   return obj
 }
 
-},{"./GLError":96}],98:[function(require,module,exports){
+},{"./GLError":100}],102:[function(require,module,exports){
 'use strict'
 
 var coallesceUniforms = require('./reflect')
@@ -26723,7 +27282,7 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
   }
 }
 
-},{"./GLError":96,"./reflect":99}],99:[function(require,module,exports){
+},{"./GLError":100,"./reflect":103}],103:[function(require,module,exports){
 'use strict'
 
 module.exports = makeReflectTypes
@@ -26781,7 +27340,7 @@ function makeReflectTypes(uniforms, useIndex) {
   }
   return obj
 }
-},{}],100:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 'use strict'
 
 exports.uniforms    = runtimeUniforms
@@ -26861,7 +27420,7 @@ function runtimeAttributes(gl, program) {
   return result
 }
 
-},{}],101:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 'use strict'
 
 exports.shader   = getShaderReference
@@ -26999,7 +27558,7 @@ function createProgram(gl, vref, fref, attribs, locations) {
   return getCache(gl).getProgram(vref, fref, attribs, locations)
 }
 
-},{"./GLError":96,"gl-format-compiler-error":82,"weakmap-shim":220}],102:[function(require,module,exports){
+},{"./GLError":100,"gl-format-compiler-error":88,"weakmap-shim":229}],106:[function(require,module,exports){
 'use strict'
 
 module.exports = createGLPlot2D
@@ -27582,7 +28141,7 @@ function createGLPlot2D(options) {
   return plot
 }
 
-},{"./lib/box":89,"./lib/grid":90,"./lib/line":91,"./lib/text":93,"gl-select-static":131}],103:[function(require,module,exports){
+},{"./lib/box":93,"./lib/grid":94,"./lib/line":95,"./lib/text":97,"gl-select-static":118}],107:[function(require,module,exports){
 
 
 exports.pointVertex       = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform float pointCloud;\n\nhighp float rand(vec2 co) {\n  highp float a = 12.9898;\n  highp float b = 78.233;\n  highp float c = 43758.5453;\n  highp float d = dot(co.xy, vec2(a, b));\n  highp float e = mod(d, 3.14);\n  return fract(sin(e) * c);\n}\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n    // if we don't jitter the point size a bit, overall point cloud\n    // saturation 'jumps' on zooming, which is disturbing and confusing\n  gl_PointSize = pointSize * ((19.5 + rand(position)) / 20.0);\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    // get the same square surface as circle would be\n    gl_PointSize *= 0.886;\n  }\n}"
@@ -27590,21 +28149,21 @@ exports.pointFragment     = "precision mediump float;\n#define GLSLIFY 1\n\nunif
 exports.pickVertex        = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  fragId = id;\n}\n"
 exports.pickFragment      = "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0 * gl_PointCoord.xy - 1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"
 
-},{}],104:[function(require,module,exports){
-arguments[4][95][0].apply(exports,arguments)
-},{"./lib/GLError":105,"./lib/create-attributes":106,"./lib/create-uniforms":107,"./lib/reflect":108,"./lib/runtime-reflect":109,"./lib/shader-cache":110,"dup":95}],105:[function(require,module,exports){
-arguments[4][96][0].apply(exports,arguments)
-},{"dup":96}],106:[function(require,module,exports){
-arguments[4][97][0].apply(exports,arguments)
-},{"./GLError":105,"dup":97}],107:[function(require,module,exports){
-arguments[4][98][0].apply(exports,arguments)
-},{"./GLError":105,"./reflect":108,"dup":98}],108:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 arguments[4][99][0].apply(exports,arguments)
-},{"dup":99}],109:[function(require,module,exports){
+},{"./lib/GLError":109,"./lib/create-attributes":110,"./lib/create-uniforms":111,"./lib/reflect":112,"./lib/runtime-reflect":113,"./lib/shader-cache":114,"dup":99}],109:[function(require,module,exports){
 arguments[4][100][0].apply(exports,arguments)
 },{"dup":100}],110:[function(require,module,exports){
 arguments[4][101][0].apply(exports,arguments)
-},{"./GLError":105,"dup":101,"gl-format-compiler-error":82,"weakmap-shim":220}],111:[function(require,module,exports){
+},{"./GLError":109,"dup":101}],111:[function(require,module,exports){
+arguments[4][102][0].apply(exports,arguments)
+},{"./GLError":109,"./reflect":112,"dup":102}],112:[function(require,module,exports){
+arguments[4][103][0].apply(exports,arguments)
+},{"dup":103}],113:[function(require,module,exports){
+arguments[4][104][0].apply(exports,arguments)
+},{"dup":104}],114:[function(require,module,exports){
+arguments[4][105][0].apply(exports,arguments)
+},{"./GLError":109,"dup":105,"gl-format-compiler-error":88,"weakmap-shim":229}],115:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -27824,1221 +28383,7 @@ function createPointcloud2D(plot, options) {
   return result
 }
 
-},{"./lib/shader":103,"gl-buffer":73,"gl-shader":104,"typedarray-pool":213}],112:[function(require,module,exports){
-'use strict'
-
-
-
-module.exports = {
-  vertex:       "precision highp float;\n#define GLSLIFY 1\n\n\nvec4 computePosition_1_0(vec2 posHi, vec2 posLo, vec2 scHi, vec2 scLo, vec2 trHi, vec2 trLo) {\n  return vec4((posHi + trHi) * scHi\n  \t\t\t//FIXME: this thingy does not give noticeable precision gain, need test\n            + (posLo + trLo) * scHi\n            + (posHi + trHi) * scLo\n            + (posLo + trLo) * scLo\n            , 0, 1);\n}\n\n\nattribute vec2 positionHi, positionLo;\nattribute float size, border;\nattribute vec2 char, color;\n\n//this is 64-bit form of scale and translate\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo;\nuniform float pixelRatio;\nuniform vec4 viewBox;\nuniform sampler2D palette;\n\nvarying vec4 charColor, borderColor;\nvarying vec2 charId;\nvarying vec2 pointCoord;\nvarying float pointSize;\nvarying float borderWidth;\n\n\nvoid main() {\n  charColor = texture2D(palette, vec2(color.x / 255., 0));\n  borderColor = texture2D(palette, vec2(color.y / 255., 0));\n\n  gl_PointSize = size * pixelRatio;\n  pointSize = size * pixelRatio;\n\n  charId = char;\n  borderWidth = border;\n\n  gl_Position = computePosition_1_0(\n    positionHi, positionLo,\n    scaleHi, scaleLo,\n    translateHi, translateLo);\n\n  pointCoord = viewBox.xy + (viewBox.zw - viewBox.xy) * (gl_Position.xy * .5 + .5);\n}\n",
-  fragment:     "precision highp float;\n#define GLSLIFY 1\n\nuniform sampler2D chars;\nuniform vec2 charsShape;\nuniform float charsStep, pixelRatio, charOffset;\n\nvarying vec4 borderColor;\nvarying vec4 charColor;\nvarying vec2 charId;\nvarying vec2 pointCoord;\nvarying float pointSize;\nvarying float borderWidth;\n\nvoid main() {\n\tvec2 pointUV = (pointCoord - gl_FragCoord.xy + pointSize * .5) / pointSize;\n\tpointUV.x = 1. - pointUV.x;\n\tvec2 texCoord = ((charId + pointUV) * charsStep) / charsShape;\n\tfloat dist = texture2D(chars, texCoord).r;\n\n\t//max-distance alpha\n\tif (dist < 1e-2)\n\t\tdiscard;\n\n\tfloat gamma = .0045 * charsStep / pointSize;\n\n    //null-border case\n \tif (borderWidth * borderColor.a == 0.) {\n\t\tfloat charAmt = smoothstep(.748 - gamma, .748 + gamma, dist);\n\t\tgl_FragColor = vec4(charColor.rgb, charAmt*charColor.a);\n\t\treturn;\n\t}\n\n\tfloat dif = 5. * pixelRatio * borderWidth / pointSize;\n\tfloat borderLevel = .748 - dif * .5;\n\tfloat charLevel = .748 + dif * .5;\n\n\tfloat borderAmt = smoothstep(borderLevel - gamma, borderLevel + gamma, dist);\n\tfloat charAmt = smoothstep(charLevel - gamma, charLevel + gamma, dist);\n\n\tvec4 color = borderColor;\n\tcolor.a *= borderAmt;\n\n\tgl_FragColor = mix(color, charColor, charAmt);\n}\n",
-  pickVertex:   "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 positionHi, positionLo;\nattribute vec4 id;\nattribute float size;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo;\nuniform vec4 pickOffset;\nuniform float pixelRatio;\n\nvarying vec4 fragColor;\n\n\nvec4 computePosition_1_0(vec2 posHi, vec2 posLo, vec2 scHi, vec2 scLo, vec2 trHi, vec2 trLo) {\n  return vec4((posHi + trHi) * scHi\n  \t\t\t//FIXME: this thingy does not give noticeable precision gain, need test\n            + (posLo + trLo) * scHi\n            + (posHi + trHi) * scLo\n            + (posLo + trLo) * scLo\n            , 0, 1);\n}\n\n\nvoid main() {\n  vec4 fragId = id + pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  fragColor = fragId / 255.0;\n\n  gl_PointSize = size * .25 * pixelRatio;\n\n  gl_Position = computePosition_1_0(\n    positionHi, positionLo,\n    scaleHi, scaleLo,\n    translateHi, translateLo);\n}\n",
-  pickFragment: "precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = fragColor;\n}\n"
-}
-
-},{}],113:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],114:[function(require,module,exports){
-arguments[4][95][0].apply(exports,arguments)
-},{"./lib/GLError":115,"./lib/create-attributes":116,"./lib/create-uniforms":117,"./lib/reflect":118,"./lib/runtime-reflect":119,"./lib/shader-cache":120,"dup":95}],115:[function(require,module,exports){
-arguments[4][96][0].apply(exports,arguments)
-},{"dup":96}],116:[function(require,module,exports){
-arguments[4][97][0].apply(exports,arguments)
-},{"./GLError":115,"dup":97}],117:[function(require,module,exports){
-arguments[4][98][0].apply(exports,arguments)
-},{"./GLError":115,"./reflect":118,"dup":98}],118:[function(require,module,exports){
-arguments[4][99][0].apply(exports,arguments)
-},{"dup":99}],119:[function(require,module,exports){
-arguments[4][100][0].apply(exports,arguments)
-},{"dup":100}],120:[function(require,module,exports){
-arguments[4][101][0].apply(exports,arguments)
-},{"./GLError":115,"dup":101,"gl-format-compiler-error":82,"weakmap-shim":220}],121:[function(require,module,exports){
-'use strict'
-
-module.exports = sortLevels
-
-var INSERT_SORT_CUTOFF = 32
-
-function sortLevels(data_levels, data_points, data_ids, data_weights, n0) {
-  if (n0 <= 4*INSERT_SORT_CUTOFF) {
-    insertionSort(0, n0 - 1, data_levels, data_points, data_ids, data_weights)
-  } else {
-    quickSort(0, n0 - 1, data_levels, data_points, data_ids, data_weights)
-  }
-}
-
-function insertionSort(left, right, data_levels, data_points, data_ids, data_weights) {
-  for(var i=left+1; i<=right; ++i) {
-    var a_level  = data_levels[i]
-    var a_x      = data_points[2*i]
-    var a_y      = data_points[2*i+1]
-    var a_id     = data_ids[i]
-    var a_weight = data_weights[i]
-
-    var j = i
-    while(j > left) {
-      var b_level = data_levels[j-1]
-      var b_x     = data_points[2*(j-1)]
-      if(((b_level - a_level) || (a_x - b_x)) >= 0) {
-        break
-      }
-      data_levels[j]      = b_level
-      data_points[2*j]    = b_x
-      data_points[2*j+1]  = data_points[2*j-1]
-      data_ids[j]         = data_ids[j-1]
-      data_weights[j]     = data_weights[j-1]
-      j -= 1
-    }
-
-    data_levels[j]     = a_level
-    data_points[2*j]   = a_x
-    data_points[2*j+1] = a_y
-    data_ids[j]        = a_id
-    data_weights[j]    = a_weight
-  }
-}
-
-function swap(i, j, data_levels, data_points, data_ids, data_weights) {
-  var a_level = data_levels[i]
-  var a_x     = data_points[2*i]
-  var a_y     = data_points[2*i+1]
-  var a_id    = data_ids[i]
-  var a_weight = data_weights[i]
-
-  data_levels[i]     = data_levels[j]
-  data_points[2*i]   = data_points[2*j]
-  data_points[2*i+1] = data_points[2*j+1]
-  data_ids[i]        = data_ids[j]
-  data_weights[i]    = data_weights[j]
-
-  data_levels[j]     = a_level
-  data_points[2*j]   = a_x
-  data_points[2*j+1] = a_y
-  data_ids[j]        = a_id
-  data_weights[j]    = a_weight
-}
-
-function move(i, j, data_levels, data_points, data_ids, data_weights) {
-  data_levels[i]     = data_levels[j]
-  data_points[2*i]   = data_points[2*j]
-  data_points[2*i+1] = data_points[2*j+1]
-  data_ids[i]        = data_ids[j]
-  data_weights[i]    = data_weights[j]
-}
-
-function rotate(i, j, k, data_levels, data_points, data_ids, data_weights) {
-  var a_level = data_levels[i]
-  var a_x     = data_points[2*i]
-  var a_y     = data_points[2*i+1]
-  var a_id    = data_ids[i]
-  var a_weight = data_weights[i]
-
-  data_levels[i]     = data_levels[j]
-  data_points[2*i]   = data_points[2*j]
-  data_points[2*i+1] = data_points[2*j+1]
-  data_ids[i]        = data_ids[j]
-  data_weights[i]    = data_weights[j]
-
-  data_levels[j]     = data_levels[k]
-  data_points[2*j]   = data_points[2*k]
-  data_points[2*j+1] = data_points[2*k+1]
-  data_ids[j]        = data_ids[k]
-  data_weights[j]    = data_weights[k]
-
-  data_levels[k]     = a_level
-  data_points[2*k]   = a_x
-  data_points[2*k+1] = a_y
-  data_ids[k]        = a_id
-  data_weights[k]    = a_weight
-}
-
-function shufflePivot(
-  i, j,
-  a_level, a_x, a_y, a_id, a_weight,
-  data_levels, data_points, data_ids, data_weights) {
-
-  data_levels[i]     = data_levels[j]
-  data_points[2*i]   = data_points[2*j]
-  data_points[2*i+1] = data_points[2*j+1]
-  data_ids[i]        = data_ids[j]
-  data_weights[i]    = data_weights[j]
-
-  data_levels[j]     = a_level
-  data_points[2*j]   = a_x
-  data_points[2*j+1] = a_y
-  data_ids[j]        = a_id
-  data_weights[j]    = a_weight
-}
-
-function compare(i, j, data_levels, data_points, data_ids) {
-  return ((data_levels[i] - data_levels[j]) ||
-          (data_points[2*j] - data_points[2*i]) ||
-          (data_ids[i] - data_ids[j])) < 0
-}
-
-function comparePivot(i, level, x, y, id, data_levels, data_points, data_ids) {
-  return ((level - data_levels[i]) ||
-          (data_points[2*i] - x) ||
-          (id - data_ids[i])) < 0
-}
-
-function quickSort(left, right, data_levels, data_points, data_ids, data_weights) {
-  var sixth = (right - left + 1) / 6 | 0,
-      index1 = left + sixth,
-      index5 = right - sixth,
-      index3 = left + right >> 1,
-      index2 = index3 - sixth,
-      index4 = index3 + sixth,
-      el1 = index1,
-      el2 = index2,
-      el3 = index3,
-      el4 = index4,
-      el5 = index5,
-      less = left + 1,
-      great = right - 1,
-      tmp = 0
-  if(compare(el1, el2, data_levels, data_points, data_ids, data_weights)) {
-    tmp = el1
-    el1 = el2
-    el2 = tmp
-  }
-  if(compare(el4, el5, data_levels, data_points, data_ids, data_weights)) {
-    tmp = el4
-    el4 = el5
-    el5 = tmp
-  }
-  if(compare(el1, el3, data_levels, data_points, data_ids, data_weights)) {
-    tmp = el1
-    el1 = el3
-    el3 = tmp
-  }
-  if(compare(el2, el3, data_levels, data_points, data_ids, data_weights)) {
-    tmp = el2
-    el2 = el3
-    el3 = tmp
-  }
-  if(compare(el1, el4, data_levels, data_points, data_ids, data_weights)) {
-    tmp = el1
-    el1 = el4
-    el4 = tmp
-  }
-  if(compare(el3, el4, data_levels, data_points, data_ids, data_weights)) {
-    tmp = el3
-    el3 = el4
-    el4 = tmp
-  }
-  if(compare(el2, el5, data_levels, data_points, data_ids, data_weights)) {
-    tmp = el2
-    el2 = el5
-    el5 = tmp
-  }
-  if(compare(el2, el3, data_levels, data_points, data_ids, data_weights)) {
-    tmp = el2
-    el2 = el3
-    el3 = tmp
-  }
-  if(compare(el4, el5, data_levels, data_points, data_ids, data_weights)) {
-    tmp = el4
-    el4 = el5
-    el5 = tmp
-  }
-
-  var pivot1_level  = data_levels[el2]
-  var pivot1_x      = data_points[2*el2]
-  var pivot1_y      = data_points[2*el2+1]
-  var pivot1_id     = data_ids[el2]
-  var pivot1_weight = data_weights[el2]
-
-  var pivot2_level  = data_levels[el4]
-  var pivot2_x      = data_points[2*el4]
-  var pivot2_y      = data_points[2*el4+1]
-  var pivot2_id     = data_ids[el4]
-  var pivot2_weight = data_weights[el4]
-
-  var ptr0 = el1
-  var ptr2 = el3
-  var ptr4 = el5
-  var ptr5 = index1
-  var ptr6 = index3
-  var ptr7 = index5
-
-  var level_x = data_levels[ptr0]
-  var level_y = data_levels[ptr2]
-  var level_z = data_levels[ptr4]
-  data_levels[ptr5] = level_x
-  data_levels[ptr6] = level_y
-  data_levels[ptr7] = level_z
-
-  for (var i1 = 0; i1 < 2; ++i1) {
-    var x = data_points[2*ptr0+i1]
-    var y = data_points[2*ptr2+i1]
-    var z = data_points[2*ptr4+i1]
-    data_points[2*ptr5+i1] = x
-    data_points[2*ptr6+i1] = y
-    data_points[2*ptr7+i1] = z
-  }
-
-  var id_x = data_ids[ptr0]
-  var id_y = data_ids[ptr2]
-  var id_z = data_ids[ptr4]
-  data_ids[ptr5] = id_x
-  data_ids[ptr6] = id_y
-  data_ids[ptr7] = id_z
-
-  var weight_x = data_weights[ptr0]
-  var weight_y = data_weights[ptr2]
-  var weight_z = data_weights[ptr4]
-  data_weights[ptr5] = weight_x
-  data_weights[ptr6] = weight_y
-  data_weights[ptr7] = weight_z
-
-  move(index2, left,  data_levels, data_points, data_ids, data_weights)
-  move(index4, right, data_levels, data_points, data_ids, data_weights)
-  for (var k = less; k <= great; ++k) {
-    if (comparePivot(k,
-        pivot1_level, pivot1_x, pivot1_y, pivot1_id,
-        data_levels, data_points, data_ids)) {
-      if (k !== less) {
-        swap(k, less, data_levels, data_points, data_ids, data_weights)
-      }
-      ++less;
-    } else {
-      if (!comparePivot(k,
-          pivot2_level, pivot2_x, pivot2_y, pivot2_id,
-          data_levels, data_points, data_ids)) {
-        while (true) {
-          if (!comparePivot(great,
-              pivot2_level, pivot2_x, pivot2_y, pivot2_id,
-              data_levels, data_points, data_ids)) {
-            if (--great < k) {
-              break;
-            }
-            continue;
-          } else {
-            if (comparePivot(great,
-                pivot1_level, pivot1_x, pivot1_y, pivot1_id,
-                data_levels, data_points, data_ids)) {
-              rotate(k, less, great, data_levels, data_points, data_ids, data_weights)
-              ++less;
-              --great;
-            } else {
-              swap(k, great, data_levels, data_points, data_ids, data_weights)
-              --great;
-            }
-            break;
-          }
-        }
-      }
-    }
-  }
-  shufflePivot(left, less-1, pivot1_level, pivot1_x, pivot1_y, pivot1_id, pivot1_weight, data_levels, data_points, data_ids, data_weights)
-  shufflePivot(right, great+1, pivot2_level, pivot2_x, pivot2_y, pivot2_id, pivot2_weight, data_levels, data_points, data_ids, data_weights)
-  if (less - 2 - left <= INSERT_SORT_CUTOFF) {
-    insertionSort(left, less - 2, data_levels, data_points, data_ids, data_weights)
-  } else {
-    quickSort(left, less - 2, data_levels, data_points, data_ids, data_weights)
-  }
-  if (right - (great + 2) <= INSERT_SORT_CUTOFF) {
-    insertionSort(great + 2, right, data_levels, data_points, data_ids, data_weights)
-  } else {
-    quickSort(great + 2, right, data_levels, data_points, data_ids, data_weights)
-  }
-  if (great - less <= INSERT_SORT_CUTOFF) {
-    insertionSort(less, great, data_levels, data_points, data_ids, data_weights)
-  } else {
-    quickSort(less, great, data_levels, data_points, data_ids, data_weights)
-  }
-}
-
-},{}],122:[function(require,module,exports){
-'use strict'
-
-var pool = require('typedarray-pool')
-
-var sortLevels = require('./lib/sort')
-
-module.exports = snapPoints
-
-function partition(points, ids, start, end, lox, loy, hix, hiy) {
-  var mid = start
-  for(var i=start; i<end; ++i) {
-    var x  = points[2*i]
-    var y  = points[2*i+1]
-    var s  = ids[i]
-    if(lox <= x && x <= hix &&
-       loy <= y && y <= hiy) {
-      if(i === mid) {
-        mid += 1
-      } else {
-        points[2*i]     = points[2*mid]
-        points[2*i+1]   = points[2*mid+1]
-        ids[i]          = ids[mid]
-        points[2*mid]   = x
-        points[2*mid+1] = y
-        ids[mid]        = s
-        mid += 1
-      }
-    }
-  }
-  return mid
-}
-
-function SnapInterval(pixelSize, offset, count) {
-  this.pixelSize  = pixelSize
-  this.offset     = offset
-  this.count      = count
-}
-
-function snapPoints(points, ids, weights, bounds) {
-  var n    = points.length >>> 1
-  if(n < 1) {
-    return []
-  }
-
-  var lox =  Infinity, loy =  Infinity
-  var hix = -Infinity, hiy = -Infinity
-  for(var i=0; i<n; ++i) {
-    var x = points[2*i]
-    var y = points[2*i+1]
-    lox = Math.min(lox, x)
-    hix = Math.max(hix, x)
-    loy = Math.min(loy, y)
-    hiy = Math.max(hiy, y)
-    ids[i] = i
-  }
-
-  if(lox === hix) {
-    hix += 1 + Math.abs(hix)
-  }
-  if(loy === hiy) {
-    hiy += 1 + Math.abs(hix)
-  }
-
-  //Calculate diameter
-  var scaleX = 1.0 / (hix - lox)
-  var scaleY = 1.0 / (hiy - loy)
-  var diam = Math.max(hix - lox, hiy - loy)
-
-  bounds = bounds || [0,0,0,0]
-
-  bounds[0] = lox
-  bounds[1] = loy
-  bounds[2] = hix
-  bounds[3] = hiy
-
-  var levels = pool.mallocInt32(n)
-  var ptr = 0
-
-  function snapRec(x, y, diam, start, end, level) {
-    var diam_2 = diam * 0.5
-    var offset = start + 1
-    var count = end - start
-    weights[ptr] = count
-    levels[ptr++] = level
-    for(var i=0; i<2; ++i) {
-      for(var j=0; j<2; ++j) {
-        var nx = x+i*diam_2
-        var ny = y+j*diam_2
-        var nextOffset = partition(
-            points
-          , ids
-          , offset
-          , end
-          , nx, ny
-          , nx+diam_2, ny+diam_2)
-        if(nextOffset === offset) {
-          continue
-        }
-        if(nextOffset - offset >= Math.max(0.9 * count, 32)) {
-          var mid = (end + start)>>>1
-          snapRec(nx, ny, diam_2, offset, mid, level+1)
-          offset = mid
-        }
-        snapRec(nx, ny, diam_2, offset, nextOffset, level+1)
-        offset = nextOffset
-      }
-    }
-  }
-  snapRec(lox, loy, diam, 0, n, 0)
-  sortLevels(levels, points, ids, weights, n)
-
-  var lod         = []
-  var lastLevel   = 0
-  var prevOffset  = n
-  for(var ptr=n-1; ptr>=0; --ptr) {
-    points[2*ptr]   = (points[2*ptr]   - lox) * scaleX
-    points[2*ptr+1] = (points[2*ptr+1] - loy) * scaleY
-
-    var level = levels[ptr]
-    if(level === lastLevel) {
-      continue
-    }
-
-    lod.push(new SnapInterval(
-      diam * Math.pow(0.5, level),
-      ptr+1,
-      prevOffset - (ptr+1)
-    ))
-    prevOffset = ptr+1
-
-    lastLevel = level
-  }
-
-  lod.push(new SnapInterval(diam * Math.pow(0.5, level+1), 0, prevOffset))
-  pool.free(levels)
-
-  return lod
-}
-
-},{"./lib/sort":121,"typedarray-pool":213}],123:[function(require,module,exports){
-'use strict'
-
-module.exports = createFancyScatter2D
-
-var createShader = require('gl-shader')
-var createBuffer = require('gl-buffer')
-var pool = require('typedarray-pool')
-var shaders = require('./lib/shaders')
-var snapPoints = require('snap-points-2d')
-var atlas = require('font-atlas-sdf')
-var createTexture = require('gl-texture2d')
-var colorId = require('color-id')
-var ndarray = require('ndarray')
-var clamp = require('clamp')
-var search = require('binary-search-bounds')
-
-function GLScatterFancy(
-    plot,
-    shader,
-    pickShader,
-    positionBuffer,
-    sizeBuffer,
-    colorBuffer,
-    idBuffer,
-    charBuffer) {
-  this.plot           = plot
-  this.shader         = shader
-  this.pickShader     = pickShader
-
-  //buffers
-  this.positionBuffer = positionBuffer
-  this.sizeBuffer     = sizeBuffer
-  this.colorBuffer    = colorBuffer
-  this.idBuffer       = idBuffer
-  this.charBuffer      = charBuffer
-
-  this.pointCount     = 0
-  this.pickOffset     = 0
-
-  //positions data
-  this.points         = null
-
-  //lod scales
-  this.scales         = []
-  this.xCoords        = []
-
-  //font atlas texture
-  this.charCanvas     = document.createElement('canvas')
-  this.charTexture    = createTexture(this.plot.gl, this.charCanvas)
-  this.charStep       = 400
-  this.charFit        = .255
-
-  //snapping loses points sorting, so disable snapping on small number of points
-  this.snapThreshold  = 1e4
-
-  //border/char colors texture
-  this.paletteTexture   = createTexture(this.plot.gl, [256, 1])
-}
-
-var proto = GLScatterFancy.prototype
-
-var SCALE_HI = new Float32Array([0, 0])
-var SCALE_LO = new Float32Array([0, 0])
-var TRANSLATE_HI = new Float32Array([0, 0])
-var TRANSLATE_LO = new Float32Array([0, 0])
-
-var PIXEL_SCALE = [0, 0]
-
-var pixelSize, xStart, xEnd
-
-
-function calcScales() {
-  var plot       = this.plot
-
-  var viewBox    = plot.viewBox
-  var dataBox    = plot.dataBox
-  var pixelRatio = plot.pixelRatio
-
-  var dataX  = dataBox[2] - dataBox[0]
-  var dataY  = dataBox[3] - dataBox[1]
-
-  var scaleX = 2 / dataX
-  var scaleY = 2 / dataY
-  var translateX = (- dataBox[0] - 0.5 * dataX)
-  var translateY = (- dataBox[1] - 0.5 * dataY)
-
-  SCALE_HI[0] = scaleX
-  SCALE_LO[0] = scaleX - SCALE_HI[0]
-  SCALE_HI[1] = scaleY
-  SCALE_LO[1] = scaleY - SCALE_HI[1]
-
-  TRANSLATE_HI[0] = translateX
-  TRANSLATE_LO[0] = translateX - TRANSLATE_HI[0]
-  TRANSLATE_HI[1] = translateY
-  TRANSLATE_LO[1] = translateY - TRANSLATE_HI[1]
-
-  var screenX = viewBox[2] - viewBox[0]
-  var screenY = viewBox[3] - viewBox[1]
-
-  pixelSize   = Math.min(dataX / screenX, dataY / screenY)
-
-  //FIXME: why twice?
-  PIXEL_SCALE[0] = 2 * pixelRatio / screenX
-  PIXEL_SCALE[1] = 2 * pixelRatio / screenY
-
-  xStart = dataBox[0]
-  xEnd = dataBox[2]
-}
-
-var PICK_OFFSET = [0, 0, 0, 0]
-
-proto.drawPick = function(offset) {
-  var pick = offset !== undefined
-  var plot = this.plot
-  var pointCount = this.pointCount
-  var snap = pointCount > this.snapThreshold
-
-  if(!pointCount) {
-    return offset
-  }
-
-  calcScales.call(this)
-
-  var gl = plot.gl
-  var shader = pick ? this.pickShader : this.shader
-  var blend = gl.isEnabled(gl.BLEND)
-
-  shader.bind()
-
-  if(pick) {
-    this.pickOffset = offset
-
-    for (var i = 0; i < 4; ++i) {
-      PICK_OFFSET[i] = (offset >> (i * 8)) & 0xff
-    }
-
-    shader.uniforms.pickOffset = PICK_OFFSET
-
-    this.idBuffer.bind()
-    shader.attributes.id.pointer(gl.UNSIGNED_BYTE, false)
-
-  } else {
-    gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.blendColor(0,0,0,1);
-    if (!blend) gl.enable(gl.BLEND)
-
-    this.colorBuffer.bind()
-    shader.attributes.color.pointer(gl.UNSIGNED_BYTE, false)
-
-    this.charBuffer.bind()
-    shader.attributes.char.pointer(gl.UNSIGNED_BYTE, false)
-
-    shader.uniforms.chars = this.charTexture.bind(0)
-    shader.uniforms.charsShape = [this.charCanvas.width, this.charCanvas.height]
-    shader.uniforms.charsStep = this.charStep
-    shader.uniforms.palette = this.paletteTexture.bind(1)
-  }
-
-  this.sizeBuffer.bind()
-  shader.attributes.size.pointer(gl.FLOAT, false, 8, 0)
-  if (!pick) shader.attributes.border.pointer(gl.FLOAT, false, 8, 4)
-
-  this.positionBuffer.bind()
-  shader.attributes.positionHi.pointer(gl.FLOAT, false, 16, 0)
-  shader.attributes.positionLo.pointer(gl.FLOAT, false, 16, 8)
-
-  shader.uniforms.pixelRatio  = plot.pixelRatio
-  shader.uniforms.scaleHi     = SCALE_HI
-  shader.uniforms.scaleLo     = SCALE_LO
-  shader.uniforms.translateHi = TRANSLATE_HI
-  shader.uniforms.translateLo = TRANSLATE_LO
-  shader.uniforms.viewBox = plot.viewBox
-
-  var scales = this.scales
-
-  if (snap) {
-    for (var scaleNum = scales.length - 1; scaleNum >= 0; scaleNum--) {
-        var lod = scales[scaleNum]
-        if(lod.pixelSize && (lod.pixelSize < pixelSize * 1.25) && scaleNum > 1) {
-          continue
-        }
-
-        var intervalStart = lod.offset
-        var intervalEnd   = lod.count + intervalStart
-
-        var startOffset = search.ge(this.xCoords, xStart, intervalStart, intervalEnd - 1)
-        var endOffset   = search.lt(this.xCoords, xEnd, startOffset, intervalEnd - 1) + 1
-
-        if (endOffset > startOffset) {
-          gl.drawArrays(gl.POINTS, startOffset, (endOffset - startOffset))
-        }
-    }
-  }
-  else {
-    gl.drawArrays(gl.POINTS, 0, pointCount)
-  }
-
-  if (pick) return offset + pointCount
-  else {
-    if (!blend) gl.disable(gl.BLEND)
-    else {
-      gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
-    }
-  }
-
-}
-
-proto.draw = proto.drawPick
-
-proto.pick = function(x, y, value) {
-  var pickOffset = this.pickOffset
-  var pointCount = this.pointCount
-  if(value < pickOffset || value >= pickOffset + pointCount) {
-    return null
-  }
-  var pointId = value - pickOffset
-  var points  = this.points
-  return {
-    object:    this,
-    pointId:   pointId,
-    dataCoord: [points[2 * pointId], points[2 * pointId + 1]]
-  }
-}
-
-proto.update = function(options) {
-  options = options || {}
-
-  var positions     = options.positions || []
-  var colors        = options.colors       || []
-  var glyphs        = options.glyphs       || []
-  var sizes         = options.sizes        || []
-  var borderWidths  = options.borderWidths || []
-  var borderColors  = options.borderColors || []
-  var gl = this.plot.gl
-  var pointCount = this.pointCount
-  var snap = pointCount > this.snapThreshold
-
-  //update positions
-  if (options.positions != null) {
-    this.points = positions
-
-    pointCount = this.points.length / 2
-
-    snap = pointCount > this.snapThreshold
-
-    //create packed positions here
-    var packedW            = pool.mallocFloat32(2 * pointCount)
-    var packed             = pool.mallocFloat64(2 * pointCount)
-    var v_ids       = pool.mallocUint32(pointCount)
-    var v_position  = pool.mallocFloat32(4 * pointCount)
-
-    packed.set(this.points)
-
-    if (snap) {
-      if (this.i2idx) pool.free(this.i2idx)
-      this.i2idx = pool.mallocInt32(pointCount)
-      this.scales = snapPoints(packed, this.i2idx, packedW)
-    }
-
-    this.pointCount = pointCount
-
-
-    for(var i = 0; i < pointCount; ++i) {
-      var id = snap ? this.i2idx[i] : i
-
-      v_ids[i] = id
-
-      //collect buffers data
-      var x = positions[2 * id]
-      var y = positions[2 * id + 1]
-
-      //write hi- and lo- position parts
-      v_position[4 * i]      = x
-      v_position[4 * i + 1]  = y
-      v_position[4 * i + 2]  = x - v_position[4 * i]
-      v_position[4 * i + 3]  = y - v_position[4 * i + 1]
-
-      this.xCoords[i] = x
-    }
-
-    this.idBuffer.update(v_ids)
-    this.positionBuffer.update(v_position)
-    pool.free(v_position)
-    pool.free(v_ids)
-    pool.free(packed)
-    pool.free(packedW)
-  }
-
-  var v_sizeWidth = pool.mallocFloat32(2 * pointCount)
-  var v_color     = pool.mallocUint8(2 * pointCount)
-  var v_chars     = pool.mallocUint8(2 * pointCount)
-
-  //aggregate colors
-  var paletteIds = {}, colorIds = [], paletteColors = [], bColorIds = []
-  for (var i = 0, l = pointCount, k = 0; i < l; ++i) {
-    var channels = [colors[4 * i] * 255, colors[4 * i + 1] * 255, colors[4 * i + 2] * 255, colors[4 * i + 3] * 255]
-    var cId = colorId(channels, false)
-    if (paletteIds[cId] == null) {
-      paletteIds[cId] = k++
-      paletteColors.push(channels[0])
-      paletteColors.push(channels[1])
-      paletteColors.push(channels[2])
-      paletteColors.push(channels[3])
-    }
-    colorIds.push(cId)
-
-    if (borderColors && borderColors.length) {
-      channels = [borderColors[4 * i] * 255, borderColors[4 * i + 1] * 255, borderColors[4 * i + 2] * 255, borderColors[4 * i + 3] * 255]
-      cId = colorId(channels, false)
-      if (paletteIds[cId] == null) {
-        paletteIds[cId] = k++
-        paletteColors.push(channels[0])
-        paletteColors.push(channels[1])
-        paletteColors.push(channels[2])
-        paletteColors.push(channels[3])
-      }
-      bColorIds.push(cId)
-    }
-  }
-
-  //aggregate glyphs
-  var glyphChars = {}
-  for (var i = 0, l = pointCount, k = 0; i < l; i++) {
-    var char = glyphs[i]
-    if (glyphChars[char] == null) {
-      glyphChars[char] = k++
-    }
-  }
-
-  //generate font atlas
-  var maxSize = 0
-  for (var i = 0, l = sizes.length; i < l; ++i) {
-    if (sizes[i] > maxSize) maxSize = sizes[i]
-  }
-  var oldStep = this.charStep
-  this.charStep = clamp(Math.ceil(maxSize*4), 128, 768)
-
-  var chars = Object.keys(glyphChars)
-  var step = this.charStep
-  var charSize = Math.floor(step / 2)
-  var maxW = gl.getParameter(gl.MAX_TEXTURE_SIZE)
-  var maxChars = (maxW / step) * (maxW / step)
-  var atlasW = Math.min(maxW, step*chars.length)
-  var atlasH = Math.min(maxW, step*Math.ceil(step*chars.length/maxW))
-  var cols = Math.floor(atlasW / step)
-  if (chars.length > maxChars) {
-    console.warn('gl-scatter2d-fancy: number of characters is more than maximum texture size. Try reducing it.')
-  }
-
-  //do not overupdate atlas
-  if (!this.chars || (this.chars+'' !== chars+'') || this.charStep != oldStep) {
-    this.charCanvas = atlas({
-      canvas: this.charCanvas,
-      family: 'sans-serif',
-      size: charSize,
-      shape: [atlasW, atlasH],
-      step: [step, step],
-      chars: chars,
-      align: true,
-      fit: this.charFit
-    })
-    this.chars = chars
-  }
-
-  for(var i = 0; i < pointCount; ++i) {
-    var id = snap ? this.i2idx[i] : i
-
-    var s = sizes[id]
-    var w = borderWidths[id]
-
-    //size is doubled bc character SDF is twice less than character step
-    v_sizeWidth[2 * i]     = s*2
-    v_sizeWidth[2 * i + 1] = w
-
-    //color/bufferColor indexes
-    var cId = colorIds[id]
-    var pcId = paletteIds[cId]
-    v_color[2 * i] = pcId
-    var bcId = bColorIds[id]
-    var pbcId = paletteIds[bcId]
-    v_color[2 * i + 1] = pbcId
-
-    //char indexes
-    var char = glyphs[id]
-    var charId = glyphChars[char]
-    v_chars[2 * i + 1] = Math.floor(charId / cols)
-    v_chars[2 * i] = charId % cols
-  }
-
-  //fill buffes
-  this.sizeBuffer.update(v_sizeWidth)
-  this.colorBuffer.update(v_color)
-  this.charBuffer.update(v_chars)
-
-  //update char/color textures
-  this.charTexture.shape = [this.charCanvas.width, this.charCanvas.height]
-  if (this.charCanvas && this.charCanvas.width) {
-    this.charTexture.setPixels(this.charCanvas)
-  }
-  this.paletteTexture.setPixels(ndarray(paletteColors.slice(0, 256*4), [256, 1, 4]))
-
-  pool.free(v_sizeWidth)
-  pool.free(v_color)
-  pool.free(v_chars)
-}
-
-proto.dispose = function() {
-  this.shader.dispose()
-  this.pickShader.dispose()
-  this.positionBuffer.dispose()
-  this.sizeBuffer.dispose()
-  this.colorBuffer.dispose()
-  this.idBuffer.dispose()
-  this.charBuffer.dispose()
-  this.plot.removeObject(this)
-}
-
-function createFancyScatter2D(plot, options) {
-  var gl = plot.gl
-
-  var shader     = createShader(gl, shaders.vertex,     shaders.fragment)
-  var pickShader = createShader(gl, shaders.pickVertex, shaders.pickFragment)
-
-  var positionBuffer   = createBuffer(gl)
-  var sizeBuffer       = createBuffer(gl)
-  var colorBuffer      = createBuffer(gl)
-  var idBuffer         = createBuffer(gl)
-  var charBuffer       = createBuffer(gl)
-
-  var scatter = new GLScatterFancy(
-    plot,
-    shader,
-    pickShader,
-    positionBuffer,
-    sizeBuffer,
-    colorBuffer,
-    idBuffer,
-    charBuffer)
-
-  scatter.update(options)
-
-  plot.addObject(scatter)
-
-  return scatter
-}
-
-},{"./lib/shaders":112,"binary-search-bounds":113,"clamp":48,"color-id":51,"font-atlas-sdf":69,"gl-buffer":73,"gl-shader":114,"gl-texture2d":140,"ndarray":163,"snap-points-2d":122,"typedarray-pool":213}],124:[function(require,module,exports){
-
-
-exports.pointVertex       = "precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 positionHi, positionLo;\nattribute float weight;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo;\nuniform float pointSize, useWeight;\n\nvarying float fragWeight;\n\n\nvec4 pfx_1_0(vec2 scaleHi, vec2 scaleLo, vec2 translateHi, vec2 translateLo, vec2 positionHi, vec2 positionLo) {\n  return vec4((positionHi + translateHi) * scaleHi\n            + (positionLo + translateLo) * scaleHi\n            + (positionHi + translateHi) * scaleLo\n            + (positionLo + translateLo) * scaleLo, 0.0, 1.0);\n}\n\nvoid main() {\n  gl_Position = pfx_1_0(scaleHi, scaleLo, translateHi, translateLo, positionHi, positionLo);\n  gl_PointSize = pointSize;\n  fragWeight = mix(1.0, weight, useWeight);\n}"
-exports.pointFragment     = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color, borderColor;\nuniform float centerFraction;\n\nvarying float fragWeight;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float radius = length(2.0*gl_PointCoord.xy-1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  vec4 baseColor = mix(borderColor, color, smoothStep(radius, centerFraction));\n  float alpha = 1.0 - pow(1.0 - baseColor.a, fragWeight);\n  gl_FragColor = vec4(baseColor.rgb * alpha, alpha);\n}\n"
-exports.pickVertex        = "precision highp float;\n#define GLSLIFY 1\n\nvec4 pfx_1_0(vec2 scaleHi, vec2 scaleLo, vec2 translateHi, vec2 translateLo, vec2 positionHi, vec2 positionLo) {\n  return vec4((positionHi + translateHi) * scaleHi\n            + (positionLo + translateLo) * scaleHi\n            + (positionHi + translateHi) * scaleLo\n            + (positionLo + translateLo) * scaleLo, 0.0, 1.0);\n}\n\nattribute vec2 positionHi, positionLo;\nattribute vec4 pickId;\n\nuniform vec2 scaleHi, scaleLo, translateHi, translateLo;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  gl_Position = pfx_1_0(scaleHi, scaleLo, translateHi, translateLo, positionHi, positionLo);\n  gl_PointSize = pointSize;\n  fragId = id;\n}"
-exports.pickFragment      = "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0 * gl_PointCoord.xy - 1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}"
-},{}],125:[function(require,module,exports){
-arguments[4][47][0].apply(exports,arguments)
-},{"dup":47}],126:[function(require,module,exports){
-arguments[4][121][0].apply(exports,arguments)
-},{"dup":121}],127:[function(require,module,exports){
-arguments[4][122][0].apply(exports,arguments)
-},{"./lib/sort":126,"dup":122,"typedarray-pool":213}],128:[function(require,module,exports){
-'use strict'
-
-var createShader = require('gl-shader')
-var createBuffer = require('gl-buffer')
-var search = require('binary-search-bounds')
-var snapPoints = require('snap-points-2d')
-var pool = require('typedarray-pool')
-var SHADERS = require('./lib/shader')
-var normalize = require('array-normalize')
-var getBounds = require('array-bounds')
-
-module.exports = createScatter2D
-
-function Scatter2D(plot, positionBufferHi, positionBufferLo, pickBuffer, weightBuffer, shader, pickShader) {
-  this.plot             = plot
-  this.positionBufferHi = positionBufferHi
-  this.positionBufferLo = positionBufferLo
-  this.pickBuffer       = pickBuffer
-  this.weightBuffer     = weightBuffer
-  this.shader           = shader
-  this.pickShader       = pickShader
-  this.scales           = []
-  this.size             = 12.0
-  this.borderSize       = 1.0
-  this.pointCount       = 0
-  this.color            = [1, 0, 0, 1]
-  this.borderColor      = [0, 0, 0, 1]
-  this.bounds           = [Infinity, Infinity, -Infinity, -Infinity]
-  this.pickOffset       = 0
-  this.points           = null
-  this.xCoords          = null
-  this.snapPoints       = true
-}
-
-var proto = Scatter2D.prototype
-var scaleHi = new Float32Array(2)
-var scaleLo = new Float32Array(2)
-var translateHi = new Float32Array(2)
-var translateLo = new Float32Array(2)
-var PICK_VEC4 = [0, 0, 0, 0]
-
-proto.dispose = function() {
-  this.shader.dispose()
-  this.pickShader.dispose()
-  this.positionBufferHi.dispose()
-  this.positionBufferLo.dispose()
-  this.pickBuffer.dispose()
-  if(this.xCoords) pool.free(this.xCoords)
-  this.plot.removeObject(this)
-}
-
-proto.update = function(options) {
-  options = options || {}
-
-  function dflt(opt, value) {
-    return opt in options ? options[opt] : value
-  }
-
-  this.size         = dflt('size', 12)
-  this.color        = dflt('color', [1, 0, 0, 1]).slice()
-  this.borderSize   = dflt('borderSize', 1)
-  this.borderColor  = dflt('borderColor', [0, 0, 0, 1]).slice()
-  this.snapPoints   = dflt('snapPoints', true)
-
-  //do not recalc points if there is no positions
-  if (options.positions != null) {
-    if(this.xCoords) pool.free(this.xCoords)
-
-    this.points             = options.positions
-    var pointCount          = this.points.length >>> 1
-
-    var packedId = pool.mallocInt32(pointCount)
-    var packedW = pool.mallocFloat32(pointCount)
-    var packed = pool.mallocFloat64(2 * pointCount)
-    packed.set(this.points)
-
-    if (this.snapPoints) {
-      this.scales = snapPoints(packed, packedId, packedW, this.bounds)
-    }
-    else {
-      //get bounds
-      this.bounds = getBounds(packed, 2)
-
-      // rescale packed to unit box
-      normalize(packed, 2, this.bounds)
-
-      // generate fake ids
-      for (var i = 0; i < pointCount; i++) {
-        packedId[i] = i
-        packedW[i] = 1
-      }
-    }
-
-    var xCoords             = pool.mallocFloat64(pointCount)
-    var packedHi            = pool.mallocFloat32(2 * pointCount)
-    var packedLo            = pool.mallocFloat32(2 * pointCount)
-    packedHi.set(packed)
-    for(var i = 0, j = 0; i < pointCount; i++, j += 2) {
-      packedLo[j] = packed[j] - packedHi[j]
-      packedLo[j + 1] = packed[j + 1] - packedHi[j + 1]
-      xCoords[i] = packed[j]
-    }
-    this.positionBufferHi.update(packedHi)
-    this.positionBufferLo.update(packedLo)
-    this.pickBuffer.update(packedId)
-    this.weightBuffer.update(packedW)
-
-    pool.free(packedHi)
-    pool.free(packedLo)
-    pool.free(packedW)
-    pool.free(packed)
-    pool.free(packedId)
-
-    this.xCoords = xCoords
-    this.pointCount = pointCount
-    this.pickOffset = 0
-  }
-}
-
-proto.draw = function(pickOffset) {
-  var pick = pickOffset !== void(0)
-
-  var plot             = this.plot
-  var shader           = pick ? this.pickShader : this.shader
-  var scales           = this.scales
-  var positionBufferHi = this.positionBufferHi
-  var positionBufferLo = this.positionBufferLo
-  var pickBuffer       = this.pickBuffer
-  var bounds           = this.bounds
-  var size             = this.size
-  var borderSize       = this.borderSize
-  var gl               = plot.gl
-  var pixelRatio       = pick ? plot.pickPixelRatio : plot.pixelRatio
-  var viewBox          = plot.viewBox
-  var dataBox          = plot.dataBox
-
-  if(this.pointCount === 0)
-    return pickOffset
-
-  var boundX  = bounds[2] - bounds[0]
-  var boundY  = bounds[3] - bounds[1]
-  var dataX   = dataBox[2] - dataBox[0]
-  var dataY   = dataBox[3] - dataBox[1]
-  var screenX = (viewBox[2] - viewBox[0]) * pixelRatio / plot.pixelRatio
-  var screenY = (viewBox[3] - viewBox[1]) * pixelRatio / plot.pixelRatio
-
-  var pixelSize = this.pixelSize = Math.min(dataX / screenX, dataY / screenY)
-
-  var scaleX = 2 * boundX / dataX
-  var scaleY = 2 * boundY / dataY
-
-  scaleHi[0] = scaleX
-  scaleHi[1] = scaleY
-
-  scaleLo[0] = scaleX - scaleHi[0]
-  scaleLo[1] = scaleY - scaleHi[1]
-
-  var translateX = (bounds[0] - dataBox[0] - 0.5 * dataX) / boundX
-  var translateY = (bounds[1] - dataBox[1] - 0.5 * dataY) / boundY
-
-  translateHi[0] = translateX
-  translateHi[1] = translateY
-
-  translateLo[0] = translateX - translateHi[0]
-  translateLo[1] = translateY - translateHi[1]
-
-  shader.bind()
-  shader.uniforms.scaleHi     = scaleHi
-  shader.uniforms.scaleLo     = scaleLo
-  shader.uniforms.translateHi = translateHi
-  shader.uniforms.translateLo = translateLo
-  shader.uniforms.color       = this.color
-  shader.uniforms.borderColor = this.borderColor
-  shader.uniforms.pointSize   = pixelRatio * (size + borderSize)
-  shader.uniforms.centerFraction = this.borderSize === 0 ? 2 : size / (size + borderSize + 1.25)
-
-  positionBufferHi.bind()
-  shader.attributes.positionHi.pointer()
-
-  positionBufferLo.bind()
-  shader.attributes.positionLo.pointer()
-
-  if(pick) {
-    this.pickOffset = pickOffset
-    PICK_VEC4[0] = ( pickOffset        & 0xff)
-    PICK_VEC4[1] = ((pickOffset >> 8)  & 0xff)
-    PICK_VEC4[2] = ((pickOffset >> 16) & 0xff)
-    PICK_VEC4[3] = ((pickOffset >> 24) & 0xff)
-    shader.uniforms.pickOffset = PICK_VEC4
-
-    pickBuffer.bind()
-    shader.attributes.pickId.pointer(gl.UNSIGNED_BYTE)
-
-  } else {
-
-    shader.uniforms.useWeight = 1
-    this.weightBuffer.bind()
-    shader.attributes.weight.pointer()
-
-  }
-
-
-  var firstLevel = true
-
-  if (this.snapPoints) {
-    for(var scaleNum = scales.length - 1; scaleNum >= 0; scaleNum--) {
-      var lod = scales[scaleNum]
-      if(lod.pixelSize < pixelSize && scaleNum > 1)
-        continue
-
-      var range = this.getVisibleRange(lod)
-      var startOffset = range[0], endOffset = range[1]
-
-      if(endOffset > startOffset)
-        gl.drawArrays(gl.POINTS, startOffset, endOffset - startOffset)
-
-      if(!pick && firstLevel) {
-        firstLevel = false
-        shader.uniforms.useWeight = 0
-      }
-    }
-  }
-  else {
-    gl.drawArrays(gl.POINTS, 0, this.pointCount)
-  }
-
-  return pickOffset + this.pointCount
-}
-
-proto.getVisibleRange = function (lod) {
-  var dataBox = this.plot.dataBox,
-      bounds = this.bounds,
-      pixelSize = this.pixelSize,
-      size = this.size,
-      pixelRatio = this.plot.pixelRatio,
-      boundX  = bounds[2] - bounds[0],
-      boundY  = bounds[3] - bounds[1]
-
-  if (!lod) {
-    for(var scaleNum = this.scales.length - 1, lod; scaleNum >= 0; scaleNum--) {
-      lod = this.scales[scaleNum];
-      if(!(lod.pixelSize < pixelSize && scaleNum > 1)) break;
-    }
-  }
-
-  var xCoords = this.xCoords
-  var xStart = (dataBox[0] - bounds[0] - pixelSize * size * pixelRatio) / boundX
-  var xEnd   = (dataBox[2] - bounds[0] + pixelSize * size * pixelRatio) / boundX
-
-  var intervalStart = lod.offset
-  var intervalEnd   = lod.count + intervalStart
-
-  var startOffset = search.ge(xCoords, xStart, intervalStart, intervalEnd - 1)
-  var endOffset   = search.lt(xCoords, xEnd, startOffset, intervalEnd - 1) + 1
-
-  return [startOffset, endOffset]
-}
-
-proto.drawPick = proto.draw
-
-proto.pick = function(x, y, value) {
-  var pointId = value - this.pickOffset
-  return pointId < 0 || pointId >= this.pointCount
-    ? null : {
-    object:  this,
-    pointId: pointId,
-    dataCoord: [ this.points[2 * pointId], this.points[2 * pointId + 1] ]
-  }
-}
-
-function createScatter2D(plot, options) {
-  var gl = plot.gl
-  var positionBufferHi = createBuffer(gl)
-  var positionBufferLo = createBuffer(gl)
-  var pickBuffer = createBuffer(gl)
-  var weightBuffer = createBuffer(gl)
-  var shader = createShader(gl, SHADERS.pointVertex, SHADERS.pointFragment)
-  var pickShader = createShader(gl, SHADERS.pickVertex, SHADERS.pickFragment)
-
-  var result = new Scatter2D(plot, positionBufferHi, positionBufferLo, pickBuffer, weightBuffer, shader, pickShader)
-  result.update(options)
-
-  plot.addObject(result) // register with plot
-
-  return result
-}
-
-},{"./lib/shader":124,"array-bounds":11,"array-normalize":12,"binary-search-bounds":125,"gl-buffer":73,"gl-shader":132,"snap-points-2d":127,"typedarray-pool":213}],129:[function(require,module,exports){
+},{"./lib/shader":107,"gl-buffer":81,"gl-shader":108,"typedarray-pool":218}],116:[function(require,module,exports){
 'use strict'
 
 
@@ -29046,7 +28391,7 @@ function createScatter2D(plot, options) {
 exports.boxVertex = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"
 exports.boxFragment = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"
 
-},{}],130:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -29172,7 +28517,7 @@ function createSelectBox(plot, options) {
   return selectBox
 }
 
-},{"./lib/shaders":129,"gl-buffer":73,"gl-shader":132}],131:[function(require,module,exports){
+},{"./lib/shaders":116,"gl-buffer":81,"gl-shader":119}],118:[function(require,module,exports){
 'use strict'
 
 module.exports = createSelectBuffer
@@ -29327,7 +28672,7 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":31,"cwise/lib/wrapper":61,"gl-fbo":81,"ndarray":163,"typedarray-pool":213}],132:[function(require,module,exports){
+},{"bit-twiddle":33,"cwise/lib/wrapper":65,"gl-fbo":87,"ndarray":153,"typedarray-pool":218}],119:[function(require,module,exports){
 'use strict'
 
 var createUniformWrapper   = require('./lib/create-uniforms')
@@ -29563,19 +28908,19 @@ function createShader(
 
 module.exports = createShader
 
-},{"./lib/GLError":133,"./lib/create-attributes":134,"./lib/create-uniforms":135,"./lib/reflect":136,"./lib/runtime-reflect":137,"./lib/shader-cache":138}],133:[function(require,module,exports){
-arguments[4][96][0].apply(exports,arguments)
-},{"dup":96}],134:[function(require,module,exports){
-arguments[4][97][0].apply(exports,arguments)
-},{"./GLError":133,"dup":97}],135:[function(require,module,exports){
-arguments[4][98][0].apply(exports,arguments)
-},{"./GLError":133,"./reflect":136,"dup":98}],136:[function(require,module,exports){
-arguments[4][99][0].apply(exports,arguments)
-},{"dup":99}],137:[function(require,module,exports){
+},{"./lib/GLError":120,"./lib/create-attributes":121,"./lib/create-uniforms":122,"./lib/reflect":123,"./lib/runtime-reflect":124,"./lib/shader-cache":125}],120:[function(require,module,exports){
 arguments[4][100][0].apply(exports,arguments)
-},{"dup":100}],138:[function(require,module,exports){
+},{"dup":100}],121:[function(require,module,exports){
 arguments[4][101][0].apply(exports,arguments)
-},{"./GLError":133,"dup":101,"gl-format-compiler-error":82,"weakmap-shim":220}],139:[function(require,module,exports){
+},{"./GLError":120,"dup":101}],122:[function(require,module,exports){
+arguments[4][102][0].apply(exports,arguments)
+},{"./GLError":120,"./reflect":123,"dup":102}],123:[function(require,module,exports){
+arguments[4][103][0].apply(exports,arguments)
+},{"dup":103}],124:[function(require,module,exports){
+arguments[4][104][0].apply(exports,arguments)
+},{"dup":104}],125:[function(require,module,exports){
+arguments[4][105][0].apply(exports,arguments)
+},{"./GLError":120,"dup":105,"gl-format-compiler-error":88,"weakmap-shim":229}],126:[function(require,module,exports){
 'use strict'
 
 module.exports = createSpikes2D
@@ -29663,7 +29008,7 @@ function createSpikes2D(plot, options) {
   return spikes
 }
 
-},{}],140:[function(require,module,exports){
+},{}],127:[function(require,module,exports){
 'use strict'
 
 var ndarray = require('ndarray')
@@ -30226,7 +29571,7 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":163,"ndarray-ops":162,"typedarray-pool":213}],141:[function(require,module,exports){
+},{"ndarray":153,"ndarray-ops":152,"typedarray-pool":218}],128:[function(require,module,exports){
 var tokenize = require('glsl-tokenizer')
 var atob     = require('atob-lite')
 
@@ -30251,7 +29596,7 @@ function getName(src) {
   }
 }
 
-},{"atob-lite":13,"glsl-tokenizer":148}],142:[function(require,module,exports){
+},{"atob-lite":15,"glsl-tokenizer":135}],129:[function(require,module,exports){
 module.exports = tokenize
 
 var literals100 = require('./lib/literals')
@@ -30615,7 +29960,7 @@ function tokenize(opt) {
   }
 }
 
-},{"./lib/builtins":144,"./lib/builtins-300es":143,"./lib/literals":146,"./lib/literals-300es":145,"./lib/operators":147}],143:[function(require,module,exports){
+},{"./lib/builtins":131,"./lib/builtins-300es":130,"./lib/literals":133,"./lib/literals-300es":132,"./lib/operators":134}],130:[function(require,module,exports){
 // 300es builtins/reserved words that were previously valid in v100
 var v100 = require('./builtins')
 
@@ -30686,7 +30031,7 @@ module.exports = v100.concat([
   , 'textureProjGradOffset'
 ])
 
-},{"./builtins":144}],144:[function(require,module,exports){
+},{"./builtins":131}],131:[function(require,module,exports){
 module.exports = [
   // Keep this list sorted
   'abs'
@@ -30838,7 +30183,7 @@ module.exports = [
   , 'textureCubeGradEXT'
 ]
 
-},{}],145:[function(require,module,exports){
+},{}],132:[function(require,module,exports){
 var v100 = require('./literals')
 
 module.exports = v100.slice().concat([
@@ -30928,7 +30273,7 @@ module.exports = v100.slice().concat([
   , 'usampler2DMSArray'
 ])
 
-},{"./literals":146}],146:[function(require,module,exports){
+},{"./literals":133}],133:[function(require,module,exports){
 module.exports = [
   // current
     'precision'
@@ -31023,7 +30368,7 @@ module.exports = [
   , 'using'
 ]
 
-},{}],147:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 module.exports = [
     '<<='
   , '>>='
@@ -31072,7 +30417,7 @@ module.exports = [
   , '}'
 ]
 
-},{}],148:[function(require,module,exports){
+},{}],135:[function(require,module,exports){
 var tokenize = require('./index')
 
 module.exports = tokenizeString
@@ -31087,7 +30432,7 @@ function tokenizeString(str, opt) {
   return tokens
 }
 
-},{"./index":142}],149:[function(require,module,exports){
+},{"./index":129}],136:[function(require,module,exports){
 (function (global){
 'use strict'
 
@@ -31104,7 +30449,7 @@ else {
 module.exports = hasHover
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"is-browser":154}],150:[function(require,module,exports){
+},{"is-browser":141}],137:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -31190,7 +30535,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],151:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 "use strict"
 
 var bounds = require("binary-search-bounds")
@@ -31557,7 +30902,7 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":30}],152:[function(require,module,exports){
+},{"binary-search-bounds":32}],139:[function(require,module,exports){
 "use strict"
 
 function invertPermutation(pi, result) {
@@ -31569,7 +30914,7 @@ function invertPermutation(pi, result) {
 }
 
 module.exports = invertPermutation
-},{}],153:[function(require,module,exports){
+},{}],140:[function(require,module,exports){
 "use strict"
 
 function iota(n) {
@@ -31581,9 +30926,9 @@ function iota(n) {
 }
 
 module.exports = iota
-},{}],154:[function(require,module,exports){
+},{}],141:[function(require,module,exports){
 module.exports = true;
-},{}],155:[function(require,module,exports){
+},{}],142:[function(require,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -31606,7 +30951,12 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],156:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
+'use strict';
+module.exports = typeof navigator !== 'undefined' &&
+	(/MSIE/.test(navigator.userAgent) || /Trident\//.test(navigator.appVersion));
+
+},{}],144:[function(require,module,exports){
 'use strict';
 var toString = Object.prototype.toString;
 
@@ -31615,7 +30965,210 @@ module.exports = function (x) {
 	return toString.call(x) === '[object Object]' && (prototype = Object.getPrototypeOf(x), prototype === null || prototype === Object.getPrototypeOf({}));
 };
 
-},{}],157:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
+'use strict'
+
+module.exports = function isPath(str) {
+	if (typeof str !== 'string') return false
+
+	str = str.trim()
+
+	// https://www.w3.org/TR/SVG/paths.html#PathDataBNF
+	if (/^[mzlhvcsqta]\s*[-+.0-9][^mlhvzcsqta]+/i.test(str) && /[\dz]$/i.test(str) && str.length > 4) return true
+
+	return false
+}
+
+},{}],146:[function(require,module,exports){
+/**
+ * @module  kdgrass
+ *
+ * Static kdbush
+ */
+
+'use strict'
+
+module.exports = KDTree
+
+//optimized kdbush
+function KDTree(points, nodeSize) {
+    if (!(this instanceof KDTree)) return new KDTree(points, nodeSize)
+
+    this.nodeSize = nodeSize || 64;
+
+    this.coords = points.slice();
+
+    var l = Math.floor(points.length / 2)
+    this.ids = Array(l);
+
+    for (var i = 0; i < l; i++) {
+        this.ids[i] = i;
+    }
+
+    sortKD(this.ids, this.coords, this.nodeSize, 0, this.ids.length - 1, 0);
+}
+
+
+KDTree.prototype.range = function range(minX, minY, maxX, maxY) {
+    var ids = this.ids, coords = this.coords, nodeSize = this.nodeSize
+    var stack = [0, ids.length - 1, 0];
+    var result = [];
+    var x, y;
+
+    while (stack.length) {
+        var axis = stack.pop();
+        var right = stack.pop();
+        var left = stack.pop();
+
+        if (right - left <= nodeSize) {
+            for (var i = left; i <= right; i++) {
+                x = coords[2 * i];
+                y = coords[2 * i + 1];
+                if (x >= minX && x <= maxX && y >= minY && y <= maxY) result.push(ids[i]);
+            }
+            continue;
+        }
+
+        var m = Math.floor((left + right) / 2);
+
+        x = coords[2 * m];
+        y = coords[2 * m + 1];
+
+        if (x >= minX && x <= maxX && y >= minY && y <= maxY) result.push(ids[m]);
+
+        var nextAxis = (axis + 1) % 2;
+
+        if (axis === 0 ? minX <= x : minY <= y) {
+            stack.push(left);
+            stack.push(m - 1);
+            stack.push(nextAxis);
+        }
+        if (axis === 0 ? maxX >= x : maxY >= y) {
+            stack.push(m + 1);
+            stack.push(right);
+            stack.push(nextAxis);
+        }
+    }
+
+    return result;
+}
+
+
+KDTree.prototype.within = function within(qx, qy, r) {
+    var ids = this.ids, coords = this.coords, nodeSize = this.nodeSize
+    var stack = [0, ids.length - 1, 0];
+    var result = [];
+    var r2 = r * r;
+
+    while (stack.length) {
+        var axis = stack.pop();
+        var right = stack.pop();
+        var left = stack.pop();
+
+        if (right - left <= nodeSize) {
+            for (var i = left; i <= right; i++) {
+                if (sqDist(coords[2 * i], coords[2 * i + 1], qx, qy) <= r2) result.push(ids[i]);
+            }
+            continue;
+        }
+
+        var m = Math.floor((left + right) / 2);
+
+        var x = coords[2 * m];
+        var y = coords[2 * m + 1];
+
+        if (sqDist(x, y, qx, qy) <= r2) result.push(ids[m]);
+
+        var nextAxis = (axis + 1) % 2;
+
+        if (axis === 0 ? qx - r <= x : qy - r <= y) {
+            stack.push(left);
+            stack.push(m - 1);
+            stack.push(nextAxis);
+        }
+        if (axis === 0 ? qx + r >= x : qy + r >= y) {
+            stack.push(m + 1);
+            stack.push(right);
+            stack.push(nextAxis);
+        }
+    }
+
+    return result;
+}
+
+function sqDist(ax, ay, bx, by) {
+    var dx = ax - bx;
+    var dy = ay - by;
+    return dx * dx + dy * dy;
+}
+
+
+function sortKD(ids, coords, nodeSize, left, right, depth) {
+    if (right - left <= nodeSize) return;
+
+    var m = Math.floor((left + right) / 2);
+
+    select(ids, coords, m, left, right, depth % 2);
+
+    sortKD(ids, coords, nodeSize, left, m - 1, depth + 1);
+    sortKD(ids, coords, nodeSize, m + 1, right, depth + 1);
+}
+
+function select(ids, coords, k, left, right, inc) {
+
+    while (right > left) {
+        if (right - left > 600) {
+            var n = right - left + 1;
+            var m = k - left + 1;
+            var z = Math.log(n);
+            var s = 0.5 * Math.exp(2 * z / 3);
+            var sd = 0.5 * Math.sqrt(z * s * (n - s) / n) * (m - n / 2 < 0 ? -1 : 1);
+            var newLeft = Math.max(left, Math.floor(k - m * s / n + sd));
+            var newRight = Math.min(right, Math.floor(k + (n - m) * s / n + sd));
+            select(ids, coords, k, newLeft, newRight, inc);
+        }
+
+        var t = coords[2 * k + inc];
+        var i = left;
+        var j = right;
+
+        swapItem(ids, coords, left, k);
+        if (coords[2 * right + inc] > t) swapItem(ids, coords, left, right);
+
+        while (i < j) {
+            swapItem(ids, coords, i, j);
+            i++;
+            j--;
+            while (coords[2 * i + inc] < t) i++;
+            while (coords[2 * j + inc] > t) j--;
+        }
+
+        if (coords[2 * left + inc] === t) swapItem(ids, coords, left, j);
+        else {
+            j++;
+            swapItem(ids, coords, j, right);
+        }
+
+        if (j <= k) left = j + 1;
+        if (k <= j) right = j - 1;
+    }
+}
+
+function swapItem(ids, coords, i, j) {
+    swap(ids, i, j);
+    swap(coords, 2 * i, 2 * j);
+    swap(coords, 2 * i + 1, 2 * j + 1);
+}
+
+function swap(arr, i, j) {
+    var tmp = arr[i];
+    arr[i] = arr[j];
+    arr[j] = tmp;
+}
+
+
+
+},{}],147:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -31822,7 +31375,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":159}],158:[function(require,module,exports){
+},{"mouse-event":149}],148:[function(require,module,exports){
 var rootPosition = { left: 0, top: 0 }
 
 module.exports = mouseEventOffset
@@ -31849,7 +31402,7 @@ function getBoundingClientOffset (element) {
   }
 }
 
-},{}],159:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -31911,7 +31464,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],160:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -31953,7 +31506,7 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":209}],161:[function(require,module,exports){
+},{"to-px":214}],151:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -32369,7 +31922,7 @@ function createSurfaceExtractor(args) {
     order,
     typesig)
 }
-},{"typedarray-pool":213}],162:[function(require,module,exports){
+},{"typedarray-pool":218}],152:[function(require,module,exports){
 "use strict"
 
 var compile = require("cwise-compiler")
@@ -32832,7 +32385,7 @@ exports.equals = compile({
 
 
 
-},{"cwise-compiler":58}],163:[function(require,module,exports){
+},{"cwise-compiler":62}],153:[function(require,module,exports){
 var iota = require("iota-array")
 var isBuffer = require("is-buffer")
 
@@ -33177,7 +32730,7 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":153,"is-buffer":155}],164:[function(require,module,exports){
+},{"iota-array":140,"is-buffer":142}],154:[function(require,module,exports){
 "use strict"
 
 var doubleBits = require("double-bits")
@@ -33220,167 +32773,301 @@ function nextafter(x, y) {
   }
   return doubleBits.pack(lo, hi)
 }
-},{"double-bits":63}],165:[function(require,module,exports){
+},{"double-bits":68}],155:[function(require,module,exports){
+
+var π = Math.PI
+var _120 = radians(120)
+
+module.exports = normalize
+
 /**
- * @module optical-properties
+ * describe `path` in terms of cubic bézier 
+ * curves and move commands
+ *
+ * @param {Array} path
+ * @return {Array}
  */
-'use strict'
 
-module.exports = measure
+function normalize(path){
+	// init state
+	var prev
+	var result = []
+	var bezierX = 0
+	var bezierY = 0
+	var startX = 0
+	var startY = 0
+	var quadX = null
+	var quadY = null
+	var x = 0
+	var y = 0
 
-var canvas = document.createElement('canvas'),
-	ctx = canvas.getContext('2d')
+	for (var i = 0, len = path.length; i < len; i++) {
+		var seg = path[i]
+		var command = seg[0]
+		switch (command) {
+			case 'M':
+				startX = seg[1]
+				startY = seg[2]
+				break
+			case 'A':
+				seg = arc(x, y,seg[1],seg[2],radians(seg[3]),seg[4],seg[5],seg[6],seg[7])
+				// split multi part
+				seg.unshift('C')
+				if (seg.length > 7) {
+					result.push(seg.splice(0, 7))
+					seg.unshift('C')
+				}
+				break
+			case 'S':
+				// default control point
+				var cx = x
+				var cy = y
+				if (prev == 'C' || prev == 'S') {
+					cx += cx - bezierX // reflect the previous command's control
+					cy += cy - bezierY // point relative to the current point
+				}
+				seg = ['C', cx, cy, seg[1], seg[2], seg[3], seg[4]]
+				break
+			case 'T':
+				if (prev == 'Q' || prev == 'T') {
+					quadX = x * 2 - quadX // as with 'S' reflect previous control point
+					quadY = y * 2 - quadY
+				} else {
+					quadX = x
+					quadY = y
+				}
+				seg = quadratic(x, y, quadX, quadY, seg[1], seg[2])
+				break
+			case 'Q':
+				quadX = seg[1]
+				quadY = seg[2]
+				seg = quadratic(x, y, seg[1], seg[2], seg[3], seg[4])
+				break
+			case 'L':
+				seg = line(x, y, seg[1], seg[2])
+				break
+			case 'H':
+				seg = line(x, y, seg[1], y)
+				break
+			case 'V':
+				seg = line(x, y, x, seg[1])
+				break
+			case 'Z':
+				seg = line(x, y, startX, startY)
+				break
+		}
 
-canvas.width = 200, canvas.height = 200
-
-measure.canvas = canvas
-
-//returns character [x, y, scale] optical params
-function measure (char, options) {
-	var data, w, h, params
-
-	//figure out argument imageData
-	if (typeof char === 'string') {
-		data = getCharImageData(char, options)
-		w = data.width, h = data.height
+		// update state
+		prev = command
+		x = seg[seg.length - 2]
+		y = seg[seg.length - 1]
+		if (seg.length > 4) {
+			bezierX = seg[seg.length - 4]
+			bezierY = seg[seg.length - 3]
+		} else {
+			bezierX = x
+			bezierY = y
+		}
+		result.push(seg)
 	}
-	else if (char instanceof HTMLCanvasElement) {
-		w = char.width, h = char.height
-		char = char.getContext('2d')
-		data = char.getImageData(0, 0, w, h)
-	}
-	else if (char instanceof ImageData) {
-		w = char.width, h = char.height
-		data = char
-	}
 
-	params = getOpticalParams(data)
-
-	return params
+	return result
 }
 
-//draw character in canvas and get it's imagedata
-function getCharImageData (char, options) {
-	if (!options) options = {}
-	var family = options.family || 'sans-serif'
-	var w = canvas.width, h = canvas.height
-
-	var size = options.width || options.height || options.size
-	if (size && size != w) {
-		w = h = canvas.width = canvas.height = size
-	}
-
-	var fs = options.fontSize || w/2
-
-	ctx.fillStyle = '#000'
-	ctx.fillRect(0, 0, w, h)
-
-	ctx.font = fs + 'px ' + family
-	ctx.textBaseline = 'middle'
-	ctx.textAlign = 'center'
-	ctx.fillStyle = 'white'
-	ctx.fillText(char, w/2, h/2)
-
-	return ctx.getImageData(0, 0, w, h)
+function line(x1, y1, x2, y2){
+	return ['C', x1, y1, x2, y2, x2, y2]
 }
 
+function quadratic(x1, y1, cx, cy, x2, y2){
+	return [
+		'C',
+		x1/3 + (2/3) * cx,
+		y1/3 + (2/3) * cy,
+		x2/3 + (2/3) * cx,
+		y2/3 + (2/3) * cy,
+		x2,
+		y2
+	]
+}
 
-//walks over imagedata, returns params
-function getOpticalParams (data) {
-	var buf = data.data, w = data.width, h = data.height
+// This function is ripped from 
+// github.com/DmitryBaranovskiy/raphael/blob/4d97d4/raphael.js#L2216-L2304 
+// which references w3.org/TR/SVG11/implnote.html#ArcImplementationNotes
+// TODO: make it human readable
 
-	var x, y, r, i, j, sum, xSum, ySum, rowAvg = Array(h), rowAvgX = Array(h), cx, cy, bounds, avg, top = 0, bottom = 0, left = w, right = 0, maxR = 0, rowBounds = Array(h), r2
-
-	for (y = 0; y < h; y++) {
-		sum = 0, xSum = 0, j = y*4*w
-
-		bounds = getBounds(buf.subarray(j, j + 4*w), 4)
-
-		if (bounds[0] === bounds[1]) {
-			continue
+function arc(x1, y1, rx, ry, angle, large_arc_flag, sweep_flag, x2, y2, recursive) {
+	if (!recursive) {
+		var xy = rotate(x1, y1, -angle)
+		x1 = xy.x
+		y1 = xy.y
+		xy = rotate(x2, y2, -angle)
+		x2 = xy.x
+		y2 = xy.y
+		var x = (x1 - x2) / 2
+		var y = (y1 - y2) / 2
+		var h = (x * x) / (rx * rx) + (y * y) / (ry * ry)
+		if (h > 1) {
+			h = Math.sqrt(h)
+			rx = h * rx
+			ry = h * ry
 		}
-		else {
-			if (!top) top = y
-			bottom = y
-		}
+		var rx2 = rx * rx
+		var ry2 = ry * ry
+		var k = (large_arc_flag == sweep_flag ? -1 : 1)
+			* Math.sqrt(Math.abs((rx2 * ry2 - rx2 * y * y - ry2 * x * x) / (rx2 * y * y + ry2 * x * x)))
+		if (k == Infinity) k = 1 // neutralize
+		var cx = k * rx * y / ry + (x1 + x2) / 2
+		var cy = k * -ry * x / rx + (y1 + y2) / 2
+		var f1 = Math.asin(((y1 - cy) / ry).toFixed(9))
+		var f2 = Math.asin(((y2 - cy) / ry).toFixed(9))
 
-		for (x = bounds[0]; x < bounds[1]; x++) {
-			i = x*4
-			r = buf[j + i]
-			sum += r
-			xSum += x*r
-		}
-
-		rowAvg[y] = sum === 0 ? 0 : sum/w
-		rowAvgX[y] = sum === 0 ? 0 : xSum/sum
-
-		if (bounds[0] < left) left = bounds[0]
-		if (bounds[1] > right) right = bounds[1]
-
-		rowBounds[y] = bounds
+		f1 = x1 < cx ? π - f1 : f1
+		f2 = x2 < cx ? π - f2 : f2
+		if (f1 < 0) f1 = π * 2 + f1
+		if (f2 < 0) f2 = π * 2 + f2
+		if (sweep_flag && f1 > f2) f1 = f1 - π * 2
+		if (!sweep_flag && f2 > f1) f2 = f2 - π * 2
+	} else {
+		f1 = recursive[0]
+		f2 = recursive[1]
+		cx = recursive[2]
+		cy = recursive[3]
 	}
-
-	sum = 0, ySum = 0, xSum = 0
-	for (y = 0; y < h; y++) {
-		avg = rowAvg[y]
-		if (!avg) continue;
-
-		ySum += avg*y
-		sum += avg
-		xSum += rowAvgX[y]*avg
+	// greater than 120 degrees requires multiple segments
+	if (Math.abs(f2 - f1) > _120) {
+		var f2old = f2
+		var x2old = x2
+		var y2old = y2
+		f2 = f1 + _120 * (sweep_flag && f2 > f1 ? 1 : -1)
+		x2 = cx + rx * Math.cos(f2)
+		y2 = cy + ry * Math.sin(f2)
+		var res = arc(x2, y2, rx, ry, angle, 0, sweep_flag, x2old, y2old, [f2, f2old, cx, cy])
 	}
-
-	cy = ySum/sum
-	cx = xSum/sum
-
-	maxR = 0, r2 = 0
-	for (y = 0; y < h; y++) {
-		bounds = rowBounds[y]
-		if (!bounds) continue
-
-		r2 = Math.max(
-			dist2(cx - bounds[0], cy - y),
-			dist2(cx - bounds[1], cy - y)
-		)
-		if (r2 > maxR) {
-			maxR = r2
-		}
+	var t = Math.tan((f2 - f1) / 4)
+	var hx = 4 / 3 * rx * t
+	var hy = 4 / 3 * ry * t
+	var curve = [
+		2 * x1 - (x1 + hx * Math.sin(f1)),
+		2 * y1 - (y1 - hy * Math.cos(f1)),
+		x2 + hx * Math.sin(f2),
+		y2 - hy * Math.cos(f2),
+		x2,
+		y2
+	]
+	if (recursive) return curve
+	if (res) curve = curve.concat(res)
+	for (var i = 0; i < curve.length;) {
+		var rot = rotate(curve[i], curve[i+1], angle)
+		curve[i++] = rot.x
+		curve[i++] = rot.y
 	}
+	return curve
+}
 
+function rotate(x, y, rad){
 	return {
-		center: [cx, cy],
-		bounds: [left, top, right, bottom+1],
-		radius: Math.sqrt(maxR)
+		x: x * Math.cos(rad) - y * Math.sin(rad),
+		y: x * Math.sin(rad) + y * Math.cos(rad)
 	}
 }
 
-//get [leftId, rightId] pair of bounding values for an array
-function getBounds (arr, stride) {
-	var left = 0, right = arr.length, i = 0
-
-	if (!stride) stride = 4
-
-	//find left non-zero value
-	while (!arr[i] && i < right) {
-		i+=stride
-	}
-	left = i
-
-	//find right non-zero value
-	i = arr.length
-	while (!arr[i] && i > left) {
-		i-=stride
-	}
-	right = i
-
-	return [left/stride, right/stride]
+function radians(degress){
+	return degress * (π / 180)
 }
 
-function dist2 (x, y) {
-	return x*x + y*y
+},{}],156:[function(require,module,exports){
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
+'use strict';
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
 }
 
-},{}],166:[function(require,module,exports){
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+module.exports = shouldUseNative() ? Object.assign : function (target, source) {
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+},{}],157:[function(require,module,exports){
 /*!
  * pad-left <https://github.com/jonschlinkert/pad-left>
  *
@@ -33396,7 +33083,66 @@ module.exports = function padLeft(str, num, ch) {
   ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
   return repeat(ch, num) + str;
 };
-},{"repeat-string":188}],167:[function(require,module,exports){
+},{"repeat-string":187}],158:[function(require,module,exports){
+
+module.exports = parse
+
+/**
+ * expected argument lengths
+ * @type {Object}
+ */
+
+var length = {a: 7, c: 6, h: 1, l: 2, m: 2, q: 4, s: 4, t: 2, v: 1, z: 0}
+
+/**
+ * segment pattern
+ * @type {RegExp}
+ */
+
+var segment = /([astvzqmhlc])([^astvzqmhlc]*)/ig
+
+/**
+ * parse an svg path data string. Generates an Array
+ * of commands where each command is an Array of the
+ * form `[command, arg1, arg2, ...]`
+ *
+ * @param {String} path
+ * @return {Array}
+ */
+
+function parse(path) {
+	var data = []
+	path.replace(segment, function(_, command, args){
+		var type = command.toLowerCase()
+		args = parseValues(args)
+
+		// overloaded moveTo
+		if (type == 'm' && args.length > 2) {
+			data.push([command].concat(args.splice(0, 2)))
+			type = 'l'
+			command = command == 'm' ? 'l' : 'L'
+		}
+
+		while (true) {
+			if (args.length == length[type]) {
+				args.unshift(command)
+				return data.push(args)
+			}
+			if (args.length < length[type]) throw new Error('malformed path data')
+			data.push([command].concat(args.splice(0, length[type])))
+		}
+	})
+	return data
+}
+
+var number = /-?[0-9]*\.?[0-9]+(?:e[-+]?\d+)?/ig
+
+function parseValues(args) {
+	var numbers = args.match(number)
+	return numbers ? numbers.map(Number) : []
+}
+
+},{}],159:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -33407,7 +33153,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],168:[function(require,module,exports){
+},{}],160:[function(require,module,exports){
 "use strict"
 
 module.exports = permutationSign
@@ -33459,7 +33205,7 @@ function permutationSign(p) {
     return sgn
   }
 }
-},{"typedarray-pool":213}],169:[function(require,module,exports){
+},{"typedarray-pool":218}],161:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -33546,7 +33292,86 @@ function unrank(n, r, p) {
 exports.rank = rank
 exports.unrank = unrank
 
-},{"invert-permutation":152,"typedarray-pool":213}],170:[function(require,module,exports){
+},{"invert-permutation":139,"typedarray-pool":218}],162:[function(require,module,exports){
+'use strict'
+
+
+module.exports = function pick (src, props, keepRest) {
+	var result = {}, prop, i
+
+	if (typeof props === 'string') props = toList(props)
+	if (Array.isArray(props)) {
+		var res = {}
+		for (i = 0; i < props.length; i++) {
+			res[props[i]] = true
+		}
+		props = res
+	}
+
+	// convert strings to lists
+	for (prop in props) {
+		props[prop] = toList(props[prop])
+	}
+
+	// keep-rest strategy requires unmatched props to be preserved
+	var occupied = {}
+
+	for (prop in props) {
+		var aliases = props[prop]
+
+		if (Array.isArray(aliases)) {
+			for (i = 0; i < aliases.length; i++) {
+				var alias = aliases[i]
+
+				if (keepRest) {
+					occupied[alias] = true
+				}
+
+				if (alias in src) {
+					result[prop] = src[alias]
+
+					if (keepRest) {
+						for (var j = i; j < aliases.length; j++) {
+							occupied[aliases[j]] = true
+						}
+					}
+
+					break
+				}
+			}
+		}
+		else if (prop in src) {
+			if (props[prop]) {
+				result[prop] = src[prop]
+			}
+
+			if (keepRest) {
+				occupied[prop] = true
+			}
+		}
+	}
+
+	if (keepRest) {
+		for (prop in src) {
+			if (occupied[prop]) continue
+			result[prop] = src[prop]
+		}
+	}
+
+	return result
+}
+
+var CACHE = {}
+
+function toList(arg) {
+	if (CACHE[arg]) return CACHE[arg]
+	if (typeof arg === 'string') {
+		arg = CACHE[arg] = arg.split(/\s*,\s*|\s+/)
+	}
+	return arg
+}
+
+},{}],163:[function(require,module,exports){
 "use strict"
 
 module.exports = planarDual
@@ -33677,7 +33502,7 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":57}],171:[function(require,module,exports){
+},{"compare-angle":61}],164:[function(require,module,exports){
 'use strict'
 
 module.exports = trimLeaves
@@ -33733,7 +33558,7 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":65}],172:[function(require,module,exports){
+},{"edges-to-adjacency-list":73}],165:[function(require,module,exports){
 'use strict'
 
 module.exports = planarGraphToPolyline
@@ -33938,7 +33763,7 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":171,"edges-to-adjacency-list":65,"planar-dual":170,"point-in-big-polygon":173,"robust-sum":195,"two-product":211,"uniq":215}],173:[function(require,module,exports){
+},{"./lib/trim-leaves":164,"edges-to-adjacency-list":73,"planar-dual":163,"point-in-big-polygon":166,"robust-sum":194,"two-product":216,"uniq":220}],166:[function(require,module,exports){
 module.exports = preprocessPolygon
 
 var orient = require('robust-orientation')[3]
@@ -34090,7 +33915,7 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":30,"interval-tree-1d":151,"robust-orientation":190,"slab-decomposition":202}],174:[function(require,module,exports){
+},{"binary-search-bounds":32,"interval-tree-1d":138,"robust-orientation":189,"slab-decomposition":201}],167:[function(require,module,exports){
 /*
  * @copyright 2016 Sean Connelly (@voidqk), http://syntheti.cc
  * @license MIT
@@ -34218,7 +34043,7 @@ if (typeof window === 'object')
 
 module.exports = PolyBool;
 
-},{"./lib/build-log":175,"./lib/epsilon":176,"./lib/geojson":177,"./lib/intersecter":178,"./lib/segment-chainer":180,"./lib/segment-selector":181}],175:[function(require,module,exports){
+},{"./lib/build-log":168,"./lib/epsilon":169,"./lib/geojson":170,"./lib/intersecter":171,"./lib/segment-chainer":173,"./lib/segment-selector":174}],168:[function(require,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -34333,7 +34158,7 @@ function BuildLog(){
 
 module.exports = BuildLog;
 
-},{}],176:[function(require,module,exports){
+},{}],169:[function(require,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -34505,7 +34330,7 @@ function Epsilon(eps){
 
 module.exports = Epsilon;
 
-},{}],177:[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 // (c) Copyright 2017, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -34695,7 +34520,7 @@ var GeoJSON = {
 
 module.exports = GeoJSON;
 
-},{}],178:[function(require,module,exports){
+},{}],171:[function(require,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -35202,7 +35027,7 @@ function Intersecter(selfIntersection, eps, buildLog){
 
 module.exports = Intersecter;
 
-},{"./linked-list":179}],179:[function(require,module,exports){
+},{"./linked-list":172}],172:[function(require,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -35285,7 +35110,7 @@ var LinkedList = {
 
 module.exports = LinkedList;
 
-},{}],180:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -35539,7 +35364,7 @@ function SegmentChainer(segments, eps, buildLog){
 
 module.exports = SegmentChainer;
 
-},{}],181:[function(require,module,exports){
+},{}],174:[function(require,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -35707,7 +35532,7 @@ var SegmentSelector = {
 
 module.exports = SegmentSelector;
 
-},{}],182:[function(require,module,exports){
+},{}],175:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -35893,7 +35718,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],183:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 'use strict'
 
 var bnadd = require('big-rat/add')
@@ -35909,7 +35734,7 @@ function add (a, b) {
   return r
 }
 
-},{"big-rat/add":14}],184:[function(require,module,exports){
+},{"big-rat/add":16}],177:[function(require,module,exports){
 'use strict'
 
 module.exports = float2rat
@@ -35924,7 +35749,7 @@ function float2rat(v) {
   return result
 }
 
-},{"big-rat":17}],185:[function(require,module,exports){
+},{"big-rat":19}],178:[function(require,module,exports){
 'use strict'
 
 var rat = require('big-rat')
@@ -35942,7 +35767,7 @@ function muls(a, x) {
   return r
 }
 
-},{"big-rat":17,"big-rat/mul":26}],186:[function(require,module,exports){
+},{"big-rat":19,"big-rat/mul":28}],179:[function(require,module,exports){
 'use strict'
 
 var bnsub = require('big-rat/sub')
@@ -35958,9512 +35783,2259 @@ function sub(a, b) {
   return r
 }
 
-},{"big-rat/sub":28}],187:[function(require,module,exports){
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global.createREGL = factory());
-}(this, (function () { 'use strict';
-
-var arrayTypes =  {
-	"[object Int8Array]": 5120,
-	"[object Int16Array]": 5122,
-	"[object Int32Array]": 5124,
-	"[object Uint8Array]": 5121,
-	"[object Uint8ClampedArray]": 5121,
-	"[object Uint16Array]": 5123,
-	"[object Uint32Array]": 5125,
-	"[object Float32Array]": 5126,
-	"[object Float64Array]": 5121,
-	"[object ArrayBuffer]": 5121
-};
-
-var isTypedArray = function (x) {
-  return Object.prototype.toString.call(x) in arrayTypes
-};
-
-var extend = function (base, opts) {
-  var keys = Object.keys(opts);
-  for (var i = 0; i < keys.length; ++i) {
-    base[keys[i]] = opts[keys[i]];
-  }
-  return base
-};
-
-// Error checking and parameter validation.
-//
-// Statements for the form `check.someProcedure(...)` get removed by
-// a browserify transform for optimized/minified bundles.
-//
-/* globals btoa */
-// only used for extracting shader names.  if btoa not present, then errors
-// will be slightly crappier
-function decodeB64 (str) {
-  if (typeof btoa !== 'undefined') {
-    return btoa(str)
-  }
-  return 'base64:' + str
-}
-
-function raise (message) {
-  var error = new Error('(regl) ' + message);
-  console.error(error);
-  throw error
-}
-
-function check (pred, message) {
-  if (!pred) {
-    raise(message);
-  }
-}
-
-function encolon (message) {
-  if (message) {
-    return ': ' + message
-  }
-  return ''
-}
-
-function checkParameter (param, possibilities, message) {
-  if (!(param in possibilities)) {
-    raise('unknown parameter (' + param + ')' + encolon(message) +
-          '. possible values: ' + Object.keys(possibilities).join());
-  }
-}
-
-function checkIsTypedArray (data, message) {
-  if (!isTypedArray(data)) {
-    raise(
-      'invalid parameter type' + encolon(message) +
-      '. must be a typed array');
-  }
-}
-
-function checkTypeOf (value, type, message) {
-  if (typeof value !== type) {
-    raise(
-      'invalid parameter type' + encolon(message) +
-      '. expected ' + type + ', got ' + (typeof value));
-  }
-}
-
-function checkNonNegativeInt (value, message) {
-  if (!((value >= 0) &&
-        ((value | 0) === value))) {
-    raise('invalid parameter type, (' + value + ')' + encolon(message) +
-          '. must be a nonnegative integer');
-  }
-}
-
-function checkOneOf (value, list, message) {
-  if (list.indexOf(value) < 0) {
-    raise('invalid value' + encolon(message) + '. must be one of: ' + list);
-  }
-}
-
-var constructorKeys = [
-  'gl',
-  'canvas',
-  'container',
-  'attributes',
-  'pixelRatio',
-  'extensions',
-  'optionalExtensions',
-  'profile',
-  'onDone'
-];
-
-function checkConstructor (obj) {
-  Object.keys(obj).forEach(function (key) {
-    if (constructorKeys.indexOf(key) < 0) {
-      raise('invalid regl constructor argument "' + key + '". must be one of ' + constructorKeys);
-    }
-  });
-}
-
-function leftPad (str, n) {
-  str = str + '';
-  while (str.length < n) {
-    str = ' ' + str;
-  }
-  return str
-}
-
-function ShaderFile () {
-  this.name = 'unknown';
-  this.lines = [];
-  this.index = {};
-  this.hasErrors = false;
-}
-
-function ShaderLine (number, line) {
-  this.number = number;
-  this.line = line;
-  this.errors = [];
-}
-
-function ShaderError (fileNumber, lineNumber, message) {
-  this.file = fileNumber;
-  this.line = lineNumber;
-  this.message = message;
-}
-
-function guessCommand () {
-  var error = new Error();
-  var stack = (error.stack || error).toString();
-  var pat = /compileProcedure.*\n\s*at.*\((.*)\)/.exec(stack);
-  if (pat) {
-    return pat[1]
-  }
-  var pat2 = /compileProcedure.*\n\s*at\s+(.*)(\n|$)/.exec(stack);
-  if (pat2) {
-    return pat2[1]
-  }
-  return 'unknown'
-}
-
-function guessCallSite () {
-  var error = new Error();
-  var stack = (error.stack || error).toString();
-  var pat = /at REGLCommand.*\n\s+at.*\((.*)\)/.exec(stack);
-  if (pat) {
-    return pat[1]
-  }
-  var pat2 = /at REGLCommand.*\n\s+at\s+(.*)\n/.exec(stack);
-  if (pat2) {
-    return pat2[1]
-  }
-  return 'unknown'
-}
-
-function parseSource (source, command) {
-  var lines = source.split('\n');
-  var lineNumber = 1;
-  var fileNumber = 0;
-  var files = {
-    unknown: new ShaderFile(),
-    0: new ShaderFile()
-  };
-  files.unknown.name = files[0].name = command || guessCommand();
-  files.unknown.lines.push(new ShaderLine(0, ''));
-  for (var i = 0; i < lines.length; ++i) {
-    var line = lines[i];
-    var parts = /^\s*\#\s*(\w+)\s+(.+)\s*$/.exec(line);
-    if (parts) {
-      switch (parts[1]) {
-        case 'line':
-          var lineNumberInfo = /(\d+)(\s+\d+)?/.exec(parts[2]);
-          if (lineNumberInfo) {
-            lineNumber = lineNumberInfo[1] | 0;
-            if (lineNumberInfo[2]) {
-              fileNumber = lineNumberInfo[2] | 0;
-              if (!(fileNumber in files)) {
-                files[fileNumber] = new ShaderFile();
-              }
-            }
-          }
-          break
-        case 'define':
-          var nameInfo = /SHADER_NAME(_B64)?\s+(.*)$/.exec(parts[2]);
-          if (nameInfo) {
-            files[fileNumber].name = (nameInfo[1]
-                ? decodeB64(nameInfo[2])
-                : nameInfo[2]);
-          }
-          break
-      }
-    }
-    files[fileNumber].lines.push(new ShaderLine(lineNumber++, line));
-  }
-  Object.keys(files).forEach(function (fileNumber) {
-    var file = files[fileNumber];
-    file.lines.forEach(function (line) {
-      file.index[line.number] = line;
-    });
-  });
-  return files
-}
-
-function parseErrorLog (errLog) {
-  var result = [];
-  errLog.split('\n').forEach(function (errMsg) {
-    if (errMsg.length < 5) {
-      return
-    }
-    var parts = /^ERROR\:\s+(\d+)\:(\d+)\:\s*(.*)$/.exec(errMsg);
-    if (parts) {
-      result.push(new ShaderError(
-        parts[1] | 0,
-        parts[2] | 0,
-        parts[3].trim()));
-    } else if (errMsg.length > 0) {
-      result.push(new ShaderError('unknown', 0, errMsg));
-    }
-  });
-  return result
-}
-
-function annotateFiles (files, errors) {
-  errors.forEach(function (error) {
-    var file = files[error.file];
-    if (file) {
-      var line = file.index[error.line];
-      if (line) {
-        line.errors.push(error);
-        file.hasErrors = true;
-        return
-      }
-    }
-    files.unknown.hasErrors = true;
-    files.unknown.lines[0].errors.push(error);
-  });
-}
-
-function checkShaderError (gl, shader, source, type, command) {
-  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    var errLog = gl.getShaderInfoLog(shader);
-    var typeName = type === gl.FRAGMENT_SHADER ? 'fragment' : 'vertex';
-    checkCommandType(source, 'string', typeName + ' shader source must be a string', command);
-    var files = parseSource(source, command);
-    var errors = parseErrorLog(errLog);
-    annotateFiles(files, errors);
-
-    Object.keys(files).forEach(function (fileNumber) {
-      var file = files[fileNumber];
-      if (!file.hasErrors) {
-        return
-      }
-
-      var strings = [''];
-      var styles = [''];
-
-      function push (str, style) {
-        strings.push(str);
-        styles.push(style || '');
-      }
-
-      push('file number ' + fileNumber + ': ' + file.name + '\n', 'color:red;text-decoration:underline;font-weight:bold');
-
-      file.lines.forEach(function (line) {
-        if (line.errors.length > 0) {
-          push(leftPad(line.number, 4) + '|  ', 'background-color:yellow; font-weight:bold');
-          push(line.line + '\n', 'color:red; background-color:yellow; font-weight:bold');
-
-          // try to guess token
-          var offset = 0;
-          line.errors.forEach(function (error) {
-            var message = error.message;
-            var token = /^\s*\'(.*)\'\s*\:\s*(.*)$/.exec(message);
-            if (token) {
-              var tokenPat = token[1];
-              message = token[2];
-              switch (tokenPat) {
-                case 'assign':
-                  tokenPat = '=';
-                  break
-              }
-              offset = Math.max(line.line.indexOf(tokenPat, offset), 0);
-            } else {
-              offset = 0;
-            }
-
-            push(leftPad('| ', 6));
-            push(leftPad('^^^', offset + 3) + '\n', 'font-weight:bold');
-            push(leftPad('| ', 6));
-            push(message + '\n', 'font-weight:bold');
-          });
-          push(leftPad('| ', 6) + '\n');
-        } else {
-          push(leftPad(line.number, 4) + '|  ');
-          push(line.line + '\n', 'color:red');
-        }
-      });
-      if (typeof document !== 'undefined') {
-        styles[0] = strings.join('%c');
-        console.log.apply(console, styles);
-      } else {
-        console.log(strings.join(''));
-      }
-    });
-
-    check.raise('Error compiling ' + typeName + ' shader, ' + files[0].name);
-  }
-}
-
-function checkLinkError (gl, program, fragShader, vertShader, command) {
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    var errLog = gl.getProgramInfoLog(program);
-    var fragParse = parseSource(fragShader, command);
-    var vertParse = parseSource(vertShader, command);
-
-    var header = 'Error linking program with vertex shader, "' +
-      vertParse[0].name + '", and fragment shader "' + fragParse[0].name + '"';
-
-    if (typeof document !== 'undefined') {
-      console.log('%c' + header + '\n%c' + errLog,
-        'color:red;text-decoration:underline;font-weight:bold',
-        'color:red');
-    } else {
-      console.log(header + '\n' + errLog);
-    }
-    check.raise(header);
-  }
-}
-
-function saveCommandRef (object) {
-  object._commandRef = guessCommand();
-}
-
-function saveDrawCommandInfo (opts, uniforms, attributes, stringStore) {
-  saveCommandRef(opts);
-
-  function id (str) {
-    if (str) {
-      return stringStore.id(str)
-    }
-    return 0
-  }
-  opts._fragId = id(opts.static.frag);
-  opts._vertId = id(opts.static.vert);
-
-  function addProps (dict, set) {
-    Object.keys(set).forEach(function (u) {
-      dict[stringStore.id(u)] = true;
-    });
-  }
-
-  var uniformSet = opts._uniformSet = {};
-  addProps(uniformSet, uniforms.static);
-  addProps(uniformSet, uniforms.dynamic);
-
-  var attributeSet = opts._attributeSet = {};
-  addProps(attributeSet, attributes.static);
-  addProps(attributeSet, attributes.dynamic);
-
-  opts._hasCount = (
-    'count' in opts.static ||
-    'count' in opts.dynamic ||
-    'elements' in opts.static ||
-    'elements' in opts.dynamic);
-}
-
-function commandRaise (message, command) {
-  var callSite = guessCallSite();
-  raise(message +
-    ' in command ' + (command || guessCommand()) +
-    (callSite === 'unknown' ? '' : ' called from ' + callSite));
-}
-
-function checkCommand (pred, message, command) {
-  if (!pred) {
-    commandRaise(message, command || guessCommand());
-  }
-}
-
-function checkParameterCommand (param, possibilities, message, command) {
-  if (!(param in possibilities)) {
-    commandRaise(
-      'unknown parameter (' + param + ')' + encolon(message) +
-      '. possible values: ' + Object.keys(possibilities).join(),
-      command || guessCommand());
-  }
-}
-
-function checkCommandType (value, type, message, command) {
-  if (typeof value !== type) {
-    commandRaise(
-      'invalid parameter type' + encolon(message) +
-      '. expected ' + type + ', got ' + (typeof value),
-      command || guessCommand());
-  }
-}
-
-function checkOptional (block) {
-  block();
-}
-
-function checkFramebufferFormat (attachment, texFormats, rbFormats) {
-  if (attachment.texture) {
-    checkOneOf(
-      attachment.texture._texture.internalformat,
-      texFormats,
-      'unsupported texture format for attachment');
-  } else {
-    checkOneOf(
-      attachment.renderbuffer._renderbuffer.format,
-      rbFormats,
-      'unsupported renderbuffer format for attachment');
-  }
-}
-
-var GL_CLAMP_TO_EDGE = 0x812F;
-
-var GL_NEAREST = 0x2600;
-var GL_NEAREST_MIPMAP_NEAREST = 0x2700;
-var GL_LINEAR_MIPMAP_NEAREST = 0x2701;
-var GL_NEAREST_MIPMAP_LINEAR = 0x2702;
-var GL_LINEAR_MIPMAP_LINEAR = 0x2703;
-
-var GL_BYTE = 5120;
-var GL_UNSIGNED_BYTE = 5121;
-var GL_SHORT = 5122;
-var GL_UNSIGNED_SHORT = 5123;
-var GL_INT = 5124;
-var GL_UNSIGNED_INT = 5125;
-var GL_FLOAT = 5126;
-
-var GL_UNSIGNED_SHORT_4_4_4_4 = 0x8033;
-var GL_UNSIGNED_SHORT_5_5_5_1 = 0x8034;
-var GL_UNSIGNED_SHORT_5_6_5 = 0x8363;
-var GL_UNSIGNED_INT_24_8_WEBGL = 0x84FA;
-
-var GL_HALF_FLOAT_OES = 0x8D61;
-
-var TYPE_SIZE = {};
-
-TYPE_SIZE[GL_BYTE] =
-TYPE_SIZE[GL_UNSIGNED_BYTE] = 1;
-
-TYPE_SIZE[GL_SHORT] =
-TYPE_SIZE[GL_UNSIGNED_SHORT] =
-TYPE_SIZE[GL_HALF_FLOAT_OES] =
-TYPE_SIZE[GL_UNSIGNED_SHORT_5_6_5] =
-TYPE_SIZE[GL_UNSIGNED_SHORT_4_4_4_4] =
-TYPE_SIZE[GL_UNSIGNED_SHORT_5_5_5_1] = 2;
-
-TYPE_SIZE[GL_INT] =
-TYPE_SIZE[GL_UNSIGNED_INT] =
-TYPE_SIZE[GL_FLOAT] =
-TYPE_SIZE[GL_UNSIGNED_INT_24_8_WEBGL] = 4;
-
-function pixelSize (type, channels) {
-  if (type === GL_UNSIGNED_SHORT_5_5_5_1 ||
-      type === GL_UNSIGNED_SHORT_4_4_4_4 ||
-      type === GL_UNSIGNED_SHORT_5_6_5) {
-    return 2
-  } else if (type === GL_UNSIGNED_INT_24_8_WEBGL) {
-    return 4
-  } else {
-    return TYPE_SIZE[type] * channels
-  }
-}
-
-function isPow2 (v) {
-  return !(v & (v - 1)) && (!!v)
-}
-
-function checkTexture2D (info, mipData, limits) {
-  var i;
-  var w = mipData.width;
-  var h = mipData.height;
-  var c = mipData.channels;
-
-  // Check texture shape
-  check(w > 0 && w <= limits.maxTextureSize &&
-        h > 0 && h <= limits.maxTextureSize,
-        'invalid texture shape');
-
-  // check wrap mode
-  if (info.wrapS !== GL_CLAMP_TO_EDGE || info.wrapT !== GL_CLAMP_TO_EDGE) {
-    check(isPow2(w) && isPow2(h),
-      'incompatible wrap mode for texture, both width and height must be power of 2');
-  }
-
-  if (mipData.mipmask === 1) {
-    if (w !== 1 && h !== 1) {
-      check(
-        info.minFilter !== GL_NEAREST_MIPMAP_NEAREST &&
-        info.minFilter !== GL_NEAREST_MIPMAP_LINEAR &&
-        info.minFilter !== GL_LINEAR_MIPMAP_NEAREST &&
-        info.minFilter !== GL_LINEAR_MIPMAP_LINEAR,
-        'min filter requires mipmap');
-    }
-  } else {
-    // texture must be power of 2
-    check(isPow2(w) && isPow2(h),
-      'texture must be a square power of 2 to support mipmapping');
-    check(mipData.mipmask === (w << 1) - 1,
-      'missing or incomplete mipmap data');
-  }
-
-  if (mipData.type === GL_FLOAT) {
-    if (limits.extensions.indexOf('oes_texture_float_linear') < 0) {
-      check(info.minFilter === GL_NEAREST && info.magFilter === GL_NEAREST,
-        'filter not supported, must enable oes_texture_float_linear');
-    }
-    check(!info.genMipmaps,
-      'mipmap generation not supported with float textures');
-  }
-
-  // check image complete
-  var mipimages = mipData.images;
-  for (i = 0; i < 16; ++i) {
-    if (mipimages[i]) {
-      var mw = w >> i;
-      var mh = h >> i;
-      check(mipData.mipmask & (1 << i), 'missing mipmap data');
-
-      var img = mipimages[i];
-
-      check(
-        img.width === mw &&
-        img.height === mh,
-        'invalid shape for mip images');
-
-      check(
-        img.format === mipData.format &&
-        img.internalformat === mipData.internalformat &&
-        img.type === mipData.type,
-        'incompatible type for mip image');
-
-      if (img.compressed) {
-        // TODO: check size for compressed images
-      } else if (img.data) {
-        // check(img.data.byteLength === mw * mh *
-        // Math.max(pixelSize(img.type, c), img.unpackAlignment),
-        var rowSize = Math.ceil(pixelSize(img.type, c) * mw / img.unpackAlignment) * img.unpackAlignment;
-        check(img.data.byteLength === rowSize * mh,
-          'invalid data for image, buffer size is inconsistent with image format');
-      } else if (img.element) {
-        // TODO: check element can be loaded
-      } else if (img.copy) {
-        // TODO: check compatible format and type
-      }
-    } else if (!info.genMipmaps) {
-      check((mipData.mipmask & (1 << i)) === 0, 'extra mipmap data');
-    }
-  }
-
-  if (mipData.compressed) {
-    check(!info.genMipmaps,
-      'mipmap generation for compressed images not supported');
-  }
-}
-
-function checkTextureCube (texture, info, faces, limits) {
-  var w = texture.width;
-  var h = texture.height;
-  var c = texture.channels;
-
-  // Check texture shape
-  check(
-    w > 0 && w <= limits.maxTextureSize && h > 0 && h <= limits.maxTextureSize,
-    'invalid texture shape');
-  check(
-    w === h,
-    'cube map must be square');
-  check(
-    info.wrapS === GL_CLAMP_TO_EDGE && info.wrapT === GL_CLAMP_TO_EDGE,
-    'wrap mode not supported by cube map');
-
-  for (var i = 0; i < faces.length; ++i) {
-    var face = faces[i];
-    check(
-      face.width === w && face.height === h,
-      'inconsistent cube map face shape');
-
-    if (info.genMipmaps) {
-      check(!face.compressed,
-        'can not generate mipmap for compressed textures');
-      check(face.mipmask === 1,
-        'can not specify mipmaps and generate mipmaps');
-    } else {
-      // TODO: check mip and filter mode
-    }
-
-    var mipmaps = face.images;
-    for (var j = 0; j < 16; ++j) {
-      var img = mipmaps[j];
-      if (img) {
-        var mw = w >> j;
-        var mh = h >> j;
-        check(face.mipmask & (1 << j), 'missing mipmap data');
-        check(
-          img.width === mw &&
-          img.height === mh,
-          'invalid shape for mip images');
-        check(
-          img.format === texture.format &&
-          img.internalformat === texture.internalformat &&
-          img.type === texture.type,
-          'incompatible type for mip image');
-
-        if (img.compressed) {
-          // TODO: check size for compressed images
-        } else if (img.data) {
-          check(img.data.byteLength === mw * mh *
-            Math.max(pixelSize(img.type, c), img.unpackAlignment),
-            'invalid data for image, buffer size is inconsistent with image format');
-        } else if (img.element) {
-          // TODO: check element can be loaded
-        } else if (img.copy) {
-          // TODO: check compatible format and type
-        }
-      }
-    }
-  }
-}
-
-var check$1 = extend(check, {
-  optional: checkOptional,
-  raise: raise,
-  commandRaise: commandRaise,
-  command: checkCommand,
-  parameter: checkParameter,
-  commandParameter: checkParameterCommand,
-  constructor: checkConstructor,
-  type: checkTypeOf,
-  commandType: checkCommandType,
-  isTypedArray: checkIsTypedArray,
-  nni: checkNonNegativeInt,
-  oneOf: checkOneOf,
-  shaderError: checkShaderError,
-  linkError: checkLinkError,
-  callSite: guessCallSite,
-  saveCommandRef: saveCommandRef,
-  saveDrawInfo: saveDrawCommandInfo,
-  framebufferFormat: checkFramebufferFormat,
-  guessCommand: guessCommand,
-  texture2D: checkTexture2D,
-  textureCube: checkTextureCube
-});
-
-var VARIABLE_COUNTER = 0;
-
-var DYN_FUNC = 0;
-
-function DynamicVariable (type, data) {
-  this.id = (VARIABLE_COUNTER++);
-  this.type = type;
-  this.data = data;
-}
-
-function escapeStr (str) {
-  return str.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
-}
-
-function splitParts (str) {
-  if (str.length === 0) {
-    return []
-  }
-
-  var firstChar = str.charAt(0);
-  var lastChar = str.charAt(str.length - 1);
-
-  if (str.length > 1 &&
-      firstChar === lastChar &&
-      (firstChar === '"' || firstChar === "'")) {
-    return ['"' + escapeStr(str.substr(1, str.length - 2)) + '"']
-  }
-
-  var parts = /\[(false|true|null|\d+|'[^']*'|"[^"]*")\]/.exec(str);
-  if (parts) {
-    return (
-      splitParts(str.substr(0, parts.index))
-      .concat(splitParts(parts[1]))
-      .concat(splitParts(str.substr(parts.index + parts[0].length)))
-    )
-  }
-
-  var subparts = str.split('.');
-  if (subparts.length === 1) {
-    return ['"' + escapeStr(str) + '"']
-  }
-
-  var result = [];
-  for (var i = 0; i < subparts.length; ++i) {
-    result = result.concat(splitParts(subparts[i]));
-  }
-  return result
-}
-
-function toAccessorString (str) {
-  return '[' + splitParts(str).join('][') + ']'
-}
-
-function defineDynamic (type, data) {
-  return new DynamicVariable(type, toAccessorString(data + ''))
-}
-
-function isDynamic (x) {
-  return (typeof x === 'function' && !x._reglType) ||
-         x instanceof DynamicVariable
-}
-
-function unbox (x, path) {
-  if (typeof x === 'function') {
-    return new DynamicVariable(DYN_FUNC, x)
-  }
-  return x
-}
-
-var dynamic = {
-  DynamicVariable: DynamicVariable,
-  define: defineDynamic,
-  isDynamic: isDynamic,
-  unbox: unbox,
-  accessor: toAccessorString
-};
-
-/* globals requestAnimationFrame, cancelAnimationFrame */
-var raf = {
-  next: typeof requestAnimationFrame === 'function'
-    ? function (cb) { return requestAnimationFrame(cb) }
-    : function (cb) { return setTimeout(cb, 16) },
-  cancel: typeof cancelAnimationFrame === 'function'
-    ? function (raf) { return cancelAnimationFrame(raf) }
-    : clearTimeout
-};
-
-/* globals performance */
-var clock = (typeof performance !== 'undefined' && performance.now)
-  ? function () { return performance.now() }
-  : function () { return +(new Date()) };
-
-function createStringStore () {
-  var stringIds = {'': 0};
-  var stringValues = [''];
-  return {
-    id: function (str) {
-      var result = stringIds[str];
-      if (result) {
-        return result
-      }
-      result = stringIds[str] = stringValues.length;
-      stringValues.push(str);
-      return result
-    },
-
-    str: function (id) {
-      return stringValues[id]
-    }
-  }
-}
-
-// Context and canvas creation helper functions
-function createCanvas (element, onDone, pixelRatio) {
-  var canvas = document.createElement('canvas');
-  extend(canvas.style, {
-    border: 0,
-    margin: 0,
-    padding: 0,
-    top: 0,
-    left: 0
-  });
-  element.appendChild(canvas);
-
-  if (element === document.body) {
-    canvas.style.position = 'absolute';
-    extend(element.style, {
-      margin: 0,
-      padding: 0
-    });
-  }
-
-  function resize () {
-    var w = window.innerWidth;
-    var h = window.innerHeight;
-    if (element !== document.body) {
-      var bounds = element.getBoundingClientRect();
-      w = bounds.right - bounds.left;
-      h = bounds.bottom - bounds.top;
-    }
-    canvas.width = pixelRatio * w;
-    canvas.height = pixelRatio * h;
-    extend(canvas.style, {
-      width: w + 'px',
-      height: h + 'px'
-    });
-  }
-
-  window.addEventListener('resize', resize, false);
-
-  function onDestroy () {
-    window.removeEventListener('resize', resize);
-    element.removeChild(canvas);
-  }
-
-  resize();
-
-  return {
-    canvas: canvas,
-    onDestroy: onDestroy
-  }
-}
-
-function createContext (canvas, contexAttributes) {
-  function get (name) {
-    try {
-      return canvas.getContext(name, contexAttributes)
-    } catch (e) {
-      return null
-    }
-  }
-  return (
-    get('webgl') ||
-    get('experimental-webgl') ||
-    get('webgl-experimental')
-  )
-}
-
-function isHTMLElement (obj) {
-  return (
-    typeof obj.nodeName === 'string' &&
-    typeof obj.appendChild === 'function' &&
-    typeof obj.getBoundingClientRect === 'function'
-  )
-}
-
-function isWebGLContext (obj) {
-  return (
-    typeof obj.drawArrays === 'function' ||
-    typeof obj.drawElements === 'function'
-  )
-}
-
-function parseExtensions (input) {
-  if (typeof input === 'string') {
-    return input.split()
-  }
-  check$1(Array.isArray(input), 'invalid extension array');
-  return input
-}
-
-function getElement (desc) {
-  if (typeof desc === 'string') {
-    check$1(typeof document !== 'undefined', 'not supported outside of DOM');
-    return document.querySelector(desc)
-  }
-  return desc
-}
-
-function parseArgs (args_) {
-  var args = args_ || {};
-  var element, container, canvas, gl;
-  var contextAttributes = {};
-  var extensions = [];
-  var optionalExtensions = [];
-  var pixelRatio = (typeof window === 'undefined' ? 1 : window.devicePixelRatio);
-  var profile = false;
-  var onDone = function (err) {
-    if (err) {
-      check$1.raise(err);
-    }
-  };
-  var onDestroy = function () {};
-  if (typeof args === 'string') {
-    check$1(
-      typeof document !== 'undefined',
-      'selector queries only supported in DOM enviroments');
-    element = document.querySelector(args);
-    check$1(element, 'invalid query string for element');
-  } else if (typeof args === 'object') {
-    if (isHTMLElement(args)) {
-      element = args;
-    } else if (isWebGLContext(args)) {
-      gl = args;
-      canvas = gl.canvas;
-    } else {
-      check$1.constructor(args);
-      if ('gl' in args) {
-        gl = args.gl;
-      } else if ('canvas' in args) {
-        canvas = getElement(args.canvas);
-      } else if ('container' in args) {
-        container = getElement(args.container);
-      }
-      if ('attributes' in args) {
-        contextAttributes = args.attributes;
-        check$1.type(contextAttributes, 'object', 'invalid context attributes');
-      }
-      if ('extensions' in args) {
-        extensions = parseExtensions(args.extensions);
-      }
-      if ('optionalExtensions' in args) {
-        optionalExtensions = parseExtensions(args.optionalExtensions);
-      }
-      if ('onDone' in args) {
-        check$1.type(
-          args.onDone, 'function',
-          'invalid or missing onDone callback');
-        onDone = args.onDone;
-      }
-      if ('profile' in args) {
-        profile = !!args.profile;
-      }
-      if ('pixelRatio' in args) {
-        pixelRatio = +args.pixelRatio;
-        check$1(pixelRatio > 0, 'invalid pixel ratio');
-      }
-    }
-  } else {
-    check$1.raise('invalid arguments to regl');
-  }
-
-  if (element) {
-    if (element.nodeName.toLowerCase() === 'canvas') {
-      canvas = element;
-    } else {
-      container = element;
-    }
-  }
-
-  if (!gl) {
-    if (!canvas) {
-      check$1(
-        typeof document !== 'undefined',
-        'must manually specify webgl context outside of DOM environments');
-      var result = createCanvas(container || document.body, onDone, pixelRatio);
-      if (!result) {
-        return null
-      }
-      canvas = result.canvas;
-      onDestroy = result.onDestroy;
-    }
-    gl = createContext(canvas, contextAttributes);
-  }
-
-  if (!gl) {
-    onDestroy();
-    onDone('webgl not supported, try upgrading your browser or graphics drivers http://get.webgl.org');
-    return null
-  }
-
-  return {
-    gl: gl,
-    canvas: canvas,
-    container: container,
-    extensions: extensions,
-    optionalExtensions: optionalExtensions,
-    pixelRatio: pixelRatio,
-    profile: profile,
-    onDone: onDone,
-    onDestroy: onDestroy
-  }
-}
-
-function createExtensionCache (gl, config) {
-  var extensions = {};
-
-  function tryLoadExtension (name_) {
-    check$1.type(name_, 'string', 'extension name must be string');
-    var name = name_.toLowerCase();
-    var ext;
-    try {
-      ext = extensions[name] = gl.getExtension(name);
-    } catch (e) {}
-    return !!ext
-  }
-
-  for (var i = 0; i < config.extensions.length; ++i) {
-    var name = config.extensions[i];
-    if (!tryLoadExtension(name)) {
-      config.onDestroy();
-      config.onDone('"' + name + '" extension is not supported by the current WebGL context, try upgrading your system or a different browser');
-      return null
-    }
-  }
-
-  config.optionalExtensions.forEach(tryLoadExtension);
-
-  return {
-    extensions: extensions,
-    restore: function () {
-      Object.keys(extensions).forEach(function (name) {
-        if (!tryLoadExtension(name)) {
-          throw new Error('(regl): error restoring extension ' + name)
-        }
-      });
-    }
-  }
-}
-
-var GL_SUBPIXEL_BITS = 0x0D50;
-var GL_RED_BITS = 0x0D52;
-var GL_GREEN_BITS = 0x0D53;
-var GL_BLUE_BITS = 0x0D54;
-var GL_ALPHA_BITS = 0x0D55;
-var GL_DEPTH_BITS = 0x0D56;
-var GL_STENCIL_BITS = 0x0D57;
-
-var GL_ALIASED_POINT_SIZE_RANGE = 0x846D;
-var GL_ALIASED_LINE_WIDTH_RANGE = 0x846E;
-
-var GL_MAX_TEXTURE_SIZE = 0x0D33;
-var GL_MAX_VIEWPORT_DIMS = 0x0D3A;
-var GL_MAX_VERTEX_ATTRIBS = 0x8869;
-var GL_MAX_VERTEX_UNIFORM_VECTORS = 0x8DFB;
-var GL_MAX_VARYING_VECTORS = 0x8DFC;
-var GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS = 0x8B4D;
-var GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS = 0x8B4C;
-var GL_MAX_TEXTURE_IMAGE_UNITS = 0x8872;
-var GL_MAX_FRAGMENT_UNIFORM_VECTORS = 0x8DFD;
-var GL_MAX_CUBE_MAP_TEXTURE_SIZE = 0x851C;
-var GL_MAX_RENDERBUFFER_SIZE = 0x84E8;
-
-var GL_VENDOR = 0x1F00;
-var GL_RENDERER = 0x1F01;
-var GL_VERSION = 0x1F02;
-var GL_SHADING_LANGUAGE_VERSION = 0x8B8C;
-
-var GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = 0x84FF;
-
-var GL_MAX_COLOR_ATTACHMENTS_WEBGL = 0x8CDF;
-var GL_MAX_DRAW_BUFFERS_WEBGL = 0x8824;
-
-var wrapLimits = function (gl, extensions) {
-  var maxAnisotropic = 1;
-  if (extensions.ext_texture_filter_anisotropic) {
-    maxAnisotropic = gl.getParameter(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-  }
-
-  var maxDrawbuffers = 1;
-  var maxColorAttachments = 1;
-  if (extensions.webgl_draw_buffers) {
-    maxDrawbuffers = gl.getParameter(GL_MAX_DRAW_BUFFERS_WEBGL);
-    maxColorAttachments = gl.getParameter(GL_MAX_COLOR_ATTACHMENTS_WEBGL);
-  }
-
-  return {
-    // drawing buffer bit depth
-    colorBits: [
-      gl.getParameter(GL_RED_BITS),
-      gl.getParameter(GL_GREEN_BITS),
-      gl.getParameter(GL_BLUE_BITS),
-      gl.getParameter(GL_ALPHA_BITS)
-    ],
-    depthBits: gl.getParameter(GL_DEPTH_BITS),
-    stencilBits: gl.getParameter(GL_STENCIL_BITS),
-    subpixelBits: gl.getParameter(GL_SUBPIXEL_BITS),
-
-    // supported extensions
-    extensions: Object.keys(extensions).filter(function (ext) {
-      return !!extensions[ext]
-    }),
-
-    // max aniso samples
-    maxAnisotropic: maxAnisotropic,
-
-    // max draw buffers
-    maxDrawbuffers: maxDrawbuffers,
-    maxColorAttachments: maxColorAttachments,
-
-    // point and line size ranges
-    pointSizeDims: gl.getParameter(GL_ALIASED_POINT_SIZE_RANGE),
-    lineWidthDims: gl.getParameter(GL_ALIASED_LINE_WIDTH_RANGE),
-    maxViewportDims: gl.getParameter(GL_MAX_VIEWPORT_DIMS),
-    maxCombinedTextureUnits: gl.getParameter(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS),
-    maxCubeMapSize: gl.getParameter(GL_MAX_CUBE_MAP_TEXTURE_SIZE),
-    maxRenderbufferSize: gl.getParameter(GL_MAX_RENDERBUFFER_SIZE),
-    maxTextureUnits: gl.getParameter(GL_MAX_TEXTURE_IMAGE_UNITS),
-    maxTextureSize: gl.getParameter(GL_MAX_TEXTURE_SIZE),
-    maxAttributes: gl.getParameter(GL_MAX_VERTEX_ATTRIBS),
-    maxVertexUniforms: gl.getParameter(GL_MAX_VERTEX_UNIFORM_VECTORS),
-    maxVertexTextureUnits: gl.getParameter(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS),
-    maxVaryingVectors: gl.getParameter(GL_MAX_VARYING_VECTORS),
-    maxFragmentUniforms: gl.getParameter(GL_MAX_FRAGMENT_UNIFORM_VECTORS),
-
-    // vendor info
-    glsl: gl.getParameter(GL_SHADING_LANGUAGE_VERSION),
-    renderer: gl.getParameter(GL_RENDERER),
-    vendor: gl.getParameter(GL_VENDOR),
-    version: gl.getParameter(GL_VERSION)
-  }
-};
-
-function isNDArrayLike (obj) {
-  return (
-    !!obj &&
-    typeof obj === 'object' &&
-    Array.isArray(obj.shape) &&
-    Array.isArray(obj.stride) &&
-    typeof obj.offset === 'number' &&
-    obj.shape.length === obj.stride.length &&
-    (Array.isArray(obj.data) ||
-      isTypedArray(obj.data)))
-}
-
-var values = function (obj) {
-  return Object.keys(obj).map(function (key) { return obj[key] })
-};
-
-function loop (n, f) {
-  var result = Array(n);
-  for (var i = 0; i < n; ++i) {
-    result[i] = f(i);
-  }
-  return result
-}
-
-var GL_BYTE$1 = 5120;
-var GL_UNSIGNED_BYTE$2 = 5121;
-var GL_SHORT$1 = 5122;
-var GL_UNSIGNED_SHORT$1 = 5123;
-var GL_INT$1 = 5124;
-var GL_UNSIGNED_INT$1 = 5125;
-var GL_FLOAT$2 = 5126;
-
-var bufferPool = loop(8, function () {
-  return []
-});
-
-function nextPow16 (v) {
-  for (var i = 16; i <= (1 << 28); i *= 16) {
-    if (v <= i) {
-      return i
-    }
-  }
-  return 0
-}
-
-function log2 (v) {
-  var r, shift;
-  r = (v > 0xFFFF) << 4;
-  v >>>= r;
-  shift = (v > 0xFF) << 3;
-  v >>>= shift; r |= shift;
-  shift = (v > 0xF) << 2;
-  v >>>= shift; r |= shift;
-  shift = (v > 0x3) << 1;
-  v >>>= shift; r |= shift;
-  return r | (v >> 1)
-}
-
-function alloc (n) {
-  var sz = nextPow16(n);
-  var bin = bufferPool[log2(sz) >> 2];
-  if (bin.length > 0) {
-    return bin.pop()
-  }
-  return new ArrayBuffer(sz)
-}
-
-function free (buf) {
-  bufferPool[log2(buf.byteLength) >> 2].push(buf);
-}
-
-function allocType (type, n) {
-  var result = null;
-  switch (type) {
-    case GL_BYTE$1:
-      result = new Int8Array(alloc(n), 0, n);
-      break
-    case GL_UNSIGNED_BYTE$2:
-      result = new Uint8Array(alloc(n), 0, n);
-      break
-    case GL_SHORT$1:
-      result = new Int16Array(alloc(2 * n), 0, n);
-      break
-    case GL_UNSIGNED_SHORT$1:
-      result = new Uint16Array(alloc(2 * n), 0, n);
-      break
-    case GL_INT$1:
-      result = new Int32Array(alloc(4 * n), 0, n);
-      break
-    case GL_UNSIGNED_INT$1:
-      result = new Uint32Array(alloc(4 * n), 0, n);
-      break
-    case GL_FLOAT$2:
-      result = new Float32Array(alloc(4 * n), 0, n);
-      break
-    default:
-      return null
-  }
-  if (result.length !== n) {
-    return result.subarray(0, n)
-  }
-  return result
-}
-
-function freeType (array) {
-  free(array.buffer);
-}
-
-var pool = {
-  alloc: alloc,
-  free: free,
-  allocType: allocType,
-  freeType: freeType
-};
-
-var flattenUtils = {
-  shape: arrayShape$1,
-  flatten: flattenArray
-};
-
-function flatten1D (array, nx, out) {
-  for (var i = 0; i < nx; ++i) {
-    out[i] = array[i];
-  }
-}
-
-function flatten2D (array, nx, ny, out) {
-  var ptr = 0;
-  for (var i = 0; i < nx; ++i) {
-    var row = array[i];
-    for (var j = 0; j < ny; ++j) {
-      out[ptr++] = row[j];
-    }
-  }
-}
-
-function flatten3D (array, nx, ny, nz, out, ptr_) {
-  var ptr = ptr_;
-  for (var i = 0; i < nx; ++i) {
-    var row = array[i];
-    for (var j = 0; j < ny; ++j) {
-      var col = row[j];
-      for (var k = 0; k < nz; ++k) {
-        out[ptr++] = col[k];
-      }
-    }
-  }
-}
-
-function flattenRec (array, shape, level, out, ptr) {
-  var stride = 1;
-  for (var i = level + 1; i < shape.length; ++i) {
-    stride *= shape[i];
-  }
-  var n = shape[level];
-  if (shape.length - level === 4) {
-    var nx = shape[level + 1];
-    var ny = shape[level + 2];
-    var nz = shape[level + 3];
-    for (i = 0; i < n; ++i) {
-      flatten3D(array[i], nx, ny, nz, out, ptr);
-      ptr += stride;
-    }
-  } else {
-    for (i = 0; i < n; ++i) {
-      flattenRec(array[i], shape, level + 1, out, ptr);
-      ptr += stride;
-    }
-  }
-}
-
-function flattenArray (array, shape, type, out_) {
-  var sz = 1;
-  if (shape.length) {
-    for (var i = 0; i < shape.length; ++i) {
-      sz *= shape[i];
-    }
-  } else {
-    sz = 0;
-  }
-  var out = out_ || pool.allocType(type, sz);
-  switch (shape.length) {
-    case 0:
-      break
-    case 1:
-      flatten1D(array, shape[0], out);
-      break
-    case 2:
-      flatten2D(array, shape[0], shape[1], out);
-      break
-    case 3:
-      flatten3D(array, shape[0], shape[1], shape[2], out, 0);
-      break
-    default:
-      flattenRec(array, shape, 0, out, 0);
-  }
-  return out
-}
-
-function arrayShape$1 (array_) {
-  var shape = [];
-  for (var array = array_; array.length; array = array[0]) {
-    shape.push(array.length);
-  }
-  return shape
-}
-
-var int8 = 5120;
-var int16 = 5122;
-var int32 = 5124;
-var uint8 = 5121;
-var uint16 = 5123;
-var uint32 = 5125;
-var float = 5126;
-var float32 = 5126;
-var glTypes = {
-	int8: int8,
-	int16: int16,
-	int32: int32,
-	uint8: uint8,
-	uint16: uint16,
-	uint32: uint32,
-	float: float,
-	float32: float32
-};
-
-var dynamic$1 = 35048;
-var stream = 35040;
-var usageTypes = {
-	dynamic: dynamic$1,
-	stream: stream,
-	"static": 35044
-};
-
-var arrayFlatten = flattenUtils.flatten;
-var arrayShape = flattenUtils.shape;
-
-var GL_STATIC_DRAW = 0x88E4;
-var GL_STREAM_DRAW = 0x88E0;
-
-var GL_UNSIGNED_BYTE$1 = 5121;
-var GL_FLOAT$1 = 5126;
-
-var DTYPES_SIZES = [];
-DTYPES_SIZES[5120] = 1; // int8
-DTYPES_SIZES[5122] = 2; // int16
-DTYPES_SIZES[5124] = 4; // int32
-DTYPES_SIZES[5121] = 1; // uint8
-DTYPES_SIZES[5123] = 2; // uint16
-DTYPES_SIZES[5125] = 4; // uint32
-DTYPES_SIZES[5126] = 4; // float32
-
-function typedArrayCode (data) {
-  return arrayTypes[Object.prototype.toString.call(data)] | 0
-}
-
-function copyArray (out, inp) {
-  for (var i = 0; i < inp.length; ++i) {
-    out[i] = inp[i];
-  }
-}
-
-function transpose (
-  result, data, shapeX, shapeY, strideX, strideY, offset) {
-  var ptr = 0;
-  for (var i = 0; i < shapeX; ++i) {
-    for (var j = 0; j < shapeY; ++j) {
-      result[ptr++] = data[strideX * i + strideY * j + offset];
-    }
-  }
-}
-
-function wrapBufferState (gl, stats, config) {
-  var bufferCount = 0;
-  var bufferSet = {};
-
-  function REGLBuffer (type) {
-    this.id = bufferCount++;
-    this.buffer = gl.createBuffer();
-    this.type = type;
-    this.usage = GL_STATIC_DRAW;
-    this.byteLength = 0;
-    this.dimension = 1;
-    this.dtype = GL_UNSIGNED_BYTE$1;
-
-    this.persistentData = null;
-
-    if (config.profile) {
-      this.stats = {size: 0};
-    }
-  }
-
-  REGLBuffer.prototype.bind = function () {
-    gl.bindBuffer(this.type, this.buffer);
-  };
-
-  REGLBuffer.prototype.destroy = function () {
-    destroy(this);
-  };
-
-  var streamPool = [];
-
-  function createStream (type, data) {
-    var buffer = streamPool.pop();
-    if (!buffer) {
-      buffer = new REGLBuffer(type);
-    }
-    buffer.bind();
-    initBufferFromData(buffer, data, GL_STREAM_DRAW, 0, 1, false);
-    return buffer
-  }
-
-  function destroyStream (stream$$1) {
-    streamPool.push(stream$$1);
-  }
-
-  function initBufferFromTypedArray (buffer, data, usage) {
-    buffer.byteLength = data.byteLength;
-    gl.bufferData(buffer.type, data, usage);
-  }
-
-  function initBufferFromData (buffer, data, usage, dtype, dimension, persist) {
-    var shape;
-    buffer.usage = usage;
-    if (Array.isArray(data)) {
-      buffer.dtype = dtype || GL_FLOAT$1;
-      if (data.length > 0) {
-        var flatData;
-        if (Array.isArray(data[0])) {
-          shape = arrayShape(data);
-          var dim = 1;
-          for (var i = 1; i < shape.length; ++i) {
-            dim *= shape[i];
-          }
-          buffer.dimension = dim;
-          flatData = arrayFlatten(data, shape, buffer.dtype);
-          initBufferFromTypedArray(buffer, flatData, usage);
-          if (persist) {
-            buffer.persistentData = flatData;
-          } else {
-            pool.freeType(flatData);
-          }
-        } else if (typeof data[0] === 'number') {
-          buffer.dimension = dimension;
-          var typedData = pool.allocType(buffer.dtype, data.length);
-          copyArray(typedData, data);
-          initBufferFromTypedArray(buffer, typedData, usage);
-          if (persist) {
-            buffer.persistentData = typedData;
-          } else {
-            pool.freeType(typedData);
-          }
-        } else if (isTypedArray(data[0])) {
-          buffer.dimension = data[0].length;
-          buffer.dtype = dtype || typedArrayCode(data[0]) || GL_FLOAT$1;
-          flatData = arrayFlatten(
-            data,
-            [data.length, data[0].length],
-            buffer.dtype);
-          initBufferFromTypedArray(buffer, flatData, usage);
-          if (persist) {
-            buffer.persistentData = flatData;
-          } else {
-            pool.freeType(flatData);
-          }
-        } else {
-          check$1.raise('invalid buffer data');
-        }
-      }
-    } else if (isTypedArray(data)) {
-      buffer.dtype = dtype || typedArrayCode(data);
-      buffer.dimension = dimension;
-      initBufferFromTypedArray(buffer, data, usage);
-      if (persist) {
-        buffer.persistentData = new Uint8Array(new Uint8Array(data.buffer));
-      }
-    } else if (isNDArrayLike(data)) {
-      shape = data.shape;
-      var stride = data.stride;
-      var offset = data.offset;
-
-      var shapeX = 0;
-      var shapeY = 0;
-      var strideX = 0;
-      var strideY = 0;
-      if (shape.length === 1) {
-        shapeX = shape[0];
-        shapeY = 1;
-        strideX = stride[0];
-        strideY = 0;
-      } else if (shape.length === 2) {
-        shapeX = shape[0];
-        shapeY = shape[1];
-        strideX = stride[0];
-        strideY = stride[1];
-      } else {
-        check$1.raise('invalid shape');
-      }
-
-      buffer.dtype = dtype || typedArrayCode(data.data) || GL_FLOAT$1;
-      buffer.dimension = shapeY;
-
-      var transposeData = pool.allocType(buffer.dtype, shapeX * shapeY);
-      transpose(transposeData,
-        data.data,
-        shapeX, shapeY,
-        strideX, strideY,
-        offset);
-      initBufferFromTypedArray(buffer, transposeData, usage);
-      if (persist) {
-        buffer.persistentData = transposeData;
-      } else {
-        pool.freeType(transposeData);
-      }
-    } else {
-      check$1.raise('invalid buffer data');
-    }
-  }
-
-  function destroy (buffer) {
-    stats.bufferCount--;
-
-    var handle = buffer.buffer;
-    check$1(handle, 'buffer must not be deleted already');
-    gl.deleteBuffer(handle);
-    buffer.buffer = null;
-    delete bufferSet[buffer.id];
-  }
-
-  function createBuffer (options, type, deferInit, persistent) {
-    stats.bufferCount++;
-
-    var buffer = new REGLBuffer(type);
-    bufferSet[buffer.id] = buffer;
-
-    function reglBuffer (options) {
-      var usage = GL_STATIC_DRAW;
-      var data = null;
-      var byteLength = 0;
-      var dtype = 0;
-      var dimension = 1;
-      if (Array.isArray(options) ||
-          isTypedArray(options) ||
-          isNDArrayLike(options)) {
-        data = options;
-      } else if (typeof options === 'number') {
-        byteLength = options | 0;
-      } else if (options) {
-        check$1.type(
-          options, 'object',
-          'buffer arguments must be an object, a number or an array');
-
-        if ('data' in options) {
-          check$1(
-            data === null ||
-            Array.isArray(data) ||
-            isTypedArray(data) ||
-            isNDArrayLike(data),
-            'invalid data for buffer');
-          data = options.data;
-        }
-
-        if ('usage' in options) {
-          check$1.parameter(options.usage, usageTypes, 'invalid buffer usage');
-          usage = usageTypes[options.usage];
-        }
-
-        if ('type' in options) {
-          check$1.parameter(options.type, glTypes, 'invalid buffer type');
-          dtype = glTypes[options.type];
-        }
-
-        if ('dimension' in options) {
-          check$1.type(options.dimension, 'number', 'invalid dimension');
-          dimension = options.dimension | 0;
-        }
-
-        if ('length' in options) {
-          check$1.nni(byteLength, 'buffer length must be a nonnegative integer');
-          byteLength = options.length | 0;
-        }
-      }
-
-      buffer.bind();
-      if (!data) {
-        gl.bufferData(buffer.type, byteLength, usage);
-        buffer.dtype = dtype || GL_UNSIGNED_BYTE$1;
-        buffer.usage = usage;
-        buffer.dimension = dimension;
-        buffer.byteLength = byteLength;
-      } else {
-        initBufferFromData(buffer, data, usage, dtype, dimension, persistent);
-      }
-
-      if (config.profile) {
-        buffer.stats.size = buffer.byteLength * DTYPES_SIZES[buffer.dtype];
-      }
-
-      return reglBuffer
-    }
-
-    function setSubData (data, offset) {
-      check$1(offset + data.byteLength <= buffer.byteLength,
-        'invalid buffer subdata call, buffer is too small. ' + ' Can\'t write data of size ' + data.byteLength + ' starting from offset ' + offset + ' to a buffer of size ' + buffer.byteLength);
-
-      gl.bufferSubData(buffer.type, offset, data);
-    }
-
-    function subdata (data, offset_) {
-      var offset = (offset_ || 0) | 0;
-      var shape;
-      buffer.bind();
-      if (Array.isArray(data)) {
-        if (data.length > 0) {
-          if (typeof data[0] === 'number') {
-            var converted = pool.allocType(buffer.dtype, data.length);
-            copyArray(converted, data);
-            setSubData(converted, offset);
-            pool.freeType(converted);
-          } else if (Array.isArray(data[0]) || isTypedArray(data[0])) {
-            shape = arrayShape(data);
-            var flatData = arrayFlatten(data, shape, buffer.dtype);
-            setSubData(flatData, offset);
-            pool.freeType(flatData);
-          } else {
-            check$1.raise('invalid buffer data');
-          }
-        }
-      } else if (isTypedArray(data)) {
-        setSubData(data, offset);
-      } else if (isNDArrayLike(data)) {
-        shape = data.shape;
-        var stride = data.stride;
-
-        var shapeX = 0;
-        var shapeY = 0;
-        var strideX = 0;
-        var strideY = 0;
-        if (shape.length === 1) {
-          shapeX = shape[0];
-          shapeY = 1;
-          strideX = stride[0];
-          strideY = 0;
-        } else if (shape.length === 2) {
-          shapeX = shape[0];
-          shapeY = shape[1];
-          strideX = stride[0];
-          strideY = stride[1];
-        } else {
-          check$1.raise('invalid shape');
-        }
-        var dtype = Array.isArray(data.data)
-          ? buffer.dtype
-          : typedArrayCode(data.data);
-
-        var transposeData = pool.allocType(dtype, shapeX * shapeY);
-        transpose(transposeData,
-          data.data,
-          shapeX, shapeY,
-          strideX, strideY,
-          data.offset);
-        setSubData(transposeData, offset);
-        pool.freeType(transposeData);
-      } else {
-        check$1.raise('invalid data for buffer subdata');
-      }
-      return reglBuffer
-    }
-
-    if (!deferInit) {
-      reglBuffer(options);
-    }
-
-    reglBuffer._reglType = 'buffer';
-    reglBuffer._buffer = buffer;
-    reglBuffer.subdata = subdata;
-    if (config.profile) {
-      reglBuffer.stats = buffer.stats;
-    }
-    reglBuffer.destroy = function () { destroy(buffer); };
-
-    return reglBuffer
-  }
-
-  function restoreBuffers () {
-    values(bufferSet).forEach(function (buffer) {
-      buffer.buffer = gl.createBuffer();
-      gl.bindBuffer(buffer.type, buffer.buffer);
-      gl.bufferData(
-        buffer.type, buffer.persistentData || buffer.byteLength, buffer.usage);
-    });
-  }
-
-  if (config.profile) {
-    stats.getTotalBufferSize = function () {
-      var total = 0;
-      // TODO: Right now, the streams are not part of the total count.
-      Object.keys(bufferSet).forEach(function (key) {
-        total += bufferSet[key].stats.size;
-      });
-      return total
-    };
-  }
-
-  return {
-    create: createBuffer,
-
-    createStream: createStream,
-    destroyStream: destroyStream,
-
-    clear: function () {
-      values(bufferSet).forEach(destroy);
-      streamPool.forEach(destroy);
-    },
-
-    getBuffer: function (wrapper) {
-      if (wrapper && wrapper._buffer instanceof REGLBuffer) {
-        return wrapper._buffer
-      }
-      return null
-    },
-
-    restore: restoreBuffers,
-
-    _initBuffer: initBufferFromData
-  }
-}
-
-var points = 0;
-var point = 0;
-var lines = 1;
-var line = 1;
-var triangles = 4;
-var triangle = 4;
-var primTypes = {
-	points: points,
-	point: point,
-	lines: lines,
-	line: line,
-	triangles: triangles,
-	triangle: triangle,
-	"line loop": 2,
-	"line strip": 3,
-	"triangle strip": 5,
-	"triangle fan": 6
-};
-
-var GL_POINTS = 0;
-var GL_LINES = 1;
-var GL_TRIANGLES = 4;
-
-var GL_BYTE$2 = 5120;
-var GL_UNSIGNED_BYTE$3 = 5121;
-var GL_SHORT$2 = 5122;
-var GL_UNSIGNED_SHORT$2 = 5123;
-var GL_INT$2 = 5124;
-var GL_UNSIGNED_INT$2 = 5125;
-
-var GL_ELEMENT_ARRAY_BUFFER = 34963;
-
-var GL_STREAM_DRAW$1 = 0x88E0;
-var GL_STATIC_DRAW$1 = 0x88E4;
-
-function wrapElementsState (gl, extensions, bufferState, stats) {
-  var elementSet = {};
-  var elementCount = 0;
-
-  var elementTypes = {
-    'uint8': GL_UNSIGNED_BYTE$3,
-    'uint16': GL_UNSIGNED_SHORT$2
-  };
-
-  if (extensions.oes_element_index_uint) {
-    elementTypes.uint32 = GL_UNSIGNED_INT$2;
-  }
-
-  function REGLElementBuffer (buffer) {
-    this.id = elementCount++;
-    elementSet[this.id] = this;
-    this.buffer = buffer;
-    this.primType = GL_TRIANGLES;
-    this.vertCount = 0;
-    this.type = 0;
-  }
-
-  REGLElementBuffer.prototype.bind = function () {
-    this.buffer.bind();
-  };
-
-  var bufferPool = [];
-
-  function createElementStream (data) {
-    var result = bufferPool.pop();
-    if (!result) {
-      result = new REGLElementBuffer(bufferState.create(
-        null,
-        GL_ELEMENT_ARRAY_BUFFER,
-        true,
-        false)._buffer);
-    }
-    initElements(result, data, GL_STREAM_DRAW$1, -1, -1, 0, 0);
-    return result
-  }
-
-  function destroyElementStream (elements) {
-    bufferPool.push(elements);
-  }
-
-  function initElements (
-    elements,
-    data,
-    usage,
-    prim,
-    count,
-    byteLength,
-    type) {
-    elements.buffer.bind();
-    if (data) {
-      var predictedType = type;
-      if (!type && (
-          !isTypedArray(data) ||
-         (isNDArrayLike(data) && !isTypedArray(data.data)))) {
-        predictedType = extensions.oes_element_index_uint
-          ? GL_UNSIGNED_INT$2
-          : GL_UNSIGNED_SHORT$2;
-      }
-      bufferState._initBuffer(
-        elements.buffer,
-        data,
-        usage,
-        predictedType,
-        3);
-    } else {
-      gl.bufferData(GL_ELEMENT_ARRAY_BUFFER, byteLength, usage);
-      elements.buffer.dtype = dtype || GL_UNSIGNED_BYTE$3;
-      elements.buffer.usage = usage;
-      elements.buffer.dimension = 3;
-      elements.buffer.byteLength = byteLength;
-    }
-
-    var dtype = type;
-    if (!type) {
-      switch (elements.buffer.dtype) {
-        case GL_UNSIGNED_BYTE$3:
-        case GL_BYTE$2:
-          dtype = GL_UNSIGNED_BYTE$3;
-          break
-
-        case GL_UNSIGNED_SHORT$2:
-        case GL_SHORT$2:
-          dtype = GL_UNSIGNED_SHORT$2;
-          break
-
-        case GL_UNSIGNED_INT$2:
-        case GL_INT$2:
-          dtype = GL_UNSIGNED_INT$2;
-          break
-
-        default:
-          check$1.raise('unsupported type for element array');
-      }
-      elements.buffer.dtype = dtype;
-    }
-    elements.type = dtype;
-
-    // Check oes_element_index_uint extension
-    check$1(
-      dtype !== GL_UNSIGNED_INT$2 ||
-      !!extensions.oes_element_index_uint,
-      '32 bit element buffers not supported, enable oes_element_index_uint first');
-
-    // try to guess default primitive type and arguments
-    var vertCount = count;
-    if (vertCount < 0) {
-      vertCount = elements.buffer.byteLength;
-      if (dtype === GL_UNSIGNED_SHORT$2) {
-        vertCount >>= 1;
-      } else if (dtype === GL_UNSIGNED_INT$2) {
-        vertCount >>= 2;
-      }
-    }
-    elements.vertCount = vertCount;
-
-    // try to guess primitive type from cell dimension
-    var primType = prim;
-    if (prim < 0) {
-      primType = GL_TRIANGLES;
-      var dimension = elements.buffer.dimension;
-      if (dimension === 1) primType = GL_POINTS;
-      if (dimension === 2) primType = GL_LINES;
-      if (dimension === 3) primType = GL_TRIANGLES;
-    }
-    elements.primType = primType;
-  }
-
-  function destroyElements (elements) {
-    stats.elementsCount--;
-
-    check$1(elements.buffer !== null, 'must not double destroy elements');
-    delete elementSet[elements.id];
-    elements.buffer.destroy();
-    elements.buffer = null;
-  }
-
-  function createElements (options, persistent) {
-    var buffer = bufferState.create(null, GL_ELEMENT_ARRAY_BUFFER, true);
-    var elements = new REGLElementBuffer(buffer._buffer);
-    stats.elementsCount++;
-
-    function reglElements (options) {
-      if (!options) {
-        buffer();
-        elements.primType = GL_TRIANGLES;
-        elements.vertCount = 0;
-        elements.type = GL_UNSIGNED_BYTE$3;
-      } else if (typeof options === 'number') {
-        buffer(options);
-        elements.primType = GL_TRIANGLES;
-        elements.vertCount = options | 0;
-        elements.type = GL_UNSIGNED_BYTE$3;
-      } else {
-        var data = null;
-        var usage = GL_STATIC_DRAW$1;
-        var primType = -1;
-        var vertCount = -1;
-        var byteLength = 0;
-        var dtype = 0;
-        if (Array.isArray(options) ||
-            isTypedArray(options) ||
-            isNDArrayLike(options)) {
-          data = options;
-        } else {
-          check$1.type(options, 'object', 'invalid arguments for elements');
-          if ('data' in options) {
-            data = options.data;
-            check$1(
-                Array.isArray(data) ||
-                isTypedArray(data) ||
-                isNDArrayLike(data),
-                'invalid data for element buffer');
-          }
-          if ('usage' in options) {
-            check$1.parameter(
-              options.usage,
-              usageTypes,
-              'invalid element buffer usage');
-            usage = usageTypes[options.usage];
-          }
-          if ('primitive' in options) {
-            check$1.parameter(
-              options.primitive,
-              primTypes,
-              'invalid element buffer primitive');
-            primType = primTypes[options.primitive];
-          }
-          if ('count' in options) {
-            check$1(
-              typeof options.count === 'number' && options.count >= 0,
-              'invalid vertex count for elements');
-            vertCount = options.count | 0;
-          }
-          if ('type' in options) {
-            check$1.parameter(
-              options.type,
-              elementTypes,
-              'invalid buffer type');
-            dtype = elementTypes[options.type];
-          }
-          if ('length' in options) {
-            byteLength = options.length | 0;
-          } else {
-            byteLength = vertCount;
-            if (dtype === GL_UNSIGNED_SHORT$2 || dtype === GL_SHORT$2) {
-              byteLength *= 2;
-            } else if (dtype === GL_UNSIGNED_INT$2 || dtype === GL_INT$2) {
-              byteLength *= 4;
-            }
-          }
-        }
-        initElements(
-          elements,
-          data,
-          usage,
-          primType,
-          vertCount,
-          byteLength,
-          dtype);
-      }
-
-      return reglElements
-    }
-
-    reglElements(options);
-
-    reglElements._reglType = 'elements';
-    reglElements._elements = elements;
-    reglElements.subdata = function (data, offset) {
-      buffer.subdata(data, offset);
-      return reglElements
-    };
-    reglElements.destroy = function () {
-      destroyElements(elements);
-    };
-
-    return reglElements
-  }
-
-  return {
-    create: createElements,
-    createStream: createElementStream,
-    destroyStream: destroyElementStream,
-    getElements: function (elements) {
-      if (typeof elements === 'function' &&
-          elements._elements instanceof REGLElementBuffer) {
-        return elements._elements
-      }
-      return null
-    },
-    clear: function () {
-      values(elementSet).forEach(destroyElements);
-    }
-  }
-}
-
-var FLOAT = new Float32Array(1);
-var INT = new Uint32Array(FLOAT.buffer);
-
-var GL_UNSIGNED_SHORT$4 = 5123;
-
-function convertToHalfFloat (array) {
-  var ushorts = pool.allocType(GL_UNSIGNED_SHORT$4, array.length);
-
-  for (var i = 0; i < array.length; ++i) {
-    if (isNaN(array[i])) {
-      ushorts[i] = 0xffff;
-    } else if (array[i] === Infinity) {
-      ushorts[i] = 0x7c00;
-    } else if (array[i] === -Infinity) {
-      ushorts[i] = 0xfc00;
-    } else {
-      FLOAT[0] = array[i];
-      var x = INT[0];
-
-      var sgn = (x >>> 31) << 15;
-      var exp = ((x << 1) >>> 24) - 127;
-      var frac = (x >> 13) & ((1 << 10) - 1);
-
-      if (exp < -24) {
-        // round non-representable denormals to 0
-        ushorts[i] = sgn;
-      } else if (exp < -14) {
-        // handle denormals
-        var s = -14 - exp;
-        ushorts[i] = sgn + ((frac + (1 << 10)) >> s);
-      } else if (exp > 15) {
-        // round overflow to +/- Infinity
-        ushorts[i] = sgn + 0x7c00;
-      } else {
-        // otherwise convert directly
-        ushorts[i] = sgn + ((exp + 15) << 10) + frac;
-      }
-    }
-  }
-
-  return ushorts
-}
-
-function isArrayLike (s) {
-  return Array.isArray(s) || isTypedArray(s)
-}
-
-var GL_COMPRESSED_TEXTURE_FORMATS = 0x86A3;
-
-var GL_TEXTURE_2D = 0x0DE1;
-var GL_TEXTURE_CUBE_MAP = 0x8513;
-var GL_TEXTURE_CUBE_MAP_POSITIVE_X = 0x8515;
-
-var GL_RGBA = 0x1908;
-var GL_ALPHA = 0x1906;
-var GL_RGB = 0x1907;
-var GL_LUMINANCE = 0x1909;
-var GL_LUMINANCE_ALPHA = 0x190A;
-
-var GL_RGBA4 = 0x8056;
-var GL_RGB5_A1 = 0x8057;
-var GL_RGB565 = 0x8D62;
-
-var GL_UNSIGNED_SHORT_4_4_4_4$1 = 0x8033;
-var GL_UNSIGNED_SHORT_5_5_5_1$1 = 0x8034;
-var GL_UNSIGNED_SHORT_5_6_5$1 = 0x8363;
-var GL_UNSIGNED_INT_24_8_WEBGL$1 = 0x84FA;
-
-var GL_DEPTH_COMPONENT = 0x1902;
-var GL_DEPTH_STENCIL = 0x84F9;
-
-var GL_SRGB_EXT = 0x8C40;
-var GL_SRGB_ALPHA_EXT = 0x8C42;
-
-var GL_HALF_FLOAT_OES$1 = 0x8D61;
-
-var GL_COMPRESSED_RGB_S3TC_DXT1_EXT = 0x83F0;
-var GL_COMPRESSED_RGBA_S3TC_DXT1_EXT = 0x83F1;
-var GL_COMPRESSED_RGBA_S3TC_DXT3_EXT = 0x83F2;
-var GL_COMPRESSED_RGBA_S3TC_DXT5_EXT = 0x83F3;
-
-var GL_COMPRESSED_RGB_ATC_WEBGL = 0x8C92;
-var GL_COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL = 0x8C93;
-var GL_COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL = 0x87EE;
-
-var GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG = 0x8C00;
-var GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG = 0x8C01;
-var GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG = 0x8C02;
-var GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG = 0x8C03;
-
-var GL_COMPRESSED_RGB_ETC1_WEBGL = 0x8D64;
-
-var GL_UNSIGNED_BYTE$4 = 0x1401;
-var GL_UNSIGNED_SHORT$3 = 0x1403;
-var GL_UNSIGNED_INT$3 = 0x1405;
-var GL_FLOAT$3 = 0x1406;
-
-var GL_TEXTURE_WRAP_S = 0x2802;
-var GL_TEXTURE_WRAP_T = 0x2803;
-
-var GL_REPEAT = 0x2901;
-var GL_CLAMP_TO_EDGE$1 = 0x812F;
-var GL_MIRRORED_REPEAT = 0x8370;
-
-var GL_TEXTURE_MAG_FILTER = 0x2800;
-var GL_TEXTURE_MIN_FILTER = 0x2801;
-
-var GL_NEAREST$1 = 0x2600;
-var GL_LINEAR = 0x2601;
-var GL_NEAREST_MIPMAP_NEAREST$1 = 0x2700;
-var GL_LINEAR_MIPMAP_NEAREST$1 = 0x2701;
-var GL_NEAREST_MIPMAP_LINEAR$1 = 0x2702;
-var GL_LINEAR_MIPMAP_LINEAR$1 = 0x2703;
-
-var GL_GENERATE_MIPMAP_HINT = 0x8192;
-var GL_DONT_CARE = 0x1100;
-var GL_FASTEST = 0x1101;
-var GL_NICEST = 0x1102;
-
-var GL_TEXTURE_MAX_ANISOTROPY_EXT = 0x84FE;
-
-var GL_UNPACK_ALIGNMENT = 0x0CF5;
-var GL_UNPACK_FLIP_Y_WEBGL = 0x9240;
-var GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL = 0x9241;
-var GL_UNPACK_COLORSPACE_CONVERSION_WEBGL = 0x9243;
-
-var GL_BROWSER_DEFAULT_WEBGL = 0x9244;
-
-var GL_TEXTURE0 = 0x84C0;
-
-var MIPMAP_FILTERS = [
-  GL_NEAREST_MIPMAP_NEAREST$1,
-  GL_NEAREST_MIPMAP_LINEAR$1,
-  GL_LINEAR_MIPMAP_NEAREST$1,
-  GL_LINEAR_MIPMAP_LINEAR$1
-];
-
-var CHANNELS_FORMAT = [
-  0,
-  GL_LUMINANCE,
-  GL_LUMINANCE_ALPHA,
-  GL_RGB,
-  GL_RGBA
-];
-
-var FORMAT_CHANNELS = {};
-FORMAT_CHANNELS[GL_LUMINANCE] =
-FORMAT_CHANNELS[GL_ALPHA] =
-FORMAT_CHANNELS[GL_DEPTH_COMPONENT] = 1;
-FORMAT_CHANNELS[GL_DEPTH_STENCIL] =
-FORMAT_CHANNELS[GL_LUMINANCE_ALPHA] = 2;
-FORMAT_CHANNELS[GL_RGB] =
-FORMAT_CHANNELS[GL_SRGB_EXT] = 3;
-FORMAT_CHANNELS[GL_RGBA] =
-FORMAT_CHANNELS[GL_SRGB_ALPHA_EXT] = 4;
-
-function objectName (str) {
-  return '[object ' + str + ']'
-}
-
-var CANVAS_CLASS = objectName('HTMLCanvasElement');
-var CONTEXT2D_CLASS = objectName('CanvasRenderingContext2D');
-var IMAGE_CLASS = objectName('HTMLImageElement');
-var VIDEO_CLASS = objectName('HTMLVideoElement');
-
-var PIXEL_CLASSES = Object.keys(arrayTypes).concat([
-  CANVAS_CLASS,
-  CONTEXT2D_CLASS,
-  IMAGE_CLASS,
-  VIDEO_CLASS
-]);
-
-// for every texture type, store
-// the size in bytes.
-var TYPE_SIZES = [];
-TYPE_SIZES[GL_UNSIGNED_BYTE$4] = 1;
-TYPE_SIZES[GL_FLOAT$3] = 4;
-TYPE_SIZES[GL_HALF_FLOAT_OES$1] = 2;
-
-TYPE_SIZES[GL_UNSIGNED_SHORT$3] = 2;
-TYPE_SIZES[GL_UNSIGNED_INT$3] = 4;
-
-var FORMAT_SIZES_SPECIAL = [];
-FORMAT_SIZES_SPECIAL[GL_RGBA4] = 2;
-FORMAT_SIZES_SPECIAL[GL_RGB5_A1] = 2;
-FORMAT_SIZES_SPECIAL[GL_RGB565] = 2;
-FORMAT_SIZES_SPECIAL[GL_DEPTH_STENCIL] = 4;
-
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGB_S3TC_DXT1_EXT] = 0.5;
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGBA_S3TC_DXT1_EXT] = 0.5;
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGBA_S3TC_DXT3_EXT] = 1;
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGBA_S3TC_DXT5_EXT] = 1;
-
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGB_ATC_WEBGL] = 0.5;
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL] = 1;
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL] = 1;
-
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG] = 0.5;
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG] = 0.25;
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG] = 0.5;
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG] = 0.25;
-
-FORMAT_SIZES_SPECIAL[GL_COMPRESSED_RGB_ETC1_WEBGL] = 0.5;
-
-function isNumericArray (arr) {
-  return (
-    Array.isArray(arr) &&
-    (arr.length === 0 ||
-    typeof arr[0] === 'number'))
-}
-
-function isRectArray (arr) {
-  if (!Array.isArray(arr)) {
-    return false
-  }
-  var width = arr.length;
-  if (width === 0 || !isArrayLike(arr[0])) {
-    return false
-  }
-  return true
-}
-
-function classString (x) {
-  return Object.prototype.toString.call(x)
-}
-
-function isCanvasElement (object) {
-  return classString(object) === CANVAS_CLASS
-}
-
-function isContext2D (object) {
-  return classString(object) === CONTEXT2D_CLASS
-}
-
-function isImageElement (object) {
-  return classString(object) === IMAGE_CLASS
-}
-
-function isVideoElement (object) {
-  return classString(object) === VIDEO_CLASS
-}
-
-function isPixelData (object) {
-  if (!object) {
-    return false
-  }
-  var className = classString(object);
-  if (PIXEL_CLASSES.indexOf(className) >= 0) {
-    return true
-  }
-  return (
-    isNumericArray(object) ||
-    isRectArray(object) ||
-    isNDArrayLike(object))
-}
-
-function typedArrayCode$1 (data) {
-  return arrayTypes[Object.prototype.toString.call(data)] | 0
-}
-
-function convertData (result, data) {
-  var n = data.length;
-  switch (result.type) {
-    case GL_UNSIGNED_BYTE$4:
-    case GL_UNSIGNED_SHORT$3:
-    case GL_UNSIGNED_INT$3:
-    case GL_FLOAT$3:
-      var converted = pool.allocType(result.type, n);
-      converted.set(data);
-      result.data = converted;
-      break
-
-    case GL_HALF_FLOAT_OES$1:
-      result.data = convertToHalfFloat(data);
-      break
-
-    default:
-      check$1.raise('unsupported texture type, must specify a typed array');
-  }
-}
-
-function preConvert (image, n) {
-  return pool.allocType(
-    image.type === GL_HALF_FLOAT_OES$1
-      ? GL_FLOAT$3
-      : image.type, n)
-}
-
-function postConvert (image, data) {
-  if (image.type === GL_HALF_FLOAT_OES$1) {
-    image.data = convertToHalfFloat(data);
-    pool.freeType(data);
-  } else {
-    image.data = data;
-  }
-}
-
-function transposeData (image, array, strideX, strideY, strideC, offset) {
-  var w = image.width;
-  var h = image.height;
-  var c = image.channels;
-  var n = w * h * c;
-  var data = preConvert(image, n);
-
-  var p = 0;
-  for (var i = 0; i < h; ++i) {
-    for (var j = 0; j < w; ++j) {
-      for (var k = 0; k < c; ++k) {
-        data[p++] = array[strideX * j + strideY * i + strideC * k + offset];
-      }
-    }
-  }
-
-  postConvert(image, data);
-}
-
-function getTextureSize (format, type, width, height, isMipmap, isCube) {
-  var s;
-  if (typeof FORMAT_SIZES_SPECIAL[format] !== 'undefined') {
-    // we have a special array for dealing with weird color formats such as RGB5A1
-    s = FORMAT_SIZES_SPECIAL[format];
-  } else {
-    s = FORMAT_CHANNELS[format] * TYPE_SIZES[type];
-  }
-
-  if (isCube) {
-    s *= 6;
-  }
-
-  if (isMipmap) {
-    // compute the total size of all the mipmaps.
-    var total = 0;
-
-    var w = width;
-    while (w >= 1) {
-      // we can only use mipmaps on a square image,
-      // so we can simply use the width and ignore the height:
-      total += s * w * w;
-      w /= 2;
-    }
-    return total
-  } else {
-    return s * width * height
-  }
-}
-
-function createTextureSet (
-  gl, extensions, limits, reglPoll, contextState, stats, config) {
-  // -------------------------------------------------------
-  // Initialize constants and parameter tables here
-  // -------------------------------------------------------
-  var mipmapHint = {
-    "don't care": GL_DONT_CARE,
-    'dont care': GL_DONT_CARE,
-    'nice': GL_NICEST,
-    'fast': GL_FASTEST
-  };
-
-  var wrapModes = {
-    'repeat': GL_REPEAT,
-    'clamp': GL_CLAMP_TO_EDGE$1,
-    'mirror': GL_MIRRORED_REPEAT
-  };
-
-  var magFilters = {
-    'nearest': GL_NEAREST$1,
-    'linear': GL_LINEAR
-  };
-
-  var minFilters = extend({
-    'mipmap': GL_LINEAR_MIPMAP_LINEAR$1,
-    'nearest mipmap nearest': GL_NEAREST_MIPMAP_NEAREST$1,
-    'linear mipmap nearest': GL_LINEAR_MIPMAP_NEAREST$1,
-    'nearest mipmap linear': GL_NEAREST_MIPMAP_LINEAR$1,
-    'linear mipmap linear': GL_LINEAR_MIPMAP_LINEAR$1
-  }, magFilters);
-
-  var colorSpace = {
-    'none': 0,
-    'browser': GL_BROWSER_DEFAULT_WEBGL
-  };
-
-  var textureTypes = {
-    'uint8': GL_UNSIGNED_BYTE$4,
-    'rgba4': GL_UNSIGNED_SHORT_4_4_4_4$1,
-    'rgb565': GL_UNSIGNED_SHORT_5_6_5$1,
-    'rgb5 a1': GL_UNSIGNED_SHORT_5_5_5_1$1
-  };
-
-  var textureFormats = {
-    'alpha': GL_ALPHA,
-    'luminance': GL_LUMINANCE,
-    'luminance alpha': GL_LUMINANCE_ALPHA,
-    'rgb': GL_RGB,
-    'rgba': GL_RGBA,
-    'rgba4': GL_RGBA4,
-    'rgb5 a1': GL_RGB5_A1,
-    'rgb565': GL_RGB565
-  };
-
-  var compressedTextureFormats = {};
-
-  if (extensions.ext_srgb) {
-    textureFormats.srgb = GL_SRGB_EXT;
-    textureFormats.srgba = GL_SRGB_ALPHA_EXT;
-  }
-
-  if (extensions.oes_texture_float) {
-    textureTypes.float32 = textureTypes.float = GL_FLOAT$3;
-  }
-
-  if (extensions.oes_texture_half_float) {
-    textureTypes['float16'] = textureTypes['half float'] = GL_HALF_FLOAT_OES$1;
-  }
-
-  if (extensions.webgl_depth_texture) {
-    extend(textureFormats, {
-      'depth': GL_DEPTH_COMPONENT,
-      'depth stencil': GL_DEPTH_STENCIL
-    });
-
-    extend(textureTypes, {
-      'uint16': GL_UNSIGNED_SHORT$3,
-      'uint32': GL_UNSIGNED_INT$3,
-      'depth stencil': GL_UNSIGNED_INT_24_8_WEBGL$1
-    });
-  }
-
-  if (extensions.webgl_compressed_texture_s3tc) {
-    extend(compressedTextureFormats, {
-      'rgb s3tc dxt1': GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
-      'rgba s3tc dxt1': GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
-      'rgba s3tc dxt3': GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
-      'rgba s3tc dxt5': GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
-    });
-  }
-
-  if (extensions.webgl_compressed_texture_atc) {
-    extend(compressedTextureFormats, {
-      'rgb atc': GL_COMPRESSED_RGB_ATC_WEBGL,
-      'rgba atc explicit alpha': GL_COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL,
-      'rgba atc interpolated alpha': GL_COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL
-    });
-  }
-
-  if (extensions.webgl_compressed_texture_pvrtc) {
-    extend(compressedTextureFormats, {
-      'rgb pvrtc 4bppv1': GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG,
-      'rgb pvrtc 2bppv1': GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG,
-      'rgba pvrtc 4bppv1': GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG,
-      'rgba pvrtc 2bppv1': GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG
-    });
-  }
-
-  if (extensions.webgl_compressed_texture_etc1) {
-    compressedTextureFormats['rgb etc1'] = GL_COMPRESSED_RGB_ETC1_WEBGL;
-  }
-
-  // Copy over all texture formats
-  var supportedCompressedFormats = Array.prototype.slice.call(
-    gl.getParameter(GL_COMPRESSED_TEXTURE_FORMATS));
-  Object.keys(compressedTextureFormats).forEach(function (name) {
-    var format = compressedTextureFormats[name];
-    if (supportedCompressedFormats.indexOf(format) >= 0) {
-      textureFormats[name] = format;
-    }
-  });
-
-  var supportedFormats = Object.keys(textureFormats);
-  limits.textureFormats = supportedFormats;
-
-  // associate with every format string its
-  // corresponding GL-value.
-  var textureFormatsInvert = [];
-  Object.keys(textureFormats).forEach(function (key) {
-    var val = textureFormats[key];
-    textureFormatsInvert[val] = key;
-  });
-
-  // associate with every type string its
-  // corresponding GL-value.
-  var textureTypesInvert = [];
-  Object.keys(textureTypes).forEach(function (key) {
-    var val = textureTypes[key];
-    textureTypesInvert[val] = key;
-  });
-
-  var magFiltersInvert = [];
-  Object.keys(magFilters).forEach(function (key) {
-    var val = magFilters[key];
-    magFiltersInvert[val] = key;
-  });
-
-  var minFiltersInvert = [];
-  Object.keys(minFilters).forEach(function (key) {
-    var val = minFilters[key];
-    minFiltersInvert[val] = key;
-  });
-
-  var wrapModesInvert = [];
-  Object.keys(wrapModes).forEach(function (key) {
-    var val = wrapModes[key];
-    wrapModesInvert[val] = key;
-  });
-
-  // colorFormats[] gives the format (channels) associated to an
-  // internalformat
-  var colorFormats = supportedFormats.reduce(function (color, key) {
-    var glenum = textureFormats[key];
-    if (glenum === GL_LUMINANCE ||
-        glenum === GL_ALPHA ||
-        glenum === GL_LUMINANCE ||
-        glenum === GL_LUMINANCE_ALPHA ||
-        glenum === GL_DEPTH_COMPONENT ||
-        glenum === GL_DEPTH_STENCIL) {
-      color[glenum] = glenum;
-    } else if (glenum === GL_RGB5_A1 || key.indexOf('rgba') >= 0) {
-      color[glenum] = GL_RGBA;
-    } else {
-      color[glenum] = GL_RGB;
-    }
-    return color
-  }, {});
-
-  function TexFlags () {
-    // format info
-    this.internalformat = GL_RGBA;
-    this.format = GL_RGBA;
-    this.type = GL_UNSIGNED_BYTE$4;
-    this.compressed = false;
-
-    // pixel storage
-    this.premultiplyAlpha = false;
-    this.flipY = false;
-    this.unpackAlignment = 1;
-    this.colorSpace = 0;
-
-    // shape info
-    this.width = 0;
-    this.height = 0;
-    this.channels = 0;
-  }
-
-  function copyFlags (result, other) {
-    result.internalformat = other.internalformat;
-    result.format = other.format;
-    result.type = other.type;
-    result.compressed = other.compressed;
-
-    result.premultiplyAlpha = other.premultiplyAlpha;
-    result.flipY = other.flipY;
-    result.unpackAlignment = other.unpackAlignment;
-    result.colorSpace = other.colorSpace;
-
-    result.width = other.width;
-    result.height = other.height;
-    result.channels = other.channels;
-  }
-
-  function parseFlags (flags, options) {
-    if (typeof options !== 'object' || !options) {
-      return
-    }
-
-    if ('premultiplyAlpha' in options) {
-      check$1.type(options.premultiplyAlpha, 'boolean',
-        'invalid premultiplyAlpha');
-      flags.premultiplyAlpha = options.premultiplyAlpha;
-    }
-
-    if ('flipY' in options) {
-      check$1.type(options.flipY, 'boolean',
-        'invalid texture flip');
-      flags.flipY = options.flipY;
-    }
-
-    if ('alignment' in options) {
-      check$1.oneOf(options.alignment, [1, 2, 4, 8],
-        'invalid texture unpack alignment');
-      flags.unpackAlignment = options.alignment;
-    }
-
-    if ('colorSpace' in options) {
-      check$1.parameter(options.colorSpace, colorSpace,
-        'invalid colorSpace');
-      flags.colorSpace = colorSpace[options.colorSpace];
-    }
-
-    if ('type' in options) {
-      var type = options.type;
-      check$1(extensions.oes_texture_float ||
-        !(type === 'float' || type === 'float32'),
-        'you must enable the OES_texture_float extension in order to use floating point textures.');
-      check$1(extensions.oes_texture_half_float ||
-        !(type === 'half float' || type === 'float16'),
-        'you must enable the OES_texture_half_float extension in order to use 16-bit floating point textures.');
-      check$1(extensions.webgl_depth_texture ||
-        !(type === 'uint16' || type === 'uint32' || type === 'depth stencil'),
-        'you must enable the WEBGL_depth_texture extension in order to use depth/stencil textures.');
-      check$1.parameter(type, textureTypes,
-        'invalid texture type');
-      flags.type = textureTypes[type];
-    }
-
-    var w = flags.width;
-    var h = flags.height;
-    var c = flags.channels;
-    var hasChannels = false;
-    if ('shape' in options) {
-      check$1(Array.isArray(options.shape) && options.shape.length >= 2,
-        'shape must be an array');
-      w = options.shape[0];
-      h = options.shape[1];
-      if (options.shape.length === 3) {
-        c = options.shape[2];
-        check$1(c > 0 && c <= 4, 'invalid number of channels');
-        hasChannels = true;
-      }
-      check$1(w >= 0 && w <= limits.maxTextureSize, 'invalid width');
-      check$1(h >= 0 && h <= limits.maxTextureSize, 'invalid height');
-    } else {
-      if ('radius' in options) {
-        w = h = options.radius;
-        check$1(w >= 0 && w <= limits.maxTextureSize, 'invalid radius');
-      }
-      if ('width' in options) {
-        w = options.width;
-        check$1(w >= 0 && w <= limits.maxTextureSize, 'invalid width');
-      }
-      if ('height' in options) {
-        h = options.height;
-        check$1(h >= 0 && h <= limits.maxTextureSize, 'invalid height');
-      }
-      if ('channels' in options) {
-        c = options.channels;
-        check$1(c > 0 && c <= 4, 'invalid number of channels');
-        hasChannels = true;
-      }
-    }
-    flags.width = w | 0;
-    flags.height = h | 0;
-    flags.channels = c | 0;
-
-    var hasFormat = false;
-    if ('format' in options) {
-      var formatStr = options.format;
-      check$1(extensions.webgl_depth_texture ||
-        !(formatStr === 'depth' || formatStr === 'depth stencil'),
-        'you must enable the WEBGL_depth_texture extension in order to use depth/stencil textures.');
-      check$1.parameter(formatStr, textureFormats,
-        'invalid texture format');
-      var internalformat = flags.internalformat = textureFormats[formatStr];
-      flags.format = colorFormats[internalformat];
-      if (formatStr in textureTypes) {
-        if (!('type' in options)) {
-          flags.type = textureTypes[formatStr];
-        }
-      }
-      if (formatStr in compressedTextureFormats) {
-        flags.compressed = true;
-      }
-      hasFormat = true;
-    }
-
-    // Reconcile channels and format
-    if (!hasChannels && hasFormat) {
-      flags.channels = FORMAT_CHANNELS[flags.format];
-    } else if (hasChannels && !hasFormat) {
-      if (flags.channels !== CHANNELS_FORMAT[flags.format]) {
-        flags.format = flags.internalformat = CHANNELS_FORMAT[flags.channels];
-      }
-    } else if (hasFormat && hasChannels) {
-      check$1(
-        flags.channels === FORMAT_CHANNELS[flags.format],
-        'number of channels inconsistent with specified format');
-    }
-  }
-
-  function setFlags (flags) {
-    gl.pixelStorei(GL_UNPACK_FLIP_Y_WEBGL, flags.flipY);
-    gl.pixelStorei(GL_UNPACK_PREMULTIPLY_ALPHA_WEBGL, flags.premultiplyAlpha);
-    gl.pixelStorei(GL_UNPACK_COLORSPACE_CONVERSION_WEBGL, flags.colorSpace);
-    gl.pixelStorei(GL_UNPACK_ALIGNMENT, flags.unpackAlignment);
-  }
-
-  // -------------------------------------------------------
-  // Tex image data
-  // -------------------------------------------------------
-  function TexImage () {
-    TexFlags.call(this);
-
-    this.xOffset = 0;
-    this.yOffset = 0;
-
-    // data
-    this.data = null;
-    this.needsFree = false;
-
-    // html element
-    this.element = null;
-
-    // copyTexImage info
-    this.needsCopy = false;
-  }
-
-  function parseImage (image, options) {
-    var data = null;
-    if (isPixelData(options)) {
-      data = options;
-    } else if (options) {
-      check$1.type(options, 'object', 'invalid pixel data type');
-      parseFlags(image, options);
-      if ('x' in options) {
-        image.xOffset = options.x | 0;
-      }
-      if ('y' in options) {
-        image.yOffset = options.y | 0;
-      }
-      if (isPixelData(options.data)) {
-        data = options.data;
-      }
-    }
-
-    check$1(
-      !image.compressed ||
-      data instanceof Uint8Array,
-      'compressed texture data must be stored in a uint8array');
-
-    if (options.copy) {
-      check$1(!data, 'can not specify copy and data field for the same texture');
-      var viewW = contextState.viewportWidth;
-      var viewH = contextState.viewportHeight;
-      image.width = image.width || (viewW - image.xOffset);
-      image.height = image.height || (viewH - image.yOffset);
-      image.needsCopy = true;
-      check$1(image.xOffset >= 0 && image.xOffset < viewW &&
-            image.yOffset >= 0 && image.yOffset < viewH &&
-            image.width > 0 && image.width <= viewW &&
-            image.height > 0 && image.height <= viewH,
-            'copy texture read out of bounds');
-    } else if (!data) {
-      image.width = image.width || 1;
-      image.height = image.height || 1;
-      image.channels = image.channels || 4;
-    } else if (isTypedArray(data)) {
-      image.channels = image.channels || 4;
-      image.data = data;
-      if (!('type' in options) && image.type === GL_UNSIGNED_BYTE$4) {
-        image.type = typedArrayCode$1(data);
-      }
-    } else if (isNumericArray(data)) {
-      image.channels = image.channels || 4;
-      convertData(image, data);
-      image.alignment = 1;
-      image.needsFree = true;
-    } else if (isNDArrayLike(data)) {
-      var array = data.data;
-      if (!Array.isArray(array) && image.type === GL_UNSIGNED_BYTE$4) {
-        image.type = typedArrayCode$1(array);
-      }
-      var shape = data.shape;
-      var stride = data.stride;
-      var shapeX, shapeY, shapeC, strideX, strideY, strideC;
-      if (shape.length === 3) {
-        shapeC = shape[2];
-        strideC = stride[2];
-      } else {
-        check$1(shape.length === 2, 'invalid ndarray pixel data, must be 2 or 3D');
-        shapeC = 1;
-        strideC = 1;
-      }
-      shapeX = shape[0];
-      shapeY = shape[1];
-      strideX = stride[0];
-      strideY = stride[1];
-      image.alignment = 1;
-      image.width = shapeX;
-      image.height = shapeY;
-      image.channels = shapeC;
-      image.format = image.internalformat = CHANNELS_FORMAT[shapeC];
-      image.needsFree = true;
-      transposeData(image, array, strideX, strideY, strideC, data.offset);
-    } else if (isCanvasElement(data) || isContext2D(data)) {
-      if (isCanvasElement(data)) {
-        image.element = data;
-      } else {
-        image.element = data.canvas;
-      }
-      image.width = image.element.width;
-      image.height = image.element.height;
-      image.channels = 4;
-    } else if (isImageElement(data)) {
-      image.element = data;
-      image.width = data.naturalWidth;
-      image.height = data.naturalHeight;
-      image.channels = 4;
-    } else if (isVideoElement(data)) {
-      image.element = data;
-      image.width = data.videoWidth;
-      image.height = data.videoHeight;
-      image.channels = 4;
-    } else if (isRectArray(data)) {
-      var w = image.width || data[0].length;
-      var h = image.height || data.length;
-      var c = image.channels;
-      if (isArrayLike(data[0][0])) {
-        c = c || data[0][0].length;
-      } else {
-        c = c || 1;
-      }
-      var arrayShape = flattenUtils.shape(data);
-      var n = 1;
-      for (var dd = 0; dd < arrayShape.length; ++dd) {
-        n *= arrayShape[dd];
-      }
-      var allocData = preConvert(image, n);
-      flattenUtils.flatten(data, arrayShape, '', allocData);
-      postConvert(image, allocData);
-      image.alignment = 1;
-      image.width = w;
-      image.height = h;
-      image.channels = c;
-      image.format = image.internalformat = CHANNELS_FORMAT[c];
-      image.needsFree = true;
-    }
-
-    if (image.type === GL_FLOAT$3) {
-      check$1(limits.extensions.indexOf('oes_texture_float') >= 0,
-        'oes_texture_float extension not enabled');
-    } else if (image.type === GL_HALF_FLOAT_OES$1) {
-      check$1(limits.extensions.indexOf('oes_texture_half_float') >= 0,
-        'oes_texture_half_float extension not enabled');
-    }
-
-    // do compressed texture  validation here.
-  }
-
-  function setImage (info, target, miplevel) {
-    var element = info.element;
-    var data = info.data;
-    var internalformat = info.internalformat;
-    var format = info.format;
-    var type = info.type;
-    var width = info.width;
-    var height = info.height;
-
-    setFlags(info);
-
-    if (element) {
-      gl.texImage2D(target, miplevel, format, format, type, element);
-    } else if (info.compressed) {
-      gl.compressedTexImage2D(target, miplevel, internalformat, width, height, 0, data);
-    } else if (info.needsCopy) {
-      reglPoll();
-      gl.copyTexImage2D(
-        target, miplevel, format, info.xOffset, info.yOffset, width, height, 0);
-    } else {
-      gl.texImage2D(
-        target, miplevel, format, width, height, 0, format, type, data);
-    }
-  }
-
-  function setSubImage (info, target, x, y, miplevel) {
-    var element = info.element;
-    var data = info.data;
-    var internalformat = info.internalformat;
-    var format = info.format;
-    var type = info.type;
-    var width = info.width;
-    var height = info.height;
-
-    setFlags(info);
-
-    if (element) {
-      gl.texSubImage2D(
-        target, miplevel, x, y, format, type, element);
-    } else if (info.compressed) {
-      gl.compressedTexSubImage2D(
-        target, miplevel, x, y, internalformat, width, height, data);
-    } else if (info.needsCopy) {
-      reglPoll();
-      gl.copyTexSubImage2D(
-        target, miplevel, x, y, info.xOffset, info.yOffset, width, height);
-    } else {
-      gl.texSubImage2D(
-        target, miplevel, x, y, width, height, format, type, data);
-    }
-  }
-
-  // texImage pool
-  var imagePool = [];
-
-  function allocImage () {
-    return imagePool.pop() || new TexImage()
-  }
-
-  function freeImage (image) {
-    if (image.needsFree) {
-      pool.freeType(image.data);
-    }
-    TexImage.call(image);
-    imagePool.push(image);
-  }
-
-  // -------------------------------------------------------
-  // Mip map
-  // -------------------------------------------------------
-  function MipMap () {
-    TexFlags.call(this);
-
-    this.genMipmaps = false;
-    this.mipmapHint = GL_DONT_CARE;
-    this.mipmask = 0;
-    this.images = Array(16);
-  }
-
-  function parseMipMapFromShape (mipmap, width, height) {
-    var img = mipmap.images[0] = allocImage();
-    mipmap.mipmask = 1;
-    img.width = mipmap.width = width;
-    img.height = mipmap.height = height;
-    img.channels = mipmap.channels = 4;
-  }
-
-  function parseMipMapFromObject (mipmap, options) {
-    var imgData = null;
-    if (isPixelData(options)) {
-      imgData = mipmap.images[0] = allocImage();
-      copyFlags(imgData, mipmap);
-      parseImage(imgData, options);
-      mipmap.mipmask = 1;
-    } else {
-      parseFlags(mipmap, options);
-      if (Array.isArray(options.mipmap)) {
-        var mipData = options.mipmap;
-        for (var i = 0; i < mipData.length; ++i) {
-          imgData = mipmap.images[i] = allocImage();
-          copyFlags(imgData, mipmap);
-          imgData.width >>= i;
-          imgData.height >>= i;
-          parseImage(imgData, mipData[i]);
-          mipmap.mipmask |= (1 << i);
-        }
-      } else {
-        imgData = mipmap.images[0] = allocImage();
-        copyFlags(imgData, mipmap);
-        parseImage(imgData, options);
-        mipmap.mipmask = 1;
-      }
-    }
-    copyFlags(mipmap, mipmap.images[0]);
-
-    // For textures of the compressed format WEBGL_compressed_texture_s3tc
-    // we must have that
-    //
-    // "When level equals zero width and height must be a multiple of 4.
-    // When level is greater than 0 width and height must be 0, 1, 2 or a multiple of 4. "
-    //
-    // but we do not yet support having multiple mipmap levels for compressed textures,
-    // so we only test for level zero.
-
-    if (mipmap.compressed &&
-        (mipmap.internalformat === GL_COMPRESSED_RGB_S3TC_DXT1_EXT) ||
-        (mipmap.internalformat === GL_COMPRESSED_RGBA_S3TC_DXT1_EXT) ||
-        (mipmap.internalformat === GL_COMPRESSED_RGBA_S3TC_DXT3_EXT) ||
-        (mipmap.internalformat === GL_COMPRESSED_RGBA_S3TC_DXT5_EXT)) {
-      check$1(mipmap.width % 4 === 0 &&
-            mipmap.height % 4 === 0,
-            'for compressed texture formats, mipmap level 0 must have width and height that are a multiple of 4');
-    }
-  }
-
-  function setMipMap (mipmap, target) {
-    var images = mipmap.images;
-    for (var i = 0; i < images.length; ++i) {
-      if (!images[i]) {
-        return
-      }
-      setImage(images[i], target, i);
-    }
-  }
-
-  var mipPool = [];
-
-  function allocMipMap () {
-    var result = mipPool.pop() || new MipMap();
-    TexFlags.call(result);
-    result.mipmask = 0;
-    for (var i = 0; i < 16; ++i) {
-      result.images[i] = null;
-    }
-    return result
-  }
-
-  function freeMipMap (mipmap) {
-    var images = mipmap.images;
-    for (var i = 0; i < images.length; ++i) {
-      if (images[i]) {
-        freeImage(images[i]);
-      }
-      images[i] = null;
-    }
-    mipPool.push(mipmap);
-  }
-
-  // -------------------------------------------------------
-  // Tex info
-  // -------------------------------------------------------
-  function TexInfo () {
-    this.minFilter = GL_NEAREST$1;
-    this.magFilter = GL_NEAREST$1;
-
-    this.wrapS = GL_CLAMP_TO_EDGE$1;
-    this.wrapT = GL_CLAMP_TO_EDGE$1;
-
-    this.anisotropic = 1;
-
-    this.genMipmaps = false;
-    this.mipmapHint = GL_DONT_CARE;
-  }
-
-  function parseTexInfo (info, options) {
-    if ('min' in options) {
-      var minFilter = options.min;
-      check$1.parameter(minFilter, minFilters);
-      info.minFilter = minFilters[minFilter];
-      if (MIPMAP_FILTERS.indexOf(info.minFilter) >= 0) {
-        info.genMipmaps = true;
-      }
-    }
-
-    if ('mag' in options) {
-      var magFilter = options.mag;
-      check$1.parameter(magFilter, magFilters);
-      info.magFilter = magFilters[magFilter];
-    }
-
-    var wrapS = info.wrapS;
-    var wrapT = info.wrapT;
-    if ('wrap' in options) {
-      var wrap = options.wrap;
-      if (typeof wrap === 'string') {
-        check$1.parameter(wrap, wrapModes);
-        wrapS = wrapT = wrapModes[wrap];
-      } else if (Array.isArray(wrap)) {
-        check$1.parameter(wrap[0], wrapModes);
-        check$1.parameter(wrap[1], wrapModes);
-        wrapS = wrapModes[wrap[0]];
-        wrapT = wrapModes[wrap[1]];
-      }
-    } else {
-      if ('wrapS' in options) {
-        var optWrapS = options.wrapS;
-        check$1.parameter(optWrapS, wrapModes);
-        wrapS = wrapModes[optWrapS];
-      }
-      if ('wrapT' in options) {
-        var optWrapT = options.wrapT;
-        check$1.parameter(optWrapT, wrapModes);
-        wrapT = wrapModes[optWrapT];
-      }
-    }
-    info.wrapS = wrapS;
-    info.wrapT = wrapT;
-
-    if ('anisotropic' in options) {
-      var anisotropic = options.anisotropic;
-      check$1(typeof anisotropic === 'number' &&
-         anisotropic >= 1 && anisotropic <= limits.maxAnisotropic,
-        'aniso samples must be between 1 and ');
-      info.anisotropic = options.anisotropic;
-    }
-
-    if ('mipmap' in options) {
-      var hasMipMap = false;
-      switch (typeof options.mipmap) {
-        case 'string':
-          check$1.parameter(options.mipmap, mipmapHint,
-            'invalid mipmap hint');
-          info.mipmapHint = mipmapHint[options.mipmap];
-          info.genMipmaps = true;
-          hasMipMap = true;
-          break
-
-        case 'boolean':
-          hasMipMap = info.genMipmaps = options.mipmap;
-          break
-
-        case 'object':
-          check$1(Array.isArray(options.mipmap), 'invalid mipmap type');
-          info.genMipmaps = false;
-          hasMipMap = true;
-          break
-
-        default:
-          check$1.raise('invalid mipmap type');
-      }
-      if (hasMipMap && !('min' in options)) {
-        info.minFilter = GL_NEAREST_MIPMAP_NEAREST$1;
-      }
-    }
-  }
-
-  function setTexInfo (info, target) {
-    gl.texParameteri(target, GL_TEXTURE_MIN_FILTER, info.minFilter);
-    gl.texParameteri(target, GL_TEXTURE_MAG_FILTER, info.magFilter);
-    gl.texParameteri(target, GL_TEXTURE_WRAP_S, info.wrapS);
-    gl.texParameteri(target, GL_TEXTURE_WRAP_T, info.wrapT);
-    if (extensions.ext_texture_filter_anisotropic) {
-      gl.texParameteri(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, info.anisotropic);
-    }
-    if (info.genMipmaps) {
-      gl.hint(GL_GENERATE_MIPMAP_HINT, info.mipmapHint);
-      gl.generateMipmap(target);
-    }
-  }
-
-  // -------------------------------------------------------
-  // Full texture object
-  // -------------------------------------------------------
-  var textureCount = 0;
-  var textureSet = {};
-  var numTexUnits = limits.maxTextureUnits;
-  var textureUnits = Array(numTexUnits).map(function () {
-    return null
-  });
-
-  function REGLTexture (target) {
-    TexFlags.call(this);
-    this.mipmask = 0;
-    this.internalformat = GL_RGBA;
-
-    this.id = textureCount++;
-
-    this.refCount = 1;
-
-    this.target = target;
-    this.texture = gl.createTexture();
-
-    this.unit = -1;
-    this.bindCount = 0;
-
-    this.texInfo = new TexInfo();
-
-    if (config.profile) {
-      this.stats = {size: 0};
-    }
-  }
-
-  function tempBind (texture) {
-    gl.activeTexture(GL_TEXTURE0);
-    gl.bindTexture(texture.target, texture.texture);
-  }
-
-  function tempRestore () {
-    var prev = textureUnits[0];
-    if (prev) {
-      gl.bindTexture(prev.target, prev.texture);
-    } else {
-      gl.bindTexture(GL_TEXTURE_2D, null);
-    }
-  }
-
-  function destroy (texture) {
-    var handle = texture.texture;
-    check$1(handle, 'must not double destroy texture');
-    var unit = texture.unit;
-    var target = texture.target;
-    if (unit >= 0) {
-      gl.activeTexture(GL_TEXTURE0 + unit);
-      gl.bindTexture(target, null);
-      textureUnits[unit] = null;
-    }
-    gl.deleteTexture(handle);
-    texture.texture = null;
-    texture.params = null;
-    texture.pixels = null;
-    texture.refCount = 0;
-    delete textureSet[texture.id];
-    stats.textureCount--;
-  }
-
-  extend(REGLTexture.prototype, {
-    bind: function () {
-      var texture = this;
-      texture.bindCount += 1;
-      var unit = texture.unit;
-      if (unit < 0) {
-        for (var i = 0; i < numTexUnits; ++i) {
-          var other = textureUnits[i];
-          if (other) {
-            if (other.bindCount > 0) {
-              continue
-            }
-            other.unit = -1;
-          }
-          textureUnits[i] = texture;
-          unit = i;
-          break
-        }
-        if (unit >= numTexUnits) {
-          check$1.raise('insufficient number of texture units');
-        }
-        if (config.profile && stats.maxTextureUnits < (unit + 1)) {
-          stats.maxTextureUnits = unit + 1; // +1, since the units are zero-based
-        }
-        texture.unit = unit;
-        gl.activeTexture(GL_TEXTURE0 + unit);
-        gl.bindTexture(texture.target, texture.texture);
-      }
-      return unit
-    },
-
-    unbind: function () {
-      this.bindCount -= 1;
-    },
-
-    decRef: function () {
-      if (--this.refCount <= 0) {
-        destroy(this);
-      }
-    }
-  });
-
-  function createTexture2D (a, b) {
-    var texture = new REGLTexture(GL_TEXTURE_2D);
-    textureSet[texture.id] = texture;
-    stats.textureCount++;
-
-    function reglTexture2D (a, b) {
-      var texInfo = texture.texInfo;
-      TexInfo.call(texInfo);
-      var mipData = allocMipMap();
-
-      if (typeof a === 'number') {
-        if (typeof b === 'number') {
-          parseMipMapFromShape(mipData, a | 0, b | 0);
-        } else {
-          parseMipMapFromShape(mipData, a | 0, a | 0);
-        }
-      } else if (a) {
-        check$1.type(a, 'object', 'invalid arguments to regl.texture');
-        parseTexInfo(texInfo, a);
-        parseMipMapFromObject(mipData, a);
-      } else {
-        // empty textures get assigned a default shape of 1x1
-        parseMipMapFromShape(mipData, 1, 1);
-      }
-
-      if (texInfo.genMipmaps) {
-        mipData.mipmask = (mipData.width << 1) - 1;
-      }
-      texture.mipmask = mipData.mipmask;
-
-      copyFlags(texture, mipData);
-
-      check$1.texture2D(texInfo, mipData, limits);
-      texture.internalformat = mipData.internalformat;
-
-      reglTexture2D.width = mipData.width;
-      reglTexture2D.height = mipData.height;
-
-      tempBind(texture);
-      setMipMap(mipData, GL_TEXTURE_2D);
-      setTexInfo(texInfo, GL_TEXTURE_2D);
-      tempRestore();
-
-      freeMipMap(mipData);
-
-      if (config.profile) {
-        texture.stats.size = getTextureSize(
-          texture.internalformat,
-          texture.type,
-          mipData.width,
-          mipData.height,
-          texInfo.genMipmaps,
-          false);
-      }
-      reglTexture2D.format = textureFormatsInvert[texture.internalformat];
-      reglTexture2D.type = textureTypesInvert[texture.type];
-
-      reglTexture2D.mag = magFiltersInvert[texInfo.magFilter];
-      reglTexture2D.min = minFiltersInvert[texInfo.minFilter];
-
-      reglTexture2D.wrapS = wrapModesInvert[texInfo.wrapS];
-      reglTexture2D.wrapT = wrapModesInvert[texInfo.wrapT];
-
-      return reglTexture2D
-    }
-
-    function subimage (image, x_, y_, level_) {
-      check$1(!!image, 'must specify image data');
-
-      var x = x_ | 0;
-      var y = y_ | 0;
-      var level = level_ | 0;
-
-      var imageData = allocImage();
-      copyFlags(imageData, texture);
-      imageData.width = 0;
-      imageData.height = 0;
-      parseImage(imageData, image);
-      imageData.width = imageData.width || ((texture.width >> level) - x);
-      imageData.height = imageData.height || ((texture.height >> level) - y);
-
-      check$1(
-        texture.type === imageData.type &&
-        texture.format === imageData.format &&
-        texture.internalformat === imageData.internalformat,
-        'incompatible format for texture.subimage');
-      check$1(
-        x >= 0 && y >= 0 &&
-        x + imageData.width <= texture.width &&
-        y + imageData.height <= texture.height,
-        'texture.subimage write out of bounds');
-      check$1(
-        texture.mipmask & (1 << level),
-        'missing mipmap data');
-      check$1(
-        imageData.data || imageData.element || imageData.needsCopy,
-        'missing image data');
-
-      tempBind(texture);
-      setSubImage(imageData, GL_TEXTURE_2D, x, y, level);
-      tempRestore();
-
-      freeImage(imageData);
-
-      return reglTexture2D
-    }
-
-    function resize (w_, h_) {
-      var w = w_ | 0;
-      var h = (h_ | 0) || w;
-      if (w === texture.width && h === texture.height) {
-        return reglTexture2D
-      }
-
-      reglTexture2D.width = texture.width = w;
-      reglTexture2D.height = texture.height = h;
-
-      tempBind(texture);
-      for (var i = 0; texture.mipmask >> i; ++i) {
-        gl.texImage2D(
-          GL_TEXTURE_2D,
-          i,
-          texture.format,
-          w >> i,
-          h >> i,
-          0,
-          texture.format,
-          texture.type,
-          null);
-      }
-      tempRestore();
-
-      // also, recompute the texture size.
-      if (config.profile) {
-        texture.stats.size = getTextureSize(
-          texture.internalformat,
-          texture.type,
-          w,
-          h,
-          false,
-          false);
-      }
-
-      return reglTexture2D
-    }
-
-    reglTexture2D(a, b);
-
-    reglTexture2D.subimage = subimage;
-    reglTexture2D.resize = resize;
-    reglTexture2D._reglType = 'texture2d';
-    reglTexture2D._texture = texture;
-    if (config.profile) {
-      reglTexture2D.stats = texture.stats;
-    }
-    reglTexture2D.destroy = function () {
-      texture.decRef();
-    };
-
-    return reglTexture2D
-  }
-
-  function createTextureCube (a0, a1, a2, a3, a4, a5) {
-    var texture = new REGLTexture(GL_TEXTURE_CUBE_MAP);
-    textureSet[texture.id] = texture;
-    stats.cubeCount++;
-
-    var faces = new Array(6);
-
-    function reglTextureCube (a0, a1, a2, a3, a4, a5) {
-      var i;
-      var texInfo = texture.texInfo;
-      TexInfo.call(texInfo);
-      for (i = 0; i < 6; ++i) {
-        faces[i] = allocMipMap();
-      }
-
-      if (typeof a0 === 'number' || !a0) {
-        var s = (a0 | 0) || 1;
-        for (i = 0; i < 6; ++i) {
-          parseMipMapFromShape(faces[i], s, s);
-        }
-      } else if (typeof a0 === 'object') {
-        if (a1) {
-          parseMipMapFromObject(faces[0], a0);
-          parseMipMapFromObject(faces[1], a1);
-          parseMipMapFromObject(faces[2], a2);
-          parseMipMapFromObject(faces[3], a3);
-          parseMipMapFromObject(faces[4], a4);
-          parseMipMapFromObject(faces[5], a5);
-        } else {
-          parseTexInfo(texInfo, a0);
-          parseFlags(texture, a0);
-          if ('faces' in a0) {
-            var face_input = a0.faces;
-            check$1(Array.isArray(face_input) && face_input.length === 6,
-              'cube faces must be a length 6 array');
-            for (i = 0; i < 6; ++i) {
-              check$1(typeof face_input[i] === 'object' && !!face_input[i],
-                'invalid input for cube map face');
-              copyFlags(faces[i], texture);
-              parseMipMapFromObject(faces[i], face_input[i]);
-            }
-          } else {
-            for (i = 0; i < 6; ++i) {
-              parseMipMapFromObject(faces[i], a0);
-            }
-          }
-        }
-      } else {
-        check$1.raise('invalid arguments to cube map');
-      }
-
-      copyFlags(texture, faces[0]);
-      if (texInfo.genMipmaps) {
-        texture.mipmask = (faces[0].width << 1) - 1;
-      } else {
-        texture.mipmask = faces[0].mipmask;
-      }
-
-      check$1.textureCube(texture, texInfo, faces, limits);
-      texture.internalformat = faces[0].internalformat;
-
-      reglTextureCube.width = faces[0].width;
-      reglTextureCube.height = faces[0].height;
-
-      tempBind(texture);
-      for (i = 0; i < 6; ++i) {
-        setMipMap(faces[i], GL_TEXTURE_CUBE_MAP_POSITIVE_X + i);
-      }
-      setTexInfo(texInfo, GL_TEXTURE_CUBE_MAP);
-      tempRestore();
-
-      if (config.profile) {
-        texture.stats.size = getTextureSize(
-          texture.internalformat,
-          texture.type,
-          reglTextureCube.width,
-          reglTextureCube.height,
-          texInfo.genMipmaps,
-          true);
-      }
-
-      reglTextureCube.format = textureFormatsInvert[texture.internalformat];
-      reglTextureCube.type = textureTypesInvert[texture.type];
-
-      reglTextureCube.mag = magFiltersInvert[texInfo.magFilter];
-      reglTextureCube.min = minFiltersInvert[texInfo.minFilter];
-
-      reglTextureCube.wrapS = wrapModesInvert[texInfo.wrapS];
-      reglTextureCube.wrapT = wrapModesInvert[texInfo.wrapT];
-
-      for (i = 0; i < 6; ++i) {
-        freeMipMap(faces[i]);
-      }
-
-      return reglTextureCube
-    }
-
-    function subimage (face, image, x_, y_, level_) {
-      check$1(!!image, 'must specify image data');
-      check$1(typeof face === 'number' && face === (face | 0) &&
-        face >= 0 && face < 6, 'invalid face');
-
-      var x = x_ | 0;
-      var y = y_ | 0;
-      var level = level_ | 0;
-
-      var imageData = allocImage();
-      copyFlags(imageData, texture);
-      imageData.width = 0;
-      imageData.height = 0;
-      parseImage(imageData, image);
-      imageData.width = imageData.width || ((texture.width >> level) - x);
-      imageData.height = imageData.height || ((texture.height >> level) - y);
-
-      check$1(
-        texture.type === imageData.type &&
-        texture.format === imageData.format &&
-        texture.internalformat === imageData.internalformat,
-        'incompatible format for texture.subimage');
-      check$1(
-        x >= 0 && y >= 0 &&
-        x + imageData.width <= texture.width &&
-        y + imageData.height <= texture.height,
-        'texture.subimage write out of bounds');
-      check$1(
-        texture.mipmask & (1 << level),
-        'missing mipmap data');
-      check$1(
-        imageData.data || imageData.element || imageData.needsCopy,
-        'missing image data');
-
-      tempBind(texture);
-      setSubImage(imageData, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, x, y, level);
-      tempRestore();
-
-      freeImage(imageData);
-
-      return reglTextureCube
-    }
-
-    function resize (radius_) {
-      var radius = radius_ | 0;
-      if (radius === texture.width) {
-        return
-      }
-
-      reglTextureCube.width = texture.width = radius;
-      reglTextureCube.height = texture.height = radius;
-
-      tempBind(texture);
-      for (var i = 0; i < 6; ++i) {
-        for (var j = 0; texture.mipmask >> j; ++j) {
-          gl.texImage2D(
-            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-            j,
-            texture.format,
-            radius >> j,
-            radius >> j,
-            0,
-            texture.format,
-            texture.type,
-            null);
-        }
-      }
-      tempRestore();
-
-      if (config.profile) {
-        texture.stats.size = getTextureSize(
-          texture.internalformat,
-          texture.type,
-          reglTextureCube.width,
-          reglTextureCube.height,
-          false,
-          true);
-      }
-
-      return reglTextureCube
-    }
-
-    reglTextureCube(a0, a1, a2, a3, a4, a5);
-
-    reglTextureCube.subimage = subimage;
-    reglTextureCube.resize = resize;
-    reglTextureCube._reglType = 'textureCube';
-    reglTextureCube._texture = texture;
-    if (config.profile) {
-      reglTextureCube.stats = texture.stats;
-    }
-    reglTextureCube.destroy = function () {
-      texture.decRef();
-    };
-
-    return reglTextureCube
-  }
-
-  // Called when regl is destroyed
-  function destroyTextures () {
-    for (var i = 0; i < numTexUnits; ++i) {
-      gl.activeTexture(GL_TEXTURE0 + i);
-      gl.bindTexture(GL_TEXTURE_2D, null);
-      textureUnits[i] = null;
-    }
-    values(textureSet).forEach(destroy);
-
-    stats.cubeCount = 0;
-    stats.textureCount = 0;
-  }
-
-  if (config.profile) {
-    stats.getTotalTextureSize = function () {
-      var total = 0;
-      Object.keys(textureSet).forEach(function (key) {
-        total += textureSet[key].stats.size;
-      });
-      return total
-    };
-  }
-
-  function restoreTextures () {
-    values(textureSet).forEach(function (texture) {
-      texture.texture = gl.createTexture();
-      gl.bindTexture(texture.target, texture.texture);
-      for (var i = 0; i < 32; ++i) {
-        if ((texture.mipmask & (1 << i)) === 0) {
-          continue
-        }
-        if (texture.target === GL_TEXTURE_2D) {
-          gl.texImage2D(GL_TEXTURE_2D,
-            i,
-            texture.internalformat,
-            texture.width >> i,
-            texture.height >> i,
-            0,
-            texture.internalformat,
-            texture.type,
-            null);
-        } else {
-          for (var j = 0; j < 6; ++j) {
-            gl.texImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j,
-              i,
-              texture.internalformat,
-              texture.width >> i,
-              texture.height >> i,
-              0,
-              texture.internalformat,
-              texture.type,
-              null);
-          }
-        }
-      }
-      setTexInfo(texture.texInfo, texture.target);
-    });
-  }
-
-  return {
-    create2D: createTexture2D,
-    createCube: createTextureCube,
-    clear: destroyTextures,
-    getTexture: function (wrapper) {
-      return null
-    },
-    restore: restoreTextures
-  }
-}
-
-var GL_RENDERBUFFER = 0x8D41;
-
-var GL_RGBA4$1 = 0x8056;
-var GL_RGB5_A1$1 = 0x8057;
-var GL_RGB565$1 = 0x8D62;
-var GL_DEPTH_COMPONENT16 = 0x81A5;
-var GL_STENCIL_INDEX8 = 0x8D48;
-var GL_DEPTH_STENCIL$1 = 0x84F9;
-
-var GL_SRGB8_ALPHA8_EXT = 0x8C43;
-
-var GL_RGBA32F_EXT = 0x8814;
-
-var GL_RGBA16F_EXT = 0x881A;
-var GL_RGB16F_EXT = 0x881B;
-
-var FORMAT_SIZES = [];
-
-FORMAT_SIZES[GL_RGBA4$1] = 2;
-FORMAT_SIZES[GL_RGB5_A1$1] = 2;
-FORMAT_SIZES[GL_RGB565$1] = 2;
-
-FORMAT_SIZES[GL_DEPTH_COMPONENT16] = 2;
-FORMAT_SIZES[GL_STENCIL_INDEX8] = 1;
-FORMAT_SIZES[GL_DEPTH_STENCIL$1] = 4;
-
-FORMAT_SIZES[GL_SRGB8_ALPHA8_EXT] = 4;
-FORMAT_SIZES[GL_RGBA32F_EXT] = 16;
-FORMAT_SIZES[GL_RGBA16F_EXT] = 8;
-FORMAT_SIZES[GL_RGB16F_EXT] = 6;
-
-function getRenderbufferSize (format, width, height) {
-  return FORMAT_SIZES[format] * width * height
-}
-
-var wrapRenderbuffers = function (gl, extensions, limits, stats, config) {
-  var formatTypes = {
-    'rgba4': GL_RGBA4$1,
-    'rgb565': GL_RGB565$1,
-    'rgb5 a1': GL_RGB5_A1$1,
-    'depth': GL_DEPTH_COMPONENT16,
-    'stencil': GL_STENCIL_INDEX8,
-    'depth stencil': GL_DEPTH_STENCIL$1
-  };
-
-  if (extensions.ext_srgb) {
-    formatTypes['srgba'] = GL_SRGB8_ALPHA8_EXT;
-  }
-
-  if (extensions.ext_color_buffer_half_float) {
-    formatTypes['rgba16f'] = GL_RGBA16F_EXT;
-    formatTypes['rgb16f'] = GL_RGB16F_EXT;
-  }
-
-  if (extensions.webgl_color_buffer_float) {
-    formatTypes['rgba32f'] = GL_RGBA32F_EXT;
-  }
-
-  var formatTypesInvert = [];
-  Object.keys(formatTypes).forEach(function (key) {
-    var val = formatTypes[key];
-    formatTypesInvert[val] = key;
-  });
-
-  var renderbufferCount = 0;
-  var renderbufferSet = {};
-
-  function REGLRenderbuffer (renderbuffer) {
-    this.id = renderbufferCount++;
-    this.refCount = 1;
-
-    this.renderbuffer = renderbuffer;
-
-    this.format = GL_RGBA4$1;
-    this.width = 0;
-    this.height = 0;
-
-    if (config.profile) {
-      this.stats = {size: 0};
-    }
-  }
-
-  REGLRenderbuffer.prototype.decRef = function () {
-    if (--this.refCount <= 0) {
-      destroy(this);
-    }
-  };
-
-  function destroy (rb) {
-    var handle = rb.renderbuffer;
-    check$1(handle, 'must not double destroy renderbuffer');
-    gl.bindRenderbuffer(GL_RENDERBUFFER, null);
-    gl.deleteRenderbuffer(handle);
-    rb.renderbuffer = null;
-    rb.refCount = 0;
-    delete renderbufferSet[rb.id];
-    stats.renderbufferCount--;
-  }
-
-  function createRenderbuffer (a, b) {
-    var renderbuffer = new REGLRenderbuffer(gl.createRenderbuffer());
-    renderbufferSet[renderbuffer.id] = renderbuffer;
-    stats.renderbufferCount++;
-
-    function reglRenderbuffer (a, b) {
-      var w = 0;
-      var h = 0;
-      var format = GL_RGBA4$1;
-
-      if (typeof a === 'object' && a) {
-        var options = a;
-        if ('shape' in options) {
-          var shape = options.shape;
-          check$1(Array.isArray(shape) && shape.length >= 2,
-            'invalid renderbuffer shape');
-          w = shape[0] | 0;
-          h = shape[1] | 0;
-        } else {
-          if ('radius' in options) {
-            w = h = options.radius | 0;
-          }
-          if ('width' in options) {
-            w = options.width | 0;
-          }
-          if ('height' in options) {
-            h = options.height | 0;
-          }
-        }
-        if ('format' in options) {
-          check$1.parameter(options.format, formatTypes,
-            'invalid renderbuffer format');
-          format = formatTypes[options.format];
-        }
-      } else if (typeof a === 'number') {
-        w = a | 0;
-        if (typeof b === 'number') {
-          h = b | 0;
-        } else {
-          h = w;
-        }
-      } else if (!a) {
-        w = h = 1;
-      } else {
-        check$1.raise('invalid arguments to renderbuffer constructor');
-      }
-
-      // check shape
-      check$1(
-        w > 0 && h > 0 &&
-        w <= limits.maxRenderbufferSize && h <= limits.maxRenderbufferSize,
-        'invalid renderbuffer size');
-
-      if (w === renderbuffer.width &&
-          h === renderbuffer.height &&
-          format === renderbuffer.format) {
-        return
-      }
-
-      reglRenderbuffer.width = renderbuffer.width = w;
-      reglRenderbuffer.height = renderbuffer.height = h;
-      renderbuffer.format = format;
-
-      gl.bindRenderbuffer(GL_RENDERBUFFER, renderbuffer.renderbuffer);
-      gl.renderbufferStorage(GL_RENDERBUFFER, format, w, h);
-
-      if (config.profile) {
-        renderbuffer.stats.size = getRenderbufferSize(renderbuffer.format, renderbuffer.width, renderbuffer.height);
-      }
-      reglRenderbuffer.format = formatTypesInvert[renderbuffer.format];
-
-      return reglRenderbuffer
-    }
-
-    function resize (w_, h_) {
-      var w = w_ | 0;
-      var h = (h_ | 0) || w;
-
-      if (w === renderbuffer.width && h === renderbuffer.height) {
-        return reglRenderbuffer
-      }
-
-      // check shape
-      check$1(
-        w > 0 && h > 0 &&
-        w <= limits.maxRenderbufferSize && h <= limits.maxRenderbufferSize,
-        'invalid renderbuffer size');
-
-      reglRenderbuffer.width = renderbuffer.width = w;
-      reglRenderbuffer.height = renderbuffer.height = h;
-
-      gl.bindRenderbuffer(GL_RENDERBUFFER, renderbuffer.renderbuffer);
-      gl.renderbufferStorage(GL_RENDERBUFFER, renderbuffer.format, w, h);
-
-      // also, recompute size.
-      if (config.profile) {
-        renderbuffer.stats.size = getRenderbufferSize(
-          renderbuffer.format, renderbuffer.width, renderbuffer.height);
-      }
-
-      return reglRenderbuffer
-    }
-
-    reglRenderbuffer(a, b);
-
-    reglRenderbuffer.resize = resize;
-    reglRenderbuffer._reglType = 'renderbuffer';
-    reglRenderbuffer._renderbuffer = renderbuffer;
-    if (config.profile) {
-      reglRenderbuffer.stats = renderbuffer.stats;
-    }
-    reglRenderbuffer.destroy = function () {
-      renderbuffer.decRef();
-    };
-
-    return reglRenderbuffer
-  }
-
-  if (config.profile) {
-    stats.getTotalRenderbufferSize = function () {
-      var total = 0;
-      Object.keys(renderbufferSet).forEach(function (key) {
-        total += renderbufferSet[key].stats.size;
-      });
-      return total
-    };
-  }
-
-  function restoreRenderbuffers () {
-    values(renderbufferSet).forEach(function (rb) {
-      rb.renderbuffer = gl.createRenderbuffer();
-      gl.bindRenderbuffer(GL_RENDERBUFFER, rb.renderbuffer);
-      gl.renderbufferStorage(GL_RENDERBUFFER, rb.format, rb.width, rb.height);
-    });
-    gl.bindRenderbuffer(GL_RENDERBUFFER, null);
-  }
-
-  return {
-    create: createRenderbuffer,
-    clear: function () {
-      values(renderbufferSet).forEach(destroy);
-    },
-    restore: restoreRenderbuffers
-  }
-};
-
-// We store these constants so that the minifier can inline them
-var GL_FRAMEBUFFER = 0x8D40;
-var GL_RENDERBUFFER$1 = 0x8D41;
-
-var GL_TEXTURE_2D$1 = 0x0DE1;
-var GL_TEXTURE_CUBE_MAP_POSITIVE_X$1 = 0x8515;
-
-var GL_COLOR_ATTACHMENT0 = 0x8CE0;
-var GL_DEPTH_ATTACHMENT = 0x8D00;
-var GL_STENCIL_ATTACHMENT = 0x8D20;
-var GL_DEPTH_STENCIL_ATTACHMENT = 0x821A;
-
-var GL_FRAMEBUFFER_COMPLETE = 0x8CD5;
-var GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT = 0x8CD6;
-var GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = 0x8CD7;
-var GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS = 0x8CD9;
-var GL_FRAMEBUFFER_UNSUPPORTED = 0x8CDD;
-
-var GL_HALF_FLOAT_OES$2 = 0x8D61;
-var GL_UNSIGNED_BYTE$5 = 0x1401;
-var GL_FLOAT$4 = 0x1406;
-
-var GL_RGBA$1 = 0x1908;
-
-var GL_DEPTH_COMPONENT$1 = 0x1902;
-
-var colorTextureFormatEnums = [
-  GL_RGBA$1
-];
-
-// for every texture format, store
-// the number of channels
-var textureFormatChannels = [];
-textureFormatChannels[GL_RGBA$1] = 4;
-
-// for every texture type, store
-// the size in bytes.
-var textureTypeSizes = [];
-textureTypeSizes[GL_UNSIGNED_BYTE$5] = 1;
-textureTypeSizes[GL_FLOAT$4] = 4;
-textureTypeSizes[GL_HALF_FLOAT_OES$2] = 2;
-
-var GL_RGBA4$2 = 0x8056;
-var GL_RGB5_A1$2 = 0x8057;
-var GL_RGB565$2 = 0x8D62;
-var GL_DEPTH_COMPONENT16$1 = 0x81A5;
-var GL_STENCIL_INDEX8$1 = 0x8D48;
-var GL_DEPTH_STENCIL$2 = 0x84F9;
-
-var GL_SRGB8_ALPHA8_EXT$1 = 0x8C43;
-
-var GL_RGBA32F_EXT$1 = 0x8814;
-
-var GL_RGBA16F_EXT$1 = 0x881A;
-var GL_RGB16F_EXT$1 = 0x881B;
-
-var colorRenderbufferFormatEnums = [
-  GL_RGBA4$2,
-  GL_RGB5_A1$2,
-  GL_RGB565$2,
-  GL_SRGB8_ALPHA8_EXT$1,
-  GL_RGBA16F_EXT$1,
-  GL_RGB16F_EXT$1,
-  GL_RGBA32F_EXT$1
-];
-
-var statusCode = {};
-statusCode[GL_FRAMEBUFFER_COMPLETE] = 'complete';
-statusCode[GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT] = 'incomplete attachment';
-statusCode[GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS] = 'incomplete dimensions';
-statusCode[GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT] = 'incomplete, missing attachment';
-statusCode[GL_FRAMEBUFFER_UNSUPPORTED] = 'unsupported';
-
-function wrapFBOState (
-  gl,
-  extensions,
-  limits,
-  textureState,
-  renderbufferState,
-  stats) {
-  var framebufferState = {
-    cur: null,
-    next: null,
-    dirty: false,
-    setFBO: null
-  };
-
-  var colorTextureFormats = ['rgba'];
-  var colorRenderbufferFormats = ['rgba4', 'rgb565', 'rgb5 a1'];
-
-  if (extensions.ext_srgb) {
-    colorRenderbufferFormats.push('srgba');
-  }
-
-  if (extensions.ext_color_buffer_half_float) {
-    colorRenderbufferFormats.push('rgba16f', 'rgb16f');
-  }
-
-  if (extensions.webgl_color_buffer_float) {
-    colorRenderbufferFormats.push('rgba32f');
-  }
-
-  var colorTypes = ['uint8'];
-  if (extensions.oes_texture_half_float) {
-    colorTypes.push('half float', 'float16');
-  }
-  if (extensions.oes_texture_float) {
-    colorTypes.push('float', 'float32');
-  }
-
-  function FramebufferAttachment (target, texture, renderbuffer) {
-    this.target = target;
-    this.texture = texture;
-    this.renderbuffer = renderbuffer;
-
-    var w = 0;
-    var h = 0;
-    if (texture) {
-      w = texture.width;
-      h = texture.height;
-    } else if (renderbuffer) {
-      w = renderbuffer.width;
-      h = renderbuffer.height;
-    }
-    this.width = w;
-    this.height = h;
-  }
-
-  function decRef (attachment) {
-    if (attachment) {
-      if (attachment.texture) {
-        attachment.texture._texture.decRef();
-      }
-      if (attachment.renderbuffer) {
-        attachment.renderbuffer._renderbuffer.decRef();
-      }
-    }
-  }
-
-  function incRefAndCheckShape (attachment, width, height) {
-    if (!attachment) {
-      return
-    }
-    if (attachment.texture) {
-      var texture = attachment.texture._texture;
-      var tw = Math.max(1, texture.width);
-      var th = Math.max(1, texture.height);
-      check$1(tw === width && th === height,
-        'inconsistent width/height for supplied texture');
-      texture.refCount += 1;
-    } else {
-      var renderbuffer = attachment.renderbuffer._renderbuffer;
-      check$1(
-        renderbuffer.width === width && renderbuffer.height === height,
-        'inconsistent width/height for renderbuffer');
-      renderbuffer.refCount += 1;
-    }
-  }
-
-  function attach (location, attachment) {
-    if (attachment) {
-      if (attachment.texture) {
-        gl.framebufferTexture2D(
-          GL_FRAMEBUFFER,
-          location,
-          attachment.target,
-          attachment.texture._texture.texture,
-          0);
-      } else {
-        gl.framebufferRenderbuffer(
-          GL_FRAMEBUFFER,
-          location,
-          GL_RENDERBUFFER$1,
-          attachment.renderbuffer._renderbuffer.renderbuffer);
-      }
-    }
-  }
-
-  function parseAttachment (attachment) {
-    var target = GL_TEXTURE_2D$1;
-    var texture = null;
-    var renderbuffer = null;
-
-    var data = attachment;
-    if (typeof attachment === 'object') {
-      data = attachment.data;
-      if ('target' in attachment) {
-        target = attachment.target | 0;
-      }
-    }
-
-    check$1.type(data, 'function', 'invalid attachment data');
-
-    var type = data._reglType;
-    if (type === 'texture2d') {
-      texture = data;
-      check$1(target === GL_TEXTURE_2D$1);
-    } else if (type === 'textureCube') {
-      texture = data;
-      check$1(
-        target >= GL_TEXTURE_CUBE_MAP_POSITIVE_X$1 &&
-        target < GL_TEXTURE_CUBE_MAP_POSITIVE_X$1 + 6,
-        'invalid cube map target');
-    } else if (type === 'renderbuffer') {
-      renderbuffer = data;
-      target = GL_RENDERBUFFER$1;
-    } else {
-      check$1.raise('invalid regl object for attachment');
-    }
-
-    return new FramebufferAttachment(target, texture, renderbuffer)
-  }
-
-  function allocAttachment (
-    width,
-    height,
-    isTexture,
-    format,
-    type) {
-    if (isTexture) {
-      var texture = textureState.create2D({
-        width: width,
-        height: height,
-        format: format,
-        type: type
-      });
-      texture._texture.refCount = 0;
-      return new FramebufferAttachment(GL_TEXTURE_2D$1, texture, null)
-    } else {
-      var rb = renderbufferState.create({
-        width: width,
-        height: height,
-        format: format
-      });
-      rb._renderbuffer.refCount = 0;
-      return new FramebufferAttachment(GL_RENDERBUFFER$1, null, rb)
-    }
-  }
-
-  function unwrapAttachment (attachment) {
-    return attachment && (attachment.texture || attachment.renderbuffer)
-  }
-
-  function resizeAttachment (attachment, w, h) {
-    if (attachment) {
-      if (attachment.texture) {
-        attachment.texture.resize(w, h);
-      } else if (attachment.renderbuffer) {
-        attachment.renderbuffer.resize(w, h);
-      }
-    }
-  }
-
-  var framebufferCount = 0;
-  var framebufferSet = {};
-
-  function REGLFramebuffer () {
-    this.id = framebufferCount++;
-    framebufferSet[this.id] = this;
-
-    this.framebuffer = gl.createFramebuffer();
-    this.width = 0;
-    this.height = 0;
-
-    this.colorAttachments = [];
-    this.depthAttachment = null;
-    this.stencilAttachment = null;
-    this.depthStencilAttachment = null;
-  }
-
-  function decFBORefs (framebuffer) {
-    framebuffer.colorAttachments.forEach(decRef);
-    decRef(framebuffer.depthAttachment);
-    decRef(framebuffer.stencilAttachment);
-    decRef(framebuffer.depthStencilAttachment);
-  }
-
-  function destroy (framebuffer) {
-    var handle = framebuffer.framebuffer;
-    check$1(handle, 'must not double destroy framebuffer');
-    gl.deleteFramebuffer(handle);
-    framebuffer.framebuffer = null;
-    stats.framebufferCount--;
-    delete framebufferSet[framebuffer.id];
-  }
-
-  function updateFramebuffer (framebuffer) {
-    var i;
-
-    gl.bindFramebuffer(GL_FRAMEBUFFER, framebuffer.framebuffer);
-    var colorAttachments = framebuffer.colorAttachments;
-    for (i = 0; i < colorAttachments.length; ++i) {
-      attach(GL_COLOR_ATTACHMENT0 + i, colorAttachments[i]);
-    }
-    for (i = colorAttachments.length; i < limits.maxColorAttachments; ++i) {
-      gl.framebufferTexture2D(
-        GL_FRAMEBUFFER,
-        GL_COLOR_ATTACHMENT0 + i,
-        GL_TEXTURE_2D$1,
-        null,
-        0);
-    }
-
-    gl.framebufferTexture2D(
-      GL_FRAMEBUFFER,
-      GL_DEPTH_STENCIL_ATTACHMENT,
-      GL_TEXTURE_2D$1,
-      null,
-      0);
-    gl.framebufferTexture2D(
-      GL_FRAMEBUFFER,
-      GL_DEPTH_ATTACHMENT,
-      GL_TEXTURE_2D$1,
-      null,
-      0);
-    gl.framebufferTexture2D(
-      GL_FRAMEBUFFER,
-      GL_STENCIL_ATTACHMENT,
-      GL_TEXTURE_2D$1,
-      null,
-      0);
-
-    attach(GL_DEPTH_ATTACHMENT, framebuffer.depthAttachment);
-    attach(GL_STENCIL_ATTACHMENT, framebuffer.stencilAttachment);
-    attach(GL_DEPTH_STENCIL_ATTACHMENT, framebuffer.depthStencilAttachment);
-
-    // Check status code
-    var status = gl.checkFramebufferStatus(GL_FRAMEBUFFER);
-    if (status !== GL_FRAMEBUFFER_COMPLETE) {
-      check$1.raise('framebuffer configuration not supported, status = ' +
-        statusCode[status]);
-    }
-
-    gl.bindFramebuffer(GL_FRAMEBUFFER, framebufferState.next);
-    framebufferState.cur = framebufferState.next;
-
-    // FIXME: Clear error code here.  This is a work around for a bug in
-    // headless-gl
-    gl.getError();
-  }
-
-  function createFBO (a0, a1) {
-    var framebuffer = new REGLFramebuffer();
-    stats.framebufferCount++;
-
-    function reglFramebuffer (a, b) {
-      var i;
-
-      check$1(framebufferState.next !== framebuffer,
-        'can not update framebuffer which is currently in use');
-
-      var extDrawBuffers = extensions.webgl_draw_buffers;
-
-      var width = 0;
-      var height = 0;
-
-      var needsDepth = true;
-      var needsStencil = true;
-
-      var colorBuffer = null;
-      var colorTexture = true;
-      var colorFormat = 'rgba';
-      var colorType = 'uint8';
-      var colorCount = 1;
-
-      var depthBuffer = null;
-      var stencilBuffer = null;
-      var depthStencilBuffer = null;
-      var depthStencilTexture = false;
-
-      if (typeof a === 'number') {
-        width = a | 0;
-        height = (b | 0) || width;
-      } else if (!a) {
-        width = height = 1;
-      } else {
-        check$1.type(a, 'object', 'invalid arguments for framebuffer');
-        var options = a;
-
-        if ('shape' in options) {
-          var shape = options.shape;
-          check$1(Array.isArray(shape) && shape.length >= 2,
-            'invalid shape for framebuffer');
-          width = shape[0];
-          height = shape[1];
-        } else {
-          if ('radius' in options) {
-            width = height = options.radius;
-          }
-          if ('width' in options) {
-            width = options.width;
-          }
-          if ('height' in options) {
-            height = options.height;
-          }
-        }
-
-        if ('color' in options ||
-            'colors' in options) {
-          colorBuffer =
-            options.color ||
-            options.colors;
-          if (Array.isArray(colorBuffer)) {
-            check$1(
-              colorBuffer.length === 1 || extDrawBuffers,
-              'multiple render targets not supported');
-          }
-        }
-
-        if (!colorBuffer) {
-          if ('colorCount' in options) {
-            colorCount = options.colorCount | 0;
-            check$1(colorCount > 0, 'invalid color buffer count');
-          }
-
-          if ('colorTexture' in options) {
-            colorTexture = !!options.colorTexture;
-            colorFormat = 'rgba4';
-          }
-
-          if ('colorType' in options) {
-            colorType = options.colorType;
-            if (!colorTexture) {
-              if (colorType === 'half float' || colorType === 'float16') {
-                check$1(extensions.ext_color_buffer_half_float,
-                  'you must enable EXT_color_buffer_half_float to use 16-bit render buffers');
-                colorFormat = 'rgba16f';
-              } else if (colorType === 'float' || colorType === 'float32') {
-                check$1(extensions.webgl_color_buffer_float,
-                  'you must enable WEBGL_color_buffer_float in order to use 32-bit floating point renderbuffers');
-                colorFormat = 'rgba32f';
-              }
-            } else {
-              check$1(extensions.oes_texture_float ||
-                !(colorType === 'float' || colorType === 'float32'),
-                'you must enable OES_texture_float in order to use floating point framebuffer objects');
-              check$1(extensions.oes_texture_half_float ||
-                !(colorType === 'half float' || colorType === 'float16'),
-                'you must enable OES_texture_half_float in order to use 16-bit floating point framebuffer objects');
-            }
-            check$1.oneOf(colorType, colorTypes, 'invalid color type');
-          }
-
-          if ('colorFormat' in options) {
-            colorFormat = options.colorFormat;
-            if (colorTextureFormats.indexOf(colorFormat) >= 0) {
-              colorTexture = true;
-            } else if (colorRenderbufferFormats.indexOf(colorFormat) >= 0) {
-              colorTexture = false;
-            } else {
-              if (colorTexture) {
-                check$1.oneOf(
-                  options.colorFormat, colorTextureFormats,
-                  'invalid color format for texture');
-              } else {
-                check$1.oneOf(
-                  options.colorFormat, colorRenderbufferFormats,
-                  'invalid color format for renderbuffer');
-              }
-            }
-          }
-        }
-
-        if ('depthTexture' in options || 'depthStencilTexture' in options) {
-          depthStencilTexture = !!(options.depthTexture ||
-            options.depthStencilTexture);
-          check$1(!depthStencilTexture || extensions.webgl_depth_texture,
-            'webgl_depth_texture extension not supported');
-        }
-
-        if ('depth' in options) {
-          if (typeof options.depth === 'boolean') {
-            needsDepth = options.depth;
-          } else {
-            depthBuffer = options.depth;
-            needsStencil = false;
-          }
-        }
-
-        if ('stencil' in options) {
-          if (typeof options.stencil === 'boolean') {
-            needsStencil = options.stencil;
-          } else {
-            stencilBuffer = options.stencil;
-            needsDepth = false;
-          }
-        }
-
-        if ('depthStencil' in options) {
-          if (typeof options.depthStencil === 'boolean') {
-            needsDepth = needsStencil = options.depthStencil;
-          } else {
-            depthStencilBuffer = options.depthStencil;
-            needsDepth = false;
-            needsStencil = false;
-          }
-        }
-      }
-
-      // parse attachments
-      var colorAttachments = null;
-      var depthAttachment = null;
-      var stencilAttachment = null;
-      var depthStencilAttachment = null;
-
-      // Set up color attachments
-      if (Array.isArray(colorBuffer)) {
-        colorAttachments = colorBuffer.map(parseAttachment);
-      } else if (colorBuffer) {
-        colorAttachments = [parseAttachment(colorBuffer)];
-      } else {
-        colorAttachments = new Array(colorCount);
-        for (i = 0; i < colorCount; ++i) {
-          colorAttachments[i] = allocAttachment(
-            width,
-            height,
-            colorTexture,
-            colorFormat,
-            colorType);
-        }
-      }
-
-      check$1(extensions.webgl_draw_buffers || colorAttachments.length <= 1,
-        'you must enable the WEBGL_draw_buffers extension in order to use multiple color buffers.');
-      check$1(colorAttachments.length <= limits.maxColorAttachments,
-        'too many color attachments, not supported');
-
-      width = width || colorAttachments[0].width;
-      height = height || colorAttachments[0].height;
-
-      if (depthBuffer) {
-        depthAttachment = parseAttachment(depthBuffer);
-      } else if (needsDepth && !needsStencil) {
-        depthAttachment = allocAttachment(
-          width,
-          height,
-          depthStencilTexture,
-          'depth',
-          'uint32');
-      }
-
-      if (stencilBuffer) {
-        stencilAttachment = parseAttachment(stencilBuffer);
-      } else if (needsStencil && !needsDepth) {
-        stencilAttachment = allocAttachment(
-          width,
-          height,
-          false,
-          'stencil',
-          'uint8');
-      }
-
-      if (depthStencilBuffer) {
-        depthStencilAttachment = parseAttachment(depthStencilBuffer);
-      } else if (!depthBuffer && !stencilBuffer && needsStencil && needsDepth) {
-        depthStencilAttachment = allocAttachment(
-          width,
-          height,
-          depthStencilTexture,
-          'depth stencil',
-          'depth stencil');
-      }
-
-      check$1(
-        (!!depthBuffer) + (!!stencilBuffer) + (!!depthStencilBuffer) <= 1,
-        'invalid framebuffer configuration, can specify exactly one depth/stencil attachment');
-
-      var commonColorAttachmentSize = null;
-
-      for (i = 0; i < colorAttachments.length; ++i) {
-        incRefAndCheckShape(colorAttachments[i], width, height);
-        check$1(!colorAttachments[i] ||
-          (colorAttachments[i].texture &&
-            colorTextureFormatEnums.indexOf(colorAttachments[i].texture._texture.format) >= 0) ||
-          (colorAttachments[i].renderbuffer &&
-            colorRenderbufferFormatEnums.indexOf(colorAttachments[i].renderbuffer._renderbuffer.format) >= 0),
-          'framebuffer color attachment ' + i + ' is invalid');
-
-        if (colorAttachments[i] && colorAttachments[i].texture) {
-          var colorAttachmentSize =
-              textureFormatChannels[colorAttachments[i].texture._texture.format] *
-              textureTypeSizes[colorAttachments[i].texture._texture.type];
-
-          if (commonColorAttachmentSize === null) {
-            commonColorAttachmentSize = colorAttachmentSize;
-          } else {
-            // We need to make sure that all color attachments have the same number of bitplanes
-            // (that is, the same numer of bits per pixel)
-            // This is required by the GLES2.0 standard. See the beginning of Chapter 4 in that document.
-            check$1(commonColorAttachmentSize === colorAttachmentSize,
-                  'all color attachments much have the same number of bits per pixel.');
-          }
-        }
-      }
-      incRefAndCheckShape(depthAttachment, width, height);
-      check$1(!depthAttachment ||
-        (depthAttachment.texture &&
-          depthAttachment.texture._texture.format === GL_DEPTH_COMPONENT$1) ||
-        (depthAttachment.renderbuffer &&
-          depthAttachment.renderbuffer._renderbuffer.format === GL_DEPTH_COMPONENT16$1),
-        'invalid depth attachment for framebuffer object');
-      incRefAndCheckShape(stencilAttachment, width, height);
-      check$1(!stencilAttachment ||
-        (stencilAttachment.renderbuffer &&
-          stencilAttachment.renderbuffer._renderbuffer.format === GL_STENCIL_INDEX8$1),
-        'invalid stencil attachment for framebuffer object');
-      incRefAndCheckShape(depthStencilAttachment, width, height);
-      check$1(!depthStencilAttachment ||
-        (depthStencilAttachment.texture &&
-          depthStencilAttachment.texture._texture.format === GL_DEPTH_STENCIL$2) ||
-        (depthStencilAttachment.renderbuffer &&
-          depthStencilAttachment.renderbuffer._renderbuffer.format === GL_DEPTH_STENCIL$2),
-        'invalid depth-stencil attachment for framebuffer object');
-
-      // decrement references
-      decFBORefs(framebuffer);
-
-      framebuffer.width = width;
-      framebuffer.height = height;
-
-      framebuffer.colorAttachments = colorAttachments;
-      framebuffer.depthAttachment = depthAttachment;
-      framebuffer.stencilAttachment = stencilAttachment;
-      framebuffer.depthStencilAttachment = depthStencilAttachment;
-
-      reglFramebuffer.color = colorAttachments.map(unwrapAttachment);
-      reglFramebuffer.depth = unwrapAttachment(depthAttachment);
-      reglFramebuffer.stencil = unwrapAttachment(stencilAttachment);
-      reglFramebuffer.depthStencil = unwrapAttachment(depthStencilAttachment);
-
-      reglFramebuffer.width = framebuffer.width;
-      reglFramebuffer.height = framebuffer.height;
-
-      updateFramebuffer(framebuffer);
-
-      return reglFramebuffer
-    }
-
-    function resize (w_, h_) {
-      check$1(framebufferState.next !== framebuffer,
-        'can not resize a framebuffer which is currently in use');
-
-      var w = w_ | 0;
-      var h = (h_ | 0) || w;
-      if (w === framebuffer.width && h === framebuffer.height) {
-        return reglFramebuffer
-      }
-
-      // resize all buffers
-      var colorAttachments = framebuffer.colorAttachments;
-      for (var i = 0; i < colorAttachments.length; ++i) {
-        resizeAttachment(colorAttachments[i], w, h);
-      }
-      resizeAttachment(framebuffer.depthAttachment, w, h);
-      resizeAttachment(framebuffer.stencilAttachment, w, h);
-      resizeAttachment(framebuffer.depthStencilAttachment, w, h);
-
-      framebuffer.width = reglFramebuffer.width = w;
-      framebuffer.height = reglFramebuffer.height = h;
-
-      updateFramebuffer(framebuffer);
-
-      return reglFramebuffer
-    }
-
-    reglFramebuffer(a0, a1);
-
-    return extend(reglFramebuffer, {
-      resize: resize,
-      _reglType: 'framebuffer',
-      _framebuffer: framebuffer,
-      destroy: function () {
-        destroy(framebuffer);
-        decFBORefs(framebuffer);
-      },
-      use: function (block) {
-        framebufferState.setFBO({
-          framebuffer: reglFramebuffer
-        }, block);
-      }
-    })
-  }
-
-  function createCubeFBO (options) {
-    var faces = Array(6);
-
-    function reglFramebufferCube (a) {
-      var i;
-
-      check$1(faces.indexOf(framebufferState.next) < 0,
-        'can not update framebuffer which is currently in use');
-
-      var extDrawBuffers = extensions.webgl_draw_buffers;
-
-      var params = {
-        color: null
-      };
-
-      var radius = 0;
-
-      var colorBuffer = null;
-      var colorFormat = 'rgba';
-      var colorType = 'uint8';
-      var colorCount = 1;
-
-      if (typeof a === 'number') {
-        radius = a | 0;
-      } else if (!a) {
-        radius = 1;
-      } else {
-        check$1.type(a, 'object', 'invalid arguments for framebuffer');
-        var options = a;
-
-        if ('shape' in options) {
-          var shape = options.shape;
-          check$1(
-            Array.isArray(shape) && shape.length >= 2,
-            'invalid shape for framebuffer');
-          check$1(
-            shape[0] === shape[1],
-            'cube framebuffer must be square');
-          radius = shape[0];
-        } else {
-          if ('radius' in options) {
-            radius = options.radius | 0;
-          }
-          if ('width' in options) {
-            radius = options.width | 0;
-            if ('height' in options) {
-              check$1(options.height === radius, 'must be square');
-            }
-          } else if ('height' in options) {
-            radius = options.height | 0;
-          }
-        }
-
-        if ('color' in options ||
-            'colors' in options) {
-          colorBuffer =
-            options.color ||
-            options.colors;
-          if (Array.isArray(colorBuffer)) {
-            check$1(
-              colorBuffer.length === 1 || extDrawBuffers,
-              'multiple render targets not supported');
-          }
-        }
-
-        if (!colorBuffer) {
-          if ('colorCount' in options) {
-            colorCount = options.colorCount | 0;
-            check$1(colorCount > 0, 'invalid color buffer count');
-          }
-
-          if ('colorType' in options) {
-            check$1.oneOf(
-              options.colorType, colorTypes,
-              'invalid color type');
-            colorType = options.colorType;
-          }
-
-          if ('colorFormat' in options) {
-            colorFormat = options.colorFormat;
-            check$1.oneOf(
-              options.colorFormat, colorTextureFormats,
-              'invalid color format for texture');
-          }
-        }
-
-        if ('depth' in options) {
-          params.depth = options.depth;
-        }
-
-        if ('stencil' in options) {
-          params.stencil = options.stencil;
-        }
-
-        if ('depthStencil' in options) {
-          params.depthStencil = options.depthStencil;
-        }
-      }
-
-      var colorCubes;
-      if (colorBuffer) {
-        if (Array.isArray(colorBuffer)) {
-          colorCubes = [];
-          for (i = 0; i < colorBuffer.length; ++i) {
-            colorCubes[i] = colorBuffer[i];
-          }
-        } else {
-          colorCubes = [ colorBuffer ];
-        }
-      } else {
-        colorCubes = Array(colorCount);
-        var cubeMapParams = {
-          radius: radius,
-          format: colorFormat,
-          type: colorType
-        };
-        for (i = 0; i < colorCount; ++i) {
-          colorCubes[i] = textureState.createCube(cubeMapParams);
-        }
-      }
-
-      // Check color cubes
-      params.color = Array(colorCubes.length);
-      for (i = 0; i < colorCubes.length; ++i) {
-        var cube = colorCubes[i];
-        check$1(
-          typeof cube === 'function' && cube._reglType === 'textureCube',
-          'invalid cube map');
-        radius = radius || cube.width;
-        check$1(
-          cube.width === radius && cube.height === radius,
-          'invalid cube map shape');
-        params.color[i] = {
-          target: GL_TEXTURE_CUBE_MAP_POSITIVE_X$1,
-          data: colorCubes[i]
-        };
-      }
-
-      for (i = 0; i < 6; ++i) {
-        for (var j = 0; j < colorCubes.length; ++j) {
-          params.color[j].target = GL_TEXTURE_CUBE_MAP_POSITIVE_X$1 + i;
-        }
-        // reuse depth-stencil attachments across all cube maps
-        if (i > 0) {
-          params.depth = faces[0].depth;
-          params.stencil = faces[0].stencil;
-          params.depthStencil = faces[0].depthStencil;
-        }
-        if (faces[i]) {
-          (faces[i])(params);
-        } else {
-          faces[i] = createFBO(params);
-        }
-      }
-
-      return extend(reglFramebufferCube, {
-        width: radius,
-        height: radius,
-        color: colorCubes
-      })
-    }
-
-    function resize (radius_) {
-      var i;
-      var radius = radius_ | 0;
-      check$1(radius > 0 && radius <= limits.maxCubeMapSize,
-        'invalid radius for cube fbo');
-
-      if (radius === reglFramebufferCube.width) {
-        return reglFramebufferCube
-      }
-
-      var colors = reglFramebufferCube.color;
-      for (i = 0; i < colors.length; ++i) {
-        colors[i].resize(radius);
-      }
-
-      for (i = 0; i < 6; ++i) {
-        faces[i].resize(radius);
-      }
-
-      reglFramebufferCube.width = reglFramebufferCube.height = radius;
-
-      return reglFramebufferCube
-    }
-
-    reglFramebufferCube(options);
-
-    return extend(reglFramebufferCube, {
-      faces: faces,
-      resize: resize,
-      _reglType: 'framebufferCube',
-      destroy: function () {
-        faces.forEach(function (f) {
-          f.destroy();
-        });
-      }
-    })
-  }
-
-  function restoreFramebuffers () {
-    values(framebufferSet).forEach(function (fb) {
-      fb.framebuffer = gl.createFramebuffer();
-      updateFramebuffer(fb);
-    });
-  }
-
-  return extend(framebufferState, {
-    getFramebuffer: function (object) {
-      if (typeof object === 'function' && object._reglType === 'framebuffer') {
-        var fbo = object._framebuffer;
-        if (fbo instanceof REGLFramebuffer) {
-          return fbo
-        }
-      }
-      return null
-    },
-    create: createFBO,
-    createCube: createCubeFBO,
-    clear: function () {
-      values(framebufferSet).forEach(destroy);
-    },
-    restore: restoreFramebuffers
-  })
-}
-
-var GL_FLOAT$5 = 5126;
-
-function AttributeRecord () {
-  this.state = 0;
-
-  this.x = 0.0;
-  this.y = 0.0;
-  this.z = 0.0;
-  this.w = 0.0;
-
-  this.buffer = null;
-  this.size = 0;
-  this.normalized = false;
-  this.type = GL_FLOAT$5;
-  this.offset = 0;
-  this.stride = 0;
-  this.divisor = 0;
-}
-
-function wrapAttributeState (
-  gl,
-  extensions,
-  limits,
-  bufferState,
-  stringStore) {
-  var NUM_ATTRIBUTES = limits.maxAttributes;
-  var attributeBindings = new Array(NUM_ATTRIBUTES);
-  for (var i = 0; i < NUM_ATTRIBUTES; ++i) {
-    attributeBindings[i] = new AttributeRecord();
-  }
-
-  return {
-    Record: AttributeRecord,
-    scope: {},
-    state: attributeBindings
-  }
-}
-
-var GL_FRAGMENT_SHADER = 35632;
-var GL_VERTEX_SHADER = 35633;
-
-var GL_ACTIVE_UNIFORMS = 0x8B86;
-var GL_ACTIVE_ATTRIBUTES = 0x8B89;
-
-function wrapShaderState (gl, stringStore, stats, config) {
-  // ===================================================
-  // glsl compilation and linking
-  // ===================================================
-  var fragShaders = {};
-  var vertShaders = {};
-
-  function ActiveInfo (name, id, location, info) {
-    this.name = name;
-    this.id = id;
-    this.location = location;
-    this.info = info;
-  }
-
-  function insertActiveInfo (list, info) {
-    for (var i = 0; i < list.length; ++i) {
-      if (list[i].id === info.id) {
-        list[i].location = info.location;
-        return
-      }
-    }
-    list.push(info);
-  }
-
-  function getShader (type, id, command) {
-    var cache = type === GL_FRAGMENT_SHADER ? fragShaders : vertShaders;
-    var shader = cache[id];
-
-    if (!shader) {
-      var source = stringStore.str(id);
-      shader = gl.createShader(type);
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      check$1.shaderError(gl, shader, source, type, command);
-      cache[id] = shader;
-    }
-
-    return shader
-  }
-
-  // ===================================================
-  // program linking
-  // ===================================================
-  var programCache = {};
-  var programList = [];
-
-  var PROGRAM_COUNTER = 0;
-
-  function REGLProgram (fragId, vertId) {
-    this.id = PROGRAM_COUNTER++;
-    this.fragId = fragId;
-    this.vertId = vertId;
-    this.program = null;
-    this.uniforms = [];
-    this.attributes = [];
-
-    if (config.profile) {
-      this.stats = {
-        uniformsCount: 0,
-        attributesCount: 0
-      };
-    }
-  }
-
-  function linkProgram (desc, command) {
-    var i, info;
-
-    // -------------------------------
-    // compile & link
-    // -------------------------------
-    var fragShader = getShader(GL_FRAGMENT_SHADER, desc.fragId);
-    var vertShader = getShader(GL_VERTEX_SHADER, desc.vertId);
-
-    var program = desc.program = gl.createProgram();
-    gl.attachShader(program, fragShader);
-    gl.attachShader(program, vertShader);
-    gl.linkProgram(program);
-    check$1.linkError(
-      gl,
-      program,
-      stringStore.str(desc.fragId),
-      stringStore.str(desc.vertId),
-      command);
-
-    // -------------------------------
-    // grab uniforms
-    // -------------------------------
-    var numUniforms = gl.getProgramParameter(program, GL_ACTIVE_UNIFORMS);
-    if (config.profile) {
-      desc.stats.uniformsCount = numUniforms;
-    }
-    var uniforms = desc.uniforms;
-    for (i = 0; i < numUniforms; ++i) {
-      info = gl.getActiveUniform(program, i);
-      if (info) {
-        if (info.size > 1) {
-          for (var j = 0; j < info.size; ++j) {
-            var name = info.name.replace('[0]', '[' + j + ']');
-            insertActiveInfo(uniforms, new ActiveInfo(
-              name,
-              stringStore.id(name),
-              gl.getUniformLocation(program, name),
-              info));
-          }
-        } else {
-          insertActiveInfo(uniforms, new ActiveInfo(
-            info.name,
-            stringStore.id(info.name),
-            gl.getUniformLocation(program, info.name),
-            info));
-        }
-      }
-    }
-
-    // -------------------------------
-    // grab attributes
-    // -------------------------------
-    var numAttributes = gl.getProgramParameter(program, GL_ACTIVE_ATTRIBUTES);
-    if (config.profile) {
-      desc.stats.attributesCount = numAttributes;
-    }
-
-    var attributes = desc.attributes;
-    for (i = 0; i < numAttributes; ++i) {
-      info = gl.getActiveAttrib(program, i);
-      if (info) {
-        insertActiveInfo(attributes, new ActiveInfo(
-          info.name,
-          stringStore.id(info.name),
-          gl.getAttribLocation(program, info.name),
-          info));
-      }
-    }
-  }
-
-  if (config.profile) {
-    stats.getMaxUniformsCount = function () {
-      var m = 0;
-      programList.forEach(function (desc) {
-        if (desc.stats.uniformsCount > m) {
-          m = desc.stats.uniformsCount;
-        }
-      });
-      return m
-    };
-
-    stats.getMaxAttributesCount = function () {
-      var m = 0;
-      programList.forEach(function (desc) {
-        if (desc.stats.attributesCount > m) {
-          m = desc.stats.attributesCount;
-        }
-      });
-      return m
-    };
-  }
-
-  function restoreShaders () {
-    fragShaders = {};
-    vertShaders = {};
-    for (var i = 0; i < programList.length; ++i) {
-      linkProgram(programList[i]);
-    }
-  }
-
-  return {
-    clear: function () {
-      var deleteShader = gl.deleteShader.bind(gl);
-      values(fragShaders).forEach(deleteShader);
-      fragShaders = {};
-      values(vertShaders).forEach(deleteShader);
-      vertShaders = {};
-
-      programList.forEach(function (desc) {
-        gl.deleteProgram(desc.program);
-      });
-      programList.length = 0;
-      programCache = {};
-
-      stats.shaderCount = 0;
-    },
-
-    program: function (vertId, fragId, command) {
-      check$1.command(vertId >= 0, 'missing vertex shader', command);
-      check$1.command(fragId >= 0, 'missing fragment shader', command);
-
-      var cache = programCache[fragId];
-      if (!cache) {
-        cache = programCache[fragId] = {};
-      }
-      var program = cache[vertId];
-      if (!program) {
-        program = new REGLProgram(fragId, vertId);
-        stats.shaderCount++;
-
-        linkProgram(program, command);
-        cache[vertId] = program;
-        programList.push(program);
-      }
-      return program
-    },
-
-    restore: restoreShaders,
-
-    shader: getShader,
-
-    frag: -1,
-    vert: -1
-  }
-}
-
-var GL_RGBA$2 = 6408;
-var GL_UNSIGNED_BYTE$6 = 5121;
-var GL_PACK_ALIGNMENT = 0x0D05;
-var GL_FLOAT$6 = 0x1406; // 5126
-
-function wrapReadPixels (
-  gl,
-  framebufferState,
-  reglPoll,
-  context,
-  glAttributes,
-  extensions) {
-  function readPixelsImpl (input) {
-    var type;
-    if (framebufferState.next === null) {
-      check$1(
-        glAttributes.preserveDrawingBuffer,
-        'you must create a webgl context with "preserveDrawingBuffer":true in order to read pixels from the drawing buffer');
-      type = GL_UNSIGNED_BYTE$6;
-    } else {
-      check$1(
-        framebufferState.next.colorAttachments[0].texture !== null,
-          'You cannot read from a renderbuffer');
-      type = framebufferState.next.colorAttachments[0].texture._texture.type;
-
-      if (extensions.oes_texture_float) {
-        check$1(
-          type === GL_UNSIGNED_BYTE$6 || type === GL_FLOAT$6,
-          'Reading from a framebuffer is only allowed for the types \'uint8\' and \'float\'');
-      } else {
-        check$1(
-          type === GL_UNSIGNED_BYTE$6,
-          'Reading from a framebuffer is only allowed for the type \'uint8\'');
-      }
-    }
-
-    var x = 0;
-    var y = 0;
-    var width = context.framebufferWidth;
-    var height = context.framebufferHeight;
-    var data = null;
-
-    if (isTypedArray(input)) {
-      data = input;
-    } else if (input) {
-      check$1.type(input, 'object', 'invalid arguments to regl.read()');
-      x = input.x | 0;
-      y = input.y | 0;
-      check$1(
-        x >= 0 && x < context.framebufferWidth,
-        'invalid x offset for regl.read');
-      check$1(
-        y >= 0 && y < context.framebufferHeight,
-        'invalid y offset for regl.read');
-      width = (input.width || (context.framebufferWidth - x)) | 0;
-      height = (input.height || (context.framebufferHeight - y)) | 0;
-      data = input.data || null;
-    }
-
-    // sanity check input.data
-    if (data) {
-      if (type === GL_UNSIGNED_BYTE$6) {
-        check$1(
-          data instanceof Uint8Array,
-          'buffer must be \'Uint8Array\' when reading from a framebuffer of type \'uint8\'');
-      } else if (type === GL_FLOAT$6) {
-        check$1(
-          data instanceof Float32Array,
-          'buffer must be \'Float32Array\' when reading from a framebuffer of type \'float\'');
-      }
-    }
-
-    check$1(
-      width > 0 && width + x <= context.framebufferWidth,
-      'invalid width for read pixels');
-    check$1(
-      height > 0 && height + y <= context.framebufferHeight,
-      'invalid height for read pixels');
-
-    // Update WebGL state
-    reglPoll();
-
-    // Compute size
-    var size = width * height * 4;
-
-    // Allocate data
-    if (!data) {
-      if (type === GL_UNSIGNED_BYTE$6) {
-        data = new Uint8Array(size);
-      } else if (type === GL_FLOAT$6) {
-        data = data || new Float32Array(size);
-      }
-    }
-
-    // Type check
-    check$1.isTypedArray(data, 'data buffer for regl.read() must be a typedarray');
-    check$1(data.byteLength >= size, 'data buffer for regl.read() too small');
-
-    // Run read pixels
-    gl.pixelStorei(GL_PACK_ALIGNMENT, 4);
-    gl.readPixels(x, y, width, height, GL_RGBA$2,
-                  type,
-                  data);
-
-    return data
-  }
-
-  function readPixelsFBO (options) {
-    var result;
-    framebufferState.setFBO({
-      framebuffer: options.framebuffer
-    }, function () {
-      result = readPixelsImpl(options);
-    });
-    return result
-  }
-
-  function readPixels (options) {
-    if (!options || !('framebuffer' in options)) {
-      return readPixelsImpl(options)
-    } else {
-      return readPixelsFBO(options)
-    }
-  }
-
-  return readPixels
-}
-
-function slice (x) {
-  return Array.prototype.slice.call(x)
-}
-
-function join (x) {
-  return slice(x).join('')
-}
-
-function createEnvironment () {
-  // Unique variable id counter
-  var varCounter = 0;
-
-  // Linked values are passed from this scope into the generated code block
-  // Calling link() passes a value into the generated scope and returns
-  // the variable name which it is bound to
-  var linkedNames = [];
-  var linkedValues = [];
-  function link (value) {
-    for (var i = 0; i < linkedValues.length; ++i) {
-      if (linkedValues[i] === value) {
-        return linkedNames[i]
-      }
-    }
-
-    var name = 'g' + (varCounter++);
-    linkedNames.push(name);
-    linkedValues.push(value);
-    return name
-  }
-
-  // create a code block
-  function block () {
-    var code = [];
-    function push () {
-      code.push.apply(code, slice(arguments));
-    }
-
-    var vars = [];
-    function def () {
-      var name = 'v' + (varCounter++);
-      vars.push(name);
-
-      if (arguments.length > 0) {
-        code.push(name, '=');
-        code.push.apply(code, slice(arguments));
-        code.push(';');
-      }
-
-      return name
-    }
-
-    return extend(push, {
-      def: def,
-      toString: function () {
-        return join([
-          (vars.length > 0 ? 'var ' + vars + ';' : ''),
-          join(code)
-        ])
-      }
-    })
-  }
-
-  function scope () {
-    var entry = block();
-    var exit = block();
-
-    var entryToString = entry.toString;
-    var exitToString = exit.toString;
-
-    function save (object, prop) {
-      exit(object, prop, '=', entry.def(object, prop), ';');
-    }
-
-    return extend(function () {
-      entry.apply(entry, slice(arguments));
-    }, {
-      def: entry.def,
-      entry: entry,
-      exit: exit,
-      save: save,
-      set: function (object, prop, value) {
-        save(object, prop);
-        entry(object, prop, '=', value, ';');
-      },
-      toString: function () {
-        return entryToString() + exitToString()
-      }
-    })
-  }
-
-  function conditional () {
-    var pred = join(arguments);
-    var thenBlock = scope();
-    var elseBlock = scope();
-
-    var thenToString = thenBlock.toString;
-    var elseToString = elseBlock.toString;
-
-    return extend(thenBlock, {
-      then: function () {
-        thenBlock.apply(thenBlock, slice(arguments));
-        return this
-      },
-      else: function () {
-        elseBlock.apply(elseBlock, slice(arguments));
-        return this
-      },
-      toString: function () {
-        var elseClause = elseToString();
-        if (elseClause) {
-          elseClause = 'else{' + elseClause + '}';
-        }
-        return join([
-          'if(', pred, '){',
-          thenToString(),
-          '}', elseClause
-        ])
-      }
-    })
-  }
-
-  // procedure list
-  var globalBlock = block();
-  var procedures = {};
-  function proc (name, count) {
-    var args = [];
-    function arg () {
-      var name = 'a' + args.length;
-      args.push(name);
-      return name
-    }
-
-    count = count || 0;
-    for (var i = 0; i < count; ++i) {
-      arg();
-    }
-
-    var body = scope();
-    var bodyToString = body.toString;
-
-    var result = procedures[name] = extend(body, {
-      arg: arg,
-      toString: function () {
-        return join([
-          'function(', args.join(), '){',
-          bodyToString(),
-          '}'
-        ])
-      }
-    });
-
-    return result
-  }
-
-  function compile () {
-    var code = ['"use strict";',
-      globalBlock,
-      'return {'];
-    Object.keys(procedures).forEach(function (name) {
-      code.push('"', name, '":', procedures[name].toString(), ',');
-    });
-    code.push('}');
-    var src = join(code)
-      .replace(/;/g, ';\n')
-      .replace(/}/g, '}\n')
-      .replace(/{/g, '{\n');
-    var proc = Function.apply(null, linkedNames.concat(src));
-    return proc.apply(null, linkedValues)
-  }
-
-  return {
-    global: globalBlock,
-    link: link,
-    block: block,
-    proc: proc,
-    scope: scope,
-    cond: conditional,
-    compile: compile
-  }
-}
-
-// "cute" names for vector components
-var CUTE_COMPONENTS = 'xyzw'.split('');
-
-var GL_UNSIGNED_BYTE$7 = 5121;
-
-var ATTRIB_STATE_POINTER = 1;
-var ATTRIB_STATE_CONSTANT = 2;
-
-var DYN_FUNC$1 = 0;
-var DYN_PROP$1 = 1;
-var DYN_CONTEXT$1 = 2;
-var DYN_STATE$1 = 3;
-var DYN_THUNK = 4;
-
-var S_DITHER = 'dither';
-var S_BLEND_ENABLE = 'blend.enable';
-var S_BLEND_COLOR = 'blend.color';
-var S_BLEND_EQUATION = 'blend.equation';
-var S_BLEND_FUNC = 'blend.func';
-var S_DEPTH_ENABLE = 'depth.enable';
-var S_DEPTH_FUNC = 'depth.func';
-var S_DEPTH_RANGE = 'depth.range';
-var S_DEPTH_MASK = 'depth.mask';
-var S_COLOR_MASK = 'colorMask';
-var S_CULL_ENABLE = 'cull.enable';
-var S_CULL_FACE = 'cull.face';
-var S_FRONT_FACE = 'frontFace';
-var S_LINE_WIDTH = 'lineWidth';
-var S_POLYGON_OFFSET_ENABLE = 'polygonOffset.enable';
-var S_POLYGON_OFFSET_OFFSET = 'polygonOffset.offset';
-var S_SAMPLE_ALPHA = 'sample.alpha';
-var S_SAMPLE_ENABLE = 'sample.enable';
-var S_SAMPLE_COVERAGE = 'sample.coverage';
-var S_STENCIL_ENABLE = 'stencil.enable';
-var S_STENCIL_MASK = 'stencil.mask';
-var S_STENCIL_FUNC = 'stencil.func';
-var S_STENCIL_OPFRONT = 'stencil.opFront';
-var S_STENCIL_OPBACK = 'stencil.opBack';
-var S_SCISSOR_ENABLE = 'scissor.enable';
-var S_SCISSOR_BOX = 'scissor.box';
-var S_VIEWPORT = 'viewport';
-
-var S_PROFILE = 'profile';
-
-var S_FRAMEBUFFER = 'framebuffer';
-var S_VERT = 'vert';
-var S_FRAG = 'frag';
-var S_ELEMENTS = 'elements';
-var S_PRIMITIVE = 'primitive';
-var S_COUNT = 'count';
-var S_OFFSET = 'offset';
-var S_INSTANCES = 'instances';
-
-var SUFFIX_WIDTH = 'Width';
-var SUFFIX_HEIGHT = 'Height';
-
-var S_FRAMEBUFFER_WIDTH = S_FRAMEBUFFER + SUFFIX_WIDTH;
-var S_FRAMEBUFFER_HEIGHT = S_FRAMEBUFFER + SUFFIX_HEIGHT;
-var S_VIEWPORT_WIDTH = S_VIEWPORT + SUFFIX_WIDTH;
-var S_VIEWPORT_HEIGHT = S_VIEWPORT + SUFFIX_HEIGHT;
-var S_DRAWINGBUFFER = 'drawingBuffer';
-var S_DRAWINGBUFFER_WIDTH = S_DRAWINGBUFFER + SUFFIX_WIDTH;
-var S_DRAWINGBUFFER_HEIGHT = S_DRAWINGBUFFER + SUFFIX_HEIGHT;
-
-var NESTED_OPTIONS = [
-  S_BLEND_FUNC,
-  S_BLEND_EQUATION,
-  S_STENCIL_FUNC,
-  S_STENCIL_OPFRONT,
-  S_STENCIL_OPBACK,
-  S_SAMPLE_COVERAGE,
-  S_VIEWPORT,
-  S_SCISSOR_BOX,
-  S_POLYGON_OFFSET_OFFSET
-];
-
-var GL_ARRAY_BUFFER$1 = 34962;
-var GL_ELEMENT_ARRAY_BUFFER$1 = 34963;
-
-var GL_FRAGMENT_SHADER$1 = 35632;
-var GL_VERTEX_SHADER$1 = 35633;
-
-var GL_TEXTURE_2D$2 = 0x0DE1;
-var GL_TEXTURE_CUBE_MAP$1 = 0x8513;
-
-var GL_CULL_FACE = 0x0B44;
-var GL_BLEND = 0x0BE2;
-var GL_DITHER = 0x0BD0;
-var GL_STENCIL_TEST = 0x0B90;
-var GL_DEPTH_TEST = 0x0B71;
-var GL_SCISSOR_TEST = 0x0C11;
-var GL_POLYGON_OFFSET_FILL = 0x8037;
-var GL_SAMPLE_ALPHA_TO_COVERAGE = 0x809E;
-var GL_SAMPLE_COVERAGE = 0x80A0;
-
-var GL_FLOAT$7 = 5126;
-var GL_FLOAT_VEC2 = 35664;
-var GL_FLOAT_VEC3 = 35665;
-var GL_FLOAT_VEC4 = 35666;
-var GL_INT$3 = 5124;
-var GL_INT_VEC2 = 35667;
-var GL_INT_VEC3 = 35668;
-var GL_INT_VEC4 = 35669;
-var GL_BOOL = 35670;
-var GL_BOOL_VEC2 = 35671;
-var GL_BOOL_VEC3 = 35672;
-var GL_BOOL_VEC4 = 35673;
-var GL_FLOAT_MAT2 = 35674;
-var GL_FLOAT_MAT3 = 35675;
-var GL_FLOAT_MAT4 = 35676;
-var GL_SAMPLER_2D = 35678;
-var GL_SAMPLER_CUBE = 35680;
-
-var GL_TRIANGLES$1 = 4;
-
-var GL_FRONT = 1028;
-var GL_BACK = 1029;
-var GL_CW = 0x0900;
-var GL_CCW = 0x0901;
-var GL_MIN_EXT = 0x8007;
-var GL_MAX_EXT = 0x8008;
-var GL_ALWAYS = 519;
-var GL_KEEP = 7680;
-var GL_ZERO = 0;
-var GL_ONE = 1;
-var GL_FUNC_ADD = 0x8006;
-var GL_LESS = 513;
-
-var GL_FRAMEBUFFER$1 = 0x8D40;
-var GL_COLOR_ATTACHMENT0$1 = 0x8CE0;
-
-var blendFuncs = {
-  '0': 0,
-  '1': 1,
-  'zero': 0,
-  'one': 1,
-  'src color': 768,
-  'one minus src color': 769,
-  'src alpha': 770,
-  'one minus src alpha': 771,
-  'dst color': 774,
-  'one minus dst color': 775,
-  'dst alpha': 772,
-  'one minus dst alpha': 773,
-  'constant color': 32769,
-  'one minus constant color': 32770,
-  'constant alpha': 32771,
-  'one minus constant alpha': 32772,
-  'src alpha saturate': 776
-};
-
-// There are invalid values for srcRGB and dstRGB. See:
-// https://www.khronos.org/registry/webgl/specs/1.0/#6.13
-// https://github.com/KhronosGroup/WebGL/blob/0d3201f5f7ec3c0060bc1f04077461541f1987b9/conformance-suites/1.0.3/conformance/misc/webgl-specific.html#L56
-var invalidBlendCombinations = [
-  'constant color, constant alpha',
-  'one minus constant color, constant alpha',
-  'constant color, one minus constant alpha',
-  'one minus constant color, one minus constant alpha',
-  'constant alpha, constant color',
-  'constant alpha, one minus constant color',
-  'one minus constant alpha, constant color',
-  'one minus constant alpha, one minus constant color'
-];
-
-var compareFuncs = {
-  'never': 512,
-  'less': 513,
-  '<': 513,
-  'equal': 514,
-  '=': 514,
-  '==': 514,
-  '===': 514,
-  'lequal': 515,
-  '<=': 515,
-  'greater': 516,
-  '>': 516,
-  'notequal': 517,
-  '!=': 517,
-  '!==': 517,
-  'gequal': 518,
-  '>=': 518,
-  'always': 519
-};
-
-var stencilOps = {
-  '0': 0,
-  'zero': 0,
-  'keep': 7680,
-  'replace': 7681,
-  'increment': 7682,
-  'decrement': 7683,
-  'increment wrap': 34055,
-  'decrement wrap': 34056,
-  'invert': 5386
-};
-
-var shaderType = {
-  'frag': GL_FRAGMENT_SHADER$1,
-  'vert': GL_VERTEX_SHADER$1
-};
-
-var orientationType = {
-  'cw': GL_CW,
-  'ccw': GL_CCW
-};
-
-function isBufferArgs (x) {
-  return Array.isArray(x) ||
-    isTypedArray(x) ||
-    isNDArrayLike(x)
-}
-
-// Make sure viewport is processed first
-function sortState (state) {
-  return state.sort(function (a, b) {
-    if (a === S_VIEWPORT) {
-      return -1
-    } else if (b === S_VIEWPORT) {
-      return 1
-    }
-    return (a < b) ? -1 : 1
-  })
-}
-
-function Declaration (thisDep, contextDep, propDep, append) {
-  this.thisDep = thisDep;
-  this.contextDep = contextDep;
-  this.propDep = propDep;
-  this.append = append;
-}
-
-function isStatic (decl) {
-  return decl && !(decl.thisDep || decl.contextDep || decl.propDep)
-}
-
-function createStaticDecl (append) {
-  return new Declaration(false, false, false, append)
-}
-
-function createDynamicDecl (dyn, append) {
-  var type = dyn.type;
-  if (type === DYN_FUNC$1) {
-    var numArgs = dyn.data.length;
-    return new Declaration(
-      true,
-      numArgs >= 1,
-      numArgs >= 2,
-      append)
-  } else if (type === DYN_THUNK) {
-    var data = dyn.data;
-    return new Declaration(
-      data.thisDep,
-      data.contextDep,
-      data.propDep,
-      append)
-  } else {
-    return new Declaration(
-      type === DYN_STATE$1,
-      type === DYN_CONTEXT$1,
-      type === DYN_PROP$1,
-      append)
-  }
-}
-
-var SCOPE_DECL = new Declaration(false, false, false, function () {});
-
-function reglCore (
-  gl,
-  stringStore,
-  extensions,
-  limits,
-  bufferState,
-  elementState,
-  textureState,
-  framebufferState,
-  uniformState,
-  attributeState,
-  shaderState,
-  drawState,
-  contextState,
-  timer,
-  config) {
-  var AttributeRecord = attributeState.Record;
-
-  var blendEquations = {
-    'add': 32774,
-    'subtract': 32778,
-    'reverse subtract': 32779
-  };
-  if (extensions.ext_blend_minmax) {
-    blendEquations.min = GL_MIN_EXT;
-    blendEquations.max = GL_MAX_EXT;
-  }
-
-  var extInstancing = extensions.angle_instanced_arrays;
-  var extDrawBuffers = extensions.webgl_draw_buffers;
-
-  // ===================================================
-  // ===================================================
-  // WEBGL STATE
-  // ===================================================
-  // ===================================================
-  var currentState = {
-    dirty: true,
-    profile: config.profile
-  };
-  var nextState = {};
-  var GL_STATE_NAMES = [];
-  var GL_FLAGS = {};
-  var GL_VARIABLES = {};
-
-  function propName (name) {
-    return name.replace('.', '_')
-  }
-
-  function stateFlag (sname, cap, init) {
-    var name = propName(sname);
-    GL_STATE_NAMES.push(sname);
-    nextState[name] = currentState[name] = !!init;
-    GL_FLAGS[name] = cap;
-  }
-
-  function stateVariable (sname, func, init) {
-    var name = propName(sname);
-    GL_STATE_NAMES.push(sname);
-    if (Array.isArray(init)) {
-      currentState[name] = init.slice();
-      nextState[name] = init.slice();
-    } else {
-      currentState[name] = nextState[name] = init;
-    }
-    GL_VARIABLES[name] = func;
-  }
-
-  // Dithering
-  stateFlag(S_DITHER, GL_DITHER);
-
-  // Blending
-  stateFlag(S_BLEND_ENABLE, GL_BLEND);
-  stateVariable(S_BLEND_COLOR, 'blendColor', [0, 0, 0, 0]);
-  stateVariable(S_BLEND_EQUATION, 'blendEquationSeparate',
-    [GL_FUNC_ADD, GL_FUNC_ADD]);
-  stateVariable(S_BLEND_FUNC, 'blendFuncSeparate',
-    [GL_ONE, GL_ZERO, GL_ONE, GL_ZERO]);
-
-  // Depth
-  stateFlag(S_DEPTH_ENABLE, GL_DEPTH_TEST, true);
-  stateVariable(S_DEPTH_FUNC, 'depthFunc', GL_LESS);
-  stateVariable(S_DEPTH_RANGE, 'depthRange', [0, 1]);
-  stateVariable(S_DEPTH_MASK, 'depthMask', true);
-
-  // Color mask
-  stateVariable(S_COLOR_MASK, S_COLOR_MASK, [true, true, true, true]);
-
-  // Face culling
-  stateFlag(S_CULL_ENABLE, GL_CULL_FACE);
-  stateVariable(S_CULL_FACE, 'cullFace', GL_BACK);
-
-  // Front face orientation
-  stateVariable(S_FRONT_FACE, S_FRONT_FACE, GL_CCW);
-
-  // Line width
-  stateVariable(S_LINE_WIDTH, S_LINE_WIDTH, 1);
-
-  // Polygon offset
-  stateFlag(S_POLYGON_OFFSET_ENABLE, GL_POLYGON_OFFSET_FILL);
-  stateVariable(S_POLYGON_OFFSET_OFFSET, 'polygonOffset', [0, 0]);
-
-  // Sample coverage
-  stateFlag(S_SAMPLE_ALPHA, GL_SAMPLE_ALPHA_TO_COVERAGE);
-  stateFlag(S_SAMPLE_ENABLE, GL_SAMPLE_COVERAGE);
-  stateVariable(S_SAMPLE_COVERAGE, 'sampleCoverage', [1, false]);
-
-  // Stencil
-  stateFlag(S_STENCIL_ENABLE, GL_STENCIL_TEST);
-  stateVariable(S_STENCIL_MASK, 'stencilMask', -1);
-  stateVariable(S_STENCIL_FUNC, 'stencilFunc', [GL_ALWAYS, 0, -1]);
-  stateVariable(S_STENCIL_OPFRONT, 'stencilOpSeparate',
-    [GL_FRONT, GL_KEEP, GL_KEEP, GL_KEEP]);
-  stateVariable(S_STENCIL_OPBACK, 'stencilOpSeparate',
-    [GL_BACK, GL_KEEP, GL_KEEP, GL_KEEP]);
-
-  // Scissor
-  stateFlag(S_SCISSOR_ENABLE, GL_SCISSOR_TEST);
-  stateVariable(S_SCISSOR_BOX, 'scissor',
-    [0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight]);
-
-  // Viewport
-  stateVariable(S_VIEWPORT, S_VIEWPORT,
-    [0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight]);
-
-  // ===================================================
-  // ===================================================
-  // ENVIRONMENT
-  // ===================================================
-  // ===================================================
-  var sharedState = {
-    gl: gl,
-    context: contextState,
-    strings: stringStore,
-    next: nextState,
-    current: currentState,
-    draw: drawState,
-    elements: elementState,
-    buffer: bufferState,
-    shader: shaderState,
-    attributes: attributeState.state,
-    uniforms: uniformState,
-    framebuffer: framebufferState,
-    extensions: extensions,
-
-    timer: timer,
-    isBufferArgs: isBufferArgs
-  };
-
-  var sharedConstants = {
-    primTypes: primTypes,
-    compareFuncs: compareFuncs,
-    blendFuncs: blendFuncs,
-    blendEquations: blendEquations,
-    stencilOps: stencilOps,
-    glTypes: glTypes,
-    orientationType: orientationType
-  };
-
-  check$1.optional(function () {
-    sharedState.isArrayLike = isArrayLike;
-  });
-
-  if (extDrawBuffers) {
-    sharedConstants.backBuffer = [GL_BACK];
-    sharedConstants.drawBuffer = loop(limits.maxDrawbuffers, function (i) {
-      if (i === 0) {
-        return [0]
-      }
-      return loop(i, function (j) {
-        return GL_COLOR_ATTACHMENT0$1 + j
-      })
-    });
-  }
-
-  var drawCallCounter = 0;
-  function createREGLEnvironment () {
-    var env = createEnvironment();
-    var link = env.link;
-    var global = env.global;
-    env.id = drawCallCounter++;
-
-    env.batchId = '0';
-
-    // link shared state
-    var SHARED = link(sharedState);
-    var shared = env.shared = {
-      props: 'a0'
-    };
-    Object.keys(sharedState).forEach(function (prop) {
-      shared[prop] = global.def(SHARED, '.', prop);
-    });
-
-    // Inject runtime assertion stuff for debug builds
-    check$1.optional(function () {
-      env.CHECK = link(check$1);
-      env.commandStr = check$1.guessCommand();
-      env.command = link(env.commandStr);
-      env.assert = function (block, pred, message) {
-        block(
-          'if(!(', pred, '))',
-          this.CHECK, '.commandRaise(', link(message), ',', this.command, ');');
-      };
-
-      sharedConstants.invalidBlendCombinations = invalidBlendCombinations;
-    });
-
-    // Copy GL state variables over
-    var nextVars = env.next = {};
-    var currentVars = env.current = {};
-    Object.keys(GL_VARIABLES).forEach(function (variable) {
-      if (Array.isArray(currentState[variable])) {
-        nextVars[variable] = global.def(shared.next, '.', variable);
-        currentVars[variable] = global.def(shared.current, '.', variable);
-      }
-    });
-
-    // Initialize shared constants
-    var constants = env.constants = {};
-    Object.keys(sharedConstants).forEach(function (name) {
-      constants[name] = global.def(JSON.stringify(sharedConstants[name]));
-    });
-
-    // Helper function for calling a block
-    env.invoke = function (block, x) {
-      switch (x.type) {
-        case DYN_FUNC$1:
-          var argList = [
-            'this',
-            shared.context,
-            shared.props,
-            env.batchId
-          ];
-          return block.def(
-            link(x.data), '.call(',
-              argList.slice(0, Math.max(x.data.length + 1, 4)),
-             ')')
-        case DYN_PROP$1:
-          return block.def(shared.props, x.data)
-        case DYN_CONTEXT$1:
-          return block.def(shared.context, x.data)
-        case DYN_STATE$1:
-          return block.def('this', x.data)
-        case DYN_THUNK:
-          x.data.append(env, block);
-          return x.data.ref
-      }
-    };
-
-    env.attribCache = {};
-
-    var scopeAttribs = {};
-    env.scopeAttrib = function (name) {
-      var id = stringStore.id(name);
-      if (id in scopeAttribs) {
-        return scopeAttribs[id]
-      }
-      var binding = attributeState.scope[id];
-      if (!binding) {
-        binding = attributeState.scope[id] = new AttributeRecord();
-      }
-      var result = scopeAttribs[id] = link(binding);
-      return result
-    };
-
-    return env
-  }
-
-  // ===================================================
-  // ===================================================
-  // PARSING
-  // ===================================================
-  // ===================================================
-  function parseProfile (options) {
-    var staticOptions = options.static;
-    var dynamicOptions = options.dynamic;
-
-    var profileEnable;
-    if (S_PROFILE in staticOptions) {
-      var value = !!staticOptions[S_PROFILE];
-      profileEnable = createStaticDecl(function (env, scope) {
-        return value
-      });
-      profileEnable.enable = value;
-    } else if (S_PROFILE in dynamicOptions) {
-      var dyn = dynamicOptions[S_PROFILE];
-      profileEnable = createDynamicDecl(dyn, function (env, scope) {
-        return env.invoke(scope, dyn)
-      });
-    }
-
-    return profileEnable
-  }
-
-  function parseFramebuffer (options, env) {
-    var staticOptions = options.static;
-    var dynamicOptions = options.dynamic;
-
-    if (S_FRAMEBUFFER in staticOptions) {
-      var framebuffer = staticOptions[S_FRAMEBUFFER];
-      if (framebuffer) {
-        framebuffer = framebufferState.getFramebuffer(framebuffer);
-        check$1.command(framebuffer, 'invalid framebuffer object');
-        return createStaticDecl(function (env, block) {
-          var FRAMEBUFFER = env.link(framebuffer);
-          var shared = env.shared;
-          block.set(
-            shared.framebuffer,
-            '.next',
-            FRAMEBUFFER);
-          var CONTEXT = shared.context;
-          block.set(
-            CONTEXT,
-            '.' + S_FRAMEBUFFER_WIDTH,
-            FRAMEBUFFER + '.width');
-          block.set(
-            CONTEXT,
-            '.' + S_FRAMEBUFFER_HEIGHT,
-            FRAMEBUFFER + '.height');
-          return FRAMEBUFFER
-        })
-      } else {
-        return createStaticDecl(function (env, scope) {
-          var shared = env.shared;
-          scope.set(
-            shared.framebuffer,
-            '.next',
-            'null');
-          var CONTEXT = shared.context;
-          scope.set(
-            CONTEXT,
-            '.' + S_FRAMEBUFFER_WIDTH,
-            CONTEXT + '.' + S_DRAWINGBUFFER_WIDTH);
-          scope.set(
-            CONTEXT,
-            '.' + S_FRAMEBUFFER_HEIGHT,
-            CONTEXT + '.' + S_DRAWINGBUFFER_HEIGHT);
-          return 'null'
-        })
-      }
-    } else if (S_FRAMEBUFFER in dynamicOptions) {
-      var dyn = dynamicOptions[S_FRAMEBUFFER];
-      return createDynamicDecl(dyn, function (env, scope) {
-        var FRAMEBUFFER_FUNC = env.invoke(scope, dyn);
-        var shared = env.shared;
-        var FRAMEBUFFER_STATE = shared.framebuffer;
-        var FRAMEBUFFER = scope.def(
-          FRAMEBUFFER_STATE, '.getFramebuffer(', FRAMEBUFFER_FUNC, ')');
-
-        check$1.optional(function () {
-          env.assert(scope,
-            '!' + FRAMEBUFFER_FUNC + '||' + FRAMEBUFFER,
-            'invalid framebuffer object');
-        });
-
-        scope.set(
-          FRAMEBUFFER_STATE,
-          '.next',
-          FRAMEBUFFER);
-        var CONTEXT = shared.context;
-        scope.set(
-          CONTEXT,
-          '.' + S_FRAMEBUFFER_WIDTH,
-          FRAMEBUFFER + '?' + FRAMEBUFFER + '.width:' +
-          CONTEXT + '.' + S_DRAWINGBUFFER_WIDTH);
-        scope.set(
-          CONTEXT,
-          '.' + S_FRAMEBUFFER_HEIGHT,
-          FRAMEBUFFER +
-          '?' + FRAMEBUFFER + '.height:' +
-          CONTEXT + '.' + S_DRAWINGBUFFER_HEIGHT);
-        return FRAMEBUFFER
-      })
-    } else {
-      return null
-    }
-  }
-
-  function parseViewportScissor (options, framebuffer, env) {
-    var staticOptions = options.static;
-    var dynamicOptions = options.dynamic;
-
-    function parseBox (param) {
-      if (param in staticOptions) {
-        var box = staticOptions[param];
-        check$1.commandType(box, 'object', 'invalid ' + param, env.commandStr);
-
-        var isStatic = true;
-        var x = box.x | 0;
-        var y = box.y | 0;
-        var w, h;
-        if ('width' in box) {
-          w = box.width | 0;
-          check$1.command(w >= 0, 'invalid ' + param, env.commandStr);
-        } else {
-          isStatic = false;
-        }
-        if ('height' in box) {
-          h = box.height | 0;
-          check$1.command(h >= 0, 'invalid ' + param, env.commandStr);
-        } else {
-          isStatic = false;
-        }
-
-        return new Declaration(
-          !isStatic && framebuffer && framebuffer.thisDep,
-          !isStatic && framebuffer && framebuffer.contextDep,
-          !isStatic && framebuffer && framebuffer.propDep,
-          function (env, scope) {
-            var CONTEXT = env.shared.context;
-            var BOX_W = w;
-            if (!('width' in box)) {
-              BOX_W = scope.def(CONTEXT, '.', S_FRAMEBUFFER_WIDTH, '-', x);
-            }
-            var BOX_H = h;
-            if (!('height' in box)) {
-              BOX_H = scope.def(CONTEXT, '.', S_FRAMEBUFFER_HEIGHT, '-', y);
-            }
-            return [x, y, BOX_W, BOX_H]
-          })
-      } else if (param in dynamicOptions) {
-        var dynBox = dynamicOptions[param];
-        var result = createDynamicDecl(dynBox, function (env, scope) {
-          var BOX = env.invoke(scope, dynBox);
-
-          check$1.optional(function () {
-            env.assert(scope,
-              BOX + '&&typeof ' + BOX + '==="object"',
-              'invalid ' + param);
-          });
-
-          var CONTEXT = env.shared.context;
-          var BOX_X = scope.def(BOX, '.x|0');
-          var BOX_Y = scope.def(BOX, '.y|0');
-          var BOX_W = scope.def(
-            '"width" in ', BOX, '?', BOX, '.width|0:',
-            '(', CONTEXT, '.', S_FRAMEBUFFER_WIDTH, '-', BOX_X, ')');
-          var BOX_H = scope.def(
-            '"height" in ', BOX, '?', BOX, '.height|0:',
-            '(', CONTEXT, '.', S_FRAMEBUFFER_HEIGHT, '-', BOX_Y, ')');
-
-          check$1.optional(function () {
-            env.assert(scope,
-              BOX_W + '>=0&&' +
-              BOX_H + '>=0',
-              'invalid ' + param);
-          });
-
-          return [BOX_X, BOX_Y, BOX_W, BOX_H]
-        });
-        if (framebuffer) {
-          result.thisDep = result.thisDep || framebuffer.thisDep;
-          result.contextDep = result.contextDep || framebuffer.contextDep;
-          result.propDep = result.propDep || framebuffer.propDep;
-        }
-        return result
-      } else if (framebuffer) {
-        return new Declaration(
-          framebuffer.thisDep,
-          framebuffer.contextDep,
-          framebuffer.propDep,
-          function (env, scope) {
-            var CONTEXT = env.shared.context;
-            return [
-              0, 0,
-              scope.def(CONTEXT, '.', S_FRAMEBUFFER_WIDTH),
-              scope.def(CONTEXT, '.', S_FRAMEBUFFER_HEIGHT)]
-          })
-      } else {
-        return null
-      }
-    }
-
-    var viewport = parseBox(S_VIEWPORT);
-
-    if (viewport) {
-      var prevViewport = viewport;
-      viewport = new Declaration(
-        viewport.thisDep,
-        viewport.contextDep,
-        viewport.propDep,
-        function (env, scope) {
-          var VIEWPORT = prevViewport.append(env, scope);
-          var CONTEXT = env.shared.context;
-          scope.set(
-            CONTEXT,
-            '.' + S_VIEWPORT_WIDTH,
-            VIEWPORT[2]);
-          scope.set(
-            CONTEXT,
-            '.' + S_VIEWPORT_HEIGHT,
-            VIEWPORT[3]);
-          return VIEWPORT
-        });
-    }
-
-    return {
-      viewport: viewport,
-      scissor_box: parseBox(S_SCISSOR_BOX)
-    }
-  }
-
-  function parseProgram (options) {
-    var staticOptions = options.static;
-    var dynamicOptions = options.dynamic;
-
-    function parseShader (name) {
-      if (name in staticOptions) {
-        var id = stringStore.id(staticOptions[name]);
-        check$1.optional(function () {
-          shaderState.shader(shaderType[name], id, check$1.guessCommand());
-        });
-        var result = createStaticDecl(function () {
-          return id
-        });
-        result.id = id;
-        return result
-      } else if (name in dynamicOptions) {
-        var dyn = dynamicOptions[name];
-        return createDynamicDecl(dyn, function (env, scope) {
-          var str = env.invoke(scope, dyn);
-          var id = scope.def(env.shared.strings, '.id(', str, ')');
-          check$1.optional(function () {
-            scope(
-              env.shared.shader, '.shader(',
-              shaderType[name], ',',
-              id, ',',
-              env.command, ');');
-          });
-          return id
-        })
-      }
-      return null
-    }
-
-    var frag = parseShader(S_FRAG);
-    var vert = parseShader(S_VERT);
-
-    var program = null;
-    var progVar;
-    if (isStatic(frag) && isStatic(vert)) {
-      program = shaderState.program(vert.id, frag.id);
-      progVar = createStaticDecl(function (env, scope) {
-        return env.link(program)
-      });
-    } else {
-      progVar = new Declaration(
-        (frag && frag.thisDep) || (vert && vert.thisDep),
-        (frag && frag.contextDep) || (vert && vert.contextDep),
-        (frag && frag.propDep) || (vert && vert.propDep),
-        function (env, scope) {
-          var SHADER_STATE = env.shared.shader;
-          var fragId;
-          if (frag) {
-            fragId = frag.append(env, scope);
-          } else {
-            fragId = scope.def(SHADER_STATE, '.', S_FRAG);
-          }
-          var vertId;
-          if (vert) {
-            vertId = vert.append(env, scope);
-          } else {
-            vertId = scope.def(SHADER_STATE, '.', S_VERT);
-          }
-          var progDef = SHADER_STATE + '.program(' + vertId + ',' + fragId;
-          check$1.optional(function () {
-            progDef += ',' + env.command;
-          });
-          return scope.def(progDef + ')')
-        });
-    }
-
-    return {
-      frag: frag,
-      vert: vert,
-      progVar: progVar,
-      program: program
-    }
-  }
-
-  function parseDraw (options, env) {
-    var staticOptions = options.static;
-    var dynamicOptions = options.dynamic;
-
-    function parseElements () {
-      if (S_ELEMENTS in staticOptions) {
-        var elements = staticOptions[S_ELEMENTS];
-        if (isBufferArgs(elements)) {
-          elements = elementState.getElements(elementState.create(elements, true));
-        } else if (elements) {
-          elements = elementState.getElements(elements);
-          check$1.command(elements, 'invalid elements', env.commandStr);
-        }
-        var result = createStaticDecl(function (env, scope) {
-          if (elements) {
-            var result = env.link(elements);
-            env.ELEMENTS = result;
-            return result
-          }
-          env.ELEMENTS = null;
-          return null
-        });
-        result.value = elements;
-        return result
-      } else if (S_ELEMENTS in dynamicOptions) {
-        var dyn = dynamicOptions[S_ELEMENTS];
-        return createDynamicDecl(dyn, function (env, scope) {
-          var shared = env.shared;
-
-          var IS_BUFFER_ARGS = shared.isBufferArgs;
-          var ELEMENT_STATE = shared.elements;
-
-          var elementDefn = env.invoke(scope, dyn);
-          var elements = scope.def('null');
-          var elementStream = scope.def(IS_BUFFER_ARGS, '(', elementDefn, ')');
-
-          var ifte = env.cond(elementStream)
-            .then(elements, '=', ELEMENT_STATE, '.createStream(', elementDefn, ');')
-            .else(elements, '=', ELEMENT_STATE, '.getElements(', elementDefn, ');');
-
-          check$1.optional(function () {
-            env.assert(ifte.else,
-              '!' + elementDefn + '||' + elements,
-              'invalid elements');
-          });
-
-          scope.entry(ifte);
-          scope.exit(
-            env.cond(elementStream)
-              .then(ELEMENT_STATE, '.destroyStream(', elements, ');'));
-
-          env.ELEMENTS = elements;
-
-          return elements
-        })
-      }
-
-      return null
-    }
-
-    var elements = parseElements();
-
-    function parsePrimitive () {
-      if (S_PRIMITIVE in staticOptions) {
-        var primitive = staticOptions[S_PRIMITIVE];
-        check$1.commandParameter(primitive, primTypes, 'invalid primitve', env.commandStr);
-        return createStaticDecl(function (env, scope) {
-          return primTypes[primitive]
-        })
-      } else if (S_PRIMITIVE in dynamicOptions) {
-        var dynPrimitive = dynamicOptions[S_PRIMITIVE];
-        return createDynamicDecl(dynPrimitive, function (env, scope) {
-          var PRIM_TYPES = env.constants.primTypes;
-          var prim = env.invoke(scope, dynPrimitive);
-          check$1.optional(function () {
-            env.assert(scope,
-              prim + ' in ' + PRIM_TYPES,
-              'invalid primitive, must be one of ' + Object.keys(primTypes));
-          });
-          return scope.def(PRIM_TYPES, '[', prim, ']')
-        })
-      } else if (elements) {
-        if (isStatic(elements)) {
-          if (elements.value) {
-            return createStaticDecl(function (env, scope) {
-              return scope.def(env.ELEMENTS, '.primType')
-            })
-          } else {
-            return createStaticDecl(function () {
-              return GL_TRIANGLES$1
-            })
-          }
-        } else {
-          return new Declaration(
-            elements.thisDep,
-            elements.contextDep,
-            elements.propDep,
-            function (env, scope) {
-              var elements = env.ELEMENTS;
-              return scope.def(elements, '?', elements, '.primType:', GL_TRIANGLES$1)
-            })
-        }
-      }
-      return null
-    }
-
-    function parseParam (param, isOffset) {
-      if (param in staticOptions) {
-        var value = staticOptions[param] | 0;
-        check$1.command(!isOffset || value >= 0, 'invalid ' + param, env.commandStr);
-        return createStaticDecl(function (env, scope) {
-          if (isOffset) {
-            env.OFFSET = value;
-          }
-          return value
-        })
-      } else if (param in dynamicOptions) {
-        var dynValue = dynamicOptions[param];
-        return createDynamicDecl(dynValue, function (env, scope) {
-          var result = env.invoke(scope, dynValue);
-          if (isOffset) {
-            env.OFFSET = result;
-            check$1.optional(function () {
-              env.assert(scope,
-                result + '>=0',
-                'invalid ' + param);
-            });
-          }
-          return result
-        })
-      } else if (isOffset && elements) {
-        return createStaticDecl(function (env, scope) {
-          env.OFFSET = '0';
-          return 0
-        })
-      }
-      return null
-    }
-
-    var OFFSET = parseParam(S_OFFSET, true);
-
-    function parseVertCount () {
-      if (S_COUNT in staticOptions) {
-        var count = staticOptions[S_COUNT] | 0;
-        check$1.command(
-          typeof count === 'number' && count >= 0, 'invalid vertex count', env.commandStr);
-        return createStaticDecl(function () {
-          return count
-        })
-      } else if (S_COUNT in dynamicOptions) {
-        var dynCount = dynamicOptions[S_COUNT];
-        return createDynamicDecl(dynCount, function (env, scope) {
-          var result = env.invoke(scope, dynCount);
-          check$1.optional(function () {
-            env.assert(scope,
-              'typeof ' + result + '==="number"&&' +
-              result + '>=0&&' +
-              result + '===(' + result + '|0)',
-              'invalid vertex count');
-          });
-          return result
-        })
-      } else if (elements) {
-        if (isStatic(elements)) {
-          if (elements) {
-            if (OFFSET) {
-              return new Declaration(
-                OFFSET.thisDep,
-                OFFSET.contextDep,
-                OFFSET.propDep,
-                function (env, scope) {
-                  var result = scope.def(
-                    env.ELEMENTS, '.vertCount-', env.OFFSET);
-
-                  check$1.optional(function () {
-                    env.assert(scope,
-                      result + '>=0',
-                      'invalid vertex offset/element buffer too small');
-                  });
-
-                  return result
-                })
-            } else {
-              return createStaticDecl(function (env, scope) {
-                return scope.def(env.ELEMENTS, '.vertCount')
-              })
-            }
-          } else {
-            var result = createStaticDecl(function () {
-              return -1
-            });
-            check$1.optional(function () {
-              result.MISSING = true;
-            });
-            return result
-          }
-        } else {
-          var variable = new Declaration(
-            elements.thisDep || OFFSET.thisDep,
-            elements.contextDep || OFFSET.contextDep,
-            elements.propDep || OFFSET.propDep,
-            function (env, scope) {
-              var elements = env.ELEMENTS;
-              if (env.OFFSET) {
-                return scope.def(elements, '?', elements, '.vertCount-',
-                  env.OFFSET, ':-1')
-              }
-              return scope.def(elements, '?', elements, '.vertCount:-1')
-            });
-          check$1.optional(function () {
-            variable.DYNAMIC = true;
-          });
-          return variable
-        }
-      }
-      return null
-    }
-
-    return {
-      elements: elements,
-      primitive: parsePrimitive(),
-      count: parseVertCount(),
-      instances: parseParam(S_INSTANCES, false),
-      offset: OFFSET
-    }
-  }
-
-  function parseGLState (options, env) {
-    var staticOptions = options.static;
-    var dynamicOptions = options.dynamic;
-
-    var STATE = {};
-
-    GL_STATE_NAMES.forEach(function (prop) {
-      var param = propName(prop);
-
-      function parseParam (parseStatic, parseDynamic) {
-        if (prop in staticOptions) {
-          var value = parseStatic(staticOptions[prop]);
-          STATE[param] = createStaticDecl(function () {
-            return value
-          });
-        } else if (prop in dynamicOptions) {
-          var dyn = dynamicOptions[prop];
-          STATE[param] = createDynamicDecl(dyn, function (env, scope) {
-            return parseDynamic(env, scope, env.invoke(scope, dyn))
-          });
-        }
-      }
-
-      switch (prop) {
-        case S_CULL_ENABLE:
-        case S_BLEND_ENABLE:
-        case S_DITHER:
-        case S_STENCIL_ENABLE:
-        case S_DEPTH_ENABLE:
-        case S_SCISSOR_ENABLE:
-        case S_POLYGON_OFFSET_ENABLE:
-        case S_SAMPLE_ALPHA:
-        case S_SAMPLE_ENABLE:
-        case S_DEPTH_MASK:
-          return parseParam(
-            function (value) {
-              check$1.commandType(value, 'boolean', prop, env.commandStr);
-              return value
-            },
-            function (env, scope, value) {
-              check$1.optional(function () {
-                env.assert(scope,
-                  'typeof ' + value + '==="boolean"',
-                  'invalid flag ' + prop, env.commandStr);
-              });
-              return value
-            })
-
-        case S_DEPTH_FUNC:
-          return parseParam(
-            function (value) {
-              check$1.commandParameter(value, compareFuncs, 'invalid ' + prop, env.commandStr);
-              return compareFuncs[value]
-            },
-            function (env, scope, value) {
-              var COMPARE_FUNCS = env.constants.compareFuncs;
-              check$1.optional(function () {
-                env.assert(scope,
-                  value + ' in ' + COMPARE_FUNCS,
-                  'invalid ' + prop + ', must be one of ' + Object.keys(compareFuncs));
-              });
-              return scope.def(COMPARE_FUNCS, '[', value, ']')
-            })
-
-        case S_DEPTH_RANGE:
-          return parseParam(
-            function (value) {
-              check$1.command(
-                isArrayLike(value) &&
-                value.length === 2 &&
-                typeof value[0] === 'number' &&
-                typeof value[1] === 'number' &&
-                value[0] <= value[1],
-                'depth range is 2d array',
-                env.commandStr);
-              return value
-            },
-            function (env, scope, value) {
-              check$1.optional(function () {
-                env.assert(scope,
-                  env.shared.isArrayLike + '(' + value + ')&&' +
-                  value + '.length===2&&' +
-                  'typeof ' + value + '[0]==="number"&&' +
-                  'typeof ' + value + '[1]==="number"&&' +
-                  value + '[0]<=' + value + '[1]',
-                  'depth range must be a 2d array');
-              });
-
-              var Z_NEAR = scope.def('+', value, '[0]');
-              var Z_FAR = scope.def('+', value, '[1]');
-              return [Z_NEAR, Z_FAR]
-            })
-
-        case S_BLEND_FUNC:
-          return parseParam(
-            function (value) {
-              check$1.commandType(value, 'object', 'blend.func', env.commandStr);
-              var srcRGB = ('srcRGB' in value ? value.srcRGB : value.src);
-              var srcAlpha = ('srcAlpha' in value ? value.srcAlpha : value.src);
-              var dstRGB = ('dstRGB' in value ? value.dstRGB : value.dst);
-              var dstAlpha = ('dstAlpha' in value ? value.dstAlpha : value.dst);
-              check$1.commandParameter(srcRGB, blendFuncs, param + '.srcRGB', env.commandStr);
-              check$1.commandParameter(srcAlpha, blendFuncs, param + '.srcAlpha', env.commandStr);
-              check$1.commandParameter(dstRGB, blendFuncs, param + '.dstRGB', env.commandStr);
-              check$1.commandParameter(dstAlpha, blendFuncs, param + '.dstAlpha', env.commandStr);
-
-              check$1.command(
-                (invalidBlendCombinations.indexOf(srcRGB + ', ' + dstRGB) === -1),
-                'unallowed blending combination (srcRGB, dstRGB) = (' + srcRGB + ', ' + dstRGB + ')', env.commandStr);
-
-              return [
-                blendFuncs[srcRGB],
-                blendFuncs[dstRGB],
-                blendFuncs[srcAlpha],
-                blendFuncs[dstAlpha]
-              ]
-            },
-            function (env, scope, value) {
-              var BLEND_FUNCS = env.constants.blendFuncs;
-
-              check$1.optional(function () {
-                env.assert(scope,
-                  value + '&&typeof ' + value + '==="object"',
-                  'invalid blend func, must be an object');
-              });
-
-              function read (prefix, suffix) {
-                var func = scope.def(
-                  '"', prefix, suffix, '" in ', value,
-                  '?', value, '.', prefix, suffix,
-                  ':', value, '.', prefix);
-
-                check$1.optional(function () {
-                  env.assert(scope,
-                    func + ' in ' + BLEND_FUNCS,
-                    'invalid ' + prop + '.' + prefix + suffix + ', must be one of ' + Object.keys(blendFuncs));
-                });
-
-                return func
-              }
-
-              var srcRGB = read('src', 'RGB');
-              var dstRGB = read('dst', 'RGB');
-
-              check$1.optional(function () {
-                var INVALID_BLEND_COMBINATIONS = env.constants.invalidBlendCombinations;
-
-                env.assert(scope,
-                           INVALID_BLEND_COMBINATIONS +
-                           '.indexOf(' + srcRGB + '+", "+' + dstRGB + ') === -1 ',
-                           'unallowed blending combination for (srcRGB, dstRGB)'
-                          );
-              });
-
-              var SRC_RGB = scope.def(BLEND_FUNCS, '[', srcRGB, ']');
-              var SRC_ALPHA = scope.def(BLEND_FUNCS, '[', read('src', 'Alpha'), ']');
-              var DST_RGB = scope.def(BLEND_FUNCS, '[', dstRGB, ']');
-              var DST_ALPHA = scope.def(BLEND_FUNCS, '[', read('dst', 'Alpha'), ']');
-
-              return [SRC_RGB, DST_RGB, SRC_ALPHA, DST_ALPHA]
-            })
-
-        case S_BLEND_EQUATION:
-          return parseParam(
-            function (value) {
-              if (typeof value === 'string') {
-                check$1.commandParameter(value, blendEquations, 'invalid ' + prop, env.commandStr);
-                return [
-                  blendEquations[value],
-                  blendEquations[value]
-                ]
-              } else if (typeof value === 'object') {
-                check$1.commandParameter(
-                  value.rgb, blendEquations, prop + '.rgb', env.commandStr);
-                check$1.commandParameter(
-                  value.alpha, blendEquations, prop + '.alpha', env.commandStr);
-                return [
-                  blendEquations[value.rgb],
-                  blendEquations[value.alpha]
-                ]
-              } else {
-                check$1.commandRaise('invalid blend.equation', env.commandStr);
-              }
-            },
-            function (env, scope, value) {
-              var BLEND_EQUATIONS = env.constants.blendEquations;
-
-              var RGB = scope.def();
-              var ALPHA = scope.def();
-
-              var ifte = env.cond('typeof ', value, '==="string"');
-
-              check$1.optional(function () {
-                function checkProp (block, name, value) {
-                  env.assert(block,
-                    value + ' in ' + BLEND_EQUATIONS,
-                    'invalid ' + name + ', must be one of ' + Object.keys(blendEquations));
-                }
-                checkProp(ifte.then, prop, value);
-
-                env.assert(ifte.else,
-                  value + '&&typeof ' + value + '==="object"',
-                  'invalid ' + prop);
-                checkProp(ifte.else, prop + '.rgb', value + '.rgb');
-                checkProp(ifte.else, prop + '.alpha', value + '.alpha');
-              });
-
-              ifte.then(
-                RGB, '=', ALPHA, '=', BLEND_EQUATIONS, '[', value, '];');
-              ifte.else(
-                RGB, '=', BLEND_EQUATIONS, '[', value, '.rgb];',
-                ALPHA, '=', BLEND_EQUATIONS, '[', value, '.alpha];');
-
-              scope(ifte);
-
-              return [RGB, ALPHA]
-            })
-
-        case S_BLEND_COLOR:
-          return parseParam(
-            function (value) {
-              check$1.command(
-                isArrayLike(value) &&
-                value.length === 4,
-                'blend.color must be a 4d array', env.commandStr);
-              return loop(4, function (i) {
-                return +value[i]
-              })
-            },
-            function (env, scope, value) {
-              check$1.optional(function () {
-                env.assert(scope,
-                  env.shared.isArrayLike + '(' + value + ')&&' +
-                  value + '.length===4',
-                  'blend.color must be a 4d array');
-              });
-              return loop(4, function (i) {
-                return scope.def('+', value, '[', i, ']')
-              })
-            })
-
-        case S_STENCIL_MASK:
-          return parseParam(
-            function (value) {
-              check$1.commandType(value, 'number', param, env.commandStr);
-              return value | 0
-            },
-            function (env, scope, value) {
-              check$1.optional(function () {
-                env.assert(scope,
-                  'typeof ' + value + '==="number"',
-                  'invalid stencil.mask');
-              });
-              return scope.def(value, '|0')
-            })
-
-        case S_STENCIL_FUNC:
-          return parseParam(
-            function (value) {
-              check$1.commandType(value, 'object', param, env.commandStr);
-              var cmp = value.cmp || 'keep';
-              var ref = value.ref || 0;
-              var mask = 'mask' in value ? value.mask : -1;
-              check$1.commandParameter(cmp, compareFuncs, prop + '.cmp', env.commandStr);
-              check$1.commandType(ref, 'number', prop + '.ref', env.commandStr);
-              check$1.commandType(mask, 'number', prop + '.mask', env.commandStr);
-              return [
-                compareFuncs[cmp],
-                ref,
-                mask
-              ]
-            },
-            function (env, scope, value) {
-              var COMPARE_FUNCS = env.constants.compareFuncs;
-              check$1.optional(function () {
-                function assert () {
-                  env.assert(scope,
-                    Array.prototype.join.call(arguments, ''),
-                    'invalid stencil.func');
-                }
-                assert(value + '&&typeof ', value, '==="object"');
-                assert('!("cmp" in ', value, ')||(',
-                  value, '.cmp in ', COMPARE_FUNCS, ')');
-              });
-              var cmp = scope.def(
-                '"cmp" in ', value,
-                '?', COMPARE_FUNCS, '[', value, '.cmp]',
-                ':', GL_KEEP);
-              var ref = scope.def(value, '.ref|0');
-              var mask = scope.def(
-                '"mask" in ', value,
-                '?', value, '.mask|0:-1');
-              return [cmp, ref, mask]
-            })
-
-        case S_STENCIL_OPFRONT:
-        case S_STENCIL_OPBACK:
-          return parseParam(
-            function (value) {
-              check$1.commandType(value, 'object', param, env.commandStr);
-              var fail = value.fail || 'keep';
-              var zfail = value.zfail || 'keep';
-              var zpass = value.zpass || 'keep';
-              check$1.commandParameter(fail, stencilOps, prop + '.fail', env.commandStr);
-              check$1.commandParameter(zfail, stencilOps, prop + '.zfail', env.commandStr);
-              check$1.commandParameter(zpass, stencilOps, prop + '.zpass', env.commandStr);
-              return [
-                prop === S_STENCIL_OPBACK ? GL_BACK : GL_FRONT,
-                stencilOps[fail],
-                stencilOps[zfail],
-                stencilOps[zpass]
-              ]
-            },
-            function (env, scope, value) {
-              var STENCIL_OPS = env.constants.stencilOps;
-
-              check$1.optional(function () {
-                env.assert(scope,
-                  value + '&&typeof ' + value + '==="object"',
-                  'invalid ' + prop);
-              });
-
-              function read (name) {
-                check$1.optional(function () {
-                  env.assert(scope,
-                    '!("' + name + '" in ' + value + ')||' +
-                    '(' + value + '.' + name + ' in ' + STENCIL_OPS + ')',
-                    'invalid ' + prop + '.' + name + ', must be one of ' + Object.keys(stencilOps));
-                });
-
-                return scope.def(
-                  '"', name, '" in ', value,
-                  '?', STENCIL_OPS, '[', value, '.', name, ']:',
-                  GL_KEEP)
-              }
-
-              return [
-                prop === S_STENCIL_OPBACK ? GL_BACK : GL_FRONT,
-                read('fail'),
-                read('zfail'),
-                read('zpass')
-              ]
-            })
-
-        case S_POLYGON_OFFSET_OFFSET:
-          return parseParam(
-            function (value) {
-              check$1.commandType(value, 'object', param, env.commandStr);
-              var factor = value.factor | 0;
-              var units = value.units | 0;
-              check$1.commandType(factor, 'number', param + '.factor', env.commandStr);
-              check$1.commandType(units, 'number', param + '.units', env.commandStr);
-              return [factor, units]
-            },
-            function (env, scope, value) {
-              check$1.optional(function () {
-                env.assert(scope,
-                  value + '&&typeof ' + value + '==="object"',
-                  'invalid ' + prop);
-              });
-
-              var FACTOR = scope.def(value, '.factor|0');
-              var UNITS = scope.def(value, '.units|0');
-
-              return [FACTOR, UNITS]
-            })
-
-        case S_CULL_FACE:
-          return parseParam(
-            function (value) {
-              var face = 0;
-              if (value === 'front') {
-                face = GL_FRONT;
-              } else if (value === 'back') {
-                face = GL_BACK;
-              }
-              check$1.command(!!face, param, env.commandStr);
-              return face
-            },
-            function (env, scope, value) {
-              check$1.optional(function () {
-                env.assert(scope,
-                  value + '==="front"||' +
-                  value + '==="back"',
-                  'invalid cull.face');
-              });
-              return scope.def(value, '==="front"?', GL_FRONT, ':', GL_BACK)
-            })
-
-        case S_LINE_WIDTH:
-          return parseParam(
-            function (value) {
-              check$1.command(
-                typeof value === 'number' &&
-                value >= limits.lineWidthDims[0] &&
-                value <= limits.lineWidthDims[1],
-                'invalid line width, must positive number between ' +
-                limits.lineWidthDims[0] + ' and ' + limits.lineWidthDims[1], env.commandStr);
-              return value
-            },
-            function (env, scope, value) {
-              check$1.optional(function () {
-                env.assert(scope,
-                  'typeof ' + value + '==="number"&&' +
-                  value + '>=' + limits.lineWidthDims[0] + '&&' +
-                  value + '<=' + limits.lineWidthDims[1],
-                  'invalid line width');
-              });
-
-              return value
-            })
-
-        case S_FRONT_FACE:
-          return parseParam(
-            function (value) {
-              check$1.commandParameter(value, orientationType, param, env.commandStr);
-              return orientationType[value]
-            },
-            function (env, scope, value) {
-              check$1.optional(function () {
-                env.assert(scope,
-                  value + '==="cw"||' +
-                  value + '==="ccw"',
-                  'invalid frontFace, must be one of cw,ccw');
-              });
-              return scope.def(value + '==="cw"?' + GL_CW + ':' + GL_CCW)
-            })
-
-        case S_COLOR_MASK:
-          return parseParam(
-            function (value) {
-              check$1.command(
-                isArrayLike(value) && value.length === 4,
-                'color.mask must be length 4 array', env.commandStr);
-              return value.map(function (v) { return !!v })
-            },
-            function (env, scope, value) {
-              check$1.optional(function () {
-                env.assert(scope,
-                  env.shared.isArrayLike + '(' + value + ')&&' +
-                  value + '.length===4',
-                  'invalid color.mask');
-              });
-              return loop(4, function (i) {
-                return '!!' + value + '[' + i + ']'
-              })
-            })
-
-        case S_SAMPLE_COVERAGE:
-          return parseParam(
-            function (value) {
-              check$1.command(typeof value === 'object' && value, param, env.commandStr);
-              var sampleValue = 'value' in value ? value.value : 1;
-              var sampleInvert = !!value.invert;
-              check$1.command(
-                typeof sampleValue === 'number' &&
-                sampleValue >= 0 && sampleValue <= 1,
-                'sample.coverage.value must be a number between 0 and 1', env.commandStr);
-              return [sampleValue, sampleInvert]
-            },
-            function (env, scope, value) {
-              check$1.optional(function () {
-                env.assert(scope,
-                  value + '&&typeof ' + value + '==="object"',
-                  'invalid sample.coverage');
-              });
-              var VALUE = scope.def(
-                '"value" in ', value, '?+', value, '.value:1');
-              var INVERT = scope.def('!!', value, '.invert');
-              return [VALUE, INVERT]
-            })
-      }
-    });
-
-    return STATE
-  }
-
-  function parseUniforms (uniforms, env) {
-    var staticUniforms = uniforms.static;
-    var dynamicUniforms = uniforms.dynamic;
-
-    var UNIFORMS = {};
-
-    Object.keys(staticUniforms).forEach(function (name) {
-      var value = staticUniforms[name];
-      var result;
-      if (typeof value === 'number' ||
-          typeof value === 'boolean') {
-        result = createStaticDecl(function () {
-          return value
-        });
-      } else if (typeof value === 'function') {
-        var reglType = value._reglType;
-        if (reglType === 'texture2d' ||
-            reglType === 'textureCube') {
-          result = createStaticDecl(function (env) {
-            return env.link(value)
-          });
-        } else if (reglType === 'framebuffer' ||
-                   reglType === 'framebufferCube') {
-          check$1.command(value.color.length > 0,
-            'missing color attachment for framebuffer sent to uniform "' + name + '"', env.commandStr);
-          result = createStaticDecl(function (env) {
-            return env.link(value.color[0])
-          });
-        } else {
-          check$1.commandRaise('invalid data for uniform "' + name + '"', env.commandStr);
-        }
-      } else if (isArrayLike(value)) {
-        result = createStaticDecl(function (env) {
-          var ITEM = env.global.def('[',
-            loop(value.length, function (i) {
-              check$1.command(
-                typeof value[i] === 'number' ||
-                typeof value[i] === 'boolean',
-                'invalid uniform ' + name, env.commandStr);
-              return value[i]
-            }), ']');
-          return ITEM
-        });
-      } else {
-        check$1.commandRaise('invalid or missing data for uniform "' + name + '"', env.commandStr);
-      }
-      result.value = value;
-      UNIFORMS[name] = result;
-    });
-
-    Object.keys(dynamicUniforms).forEach(function (key) {
-      var dyn = dynamicUniforms[key];
-      UNIFORMS[key] = createDynamicDecl(dyn, function (env, scope) {
-        return env.invoke(scope, dyn)
-      });
-    });
-
-    return UNIFORMS
-  }
-
-  function parseAttributes (attributes, env) {
-    var staticAttributes = attributes.static;
-    var dynamicAttributes = attributes.dynamic;
-
-    var attributeDefs = {};
-
-    Object.keys(staticAttributes).forEach(function (attribute) {
-      var value = staticAttributes[attribute];
-      var id = stringStore.id(attribute);
-
-      var record = new AttributeRecord();
-      if (isBufferArgs(value)) {
-        record.state = ATTRIB_STATE_POINTER;
-        record.buffer = bufferState.getBuffer(
-          bufferState.create(value, GL_ARRAY_BUFFER$1, false, true));
-        record.type = 0;
-      } else {
-        var buffer = bufferState.getBuffer(value);
-        if (buffer) {
-          record.state = ATTRIB_STATE_POINTER;
-          record.buffer = buffer;
-          record.type = 0;
-        } else {
-          check$1.command(typeof value === 'object' && value,
-            'invalid data for attribute ' + attribute, env.commandStr);
-          if (value.constant) {
-            var constant = value.constant;
-            record.buffer = 'null';
-            record.state = ATTRIB_STATE_CONSTANT;
-            if (typeof constant === 'number') {
-              record.x = constant;
-            } else {
-              check$1.command(
-                isArrayLike(constant) &&
-                constant.length > 0 &&
-                constant.length <= 4,
-                'invalid constant for attribute ' + attribute, env.commandStr);
-              CUTE_COMPONENTS.forEach(function (c, i) {
-                if (i < constant.length) {
-                  record[c] = constant[i];
-                }
-              });
-            }
-          } else {
-            if (isBufferArgs(value.buffer)) {
-              buffer = bufferState.getBuffer(
-                bufferState.create(value.buffer, GL_ARRAY_BUFFER$1, false, true));
-            } else {
-              buffer = bufferState.getBuffer(value.buffer);
-            }
-            check$1.command(!!buffer, 'missing buffer for attribute "' + attribute + '"', env.commandStr);
-
-            var offset = value.offset | 0;
-            check$1.command(offset >= 0,
-              'invalid offset for attribute "' + attribute + '"', env.commandStr);
-
-            var stride = value.stride | 0;
-            check$1.command(stride >= 0 && stride < 256,
-              'invalid stride for attribute "' + attribute + '", must be integer betweeen [0, 255]', env.commandStr);
-
-            var size = value.size | 0;
-            check$1.command(!('size' in value) || (size > 0 && size <= 4),
-              'invalid size for attribute "' + attribute + '", must be 1,2,3,4', env.commandStr);
-
-            var normalized = !!value.normalized;
-
-            var type = 0;
-            if ('type' in value) {
-              check$1.commandParameter(
-                value.type, glTypes,
-                'invalid type for attribute ' + attribute, env.commandStr);
-              type = glTypes[value.type];
-            }
-
-            var divisor = value.divisor | 0;
-            if ('divisor' in value) {
-              check$1.command(divisor === 0 || extInstancing,
-                'cannot specify divisor for attribute "' + attribute + '", instancing not supported', env.commandStr);
-              check$1.command(divisor >= 0,
-                'invalid divisor for attribute "' + attribute + '"', env.commandStr);
-            }
-
-            check$1.optional(function () {
-              var command = env.commandStr;
-
-              var VALID_KEYS = [
-                'buffer',
-                'offset',
-                'divisor',
-                'normalized',
-                'type',
-                'size',
-                'stride'
-              ];
-
-              Object.keys(value).forEach(function (prop) {
-                check$1.command(
-                  VALID_KEYS.indexOf(prop) >= 0,
-                  'unknown parameter "' + prop + '" for attribute pointer "' + attribute + '" (valid parameters are ' + VALID_KEYS + ')',
-                  command);
-              });
-            });
-
-            record.buffer = buffer;
-            record.state = ATTRIB_STATE_POINTER;
-            record.size = size;
-            record.normalized = normalized;
-            record.type = type || buffer.dtype;
-            record.offset = offset;
-            record.stride = stride;
-            record.divisor = divisor;
-          }
-        }
-      }
-
-      attributeDefs[attribute] = createStaticDecl(function (env, scope) {
-        var cache = env.attribCache;
-        if (id in cache) {
-          return cache[id]
-        }
-        var result = {
-          isStream: false
-        };
-        Object.keys(record).forEach(function (key) {
-          result[key] = record[key];
-        });
-        if (record.buffer) {
-          result.buffer = env.link(record.buffer);
-          result.type = result.type || (result.buffer + '.dtype');
-        }
-        cache[id] = result;
-        return result
-      });
-    });
-
-    Object.keys(dynamicAttributes).forEach(function (attribute) {
-      var dyn = dynamicAttributes[attribute];
-
-      function appendAttributeCode (env, block) {
-        var VALUE = env.invoke(block, dyn);
-
-        var shared = env.shared;
-
-        var IS_BUFFER_ARGS = shared.isBufferArgs;
-        var BUFFER_STATE = shared.buffer;
-
-        // Perform validation on attribute
-        check$1.optional(function () {
-          env.assert(block,
-            VALUE + '&&(typeof ' + VALUE + '==="object"||typeof ' +
-            VALUE + '==="function")&&(' +
-            IS_BUFFER_ARGS + '(' + VALUE + ')||' +
-            BUFFER_STATE + '.getBuffer(' + VALUE + ')||' +
-            BUFFER_STATE + '.getBuffer(' + VALUE + '.buffer)||' +
-            IS_BUFFER_ARGS + '(' + VALUE + '.buffer)||' +
-            '("constant" in ' + VALUE +
-            '&&(typeof ' + VALUE + '.constant==="number"||' +
-            shared.isArrayLike + '(' + VALUE + '.constant))))',
-            'invalid dynamic attribute "' + attribute + '"');
-        });
-
-        // allocate names for result
-        var result = {
-          isStream: block.def(false)
-        };
-        var defaultRecord = new AttributeRecord();
-        defaultRecord.state = ATTRIB_STATE_POINTER;
-        Object.keys(defaultRecord).forEach(function (key) {
-          result[key] = block.def('' + defaultRecord[key]);
-        });
-
-        var BUFFER = result.buffer;
-        var TYPE = result.type;
-        block(
-          'if(', IS_BUFFER_ARGS, '(', VALUE, ')){',
-          result.isStream, '=true;',
-          BUFFER, '=', BUFFER_STATE, '.createStream(', GL_ARRAY_BUFFER$1, ',', VALUE, ');',
-          TYPE, '=', BUFFER, '.dtype;',
-          '}else{',
-          BUFFER, '=', BUFFER_STATE, '.getBuffer(', VALUE, ');',
-          'if(', BUFFER, '){',
-          TYPE, '=', BUFFER, '.dtype;',
-          '}else if("constant" in ', VALUE, '){',
-          result.state, '=', ATTRIB_STATE_CONSTANT, ';',
-          'if(typeof ' + VALUE + '.constant === "number"){',
-          result[CUTE_COMPONENTS[0]], '=', VALUE, '.constant;',
-          CUTE_COMPONENTS.slice(1).map(function (n) {
-            return result[n]
-          }).join('='), '=0;',
-          '}else{',
-          CUTE_COMPONENTS.map(function (name, i) {
-            return (
-              result[name] + '=' + VALUE + '.constant.length>=' + i +
-              '?' + VALUE + '.constant[' + i + ']:0;'
-            )
-          }).join(''),
-          '}}else{',
-          'if(', IS_BUFFER_ARGS, '(', VALUE, '.buffer)){',
-          BUFFER, '=', BUFFER_STATE, '.createStream(', GL_ARRAY_BUFFER$1, ',', VALUE, '.buffer);',
-          '}else{',
-          BUFFER, '=', BUFFER_STATE, '.getBuffer(', VALUE, '.buffer);',
-          '}',
-          TYPE, '="type" in ', VALUE, '?',
-          shared.glTypes, '[', VALUE, '.type]:', BUFFER, '.dtype;',
-          result.normalized, '=!!', VALUE, '.normalized;');
-        function emitReadRecord (name) {
-          block(result[name], '=', VALUE, '.', name, '|0;');
-        }
-        emitReadRecord('size');
-        emitReadRecord('offset');
-        emitReadRecord('stride');
-        emitReadRecord('divisor');
-
-        block('}}');
-
-        block.exit(
-          'if(', result.isStream, '){',
-          BUFFER_STATE, '.destroyStream(', BUFFER, ');',
-          '}');
-
-        return result
-      }
-
-      attributeDefs[attribute] = createDynamicDecl(dyn, appendAttributeCode);
-    });
-
-    return attributeDefs
-  }
-
-  function parseContext (context) {
-    var staticContext = context.static;
-    var dynamicContext = context.dynamic;
-    var result = {};
-
-    Object.keys(staticContext).forEach(function (name) {
-      var value = staticContext[name];
-      result[name] = createStaticDecl(function (env, scope) {
-        if (typeof value === 'number' || typeof value === 'boolean') {
-          return '' + value
-        } else {
-          return env.link(value)
-        }
-      });
-    });
-
-    Object.keys(dynamicContext).forEach(function (name) {
-      var dyn = dynamicContext[name];
-      result[name] = createDynamicDecl(dyn, function (env, scope) {
-        return env.invoke(scope, dyn)
-      });
-    });
-
-    return result
-  }
-
-  function parseArguments (options, attributes, uniforms, context, env) {
-    var staticOptions = options.static;
-    var dynamicOptions = options.dynamic;
-
-    check$1.optional(function () {
-      var KEY_NAMES = [
-        S_FRAMEBUFFER,
-        S_VERT,
-        S_FRAG,
-        S_ELEMENTS,
-        S_PRIMITIVE,
-        S_OFFSET,
-        S_COUNT,
-        S_INSTANCES,
-        S_PROFILE
-      ].concat(GL_STATE_NAMES);
-
-      function checkKeys (dict) {
-        Object.keys(dict).forEach(function (key) {
-          check$1.command(
-            KEY_NAMES.indexOf(key) >= 0,
-            'unknown parameter "' + key + '"',
-            env.commandStr);
-        });
-      }
-
-      checkKeys(staticOptions);
-      checkKeys(dynamicOptions);
-    });
-
-    var framebuffer = parseFramebuffer(options, env);
-    var viewportAndScissor = parseViewportScissor(options, framebuffer, env);
-    var draw = parseDraw(options, env);
-    var state = parseGLState(options, env);
-    var shader = parseProgram(options, env);
-
-    function copyBox (name) {
-      var defn = viewportAndScissor[name];
-      if (defn) {
-        state[name] = defn;
-      }
-    }
-    copyBox(S_VIEWPORT);
-    copyBox(propName(S_SCISSOR_BOX));
-
-    var dirty = Object.keys(state).length > 0;
-
-    var result = {
-      framebuffer: framebuffer,
-      draw: draw,
-      shader: shader,
-      state: state,
-      dirty: dirty
-    };
-
-    result.profile = parseProfile(options, env);
-    result.uniforms = parseUniforms(uniforms, env);
-    result.attributes = parseAttributes(attributes, env);
-    result.context = parseContext(context, env);
-    return result
-  }
-
-  // ===================================================
-  // ===================================================
-  // COMMON UPDATE FUNCTIONS
-  // ===================================================
-  // ===================================================
-  function emitContext (env, scope, context) {
-    var shared = env.shared;
-    var CONTEXT = shared.context;
-
-    var contextEnter = env.scope();
-
-    Object.keys(context).forEach(function (name) {
-      scope.save(CONTEXT, '.' + name);
-      var defn = context[name];
-      contextEnter(CONTEXT, '.', name, '=', defn.append(env, scope), ';');
-    });
-
-    scope(contextEnter);
-  }
-
-  // ===================================================
-  // ===================================================
-  // COMMON DRAWING FUNCTIONS
-  // ===================================================
-  // ===================================================
-  function emitPollFramebuffer (env, scope, framebuffer, skipCheck) {
-    var shared = env.shared;
-
-    var GL = shared.gl;
-    var FRAMEBUFFER_STATE = shared.framebuffer;
-    var EXT_DRAW_BUFFERS;
-    if (extDrawBuffers) {
-      EXT_DRAW_BUFFERS = scope.def(shared.extensions, '.webgl_draw_buffers');
-    }
-
-    var constants = env.constants;
-
-    var DRAW_BUFFERS = constants.drawBuffer;
-    var BACK_BUFFER = constants.backBuffer;
-
-    var NEXT;
-    if (framebuffer) {
-      NEXT = framebuffer.append(env, scope);
-    } else {
-      NEXT = scope.def(FRAMEBUFFER_STATE, '.next');
-    }
-
-    if (!skipCheck) {
-      scope('if(', NEXT, '!==', FRAMEBUFFER_STATE, '.cur){');
-    }
-    scope(
-      'if(', NEXT, '){',
-      GL, '.bindFramebuffer(', GL_FRAMEBUFFER$1, ',', NEXT, '.framebuffer);');
-    if (extDrawBuffers) {
-      scope(EXT_DRAW_BUFFERS, '.drawBuffersWEBGL(',
-        DRAW_BUFFERS, '[', NEXT, '.colorAttachments.length]);');
-    }
-    scope('}else{',
-      GL, '.bindFramebuffer(', GL_FRAMEBUFFER$1, ',null);');
-    if (extDrawBuffers) {
-      scope(EXT_DRAW_BUFFERS, '.drawBuffersWEBGL(', BACK_BUFFER, ');');
-    }
-    scope(
-      '}',
-      FRAMEBUFFER_STATE, '.cur=', NEXT, ';');
-    if (!skipCheck) {
-      scope('}');
-    }
-  }
-
-  function emitPollState (env, scope, args) {
-    var shared = env.shared;
-
-    var GL = shared.gl;
-
-    var CURRENT_VARS = env.current;
-    var NEXT_VARS = env.next;
-    var CURRENT_STATE = shared.current;
-    var NEXT_STATE = shared.next;
-
-    var block = env.cond(CURRENT_STATE, '.dirty');
-
-    GL_STATE_NAMES.forEach(function (prop) {
-      var param = propName(prop);
-      if (param in args.state) {
-        return
-      }
-
-      var NEXT, CURRENT;
-      if (param in NEXT_VARS) {
-        NEXT = NEXT_VARS[param];
-        CURRENT = CURRENT_VARS[param];
-        var parts = loop(currentState[param].length, function (i) {
-          return block.def(NEXT, '[', i, ']')
-        });
-        block(env.cond(parts.map(function (p, i) {
-          return p + '!==' + CURRENT + '[' + i + ']'
-        }).join('||'))
-          .then(
-            GL, '.', GL_VARIABLES[param], '(', parts, ');',
-            parts.map(function (p, i) {
-              return CURRENT + '[' + i + ']=' + p
-            }).join(';'), ';'));
-      } else {
-        NEXT = block.def(NEXT_STATE, '.', param);
-        var ifte = env.cond(NEXT, '!==', CURRENT_STATE, '.', param);
-        block(ifte);
-        if (param in GL_FLAGS) {
-          ifte(
-            env.cond(NEXT)
-                .then(GL, '.enable(', GL_FLAGS[param], ');')
-                .else(GL, '.disable(', GL_FLAGS[param], ');'),
-            CURRENT_STATE, '.', param, '=', NEXT, ';');
-        } else {
-          ifte(
-            GL, '.', GL_VARIABLES[param], '(', NEXT, ');',
-            CURRENT_STATE, '.', param, '=', NEXT, ';');
-        }
-      }
-    });
-    if (Object.keys(args.state).length === 0) {
-      block(CURRENT_STATE, '.dirty=false;');
-    }
-    scope(block);
-  }
-
-  function emitSetOptions (env, scope, options, filter) {
-    var shared = env.shared;
-    var CURRENT_VARS = env.current;
-    var CURRENT_STATE = shared.current;
-    var GL = shared.gl;
-    sortState(Object.keys(options)).forEach(function (param) {
-      var defn = options[param];
-      if (filter && !filter(defn)) {
-        return
-      }
-      var variable = defn.append(env, scope);
-      if (GL_FLAGS[param]) {
-        var flag = GL_FLAGS[param];
-        if (isStatic(defn)) {
-          if (variable) {
-            scope(GL, '.enable(', flag, ');');
-          } else {
-            scope(GL, '.disable(', flag, ');');
-          }
-        } else {
-          scope(env.cond(variable)
-            .then(GL, '.enable(', flag, ');')
-            .else(GL, '.disable(', flag, ');'));
-        }
-        scope(CURRENT_STATE, '.', param, '=', variable, ';');
-      } else if (isArrayLike(variable)) {
-        var CURRENT = CURRENT_VARS[param];
-        scope(
-          GL, '.', GL_VARIABLES[param], '(', variable, ');',
-          variable.map(function (v, i) {
-            return CURRENT + '[' + i + ']=' + v
-          }).join(';'), ';');
-      } else {
-        scope(
-          GL, '.', GL_VARIABLES[param], '(', variable, ');',
-          CURRENT_STATE, '.', param, '=', variable, ';');
-      }
-    });
-  }
-
-  function injectExtensions (env, scope) {
-    if (extInstancing) {
-      env.instancing = scope.def(
-        env.shared.extensions, '.angle_instanced_arrays');
-    }
-  }
-
-  function emitProfile (env, scope, args, useScope, incrementCounter) {
-    var shared = env.shared;
-    var STATS = env.stats;
-    var CURRENT_STATE = shared.current;
-    var TIMER = shared.timer;
-    var profileArg = args.profile;
-
-    function perfCounter () {
-      if (typeof performance === 'undefined') {
-        return 'Date.now()'
-      } else {
-        return 'performance.now()'
-      }
-    }
-
-    var CPU_START, QUERY_COUNTER;
-    function emitProfileStart (block) {
-      CPU_START = scope.def();
-      block(CPU_START, '=', perfCounter(), ';');
-      if (typeof incrementCounter === 'string') {
-        block(STATS, '.count+=', incrementCounter, ';');
-      } else {
-        block(STATS, '.count++;');
-      }
-      if (timer) {
-        if (useScope) {
-          QUERY_COUNTER = scope.def();
-          block(QUERY_COUNTER, '=', TIMER, '.getNumPendingQueries();');
-        } else {
-          block(TIMER, '.beginQuery(', STATS, ');');
-        }
-      }
-    }
-
-    function emitProfileEnd (block) {
-      block(STATS, '.cpuTime+=', perfCounter(), '-', CPU_START, ';');
-      if (timer) {
-        if (useScope) {
-          block(TIMER, '.pushScopeStats(',
-            QUERY_COUNTER, ',',
-            TIMER, '.getNumPendingQueries(),',
-            STATS, ');');
-        } else {
-          block(TIMER, '.endQuery();');
-        }
-      }
-    }
-
-    function scopeProfile (value) {
-      var prev = scope.def(CURRENT_STATE, '.profile');
-      scope(CURRENT_STATE, '.profile=', value, ';');
-      scope.exit(CURRENT_STATE, '.profile=', prev, ';');
-    }
-
-    var USE_PROFILE;
-    if (profileArg) {
-      if (isStatic(profileArg)) {
-        if (profileArg.enable) {
-          emitProfileStart(scope);
-          emitProfileEnd(scope.exit);
-          scopeProfile('true');
-        } else {
-          scopeProfile('false');
-        }
-        return
-      }
-      USE_PROFILE = profileArg.append(env, scope);
-      scopeProfile(USE_PROFILE);
-    } else {
-      USE_PROFILE = scope.def(CURRENT_STATE, '.profile');
-    }
-
-    var start = env.block();
-    emitProfileStart(start);
-    scope('if(', USE_PROFILE, '){', start, '}');
-    var end = env.block();
-    emitProfileEnd(end);
-    scope.exit('if(', USE_PROFILE, '){', end, '}');
-  }
-
-  function emitAttributes (env, scope, args, attributes, filter) {
-    var shared = env.shared;
-
-    function typeLength (x) {
-      switch (x) {
-        case GL_FLOAT_VEC2:
-        case GL_INT_VEC2:
-        case GL_BOOL_VEC2:
-          return 2
-        case GL_FLOAT_VEC3:
-        case GL_INT_VEC3:
-        case GL_BOOL_VEC3:
-          return 3
-        case GL_FLOAT_VEC4:
-        case GL_INT_VEC4:
-        case GL_BOOL_VEC4:
-          return 4
-        default:
-          return 1
-      }
-    }
-
-    function emitBindAttribute (ATTRIBUTE, size, record) {
-      var GL = shared.gl;
-
-      var LOCATION = scope.def(ATTRIBUTE, '.location');
-      var BINDING = scope.def(shared.attributes, '[', LOCATION, ']');
-
-      var STATE = record.state;
-      var BUFFER = record.buffer;
-      var CONST_COMPONENTS = [
-        record.x,
-        record.y,
-        record.z,
-        record.w
-      ];
-
-      var COMMON_KEYS = [
-        'buffer',
-        'normalized',
-        'offset',
-        'stride'
-      ];
-
-      function emitBuffer () {
-        scope(
-          'if(!', BINDING, '.buffer){',
-          GL, '.enableVertexAttribArray(', LOCATION, ');}');
-
-        var TYPE = record.type;
-        var SIZE;
-        if (!record.size) {
-          SIZE = size;
-        } else {
-          SIZE = scope.def(record.size, '||', size);
-        }
-
-        scope('if(',
-          BINDING, '.type!==', TYPE, '||',
-          BINDING, '.size!==', SIZE, '||',
-          COMMON_KEYS.map(function (key) {
-            return BINDING + '.' + key + '!==' + record[key]
-          }).join('||'),
-          '){',
-          GL, '.bindBuffer(', GL_ARRAY_BUFFER$1, ',', BUFFER, '.buffer);',
-          GL, '.vertexAttribPointer(', [
-            LOCATION,
-            SIZE,
-            TYPE,
-            record.normalized,
-            record.stride,
-            record.offset
-          ], ');',
-          BINDING, '.type=', TYPE, ';',
-          BINDING, '.size=', SIZE, ';',
-          COMMON_KEYS.map(function (key) {
-            return BINDING + '.' + key + '=' + record[key] + ';'
-          }).join(''),
-          '}');
-
-        if (extInstancing) {
-          var DIVISOR = record.divisor;
-          scope(
-            'if(', BINDING, '.divisor!==', DIVISOR, '){',
-            env.instancing, '.vertexAttribDivisorANGLE(', [LOCATION, DIVISOR], ');',
-            BINDING, '.divisor=', DIVISOR, ';}');
-        }
-      }
-
-      function emitConstant () {
-        scope(
-          'if(', BINDING, '.buffer){',
-          GL, '.disableVertexAttribArray(', LOCATION, ');',
-          '}if(', CUTE_COMPONENTS.map(function (c, i) {
-            return BINDING + '.' + c + '!==' + CONST_COMPONENTS[i]
-          }).join('||'), '){',
-          GL, '.vertexAttrib4f(', LOCATION, ',', CONST_COMPONENTS, ');',
-          CUTE_COMPONENTS.map(function (c, i) {
-            return BINDING + '.' + c + '=' + CONST_COMPONENTS[i] + ';'
-          }).join(''),
-          '}');
-      }
-
-      if (STATE === ATTRIB_STATE_POINTER) {
-        emitBuffer();
-      } else if (STATE === ATTRIB_STATE_CONSTANT) {
-        emitConstant();
-      } else {
-        scope('if(', STATE, '===', ATTRIB_STATE_POINTER, '){');
-        emitBuffer();
-        scope('}else{');
-        emitConstant();
-        scope('}');
-      }
-    }
-
-    attributes.forEach(function (attribute) {
-      var name = attribute.name;
-      var arg = args.attributes[name];
-      var record;
-      if (arg) {
-        if (!filter(arg)) {
-          return
-        }
-        record = arg.append(env, scope);
-      } else {
-        if (!filter(SCOPE_DECL)) {
-          return
-        }
-        var scopeAttrib = env.scopeAttrib(name);
-        check$1.optional(function () {
-          env.assert(scope,
-            scopeAttrib + '.state',
-            'missing attribute ' + name);
-        });
-        record = {};
-        Object.keys(new AttributeRecord()).forEach(function (key) {
-          record[key] = scope.def(scopeAttrib, '.', key);
-        });
-      }
-      emitBindAttribute(
-        env.link(attribute), typeLength(attribute.info.type), record);
-    });
-  }
-
-  function emitUniforms (env, scope, args, uniforms, filter) {
-    var shared = env.shared;
-    var GL = shared.gl;
-
-    var infix;
-    for (var i = 0; i < uniforms.length; ++i) {
-      var uniform = uniforms[i];
-      var name = uniform.name;
-      var type = uniform.info.type;
-      var arg = args.uniforms[name];
-      var UNIFORM = env.link(uniform);
-      var LOCATION = UNIFORM + '.location';
-
-      var VALUE;
-      if (arg) {
-        if (!filter(arg)) {
-          continue
-        }
-        if (isStatic(arg)) {
-          var value = arg.value;
-          check$1.command(
-            value !== null && typeof value !== 'undefined',
-            'missing uniform "' + name + '"', env.commandStr);
-          if (type === GL_SAMPLER_2D || type === GL_SAMPLER_CUBE) {
-            check$1.command(
-              typeof value === 'function' &&
-              ((type === GL_SAMPLER_2D &&
-                (value._reglType === 'texture2d' ||
-                value._reglType === 'framebuffer')) ||
-              (type === GL_SAMPLER_CUBE &&
-                (value._reglType === 'textureCube' ||
-                value._reglType === 'framebufferCube'))),
-              'invalid texture for uniform ' + name, env.commandStr);
-            var TEX_VALUE = env.link(value._texture || value.color[0]._texture);
-            scope(GL, '.uniform1i(', LOCATION, ',', TEX_VALUE + '.bind());');
-            scope.exit(TEX_VALUE, '.unbind();');
-          } else if (
-            type === GL_FLOAT_MAT2 ||
-            type === GL_FLOAT_MAT3 ||
-            type === GL_FLOAT_MAT4) {
-            check$1.optional(function () {
-              check$1.command(isArrayLike(value),
-                'invalid matrix for uniform ' + name, env.commandStr);
-              check$1.command(
-                (type === GL_FLOAT_MAT2 && value.length === 4) ||
-                (type === GL_FLOAT_MAT3 && value.length === 9) ||
-                (type === GL_FLOAT_MAT4 && value.length === 16),
-                'invalid length for matrix uniform ' + name, env.commandStr);
-            });
-            var MAT_VALUE = env.global.def('new Float32Array([' +
-              Array.prototype.slice.call(value) + '])');
-            var dim = 2;
-            if (type === GL_FLOAT_MAT3) {
-              dim = 3;
-            } else if (type === GL_FLOAT_MAT4) {
-              dim = 4;
-            }
-            scope(
-              GL, '.uniformMatrix', dim, 'fv(',
-              LOCATION, ',false,', MAT_VALUE, ');');
-          } else {
-            switch (type) {
-              case GL_FLOAT$7:
-                check$1.commandType(value, 'number', 'uniform ' + name, env.commandStr);
-                infix = '1f';
-                break
-              case GL_FLOAT_VEC2:
-                check$1.command(
-                  isArrayLike(value) && value.length === 2,
-                  'uniform ' + name, env.commandStr);
-                infix = '2f';
-                break
-              case GL_FLOAT_VEC3:
-                check$1.command(
-                  isArrayLike(value) && value.length === 3,
-                  'uniform ' + name, env.commandStr);
-                infix = '3f';
-                break
-              case GL_FLOAT_VEC4:
-                check$1.command(
-                  isArrayLike(value) && value.length === 4,
-                  'uniform ' + name, env.commandStr);
-                infix = '4f';
-                break
-              case GL_BOOL:
-                check$1.commandType(value, 'boolean', 'uniform ' + name, env.commandStr);
-                infix = '1i';
-                break
-              case GL_INT$3:
-                check$1.commandType(value, 'number', 'uniform ' + name, env.commandStr);
-                infix = '1i';
-                break
-              case GL_BOOL_VEC2:
-                check$1.command(
-                  isArrayLike(value) && value.length === 2,
-                  'uniform ' + name, env.commandStr);
-                infix = '2i';
-                break
-              case GL_INT_VEC2:
-                check$1.command(
-                  isArrayLike(value) && value.length === 2,
-                  'uniform ' + name, env.commandStr);
-                infix = '2i';
-                break
-              case GL_BOOL_VEC3:
-                check$1.command(
-                  isArrayLike(value) && value.length === 3,
-                  'uniform ' + name, env.commandStr);
-                infix = '3i';
-                break
-              case GL_INT_VEC3:
-                check$1.command(
-                  isArrayLike(value) && value.length === 3,
-                  'uniform ' + name, env.commandStr);
-                infix = '3i';
-                break
-              case GL_BOOL_VEC4:
-                check$1.command(
-                  isArrayLike(value) && value.length === 4,
-                  'uniform ' + name, env.commandStr);
-                infix = '4i';
-                break
-              case GL_INT_VEC4:
-                check$1.command(
-                  isArrayLike(value) && value.length === 4,
-                  'uniform ' + name, env.commandStr);
-                infix = '4i';
-                break
-            }
-            scope(GL, '.uniform', infix, '(', LOCATION, ',',
-              isArrayLike(value) ? Array.prototype.slice.call(value) : value,
-              ');');
-          }
-          continue
-        } else {
-          VALUE = arg.append(env, scope);
-        }
-      } else {
-        if (!filter(SCOPE_DECL)) {
-          continue
-        }
-        VALUE = scope.def(shared.uniforms, '[', stringStore.id(name), ']');
-      }
-
-      if (type === GL_SAMPLER_2D) {
-        scope(
-          'if(', VALUE, '&&', VALUE, '._reglType==="framebuffer"){',
-          VALUE, '=', VALUE, '.color[0];',
-          '}');
-      } else if (type === GL_SAMPLER_CUBE) {
-        scope(
-          'if(', VALUE, '&&', VALUE, '._reglType==="framebufferCube"){',
-          VALUE, '=', VALUE, '.color[0];',
-          '}');
-      }
-
-      // perform type validation
-      check$1.optional(function () {
-        function check (pred, message) {
-          env.assert(scope, pred,
-            'bad data or missing for uniform "' + name + '".  ' + message);
-        }
-
-        function checkType (type) {
-          check(
-            'typeof ' + VALUE + '==="' + type + '"',
-            'invalid type, expected ' + type);
-        }
-
-        function checkVector (n, type) {
-          check(
-            shared.isArrayLike + '(' + VALUE + ')&&' + VALUE + '.length===' + n,
-            'invalid vector, should have length ' + n, env.commandStr);
-        }
-
-        function checkTexture (target) {
-          check(
-            'typeof ' + VALUE + '==="function"&&' +
-            VALUE + '._reglType==="texture' +
-            (target === GL_TEXTURE_2D$2 ? '2d' : 'Cube') + '"',
-            'invalid texture type', env.commandStr);
-        }
-
-        switch (type) {
-          case GL_INT$3:
-            checkType('number');
-            break
-          case GL_INT_VEC2:
-            checkVector(2, 'number');
-            break
-          case GL_INT_VEC3:
-            checkVector(3, 'number');
-            break
-          case GL_INT_VEC4:
-            checkVector(4, 'number');
-            break
-          case GL_FLOAT$7:
-            checkType('number');
-            break
-          case GL_FLOAT_VEC2:
-            checkVector(2, 'number');
-            break
-          case GL_FLOAT_VEC3:
-            checkVector(3, 'number');
-            break
-          case GL_FLOAT_VEC4:
-            checkVector(4, 'number');
-            break
-          case GL_BOOL:
-            checkType('boolean');
-            break
-          case GL_BOOL_VEC2:
-            checkVector(2, 'boolean');
-            break
-          case GL_BOOL_VEC3:
-            checkVector(3, 'boolean');
-            break
-          case GL_BOOL_VEC4:
-            checkVector(4, 'boolean');
-            break
-          case GL_FLOAT_MAT2:
-            checkVector(4, 'number');
-            break
-          case GL_FLOAT_MAT3:
-            checkVector(9, 'number');
-            break
-          case GL_FLOAT_MAT4:
-            checkVector(16, 'number');
-            break
-          case GL_SAMPLER_2D:
-            checkTexture(GL_TEXTURE_2D$2);
-            break
-          case GL_SAMPLER_CUBE:
-            checkTexture(GL_TEXTURE_CUBE_MAP$1);
-            break
-        }
-      });
-
-      var unroll = 1;
-      switch (type) {
-        case GL_SAMPLER_2D:
-        case GL_SAMPLER_CUBE:
-          var TEX = scope.def(VALUE, '._texture');
-          scope(GL, '.uniform1i(', LOCATION, ',', TEX, '.bind());');
-          scope.exit(TEX, '.unbind();');
-          continue
-
-        case GL_INT$3:
-        case GL_BOOL:
-          infix = '1i';
-          break
-
-        case GL_INT_VEC2:
-        case GL_BOOL_VEC2:
-          infix = '2i';
-          unroll = 2;
-          break
-
-        case GL_INT_VEC3:
-        case GL_BOOL_VEC3:
-          infix = '3i';
-          unroll = 3;
-          break
-
-        case GL_INT_VEC4:
-        case GL_BOOL_VEC4:
-          infix = '4i';
-          unroll = 4;
-          break
-
-        case GL_FLOAT$7:
-          infix = '1f';
-          break
-
-        case GL_FLOAT_VEC2:
-          infix = '2f';
-          unroll = 2;
-          break
-
-        case GL_FLOAT_VEC3:
-          infix = '3f';
-          unroll = 3;
-          break
-
-        case GL_FLOAT_VEC4:
-          infix = '4f';
-          unroll = 4;
-          break
-
-        case GL_FLOAT_MAT2:
-          infix = 'Matrix2fv';
-          break
-
-        case GL_FLOAT_MAT3:
-          infix = 'Matrix3fv';
-          break
-
-        case GL_FLOAT_MAT4:
-          infix = 'Matrix4fv';
-          break
-      }
-
-      scope(GL, '.uniform', infix, '(', LOCATION, ',');
-      if (infix.charAt(0) === 'M') {
-        var matSize = Math.pow(type - GL_FLOAT_MAT2 + 2, 2);
-        var STORAGE = env.global.def('new Float32Array(', matSize, ')');
-        scope(
-          'false,(Array.isArray(', VALUE, ')||', VALUE, ' instanceof Float32Array)?', VALUE, ':(',
-          loop(matSize, function (i) {
-            return STORAGE + '[' + i + ']=' + VALUE + '[' + i + ']'
-          }), ',', STORAGE, ')');
-      } else if (unroll > 1) {
-        scope(loop(unroll, function (i) {
-          return VALUE + '[' + i + ']'
-        }));
-      } else {
-        scope(VALUE);
-      }
-      scope(');');
-    }
-  }
-
-  function emitDraw (env, outer, inner, args) {
-    var shared = env.shared;
-    var GL = shared.gl;
-    var DRAW_STATE = shared.draw;
-
-    var drawOptions = args.draw;
-
-    function emitElements () {
-      var defn = drawOptions.elements;
-      var ELEMENTS;
-      var scope = outer;
-      if (defn) {
-        if ((defn.contextDep && args.contextDynamic) || defn.propDep) {
-          scope = inner;
-        }
-        ELEMENTS = defn.append(env, scope);
-      } else {
-        ELEMENTS = scope.def(DRAW_STATE, '.', S_ELEMENTS);
-      }
-      if (ELEMENTS) {
-        scope(
-          'if(' + ELEMENTS + ')' +
-          GL + '.bindBuffer(' + GL_ELEMENT_ARRAY_BUFFER$1 + ',' + ELEMENTS + '.buffer.buffer);');
-      }
-      return ELEMENTS
-    }
-
-    function emitCount () {
-      var defn = drawOptions.count;
-      var COUNT;
-      var scope = outer;
-      if (defn) {
-        if ((defn.contextDep && args.contextDynamic) || defn.propDep) {
-          scope = inner;
-        }
-        COUNT = defn.append(env, scope);
-        check$1.optional(function () {
-          if (defn.MISSING) {
-            env.assert(outer, 'false', 'missing vertex count');
-          }
-          if (defn.DYNAMIC) {
-            env.assert(scope, COUNT + '>=0', 'missing vertex count');
-          }
-        });
-      } else {
-        COUNT = scope.def(DRAW_STATE, '.', S_COUNT);
-        check$1.optional(function () {
-          env.assert(scope, COUNT + '>=0', 'missing vertex count');
-        });
-      }
-      return COUNT
-    }
-
-    var ELEMENTS = emitElements();
-    function emitValue (name) {
-      var defn = drawOptions[name];
-      if (defn) {
-        if ((defn.contextDep && args.contextDynamic) || defn.propDep) {
-          return defn.append(env, inner)
-        } else {
-          return defn.append(env, outer)
-        }
-      } else {
-        return outer.def(DRAW_STATE, '.', name)
-      }
-    }
-
-    var PRIMITIVE = emitValue(S_PRIMITIVE);
-    var OFFSET = emitValue(S_OFFSET);
-
-    var COUNT = emitCount();
-    if (typeof COUNT === 'number') {
-      if (COUNT === 0) {
-        return
-      }
-    } else {
-      inner('if(', COUNT, '){');
-      inner.exit('}');
-    }
-
-    var INSTANCES, EXT_INSTANCING;
-    if (extInstancing) {
-      INSTANCES = emitValue(S_INSTANCES);
-      EXT_INSTANCING = env.instancing;
-    }
-
-    var ELEMENT_TYPE = ELEMENTS + '.type';
-
-    var elementsStatic = drawOptions.elements && isStatic(drawOptions.elements);
-
-    function emitInstancing () {
-      function drawElements () {
-        inner(EXT_INSTANCING, '.drawElementsInstancedANGLE(', [
-          PRIMITIVE,
-          COUNT,
-          ELEMENT_TYPE,
-          OFFSET + '<<((' + ELEMENT_TYPE + '-' + GL_UNSIGNED_BYTE$7 + ')>>1)',
-          INSTANCES
-        ], ');');
-      }
-
-      function drawArrays () {
-        inner(EXT_INSTANCING, '.drawArraysInstancedANGLE(',
-          [PRIMITIVE, OFFSET, COUNT, INSTANCES], ');');
-      }
-
-      if (ELEMENTS) {
-        if (!elementsStatic) {
-          inner('if(', ELEMENTS, '){');
-          drawElements();
-          inner('}else{');
-          drawArrays();
-          inner('}');
-        } else {
-          drawElements();
-        }
-      } else {
-        drawArrays();
-      }
-    }
-
-    function emitRegular () {
-      function drawElements () {
-        inner(GL + '.drawElements(' + [
-          PRIMITIVE,
-          COUNT,
-          ELEMENT_TYPE,
-          OFFSET + '<<((' + ELEMENT_TYPE + '-' + GL_UNSIGNED_BYTE$7 + ')>>1)'
-        ] + ');');
-      }
-
-      function drawArrays () {
-        inner(GL + '.drawArrays(' + [PRIMITIVE, OFFSET, COUNT] + ');');
-      }
-
-      if (ELEMENTS) {
-        if (!elementsStatic) {
-          inner('if(', ELEMENTS, '){');
-          drawElements();
-          inner('}else{');
-          drawArrays();
-          inner('}');
-        } else {
-          drawElements();
-        }
-      } else {
-        drawArrays();
-      }
-    }
-
-    if (extInstancing && (typeof INSTANCES !== 'number' || INSTANCES >= 0)) {
-      if (typeof INSTANCES === 'string') {
-        inner('if(', INSTANCES, '>0){');
-        emitInstancing();
-        inner('}else if(', INSTANCES, '<0){');
-        emitRegular();
-        inner('}');
-      } else {
-        emitInstancing();
-      }
-    } else {
-      emitRegular();
-    }
-  }
-
-  function createBody (emitBody, parentEnv, args, program, count) {
-    var env = createREGLEnvironment();
-    var scope = env.proc('body', count);
-    check$1.optional(function () {
-      env.commandStr = parentEnv.commandStr;
-      env.command = env.link(parentEnv.commandStr);
-    });
-    if (extInstancing) {
-      env.instancing = scope.def(
-        env.shared.extensions, '.angle_instanced_arrays');
-    }
-    emitBody(env, scope, args, program);
-    return env.compile().body
-  }
-
-  // ===================================================
-  // ===================================================
-  // DRAW PROC
-  // ===================================================
-  // ===================================================
-  function emitDrawBody (env, draw, args, program) {
-    injectExtensions(env, draw);
-    emitAttributes(env, draw, args, program.attributes, function () {
-      return true
-    });
-    emitUniforms(env, draw, args, program.uniforms, function () {
-      return true
-    });
-    emitDraw(env, draw, draw, args);
-  }
-
-  function emitDrawProc (env, args) {
-    var draw = env.proc('draw', 1);
-
-    injectExtensions(env, draw);
-
-    emitContext(env, draw, args.context);
-    emitPollFramebuffer(env, draw, args.framebuffer);
-
-    emitPollState(env, draw, args);
-    emitSetOptions(env, draw, args.state);
-
-    emitProfile(env, draw, args, false, true);
-
-    var program = args.shader.progVar.append(env, draw);
-    draw(env.shared.gl, '.useProgram(', program, '.program);');
-
-    if (args.shader.program) {
-      emitDrawBody(env, draw, args, args.shader.program);
-    } else {
-      var drawCache = env.global.def('{}');
-      var PROG_ID = draw.def(program, '.id');
-      var CACHED_PROC = draw.def(drawCache, '[', PROG_ID, ']');
-      draw(
-        env.cond(CACHED_PROC)
-          .then(CACHED_PROC, '.call(this,a0);')
-          .else(
-            CACHED_PROC, '=', drawCache, '[', PROG_ID, ']=',
-            env.link(function (program) {
-              return createBody(emitDrawBody, env, args, program, 1)
-            }), '(', program, ');',
-            CACHED_PROC, '.call(this,a0);'));
-    }
-
-    if (Object.keys(args.state).length > 0) {
-      draw(env.shared.current, '.dirty=true;');
-    }
-  }
-
-  // ===================================================
-  // ===================================================
-  // BATCH PROC
-  // ===================================================
-  // ===================================================
-
-  function emitBatchDynamicShaderBody (env, scope, args, program) {
-    env.batchId = 'a1';
-
-    injectExtensions(env, scope);
-
-    function all () {
-      return true
-    }
-
-    emitAttributes(env, scope, args, program.attributes, all);
-    emitUniforms(env, scope, args, program.uniforms, all);
-    emitDraw(env, scope, scope, args);
-  }
-
-  function emitBatchBody (env, scope, args, program) {
-    injectExtensions(env, scope);
-
-    var contextDynamic = args.contextDep;
-
-    var BATCH_ID = scope.def();
-    var PROP_LIST = 'a0';
-    var NUM_PROPS = 'a1';
-    var PROPS = scope.def();
-    env.shared.props = PROPS;
-    env.batchId = BATCH_ID;
-
-    var outer = env.scope();
-    var inner = env.scope();
-
-    scope(
-      outer.entry,
-      'for(', BATCH_ID, '=0;', BATCH_ID, '<', NUM_PROPS, ';++', BATCH_ID, '){',
-      PROPS, '=', PROP_LIST, '[', BATCH_ID, '];',
-      inner,
-      '}',
-      outer.exit);
-
-    function isInnerDefn (defn) {
-      return ((defn.contextDep && contextDynamic) || defn.propDep)
-    }
-
-    function isOuterDefn (defn) {
-      return !isInnerDefn(defn)
-    }
-
-    if (args.needsContext) {
-      emitContext(env, inner, args.context);
-    }
-    if (args.needsFramebuffer) {
-      emitPollFramebuffer(env, inner, args.framebuffer);
-    }
-    emitSetOptions(env, inner, args.state, isInnerDefn);
-
-    if (args.profile && isInnerDefn(args.profile)) {
-      emitProfile(env, inner, args, false, true);
-    }
-
-    if (!program) {
-      var progCache = env.global.def('{}');
-      var PROGRAM = args.shader.progVar.append(env, inner);
-      var PROG_ID = inner.def(PROGRAM, '.id');
-      var CACHED_PROC = inner.def(progCache, '[', PROG_ID, ']');
-      inner(
-        env.shared.gl, '.useProgram(', PROGRAM, '.program);',
-        'if(!', CACHED_PROC, '){',
-        CACHED_PROC, '=', progCache, '[', PROG_ID, ']=',
-        env.link(function (program) {
-          return createBody(
-            emitBatchDynamicShaderBody, env, args, program, 2)
-        }), '(', PROGRAM, ');}',
-        CACHED_PROC, '.call(this,a0[', BATCH_ID, '],', BATCH_ID, ');');
-    } else {
-      emitAttributes(env, outer, args, program.attributes, isOuterDefn);
-      emitAttributes(env, inner, args, program.attributes, isInnerDefn);
-      emitUniforms(env, outer, args, program.uniforms, isOuterDefn);
-      emitUniforms(env, inner, args, program.uniforms, isInnerDefn);
-      emitDraw(env, outer, inner, args);
-    }
-  }
-
-  function emitBatchProc (env, args) {
-    var batch = env.proc('batch', 2);
-    env.batchId = '0';
-
-    injectExtensions(env, batch);
-
-    // Check if any context variables depend on props
-    var contextDynamic = false;
-    var needsContext = true;
-    Object.keys(args.context).forEach(function (name) {
-      contextDynamic = contextDynamic || args.context[name].propDep;
-    });
-    if (!contextDynamic) {
-      emitContext(env, batch, args.context);
-      needsContext = false;
-    }
-
-    // framebuffer state affects framebufferWidth/height context vars
-    var framebuffer = args.framebuffer;
-    var needsFramebuffer = false;
-    if (framebuffer) {
-      if (framebuffer.propDep) {
-        contextDynamic = needsFramebuffer = true;
-      } else if (framebuffer.contextDep && contextDynamic) {
-        needsFramebuffer = true;
-      }
-      if (!needsFramebuffer) {
-        emitPollFramebuffer(env, batch, framebuffer);
-      }
-    } else {
-      emitPollFramebuffer(env, batch, null);
-    }
-
-    // viewport is weird because it can affect context vars
-    if (args.state.viewport && args.state.viewport.propDep) {
-      contextDynamic = true;
-    }
-
-    function isInnerDefn (defn) {
-      return (defn.contextDep && contextDynamic) || defn.propDep
-    }
-
-    // set webgl options
-    emitPollState(env, batch, args);
-    emitSetOptions(env, batch, args.state, function (defn) {
-      return !isInnerDefn(defn)
-    });
-
-    if (!args.profile || !isInnerDefn(args.profile)) {
-      emitProfile(env, batch, args, false, 'a1');
-    }
-
-    // Save these values to args so that the batch body routine can use them
-    args.contextDep = contextDynamic;
-    args.needsContext = needsContext;
-    args.needsFramebuffer = needsFramebuffer;
-
-    // determine if shader is dynamic
-    var progDefn = args.shader.progVar;
-    if ((progDefn.contextDep && contextDynamic) || progDefn.propDep) {
-      emitBatchBody(
-        env,
-        batch,
-        args,
-        null);
-    } else {
-      var PROGRAM = progDefn.append(env, batch);
-      batch(env.shared.gl, '.useProgram(', PROGRAM, '.program);');
-      if (args.shader.program) {
-        emitBatchBody(
-          env,
-          batch,
-          args,
-          args.shader.program);
-      } else {
-        var batchCache = env.global.def('{}');
-        var PROG_ID = batch.def(PROGRAM, '.id');
-        var CACHED_PROC = batch.def(batchCache, '[', PROG_ID, ']');
-        batch(
-          env.cond(CACHED_PROC)
-            .then(CACHED_PROC, '.call(this,a0,a1);')
-            .else(
-              CACHED_PROC, '=', batchCache, '[', PROG_ID, ']=',
-              env.link(function (program) {
-                return createBody(emitBatchBody, env, args, program, 2)
-              }), '(', PROGRAM, ');',
-              CACHED_PROC, '.call(this,a0,a1);'));
-      }
-    }
-
-    if (Object.keys(args.state).length > 0) {
-      batch(env.shared.current, '.dirty=true;');
-    }
-  }
-
-  // ===================================================
-  // ===================================================
-  // SCOPE COMMAND
-  // ===================================================
-  // ===================================================
-  function emitScopeProc (env, args) {
-    var scope = env.proc('scope', 3);
-    env.batchId = 'a2';
-
-    var shared = env.shared;
-    var CURRENT_STATE = shared.current;
-
-    emitContext(env, scope, args.context);
-
-    if (args.framebuffer) {
-      args.framebuffer.append(env, scope);
-    }
-
-    sortState(Object.keys(args.state)).forEach(function (name) {
-      var defn = args.state[name];
-      var value = defn.append(env, scope);
-      if (isArrayLike(value)) {
-        value.forEach(function (v, i) {
-          scope.set(env.next[name], '[' + i + ']', v);
-        });
-      } else {
-        scope.set(shared.next, '.' + name, value);
-      }
-    });
-
-    emitProfile(env, scope, args, true, true)
-
-    ;[S_ELEMENTS, S_OFFSET, S_COUNT, S_INSTANCES, S_PRIMITIVE].forEach(
-      function (opt) {
-        var variable = args.draw[opt];
-        if (!variable) {
-          return
-        }
-        scope.set(shared.draw, '.' + opt, '' + variable.append(env, scope));
-      });
-
-    Object.keys(args.uniforms).forEach(function (opt) {
-      scope.set(
-        shared.uniforms,
-        '[' + stringStore.id(opt) + ']',
-        args.uniforms[opt].append(env, scope));
-    });
-
-    Object.keys(args.attributes).forEach(function (name) {
-      var record = args.attributes[name].append(env, scope);
-      var scopeAttrib = env.scopeAttrib(name);
-      Object.keys(new AttributeRecord()).forEach(function (prop) {
-        scope.set(scopeAttrib, '.' + prop, record[prop]);
-      });
-    });
-
-    function saveShader (name) {
-      var shader = args.shader[name];
-      if (shader) {
-        scope.set(shared.shader, '.' + name, shader.append(env, scope));
-      }
-    }
-    saveShader(S_VERT);
-    saveShader(S_FRAG);
-
-    if (Object.keys(args.state).length > 0) {
-      scope(CURRENT_STATE, '.dirty=true;');
-      scope.exit(CURRENT_STATE, '.dirty=true;');
-    }
-
-    scope('a1(', env.shared.context, ',a0,', env.batchId, ');');
-  }
-
-  function isDynamicObject (object) {
-    if (typeof object !== 'object' || isArrayLike(object)) {
-      return
-    }
-    var props = Object.keys(object);
-    for (var i = 0; i < props.length; ++i) {
-      if (dynamic.isDynamic(object[props[i]])) {
-        return true
-      }
-    }
-    return false
-  }
-
-  function splatObject (env, options, name) {
-    var object = options.static[name];
-    if (!object || !isDynamicObject(object)) {
-      return
-    }
-
-    var globals = env.global;
-    var keys = Object.keys(object);
-    var thisDep = false;
-    var contextDep = false;
-    var propDep = false;
-    var objectRef = env.global.def('{}');
-    keys.forEach(function (key) {
-      var value = object[key];
-      if (dynamic.isDynamic(value)) {
-        if (typeof value === 'function') {
-          value = object[key] = dynamic.unbox(value);
-        }
-        var deps = createDynamicDecl(value, null);
-        thisDep = thisDep || deps.thisDep;
-        propDep = propDep || deps.propDep;
-        contextDep = contextDep || deps.contextDep;
-      } else {
-        globals(objectRef, '.', key, '=');
-        switch (typeof value) {
-          case 'number':
-            globals(value);
-            break
-          case 'string':
-            globals('"', value, '"');
-            break
-          case 'object':
-            if (Array.isArray(value)) {
-              globals('[', value.join(), ']');
-            }
-            break
-          default:
-            globals(env.link(value));
-            break
-        }
-        globals(';');
-      }
-    });
-
-    function appendBlock (env, block) {
-      keys.forEach(function (key) {
-        var value = object[key];
-        if (!dynamic.isDynamic(value)) {
-          return
-        }
-        var ref = env.invoke(block, value);
-        block(objectRef, '.', key, '=', ref, ';');
-      });
-    }
-
-    options.dynamic[name] = new dynamic.DynamicVariable(DYN_THUNK, {
-      thisDep: thisDep,
-      contextDep: contextDep,
-      propDep: propDep,
-      ref: objectRef,
-      append: appendBlock
-    });
-    delete options.static[name];
-  }
-
-  // ===========================================================================
-  // ===========================================================================
-  // MAIN DRAW COMMAND
-  // ===========================================================================
-  // ===========================================================================
-  function compileCommand (options, attributes, uniforms, context, stats) {
-    var env = createREGLEnvironment();
-
-    // link stats, so that we can easily access it in the program.
-    env.stats = env.link(stats);
-
-    // splat options and attributes to allow for dynamic nested properties
-    Object.keys(attributes.static).forEach(function (key) {
-      splatObject(env, attributes, key);
-    });
-    NESTED_OPTIONS.forEach(function (name) {
-      splatObject(env, options, name);
-    });
-
-    var args = parseArguments(options, attributes, uniforms, context, env);
-
-    emitDrawProc(env, args);
-    emitScopeProc(env, args);
-    emitBatchProc(env, args);
-
-    return env.compile()
-  }
-
-  // ===========================================================================
-  // ===========================================================================
-  // POLL / REFRESH
-  // ===========================================================================
-  // ===========================================================================
-  return {
-    next: nextState,
-    current: currentState,
-    procs: (function () {
-      var env = createREGLEnvironment();
-      var poll = env.proc('poll');
-      var refresh = env.proc('refresh');
-      var common = env.block();
-      poll(common);
-      refresh(common);
-
-      var shared = env.shared;
-      var GL = shared.gl;
-      var NEXT_STATE = shared.next;
-      var CURRENT_STATE = shared.current;
-
-      common(CURRENT_STATE, '.dirty=false;');
-
-      emitPollFramebuffer(env, poll);
-      emitPollFramebuffer(env, refresh, null, true);
-
-      // Refresh updates all attribute state changes
-      var extInstancing = gl.getExtension('angle_instanced_arrays');
-      var INSTANCING;
-      if (extInstancing) {
-        INSTANCING = env.link(extInstancing);
-      }
-      for (var i = 0; i < limits.maxAttributes; ++i) {
-        var BINDING = refresh.def(shared.attributes, '[', i, ']');
-        var ifte = env.cond(BINDING, '.buffer');
-        ifte.then(
-          GL, '.enableVertexAttribArray(', i, ');',
-          GL, '.bindBuffer(',
-            GL_ARRAY_BUFFER$1, ',',
-            BINDING, '.buffer.buffer);',
-          GL, '.vertexAttribPointer(',
-            i, ',',
-            BINDING, '.size,',
-            BINDING, '.type,',
-            BINDING, '.normalized,',
-            BINDING, '.stride,',
-            BINDING, '.offset);'
-        ).else(
-          GL, '.disableVertexAttribArray(', i, ');',
-          GL, '.vertexAttrib4f(',
-            i, ',',
-            BINDING, '.x,',
-            BINDING, '.y,',
-            BINDING, '.z,',
-            BINDING, '.w);',
-          BINDING, '.buffer=null;');
-        refresh(ifte);
-        if (extInstancing) {
-          refresh(
-            INSTANCING, '.vertexAttribDivisorANGLE(',
-            i, ',',
-            BINDING, '.divisor);');
-        }
-      }
-
-      Object.keys(GL_FLAGS).forEach(function (flag) {
-        var cap = GL_FLAGS[flag];
-        var NEXT = common.def(NEXT_STATE, '.', flag);
-        var block = env.block();
-        block('if(', NEXT, '){',
-          GL, '.enable(', cap, ')}else{',
-          GL, '.disable(', cap, ')}',
-          CURRENT_STATE, '.', flag, '=', NEXT, ';');
-        refresh(block);
-        poll(
-          'if(', NEXT, '!==', CURRENT_STATE, '.', flag, '){',
-          block,
-          '}');
-      });
-
-      Object.keys(GL_VARIABLES).forEach(function (name) {
-        var func = GL_VARIABLES[name];
-        var init = currentState[name];
-        var NEXT, CURRENT;
-        var block = env.block();
-        block(GL, '.', func, '(');
-        if (isArrayLike(init)) {
-          var n = init.length;
-          NEXT = env.global.def(NEXT_STATE, '.', name);
-          CURRENT = env.global.def(CURRENT_STATE, '.', name);
-          block(
-            loop(n, function (i) {
-              return NEXT + '[' + i + ']'
-            }), ');',
-            loop(n, function (i) {
-              return CURRENT + '[' + i + ']=' + NEXT + '[' + i + '];'
-            }).join(''));
-          poll(
-            'if(', loop(n, function (i) {
-              return NEXT + '[' + i + ']!==' + CURRENT + '[' + i + ']'
-            }).join('||'), '){',
-            block,
-            '}');
-        } else {
-          NEXT = common.def(NEXT_STATE, '.', name);
-          CURRENT = common.def(CURRENT_STATE, '.', name);
-          block(
-            NEXT, ');',
-            CURRENT_STATE, '.', name, '=', NEXT, ';');
-          poll(
-            'if(', NEXT, '!==', CURRENT, '){',
-            block,
-            '}');
-        }
-        refresh(block);
-      });
-
-      return env.compile()
-    })(),
-    compile: compileCommand
-  }
-}
-
-function stats () {
-  return {
-    bufferCount: 0,
-    elementsCount: 0,
-    framebufferCount: 0,
-    shaderCount: 0,
-    textureCount: 0,
-    cubeCount: 0,
-    renderbufferCount: 0,
-
-    maxTextureUnits: 0
-  }
-}
-
-var GL_QUERY_RESULT_EXT = 0x8866;
-var GL_QUERY_RESULT_AVAILABLE_EXT = 0x8867;
-var GL_TIME_ELAPSED_EXT = 0x88BF;
-
-var createTimer = function (gl, extensions) {
-  var extTimer = extensions.ext_disjoint_timer_query;
-
-  if (!extTimer) {
-    return null
-  }
-
-  // QUERY POOL BEGIN
-  var queryPool = [];
-  function allocQuery () {
-    return queryPool.pop() || extTimer.createQueryEXT()
-  }
-  function freeQuery (query) {
-    queryPool.push(query);
-  }
-  // QUERY POOL END
-
-  var pendingQueries = [];
-  function beginQuery (stats) {
-    var query = allocQuery();
-    extTimer.beginQueryEXT(GL_TIME_ELAPSED_EXT, query);
-    pendingQueries.push(query);
-    pushScopeStats(pendingQueries.length - 1, pendingQueries.length, stats);
-  }
-
-  function endQuery () {
-    extTimer.endQueryEXT(GL_TIME_ELAPSED_EXT);
-  }
-
-  //
-  // Pending stats pool.
-  //
-  function PendingStats () {
-    this.startQueryIndex = -1;
-    this.endQueryIndex = -1;
-    this.sum = 0;
-    this.stats = null;
-  }
-  var pendingStatsPool = [];
-  function allocPendingStats () {
-    return pendingStatsPool.pop() || new PendingStats()
-  }
-  function freePendingStats (pendingStats) {
-    pendingStatsPool.push(pendingStats);
-  }
-  // Pending stats pool end
-
-  var pendingStats = [];
-  function pushScopeStats (start, end, stats) {
-    var ps = allocPendingStats();
-    ps.startQueryIndex = start;
-    ps.endQueryIndex = end;
-    ps.sum = 0;
-    ps.stats = stats;
-    pendingStats.push(ps);
-  }
-
-  // we should call this at the beginning of the frame,
-  // in order to update gpuTime
-  var timeSum = [];
-  var queryPtr = [];
-  function update () {
-    var ptr, i;
-
-    var n = pendingQueries.length;
-    if (n === 0) {
-      return
-    }
-
-    // Reserve space
-    queryPtr.length = Math.max(queryPtr.length, n + 1);
-    timeSum.length = Math.max(timeSum.length, n + 1);
-    timeSum[0] = 0;
-    queryPtr[0] = 0;
-
-    // Update all pending timer queries
-    var queryTime = 0;
-    ptr = 0;
-    for (i = 0; i < pendingQueries.length; ++i) {
-      var query = pendingQueries[i];
-      if (extTimer.getQueryObjectEXT(query, GL_QUERY_RESULT_AVAILABLE_EXT)) {
-        queryTime += extTimer.getQueryObjectEXT(query, GL_QUERY_RESULT_EXT);
-        freeQuery(query);
-      } else {
-        pendingQueries[ptr++] = query;
-      }
-      timeSum[i + 1] = queryTime;
-      queryPtr[i + 1] = ptr;
-    }
-    pendingQueries.length = ptr;
-
-    // Update all pending stat queries
-    ptr = 0;
-    for (i = 0; i < pendingStats.length; ++i) {
-      var stats = pendingStats[i];
-      var start = stats.startQueryIndex;
-      var end = stats.endQueryIndex;
-      stats.sum += timeSum[end] - timeSum[start];
-      var startPtr = queryPtr[start];
-      var endPtr = queryPtr[end];
-      if (endPtr === startPtr) {
-        stats.stats.gpuTime += stats.sum / 1e6;
-        freePendingStats(stats);
-      } else {
-        stats.startQueryIndex = startPtr;
-        stats.endQueryIndex = endPtr;
-        pendingStats[ptr++] = stats;
-      }
-    }
-    pendingStats.length = ptr;
-  }
-
-  return {
-    beginQuery: beginQuery,
-    endQuery: endQuery,
-    pushScopeStats: pushScopeStats,
-    update: update,
-    getNumPendingQueries: function () {
-      return pendingQueries.length
-    },
-    clear: function () {
-      queryPool.push.apply(queryPool, pendingQueries);
-      for (var i = 0; i < queryPool.length; i++) {
-        extTimer.deleteQueryEXT(queryPool[i]);
-      }
-      pendingQueries.length = 0;
-      queryPool.length = 0;
-    },
-    restore: function () {
-      pendingQueries.length = 0;
-      queryPool.length = 0;
-    }
-  }
-};
-
-var GL_COLOR_BUFFER_BIT = 16384;
-var GL_DEPTH_BUFFER_BIT = 256;
-var GL_STENCIL_BUFFER_BIT = 1024;
-
-var GL_ARRAY_BUFFER = 34962;
-
-var CONTEXT_LOST_EVENT = 'webglcontextlost';
-var CONTEXT_RESTORED_EVENT = 'webglcontextrestored';
-
-var DYN_PROP = 1;
-var DYN_CONTEXT = 2;
-var DYN_STATE = 3;
-
-function find (haystack, needle) {
-  for (var i = 0; i < haystack.length; ++i) {
-    if (haystack[i] === needle) {
-      return i
-    }
-  }
-  return -1
-}
-
-function wrapREGL (args) {
-  var config = parseArgs(args);
-  if (!config) {
-    return null
-  }
-
-  var gl = config.gl;
-  var glAttributes = gl.getContextAttributes();
-  var contextLost = gl.isContextLost();
-
-  var extensionState = createExtensionCache(gl, config);
-  if (!extensionState) {
-    return null
-  }
-
-  var stringStore = createStringStore();
-  var stats$$1 = stats();
-  var extensions = extensionState.extensions;
-  var timer = createTimer(gl, extensions);
-
-  var START_TIME = clock();
-  var WIDTH = gl.drawingBufferWidth;
-  var HEIGHT = gl.drawingBufferHeight;
-
-  var contextState = {
-    tick: 0,
-    time: 0,
-    viewportWidth: WIDTH,
-    viewportHeight: HEIGHT,
-    framebufferWidth: WIDTH,
-    framebufferHeight: HEIGHT,
-    drawingBufferWidth: WIDTH,
-    drawingBufferHeight: HEIGHT,
-    pixelRatio: config.pixelRatio
-  };
-  var uniformState = {};
-  var drawState = {
-    elements: null,
-    primitive: 4, // GL_TRIANGLES
-    count: -1,
-    offset: 0,
-    instances: -1
-  };
-
-  var limits = wrapLimits(gl, extensions);
-  var bufferState = wrapBufferState(gl, stats$$1, config);
-  var elementState = wrapElementsState(gl, extensions, bufferState, stats$$1);
-  var attributeState = wrapAttributeState(
-    gl,
-    extensions,
-    limits,
-    bufferState,
-    stringStore);
-  var shaderState = wrapShaderState(gl, stringStore, stats$$1, config);
-  var textureState = createTextureSet(
-    gl,
-    extensions,
-    limits,
-    function () { core.procs.poll(); },
-    contextState,
-    stats$$1,
-    config);
-  var renderbufferState = wrapRenderbuffers(gl, extensions, limits, stats$$1, config);
-  var framebufferState = wrapFBOState(
-    gl,
-    extensions,
-    limits,
-    textureState,
-    renderbufferState,
-    stats$$1);
-  var core = reglCore(
-    gl,
-    stringStore,
-    extensions,
-    limits,
-    bufferState,
-    elementState,
-    textureState,
-    framebufferState,
-    uniformState,
-    attributeState,
-    shaderState,
-    drawState,
-    contextState,
-    timer,
-    config);
-  var readPixels = wrapReadPixels(
-    gl,
-    framebufferState,
-    core.procs.poll,
-    contextState,
-    glAttributes, extensions);
-
-  var nextState = core.next;
-  var canvas = gl.canvas;
-
-  var rafCallbacks = [];
-  var lossCallbacks = [];
-  var restoreCallbacks = [];
-  var destroyCallbacks = [config.onDestroy];
-
-  var activeRAF = null;
-  function handleRAF () {
-    if (rafCallbacks.length === 0) {
-      if (timer) {
-        timer.update();
-      }
-      activeRAF = null;
-      return
-    }
-
-    // schedule next animation frame
-    activeRAF = raf.next(handleRAF);
-
-    // poll for changes
-    poll();
-
-    // fire a callback for all pending rafs
-    for (var i = rafCallbacks.length - 1; i >= 0; --i) {
-      var cb = rafCallbacks[i];
-      if (cb) {
-        cb(contextState, null, 0);
-      }
-    }
-
-    // flush all pending webgl calls
-    gl.flush();
-
-    // poll GPU timers *after* gl.flush so we don't delay command dispatch
-    if (timer) {
-      timer.update();
-    }
-  }
-
-  function startRAF () {
-    if (!activeRAF && rafCallbacks.length > 0) {
-      activeRAF = raf.next(handleRAF);
-    }
-  }
-
-  function stopRAF () {
-    if (activeRAF) {
-      raf.cancel(handleRAF);
-      activeRAF = null;
-    }
-  }
-
-  function handleContextLoss (event) {
-    event.preventDefault();
-
-    // set context lost flag
-    contextLost = true;
-
-    // pause request animation frame
-    stopRAF();
-
-    // lose context
-    lossCallbacks.forEach(function (cb) {
-      cb();
-    });
-  }
-
-  function handleContextRestored (event) {
-    // clear error code
-    gl.getError();
-
-    // clear context lost flag
-    contextLost = false;
-
-    // refresh state
-    extensionState.restore();
-    shaderState.restore();
-    bufferState.restore();
-    textureState.restore();
-    renderbufferState.restore();
-    framebufferState.restore();
-    if (timer) {
-      timer.restore();
-    }
-
-    // refresh state
-    core.procs.refresh();
-
-    // restart RAF
-    startRAF();
-
-    // restore context
-    restoreCallbacks.forEach(function (cb) {
-      cb();
-    });
-  }
-
-  if (canvas) {
-    canvas.addEventListener(CONTEXT_LOST_EVENT, handleContextLoss, false);
-    canvas.addEventListener(CONTEXT_RESTORED_EVENT, handleContextRestored, false);
-  }
-
-  function destroy () {
-    rafCallbacks.length = 0;
-    stopRAF();
-
-    if (canvas) {
-      canvas.removeEventListener(CONTEXT_LOST_EVENT, handleContextLoss);
-      canvas.removeEventListener(CONTEXT_RESTORED_EVENT, handleContextRestored);
-    }
-
-    shaderState.clear();
-    framebufferState.clear();
-    renderbufferState.clear();
-    textureState.clear();
-    elementState.clear();
-    bufferState.clear();
-
-    if (timer) {
-      timer.clear();
-    }
-
-    destroyCallbacks.forEach(function (cb) {
-      cb();
-    });
-  }
-
-  function compileProcedure (options) {
-    check$1(!!options, 'invalid args to regl({...})');
-    check$1.type(options, 'object', 'invalid args to regl({...})');
-
-    function flattenNestedOptions (options) {
-      var result = extend({}, options);
-      delete result.uniforms;
-      delete result.attributes;
-      delete result.context;
-
-      if ('stencil' in result && result.stencil.op) {
-        result.stencil.opBack = result.stencil.opFront = result.stencil.op;
-        delete result.stencil.op;
-      }
-
-      function merge (name) {
-        if (name in result) {
-          var child = result[name];
-          delete result[name];
-          Object.keys(child).forEach(function (prop) {
-            result[name + '.' + prop] = child[prop];
-          });
-        }
-      }
-      merge('blend');
-      merge('depth');
-      merge('cull');
-      merge('stencil');
-      merge('polygonOffset');
-      merge('scissor');
-      merge('sample');
-
-      return result
-    }
-
-    function separateDynamic (object) {
-      var staticItems = {};
-      var dynamicItems = {};
-      Object.keys(object).forEach(function (option) {
-        var value = object[option];
-        if (dynamic.isDynamic(value)) {
-          dynamicItems[option] = dynamic.unbox(value, option);
-        } else {
-          staticItems[option] = value;
-        }
-      });
-      return {
-        dynamic: dynamicItems,
-        static: staticItems
-      }
-    }
-
-    // Treat context variables separate from other dynamic variables
-    var context = separateDynamic(options.context || {});
-    var uniforms = separateDynamic(options.uniforms || {});
-    var attributes = separateDynamic(options.attributes || {});
-    var opts = separateDynamic(flattenNestedOptions(options));
-
-    var stats$$1 = {
-      gpuTime: 0.0,
-      cpuTime: 0.0,
-      count: 0
-    };
-
-    var compiled = core.compile(opts, attributes, uniforms, context, stats$$1);
-
-    var draw = compiled.draw;
-    var batch = compiled.batch;
-    var scope = compiled.scope;
-
-    // FIXME: we should modify code generation for batch commands so this
-    // isn't necessary
-    var EMPTY_ARRAY = [];
-    function reserve (count) {
-      while (EMPTY_ARRAY.length < count) {
-        EMPTY_ARRAY.push(null);
-      }
-      return EMPTY_ARRAY
-    }
-
-    function REGLCommand (args, body) {
-      var i;
-      if (contextLost) {
-        check$1.raise('context lost');
-      }
-      if (typeof args === 'function') {
-        return scope.call(this, null, args, 0)
-      } else if (typeof body === 'function') {
-        if (typeof args === 'number') {
-          for (i = 0; i < args; ++i) {
-            scope.call(this, null, body, i);
-          }
-          return
-        } else if (Array.isArray(args)) {
-          for (i = 0; i < args.length; ++i) {
-            scope.call(this, args[i], body, i);
-          }
-          return
-        } else {
-          return scope.call(this, args, body, 0)
-        }
-      } else if (typeof args === 'number') {
-        if (args > 0) {
-          return batch.call(this, reserve(args | 0), args | 0)
-        }
-      } else if (Array.isArray(args)) {
-        if (args.length) {
-          return batch.call(this, args, args.length)
-        }
-      } else {
-        return draw.call(this, args)
-      }
-    }
-
-    return extend(REGLCommand, {
-      stats: stats$$1
-    })
-  }
-
-  var setFBO = framebufferState.setFBO = compileProcedure({
-    framebuffer: dynamic.define.call(null, DYN_PROP, 'framebuffer')
-  });
-
-  function clearImpl (_, options) {
-    var clearFlags = 0;
-    core.procs.poll();
-
-    var c = options.color;
-    if (c) {
-      gl.clearColor(+c[0] || 0, +c[1] || 0, +c[2] || 0, +c[3] || 0);
-      clearFlags |= GL_COLOR_BUFFER_BIT;
-    }
-    if ('depth' in options) {
-      gl.clearDepth(+options.depth);
-      clearFlags |= GL_DEPTH_BUFFER_BIT;
-    }
-    if ('stencil' in options) {
-      gl.clearStencil(options.stencil | 0);
-      clearFlags |= GL_STENCIL_BUFFER_BIT;
-    }
-
-    check$1(!!clearFlags, 'called regl.clear with no buffer specified');
-    gl.clear(clearFlags);
-  }
-
-  function clear (options) {
-    check$1(
-      typeof options === 'object' && options,
-      'regl.clear() takes an object as input');
-    if ('framebuffer' in options) {
-      if (options.framebuffer &&
-          options.framebuffer_reglType === 'framebufferCube') {
-        for (var i = 0; i < 6; ++i) {
-          setFBO(extend({
-            framebuffer: options.framebuffer.faces[i]
-          }, options), clearImpl);
-        }
-      } else {
-        setFBO(options, clearImpl);
-      }
-    } else {
-      clearImpl(null, options);
-    }
-  }
-
-  function frame (cb) {
-    check$1.type(cb, 'function', 'regl.frame() callback must be a function');
-    rafCallbacks.push(cb);
-
-    function cancel () {
-      // FIXME:  should we check something other than equals cb here?
-      // what if a user calls frame twice with the same callback...
-      //
-      var i = find(rafCallbacks, cb);
-      check$1(i >= 0, 'cannot cancel a frame twice');
-      function pendingCancel () {
-        var index = find(rafCallbacks, pendingCancel);
-        rafCallbacks[index] = rafCallbacks[rafCallbacks.length - 1];
-        rafCallbacks.length -= 1;
-        if (rafCallbacks.length <= 0) {
-          stopRAF();
-        }
-      }
-      rafCallbacks[i] = pendingCancel;
-    }
-
-    startRAF();
-
-    return {
-      cancel: cancel
-    }
-  }
-
-  // poll viewport
-  function pollViewport () {
-    var viewport = nextState.viewport;
-    var scissorBox = nextState.scissor_box;
-    viewport[0] = viewport[1] = scissorBox[0] = scissorBox[1] = 0;
-    contextState.viewportWidth =
-      contextState.framebufferWidth =
-      contextState.drawingBufferWidth =
-      viewport[2] =
-      scissorBox[2] = gl.drawingBufferWidth;
-    contextState.viewportHeight =
-      contextState.framebufferHeight =
-      contextState.drawingBufferHeight =
-      viewport[3] =
-      scissorBox[3] = gl.drawingBufferHeight;
-  }
-
-  function poll () {
-    contextState.tick += 1;
-    contextState.time = now();
-    pollViewport();
-    core.procs.poll();
-  }
-
-  function refresh () {
-    pollViewport();
-    core.procs.refresh();
-    if (timer) {
-      timer.update();
-    }
-  }
-
-  function now () {
-    return (clock() - START_TIME) / 1000.0
-  }
-
-  refresh();
-
-  function addListener (event, callback) {
-    check$1.type(callback, 'function', 'listener callback must be a function');
-
-    var callbacks;
-    switch (event) {
-      case 'frame':
-        return frame(callback)
-      case 'lost':
-        callbacks = lossCallbacks;
-        break
-      case 'restore':
-        callbacks = restoreCallbacks;
-        break
-      case 'destroy':
-        callbacks = destroyCallbacks;
-        break
-      default:
-        check$1.raise('invalid event, must be one of frame,lost,restore,destroy');
-    }
-
-    callbacks.push(callback);
-    return {
-      cancel: function () {
-        for (var i = 0; i < callbacks.length; ++i) {
-          if (callbacks[i] === callback) {
-            callbacks[i] = callbacks[callbacks.length - 1];
-            callbacks.pop();
-            return
-          }
-        }
-      }
-    }
-  }
-
-  var regl = extend(compileProcedure, {
-    // Clear current FBO
-    clear: clear,
-
-    // Short cuts for dynamic variables
-    prop: dynamic.define.bind(null, DYN_PROP),
-    context: dynamic.define.bind(null, DYN_CONTEXT),
-    this: dynamic.define.bind(null, DYN_STATE),
-
-    // executes an empty draw command
-    draw: compileProcedure({}),
-
-    // Resources
-    buffer: function (options) {
-      return bufferState.create(options, GL_ARRAY_BUFFER, false, false)
-    },
-    elements: function (options) {
-      return elementState.create(options, false)
-    },
-    texture: textureState.create2D,
-    cube: textureState.createCube,
-    renderbuffer: renderbufferState.create,
-    framebuffer: framebufferState.create,
-    framebufferCube: framebufferState.createCube,
-
-    // Expose context attributes
-    attributes: glAttributes,
-
-    // Frame rendering
-    frame: frame,
-    on: addListener,
-
-    // System limits
-    limits: limits,
-    hasExtension: function (name) {
-      return limits.extensions.indexOf(name.toLowerCase()) >= 0
-    },
-
-    // Read pixels
-    read: readPixels,
-
-    // Destroy regl and all associated resources
-    destroy: destroy,
-
-    // Direct GL state manipulation
-    _gl: gl,
-    _refresh: refresh,
-
-    poll: function () {
-      poll();
-      if (timer) {
-        timer.update();
-      }
-    },
-
-    // Current time
-    now: now,
-
-    // regl Statistics Information
-    stats: stats$$1
-  });
-
-  config.onDone(null, regl);
-
-  return regl
-}
-
-return wrapREGL;
-
-})));
-
-
-},{}],188:[function(require,module,exports){
+},{"big-rat/sub":30}],180:[function(require,module,exports){
+'use strict'
+
+var getBounds = require('array-bounds')
+var rgba = require('color-normalize')
+var updateDiff = require('update-diff')
+var pick = require('pick-by-alias')
+var extend = require('object-assign')
+var flatten = require('flatten-vertex-data')
+var ref = require('to-float32');
+var float32 = ref.float32;
+var fract32 = ref.fract32;
+
+module.exports = Error2D
+
+var WEIGHTS = [
+	//direction, lineWidth shift, capSize shift
+
+	// x-error bar
+	[1, 0, 0, 1, 0, 0],
+	[1, 0, 0, -1, 0, 0],
+	[-1, 0, 0, -1, 0, 0],
+
+	[-1, 0, 0, -1, 0, 0],
+	[-1, 0, 0, 1, 0, 0],
+	[1, 0, 0, 1, 0, 0],
+
+	// x-error right cap
+	[1, 0, -1, 0, 0, 1],
+	[1, 0, -1, 0, 0, -1],
+	[1, 0, 1, 0, 0, -1],
+
+	[1, 0, 1, 0, 0, -1],
+	[1, 0, 1, 0, 0, 1],
+	[1, 0, -1, 0, 0, 1],
+
+	// x-error left cap
+	[-1, 0, -1, 0, 0, 1],
+	[-1, 0, -1, 0, 0, -1],
+	[-1, 0, 1, 0, 0, -1],
+
+	[-1, 0, 1, 0, 0, -1],
+	[-1, 0, 1, 0, 0, 1],
+	[-1, 0, -1, 0, 0, 1],
+
+	// y-error bar
+	[0, 1, 1, 0, 0, 0],
+	[0, 1, -1, 0, 0, 0],
+	[0, -1, -1, 0, 0, 0],
+
+	[0, -1, -1, 0, 0, 0],
+	[0, 1, 1, 0, 0, 0],
+	[0, -1, 1, 0, 0, 0],
+
+	// y-error top cap
+	[0, 1, 0, -1, 1, 0],
+	[0, 1, 0, -1, -1, 0],
+	[0, 1, 0, 1, -1, 0],
+
+	[0, 1, 0, 1, 1, 0],
+	[0, 1, 0, -1, 1, 0],
+	[0, 1, 0, 1, -1, 0],
+
+	// y-error bottom cap
+	[0, -1, 0, -1, 1, 0],
+	[0, -1, 0, -1, -1, 0],
+	[0, -1, 0, 1, -1, 0],
+
+	[0, -1, 0, 1, 1, 0],
+	[0, -1, 0, -1, 1, 0],
+	[0, -1, 0, 1, -1, 0]
+]
+
+
+function Error2D (regl, options) {
+	if (typeof regl === 'function') {
+		if (!options) { options = {} }
+		options.regl = regl
+	}
+	else {
+		options = regl
+	}
+	if (options.length) { options.positions = options }
+	regl = options.regl
+
+	if (!regl.hasExtension('ANGLE_instanced_arrays')) {
+		throw Error('regl-error2d: `ANGLE_instanced_arrays` extension should be enabled');
+	}
+
+	// persistent variables
+	var gl = regl._gl, drawErrors, positionBuffer, positionFractBuffer, colorBuffer, errorBuffer, meshBuffer,
+			defaults = {
+				color: 'black',
+				capSize: 5,
+				lineWidth: 1,
+				opacity: 1,
+				viewport: null,
+				range: null,
+				offset: 0,
+				count: 0,
+				bounds: null,
+				positions: [],
+				errors: []
+			}, groups = []
+
+	//color per-point
+	colorBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'uint8',
+		data: null
+	})
+	//xy-position per-point
+	positionBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'float',
+		data: null
+	})
+	//xy-position float32-fraction
+	positionFractBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'float',
+		data: null
+	})
+	//4 errors per-point
+	errorBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'float',
+		data: null
+	})
+	//error bar mesh
+	meshBuffer = regl.buffer({
+		usage: 'static',
+		type: 'float',
+		data: WEIGHTS
+	})
+
+	update(options)
+
+	//drawing method
+	drawErrors = regl({
+		vert: "\n\t\tprecision highp float;\n\n\t\tattribute vec2 position, positionFract;\n\t\tattribute vec4 error;\n\t\tattribute vec4 color;\n\n\t\tattribute vec2 direction, lineOffset, capOffset;\n\n\t\tuniform vec4 viewport;\n\t\tuniform float lineWidth, capSize;\n\t\tuniform vec2 scale, scaleFract, translate, translateFract;\n\n\t\tvarying vec4 fragColor;\n\n\t\tvoid main() {\n\t\t\tfragColor = color / 255.;\n\n\t\t\tvec2 pixelOffset = lineWidth * lineOffset + (capSize + lineWidth) * capOffset;\n\n\t\t\tvec2 dxy = -step(.5, direction.xy) * error.xz + step(direction.xy, vec2(-.5)) * error.yw;\n\n\t\t\tvec2 position = position + dxy;\n\n\t\t\tvec2 pos = (position + translate) * scale\n\t\t\t\t+ (positionFract + translateFract) * scale\n\t\t\t\t+ (position + translate) * scaleFract\n\t\t\t\t+ (positionFract + translateFract) * scaleFract;\n\n\t\t\tpos += pixelOffset / viewport.zw;\n\n\t\t\tgl_Position = vec4(pos * 2. - 1., 0, 1);\n\t\t}\n\t\t",
+
+		frag: "\n\t\tprecision mediump float;\n\n\t\tvarying vec4 fragColor;\n\n\t\tuniform float opacity;\n\n\t\tvoid main() {\n\t\t\tgl_FragColor = fragColor;\n\t\t\tgl_FragColor.a *= opacity;\n\t\t}\n\t\t",
+
+		uniforms: {
+			range: regl.prop('range'),
+			lineWidth: regl.prop('lineWidth'),
+			capSize: regl.prop('capSize'),
+			opacity: regl.prop('opacity'),
+			scale: regl.prop('scale'),
+			translate: regl.prop('translate'),
+			scaleFract: regl.prop('scaleFract'),
+			translateFract: regl.prop('translateFract'),
+			viewport: function (ctx, prop) { return [prop.viewport.x, prop.viewport.y, ctx.viewportWidth, ctx.viewportHeight]; }
+		},
+
+		attributes: {
+			//dynamic attributes
+			color: {
+				buffer: colorBuffer,
+				offset: function (ctx, prop) { return prop.offset * 4; },
+				divisor: 1,
+			},
+			position: {
+				buffer: positionBuffer,
+				offset: function (ctx, prop) { return prop.offset * 8; },
+				divisor: 1
+			},
+			positionFract: {
+				buffer: positionFractBuffer,
+				offset: function (ctx, prop) { return prop.offset * 8; },
+				divisor: 1
+			},
+			error: {
+				buffer: errorBuffer,
+				offset: function (ctx, prop) { return prop.offset * 16; },
+				divisor: 1
+			},
+
+			//static attributes
+			direction: {
+				buffer: meshBuffer,
+				stride: 24,
+				offset: 0
+			},
+			lineOffset: {
+				buffer: meshBuffer,
+				stride: 24,
+				offset: 8
+			},
+			capOffset: {
+				buffer: meshBuffer,
+				stride: 24,
+				offset: 16
+			}
+		},
+
+		primitive: 'triangles',
+
+		blend: {
+			enable: true,
+			color: [0,0,0,0],
+			equation: {
+				rgb: 'add',
+				alpha: 'add'
+			},
+			func: {
+				srcRGB: 'src alpha',
+				dstRGB: 'one minus src alpha',
+				srcAlpha: 'one minus dst alpha',
+				dstAlpha: 'one'
+			}
+		},
+
+		depth: {
+			enable: false
+		},
+
+		scissor: {
+			enable: true,
+			box: regl.prop('viewport')
+		},
+		viewport: regl.prop('viewport'),
+		stencil: false,
+
+		instances: regl.prop('count'),
+		count: WEIGHTS.length
+	})
+
+	//expose API
+	extend(error2d, {
+		update: update,
+		draw: draw,
+		destroy: destroy,
+		regl: regl,
+		gl: gl,
+		canvas: gl.canvas,
+		groups: groups
+	})
+
+	return error2d
+
+	function error2d (opts) {
+		//update
+		if (opts) {
+			update(opts)
+		}
+
+		//destroy
+		else if (opts === null) {
+			destroy()
+		}
+
+		draw()
+	}
+
+
+	//main draw method
+	function draw (options) {
+		if (typeof options === 'number') { return drawGroup(options) }
+
+		//make options a batch
+		if (options && !Array.isArray(options)) { options = [options] }
+
+
+		regl._refresh()
+
+		//render multiple polylines via regl batch
+		groups.forEach(function (s, i) {
+			if (!s) { return }
+
+			if (options) {
+				if (!options[i]) { s.draw = false }
+				else { s.draw = true }
+			}
+
+			//ignore draw flag for one pass
+			if (!s.draw) {
+				s.draw = true;
+				return
+			}
+
+			drawGroup(i)
+		})
+	}
+
+	//draw single error group by id
+	function drawGroup (s) {
+		if (typeof s === 'number') { s = groups[s] }
+		if (s == null) { return }
+
+		if (!(s && s.count && s.color && s.opacity && s.positions && s.positions.length > 1)) { return }
+
+		s.scaleRatio = [
+			s.scale[0] * s.viewport.width,
+			s.scale[1] * s.viewport.height
+		]
+
+		drawErrors(s)
+
+		if (s.after) { s.after(s) }
+	}
+
+	function update (options) {
+		if (!options) { return }
+
+		//direct points argument
+		if (options.length != null) {
+			if (typeof options[0] === 'number') { options = [{positions: options}] }
+		}
+
+		//make options a batch
+		else if (!Array.isArray(options)) { options = [options] }
+
+		//global count of points
+		var pointCount = 0, errorCount = 0
+
+		groups = options.map(function (options, i) {
+			var group = groups[i]
+
+			if (!options) { return group }
+			else if (typeof options === 'function') { options = {after: options} }
+			else if (typeof options[0] === 'number') { options = {positions: options} }
+
+			//copy options to avoid mutation & handle aliases
+			options = pick(options, {
+				color: 'color colors fill',
+				capSize: 'capSize cap capsize cap-size',
+				lineWidth: 'lineWidth line-width width line thickness',
+				opacity: 'opacity alpha',
+				range: 'range dataBox',
+				viewport: 'viewport viewBox',
+				errors: 'errors error',
+				positions: 'positions position data points'
+			})
+
+			if (!group) {
+				groups[i] = group = {
+					id: i,
+					scale: null,
+					translate: null,
+					scaleFract: null,
+					translateFract: null,
+					draw: true
+				}
+				options = extend({}, defaults, options)
+			}
+
+			updateDiff(group, options, [{
+				lineWidth: function (v) { return +v * .5; },
+				capSize: function (v) { return +v * .5; },
+				opacity: parseFloat,
+				errors: function (errors) {
+					errors = flatten(errors)
+
+					errorCount += errors.length
+					return errors
+				},
+				positions: function (positions, state) {
+					positions = flatten(positions, 'float64')
+					state.count = Math.floor(positions.length / 2)
+					state.bounds = getBounds(positions, 2)
+					state.offset = pointCount
+
+					pointCount += state.count
+
+					return positions
+				}
+			}, {
+				color: function (colors, state) {
+					var count = state.count
+
+					if (!colors) { colors = 'transparent' }
+
+					// 'black' or [0,0,0,0] case
+					if (!Array.isArray(colors) || typeof colors[0] === 'number') {
+						var color = colors
+						colors = Array(count)
+						for (var i = 0; i < count; i++) {
+							colors[i] = color
+						}
+					}
+
+					if (colors.length < count) { throw Error('Not enough colors') }
+
+					var colorData = new Uint8Array(count * 4)
+
+					//convert colors to float arrays
+					for (var i$1 = 0; i$1 < count; i$1++) {
+						var c = rgba(colors[i$1], 'uint8')
+						colorData.set(c, i$1 * 4)
+					}
+
+					return colorData
+				},
+
+				range: function (range, state, options) {
+					var bounds = state.bounds
+					if (!range) { range = bounds }
+
+					state.scale = [1 / (range[2] - range[0]), 1 / (range[3] - range[1])]
+					state.translate = [-range[0], -range[1]]
+
+					state.scaleFract = fract32(state.scale)
+					state.translateFract = fract32(state.translate)
+
+					return range
+				},
+
+				viewport: function (vp) {
+					var viewport
+
+					if (Array.isArray(vp)) {
+						viewport = {
+							x: vp[0],
+							y: vp[1],
+							width: vp[2] - vp[0],
+							height: vp[3] - vp[1]
+						}
+					}
+					else if (vp) {
+						viewport = {
+							x: vp.x || vp.left || 0,
+							y: vp.y || vp.top || 0
+						}
+
+						if (vp.right) { viewport.width = vp.right - viewport.x }
+						else { viewport.width = vp.w || vp.width || 0 }
+
+						if (vp.bottom) { viewport.height = vp.bottom - viewport.y }
+						else { viewport.height = vp.h || vp.height || 0 }
+					}
+					else {
+						viewport = {
+							x: 0, y: 0,
+							width: gl.drawingBufferWidth,
+							height: gl.drawingBufferHeight
+						}
+					}
+
+					return viewport
+				}
+			}])
+
+			return group
+		})
+
+		if (pointCount || errorCount) {
+			var len = groups.reduce(function (acc, group, i) {
+				return acc + (group ? group.count : 0)
+			}, 0)
+
+			var positionData = new Float64Array(len * 2)
+			var colorData = new Uint8Array(len * 4)
+			var errorData = new Float32Array(len * 4)
+
+			groups.forEach(function (group, i) {
+				if (!group) { return }
+				var positions = group.positions;
+				var count = group.count;
+				var offset = group.offset;
+				var color = group.color;
+				var errors = group.errors;
+				if (!count) { return }
+
+				colorData.set(color, offset * 4)
+				errorData.set(errors, offset * 4)
+				positionData.set(positions, offset * 2)
+			})
+
+			positionBuffer(float32(positionData))
+			positionFractBuffer(fract32(positionData))
+			colorBuffer(colorData)
+			errorBuffer(errorData)
+		}
+
+	}
+
+	function destroy () {
+		positionBuffer.destroy()
+		positionFractBuffer.destroy()
+		colorBuffer.destroy()
+		errorBuffer.destroy()
+		meshBuffer.destroy()
+	}
+}
+},{"array-bounds":12,"color-normalize":56,"flatten-vertex-data":77,"object-assign":156,"pick-by-alias":162,"to-float32":213,"update-diff":221}],181:[function(require,module,exports){
+'use strict'
+
+var rgba = require('color-normalize')
+var getBounds = require('array-bounds')
+var extend = require('object-assign')
+var glslify = require('glslify')
+var pick = require('pick-by-alias')
+var updateDiff = require('update-diff')
+var flatten = require('flatten-vertex-data')
+var triangulate = require('earcut')
+var normalize = require('array-normalize')
+
+module.exports = createLine
+
+
+function createLine (regl, options) {
+	if (typeof regl === 'function') {
+		if (!options) { options = {} }
+		options.regl = regl
+	}
+	else {
+		options = regl
+	}
+	if (options.length) { options.positions = options }
+	regl = options.regl
+
+	if (!regl.hasExtension('ANGLE_instanced_arrays')) {
+		throw Error('regl-error2d: `ANGLE_instanced_arrays` extension should be enabled');
+	}
+
+	// persistent variables
+	var gl = regl._gl, drawMiterLine, drawRectLine, drawFill, colorBuffer, offsetBuffer, positionBuffer, positionFractBuffer, dashTexture,
+
+		// used to for new lines instances
+		defaults = {
+			positions: [],
+			dashes: null,
+			join: null,
+			miterLimit: 1,
+			thickness: 10,
+			cap: 'square',
+			color: 'black',
+			opacity: 1,
+			overlay: false,
+			viewport: null,
+			range: null,
+			close: null,
+			fill: null
+		},
+
+		// list of options for lines
+		lines = []
+
+	var dashMult = 2, maxPatternLength = 256, maxLinesNumber = 2048, precisionThreshold = 3e6, maxPoints = 1e4
+
+
+	//color per-point
+	colorBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'uint8',
+		data: null
+	})
+	offsetBuffer = regl.buffer({
+		usage: 'static',
+		type: 'float',
+		data: [0,1, 0,0, 1,1, 1,0]
+	})
+	positionBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'float',
+		data: null
+	})
+	positionFractBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'float',
+		data: null
+	})
+	dashTexture = regl.texture({
+		channels: 1,
+		width: maxPatternLength,
+		height: maxLinesNumber,
+		mag: 'linear',
+		min: 'linear'
+	})
+
+	//init defaults
+	update(options)
+
+	var shaderOptions = {
+		primitive: 'triangle strip',
+		instances: regl.prop('count'),
+		count: 4,
+		offset: 0,
+
+		uniforms: {
+			miterMode: function (ctx, prop) { return prop.join === 'round' ? 2 : 1; },
+			miterLimit: regl.prop('miterLimit'),
+			scale: regl.prop('scale'),
+			scaleFract: regl.prop('scaleFract'),
+			translateFract: regl.prop('translateFract'),
+			translate: regl.prop('translate'),
+			thickness: regl.prop('thickness'),
+			dashPattern: dashTexture,
+			dashLength: regl.prop('dashLength'),
+			dashShape: [maxPatternLength, maxLinesNumber],
+			opacity: regl.prop('opacity'),
+			pixelRatio: regl.context('pixelRatio'),
+			id: regl.prop('id'),
+			scaleRatio: regl.prop('scaleRatio'),
+			viewport: function (ctx, prop) { return [prop.viewport.x, prop.viewport.y, ctx.viewportWidth, ctx.viewportHeight]; }
+		},
+
+		blend: {
+			enable: true,
+			color: [0,0,0,0],
+			equation: {
+				rgb: 'add',
+				alpha: 'add'
+			},
+			func: {
+				srcRGB: 'src alpha',
+				dstRGB: 'one minus src alpha',
+				srcAlpha: 'one minus dst alpha',
+				dstAlpha: 'one'
+			}
+		},
+		depth: {
+			enable: function (ctx, prop) {
+				return !prop.overlay
+			}
+		},
+		scissor: {
+			enable: true,
+			box: regl.prop('viewport')
+		},
+		stencil: false,
+		viewport: regl.prop('viewport')
+	}
+
+	//create regl draw
+	drawMiterLine = regl(extend({
+		//culling removes polygon creasing
+		cull: {
+			enable: true,
+			face: 'back'
+		},
+
+		vert: glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aCoord, bCoord, nextCoord, prevCoord;\nattribute vec4 aColor, bColor;\nattribute float lineEnd, lineTop;\n\nuniform vec2 scale, translate, scaleRatio;\nuniform float thickness, pixelRatio, id;\nuniform vec4 viewport;\nuniform float miterLimit, dashLength, miterMode;\n\nvarying vec4 fragColor;\nvarying vec4 startCutoff, endCutoff;\nvarying vec2 tangent;\nvarying vec2 startCoord, endCoord;\nvarying float enableStartMiter, enableEndMiter;\n\nconst float MAX_LINES = 256.;\nconst float REVERSE_THRESHOLD = -.875;\nconst float MIN_DIST = 1.;\n\n//TODO: possible optimizations: avoid overcalculating all for vertices and calc just one instead\n//TODO: precalculate dot products, normalize things beforehead etc.\n\nfloat distToLine(vec2 p, vec2 a, vec2 b) {\n\tvec2 diff = b - a;\n\tvec2 perp = normalize(vec2(-diff.y, diff.x));\n\treturn dot(p - a, perp);\n}\n\nbool isNaN( float val ){\n  return ( val < 0.0 || 0.0 < val || val == 0.0 ) ? false : true;\n}\n\nvoid main() {\n\tvec2 aCoord = aCoord, bCoord = bCoord, prevCoord = prevCoord, nextCoord = nextCoord;\n\tvec2 normalWidth = thickness / scaleRatio;\n\n\tfloat lineStart = 1. - lineEnd;\n\tfloat lineBot = 1. - lineTop;\n\tfloat depth = (MAX_LINES - 1. - id) / MAX_LINES;\n\n\tfragColor = (lineStart * aColor + lineEnd * bColor) / 255.;\n\n\tif (isNaN(aCoord.x) || isNaN(aCoord.y) || isNaN(bCoord.x) || isNaN(bCoord.y)) return;\n\n\tif (aCoord == prevCoord) prevCoord = aCoord + normalize(bCoord - aCoord);\n\tif (bCoord == nextCoord) nextCoord = bCoord - normalize(bCoord - aCoord);\n\n\tvec2 prevDiff = aCoord - prevCoord;\n\tvec2 currDiff = bCoord - aCoord;\n\tvec2 nextDiff = nextCoord - bCoord;\n\n\tvec2 prevDirection = normalize(prevDiff);\n\tvec2 currDirection = normalize(currDiff);\n\tvec2 nextDirection = normalize(nextDiff);\n\n\tvec2 prevTangent = normalize(prevDiff * scaleRatio);\n\tvec2 currTangent = normalize(currDiff * scaleRatio);\n\tvec2 nextTangent = normalize(nextDiff * scaleRatio);\n\n\tvec2 prevNormal = vec2(-prevTangent.y, prevTangent.x);\n\tvec2 currNormal = vec2(-currTangent.y, currTangent.x);\n\tvec2 nextNormal = vec2(-nextTangent.y, nextTangent.x);\n\n\tvec2 startJoinDirection = normalize(prevTangent - currTangent);\n\tvec2 endJoinDirection = normalize(currTangent - nextTangent);\n\n\t//collapsed/unidirectional segment cases\n\tif (prevDirection == currDirection) {\n\t\tstartJoinDirection = currNormal;\n\t}\n\tif (nextDirection == currDirection) {\n\t\tendJoinDirection = currNormal;\n\t}\n\tif (aCoord == bCoord) {\n\t\tendJoinDirection = startJoinDirection;\n\t\tcurrNormal = prevNormal;\n\t\tcurrTangent = prevTangent;\n\t}\n\n\ttangent = currTangent;\n\n\t//calculate join shifts relative to normals\n\tfloat startJoinShift = dot(currNormal, startJoinDirection);\n\tfloat endJoinShift = dot(currNormal, endJoinDirection);\n\n\tfloat startMiterRatio = abs(1. / startJoinShift);\n\tfloat endMiterRatio = abs(1. / endJoinShift);\n\n\tvec2 startJoin = startJoinDirection * startMiterRatio;\n\tvec2 endJoin = endJoinDirection * endMiterRatio;\n\n\tvec2 startTopJoin, startBotJoin, endTopJoin, endBotJoin;\n\tstartTopJoin = sign(startJoinShift) * startJoin * .5;\n\tstartBotJoin = -startTopJoin;\n\n\tendTopJoin = sign(endJoinShift) * endJoin * .5;\n\tendBotJoin = -endTopJoin;\n\n\tvec2 aTopCoord = aCoord + normalWidth * startTopJoin;\n\tvec2 bTopCoord = bCoord + normalWidth * endTopJoin;\n\tvec2 aBotCoord = aCoord + normalWidth * startBotJoin;\n\tvec2 bBotCoord = bCoord + normalWidth * endBotJoin;\n\n\t//miter anti-clipping\n\tfloat baClipping = distToLine(bCoord, aCoord, aBotCoord) / dot(normalize(normalWidth * endBotJoin), normalize(normalWidth.yx * vec2(-startBotJoin.y, startBotJoin.x)));\n\tfloat abClipping = distToLine(aCoord, bCoord, bTopCoord) / dot(normalize(normalWidth * startBotJoin), normalize(normalWidth.yx * vec2(-endBotJoin.y, endBotJoin.x)));\n\n\t//prevent close to reverse direction switch\n\tbool prevReverse = dot(currTangent, prevTangent) <= REVERSE_THRESHOLD && abs(dot(currTangent, prevNormal)) * min(length(prevDiff), length(currDiff)) <  length(normalWidth * currNormal);\n\tbool nextReverse = dot(currTangent, nextTangent) <= REVERSE_THRESHOLD && abs(dot(currTangent, nextNormal)) * min(length(nextDiff), length(currDiff)) <  length(normalWidth * currNormal);\n\n\tif (prevReverse) {\n\t\t//make join rectangular\n\t\tvec2 miterShift = normalWidth * startJoinDirection * miterLimit * .5;\n\t\tfloat normalAdjust = 1. - min(miterLimit / startMiterRatio, 1.);\n\t\taBotCoord = aCoord + miterShift - normalAdjust * normalWidth * currNormal * .5;\n\t\taTopCoord = aCoord + miterShift + normalAdjust * normalWidth * currNormal * .5;\n\t}\n\telse if (!nextReverse && baClipping > 0. && baClipping < length(normalWidth * endBotJoin)) {\n\t\t//handle miter clipping\n\t\tbTopCoord -= normalWidth * endTopJoin;\n\t\tbTopCoord += normalize(endTopJoin * normalWidth) * baClipping;\n\t}\n\n\tif (nextReverse) {\n\t\t//make join rectangular\n\t\tvec2 miterShift = normalWidth * endJoinDirection * miterLimit * .5;\n\t\tfloat normalAdjust = 1. - min(miterLimit / endMiterRatio, 1.);\n\t\tbBotCoord = bCoord + miterShift - normalAdjust * normalWidth * currNormal * .5;\n\t\tbTopCoord = bCoord + miterShift + normalAdjust * normalWidth * currNormal * .5;\n\t}\n\telse if (!prevReverse && abClipping > 0. && abClipping < length(normalWidth * startBotJoin)) {\n\t\t//handle miter clipping\n\t\taBotCoord -= normalWidth * startBotJoin;\n\t\taBotCoord += normalize(startBotJoin * normalWidth) * abClipping;\n\t}\n\n\tvec2 aTopPosition = (aTopCoord + translate) * scale;\n\tvec2 aBotPosition = (aBotCoord + translate) * scale;\n\n\tvec2 bTopPosition = (bTopCoord + translate) * scale;\n\tvec2 bBotPosition = (bBotCoord + translate) * scale;\n\n\t//position is normalized 0..1 coord on the screen\n\tvec2 position = (aTopPosition * lineTop + aBotPosition * lineBot) * lineStart + (bTopPosition * lineTop + bBotPosition * lineBot) * lineEnd;\n\n\tstartCoord = (aCoord + translate) * scaleRatio + viewport.xy;\n\tendCoord = (bCoord + translate) * scaleRatio + viewport.xy;\n\n\tgl_Position = vec4(position  * 2.0 - 1.0, depth, 1);\n\n\tenableStartMiter = step(dot(currTangent, prevTangent), .5);\n\tenableEndMiter = step(dot(currTangent, nextTangent), .5);\n\n\t//bevel miter cutoffs\n\tif (miterMode == 1.) {\n\t\tif (enableStartMiter == 1.) {\n\t\t\tvec2 startMiterWidth = vec2(startJoinDirection) * thickness * miterLimit * .5;\n\t\t\tstartCutoff = vec4(aCoord, aCoord);\n\t\t\tstartCutoff.zw += vec2(-startJoinDirection.y, startJoinDirection.x) / scaleRatio;\n\t\t\tstartCutoff = (startCutoff + translate.xyxy) * scaleRatio.xyxy;\n\t\t\tstartCutoff += viewport.xyxy;\n\t\t\tstartCutoff += startMiterWidth.xyxy;\n\t\t}\n\n\t\tif (enableEndMiter == 1.) {\n\t\t\tvec2 endMiterWidth = vec2(endJoinDirection) * thickness * miterLimit * .5;\n\t\t\tendCutoff = vec4(bCoord, bCoord);\n\t\t\tendCutoff.zw += vec2(-endJoinDirection.y, endJoinDirection.x)  / scaleRatio;\n\t\t\tendCutoff = (endCutoff + translate.xyxy) * scaleRatio.xyxy;\n\t\t\tendCutoff += viewport.xyxy;\n\t\t\tendCutoff += endMiterWidth.xyxy;\n\t\t}\n\t}\n\n\t//round miter cutoffs\n\telse if (miterMode == 2.) {\n\t\tif (enableStartMiter == 1.) {\n\t\t\tvec2 startMiterWidth = vec2(startJoinDirection) * thickness * abs(dot(startJoinDirection, currNormal)) * .5;\n\t\t\tstartCutoff = vec4(aCoord, aCoord);\n\t\t\tstartCutoff.zw += vec2(-startJoinDirection.y, startJoinDirection.x) / scaleRatio;\n\t\t\tstartCutoff = (startCutoff + translate.xyxy) * scaleRatio.xyxy;\n\t\t\tstartCutoff += viewport.xyxy;\n\t\t\tstartCutoff += startMiterWidth.xyxy;\n\t\t}\n\n\t\tif (enableEndMiter == 1.) {\n\t\t\tvec2 endMiterWidth = vec2(endJoinDirection) * thickness * abs(dot(endJoinDirection, currNormal)) * .5;\n\t\t\tendCutoff = vec4(bCoord, bCoord);\n\t\t\tendCutoff.zw += vec2(-endJoinDirection.y, endJoinDirection.x)  / scaleRatio;\n\t\t\tendCutoff = (endCutoff + translate.xyxy) * scaleRatio.xyxy;\n\t\t\tendCutoff += viewport.xyxy;\n\t\t\tendCutoff += endMiterWidth.xyxy;\n\t\t}\n\t}\n}\n"]),
+		frag: glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform sampler2D dashPattern;\nuniform vec2 dashShape;\nuniform float dashLength, pixelRatio, thickness, opacity, id, miterMode;\n\nvarying vec4 fragColor;\nvarying vec2 tangent;\nvarying vec4 startCutoff, endCutoff;\nvarying vec2 startCoord, endCoord;\nvarying float enableStartMiter, enableEndMiter;\n\nfloat distToLine(vec2 p, vec2 a, vec2 b) {\n\tvec2 diff = b - a;\n\tvec2 perp = normalize(vec2(-diff.y, diff.x));\n\treturn dot(p - a, perp);\n}\n\nvoid main() {\n\tfloat alpha = 1., distToStart, distToEnd;\n\tfloat cutoff = thickness * .5;\n\n\t//bevel miter\n\tif (miterMode == 1.) {\n\t\tif (enableStartMiter == 1.) {\n\t\t\tdistToStart = distToLine(gl_FragCoord.xy, startCutoff.xy, startCutoff.zw);\n\t\t\tif (distToStart < -1.) {\n\t\t\t\tdiscard;\n\t\t\t\treturn;\n\t\t\t}\n\t\t\talpha *= min(max(distToStart + 1., 0.), 1.);\n\t\t}\n\n\t\tif (enableEndMiter == 1.) {\n\t\t\tdistToEnd = distToLine(gl_FragCoord.xy, endCutoff.xy, endCutoff.zw);\n\t\t\tif (distToEnd < -1.) {\n\t\t\t\tdiscard;\n\t\t\t\treturn;\n\t\t\t}\n\t\t\talpha *= min(max(distToEnd + 1., 0.), 1.);\n\t\t}\n\t}\n\n\t// round miter\n\telse if (miterMode == 2.) {\n\t\tif (enableStartMiter == 1.) {\n\t\t\tdistToStart = distToLine(gl_FragCoord.xy, startCutoff.xy, startCutoff.zw);\n\t\t\tif (distToStart < 0.) {\n\t\t\t\tfloat radius = length(gl_FragCoord.xy - startCoord);\n\n\t\t\t\tif(radius > cutoff + .5) {\n\t\t\t\t\tdiscard;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\talpha -= smoothstep(cutoff - .5, cutoff + .5, radius);\n\t\t\t}\n\t\t}\n\n\t\tif (enableEndMiter == 1.) {\n\t\t\tdistToEnd = distToLine(gl_FragCoord.xy, endCutoff.xy, endCutoff.zw);\n\t\t\tif (distToEnd < 0.) {\n\t\t\t\tfloat radius = length(gl_FragCoord.xy - endCoord);\n\n\t\t\t\tif(radius > cutoff + .5) {\n\t\t\t\t\tdiscard;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\talpha -= smoothstep(cutoff - .5, cutoff + .5, radius);\n\t\t\t}\n\t\t}\n\t}\n\n\tfloat t = fract(dot(tangent, gl_FragCoord.xy) / dashLength) * .5 + .25;\n\tfloat dash = texture2D(dashPattern, vec2(t * dashLength * 2. / dashShape.x, (id + .5) / dashShape.y)).r;\n\n\tgl_FragColor = fragColor * dash;\n\tgl_FragColor.a *= alpha * opacity * dash;\n}\n"]),
+
+		attributes: {
+			lineEnd: {
+				buffer: offsetBuffer,
+				divisor: 0,
+				stride: 8,
+				offset: 0
+			},
+			lineTop: {
+				buffer: offsetBuffer,
+				divisor: 0,
+				stride: 8,
+				offset: 4
+			},
+			aColor: {
+				buffer: colorBuffer,
+				stride: 4,
+				offset: function (ctx, prop) { return prop.offset * 4; },
+				divisor: 1
+			},
+			bColor: {
+				buffer: colorBuffer,
+				stride: 4,
+				offset: function (ctx, prop) { return prop.offset * 4 + 4; },
+				divisor: 1
+			},
+			prevCoord: {
+				buffer: positionBuffer,
+				stride: 8,
+				offset: function (ctx, prop) { return prop.offset * 8; },
+				divisor: 1
+			},
+			aCoord: {
+				buffer: positionBuffer,
+				stride: 8,
+				offset: function (ctx, prop) { return 8 + prop.offset * 8; },
+				divisor: 1
+			},
+			bCoord: {
+				buffer: positionBuffer,
+				stride: 8,
+				offset: function (ctx, prop) { return 16 + prop.offset * 8; },
+				divisor: 1
+			},
+			nextCoord: {
+				buffer: positionBuffer,
+				stride: 8,
+				offset: function (ctx, prop) { return 24 + prop.offset * 8; },
+				divisor: 1
+			}
+		}
+	}, shaderOptions))
+
+	//simplified rectangular line shader
+	drawRectLine = regl(extend({
+		vert: glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aCoord, bCoord, aCoordFract, bCoordFract;\nattribute vec4 color;\nattribute float lineEnd, lineTop;\n\nuniform vec2 scale, scaleFract, translate, translateFract, scaleRatio;\nuniform float thickness, pixelRatio, id;\nuniform vec4 viewport;\n\nvarying vec4 fragColor;\nvarying vec2 tangent;\n\nconst float MAX_LINES = 256.;\n\nvec2 project(vec2 position, vec2 positionFract, vec2 scale, vec2 scaleFract, vec2 translate, vec2 translateFract) {\n  return (position + translate) * scale\n       + (positionFract + translateFract) * scale\n       + (position + translate) * scaleFract\n       + (positionFract + translateFract) * scaleFract;\n}\n\nvoid main() {\n\t// vec2 scaleRatio = scale * viewport.zw;\n\tvec2 normalWidth = thickness / scaleRatio;\n\n\tfloat lineStart = 1. - lineEnd;\n\tfloat lineOffset = lineTop * 2. - 1.;\n\tfloat depth = (MAX_LINES - 1. - id) / (MAX_LINES);\n\n\tvec2 diff = (bCoord + bCoordFract - aCoord - aCoordFract);\n\ttangent = normalize(diff * scaleRatio);\n\tvec2 normal = vec2(-tangent.y, tangent.x);\n\n\tvec2 position = project(aCoord, aCoordFract, scale, scaleFract, translate, translateFract) * lineStart\n\t\t+ project(bCoord, bCoordFract, scale, scaleFract, translate, translateFract) * lineEnd\n\n\t\t+ thickness * normal * .5 * lineOffset / viewport.zw;\n\n\tgl_Position = vec4(position * 2.0 - 1.0, depth, 1);\n\n\tfragColor = color / 255.;\n}\n"]),
+		frag: glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform sampler2D dashPattern;\nuniform vec2 dashShape;\nuniform float dashLength, pixelRatio, thickness, opacity, id;\n\nvarying vec4 fragColor;\nvarying vec2 tangent;\n\nvoid main() {\n\tfloat alpha = 1.;\n\n\tfloat t = fract(dot(tangent, gl_FragCoord.xy) / dashLength) * .5 + .25;\n\tfloat dash = texture2D(dashPattern, vec2(t * dashLength * 2. / dashShape.x, (id + .5) / dashShape.y)).r;\n\n\tgl_FragColor = fragColor * dash;\n\tgl_FragColor.a *= alpha * opacity * dash;\n}\n"]),
+
+		attributes: {
+			lineEnd: {
+				buffer: offsetBuffer,
+				divisor: 0,
+				stride: 8,
+				offset: 0
+			},
+			lineTop: {
+				buffer: offsetBuffer,
+				divisor: 0,
+				stride: 8,
+				offset: 4
+			},
+			aCoord: {
+				buffer: positionBuffer,
+				stride: 8,
+				offset: function (ctx, prop) { return 8 + prop.offset * 8; },
+				divisor: 1
+			},
+			bCoord: {
+				buffer: positionBuffer,
+				stride: 8,
+				offset: function (ctx, prop) { return 16 + prop.offset * 8; },
+				divisor: 1
+			},
+			aCoordFract: {
+				buffer: positionFractBuffer,
+				stride: 8,
+				offset: function (ctx, prop) { return 8 + prop.offset * 8; },
+				divisor: 1
+			},
+			bCoordFract: {
+				buffer: positionFractBuffer,
+				stride: 8,
+				offset: function (ctx, prop) { return 16 + prop.offset * 8; },
+				divisor: 1
+			},
+			color: {
+				buffer: colorBuffer,
+				stride: 4,
+				offset: function (ctx, prop) { return prop.offset * 4; },
+				divisor: 1
+			}
+		}
+	}, shaderOptions))
+
+
+	//fill shader
+	drawFill = regl({
+		primitive: 'triangle',
+		elements: function (ctx, prop) { return prop.triangles; },
+		offset: 0,
+
+		vert: glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 position, positionFract;\n\nuniform vec4 color;\nuniform vec2 scale, scaleFract, translate, translateFract, scaleRatio;\nuniform float pixelRatio, id;\nuniform vec4 viewport;\n\nvarying vec4 fragColor;\n\nconst float MAX_LINES = 256.;\n\nvoid main() {\n\tfloat depth = (MAX_LINES - 4. - id) / (MAX_LINES);\n\n\tvec2 position = (position + translate) * scale\n       + (positionFract + translateFract) * scale\n       + (position + translate) * scaleFract\n       + (positionFract + translateFract) * scaleFract;\n\n\tgl_Position = vec4(position * 2.0 - 1.0, depth, 1);\n\n\tfragColor = color / 255.;\n}\n"]),
+		frag: glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform float opacity;\n\nvarying vec4 fragColor;\n\nvoid main() {\n\tgl_FragColor = fragColor;\n\tgl_FragColor.a *= opacity;\n}\n"]),
+
+		uniforms: {
+			scale: regl.prop('scale'),
+			color: regl.prop('fill'),
+			scaleFract: regl.prop('scaleFract'),
+			translateFract: regl.prop('translateFract'),
+			translate: regl.prop('translate'),
+			opacity: regl.prop('opacity'),
+			pixelRatio: regl.context('pixelRatio'),
+			id: regl.prop('id'),
+			viewport: function (ctx, prop) { return [prop.viewport.x, prop.viewport.y, ctx.viewportWidth, ctx.viewportHeight]; }
+		},
+
+		attributes: {
+			position: {
+				buffer: positionBuffer,
+				stride: 8,
+				offset: function (ctx, prop) { return 8 + prop.offset * 8; }
+			},
+			positionFract: {
+				buffer: positionFractBuffer,
+				stride: 8,
+				offset: function (ctx, prop) { return 8 + prop.offset * 8; }
+			}
+		},
+
+		blend: shaderOptions.blend,
+
+		depth: {
+			enable: false
+		},
+		scissor: shaderOptions.scissor,
+		stencil: shaderOptions.stencil,
+		viewport: shaderOptions.viewport
+	})
+
+	//expose API
+	extend(line2d, {
+		update: update,
+		draw: draw,
+		destroy: destroy,
+		regl: regl,
+		gl: gl,
+		canvas: gl.canvas,
+		lines: lines
+	})
+
+	function line2d (opts) {
+		//update
+		if (opts) {
+			update(opts)
+		}
+
+		//destroy
+		else if (opts === null) {
+			destroy()
+		}
+
+		draw()
+	}
+
+	function draw (options) {
+		if (typeof options === 'number') { return drawLine(options) }
+
+		//make options a batch
+		if (options && !Array.isArray(options)) { options = [options] }
+
+		//render multiple polylines via regl batch
+		lines.forEach(function (s, i) {
+			if (options) {
+				if (!options[i]) { s.draw = false }
+				else { s.draw = true }
+			}
+
+			//ignore draw flag for one pass
+			if (!s.draw) {
+				s.draw = true;
+				return
+			}
+
+			drawLine(i)
+		})
+	}
+
+	//draw single line by id
+	function drawLine (s) {
+		if (typeof s === 'number') { s = lines[s] }
+
+		if (!(s && s.count && s.opacity && s.positions && s.positions.length > 2)) { return }
+
+		regl._refresh()
+
+		if (s.fill && s.triangles && s.triangles.length > 2) {
+			drawFill(s)
+		}
+
+		if (!s.thickness || !s.color) { return }
+
+		s.scaleRatio = [
+			s.scale[0] * s.viewport.width,
+			s.scale[1] * s.viewport.height
+		]
+
+		//high scale is only available for rect mode with precision
+		if (s.scaleRatio[0] > precisionThreshold || s.scaleRatio[1] > precisionThreshold) {
+			drawRectLine(s)
+		}
+
+		//thin lines or too many points are rendered as simplified rect shader
+		else if (s.join === 'rect' || (!s.join && (s.thickness <= 2 || s.positions.length >= maxPoints))) {
+			drawRectLine(s)
+		}
+		else {
+			drawMiterLine(s)
+		}
+
+		if (s.after) { s.after(s) }
+	}
+
+	function update (options) {
+		if (!options) { return }
+
+		if (options.length != null) {
+			if (typeof options[0] === 'number') { options = [{positions: options}] }
+		}
+
+		//make options a batch
+		else if (!Array.isArray(options)) { options = [options] }
+
+		//global count of points
+		var pointCount = 0
+
+		//process per-line settings
+		lines = options.map(function (options, i) {
+			var state = lines[i]
+
+			if (!options) { return state }
+			else if (typeof options === 'function') { options = {after: options} }
+			else if (typeof options[0] === 'number') { options = {positions: options} }
+
+			//reduce by aliases
+			options = pick(options, {
+				positions: 'positions points data coords',
+				thickness: 'thickness lineWidth lineWidths line-width linewidth width stroke-width strokewidth strokeWidth',
+				join: 'lineJoin linejoin join type mode',
+				miterLimit: 'miterlimit miterLimit',
+				dashes: 'dash dashes dasharray dash-array dashArray',
+				color: 'color stroke colors stroke-color strokeColor',
+				fill: 'fill fill-color fillColor',
+				opacity: 'alpha opacity',
+				overlay: 'overlay crease overlap intersect',
+				close: 'closed close closed-path closePath',
+				range: 'range dataBox',
+				viewport: 'viewport viewBox',
+				hole: 'holes hole hollow',
+				after: 'after callback done pass'
+			})
+
+			if (!state) {
+				lines[i] = state = {
+					id: i,
+					scale: null,
+					scaleFract: null,
+					translate: null,
+					translateFract: null,
+					count: 0,
+					offset: 0,
+					dashLength: 0,
+					hole: true
+				}
+				options = extend({}, defaults, options)
+			}
+
+			//calculate state values
+			updateDiff(state, options, [{
+				thickness: parseFloat,
+				opacity: parseFloat,
+				miterLimit: parseFloat,
+				overlay: Boolean,
+				join: function (j) { return j; },
+				after: function (fn) { return fn; },
+				hole: function (h) { return h || []; },
+
+				positions: function (positions, state, options) {
+					positions = flatten(positions, 'float64')
+
+					var count = Math.floor(positions.length / 2)
+					var bounds = getBounds(positions, 2)
+
+					if (!state.range && !options.range) {
+						options.range = bounds
+					}
+
+					state.count = count
+					state.bounds = bounds
+
+					pointCount += count
+
+					return positions
+				},
+
+				fill: function (c) {
+					return !c ? null : rgba(c, 'uint8')
+				},
+
+				dashes: function (dashes, state, options) {
+					var dashLength = state.dashLength,
+						dashData
+
+					if (!dashes || dashes.length < 2) {
+						dashLength = 1.
+						dashData = new Uint8Array([255, 255, 255, 255, 255, 255, 255, 255])
+					}
+
+					else {
+						dashLength = 0.;
+						for(var i = 0; i < dashes.length; ++i) {
+							dashLength += dashes[i]
+						}
+						dashData = new Uint8Array(dashLength * dashMult)
+						var ptr = 0
+						var fillColor = 255
+
+						//repeat texture two times to provide smooth 0-step
+						for (var k = 0; k < 2; k++) {
+							for(var i$1 = 0; i$1 < dashes.length; ++i$1) {
+								for(var j = 0, l = dashes[i$1] * dashMult * .5; j < l; ++j) {
+									dashData[ptr++] = fillColor
+								}
+								fillColor ^= 255
+							}
+						}
+					}
+
+					dashTexture.subimage({
+						// channels: 1,
+						data: dashData,
+						width: dashData.length,
+						height: 1
+					}, 0, state.id)
+
+					state.dashLength = dashLength
+
+					return dashData
+				}
+			},
+
+			//dependent properties & complement actions
+			{
+				close: function (close, state, options) {
+					if (close != null) { return close }
+					if (state.positions.length >= 4 &&
+						state.positions[0] === state.positions[state.positions.length - 2] &&
+						state.positions[1] === state.positions[state.positions.length - 1]) {
+						return true
+					}
+					return false
+				},
+
+				positions: function (p, state, options) {
+					if (state.fill && p.length) {
+						var pos = []
+
+						//filter bad vertices and remap triangles to ensure shape
+						var ids = {}
+						var lastId = 0
+
+						for (var i = 0, ptr = 0, l = state.count; i < l; i++) {
+							var x = state.positions[i*2]
+							var y = state.positions[i*2 + 1]
+							if (Number.isNaN(x) || Number.isNaN(y)) {
+								x = state.positions[lastId*2]
+								y = state.positions[lastId*2 + 1]
+								ids[i] = lastId
+							}
+							else {
+								lastId = i
+							}
+							pos[ptr++] = x
+							pos[ptr++] = y
+						}
+
+						var triangles = triangulate(pos, state.hole)
+
+						for (var i$1 = 0, l$1 = triangles.length; i$1 < l$1; i$1++) {
+							if (ids[triangles[i$1]] != null) { triangles[i$1] = ids[triangles[i$1]] }
+						}
+
+						state.triangles = triangles
+					}
+					return state.positions
+				},
+
+				color: function (colors, state, options) {
+					var count = state.count
+
+					if (!colors) { colors = 'transparent' }
+
+					// 'black' or [0,0,0,0] case
+					if (!Array.isArray(colors) || typeof colors[0] === 'number') {
+						var color = colors;
+						colors = Array(count);
+						for (var i = 0; i < count; i++) {
+							colors[i] = color
+						}
+					}
+
+					if (colors.length < count) { throw Error('Not enough colors') }
+
+					var colorData = new Uint8Array(count * 4 + 4)
+
+					//convert colors to float arrays
+					for (var i$1 = 0; i$1 < count; i$1++) {
+						var c = rgba(colors[i$1], 'uint8')
+						colorData.set(c, i$1 * 4)
+					}
+
+					return colorData
+				},
+
+				range: function (range, state, options) {
+					if (!state.count) { return null }
+
+					var bounds = state.bounds
+					if (!range) { range = bounds }
+
+					var nrange = normalize(range.slice(), 2, bounds)
+
+					state.scale = [1 / (nrange[2] - nrange[0]), 1 / (nrange[3] - nrange[1])]
+					state.translate = [-nrange[0], -nrange[1]]
+
+					state.scaleFract = fract32(state.scale)
+					state.translateFract = fract32(state.translate)
+
+					return range
+				},
+
+				viewport: function (vp) {
+					var viewport
+
+					if (Array.isArray(vp)) {
+						viewport = {
+							x: vp[0],
+							y: vp[1],
+							width: vp[2] - vp[0],
+							height: vp[3] - vp[1]
+						}
+					}
+					else if (vp) {
+						viewport = {
+							x: vp.x || vp.left || 0,
+							y: vp.y || vp.top || 0
+						}
+
+						if (vp.right) { viewport.width = vp.right - viewport.x }
+						else { viewport.width = vp.w || vp.width || 0 }
+
+						if (vp.bottom) { viewport.height = vp.bottom - viewport.y }
+						else { viewport.height = vp.h || vp.height || 0 }
+					}
+					else {
+						viewport = {
+							x: 0, y: 0,
+							width: gl.drawingBufferWidth,
+							height: gl.drawingBufferHeight
+						}
+					}
+
+					return viewport
+				}
+			}])
+
+			return state
+		})
+
+		//put collected data into buffers
+		//FIXME: possible optimization is updating only segment subdata
+		if (pointCount) {
+			var len = pointCount * 2 + lines.length * 6;
+			var positionData = new Float64Array(len)
+			var offset = 0
+			var colorData = new Uint8Array(len * 2)
+
+			lines.forEach(function (state, i) {
+				if (!state) { return }
+
+				var positions = state.positions;
+				var count = state.count;
+				var color = state.color;
+				state.offset = offset
+
+				if (!count) { return }
+
+				//provide normalized positions
+				var npos = new Float64Array(positions.length)
+				npos.set(positions)
+				normalize(npos, 2, state.bounds)
+
+				//rotate first segment join
+				if (state.close) {
+					if (positions[0] === positions[count*2 - 2] &&
+						positions[1] === positions[count*2 - 1]) {
+						positionData[offset*2 + 0] = npos[count*2 - 4]
+						positionData[offset*2 + 1] = npos[count*2 - 3]
+					}
+					else {
+						positionData[offset*2 + 0] = npos[count*2 - 2]
+						positionData[offset*2 + 1] = npos[count*2 - 1]
+					}
+				}
+				else {
+					positionData[offset*2 + 0] = npos[0]
+					positionData[offset*2 + 1] = npos[1]
+				}
+				colorData[offset*4 + 0] = color[0]
+				colorData[offset*4 + 1] = color[1]
+				colorData[offset*4 + 2] = color[2]
+				colorData[offset*4 + 3] = color[3]
+
+				positionData.set(npos, offset * 2 + 2)
+				colorData.set(color, offset * 4 + 4)
+
+				//add last segment
+				if (state.close) {
+					//ignore coinciding start/end
+					if (positions[0] === positions[count*2 - 2] &&
+						positions[1] === positions[count*2 - 1]) {
+						positionData[offset*2 + count*2 + 2] = npos[2]
+						positionData[offset*2 + count*2 + 3] = npos[3]
+						offset += count + 2
+						state.count -= 1
+					}
+					else {
+						positionData[offset*2 + count*2 + 2] = npos[0]
+						positionData[offset*2 + count*2 + 3] = npos[1]
+						positionData[offset*2 + count*2 + 4] = npos[2]
+						positionData[offset*2 + count*2 + 5] = npos[3]
+						offset += count + 3
+					}
+				}
+				//add stub
+				else {
+					positionData[offset*2 + count*2 + 2] = npos[count*2 - 2]
+					positionData[offset*2 + count*2 + 3] = npos[count*2 - 1]
+					positionData[offset*2 + count*2 + 4] = npos[count*2 - 2]
+					positionData[offset*2 + count*2 + 5] = npos[count*2 - 1]
+					offset += count + 3
+				}
+			})
+
+			colorBuffer(colorData)
+			positionBuffer(float32(positionData))
+			positionFractBuffer(fract32(positionData))
+		}
+
+		return line2d
+	}
+
+	function destroy () {
+		lines.length = 0
+		colorBuffer.destroy()
+		offsetBuffer.destroy()
+		positionBuffer.destroy()
+		dashTexture.destroy()
+	}
+
+	return line2d
+}
+
+
+//return fractional part of float32 array
+function fract32 (arr) {
+	var fract = new Float32Array(arr.length)
+	fract.set(arr)
+	for (var i = 0, l = fract.length; i < l; i++) {
+		fract[i] = arr[i] - fract[i]
+	}
+	return fract
+}
+function float32 (arr) {
+	if (arr instanceof Float32Array) { return arr }
+
+	var float = new Float32Array(arr)
+	float.set(arr)
+	return float
+}
+},{"array-bounds":12,"array-normalize":13,"color-normalize":56,"earcut":72,"flatten-vertex-data":77,"glslify":182,"object-assign":156,"pick-by-alias":162,"update-diff":221}],182:[function(require,module,exports){
+module.exports = function(strings) {
+  if (typeof strings === 'string') strings = [strings]
+  var exprs = [].slice.call(arguments,1)
+  var parts = []
+  for (var i = 0; i < strings.length-1; i++) {
+    parts.push(strings[i], exprs[i] || '')
+  }
+  parts.push(strings[i])
+  return parts.join('')
+}
+
+},{}],183:[function(require,module,exports){
+'use strict'
+
+var rgba = require('color-normalize')
+var getBounds = require('array-bounds')
+var colorId = require('color-id')
+var snapPoints = require('snap-points-2d')
+var extend = require('object-assign')
+var glslify = require('glslify')
+var search = require('binary-search-bounds')
+var pick = require('pick-by-alias')
+var updateDiff = require('update-diff')
+var flatten = require('flatten-vertex-data')
+var ie = require('is-iexplorer')
+var ref = require('to-float32');
+var float32 = ref.float32;
+var fract32 = ref.fract32;
+
+module.exports = Scatter
+
+
+function Scatter (regl, options) {
+	if (typeof regl === 'function') {
+		if (!options) { options = {} }
+		options.regl = regl
+	}
+	else {
+		options = regl
+		regl = null
+	}
+
+	if (options && options.length) { options.positions = options }
+	regl = options.regl
+
+	// persistent variables
+	var gl = regl._gl,
+		drawMarker, drawCircle,
+		sizeBuffer, positionBuffer, positionFractBuffer, colorBuffer,
+		paletteTexture, palette = [], paletteIds = {},
+		defaults = {
+			color: 'black',
+			borderColor: 'transparent',
+			borderSize: 1,
+			size: 12,
+			opacity: 1,
+			marker: undefined,
+			viewport: null,
+			range: null,
+			pixelSize: null,
+			offset: 0,
+			count: 0,
+			bounds: null,
+			positions: [],
+			snap: 1e4
+		},
+
+		//state
+		groups = [],
+
+		//textures for marker keys
+		markerTextures = [null],
+		markerCache = [null]
+
+	var maxColors = 4096, maxSize = 100
+
+	//texture with color palette
+	paletteTexture = regl.texture({
+		width: maxColors,
+		height: 1,
+		type: 'uint8',
+		format: 'rgba',
+		wrapS: 'clamp',
+		wrapT: 'clamp',
+		mag: 'nearest',
+		min: 'nearest'
+	})
+
+	//buffers to reuse
+	sizeBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'float',
+		data: null
+	})
+	colorBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'uint16',
+		data: null
+	})
+	positionBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'float',
+		data: null
+	})
+	positionFractBuffer = regl.buffer({
+		usage: 'dynamic',
+		type: 'float',
+		data: null
+	})
+
+	//fast-create from existing regl-scatter instance
+	if (options.clone) {
+		groups = options.clone.groups.map(function (group) {
+			group = extend({}, group)
+			if (group.markerIds) {
+				group.markerIds = group.markerIds.map(function (ids) {
+					// recreate regl elements here
+					var newIds = ids.slice()
+					newIds.lod = ids.lod
+					newIds.snap = ids.snap
+					newIds.data = ids.data
+					newIds.id = ids.id
+					newIds.elements = regl.elements({
+						primitive: 'points',
+						type: 'uint32',
+						data: ids.data
+					})
+					return newIds
+				})
+			}
+			return group
+		})
+
+		//create marker textures
+		options.clone.markers.forEach(function (markers) {
+			addMarker(markers)
+		})
+
+		updateBuffers({point: true, color: true, size: true})
+	}
+	//full create from options
+	else {
+		update(options)
+	}
+
+
+	//common shader options
+	var shaderOptions = {
+		uniforms: {
+			pixelRatio: regl.context('pixelRatio'),
+			palette: paletteTexture,
+			scale: regl.prop('scale'),
+			scaleFract: regl.prop('scaleFract'),
+			translate: regl.prop('translate'),
+			translateFract: regl.prop('translateFract'),
+			opacity: regl.prop('opacity'),
+			marker: regl.prop('marker')
+		},
+
+		attributes: {
+			position: positionBuffer,
+			positionFract: positionFractBuffer,
+			size: function (ctx, prop) { return prop.size.length ? {
+				buffer: sizeBuffer,
+				stride: 2,
+				offset: 0
+			} : {constant: [Math.round(prop.size * 255 / maxSize)]}; },
+			borderSize: function (ctx, prop) { return prop.borderSize.length ? {
+				buffer: sizeBuffer,
+				stride: 2,
+				offset: 1
+			} : {constant: [Math.round(prop.borderSize * 255 / maxSize)]}; },
+			colorId: function (ctx, prop) { return prop.color.length ? {
+				buffer: colorBuffer,
+				stride: 4,
+				offset: 0
+			} : {constant: [prop.color]}; },
+			borderColorId: function (ctx, prop) { return prop.borderColor.length ? {
+				buffer: colorBuffer,
+				stride: 4,
+				offset: 2
+			} : {constant: [prop.borderColor]}; }
+		},
+
+
+		blend: {
+			enable: true,
+			color: [0,0,0,1],
+			func: {
+				srcRGB: 'src alpha',
+				dstRGB: 'one minus src alpha',
+				srcAlpha: 'one minus dst alpha',
+				dstAlpha: 'one'
+			}
+		},
+
+		scissor: {
+			enable: true,
+			box: regl.prop('viewport')
+		},
+		viewport: regl.prop('viewport'),
+
+		stencil: {enable: false},
+		depth: {enable: false},
+
+
+		elements: regl.prop('elements'),
+		count: regl.prop('count'),
+		offset: regl.prop('offset'),
+
+		primitive: 'points'
+	}
+
+	// IE11 shader workaround
+	if (ie) {
+		drawCircle = regl(extend({}, shaderOptions, {
+			frag: glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color, borderColor;\nuniform float opacity;\nvarying float fragBorderRadius, fragWidth, fragBorderSize, fragSize;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float radius = length(2.0*gl_PointCoord.xy-1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n\n  float centerFraction = fragBorderSize == 0. ? 2. : fragSize / (fragSize + fragBorderSize + 1.25);\n\n  vec4 baseColor = mix(borderColor, color, smoothStep(radius, centerFraction));\n  float alpha = 1.0 - pow(1.0 - baseColor.a, 1.);\n  gl_FragColor = vec4(baseColor.rgb * alpha, alpha);\n}\n"]),
+			vert: glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 position, positionFract;\nattribute float size, borderSize;\n\nuniform vec2 scale, scaleFract, translate, translateFract;\nuniform float pixelRatio;\nuniform sampler2D palette;\n\nconst float paletteSize = 4096., maxSize = 100.;\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragBorderRadius, fragWidth, fragBorderSize, fragSize;\n\nvoid main() {\n  float size = size * maxSize / 255.;\n  float borderSize = borderSize * maxSize / 255.;\n  fragBorderSize = borderSize;\n  fragSize = size;\n\n  gl_PointSize = (size + borderSize) * pixelRatio;\n\n  vec2 pos = (position + translate) * scale\n\t\t\t+ (positionFract + translateFract) * scale\n\t\t\t+ (position + translate) * scaleFract\n\t\t\t+ (positionFract + translateFract) * scaleFract;\n\n  gl_Position = vec4(pos * 2. - 1., 0, 1);\n\n  fragBorderRadius = borderSize == 0. ? 2. : 1. - 2. * borderSize / (size + borderSize);\n  fragWidth = 1. / gl_PointSize;\n}\n"]),
+			uniforms: {
+				// FIXME: generate attribute color data
+				color: function (ctx, p) {
+					var id = p.color.length ? p.color[0] : p.color;
+					return palette.slice(id * 4, id * 4 + 4).map(function (v) { return v / 255; })
+				},
+				borderColor: function (ctx, p) {
+					var id = p.borderColor.length ? p.borderColor[0] : p.borderColor;
+					return palette.slice(id * 4, id * 4 + 4).map(function (v) { return v / 255; })
+				},
+				pixelRatio: regl.context('pixelRatio'),
+				palette: paletteTexture,
+				scale: regl.prop('scale'),
+				scaleFract: regl.prop('scaleFract'),
+				translate: regl.prop('translate'),
+				translateFract: regl.prop('translateFract'),
+				opacity: regl.prop('opacity'),
+				marker: regl.prop('marker')
+			},
+			attributes: {
+				position: positionBuffer,
+				positionFract: positionFractBuffer,
+				size: shaderOptions.attributes.size,
+				borderSize: shaderOptions.attributes.borderSize
+			}
+		}))
+	}
+	else {
+		//draw sdf-marker
+		var markerOptions = extend({}, shaderOptions)
+		markerOptions.frag = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragWidth, fragBorderColorLevel, fragColorLevel;\n\nuniform sampler2D marker;\nuniform float pixelRatio, opacity;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float dist = texture2D(marker, gl_PointCoord).r, delta = fragWidth;\n\n  //max-distance alpha\n  if (dist < 0.003) discard;\n\n  //null-border case\n  if (fragBorderColorLevel == fragColorLevel || fragBorderColor.a == 0.) {\n    float colorAmt = smoothstep(.5 - delta, .5 + delta, dist);\n    gl_FragColor = vec4(fragColor.rgb, colorAmt * fragColor.a);\n    return;\n  }\n\n  float borderColorAmt = smoothstep(fragBorderColorLevel - delta, fragBorderColorLevel + delta, dist);\n  float colorAmt = smoothstep(fragColorLevel - delta, fragColorLevel + delta, dist);\n\n  vec4 color = fragBorderColor;\n  color.a *= borderColorAmt;\n  color = mix(color, fragColor, colorAmt);\n  color.a *= opacity;\n\n  gl_FragColor = color;\n}\n"])
+		markerOptions.vert = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position, positionFract;\nattribute float size, borderSize;\nattribute float colorId, borderColorId;\n\nuniform vec2 scale, scaleFract, translate, translateFract;\nuniform float pixelRatio;\nuniform sampler2D palette;\n\nconst float paletteSize = 4096., maxSize = 100.;\nconst float borderLevel = .5;\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragPointSize, fragBorderRadius,\n\t\tfragWidth, fragBorderColorLevel, fragColorLevel;\n\nvoid main() {\n  vec4 color = texture2D(palette, vec2((colorId + .5) / paletteSize, 0));\n  vec4 borderColor = texture2D(palette, vec2((borderColorId + .5) / paletteSize, 0));\n\n  float size = size * maxSize / 255.;\n  float borderSize = borderSize * maxSize / 255.;\n\n  gl_PointSize = 2. * size * pixelRatio;\n  fragPointSize = size * pixelRatio;\n\n  vec2 pos = (position + translate) * scale\n      + (positionFract + translateFract) * scale\n      + (position + translate) * scaleFract\n      + (positionFract + translateFract) * scaleFract;\n\n  gl_Position = vec4(pos * 2. - 1., 0, 1);\n\n  fragColor = color;\n  fragBorderColor = borderColor;\n  fragWidth = 1. / gl_PointSize;\n\n  fragBorderColorLevel = clamp(borderLevel - borderLevel * borderSize / size, 0., 1.);\n  fragColorLevel = clamp(borderLevel + (1. - borderLevel) * borderSize / size, 0., 1.);\n}\n"])
+
+		drawMarker = regl(markerOptions)
+
+		//draw circle
+		var circleOptions = extend({}, shaderOptions)
+		circleOptions.frag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor, fragBorderColor;\n\nuniform float opacity;\nvarying float fragBorderRadius, fragWidth;\n\nvoid main() {\n\tfloat radius, alpha = 1.0, delta = fragWidth;\n\n\tradius = length(2.0 * gl_PointCoord.xy - 1.0);\n\n\tif(radius > 1.0 + delta) {\n\t\tdiscard;\n\t\treturn;\n\t}\n\n\talpha -= smoothstep(1.0 - delta, 1.0 + delta, radius);\n\n\tfloat borderRadius = fragBorderRadius;\n\tfloat ratio = smoothstep(borderRadius - delta, borderRadius + delta, radius);\n\tvec4 color = mix(fragColor, fragBorderColor, ratio);\n\tcolor.a *= alpha * opacity;\n\tgl_FragColor = color;\n}\n"])
+		circleOptions.vert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 position, positionFract;\nattribute float size, borderSize;\nattribute float colorId, borderColorId;\n\nuniform vec2 scale, scaleFract, translate, translateFract;\nuniform float pixelRatio;\nuniform sampler2D palette;\n\nconst float paletteSize = 4096., maxSize = 100.;\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragBorderRadius, fragWidth;\n\nvoid main() {\n  vec4 color = texture2D(palette, vec2((colorId + .5) / paletteSize, 0));\n  vec4 borderColor = texture2D(palette, vec2((borderColorId + .5) / paletteSize, 0));\n\n  float size = size * maxSize / 255.;\n  float borderSize = borderSize * maxSize / 255.;\n\n  gl_PointSize = (size + borderSize) * pixelRatio;\n\n  vec2 pos = (position + translate) * scale\n\t\t\t+ (positionFract + translateFract) * scale\n\t\t\t+ (position + translate) * scaleFract\n\t\t\t+ (positionFract + translateFract) * scaleFract;\n\n  gl_Position = vec4(pos * 2. - 1., 0, 1);\n\n  fragBorderRadius = borderSize == 0. ? 2. : 1. - 2. * borderSize / (size + borderSize);\n  fragColor = color;\n  fragBorderColor = borderColor;\n  fragWidth = 1. / gl_PointSize;\n}\n"])
+
+		drawCircle = regl(circleOptions)
+	}
+
+	//expose API
+	extend(scatter2d, {
+		update: update,
+		draw: draw,
+		destroy: destroy,
+		regl: regl,
+		gl: gl,
+		canvas: gl.canvas,
+		groups: groups,
+		markers: markerCache
+	})
+
+
+	function scatter2d (opts) {
+		//update
+		if (opts) {
+			update(opts)
+		}
+
+		//destroy
+		else if (opts === null) {
+			destroy()
+		}
+
+		draw()
+	}
+
+	// draw all groups or only indicated ones
+	function draw (opts) {
+		if (typeof opts === 'number') { return drawGroup(opts) }
+
+		// highlight elements
+		if (Array.isArray(opts)) {
+			opts.forEach(function (els, i) {
+				if (els == null) { return }
+				if (els.length) { return drawGroup(els, i) }
+				return drawGroup(els)
+			})
+			return
+		}
+
+		// make options a batch
+		groups.forEach(function (group, i) {
+			if (!group) { return }
+
+			drawGroup(i)
+		})
+	}
+
+	// draw specific scatter group
+	function drawGroup (group, id) {
+		if (typeof group === 'number') { group = groups[group] }
+
+		var els
+		if (Array.isArray(group)) {
+			els = group
+			group = groups[id]
+		}
+
+		if (!(group && group.count && group.opacity)) { return }
+
+		//if subset of elements to redraw passed - form a whitelist
+		var whitelist
+		if (els) {
+			whitelist = Array(group.count);
+
+			for (var i = 0; i < els.length; i++) {
+				whitelist[els[i]] = true
+			}
+		}
+
+		//draw circles
+		//FIXME remove regl._refresh hooks once regl issue #427 is fixed
+		if (group.markerIds[0]) {
+			regl._refresh()
+
+			var opts = getMarkerDrawOptions(group.markerIds[0], group, whitelist)
+			drawCircle(opts)
+		}
+
+		//draw all other available markers
+		var batch = []
+		for (var i$1 = 1; i$1 < group.markerIds.length; i$1++) {
+			var ids = group.markerIds[i$1]
+
+			if (!ids || !ids.length) { continue }
+
+			[].push.apply(batch, getMarkerDrawOptions(ids, group, whitelist))
+		}
+
+		if (batch.length) {
+			regl._refresh()
+			drawMarker(batch)
+		}
+	}
+
+	// get options for the marker ids
+	function getMarkerDrawOptions(ids, group, whitelist) {
+		var range = group.range;
+		var offset = group.offset;
+		//unsnapped options
+		if (!ids.snap) {
+			var elements = whitelist ? filter(ids.data, whitelist) : ids.elements;
+
+			return [extend({}, group, {
+				elements: elements,
+				offset: 0,
+				count: whitelist ? elements.length : ids.length,
+				marker: markerTextures[ids.id]
+			})]
+		}
+
+		//scales batch
+		var batch = []
+		var lod = ids.lod;
+		var x = ids.x;
+		var id = ids.id;
+		var pixelSize = (range[2] - range[0]) / group.viewport.width
+
+		for (var scaleNum = lod.length; scaleNum--;) {
+			var level = lod[scaleNum]
+
+			//FIXME: use minSize-adaptive coeff here, if makes sense, mb we need dist tho
+			if (level.pixelSize && level.pixelSize < pixelSize && scaleNum > 1) {
+				continue
+			}
+
+			var intervalStart = level.offset
+			var intervalEnd = level.count + intervalStart
+
+			var startOffset = search.ge(x, range[0], intervalStart, intervalEnd - 1)
+			var endOffset = search.lt(x, range[2], startOffset, intervalEnd - 1) + 1
+
+			if (endOffset <= startOffset) { continue }
+
+			// whitelisted level requires subelements from the range
+			if (whitelist) {
+				var elements$1 = filter(ids.data.subarray(startOffset, endOffset), whitelist)
+
+				batch.push(extend({}, group, {
+					elements: elements$1,
+					marker: markerTextures[id],
+					offset: 0,
+					count: elements$1.length
+				}))
+			}
+			else {
+				batch.push(extend({}, group, {
+					elements: ids.elements,
+					marker: markerTextures[id],
+					offset: startOffset,
+					count: endOffset - startOffset
+				}))
+			}
+		}
+
+		function filter(offsets, whitelist) {
+			var subEls = []
+			for (var i = 0, l = offsets.length; i < l; i++) {
+				var el = offsets[i]
+				var id = el - offset
+				if (whitelist[id]) {
+					subEls.push(el)
+				}
+			}
+			return subEls
+		}
+
+		return batch
+	}
+
+	// update groups options
+	function update (options) {
+		if (!options) { return }
+
+		//direct points argument
+		if (options.length != null) {
+			if (typeof options[0] === 'number') { options = [{positions: options}] }
+		}
+		//make options a batch
+		else if (!Array.isArray(options)) { options = [options] }
+
+		//global count of points
+		var pointCount = 0, sizeCount = 0, colorCount = 0
+
+		groups = options.map(function (options, i) {
+			var group = groups[i]
+
+			if (!options) { return group }
+			else if (typeof options === 'function') { options = {after: options} }
+			else if (typeof options[0] === 'number') { options = {positions: options} }
+
+			//copy options to avoid mutation & handle aliases
+			options = pick(options, {
+				positions: 'positions data points',
+				snap: 'snap cluster',
+				size: 'sizes size radius',
+				borderSize: 'borderSizes borderSize stroke-width strokeWidth outline',
+				color: 'colors color fill fill-color fillColor',
+				borderColor: 'borderColors borderColor stroke stroke-color strokeColor',
+				palette: 'palette swatch',
+				marker: 'markers marker shape',
+				range: 'range dataBox',
+				viewport: 'viewport viewBox',
+				opacity: 'opacity alpha'
+			})
+			if (!group) {
+				groups[i] = group = {
+					id: i,
+					scale: null,
+					translate: null,
+					scaleFract: null,
+					translateFract: null,
+
+					//list of ids corresponding to markers, with inner props
+					markerIds: []
+				}
+				options = extend({}, defaults, options)
+			}
+
+			//force update triggers
+			if (options.positions && !('marker' in options)) {
+				options.marker = group.marker
+				delete group.marker
+			}
+
+			updateDiff(group, options, [{
+				snap: true,
+				size: function (s) {
+					sizeCount += s.length ? 1 : 0
+					return s
+				},
+				borderSize: function (s) {
+					sizeCount += s.length ? 1 : 0
+					return s
+				},
+				opacity: parseFloat,
+
+				//add colors to palette, save references
+				color: function (c) {
+					c = updateColor(c)
+					colorCount++
+					return c
+				},
+				borderColor: function (c) {
+					c = updateColor(c)
+					colorCount++
+					return c
+				},
+
+				positions: function (positions, group, options) {
+					positions = flatten(positions, 'float64')
+
+					var count = group.count = Math.floor(positions.length / 2)
+					var bounds = group.bounds = count ? getBounds(positions, 2) : null
+
+					// if range is not provided updated - recalc it
+					if (!options.range && !group.range) {
+						delete group.range
+						options.range = bounds
+					}
+
+					group.offset = pointCount
+					pointCount += count
+
+					// reset marker
+					if (!options.marker && !group.marker) {
+						delete group.marker;
+						options.marker = null;
+					}
+
+					return positions
+				}
+			}, {
+				//create marker ids corresponding to known marker textures
+				marker: function (markers, group, options) {
+					//reset marker elements
+					group.markerIds.length = 0
+
+					//single sdf marker
+					if (!markers || typeof markers[0] === 'number') {
+						var id = addMarker(markers)
+
+						var elements = Array(group.count)
+						for (var i = 0; i < group.count; i++) {
+							elements[i] = i
+						}
+
+						group.markerIds[id] = elements
+					}
+					//per-point markers
+					else {
+						for (var i$1 = 0, l = markers.length; i$1 < l; i$1++) {
+							var id$1 = addMarker(markers[i$1])
+
+							if (!group.markerIds[id$1]) { group.markerIds[id$1] = [] }
+							group.markerIds[id$1].push(i$1)
+						}
+					}
+
+					return markers
+				}
+			}, {
+				//recalculate per-marker snapping
+				//first, it is faster to snap 100 points 100 times than 10000 points once (practically, not theoretically)
+				//second, it is easier to subset render per-marker than per-generic set
+				positions: function (positions, group) {
+					var markerIds = group.markerIds;
+					var snap = group.snap;
+					var bounds = group.bounds;
+					var offset = group.offset;
+
+					for (var i = 0; i < markerIds.length; i++) {
+						var ids = markerIds[i]
+						if (!ids || !ids.length) { continue }
+
+						var l = ids.length, els = (void 0)
+
+						ids.id = i;
+
+						if (snap && (snap === true || l > snap)) {
+							ids.snap = true
+							var x = ids.x = Array(l)
+							var w = ids.w = Array(l)
+							var markerPoints = (void 0)
+
+							//multimarker snapping is computationally more intense
+							if (markerIds.length > 1) {
+								markerPoints = Array(l * 2)
+
+								for (var i$1 = 0; i$1 < l; i$1++) {
+									var id = ids[i$1]
+									markerPoints[i$1 * 2] = positions[id * 2]
+									markerPoints[i$1 * 2 + 1] = positions[id * 2 + 1]
+								}
+							}
+							else {
+								markerPoints = new Float64Array(positions.length)
+								markerPoints.set(positions)
+							}
+
+							//shuffled_id: real_id
+							var i2id = new Uint32Array(l)
+
+							ids.lod = snapPoints(markerPoints, i2id, w, bounds)
+
+							els = new Uint32Array(l)
+							for (var i$2 = 0; i$2 < l; i$2++) {
+								var id$1 = i2id[i$2], iid = ids[id$1]
+								els[i$2] = iid + offset
+								x[i$2] = positions[iid * 2]
+							}
+						}
+						else {
+							els = new Uint32Array(l)
+							for (var i$3 = 0; i$3 < l; i$3++) {
+								els[i$3] = ids[i$3] + offset
+							}
+						}
+
+						ids.data = els;
+						ids.elements = regl.elements({
+							primitive: 'points',
+							type: 'uint32',
+							data: els
+						})
+					}
+				},
+
+				range: function (range, group, options) {
+					var bounds = group.bounds
+
+					if (!bounds) { return }
+					if (!range) { range = bounds }
+
+					group.scale = [1 / (range[2] - range[0]), 1 / (range[3] - range[1])]
+					group.translate = [-range[0], -range[1]]
+
+					group.scaleFract = fract32(group.scale)
+					group.translateFract = fract32(group.translate)
+
+					return range
+				},
+
+				viewport: function (vp) {
+					var viewport
+
+					if (Array.isArray(vp)) {
+						viewport = {
+							x: vp[0],
+							y: vp[1],
+							width: vp[2] - vp[0],
+							height: vp[3] - vp[1]
+						}
+					}
+					else if (vp) {
+						viewport = {
+							x: vp.x || vp.left || 0,
+							y: vp.y || vp.top || 0
+						}
+
+						if (vp.right) { viewport.width = vp.right - viewport.x }
+						else { viewport.width = vp.w || vp.width || 0 }
+
+						if (vp.bottom) { viewport.height = vp.bottom - viewport.y }
+						else { viewport.height = vp.h || vp.height || 0 }
+					}
+					else {
+						viewport = {
+							x: 0, y: 0,
+							width: gl.drawingBufferWidth,
+							height: gl.drawingBufferHeight
+						}
+					}
+
+					return viewport
+				}
+			}])
+
+			return group
+		})
+
+		updateBuffers({
+			point: pointCount,
+			size: sizeCount,
+			color: colorCount
+		})
+	}
+
+	// update buffers data based on existing groups
+	function updateBuffers(ref) {
+		var point = ref.point;
+		var size = ref.size;
+		var color = ref.color;
+
+		//put point/color data into buffers, if updated any of them
+		var len = groups.reduce(function (acc, group, i) {
+			return acc + (group ? group.count : 0)
+		}, 0)
+
+		if (point) {
+			var positionData = new Float32Array(len * 2)
+			var positionFractData = new Float32Array(len * 2)
+
+			groups.forEach(function (group, i) {
+				if (!group) { return }
+				var positions = group.positions;
+				var count = group.count;
+				var offset = group.offset;
+				if (!count) { return }
+				positionData.set(float32(positions), offset * 2)
+				positionFractData.set(fract32(positions), offset * 2)
+			})
+
+			positionBuffer(positionData)
+			positionFractBuffer(positionFractData)
+		}
+
+		if (size) {
+			var sizeData = new Uint8Array(len * 2)
+
+			groups.forEach(function (group, i) {
+				if (!group) { return }
+				var count = group.count;
+				var offset = group.offset;
+				var size = group.size;
+				var borderSize = group.borderSize;
+				if (!count) { return }
+
+				if (size.length || borderSize.length) {
+					var sizes = new Uint8Array(count*2)
+					for (var i$1 = 0; i$1 < count; i$1++) {
+						//we downscale size to allow for fractions
+						sizes[i$1*2] = Math.round((size[i$1] == null ? size : size[i$1]) * 255 / maxSize)
+						sizes[i$1*2 + 1] = Math.round((borderSize[i$1] == null ? borderSize : borderSize[i$1]) * 255 / maxSize)
+					}
+					sizeData.set(sizes, offset * 2)
+				}
+			})
+			sizeBuffer(sizeData)
+		}
+
+		if (color) {
+			var colorData = new Uint16Array(len * 2)
+
+			groups.forEach(function (group, i) {
+				if (!group) { return }
+				var count = group.count;
+				var offset = group.offset;
+				var color = group.color;
+				var borderColor = group.borderColor;
+				if (!count) { return }
+
+				if (color.length || borderColor.length) {
+					var colorIds = new Uint16Array(count*2)
+					for (var i$1 = 0; i$1 < count; i$1++) {
+						colorIds[i$1*2] = color[i$1] == null ? color : color[i$1]
+						colorIds[i$1*2 + 1] = borderColor[i$1] == null ? borderColor : borderColor[i$1]
+					}
+					colorData.set(colorIds, offset * 2)
+				}
+			})
+			colorBuffer(colorData)
+		}
+	}
+
+	// get (and create) marker texture id
+	function addMarker (sdf) {
+		var pos = sdf == null ? 0 : markerCache.indexOf(sdf)
+
+		if (pos >= 0) { return pos }
+
+		//convert sdf to 0..255 range
+		var distArr
+		if (sdf instanceof Uint8Array || sdf instanceof Uint8ClampedArray) {
+			distArr = sdf
+		}
+		else {
+			distArr = new Uint8Array(sdf.length)
+			for (var i = 0, l = sdf.length; i < l; i++) {
+				distArr[i] = sdf[i] * 255
+			}
+		}
+
+		var radius = Math.floor(Math.sqrt(distArr.length))
+
+		pos = markerTextures.length
+
+		markerCache.push(sdf)
+		markerTextures.push(regl.texture({
+			channels: 1,
+			data: distArr,
+			radius: radius,
+			mag: 'linear',
+			min: 'linear'
+		}))
+
+		return pos
+	}
+
+	// register color to palette, return it's index or list of indexes
+	function updateColor (colors) {
+		if (!Array.isArray(colors)) {
+			colors = [colors]
+		}
+
+		var start = palette.length
+		var idx = []
+
+		for (var i = 0; i < colors.length; i++) {
+			var color = colors[i]
+
+			//idx colors directly
+			if (typeof color === 'number') {
+				idx[i] = color
+				continue
+			}
+
+			color = rgba(color, 'uint8')
+
+			var id = colorId(color, false)
+
+			// if new color - save it
+			if (paletteIds[id] == null) {
+				var pos = palette.length
+				paletteIds[id] = Math.floor(pos / 4)
+				palette[pos] = color[0]
+				palette[pos+1] = color[1]
+				palette[pos+2] = color[2]
+				palette[pos+3] = color[3]
+			}
+
+			idx[i] = Math.min(paletteIds[id], maxColors - 1)
+		}
+
+		// limit max color
+		if (start < maxColors * 4) {
+			paletteTexture.subimage({
+				width: Math.min(palette.length * .25, maxColors),
+				height: 1,
+				data: palette.slice(0, maxColors * 4)
+			}, 0, 0)
+		}
+
+
+		//keep static index for single-color property
+		return idx.length === 1 ? idx[0] : idx
+	}
+
+	// remove unused stuff
+	function destroy () {
+		groups.length = 0
+
+		sizeBuffer.destroy()
+		positionBuffer.destroy()
+		positionFractBuffer.destroy()
+		colorBuffer.destroy()
+		paletteTexture.destroy()
+	}
+
+	return scatter2d
+}
+},{"array-bounds":12,"binary-search-bounds":184,"color-id":54,"color-normalize":56,"flatten-vertex-data":77,"glslify":185,"is-iexplorer":143,"object-assign":156,"pick-by-alias":162,"snap-points-2d":203,"to-float32":213,"update-diff":221}],184:[function(require,module,exports){
+arguments[4][50][0].apply(exports,arguments)
+},{"dup":50}],185:[function(require,module,exports){
+arguments[4][182][0].apply(exports,arguments)
+},{"dup":182}],186:[function(require,module,exports){
+(function(da,ea){"object"===typeof exports&&"undefined"!==typeof module?module.exports=ea():"function"===typeof define&&define.amd?define(ea):da.createREGL=ea()})(this,function(){function da(a,b){this.id=vb++;this.type=a;this.data=b}function ea(a){if(0===a.length)return[];var b=a.charAt(0),c=a.charAt(a.length-1);if(1<a.length&&b===c&&('"'===b||"'"===b))return['"'+a.substr(1,a.length-2).replace(/\\/g,"\\\\").replace(/"/g,'\\"')+'"'];if(b=/\[(false|true|null|\d+|'[^']*'|"[^"]*")\]/.exec(a))return ea(a.substr(0,
+b.index)).concat(ea(b[1])).concat(ea(a.substr(b.index+b[0].length)));b=a.split(".");if(1===b.length)return['"'+a.replace(/\\/g,"\\\\").replace(/"/g,'\\"')+'"'];a=[];for(c=0;c<b.length;++c)a=a.concat(ea(b[c]));return a}function Wa(a){return"["+ea(a).join("][")+"]"}function wb(){var a={"":0},b=[""];return{id:function(c){var d=a[c];if(d)return d;d=a[c]=b.length;b.push(c);return d},str:function(a){return b[a]}}}function xb(a,b,c){function d(){var b=window.innerWidth,d=window.innerHeight;a!==document.body&&
+(d=a.getBoundingClientRect(),b=d.right-d.left,d=d.bottom-d.top);f.width=c*b;f.height=c*d;A(f.style,{width:b+"px",height:d+"px"})}var f=document.createElement("canvas");A(f.style,{border:0,margin:0,padding:0,top:0,left:0});a.appendChild(f);a===document.body&&(f.style.position="absolute",A(a.style,{margin:0,padding:0}));window.addEventListener("resize",d,!1);d();return{canvas:f,onDestroy:function(){window.removeEventListener("resize",d);a.removeChild(f)}}}function yb(a,b){function c(c){try{return a.getContext(c,
+b)}catch(f){return null}}return c("webgl")||c("experimental-webgl")||c("webgl-experimental")}function Xa(a){return"string"===typeof a?a.split():a}function Ya(a){return"string"===typeof a?document.querySelector(a):a}function zb(a){var b=a||{},c,d,f,k;a={};var p=[],h=[],g="undefined"===typeof window?1:window.devicePixelRatio,r=!1,v=function(a){},l=function(){};"string"===typeof b?c=document.querySelector(b):"object"===typeof b&&("string"===typeof b.nodeName&&"function"===typeof b.appendChild&&"function"===
+typeof b.getBoundingClientRect?c=b:"function"===typeof b.drawArrays||"function"===typeof b.drawElements?(k=b,f=k.canvas):("gl"in b?k=b.gl:"canvas"in b?f=Ya(b.canvas):"container"in b&&(d=Ya(b.container)),"attributes"in b&&(a=b.attributes),"extensions"in b&&(p=Xa(b.extensions)),"optionalExtensions"in b&&(h=Xa(b.optionalExtensions)),"onDone"in b&&(v=b.onDone),"profile"in b&&(r=!!b.profile),"pixelRatio"in b&&(g=+b.pixelRatio)));c&&("canvas"===c.nodeName.toLowerCase()?f=c:d=c);if(!k){if(!f){c=xb(d||document.body,
+v,g);if(!c)return null;f=c.canvas;l=c.onDestroy}k=yb(f,a)}return k?{gl:k,canvas:f,container:d,extensions:p,optionalExtensions:h,pixelRatio:g,profile:r,onDone:v,onDestroy:l}:(l(),v("webgl not supported, try upgrading your browser or graphics drivers http://get.webgl.org"),null)}function Ab(a,b){function c(b){b=b.toLowerCase();var c;try{c=d[b]=a.getExtension(b)}catch(g){}return!!c}for(var d={},f=0;f<b.extensions.length;++f){var k=b.extensions[f];if(!c(k))return b.onDestroy(),b.onDone('"'+k+'" extension is not supported by the current WebGL context, try upgrading your system or a different browser'),
+null}b.optionalExtensions.forEach(c);return{extensions:d,restore:function(){Object.keys(d).forEach(function(a){if(!c(a))throw Error("(regl): error restoring extension "+a);})}}}function ja(a){return!!a&&"object"===typeof a&&Array.isArray(a.shape)&&Array.isArray(a.stride)&&"number"===typeof a.offset&&a.shape.length===a.stride.length&&(Array.isArray(a.data)||O(a.data))}function J(a,b){for(var c=Array(a),d=0;d<a;++d)c[d]=b(d);return c}function Za(a){var b,c;b=(65535<a)<<4;a>>>=b;c=(255<a)<<3;a>>>=c;
+b|=c;c=(15<a)<<2;a>>>=c;b|=c;c=(3<a)<<1;return b|c|a>>>c>>1}function fa(a){a:{for(var b=16;268435456>=b;b*=16)if(a<=b){a=b;break a}a=0}b=$a[Za(a)>>2];return 0<b.length?b.pop():new ArrayBuffer(a)}function ab(a){$a[Za(a.byteLength)>>2].push(a)}function bb(a,b,c,d,f,k){for(var p=0;p<b;++p)for(var h=a[p],g=0;g<c;++g)for(var r=h[g],v=0;v<d;++v)f[k++]=r[v]}function cb(a,b,c,d,f){for(var k=1,p=c+1;p<b.length;++p)k*=b[p];var h=b[c];if(4===b.length-c){var g=b[c+1],r=b[c+2];b=b[c+3];for(p=0;p<h;++p)bb(a[p],
+g,r,b,d,f),f+=k}else for(p=0;p<h;++p)cb(a[p],b,c+1,d,f),f+=k}function Ga(a){return Ha[Object.prototype.toString.call(a)]|0}function db(a,b){for(var c=0;c<b.length;++c)a[c]=b[c]}function eb(a,b,c,d,f,k,p){for(var h=0,g=0;g<c;++g)for(var r=0;r<d;++r)a[h++]=b[f*g+k*r+p]}function Bb(a,b,c){function d(b){this.id=h++;this.buffer=a.createBuffer();this.type=b;this.usage=35044;this.byteLength=0;this.dimension=1;this.dtype=5121;this.persistentData=null;c.profile&&(this.stats={size:0})}function f(b,c,d){b.byteLength=
+c.byteLength;a.bufferData(b.type,c,d)}function k(a,b,c,d,e,n){a.usage=c;if(Array.isArray(b)){if(a.dtype=d||5126,0<b.length)if(Array.isArray(b[0])){e=fb(b);for(var D=d=1;D<e.length;++D)d*=e[D];a.dimension=d;b=Pa(b,e,a.dtype);f(a,b,c);n?a.persistentData=b:x.freeType(b)}else"number"===typeof b[0]?(a.dimension=e,e=x.allocType(a.dtype,b.length),db(e,b),f(a,e,c),n?a.persistentData=e:x.freeType(e)):O(b[0])&&(a.dimension=b[0].length,a.dtype=d||Ga(b[0])||5126,b=Pa(b,[b.length,b[0].length],a.dtype),f(a,b,c),
+n?a.persistentData=b:x.freeType(b))}else if(O(b))a.dtype=d||Ga(b),a.dimension=e,f(a,b,c),n&&(a.persistentData=new Uint8Array(new Uint8Array(b.buffer)));else if(ja(b)){e=b.shape;var g=b.stride,D=b.offset,t=0,k=0,p=0,r=0;1===e.length?(t=e[0],k=1,p=g[0],r=0):2===e.length&&(t=e[0],k=e[1],p=g[0],r=g[1]);a.dtype=d||Ga(b.data)||5126;a.dimension=k;e=x.allocType(a.dtype,t*k);eb(e,b.data,t,k,p,r,D);f(a,e,c);n?a.persistentData=e:x.freeType(e)}}function p(c){b.bufferCount--;a.deleteBuffer(c.buffer);c.buffer=
+null;delete g[c.id]}var h=0,g={};d.prototype.bind=function(){a.bindBuffer(this.type,this.buffer)};d.prototype.destroy=function(){p(this)};var r=[];c.profile&&(b.getTotalBufferSize=function(){var a=0;Object.keys(g).forEach(function(b){a+=g[b].stats.size});return a});return{create:function(f,l,u,m){function e(b){var d=35044,g=null,l=0,f=0,u=1;Array.isArray(b)||O(b)||ja(b)?g=b:"number"===typeof b?l=b|0:b&&("data"in b&&(g=b.data),"usage"in b&&(d=hb[b.usage]),"type"in b&&(f=Qa[b.type]),"dimension"in b&&
+(u=b.dimension|0),"length"in b&&(l=b.length|0));n.bind();g?k(n,g,d,f,u,m):(a.bufferData(n.type,l,d),n.dtype=f||5121,n.usage=d,n.dimension=u,n.byteLength=l);c.profile&&(n.stats.size=n.byteLength*ga[n.dtype]);return e}b.bufferCount++;var n=new d(l);g[n.id]=n;u||e(f);e._reglType="buffer";e._buffer=n;e.subdata=function(b,c){var d=(c||0)|0,g;n.bind();if(O(b))a.bufferSubData(n.type,d,b);else if(Array.isArray(b)){if(0<b.length)if("number"===typeof b[0]){var l=x.allocType(n.dtype,b.length);db(l,b);a.bufferSubData(n.type,
+d,l);x.freeType(l)}else if(Array.isArray(b[0])||O(b[0]))g=fb(b),l=Pa(b,g,n.dtype),a.bufferSubData(n.type,d,l),x.freeType(l)}else if(ja(b)){g=b.shape;var f=b.stride,m=l=0,u=0,k=0;1===g.length?(l=g[0],m=1,u=f[0],k=0):2===g.length&&(l=g[0],m=g[1],u=f[0],k=f[1]);g=Array.isArray(b.data)?n.dtype:Ga(b.data);g=x.allocType(g,l*m);eb(g,b.data,l,m,u,k,b.offset);a.bufferSubData(n.type,d,g);x.freeType(g)}return e};c.profile&&(e.stats=n.stats);e.destroy=function(){p(n)};return e},createStream:function(a,b){var c=
+r.pop();c||(c=new d(a));c.bind();k(c,b,35040,0,1,!1);return c},destroyStream:function(a){r.push(a)},clear:function(){H(g).forEach(p);r.forEach(p)},getBuffer:function(a){return a&&a._buffer instanceof d?a._buffer:null},restore:function(){H(g).forEach(function(b){b.buffer=a.createBuffer();a.bindBuffer(b.type,b.buffer);a.bufferData(b.type,b.persistentData||b.byteLength,b.usage)})},_initBuffer:k}}function Cb(a,b,c,d){function f(a){this.id=g++;h[this.id]=this;this.buffer=a;this.primType=4;this.type=this.vertCount=
+0}function k(d,g,f,e,n,k,w){d.buffer.bind();if(g){var t=w;w||O(g)&&(!ja(g)||O(g.data))||(t=b.oes_element_index_uint?5125:5123);c._initBuffer(d.buffer,g,f,t,3)}else a.bufferData(34963,k,f),d.buffer.dtype=t||5121,d.buffer.usage=f,d.buffer.dimension=3,d.buffer.byteLength=k;t=w;if(!w){switch(d.buffer.dtype){case 5121:case 5120:t=5121;break;case 5123:case 5122:t=5123;break;case 5125:case 5124:t=5125}d.buffer.dtype=t}d.type=t;g=n;0>g&&(g=d.buffer.byteLength,5123===t?g>>=1:5125===t&&(g>>=2));d.vertCount=
+g;g=e;0>e&&(g=4,e=d.buffer.dimension,1===e&&(g=0),2===e&&(g=1),3===e&&(g=4));d.primType=g}function p(a){d.elementsCount--;delete h[a.id];a.buffer.destroy();a.buffer=null}var h={},g=0,r={uint8:5121,uint16:5123};b.oes_element_index_uint&&(r.uint32=5125);f.prototype.bind=function(){this.buffer.bind()};var v=[];return{create:function(a,b){function g(a){if(a)if("number"===typeof a)e(a),n.primType=4,n.vertCount=a|0,n.type=5121;else{var b=null,c=35044,d=-1,f=-1,l=0,p=0;if(Array.isArray(a)||O(a)||ja(a))b=
+a;else if("data"in a&&(b=a.data),"usage"in a&&(c=hb[a.usage]),"primitive"in a&&(d=Ra[a.primitive]),"count"in a&&(f=a.count|0),"type"in a&&(p=r[a.type]),"length"in a)l=a.length|0;else if(l=f,5123===p||5122===p)l*=2;else if(5125===p||5124===p)l*=4;k(n,b,c,d,f,l,p)}else e(),n.primType=4,n.vertCount=0,n.type=5121;return g}var e=c.create(null,34963,!0),n=new f(e._buffer);d.elementsCount++;g(a);g._reglType="elements";g._elements=n;g.subdata=function(a,b){e.subdata(a,b);return g};g.destroy=function(){p(n)};
+return g},createStream:function(a){var b=v.pop();b||(b=new f(c.create(null,34963,!0,!1)._buffer));k(b,a,35040,-1,-1,0,0);return b},destroyStream:function(a){v.push(a)},getElements:function(a){return"function"===typeof a&&a._elements instanceof f?a._elements:null},clear:function(){H(h).forEach(p)}}}function ib(a){for(var b=x.allocType(5123,a.length),c=0;c<a.length;++c)if(isNaN(a[c]))b[c]=65535;else if(Infinity===a[c])b[c]=31744;else if(-Infinity===a[c])b[c]=64512;else{jb[0]=a[c];var d=Db[0],f=d>>>
+31<<15,k=(d<<1>>>24)-127,d=d>>13&1023;b[c]=-24>k?f:-14>k?f+(d+1024>>-14-k):15<k?f+31744:f+(k+15<<10)+d}return b}function na(a){return Array.isArray(a)||O(a)}function kb(a){return Array.isArray(a)&&(0===a.length||"number"===typeof a[0])}function lb(a){return Array.isArray(a)&&0!==a.length&&na(a[0])?!0:!1}function oa(a){return Object.prototype.toString.call(a)}function Sa(a){if(!a)return!1;var b=oa(a);return 0<=Eb.indexOf(b)?!0:kb(a)||lb(a)||ja(a)}function mb(a,b){36193===a.type?(a.data=ib(b),x.freeType(b)):
+a.data=b}function Ia(a,b,c,d,f,k){a="undefined"!==typeof C[a]?C[a]:R[a]*za[b];k&&(a*=6);if(f){for(d=0;1<=c;)d+=a*c*c,c/=2;return d}return a*c*d}function Fb(a,b,c,d,f,k,p){function h(){this.format=this.internalformat=6408;this.type=5121;this.flipY=this.premultiplyAlpha=this.compressed=!1;this.unpackAlignment=1;this.colorSpace=37444;this.channels=this.height=this.width=0}function g(a,b){a.internalformat=b.internalformat;a.format=b.format;a.type=b.type;a.compressed=b.compressed;a.premultiplyAlpha=b.premultiplyAlpha;
+a.flipY=b.flipY;a.unpackAlignment=b.unpackAlignment;a.colorSpace=b.colorSpace;a.width=b.width;a.height=b.height;a.channels=b.channels}function r(a,b){if("object"===typeof b&&b){"premultiplyAlpha"in b&&(a.premultiplyAlpha=b.premultiplyAlpha);"flipY"in b&&(a.flipY=b.flipY);"alignment"in b&&(a.unpackAlignment=b.alignment);"colorSpace"in b&&(a.colorSpace=ua[b.colorSpace]);"type"in b&&(a.type=E[b.type]);var c=a.width,g=a.height,e=a.channels,d=!1;"shape"in b?(c=b.shape[0],g=b.shape[1],3===b.shape.length&&
+(e=b.shape[2],d=!0)):("radius"in b&&(c=g=b.radius),"width"in b&&(c=b.width),"height"in b&&(g=b.height),"channels"in b&&(e=b.channels,d=!0));a.width=c|0;a.height=g|0;a.channels=e|0;c=!1;"format"in b&&(c=b.format,g=a.internalformat=S[c],a.format=Gb[g],c in E&&!("type"in b)&&(a.type=E[c]),c in U&&(a.compressed=!0),c=!0);!d&&c?a.channels=R[a.format]:d&&!c&&a.channels!==Ka[a.format]&&(a.format=a.internalformat=Ka[a.channels])}}function v(b){a.pixelStorei(37440,b.flipY);a.pixelStorei(37441,b.premultiplyAlpha);
+a.pixelStorei(37443,b.colorSpace);a.pixelStorei(3317,b.unpackAlignment)}function l(){h.call(this);this.yOffset=this.xOffset=0;this.data=null;this.needsFree=!1;this.element=null;this.needsCopy=!1}function u(a,b){var c=null;Sa(b)?c=b:b&&(r(a,b),"x"in b&&(a.xOffset=b.x|0),"y"in b&&(a.yOffset=b.y|0),Sa(b.data)&&(c=b.data));if(b.copy){var g=f.viewportWidth,e=f.viewportHeight;a.width=a.width||g-a.xOffset;a.height=a.height||e-a.yOffset;a.needsCopy=!0}else if(!c)a.width=a.width||1,a.height=a.height||1,a.channels=
+a.channels||4;else if(O(c))a.channels=a.channels||4,a.data=c,"type"in b||5121!==a.type||(a.type=Ha[Object.prototype.toString.call(c)]|0);else if(kb(c)){a.channels=a.channels||4;g=c;e=g.length;switch(a.type){case 5121:case 5123:case 5125:case 5126:e=x.allocType(a.type,e);e.set(g);a.data=e;break;case 36193:a.data=ib(g)}a.alignment=1;a.needsFree=!0}else if(ja(c)){g=c.data;Array.isArray(g)||5121!==a.type||(a.type=Ha[Object.prototype.toString.call(g)]|0);var e=c.shape,d=c.stride,n,l,q,y;3===e.length?(q=
+e[2],y=d[2]):y=q=1;n=e[0];l=e[1];e=d[0];d=d[1];a.alignment=1;a.width=n;a.height=l;a.channels=q;a.format=a.internalformat=Ka[q];a.needsFree=!0;n=y;c=c.offset;q=a.width;y=a.height;l=a.channels;for(var K=x.allocType(36193===a.type?5126:a.type,q*y*l),aa=0,va=0;va<y;++va)for(var wa=0;wa<q;++wa)for(var ca=0;ca<l;++ca)K[aa++]=g[e*wa+d*va+n*ca+c];mb(a,K)}else if("[object HTMLCanvasElement]"===oa(c)||"[object CanvasRenderingContext2D]"===oa(c))"[object HTMLCanvasElement]"===oa(c)?a.element=c:a.element=c.canvas,
+a.width=a.element.width,a.height=a.element.height,a.channels=4;else if("[object HTMLImageElement]"===oa(c))a.element=c,a.width=c.naturalWidth,a.height=c.naturalHeight,a.channels=4;else if("[object HTMLVideoElement]"===oa(c))a.element=c,a.width=c.videoWidth,a.height=c.videoHeight,a.channels=4;else if(lb(c)){g=a.width||c[0].length;e=a.height||c.length;d=a.channels;d=na(c[0][0])?d||c[0][0].length:d||1;n=La.shape(c);q=1;for(y=0;y<n.length;++y)q*=n[y];q=x.allocType(36193===a.type?5126:a.type,q);La.flatten(c,
+n,"",q);mb(a,q);a.alignment=1;a.width=g;a.height=e;a.channels=d;a.format=a.internalformat=Ka[d];a.needsFree=!0}}function m(b,c,g,e,f){var n=b.element,l=b.data,k=b.internalformat,q=b.format,y=b.type,K=b.width,aa=b.height;v(b);n?a.texSubImage2D(c,f,g,e,q,y,n):b.compressed?a.compressedTexSubImage2D(c,f,g,e,k,K,aa,l):b.needsCopy?(d(),a.copyTexSubImage2D(c,f,g,e,b.xOffset,b.yOffset,K,aa)):a.texSubImage2D(c,f,g,e,K,aa,q,y,l)}function e(){return N.pop()||new l}function n(a){a.needsFree&&x.freeType(a.data);
+l.call(a);N.push(a)}function D(){h.call(this);this.genMipmaps=!1;this.mipmapHint=4352;this.mipmask=0;this.images=Array(16)}function w(a,b,c){var g=a.images[0]=e();a.mipmask=1;g.width=a.width=b;g.height=a.height=c;g.channels=a.channels=4}function t(a,b){var c=null;if(Sa(b))c=a.images[0]=e(),g(c,a),u(c,b),a.mipmask=1;else if(r(a,b),Array.isArray(b.mipmap))for(var d=b.mipmap,f=0;f<d.length;++f)c=a.images[f]=e(),g(c,a),c.width>>=f,c.height>>=f,u(c,d[f]),a.mipmask|=1<<f;else c=a.images[0]=e(),g(c,a),u(c,
+b),a.mipmask=1;g(a,a.images[0])}function Z(b,c){for(var g=b.images,e=0;e<g.length&&g[e];++e){var f=g[e],n=c,l=e,k=f.element,q=f.data,y=f.internalformat,K=f.format,aa=f.type,va=f.width,wa=f.height;v(f);k?a.texImage2D(n,l,K,K,aa,k):f.compressed?a.compressedTexImage2D(n,l,y,va,wa,0,q):f.needsCopy?(d(),a.copyTexImage2D(n,l,K,f.xOffset,f.yOffset,va,wa,0)):a.texImage2D(n,l,K,va,wa,0,K,aa,q)}}function B(){var a=nb.pop()||new D;h.call(a);for(var b=a.mipmask=0;16>b;++b)a.images[b]=null;return a}function gb(a){for(var b=
+a.images,c=0;c<b.length;++c)b[c]&&n(b[c]),b[c]=null;nb.push(a)}function C(){this.magFilter=this.minFilter=9728;this.wrapT=this.wrapS=33071;this.anisotropic=1;this.genMipmaps=!1;this.mipmapHint=4352}function M(a,b){"min"in b&&(a.minFilter=Ta[b.min],0<=Hb.indexOf(a.minFilter)&&(a.genMipmaps=!0));"mag"in b&&(a.magFilter=T[b.mag]);var c=a.wrapS,g=a.wrapT;if("wrap"in b){var e=b.wrap;"string"===typeof e?c=g=I[e]:Array.isArray(e)&&(c=I[e[0]],g=I[e[1]])}else"wrapS"in b&&(c=I[b.wrapS]),"wrapT"in b&&(g=I[b.wrapT]);
+a.wrapS=c;a.wrapT=g;"anisotropic"in b&&(a.anisotropic=b.anisotropic);if("mipmap"in b){c=!1;switch(typeof b.mipmap){case "string":a.mipmapHint=sa[b.mipmap];c=a.genMipmaps=!0;break;case "boolean":c=a.genMipmaps=b.mipmap;break;case "object":a.genMipmaps=!1,c=!0}!c||"min"in b||(a.minFilter=9984)}}function P(c,g){a.texParameteri(g,10241,c.minFilter);a.texParameteri(g,10240,c.magFilter);a.texParameteri(g,10242,c.wrapS);a.texParameteri(g,10243,c.wrapT);b.ext_texture_filter_anisotropic&&a.texParameteri(g,
+34046,c.anisotropic);c.genMipmaps&&(a.hint(33170,c.mipmapHint),a.generateMipmap(g))}function G(b){h.call(this);this.mipmask=0;this.internalformat=6408;this.id=xa++;this.refCount=1;this.target=b;this.texture=a.createTexture();this.unit=-1;this.bindCount=0;this.texInfo=new C;p.profile&&(this.stats={size:0})}function Q(b){a.activeTexture(33984);a.bindTexture(b.target,b.texture)}function Aa(){var b=ka[0];b?a.bindTexture(b.target,b.texture):a.bindTexture(3553,null)}function z(b){var c=b.texture,g=b.unit,
+e=b.target;0<=g&&(a.activeTexture(33984+g),a.bindTexture(e,null),ka[g]=null);a.deleteTexture(c);b.texture=null;b.params=null;b.pixels=null;b.refCount=0;delete V[b.id];k.textureCount--}var sa={"don't care":4352,"dont care":4352,nice:4354,fast:4353},I={repeat:10497,clamp:33071,mirror:33648},T={nearest:9728,linear:9729},Ta=A({mipmap:9987,"nearest mipmap nearest":9984,"linear mipmap nearest":9985,"nearest mipmap linear":9986,"linear mipmap linear":9987},T),ua={none:0,browser:37444},E={uint8:5121,rgba4:32819,
+rgb565:33635,"rgb5 a1":32820},S={alpha:6406,luminance:6409,"luminance alpha":6410,rgb:6407,rgba:6408,rgba4:32854,"rgb5 a1":32855,rgb565:36194},U={};b.ext_srgb&&(S.srgb=35904,S.srgba=35906);b.oes_texture_float&&(E.float32=E["float"]=5126);b.oes_texture_half_float&&(E.float16=E["half float"]=36193);b.webgl_depth_texture&&(A(S,{depth:6402,"depth stencil":34041}),A(E,{uint16:5123,uint32:5125,"depth stencil":34042}));b.webgl_compressed_texture_s3tc&&A(U,{"rgb s3tc dxt1":33776,"rgba s3tc dxt1":33777,"rgba s3tc dxt3":33778,
+"rgba s3tc dxt5":33779});b.webgl_compressed_texture_atc&&A(U,{"rgb atc":35986,"rgba atc explicit alpha":35987,"rgba atc interpolated alpha":34798});b.webgl_compressed_texture_pvrtc&&A(U,{"rgb pvrtc 4bppv1":35840,"rgb pvrtc 2bppv1":35841,"rgba pvrtc 4bppv1":35842,"rgba pvrtc 2bppv1":35843});b.webgl_compressed_texture_etc1&&(U["rgb etc1"]=36196);var Ib=Array.prototype.slice.call(a.getParameter(34467));Object.keys(U).forEach(function(a){var b=U[a];0<=Ib.indexOf(b)&&(S[a]=b)});var ba=Object.keys(S);c.textureFormats=
+ba;var J=[];Object.keys(S).forEach(function(a){J[S[a]]=a});var W=[];Object.keys(E).forEach(function(a){W[E[a]]=a});var la=[];Object.keys(T).forEach(function(a){la[T[a]]=a});var ya=[];Object.keys(Ta).forEach(function(a){ya[Ta[a]]=a});var ha=[];Object.keys(I).forEach(function(a){ha[I[a]]=a});var Gb=ba.reduce(function(a,b){var c=S[b];6409===c||6406===c||6409===c||6410===c||6402===c||34041===c?a[c]=c:32855===c||0<=b.indexOf("rgba")?a[c]=6408:a[c]=6407;return a},{}),N=[],nb=[],xa=0,V={},ma=c.maxTextureUnits,
+ka=Array(ma).map(function(){return null});A(G.prototype,{bind:function(){this.bindCount+=1;var b=this.unit;if(0>b){for(var c=0;c<ma;++c){var g=ka[c];if(g){if(0<g.bindCount)continue;g.unit=-1}ka[c]=this;b=c;break}p.profile&&k.maxTextureUnits<b+1&&(k.maxTextureUnits=b+1);this.unit=b;a.activeTexture(33984+b);a.bindTexture(this.target,this.texture)}return b},unbind:function(){--this.bindCount},decRef:function(){0>=--this.refCount&&z(this)}});p.profile&&(k.getTotalTextureSize=function(){var a=0;Object.keys(V).forEach(function(b){a+=
+V[b].stats.size});return a});return{create2D:function(b,c){function d(a,b){var c=f.texInfo;C.call(c);var e=B();"number"===typeof a?"number"===typeof b?w(e,a|0,b|0):w(e,a|0,a|0):a?(M(c,a),t(e,a)):w(e,1,1);c.genMipmaps&&(e.mipmask=(e.width<<1)-1);f.mipmask=e.mipmask;g(f,e);f.internalformat=e.internalformat;d.width=e.width;d.height=e.height;Q(f);Z(e,3553);P(c,3553);Aa();gb(e);p.profile&&(f.stats.size=Ia(f.internalformat,f.type,e.width,e.height,c.genMipmaps,!1));d.format=J[f.internalformat];d.type=W[f.type];
+d.mag=la[c.magFilter];d.min=ya[c.minFilter];d.wrapS=ha[c.wrapS];d.wrapT=ha[c.wrapT];return d}var f=new G(3553);V[f.id]=f;k.textureCount++;d(b,c);d.subimage=function(a,b,c,l){b|=0;c|=0;l|=0;var q=e();g(q,f);q.width=0;q.height=0;u(q,a);q.width=q.width||(f.width>>l)-b;q.height=q.height||(f.height>>l)-c;Q(f);m(q,3553,b,c,l);Aa();n(q);return d};d.resize=function(b,c){var e=b|0,g=c|0||e;if(e===f.width&&g===f.height)return d;d.width=f.width=e;d.height=f.height=g;Q(f);for(var q=0;f.mipmask>>q;++q)a.texImage2D(3553,
+q,f.format,e>>q,g>>q,0,f.format,f.type,null);Aa();p.profile&&(f.stats.size=Ia(f.internalformat,f.type,e,g,!1,!1));return d};d._reglType="texture2d";d._texture=f;p.profile&&(d.stats=f.stats);d.destroy=function(){f.decRef()};return d},createCube:function(b,c,d,f,l,sa){function z(a,b,c,e,d,f){var F,X=h.texInfo;C.call(X);for(F=0;6>F;++F)q[F]=B();if("number"===typeof a||!a)for(a=a|0||1,F=0;6>F;++F)w(q[F],a,a);else if("object"===typeof a)if(b)t(q[0],a),t(q[1],b),t(q[2],c),t(q[3],e),t(q[4],d),t(q[5],f);
+else if(M(X,a),r(h,a),"faces"in a)for(a=a.faces,F=0;6>F;++F)g(q[F],h),t(q[F],a[F]);else for(F=0;6>F;++F)t(q[F],a);g(h,q[0]);h.mipmask=X.genMipmaps?(q[0].width<<1)-1:q[0].mipmask;h.internalformat=q[0].internalformat;z.width=q[0].width;z.height=q[0].height;Q(h);for(F=0;6>F;++F)Z(q[F],34069+F);P(X,34067);Aa();p.profile&&(h.stats.size=Ia(h.internalformat,h.type,z.width,z.height,X.genMipmaps,!0));z.format=J[h.internalformat];z.type=W[h.type];z.mag=la[X.magFilter];z.min=ya[X.minFilter];z.wrapS=ha[X.wrapS];
+z.wrapT=ha[X.wrapT];for(F=0;6>F;++F)gb(q[F]);return z}var h=new G(34067);V[h.id]=h;k.cubeCount++;var q=Array(6);z(b,c,d,f,l,sa);z.subimage=function(a,b,c,q,d){c|=0;q|=0;d|=0;var f=e();g(f,h);f.width=0;f.height=0;u(f,b);f.width=f.width||(h.width>>d)-c;f.height=f.height||(h.height>>d)-q;Q(h);m(f,34069+a,c,q,d);Aa();n(f);return z};z.resize=function(b){b|=0;if(b!==h.width){z.width=h.width=b;z.height=h.height=b;Q(h);for(var c=0;6>c;++c)for(var q=0;h.mipmask>>q;++q)a.texImage2D(34069+c,q,h.format,b>>q,
+b>>q,0,h.format,h.type,null);Aa();p.profile&&(h.stats.size=Ia(h.internalformat,h.type,z.width,z.height,!1,!0));return z}};z._reglType="textureCube";z._texture=h;p.profile&&(z.stats=h.stats);z.destroy=function(){h.decRef()};return z},clear:function(){for(var b=0;b<ma;++b)a.activeTexture(33984+b),a.bindTexture(3553,null),ka[b]=null;H(V).forEach(z);k.cubeCount=0;k.textureCount=0},getTexture:function(a){return null},restore:function(){H(V).forEach(function(b){b.texture=a.createTexture();a.bindTexture(b.target,
+b.texture);for(var c=0;32>c;++c)if(0!==(b.mipmask&1<<c))if(3553===b.target)a.texImage2D(3553,c,b.internalformat,b.width>>c,b.height>>c,0,b.internalformat,b.type,null);else for(var e=0;6>e;++e)a.texImage2D(34069+e,c,b.internalformat,b.width>>c,b.height>>c,0,b.internalformat,b.type,null);P(b.texInfo,b.target)})}}}function Jb(a,b,c,d,f,k){function p(a,b,c){this.target=a;this.texture=b;this.renderbuffer=c;var e=a=0;b?(a=b.width,e=b.height):c&&(a=c.width,e=c.height);this.width=a;this.height=e}function h(a){a&&
+(a.texture&&a.texture._texture.decRef(),a.renderbuffer&&a.renderbuffer._renderbuffer.decRef())}function g(a,b,c){a&&(a.texture?a.texture._texture.refCount+=1:a.renderbuffer._renderbuffer.refCount+=1)}function r(b,c){c&&(c.texture?a.framebufferTexture2D(36160,b,c.target,c.texture._texture.texture,0):a.framebufferRenderbuffer(36160,b,36161,c.renderbuffer._renderbuffer.renderbuffer))}function v(a){var b=3553,c=null,e=null,g=a;"object"===typeof a&&(g=a.data,"target"in a&&(b=a.target|0));a=g._reglType;
+"texture2d"===a?c=g:"textureCube"===a?c=g:"renderbuffer"===a&&(e=g,b=36161);return new p(b,c,e)}function l(a,b,c,e,g){if(c)return a=d.create2D({width:a,height:b,format:e,type:g}),a._texture.refCount=0,new p(3553,a,null);a=f.create({width:a,height:b,format:e});a._renderbuffer.refCount=0;return new p(36161,null,a)}function u(a){return a&&(a.texture||a.renderbuffer)}function m(a,b,c){a&&(a.texture?a.texture.resize(b,c):a.renderbuffer&&a.renderbuffer.resize(b,c))}function e(){this.id=M++;P[this.id]=this;
+this.framebuffer=a.createFramebuffer();this.height=this.width=0;this.colorAttachments=[];this.depthStencilAttachment=this.stencilAttachment=this.depthAttachment=null}function n(a){a.colorAttachments.forEach(h);h(a.depthAttachment);h(a.stencilAttachment);h(a.depthStencilAttachment)}function D(b){a.deleteFramebuffer(b.framebuffer);b.framebuffer=null;k.framebufferCount--;delete P[b.id]}function w(b){var e;a.bindFramebuffer(36160,b.framebuffer);var g=b.colorAttachments;for(e=0;e<g.length;++e)r(36064+
+e,g[e]);for(e=g.length;e<c.maxColorAttachments;++e)a.framebufferTexture2D(36160,36064+e,3553,null,0);a.framebufferTexture2D(36160,33306,3553,null,0);a.framebufferTexture2D(36160,36096,3553,null,0);a.framebufferTexture2D(36160,36128,3553,null,0);r(36096,b.depthAttachment);r(36128,b.stencilAttachment);r(33306,b.depthStencilAttachment);a.checkFramebufferStatus(36160);a.bindFramebuffer(36160,Z.next);Z.cur=Z.next;a.getError()}function t(a,b){function c(a,b){var e,f=0,h=0,k=!0,m=!0;e=null;var p=!0,t="rgba",
+r="uint8",D=1,W=null,la=null,Z=null,ha=!1;if("number"===typeof a)f=a|0,h=b|0||f;else if(a){"shape"in a?(h=a.shape,f=h[0],h=h[1]):("radius"in a&&(f=h=a.radius),"width"in a&&(f=a.width),"height"in a&&(h=a.height));if("color"in a||"colors"in a)e=a.color||a.colors,Array.isArray(e);if(!e){"colorCount"in a&&(D=a.colorCount|0);"colorTexture"in a&&(p=!!a.colorTexture,t="rgba4");if("colorType"in a&&(r=a.colorType,!p))if("half float"===r||"float16"===r)t="rgba16f";else if("float"===r||"float32"===r)t="rgba32f";
+"colorFormat"in a&&(t=a.colorFormat,0<=B.indexOf(t)?p=!0:0<=C.indexOf(t)&&(p=!1))}if("depthTexture"in a||"depthStencilTexture"in a)ha=!(!a.depthTexture&&!a.depthStencilTexture);"depth"in a&&("boolean"===typeof a.depth?k=a.depth:(W=a.depth,m=!1));"stencil"in a&&("boolean"===typeof a.stencil?m=a.stencil:(la=a.stencil,k=!1));"depthStencil"in a&&("boolean"===typeof a.depthStencil?k=m=a.depthStencil:(Z=a.depthStencil,m=k=!1))}else f=h=1;var G=null,A=null,Q=null,x=null;if(Array.isArray(e))G=e.map(v);else if(e)G=
+[v(e)];else for(G=Array(D),e=0;e<D;++e)G[e]=l(f,h,p,t,r);f=f||G[0].width;h=h||G[0].height;W?A=v(W):k&&!m&&(A=l(f,h,ha,"depth","uint32"));la?Q=v(la):m&&!k&&(Q=l(f,h,!1,"stencil","uint8"));Z?x=v(Z):!W&&!la&&m&&k&&(x=l(f,h,ha,"depth stencil","depth stencil"));k=null;for(e=0;e<G.length;++e)g(G[e],f,h),G[e]&&G[e].texture&&(m=ob[G[e].texture._texture.format]*Ma[G[e].texture._texture.type],null===k&&(k=m));g(A,f,h);g(Q,f,h);g(x,f,h);n(d);d.width=f;d.height=h;d.colorAttachments=G;d.depthAttachment=A;d.stencilAttachment=
+Q;d.depthStencilAttachment=x;c.color=G.map(u);c.depth=u(A);c.stencil=u(Q);c.depthStencil=u(x);c.width=d.width;c.height=d.height;w(d);return c}var d=new e;k.framebufferCount++;c(a,b);return A(c,{resize:function(a,b){var e=a|0,g=b|0||e;if(e===d.width&&g===d.height)return c;for(var f=d.colorAttachments,h=0;h<f.length;++h)m(f[h],e,g);m(d.depthAttachment,e,g);m(d.stencilAttachment,e,g);m(d.depthStencilAttachment,e,g);d.width=c.width=e;d.height=c.height=g;w(d);return c},_reglType:"framebuffer",_framebuffer:d,
+destroy:function(){D(d);n(d)},use:function(a){Z.setFBO({framebuffer:c},a)}})}var Z={cur:null,next:null,dirty:!1,setFBO:null},B=["rgba"],C=["rgba4","rgb565","rgb5 a1"];b.ext_srgb&&C.push("srgba");b.ext_color_buffer_half_float&&C.push("rgba16f","rgb16f");b.webgl_color_buffer_float&&C.push("rgba32f");var x=["uint8"];b.oes_texture_half_float&&x.push("half float","float16");b.oes_texture_float&&x.push("float","float32");var M=0,P={};return A(Z,{getFramebuffer:function(a){return"function"===typeof a&&"framebuffer"===
+a._reglType&&(a=a._framebuffer,a instanceof e)?a:null},create:t,createCube:function(a){function b(a){var e,g={color:null},f=0,h=null;e="rgba";var l="uint8",n=1;if("number"===typeof a)f=a|0;else if(a){"shape"in a?f=a.shape[0]:("radius"in a&&(f=a.radius|0),"width"in a?f=a.width|0:"height"in a&&(f=a.height|0));if("color"in a||"colors"in a)h=a.color||a.colors,Array.isArray(h);h||("colorCount"in a&&(n=a.colorCount|0),"colorType"in a&&(l=a.colorType),"colorFormat"in a&&(e=a.colorFormat));"depth"in a&&(g.depth=
+a.depth);"stencil"in a&&(g.stencil=a.stencil);"depthStencil"in a&&(g.depthStencil=a.depthStencil)}else f=1;if(h)if(Array.isArray(h))for(a=[],e=0;e<h.length;++e)a[e]=h[e];else a=[h];else for(a=Array(n),h={radius:f,format:e,type:l},e=0;e<n;++e)a[e]=d.createCube(h);g.color=Array(a.length);for(e=0;e<a.length;++e)n=a[e],f=f||n.width,g.color[e]={target:34069,data:a[e]};for(e=0;6>e;++e){for(n=0;n<a.length;++n)g.color[n].target=34069+e;0<e&&(g.depth=c[0].depth,g.stencil=c[0].stencil,g.depthStencil=c[0].depthStencil);
+if(c[e])c[e](g);else c[e]=t(g)}return A(b,{width:f,height:f,color:a})}var c=Array(6);b(a);return A(b,{faces:c,resize:function(a){var e=a|0;if(e===b.width)return b;var g=b.color;for(a=0;a<g.length;++a)g[a].resize(e);for(a=0;6>a;++a)c[a].resize(e);b.width=b.height=e;return b},_reglType:"framebufferCube",destroy:function(){c.forEach(function(a){a.destroy()})}})},clear:function(){H(P).forEach(D)},restore:function(){H(P).forEach(function(b){b.framebuffer=a.createFramebuffer();w(b)})}})}function pb(){this.w=
+this.z=this.y=this.x=this.state=0;this.buffer=null;this.size=0;this.normalized=!1;this.type=5126;this.divisor=this.stride=this.offset=0}function Kb(a,b,c,d,f){a=c.maxAttributes;b=Array(a);for(c=0;c<a;++c)b[c]=new pb;return{Record:pb,scope:{},state:b}}function Lb(a,b,c,d){function f(a,b,c,g){this.name=a;this.id=b;this.location=c;this.info=g}function k(a,b){for(var c=0;c<a.length;++c)if(a[c].id===b.id){a[c].location=b.location;return}a.push(b)}function p(c,g,d){d=35632===c?r:v;var f=d[g];if(!f){var h=
+b.str(g),f=a.createShader(c);a.shaderSource(f,h);a.compileShader(f);d[g]=f}return f}function h(a,b){this.id=m++;this.fragId=a;this.vertId=b;this.program=null;this.uniforms=[];this.attributes=[];d.profile&&(this.stats={uniformsCount:0,attributesCount:0})}function g(c,g){var h,l;h=p(35632,c.fragId);l=p(35633,c.vertId);var m=c.program=a.createProgram();a.attachShader(m,h);a.attachShader(m,l);a.linkProgram(m);var r=a.getProgramParameter(m,35718);d.profile&&(c.stats.uniformsCount=r);var u=c.uniforms;for(h=
+0;h<r;++h)if(l=a.getActiveUniform(m,h))if(1<l.size)for(var v=0;v<l.size;++v){var A=l.name.replace("[0]","["+v+"]");k(u,new f(A,b.id(A),a.getUniformLocation(m,A),l))}else k(u,new f(l.name,b.id(l.name),a.getUniformLocation(m,l.name),l));r=a.getProgramParameter(m,35721);d.profile&&(c.stats.attributesCount=r);u=c.attributes;for(h=0;h<r;++h)(l=a.getActiveAttrib(m,h))&&k(u,new f(l.name,b.id(l.name),a.getAttribLocation(m,l.name),l))}var r={},v={},l={},u=[],m=0;d.profile&&(c.getMaxUniformsCount=function(){var a=
+0;u.forEach(function(b){b.stats.uniformsCount>a&&(a=b.stats.uniformsCount)});return a},c.getMaxAttributesCount=function(){var a=0;u.forEach(function(b){b.stats.attributesCount>a&&(a=b.stats.attributesCount)});return a});return{clear:function(){var b=a.deleteShader.bind(a);H(r).forEach(b);r={};H(v).forEach(b);v={};u.forEach(function(b){a.deleteProgram(b.program)});u.length=0;l={};c.shaderCount=0},program:function(a,b,f){var d=l[b];d||(d=l[b]={});var m=d[a];m||(m=new h(b,a),c.shaderCount++,g(m,f),d[a]=
+m,u.push(m));return m},restore:function(){r={};v={};for(var a=0;a<u.length;++a)g(u[a])},shader:p,frag:-1,vert:-1}}function Mb(a,b,c,d,f,k){function p(g){var f;f=null===b.next?5121:b.next.colorAttachments[0].texture._texture.type;var h=0,l=0,k=d.framebufferWidth,m=d.framebufferHeight,e=null;O(g)?e=g:g&&(h=g.x|0,l=g.y|0,k=(g.width||d.framebufferWidth-h)|0,m=(g.height||d.framebufferHeight-l)|0,e=g.data||null);c();g=k*m*4;e||(5121===f?e=new Uint8Array(g):5126===f&&(e=e||new Float32Array(g)));a.pixelStorei(3333,
+4);a.readPixels(h,l,k,m,6408,f,e);return e}function h(a){var c;b.setFBO({framebuffer:a.framebuffer},function(){c=p(a)});return c}return function(a){return a&&"framebuffer"in a?h(a):p(a)}}function Ba(a){return Array.prototype.slice.call(a)}function Ca(a){return Ba(a).join("")}function Nb(){function a(){var a=[],b=[];return A(function(){a.push.apply(a,Ba(arguments))},{def:function(){var f="v"+c++;b.push(f);0<arguments.length&&(a.push(f,"="),a.push.apply(a,Ba(arguments)),a.push(";"));return f},toString:function(){return Ca([0<
+b.length?"var "+b+";":"",Ca(a)])}})}function b(){function b(a,d){f(a,d,"=",c.def(a,d),";")}var c=a(),f=a(),d=c.toString,l=f.toString;return A(function(){c.apply(c,Ba(arguments))},{def:c.def,entry:c,exit:f,save:b,set:function(a,f,e){b(a,f);c(a,f,"=",e,";")},toString:function(){return d()+l()}})}var c=0,d=[],f=[],k=a(),p={};return{global:k,link:function(a){for(var b=0;b<f.length;++b)if(f[b]===a)return d[b];b="g"+c++;d.push(b);f.push(a);return b},block:a,proc:function(a,c){function f(){var a="a"+d.length;
+d.push(a);return a}var d=[];c=c||0;for(var l=0;l<c;++l)f();var l=b(),k=l.toString;return p[a]=A(l,{arg:f,toString:function(){return Ca(["function(",d.join(),"){",k(),"}"])}})},scope:b,cond:function(){var a=Ca(arguments),c=b(),f=b(),d=c.toString,l=f.toString;return A(c,{then:function(){c.apply(c,Ba(arguments));return this},"else":function(){f.apply(f,Ba(arguments));return this},toString:function(){var b=l();b&&(b="else{"+b+"}");return Ca(["if(",a,"){",d(),"}",b])}})},compile:function(){var a=['"use strict";',
+k,"return {"];Object.keys(p).forEach(function(b){a.push('"',b,'":',p[b].toString(),",")});a.push("}");var b=Ca(a).replace(/;/g,";\n").replace(/}/g,"}\n").replace(/{/g,"{\n");return Function.apply(null,d.concat(b)).apply(null,f)}}}function Na(a){return Array.isArray(a)||O(a)||ja(a)}function qb(a){return a.sort(function(a,c){return"viewport"===a?-1:"viewport"===c?1:a<c?-1:1})}function Y(a,b,c,d){this.thisDep=a;this.contextDep=b;this.propDep=c;this.append=d}function ta(a){return a&&!(a.thisDep||a.contextDep||
+a.propDep)}function B(a){return new Y(!1,!1,!1,a)}function N(a,b){var c=a.type;return 0===c?(c=a.data.length,new Y(!0,1<=c,2<=c,b)):4===c?(c=a.data,new Y(c.thisDep,c.contextDep,c.propDep,b)):new Y(3===c,2===c,1===c,b)}function Ob(a,b,c,d,f,k,p,h,g,r,v,l,u,m,e){function n(a){return a.replace(".","_")}function D(a,b,c){var e=n(a);Ja.push(a);Ea[e]=pa[e]=!!c;qa[e]=b}function w(a,b,c){var e=n(a);Ja.push(a);Array.isArray(c)?(pa[e]=c.slice(),Ea[e]=c.slice()):pa[e]=Ea[e]=c;ra[e]=b}function t(){var a=Nb(),
+c=a.link,e=a.global;a.id=oa++;a.batchId="0";var f=c(ga),d=a.shared={props:"a0"};Object.keys(ga).forEach(function(a){d[a]=e.def(f,".",a)});var g=a.next={},ca=a.current={};Object.keys(ra).forEach(function(a){Array.isArray(pa[a])&&(g[a]=e.def(d.next,".",a),ca[a]=e.def(d.current,".",a))});var F=a.constants={};Object.keys(da).forEach(function(a){F[a]=e.def(JSON.stringify(da[a]))});a.invoke=function(b,e){switch(e.type){case 0:var X=["this",d.context,d.props,a.batchId];return b.def(c(e.data),".call(",X.slice(0,
+Math.max(e.data.length+1,4)),")");case 1:return b.def(d.props,e.data);case 2:return b.def(d.context,e.data);case 3:return b.def("this",e.data);case 4:return e.data.append(a,b),e.data.ref}};a.attribCache={};var X={};a.scopeAttrib=function(a){a=b.id(a);if(a in X)return X[a];var e=r.scope[a];e||(e=r.scope[a]=new xa);return X[a]=c(e)};return a}function Z(a){var b=a["static"];a=a.dynamic;var c;if("profile"in b){var e=!!b.profile;c=B(function(a,b){return e});c.enable=e}else if("profile"in a){var f=a.profile;
+c=N(f,function(a,b){return a.invoke(b,f)})}return c}function A(a,b){var c=a["static"],e=a.dynamic;if("framebuffer"in c){var f=c.framebuffer;return f?(f=h.getFramebuffer(f),B(function(a,b){var c=a.link(f),e=a.shared;b.set(e.framebuffer,".next",c);e=e.context;b.set(e,".framebufferWidth",c+".width");b.set(e,".framebufferHeight",c+".height");return c})):B(function(a,b){var c=a.shared;b.set(c.framebuffer,".next","null");c=c.context;b.set(c,".framebufferWidth",c+".drawingBufferWidth");b.set(c,".framebufferHeight",
+c+".drawingBufferHeight");return"null"})}if("framebuffer"in e){var d=e.framebuffer;return N(d,function(a,b){var c=a.invoke(b,d),e=a.shared,q=e.framebuffer,c=b.def(q,".getFramebuffer(",c,")");b.set(q,".next",c);e=e.context;b.set(e,".framebufferWidth",c+"?"+c+".width:"+e+".drawingBufferWidth");b.set(e,".framebufferHeight",c+"?"+c+".height:"+e+".drawingBufferHeight");return c})}return null}function x(a,b,c){function e(a){if(a in f){var c=f[a];a=!0;var q=c.x|0,g=c.y|0,K,ca;"width"in c?K=c.width|0:a=!1;
+"height"in c?ca=c.height|0:a=!1;return new Y(!a&&b&&b.thisDep,!a&&b&&b.contextDep,!a&&b&&b.propDep,function(a,b){var e=a.shared.context,f=K;"width"in c||(f=b.def(e,".","framebufferWidth","-",q));var d=ca;"height"in c||(d=b.def(e,".","framebufferHeight","-",g));return[q,g,f,d]})}if(a in d){var l=d[a];a=N(l,function(a,b){var c=a.invoke(b,l),e=a.shared.context,q=b.def(c,".x|0"),f=b.def(c,".y|0"),d=b.def('"width" in ',c,"?",c,".width|0:","(",e,".","framebufferWidth","-",q,")"),c=b.def('"height" in ',
+c,"?",c,".height|0:","(",e,".","framebufferHeight","-",f,")");return[q,f,d,c]});b&&(a.thisDep=a.thisDep||b.thisDep,a.contextDep=a.contextDep||b.contextDep,a.propDep=a.propDep||b.propDep);return a}return b?new Y(b.thisDep,b.contextDep,b.propDep,function(a,b){var c=a.shared.context;return[0,0,b.def(c,".","framebufferWidth"),b.def(c,".","framebufferHeight")]}):null}var f=a["static"],d=a.dynamic;if(a=e("viewport")){var g=a;a=new Y(a.thisDep,a.contextDep,a.propDep,function(a,b){var c=g.append(a,b),e=a.shared.context;
+b.set(e,".viewportWidth",c[2]);b.set(e,".viewportHeight",c[3]);return c})}return{viewport:a,scissor_box:e("scissor.box")}}function C(a){function c(a){if(a in e){var d=b.id(e[a]);a=B(function(){return d});a.id=d;return a}if(a in f){var q=f[a];return N(q,function(a,b){var c=a.invoke(b,q);return b.def(a.shared.strings,".id(",c,")")})}return null}var e=a["static"],f=a.dynamic,d=c("frag"),g=c("vert"),ca=null;ta(d)&&ta(g)?(ca=v.program(g.id,d.id),a=B(function(a,b){return a.link(ca)})):a=new Y(d&&d.thisDep||
+g&&g.thisDep,d&&d.contextDep||g&&g.contextDep,d&&d.propDep||g&&g.propDep,function(a,b){var c=a.shared.shader,e;e=d?d.append(a,b):b.def(c,".","frag");var f;f=g?g.append(a,b):b.def(c,".","vert");return b.def(c+".program("+f+","+e+")")});return{frag:d,vert:g,progVar:a,program:ca}}function M(a,b){function c(a,b){if(a in e){var q=e[a]|0;return B(function(a,c){b&&(a.OFFSET=q);return q})}if(a in f){var g=f[a];return N(g,function(a,c){var e=a.invoke(c,g);b&&(a.OFFSET=e);return e})}return b&&d?B(function(a,
+b){a.OFFSET="0";return 0}):null}var e=a["static"],f=a.dynamic,d=function(){if("elements"in e){var a=e.elements;Na(a)?a=k.getElements(k.create(a,!0)):a&&(a=k.getElements(a));var b=B(function(b,c){if(a){var e=b.link(a);return b.ELEMENTS=e}return b.ELEMENTS=null});b.value=a;return b}if("elements"in f){var c=f.elements;return N(c,function(a,b){var e=a.shared,d=e.isBufferArgs,e=e.elements,f=a.invoke(b,c),q=b.def("null"),d=b.def(d,"(",f,")"),f=a.cond(d).then(q,"=",e,".createStream(",f,");")["else"](q,"=",
+e,".getElements(",f,");");b.entry(f);b.exit(a.cond(d).then(e,".destroyStream(",q,");"));return a.ELEMENTS=q})}return null}(),g=c("offset",!0);return{elements:d,primitive:function(){if("primitive"in e){var a=e.primitive;return B(function(b,c){return Ra[a]})}if("primitive"in f){var b=f.primitive;return N(b,function(a,c){var e=a.constants.primTypes,d=a.invoke(c,b);return c.def(e,"[",d,"]")})}return d?ta(d)?d.value?B(function(a,b){return b.def(a.ELEMENTS,".primType")}):B(function(){return 4}):new Y(d.thisDep,
+d.contextDep,d.propDep,function(a,b){var c=a.ELEMENTS;return b.def(c,"?",c,".primType:",4)}):null}(),count:function(){if("count"in e){var a=e.count|0;return B(function(){return a})}if("count"in f){var b=f.count;return N(b,function(a,c){return a.invoke(c,b)})}return d?ta(d)?d?g?new Y(g.thisDep,g.contextDep,g.propDep,function(a,b){return b.def(a.ELEMENTS,".vertCount-",a.OFFSET)}):B(function(a,b){return b.def(a.ELEMENTS,".vertCount")}):B(function(){return-1}):new Y(d.thisDep||g.thisDep,d.contextDep||
+g.contextDep,d.propDep||g.propDep,function(a,b){var c=a.ELEMENTS;return a.OFFSET?b.def(c,"?",c,".vertCount-",a.OFFSET,":-1"):b.def(c,"?",c,".vertCount:-1")}):null}(),instances:c("instances",!1),offset:g}}function P(a,b){var c=a["static"],e=a.dynamic,d={};Ja.forEach(function(a){function b(q,g){if(a in c){var y=q(c[a]);d[f]=B(function(){return y})}else if(a in e){var l=e[a];d[f]=N(l,function(a,b){return g(a,b,a.invoke(b,l))})}}var f=n(a);switch(a){case "cull.enable":case "blend.enable":case "dither":case "stencil.enable":case "depth.enable":case "scissor.enable":case "polygonOffset.enable":case "sample.alpha":case "sample.enable":case "depth.mask":return b(function(a){return a},
+function(a,b,c){return c});case "depth.func":return b(function(a){return Ua[a]},function(a,b,c){return b.def(a.constants.compareFuncs,"[",c,"]")});case "depth.range":return b(function(a){return a},function(a,b,c){a=b.def("+",c,"[0]");b=b.def("+",c,"[1]");return[a,b]});case "blend.func":return b(function(a){return[Fa["srcRGB"in a?a.srcRGB:a.src],Fa["dstRGB"in a?a.dstRGB:a.dst],Fa["srcAlpha"in a?a.srcAlpha:a.src],Fa["dstAlpha"in a?a.dstAlpha:a.dst]]},function(a,b,c){function e(a,d){return b.def('"',
+a,d,'" in ',c,"?",c,".",a,d,":",c,".",a)}a=a.constants.blendFuncs;var d=e("src","RGB"),f=e("dst","RGB"),d=b.def(a,"[",d,"]"),q=b.def(a,"[",e("src","Alpha"),"]"),f=b.def(a,"[",f,"]");a=b.def(a,"[",e("dst","Alpha"),"]");return[d,f,q,a]});case "blend.equation":return b(function(a){if("string"===typeof a)return[V[a],V[a]];if("object"===typeof a)return[V[a.rgb],V[a.alpha]]},function(a,b,c){var e=a.constants.blendEquations,d=b.def(),f=b.def();a=a.cond("typeof ",c,'==="string"');a.then(d,"=",f,"=",e,"[",
+c,"];");a["else"](d,"=",e,"[",c,".rgb];",f,"=",e,"[",c,".alpha];");b(a);return[d,f]});case "blend.color":return b(function(a){return J(4,function(b){return+a[b]})},function(a,b,c){return J(4,function(a){return b.def("+",c,"[",a,"]")})});case "stencil.mask":return b(function(a){return a|0},function(a,b,c){return b.def(c,"|0")});case "stencil.func":return b(function(a){return[Ua[a.cmp||"keep"],a.ref||0,"mask"in a?a.mask:-1]},function(a,b,c){a=b.def('"cmp" in ',c,"?",a.constants.compareFuncs,"[",c,".cmp]",
+":",7680);var e=b.def(c,".ref|0");b=b.def('"mask" in ',c,"?",c,".mask|0:-1");return[a,e,b]});case "stencil.opFront":case "stencil.opBack":return b(function(b){return["stencil.opBack"===a?1029:1028,Oa[b.fail||"keep"],Oa[b.zfail||"keep"],Oa[b.zpass||"keep"]]},function(b,c,e){function d(a){return c.def('"',a,'" in ',e,"?",f,"[",e,".",a,"]:",7680)}var f=b.constants.stencilOps;return["stencil.opBack"===a?1029:1028,d("fail"),d("zfail"),d("zpass")]});case "polygonOffset.offset":return b(function(a){return[a.factor|
+0,a.units|0]},function(a,b,c){a=b.def(c,".factor|0");b=b.def(c,".units|0");return[a,b]});case "cull.face":return b(function(a){var b=0;"front"===a?b=1028:"back"===a&&(b=1029);return b},function(a,b,c){return b.def(c,'==="front"?',1028,":",1029)});case "lineWidth":return b(function(a){return a},function(a,b,c){return c});case "frontFace":return b(function(a){return rb[a]},function(a,b,c){return b.def(c+'==="cw"?2304:2305')});case "colorMask":return b(function(a){return a.map(function(a){return!!a})},
+function(a,b,c){return J(4,function(a){return"!!"+c+"["+a+"]"})});case "sample.coverage":return b(function(a){return["value"in a?a.value:1,!!a.invert]},function(a,b,c){a=b.def('"value" in ',c,"?+",c,".value:1");b=b.def("!!",c,".invert");return[a,b]})}});return d}function G(a,b){var c=a["static"],e=a.dynamic,d={};Object.keys(c).forEach(function(a){var b=c[a],e;if("number"===typeof b||"boolean"===typeof b)e=B(function(){return b});else if("function"===typeof b){var f=b._reglType;if("texture2d"===f||
+"textureCube"===f)e=B(function(a){return a.link(b)});else if("framebuffer"===f||"framebufferCube"===f)e=B(function(a){return a.link(b.color[0])})}else na(b)&&(e=B(function(a){return a.global.def("[",J(b.length,function(a){return b[a]}),"]")}));e.value=b;d[a]=e});Object.keys(e).forEach(function(a){var b=e[a];d[a]=N(b,function(a,c){return a.invoke(c,b)})});return d}function Q(a,c){var e=a["static"],d=a.dynamic,g={};Object.keys(e).forEach(function(a){var c=e[a],d=b.id(a),q=new xa;if(Na(c))q.state=1,
+q.buffer=f.getBuffer(f.create(c,34962,!1,!0)),q.type=0;else{var y=f.getBuffer(c);if(y)q.state=1,q.buffer=y,q.type=0;else if(c.constant){var l=c.constant;q.buffer="null";q.state=2;"number"===typeof l?q.x=l:Da.forEach(function(a,b){b<l.length&&(q[a]=l[b])})}else{var y=Na(c.buffer)?f.getBuffer(f.create(c.buffer,34962,!1,!0)):f.getBuffer(c.buffer),h=c.offset|0,k=c.stride|0,m=c.size|0,n=!!c.normalized,aa=0;"type"in c&&(aa=Qa[c.type]);c=c.divisor|0;q.buffer=y;q.state=1;q.size=m;q.normalized=n;q.type=aa||
+y.dtype;q.offset=h;q.stride=k;q.divisor=c}}g[a]=B(function(a,b){var c=a.attribCache;if(d in c)return c[d];var e={isStream:!1};Object.keys(q).forEach(function(a){e[a]=q[a]});q.buffer&&(e.buffer=a.link(q.buffer),e.type=e.type||e.buffer+".dtype");return c[d]=e})});Object.keys(d).forEach(function(a){var b=d[a];g[a]=N(b,function(a,c){function e(a){c(y[a],"=",d,".",a,"|0;")}var d=a.invoke(c,b),f=a.shared,q=f.isBufferArgs,g=f.buffer,y={isStream:c.def(!1)},l=new xa;l.state=1;Object.keys(l).forEach(function(a){y[a]=
+c.def(""+l[a])});var h=y.buffer,K=y.type;c("if(",q,"(",d,")){",y.isStream,"=true;",h,"=",g,".createStream(",34962,",",d,");",K,"=",h,".dtype;","}else{",h,"=",g,".getBuffer(",d,");","if(",h,"){",K,"=",h,".dtype;",'}else if("constant" in ',d,"){",y.state,"=",2,";","if(typeof "+d+'.constant === "number"){',y[Da[0]],"=",d,".constant;",Da.slice(1).map(function(a){return y[a]}).join("="),"=0;","}else{",Da.map(function(a,b){return y[a]+"="+d+".constant.length>="+b+"?"+d+".constant["+b+"]:0;"}).join(""),
+"}}else{","if(",q,"(",d,".buffer)){",h,"=",g,".createStream(",34962,",",d,".buffer);","}else{",h,"=",g,".getBuffer(",d,".buffer);","}",K,'="type" in ',d,"?",f.glTypes,"[",d,".type]:",h,".dtype;",y.normalized,"=!!",d,".normalized;");e("size");e("offset");e("stride");e("divisor");c("}}");c.exit("if(",y.isStream,"){",g,".destroyStream(",h,");","}");return y})});return g}function O(a){var b=a["static"],c=a.dynamic,e={};Object.keys(b).forEach(function(a){var c=b[a];e[a]=B(function(a,b){return"number"===
+typeof c||"boolean"===typeof c?""+c:a.link(c)})});Object.keys(c).forEach(function(a){var b=c[a];e[a]=N(b,function(a,c){return a.invoke(c,b)})});return e}function z(a,b,c,e,d){var f=A(a,d),g=x(a,f,d),l=M(a,d),h=P(a,d),k=C(a,d),m=g.viewport;m&&(h.viewport=m);m=n("scissor.box");(g=g[m])&&(h[m]=g);g=0<Object.keys(h).length;f={framebuffer:f,draw:l,shader:k,state:h,dirty:g};f.profile=Z(a,d);f.uniforms=G(c,d);f.attributes=Q(b,d);f.context=O(e,d);return f}function sa(a,b,c){var e=a.shared.context,d=a.scope();
+Object.keys(c).forEach(function(f){b.save(e,"."+f);d(e,".",f,"=",c[f].append(a,b),";")});b(d)}function I(a,b,c,e){var d=a.shared,f=d.gl,g=d.framebuffer,l;ka&&(l=b.def(d.extensions,".webgl_draw_buffers"));var h=a.constants,d=h.drawBuffer,h=h.backBuffer;a=c?c.append(a,b):b.def(g,".next");e||b("if(",a,"!==",g,".cur){");b("if(",a,"){",f,".bindFramebuffer(",36160,",",a,".framebuffer);");ka&&b(l,".drawBuffersWEBGL(",d,"[",a,".colorAttachments.length]);");b("}else{",f,".bindFramebuffer(",36160,",null);");
+ka&&b(l,".drawBuffersWEBGL(",h,");");b("}",g,".cur=",a,";");e||b("}")}function T(a,b,c){var e=a.shared,d=e.gl,f=a.current,g=a.next,l=e.current,h=e.next,k=a.cond(l,".dirty");Ja.forEach(function(b){b=n(b);if(!(b in c.state)){var e,y;if(b in g){e=g[b];y=f[b];var m=J(pa[b].length,function(a){return k.def(e,"[",a,"]")});k(a.cond(m.map(function(a,b){return a+"!=="+y+"["+b+"]"}).join("||")).then(d,".",ra[b],"(",m,");",m.map(function(a,b){return y+"["+b+"]="+a}).join(";"),";"))}else e=k.def(h,".",b),m=a.cond(e,
+"!==",l,".",b),k(m),b in qa?m(a.cond(e).then(d,".enable(",qa[b],");")["else"](d,".disable(",qa[b],");"),l,".",b,"=",e,";"):m(d,".",ra[b],"(",e,");",l,".",b,"=",e,";")}});0===Object.keys(c.state).length&&k(l,".dirty=false;");b(k)}function L(a,b,c,e){var d=a.shared,f=a.current,g=d.current,l=d.gl;qb(Object.keys(c)).forEach(function(d){var h=c[d];if(!e||e(h)){var k=h.append(a,b);if(qa[d]){var m=qa[d];ta(h)?k?b(l,".enable(",m,");"):b(l,".disable(",m,");"):b(a.cond(k).then(l,".enable(",m,");")["else"](l,
+".disable(",m,");"));b(g,".",d,"=",k,";")}else if(na(k)){var n=f[d];b(l,".",ra[d],"(",k,");",k.map(function(a,b){return n+"["+b+"]="+a}).join(";"),";")}else b(l,".",ra[d],"(",k,");",g,".",d,"=",k,";")}})}function ua(a,b){ma&&(a.instancing=b.def(a.shared.extensions,".angle_instanced_arrays"))}function E(a,b,c,e,d){function f(){return"undefined"===typeof performance?"Date.now()":"performance.now()"}function g(a){r=b.def();a(r,"=",f(),";");"string"===typeof d?a(n,".count+=",d,";"):a(n,".count++;");m&&
+(e?(u=b.def(),a(u,"=",t,".getNumPendingQueries();")):a(t,".beginQuery(",n,");"))}function l(a){a(n,".cpuTime+=",f(),"-",r,";");m&&(e?a(t,".pushScopeStats(",u,",",t,".getNumPendingQueries(),",n,");"):a(t,".endQuery();"))}function h(a){var c=b.def(p,".profile");b(p,".profile=",a,";");b.exit(p,".profile=",c,";")}var k=a.shared,n=a.stats,p=k.current,t=k.timer;c=c.profile;var r,u;if(c){if(ta(c)){c.enable?(g(b),l(b.exit),h("true")):h("false");return}c=c.append(a,b);h(c)}else c=b.def(p,".profile");k=a.block();
+g(k);b("if(",c,"){",k,"}");a=a.block();l(a);b.exit("if(",c,"){",a,"}")}function S(a,b,c,e,d){function f(a){switch(a){case 35664:case 35667:case 35671:return 2;case 35665:case 35668:case 35672:return 3;case 35666:case 35669:case 35673:return 4;default:return 1}}function g(c,e,d){function f(){b("if(!",n,".buffer){",k,".enableVertexAttribArray(",m,");}");var c=d.type,g;g=d.size?b.def(d.size,"||",e):e;b("if(",n,".type!==",c,"||",n,".size!==",g,"||",aa.map(function(a){return n+"."+a+"!=="+d[a]}).join("||"),
+"){",k,".bindBuffer(",34962,",",K,".buffer);",k,".vertexAttribPointer(",[m,g,c,d.normalized,d.stride,d.offset],");",n,".type=",c,";",n,".size=",g,";",aa.map(function(a){return n+"."+a+"="+d[a]+";"}).join(""),"}");ma&&(c=d.divisor,b("if(",n,".divisor!==",c,"){",a.instancing,".vertexAttribDivisorANGLE(",[m,c],");",n,".divisor=",c,";}"))}function h(){b("if(",n,".buffer){",k,".disableVertexAttribArray(",m,");","}if(",Da.map(function(a,b){return n+"."+a+"!=="+p[b]}).join("||"),"){",k,".vertexAttrib4f(",
+m,",",p,");",Da.map(function(a,b){return n+"."+a+"="+p[b]+";"}).join(""),"}")}var k=l.gl,m=b.def(c,".location"),n=b.def(l.attributes,"[",m,"]");c=d.state;var K=d.buffer,p=[d.x,d.y,d.z,d.w],aa=["buffer","normalized","offset","stride"];1===c?f():2===c?h():(b("if(",c,"===",1,"){"),f(),b("}else{"),h(),b("}"))}var l=a.shared;e.forEach(function(e){var l=e.name,h=c.attributes[l],k;if(h){if(!d(h))return;k=h.append(a,b)}else{if(!d(sb))return;var m=a.scopeAttrib(l);k={};Object.keys(new xa).forEach(function(a){k[a]=
+b.def(m,".",a)})}g(a.link(e),f(e.info.type),k)})}function U(a,c,e,d,f){for(var g=a.shared,l=g.gl,h,k=0;k<d.length;++k){var m=d[k],n=m.name,p=m.info.type,t=e.uniforms[n],m=a.link(m)+".location",r;if(t){if(!f(t))continue;if(ta(t)){n=t.value;if(35678===p||35680===p)p=a.link(n._texture||n.color[0]._texture),c(l,".uniform1i(",m,",",p+".bind());"),c.exit(p,".unbind();");else if(35674===p||35675===p||35676===p)n=a.global.def("new Float32Array(["+Array.prototype.slice.call(n)+"])"),t=2,35675===p?t=3:35676===
+p&&(t=4),c(l,".uniformMatrix",t,"fv(",m,",false,",n,");");else{switch(p){case 5126:h="1f";break;case 35664:h="2f";break;case 35665:h="3f";break;case 35666:h="4f";break;case 35670:h="1i";break;case 5124:h="1i";break;case 35671:h="2i";break;case 35667:h="2i";break;case 35672:h="3i";break;case 35668:h="3i";break;case 35673:h="4i";break;case 35669:h="4i"}c(l,".uniform",h,"(",m,",",na(n)?Array.prototype.slice.call(n):n,");")}continue}else r=t.append(a,c)}else{if(!f(sb))continue;r=c.def(g.uniforms,"[",
+b.id(n),"]")}35678===p?c("if(",r,"&&",r,'._reglType==="framebuffer"){',r,"=",r,".color[0];","}"):35680===p&&c("if(",r,"&&",r,'._reglType==="framebufferCube"){',r,"=",r,".color[0];","}");n=1;switch(p){case 35678:case 35680:p=c.def(r,"._texture");c(l,".uniform1i(",m,",",p,".bind());");c.exit(p,".unbind();");continue;case 5124:case 35670:h="1i";break;case 35667:case 35671:h="2i";n=2;break;case 35668:case 35672:h="3i";n=3;break;case 35669:case 35673:h="4i";n=4;break;case 5126:h="1f";break;case 35664:h=
+"2f";n=2;break;case 35665:h="3f";n=3;break;case 35666:h="4f";n=4;break;case 35674:h="Matrix2fv";break;case 35675:h="Matrix3fv";break;case 35676:h="Matrix4fv"}c(l,".uniform",h,"(",m,",");if("M"===h.charAt(0)){var m=Math.pow(p-35674+2,2),u=a.global.def("new Float32Array(",m,")");c("false,(Array.isArray(",r,")||",r," instanceof Float32Array)?",r,":(",J(m,function(a){return u+"["+a+"]="+r+"["+a+"]"}),",",u,")")}else 1<n?c(J(n,function(a){return r+"["+a+"]"})):c(r);c(");")}}function H(a,b,c,e){function d(f){var g=
+m[f];return g?g.contextDep&&e.contextDynamic||g.propDep?g.append(a,c):g.append(a,b):b.def(k,".",f)}function f(){function a(){c(w,".drawElementsInstancedANGLE(",[p,t,W,r+"<<(("+W+"-5121)>>1)",u],");")}function b(){c(w,".drawArraysInstancedANGLE(",[p,r,t,u],");")}n?v?a():(c("if(",n,"){"),a(),c("}else{"),b(),c("}")):b()}function g(){function a(){c(l+".drawElements("+[p,t,W,r+"<<(("+W+"-5121)>>1)"]+");")}function b(){c(l+".drawArrays("+[p,r,t]+");")}n?v?a():(c("if(",n,"){"),a(),c("}else{"),b(),c("}")):
+b()}var h=a.shared,l=h.gl,k=h.draw,m=e.draw,n=function(){var d=m.elements,f=b;if(d){if(d.contextDep&&e.contextDynamic||d.propDep)f=c;d=d.append(a,f)}else d=f.def(k,".","elements");d&&f("if("+d+")"+l+".bindBuffer(34963,"+d+".buffer.buffer);");return d}(),p=d("primitive"),r=d("offset"),t=function(){var d=m.count,f=b;if(d){if(d.contextDep&&e.contextDynamic||d.propDep)f=c;d=d.append(a,f)}else d=f.def(k,".","count");return d}();if("number"===typeof t){if(0===t)return}else c("if(",t,"){"),c.exit("}");var u,
+w;ma&&(u=d("instances"),w=a.instancing);var W=n+".type",v=m.elements&&ta(m.elements);ma&&("number"!==typeof u||0<=u)?"string"===typeof u?(c("if(",u,">0){"),f(),c("}else if(",u,"<0){"),g(),c("}")):f():g()}function ba(a,b,c,e,d){b=t();d=b.proc("body",d);ma&&(b.instancing=d.def(b.shared.extensions,".angle_instanced_arrays"));a(b,d,c,e);return b.compile().body}function R(a,b,c,e){ua(a,b);S(a,b,c,e.attributes,function(){return!0});U(a,b,c,e.uniforms,function(){return!0});H(a,b,b,c)}function W(a,b){var c=
+a.proc("draw",1);ua(a,c);sa(a,c,b.context);I(a,c,b.framebuffer);T(a,c,b);L(a,c,b.state);E(a,c,b,!1,!0);var e=b.shader.progVar.append(a,c);c(a.shared.gl,".useProgram(",e,".program);");if(b.shader.program)R(a,c,b,b.shader.program);else{var d=a.global.def("{}"),f=c.def(e,".id"),g=c.def(d,"[",f,"]");c(a.cond(g).then(g,".call(this,a0);")["else"](g,"=",d,"[",f,"]=",a.link(function(c){return ba(R,a,b,c,1)}),"(",e,");",g,".call(this,a0);"))}0<Object.keys(b.state).length&&c(a.shared.current,".dirty=true;")}
+function la(a,b,c,e){function d(){return!0}a.batchId="a1";ua(a,b);S(a,b,c,e.attributes,d);U(a,b,c,e.uniforms,d);H(a,b,b,c)}function ya(a,b,c,e){function d(a){return a.contextDep&&g||a.propDep}function f(a){return!d(a)}ua(a,b);var g=c.contextDep,h=b.def(),l=b.def();a.shared.props=l;a.batchId=h;var k=a.scope(),m=a.scope();b(k.entry,"for(",h,"=0;",h,"<","a1",";++",h,"){",l,"=","a0","[",h,"];",m,"}",k.exit);c.needsContext&&sa(a,m,c.context);c.needsFramebuffer&&I(a,m,c.framebuffer);L(a,m,c.state,d);c.profile&&
+d(c.profile)&&E(a,m,c,!1,!0);e?(S(a,k,c,e.attributes,f),S(a,m,c,e.attributes,d),U(a,k,c,e.uniforms,f),U(a,m,c,e.uniforms,d),H(a,k,m,c)):(b=a.global.def("{}"),e=c.shader.progVar.append(a,m),l=m.def(e,".id"),k=m.def(b,"[",l,"]"),m(a.shared.gl,".useProgram(",e,".program);","if(!",k,"){",k,"=",b,"[",l,"]=",a.link(function(b){return ba(la,a,c,b,2)}),"(",e,");}",k,".call(this,a0[",h,"],",h,");"))}function ha(a,b){function c(a){return a.contextDep&&d||a.propDep}var e=a.proc("batch",2);a.batchId="0";ua(a,
+e);var d=!1,f=!0;Object.keys(b.context).forEach(function(a){d=d||b.context[a].propDep});d||(sa(a,e,b.context),f=!1);var g=b.framebuffer,h=!1;g?(g.propDep?d=h=!0:g.contextDep&&d&&(h=!0),h||I(a,e,g)):I(a,e,null);b.state.viewport&&b.state.viewport.propDep&&(d=!0);T(a,e,b);L(a,e,b.state,function(a){return!c(a)});b.profile&&c(b.profile)||E(a,e,b,!1,"a1");b.contextDep=d;b.needsContext=f;b.needsFramebuffer=h;f=b.shader.progVar;if(f.contextDep&&d||f.propDep)ya(a,e,b,null);else if(f=f.append(a,e),e(a.shared.gl,
+".useProgram(",f,".program);"),b.shader.program)ya(a,e,b,b.shader.program);else{var g=a.global.def("{}"),h=e.def(f,".id"),l=e.def(g,"[",h,"]");e(a.cond(l).then(l,".call(this,a0,a1);")["else"](l,"=",g,"[",h,"]=",a.link(function(c){return ba(ya,a,b,c,2)}),"(",f,");",l,".call(this,a0,a1);"))}0<Object.keys(b.state).length&&e(a.shared.current,".dirty=true;")}function ea(a,c){function e(b){var g=c.shader[b];g&&d.set(f.shader,"."+b,g.append(a,d))}var d=a.proc("scope",3);a.batchId="a2";var f=a.shared,g=f.current;
+sa(a,d,c.context);c.framebuffer&&c.framebuffer.append(a,d);qb(Object.keys(c.state)).forEach(function(b){var e=c.state[b].append(a,d);na(e)?e.forEach(function(c,e){d.set(a.next[b],"["+e+"]",c)}):d.set(f.next,"."+b,e)});E(a,d,c,!0,!0);["elements","offset","count","instances","primitive"].forEach(function(b){var e=c.draw[b];e&&d.set(f.draw,"."+b,""+e.append(a,d))});Object.keys(c.uniforms).forEach(function(e){d.set(f.uniforms,"["+b.id(e)+"]",c.uniforms[e].append(a,d))});Object.keys(c.attributes).forEach(function(b){var e=
+c.attributes[b].append(a,d),f=a.scopeAttrib(b);Object.keys(new xa).forEach(function(a){d.set(f,"."+a,e[a])})});e("vert");e("frag");0<Object.keys(c.state).length&&(d(g,".dirty=true;"),d.exit(g,".dirty=true;"));d("a1(",a.shared.context,",a0,",a.batchId,");")}function ja(a){if("object"===typeof a&&!na(a)){for(var b=Object.keys(a),c=0;c<b.length;++c)if(ia.isDynamic(a[b[c]]))return!0;return!1}}function fa(a,b,c){function e(a,b){g.forEach(function(c){var e=d[c];ia.isDynamic(e)&&(e=a.invoke(b,e),b(k,".",
+c,"=",e,";"))})}var d=b["static"][c];if(d&&ja(d)){var f=a.global,g=Object.keys(d),h=!1,l=!1,m=!1,k=a.global.def("{}");g.forEach(function(b){var c=d[b];if(ia.isDynamic(c))"function"===typeof c&&(c=d[b]=ia.unbox(c)),b=N(c,null),h=h||b.thisDep,m=m||b.propDep,l=l||b.contextDep;else{f(k,".",b,"=");switch(typeof c){case "number":f(c);break;case "string":f('"',c,'"');break;case "object":Array.isArray(c)&&f("[",c.join(),"]");break;default:f(a.link(c))}f(";")}});b.dynamic[c]=new ia.DynamicVariable(4,{thisDep:h,
+contextDep:l,propDep:m,ref:k,append:e});delete b["static"][c]}}var xa=r.Record,V={add:32774,subtract:32778,"reverse subtract":32779};c.ext_blend_minmax&&(V.min=32775,V.max=32776);var ma=c.angle_instanced_arrays,ka=c.webgl_draw_buffers,pa={dirty:!0,profile:e.profile},Ea={},Ja=[],qa={},ra={};D("dither",3024);D("blend.enable",3042);w("blend.color","blendColor",[0,0,0,0]);w("blend.equation","blendEquationSeparate",[32774,32774]);w("blend.func","blendFuncSeparate",[1,0,1,0]);D("depth.enable",2929,!0);
+w("depth.func","depthFunc",513);w("depth.range","depthRange",[0,1]);w("depth.mask","depthMask",!0);w("colorMask","colorMask",[!0,!0,!0,!0]);D("cull.enable",2884);w("cull.face","cullFace",1029);w("frontFace","frontFace",2305);w("lineWidth","lineWidth",1);D("polygonOffset.enable",32823);w("polygonOffset.offset","polygonOffset",[0,0]);D("sample.alpha",32926);D("sample.enable",32928);w("sample.coverage","sampleCoverage",[1,!1]);D("stencil.enable",2960);w("stencil.mask","stencilMask",-1);w("stencil.func",
+"stencilFunc",[519,0,-1]);w("stencil.opFront","stencilOpSeparate",[1028,7680,7680,7680]);w("stencil.opBack","stencilOpSeparate",[1029,7680,7680,7680]);D("scissor.enable",3089);w("scissor.box","scissor",[0,0,a.drawingBufferWidth,a.drawingBufferHeight]);w("viewport","viewport",[0,0,a.drawingBufferWidth,a.drawingBufferHeight]);var ga={gl:a,context:u,strings:b,next:Ea,current:pa,draw:l,elements:k,buffer:f,shader:v,attributes:r.state,uniforms:g,framebuffer:h,extensions:c,timer:m,isBufferArgs:Na},da={primTypes:Ra,
+compareFuncs:Ua,blendFuncs:Fa,blendEquations:V,stencilOps:Oa,glTypes:Qa,orientationType:rb};ka&&(da.backBuffer=[1029],da.drawBuffer=J(d.maxDrawbuffers,function(a){return 0===a?[0]:J(a,function(a){return 36064+a})}));var oa=0;return{next:Ea,current:pa,procs:function(){var b=t(),c=b.proc("poll"),e=b.proc("refresh"),f=b.block();c(f);e(f);var g=b.shared,h=g.gl,l=g.next,m=g.current;f(m,".dirty=false;");I(b,c);I(b,e,null,!0);var k=a.getExtension("angle_instanced_arrays"),n;k&&(n=b.link(k));for(var p=0;p<
+d.maxAttributes;++p){var r=e.def(g.attributes,"[",p,"]"),u=b.cond(r,".buffer");u.then(h,".enableVertexAttribArray(",p,");",h,".bindBuffer(",34962,",",r,".buffer.buffer);",h,".vertexAttribPointer(",p,",",r,".size,",r,".type,",r,".normalized,",r,".stride,",r,".offset);")["else"](h,".disableVertexAttribArray(",p,");",h,".vertexAttrib4f(",p,",",r,".x,",r,".y,",r,".z,",r,".w);",r,".buffer=null;");e(u);k&&e(n,".vertexAttribDivisorANGLE(",p,",",r,".divisor);")}Object.keys(qa).forEach(function(a){var d=qa[a],
+g=f.def(l,".",a),k=b.block();k("if(",g,"){",h,".enable(",d,")}else{",h,".disable(",d,")}",m,".",a,"=",g,";");e(k);c("if(",g,"!==",m,".",a,"){",k,"}")});Object.keys(ra).forEach(function(a){var d=ra[a],g=pa[a],k,n,p=b.block();p(h,".",d,"(");na(g)?(d=g.length,k=b.global.def(l,".",a),n=b.global.def(m,".",a),p(J(d,function(a){return k+"["+a+"]"}),");",J(d,function(a){return n+"["+a+"]="+k+"["+a+"];"}).join("")),c("if(",J(d,function(a){return k+"["+a+"]!=="+n+"["+a+"]"}).join("||"),"){",p,"}")):(k=f.def(l,
+".",a),n=f.def(m,".",a),p(k,");",m,".",a,"=",k,";"),c("if(",k,"!==",n,"){",p,"}"));e(p)});return b.compile()}(),compile:function(a,b,c,e,d){var f=t();f.stats=f.link(d);Object.keys(b["static"]).forEach(function(a){fa(f,b,a)});Pb.forEach(function(b){fa(f,a,b)});c=z(a,b,c,e,f);W(f,c);ea(f,c);ha(f,c);return f.compile()}}}function tb(a,b){for(var c=0;c<a.length;++c)if(a[c]===b)return c;return-1}var A=function(a,b){for(var c=Object.keys(b),d=0;d<c.length;++d)a[c[d]]=b[c[d]];return a},vb=0,ia={DynamicVariable:da,
+define:function(a,b){return new da(a,Wa(b+""))},isDynamic:function(a){return"function"===typeof a&&!a._reglType||a instanceof da},unbox:function(a,b){return"function"===typeof a?new da(0,a):a},accessor:Wa},Va={next:"function"===typeof requestAnimationFrame?function(a){return requestAnimationFrame(a)}:function(a){return setTimeout(a,16)},cancel:"function"===typeof cancelAnimationFrame?function(a){return cancelAnimationFrame(a)}:clearTimeout},ub="undefined"!==typeof performance&&performance.now?function(){return performance.now()}:
+function(){return+new Date},Qb=function(a,b){var c=1;b.ext_texture_filter_anisotropic&&(c=a.getParameter(34047));var d=1,f=1;b.webgl_draw_buffers&&(d=a.getParameter(34852),f=a.getParameter(36063));return{colorBits:[a.getParameter(3410),a.getParameter(3411),a.getParameter(3412),a.getParameter(3413)],depthBits:a.getParameter(3414),stencilBits:a.getParameter(3415),subpixelBits:a.getParameter(3408),extensions:Object.keys(b).filter(function(a){return!!b[a]}),maxAnisotropic:c,maxDrawbuffers:d,maxColorAttachments:f,
+pointSizeDims:a.getParameter(33901),lineWidthDims:a.getParameter(33902),maxViewportDims:a.getParameter(3386),maxCombinedTextureUnits:a.getParameter(35661),maxCubeMapSize:a.getParameter(34076),maxRenderbufferSize:a.getParameter(34024),maxTextureUnits:a.getParameter(34930),maxTextureSize:a.getParameter(3379),maxAttributes:a.getParameter(34921),maxVertexUniforms:a.getParameter(36347),maxVertexTextureUnits:a.getParameter(35660),maxVaryingVectors:a.getParameter(36348),maxFragmentUniforms:a.getParameter(36349),
+glsl:a.getParameter(35724),renderer:a.getParameter(7937),vendor:a.getParameter(7936),version:a.getParameter(7938)}},O=function(a){return a instanceof Uint8Array||a instanceof Uint16Array||a instanceof Uint32Array||a instanceof Int8Array||a instanceof Int16Array||a instanceof Int32Array||a instanceof Float32Array||a instanceof Float64Array||a instanceof Uint8ClampedArray},H=function(a){return Object.keys(a).map(function(b){return a[b]})},$a=J(8,function(){return[]}),x={alloc:fa,free:ab,allocType:function(a,
+b){var c=null;switch(a){case 5120:c=new Int8Array(fa(b),0,b);break;case 5121:c=new Uint8Array(fa(b),0,b);break;case 5122:c=new Int16Array(fa(2*b),0,b);break;case 5123:c=new Uint16Array(fa(2*b),0,b);break;case 5124:c=new Int32Array(fa(4*b),0,b);break;case 5125:c=new Uint32Array(fa(4*b),0,b);break;case 5126:c=new Float32Array(fa(4*b),0,b);break;default:return null}return c.length!==b?c.subarray(0,b):c},freeType:function(a){ab(a.buffer)}},La={shape:function(a){for(var b=[];a.length;a=a[0])b.push(a.length);
+return b},flatten:function(a,b,c,d){var f=1;if(b.length)for(var k=0;k<b.length;++k)f*=b[k];else f=0;c=d||x.allocType(c,f);switch(b.length){case 0:break;case 1:d=b[0];for(b=0;b<d;++b)c[b]=a[b];break;case 2:d=b[0];b=b[1];for(k=f=0;k<d;++k)for(var p=a[k],h=0;h<b;++h)c[f++]=p[h];break;case 3:bb(a,b[0],b[1],b[2],c,0);break;default:cb(a,b,0,c,0)}return c}},Ha={"[object Int8Array]":5120,"[object Int16Array]":5122,"[object Int32Array]":5124,"[object Uint8Array]":5121,"[object Uint8ClampedArray]":5121,"[object Uint16Array]":5123,
+"[object Uint32Array]":5125,"[object Float32Array]":5126,"[object Float64Array]":5121,"[object ArrayBuffer]":5121},Qa={int8:5120,int16:5122,int32:5124,uint8:5121,uint16:5123,uint32:5125,"float":5126,float32:5126},hb={dynamic:35048,stream:35040,"static":35044},Pa=La.flatten,fb=La.shape,ga=[];ga[5120]=1;ga[5122]=2;ga[5124]=4;ga[5121]=1;ga[5123]=2;ga[5125]=4;ga[5126]=4;var Ra={points:0,point:0,lines:1,line:1,triangles:4,triangle:4,"line loop":2,"line strip":3,"triangle strip":5,"triangle fan":6},jb=
+new Float32Array(1),Db=new Uint32Array(jb.buffer),Hb=[9984,9986,9985,9987],Ka=[0,6409,6410,6407,6408],R={};R[6409]=R[6406]=R[6402]=1;R[34041]=R[6410]=2;R[6407]=R[35904]=3;R[6408]=R[35906]=4;var Eb=Object.keys(Ha).concat(["[object HTMLCanvasElement]","[object CanvasRenderingContext2D]","[object HTMLImageElement]","[object HTMLVideoElement]"]),za=[];za[5121]=1;za[5126]=4;za[36193]=2;za[5123]=2;za[5125]=4;var C=[];C[32854]=2;C[32855]=2;C[36194]=2;C[34041]=4;C[33776]=.5;C[33777]=.5;C[33778]=1;C[33779]=
+1;C[35986]=.5;C[35987]=1;C[34798]=1;C[35840]=.5;C[35841]=.25;C[35842]=.5;C[35843]=.25;C[36196]=.5;var L=[];L[32854]=2;L[32855]=2;L[36194]=2;L[33189]=2;L[36168]=1;L[34041]=4;L[35907]=4;L[34836]=16;L[34842]=8;L[34843]=6;var Rb=function(a,b,c,d,f){function k(a){this.id=r++;this.refCount=1;this.renderbuffer=a;this.format=32854;this.height=this.width=0;f.profile&&(this.stats={size:0})}function p(b){var c=b.renderbuffer;a.bindRenderbuffer(36161,null);a.deleteRenderbuffer(c);b.renderbuffer=null;b.refCount=
+0;delete v[b.id];d.renderbufferCount--}var h={rgba4:32854,rgb565:36194,"rgb5 a1":32855,depth:33189,stencil:36168,"depth stencil":34041};b.ext_srgb&&(h.srgba=35907);b.ext_color_buffer_half_float&&(h.rgba16f=34842,h.rgb16f=34843);b.webgl_color_buffer_float&&(h.rgba32f=34836);var g=[];Object.keys(h).forEach(function(a){g[h[a]]=a});var r=0,v={};k.prototype.decRef=function(){0>=--this.refCount&&p(this)};f.profile&&(d.getTotalRenderbufferSize=function(){var a=0;Object.keys(v).forEach(function(b){a+=v[b].stats.size});
+return a});return{create:function(b,c){function m(b,c){var d=0,l=0,k=32854;"object"===typeof b&&b?("shape"in b?(l=b.shape,d=l[0]|0,l=l[1]|0):("radius"in b&&(d=l=b.radius|0),"width"in b&&(d=b.width|0),"height"in b&&(l=b.height|0)),"format"in b&&(k=h[b.format])):"number"===typeof b?(d=b|0,l="number"===typeof c?c|0:d):b||(d=l=1);if(d!==e.width||l!==e.height||k!==e.format)return m.width=e.width=d,m.height=e.height=l,e.format=k,a.bindRenderbuffer(36161,e.renderbuffer),a.renderbufferStorage(36161,k,d,l),
+f.profile&&(e.stats.size=L[e.format]*e.width*e.height),m.format=g[e.format],m}var e=new k(a.createRenderbuffer());v[e.id]=e;d.renderbufferCount++;m(b,c);m.resize=function(b,c){var d=b|0,g=c|0||d;if(d===e.width&&g===e.height)return m;m.width=e.width=d;m.height=e.height=g;a.bindRenderbuffer(36161,e.renderbuffer);a.renderbufferStorage(36161,e.format,d,g);f.profile&&(e.stats.size=L[e.format]*e.width*e.height);return m};m._reglType="renderbuffer";m._renderbuffer=e;f.profile&&(m.stats=e.stats);m.destroy=
+function(){e.decRef()};return m},clear:function(){H(v).forEach(p)},restore:function(){H(v).forEach(function(b){b.renderbuffer=a.createRenderbuffer();a.bindRenderbuffer(36161,b.renderbuffer);a.renderbufferStorage(36161,b.format,b.width,b.height)});a.bindRenderbuffer(36161,null)}}},ob=[];ob[6408]=4;var Ma=[];Ma[5121]=1;Ma[5126]=4;Ma[36193]=2;var Da=["x","y","z","w"],Pb="blend.func blend.equation stencil.func stencil.opFront stencil.opBack sample.coverage viewport scissor.box polygonOffset.offset".split(" "),
+Fa={0:0,1:1,zero:0,one:1,"src color":768,"one minus src color":769,"src alpha":770,"one minus src alpha":771,"dst color":774,"one minus dst color":775,"dst alpha":772,"one minus dst alpha":773,"constant color":32769,"one minus constant color":32770,"constant alpha":32771,"one minus constant alpha":32772,"src alpha saturate":776},Ua={never:512,less:513,"<":513,equal:514,"=":514,"==":514,"===":514,lequal:515,"<=":515,greater:516,">":516,notequal:517,"!=":517,"!==":517,gequal:518,">=":518,always:519},
+Oa={0:0,zero:0,keep:7680,replace:7681,increment:7682,decrement:7683,"increment wrap":34055,"decrement wrap":34056,invert:5386},rb={cw:2304,ccw:2305},sb=new Y(!1,!1,!1,function(){}),Sb=function(a,b){function c(){this.endQueryIndex=this.startQueryIndex=-1;this.sum=0;this.stats=null}function d(a,b,d){var e=h.pop()||new c;e.startQueryIndex=a;e.endQueryIndex=b;e.sum=0;e.stats=d;g.push(e)}var f=b.ext_disjoint_timer_query;if(!f)return null;var k=[],p=[],h=[],g=[],r=[],v=[];return{beginQuery:function(a){var b=
+k.pop()||f.createQueryEXT();f.beginQueryEXT(35007,b);p.push(b);d(p.length-1,p.length,a)},endQuery:function(){f.endQueryEXT(35007)},pushScopeStats:d,update:function(){var a,b;a=p.length;if(0!==a){v.length=Math.max(v.length,a+1);r.length=Math.max(r.length,a+1);r[0]=0;var c=v[0]=0;for(b=a=0;b<p.length;++b){var e=p[b];f.getQueryObjectEXT(e,34919)?(c+=f.getQueryObjectEXT(e,34918),k.push(e)):p[a++]=e;r[b+1]=c;v[b+1]=a}p.length=a;for(b=a=0;b<g.length;++b){var c=g[b],d=c.startQueryIndex,e=c.endQueryIndex;
+c.sum+=r[e]-r[d];d=v[d];e=v[e];e===d?(c.stats.gpuTime+=c.sum/1E6,h.push(c)):(c.startQueryIndex=d,c.endQueryIndex=e,g[a++]=c)}g.length=a}},getNumPendingQueries:function(){return p.length},clear:function(){k.push.apply(k,p);for(var a=0;a<k.length;a++)f.deleteQueryEXT(k[a]);p.length=0;k.length=0},restore:function(){p.length=0;k.length=0}}};return function(a){function b(){if(0===E.length)x&&x.update(),ba=null;else{ba=Va.next(b);v();for(var a=E.length-1;0<=a;--a){var c=E[a];c&&c(M,null,0)}m.flush();x&&
+x.update()}}function c(){!ba&&0<E.length&&(ba=Va.next(b))}function d(){ba&&(Va.cancel(b),ba=null)}function f(a){a.preventDefault();d();S.forEach(function(a){a()})}function k(a){m.getError();n.restore();N.restore();G.restore();z.restore();L.restore();I.restore();x&&x.restore();T.procs.refresh();c();U.forEach(function(a){a()})}function p(a){function b(a){var c={},d={};Object.keys(a).forEach(function(b){var e=a[b];ia.isDynamic(e)?d[b]=ia.unbox(e,b):c[b]=e});return{dynamic:d,"static":c}}function c(a){for(;m.length<
+a;)m.push(null);return m}var d=b(a.context||{}),e=b(a.uniforms||{}),f=b(a.attributes||{}),g=b(function(a){function b(a){if(a in c){var d=c[a];delete c[a];Object.keys(d).forEach(function(b){c[a+"."+b]=d[b]})}}var c=A({},a);delete c.uniforms;delete c.attributes;delete c.context;"stencil"in c&&c.stencil.op&&(c.stencil.opBack=c.stencil.opFront=c.stencil.op,delete c.stencil.op);b("blend");b("depth");b("cull");b("stencil");b("polygonOffset");b("scissor");b("sample");return c}(a));a={gpuTime:0,cpuTime:0,
+count:0};var d=T.compile(g,f,e,d,a),h=d.draw,k=d.batch,l=d.scope,m=[];return A(function(a,b){var d;if("function"===typeof a)return l.call(this,null,a,0);if("function"===typeof b)if("number"===typeof a)for(d=0;d<a;++d)l.call(this,null,b,d);else if(Array.isArray(a))for(d=0;d<a.length;++d)l.call(this,a[d],b,d);else return l.call(this,a,b,0);else if("number"===typeof a){if(0<a)return k.call(this,c(a|0),a|0)}else if(Array.isArray(a)){if(a.length)return k.call(this,a,a.length)}else return h.call(this,a)},
+{stats:a})}function h(a,b){var c=0;T.procs.poll();var d=b.color;d&&(m.clearColor(+d[0]||0,+d[1]||0,+d[2]||0,+d[3]||0),c|=16384);"depth"in b&&(m.clearDepth(+b.depth),c|=256);"stencil"in b&&(m.clearStencil(b.stencil|0),c|=1024);m.clear(c)}function g(a){E.push(a);c();return{cancel:function(){function b(){var a=tb(E,b);E[a]=E[E.length-1];--E.length;0>=E.length&&d()}var c=tb(E,a);E[c]=b}}}function r(){var a=O.viewport,b=O.scissor_box;a[0]=a[1]=b[0]=b[1]=0;M.viewportWidth=M.framebufferWidth=M.drawingBufferWidth=
+a[2]=b[2]=m.drawingBufferWidth;M.viewportHeight=M.framebufferHeight=M.drawingBufferHeight=a[3]=b[3]=m.drawingBufferHeight}function v(){M.tick+=1;M.time=u();r();T.procs.poll()}function l(){r();T.procs.refresh();x&&x.update()}function u(){return(ub()-C)/1E3}a=zb(a);if(!a)return null;var m=a.gl,e=m.getContextAttributes();m.isContextLost();var n=Ab(m,a);if(!n)return null;var D=wb(),w={bufferCount:0,elementsCount:0,framebufferCount:0,shaderCount:0,textureCount:0,cubeCount:0,renderbufferCount:0,maxTextureUnits:0},
+t=n.extensions,x=Sb(m,t),C=ub(),B=m.drawingBufferWidth,J=m.drawingBufferHeight,M={tick:0,time:0,viewportWidth:B,viewportHeight:J,framebufferWidth:B,framebufferHeight:J,drawingBufferWidth:B,drawingBufferHeight:J,pixelRatio:a.pixelRatio},P=Qb(m,t),G=Bb(m,w,a),Q=Cb(m,t,G,w),B=Kb(m,t,P,G,D),N=Lb(m,D,w,a),z=Fb(m,t,P,function(){T.procs.poll()},M,w,a),L=Rb(m,t,P,w,a),I=Jb(m,t,P,z,L,w),T=Ob(m,D,t,P,G,Q,z,I,{},B,N,{elements:null,primitive:4,count:-1,offset:0,instances:-1},M,x,a),D=Mb(m,I,T.procs.poll,M,e,
+t),O=T.next,H=m.canvas,E=[],S=[],U=[],R=[a.onDestroy],ba=null;H&&(H.addEventListener("webglcontextlost",f,!1),H.addEventListener("webglcontextrestored",k,!1));var Y=I.setFBO=p({framebuffer:ia.define.call(null,1,"framebuffer")});l();e=A(p,{clear:function(a){if("framebuffer"in a)if(a.framebuffer&&"framebufferCube"===a.framebuffer_reglType)for(var b=0;6>b;++b)Y(A({framebuffer:a.framebuffer.faces[b]},a),h);else Y(a,h);else h(null,a)},prop:ia.define.bind(null,1),context:ia.define.bind(null,2),"this":ia.define.bind(null,
+3),draw:p({}),buffer:function(a){return G.create(a,34962,!1,!1)},elements:function(a){return Q.create(a,!1)},texture:z.create2D,cube:z.createCube,renderbuffer:L.create,framebuffer:I.create,framebufferCube:I.createCube,attributes:e,frame:g,on:function(a,b){var c;switch(a){case "frame":return g(b);case "lost":c=S;break;case "restore":c=U;break;case "destroy":c=R}c.push(b);return{cancel:function(){for(var a=0;a<c.length;++a)if(c[a]===b){c[a]=c[c.length-1];c.pop();break}}}},limits:P,hasExtension:function(a){return 0<=
+P.extensions.indexOf(a.toLowerCase())},read:D,destroy:function(){E.length=0;d();H&&(H.removeEventListener("webglcontextlost",f),H.removeEventListener("webglcontextrestored",k));N.clear();I.clear();L.clear();z.clear();Q.clear();G.clear();x&&x.clear();R.forEach(function(a){a()})},_gl:m,_refresh:l,poll:function(){v();x&&x.update()},now:u,stats:w});a.onDone(null,e);return e}});
+
+},{}],187:[function(require,module,exports){
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -45535,7 +38107,7 @@ function repeat(str, num) {
   return res;
 }
 
-},{}],189:[function(require,module,exports){
+},{}],188:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -45703,7 +38275,7 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":192,"robust-subtract":194,"robust-sum":195,"two-product":211}],190:[function(require,module,exports){
+},{"robust-scale":191,"robust-subtract":193,"robust-sum":194,"two-product":216}],189:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -45894,7 +38466,7 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":192,"robust-subtract":194,"robust-sum":195,"two-product":211}],191:[function(require,module,exports){
+},{"robust-scale":191,"robust-subtract":193,"robust-sum":194,"two-product":216}],190:[function(require,module,exports){
 "use strict"
 
 var robustSum = require("robust-sum")
@@ -45924,7 +38496,7 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":192,"robust-sum":195}],192:[function(require,module,exports){
+},{"robust-scale":191,"robust-sum":194}],191:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -45975,7 +38547,7 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":211,"two-sum":212}],193:[function(require,module,exports){
+},{"two-product":216,"two-sum":217}],192:[function(require,module,exports){
 "use strict"
 
 module.exports = segmentsIntersect
@@ -46023,7 +38595,7 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":190}],194:[function(require,module,exports){
+},{"robust-orientation":189}],193:[function(require,module,exports){
 "use strict"
 
 module.exports = robustSubtract
@@ -46180,7 +38752,7 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],195:[function(require,module,exports){
+},{}],194:[function(require,module,exports){
 "use strict"
 
 module.exports = linearExpansionSum
@@ -46337,7 +38909,7 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],196:[function(require,module,exports){
+},{}],195:[function(require,module,exports){
 "use strict"
 
 module.exports = function signum(x) {
@@ -46345,9 +38917,9 @@ module.exports = function signum(x) {
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],197:[function(require,module,exports){
-arguments[4][31][0].apply(exports,arguments)
-},{"dup":31}],198:[function(require,module,exports){
+},{}],196:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"dup":33}],197:[function(require,module,exports){
 "use strict"; "use restrict";
 
 var bits      = require("bit-twiddle")
@@ -46691,7 +39263,7 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":197,"union-find":199}],199:[function(require,module,exports){
+},{"bit-twiddle":196,"union-find":198}],198:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -46748,7 +39320,7 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],200:[function(require,module,exports){
+},{}],199:[function(require,module,exports){
 "use strict"
 
 module.exports = simplifyPolygon
@@ -47020,7 +39592,7 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":190,"simplicial-complex":198}],201:[function(require,module,exports){
+},{"robust-orientation":189,"simplicial-complex":197}],200:[function(require,module,exports){
 "use strict"
 
 module.exports = orderSegments
@@ -47116,7 +39688,7 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":190}],202:[function(require,module,exports){
+},{"robust-orientation":189}],201:[function(require,module,exports){
 "use strict"
 
 module.exports = createSlabDecomposition
@@ -47347,7 +39919,449 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":201,"binary-search-bounds":30,"functional-red-black-tree":70,"robust-orientation":190}],203:[function(require,module,exports){
+},{"./lib/order-segments":200,"binary-search-bounds":32,"functional-red-black-tree":78,"robust-orientation":189}],202:[function(require,module,exports){
+'use strict'
+
+module.exports = sortLevels
+
+var INSERT_SORT_CUTOFF = 32
+
+function sortLevels(data_levels, data_points, data_ids, data_weights, n0) {
+  if (n0 <= 4*INSERT_SORT_CUTOFF) {
+    insertionSort(0, n0 - 1, data_levels, data_points, data_ids, data_weights)
+  } else {
+    quickSort(0, n0 - 1, data_levels, data_points, data_ids, data_weights)
+  }
+}
+
+function insertionSort(left, right, data_levels, data_points, data_ids, data_weights) {
+  for(var i=left+1; i<=right; ++i) {
+    var a_level  = data_levels[i]
+    var a_x      = data_points[2*i]
+    var a_y      = data_points[2*i+1]
+    var a_id     = data_ids[i]
+    var a_weight = data_weights[i]
+
+    var j = i
+    while(j > left) {
+      var b_level = data_levels[j-1]
+      var b_x     = data_points[2*(j-1)]
+      if(((b_level - a_level) || (a_x - b_x)) >= 0) {
+        break
+      }
+      data_levels[j]      = b_level
+      data_points[2*j]    = b_x
+      data_points[2*j+1]  = data_points[2*j-1]
+      data_ids[j]         = data_ids[j-1]
+      data_weights[j]     = data_weights[j-1]
+      j -= 1
+    }
+
+    data_levels[j]     = a_level
+    data_points[2*j]   = a_x
+    data_points[2*j+1] = a_y
+    data_ids[j]        = a_id
+    data_weights[j]    = a_weight
+  }
+}
+
+function swap(i, j, data_levels, data_points, data_ids, data_weights) {
+  var a_level = data_levels[i]
+  var a_x     = data_points[2*i]
+  var a_y     = data_points[2*i+1]
+  var a_id    = data_ids[i]
+  var a_weight = data_weights[i]
+
+  data_levels[i]     = data_levels[j]
+  data_points[2*i]   = data_points[2*j]
+  data_points[2*i+1] = data_points[2*j+1]
+  data_ids[i]        = data_ids[j]
+  data_weights[i]    = data_weights[j]
+
+  data_levels[j]     = a_level
+  data_points[2*j]   = a_x
+  data_points[2*j+1] = a_y
+  data_ids[j]        = a_id
+  data_weights[j]    = a_weight
+}
+
+function move(i, j, data_levels, data_points, data_ids, data_weights) {
+  data_levels[i]     = data_levels[j]
+  data_points[2*i]   = data_points[2*j]
+  data_points[2*i+1] = data_points[2*j+1]
+  data_ids[i]        = data_ids[j]
+  data_weights[i]    = data_weights[j]
+}
+
+function rotate(i, j, k, data_levels, data_points, data_ids, data_weights) {
+  var a_level = data_levels[i]
+  var a_x     = data_points[2*i]
+  var a_y     = data_points[2*i+1]
+  var a_id    = data_ids[i]
+  var a_weight = data_weights[i]
+
+  data_levels[i]     = data_levels[j]
+  data_points[2*i]   = data_points[2*j]
+  data_points[2*i+1] = data_points[2*j+1]
+  data_ids[i]        = data_ids[j]
+  data_weights[i]    = data_weights[j]
+
+  data_levels[j]     = data_levels[k]
+  data_points[2*j]   = data_points[2*k]
+  data_points[2*j+1] = data_points[2*k+1]
+  data_ids[j]        = data_ids[k]
+  data_weights[j]    = data_weights[k]
+
+  data_levels[k]     = a_level
+  data_points[2*k]   = a_x
+  data_points[2*k+1] = a_y
+  data_ids[k]        = a_id
+  data_weights[k]    = a_weight
+}
+
+function shufflePivot(
+  i, j,
+  a_level, a_x, a_y, a_id, a_weight,
+  data_levels, data_points, data_ids, data_weights) {
+
+  data_levels[i]     = data_levels[j]
+  data_points[2*i]   = data_points[2*j]
+  data_points[2*i+1] = data_points[2*j+1]
+  data_ids[i]        = data_ids[j]
+  data_weights[i]    = data_weights[j]
+
+  data_levels[j]     = a_level
+  data_points[2*j]   = a_x
+  data_points[2*j+1] = a_y
+  data_ids[j]        = a_id
+  data_weights[j]    = a_weight
+}
+
+function compare(i, j, data_levels, data_points, data_ids) {
+  return ((data_levels[i] - data_levels[j]) ||
+          (data_points[2*j] - data_points[2*i]) ||
+          (data_ids[i] - data_ids[j])) < 0
+}
+
+function comparePivot(i, level, x, y, id, data_levels, data_points, data_ids) {
+  return ((level - data_levels[i]) ||
+          (data_points[2*i] - x) ||
+          (id - data_ids[i])) < 0
+}
+
+function quickSort(left, right, data_levels, data_points, data_ids, data_weights) {
+  var sixth = (right - left + 1) / 6 | 0,
+      index1 = left + sixth,
+      index5 = right - sixth,
+      index3 = left + right >> 1,
+      index2 = index3 - sixth,
+      index4 = index3 + sixth,
+      el1 = index1,
+      el2 = index2,
+      el3 = index3,
+      el4 = index4,
+      el5 = index5,
+      less = left + 1,
+      great = right - 1,
+      tmp = 0
+  if(compare(el1, el2, data_levels, data_points, data_ids, data_weights)) {
+    tmp = el1
+    el1 = el2
+    el2 = tmp
+  }
+  if(compare(el4, el5, data_levels, data_points, data_ids, data_weights)) {
+    tmp = el4
+    el4 = el5
+    el5 = tmp
+  }
+  if(compare(el1, el3, data_levels, data_points, data_ids, data_weights)) {
+    tmp = el1
+    el1 = el3
+    el3 = tmp
+  }
+  if(compare(el2, el3, data_levels, data_points, data_ids, data_weights)) {
+    tmp = el2
+    el2 = el3
+    el3 = tmp
+  }
+  if(compare(el1, el4, data_levels, data_points, data_ids, data_weights)) {
+    tmp = el1
+    el1 = el4
+    el4 = tmp
+  }
+  if(compare(el3, el4, data_levels, data_points, data_ids, data_weights)) {
+    tmp = el3
+    el3 = el4
+    el4 = tmp
+  }
+  if(compare(el2, el5, data_levels, data_points, data_ids, data_weights)) {
+    tmp = el2
+    el2 = el5
+    el5 = tmp
+  }
+  if(compare(el2, el3, data_levels, data_points, data_ids, data_weights)) {
+    tmp = el2
+    el2 = el3
+    el3 = tmp
+  }
+  if(compare(el4, el5, data_levels, data_points, data_ids, data_weights)) {
+    tmp = el4
+    el4 = el5
+    el5 = tmp
+  }
+
+  var pivot1_level  = data_levels[el2]
+  var pivot1_x      = data_points[2*el2]
+  var pivot1_y      = data_points[2*el2+1]
+  var pivot1_id     = data_ids[el2]
+  var pivot1_weight = data_weights[el2]
+
+  var pivot2_level  = data_levels[el4]
+  var pivot2_x      = data_points[2*el4]
+  var pivot2_y      = data_points[2*el4+1]
+  var pivot2_id     = data_ids[el4]
+  var pivot2_weight = data_weights[el4]
+
+  var ptr0 = el1
+  var ptr2 = el3
+  var ptr4 = el5
+  var ptr5 = index1
+  var ptr6 = index3
+  var ptr7 = index5
+
+  var level_x = data_levels[ptr0]
+  var level_y = data_levels[ptr2]
+  var level_z = data_levels[ptr4]
+  data_levels[ptr5] = level_x
+  data_levels[ptr6] = level_y
+  data_levels[ptr7] = level_z
+
+  for (var i1 = 0; i1 < 2; ++i1) {
+    var x = data_points[2*ptr0+i1]
+    var y = data_points[2*ptr2+i1]
+    var z = data_points[2*ptr4+i1]
+    data_points[2*ptr5+i1] = x
+    data_points[2*ptr6+i1] = y
+    data_points[2*ptr7+i1] = z
+  }
+
+  var id_x = data_ids[ptr0]
+  var id_y = data_ids[ptr2]
+  var id_z = data_ids[ptr4]
+  data_ids[ptr5] = id_x
+  data_ids[ptr6] = id_y
+  data_ids[ptr7] = id_z
+
+  var weight_x = data_weights[ptr0]
+  var weight_y = data_weights[ptr2]
+  var weight_z = data_weights[ptr4]
+  data_weights[ptr5] = weight_x
+  data_weights[ptr6] = weight_y
+  data_weights[ptr7] = weight_z
+
+  move(index2, left,  data_levels, data_points, data_ids, data_weights)
+  move(index4, right, data_levels, data_points, data_ids, data_weights)
+  for (var k = less; k <= great; ++k) {
+    if (comparePivot(k,
+        pivot1_level, pivot1_x, pivot1_y, pivot1_id,
+        data_levels, data_points, data_ids)) {
+      if (k !== less) {
+        swap(k, less, data_levels, data_points, data_ids, data_weights)
+      }
+      ++less;
+    } else {
+      if (!comparePivot(k,
+          pivot2_level, pivot2_x, pivot2_y, pivot2_id,
+          data_levels, data_points, data_ids)) {
+        while (true) {
+          if (!comparePivot(great,
+              pivot2_level, pivot2_x, pivot2_y, pivot2_id,
+              data_levels, data_points, data_ids)) {
+            if (--great < k) {
+              break;
+            }
+            continue;
+          } else {
+            if (comparePivot(great,
+                pivot1_level, pivot1_x, pivot1_y, pivot1_id,
+                data_levels, data_points, data_ids)) {
+              rotate(k, less, great, data_levels, data_points, data_ids, data_weights)
+              ++less;
+              --great;
+            } else {
+              swap(k, great, data_levels, data_points, data_ids, data_weights)
+              --great;
+            }
+            break;
+          }
+        }
+      }
+    }
+  }
+  shufflePivot(left, less-1, pivot1_level, pivot1_x, pivot1_y, pivot1_id, pivot1_weight, data_levels, data_points, data_ids, data_weights)
+  shufflePivot(right, great+1, pivot2_level, pivot2_x, pivot2_y, pivot2_id, pivot2_weight, data_levels, data_points, data_ids, data_weights)
+  if (less - 2 - left <= INSERT_SORT_CUTOFF) {
+    insertionSort(left, less - 2, data_levels, data_points, data_ids, data_weights)
+  } else {
+    quickSort(left, less - 2, data_levels, data_points, data_ids, data_weights)
+  }
+  if (right - (great + 2) <= INSERT_SORT_CUTOFF) {
+    insertionSort(great + 2, right, data_levels, data_points, data_ids, data_weights)
+  } else {
+    quickSort(great + 2, right, data_levels, data_points, data_ids, data_weights)
+  }
+  if (great - less <= INSERT_SORT_CUTOFF) {
+    insertionSort(less, great, data_levels, data_points, data_ids, data_weights)
+  } else {
+    quickSort(less, great, data_levels, data_points, data_ids, data_weights)
+  }
+}
+
+},{}],203:[function(require,module,exports){
+'use strict'
+
+var sortLevels = require('./lib/sort')
+var getBounds = require('array-bounds')
+
+module.exports = snapPoints
+
+function partition(points, ids, start, end, lox, loy, hix, hiy) {
+  var mid = start
+  for(var i=start; i<end; ++i) {
+    var x  = points[2*i]
+    var y  = points[2*i+1]
+    var s  = ids[i]
+    if(lox <= x && x <= hix &&
+       loy <= y && y <= hiy) {
+      if(i === mid) {
+        mid += 1
+      } else {
+        points[2*i]     = points[2*mid]
+        points[2*i+1]   = points[2*mid+1]
+        ids[i]          = ids[mid]
+        points[2*mid]   = x
+        points[2*mid+1] = y
+        ids[mid]        = s
+        mid += 1
+      }
+    }
+  }
+  return mid
+}
+
+function SnapInterval(pixelSize, offset, count) {
+  this.pixelSize  = pixelSize
+  this.offset     = offset
+  this.count      = count
+}
+
+function snapPoints(points, ids, weights, bounds) {
+  var n = points.length >>> 1
+  if(n < 1) {
+    return []
+  }
+
+  if (!ids) ids = Array(n)
+  if (!weights) weights = Array(n)
+  if (!bounds) bounds = []
+
+  for(var i=0; i<n; ++i) {
+    ids[i] = i
+  }
+
+  // empty bounds or invalid bounds are considered as undefined and require recalc
+  if (!bounds.length || bounds.length < 4 || bounds[0] >= bounds[2] || bounds[1] >= bounds[3]) {
+    var b = getBounds(points, 2)
+
+    if(b[0] === b[2]) {
+      b[2] += 1
+    }
+    if(b[1] === b[3]) {
+      b[3] += 1
+    }
+
+    bounds[0] = b[0]
+    bounds[1] = b[1]
+    bounds[2] = b[2]
+    bounds[3] = b[3]
+  }
+
+  var lox = bounds[0]
+  var loy = bounds[1]
+  var hix = bounds[2]
+  var hiy = bounds[3]
+
+  //Calculate diameter
+  var scaleX = 1.0 / (hix - lox)
+  var scaleY = 1.0 / (hiy - loy)
+  var diam = Math.max(hix - lox, hiy - loy)
+
+
+
+  var levels = new Int32Array(n)
+  var ptr = 0
+
+  function snapRec(x, y, diam, start, end, level) {
+    var diam_2 = diam * 0.5
+    var offset = start + 1
+    var count = end - start
+    weights[ptr] = count
+    levels[ptr++] = level
+    for(var i=0; i<2; ++i) {
+      for(var j=0; j<2; ++j) {
+        var nx = x+i*diam_2
+        var ny = y+j*diam_2
+        var nextOffset = partition(
+            points
+          , ids
+          , offset
+          , end
+          , nx, ny
+          , nx+diam_2, ny+diam_2)
+        if(nextOffset === offset) {
+          continue
+        }
+        if(nextOffset - offset >= Math.max(0.9 * count, 32)) {
+          var mid = (end + start)>>>1
+          snapRec(nx, ny, diam_2, offset, mid, level+1)
+          offset = mid
+        }
+        snapRec(nx, ny, diam_2, offset, nextOffset, level+1)
+        offset = nextOffset
+      }
+    }
+  }
+  snapRec(lox, loy, diam, 0, n, 0)
+  sortLevels(levels, points, ids, weights, n)
+
+  var lod         = []
+  var lastLevel   = 0
+  var prevOffset  = n
+  for(var ptr=n-1; ptr>=0; --ptr) {
+    points[2*ptr]   = (points[2*ptr]   - lox) * scaleX
+    points[2*ptr+1] = (points[2*ptr+1] - loy) * scaleY
+
+    var level = levels[ptr]
+    if(level === lastLevel) {
+      continue
+    }
+
+    lod.push(new SnapInterval(
+      diam * Math.pow(0.5, level),
+      ptr+1,
+      prevOffset - (ptr+1)
+    ))
+    prevOffset = ptr+1
+
+    lastLevel = level
+  }
+
+  lod.push(new SnapInterval(diam * Math.pow(0.5, level+1), 0, prevOffset))
+
+  return lod
+}
+
+},{"./lib/sort":202,"array-bounds":12}],204:[function(require,module,exports){
 /* global window, exports, define */
 
 !function() {
@@ -47567,7 +40581,7 @@ function createSlabDecomposition(segments) {
     /* eslint-enable quote-props */
 }()
 
-},{}],204:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 'use strict'
 
 module.exports = toSuperScript
@@ -47622,7 +40636,7 @@ function toSuperScript(x) {
   }).join('')
 }
 
-},{}],205:[function(require,module,exports){
+},{}],206:[function(require,module,exports){
 "use strict"
 
 module.exports = surfaceNets
@@ -47830,7 +40844,441 @@ function surfaceNets(array,level) {
   }
   return proc(array,level)
 }
-},{"ndarray-extract-contour":161,"triangulate-hypercube":210,"zero-crossings":223}],206:[function(require,module,exports){
+},{"ndarray-extract-contour":151,"triangulate-hypercube":215,"zero-crossings":232}],207:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var TAU = Math.PI * 2;
+
+var mapToEllipse = function mapToEllipse(_ref, rx, ry, cosphi, sinphi, centerx, centery) {
+  var x = _ref.x,
+      y = _ref.y;
+
+  x *= rx;
+  y *= ry;
+
+  var xp = cosphi * x - sinphi * y;
+  var yp = sinphi * x + cosphi * y;
+
+  return {
+    x: xp + centerx,
+    y: yp + centery
+  };
+};
+
+var approxUnitArc = function approxUnitArc(ang1, ang2) {
+  var a = 4 / 3 * Math.tan(ang2 / 4);
+
+  var x1 = Math.cos(ang1);
+  var y1 = Math.sin(ang1);
+  var x2 = Math.cos(ang1 + ang2);
+  var y2 = Math.sin(ang1 + ang2);
+
+  return [{
+    x: x1 - y1 * a,
+    y: y1 + x1 * a
+  }, {
+    x: x2 + y2 * a,
+    y: y2 - x2 * a
+  }, {
+    x: x2,
+    y: y2
+  }];
+};
+
+var vectorAngle = function vectorAngle(ux, uy, vx, vy) {
+  var sign = ux * vy - uy * vx < 0 ? -1 : 1;
+  var umag = Math.sqrt(ux * ux + uy * uy);
+  var vmag = Math.sqrt(ux * ux + uy * uy);
+  var dot = ux * vx + uy * vy;
+
+  var div = dot / (umag * vmag);
+
+  if (div > 1) {
+    div = 1;
+  }
+
+  if (div < -1) {
+    div = -1;
+  }
+
+  return sign * Math.acos(div);
+};
+
+var getArcCenter = function getArcCenter(px, py, cx, cy, rx, ry, largeArcFlag, sweepFlag, sinphi, cosphi, pxp, pyp) {
+  var rxsq = Math.pow(rx, 2);
+  var rysq = Math.pow(ry, 2);
+  var pxpsq = Math.pow(pxp, 2);
+  var pypsq = Math.pow(pyp, 2);
+
+  var radicant = rxsq * rysq - rxsq * pypsq - rysq * pxpsq;
+
+  if (radicant < 0) {
+    radicant = 0;
+  }
+
+  radicant /= rxsq * pypsq + rysq * pxpsq;
+  radicant = Math.sqrt(radicant) * (largeArcFlag === sweepFlag ? -1 : 1);
+
+  var centerxp = radicant * rx / ry * pyp;
+  var centeryp = radicant * -ry / rx * pxp;
+
+  var centerx = cosphi * centerxp - sinphi * centeryp + (px + cx) / 2;
+  var centery = sinphi * centerxp + cosphi * centeryp + (py + cy) / 2;
+
+  var vx1 = (pxp - centerxp) / rx;
+  var vy1 = (pyp - centeryp) / ry;
+  var vx2 = (-pxp - centerxp) / rx;
+  var vy2 = (-pyp - centeryp) / ry;
+
+  var ang1 = vectorAngle(1, 0, vx1, vy1);
+  var ang2 = vectorAngle(vx1, vy1, vx2, vy2);
+
+  if (sweepFlag === 0 && ang2 > 0) {
+    ang2 -= TAU;
+  }
+
+  if (sweepFlag === 1 && ang2 < 0) {
+    ang2 += TAU;
+  }
+
+  return [centerx, centery, ang1, ang2];
+};
+
+var arcToBezier = function arcToBezier(_ref2) {
+  var px = _ref2.px,
+      py = _ref2.py,
+      cx = _ref2.cx,
+      cy = _ref2.cy,
+      rx = _ref2.rx,
+      ry = _ref2.ry,
+      _ref2$xAxisRotation = _ref2.xAxisRotation,
+      xAxisRotation = _ref2$xAxisRotation === undefined ? 0 : _ref2$xAxisRotation,
+      _ref2$largeArcFlag = _ref2.largeArcFlag,
+      largeArcFlag = _ref2$largeArcFlag === undefined ? 0 : _ref2$largeArcFlag,
+      _ref2$sweepFlag = _ref2.sweepFlag,
+      sweepFlag = _ref2$sweepFlag === undefined ? 0 : _ref2$sweepFlag;
+
+  var curves = [];
+
+  if (rx === 0 || ry === 0) {
+    return [];
+  }
+
+  var sinphi = Math.sin(xAxisRotation * TAU / 360);
+  var cosphi = Math.cos(xAxisRotation * TAU / 360);
+
+  var pxp = cosphi * (px - cx) / 2 + sinphi * (py - cy) / 2;
+  var pyp = -sinphi * (px - cx) / 2 + cosphi * (py - cy) / 2;
+
+  if (pxp === 0 && pyp === 0) {
+    return [];
+  }
+
+  rx = Math.abs(rx);
+  ry = Math.abs(ry);
+
+  var lambda = Math.pow(pxp, 2) / Math.pow(rx, 2) + Math.pow(pyp, 2) / Math.pow(ry, 2);
+
+  if (lambda > 1) {
+    rx *= Math.sqrt(lambda);
+    ry *= Math.sqrt(lambda);
+  }
+
+  var _getArcCenter = getArcCenter(px, py, cx, cy, rx, ry, largeArcFlag, sweepFlag, sinphi, cosphi, pxp, pyp),
+      _getArcCenter2 = _slicedToArray(_getArcCenter, 4),
+      centerx = _getArcCenter2[0],
+      centery = _getArcCenter2[1],
+      ang1 = _getArcCenter2[2],
+      ang2 = _getArcCenter2[3];
+
+  var segments = Math.max(Math.ceil(Math.abs(ang2) / (TAU / 4)), 1);
+
+  ang2 /= segments;
+
+  for (var i = 0; i < segments; i++) {
+    curves.push(approxUnitArc(ang1, ang2));
+    ang1 += ang2;
+  }
+
+  return curves.map(function (curve) {
+    var _mapToEllipse = mapToEllipse(curve[0], rx, ry, cosphi, sinphi, centerx, centery),
+        x1 = _mapToEllipse.x,
+        y1 = _mapToEllipse.y;
+
+    var _mapToEllipse2 = mapToEllipse(curve[1], rx, ry, cosphi, sinphi, centerx, centery),
+        x2 = _mapToEllipse2.x,
+        y2 = _mapToEllipse2.y;
+
+    var _mapToEllipse3 = mapToEllipse(curve[2], rx, ry, cosphi, sinphi, centerx, centery),
+        x = _mapToEllipse3.x,
+        y = _mapToEllipse3.y;
+
+    return { x1: x1, y1: y1, x2: x2, y2: y2, x: x, y: y };
+  });
+};
+
+exports.default = arcToBezier;
+module.exports = exports["default"];
+},{}],208:[function(require,module,exports){
+'use strict'
+
+var parse = require('parse-svg-path')
+var abs = require('abs-svg-path')
+var normalize = require('normalize-svg-path')
+var isSvgPath = require('is-svg-path')
+var assert = require('assert')
+
+module.exports = pathBounds
+
+
+function pathBounds(path) {
+  // ES6 string tpl call
+  if (Array.isArray(path) && path.length === 1 && typeof path[0] === 'string') path = path[0]
+
+  // svg path string
+  if (typeof path === 'string') {
+    assert(isSvgPath(path), 'String is not an SVG path.')
+    path = parse(path)
+  }
+
+  assert(Array.isArray(path), 'Argument should be a string or an array of path segments.')
+
+  path = abs(path)
+  path = normalize(path)
+
+  if (!path.length) return [0, 0, 0, 0]
+
+  var bounds = [Infinity, Infinity, -Infinity, -Infinity]
+
+  for (var i = 0, l = path.length; i < l; i++) {
+    var points = path[i].slice(1)
+
+    for (var j = 0; j < points.length; j += 2) {
+      if (points[j + 0] < bounds[0]) bounds[0] = points[j + 0]
+      if (points[j + 1] < bounds[1]) bounds[1] = points[j + 1]
+      if (points[j + 0] > bounds[2]) bounds[2] = points[j + 0]
+      if (points[j + 1] > bounds[3]) bounds[3] = points[j + 1]
+    }
+  }
+
+  return bounds
+}
+
+},{"abs-svg-path":10,"assert":14,"is-svg-path":145,"normalize-svg-path":209,"parse-svg-path":158}],209:[function(require,module,exports){
+'use strict'
+
+module.exports = normalize
+
+var arcToCurve = require('svg-arc-to-cubic-bezier')
+
+function normalize(path){
+  // init state
+  var prev
+  var result = []
+  var bezierX = 0
+  var bezierY = 0
+  var startX = 0
+  var startY = 0
+  var quadX = null
+  var quadY = null
+  var x = 0
+  var y = 0
+
+  for (var i = 0, len = path.length; i < len; i++) {
+    var seg = path[i]
+    var command = seg[0]
+
+    switch (command) {
+      case 'M':
+        startX = seg[1]
+        startY = seg[2]
+        break
+      case 'A':
+        var curves = arcToCurve({
+          px: x,
+          py: y,
+          cx: seg[6],
+          cy:  seg[7],
+          rx: seg[1],
+          ry: seg[2],
+          xAxisRotation: seg[3],
+          largeArcFlag: seg[4],
+          sweepFlag: seg[5]
+        })
+
+        // null-curves
+        if (!curves.length) continue
+
+        for (var j = 0, c; j < curves.length; j++) {
+          c = curves[j]
+          seg = ['C', c.x1, c.y1, c.x2, c.y2, c.x, c.y]
+          if (j < curves.length - 1) result.push(seg)
+        }
+
+        break
+      case 'S':
+        // default control point
+        var cx = x
+        var cy = y
+        if (prev == 'C' || prev == 'S') {
+          cx += cx - bezierX // reflect the previous command's control
+          cy += cy - bezierY // point relative to the current point
+        }
+        seg = ['C', cx, cy, seg[1], seg[2], seg[3], seg[4]]
+        break
+      case 'T':
+        if (prev == 'Q' || prev == 'T') {
+          quadX = x * 2 - quadX // as with 'S' reflect previous control point
+          quadY = y * 2 - quadY
+        } else {
+          quadX = x
+          quadY = y
+        }
+        seg = quadratic(x, y, quadX, quadY, seg[1], seg[2])
+        break
+      case 'Q':
+        quadX = seg[1]
+        quadY = seg[2]
+        seg = quadratic(x, y, seg[1], seg[2], seg[3], seg[4])
+        break
+      case 'L':
+        seg = line(x, y, seg[1], seg[2])
+        break
+      case 'H':
+        seg = line(x, y, seg[1], y)
+        break
+      case 'V':
+        seg = line(x, y, x, seg[1])
+        break
+      case 'Z':
+        seg = line(x, y, startX, startY)
+        break
+    }
+
+    // update state
+    prev = command
+    x = seg[seg.length - 2]
+    y = seg[seg.length - 1]
+    if (seg.length > 4) {
+      bezierX = seg[seg.length - 4]
+      bezierY = seg[seg.length - 3]
+    } else {
+      bezierX = x
+      bezierY = y
+    }
+    result.push(seg)
+  }
+
+  return result
+}
+
+function line(x1, y1, x2, y2){
+  return ['C', x1, y1, x2, y2, x2, y2]
+}
+
+function quadratic(x1, y1, cx, cy, x2, y2){
+  return [
+    'C',
+    x1/3 + (2/3) * cx,
+    y1/3 + (2/3) * cy,
+    x2/3 + (2/3) * cx,
+    y2/3 + (2/3) * cy,
+    x2,
+    y2
+  ]
+}
+
+},{"svg-arc-to-cubic-bezier":207}],210:[function(require,module,exports){
+(function (global){
+'use strict'
+
+var pathBounds = require('svg-path-bounds')
+var parsePath = require('parse-svg-path')
+var drawPath = require('draw-svg-path')
+var isSvgPath = require('is-svg-path')
+var bitmapSdf = require('bitmap-sdf')
+
+var canvas = document.createElement('canvas')
+var ctx = canvas.getContext('2d')
+
+
+module.exports = pathSdf
+
+function pathSdf (path, options) {
+	if (!isSvgPath(path)) throw Error('Argument should be valid svg path string')
+
+	if (!options) options = {}
+
+	var w, h
+	if (options.shape) {
+		w = options.shape[0]
+		h = options.shape[1]
+	}
+	else {
+		w = canvas.width = options.w || options.width || 200
+		h = canvas.height = options.h || options.height || 200
+	}
+	var size = Math.min(w, h)
+
+	var stroke = options.stroke || 0
+
+	var viewbox = options.viewbox || options.viewBox || pathBounds(path)
+	var scale = [w / (viewbox[2] - viewbox[0]), h / (viewbox[3] - viewbox[1])]
+	var maxScale = Math.min(scale[0] || 0, scale[1] || 0) / 2
+
+	//clear ctx
+	ctx.fillStyle = 'black'
+	ctx.fillRect(0, 0, w, h)
+
+	ctx.fillStyle = 'white'
+
+	if (stroke)	{
+		if (typeof stroke != 'number') stroke = 1
+		if (stroke > 0) {
+			ctx.strokeStyle = 'white'
+		}
+		else {
+			ctx.strokeStyle = 'black'
+		}
+
+		ctx.lineWidth = Math.abs(stroke)
+	}
+
+	ctx.translate(w * .5, h * .5)
+	ctx.scale(maxScale, maxScale)
+
+	//if canvas svg paths api is available
+	if (global.Path2D) {
+		var path2d = new Path2D(path)
+		ctx.fill(path2d)
+		stroke && ctx.stroke(path2d)
+	}
+	//fallback to bezier-curves
+	else {
+		var segments = parsePath(path)
+		drawPath(ctx, segments)
+		ctx.fill()
+		stroke && ctx.stroke()
+	}
+
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+	var data = bitmapSdf(ctx, {
+		cutoff: options.cutoff != null ? options.cutoff : .5,
+		radius: options.radius != null ? options.radius : size * .5
+	})
+
+	return data
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"bitmap-sdf":34,"draw-svg-path":69,"is-svg-path":145,"parse-svg-path":158,"svg-path-bounds":208}],211:[function(require,module,exports){
 (function (process){
 'use strict'
 
@@ -47920,116 +41368,7 @@ function textGet(font, text, opts) {
 }
 
 }).call(this,require('_process'))
-},{"_process":182,"vectorize-text":216}],207:[function(require,module,exports){
-'use strict';
-
-module.exports = TinySDF;
-
-var INF = 1e20;
-
-function TinySDF(fontSize, buffer, radius, cutoff, fontFamily) {
-    this.fontSize = fontSize || 24;
-    this.buffer = buffer === undefined ? 3 : buffer;
-    this.cutoff = cutoff || 0.25;
-    this.fontFamily = fontFamily || 'sans-serif';
-    this.radius = radius || 8;
-    var size = this.size = this.fontSize + this.buffer * 2;
-
-    this.canvas = document.createElement('canvas');
-    this.canvas.width = this.canvas.height = size;
-
-    this.ctx = this.canvas.getContext('2d');
-    this.ctx.font = fontSize + 'px ' + this.fontFamily;
-    this.ctx.textBaseline = 'middle';
-    this.ctx.fillStyle = 'black';
-
-    // temporary arrays for the distance transform
-    this.gridOuter = new Float64Array(size * size);
-    this.gridInner = new Float64Array(size * size);
-    this.f = new Float64Array(size);
-    this.d = new Float64Array(size);
-    this.z = new Float64Array(size + 1);
-    this.v = new Int16Array(size);
-
-    // hack around https://bugzilla.mozilla.org/show_bug.cgi?id=737852
-    this.middle = Math.round((size / 2) * (navigator.userAgent.indexOf('Gecko/') >= 0 ? 1.2 : 1));
-}
-
-TinySDF.prototype.draw = function (char) {
-    this.ctx.clearRect(0, 0, this.size, this.size);
-    this.ctx.fillText(char, this.buffer, this.middle);
-
-    var imgData = this.ctx.getImageData(0, 0, this.size, this.size);
-    var data = imgData.data;
-
-    for (var i = 0; i < this.size * this.size; i++) {
-        var a = data[i * 4 + 3] / 255; // alpha value
-        this.gridOuter[i] = a === 1 ? 0 : a === 0 ? INF : Math.pow(Math.max(0, 0.5 - a), 2);
-        this.gridInner[i] = a === 1 ? INF : a === 0 ? 0 : Math.pow(Math.max(0, a - 0.5), 2);
-    }
-
-    edt(this.gridOuter, this.size, this.size, this.f, this.d, this.v, this.z);
-    edt(this.gridInner, this.size, this.size, this.f, this.d, this.v, this.z);
-
-    for (i = 0; i < this.size * this.size; i++) {
-        var d = this.gridOuter[i] - this.gridInner[i];
-        var c = Math.max(0, Math.min(255, Math.round(255 - 255 * (d / this.radius + this.cutoff))));
-        data[4 * i + 0] = c;
-        data[4 * i + 1] = c;
-        data[4 * i + 2] = c;
-        data[4 * i + 3] = 255;
-    }
-
-    return imgData;
-};
-
-// 2D Euclidean distance transform by Felzenszwalb & Huttenlocher https://cs.brown.edu/~pff/dt/
-function edt(data, width, height, f, d, v, z) {
-    for (var x = 0; x < width; x++) {
-        for (var y = 0; y < height; y++) {
-            f[y] = data[y * width + x];
-        }
-        edt1d(f, d, v, z, height);
-        for (y = 0; y < height; y++) {
-            data[y * width + x] = d[y];
-        }
-    }
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) {
-            f[x] = data[y * width + x];
-        }
-        edt1d(f, d, v, z, width);
-        for (x = 0; x < width; x++) {
-            data[y * width + x] = Math.sqrt(d[x]);
-        }
-    }
-}
-
-// 1D squared distance transform
-function edt1d(f, d, v, z, n) {
-    v[0] = 0;
-    z[0] = -INF;
-    z[1] = +INF;
-
-    for (var q = 1, k = 0; q < n; q++) {
-        var s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
-        while (s <= z[k]) {
-            k--;
-            s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
-        }
-        k++;
-        v[k] = q;
-        z[k] = s;
-        z[k + 1] = +INF;
-    }
-
-    for (q = 0, k = 0; q < n; q++) {
-        while (z[k + 1] < q) k++;
-        d[q] = (q - v[k]) * (q - v[k]) + f[v[k]];
-    }
-}
-
-},{}],208:[function(require,module,exports){
+},{"_process":175,"vectorize-text":225}],212:[function(require,module,exports){
 // TinyColor v1.4.1
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -49226,7 +42565,43 @@ else {
 
 })(Math);
 
-},{}],209:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
+/* @module to-float32 */
+
+'use strict'
+
+module.exports = float32
+module.exports.float32 =
+module.exports.float = float32
+module.exports.fract32 =
+module.exports.fract = fract32
+
+// return fractional part of float32 array
+function fract32 (arr) {
+	if (typeof arr === 'number') {
+		return float32(arr - float32(arr))
+	}
+
+	var fract = float32(arr)
+	for (var i = 0, l = fract.length; i < l; i++) {
+		fract[i] = arr[i] - fract[i]
+	}
+	return fract
+}
+
+// make sure data is float32 array
+function float32 (arr) {
+	if (arr instanceof Float32Array) return arr
+	if (typeof arr === 'number') {
+		return (new Float32Array([arr]))[0]
+	}
+
+	var float = new Float32Array(arr)
+	float.set(arr)
+	return float
+}
+
+},{}],214:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
@@ -49287,7 +42662,7 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":167}],210:[function(require,module,exports){
+},{"parse-unit":159}],215:[function(require,module,exports){
 "use strict"
 
 module.exports = triangulateCube
@@ -49321,7 +42696,7 @@ function triangulateCube(dimension) {
   }
   return result
 }
-},{"gamma":71,"permutation-parity":168,"permutation-rank":169}],211:[function(require,module,exports){
+},{"gamma":79,"permutation-parity":160,"permutation-rank":161}],216:[function(require,module,exports){
 "use strict"
 
 module.exports = twoProduct
@@ -49355,7 +42730,7 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],212:[function(require,module,exports){
+},{}],217:[function(require,module,exports){
 "use strict"
 
 module.exports = fastTwoSum
@@ -49373,7 +42748,7 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],213:[function(require,module,exports){
+},{}],218:[function(require,module,exports){
 (function (global,Buffer){
 'use strict'
 
@@ -49590,7 +42965,7 @@ exports.clearCache = function clearCache() {
   }
 }
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bit-twiddle":31,"buffer":40,"dup":64}],214:[function(require,module,exports){
+},{"bit-twiddle":33,"buffer":43,"dup":71}],219:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -49653,7 +43028,7 @@ proto.link = function(x, y) {
     ++ranks[xr];
   }
 }
-},{}],215:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {
@@ -49712,7 +43087,662 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],216:[function(require,module,exports){
+},{}],221:[function(require,module,exports){
+/**
+ * @module update-diff
+ */
+
+'use strict'
+
+module.exports = function updateDiff (obj, diff, mappers) {
+	if (!Array.isArray(mappers)) mappers = [].slice.call(arguments, 2)
+
+	for (var i = 0, l = mappers.length; i < l; i++) {
+		var dict = mappers[i]
+		for (var prop in dict) {
+			if (diff[prop] !== undefined && !Array.isArray(diff[prop]) && obj[prop] === diff[prop]) continue
+
+			if (prop in diff) {
+				var result
+
+				if (dict[prop] === true) result = diff[prop]
+				else if (dict[prop] === false) continue
+				else if (typeof dict[prop] === 'function') {
+					result = dict[prop](diff[prop], obj, diff)
+					if (result === undefined) continue
+				}
+
+				obj[prop] = result
+			}
+		}
+	}
+
+	return obj
+}
+
+},{}],222:[function(require,module,exports){
+if (typeof Object.create === 'function') {
+  // implementation from standard node.js 'util' module
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    ctor.prototype = Object.create(superCtor.prototype, {
+      constructor: {
+        value: ctor,
+        enumerable: false,
+        writable: true,
+        configurable: true
+      }
+    });
+  };
+} else {
+  // old school shim for old browsers
+  module.exports = function inherits(ctor, superCtor) {
+    ctor.super_ = superCtor
+    var TempCtor = function () {}
+    TempCtor.prototype = superCtor.prototype
+    ctor.prototype = new TempCtor()
+    ctor.prototype.constructor = ctor
+  }
+}
+
+},{}],223:[function(require,module,exports){
+module.exports = function isBuffer(arg) {
+  return arg && typeof arg === 'object'
+    && typeof arg.copy === 'function'
+    && typeof arg.fill === 'function'
+    && typeof arg.readUInt8 === 'function';
+}
+},{}],224:[function(require,module,exports){
+(function (process,global){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+var formatRegExp = /%[sdj%]/g;
+exports.format = function(f) {
+  if (!isString(f)) {
+    var objects = [];
+    for (var i = 0; i < arguments.length; i++) {
+      objects.push(inspect(arguments[i]));
+    }
+    return objects.join(' ');
+  }
+
+  var i = 1;
+  var args = arguments;
+  var len = args.length;
+  var str = String(f).replace(formatRegExp, function(x) {
+    if (x === '%%') return '%';
+    if (i >= len) return x;
+    switch (x) {
+      case '%s': return String(args[i++]);
+      case '%d': return Number(args[i++]);
+      case '%j':
+        try {
+          return JSON.stringify(args[i++]);
+        } catch (_) {
+          return '[Circular]';
+        }
+      default:
+        return x;
+    }
+  });
+  for (var x = args[i]; i < len; x = args[++i]) {
+    if (isNull(x) || !isObject(x)) {
+      str += ' ' + x;
+    } else {
+      str += ' ' + inspect(x);
+    }
+  }
+  return str;
+};
+
+
+// Mark that a method should not be used.
+// Returns a modified function which warns once by default.
+// If --no-deprecation is set, then it is a no-op.
+exports.deprecate = function(fn, msg) {
+  // Allow for deprecating things in the process of starting up.
+  if (isUndefined(global.process)) {
+    return function() {
+      return exports.deprecate(fn, msg).apply(this, arguments);
+    };
+  }
+
+  if (process.noDeprecation === true) {
+    return fn;
+  }
+
+  var warned = false;
+  function deprecated() {
+    if (!warned) {
+      if (process.throwDeprecation) {
+        throw new Error(msg);
+      } else if (process.traceDeprecation) {
+        console.trace(msg);
+      } else {
+        console.error(msg);
+      }
+      warned = true;
+    }
+    return fn.apply(this, arguments);
+  }
+
+  return deprecated;
+};
+
+
+var debugs = {};
+var debugEnviron;
+exports.debuglog = function(set) {
+  if (isUndefined(debugEnviron))
+    debugEnviron = process.env.NODE_DEBUG || '';
+  set = set.toUpperCase();
+  if (!debugs[set]) {
+    if (new RegExp('\\b' + set + '\\b', 'i').test(debugEnviron)) {
+      var pid = process.pid;
+      debugs[set] = function() {
+        var msg = exports.format.apply(exports, arguments);
+        console.error('%s %d: %s', set, pid, msg);
+      };
+    } else {
+      debugs[set] = function() {};
+    }
+  }
+  return debugs[set];
+};
+
+
+/**
+ * Echos the value of a value. Trys to print the value out
+ * in the best way possible given the different types.
+ *
+ * @param {Object} obj The object to print out.
+ * @param {Object} opts Optional options object that alters the output.
+ */
+/* legacy: obj, showHidden, depth, colors*/
+function inspect(obj, opts) {
+  // default options
+  var ctx = {
+    seen: [],
+    stylize: stylizeNoColor
+  };
+  // legacy...
+  if (arguments.length >= 3) ctx.depth = arguments[2];
+  if (arguments.length >= 4) ctx.colors = arguments[3];
+  if (isBoolean(opts)) {
+    // legacy...
+    ctx.showHidden = opts;
+  } else if (opts) {
+    // got an "options" object
+    exports._extend(ctx, opts);
+  }
+  // set default options
+  if (isUndefined(ctx.showHidden)) ctx.showHidden = false;
+  if (isUndefined(ctx.depth)) ctx.depth = 2;
+  if (isUndefined(ctx.colors)) ctx.colors = false;
+  if (isUndefined(ctx.customInspect)) ctx.customInspect = true;
+  if (ctx.colors) ctx.stylize = stylizeWithColor;
+  return formatValue(ctx, obj, ctx.depth);
+}
+exports.inspect = inspect;
+
+
+// http://en.wikipedia.org/wiki/ANSI_escape_code#graphics
+inspect.colors = {
+  'bold' : [1, 22],
+  'italic' : [3, 23],
+  'underline' : [4, 24],
+  'inverse' : [7, 27],
+  'white' : [37, 39],
+  'grey' : [90, 39],
+  'black' : [30, 39],
+  'blue' : [34, 39],
+  'cyan' : [36, 39],
+  'green' : [32, 39],
+  'magenta' : [35, 39],
+  'red' : [31, 39],
+  'yellow' : [33, 39]
+};
+
+// Don't use 'blue' not visible on cmd.exe
+inspect.styles = {
+  'special': 'cyan',
+  'number': 'yellow',
+  'boolean': 'yellow',
+  'undefined': 'grey',
+  'null': 'bold',
+  'string': 'green',
+  'date': 'magenta',
+  // "name": intentionally not styling
+  'regexp': 'red'
+};
+
+
+function stylizeWithColor(str, styleType) {
+  var style = inspect.styles[styleType];
+
+  if (style) {
+    return '\u001b[' + inspect.colors[style][0] + 'm' + str +
+           '\u001b[' + inspect.colors[style][1] + 'm';
+  } else {
+    return str;
+  }
+}
+
+
+function stylizeNoColor(str, styleType) {
+  return str;
+}
+
+
+function arrayToHash(array) {
+  var hash = {};
+
+  array.forEach(function(val, idx) {
+    hash[val] = true;
+  });
+
+  return hash;
+}
+
+
+function formatValue(ctx, value, recurseTimes) {
+  // Provide a hook for user-specified inspect functions.
+  // Check that value is an object with an inspect function on it
+  if (ctx.customInspect &&
+      value &&
+      isFunction(value.inspect) &&
+      // Filter out the util module, it's inspect function is special
+      value.inspect !== exports.inspect &&
+      // Also filter out any prototype objects using the circular check.
+      !(value.constructor && value.constructor.prototype === value)) {
+    var ret = value.inspect(recurseTimes, ctx);
+    if (!isString(ret)) {
+      ret = formatValue(ctx, ret, recurseTimes);
+    }
+    return ret;
+  }
+
+  // Primitive types cannot have properties
+  var primitive = formatPrimitive(ctx, value);
+  if (primitive) {
+    return primitive;
+  }
+
+  // Look up the keys of the object.
+  var keys = Object.keys(value);
+  var visibleKeys = arrayToHash(keys);
+
+  if (ctx.showHidden) {
+    keys = Object.getOwnPropertyNames(value);
+  }
+
+  // IE doesn't make error fields non-enumerable
+  // http://msdn.microsoft.com/en-us/library/ie/dww52sbt(v=vs.94).aspx
+  if (isError(value)
+      && (keys.indexOf('message') >= 0 || keys.indexOf('description') >= 0)) {
+    return formatError(value);
+  }
+
+  // Some type of object without properties can be shortcutted.
+  if (keys.length === 0) {
+    if (isFunction(value)) {
+      var name = value.name ? ': ' + value.name : '';
+      return ctx.stylize('[Function' + name + ']', 'special');
+    }
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    }
+    if (isDate(value)) {
+      return ctx.stylize(Date.prototype.toString.call(value), 'date');
+    }
+    if (isError(value)) {
+      return formatError(value);
+    }
+  }
+
+  var base = '', array = false, braces = ['{', '}'];
+
+  // Make Array say that they are Array
+  if (isArray(value)) {
+    array = true;
+    braces = ['[', ']'];
+  }
+
+  // Make functions say that they are functions
+  if (isFunction(value)) {
+    var n = value.name ? ': ' + value.name : '';
+    base = ' [Function' + n + ']';
+  }
+
+  // Make RegExps say that they are RegExps
+  if (isRegExp(value)) {
+    base = ' ' + RegExp.prototype.toString.call(value);
+  }
+
+  // Make dates with properties first say the date
+  if (isDate(value)) {
+    base = ' ' + Date.prototype.toUTCString.call(value);
+  }
+
+  // Make error with message first say the error
+  if (isError(value)) {
+    base = ' ' + formatError(value);
+  }
+
+  if (keys.length === 0 && (!array || value.length == 0)) {
+    return braces[0] + base + braces[1];
+  }
+
+  if (recurseTimes < 0) {
+    if (isRegExp(value)) {
+      return ctx.stylize(RegExp.prototype.toString.call(value), 'regexp');
+    } else {
+      return ctx.stylize('[Object]', 'special');
+    }
+  }
+
+  ctx.seen.push(value);
+
+  var output;
+  if (array) {
+    output = formatArray(ctx, value, recurseTimes, visibleKeys, keys);
+  } else {
+    output = keys.map(function(key) {
+      return formatProperty(ctx, value, recurseTimes, visibleKeys, key, array);
+    });
+  }
+
+  ctx.seen.pop();
+
+  return reduceToSingleString(output, base, braces);
+}
+
+
+function formatPrimitive(ctx, value) {
+  if (isUndefined(value))
+    return ctx.stylize('undefined', 'undefined');
+  if (isString(value)) {
+    var simple = '\'' + JSON.stringify(value).replace(/^"|"$/g, '')
+                                             .replace(/'/g, "\\'")
+                                             .replace(/\\"/g, '"') + '\'';
+    return ctx.stylize(simple, 'string');
+  }
+  if (isNumber(value))
+    return ctx.stylize('' + value, 'number');
+  if (isBoolean(value))
+    return ctx.stylize('' + value, 'boolean');
+  // For some reason typeof null is "object", so special case here.
+  if (isNull(value))
+    return ctx.stylize('null', 'null');
+}
+
+
+function formatError(value) {
+  return '[' + Error.prototype.toString.call(value) + ']';
+}
+
+
+function formatArray(ctx, value, recurseTimes, visibleKeys, keys) {
+  var output = [];
+  for (var i = 0, l = value.length; i < l; ++i) {
+    if (hasOwnProperty(value, String(i))) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          String(i), true));
+    } else {
+      output.push('');
+    }
+  }
+  keys.forEach(function(key) {
+    if (!key.match(/^\d+$/)) {
+      output.push(formatProperty(ctx, value, recurseTimes, visibleKeys,
+          key, true));
+    }
+  });
+  return output;
+}
+
+
+function formatProperty(ctx, value, recurseTimes, visibleKeys, key, array) {
+  var name, str, desc;
+  desc = Object.getOwnPropertyDescriptor(value, key) || { value: value[key] };
+  if (desc.get) {
+    if (desc.set) {
+      str = ctx.stylize('[Getter/Setter]', 'special');
+    } else {
+      str = ctx.stylize('[Getter]', 'special');
+    }
+  } else {
+    if (desc.set) {
+      str = ctx.stylize('[Setter]', 'special');
+    }
+  }
+  if (!hasOwnProperty(visibleKeys, key)) {
+    name = '[' + key + ']';
+  }
+  if (!str) {
+    if (ctx.seen.indexOf(desc.value) < 0) {
+      if (isNull(recurseTimes)) {
+        str = formatValue(ctx, desc.value, null);
+      } else {
+        str = formatValue(ctx, desc.value, recurseTimes - 1);
+      }
+      if (str.indexOf('\n') > -1) {
+        if (array) {
+          str = str.split('\n').map(function(line) {
+            return '  ' + line;
+          }).join('\n').substr(2);
+        } else {
+          str = '\n' + str.split('\n').map(function(line) {
+            return '   ' + line;
+          }).join('\n');
+        }
+      }
+    } else {
+      str = ctx.stylize('[Circular]', 'special');
+    }
+  }
+  if (isUndefined(name)) {
+    if (array && key.match(/^\d+$/)) {
+      return str;
+    }
+    name = JSON.stringify('' + key);
+    if (name.match(/^"([a-zA-Z_][a-zA-Z_0-9]*)"$/)) {
+      name = name.substr(1, name.length - 2);
+      name = ctx.stylize(name, 'name');
+    } else {
+      name = name.replace(/'/g, "\\'")
+                 .replace(/\\"/g, '"')
+                 .replace(/(^"|"$)/g, "'");
+      name = ctx.stylize(name, 'string');
+    }
+  }
+
+  return name + ': ' + str;
+}
+
+
+function reduceToSingleString(output, base, braces) {
+  var numLinesEst = 0;
+  var length = output.reduce(function(prev, cur) {
+    numLinesEst++;
+    if (cur.indexOf('\n') >= 0) numLinesEst++;
+    return prev + cur.replace(/\u001b\[\d\d?m/g, '').length + 1;
+  }, 0);
+
+  if (length > 60) {
+    return braces[0] +
+           (base === '' ? '' : base + '\n ') +
+           ' ' +
+           output.join(',\n  ') +
+           ' ' +
+           braces[1];
+  }
+
+  return braces[0] + base + ' ' + output.join(', ') + ' ' + braces[1];
+}
+
+
+// NOTE: These type checking functions intentionally don't use `instanceof`
+// because it is fragile and can be easily faked with `Object.create()`.
+function isArray(ar) {
+  return Array.isArray(ar);
+}
+exports.isArray = isArray;
+
+function isBoolean(arg) {
+  return typeof arg === 'boolean';
+}
+exports.isBoolean = isBoolean;
+
+function isNull(arg) {
+  return arg === null;
+}
+exports.isNull = isNull;
+
+function isNullOrUndefined(arg) {
+  return arg == null;
+}
+exports.isNullOrUndefined = isNullOrUndefined;
+
+function isNumber(arg) {
+  return typeof arg === 'number';
+}
+exports.isNumber = isNumber;
+
+function isString(arg) {
+  return typeof arg === 'string';
+}
+exports.isString = isString;
+
+function isSymbol(arg) {
+  return typeof arg === 'symbol';
+}
+exports.isSymbol = isSymbol;
+
+function isUndefined(arg) {
+  return arg === void 0;
+}
+exports.isUndefined = isUndefined;
+
+function isRegExp(re) {
+  return isObject(re) && objectToString(re) === '[object RegExp]';
+}
+exports.isRegExp = isRegExp;
+
+function isObject(arg) {
+  return typeof arg === 'object' && arg !== null;
+}
+exports.isObject = isObject;
+
+function isDate(d) {
+  return isObject(d) && objectToString(d) === '[object Date]';
+}
+exports.isDate = isDate;
+
+function isError(e) {
+  return isObject(e) &&
+      (objectToString(e) === '[object Error]' || e instanceof Error);
+}
+exports.isError = isError;
+
+function isFunction(arg) {
+  return typeof arg === 'function';
+}
+exports.isFunction = isFunction;
+
+function isPrimitive(arg) {
+  return arg === null ||
+         typeof arg === 'boolean' ||
+         typeof arg === 'number' ||
+         typeof arg === 'string' ||
+         typeof arg === 'symbol' ||  // ES6 symbol
+         typeof arg === 'undefined';
+}
+exports.isPrimitive = isPrimitive;
+
+exports.isBuffer = require('./support/isBuffer');
+
+function objectToString(o) {
+  return Object.prototype.toString.call(o);
+}
+
+
+function pad(n) {
+  return n < 10 ? '0' + n.toString(10) : n.toString(10);
+}
+
+
+var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+              'Oct', 'Nov', 'Dec'];
+
+// 26 Feb 16:19:34
+function timestamp() {
+  var d = new Date();
+  var time = [pad(d.getHours()),
+              pad(d.getMinutes()),
+              pad(d.getSeconds())].join(':');
+  return [d.getDate(), months[d.getMonth()], time].join(' ');
+}
+
+
+// log is just a thin wrapper to console.log that prepends a timestamp
+exports.log = function() {
+  console.log('%s - %s', timestamp(), exports.format.apply(exports, arguments));
+};
+
+
+/**
+ * Inherit the prototype methods from one constructor into another.
+ *
+ * The Function.prototype.inherits from lang.js rewritten as a standalone
+ * function (not on Function.prototype). NOTE: If this file is to be loaded
+ * during bootstrapping this function needs to be rewritten using some native
+ * functions as prototype setup using normal JavaScript does not work as
+ * expected during bootstrapping (see mirror.js in r114903).
+ *
+ * @param {function} ctor Constructor function which needs to inherit the
+ *     prototype.
+ * @param {function} superCtor Constructor function to inherit prototype from.
+ */
+exports.inherits = require('inherits');
+
+exports._extend = function(origin, add) {
+  // Don't do anything if add isn't an object
+  if (!add || !isObject(add)) return origin;
+
+  var keys = Object.keys(add);
+  var i = keys.length;
+  while (i--) {
+    origin[keys[i]] = add[keys[i]];
+  }
+  return origin;
+};
+
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./support/isBuffer":223,"_process":175,"inherits":222}],225:[function(require,module,exports){
 "use strict"
 
 module.exports = createText
@@ -49739,7 +43769,7 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":217}],217:[function(require,module,exports){
+},{"./lib/vtext":226}],226:[function(require,module,exports){
 "use strict"
 
 module.exports = vectorizeText
@@ -49945,7 +43975,7 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":42,"clean-pslg":49,"ndarray":163,"planar-graph-to-polyline":172,"simplify-planar-graph":200,"surface-nets":205}],218:[function(require,module,exports){
+},{"cdt2d":45,"clean-pslg":52,"ndarray":153,"planar-graph-to-polyline":165,"simplify-planar-graph":199,"surface-nets":206}],227:[function(require,module,exports){
 var hiddenStore = require('./hidden-store.js');
 
 module.exports = createStore;
@@ -49966,7 +43996,7 @@ function createStore() {
     };
 }
 
-},{"./hidden-store.js":219}],219:[function(require,module,exports){
+},{"./hidden-store.js":228}],228:[function(require,module,exports){
 module.exports = hiddenStore;
 
 function hiddenStore(obj, key) {
@@ -49984,7 +44014,7 @@ function hiddenStore(obj, key) {
     return store;
 }
 
-},{}],220:[function(require,module,exports){
+},{}],229:[function(require,module,exports){
 // Original - @Gozola.
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
@@ -50015,14 +44045,14 @@ function weakMap() {
     }
 }
 
-},{"./create-store.js":218}],221:[function(require,module,exports){
+},{"./create-store.js":227}],230:[function(require,module,exports){
 var getContext = require('get-canvas-context')
 
 module.exports = function getWebGLContext (opt) {
   return getContext('webgl', opt)
 }
 
-},{"get-canvas-context":72}],222:[function(require,module,exports){
+},{"get-canvas-context":80}],231:[function(require,module,exports){
 module.exports = require('cwise-compiler')({
     args: ['array', {
         offset: [1],
@@ -50074,7 +44104,7 @@ module.exports = require('cwise-compiler')({
     funcName: 'zeroCrossings'
 })
 
-},{"cwise-compiler":58}],223:[function(require,module,exports){
+},{"cwise-compiler":62}],232:[function(require,module,exports){
 "use strict"
 
 module.exports = findZeroCrossings
@@ -50087,7 +44117,7 @@ function findZeroCrossings(array, level) {
   core(array.hi(array.shape[0]-1), cross, level)
   return cross
 }
-},{"./lib/zc-core":222}],224:[function(require,module,exports){
+},{"./lib/zc-core":231}],233:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50184,7 +44214,7 @@ module.exports = function handleAnnotationDefaults(annIn, annOut, fullLayout, op
     return annOut;
 };
 
-},{"../../lib":362,"../../plots/cartesian/axes":408,"./attributes":226,"./common_defaults":229}],225:[function(require,module,exports){
+},{"../../lib":371,"../../plots/cartesian/axes":416,"./attributes":235,"./common_defaults":238}],234:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50255,7 +44285,7 @@ module.exports = [
     }
 ];
 
-},{}],226:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50611,7 +44641,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian/constants":413,"../../plots/font_attributes":433,"./arrow_paths":225}],227:[function(require,module,exports){
+},{"../../plots/cartesian/constants":421,"../../plots/font_attributes":443,"./arrow_paths":234}],236:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50723,7 +44753,7 @@ function annAutorange(gd) {
     });
 }
 
-},{"../../lib":362,"../../plots/cartesian/axes":408,"./draw":232}],228:[function(require,module,exports){
+},{"../../lib":371,"../../plots/cartesian/axes":416,"./draw":241}],237:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50857,7 +44887,7 @@ function clickData2r(d, ax) {
     return ax.type === 'log' ? ax.l2r(d) : ax.d2r(d);
 }
 
-},{"../../plotly":403}],229:[function(require,module,exports){
+},{"../../plotly":411}],238:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -50884,7 +44914,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     var borderWidth = coerce('borderwidth');
     var showArrow = coerce('showarrow');
 
-    coerce('text', showArrow ? ' ' : 'new text');
+    coerce('text', showArrow ? ' ' : fullLayout._dfltTitle.annotation);
     coerce('textangle');
     Lib.coerceFont(coerce, 'font', fullLayout.font);
 
@@ -50937,7 +44967,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     coerce('captureevents', !!hoverText);
 };
 
-},{"../../lib":362,"../color":241}],230:[function(require,module,exports){
+},{"../../lib":371,"../color":250}],239:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51000,7 +45030,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":387,"fast-isnumeric":68}],231:[function(require,module,exports){
+},{"../../lib/to_log_range":396,"fast-isnumeric":76}],240:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51025,7 +45055,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, opts);
 };
 
-},{"../../plots/array_container_defaults":405,"./annotation_defaults":224}],232:[function(require,module,exports){
+},{"../../plots/array_container_defaults":413,"./annotation_defaults":233}],241:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51732,7 +45762,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     else annText.call(textLayout);
 }
 
-},{"../../lib":362,"../../lib/setcursor":381,"../../lib/svg_text_utils":385,"../../plotly":403,"../../plots/cartesian/axes":408,"../../plots/plots":443,"../color":241,"../dragelement":263,"../drawing":266,"../fx":283,"./draw_arrow_head":233,"d3":62}],233:[function(require,module,exports){
+},{"../../lib":371,"../../lib/setcursor":390,"../../lib/svg_text_utils":394,"../../plotly":411,"../../plots/cartesian/axes":416,"../../plots/plots":453,"../color":250,"../dragelement":272,"../drawing":275,"../fx":292,"./draw_arrow_head":242,"d3":66}],242:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51886,7 +45916,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
     if(doEnd) drawhead(headStyle, end, endRot, scale);
 };
 
-},{"../color":241,"./arrow_paths":225,"d3":62}],234:[function(require,module,exports){
+},{"../color":250,"./arrow_paths":234,"d3":66}],243:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -51920,7 +45950,7 @@ module.exports = {
     convertCoords: require('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":418,"./attributes":226,"./calc_autorange":227,"./click":228,"./convert_coords":230,"./defaults":231,"./draw":232}],235:[function(require,module,exports){
+},{"../../plots/cartesian/include_components":426,"./attributes":235,"./calc_autorange":236,"./click":237,"./convert_coords":239,"./defaults":240,"./draw":241}],244:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52009,7 +46039,7 @@ module.exports = overrideAll({
     // zref: 'z'
 }, 'calc', 'from-root');
 
-},{"../../plot_api/edit_types":392,"../annotations/attributes":226}],236:[function(require,module,exports){
+},{"../../plot_api/edit_types":400,"../annotations/attributes":235}],245:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52074,7 +46104,7 @@ function mockAnnAxes(ann, scene) {
     };
 }
 
-},{"../../lib":362,"../../plots/cartesian/axes":408}],237:[function(require,module,exports){
+},{"../../lib":371,"../../plots/cartesian/axes":416}],246:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52152,7 +46182,7 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
     return annOut;
 }
 
-},{"../../lib":362,"../../plots/array_container_defaults":405,"../../plots/cartesian/axes":408,"../annotations/common_defaults":229,"./attributes":235}],238:[function(require,module,exports){
+},{"../../lib":371,"../../plots/array_container_defaults":413,"../../plots/cartesian/axes":416,"../annotations/common_defaults":238,"./attributes":244}],247:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52204,7 +46234,7 @@ module.exports = function draw(scene) {
     }
 };
 
-},{"../../plots/gl3d/project":440,"../annotations/draw":232}],239:[function(require,module,exports){
+},{"../../plots/gl3d/project":450,"../annotations/draw":241}],248:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52252,7 +46282,7 @@ function includeGL3D(layoutIn, layoutOut) {
     }
 }
 
-},{"../../lib":362,"../../registry":450,"./attributes":235,"./convert":236,"./defaults":237,"./draw":238}],240:[function(require,module,exports){
+},{"../../lib":371,"../../registry":460,"./attributes":244,"./convert":245,"./defaults":246,"./draw":247}],249:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52292,7 +46322,7 @@ exports.borderLine = '#BEC8D9';
 // gives back exactly lightLine if the other colors are defaults.
 exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);
 
-},{}],241:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52463,7 +46493,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"./attributes":240,"fast-isnumeric":68,"tinycolor2":208}],242:[function(require,module,exports){
+},{"./attributes":249,"fast-isnumeric":76,"tinycolor2":212}],251:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52622,7 +46652,7 @@ module.exports = overrideAll({
     }
 }, 'colorbars', 'from-root');
 
-},{"../../lib/extend":353,"../../plot_api/edit_types":392,"../../plots/cartesian/layout_attributes":420,"../../plots/font_attributes":433}],243:[function(require,module,exports){
+},{"../../lib/extend":362,"../../plot_api/edit_types":400,"../../plots/cartesian/layout_attributes":428,"../../plots/font_attributes":443}],252:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52650,7 +46680,7 @@ module.exports = {
     }
 };
 
-},{}],244:[function(require,module,exports){
+},{}],253:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -52717,7 +46747,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('titleside');
 };
 
-},{"../../lib":362,"../../plots/cartesian/tick_label_defaults":427,"../../plots/cartesian/tick_mark_defaults":428,"../../plots/cartesian/tick_value_defaults":429,"./attributes":242}],245:[function(require,module,exports){
+},{"../../lib":371,"../../plots/cartesian/tick_label_defaults":436,"../../plots/cartesian/tick_mark_defaults":437,"../../plots/cartesian/tick_value_defaults":438,"./attributes":251}],254:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53361,7 +47391,7 @@ module.exports = function draw(gd, id) {
     return component;
 };
 
-},{"../../constants/alignment":339,"../../lib":362,"../../lib/extend":353,"../../lib/setcursor":381,"../../lib/svg_text_utils":385,"../../plotly":403,"../../plots/cartesian/axes":408,"../../plots/cartesian/axis_defaults":410,"../../plots/cartesian/layout_attributes":420,"../../plots/cartesian/position_defaults":423,"../../plots/plots":443,"../../registry":450,"../color":241,"../dragelement":263,"../drawing":266,"../titles":332,"./attributes":242,"./constants":243,"d3":62,"tinycolor2":208}],246:[function(require,module,exports){
+},{"../../constants/alignment":348,"../../lib":371,"../../lib/extend":362,"../../lib/setcursor":390,"../../lib/svg_text_utils":394,"../../plotly":411,"../../plots/cartesian/axes":416,"../../plots/cartesian/axis_defaults":418,"../../plots/cartesian/layout_attributes":428,"../../plots/cartesian/position_defaults":432,"../../plots/plots":453,"../../registry":460,"../color":250,"../dragelement":272,"../drawing":275,"../titles":341,"./attributes":251,"./constants":252,"d3":66,"tinycolor2":212}],255:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53380,7 +47410,7 @@ module.exports = function hasColorbar(container) {
     return Lib.isPlainObject(container.colorbar);
 };
 
-},{"../../lib":362}],247:[function(require,module,exports){
+},{"../../lib":371}],256:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53447,7 +47477,7 @@ module.exports = {
     }
 };
 
-},{}],248:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53526,7 +47556,7 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     }
 };
 
-},{"../../lib":362,"./flip_scale":253,"./scales":260}],249:[function(require,module,exports){
+},{"../../lib":371,"./flip_scale":262,"./scales":269}],258:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53593,7 +47623,7 @@ module.exports = function makeColorScaleAttributes(context, editTypeOverride, au
     };
 };
 
-},{"../../lib/extend":353,"./attributes":247,"./scales.js":260}],250:[function(require,module,exports){
+},{"../../lib/extend":362,"./attributes":256,"./scales.js":269}],259:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53609,7 +47639,7 @@ var scales = require('./scales');
 
 module.exports = scales.RdBu;
 
-},{"./scales":260}],251:[function(require,module,exports){
+},{"./scales":269}],260:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53673,7 +47703,7 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     if(showScale) colorbarDefaults(containerIn, containerOut, layout);
 };
 
-},{"../../lib":362,"../colorbar/defaults":244,"../colorbar/has_colorbar":246,"./flip_scale":253,"./is_valid_scale":257,"fast-isnumeric":68}],252:[function(require,module,exports){
+},{"../../lib":371,"../colorbar/defaults":253,"../colorbar/has_colorbar":255,"./flip_scale":262,"./is_valid_scale":266,"fast-isnumeric":76}],261:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53710,7 +47740,7 @@ module.exports = function extractScale(scl, cmin, cmax) {
     };
 };
 
-},{}],253:[function(require,module,exports){
+},{}],262:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53735,7 +47765,7 @@ module.exports = function flipScale(scl) {
     return sclNew;
 };
 
-},{}],254:[function(require,module,exports){
+},{}],263:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53775,7 +47805,7 @@ module.exports = function getScale(scl, dflt) {
     return scl;
 };
 
-},{"./default_scale":250,"./is_valid_scale_array":258,"./scales":260}],255:[function(require,module,exports){
+},{"./default_scale":259,"./is_valid_scale_array":267,"./scales":269}],264:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53821,7 +47851,7 @@ module.exports = function hasColorscale(trace, containerStr) {
     );
 };
 
-},{"../../lib":362,"./is_valid_scale":257,"fast-isnumeric":68}],256:[function(require,module,exports){
+},{"../../lib":371,"./is_valid_scale":266,"fast-isnumeric":76}],265:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53855,7 +47885,7 @@ exports.extractScale = require('./extract_scale');
 
 exports.makeColorScaleFunc = require('./make_color_scale_func');
 
-},{"./attributes":247,"./calc":248,"./default_scale":250,"./defaults":251,"./extract_scale":252,"./flip_scale":253,"./get_scale":254,"./has_colorscale":255,"./is_valid_scale":257,"./make_color_scale_func":259,"./scales":260}],257:[function(require,module,exports){
+},{"./attributes":256,"./calc":257,"./default_scale":259,"./defaults":260,"./extract_scale":261,"./flip_scale":262,"./get_scale":263,"./has_colorscale":264,"./is_valid_scale":266,"./make_color_scale_func":268,"./scales":269}],266:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53876,7 +47906,7 @@ module.exports = function isValidScale(scl) {
     else return isValidScaleArray(scl);
 };
 
-},{"./is_valid_scale_array":258,"./scales":260}],258:[function(require,module,exports){
+},{"./is_valid_scale_array":267,"./scales":269}],267:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53913,7 +47943,7 @@ module.exports = function isValidScaleArray(scl) {
     return true;
 };
 
-},{"tinycolor2":208}],259:[function(require,module,exports){
+},{"tinycolor2":212}],268:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54009,7 +48039,7 @@ function colorArray2rbga(colorArray) {
     return tinycolor(colorObj).toRgbString();
 }
 
-},{"../color":241,"d3":62,"fast-isnumeric":68,"tinycolor2":208}],260:[function(require,module,exports){
+},{"../color":250,"d3":66,"fast-isnumeric":76,"tinycolor2":212}],269:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54152,7 +48182,7 @@ module.exports = {
     ]
 };
 
-},{}],261:[function(require,module,exports){
+},{}],270:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54185,7 +48215,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     return vc;
 };
 
-},{}],262:[function(require,module,exports){
+},{}],271:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54223,7 +48253,7 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
     return cursorset[y][x];
 };
 
-},{"../../lib":362}],263:[function(require,module,exports){
+},{"../../lib":371}],272:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54252,6 +48282,8 @@ dragElement.getCursor = require('./cursor');
 var unhover = require('./unhover');
 dragElement.unhover = unhover.wrapped;
 dragElement.unhoverRaw = unhover.raw;
+
+var supportsPassive = Lib.eventListenerOptionsSupported();
 
 /**
  * Abstracts click & drag interactions
@@ -54302,6 +48334,10 @@ dragElement.unhoverRaw = unhover.raw;
  *          numClicks is how many clicks we've registered within
  *          a doubleclick time
  *          e is the original mousedown event
+ *      clampFn (optional, function(dx, dy) return [dx2, dy2])
+ *          Provide custom clamping function for small displacements.
+ *          By default, clamping is done using `minDrag` to x and y displacements
+ *          independently.
  */
 dragElement.init = function init(options) {
     var gd = options.gd;
@@ -54323,7 +48359,25 @@ dragElement.init = function init(options) {
     element.style.pointerEvents = 'all';
 
     element.onmousedown = onStart;
-    element.ontouchstart = onStart;
+
+    if(!supportsPassive) {
+        element.ontouchstart = onStart;
+    }
+    else {
+        if(element._ontouchstart) {
+            element.removeEventListener('touchstart', element._ontouchstart);
+        }
+        element._ontouchstart = onStart;
+        element.addEventListener('touchstart', onStart, {passive: false});
+    }
+
+    function _clampFn(dx, dy, minDrag) {
+        if(Math.abs(dx) < minDrag) dx = 0;
+        if(Math.abs(dy) < minDrag) dy = 0;
+        return [dx, dy];
+    }
+
+    var clampFn = options.clampFn || _clampFn;
 
     function onStart(e) {
         // make dragging and dragged into properties of gd
@@ -54371,12 +48425,11 @@ dragElement.init = function init(options) {
 
     function onMove(e) {
         var offset = pointerOffset(e);
-        var dx = offset[0] - startX;
-        var dy = offset[1] - startY;
         var minDrag = options.minDrag || constants.MINDRAG;
+        var dxdy = clampFn(offset[0] - startX, offset[1] - startY, minDrag);
+        var dx = dxdy[0];
+        var dy = dxdy[1];
 
-        if(Math.abs(dx) < minDrag) dx = 0;
-        if(Math.abs(dy) < minDrag) dy = 0;
         if(dx || dy) {
             gd._dragged = true;
             dragElement.unhover(gd);
@@ -54485,7 +48538,7 @@ function pointerOffset(e) {
     );
 }
 
-},{"../../constants/interactions":342,"../../lib":362,"../../plotly":403,"../../plots/cartesian/constants":413,"./align":261,"./cursor":262,"./unhover":264,"has-hover":149,"mouse-event-offset":158}],264:[function(require,module,exports){
+},{"../../constants/interactions":350,"../../lib":371,"../../plotly":411,"../../plots/cartesian/constants":421,"./align":270,"./cursor":271,"./unhover":273,"has-hover":136,"mouse-event-offset":148}],273:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54541,7 +48594,7 @@ unhover.raw = function unhoverRaw(gd, evt) {
     }
 };
 
-},{"../../lib/events":352,"../../lib/get_graph_div":357,"../../lib/throttle":386,"../fx/constants":278}],265:[function(require,module,exports){
+},{"../../lib/events":361,"../../lib/get_graph_div":366,"../../lib/throttle":395,"../fx/constants":287}],274:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54566,7 +48619,7 @@ exports.dash = {
     
 };
 
-},{}],266:[function(require,module,exports){
+},{}],275:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -54782,6 +48835,7 @@ drawing.symbolNames = [];
 drawing.symbolFuncs = [];
 drawing.symbolNeedLines = {};
 drawing.symbolNoDot = {};
+drawing.symbolNoFill = {};
 drawing.symbolList = [];
 
 Object.keys(SYMBOLDEFS).forEach(function(k) {
@@ -54799,6 +48853,9 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     else {
         drawing.symbolList = drawing.symbolList.concat(
             [symDef.n + 200, k + '-dot', symDef.n + 300, k + '-open-dot']);
+    }
+    if(symDef.noFill) {
+        drawing.symbolNoFill[symDef.n] = true;
     }
 });
 var MAXSYMBOL = drawing.symbolNames.length,
@@ -55608,7 +49665,7 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
     });
 };
 
-},{"../../constants/alignment":339,"../../constants/interactions":342,"../../constants/xmlns_namespaces":345,"../../lib":362,"../../lib/svg_text_utils":385,"../../registry":450,"../../traces/scatter/make_bubble_size_func":525,"../../traces/scatter/subtypes":530,"../color":241,"../colorscale":256,"./symbol_defs":267,"d3":62,"fast-isnumeric":68,"tinycolor2":208}],267:[function(require,module,exports){
+},{"../../constants/alignment":348,"../../constants/interactions":350,"../../constants/xmlns_namespaces":353,"../../lib":371,"../../lib/svg_text_utils":394,"../../registry":460,"../../traces/scatter/make_bubble_size_func":535,"../../traces/scatter/subtypes":540,"../color":250,"../colorscale":265,"./symbol_defs":276,"d3":66,"fast-isnumeric":76,"tinycolor2":212}],276:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -55966,7 +50023,8 @@ module.exports = {
             return 'M0,' + rc + 'V-' + rc + 'M' + rc + ',0H-' + rc;
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     },
     'x-thin': {
         n: 34,
@@ -55976,7 +50034,8 @@ module.exports = {
                 'M' + rx + ',-' + rx + 'L-' + rx + ',' + rx;
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     },
     asterisk: {
         n: 35,
@@ -55988,7 +50047,8 @@ module.exports = {
                 'M' + rs + ',-' + rs + 'L-' + rs + ',' + rs;
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     },
     hash: {
         n: 36,
@@ -56000,7 +50060,8 @@ module.exports = {
                 'M' + r2 + ',' + r1 + 'H-' + r2 +
                 'm0,-' + r2 + 'H' + r2;
         },
-        needLine: true
+        needLine: true,
+        noFill: true
     },
     'y-up': {
         n: 37,
@@ -56011,7 +50072,8 @@ module.exports = {
             return 'M-' + x + ',' + y1 + 'L0,0M' + x + ',' + y1 + 'L0,0M0,-' + y0 + 'L0,0';
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     },
     'y-down': {
         n: 38,
@@ -56022,7 +50084,8 @@ module.exports = {
             return 'M-' + x + ',-' + y1 + 'L0,0M' + x + ',-' + y1 + 'L0,0M0,' + y0 + 'L0,0';
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     },
     'y-left': {
         n: 39,
@@ -56033,7 +50096,8 @@ module.exports = {
             return 'M' + x1 + ',' + y + 'L0,0M' + x1 + ',-' + y + 'L0,0M-' + x0 + ',0L0,0';
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     },
     'y-right': {
         n: 40,
@@ -56044,7 +50108,8 @@ module.exports = {
             return 'M-' + x1 + ',' + y + 'L0,0M-' + x1 + ',-' + y + 'L0,0M' + x0 + ',0L0,0';
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     },
     'line-ew': {
         n: 41,
@@ -56053,7 +50118,8 @@ module.exports = {
             return 'M' + rc + ',0H-' + rc;
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     },
     'line-ns': {
         n: 42,
@@ -56062,7 +50128,8 @@ module.exports = {
             return 'M0,' + rc + 'V-' + rc;
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     },
     'line-ne': {
         n: 43,
@@ -56071,7 +50138,8 @@ module.exports = {
             return 'M' + rx + ',-' + rx + 'L-' + rx + ',' + rx;
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     },
     'line-nw': {
         n: 44,
@@ -56080,11 +50148,12 @@ module.exports = {
             return 'M' + rx + ',' + rx + 'L-' + rx + ',-' + rx;
         },
         needLine: true,
-        noDot: true
+        noDot: true,
+        noFill: true
     }
 };
 
-},{"d3":62}],268:[function(require,module,exports){
+},{"d3":66}],277:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56199,7 +50268,7 @@ module.exports = {
     }
 };
 
-},{}],269:[function(require,module,exports){
+},{}],278:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56262,7 +50331,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     Axes.expand(axis, vals, {padded: true});
 }
 
-},{"../../plots/cartesian/axes":408,"../../registry":450,"./compute_error":270,"fast-isnumeric":68}],270:[function(require,module,exports){
+},{"../../plots/cartesian/axes":416,"../../registry":460,"./compute_error":279,"fast-isnumeric":76}],279:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56358,7 +50427,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],271:[function(require,module,exports){
+},{}],280:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56435,7 +50504,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":362,"../../registry":450,"./attributes":268,"fast-isnumeric":68}],272:[function(require,module,exports){
+},{"../../lib":371,"../../registry":460,"./attributes":277,"fast-isnumeric":76}],281:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56494,7 +50563,7 @@ errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
     }
 };
 
-},{"./attributes":268,"./calc":269,"./defaults":271,"./plot":273,"./style":274}],273:[function(require,module,exports){
+},{"./attributes":277,"./calc":278,"./defaults":280,"./plot":282,"./style":283}],282:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56668,7 +50737,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":530,"../drawing":266,"d3":62,"fast-isnumeric":68}],274:[function(require,module,exports){
+},{"../../traces/scatter/subtypes":540,"../drawing":275,"d3":66,"fast-isnumeric":76}],283:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56705,7 +50774,7 @@ module.exports = function style(traces) {
     });
 };
 
-},{"../color":241,"d3":62}],275:[function(require,module,exports){
+},{"../color":250,"d3":66}],284:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56751,7 +50820,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/font_attributes":433}],276:[function(require,module,exports){
+},{"../../plots/font_attributes":443}],285:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56807,7 +50876,7 @@ function paste(traceAttr, cd, cdAttr, fn) {
     }
 }
 
-},{"../../lib":362,"../../registry":450}],277:[function(require,module,exports){
+},{"../../lib":371,"../../registry":460}],286:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56845,7 +50914,7 @@ module.exports = function click(gd, evt, subplot) {
     }
 };
 
-},{"../../registry":450,"./hover":281}],278:[function(require,module,exports){
+},{"../../registry":460,"./hover":290}],287:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56880,7 +50949,7 @@ module.exports = {
     HOVERID: '-hover'
 };
 
-},{}],279:[function(require,module,exports){
+},{}],288:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56903,7 +50972,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleHoverLabelDefaults(traceIn, traceOut, coerce, layout.hoverlabel);
 };
 
-},{"../../lib":362,"./attributes":275,"./hoverlabel_defaults":282}],280:[function(require,module,exports){
+},{"../../lib":371,"./attributes":284,"./hoverlabel_defaults":291}],289:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57130,7 +51199,7 @@ function getPointData(val, pointNumber) {
     }
 }
 
-},{"../../lib":362,"./constants":278}],281:[function(require,module,exports){
+},{"../../lib":371,"./constants":287}],290:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -57277,7 +51346,8 @@ exports.loneHover = function loneHover(hoverItem, opts) {
         rotateLabels: false,
         bgColor: opts.bgColor || Color.background,
         container: container3,
-        outerContainer: outerContainer3
+        outerContainer: outerContainer3,
+        hoverdistance: constants.MAXDIST
     };
 
     var hoverLabel = createHoverText([pointData], fullOpts, opts.gd);
@@ -57340,6 +51410,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         return dragElement.unhoverRaw(gd, evt);
     }
 
+    var hoverdistance = fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance;
+    var spikedistance = fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance;
+
         // hoverData: the set of candidate points we've found to highlight
     var hoverData = [],
 
@@ -57365,7 +51438,13 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         xval,
         yval,
         pointData,
-        closedataPreviousLength;
+        closedataPreviousLength,
+
+        // spikePoints: the set of candidate points we've found to draw spikes to
+        spikePoints = {
+            hLinePoint: null,
+            vLinePoint: null
+        };
 
     // Figure out what we're hovering on:
     // mouse location or user-supplied data
@@ -57391,15 +51470,18 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
         // [x|y]px: the pixels (from top left) of the mouse location
         // on the currently selected plot area
+        // add pointerX|Y property for drawing the spikes in spikesnap 'cursor' situation
         var hasUserCalledHover = !evt.target,
             xpx, ypx;
 
         if(hasUserCalledHover) {
             if('xpx' in evt) xpx = evt.xpx;
             else xpx = xaArray[0]._length / 2;
+            evt.pointerX = xpx + xaArray[0]._offset;
 
             if('ypx' in evt) ypx = evt.ypx;
             else ypx = yaArray[0]._length / 2;
+            evt.pointerY = ypx + yaArray[0]._offset;
         }
         else {
             // fire the beforehover event and quit if it returns false
@@ -57419,6 +51501,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             if(xpx < 0 || xpx > dbb.width || ypx < 0 || ypx > dbb.height) {
                 return dragElement.unhoverRaw(gd, evt);
             }
+            evt.pointerX = evt.offsetX;
+            evt.pointerY = evt.offsetY;
         }
 
         if('xval' in evt) xvalArray = helpers.flat(subplots, evt.xval);
@@ -57467,7 +51551,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             ya: yaArray[subploti],
             // point properties - override all of these
             index: false, // point index in trace - only used by plotly.js hoverdata consumers
-            distance: Math.min(distance, constants.MAXDIST), // pixel distance or pseudo-distance
+            distance: Math.min(distance, hoverdistance), // pixel distance or pseudo-distance
             color: Color.defaultLine, // trace color
             name: trace.name,
             x0: undefined,
@@ -57512,21 +51596,23 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             yval = yvalArray[subploti];
         }
 
-        // Now find the points.
-        if(trace._module && trace._module.hoverPoints) {
-            var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
-            if(newPoints) {
-                var newPoint;
-                for(var newPointNum = 0; newPointNum < newPoints.length; newPointNum++) {
-                    newPoint = newPoints[newPointNum];
-                    if(isNumeric(newPoint.x0) && isNumeric(newPoint.y0)) {
-                        hoverData.push(cleanPoint(newPoint, hovermode));
+        // Now if there is range to look in, find the points to hover.
+        if(hoverdistance !== 0) {
+            if(trace._module && trace._module.hoverPoints) {
+                var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
+                if(newPoints) {
+                    var newPoint;
+                    for(var newPointNum = 0; newPointNum < newPoints.length; newPointNum++) {
+                        newPoint = newPoints[newPointNum];
+                        if(isNumeric(newPoint.x0) && isNumeric(newPoint.y0)) {
+                            hoverData.push(cleanPoint(newPoint, hovermode));
+                        }
                     }
                 }
             }
-        }
-        else {
-            Lib.log('Unrecognized trace type in hover:', trace);
+            else {
+                Lib.log('Unrecognized trace type in hover:', trace);
+            }
         }
 
         // in closest mode, remove any existing (farther) points
@@ -57535,10 +51621,140 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             hoverData.splice(0, closedataPreviousLength);
             distance = hoverData[0].distance;
         }
+
+        // Now if there is range to look in, find the points to draw the spikelines
+        // Do it only if there is no hoverData
+        if(fullLayout._has('cartesian') && (spikedistance !== 0)) {
+            if(hoverData.length === 0) {
+                pointData.distance = spikedistance;
+                pointData.index = false;
+                var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', fullLayout._hoverlayer);
+                if(closestPoints) {
+                    var tmpPoint;
+                    var closestVPoints = closestPoints.filter(function(point) {
+                        return point.xa.showspikes;
+                    });
+                    if(closestVPoints.length) {
+                        var closestVPt = closestVPoints[0];
+                        if(isNumeric(closestVPt.x0) && isNumeric(closestVPt.y0)) {
+                            tmpPoint = fillClosestPoint(closestVPt);
+                            if(!spikePoints.vLinePoint || (spikePoints.vLinePoint.distance > tmpPoint.distance)) {
+                                spikePoints.vLinePoint = tmpPoint;
+                            }
+                        }
+                    }
+
+                    var closestHPoints = closestPoints.filter(function(point) {
+                        return point.ya.showspikes;
+                    });
+                    if(closestHPoints.length) {
+                        var closestHPt = closestHPoints[0];
+                        if(isNumeric(closestHPt.x0) && isNumeric(closestHPt.y0)) {
+                            tmpPoint = fillClosestPoint(closestHPt);
+                            if(!spikePoints.hLinePoint || (spikePoints.hLinePoint.distance > tmpPoint.distance)) {
+                                spikePoints.hLinePoint = tmpPoint;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    // nothing left: remove all labels and quit
-    if(hoverData.length === 0) return dragElement.unhoverRaw(gd, evt);
+    function selectClosestPoint(pointsData, spikedistance) {
+        if(!pointsData.length) return null;
+        var resultPoint;
+        var pointsDistances = pointsData.map(function(point, index) {
+            var xa = point.xa,
+                ya = point.ya,
+                xpx = xa.c2p(xval),
+                ypx = ya.c2p(yval),
+                dxy = function(point) {
+                    var rad = point.kink,
+                        dx = (point.x1 + point.x0) / 2 - xpx,
+                        dy = (point.y1 + point.y0) / 2 - ypx;
+                    return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
+                };
+            var distance = dxy(point);
+            return {distance: distance, index: index};
+        });
+        pointsDistances = pointsDistances
+            .filter(function(point) {
+                return point.distance <= spikedistance;
+            })
+            .sort(function(a, b) {
+                return a.distance - b.distance;
+            });
+        if(pointsDistances.length) {
+            resultPoint = pointsData[pointsDistances[0].index];
+        } else {
+            resultPoint = null;
+        }
+        return resultPoint;
+    }
+
+    function fillClosestPoint(point) {
+        if(!point) return null;
+        return {
+            xa: point.xa,
+            ya: point.ya,
+            x0: point.x0,
+            x1: point.x1,
+            y0: point.y0,
+            y1: point.y1,
+            distance: point.distance,
+            curveNumber: point.trace.index,
+            color: point.color,
+            pointNumber: point.index
+        };
+    }
+
+    var spikelineOpts = {
+        fullLayout: fullLayout,
+        container: fullLayout._hoverlayer,
+        outerContainer: fullLayout._paperdiv,
+        event: evt
+    };
+    var oldspikepoints = gd._spikepoints,
+        newspikepoints = {
+            vLinePoint: spikePoints.vLinePoint,
+            hLinePoint: spikePoints.hLinePoint
+        };
+    gd._spikepoints = newspikepoints;
+
+    // Now if it is not restricted by spikedistance option, set the points to draw the spikelines
+    if(fullLayout._has('cartesian') && (spikedistance !== 0)) {
+        if(hoverData.length !== 0) {
+            var tmpHPointData = hoverData.filter(function(point) {
+                return point.ya.showspikes;
+            });
+            var tmpHPoint = selectClosestPoint(tmpHPointData, spikedistance);
+            spikePoints.hLinePoint = fillClosestPoint(tmpHPoint);
+
+            var tmpVPointData = hoverData.filter(function(point) {
+                return point.xa.showspikes;
+            });
+            var tmpVPoint = selectClosestPoint(tmpVPointData, spikedistance);
+            spikePoints.vLinePoint = fillClosestPoint(tmpVPoint);
+        }
+    }
+
+    // if hoverData is empty check for the spikes to draw and quit if there are none
+    if(hoverData.length === 0) {
+        var result = dragElement.unhoverRaw(gd, evt);
+        if(fullLayout._has('cartesian') && ((spikePoints.hLinePoint !== null) || (spikePoints.vLinePoint !== null))) {
+            if(spikesChanged(oldspikepoints)) {
+                createSpikelines(spikePoints, spikelineOpts);
+            }
+        }
+        return result;
+    }
+
+    if(fullLayout._has('cartesian')) {
+        if(spikesChanged(oldspikepoints)) {
+            createSpikelines(spikePoints, spikelineOpts);
+        }
+    }
 
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
@@ -57555,16 +51771,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     gd._hoverdata = newhoverdata;
 
-    if(hoverChanged(gd, evt, oldhoverdata) && fullLayout._hasCartesian) {
-        var spikelineOpts = {
-            hovermode: hovermode,
-            fullLayout: fullLayout,
-            container: fullLayout._hoverlayer,
-            outerContainer: fullLayout._paperdiv
-        };
-        createSpikelines(hoverData, spikelineOpts);
-    }
-
     // if there's more than one horz bar trace,
     // rotate the labels so they don't overlap
     var rotateLabels = hovermode === 'y' && searchData.length > 1;
@@ -57580,7 +51786,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         bgColor: bgColor,
         container: fullLayout._hoverlayer,
         outerContainer: fullLayout._paperdiv,
-        commonLabelOpts: fullLayout.hoverlabel
+        commonLabelOpts: fullLayout.hoverlabel,
+        hoverdistance: fullLayout.hoverdistance
     };
 
     var hoverLabels = createHoverText(hoverData, labelOpts, gd);
@@ -57644,7 +51851,7 @@ function createHoverText(hoverData, opts, gd) {
     // show the common label, if any, on the axis
     // never show a common label in array mode,
     // even if sometimes there could be one
-    var showCommonLabel = c0.distance <= constants.MAXDIST &&
+    var showCommonLabel = c0.distance <= opts.hoverdistance &&
                           (hovermode === 'x' || hovermode === 'y');
 
     // all hover traces hoverinfo must contain the hovermode
@@ -57652,7 +51859,7 @@ function createHoverText(hoverData, opts, gd) {
     var i, traceHoverinfo;
     for(i = 0; i < hoverData.length; i++) {
         traceHoverinfo = hoverData[i].hoverinfo || hoverData[i].trace.hoverinfo;
-        var parts = traceHoverinfo.split('+');
+        var parts = Array.isArray(traceHoverinfo) ? traceHoverinfo : traceHoverinfo.split('+');
         if(parts.indexOf('all') === -1 &&
             parts.indexOf(hovermode) === -1) {
             showCommonLabel = false;
@@ -58210,8 +52417,9 @@ function cleanPoint(d, hovermode) {
     }
 
     var infomode = d.hoverinfo || d.trace.hoverinfo;
+
     if(infomode !== 'all') {
-        infomode = infomode.split('+');
+        infomode = Array.isArray(infomode) ? infomode : infomode.split('+');
         if(infomode.indexOf('x') === -1) d.xLabel = undefined;
         if(infomode.indexOf('y') === -1) d.yLabel = undefined;
         if(infomode.indexOf('z') === -1) d.zLabel = undefined;
@@ -58222,75 +52430,92 @@ function cleanPoint(d, hovermode) {
     return d;
 }
 
-function createSpikelines(hoverData, opts) {
-    var hovermode = opts.hovermode;
+function createSpikelines(closestPoints, opts) {
     var container = opts.container;
-    var c0 = hoverData[0];
-    var xa = c0.xa;
-    var ya = c0.ya;
-    var showX = xa.showspikes;
-    var showY = ya.showspikes;
+    var fullLayout = opts.fullLayout;
+    var evt = opts.event;
+    var xa,
+        ya;
+
+    var showY = !!closestPoints.hLinePoint;
+    var showX = !!closestPoints.vLinePoint;
 
     // Remove old spikeline items
     container.selectAll('.spikeline').remove();
 
-    if(hovermode !== 'closest' || !(showX || showY)) return;
+    if(!(showX || showY)) return;
 
-    var fullLayout = opts.fullLayout;
-    var xPoint = xa._offset + (c0.x0 + c0.x1) / 2;
-    var yPoint = ya._offset + (c0.y0 + c0.y1) / 2;
     var contrastColor = Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor);
-    var dfltDashColor = tinycolor.readability(c0.color, contrastColor) < 1.5 ?
-            Color.contrast(contrastColor) : c0.color;
 
+    // Horizontal line (to y-axis)
     if(showY) {
-        var yMode = ya.spikemode;
-        var yThickness = ya.spikethickness;
-        var yColor = ya.spikecolor || dfltDashColor;
-        var yBB = ya._boundingBox;
-        var xEdge = ((yBB.left + yBB.right) / 2) < xPoint ? yBB.right : yBB.left;
+        var hLinePoint = closestPoints.hLinePoint,
+            hLinePointX,
+            hLinePointY;
+        xa = hLinePoint && hLinePoint.xa;
+        ya = hLinePoint && hLinePoint.ya;
+        var ySnap = ya.spikesnap;
+
+        if(ySnap === 'cursor') {
+            hLinePointX = evt.pointerX;
+            hLinePointY = evt.pointerY;
+        } else {
+            hLinePointX = xa._offset + (hLinePoint.x0 + hLinePoint.x1) / 2;
+            hLinePointY = ya._offset + (hLinePoint.y0 + hLinePoint.y1) / 2;
+        }
+        var dfltHLineColor = tinycolor.readability(hLinePoint.color, contrastColor) < 1.5 ?
+            Color.contrast(contrastColor) : hLinePoint.color;
+        var yMode = ya.spikemode,
+            yThickness = ya.spikethickness,
+            yColor = ya.spikecolor || dfltHLineColor,
+            yBB = ya._boundingBox,
+            xEdge = ((yBB.left + yBB.right) / 2) < hLinePointX ? yBB.right : yBB.left,
+            xBase,
+            xEndSpike;
 
         if(yMode.indexOf('toaxis') !== -1 || yMode.indexOf('across') !== -1) {
-            var xBase = xEdge;
-            var xEndSpike = xPoint;
+            if(yMode.indexOf('toaxis') !== -1) {
+                xBase = xEdge;
+                xEndSpike = hLinePointX;
+            }
             if(yMode.indexOf('across') !== -1) {
                 xBase = ya._counterSpan[0];
                 xEndSpike = ya._counterSpan[1];
             }
 
-            // Background horizontal Line (to y-axis)
-            container.append('line')
-                .attr({
-                    'x1': xBase,
-                    'x2': xEndSpike,
-                    'y1': yPoint,
-                    'y2': yPoint,
-                    'stroke-width': yThickness + 2,
-                    'stroke': contrastColor
-                })
-                .classed('spikeline', true)
-                .classed('crisp', true);
-
             // Foreground horizontal line (to y-axis)
-            container.append('line')
+            container.insert('line', ':first-child')
                 .attr({
                     'x1': xBase,
                     'x2': xEndSpike,
-                    'y1': yPoint,
-                    'y2': yPoint,
+                    'y1': hLinePointY,
+                    'y2': hLinePointY,
                     'stroke-width': yThickness,
                     'stroke': yColor,
                     'stroke-dasharray': Drawing.dashStyle(ya.spikedash, yThickness)
                 })
                 .classed('spikeline', true)
                 .classed('crisp', true);
+
+            // Background horizontal Line (to y-axis)
+            container.insert('line', ':first-child')
+                .attr({
+                    'x1': xBase,
+                    'x2': xEndSpike,
+                    'y1': hLinePointY,
+                    'y2': hLinePointY,
+                    'stroke-width': yThickness + 2,
+                    'stroke': contrastColor
+                })
+                .classed('spikeline', true)
+                .classed('crisp', true);
         }
         // Y axis marker
         if(yMode.indexOf('marker') !== -1) {
-            container.append('circle')
+            container.insert('circle', ':first-child')
                 .attr({
                     'cx': xEdge + (ya.side !== 'right' ? yThickness : -yThickness),
-                    'cy': yPoint,
+                    'cy': hLinePointY,
                     'r': yThickness,
                     'fill': yColor
                 })
@@ -58299,38 +52524,46 @@ function createSpikelines(hoverData, opts) {
     }
 
     if(showX) {
-        var xMode = xa.spikemode;
-        var xThickness = xa.spikethickness;
-        var xColor = xa.spikecolor || dfltDashColor;
-        var xBB = xa._boundingBox;
-        var yEdge = ((xBB.top + xBB.bottom) / 2) < yPoint ? xBB.bottom : xBB.top;
+        var vLinePoint = closestPoints.vLinePoint,
+            vLinePointX,
+            vLinePointY;
+
+        xa = vLinePoint && vLinePoint.xa;
+        ya = vLinePoint && vLinePoint.ya;
+        var xSnap = xa.spikesnap;
+
+        if(xSnap === 'cursor') {
+            vLinePointX = evt.pointerX;
+            vLinePointY = evt.pointerY;
+        } else {
+            vLinePointX = xa._offset + (vLinePoint.x0 + vLinePoint.x1) / 2;
+            vLinePointY = ya._offset + (vLinePoint.y0 + vLinePoint.y1) / 2;
+        }
+        var dfltVLineColor = tinycolor.readability(vLinePoint.color, contrastColor) < 1.5 ?
+        Color.contrast(contrastColor) : vLinePoint.color;
+        var xMode = xa.spikemode,
+            xThickness = xa.spikethickness,
+            xColor = xa.spikecolor || dfltVLineColor,
+            xBB = xa._boundingBox,
+            yEdge = ((xBB.top + xBB.bottom) / 2) < vLinePointY ? xBB.bottom : xBB.top,
+            yBase,
+            yEndSpike;
 
         if(xMode.indexOf('toaxis') !== -1 || xMode.indexOf('across') !== -1) {
-            var yBase = yEdge;
-            var yEndSpike = yPoint;
+            if(xMode.indexOf('toaxis') !== -1) {
+                yBase = yEdge;
+                yEndSpike = vLinePointY;
+            }
             if(xMode.indexOf('across') !== -1) {
                 yBase = xa._counterSpan[0];
                 yEndSpike = xa._counterSpan[1];
             }
 
-            // Background vertical line (to x-axis)
-            container.append('line')
-                .attr({
-                    'x1': xPoint,
-                    'x2': xPoint,
-                    'y1': yBase,
-                    'y2': yEndSpike,
-                    'stroke-width': xThickness + 2,
-                    'stroke': contrastColor
-                })
-                .classed('spikeline', true)
-                .classed('crisp', true);
-
             // Foreground vertical line (to x-axis)
-            container.append('line')
+            container.insert('line', ':first-child')
                 .attr({
-                    'x1': xPoint,
-                    'x2': xPoint,
+                    'x1': vLinePointX,
+                    'x2': vLinePointX,
                     'y1': yBase,
                     'y2': yEndSpike,
                     'stroke-width': xThickness,
@@ -58339,13 +52572,26 @@ function createSpikelines(hoverData, opts) {
                 })
                 .classed('spikeline', true)
                 .classed('crisp', true);
+
+            // Background vertical line (to x-axis)
+            container.insert('line', ':first-child')
+                .attr({
+                    'x1': vLinePointX,
+                    'x2': vLinePointX,
+                    'y1': yBase,
+                    'y2': yEndSpike,
+                    'stroke-width': xThickness + 2,
+                    'stroke': contrastColor
+                })
+                .classed('spikeline', true)
+                .classed('crisp', true);
         }
 
         // X axis marker
         if(xMode.indexOf('marker') !== -1) {
-            container.append('circle')
+            container.insert('circle', ':first-child')
                 .attr({
-                    'cx': xPoint,
+                    'cx': vLinePointX,
                     'cy': yEdge - (xa.side !== 'top' ? xThickness : -xThickness),
                     'r': xThickness,
                     'fill': xColor
@@ -58370,7 +52616,16 @@ function hoverChanged(gd, evt, oldhoverdata) {
     return false;
 }
 
-},{"../../lib":362,"../../lib/events":352,"../../lib/override_cursor":373,"../../lib/svg_text_utils":385,"../../plots/cartesian/axes":408,"../../registry":450,"../color":241,"../dragelement":263,"../drawing":266,"./constants":278,"./helpers":280,"d3":62,"fast-isnumeric":68,"tinycolor2":208}],282:[function(require,module,exports){
+function spikesChanged(gd, oldspikepoints) {
+    // don't relayout the plot because of new spikelines if spikelines points didn't change
+    if(!oldspikepoints) return true;
+    if(oldspikepoints.vLinePoint !== gd._spikepoints.vLinePoint ||
+        oldspikepoints.hLinePoint !== gd._spikepoints.hLinePoint
+    ) return true;
+    return false;
+}
+
+},{"../../lib":371,"../../lib/events":361,"../../lib/override_cursor":382,"../../lib/svg_text_utils":394,"../../plots/cartesian/axes":416,"../../registry":460,"../color":250,"../dragelement":272,"../drawing":275,"./constants":287,"./helpers":289,"d3":66,"fast-isnumeric":76,"tinycolor2":212}],291:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58392,7 +52647,7 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
     Lib.coerceFont(coerce, 'hoverlabel.font', opts.font);
 };
 
-},{"../../lib":362}],283:[function(require,module,exports){
+},{"../../lib":371}],292:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58470,7 +52725,7 @@ function castHoverinfo(trace, fullLayout, ptNumber) {
     return Lib.castOption(trace, ptNumber, 'hoverinfo', _coerce);
 }
 
-},{"../../lib":362,"../dragelement":263,"./attributes":275,"./calc":276,"./click":277,"./constants":278,"./defaults":279,"./helpers":280,"./hover":281,"./layout_attributes":284,"./layout_defaults":285,"./layout_global_defaults":286,"d3":62}],284:[function(require,module,exports){
+},{"../../lib":371,"../dragelement":272,"./attributes":284,"./calc":285,"./click":286,"./constants":287,"./defaults":288,"./helpers":289,"./hover":290,"./layout_attributes":293,"./layout_defaults":294,"./layout_global_defaults":295,"d3":66}],293:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58506,7 +52761,22 @@ module.exports = {
         editType: 'modebar',
         
     },
-
+    hoverdistance: {
+        valType: 'integer',
+        min: -1,
+        dflt: 20,
+        
+        editType: 'none',
+        
+    },
+    spikedistance: {
+        valType: 'integer',
+        min: -1,
+        dflt: 20,
+        
+        editType: 'none',
+        
+    },
     hoverlabel: {
         bgcolor: {
             valType: 'color',
@@ -58533,7 +52803,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/font_attributes":433,"./constants":278}],285:[function(require,module,exports){
+},{"../../plots/font_attributes":443,"./constants":287}],294:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58563,7 +52833,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
     else hovermodeDflt = 'closest';
 
-    coerce('hovermode', hovermodeDflt);
+    var hoverMode = coerce('hovermode', hovermodeDflt);
+    if(hoverMode) {
+        coerce('hoverdistance');
+        coerce('spikedistance');
+    }
 
     // if only mapbox or geo subplots is present on graph,
     // reset 'zoom' dragmode to 'pan' until 'zoom' is implemented,
@@ -58595,7 +52869,7 @@ function isHoriz(fullData) {
     return out;
 }
 
-},{"../../lib":362,"./layout_attributes":284}],286:[function(require,module,exports){
+},{"../../lib":371,"./layout_attributes":293}],295:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58618,7 +52892,7 @@ module.exports = function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
 };
 
-},{"../../lib":362,"./hoverlabel_defaults":282,"./layout_attributes":284}],287:[function(require,module,exports){
+},{"../../lib":371,"./hoverlabel_defaults":291,"./layout_attributes":293}],296:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58754,7 +53028,7 @@ module.exports = {
     editType: 'arraydraw'
 };
 
-},{"../../plots/cartesian/constants":413}],288:[function(require,module,exports){
+},{"../../plots/cartesian/constants":421}],297:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58837,7 +53111,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":387,"fast-isnumeric":68}],289:[function(require,module,exports){
+},{"../../lib/to_log_range":396,"fast-isnumeric":76}],298:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58898,7 +53172,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     return imageOut;
 }
 
-},{"../../lib":362,"../../plots/array_container_defaults":405,"../../plots/cartesian/axes":408,"./attributes":287}],290:[function(require,module,exports){
+},{"../../lib":371,"../../plots/array_container_defaults":413,"../../plots/cartesian/axes":416,"./attributes":296}],299:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -59119,7 +53393,7 @@ module.exports = function draw(gd) {
     }
 };
 
-},{"../../constants/xmlns_namespaces":345,"../../plots/cartesian/axes":408,"../drawing":266,"d3":62}],291:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":353,"../../plots/cartesian/axes":416,"../drawing":275,"d3":66}],300:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -59143,7 +53417,7 @@ module.exports = {
     convertCoords: require('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":418,"./attributes":287,"./convert_coords":288,"./defaults":289,"./draw":290}],292:[function(require,module,exports){
+},{"../../plots/cartesian/include_components":426,"./attributes":296,"./convert_coords":297,"./defaults":298,"./draw":299}],301:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -59192,7 +53466,7 @@ exports.isMiddleAnchor = function isMiddleAnchor(opts) {
     );
 };
 
-},{}],293:[function(require,module,exports){
+},{}],302:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -59294,7 +53568,7 @@ module.exports = {
     editType: 'legend'
 };
 
-},{"../../plots/font_attributes":433,"../color/attributes":240}],294:[function(require,module,exports){
+},{"../../plots/font_attributes":443,"../color/attributes":249}],303:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -59312,7 +53586,7 @@ module.exports = {
     scrollBarMargin: 4
 };
 
-},{}],295:[function(require,module,exports){
+},{}],304:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -59405,7 +53679,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 };
 
-},{"../../lib":362,"../../plots/layout_attributes":441,"../../registry":450,"./attributes":293,"./helpers":299}],296:[function(require,module,exports){
+},{"../../lib":371,"../../plots/layout_attributes":451,"../../registry":460,"./attributes":302,"./helpers":308}],305:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60132,7 +54406,7 @@ function expandHorizontalMargin(gd) {
     });
 }
 
-},{"../../constants/alignment":339,"../../constants/interactions":342,"../../lib":362,"../../lib/svg_text_utils":385,"../../plotly":403,"../../plots/plots":443,"../../registry":450,"../color":241,"../dragelement":263,"../drawing":266,"./anchor_utils":292,"./constants":294,"./get_legend_data":297,"./handle_click":298,"./helpers":299,"./style":301,"d3":62}],297:[function(require,module,exports){
+},{"../../constants/alignment":348,"../../constants/interactions":350,"../../lib":371,"../../lib/svg_text_utils":394,"../../plotly":411,"../../plots/plots":453,"../../registry":460,"../color":250,"../dragelement":272,"../drawing":275,"./anchor_utils":301,"./constants":303,"./get_legend_data":306,"./handle_click":307,"./helpers":308,"./style":310,"d3":66}],306:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60237,7 +54511,7 @@ module.exports = function getLegendData(calcdata, opts) {
     return legendData;
 };
 
-},{"../../registry":450,"./helpers":299}],298:[function(require,module,exports){
+},{"../../registry":460,"./helpers":308}],307:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60462,7 +54736,7 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 };
 
-},{"../../lib":362,"../../plotly":403,"../../registry":450}],299:[function(require,module,exports){
+},{"../../lib":371,"../../plotly":411,"../../registry":460}],308:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60493,7 +54767,7 @@ exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
 
-},{"../../registry":450}],300:[function(require,module,exports){
+},{"../../registry":460}],309:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60517,7 +54791,7 @@ module.exports = {
     style: require('./style')
 };
 
-},{"./attributes":293,"./defaults":295,"./draw":296,"./style":301}],301:[function(require,module,exports){
+},{"./attributes":302,"./defaults":304,"./draw":305,"./style":310}],310:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60750,7 +55024,7 @@ module.exports = function style(s, gd) {
     }
 };
 
-},{"../../lib":362,"../../registry":450,"../../traces/pie/style_one":502,"../../traces/scatter/subtypes":530,"../color":241,"../drawing":266,"d3":62}],302:[function(require,module,exports){
+},{"../../lib":371,"../../registry":460,"../../traces/pie/style_one":512,"../../traces/scatter/subtypes":540,"../color":250,"../drawing":275,"d3":66}],311:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -60934,7 +55208,7 @@ function handleCartesian(gd, ev) {
     var fullLayout = gd._fullLayout;
     var aobj = {};
     var axList = axisIds.list(gd, null, true);
-    var allEnabled = 'on';
+    var allSpikesEnabled = 'on';
 
     var ax, i;
 
@@ -60962,8 +55236,8 @@ function handleCartesian(gd, ev) {
                     }
                     if(ax._showSpikeInitial !== undefined) {
                         aobj[axName + '.showspikes'] = ax._showSpikeInitial;
-                        if(allEnabled === 'on' && !ax._showSpikeInitial) {
-                            allEnabled = 'off';
+                        if(allSpikesEnabled === 'on' && !ax._showSpikeInitial) {
+                            allSpikesEnabled = 'off';
                         }
                     }
                 }
@@ -60983,24 +55257,21 @@ function handleCartesian(gd, ev) {
                 }
             }
         }
-        fullLayout._cartesianSpikesEnabled = allEnabled;
+        fullLayout._cartesianSpikesEnabled = allSpikesEnabled;
     }
     else {
         // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
         if(astr === 'hovermode' && (val === 'x' || val === 'y')) {
             val = fullLayout._isHoriz ? 'y' : 'x';
             button.setAttribute('data-val', val);
-            if(val !== 'closest') {
-                fullLayout._cartesianSpikesEnabled = 'off';
-            }
         } else if(astr === 'hovermode' && val === 'closest') {
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
-                if(allEnabled === 'on' && !ax.showspikes) {
-                    allEnabled = 'off';
+                if(allSpikesEnabled === 'on' && !ax.showspikes) {
+                    allSpikesEnabled = 'off';
                 }
             }
-            fullLayout._cartesianSpikesEnabled = allEnabled;
+            fullLayout._cartesianSpikesEnabled = allSpikesEnabled;
         }
 
         aobj[astr] = val;
@@ -61304,12 +55575,10 @@ modeBarButtons.toggleSpikelines = {
     click: function(gd) {
         var fullLayout = gd._fullLayout;
 
-        fullLayout._cartesianSpikesEnabled = fullLayout.hovermode === 'closest' ?
-            (fullLayout._cartesianSpikesEnabled === 'on' ? 'off' : 'on') : 'on';
+        fullLayout._cartesianSpikesEnabled = fullLayout._cartesianSpikesEnabled === 'on' ? 'off' : 'on';
 
         var aobj = setSpikelineVisibility(gd);
 
-        aobj.hovermode = 'closest';
         Plotly.relayout(gd, aobj);
     }
 };
@@ -61324,7 +55593,7 @@ function setSpikelineVisibility(gd) {
     for(var i = 0; i < axList.length; i++) {
         ax = axList[i];
         axName = ax._name;
-        aobj[axName + '.showspikes'] = fullLayout._cartesianSpikesEnabled === 'on' ? true : false;
+        aobj[axName + '.showspikes'] = fullLayout._cartesianSpikesEnabled === 'on' ? true : ax._showSpikeInitial;
     }
 
     return aobj;
@@ -61360,7 +55629,7 @@ function resetView(gd, subplotType) {
     Plotly.relayout(gd, aObj);
 }
 
-},{"../../../build/ploticon":2,"../../lib":362,"../../plotly":403,"../../plots/cartesian/axis_ids":411,"../../plots/plots":443,"../../snapshot/download":452}],303:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":371,"../../plotly":411,"../../plots/cartesian/axis_ids":419,"../../plots/plots":453,"../../snapshot/download":462}],312:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -61374,7 +55643,7 @@ function resetView(gd, subplotType) {
 
 exports.manage = require('./manage');
 
-},{"./manage":304}],304:[function(require,module,exports){
+},{"./manage":313}],313:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -61458,6 +55727,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var hasGL2D = fullLayout._has('gl2d');
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
+    var hasPolar = fullLayout._has('polar');
 
     var groups = [];
 
@@ -61497,6 +55767,9 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     }
     if(hasMapbox || hasGeo) {
         dragModeGroup = ['pan2d'];
+    }
+    if(hasPolar) {
+        dragModeGroup = ['zoom2d'];
     }
     if(isSelectable(fullData)) {
         dragModeGroup.push('select2d');
@@ -61606,7 +55879,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axis_ids":411,"../../registry":450,"../../traces/scatter/subtypes":530,"./buttons":302,"./modebar":305}],305:[function(require,module,exports){
+},{"../../plots/cartesian/axis_ids":419,"../../registry":460,"../../traces/scatter/subtypes":540,"./buttons":311,"./modebar":314}],314:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -61903,7 +56176,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../../build/ploticon":2,"../../lib":362,"d3":62}],306:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":371,"d3":66}],315:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62004,7 +56277,7 @@ module.exports = {
     editType: 'plot'
 };
 
-},{"../../lib/extend":353,"../../plots/font_attributes":433,"../color/attributes":240,"./button_attributes":307}],307:[function(require,module,exports){
+},{"../../lib/extend":362,"../../plots/font_attributes":443,"../color/attributes":249,"./button_attributes":316}],316:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62050,7 +56323,7 @@ module.exports = {
     editType: 'plot'
 };
 
-},{}],308:[function(require,module,exports){
+},{}],317:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62079,7 +56352,7 @@ module.exports = {
     darkAmount: 10
 };
 
-},{}],309:[function(require,module,exports){
+},{}],318:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62178,7 +56451,7 @@ function getPosDflt(containerOut, layout, counterAxes) {
     return [containerOut.domain[0], posY + constants.yPad];
 }
 
-},{"../../lib":362,"../color":241,"./attributes":306,"./button_attributes":307,"./constants":308}],310:[function(require,module,exports){
+},{"../../lib":371,"../color":250,"./attributes":315,"./button_attributes":316,"./constants":317}],319:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62445,7 +56718,7 @@ function reposition(gd, buttons, opts, axName) {
     });
 }
 
-},{"../../constants/alignment":339,"../../lib/svg_text_utils":385,"../../plotly":403,"../../plots/cartesian/axis_ids":411,"../../plots/plots":443,"../color":241,"../drawing":266,"../legend/anchor_utils":292,"./constants":308,"./get_update_object":311,"d3":62}],311:[function(require,module,exports){
+},{"../../constants/alignment":348,"../../lib/svg_text_utils":394,"../../plotly":411,"../../plots/cartesian/axis_ids":419,"../../plots/plots":453,"../color":250,"../drawing":275,"../legend/anchor_utils":301,"./constants":317,"./get_update_object":320,"d3":66}],320:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62502,7 +56775,7 @@ function getXRange(axisLayout, buttonLayout) {
     return [range0, range1];
 }
 
-},{"d3":62}],312:[function(require,module,exports){
+},{"d3":66}],321:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62529,7 +56802,7 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":306,"./defaults":309,"./draw":310}],313:[function(require,module,exports){
+},{"./attributes":315,"./defaults":318,"./draw":319}],322:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62601,7 +56874,7 @@ module.exports = {
     editType: 'calc'
 };
 
-},{"../color/attributes":240}],314:[function(require,module,exports){
+},{"../color/attributes":249}],323:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62637,7 +56910,7 @@ module.exports = function calcAutorange(gd) {
     }
 };
 
-},{"../../plots/cartesian/axes":408,"./constants":315}],315:[function(require,module,exports){
+},{"../../plots/cartesian/axes":416,"./constants":324}],324:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62689,7 +56962,7 @@ module.exports = {
     extraPad: 15
 };
 
-},{}],316:[function(require,module,exports){
+},{}],325:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62746,7 +57019,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     containerOut._input = containerIn;
 };
 
-},{"../../lib":362,"./attributes":313}],317:[function(require,module,exports){
+},{"../../lib":371,"./attributes":322}],326:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63298,7 +57571,7 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib":362,"../../lib/setcursor":381,"../../plotly":403,"../../plots/cartesian":419,"../../plots/cartesian/axes":408,"../../plots/plots":443,"../color":241,"../dragelement":263,"../drawing":266,"./constants":315,"d3":62}],318:[function(require,module,exports){
+},{"../../lib":371,"../../lib/setcursor":390,"../../plotly":411,"../../plots/cartesian":427,"../../plots/cartesian/axes":416,"../../plots/plots":453,"../color":250,"../dragelement":272,"../drawing":275,"./constants":324,"d3":66}],327:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63325,7 +57598,7 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":313,"./calc_autorange":314,"./defaults":316,"./draw":317}],319:[function(require,module,exports){
+},{"./attributes":322,"./calc_autorange":323,"./defaults":325,"./draw":326}],328:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63434,7 +57707,7 @@ module.exports = {
     editType: 'arraydraw'
 };
 
-},{"../../lib/extend":353,"../../traces/scatter/attributes":508,"../annotations/attributes":226,"../drawing/attributes":265}],320:[function(require,module,exports){
+},{"../../lib/extend":362,"../../traces/scatter/attributes":518,"../annotations/attributes":235,"../drawing/attributes":274}],329:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63511,7 +57784,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../lib":362,"../../plots/cartesian/axes":408,"./constants":321,"./helpers":324}],321:[function(require,module,exports){
+},{"../../lib":371,"../../plots/cartesian/axes":416,"./constants":330,"./helpers":333}],330:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63575,7 +57848,7 @@ module.exports = {
     }
 };
 
-},{}],322:[function(require,module,exports){
+},{}],331:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63600,7 +57873,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleArrayContainerDefaults(layoutIn, layoutOut, opts);
 };
 
-},{"../../plots/array_container_defaults":405,"./shape_defaults":326}],323:[function(require,module,exports){
+},{"../../plots/array_container_defaults":413,"./shape_defaults":335}],332:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63975,7 +58248,7 @@ function movePath(pathIn, moveX, moveY) {
     });
 }
 
-},{"../../lib":362,"../../lib/setcursor":381,"../../plotly":403,"../../plots/cartesian/axes":408,"../color":241,"../dragelement":263,"../drawing":266,"./constants":321,"./helpers":324}],324:[function(require,module,exports){
+},{"../../lib":371,"../../lib/setcursor":390,"../../plotly":411,"../../plots/cartesian/axes":416,"../color":250,"../dragelement":272,"../drawing":275,"./constants":330,"./helpers":333}],333:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64056,7 +58329,7 @@ exports.getPixelToData = function(gd, axis, isVertical) {
     return pixelToData;
 };
 
-},{}],325:[function(require,module,exports){
+},{}],334:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64083,7 +58356,7 @@ module.exports = {
     drawOne: drawModule.drawOne
 };
 
-},{"../../plots/cartesian/include_components":418,"./attributes":319,"./calc_autorange":320,"./defaults":322,"./draw":323}],326:[function(require,module,exports){
+},{"../../plots/cartesian/include_components":426,"./attributes":328,"./calc_autorange":329,"./defaults":331,"./draw":332}],335:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64182,7 +58455,7 @@ module.exports = function handleShapeDefaults(shapeIn, shapeOut, fullLayout, opt
     return shapeOut;
 };
 
-},{"../../lib":362,"../../plots/cartesian/axes":408,"./attributes":319,"./helpers":324}],327:[function(require,module,exports){
+},{"../../lib":371,"../../plots/cartesian/axes":416,"./attributes":328,"./helpers":333}],336:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64422,7 +58695,7 @@ module.exports = overrideAll({
     }
 }, 'arraydraw', 'from-root');
 
-},{"../../lib/extend":353,"../../plot_api/edit_types":392,"../../plots/animation_attributes":404,"../../plots/font_attributes":433,"../../plots/pad_attributes":442,"./constants":328}],328:[function(require,module,exports){
+},{"../../lib/extend":362,"../../plot_api/edit_types":400,"../../plots/animation_attributes":412,"../../plots/font_attributes":443,"../../plots/pad_attributes":452,"./constants":337}],337:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64516,7 +58789,7 @@ module.exports = {
     currentValueInset: 0,
 };
 
-},{}],329:[function(require,module,exports){
+},{}],338:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -64631,7 +58904,7 @@ function stepsDefaults(sliderIn, sliderOut) {
     return valuesOut;
 }
 
-},{"../../lib":362,"../../plots/array_container_defaults":405,"./attributes":327,"./constants":328}],330:[function(require,module,exports){
+},{"../../lib":371,"../../plots/array_container_defaults":413,"./attributes":336,"./constants":337}],339:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -65252,7 +59525,7 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../constants/alignment":339,"../../lib/svg_text_utils":385,"../../plots/plots":443,"../color":241,"../drawing":266,"../legend/anchor_utils":292,"./constants":328,"d3":62}],331:[function(require,module,exports){
+},{"../../constants/alignment":348,"../../lib/svg_text_utils":394,"../../plots/plots":453,"../color":250,"../drawing":275,"../legend/anchor_utils":301,"./constants":337,"d3":66}],340:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -65275,7 +59548,7 @@ module.exports = {
     draw: require('./draw')
 };
 
-},{"./attributes":327,"./constants":328,"./defaults":329,"./draw":330}],332:[function(require,module,exports){
+},{"./attributes":336,"./constants":337,"./defaults":338,"./draw":339}],341:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -65329,6 +59602,8 @@ var numStripRE = / [XY][0-9]* /;
  *          offset - shift up/down in the rotated frame (unused?)
  *      containerGroup - if an svg <g> element already exists to hold this
  *          title, include here. Otherwise it will go in fullLayout._infolayer
+ *
+ *  @return {selection} d3 selection of title container group
  */
 Titles.draw = function(gd, titleClass, options) {
     var cont = options.propContainer;
@@ -65341,13 +59616,14 @@ Titles.draw = function(gd, titleClass, options) {
     var group = options.containerGroup;
 
     var fullLayout = gd._fullLayout;
-    var font = cont.titlefont.family;
-    var fontSize = cont.titlefont.size;
-    var fontColor = cont.titlefont.color;
+    var titlefont = cont.titlefont || {};
+    var font = titlefont.family;
+    var fontSize = titlefont.size;
+    var fontColor = titlefont.color;
 
     var opacity = 1;
     var isplaceholder = false;
-    var txt = cont.title.trim();
+    var txt = (cont.title || '').trim();
 
     // only make this title editable if we positively identify its property
     // as one that has editing enabled.
@@ -65389,17 +59665,28 @@ Titles.draw = function(gd, titleClass, options) {
         .attr('class', titleClass);
     el.exit().remove();
 
-    if(!elShouldExist) return;
+    if(!elShouldExist) return group;
 
     function titleLayout(titleEl) {
         Lib.syncOrAsync([drawTitle, scootTitle], titleEl);
     }
 
     function drawTitle(titleEl) {
-        titleEl.attr('transform', transform ?
-            'rotate(' + [transform.rotate, attributes.x, attributes.y] +
-                ') translate(0, ' + transform.offset + ')' :
-            null);
+        var transformVal;
+
+        if(transform) {
+            transformVal = '';
+            if(transform.rotate) {
+                transformVal += 'rotate(' + [transform.rotate, attributes.x, attributes.y] + ')';
+            }
+            if(transform.offset) {
+                transformVal += 'translate(0, ' + transform.offset + ')';
+            }
+        } else {
+            transformVal = null;
+        }
+
+        titleEl.attr('transform', transformVal);
 
         titleEl.style({
             'font-family': font,
@@ -65514,9 +59801,11 @@ Titles.draw = function(gd, titleClass, options) {
             });
     }
     el.classed('js-placeholder', isplaceholder);
+
+    return group;
 };
 
-},{"../../constants/interactions":342,"../../lib":362,"../../lib/svg_text_utils":385,"../../plotly":403,"../../plots/plots":443,"../color":241,"../drawing":266,"d3":62,"fast-isnumeric":68}],333:[function(require,module,exports){
+},{"../../constants/interactions":350,"../../lib":371,"../../lib/svg_text_utils":394,"../../plotly":411,"../../plots/plots":453,"../color":250,"../drawing":275,"d3":66,"fast-isnumeric":76}],342:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -65671,7 +59960,7 @@ module.exports = overrideAll({
     }
 }, 'arraydraw', 'from-root');
 
-},{"../../lib/extend":353,"../../plot_api/edit_types":392,"../../plots/font_attributes":433,"../../plots/pad_attributes":442,"../color/attributes":240}],334:[function(require,module,exports){
+},{"../../lib/extend":362,"../../plot_api/edit_types":400,"../../plots/font_attributes":443,"../../plots/pad_attributes":452,"../color/attributes":249}],343:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -65752,7 +60041,7 @@ module.exports = {
     }
 };
 
-},{}],335:[function(require,module,exports){
+},{}],344:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -65848,7 +60137,7 @@ function buttonsDefaults(menuIn, menuOut) {
     return buttonsOut;
 }
 
-},{"../../lib":362,"../../plots/array_container_defaults":405,"./attributes":333,"./constants":334}],336:[function(require,module,exports){
+},{"../../lib":371,"../../plots/array_container_defaults":413,"./attributes":342,"./constants":343}],345:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -66531,9 +60820,9 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../constants/alignment":339,"../../lib/svg_text_utils":385,"../../plots/plots":443,"../color":241,"../drawing":266,"../legend/anchor_utils":292,"./constants":334,"./scrollbox":338,"d3":62}],337:[function(require,module,exports){
-arguments[4][331][0].apply(exports,arguments)
-},{"./attributes":333,"./constants":334,"./defaults":335,"./draw":336,"dup":331}],338:[function(require,module,exports){
+},{"../../constants/alignment":348,"../../lib/svg_text_utils":394,"../../plots/plots":453,"../color":250,"../drawing":275,"../legend/anchor_utils":301,"./constants":343,"./scrollbox":347,"d3":66}],346:[function(require,module,exports){
+arguments[4][340][0].apply(exports,arguments)
+},{"./attributes":342,"./constants":343,"./defaults":344,"./draw":345,"dup":340}],347:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67004,7 +61293,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     }
 };
 
-},{"../../lib":362,"../color":241,"../drawing":266,"d3":62}],339:[function(require,module,exports){
+},{"../../lib":371,"../color":250,"../drawing":275,"d3":66}],348:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67055,7 +61344,7 @@ module.exports = {
     }
 };
 
-},{}],340:[function(require,module,exports){
+},{}],349:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67076,141 +61365,7 @@ module.exports = {
     longdashdot: [8, 1, 1, 1]
 };
 
-},{}],341:[function(require,module,exports){
-/**
-* Copyright 2012-2018, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
-'use strict';
-
-var extendFlat = require('../lib/extend').extendFlat;
-
-var symbolsWithOpenSupport = {
-    'circle': {
-        unicode: '●'
-    },
-    'square': {
-        unicode: '■'
-    },
-    'diamond': {
-        unicode: '◆'
-    },
-    'cross': {
-        unicode: '✚'
-    },
-    'x': {
-        unicode: '❌'
-    },
-    'triangle-up': {
-        unicode: '▲'
-    },
-    'triangle-down': {
-        unicode: '▼'
-    },
-    'triangle-left': {
-        unicode: '◄'
-    },
-    'triangle-right': {
-        unicode: '►'
-    },
-    'triangle-ne': {
-        unicode: '◥'
-    },
-    'triangle-nw': {
-        unicode: '◤'
-    },
-    'triangle-se': {
-        unicode: '◢'
-    },
-    'triangle-sw': {
-        unicode: '◣'
-    },
-    'pentagon': {
-        unicode: '⬟'
-    },
-    'hexagon': {
-        unicode: '⬢'
-    },
-    'hexagon2': {
-        unicode: '⬣'
-    },
-    'star': {
-        unicode: '★'
-    },
-    'diamond-tall': {
-        unicode: '♦'
-    },
-    'bowtie': {
-        unicode: '⧓'
-    },
-    'diamond-x': {
-        unicode: '❖'
-    },
-    'cross-thin': {
-        unicode: '+',
-        noBorder: true
-    },
-    'asterisk': {
-        unicode: '✳',
-        noBorder: true
-    },
-    'y-up': {
-        unicode: '⅄',
-        noBorder: true
-    },
-    'y-down': {
-        unicode: 'Y',
-        noBorder: true
-    },
-    'line-ew': {
-        unicode: '─',
-        noBorder: true
-    },
-    'line-ns': {
-        unicode: '│',
-        noBorder: true
-    }
-};
-
-var openSymbols = {};
-var keys = Object.keys(symbolsWithOpenSupport);
-
-for(var i = 0; i < keys.length; i++) {
-    var k = keys[i];
-    openSymbols[k + '-open'] = extendFlat({}, symbolsWithOpenSupport[k]);
-}
-
-var otherSymbols = {
-    'circle-cross-open': {
-        unicode: '⨁',
-        noFill: true
-    },
-    'circle-x-open': {
-        unicode: '⨂',
-        noFill: true
-    },
-    'square-cross-open': {
-        unicode: '⊞',
-        noFill: true
-    },
-    'square-x-open': {
-        unicode: '⊠',
-        noFill: true
-    }
-};
-
-module.exports = extendFlat({},
-    symbolsWithOpenSupport,
-    openSymbols,
-    otherSymbols
-);
-
-},{"../lib/extend":353}],342:[function(require,module,exports){
+},{}],350:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67237,7 +61392,7 @@ module.exports = {
     DESELECTDIM: 0.2
 };
 
-},{}],343:[function(require,module,exports){
+},{}],351:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67296,7 +61451,7 @@ module.exports = {
     MINUS_SIGN: '\u2212'
 };
 
-},{}],344:[function(require,module,exports){
+},{}],352:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67339,7 +61494,7 @@ module.exports = {
     }
 };
 
-},{}],345:[function(require,module,exports){
+},{}],353:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67363,7 +61518,7 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],346:[function(require,module,exports){
+},{}],354:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67381,7 +61536,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.32.0';
+exports.version = '1.33.0';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -67450,7 +61605,7 @@ exports.Queue = require('./lib/queue');
 // export d3 used in the bundle
 exports.d3 = require('d3');
 
-},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":234,"./components/annotations3d":239,"./components/fx":283,"./components/images":291,"./components/legend":300,"./components/rangeselector":312,"./components/rangeslider":318,"./components/shapes":325,"./components/sliders":331,"./components/updatemenus":337,"./fonts/mathjax_config":347,"./lib/queue":376,"./locale-en":390,"./locale-en-us":389,"./plot_api/plot_schema":397,"./plot_api/register":398,"./plot_api/set_plot_config":399,"./plot_api/to_image":401,"./plot_api/validate":402,"./plotly":403,"./snapshot":455,"./snapshot/download":452,"./traces/scatter":520,"d3":62,"es6-promise":66}],347:[function(require,module,exports){
+},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":243,"./components/annotations3d":248,"./components/fx":292,"./components/images":300,"./components/legend":309,"./components/rangeselector":321,"./components/rangeslider":327,"./components/shapes":334,"./components/sliders":340,"./components/updatemenus":346,"./fonts/mathjax_config":355,"./lib/queue":385,"./locale-en":398,"./locale-en-us":397,"./plot_api/plot_schema":405,"./plot_api/register":406,"./plot_api/set_plot_config":407,"./plot_api/to_image":409,"./plot_api/validate":410,"./plotly":411,"./snapshot":465,"./snapshot/download":462,"./traces/scatter":530,"d3":66,"es6-promise":74}],355:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67483,7 +61638,38 @@ if(typeof MathJax !== 'undefined') {
     exports.MathJax = false;
 }
 
-},{}],348:[function(require,module,exports){
+},{}],356:[function(require,module,exports){
+/**
+* Copyright 2012-2018, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+'use strict';
+
+var PI = Math.PI;
+
+exports.deg2rad = function(deg) {
+    return deg / 180 * PI;
+};
+
+exports.rad2deg = function(rad) {
+    return rad / PI * 180;
+};
+
+exports.wrap360 = function(deg) {
+    var out = deg % 360;
+    return out < 0 ? out + 360 : out;
+};
+
+exports.wrap180 = function(deg) {
+    if(Math.abs(deg) > 180) deg -= Math.round(deg / 360) * 360;
+    return deg;
+};
+
+},{}],357:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67516,7 +61702,7 @@ module.exports = function cleanNumber(v) {
     return BADNUM;
 };
 
-},{"../constants/numerical":343,"fast-isnumeric":68}],349:[function(require,module,exports){
+},{"../constants/numerical":351,"fast-isnumeric":76}],358:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -67537,6 +61723,7 @@ var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
 var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
+var wrap180 = require('./angles').wrap180;
 
 exports.valObjectMeta = {
     data_array: {
@@ -67661,10 +61848,7 @@ exports.valObjectMeta = {
         coerceFunction: function(v, propOut, dflt) {
             if(v === 'auto') propOut.set('auto');
             else if(!isNumeric(v)) propOut.set(dflt);
-            else {
-                if(Math.abs(v) > 180) v -= Math.round(v / 360) * 360;
-                propOut.set(+v);
-            }
+            else propOut.set(wrap180(+v));
         }
     },
     subplotid: {
@@ -67911,7 +62095,7 @@ exports.validate = function(value, opts) {
     return out !== failed;
 };
 
-},{"../components/colorscale/get_scale":254,"../components/colorscale/scales":260,"../constants/interactions":342,"../plots/attributes":406,"./nested_property":370,"./regex":377,"fast-isnumeric":68,"tinycolor2":208}],350:[function(require,module,exports){
+},{"../components/colorscale/get_scale":263,"../components/colorscale/scales":269,"../constants/interactions":350,"../plots/attributes":414,"./angles":356,"./nested_property":379,"./regex":386,"fast-isnumeric":76,"tinycolor2":212}],359:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68543,7 +62727,7 @@ exports.findExactDates = function(data, calendar) {
     };
 };
 
-},{"../constants/numerical":343,"../registry":450,"./loggers":367,"./mod":369,"d3":62,"fast-isnumeric":68}],351:[function(require,module,exports){
+},{"../constants/numerical":351,"../registry":460,"./loggers":376,"./mod":378,"d3":66,"fast-isnumeric":76}],360:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68572,7 +62756,7 @@ module.exports = function ensureArray(out, n) {
     return out;
 };
 
-},{}],352:[function(require,module,exports){
+},{}],361:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68738,7 +62922,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":67}],353:[function(require,module,exports){
+},{"events":75}],362:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68852,7 +63036,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     return target;
 }
 
-},{"./is_plain_object.js":364}],354:[function(require,module,exports){
+},{"./is_plain_object.js":373}],363:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68903,7 +63087,7 @@ module.exports = function filterUnique(array) {
     return out;
 };
 
-},{}],355:[function(require,module,exports){
+},{}],364:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -68911,7 +63095,6 @@ module.exports = function filterUnique(array) {
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-
 
 'use strict';
 
@@ -68923,18 +63106,35 @@ module.exports = function filterUnique(array) {
  *
  */
 module.exports = function filterVisible(container) {
+    var filterFn = isCalcData(container) ? calcDataFilter : baseFilter;
     var out = [];
 
     for(var i = 0; i < container.length; i++) {
         var item = container[i];
-
-        if(item.visible === true) out.push(item);
+        if(filterFn(item)) out.push(item);
     }
 
     return out;
 };
 
-},{}],356:[function(require,module,exports){
+function baseFilter(item) {
+    return item.visible === true;
+}
+
+function calcDataFilter(item) {
+    return item[0].trace.visible === true;
+}
+
+function isCalcData(cont) {
+    return (
+        Array.isArray(cont) &&
+        Array.isArray(cont[0]) &&
+        cont[0][0] &&
+        cont[0][0].trace
+    );
+}
+
+},{}],365:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69180,7 +63380,7 @@ exports.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
     return pt;
 };
 
-},{"./mod":369}],357:[function(require,module,exports){
+},{"./mod":378}],366:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69218,7 +63418,7 @@ module.exports = function(gd) {
     return gd;  // otherwise assume that gd is a DOM element
 };
 
-},{}],358:[function(require,module,exports){
+},{}],367:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69231,7 +63431,7 @@ module.exports = function(gd) {
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var rgba = require('color-rgba');
+var rgba = require('color-normalize');
 
 var Colorscale = require('../components/colorscale');
 var colorDflt = require('../components/color/attributes').defaultLine;
@@ -69280,6 +63480,7 @@ function formatColor(containerIn, opacityIn, len) {
 
     if(isArrayColorIn) {
         getColor = function(c, i) {
+            // FIXME: there is double work, considering that sclFunc does the opposite
             return c[i] === undefined ? colorDfltRgba : rgba(sclFunc(c[i]));
         };
     }
@@ -69306,7 +63507,7 @@ function formatColor(containerIn, opacityIn, len) {
 
 module.exports = formatColor;
 
-},{"../components/color/attributes":240,"../components/colorscale":256,"color-rgba":54,"fast-isnumeric":68}],359:[function(require,module,exports){
+},{"../components/color/attributes":249,"../components/colorscale":265,"color-normalize":56,"fast-isnumeric":76}],368:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69342,7 +63543,7 @@ module.exports = {
     unwrap: function(d) {return d[0];}
 };
 
-},{"./identity":361}],360:[function(require,module,exports){
+},{"./identity":370}],369:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69411,7 +63612,7 @@ function convertHTMLToUnicode(html) {
 
 module.exports = convertHTMLToUnicode;
 
-},{"../constants/string_mappings":344,"superscript-text":204}],361:[function(require,module,exports){
+},{"../constants/string_mappings":352,"superscript-text":205}],370:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69427,7 +63628,7 @@ module.exports = convertHTMLToUnicode;
 
 module.exports = function identity(d) { return d; };
 
-},{}],362:[function(require,module,exports){
+},{}],371:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -69506,6 +63707,12 @@ lib.rotationMatrix = matrixModule.rotationMatrix;
 lib.rotationXYMatrix = matrixModule.rotationXYMatrix;
 lib.apply2DTransform = matrixModule.apply2DTransform;
 lib.apply2DTransform2 = matrixModule.apply2DTransform2;
+
+var anglesModule = require('./angles');
+lib.deg2rad = anglesModule.deg2rad;
+lib.rad2deg = anglesModule.rad2deg;
+lib.wrap360 = anglesModule.wrap360;
+lib.wrap180 = anglesModule.wrap180;
 
 var geom2dModule = require('./geometry2d');
 lib.segmentsIntersect = geom2dModule.segmentsIntersect;
@@ -70315,7 +64522,29 @@ lib.subplotSort = function(a, b) {
     return numB - numA;
 };
 
-},{"../constants/numerical":343,"./clean_number":348,"./coerce":349,"./dates":350,"./ensure_array":351,"./extend":353,"./filter_unique":354,"./filter_visible":355,"./geometry2d":356,"./get_graph_div":357,"./identity":361,"./is_array":363,"./is_plain_object":364,"./keyed_container":365,"./localize":366,"./loggers":367,"./matrix":368,"./mod":369,"./nested_property":370,"./noop":371,"./notifier":372,"./push_unique":375,"./regex":377,"./relative_attr":378,"./relink_private":379,"./search":380,"./stats":383,"./throttle":386,"./to_log_range":387,"d3":62,"fast-isnumeric":68}],363:[function(require,module,exports){
+/*
+ * test if event listener options supported
+ */
+lib.eventListenerOptionsSupported = function() {
+    var supported = false;
+
+    try {
+        var opts = Object.defineProperty({}, 'passive', {
+            get: function() {
+                supported = true;
+            }
+        });
+
+        window.addEventListener('test', null, opts);
+        window.removeEventListener('test', null, opts);
+    } catch(e) {
+        supported = false;
+    }
+
+    return supported;
+};
+
+},{"../constants/numerical":351,"./angles":356,"./clean_number":357,"./coerce":358,"./dates":359,"./ensure_array":360,"./extend":362,"./filter_unique":363,"./filter_visible":364,"./geometry2d":365,"./get_graph_div":366,"./identity":370,"./is_array":372,"./is_plain_object":373,"./keyed_container":374,"./localize":375,"./loggers":376,"./matrix":377,"./mod":378,"./nested_property":379,"./noop":380,"./notifier":381,"./push_unique":384,"./regex":386,"./relative_attr":387,"./relink_private":388,"./search":389,"./stats":392,"./throttle":395,"./to_log_range":396,"d3":66,"fast-isnumeric":76}],372:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70339,7 +64568,7 @@ module.exports = function isArray(a) {
     return Array.isArray(a) || ab.isView(a);
 };
 
-},{}],364:[function(require,module,exports){
+},{}],373:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70368,7 +64597,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],365:[function(require,module,exports){
+},{}],374:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70547,7 +64776,7 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
     return obj;
 };
 
-},{"./nested_property":370}],366:[function(require,module,exports){
+},{"./nested_property":379}],375:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70603,7 +64832,7 @@ module.exports = function localize(gd, s) {
     return s;
 };
 
-},{"../registry":450}],367:[function(require,module,exports){
+},{"../registry":460}],376:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70677,7 +64906,7 @@ function apply(f, args) {
     }
 }
 
-},{"../plot_api/plot_config":396}],368:[function(require,module,exports){
+},{"../plot_api/plot_config":404}],377:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70787,7 +65016,7 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-},{}],369:[function(require,module,exports){
+},{}],378:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -70807,7 +65036,7 @@ module.exports = function mod(v, d) {
     return out < 0 ? out + d : out;
 };
 
-},{}],370:[function(require,module,exports){
+},{}],379:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71111,7 +65340,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"../plot_api/container_array_match":391,"./is_array":363,"./is_plain_object":364,"fast-isnumeric":68}],371:[function(require,module,exports){
+},{"../plot_api/container_array_match":399,"./is_array":372,"./is_plain_object":373,"fast-isnumeric":76}],380:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71127,7 +65356,7 @@ function badContainer(container, propStr, propParts) {
 
 module.exports = function noop() {};
 
-},{}],372:[function(require,module,exports){
+},{}],381:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71209,7 +65438,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"d3":62,"fast-isnumeric":68}],373:[function(require,module,exports){
+},{"d3":66,"fast-isnumeric":76}],382:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71258,7 +65487,7 @@ module.exports = function overrideCursor(el3, csr) {
     }
 };
 
-},{"./setcursor":381}],374:[function(require,module,exports){
+},{"./setcursor":390}],383:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71557,7 +65786,7 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"../constants/numerical":343,"./matrix":368}],375:[function(require,module,exports){
+},{"../constants/numerical":351,"./matrix":377}],384:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71595,7 +65824,7 @@ module.exports = function pushUnique(array, item) {
     return array;
 };
 
-},{}],376:[function(require,module,exports){
+},{}],385:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71806,7 +66035,7 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../lib":362,"../plot_api/plot_config":396}],377:[function(require,module,exports){
+},{"../lib":371,"../plot_api/plot_config":404}],386:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71831,7 +66060,7 @@ exports.counter = function(head, tail, openEnded) {
         (tail || '') + (openEnded ? '' : '$'));
 };
 
-},{}],378:[function(require,module,exports){
+},{}],387:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71884,7 +66113,7 @@ module.exports = function(baseAttr, relativeAttr) {
     return baseAttr + relativeAttr;
 };
 
-},{}],379:[function(require,module,exports){
+},{}],388:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -71941,7 +66170,7 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
     }
 };
 
-},{"./is_array":363,"./is_plain_object":364}],380:[function(require,module,exports){
+},{"./is_array":372,"./is_plain_object":373}],389:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72058,7 +66287,7 @@ exports.roundUp = function(val, arrayIn, reverse) {
     return arrayIn[low];
 };
 
-},{"./loggers":367,"fast-isnumeric":68}],381:[function(require,module,exports){
+},{"./loggers":376,"fast-isnumeric":76}],390:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72081,7 +66310,7 @@ module.exports = function setCursor(el3, csr) {
     if(csr) el3.classed('cursor-' + csr, true);
 };
 
-},{}],382:[function(require,module,exports){
+},{}],391:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72130,7 +66359,7 @@ module.exports = function showWebGlMsg(scene) {
     return false;
 };
 
-},{"../components/color":241}],383:[function(require,module,exports){
+},{"../components/color":250}],392:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72226,7 +66455,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"fast-isnumeric":68}],384:[function(require,module,exports){
+},{"fast-isnumeric":76}],393:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72238,16 +66467,16 @@ exports.interp = function(arr, n) {
 
 'use strict';
 
-var rgba = require('color-rgba');
+var rgba = require('color-normalize');
 
 function str2RgbaArray(color) {
-    var colorOut = rgba(color);
-    return colorOut.length ? colorOut : [0, 0, 0, 1];
+    if(!color) return [0, 0, 0, 1];
+    return rgba(color);
 }
 
 module.exports = str2RgbaArray;
 
-},{"color-rgba":54}],385:[function(require,module,exports){
+},{"color-normalize":56}],394:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -72921,7 +67150,7 @@ exports.makeEditable = function(context, options) {
     return d3.rebind(context, dispatch, 'on');
 };
 
-},{"../constants/alignment":339,"../constants/string_mappings":344,"../constants/xmlns_namespaces":345,"../lib":362,"d3":62}],386:[function(require,module,exports){
+},{"../constants/alignment":348,"../constants/string_mappings":352,"../constants/xmlns_namespaces":353,"../lib":371,"d3":66}],395:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -73025,7 +67254,7 @@ function _clearTimeout(cache) {
     }
 }
 
-},{}],387:[function(require,module,exports){
+},{}],396:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -73053,41 +67282,7 @@ module.exports = function toLogRange(val, range) {
     return newVal;
 };
 
-},{"fast-isnumeric":68}],388:[function(require,module,exports){
-/**
-* Copyright 2012-2018, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-'use strict';
-
-function truncateFloat32(arrayIn, len) {
-    var arrayOut = new Float32Array(len);
-    for(var i = 0; i < len; i++) arrayOut[i] = arrayIn[i];
-    return arrayOut;
-}
-
-function truncateFloat64(arrayIn, len) {
-    var arrayOut = new Float64Array(len);
-    for(var i = 0; i < len; i++) arrayOut[i] = arrayIn[i];
-    return arrayOut;
-}
-
-/**
- * Truncate a typed array to some length.
- * For some reason, ES2015 Float32Array.prototype.slice takes
- * 2x as long, therefore we aren't checking for its existence
- */
-module.exports = function truncate(arrayIn, len) {
-    if(arrayIn instanceof Float32Array) return truncateFloat32(arrayIn, len);
-    if(arrayIn instanceof Float64Array) return truncateFloat64(arrayIn, len);
-    throw new Error('This array type is not yet supported by `truncate`.');
-};
-
-},{}],389:[function(require,module,exports){
+},{"fast-isnumeric":76}],397:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -73109,7 +67304,7 @@ module.exports = {
     }
 };
 
-},{}],390:[function(require,module,exports){
+},{}],398:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -73148,7 +67343,7 @@ module.exports = {
     }
 };
 
-},{}],391:[function(require,module,exports){
+},{}],399:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -73206,7 +67401,7 @@ module.exports = function containerArrayMatch(astr) {
     return {array: arrayStr, index: Number(match[1]), property: match[3] || ''};
 };
 
-},{"../registry":450}],392:[function(require,module,exports){
+},{"../registry":460}],400:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -73332,7 +67527,7 @@ function overrideOne(attr, editTypeOverride, overrideContainers, key) {
     }
 }
 
-},{"../lib":362}],393:[function(require,module,exports){
+},{"../lib":371}],401:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -73889,7 +68084,7 @@ exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
     }
 };
 
-},{"../components/color":241,"../lib":362,"../plots/cartesian/axis_ids":411,"../plots/plots":443,"../registry":450,"fast-isnumeric":68,"gl-mat4/fromQuat":88}],394:[function(require,module,exports){
+},{"../components/color":250,"../lib":371,"../plots/cartesian/axis_ids":419,"../plots/plots":453,"../registry":460,"fast-isnumeric":76,"gl-mat4/fromQuat":92}],402:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -74103,7 +68298,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
     return true;
 };
 
-},{"../lib/is_plain_object":364,"../lib/loggers":367,"../lib/nested_property":370,"../lib/noop":371,"../lib/search":380,"../registry":450,"./container_array_match":391}],395:[function(require,module,exports){
+},{"../lib/is_plain_object":373,"../lib/loggers":376,"../lib/nested_property":379,"../lib/noop":380,"../lib/search":389,"../registry":460,"./container_array_match":399}],403:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -74128,7 +68323,7 @@ var Queue = require('../lib/queue');
 var Registry = require('../registry');
 var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
-var Polar = require('../plots/polar');
+var Polar = require('../plots/polar/legacy');
 var initInteractions = require('../plots/cartesian/graph_interact');
 
 var Drawing = require('../components/drawing');
@@ -74250,8 +68445,11 @@ Plotly.plot = function(gd, data, layout, config) {
 
     var fullLayout = gd._fullLayout;
 
-    // Polar plots
-    if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
+    // Legacy polar plots
+    if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
+        Lib.log('Legacy polar charts are deprecated!');
+        return plotPolar(gd, data, layout);
+    }
 
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
@@ -74326,16 +68524,11 @@ Plotly.plot = function(gd, data, layout, config) {
                     'left': 0,
                     'width': '100%',
                     'height': '100%',
-                    'overflow': 'visible'
+                    'overflow': 'visible',
+                    'pointer-events': 'none'
                 })
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
-
-            fullLayout._glcanvas.filter(function(d) {
-                return !d.pick;
-            }).style({
-                'pointer-events': 'none'
-            });
         }
 
         return Lib.syncOrAsync([
@@ -76047,6 +70240,16 @@ function _relayout(gd, aobj) {
                     ax.range = (ax.range[1] > ax.range[0]) ? [1, 2] : [2, 1];
                 }
 
+                // clear polar view initial stash for radial range so that
+                // value get recomputed in correct units
+                if(Array.isArray(fullLayout._subplots.polar) &&
+                    fullLayout._subplots.polar.length &&
+                    fullLayout[p.parts[0]] &&
+                    p.parts[1] === 'radialaxis'
+                ) {
+                    delete fullLayout[p.parts[0]]._subplot.viewInitial['radialaxis.range'];
+                }
+
                 // Annotations and images also need to convert to/from linearized coords
                 // Shapes do not need this :)
                 Registry.getComponentMethod('annotations', 'convertCoords')(gd, parentFull, vi, doextra);
@@ -76910,6 +71113,7 @@ function makePlotFramework(gd) {
     // FIXME: parcoords reuses this object, not the best pattern
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
         .data([{}]);
+
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
 
@@ -76971,6 +71175,9 @@ function makePlotFramework(gd) {
     // single cartesian layer for the whole plot
     fullLayout._cartesianlayer = fullLayout._paper.append('g').classed('cartesianlayer', true);
 
+    // single polar layer for the whole plot
+    fullLayout._polarlayer = fullLayout._paper.append('g').classed('polarlayer', true);
+
     // single ternary layer for the whole plot
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
 
@@ -77002,7 +71209,7 @@ function makePlotFramework(gd) {
     gd.emit('plotly_framework');
 }
 
-},{"../components/color":241,"../components/drawing":266,"../components/errorbars":272,"../constants/xmlns_namespaces":345,"../lib":362,"../lib/events":352,"../lib/queue":376,"../lib/svg_text_utils":385,"../plotly":403,"../plots/cartesian/axis_ids":411,"../plots/cartesian/constants":413,"../plots/cartesian/constraints":415,"../plots/cartesian/graph_interact":417,"../plots/plots":443,"../plots/polar":446,"../registry":450,"./edit_types":392,"./helpers":393,"./manage_arrays":394,"./plot_schema":397,"./subroutines":400,"d3":62,"fast-isnumeric":68,"has-hover":149}],396:[function(require,module,exports){
+},{"../components/color":250,"../components/drawing":275,"../components/errorbars":281,"../constants/xmlns_namespaces":353,"../lib":371,"../lib/events":361,"../lib/queue":385,"../lib/svg_text_utils":394,"../plotly":411,"../plots/cartesian/axis_ids":419,"../plots/cartesian/constants":421,"../plots/cartesian/constraints":423,"../plots/cartesian/graph_interact":425,"../plots/plots":453,"../plots/polar/legacy":456,"../registry":460,"./edit_types":400,"./helpers":401,"./manage_arrays":402,"./plot_schema":405,"./subroutines":408,"d3":66,"fast-isnumeric":76,"has-hover":136}],404:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -77189,7 +71396,7 @@ module.exports = {
     locales: {}
 };
 
-},{}],397:[function(require,module,exports){
+},{}],405:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -77210,8 +71417,8 @@ var frameAttributes = require('../plots/frame_attributes');
 var animationAttributes = require('../plots/animation_attributes');
 
 // polar attributes are not part of the Registry yet
-var polarAreaAttrs = require('../plots/polar/area_attributes');
-var polarAxisAttrs = require('../plots/polar/axis_attributes');
+var polarAreaAttrs = require('../plots/polar/legacy/area_attributes');
+var polarAxisAttrs = require('../plots/polar/legacy/axis_attributes');
 
 var editTypes = require('./edit_types');
 
@@ -77807,7 +72014,7 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
     np.set(extendDeepAll(np.get() || {}, newAttrs));
 }
 
-},{"../lib":362,"../plots/animation_attributes":404,"../plots/attributes":406,"../plots/frame_attributes":434,"../plots/layout_attributes":441,"../plots/polar/area_attributes":444,"../plots/polar/axis_attributes":445,"../registry":450,"./edit_types":392}],398:[function(require,module,exports){
+},{"../lib":371,"../plots/animation_attributes":412,"../plots/attributes":414,"../plots/frame_attributes":444,"../plots/layout_attributes":451,"../plots/polar/legacy/area_attributes":454,"../plots/polar/legacy/axis_attributes":455,"../registry":460,"./edit_types":400}],406:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -77910,7 +72117,7 @@ function registerComponentModule(newModule) {
     Registry.registerComponent(newModule);
 }
 
-},{"../lib":362,"../registry":450}],399:[function(require,module,exports){
+},{"../lib":371,"../registry":460}],407:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -77936,7 +72143,7 @@ module.exports = function setPlotConfig(configObj) {
     return Lib.extendFlat(Plotly.defaultConfig, configObj);
 };
 
-},{"../lib":362,"../plotly":403}],400:[function(require,module,exports){
+},{"../lib":371,"../plotly":411}],408:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -78424,7 +72631,6 @@ exports.doModeBar = function(gd) {
         if(updateFx) updateFx(fullLayout);
     }
 
-
     return Plots.previousPromises(gd);
 };
 
@@ -78440,7 +72646,7 @@ exports.doCamera = function(gd) {
     }
 };
 
-},{"../components/color":241,"../components/drawing":266,"../components/modebar":303,"../components/titles":332,"../constants/alignment":339,"../lib":362,"../plotly":403,"../plots/cartesian/constants":413,"../plots/cartesian/graph_interact":417,"../plots/plots":443,"../registry":450,"d3":62}],401:[function(require,module,exports){
+},{"../components/color":250,"../components/drawing":275,"../components/modebar":312,"../components/titles":341,"../constants/alignment":348,"../lib":371,"../plotly":411,"../plots/cartesian/constants":421,"../plots/cartesian/graph_interact":425,"../plots/plots":453,"../registry":460,"d3":66}],409:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -78630,7 +72836,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":362,"../plotly":403,"../snapshot/helpers":454,"../snapshot/svgtoimg":456,"../snapshot/tosvg":458}],402:[function(require,module,exports){
+},{"../lib":371,"../plotly":411,"../snapshot/helpers":464,"../snapshot/svgtoimg":466,"../snapshot/tosvg":468}],410:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79016,7 +73222,7 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":362,"../plots/plots":443,"./plot_config":396,"./plot_schema":397}],403:[function(require,module,exports){
+},{"../lib":371,"../plots/plots":453,"./plot_config":404,"./plot_schema":405}],411:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79050,7 +73256,7 @@ exports.ModeBar = require('./components/modebar');
 // plot api
 require('./plot_api/plot_api');
 
-},{"./components/modebar":303,"./plot_api/plot_api":395,"./plot_api/plot_config":396,"./plots/cartesian/axes":408,"./plots/plots":443}],404:[function(require,module,exports){
+},{"./components/modebar":312,"./plot_api/plot_api":403,"./plot_api/plot_config":404,"./plots/cartesian/axes":416,"./plots/plots":453}],412:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79152,7 +73358,7 @@ module.exports = {
     }
 };
 
-},{}],405:[function(require,module,exports){
+},{}],413:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79233,7 +73439,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
     }
 };
 
-},{"../lib":362}],406:[function(require,module,exports){
+},{"../lib":371}],414:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79353,7 +73559,7 @@ module.exports = {
     }
 };
 
-},{"../components/fx/attributes":275}],407:[function(require,module,exports){
+},{"../components/fx/attributes":284}],415:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79382,7 +73588,7 @@ module.exports = {
     }
 };
 
-},{}],408:[function(require,module,exports){
+},{}],416:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -79783,7 +73989,7 @@ axes.saveRangeInitial = function(gd, overwrite) {
 axes.saveShowSpikeInitial = function(gd, overwrite) {
     var axList = axes.list(gd, '', true),
         hasOneAxisChanged = false,
-        allEnabled = 'on';
+        allSpikesEnabled = 'on';
 
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
@@ -79800,11 +74006,11 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
             hasOneAxisChanged = true;
         }
 
-        if(allEnabled === 'on' && !ax.showspikes) {
-            allEnabled = 'off';
+        if(allSpikesEnabled === 'on' && !ax.showspikes) {
+            allSpikesEnabled = 'off';
         }
     }
-    gd._fullLayout._cartesianSpikesEnabled = allEnabled;
+    gd._fullLayout._cartesianSpikesEnabled = allSpikesEnabled;
     return hasOneAxisChanged;
 };
 
@@ -80147,6 +74353,10 @@ axes.calcTicks = function calcTicks(ax) {
                 minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
                 nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
+
+            // radial axes span half their domain,
+            // multiply nticks value by two to get correct number of auto ticks.
+            if(ax._name === 'radialaxis') nt *= 2;
         }
 
         // add a couple of extra digits for filling in ticks when we
@@ -80199,6 +74409,12 @@ axes.calcTicks = function calcTicks(ax) {
         xPrevious = x;
 
         vals.push(x);
+    }
+
+    // If same angle over a full circle, the last tick vals is a duplicate.
+    // TODO must do something similar for angular date axes.
+    if(ax._id === 'angular' && Math.abs(rng[1] - rng[0]) === 360) {
+        vals.pop();
     }
 
     // save the last tick as well as first, so we can
@@ -80268,7 +74484,9 @@ var roundBase10 = [2, 5, 10],
     // approx. tick positions for log axes, showing all (1) and just 1, 2, 5 (2)
     // these don't have to be exact, just close enough to round to the right value
     roundLog1 = [-0.046, 0, 0.301, 0.477, 0.602, 0.699, 0.778, 0.845, 0.903, 0.954, 1],
-    roundLog2 = [-0.301, 0, 0.301, 0.699, 1];
+    roundLog2 = [-0.301, 0, 0.301, 0.699, 1],
+    // N.B. `thetaunit; 'radians' angular axes must be converted to degrees
+    roundAngles = [15, 30, 45, 90, 180];
 
 function roundDTick(roughDTick, base, roundingSet) {
     return base * Lib.roundUp(roughDTick / base, roundingSet);
@@ -80293,6 +74511,10 @@ function roundDTick(roughDTick, base, roundingSet) {
 axes.autoTicks = function(ax, roughDTick) {
     var base;
 
+    function getBase(v) {
+        return Math.pow(v, Math.floor(Math.log(roughDTick) / Math.LN10));
+    }
+
     if(ax.type === 'date') {
         ax.tick0 = Lib.dateTick0(ax.calendar);
         // the criteria below are all based on the rough spacing we calculate
@@ -80301,7 +74523,7 @@ axes.autoTicks = function(ax, roughDTick) {
 
         if(roughX2 > ONEAVGYEAR) {
             roughDTick /= ONEAVGYEAR;
-            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            base = getBase(10);
             ax.dtick = 'M' + (12 * roundDTick(roughDTick, base, roundBase10));
         }
         else if(roughX2 > ONEAVGMONTH) {
@@ -80326,7 +74548,7 @@ axes.autoTicks = function(ax, roughDTick) {
         }
         else {
             // milliseconds
-            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            base = getBase(10);
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
     }
@@ -80345,7 +74567,7 @@ axes.autoTicks = function(ax, roughDTick) {
             // ticks on a linear scale, labeled fully
             roughDTick = Math.abs(Math.pow(10, rng[1]) -
                 Math.pow(10, rng[0])) / nt;
-            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            base = getBase(10);
             ax.dtick = 'L' + roundDTick(roughDTick, base, roundBase10);
         }
         else {
@@ -80359,10 +74581,15 @@ axes.autoTicks = function(ax, roughDTick) {
         ax.tick0 = 0;
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
+    else if(ax._id === 'angular') {
+        ax.tick0 = 0;
+        base = 1;
+        ax.dtick = roundDTick(roughDTick, base, roundAngles);
+    }
     else {
         // auto ticks always start at 0
         ax.tick0 = 0;
-        base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+        base = getBase(10);
         ax.dtick = roundDTick(roughDTick, base, roundBase10);
     }
 
@@ -80590,6 +74817,7 @@ axes.tickText = function(ax, x, hover) {
     if(ax.type === 'date') formatDate(ax, out, hover, extraPrecision);
     else if(ax.type === 'log') formatLog(ax, out, hover, extraPrecision, hideexp);
     else if(ax.type === 'category') formatCategory(ax, out);
+    else if(ax._id === 'angular') formatAngle(ax, out, hover, extraPrecision, hideexp);
     else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
     // add prefix and suffix
@@ -80782,6 +75010,71 @@ function formatLinear(ax, out, hover, extraPrecision, hideexp) {
         hideexp = 'hide';
     }
     out.text = numFormat(out.x, ax, hideexp, extraPrecision);
+}
+
+function formatAngle(ax, out, hover, extraPrecision, hideexp) {
+    if(ax.thetaunit === 'radians' && !hover) {
+        var num = out.x / 180;
+
+        if(num === 0) {
+            out.text = '0';
+        } else {
+            var frac = num2frac(num);
+
+            if(frac[1] >= 100) {
+                out.text = numFormat(Lib.deg2rad(out.x), ax, hideexp, extraPrecision);
+            } else {
+                var isNeg = out.x < 0;
+
+                if(frac[1] === 1) {
+                    if(frac[0] === 1) out.text = 'π';
+                    else out.text = frac[0] + 'π';
+                } else {
+                    out.text = [
+                        '<sup>', frac[0], '</sup>',
+                        '⁄',
+                        '<sub>', frac[1], '</sub>',
+                        'π'
+                    ].join('');
+                }
+
+                if(isNeg) out.text = MINUS_SIGN + out.text;
+            }
+        }
+    } else {
+        out.text = numFormat(out.x, ax, hideexp, extraPrecision);
+    }
+}
+
+// inspired by
+// https://github.com/yisibl/num2fraction/blob/master/index.js
+function num2frac(num) {
+    function almostEq(a, b) {
+        return Math.abs(a - b) <= 1e-6;
+    }
+
+    function findGCD(a, b) {
+        return almostEq(b, 0) ? a : findGCD(b, a % b);
+    }
+
+    function findPrecision(n) {
+        var e = 1;
+        while(!almostEq(Math.round(n * e) / e, n)) {
+            e *= 10;
+        }
+        return e;
+    }
+
+    var precision = findPrecision(num);
+    var number = num * precision;
+    var gcd = Math.abs(findGCD(number, precision));
+
+    return [
+        // numerator
+        Math.round(number / gcd),
+        // denominator
+        Math.round(precision / gcd)
+    ];
 }
 
 // format a number (tick value) according to the axis settings
@@ -81132,7 +75425,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     var axLetter = axid.charAt(0),
         counterLetter = axes.counterLetter(axid),
         vals = axes.calcTicks(ax),
-        datafn = function(d) { return [d.text, d.x, ax.mirror].join('_'); },
+        datafn = function(d) { return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_'); },
         tcls = axid + 'tick',
         gcls = axid + 'grid',
         zcls = axid + 'zl',
@@ -81158,7 +75451,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     // positioning arguments for x vs y axes
     if(axLetter === 'x') {
         sides = ['bottom', 'top'];
-        transfn = function(d) {
+        transfn = ax._transfn || function(d) {
             return 'translate(' + (ax._offset + ax.l2p(d.x)) + ',0)';
         };
         tickpathfn = function(shift, len) {
@@ -81171,7 +75464,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     }
     else if(axLetter === 'y') {
         sides = ['left', 'right'];
-        transfn = function(d) {
+        transfn = ax._transfn || function(d) {
             return 'translate(0,' + (ax._offset + ax.l2p(d.x)) + ')';
         };
         tickpathfn = function(shift, len) {
@@ -81180,6 +75473,13 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 return 'M' + shift + ',0l' + (Math.cos(caRad) * len) + ',' + (-Math.sin(caRad) * len);
             }
             else return 'M' + shift + ',0h' + len;
+        };
+    }
+    else if(axid === 'angular') {
+        sides = ['left', 'right'];
+        transfn = ax._transfn;
+        tickpathfn = function(shift, len) {
+            return 'M' + shift + ',0h' + len;
         };
     }
     else {
@@ -81196,6 +75496,10 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
     if(!ax.visible) return;
 
+    if(ax._tickFilter) {
+        vals = vals.filter(ax._tickFilter);
+    }
+
     // remove zero lines, grid lines, and inside ticks if they're within
     // 1 pixel of the end
     // The key case here is removing zero lines when the axis bound is zero.
@@ -81204,6 +75508,11 @@ axes.doTicks = function(gd, axid, skipTitle) {
         return (p > 1 && p < ax._length - 1);
     }
     var valsClipped = vals.filter(clipEnds);
+
+    // don't clip angular values
+    if(ax._id === 'angular') {
+        valsClipped = vals;
+    }
 
     function drawTicks(container, tickpath) {
         var ticks = container.selectAll('path.' + tcls)
@@ -81253,7 +75562,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 return (angle * flipit < 0) ? 'end' : 'start';
             };
         }
-        else {
+        else if(axLetter === 'y') {
             flipit = (axside === 'right') ? 1 : -1;
             labely = function(d) {
                 return d.dy + d.fontSize * MID_SHIFT - labelShift * flipit;
@@ -81269,6 +75578,16 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 return axside === 'right' ? 'start' : 'end';
             };
         }
+        else if(axid === 'angular') {
+            ax._labelShift = labelShift;
+            ax._labelStandoff = labelStandoff;
+            ax._pad = pad;
+
+            labelx = ax._labelx;
+            labely = ax._labely;
+            labelanchor = ax._labelanchor;
+        }
+
         var maxFontSize = 0,
             autoangle = 0,
             labelsReady = [];
@@ -81306,9 +75625,16 @@ axes.doTicks = function(gd, axid, skipTitle) {
             maxFontSize = Math.max(maxFontSize, d.fontSize);
         });
 
+        if(axid === 'angular') {
+            tickLabels.each(function(d) {
+                d3.select(this).select('text')
+                    .call(svgTextUtils.positionText, labelx(d), labely(d));
+            });
+        }
+
         function positionLabels(s, angle) {
             s.each(function(d) {
-                var anchor = labelanchor(angle);
+                var anchor = labelanchor(angle, d);
                 var thisLabel = d3.select(this),
                     mathjaxGroup = thisLabel.select('.text-math-group'),
                     transform = transfn(d) +
@@ -81433,7 +75759,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                         top: pos,
                         bottom: pos,
                         left: ax._offset,
-                        rigth: ax._offset + ax._length,
+                        right: ax._offset + ax._length,
                         width: ax._length,
                         height: 0
                     };
@@ -81602,6 +75928,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         grid.attr('transform', transfn)
             .call(Color.stroke, ax.gridcolor || '#ddd')
             .style('stroke-width', gridWidth + 'px');
+        if(typeof gridpath === 'function') grid.attr('d', gridpath);
         grid.exit().remove();
 
         // zero line
@@ -81848,7 +76175,7 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
     }
 }
 
-},{"../../components/color":241,"../../components/drawing":266,"../../components/titles":332,"../../constants/alignment":339,"../../constants/numerical":343,"../../lib":362,"../../lib/svg_text_utils":385,"../../registry":450,"./axis_autotype":409,"./axis_ids":411,"./set_convert":426,"d3":62,"fast-isnumeric":68}],409:[function(require,module,exports){
+},{"../../components/color":250,"../../components/drawing":275,"../../components/titles":341,"../../constants/alignment":348,"../../constants/numerical":351,"../../lib":371,"../../lib/svg_text_utils":394,"../../registry":460,"./axis_autotype":417,"./axis_ids":419,"./set_convert":435,"d3":66,"fast-isnumeric":76}],417:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -81923,7 +76250,7 @@ function category(a) {
     return curvecats > curvenums * 2;
 }
 
-},{"../../constants/numerical":343,"../../lib":362,"fast-isnumeric":68}],410:[function(require,module,exports){
+},{"../../constants/numerical":351,"../../lib":371,"fast-isnumeric":76}],418:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -81932,23 +76259,19 @@ function category(a) {
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
-
-var colorMix = require('tinycolor2').mix;
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var lightFraction = require('../../components/color/attributes').lightFraction;
 
 var layoutAttributes = require('./layout_attributes');
 var handleTickValueDefaults = require('./tick_value_defaults');
 var handleTickMarkDefaults = require('./tick_mark_defaults');
 var handleTickLabelDefaults = require('./tick_label_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
+var handleLineGridDefaults = require('./line_grid_defaults');
 var setConvert = require('./set_convert');
 var orderedCategories = require('./ordered_categories');
-
 
 /**
  * options: object containing:
@@ -81965,10 +76288,6 @@ var orderedCategories = require('./ordered_categories');
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
     var font = options.font || {};
-
-    function coerce2(attr, dflt) {
-        return Lib.coerce2(containerIn, containerOut, layoutAttributes, attr, dflt);
-    }
 
     var visible = coerce('visible', !options.cheateronly);
 
@@ -82010,40 +76329,19 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
+    handleLineGridDefaults(containerIn, containerOut, coerce, {
+        dfltColor: dfltColor,
+        bgColor: options.bgColor,
+        showGrid: options.showGrid,
+        attributes: layoutAttributes
+    });
 
-    var lineColor = coerce2('linecolor', dfltColor),
-        lineWidth = coerce2('linewidth'),
-        showLine = coerce('showline', !!lineColor || !!lineWidth);
-
-    if(!showLine) {
-        delete containerOut.linecolor;
-        delete containerOut.linewidth;
-    }
-
-    if(showLine || containerOut.ticks) coerce('mirror');
-
-    var gridColor = coerce2('gridcolor', colorMix(dfltColor, options.bgColor, lightFraction).toRgbString()),
-        gridWidth = coerce2('gridwidth'),
-        showGridLines = coerce('showgrid', options.showGrid || !!gridColor || !!gridWidth);
-
-    if(!showGridLines) {
-        delete containerOut.gridcolor;
-        delete containerOut.gridwidth;
-    }
-
-    var zeroLineColor = coerce2('zerolinecolor', dfltColor),
-        zeroLineWidth = coerce2('zerolinewidth'),
-        showZeroLine = coerce('zeroline', options.showGrid || !!zeroLineColor || !!zeroLineWidth);
-
-    if(!showZeroLine) {
-        delete containerOut.zerolinecolor;
-        delete containerOut.zerolinewidth;
-    }
+    if(containerOut.showline || containerOut.ticks) coerce('mirror');
 
     return containerOut;
 };
 
-},{"../../components/color/attributes":240,"../../lib":362,"../../registry":450,"./category_order_defaults":412,"./layout_attributes":420,"./ordered_categories":422,"./set_convert":426,"./tick_label_defaults":427,"./tick_mark_defaults":428,"./tick_value_defaults":429,"tinycolor2":208}],411:[function(require,module,exports){
+},{"../../lib":371,"../../registry":460,"./category_order_defaults":420,"./layout_attributes":428,"./line_grid_defaults":430,"./ordered_categories":431,"./set_convert":435,"./tick_label_defaults":436,"./tick_mark_defaults":437,"./tick_value_defaults":438}],419:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -82161,7 +76459,7 @@ exports.idSort = function(id1, id2) {
     return +(id1.substr(1) || 1) - +(id2.substr(1) || 1);
 };
 
-},{"../../registry":450,"./constants":413}],412:[function(require,module,exports){
+},{"../../registry":460,"./constants":421}],420:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -82195,7 +76493,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     }
 };
 
-},{}],413:[function(require,module,exports){
+},{}],421:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -82275,7 +76573,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":362}],414:[function(require,module,exports){
+},{"../../lib":371}],422:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -82429,7 +76727,7 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor
     thisGroup[scaleanchor] = 1;
 }
 
-},{"../../lib":362,"./axis_ids":411}],415:[function(require,module,exports){
+},{"../../lib":371,"./axis_ids":419}],423:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -82634,7 +76932,7 @@ function updateDomain(ax, factor) {
     ];
 }
 
-},{"../../constants/alignment":339,"../../constants/numerical":343,"./axis_ids":411,"./scale_zoom":424}],416:[function(require,module,exports){
+},{"../../constants/alignment":348,"../../constants/numerical":351,"./axis_ids":419,"./scale_zoom":433}],424:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -82671,6 +76969,8 @@ var constants = require('./constants');
 var MINDRAG = constants.MINDRAG;
 var MINZOOM = constants.MINZOOM;
 
+var supportsPassive = Lib.eventListenerOptionsSupported();
+
 // flag for showing "doubleclick to zoom out" only at the beginning
 var SHOWZOOMOUTTIP = true;
 
@@ -82683,7 +76983,7 @@ var SHOWZOOMOUTTIP = true;
 //          's' - bottom only
 //          'ns' - top and bottom together, difference unchanged
 //      ew - same for horizontal axis
-module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
+function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // mouseDown stores ms of first mousedown event in the last
     // DBLCLICKDELAY ms on the drag bars
     // numClicks stores how many mousedowns have been seen
@@ -82746,7 +77046,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     recomputeAxisLists();
 
-    var dragger = makeDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
+    var dragger = makeRectDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
 
     // still need to make the element if the axes are disabled
     // but nuke its events (except for maindrag which needs them for hover)
@@ -82967,11 +77267,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         removeZoombox(gd);
         dragTail();
-
-        if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long');
-            SHOWZOOMOUTTIP = false;
-        }
+        showDoubleClickNotifier(gd);
     }
 
     // scroll zoom, on all draggers except corners
@@ -83071,9 +77367,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // everything but the corners gets wheel zoom
     if(ns.length * ew.length !== 1) {
-        // still seems to be some confusion about onwheel vs onmousewheel...
-        if(dragger.onwheel !== undefined) dragger.onwheel = zoomWheel;
-        else if(dragger.onmousewheel !== undefined) dragger.onmousewheel = zoomWheel;
+        attachWheelEventHandler(dragger, zoomWheel);
     }
 
     // plotDrag: move the plot in response to a drag
@@ -83389,7 +77683,9 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
 
             // don't scale at all if neither axis is scalable here
-            if(!xScaleFactor2 && !yScaleFactor2) continue;
+            if(!xScaleFactor2 && !yScaleFactor2) {
+                continue;
+            }
 
             // but if only one is, reset the other axis scaling
             if(!xScaleFactor2) xScaleFactor2 = 1;
@@ -83422,21 +77718,26 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     return dragger;
-};
+}
 
-function makeDragger(plotinfo, dragClass, cursor, x, y, w, h) {
+function makeDragger(plotinfo, nodeName, dragClass, cursor) {
     var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
 
-    dragger3.enter().append('rect')
+    dragger3.enter().append(nodeName)
         .classed('drag', true)
         .classed(dragClass, true)
         .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
 
-    dragger3.call(Drawing.setRect, x, y, w, h)
-        .call(setCursor, cursor);
+    dragger3.call(setCursor, cursor);
 
     return dragger3.node();
+}
+
+function makeRectDragger(plotinfo, dragClass, cursor, x, y, w, h) {
+    var dragger = makeDragger(plotinfo, 'rect', dragClass, cursor);
+    d3.select(dragger).call(Drawing.setRect, x, y, w, h);
+    return dragger;
 }
 
 function isDirectionActive(axList, activeVal) {
@@ -83561,6 +77862,10 @@ function updateZoombox(zb, corners, box, path0, dimmed, lum) {
     zb.attr('d',
         path0 + 'M' + (box.l) + ',' + (box.t) + 'v' + (box.h) +
         'h' + (box.w) + 'v-' + (box.h) + 'h-' + (box.w) + 'Z');
+    transitionZoombox(zb, corners, dimmed, lum);
+}
+
+function transitionZoombox(zb, corners, dimmed, lum) {
     if(!dimmed) {
         zb.transition()
             .style('fill', lum > 0.2 ? 'rgba(0,0,0,0.4)' :
@@ -83576,6 +77881,13 @@ function removeZoombox(gd) {
     d3.select(gd)
         .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
         .remove();
+}
+
+function showDoubleClickNotifier(gd) {
+    if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
+        Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long');
+        SHOWZOOMOUTTIP = false;
+    }
 }
 
 function isSelectOrLasso(dragmode) {
@@ -83666,7 +77978,43 @@ function calcLinks(constraintGroups, xIDs, yIDs) {
     };
 }
 
-},{"../../components/color":241,"../../components/dragelement":263,"../../components/drawing":266,"../../components/fx":283,"../../constants/alignment":339,"../../lib":362,"../../lib/setcursor":381,"../../lib/svg_text_utils":385,"../../plotly":403,"../../registry":450,"../plots":443,"./axes":408,"./axis_ids":411,"./constants":413,"./scale_zoom":424,"./select":425,"d3":62,"tinycolor2":208}],417:[function(require,module,exports){
+// still seems to be some confusion about onwheel vs onmousewheel...
+function attachWheelEventHandler(element, handler) {
+    if(!supportsPassive) {
+        if(element.onwheel !== undefined) element.onwheel = handler;
+        else if(element.onmousewheel !== undefined) element.onmousewheel = handler;
+    }
+    else {
+        var wheelEventName = element.onwheel !== undefined ? 'wheel' : 'mousewheel';
+
+        if(element._onwheel) {
+            element.removeEventListener(wheelEventName, element._onwheel);
+        }
+        element._onwheel = handler;
+
+        element.addEventListener(wheelEventName, handler, {passive: false});
+    }
+}
+
+module.exports = {
+    makeDragBox: makeDragBox,
+
+    makeDragger: makeDragger,
+    makeRectDragger: makeRectDragger,
+    makeZoombox: makeZoombox,
+    makeCorners: makeCorners,
+
+    updateZoombox: updateZoombox,
+    xyCorners: xyCorners,
+    transitionZoombox: transitionZoombox,
+    removeZoombox: removeZoombox,
+    clearSelect: clearSelect,
+    showDoubleClickNotifier: showDoubleClickNotifier,
+
+    attachWheelEventHandler: attachWheelEventHandler
+};
+
+},{"../../components/color":250,"../../components/dragelement":272,"../../components/drawing":275,"../../components/fx":292,"../../constants/alignment":348,"../../lib":371,"../../lib/setcursor":390,"../../lib/svg_text_utils":394,"../../plotly":411,"../../registry":460,"../plots":453,"./axes":416,"./axis_ids":419,"./constants":421,"./scale_zoom":433,"./select":434,"d3":66,"tinycolor2":212}],425:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -83682,7 +78030,7 @@ var Fx = require('../../components/fx');
 var dragElement = require('../../components/dragelement');
 
 var constants = require('./constants');
-var dragBox = require('./dragbox');
+var makeDragBox = require('./dragbox').makeDragBox;
 
 module.exports = function initInteractions(gd) {
     var fullLayout = gd._fullLayout;
@@ -83715,7 +78063,7 @@ module.exports = function initInteractions(gd) {
         if(!plotinfo.mainplot) {
             // main dragger goes over the grids and data, so we use its
             // mousemove events for all data hover effects
-            var maindrag = dragBox(gd, plotinfo, xa._offset, ya._offset,
+            var maindrag = makeDragBox(gd, plotinfo, xa._offset, ya._offset,
                 xa._length, ya._length, 'ns', 'ew');
 
             maindrag.onmousemove = function(evt) {
@@ -83755,13 +78103,13 @@ module.exports = function initInteractions(gd) {
 
             // corner draggers
             if(gd._context.showAxisDragHandles) {
-                dragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset - DRAGGERSIZE,
+                makeDragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset - DRAGGERSIZE,
                     DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');
-                dragBox(gd, plotinfo, xa._offset + xa._length, ya._offset - DRAGGERSIZE,
+                makeDragBox(gd, plotinfo, xa._offset + xa._length, ya._offset - DRAGGERSIZE,
                     DRAGGERSIZE, DRAGGERSIZE, 'n', 'e');
-                dragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset + ya._length,
+                makeDragBox(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset + ya._length,
                     DRAGGERSIZE, DRAGGERSIZE, 's', 'w');
-                dragBox(gd, plotinfo, xa._offset + xa._length, ya._offset + ya._length,
+                makeDragBox(gd, plotinfo, xa._offset + xa._length, ya._offset + ya._length,
                     DRAGGERSIZE, DRAGGERSIZE, 's', 'e');
             }
         }
@@ -83772,11 +78120,11 @@ module.exports = function initInteractions(gd) {
                 // the y position of the main x axis line
                 var y0 = xa._mainLinePosition;
                 if(xa.side === 'top') y0 -= DRAGGERSIZE;
-                dragBox(gd, plotinfo, xa._offset + xa._length * 0.1, y0,
+                makeDragBox(gd, plotinfo, xa._offset + xa._length * 0.1, y0,
                     xa._length * 0.8, DRAGGERSIZE, '', 'ew');
-                dragBox(gd, plotinfo, xa._offset, y0,
+                makeDragBox(gd, plotinfo, xa._offset, y0,
                     xa._length * 0.1, DRAGGERSIZE, '', 'w');
-                dragBox(gd, plotinfo, xa._offset + xa._length * 0.9, y0,
+                makeDragBox(gd, plotinfo, xa._offset + xa._length * 0.9, y0,
                     xa._length * 0.1, DRAGGERSIZE, '', 'e');
             }
             // y axis draggers
@@ -83784,11 +78132,11 @@ module.exports = function initInteractions(gd) {
                 // the x position of the main y axis line
                 var x0 = ya._mainLinePosition;
                 if(ya.side !== 'right') x0 -= DRAGGERSIZE;
-                dragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.1,
+                makeDragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.1,
                     DRAGGERSIZE, ya._length * 0.8, 'ns', '');
-                dragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.9,
+                makeDragBox(gd, plotinfo, x0, ya._offset + ya._length * 0.9,
                     DRAGGERSIZE, ya._length * 0.1, 's', '');
-                dragBox(gd, plotinfo, x0, ya._offset,
+                makeDragBox(gd, plotinfo, x0, ya._offset,
                     DRAGGERSIZE, ya._length * 0.1, 'n', '');
             }
         }
@@ -83815,7 +78163,7 @@ module.exports = function initInteractions(gd) {
     };
 };
 
-},{"../../components/dragelement":263,"../../components/fx":283,"./constants":413,"./dragbox":416}],418:[function(require,module,exports){
+},{"../../components/dragelement":272,"../../components/fx":292,"./constants":421,"./dragbox":424}],426:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -83890,7 +78238,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
     };
 };
 
-},{"../../lib":362,"../../registry":450}],419:[function(require,module,exports){
+},{"../../lib":371,"../../registry":460}],427:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -83909,6 +78257,7 @@ var getModuleCalcData = require('../get_data').getModuleCalcData;
 
 var axisIds = require('./axis_ids');
 var constants = require('./constants');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 exports.name = 'cartesian';
 
@@ -84102,7 +78451,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         // plot all traces of this type on this subplot at once
         var cdModule = getModuleCalcData(cdSubplot, _module);
 
-        _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+        if(_module.plot) _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }
 }
 
@@ -84110,13 +78459,14 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldModules = oldFullLayout._modules || [],
         newModules = newFullLayout._modules || [];
 
-    var hadScatter, hasScatter, i;
+    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo;
+
 
     for(i = 0; i < oldModules.length; i++) {
         if(oldModules[i].name === 'scatter') {
             hadScatter = true;
-            break;
         }
+        break;
     }
 
     for(i = 0; i < newModules.length; i++) {
@@ -84126,12 +78476,26 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 
+    for(i = 0; i < oldModules.length; i++) {
+        if(oldModules[i].name === 'scattergl') {
+            hadGl = true;
+        }
+        break;
+    }
+
+    for(i = 0; i < newModules.length; i++) {
+        if(newModules[i].name === 'scattergl') {
+            hasGl = true;
+            break;
+        }
+    }
+
     if(hadScatter && !hasScatter) {
-        var oldPlots = oldFullLayout._plots,
-            ids = Object.keys(oldPlots || {});
+        oldPlots = oldFullLayout._plots;
+        ids = Object.keys(oldPlots || {});
 
         for(i = 0; i < ids.length; i++) {
-            var subplotInfo = oldPlots[ids[i]];
+            subplotInfo = oldPlots[ids[i]];
 
             if(subplotInfo.plot) {
                 subplotInfo.plot.select('g.scatterlayer')
@@ -84144,6 +78508,19 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             .select('g.scatterlayer')
             .selectAll('g.trace')
             .remove();
+    }
+
+    if(hadGl && !hasGl) {
+        oldPlots = oldFullLayout._plots;
+        ids = Object.keys(oldPlots || {});
+
+        for(i = 0; i < ids.length; i++) {
+            subplotInfo = oldPlots[ids[i]];
+
+            if(subplotInfo._scene) {
+                subplotInfo._scene.destroy();
+            }
+        }
     }
 
     var oldSubplotList = oldFullLayout._subplots || {};
@@ -84197,7 +78574,6 @@ exports.drawFramework = function(gd) {
         plotinfo.overlays = [];
 
         makeSubplotLayer(plotinfo);
-
         // fill in list of overlay subplots
         if(plotinfo.mainplot) {
             var mainplot = fullLayout._plots[plotinfo.mainplot];
@@ -84390,7 +78766,32 @@ function joinLayer(parent, nodeType, className, dataVal) {
     return layer;
 }
 
-},{"../../lib":362,"../get_data":435,"../plots":443,"./attributes":407,"./axis_ids":411,"./constants":413,"./layout_attributes":420,"./layout_defaults":421,"./transition_axes":430,"d3":62}],420:[function(require,module,exports){
+exports.toSVG = function(gd) {
+    var imageRoot = gd._fullLayout._glimages;
+    var root = d3.select(gd).selectAll('.svg-container');
+    var canvases = root.filter(function(d, i) {return i === root.size() - 1;})
+        .selectAll('.gl-canvas-context, .gl-canvas-focus');
+
+    function canvasToImage() {
+        var canvas = this;
+        var imageData = canvas.toDataURL('image/png');
+        var image = imageRoot.append('svg:image');
+
+        image.attr({
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': imageData,
+            preserveAspectRatio: 'none',
+            x: 0,
+            y: 0,
+            width: canvas.width,
+            height: canvas.height
+        });
+    }
+
+    canvases.each(canvasToImage);
+};
+
+},{"../../constants/xmlns_namespaces":353,"../../lib":371,"../get_data":445,"../plots":453,"./attributes":415,"./axis_ids":419,"./constants":421,"./layout_attributes":428,"./layout_defaults":429,"./transition_axes":439,"d3":66}],428:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -84628,6 +79029,14 @@ module.exports = {
         flags: ['toaxis', 'across', 'marker'],
         
         dflt: 'toaxis',
+        editType: 'none',
+        
+    },
+    spikesnap: {
+        valType: 'enumerated',
+        values: ['data', 'cursor'],
+        dflt: 'data',
+        
         editType: 'none',
         
     },
@@ -84889,7 +79298,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":240,"../../components/drawing/attributes":265,"../../lib/extend":353,"../font_attributes":433,"./constants":413}],421:[function(require,module,exports){
+},{"../../components/color/attributes":249,"../../components/drawing/attributes":274,"../../lib/extend":362,"../font_attributes":443,"./constants":421}],429:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -84981,6 +79390,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         return Lib.coerce(axLayoutIn, axLayoutOut, layoutAttributes, attr, dflt);
     }
 
+    function coerce2(attr, dflt) {
+        return Lib.coerce2(axLayoutIn, axLayoutOut, layoutAttributes, attr, dflt);
+    }
+
     function getCounterAxes(axLetter) {
         return (axLetter === 'x') ? yIds : xIds;
     }
@@ -85031,12 +79444,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
-        var showSpikes = coerce('showspikes');
-        if(showSpikes) {
-            coerce('spikecolor');
-            coerce('spikethickness');
-            coerce('spikedash');
-            coerce('spikemode');
+        var spikecolor = coerce2('spikecolor'),
+            spikethickness = coerce2('spikethickness'),
+            spikedash = coerce2('spikedash'),
+            spikemode = coerce2('spikemode'),
+            spikesnap = coerce2('spikesnap'),
+            showSpikes = coerce('showspikes', !!spikecolor || !!spikethickness || !!spikedash || !!spikemode || !!spikesnap);
+
+        if(!showSpikes) {
+            delete axLayoutOut.spikecolor;
+            delete axLayoutOut.spikethickness;
+            delete axLayoutOut.spikedash;
+            delete axLayoutOut.spikemode;
+            delete axLayoutOut.spikesnap;
         }
 
         var positioningOptions = {
@@ -85110,7 +79530,72 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../components/color":241,"../../lib":362,"../../registry":450,"../layout_attributes":441,"./axis_defaults":410,"./axis_ids":411,"./constraint_defaults":414,"./layout_attributes":420,"./position_defaults":423,"./type_defaults":431}],422:[function(require,module,exports){
+},{"../../components/color":250,"../../lib":371,"../../registry":460,"../layout_attributes":451,"./axis_defaults":418,"./axis_ids":419,"./constraint_defaults":422,"./layout_attributes":428,"./position_defaults":432,"./type_defaults":440}],430:[function(require,module,exports){
+/**
+* Copyright 2012-2018, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+'use strict';
+
+var colorMix = require('tinycolor2').mix;
+var lightFraction = require('../../components/color/attributes').lightFraction;
+var Lib = require('../../lib');
+
+/**
+ * @param {object} opts :
+ *   - dfltColor {string} : default axis color
+ *   - bgColor {string} : combined subplot bg color
+ *   - blend {number, optional} : blend percentage (to compute dflt grid color)
+ *   - showLine {boolean} : show line by default
+ *   - showGrid {boolean} : show grid by default
+ *   - noZeroLine {boolean} : don't coerce zeroline* attributes
+ *   - attributes {object} : attribute object associated with input containers
+ */
+module.exports = function handleLineGridDefaults(containerIn, containerOut, coerce, opts) {
+    opts = opts || {};
+
+    var dfltColor = opts.dfltColor;
+
+    function coerce2(attr, dflt) {
+        return Lib.coerce2(containerIn, containerOut, opts.attributes, attr, dflt);
+    }
+
+    var lineColor = coerce2('linecolor', dfltColor);
+    var lineWidth = coerce2('linewidth');
+    var showLine = coerce('showline', opts.showLine || !!lineColor || !!lineWidth);
+
+    if(!showLine) {
+        delete containerOut.linecolor;
+        delete containerOut.linewidth;
+    }
+
+    var gridColorDflt = colorMix(dfltColor, opts.bgColor, opts.blend || lightFraction).toRgbString();
+    var gridColor = coerce2('gridcolor', gridColorDflt);
+    var gridWidth = coerce2('gridwidth');
+    var showGridLines = coerce('showgrid', opts.showGrid || !!gridColor || !!gridWidth);
+
+    if(!showGridLines) {
+        delete containerOut.gridcolor;
+        delete containerOut.gridwidth;
+    }
+
+    if(!opts.noZeroLine) {
+        var zeroLineColor = coerce2('zerolinecolor', dfltColor);
+        var zeroLineWidth = coerce2('zerolinewidth');
+        var showZeroLine = coerce('zeroline', opts.showGrid || !!zeroLineColor || !!zeroLineWidth);
+
+        if(!showZeroLine) {
+            delete containerOut.zerolinecolor;
+            delete containerOut.zerolinewidth;
+        }
+    }
+};
+
+},{"../../components/color/attributes":249,"../../lib":371,"tinycolor2":212}],431:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -85189,7 +79674,7 @@ module.exports = function orderedCategories(axisLetter, categoryorder, categorya
     }
 };
 
-},{"d3":62}],423:[function(require,module,exports){
+},{"d3":66}],432:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -85256,7 +79741,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":362,"fast-isnumeric":68}],424:[function(require,module,exports){
+},{"../../lib":371,"fast-isnumeric":76}],433:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -85284,7 +79769,7 @@ module.exports = function scaleZoom(ax, factor, centerFraction) {
     ];
 };
 
-},{"../../constants/alignment":339}],425:[function(require,module,exports){
+},{"../../constants/alignment":348}],434:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -85301,6 +79786,7 @@ var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var color = require('../../components/color');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
+var Fx = require('../../components/fx');
 
 var axes = require('./axes');
 var constants = require('./constants');
@@ -85349,12 +79835,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     if(mode === 'lasso') {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
-
-    var outlines = zoomLayer.selectAll('path.select-outline').data([1, 2]);
+    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1, 2]);
 
     outlines.enter()
         .append('path')
-        .attr('class', function(d) { return 'select-outline select-outline-' + d; })
+        .attr('class', function(d) { return 'select-outline select-outline-' + d + ' select-outline-' + plotinfo.id; })
         .attr('transform', 'translate(' + xs + ', ' + ys + ')')
         .attr('d', path0 + 'Z');
 
@@ -85435,7 +79920,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 }
             };
         } else {
-            fillRangeItems = function(eventData, currentPolygon, filterPoly) {
+            fillRangeItems = function(eventData, poly, filterPoly) {
                 var dataPts = eventData.lassoPoints = {};
 
                 for(i = 0; i < allAxes.length; i++) {
@@ -85512,7 +79997,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             var ppts = mergedPolygons[i];
             paths.push(ppts.join('L') + 'L' + ppts[0]);
         }
-        outlines.attr('d', 'M' + paths.join('M') + 'Z');
+        outlines
+            .attr('d', 'M' + paths.join('M') + 'Z');
 
         throttle.throttle(
             throttleID,
@@ -85520,14 +80006,15 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             function() {
                 selection = [];
 
-                var traceSelections = [], traceSelection;
+                var thisSelection, traceSelections = [], traceSelection;
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 
                     traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
                     traceSelections.push(traceSelection);
 
-                    var thisSelection = fillSelectionItem(traceSelection, searchInfo);
+                    thisSelection = fillSelectionItem(traceSelection, searchInfo);
+
                     if(selection.length) {
                         for(var j = 0; j < thisSelection.length; j++) {
                             selection.push(thisSelection[j]);
@@ -85544,7 +80031,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         );
     };
 
-    dragOptions.clickFn = function(numClicks) {
+    dragOptions.clickFn = function(numClicks, evt) {
         corners.remove();
 
         throttle.done(throttleID).then(function() {
@@ -85565,6 +80052,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 // but in case anyone depends on it we don't want to break it now.
                 gd.emit('plotly_selected', undefined);
             }
+
+            Fx.click(gd, evt);
         });
     };
 
@@ -85606,8 +80095,8 @@ function updateSelectedState(gd, searchTraces, eventData) {
             var fullData = pt.fullData;
 
             if(pt.pointIndices) {
-                data.selectedpoints = data.selectedpoints.concat(pt.pointIndices);
-                fullData.selectedpoints = fullData.selectedpoints.concat(pt.pointIndices);
+                [].push.apply(data.selectedpoints, pt.pointIndices);
+                [].push.apply(fullData.selectedpoints, pt.pointIndices);
             } else {
                 data.selectedpoints.push(pt.pointIndex);
                 fullData.selectedpoints.push(pt.pointIndex);
@@ -85619,6 +80108,11 @@ function updateSelectedState(gd, searchTraces, eventData) {
             trace = searchTraces[i].cd[0].trace;
             delete trace.selectedpoints;
             delete trace._input.selectedpoints;
+
+            // delete scattergl selection
+            if(searchTraces[i].cd[0].t && searchTraces[i].cd[0].t.scene) {
+                searchTraces[i].cd[0].t.scene.clearSelect();
+            }
         }
     }
 
@@ -85667,7 +80161,7 @@ function fillSelectionItem(selection, searchInfo) {
     return selection;
 }
 
-},{"../../components/color":241,"../../components/fx/helpers":280,"../../lib/polygon":374,"../../lib/throttle":386,"./axes":408,"./constants":413,"polybooljs":174}],426:[function(require,module,exports){
+},{"../../components/color":250,"../../components/fx":292,"../../components/fx/helpers":289,"../../lib/polygon":383,"../../lib/throttle":395,"./axes":416,"./constants":421,"polybooljs":167}],435:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -85946,14 +80440,16 @@ module.exports = function setConvert(ax, fullLayout) {
      * optional param rangeAttr: operate on a different attribute, like
      * ax._r, rather than ax.range
      */
-    ax.cleanRange = function(rangeAttr) {
+    ax.cleanRange = function(rangeAttr, opts) {
+        if(!opts) opts = {};
         if(!rangeAttr) rangeAttr = 'range';
-        var range = Lib.nestedProperty(ax, rangeAttr).get(),
-            i, dflt;
+
+        var range = Lib.nestedProperty(ax, rangeAttr).get();
+        var i, dflt;
 
         if(ax.type === 'date') dflt = Lib.dfltRange(ax.calendar);
         else if(axLetter === 'y') dflt = constants.DFLTRANGEY;
-        else dflt = constants.DFLTRANGEX;
+        else dflt = opts.dfltRange || constants.DFLTRANGEX;
 
         // make sure we don't later mutate the defaults
         dflt = dflt.slice();
@@ -86136,7 +80632,7 @@ module.exports = function setConvert(ax, fullLayout) {
     delete ax._forceTick0;
 };
 
-},{"../../constants/numerical":343,"../../lib":362,"./axis_ids":411,"./constants":413,"d3":62,"fast-isnumeric":68}],427:[function(require,module,exports){
+},{"../../constants/numerical":351,"../../lib":371,"./axis_ids":419,"./constants":421,"d3":66,"fast-isnumeric":76}],436:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -86160,7 +80656,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
     var tickPrefix = coerce('tickprefix');
     if(tickPrefix) coerce('showtickprefix', showAttrDflt);
 
-    var tickSuffix = coerce('ticksuffix');
+    var tickSuffix = coerce('ticksuffix', options.tickSuffixDflt);
     if(tickSuffix) coerce('showticksuffix', showAttrDflt);
 
     var showTickLabels = coerce('showticklabels');
@@ -86244,7 +80740,7 @@ function tickformatstopsDefaults(tickformatIn, tickformatOut) {
     }
 }
 
-},{"../../lib":362,"./layout_attributes":420}],428:[function(require,module,exports){
+},{"../../lib":371,"./layout_attributes":428}],437:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -86277,7 +80773,7 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
     }
 };
 
-},{"../../lib":362,"./layout_attributes":420}],429:[function(require,module,exports){
+},{"../../lib":371,"./layout_attributes":428}],438:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -86361,7 +80857,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"../../constants/numerical":343,"../../lib":362,"fast-isnumeric":68}],430:[function(require,module,exports){
+},{"../../constants/numerical":351,"../../lib":371,"fast-isnumeric":76}],439:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -86695,7 +81191,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     return Promise.resolve();
 };
 
-},{"../../components/drawing":266,"../../plotly":403,"../../registry":450,"./axes":408,"./constants":413,"d3":62}],431:[function(require,module,exports){
+},{"../../components/drawing":275,"../../plotly":411,"../../registry":460,"./axes":416,"./constants":421,"d3":66}],440:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -86823,7 +81319,7 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
     );
 }
 
-},{"../../registry":450,"./axis_autotype":409,"./axis_ids":411}],432:[function(require,module,exports){
+},{"../../registry":460,"./axis_autotype":417,"./axis_ids":419}],441:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87250,7 +81746,69 @@ function crawl(attrs, callback, path, depth) {
     });
 }
 
-},{"../lib":362,"../plotly":403}],433:[function(require,module,exports){
+},{"../lib":371,"../plotly":411}],442:[function(require,module,exports){
+/**
+* Copyright 2012-2018, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+'use strict';
+
+var extendFlat = require('../lib/extend').extendFlat;
+
+/**
+ * Make a xy domain attribute group
+ *
+ * @param {object} opts
+ *   @param {string}
+ *     opts.name: name to be inserted in the default description
+ *   @param {boolean}
+ *     opts.trace: set to true for trace containers
+ *   @param {string}
+ *     opts.editType: editType for all pieces
+ *
+ * @param {object} extra
+ *   @param {string}
+ *     extra.description: extra description. N.B we use
+ *     a separate extra container to make it compatible with
+ *     the compress_attributes transform.
+ *
+ * @return {object} attributes object containing {x,y} as specified
+ */
+module.exports = function(opts, extra) {
+    opts = opts || {};
+    extra = extra || {};
+
+    var base = {
+        valType: 'info_array',
+        
+        editType: opts.editType,
+        items: [
+            {valType: 'number', min: 0, max: 1},
+            {valType: 'number', min: 0, max: 1}
+        ],
+        dflt: [0, 1]
+    };
+
+    var namePart = opts.name ? opts.name + ' ' : '';
+    var contPart = opts.trace ? 'trace ' : 'subplot ';
+    var descPart = extra.description ? ' ' + extra.description : '';
+
+    return {
+        x: extendFlat({}, base, {
+            
+        }),
+        y: extendFlat({}, base, {
+            
+        }),
+        editType: opts.editType
+    };
+};
+
+},{"../lib/extend":362}],443:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87315,7 +81873,7 @@ module.exports = function(opts) {
     return attrs;
 };
 
-},{}],434:[function(require,module,exports){
+},{}],444:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87361,7 +81919,7 @@ module.exports = {
     }
 };
 
-},{}],435:[function(require,module,exports){
+},{}],445:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87455,7 +82013,7 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
-},{"../registry":450,"./cartesian/constants":413}],436:[function(require,module,exports){
+},{"../registry":460,"./cartesian/constants":421}],446:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87750,7 +82308,7 @@ function createCamera(scene) {
     return result;
 }
 
-},{"../cartesian/constants":413,"mouse-change":157,"mouse-event-offset":158,"mouse-wheel":160}],437:[function(require,module,exports){
+},{"../cartesian/constants":421,"mouse-change":147,"mouse-event-offset":148,"mouse-wheel":150}],447:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -87996,7 +82554,7 @@ function createAxes2D(scene) {
 
 module.exports = createAxes2D;
 
-},{"../../lib/html2unicode":360,"../../lib/str2rgbarray":384,"../cartesian/axes":408}],438:[function(require,module,exports){
+},{"../../lib/html2unicode":369,"../../lib/str2rgbarray":393,"../cartesian/axes":416}],448:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -88146,7 +82704,7 @@ exports.updateFx = function(fullLayout) {
     }
 };
 
-},{"../../components/fx/layout_attributes":284,"../../constants/xmlns_namespaces":345,"../../plot_api/edit_types":392,"../cartesian":419,"../cartesian/attributes":407,"../cartesian/constants":413,"../get_data":435,"../layout_attributes":441,"./scene2d":439}],439:[function(require,module,exports){
+},{"../../components/fx/layout_attributes":293,"../../constants/xmlns_namespaces":353,"../../plot_api/edit_types":400,"../cartesian":427,"../cartesian/attributes":415,"../cartesian/constants":421,"../get_data":445,"../layout_attributes":451,"./scene2d":449}],449:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -88884,7 +83442,7 @@ proto.hoverFormatter = function(axisName, val) {
     return Axes.tickText(axis, axis.c2l(val), 'hover').text;
 };
 
-},{"../../components/fx":283,"../../lib/html2unicode":360,"../../lib/show_no_webgl_msg":382,"../../plots/cartesian/axes":408,"../../registry":450,"../cartesian/constants":413,"../cartesian/constraints":415,"./camera":436,"./convert":437,"gl-plot2d":102,"gl-select-box":130,"gl-spikes2d":139,"webgl-context":221}],440:[function(require,module,exports){
+},{"../../components/fx":292,"../../lib/html2unicode":369,"../../lib/show_no_webgl_msg":391,"../../plots/cartesian/axes":416,"../../registry":460,"../cartesian/constants":421,"../cartesian/constraints":423,"./camera":446,"./convert":447,"gl-plot2d":106,"gl-select-box":117,"gl-spikes2d":126,"webgl-context":230}],450:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -88918,7 +83476,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],441:[function(require,module,exports){
+},{}],451:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -89072,7 +83630,7 @@ module.exports = {
     },
 };
 
-},{"../components/color/attributes":240,"./font_attributes":433}],442:[function(require,module,exports){
+},{"../components/color/attributes":249,"./font_attributes":443}],452:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -89118,7 +83676,7 @@ module.exports = {
     editType: 'arraydraw'
 };
 
-},{}],443:[function(require,module,exports){
+},{}],453:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -89169,7 +83727,6 @@ plots.executeAPICommand = commandModule.executeAPICommand;
 plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
 plots.manageCommandObserver = commandModule.manageCommandObserver;
 plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
-
 
 // in some cases the browser doesn't seem to know how big
 // the text is at first, so it needs to draw it,
@@ -89421,7 +83978,8 @@ plots.supplyDefaults = function(gd) {
         plot: _(gd, 'Click to enter Plot title'),
         x: _(gd, 'Click to enter X axis title'),
         y: _(gd, 'Click to enter Y axis title'),
-        colorbar: _(gd, 'Click to enter Colorscale title')
+        colorbar: _(gd, 'Click to enter Colorscale title'),
+        annotation: _(gd, 'new text')
     };
     newFullLayout._traceWord = _(gd, 'trace');
 
@@ -89707,7 +84265,6 @@ plots.createTransitionData = function(gd) {
 // or trace has a category
 plots._hasPlotType = function(category) {
     // check plot
-
     var basePlotModules = this._basePlotModules || [];
     var i;
 
@@ -89821,10 +84378,6 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
         if(oldSubplot) {
             plotinfo = newSubplots[id] = oldSubplot;
-
-            if(plotinfo._scene2d) {
-                plotinfo._scene2d.updateRefs(newFullLayout);
-            }
 
             if(plotinfo.xaxis.layer !== xaxis.layer) {
                 plotinfo.xlines.attr('d', null);
@@ -90049,7 +84602,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
             }
         }
         else {
-
             // add identify refs for consistency with transformed traces
             fullTrace._fullInput = fullTrace;
             fullTrace._expandedInput = fullTrace;
@@ -90243,7 +84795,7 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
             traceOut.visible = !!traceOut.visible;
         }
 
-        if(_module && _module.selectPoints && traceOut.type !== 'scattergl') {
+        if(_module && _module.selectPoints) {
             coerce('selectedpoints');
         }
 
@@ -90538,7 +85090,6 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 // Remove all plotly attributes from a div so it can be replotted fresh
 // TODO: these really need to be encapsulated into a much smaller set...
 plots.purge = function(gd) {
-
     // note: we DO NOT remove _context because it doesn't change when we insert
     // a new plot, and may have been set outside of our scope.
 
@@ -90613,11 +85164,21 @@ plots.purge = function(gd) {
 
 plots.style = function(gd) {
     var _modules = gd._fullLayout._modules;
+    var styleModules = [];
+    var i;
 
-    for(var i = 0; i < _modules.length; i++) {
+    // some trace modules reuse the same style method,
+    // make sure to not unnecessary call them multiple times.
+
+    for(i = 0; i < _modules.length; i++) {
         var _module = _modules[i];
+        if(_module.style) {
+            Lib.pushUnique(styleModules, _module.style);
+        }
+    }
 
-        if(_module.style) _module.style(gd);
+    for(i = 0; i < styleModules.length; i++) {
+        styleModules[i](gd);
     }
 };
 
@@ -91433,6 +85994,15 @@ plots.doCalcdata = function(gd, traces) {
         trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
     }
 
+    // add polar axes to axis list
+    var polarIds = fullLayout._subplots.polar || [];
+    for(i = 0; i < polarIds.length; i++) {
+        axList.push(
+            fullLayout[polarIds[i]].radialaxis,
+            fullLayout[polarIds[i]].angularaxis
+        );
+    }
+
     initCategories(axList);
 
     var hasCalcTransform = false;
@@ -91538,23 +86108,10 @@ plots.rehover = function(gd) {
     }
 };
 
-plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLayout) {
-    var traceHashOld = subplot.traceHash,
-        traceHash = {},
-        i;
-
-    function filterVisible(calcDataIn) {
-        var calcDataOut = [];
-
-        for(var i = 0; i < calcDataIn.length; i++) {
-            var calcTrace = calcDataIn[i],
-                trace = calcTrace[0].trace;
-
-            if(trace.visible === true) calcDataOut.push(calcTrace);
-        }
-
-        return calcDataOut;
-    }
+plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subplotLayout) {
+    var traceHashOld = subplot.traceHash;
+    var traceHash = {};
+    var i;
 
     // build up moduleName -> calcData hash
     for(i = 0; i < subplotCalcData.length; i++) {
@@ -91573,7 +86130,6 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
     // plot method is called so that it is properly
     // removed from the DOM.
     for(var moduleNameOld in traceHashOld) {
-
         if(!traceHash[moduleNameOld]) {
             var fakeCalcTrace = traceHashOld[moduleNameOld][0],
                 fakeTrace = fakeCalcTrace[0].trace;
@@ -91588,14 +86144,14 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
         var moduleCalcData = traceHash[moduleName];
         var _module = moduleCalcData[0][0].trace._module;
 
-        _module.plot(subplot, filterVisible(moduleCalcData), subplotLayout);
+        _module.plot(gd, subplot, Lib.filterVisible(moduleCalcData), subplotLayout);
     }
 
     // update moduleName -> calcData hash
     subplot.traceHash = traceHash;
 };
 
-},{"../components/color":241,"../components/errorbars":272,"../constants/numerical":343,"../lib":362,"../plot_api/plot_schema":397,"../plotly":403,"../plots/cartesian/axis_ids":411,"../registry":450,"./animation_attributes":404,"./attributes":406,"./command":432,"./font_attributes":433,"./frame_attributes":434,"./layout_attributes":441,"d3":62,"fast-isnumeric":68}],444:[function(require,module,exports){
+},{"../components/color":250,"../components/errorbars":281,"../constants/numerical":351,"../lib":371,"../plot_api/plot_schema":405,"../plotly":411,"../plots/cartesian/axis_ids":419,"../registry":460,"./animation_attributes":412,"./attributes":414,"./command":441,"./font_attributes":443,"./frame_attributes":444,"./layout_attributes":451,"d3":66,"fast-isnumeric":76}],454:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -91606,7 +86162,7 @@ plots.generalUpdatePerTraceModule = function(subplot, subplotCalcData, subplotLa
 
 'use strict';
 
-var scatterAttrs = require('../../traces/scatter/attributes');
+var scatterAttrs = require('../../../traces/scatter/attributes');
 var scatterMarkerAttrs = scatterAttrs.marker;
 
 module.exports = {
@@ -91621,7 +86177,7 @@ module.exports = {
     }
 };
 
-},{"../../traces/scatter/attributes":508}],445:[function(require,module,exports){
+},{"../../../traces/scatter/attributes":518}],455:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -91633,9 +86189,9 @@ module.exports = {
 
 'use strict';
 
-var axesAttrs = require('../cartesian/layout_attributes');
-var extendFlat = require('../../lib/extend').extendFlat;
-var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var axesAttrs = require('../../cartesian/layout_attributes');
+var extendFlat = require('../../../lib/extend').extendFlat;
+var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 
 var domainAttr = extendFlat({}, axesAttrs.domain, {
     
@@ -91737,7 +86293,7 @@ module.exports = overrideAll({
     }
 }, 'plot', 'nested');
 
-},{"../../lib/extend":353,"../../plot_api/edit_types":392,"../cartesian/layout_attributes":420}],446:[function(require,module,exports){
+},{"../../../lib/extend":362,"../../../plot_api/edit_types":400,"../../cartesian/layout_attributes":428}],456:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -91752,7 +86308,7 @@ var Polar = module.exports = require('./micropolar');
 
 Polar.manager = require('./micropolar_manager');
 
-},{"./micropolar":447,"./micropolar_manager":448}],447:[function(require,module,exports){
+},{"./micropolar":457,"./micropolar_manager":458}],457:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -91762,9 +86318,9 @@ Polar.manager = require('./micropolar_manager');
 */
 
 var d3 = require('d3');
-var Lib = require('../../lib');
+var Lib = require('../../../lib');
 var extendDeepAll = Lib.extendDeepAll;
-var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
+var MID_SHIFT = require('../../../constants/alignment').MID_SHIFT;
 
 var µ = module.exports = { version: '0.2.2' };
 
@@ -93172,7 +87728,7 @@ var µ = module.exports = { version: '0.2.2' };
     return exports;
 };
 
-},{"../../constants/alignment":339,"../../lib":362,"d3":62}],448:[function(require,module,exports){
+},{"../../../constants/alignment":348,"../../../lib":371,"d3":66}],458:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -93186,8 +87742,8 @@ var µ = module.exports = { version: '0.2.2' };
 'use strict';
 
 var d3 = require('d3');
-var Lib = require('../../lib');
-var Color = require('../../components/color');
+var Lib = require('../../../lib');
+var Color = require('../../../components/color');
 
 var micropolar = require('./micropolar');
 var UndoManager = require('./undo_manager');
@@ -93258,7 +87814,7 @@ manager.fillLayout = function(_gd) {
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };
 
-},{"../../components/color":241,"../../lib":362,"./micropolar":447,"./undo_manager":449,"d3":62}],449:[function(require,module,exports){
+},{"../../../components/color":250,"../../../lib":371,"./micropolar":457,"./undo_manager":459,"d3":66}],459:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -93324,7 +87880,7 @@ module.exports = function UndoManager() {
     };
 };
 
-},{}],450:[function(require,module,exports){
+},{}],460:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -93535,14 +88091,6 @@ function mergeComponentAttrsToSubplot(componentName, subplotName) {
  *  module object corresponding to trace type
  */
 exports.getModule = function(trace) {
-    if(trace.r !== undefined) {
-        Loggers.warn('Tried to put a polar trace ' +
-            'on an incompatible graph of cartesian ' +
-            'data. Ignoring this dataset.', trace
-        );
-        return false;
-    }
-
     var _module = exports.modules[getTraceType(trace)];
     if(!_module) return false;
     return _module._module;
@@ -93695,7 +88243,7 @@ exports.registerLocale = function(_module) {
     if(hasFormat) localeObj.format = newFormat;
 };
 
-},{"./lib/extend":353,"./lib/loggers":367,"./lib/noop":371,"./lib/push_unique":375,"./plots/attributes":406,"./plots/layout_attributes":441}],451:[function(require,module,exports){
+},{"./lib/extend":362,"./lib/loggers":376,"./lib/noop":380,"./lib/push_unique":384,"./plots/attributes":414,"./plots/layout_attributes":451}],461:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -93869,7 +88417,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":362}],452:[function(require,module,exports){
+},{"../lib":371}],462:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -93935,7 +88483,7 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":362,"../plot_api/to_image":401,"./filesaver":453}],453:[function(require,module,exports){
+},{"../lib":371,"../plot_api/to_image":409,"./filesaver":463}],463:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94007,7 +88555,7 @@ var fileSaver = function(url, name) {
 
 module.exports = fileSaver;
 
-},{}],454:[function(require,module,exports){
+},{}],464:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94029,9 +88577,12 @@ exports.getDelay = function(fullLayout) {
 };
 
 exports.getRedrawFunc = function(gd) {
+    var fullLayout = gd._fullLayout || {};
+    var hasPolar = fullLayout._has && fullLayout._has('polar');
+    var hasLegacyPolar = !hasPolar && gd.data && gd.data[0] && gd.data[0].r;
 
-    // do not work if polar is present
-    if((gd.data && gd.data[0] && gd.data[0].r)) return;
+    // do not work for legacy polar
+    if(hasLegacyPolar) return;
 
     return function() {
         (gd.calcdata || []).forEach(function(d) {
@@ -94040,7 +88591,7 @@ exports.getRedrawFunc = function(gd) {
     };
 };
 
-},{}],455:[function(require,module,exports){
+},{}],465:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94066,7 +88617,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":451,"./download":452,"./helpers":454,"./svgtoimg":456,"./toimage":457,"./tosvg":458}],456:[function(require,module,exports){
+},{"./cloneplot":461,"./download":462,"./helpers":464,"./svgtoimg":466,"./toimage":467,"./tosvg":468}],466:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94182,7 +88733,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":362,"events":67}],457:[function(require,module,exports){
+},{"../lib":371,"events":75}],467:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94262,7 +88813,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":362,"../plotly":403,"./cloneplot":451,"./helpers":454,"./svgtoimg":456,"./tosvg":458,"events":67}],458:[function(require,module,exports){
+},{"../lib":371,"../plotly":411,"./cloneplot":461,"./helpers":464,"./svgtoimg":466,"./tosvg":468,"events":75}],468:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94439,7 +88990,7 @@ module.exports = function toSVG(gd, format, scale) {
     return s;
 };
 
-},{"../components/color":241,"../components/drawing":266,"../constants/xmlns_namespaces":345,"../lib":362,"d3":62}],459:[function(require,module,exports){
+},{"../components/color":250,"../components/drawing":275,"../constants/xmlns_namespaces":353,"../lib":371,"d3":66}],469:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94584,7 +89135,7 @@ module.exports = extendFlat({
     { colorbar: colorbarAttrs }
 );
 
-},{"../../components/colorbar/attributes":242,"../../components/colorscale/attributes":247,"../../components/drawing/attributes":265,"../../lib/extend":353,"../../plots/font_attributes":433,"../heatmap/attributes":469,"../scatter/attributes":508}],460:[function(require,module,exports){
+},{"../../components/colorbar/attributes":251,"../../components/colorscale/attributes":256,"../../components/drawing/attributes":274,"../../lib/extend":362,"../../plots/font_attributes":443,"../heatmap/attributes":479,"../scatter/attributes":518}],470:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94688,7 +89239,7 @@ function autoContours(start, end, ncontours) {
     return dummyAx;
 }
 
-},{"../../lib":362,"../../plots/cartesian/axes":408,"../heatmap/calc":470}],461:[function(require,module,exports){
+},{"../../lib":371,"../../plots/cartesian/axes":416,"../heatmap/calc":480}],471:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94750,7 +89301,7 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":245,"../../plots/plots":443,"./end_plus":464,"./make_color_map":465}],462:[function(require,module,exports){
+},{"../../components/colorbar/draw":254,"../../plots/plots":453,"./end_plus":474,"./make_color_map":475}],472:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94782,7 +89333,7 @@ module.exports = function handleContourDefaults(traceIn, traceOut, coerce) {
     if(autoContour || !contourSize) coerce('ncontours');
 };
 
-},{"../../lib":362,"./attributes":459}],463:[function(require,module,exports){
+},{"../../lib":371,"./attributes":469}],473:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94821,7 +89372,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
 
-},{"../../lib":362,"../heatmap/has_columns":476,"../heatmap/xyz_defaults":481,"./attributes":459,"./contours_defaults":462,"./style_defaults":466}],464:[function(require,module,exports){
+},{"../../lib":371,"../heatmap/has_columns":486,"../heatmap/xyz_defaults":491,"./attributes":469,"./contours_defaults":472,"./style_defaults":476}],474:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94841,7 +89392,7 @@ module.exports = function endPlus(contours) {
     return contours.end + contours.size / 1e6;
 };
 
-},{}],465:[function(require,module,exports){
+},{}],475:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94925,7 +89476,7 @@ module.exports = function makeColorMap(trace) {
     });
 };
 
-},{"../../components/colorscale":256,"./end_plus":464,"d3":62}],466:[function(require,module,exports){
+},{"../../components/colorscale":265,"./end_plus":474,"d3":66}],476:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -94977,7 +89528,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
     if(opts.hasHover !== false) coerce('zhoverformat');
 };
 
-},{"../../components/colorscale/defaults":251,"../../lib":362}],467:[function(require,module,exports){
+},{"../../components/colorscale/defaults":260,"../../lib":371}],477:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95165,7 +89716,7 @@ function createContour(scene, fullTrace, calcTrace) {
 
 module.exports = createContour;
 
-},{"../../lib/str2rgbarray":384,"../../plots/cartesian/axes":408,"../contour/make_color_map":465,"gl-contour2d":76,"gl-heatmap2d":83}],468:[function(require,module,exports){
+},{"../../lib/str2rgbarray":393,"../../plots/cartesian/axes":416,"../contour/make_color_map":475,"gl-contour2d":84,"gl-heatmap2d":89}],478:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95198,7 +89749,7 @@ ContourGl.meta = {
 
 module.exports = ContourGl;
 
-},{"../../plot_api/edit_types":392,"../../plots/gl2d":438,"../contour/attributes":459,"../contour/calc":460,"../contour/colorbar":461,"../contour/defaults":463,"./convert":467}],469:[function(require,module,exports){
+},{"../../plot_api/edit_types":400,"../../plots/gl2d":448,"../contour/attributes":469,"../contour/calc":470,"../contour/colorbar":471,"../contour/defaults":473,"./convert":477}],479:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95298,7 +89849,7 @@ module.exports = extendFlat({}, {
     { colorbar: colorbarAttrs }
 );
 
-},{"../../components/colorbar/attributes":242,"../../components/colorscale/attributes":247,"../../lib/extend":353,"../scatter/attributes":508}],470:[function(require,module,exports){
+},{"../../components/colorbar/attributes":251,"../../components/colorscale/attributes":256,"../../lib/extend":362,"../scatter/attributes":518}],480:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95452,7 +90003,7 @@ module.exports = function calc(gd, trace) {
     return [cd0];
 };
 
-},{"../../components/colorscale/calc":248,"../../lib":362,"../../plots/cartesian/axes":408,"../../registry":450,"../histogram2d/calc":490,"./clean_2d_array":471,"./convert_column_xyz":473,"./find_empties":475,"./has_columns":476,"./interp2d":477,"./make_bound_array":478,"./max_row_length":479}],471:[function(require,module,exports){
+},{"../../components/colorscale/calc":257,"../../lib":371,"../../plots/cartesian/axes":416,"../../registry":460,"../histogram2d/calc":500,"./clean_2d_array":481,"./convert_column_xyz":483,"./find_empties":485,"./has_columns":486,"./interp2d":487,"./make_bound_array":488,"./max_row_length":489}],481:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95497,7 +90048,7 @@ module.exports = function clean2dArray(zOld, transpose) {
     return zNew;
 };
 
-},{"fast-isnumeric":68}],472:[function(require,module,exports){
+},{"fast-isnumeric":76}],482:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95548,7 +90099,7 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":245,"../../components/colorscale":256,"../../lib":362,"../../plots/plots":443,"fast-isnumeric":68}],473:[function(require,module,exports){
+},{"../../components/colorbar/draw":254,"../../components/colorscale":265,"../../lib":371,"../../plots/plots":453,"fast-isnumeric":76}],483:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95629,7 +90180,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     if(hasColumnText) trace.text = text;
 };
 
-},{"../../constants/numerical":343,"../../lib":362}],474:[function(require,module,exports){
+},{"../../constants/numerical":351,"../../lib":371}],484:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95670,7 +90221,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };
 
-},{"../../components/colorscale/defaults":251,"../../lib":362,"./attributes":469,"./has_columns":476,"./style_defaults":480,"./xyz_defaults":481}],475:[function(require,module,exports){
+},{"../../components/colorscale/defaults":260,"../../lib":371,"./attributes":479,"./has_columns":486,"./style_defaults":490,"./xyz_defaults":491}],485:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95776,7 +90327,7 @@ module.exports = function findEmpties(z) {
     return empties.sort(function(a, b) { return b[2] - a[2]; });
 };
 
-},{"./max_row_length":479}],476:[function(require,module,exports){
+},{"./max_row_length":489}],486:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95792,7 +90343,7 @@ module.exports = function(trace) {
     return !Array.isArray(trace.z[0]);
 };
 
-},{}],477:[function(require,module,exports){
+},{}],487:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -95924,7 +90475,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../lib":362}],478:[function(require,module,exports){
+},{"../../lib":371}],488:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96006,7 +90557,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
     return arrayOut;
 };
 
-},{"../../registry":450}],479:[function(require,module,exports){
+},{"../../registry":460}],489:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96028,7 +90579,7 @@ module.exports = function maxRowLength(z) {
     return len;
 };
 
-},{}],480:[function(require,module,exports){
+},{}],490:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96051,7 +90602,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce) {
     coerce('zhoverformat');
 };
 
-},{}],481:[function(require,module,exports){
+},{}],491:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96146,7 +90697,7 @@ function isValidZ(z) {
     return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
 }
 
-},{"../../registry":450,"./has_columns":476,"fast-isnumeric":68}],482:[function(require,module,exports){
+},{"../../registry":460,"./has_columns":486,"fast-isnumeric":76}],492:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96190,7 +90741,7 @@ extendFlat(
 
 module.exports = overrideAll(attrs, 'calc', 'nested');
 
-},{"../../components/colorbar/attributes":242,"../../components/colorscale/attributes":247,"../../lib/extend":353,"../../plot_api/edit_types":392,"../heatmap/attributes":469}],483:[function(require,module,exports){
+},{"../../components/colorbar/attributes":251,"../../components/colorscale/attributes":256,"../../lib/extend":362,"../../plot_api/edit_types":400,"../heatmap/attributes":479}],493:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96330,7 +90881,7 @@ function createHeatmap(scene, fullTrace, calcTrace) {
 
 module.exports = createHeatmap;
 
-},{"../../lib/str2rgbarray":384,"../../plots/cartesian/axes":408,"gl-heatmap2d":83}],484:[function(require,module,exports){
+},{"../../lib/str2rgbarray":393,"../../plots/cartesian/axes":416,"gl-heatmap2d":89}],494:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96361,7 +90912,7 @@ HeatmapGl.meta = {
 
 module.exports = HeatmapGl;
 
-},{"../../plots/gl2d":438,"../heatmap/calc":470,"../heatmap/colorbar":472,"../heatmap/defaults":474,"./attributes":482,"./convert":483}],485:[function(require,module,exports){
+},{"../../plots/gl2d":448,"../heatmap/calc":480,"../heatmap/colorbar":482,"../heatmap/defaults":484,"./attributes":492,"./convert":493}],495:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96387,7 +90938,7 @@ module.exports = function doAvg(size, counts) {
     return total;
 };
 
-},{}],486:[function(require,module,exports){
+},{}],496:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96463,7 +91014,7 @@ module.exports = {
     }
 };
 
-},{"fast-isnumeric":68}],487:[function(require,module,exports){
+},{"fast-isnumeric":76}],497:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96641,7 +91192,7 @@ function dateParts(v, pa, calendar) {
     return parts;
 }
 
-},{"../../constants/numerical":343,"../../plots/cartesian/axes":408}],488:[function(require,module,exports){
+},{"../../constants/numerical":351,"../../plots/cartesian/axes":416}],498:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96718,7 +91269,7 @@ module.exports = function cleanBins(trace, ax, binDirection) {
     if(!trace[autoBinAttr]) delete trace['nbins' + binDirection];
 };
 
-},{"../../constants/numerical":343,"../../lib":362,"fast-isnumeric":68}],489:[function(require,module,exports){
+},{"../../constants/numerical":351,"../../lib":371,"fast-isnumeric":76}],499:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -96753,7 +91304,7 @@ module.exports = {
     }
 };
 
-},{}],490:[function(require,module,exports){
+},{}],500:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97001,7 +91552,7 @@ function getRanges(edges, uniqueVals, gapLow, gapHigh, ax, calendar) {
     return out;
 }
 
-},{"../../lib":362,"../../plots/cartesian/axes":408,"../histogram/average":485,"../histogram/bin_functions":486,"../histogram/bin_label_vals":487,"../histogram/clean_bins":488,"../histogram/norm_functions":489}],491:[function(require,module,exports){
+},{"../../lib":371,"../../plots/cartesian/axes":416,"../histogram/average":495,"../histogram/bin_functions":496,"../histogram/bin_label_vals":497,"../histogram/clean_bins":498,"../histogram/norm_functions":499}],501:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97017,38 +91568,14 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 var colorscales = require('../../components/colorscale/scales');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var fontAttrs = require('../../plots/font_attributes');
+var domainAttrs = require('../../plots/domain_attributes');
 
 var extend = require('../../lib/extend');
 var extendDeepAll = extend.extendDeepAll;
 var extendFlat = extend.extendFlat;
 
 module.exports = {
-
-    domain: {
-        x: {
-            valType: 'info_array',
-            
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'calc'},
-                {valType: 'number', min: 0, max: 1, editType: 'calc'}
-            ],
-            dflt: [0, 1],
-            editType: 'calc',
-            
-        },
-        y: {
-            valType: 'info_array',
-            
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'calc'},
-                {valType: 'number', min: 0, max: 1, editType: 'calc'}
-            ],
-            dflt: [0, 1],
-            editType: 'calc',
-            
-        },
-        editType: 'calc'
-    },
+    domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
 
     labelfont: fontAttrs({
         editType: 'calc',
@@ -97120,6 +91647,7 @@ module.exports = {
 
     line: extendFlat(
         // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
+
         // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
         extendDeepAll(
             colorAttributes('line', 'calc'),
@@ -97129,7 +91657,6 @@ module.exports = {
                     dflt: false,
                     
                 }
-
             }
         ),
 
@@ -97147,7 +91674,7 @@ module.exports = {
     )
 };
 
-},{"../../components/colorbar/attributes":242,"../../components/colorscale/color_attributes":249,"../../components/colorscale/scales":260,"../../lib/extend":353,"../../plots/cartesian/layout_attributes":420,"../../plots/font_attributes":433}],492:[function(require,module,exports){
+},{"../../components/colorbar/attributes":251,"../../components/colorscale/color_attributes":258,"../../components/colorscale/scales":269,"../../lib/extend":362,"../../plots/cartesian/layout_attributes":428,"../../plots/domain_attributes":442,"../../plots/font_attributes":443}],502:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97183,7 +91710,6 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 };
 
 exports.toSVG = function(gd) {
-
     var imageRoot = gd._fullLayout._glimages;
     var root = d3.select(gd).selectAll('.svg-container');
     var canvases = root.filter(function(d, i) {return i === root.size() - 1;})
@@ -97197,11 +91723,11 @@ exports.toSVG = function(gd) {
         image.attr({
             xmlns: xmlnsNamespaces.svg,
             'xlink:href': imageData,
+            preserveAspectRatio: 'none',
             x: 0,
             y: 0,
             width: canvas.width,
-            height: canvas.height,
-            preserveAspectRatio: 'none'
+            height: canvas.height
         });
     }
 
@@ -97217,7 +91743,7 @@ exports.toSVG = function(gd) {
     }, 60);
 };
 
-},{"../../constants/xmlns_namespaces":345,"../../plots/get_data":435,"./plot":500,"d3":62}],493:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":353,"../../plots/get_data":445,"./plot":510,"d3":66}],503:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97248,7 +91774,7 @@ module.exports = function calc(gd, trace) {
     });
 };
 
-},{"../../components/colorscale/calc":248,"../../components/colorscale/has_colorscale":255,"../../lib":362,"../../lib/gup":359}],494:[function(require,module,exports){
+},{"../../components/colorscale/calc":257,"../../components/colorscale/has_colorscale":264,"../../lib":371,"../../lib/gup":368}],504:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97302,7 +91828,7 @@ module.exports = function colorbar(gd, cd) {
         .options(line.colorbar)();
 };
 
-},{"../../components/colorbar/draw":245,"../../components/colorscale":256,"../../lib":362,"../../plots/plots":443,"fast-isnumeric":68}],495:[function(require,module,exports){
+},{"../../components/colorbar/draw":254,"../../components/colorscale":265,"../../lib":371,"../../plots/plots":453,"fast-isnumeric":76}],505:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97361,7 +91887,7 @@ module.exports = {
     }
 };
 
-},{}],496:[function(require,module,exports){
+},{}],506:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97474,7 +92000,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceFont(coerce, 'rangefont', fontDflt);
 };
 
-},{"../../components/colorscale/defaults":251,"../../components/colorscale/has_colorscale":255,"../../lib":362,"./attributes":491,"./constants":495}],497:[function(require,module,exports){
+},{"../../components/colorscale/defaults":260,"../../components/colorscale/has_colorscale":264,"../../lib":371,"./attributes":501,"./constants":505}],507:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97503,7 +92029,7 @@ Parcoords.meta = {
 
 module.exports = Parcoords;
 
-},{"./attributes":491,"./base_plot":492,"./calc":493,"./colorbar":494,"./defaults":496,"./plot":500}],498:[function(require,module,exports){
+},{"./attributes":501,"./base_plot":502,"./calc":503,"./colorbar":504,"./defaults":506,"./plot":510}],508:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -97561,7 +92087,8 @@ function renderBlock(regl, glAes, renderState, blockLineCount, sampleCount, item
         item.offset = sectionVertexCount * blockNumber * blockLineCount;
         item.count = sectionVertexCount * count;
         if(blockNumber === 0) {
-            window.cancelAnimationFrame(renderState.currentRafs[rafKey]); // stop drawing possibly stale glyphs before clearing
+            // stop drawing possibly stale glyphs before clearing
+            window.cancelAnimationFrame(renderState.currentRafs[rafKey]);
             delete renderState.currentRafs[rafKey];
             clear(regl, item.scissorX, item.scissorY, item.scissorWidth, item.viewBoxSize[1]);
         }
@@ -97859,6 +92386,7 @@ module.exports = function(canvasGL, d, scatter) {
 
             colorClamp: colorClamp,
             scatter: scatter || 0,
+
             scissorX: (I === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
             scissorWidth: (I === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (I === leftmost ? x + overdrag : 0),
             scissorY: y + model.pad.b + model.layoutHeight * domain.y[0],
@@ -97937,6 +92465,7 @@ module.exports = function(canvasGL, d, scatter) {
     }
 
     function destroy() {
+        canvasGL.style['pointer-events'] = 'none';
         paletteTexture.destroy();
     }
 
@@ -97949,7 +92478,7 @@ module.exports = function(canvasGL, d, scatter) {
     };
 };
 
-},{"./constants":495}],499:[function(require,module,exports){
+},{"./constants":505}],509:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98257,6 +92786,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         .filter(function(d) {
             return d.pick;
         })
+        .style('pointer-events', 'auto')
         .on('mousemove', function(d) {
             if(linePickActive && d.lineLayer && callbacks && callbacks.hover) {
                 var event = d3.event;
@@ -98703,7 +93233,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     return tweakables;
 };
 
-},{"../../components/drawing":266,"../../lib":362,"../../lib/gup":359,"./constants":495,"./lines":498,"d3":62}],500:[function(require,module,exports){
+},{"../../components/drawing":275,"../../lib":371,"../../lib/gup":368,"./constants":505,"./lines":508,"d3":66}],510:[function(require,module,exports){
 (function (global){
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -98719,7 +93249,6 @@ var parcoords = require('./parcoords');
 var createRegl = require('regl');
 
 module.exports = function plot(gd, cdparcoords) {
-
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
     var root = fullLayout._paperdiv;
@@ -98841,7 +93370,7 @@ module.exports = function plot(gd, cdparcoords) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./parcoords":499,"regl":187}],501:[function(require,module,exports){
+},{"./parcoords":509,"regl":186}],511:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98883,7 +93412,7 @@ exports.castOption = function castOption(item, indices) {
     else if(item) return item;
 };
 
-},{"../../lib":362}],502:[function(require,module,exports){
+},{"../../lib":371}],512:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98907,7 +93436,7 @@ module.exports = function styleOne(s, pt, trace) {
         .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":241,"./helpers":501}],503:[function(require,module,exports){
+},{"../../components/color":250,"./helpers":511}],513:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -98918,7 +93447,7 @@ module.exports = function styleOne(s, pt, trace) {
 
 'use strict';
 
-var scatterglAttrs = require('../scattergl/attributes');
+var scatterglAttrs = require('../scatter/attributes');
 
 module.exports = {
     x: scatterglAttrs.x,
@@ -99009,7 +93538,7 @@ module.exports = {
     }
 };
 
-},{"../scattergl/attributes":534}],504:[function(require,module,exports){
+},{"../scatter/attributes":518}],514:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99240,7 +93769,7 @@ function createPointcloud(scene, data) {
 
 module.exports = createPointcloud;
 
-},{"../../lib/str2rgbarray":384,"../scatter/get_trace_color":518,"gl-pointcloud2d":111}],505:[function(require,module,exports){
+},{"../../lib/str2rgbarray":393,"../scatter/get_trace_color":528,"gl-pointcloud2d":115}],515:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99285,7 +93814,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     coerce('marker.border.arearatio');
 };
 
-},{"../../lib":362,"./attributes":503}],506:[function(require,module,exports){
+},{"../../lib":371,"./attributes":513}],516:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99315,7 +93844,7 @@ pointcloud.meta = {
 
 module.exports = pointcloud;
 
-},{"../../plots/gl2d":438,"../scatter3d/calc":533,"./attributes":503,"./convert":504,"./defaults":505}],507:[function(require,module,exports){
+},{"../../plots/gl2d":448,"../scatter3d/calc":543,"./attributes":513,"./convert":514,"./defaults":515}],517:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99367,7 +93896,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":362}],508:[function(require,module,exports){
+},{"../../lib":371}],518:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99743,7 +94272,7 @@ module.exports = {
     error_x: errorBarAttrs
 };
 
-},{"../../components/colorbar/attributes":242,"../../components/colorscale/color_attributes":249,"../../components/drawing":266,"../../components/drawing/attributes":265,"../../components/errorbars/attributes":268,"../../lib/extend":353,"../../plots/font_attributes":433,"./constants":514}],509:[function(require,module,exports){
+},{"../../components/colorbar/attributes":251,"../../components/colorscale/color_attributes":258,"../../components/drawing":275,"../../components/drawing/attributes":274,"../../components/errorbars/attributes":277,"../../lib/extend":362,"../../plots/font_attributes":443,"./constants":524}],519:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99765,17 +94294,12 @@ var calcColorscale = require('./colorscale_calc');
 var arraysToCalcdata = require('./arrays_to_calcdata');
 var calcSelection = require('./calc_selection');
 
-module.exports = function calc(gd, trace) {
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
-        ya = Axes.getFromId(gd, trace.yaxis || 'y');
-
-    var x = xa.makeCalcdata(trace, 'x'),
-        y = ya.makeCalcdata(trace, 'y');
-
-    var serieslen = Math.min(x.length, y.length),
-        marker,
-        s,
-        i;
+function calc(gd, trace) {
+    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
+    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
+    var x = xa.makeCalcdata(trace, 'x');
+    var y = ya.makeCalcdata(trace, 'y');
+    var serieslen = Math.min(x.length, y.length);
 
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
@@ -99786,41 +94310,11 @@ module.exports = function calc(gd, trace) {
 
     // check whether bounds should be tight, padded, extended to zero...
     // most cases both should be padded on both ends, so start with that.
-    var xOptions = {padded: true},
-        yOptions = {padded: true};
+    var xOptions = {padded: true};
+    var yOptions = {padded: true};
 
-    if(subTypes.hasMarkers(trace)) {
-
-        // Treat size like x or y arrays --- Run d2c
-        // this needs to go before ppad computation
-        marker = trace.marker;
-        s = marker.size;
-
-        if(Array.isArray(s)) {
-            // I tried auto-type but category and dates dont make much sense.
-            var ax = {type: 'linear'};
-            Axes.setConvert(ax);
-            s = ax.makeCalcdata(trace.marker, 'size');
-            if(s.length > serieslen) s.splice(serieslen, s.length - serieslen);
-        }
-
-        var sizeref = 1.6 * (trace.marker.sizeref || 1),
-            markerTrans;
-        if(trace.marker.sizemode === 'area') {
-            markerTrans = function(v) {
-                return Math.max(Math.sqrt((v || 0) / sizeref), 3);
-            };
-        }
-        else {
-            markerTrans = function(v) {
-                return Math.max((v || 0) / sizeref, 3);
-            };
-        }
-        xOptions.ppad = yOptions.ppad = Array.isArray(s) ?
-            s.map(markerTrans) : markerTrans(s);
-    }
-
-    calcColorscale(trace);
+    var ppad = calcMarkerSize(trace, serieslen);
+    if(ppad) xOptions.ppad = yOptions.ppad = ppad;
 
     // TODO: text size
 
@@ -99859,7 +94353,7 @@ module.exports = function calc(gd, trace) {
 
     // create the "calculated data" to plot
     var cd = new Array(serieslen);
-    for(i = 0; i < serieslen; i++) {
+    for(var i = 0; i < serieslen; i++) {
         cd[i] = (isNumeric(x[i]) && isNumeric(y[i])) ?
             {x: x[i], y: y[i]} : {x: BADNUM, y: BADNUM};
 
@@ -99869,13 +94363,52 @@ module.exports = function calc(gd, trace) {
     }
 
     arraysToCalcdata(cd, trace);
+    calcColorscale(trace);
     calcSelection(cd, trace);
 
     gd.firstscatter = false;
     return cd;
+}
+
+function calcMarkerSize(trace, serieslen) {
+    if(!subTypes.hasMarkers(trace)) return;
+
+    // Treat size like x or y arrays --- Run d2c
+    // this needs to go before ppad computation
+    var marker = trace.marker;
+    var sizeref = 1.6 * (trace.marker.sizeref || 1);
+    var markerTrans;
+
+    if(trace.marker.sizemode === 'area') {
+        markerTrans = function(v) {
+            return Math.max(Math.sqrt((v || 0) / sizeref), 3);
+        };
+    } else {
+        markerTrans = function(v) {
+            return Math.max((v || 0) / sizeref, 3);
+        };
+    }
+
+    if(Array.isArray(marker.size)) {
+        // I tried auto-type but category and dates dont make much sense.
+        var ax = {type: 'linear'};
+        Axes.setConvert(ax);
+
+        var s = ax.makeCalcdata(trace.marker, 'size');
+        if(s.length > serieslen) s.splice(serieslen, s.length - serieslen);
+
+        return s.map(markerTrans);
+    } else {
+        return markerTrans(marker.size);
+    }
+}
+
+module.exports = {
+    calc: calc,
+    calcMarkerSize: calcMarkerSize
 };
 
-},{"../../constants/numerical":343,"../../plots/cartesian/axes":408,"./arrays_to_calcdata":507,"./calc_selection":510,"./colorscale_calc":513,"./subtypes":530,"fast-isnumeric":68}],510:[function(require,module,exports){
+},{"../../constants/numerical":351,"../../plots/cartesian/axes":416,"./arrays_to_calcdata":517,"./calc_selection":520,"./colorscale_calc":523,"./subtypes":540,"fast-isnumeric":76}],520:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99894,7 +94427,7 @@ module.exports = function calcSelection(cd, trace) {
     }
 };
 
-},{"../../lib":362}],511:[function(require,module,exports){
+},{"../../lib":371}],521:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99933,7 +94466,7 @@ module.exports = function cleanData(fullData) {
     }
 };
 
-},{}],512:[function(require,module,exports){
+},{}],522:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -99989,7 +94522,7 @@ module.exports = function colorbar(gd, cd) {
         .options(marker.colorbar)();
 };
 
-},{"../../components/colorbar/draw":245,"../../components/colorscale":256,"../../lib":362,"../../plots/plots":443,"fast-isnumeric":68}],513:[function(require,module,exports){
+},{"../../components/colorbar/draw":254,"../../components/colorscale":265,"../../lib":371,"../../plots/plots":453,"fast-isnumeric":76}],523:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100022,7 +94555,7 @@ module.exports = function calcMarkerColorscale(trace) {
     }
 };
 
-},{"../../components/colorscale/calc":248,"../../components/colorscale/has_colorscale":255,"./subtypes":530}],514:[function(require,module,exports){
+},{"../../components/colorscale/calc":257,"../../components/colorscale/has_colorscale":264,"./subtypes":540}],524:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100049,7 +94582,7 @@ module.exports = {
     maxScreensAway: 20
 };
 
-},{}],515:[function(require,module,exports){
+},{}],525:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100109,6 +94642,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var dfltHoverOn = [];
 
     if(subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
+        coerce('cliponaxis');
         coerce('marker.maxdisplayed');
         dfltHoverOn.push('points');
     }
@@ -100127,12 +94661,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 
-    coerce('cliponaxis');
-
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../components/errorbars/defaults":271,"../../lib":362,"./attributes":508,"./constants":514,"./fillcolor_defaults":517,"./line_defaults":521,"./line_shape_defaults":523,"./marker_defaults":526,"./subtypes":530,"./text_defaults":531,"./xy_defaults":532}],516:[function(require,module,exports){
+},{"../../components/errorbars/defaults":280,"../../lib":371,"./attributes":518,"./constants":524,"./fillcolor_defaults":527,"./line_defaults":531,"./line_shape_defaults":533,"./marker_defaults":536,"./subtypes":540,"./text_defaults":541,"./xy_defaults":542}],526:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100175,7 +94707,7 @@ function isValid(v) {
     return v || v === 0;
 }
 
-},{"../../lib":362}],517:[function(require,module,exports){
+},{"../../lib":371}],527:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100213,7 +94745,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":241}],518:[function(require,module,exports){
+},{"../../components/color":250}],528:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100266,7 +94798,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":241,"./subtypes":530}],519:[function(require,module,exports){
+},{"../../components/color":250,"./subtypes":540}],529:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100348,7 +94880,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
                 y0: yc - rad,
                 y1: yc + rad,
-                yLabelVal: di.y
+                yLabelVal: di.y,
+
+                kink: Math.max(minRad, di.mrc || 0)
             });
 
             fillHoverText(di, trace, pointData);
@@ -100403,9 +94937,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                     if((y0 > yAvg) !== (y1 >= yAvg)) {
                         x0 = pts[j - 1][0];
                         x1 = pts[j][0];
-                        xCross = x0 + (x1 - x0) * (yAvg - y0) / (y1 - y0);
-                        xmin = Math.min(xmin, xCross);
-                        xmax = Math.max(xmax, xCross);
+                        if(y1 - y0) {
+                            xCross = x0 + (x1 - x0) * (yAvg - y0) / (y1 - y0);
+                            xmin = Math.min(xmin, xCross);
+                            xmax = Math.max(xmax, xCross);
+                        }
                     }
                 }
             }
@@ -100443,7 +94979,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":241,"../../components/errorbars":272,"../../components/fx":283,"../../lib":362,"./fill_hover_text":516,"./get_trace_color":518}],520:[function(require,module,exports){
+},{"../../components/color":250,"../../components/errorbars":281,"../../components/fx":292,"../../lib":371,"./fill_hover_text":526,"./get_trace_color":528}],530:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100468,7 +95004,7 @@ Scatter.isBubble = subtypes.isBubble;
 Scatter.attributes = require('./attributes');
 Scatter.supplyDefaults = require('./defaults');
 Scatter.cleanData = require('./clean_data');
-Scatter.calc = require('./calc');
+Scatter.calc = require('./calc').calc;
 Scatter.arraysToCalcdata = require('./arrays_to_calcdata');
 Scatter.plot = require('./plot');
 Scatter.colorbar = require('./colorbar');
@@ -100487,7 +95023,7 @@ Scatter.meta = {
 
 module.exports = Scatter;
 
-},{"../../plots/cartesian":419,"./arrays_to_calcdata":507,"./attributes":508,"./calc":509,"./clean_data":511,"./colorbar":512,"./defaults":515,"./hover":519,"./plot":527,"./select":528,"./style":529,"./subtypes":530}],521:[function(require,module,exports){
+},{"../../plots/cartesian":427,"./arrays_to_calcdata":517,"./attributes":518,"./calc":519,"./clean_data":521,"./colorbar":522,"./defaults":525,"./hover":529,"./plot":537,"./select":538,"./style":539,"./subtypes":540}],531:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100520,7 +95056,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     if(!(opts || {}).noDash) coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":251,"../../components/colorscale/has_colorscale":255}],522:[function(require,module,exports){
+},{"../../components/colorscale/defaults":260,"../../components/colorscale/has_colorscale":264}],532:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100583,9 +95119,10 @@ module.exports = function linePoints(d, opts) {
 
     // turn one calcdata point into pixel coordinates
     function getPt(index) {
-        var x = xa.c2p(d[index].x);
-        var y = ya.c2p(d[index].y);
-        if(x === BADNUM || y === BADNUM) return false;
+        var di = d[index];
+        var x = xa.c2p(di.x);
+        var y = ya.c2p(di.y);
+        if(x === BADNUM || y === BADNUM) return di.intoCenter || false;
         return [x, y];
     }
 
@@ -100931,7 +95468,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../constants/numerical":343,"../../lib":362,"./constants":514}],523:[function(require,module,exports){
+},{"../../constants/numerical":351,"../../lib":371,"./constants":524}],533:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100950,7 +95487,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],524:[function(require,module,exports){
+},{}],534:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -100991,7 +95528,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     }
 };
 
-},{}],525:[function(require,module,exports){
+},{}],535:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101033,7 +95570,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     };
 };
 
-},{"fast-isnumeric":68}],526:[function(require,module,exports){
+},{"fast-isnumeric":76}],536:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101116,7 +95653,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":241,"../../components/colorscale/defaults":251,"../../components/colorscale/has_colorscale":255,"./subtypes":530}],527:[function(require,module,exports){
+},{"../../components/color":250,"../../components/colorscale/defaults":260,"../../components/colorscale/has_colorscale":264,"./subtypes":540}],537:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101689,7 +96226,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":266,"../../components/errorbars":272,"../../lib":362,"../../lib/polygon":374,"./line_points":522,"./link_traces":524,"./subtypes":530,"d3":62}],528:[function(require,module,exports){
+},{"../../components/drawing":275,"../../components/errorbars":281,"../../lib":371,"../../lib/polygon":383,"./line_points":532,"./link_traces":534,"./subtypes":540,"d3":66}],538:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101744,7 +96281,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     return selection;
 };
 
-},{"./subtypes":530}],529:[function(require,module,exports){
+},{"./subtypes":540}],539:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101797,7 +96334,7 @@ module.exports = {
     stylePoints: stylePoints
 };
 
-},{"../../components/drawing":266,"../../components/errorbars":272,"d3":62}],530:[function(require,module,exports){
+},{"../../components/drawing":275,"../../components/errorbars":281,"d3":66}],540:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101833,7 +96370,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":362}],531:[function(require,module,exports){
+},{"../../lib":371}],541:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101863,7 +96400,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     }
 };
 
-},{"../../lib":362}],532:[function(require,module,exports){
+},{"../../lib":371}],542:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101913,7 +96450,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     return len;
 };
 
-},{"../../registry":450}],533:[function(require,module,exports){
+},{"../../registry":460}],543:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101942,7 +96479,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":507,"../scatter/colorscale_calc":513}],534:[function(require,module,exports){
+},{"../scatter/arrays_to_calcdata":517,"../scatter/colorscale_calc":523}],544:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -101957,7 +96494,6 @@ var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 
 var DASHES = require('../../constants/gl2d_dashes');
-var MARKERS = require('../../constants/gl2d_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
@@ -101995,14 +96531,7 @@ var attrs = module.exports = overrideAll({
         }
     },
     marker: extendFlat({}, colorAttributes('marker'), {
-        symbol: {
-            valType: 'enumerated',
-            values: Object.keys(MARKERS),
-            dflt: 'circle',
-            arrayOk: true,
-            
-            
-        },
+        symbol: scatterMarkerAttrs.symbol,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
@@ -102015,10 +96544,17 @@ var attrs = module.exports = overrideAll({
         })
     }),
     connectgaps: scatterAttrs.connectgaps,
-    fill: extendFlat({}, scatterAttrs.fill, {
-        values: ['none', 'tozeroy', 'tozerox']
-    }),
+    fill: scatterAttrs.fill,
     fillcolor: scatterAttrs.fillcolor,
+
+    hoveron: scatterAttrs.hoveron,
+
+    selected: {
+        marker: scatterAttrs.selected.marker
+    },
+    unselected: {
+        marker: scatterAttrs.unselected.marker
+    },
 
     error_y: scatterAttrs.error_y,
     error_x: scatterAttrs.error_x
@@ -102026,822 +96562,7 @@ var attrs = module.exports = overrideAll({
 
 attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';
 
-},{"../../components/colorscale/color_attributes":249,"../../constants/gl2d_dashes":340,"../../constants/gl2d_markers":341,"../../lib/extend":353,"../../plot_api/edit_types":392,"../scatter/attributes":508}],535:[function(require,module,exports){
-/**
-* Copyright 2012-2018, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
-'use strict';
-
-var Axes = require('../../plots/cartesian/axes');
-var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
-var calcColorscales = require('../scatter/colorscale_calc');
-
-module.exports = function calc(gd, trace) {
-    var dragmode = gd._fullLayout.dragmode;
-    var cd;
-
-    if(dragmode === 'lasso' || dragmode === 'select') {
-        var xa = Axes.getFromId(gd, trace.xaxis || 'x');
-        var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-
-        var x = xa.makeCalcdata(trace, 'x');
-        var y = ya.makeCalcdata(trace, 'y');
-
-        var serieslen = Math.min(x.length, y.length), i;
-
-        // create the "calculated data" to plot
-        cd = new Array(serieslen);
-
-        for(i = 0; i < serieslen; i++) {
-            cd[i] = {x: x[i], y: y[i]};
-        }
-    } else {
-        cd = [{x: false, y: false, trace: trace, t: {}}];
-        arraysToCalcdata(cd, trace);
-    }
-
-    calcColorscales(trace);
-
-    return cd;
-};
-
-},{"../../plots/cartesian/axes":408,"../scatter/arrays_to_calcdata":507,"../scatter/colorscale_calc":513}],536:[function(require,module,exports){
-/**
-* Copyright 2012-2018, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
-'use strict';
-
-var createScatter = require('gl-scatter2d');
-var createFancyScatter = require('gl-scatter2d-sdf');
-var createLine = require('gl-line2d');
-var createError = require('gl-error2d');
-var isNumeric = require('fast-isnumeric');
-
-var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
-var autoType = require('../../plots/cartesian/axis_autotype');
-var ErrorBars = require('../../components/errorbars');
-var str2RGBArray = require('../../lib/str2rgbarray');
-var truncate = require('../../lib/typed_array_truncate');
-var formatColor = require('../../lib/gl_format_color');
-var subTypes = require('../scatter/subtypes');
-var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
-var getTraceColor = require('../scatter/get_trace_color');
-var MARKER_SYMBOLS = require('../../constants/gl2d_markers');
-var DASHES = require('../../constants/gl2d_dashes');
-var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
-
-var AXES = ['xaxis', 'yaxis'];
-var TRANSPARENT = [0, 0, 0, 0];
-
-function LineWithMarkers(scene, uid) {
-    this.scene = scene;
-    this.uid = uid;
-    this.type = 'scattergl';
-
-    this.pickXData = [];
-    this.pickYData = [];
-    this.xData = [];
-    this.yData = [];
-    this.textLabels = [];
-    this.color = 'rgb(0, 0, 0)';
-    this.name = '';
-    this.hoverinfo = 'all';
-    this.connectgaps = true;
-
-    this.index = null;
-    this.idToIndex = [];
-    this.bounds = [0, 0, 0, 0];
-
-    this.isVisible = false;
-    this.hasLines = false;
-    this.hasErrorX = false;
-    this.hasErrorY = false;
-    this.hasMarkers = false;
-
-    this.line = this.initObject(createLine, {
-        positions: new Float64Array(0),
-        color: [0, 0, 0, 1],
-        width: 1,
-        fill: [false, false, false, false],
-        fillColor: [
-            [0, 0, 0, 1],
-            [0, 0, 0, 1],
-            [0, 0, 0, 1],
-            [0, 0, 0, 1]],
-        dashes: [1],
-    }, 0);
-
-    this.errorX = this.initObject(createError, {
-        positions: new Float64Array(0),
-        errors: new Float64Array(0),
-        lineWidth: 1,
-        capSize: 0,
-        color: [0, 0, 0, 1]
-    }, 1);
-
-    this.errorY = this.initObject(createError, {
-        positions: new Float64Array(0),
-        errors: new Float64Array(0),
-        lineWidth: 1,
-        capSize: 0,
-        color: [0, 0, 0, 1]
-    }, 2);
-
-    var scatterOptions0 = {
-        positions: new Float64Array(0),
-        sizes: [],
-        colors: [],
-        glyphs: [],
-        borderWidths: [],
-        borderColors: [],
-        size: 12,
-        color: [0, 0, 0, 1],
-        borderSize: 1,
-        borderColor: [0, 0, 0, 1],
-        snapPoints: true
-    };
-    var scatterOptions1 = Lib.extendFlat({}, scatterOptions0, {snapPoints: false});
-
-    this.scatter = this.initObject(createScatter, scatterOptions0, 3);
-    this.fancyScatter = this.initObject(createFancyScatter, scatterOptions0, 4);
-    this.selectScatter = this.initObject(createScatter, scatterOptions1, 5);
-}
-
-var proto = LineWithMarkers.prototype;
-
-proto.initObject = function(createFn, options, objIndex) {
-    var _this = this;
-    var glplot = _this.scene.glplot;
-    var options0 = Lib.extendFlat({}, options);
-    var obj = null;
-
-    function update() {
-        if(!obj) {
-            obj = createFn(glplot, options);
-            obj._trace = _this;
-            obj._index = objIndex;
-        }
-        obj.update(options);
-    }
-
-    function clear() {
-        if(obj) obj.update(options0);
-    }
-
-    function dispose() {
-        if(obj) obj.dispose();
-    }
-
-    return {
-        options: options,
-        update: update,
-        clear: clear,
-        dispose: dispose
-    };
-};
-
-proto.handlePick = function(pickResult) {
-    var index = pickResult.pointId;
-
-    if(pickResult.object !== this.line || this.connectgaps) {
-        index = this.idToIndex[pickResult.pointId];
-    }
-
-    var x = this.pickXData[index];
-
-    return {
-        trace: this,
-        dataCoord: pickResult.dataCoord,
-        traceCoord: [
-            isNumeric(x) || !Lib.isDateTime(x) ? x : Lib.dateTime2ms(x),
-            this.pickYData[index]
-        ],
-        textLabel: Array.isArray(this.textLabels) ?
-            this.textLabels[index] :
-            this.textLabels,
-        color: Array.isArray(this.color) ?
-            this.color[index] :
-            this.color,
-        name: this.name,
-        pointIndex: index,
-        hoverinfo: this.hoverinfo
-    };
-};
-
-// check if trace is fancy
-proto.isFancy = function(options) {
-    if(this.scene.xaxis.type !== 'linear' && this.scene.xaxis.type !== 'date') return true;
-    if(this.scene.yaxis.type !== 'linear') return true;
-
-    if(!options.x || !options.y) return true;
-
-    if(this.hasMarkers) {
-        var marker = options.marker || {};
-
-        if(Array.isArray(marker.symbol) ||
-             marker.symbol !== 'circle' ||
-             Array.isArray(marker.size) ||
-             Array.isArray(marker.color) ||
-             Array.isArray(marker.line.width) ||
-             Array.isArray(marker.line.color) ||
-             Array.isArray(marker.opacity)
-        ) return true;
-    }
-
-    if(this.hasLines && !this.connectgaps) return true;
-
-    if(this.hasErrorX) return true;
-    if(this.hasErrorY) return true;
-
-    return false;
-};
-
-// handle the situation where values can be array-like or not array like
-function convertArray(convert, data, count) {
-    if(!Array.isArray(data)) data = [data];
-
-    return _convertArray(convert, data, count);
-}
-
-function _convertArray(convert, data, count) {
-    var result = new Array(count),
-        data0 = data[0];
-
-    for(var i = 0; i < count; ++i) {
-        result[i] = (i >= data.length) ?
-            convert(data0) :
-            convert(data[i]);
-    }
-
-    return result;
-}
-
-var convertNumber = convertArray.bind(null, function(x) { return +x; });
-var convertColorBase = convertArray.bind(null, str2RGBArray);
-var convertSymbol = convertArray.bind(null, function(x) {
-    return MARKER_SYMBOLS[x] ? x : 'circle';
-});
-
-function convertColor(color, opacity, count) {
-    return _convertColor(
-        convertColorBase(color, count),
-        convertNumber(opacity, count),
-        count
-    );
-}
-
-function convertColorScale(containerIn, markerOpacity, traceOpacity, count) {
-    var colors = formatColor(containerIn, markerOpacity, count);
-
-    colors = Array.isArray(colors[0]) ?
-        colors :
-        _convertArray(Lib.identity, [colors], count);
-
-    return _convertColor(
-        colors,
-        convertNumber(traceOpacity, count),
-        count
-    );
-}
-
-function _convertColor(colors, opacities, count) {
-    var result = new Array(4 * count);
-
-    for(var i = 0; i < count; ++i) {
-        for(var j = 0; j < 3; ++j) result[4 * i + j] = colors[i][j];
-
-        result[4 * i + 3] = colors[i][3] * opacities[i];
-    }
-
-    return result;
-}
-
-function isSymbolOpen(symbol) {
-    return symbol.split('-open')[1] === '';
-}
-
-function fillColor(colorIn, colorOut, offsetIn, offsetOut, isDimmed) {
-    var dim = isDimmed ? DESELECTDIM : 1;
-    var j;
-
-    for(j = 0; j < 3; j++) {
-        colorIn[4 * offsetIn + j] = colorOut[4 * offsetOut + j];
-    }
-    colorIn[4 * offsetIn + j] = dim * colorOut[4 * offsetOut + j];
-}
-
-proto.update = function(options, cdscatter) {
-    if(options.visible !== true) {
-        this.isVisible = false;
-        this.hasLines = false;
-        this.hasErrorX = false;
-        this.hasErrorY = false;
-        this.hasMarkers = false;
-    }
-    else {
-        this.isVisible = true;
-        this.hasLines = subTypes.hasLines(options);
-        this.hasErrorX = options.error_x.visible === true;
-        this.hasErrorY = options.error_y.visible === true;
-        this.hasMarkers = subTypes.hasMarkers(options);
-    }
-
-    this.textLabels = options.text;
-    this.name = options.name;
-    this.hoverinfo = options.hoverinfo;
-    this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
-    this.connectgaps = !!options.connectgaps;
-
-    if(!this.isVisible) {
-        this.line.clear();
-        this.errorX.clear();
-        this.errorY.clear();
-        this.scatter.clear();
-        this.fancyScatter.clear();
-    }
-    else if(this.isFancy(options)) {
-        this.updateFancy(options);
-    }
-    else {
-        this.updateFast(options);
-    }
-
-    // sort objects so that order is preserve on updates:
-    // - lines
-    // - errorX
-    // - errorY
-    // - markers
-    this.scene.glplot.objects.sort(function(a, b) {
-        return a._index - b._index;
-    });
-
-    // set trace index so that scene2d can sort object per traces
-    this.index = options.index;
-
-    // not quite on-par with 'scatter', but close enough for now
-    // does not handle the colorscale case
-    this.color = getTraceColor(options, {});
-
-    // provide reference for selecting points
-    if(cdscatter && cdscatter[0] && !cdscatter[0]._glTrace) {
-        cdscatter[0]._glTrace = this;
-    }
-};
-
-// We'd ideally know that all values are of fast types; sampling gives no certainty but faster
-//     (for the future, typed arrays can guarantee it, and Date values can be done with
-//      representing the epoch milliseconds in a typed array;
-//      also, perhaps the Python / R interfaces take care of String->Date conversions
-//      such that there's no need to check for string dates in plotly.js)
-// Patterned from axis_autotype.js:moreDates
-// Code DRYing is not done to preserve the most direct compilation possible for speed;
-// also, there are quite a few differences
-function allFastTypesLikely(a) {
-    var len = a.length,
-        inc = Math.max(1, (len - 1) / Math.min(Math.max(len, 1), 1000)),
-        ai;
-
-    for(var i = 0; i < len; i += inc) {
-        ai = a[Math.floor(i)];
-        if(!isNumeric(ai) && !(ai instanceof Date)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-proto.updateFast = function(options) {
-    var x = this.xData = this.pickXData = options.x;
-    var y = this.yData = this.pickYData = options.y;
-
-    var len = x.length,
-        idToIndex = new Array(len),
-        positions = new Float64Array(2 * len),
-        bounds = this.bounds,
-        pId = 0,
-        ptr = 0,
-        selection = options.selection,
-        i, selPositions, l;
-
-    var xx, yy;
-
-    var xcalendar = options.xcalendar;
-
-    var fastType = allFastTypesLikely(x);
-    var isDateTime = !fastType && autoType(x, xcalendar) === 'date';
-
-    // TODO add 'very fast' mode that bypasses this loop
-    // TODO bypass this on modebar +/- zoom
-    if(fastType || isDateTime) {
-
-        for(i = 0; i < len; ++i) {
-            xx = x[i];
-            yy = y[i];
-
-            if(isNumeric(yy)) {
-
-                if(!fastType) {
-                    xx = Lib.dateTime2ms(xx, xcalendar);
-                }
-
-                positions[ptr++] = xx;
-                positions[ptr++] = yy;
-
-                idToIndex[pId++] = i;
-
-                bounds[0] = Math.min(bounds[0], xx);
-                bounds[1] = Math.min(bounds[1], yy);
-                bounds[2] = Math.max(bounds[2], xx);
-                bounds[3] = Math.max(bounds[3], yy);
-            }
-        }
-    }
-
-    positions = truncate(positions, ptr);
-    this.idToIndex = idToIndex;
-
-    // form selected set
-    if(selection && selection.length) {
-        selPositions = new Float64Array(2 * selection.length);
-
-        for(i = 0, l = selection.length; i < l; i++) {
-            selPositions[i * 2 + 0] = selection[i].x;
-            selPositions[i * 2 + 1] = selection[i].y;
-        }
-    }
-
-    this.updateLines(options, positions);
-    this.updateError('X', options);
-    this.updateError('Y', options);
-
-    var markerSize;
-
-    if(this.hasMarkers) {
-        var markerColor, borderColor, opacity;
-
-        // if we have selPositions array - means we have to render all points transparent, and selected points opaque
-        if(selPositions) {
-            this.scatter.options.positions = null;
-
-            markerColor = str2RGBArray(options.marker.color);
-            borderColor = str2RGBArray(options.marker.line.color);
-            opacity = (options.opacity) * (options.marker.opacity) * DESELECTDIM;
-
-            markerColor[3] *= opacity;
-            this.scatter.options.color = markerColor;
-
-            borderColor[3] *= opacity;
-            this.scatter.options.borderColor = borderColor;
-
-            markerSize = options.marker.size;
-            this.scatter.options.size = markerSize;
-            this.scatter.options.borderSize = options.marker.line.width;
-
-            this.scatter.update();
-            this.scatter.options.positions = positions;
-
-
-            this.selectScatter.options.positions = selPositions;
-
-            markerColor = str2RGBArray(options.marker.color);
-            borderColor = str2RGBArray(options.marker.line.color);
-            opacity = (options.opacity) * (options.marker.opacity);
-
-            markerColor[3] *= opacity;
-            this.selectScatter.options.color = markerColor;
-
-            borderColor[3] *= opacity;
-            this.selectScatter.options.borderColor = borderColor;
-
-            markerSize = options.marker.size;
-            this.selectScatter.options.size = markerSize;
-            this.selectScatter.options.borderSize = options.marker.line.width;
-
-            this.selectScatter.update();
-        }
-
-        else {
-            this.scatter.options.positions = positions;
-
-            markerColor = str2RGBArray(options.marker.color);
-            borderColor = str2RGBArray(options.marker.line.color);
-            opacity = (options.opacity) * (options.marker.opacity);
-            markerColor[3] *= opacity;
-            this.scatter.options.color = markerColor;
-
-            borderColor[3] *= opacity;
-            this.scatter.options.borderColor = borderColor;
-
-            markerSize = options.marker.size;
-            this.scatter.options.size = markerSize;
-            this.scatter.options.borderSize = options.marker.line.width;
-
-            this.scatter.update();
-        }
-
-    }
-    else {
-        this.scatter.clear();
-    }
-
-    // turn off fancy scatter plot
-    this.fancyScatter.clear();
-
-    // add item for autorange routine
-    this.expandAxesFast(bounds, markerSize);
-};
-
-proto.updateFancy = function(options) {
-    var scene = this.scene,
-        xaxis = scene.xaxis,
-        yaxis = scene.yaxis,
-        bounds = this.bounds,
-        selection = options.selection;
-
-    // makeCalcdata runs d2c (data-to-coordinate) on every point
-    var x = this.pickXData = xaxis.makeCalcdata(options, 'x').slice();
-    var y = this.pickYData = yaxis.makeCalcdata(options, 'y').slice();
-
-    this.xData = x.slice();
-    this.yData = y.slice();
-
-    // get error values
-    var errorVals = ErrorBars.calcFromTrace(options, scene.fullLayout);
-
-    var len = x.length,
-        idToIndex = new Array(len),
-        positions = new Float64Array(2 * len),
-        errorsX = new Float64Array(4 * len),
-        errorsY = new Float64Array(4 * len),
-        pId = 0,
-        ptr = 0,
-        ptrX = 0,
-        ptrY = 0;
-
-    var getX = (xaxis.type === 'log') ? xaxis.d2l : function(x) { return x; };
-    var getY = (yaxis.type === 'log') ? yaxis.d2l : function(y) { return y; };
-
-    var i, xx, yy, ex0, ex1, ey0, ey1;
-
-    for(i = 0; i < len; ++i) {
-        this.xData[i] = xx = getX(x[i]);
-        this.yData[i] = yy = getY(y[i]);
-
-        if(isNaN(xx) || isNaN(yy)) continue;
-
-        idToIndex[pId++] = i;
-
-        positions[ptr++] = xx;
-        positions[ptr++] = yy;
-
-        ex0 = errorsX[ptrX++] = xx - errorVals[i].xs || 0;
-        ex1 = errorsX[ptrX++] = errorVals[i].xh - xx || 0;
-        errorsX[ptrX++] = 0;
-        errorsX[ptrX++] = 0;
-
-        errorsY[ptrY++] = 0;
-        errorsY[ptrY++] = 0;
-        ey0 = errorsY[ptrY++] = yy - errorVals[i].ys || 0;
-        ey1 = errorsY[ptrY++] = errorVals[i].yh - yy || 0;
-
-        bounds[0] = Math.min(bounds[0], xx - ex0);
-        bounds[1] = Math.min(bounds[1], yy - ey0);
-        bounds[2] = Math.max(bounds[2], xx + ex1);
-        bounds[3] = Math.max(bounds[3], yy + ey1);
-    }
-
-    positions = truncate(positions, ptr);
-    this.idToIndex = idToIndex;
-
-    this.updateLines(options, positions);
-    this.updateError('X', options, positions, errorsX);
-    this.updateError('Y', options, positions, errorsY);
-
-    var sizes, selIds;
-
-    if(selection && selection.length) {
-        selIds = {};
-        for(i = 0; i < selection.length; i++) {
-            selIds[selection[i].pointNumber] = true;
-        }
-    }
-
-    if(this.hasMarkers) {
-        this.scatter.options.positions = positions;
-
-        // TODO rewrite convert function so that
-        // we don't have to loop through the data another time
-
-        this.scatter.options.sizes = new Array(pId);
-        this.scatter.options.glyphs = new Array(pId);
-        this.scatter.options.borderWidths = new Array(pId);
-        this.scatter.options.colors = new Array(pId * 4);
-        this.scatter.options.borderColors = new Array(pId * 4);
-
-        var markerSizeFunc = makeBubbleSizeFn(options);
-        var markerOpts = options.marker;
-        var markerOpacity = markerOpts.opacity;
-        var traceOpacity = options.opacity;
-        var symbols = convertSymbol(markerOpts.symbol, len);
-        var colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len);
-        var borderWidths = convertNumber(markerOpts.line.width, len);
-        var borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len);
-        var index, size, symbol, symbolSpec, isOpen, isDimmed, _colors, _borderColors, bw, minBorderWidth;
-
-        sizes = convertArray(markerSizeFunc, markerOpts.size, len);
-
-        for(i = 0; i < pId; ++i) {
-            index = idToIndex[i];
-
-            symbol = symbols[index];
-            symbolSpec = MARKER_SYMBOLS[symbol];
-            isOpen = isSymbolOpen(symbol);
-            isDimmed = selIds && !selIds[index];
-
-            if(symbolSpec.noBorder && !isOpen) {
-                _colors = borderColors;
-            } else {
-                _colors = colors;
-            }
-
-            if(isOpen) {
-                _borderColors = colors;
-            } else {
-                _borderColors = borderColors;
-            }
-
-            // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
-            // for more info on this logic
-            size = sizes[index];
-            bw = borderWidths[index];
-            minBorderWidth = (symbolSpec.noBorder || symbolSpec.noFill) ? 0.1 * size : 0;
-
-            this.scatter.options.sizes[i] = 4.0 * size;
-            this.scatter.options.glyphs[i] = symbolSpec.unicode;
-            this.scatter.options.borderWidths[i] = 0.5 * ((bw > minBorderWidth) ? bw - minBorderWidth : 0);
-
-            if(isOpen && !symbolSpec.noBorder && !symbolSpec.noFill) {
-                fillColor(this.scatter.options.colors, TRANSPARENT, i, 0);
-            } else {
-                fillColor(this.scatter.options.colors, _colors, i, index, isDimmed);
-            }
-            fillColor(this.scatter.options.borderColors, _borderColors, i, index, isDimmed);
-        }
-
-        // prevent scatter from resnapping points
-        if(selIds) {
-            this.scatter.options.positions = null;
-            this.fancyScatter.update();
-            this.scatter.options.positions = positions;
-        }
-        else {
-            this.fancyScatter.update();
-        }
-    }
-    else {
-        this.fancyScatter.clear();
-    }
-
-    // turn off fast scatter plot
-    this.scatter.clear();
-
-    // add item for autorange routine
-    this.expandAxesFancy(x, y, sizes);
-};
-
-proto.updateLines = function(options, positions) {
-    var i;
-
-    if(this.hasLines) {
-        var linePositions = positions;
-
-        if(!options.connectgaps) {
-            var p = 0;
-            var x = this.xData;
-            var y = this.yData;
-            linePositions = new Float64Array(2 * x.length);
-
-            for(i = 0; i < x.length; ++i) {
-                linePositions[p++] = x[i];
-                linePositions[p++] = y[i];
-            }
-        }
-
-        this.line.options.positions = linePositions;
-
-        var lineColor = convertColor(options.line.color, options.opacity, 1),
-            lineWidth = Math.round(0.5 * this.line.options.width),
-            dashes = (DASHES[options.line.dash] || [1]).slice();
-
-        for(i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
-
-        switch(options.fill) {
-            case 'tozeroy':
-                this.line.options.fill = [false, true, false, false];
-                break;
-            case 'tozerox':
-                this.line.options.fill = [true, false, false, false];
-                break;
-            default:
-                this.line.options.fill = [false, false, false, false];
-                break;
-        }
-
-        var fillColor = str2RGBArray(options.fillcolor);
-
-        this.line.options.color = lineColor;
-        this.line.options.width = 2.0 * options.line.width;
-        this.line.options.dashes = dashes;
-        this.line.options.fillColor = [fillColor, fillColor, fillColor, fillColor];
-
-        this.line.update();
-    }
-    else {
-        this.line.clear();
-    }
-};
-
-proto.updateError = function(axLetter, options, positions, errors) {
-    var errorObj = this['error' + axLetter],
-        errorOptions = options['error_' + axLetter.toLowerCase()];
-
-    if(axLetter.toLowerCase() === 'x' && errorOptions.copy_ystyle) {
-        errorOptions = options.error_y;
-    }
-
-    if(this['hasError' + axLetter]) {
-        errorObj.options.positions = positions;
-        errorObj.options.errors = errors;
-        errorObj.options.capSize = errorOptions.width;
-        errorObj.options.lineWidth = errorOptions.thickness / 2;  // ballpark rescaling
-        errorObj.options.color = convertColor(errorOptions.color, 1, 1);
-
-        errorObj.update();
-    }
-    else {
-        errorObj.clear();
-    }
-};
-
-proto.expandAxesFast = function(bounds, markerSize) {
-    var pad = markerSize || 10;
-    var ax, min, max;
-
-    for(var i = 0; i < 2; i++) {
-        ax = this.scene[AXES[i]];
-
-        min = ax._min;
-        if(!min) min = [];
-        min.push({ val: bounds[i], pad: pad });
-
-        max = ax._max;
-        if(!max) max = [];
-        max.push({ val: bounds[i + 2], pad: pad });
-    }
-};
-
-// not quite on-par with 'scatter' (scatter fill in several other expand options)
-// but close enough for now
-proto.expandAxesFancy = function(x, y, ppad) {
-    var scene = this.scene,
-        expandOpts = { padded: true, ppad: ppad };
-
-    Axes.expand(scene.xaxis, x, expandOpts);
-    Axes.expand(scene.yaxis, y, expandOpts);
-};
-
-proto.dispose = function() {
-    this.line.dispose();
-    this.errorX.dispose();
-    this.errorY.dispose();
-    this.scatter.dispose();
-    this.fancyScatter.dispose();
-};
-
-function createLineWithMarkers(scene, data, cdscatter) {
-    var plot = new LineWithMarkers(scene, data.uid);
-    plot.update(data, cdscatter);
-
-    return plot;
-}
-
-module.exports = createLineWithMarkers;
-
-},{"../../components/errorbars":272,"../../constants/gl2d_dashes":340,"../../constants/gl2d_markers":341,"../../constants/interactions":342,"../../lib":362,"../../lib/gl_format_color":358,"../../lib/str2rgbarray":384,"../../lib/typed_array_truncate":388,"../../plots/cartesian/axes":408,"../../plots/cartesian/axis_autotype":409,"../scatter/get_trace_color":518,"../scatter/make_bubble_size_func":525,"../scatter/subtypes":530,"fast-isnumeric":68,"gl-error2d":79,"gl-line2d":87,"gl-scatter2d":128,"gl-scatter2d-sdf":123}],537:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":258,"../../constants/gl2d_dashes":349,"../../lib/extend":362,"../../plot_api/edit_types":400,"../scatter/attributes":518}],545:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102871,6 +96592,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    var isOpen = traceIn.marker ? /-open/.test(traceIn.marker.symbol) : false;
+    var isBubble = subTypes.isBubble(traceIn);
+
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
@@ -102885,8 +96609,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
+    var dfltHoverOn = [];
+
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noSelect: true});
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
+        dfltHoverOn.push('points');
     }
 
     coerce('fill');
@@ -102894,11 +96622,20 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
+    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
+        dfltHoverOn.push('fills');
+    }
+
+    coerce('hoveron', dfltHoverOn.join('+') || 'points');
+
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../components/errorbars/defaults":271,"../../lib":362,"../scatter/constants":514,"../scatter/fillcolor_defaults":517,"../scatter/line_defaults":521,"../scatter/marker_defaults":526,"../scatter/subtypes":530,"../scatter/xy_defaults":532,"./attributes":534}],538:[function(require,module,exports){
+},{"../../components/errorbars/defaults":280,"../../lib":371,"../scatter/constants":524,"../scatter/fillcolor_defaults":527,"../scatter/line_defaults":531,"../scatter/marker_defaults":536,"../scatter/subtypes":540,"../scatter/xy_defaults":542,"./attributes":544}],546:[function(require,module,exports){
+(function (global){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -102909,92 +96646,1225 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
 'use strict';
 
-var ScatterGl = {};
+var Lib = require('../../lib');
+var getTraceColor = require('../scatter/get_trace_color');
+var ErrorBars = require('../../components/errorbars');
+var extend = require('object-assign');
+var Axes = require('../../plots/cartesian/axes');
+var kdtree = require('kdgrass');
+var Fx = require('../../components/fx');
+var subTypes = require('../scatter/subtypes');
+var calcColorscales = require('../scatter/colorscale_calc');
+var Drawing = require('../../components/drawing');
+var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
+var DASHES = require('../../constants/gl2d_dashes');
+var formatColor = require('../../lib/gl_format_color');
+var linkTraces = require('../scatter/link_traces');
+var createScatter = require('regl-scatter2d');
+var createLine = require('regl-line2d');
+var createError = require('regl-error2d');
+var rgba = require('color-normalize');
+var svgSdf = require('svg-path-sdf');
+var createRegl = require('regl');
+var fillHoverText = require('../scatter/fill_hover_text');
+var isNumeric = require('fast-isnumeric');
 
-ScatterGl.attributes = require('./attributes');
-ScatterGl.supplyDefaults = require('./defaults');
-ScatterGl.colorbar = require('../scatter/colorbar');
-ScatterGl.hoverPoints = require('../scatter/hover');
+var MAXDIST = Fx.constants.MAXDIST;
+var SYMBOL_SDF_SIZE = 200;
+var SYMBOL_SIZE = 20;
+var SYMBOL_STROKE = SYMBOL_SIZE / 20;
+var SYMBOL_SDF = {};
+var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
+var TOO_MANY_POINTS = 1e5;
+var DOT_RE = /-dot/;
 
-// reuse the Scatter3D 'dummy' calc step so that legends know what to do
-ScatterGl.calc = require('./calc');
-ScatterGl.plot = require('./convert');
-ScatterGl.selectPoints = require('./select');
+function calc(container, trace) {
+    var layout = container._fullLayout;
+    var positions;
+    var stash = {};
+    var xaxis = Axes.getFromId(container, trace.xaxis);
+    var yaxis = Axes.getFromId(container, trace.yaxis);
 
-ScatterGl.moduleType = 'trace';
-ScatterGl.name = 'scattergl';
-ScatterGl.basePlotModule = require('../../plots/gl2d');
-ScatterGl.categories = ['gl', 'gl2d', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'];
-ScatterGl.meta = {
-    
-};
+    var subplot = layout._plots[trace.xaxis + trace.yaxis];
 
-module.exports = ScatterGl;
+    var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
+    var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
 
-},{"../../plots/gl2d":438,"../scatter/colorbar":512,"../scatter/hover":519,"./attributes":534,"./calc":535,"./convert":536,"./defaults":537,"./select":539}],539:[function(require,module,exports){
-/**
-* Copyright 2012-2018, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
+    var count = (x || y).length, i, l, xx, yy;
 
-
-'use strict';
-
-var subtypes = require('../scatter/subtypes');
-
-module.exports = function selectPoints(searchInfo, polygon) {
-    var cd = searchInfo.cd,
-        xa = searchInfo.xaxis,
-        ya = searchInfo.yaxis,
-        selection = [],
-        trace = cd[0].trace,
-        i,
-        di,
-        x,
-        y;
-
-    var glTrace = cd[0]._glTrace;
-
-    if(!glTrace) return;
-
-    var scene = glTrace.scene;
-
-    var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
-    if(hasOnlyLines) return [];
-
-    // filter out points by visible scatter ones
-    if(polygon === false) {
-        // clear selection
-        for(i = 0; i < cd.length; i++) cd[i].dim = 0;
+    if(!x) {
+        x = Array(count);
+        for(i = 0; i < count; i++) {
+            x[i] = i;
+        }
     }
-    else {
-        for(i = 0; i < cd.length; i++) {
-            di = cd[i];
-            x = xa.c2p(di.x);
-            y = ya.c2p(di.y);
-            if(polygon.contains([x, y])) {
-                selection.push({
-                    pointNumber: i,
-                    x: xa.c2d(di.x),
-                    y: ya.c2d(di.y)
-                });
-                di.dim = 0;
-            }
-            else di.dim = 1;
+    if(!y) {
+        y = Array(count);
+        for(i = 0; i < count; i++) {
+            y[i] = i;
         }
     }
 
-    // highlight selected points here
-    trace.selection = selection;
+    // get log converted positions
+    var rawx, rawy;
+    if(xaxis.type === 'log') {
+        rawx = Array(x.length);
+        for(i = 0, l = x.length; i < l; i++) {
+            rawx[i] = x[i];
+            x[i] = xaxis.d2l(x[i]);
+        }
+    }
+    else {
+        rawx = x;
+        for(i = 0, l = x.length; i < l; i++) {
+            x[i] = parseFloat(x[i]);
+        }
+    }
+    if(yaxis.type === 'log') {
+        rawy = Array(y.length);
+        for(i = 0, l = y.length; i < l; i++) {
+            rawy[i] = y[i];
+            y[i] = yaxis.d2l(y[i]);
+        }
+    }
+    else {
+        rawy = y;
+        for(i = 0, l = y.length; i < l; i++) {
+            y[i] = parseFloat(y[i]);
+        }
+    }
 
-    glTrace.update(trace, cd);
-    scene.glplot.setDirty();
+    // we need hi-precision for scatter2d
+    positions = new Array(count * 2);
+
+    for(i = 0; i < count; i++) {
+        // if no x defined, we are creating simple int sequence (API)
+        // we use parseFloat because it gives NaN (we need that for empty values to avoid drawing lines) and it is incredibly fast
+        xx = isNumeric(x[i]) ? +x[i] : NaN;
+        yy = isNumeric(y[i]) ? +y[i] : NaN;
+
+        positions[i * 2] = xx;
+        positions[i * 2 + 1] = yy;
+    }
+
+    // we don't build a tree for log axes since it takes long to convert log2px
+    // and it is also
+    if(xaxis.type !== 'log' && yaxis.type !== 'log') {
+        // FIXME: delegate this to webworker
+        stash.tree = kdtree(positions, 512);
+    }
+    else {
+        var ids = stash.ids = Array(count);
+        for(i = 0; i < count; i++) {
+            ids[i] = i;
+        }
+    }
+
+
+    calcColorscales(trace);
+
+    var options = sceneOptions(container, subplot, trace, positions);
+
+    // expanding axes is separate from options
+    if(!options.markers) {
+        Axes.expand(xaxis, rawx, { padded: true });
+        Axes.expand(yaxis, rawy, { padded: true });
+    }
+    else if(Array.isArray(options.markers.sizes)) {
+        var sizes = options.markers.sizes;
+        Axes.expand(xaxis, rawx, { padded: true, ppad: sizes });
+        Axes.expand(yaxis, rawy, { padded: true, ppad: sizes });
+    }
+    else {
+        var xbounds = [Infinity, -Infinity], ybounds = [Infinity, -Infinity];
+        var size = options.markers.size;
+
+        // axes bounds
+        for(i = 0; i < count; i++) {
+            xx = x[i], yy = y[i];
+            if(xbounds[0] > xx) xbounds[0] = xx;
+            if(xbounds[1] < xx) xbounds[1] = xx;
+            if(ybounds[0] > yy) ybounds[0] = yy;
+            if(ybounds[1] < yy) ybounds[1] = yy;
+        }
+
+        // FIXME: is there a better way to separate expansion?
+        if(count < TOO_MANY_POINTS) {
+            Axes.expand(xaxis, rawx, { padded: true, ppad: size });
+            Axes.expand(yaxis, rawy, { padded: true, ppad: size });
+        }
+        // update axes fast for big number of points
+        else {
+            if(xaxis._min) {
+                xaxis._min.push({ val: xbounds[0], pad: size });
+            }
+            if(xaxis._max) {
+                xaxis._max.push({ val: xbounds[1], pad: size });
+            }
+
+            if(yaxis._min) {
+                yaxis._min.push({ val: ybounds[0], pad: size });
+            }
+            if(yaxis._max) {
+                yaxis._max.push({ val: ybounds[1], pad: size });
+            }
+        }
+    }
+
+    // create scene
+    var scene = sceneUpdate(container, subplot);
+
+    // set flags to create scene renderers
+    if(options.fill && !scene.fill2d) scene.fill2d = true;
+    if(options.marker && !scene.scatter2d) scene.scatter2d = true;
+    if(options.line && !scene.line2d) scene.line2d = true;
+    if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
+
+    // save scene options batch
+    scene.lineOptions.push(options.line);
+    scene.errorXOptions.push(options.errorX);
+    scene.errorYOptions.push(options.errorY);
+    scene.fillOptions.push(options.fill);
+    scene.markerOptions.push(options.marker);
+    scene.selectedOptions.push(options.selected);
+    scene.unselectedOptions.push(options.unselected);
+    scene.count++;
+
+    // stash scene ref
+    stash.scene = scene;
+    stash.index = scene.count - 1;
+    stash.x = x;
+    stash.y = y;
+    stash.rawx = rawx;
+    stash.rawy = rawy;
+    stash.positions = positions;
+    stash.count = count;
+
+    return [{x: false, y: false, t: stash, trace: trace}];
+}
+
+// create scene options
+function sceneOptions(container, subplot, trace, positions) {
+    var layout = container._fullLayout;
+    var count = positions.length / 2;
+    var markerOpts = trace.marker;
+    var i, ptrX = 0, ptrY = 0;
+    var xaxis = Axes.getFromId(container, trace.xaxis);
+    var yaxis = Axes.getFromId(container, trace.yaxis);
+
+    var hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
+
+    if(trace.visible !== true) {
+        hasLines = false;
+        hasErrorX = false;
+        hasErrorY = false;
+        hasMarkers = false;
+        hasFill = false;
+    }
+    else {
+        hasLines = subTypes.hasLines(trace) && positions.length > 1;
+        hasErrorX = trace.error_x && trace.error_x.visible === true;
+        hasErrorY = trace.error_y && trace.error_y.visible === true;
+        hasError = hasErrorX || hasErrorY;
+        hasMarkers = subTypes.hasMarkers(trace);
+        hasFill = !!trace.fill && trace.fill !== 'none';
+    }
+
+    var lineOptions, markerOptions, errorXOptions, errorYOptions, fillOptions, selectedOptions, unselectedOptions;
+    var linePositions;
+
+    // get error values
+    var errorVals = hasError ? ErrorBars.calcFromTrace(trace, layout) : null;
+
+    if(hasErrorX) {
+        errorXOptions = {};
+        errorXOptions.positions = positions;
+        var errorsX = new Float64Array(4 * count);
+
+        if(xaxis.type === 'log') {
+            for(i = 0; i < count; ++i) {
+                errorsX[ptrX++] = positions[i * 2] - xaxis.d2l(errorVals[i].xs) || 0;
+                errorsX[ptrX++] = xaxis.d2l(errorVals[i].xh) - positions[i * 2] || 0;
+                errorsX[ptrX++] = 0;
+                errorsX[ptrX++] = 0;
+            }
+        } else {
+            for(i = 0; i < count; ++i) {
+                errorsX[ptrX++] = positions[i * 2] - errorVals[i].xs || 0;
+                errorsX[ptrX++] = errorVals[i].xh - positions[i * 2] || 0;
+                errorsX[ptrX++] = 0;
+                errorsX[ptrX++] = 0;
+            }
+        }
+
+        if(trace.error_x.copy_ystyle) {
+            trace.error_x = trace.error_y;
+        }
+
+        errorXOptions.errors = errorsX;
+        errorXOptions.capSize = trace.error_x.width * 2;
+        errorXOptions.lineWidth = trace.error_x.thickness;
+        errorXOptions.color = trace.error_x.color;
+    }
+
+    if(hasErrorY) {
+        errorYOptions = {};
+        errorYOptions.positions = positions;
+        var errorsY = new Float64Array(4 * count);
+
+        if(yaxis.type === 'log') {
+            for(i = 0; i < count; ++i) {
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = positions[i * 2 + 1] - yaxis.d2l(errorVals[i].ys) || 0;
+                errorsY[ptrY++] = yaxis.d2l(errorVals[i].yh) - positions[i * 2 + 1] || 0;
+            }
+        } else {
+            for(i = 0; i < count; ++i) {
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = 0;
+                errorsY[ptrY++] = positions[i * 2 + 1] - errorVals[i].ys || 0;
+                errorsY[ptrY++] = errorVals[i].yh - positions[i * 2 + 1] || 0;
+            }
+        }
+
+        errorYOptions.errors = errorsY;
+        errorYOptions.capSize = trace.error_y.width * 2;
+        errorYOptions.lineWidth = trace.error_y.thickness;
+        errorYOptions.color = trace.error_y.color;
+    }
+
+    if(hasLines) {
+        lineOptions = {};
+        lineOptions.thickness = trace.line.width;
+        lineOptions.color = trace.line.color;
+        lineOptions.opacity = trace.opacity;
+        lineOptions.overlay = true;
+
+        var dashes = (DASHES[trace.line.dash] || [1]).slice();
+        for(i = 0; i < dashes.length; ++i) dashes[i] *= lineOptions.thickness;
+        lineOptions.dashes = dashes;
+
+        if(trace.line.shape === 'hv') {
+            linePositions = [];
+            for(i = 0; i < Math.floor(positions.length / 2) - 1; i++) {
+                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1])) {
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                }
+                else {
+                    linePositions.push(positions[i * 2]);
+                    linePositions.push(positions[i * 2 + 1]);
+                    linePositions.push(positions[i * 2 + 2]);
+                    linePositions.push(positions[i * 2 + 1]);
+                }
+            }
+            linePositions.push(positions[positions.length - 2]);
+            linePositions.push(positions[positions.length - 1]);
+        }
+        else if(trace.line.shape === 'vh') {
+            linePositions = [];
+            for(i = 0; i < Math.floor(positions.length / 2) - 1; i++) {
+                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1])) {
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                    linePositions.push(NaN);
+                }
+                else {
+                    linePositions.push(positions[i * 2]);
+                    linePositions.push(positions[i * 2 + 1]);
+                    linePositions.push(positions[i * 2]);
+                    linePositions.push(positions[i * 2 + 3]);
+                }
+            }
+            linePositions.push(positions[positions.length - 2]);
+            linePositions.push(positions[positions.length - 1]);
+        }
+        else {
+            linePositions = positions;
+        }
+
+        // If we have data with gaps, we ought to use rect joins
+        // FIXME: get rid of this
+        var hasNaN = false;
+        for(i = 0; i < linePositions.length; i++) {
+            if(isNaN(linePositions[i])) {
+                hasNaN = true;
+                break;
+            }
+        }
+        lineOptions.join = (hasNaN || linePositions.length > TOO_MANY_POINTS) ? 'rect' : hasMarkers ? 'rect' : 'round';
+
+        // fill gaps
+        if(hasNaN && trace.connectgaps) {
+            var lastX = linePositions[0], lastY = linePositions[1];
+            for(i = 0; i < linePositions.length; i += 2) {
+                if(isNaN(linePositions[i]) || isNaN(linePositions[i + 1])) {
+                    linePositions[i] = lastX;
+                    linePositions[i + 1] = lastY;
+                }
+                else {
+                    lastX = linePositions[i];
+                    lastY = linePositions[i + 1];
+                }
+            }
+        }
+
+        lineOptions.positions = linePositions;
+    }
+
+    if(hasFill) {
+        fillOptions = {};
+        fillOptions.fill = trace.fillcolor;
+        fillOptions.thickness = 0;
+        fillOptions.closed = true;
+    }
+
+    if(hasMarkers) {
+        markerOptions = makeMarkerOptions(markerOpts);
+        selectedOptions = trace.selected ? makeMarkerOptions(extend({}, markerOpts, trace.selected.marker)) : markerOptions;
+        unselectedOptions = trace.unselected ? makeMarkerOptions(extend({}, markerOpts, trace.unselected.marker)) : markerOptions;
+
+        markerOptions.positions = positions;
+    }
+
+    function makeMarkerOptions(markerOpts) {
+        var markerOptions = {}, i;
+
+        // get basic symbol info
+        var multiMarker = Array.isArray(markerOpts.symbol);
+        var isOpen, symbol;
+        if(!multiMarker) {
+            isOpen = /-open/.test(markerOpts.symbol);
+        }
+
+        // prepare colors
+        if(multiMarker || Array.isArray(markerOpts.color) || Array.isArray(markerOpts.line.color) || Array.isArray(markerOpts.line) || Array.isArray(markerOpts.opacity)) {
+            markerOptions.colors = new Array(count);
+            markerOptions.borderColors = new Array(count);
+            var colors = formatColor(markerOpts, markerOpts.opacity, count);
+            var borderColors = formatColor(markerOpts.line, markerOpts.opacity, count);
+
+            if(!Array.isArray(borderColors[0])) {
+                var borderColor = borderColors;
+                borderColors = Array(count);
+                for(i = 0; i < count; i++) {
+                    borderColors[i] = borderColor;
+                }
+            }
+            if(!Array.isArray(colors[0])) {
+                var color = colors;
+                colors = Array(count);
+                for(i = 0; i < count; i++) {
+                    colors[i] = color;
+                }
+            }
+
+            markerOptions.colors = colors;
+            markerOptions.borderColors = borderColors;
+
+            for(i = 0; i < count; i++) {
+                if(multiMarker) {
+                    symbol = markerOpts.symbol[i];
+                    isOpen = /-open/.test(symbol);
+                }
+                if(isOpen) {
+                    borderColors[i] = colors[i].slice();
+                    colors[i] = colors[i].slice();
+                    colors[i][3] = 0;
+                }
+            }
+
+            markerOptions.opacity = trace.opacity;
+        }
+        else {
+            if(isOpen) {
+                markerOptions.color = rgba(markerOpts.color, 'uint8');
+                markerOptions.color[3] = 0;
+                markerOptions.borderColor = rgba(markerOpts.color, 'uint8');
+            }
+            else {
+                markerOptions.color = rgba(markerOpts.color, 'uint8');
+                markerOptions.borderColor = rgba(markerOpts.line.color, 'uint8');
+            }
+
+            markerOptions.opacity = trace.opacity * markerOpts.opacity;
+        }
+
+        // prepare markers
+        if(Array.isArray(markerOpts.symbol)) {
+            markerOptions.markers = new Array(count);
+            for(i = 0; i < count; ++i) {
+                markerOptions.markers[i] = getSymbolSdf(markerOpts.symbol[i]);
+            }
+        }
+        else {
+            markerOptions.marker = getSymbolSdf(markerOpts.symbol);
+        }
+
+        // prepare sizes and expand axes
+        var multiSize = markerOpts && (Array.isArray(markerOpts.size) || Array.isArray(markerOpts.line.width));
+        var markerSizeFunc = makeBubbleSizeFn(trace);
+        var size, sizes;
+
+        if(multiSize) {
+            sizes = markerOptions.sizes = new Array(count);
+            var borderSizes = markerOptions.borderSizes = new Array(count);
+
+            if(Array.isArray(markerOpts.size)) {
+                for(i = 0; i < count; ++i) {
+                    sizes[i] = markerSizeFunc(markerOpts.size[i]);
+                }
+            }
+            else {
+                size = markerSizeFunc(markerOpts.size);
+                for(i = 0; i < count; ++i) {
+                    sizes[i] = size;
+                }
+            }
+
+            // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
+            if(Array.isArray(markerOpts.line.width)) {
+                for(i = 0; i < count; ++i) {
+                    borderSizes[i] = markerSizeFunc(markerOpts.line.width[i]);
+                }
+            }
+            else {
+                size = markerSizeFunc(markerOpts.line.width);
+                for(i = 0; i < count; ++i) {
+                    borderSizes[i] = size;
+                }
+            }
+        }
+        else {
+            size = markerOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
+            markerOptions.borderSizes = markerSizeFunc(markerOpts.line.width);
+        }
+
+        return markerOptions;
+    }
+
+    return {
+        line: lineOptions,
+        marker: markerOptions,
+        errorX: errorXOptions,
+        errorY: errorYOptions,
+        fill: fillOptions,
+        selected: selectedOptions,
+        unselected: unselectedOptions
+    };
+}
+
+// make sure scene exists on subplot, return it
+function sceneUpdate(container, subplot) {
+    var scene = subplot._scene;
+    var layout = container._fullLayout;
+
+    if(!subplot._scene) {
+        scene = subplot._scene = {
+            // number of traces in subplot, since scene:subplot → 1:1
+            count: 0,
+
+            // whether scene requires init hook in plot call (dirty plot call)
+            dirty: true,
+
+            // last used options
+            lineOptions: [],
+            fillOptions: [],
+            markerOptions: [],
+            selectedOptions: [],
+            unselectedOptions: [],
+            errorXOptions: [],
+            errorYOptions: [],
+            selectBatch: null,
+            unselectBatch: null,
+
+            // regl- component stubs, initialized in dirty plot call
+            fill2d: false,
+            scatter2d: false,
+            error2d: false,
+            line2d: false,
+            select2d: null
+        };
+
+        // apply new option to all regl components
+        scene.update = function update(opt) {
+            var opts = Array(scene.count);
+            for(var i = 0; i < scene.count; i++) {
+                opts[i] = opt;
+            }
+            if(scene.fill2d) scene.fill2d.update(opts);
+            if(scene.scatter2d) scene.scatter2d.update(opts);
+            if(scene.line2d) scene.line2d.update(opts);
+            if(scene.error2d) scene.error2d.update(opts.concat(opts));
+            if(scene.select2d) scene.select2d.update(opts);
+
+            scene.draw();
+        };
+
+        // draw traces in proper order
+        scene.draw = function draw() {
+            var i;
+            for(i = 0; i < scene.count; i++) {
+                if(scene.fill2d) scene.fill2d.draw(i);
+            }
+            for(i = 0; i < scene.count; i++) {
+                if(scene.line2d) {
+                    scene.line2d.draw(i);
+                }
+                if(scene.error2d) {
+                    scene.error2d.draw(i);
+                    scene.error2d.draw(i + scene.count);
+                }
+                if(scene.scatter2d && !scene.selectBatch) {
+                    scene.scatter2d.draw(i);
+                }
+            }
+
+            // persistent selection draw
+            if(scene.select2d && scene.selectBatch) {
+                scene.select2d.draw(scene.selectBatch);
+                scene.scatter2d.draw(scene.unselectBatch);
+            }
+
+            scene.dirty = false;
+        };
+
+        // make sure canvas is clear
+        scene.clear = function clear() {
+            var vpSize = layout._size, width = layout.width, height = layout.height, vp, gl, regl;
+            var xaxis = subplot.xaxis;
+            var yaxis = subplot.yaxis;
+
+            // multisubplot case
+            if(xaxis && xaxis.domain && yaxis && yaxis.domain) {
+                vp = [
+                    vpSize.l + xaxis.domain[0] * vpSize.w,
+                    vpSize.b + yaxis.domain[0] * vpSize.h,
+                    (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
+                    (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
+                ];
+            }
+            else {
+                vp = [
+                    vpSize.l,
+                    vpSize.b,
+                    (width - vpSize.r),
+                    (height - vpSize.t)
+                ];
+            }
+
+            if(scene.select2d) {
+                regl = scene.select2d.regl;
+                gl = regl._gl;
+                gl.enable(gl.SCISSOR_TEST);
+                gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
+                gl.clearColor(0, 0, 0, 0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+            }
+
+            if(scene.scatter2d) {
+                regl = scene.scatter2d.regl;
+                gl = regl._gl;
+                gl.enable(gl.SCISSOR_TEST);
+                gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
+                gl.clearColor(0, 0, 0, 0);
+                gl.clear(gl.COLOR_BUFFER_BIT);
+            }
+        };
+
+        // remove selection
+        scene.clearSelect = function clearSelect() {
+            if(!scene.selectBatch) return;
+            scene.selectBatch = null;
+            scene.unselectBatch = null;
+            scene.scatter2d.update(scene.markerOptions);
+            scene.clear();
+            scene.draw();
+        };
+
+        // remove scene resources
+        scene.destroy = function destroy() {
+            if(scene.fill2d) scene.fill2d.destroy();
+            if(scene.scatter2d) scene.scatter2d.destroy();
+            if(scene.error2d) scene.error2d.destroy();
+            if(scene.line2d) scene.line2d.destroy();
+            if(scene.select2d) scene.select2d.destroy();
+
+            scene.lineOptions = null;
+            scene.fillOptions = null;
+            scene.markerOptions = null;
+            scene.selectedOptions = null;
+            scene.unselectedOptions = null;
+            scene.errorXOptions = null;
+            scene.errorYOptions = null;
+            scene.selectBatch = null;
+            scene.unselectBatch = null;
+
+            delete subplot._scene;
+        };
+    }
+
+    // In case if we have scene from the last calc - reset data
+    if(!scene.dirty) {
+        scene.dirty = true;
+        scene.count = 0;
+        scene.lineOptions = [];
+        scene.fillOptions = [];
+        scene.markerOptions = [];
+        scene.selectedOptions = [];
+        scene.unselectedOptions = [];
+        scene.errorXOptions = [];
+        scene.errorYOptions = [];
+    }
+
+    return scene;
+}
+
+function getSymbolSdf(symbol) {
+    if(symbol === 'circle') return null;
+
+    var symbolPath, symbolSdf;
+    var symbolNumber = Drawing.symbolNumber(symbol);
+    var symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
+    var symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
+    var symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
+
+    var isDot = DOT_RE.test(symbol);
+
+    // get symbol sdf from cache or generate it
+    if(SYMBOL_SDF[symbol]) return SYMBOL_SDF[symbol];
+
+    if(isDot && !symbolNoDot) {
+        symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE;
+    }
+    else {
+        symbolPath = symbolFunc(SYMBOL_SIZE);
+    }
+
+    symbolSdf = svgSdf(symbolPath, {
+        w: SYMBOL_SDF_SIZE,
+        h: SYMBOL_SDF_SIZE,
+        viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
+        stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
+    });
+    SYMBOL_SDF[symbol] = symbolSdf;
+
+    return symbolSdf || null;
+}
+
+function plot(container, subplot, cdata) {
+    if(!cdata.length) return;
+
+    var layout = container._fullLayout;
+    var stash = cdata[0][0].t;
+    var scene = stash.scene;
+
+    // we may have more subplots than initialized data due to Axes.getSubplots method
+    if(!scene) return;
+
+    var vpSize = layout._size, width = layout.width, height = layout.height;
+
+    // make sure proper regl instances are created
+    layout._glcanvas.each(function(d) {
+        if(d.regl || d.pick) return;
+        d.regl = createRegl({
+            canvas: this,
+            attributes: {
+                antialias: !d.pick,
+                preserveDrawingBuffer: true
+            },
+            extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
+            pixelRatio: container._context.plotGlPixelRatio || global.devicePixelRatio
+        });
+    });
+
+    var regl = layout._glcanvas.data()[0].regl;
+
+    // that is needed for fills
+    linkTraces(container, subplot, cdata);
+
+    if(scene.dirty) {
+        // make sure scenes are created
+        if(scene.error2d === true) {
+            scene.error2d = createError(regl);
+        }
+        if(scene.line2d === true) {
+            scene.line2d = createLine(regl);
+        }
+        if(scene.scatter2d === true) {
+            scene.scatter2d = createScatter(regl);
+        }
+        if(scene.fill2d === true) {
+            scene.fill2d = createLine(regl);
+        }
+
+        if(scene.line2d) {
+            scene.line2d.update(scene.lineOptions);
+        }
+        if(scene.error2d) {
+            var errorBatch = (scene.errorXOptions || []).concat(scene.errorYOptions || []);
+            scene.error2d.update(errorBatch);
+        }
+        if(scene.scatter2d) {
+            if(!scene.selectBatch) {
+                scene.scatter2d.update(scene.markerOptions);
+            }
+            else {
+                scene.scatter2d.update(scene.unselectedOptions);
+                scene.select2d.update(scene.selectedOptions);
+            }
+        }
+        // fill requires linked traces, so we generate it's positions here
+        if(scene.fill2d) {
+            scene.fillOptions.forEach(function(fillOptions, i) {
+                var cdscatter = cdata[i];
+                if(!fillOptions || !cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
+                var cd = cdscatter[0];
+                var trace = cd.trace;
+                var stash = cd.t;
+                var lineOptions = scene.lineOptions[i];
+                var last, j;
+
+                var pos = [], srcPos = (lineOptions && lineOptions.positions) || stash.positions;
+
+                if(trace.fill === 'tozeroy') {
+                    pos = [srcPos[0], 0];
+                    pos = pos.concat(srcPos);
+                    pos.push(srcPos[srcPos.length - 2]);
+                    pos.push(0);
+                }
+                else if(trace.fill === 'tozerox') {
+                    pos = [0, srcPos[1]];
+                    pos = pos.concat(srcPos);
+                    pos.push(0);
+                    pos.push(srcPos[srcPos.length - 1]);
+                }
+                else if(trace.fill === 'toself' || trace.fill === 'tonext') {
+                    pos = [];
+                    last = 0;
+                    for(j = 0; j < srcPos.length; j += 2) {
+                        if(isNaN(srcPos[j]) || isNaN(srcPos[j + 1])) {
+                            pos = pos.concat(srcPos.slice(last, j));
+                            pos.push(srcPos[last], srcPos[last + 1]);
+                            last = j + 2;
+                        }
+                    }
+                    pos = pos.concat(srcPos.slice(last));
+                    if(last) {
+                        pos.push(srcPos[last], srcPos[last + 1]);
+                    }
+                }
+                else {
+                    var nextTrace = trace._nexttrace;
+
+                    if(nextTrace) {
+                        var nextOptions = scene.lineOptions[i + 1];
+
+                        if(nextOptions) {
+                            var nextPos = nextOptions.positions;
+                            if(trace.fill === 'tonexty') {
+                                pos = srcPos.slice();
+
+                                for(i = Math.floor(nextPos.length / 2); i--;) {
+                                    var xx = nextPos[i * 2], yy = nextPos[i * 2 + 1];
+                                    if(isNaN(xx) || isNaN(yy)) continue;
+                                    pos.push(xx);
+                                    pos.push(yy);
+                                }
+                                fillOptions.fill = nextTrace.fillcolor;
+                            }
+                        }
+                    }
+                }
+
+                // detect prev trace positions to exclude from current fill
+                if(trace._prevtrace && trace._prevtrace.fill === 'tonext') {
+                    var prevLinePos = scene.lineOptions[i - 1].positions;
+
+                    // FIXME: likely this logic should be tested better
+                    var offset = pos.length / 2;
+                    last = offset;
+                    var hole = [last];
+                    for(j = 0; j < prevLinePos.length; j += 2) {
+                        if(isNaN(prevLinePos[j]) || isNaN(prevLinePos[j + 1])) {
+                            hole.push(j / 2 + offset + 1);
+                            last = j + 2;
+                        }
+                    }
+
+                    pos = pos.concat(prevLinePos);
+                    fillOptions.hole = hole;
+                }
+
+                fillOptions.opacity = trace.opacity;
+                fillOptions.positions = pos;
+            });
+
+            scene.fill2d.update(scene.fillOptions);
+        }
+    }
+
+    // make sure selection layer is initialized if we require selection
+    var dragmode = layout.dragmode;
+
+    if(dragmode === 'lasso' || dragmode === 'select') {
+        if(scene.select2d && scene.selectBatch) {
+            scene.scatter2d.update(scene.unselectedOptions);
+        }
+    }
+
+    // provide viewport and range
+    var vpRange = cdata.map(function(cdscatter) {
+        if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
+        var cd = cdscatter[0];
+        var trace = cd.trace;
+        var stash = cd.t;
+        var x = stash.rawx,
+            y = stash.rawy;
+
+        var xaxis = subplot.xaxis || Axes.getFromId(container, trace.xaxis || 'x');
+        var yaxis = subplot.yaxis || Axes.getFromId(container, trace.yaxis || 'y');
+        var i;
+
+        var range = [
+            (xaxis._rl || xaxis.range)[0],
+            (yaxis._rl || yaxis.range)[0],
+            (xaxis._rl || xaxis.range)[1],
+            (yaxis._rl || yaxis.range)[1]
+        ];
+
+        var viewport = [
+            vpSize.l + xaxis.domain[0] * vpSize.w,
+            vpSize.b + yaxis.domain[0] * vpSize.h,
+            (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
+            (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
+        ];
+
+        if(trace.selectedpoints || dragmode === 'lasso' || dragmode === 'select') {
+            // create select2d
+            if(!scene.select2d && scene.scatter2d) {
+                var selectRegl = layout._glcanvas.data()[1].regl;
+
+                // smol hack to create scatter instance by cloning scatter2d
+                scene.select2d = createScatter(selectRegl, {clone: scene.scatter2d});
+                scene.select2d.update(scene.selectedOptions);
+
+                // create selection style once we have something selected
+                if(trace.selectedpoints && !scene.selectBatch) {
+                    scene.selectBatch = Array(scene.count);
+                    scene.unselectBatch = Array(scene.count);
+                    scene.scatter2d.update(scene.unselectedOptions);
+                }
+            }
+            else {
+                // update selection positions, since they may have changed by panning or alike
+                scene.select2d.update(scene.selectedOptions);
+            }
+
+            // form unselected batch
+            if(trace.selectedpoints && !scene.unselectBatch[stash.index]) {
+                scene.selectBatch[stash.index] = trace.selectedpoints;
+                var selPts = trace.selectedpoints;
+                var selDict = {};
+                for(i = 0; i < selPts.length; i++) {
+                    selDict[selPts[i]] = true;
+                }
+                var unselPts = [];
+                for(i = 0; i < stash.count; i++) {
+                    if(!selDict[i]) unselPts.push(i);
+                }
+                scene.unselectBatch[stash.index] = unselPts;
+            }
+
+            // precalculate px coords since we are not going to pan during select
+            var xpx = Array(stash.count), ypx = Array(stash.count);
+            for(i = 0; i < stash.count; i++) {
+                xpx[i] = xaxis.c2p(x[i]);
+                ypx[i] = yaxis.c2p(y[i]);
+            }
+            stash.xpx = xpx;
+            stash.ypx = ypx;
+        }
+        else {
+            stash.xpx = stash.ypx = null;
+        }
+
+        return trace.visible ? {
+            viewport: viewport,
+            range: range
+        } : null;
+    });
+
+    // uploat viewport/range data to GPU
+    if(scene.fill2d) {
+        scene.fill2d.update(vpRange);
+    }
+    if(scene.line2d) {
+        scene.line2d.update(vpRange);
+    }
+    if(scene.error2d) {
+        scene.error2d.update(vpRange.concat(vpRange));
+    }
+    if(scene.scatter2d) {
+        scene.scatter2d.update(vpRange);
+    }
+    if(scene.select2d) {
+        scene.select2d.update(vpRange);
+    }
+
+    scene.draw();
+
+    return;
+}
+
+function hoverPoints(pointData, xval, yval, hovermode) {
+    var cd = pointData.cd,
+        stash = cd[0].t,
+        trace = cd[0].trace,
+        xa = pointData.xa,
+        ya = pointData.ya,
+        x = stash.rawx,
+        y = stash.rawy,
+        xpx = xa.c2p(xval),
+        ypx = ya.c2p(yval),
+        ids;
+
+    // FIXME: make sure this is a proper way to calc search radius
+    if(stash.tree) {
+        var xl = xa.p2c(xpx - MAXDIST),
+            xr = xa.p2c(xpx + MAXDIST),
+            yl = ya.p2c(ypx - MAXDIST),
+            yr = ya.p2c(ypx + MAXDIST);
+
+        if(hovermode === 'x') {
+            ids = stash.tree.range(
+                Math.min(xl, xr), Math.min(ya._rl[0], ya._rl[1]),
+                Math.max(xl, xr), Math.max(ya._rl[0], ya._rl[1])
+            );
+        }
+        else {
+            ids = stash.tree.range(
+                Math.min(xl, xr), Math.min(yl, yr),
+                Math.max(xl, xr), Math.max(yl, yr)
+            );
+        }
+    }
+    else if(stash.ids) {
+        ids = stash.ids;
+    }
+    else return [pointData];
+
+    // pick the id closest to the point
+    // note that point possibly may not be found
+    var min = MAXDIST, id, ptx, pty, i, dx, dy, dist;
+
+    if(hovermode === 'x') {
+        for(i = 0; i < ids.length; i++) {
+            ptx = x[ids[i]];
+            dx = Math.abs(xa.c2p(ptx) - xpx);
+            if(dx < min) {
+                min = dx;
+                id = ids[i];
+            }
+        }
+    }
+    else {
+        for(i = 0; i < ids.length; i++) {
+            ptx = x[ids[i]];
+            pty = y[ids[i]];
+            dx = xa.c2p(ptx) - xpx, dy = ya.c2p(pty) - ypx;
+
+            dist = Math.sqrt(dx * dx + dy * dy);
+            if(dist < min) {
+                min = dist;
+                id = ids[i];
+            }
+        }
+    }
+
+    pointData.index = id;
+
+    if(id === undefined) return [pointData];
+
+    // the closest data point
+    var di = {
+        pointNumber: id,
+        x: x[id],
+        y: y[id]
+    };
+
+    // that is single-item arrays_to_calcdata excerpt, since we are doing it for a single point and we don't have to do it beforehead for 1e6 points
+    di.tx = Array.isArray(trace.text) ? trace.text[id] : trace.text;
+    di.htx = Array.isArray(trace.hovertext) ? trace.hovertext[id] : trace.hovertext;
+    di.data = Array.isArray(trace.customdata) ? trace.customdata[id] : trace.customdata;
+    di.tp = Array.isArray(trace.textposition) ? trace.textposition[id] : trace.textposition;
+
+    var font = trace.textfont;
+    if(font) {
+        di.ts = Array.isArray(font.size) ? font.size[id] : font.size;
+        di.tc = Array.isArray(font.color) ? font.color[id] : font.color;
+        di.tf = Array.isArray(font.family) ? font.family[id] : font.family;
+    }
+
+    var marker = trace.marker;
+    if(marker) {
+        di.ms = Array.isArray(marker.size) ? marker.size[id] : marker.size;
+        di.mo = Array.isArray(marker.opacity) ? marker.opacity[id] : marker.opacity;
+        di.mx = Array.isArray(marker.symbol) ? marker.symbol[id] : marker.symbol;
+        di.mc = Array.isArray(marker.color) ? marker.color[id] : marker.color;
+    }
+
+    var line = marker && marker.line;
+    if(line) {
+        di.mlc = Array.isArray(line.color) ? line.color[id] : line.color;
+        di.mlw = Array.isArray(line.width) ? line.width[id] : line.width;
+    }
+
+    var grad = marker && marker.gradient;
+    if(grad && grad.type !== 'none') {
+        di.mgt = Array.isArray(grad.type) ? grad.type[id] : grad.type;
+        di.mgc = Array.isArray(grad.color) ? grad.color[id] : grad.color;
+    }
+
+    var xc = xa.c2p(di.x, true),
+        yc = ya.c2p(di.y, true),
+        rad = di.mrc || 1;
+
+    var hoverlabel = trace.hoverlabel;
+
+    if(hoverlabel) {
+        di.hbg = Array.isArray(hoverlabel.bgcolor) ? hoverlabel.bgcolor[id] : hoverlabel.bgcolor;
+        di.hbc = Array.isArray(hoverlabel.bordercolor) ? hoverlabel.bordercolor[id] : hoverlabel.bordercolor;
+        di.hts = Array.isArray(hoverlabel.font.size) ? hoverlabel.font.size[id] : hoverlabel.font.size;
+        di.htc = Array.isArray(hoverlabel.font.color) ? hoverlabel.font.color[id] : hoverlabel.font.color;
+        di.htf = Array.isArray(hoverlabel.font.family) ? hoverlabel.font.family[id] : hoverlabel.font.family;
+        di.hnl = Array.isArray(hoverlabel.namelength) ? hoverlabel.namelength[id] : hoverlabel.namelength;
+    }
+    var hoverinfo = trace.hoverinfo;
+    if(hoverinfo) {
+        di.hi = Array.isArray(hoverinfo) ? hoverinfo[id] : hoverinfo;
+    }
+
+    var fakeCd = {};
+    fakeCd[pointData.index] = di;
+
+    Lib.extendFlat(pointData, {
+        color: getTraceColor(trace, di),
+
+        x0: xc - rad,
+        x1: xc + rad,
+        xLabelVal: di.x,
+
+        y0: yc - rad,
+        y1: yc + rad,
+        yLabelVal: di.y,
+
+        cd: fakeCd
+    });
+
+    if(di.htx) pointData.text = di.htx;
+    else if(di.tx) pointData.text = di.tx;
+    else if(trace.text) pointData.text = trace.text;
+
+    fillHoverText(di, trace, pointData);
+    ErrorBars.hoverInfo(di, trace, pointData);
+
+    return [pointData];
+}
+
+function selectPoints(searchInfo, polygon) {
+    var cd = searchInfo.cd,
+        selection = [],
+        trace = cd[0].trace,
+        stash = cd[0].t,
+        x = stash.x,
+        y = stash.y,
+        rawx = stash.rawx,
+        rawy = stash.rawy;
+
+    var scene = stash.scene;
+
+    if(!scene) return selection;
+
+    var hasOnlyLines = (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace));
+    if(trace.visible !== true || hasOnlyLines) return selection;
+
+    // degenerate polygon does not enable selection
+    // filter out points by visible scatter ones
+    var els = null, unels = null, i;
+    if(polygon !== false && !polygon.degenerate) {
+        els = [], unels = [];
+        for(i = 0; i < stash.count; i++) {
+            if(polygon.contains([stash.xpx[i], stash.ypx[i]])) {
+                els.push(i);
+                selection.push({
+                    pointNumber: i,
+                    x: rawx ? rawx[i] : x[i],
+                    y: rawy ? rawy[i] : y[i]
+                });
+            }
+            else {
+                unels.push(i);
+            }
+        }
+    }
+    else {
+        unels = Array(stash.count);
+        for(i = 0; i < stash.count; i++) {
+            unels[i] = i;
+        }
+    }
+
+    // create selection style once we have something selected
+    if(!scene.selectBatch) {
+        scene.selectBatch = Array(scene.count);
+        scene.unselectBatch = Array(scene.count);
+        scene.scatter2d.update(scene.unselectedOptions);
+    }
+    scene.selectBatch[stash.index] = els;
+    scene.unselectBatch[stash.index] = unels;
 
     return selection;
+}
+
+function style(gd, cd) {
+    if(cd) {
+        var stash = cd[0].t;
+        var scene = stash.scene;
+        scene.clear();
+        scene.draw();
+    }
+}
+
+module.exports = {
+    moduleType: 'trace',
+    name: 'scattergl',
+    basePlotModule: require('../../plots/cartesian'),
+    categories: ['gl', 'regl', 'cartesian', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend', 'scatter-like'],
+
+    attributes: require('./attributes'),
+    supplyDefaults: require('./defaults'),
+    cleanData: require('../scatter/clean_data'),
+    colorbar: require('../scatter/colorbar'),
+    calc: calc,
+    plot: plot,
+    hoverPoints: hoverPoints,
+    style: style,
+    selectPoints: selectPoints,
+
+    sceneOptions: sceneOptions,
+    sceneUpdate: sceneUpdate,
+
+    meta: {
+        
+        
+    }
 };
 
-},{"../scatter/subtypes":530}]},{},[6])(6)
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"../../components/drawing":275,"../../components/errorbars":281,"../../components/fx":292,"../../constants/gl2d_dashes":349,"../../lib":371,"../../lib/gl_format_color":367,"../../plots/cartesian":427,"../../plots/cartesian/axes":416,"../scatter/clean_data":521,"../scatter/colorbar":522,"../scatter/colorscale_calc":523,"../scatter/fill_hover_text":526,"../scatter/get_trace_color":528,"../scatter/link_traces":534,"../scatter/make_bubble_size_func":535,"../scatter/subtypes":540,"./attributes":544,"./defaults":545,"color-normalize":56,"fast-isnumeric":76,"kdgrass":146,"object-assign":156,"regl":186,"regl-error2d":180,"regl-line2d":181,"regl-scatter2d":183,"svg-path-sdf":210}]},{},[6])(6)
 });
