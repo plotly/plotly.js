@@ -561,7 +561,7 @@ function sceneUpdate(container, subplot) {
             if(scene.fill2d) scene.fill2d.update(opts);
             if(scene.scatter2d) scene.scatter2d.update(opts);
             if(scene.line2d) scene.line2d.update(opts);
-            if(scene.error2d) scene.error2d.update([].push.apply(opts, opts));
+            if(scene.error2d) scene.error2d.update(opts.concat(opts));
             if(scene.select2d) scene.select2d.update(opts);
 
             scene.draw();
