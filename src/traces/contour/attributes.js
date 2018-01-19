@@ -194,21 +194,16 @@ module.exports = extendFlat({
 
                 '*=* keeps items equal to `value`',
 
-                '*<* keeps items less than `value`',
-                '*<=* keeps items less than or equal to `value`',
+                '*<* and *<=* keep items less than `value`',
 
-                '*>* keeps items greater than `value`',
-                '*>=* keeps items greater than or equal to `value`',
+                '*>* and *>=* keep items greater than `value`',
 
-                '*[]* keeps items inside `value[0]` to value[1]` including both bounds`',
-                '*()* keeps items inside `value[0]` to value[1]` excluding both bounds`',
-                '*[)* keeps items inside `value[0]` to value[1]` including `value[0]` but excluding `value[1]',
-                '*(]* keeps items inside `value[0]` to value[1]` excluding `value[0]` but including `value[1]',
+                '*[]*, *()*, *[)*, and *(]* keep items inside `value[0]` to `value[1]`',
 
-                '*][* keeps items outside `value[0]` to value[1]` and equal to both bounds`',
-                '*)(* keeps items outside `value[0]` to value[1]`',
-                '*](* keeps items outside `value[0]` to value[1]` and equal to `value[0]`',
-                '*)[* keeps items outside `value[0]` to value[1]` and equal to `value[1]`'
+                '*][*, *)(*, *](*, *)[* keep items outside `value[0]` to value[1]`',
+
+                'Open vs. closed intervals make no difference to constraint display, but',
+                'all versions are allowed for consistency with filter transforms.'
             ].join(' ')
         },
         value: {
@@ -231,7 +226,8 @@ module.exports = extendFlat({
                 '*value* is expected to be 2-item array where the first item',
                 'is the lower bound and the second item is the upper bound.',
 
-                'Open vs. closed intervals make no difference to constraint display.'
+                'Open vs. closed intervals make no difference to constraint display, but',
+                'all versions are allowed for consistency with filter transforms.'
             ].join(' ')
         },
         editType: 'calc',

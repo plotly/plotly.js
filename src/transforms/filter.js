@@ -73,15 +73,15 @@ exports.attributes = {
             '*>* keeps items greater than `value`',
             '*>=* keeps items greater than or equal to `value`',
 
-            '*[]* keeps items inside `value[0]` to value[1]` including both bounds`',
-            '*()* keeps items inside `value[0]` to value[1]` excluding both bounds`',
-            '*[)* keeps items inside `value[0]` to value[1]` including `value[0]` but excluding `value[1]',
-            '*(]* keeps items inside `value[0]` to value[1]` excluding `value[0]` but including `value[1]',
+            '*[]* keeps items inside `value[0]` to `value[1]` including both bounds',
+            '*()* keeps items inside `value[0]` to `value[1]` excluding both bounds',
+            '*[)* keeps items inside `value[0]` to `value[1]` including `value[0]` but excluding `value[1]',
+            '*(]* keeps items inside `value[0]` to `value[1]` excluding `value[0]` but including `value[1]',
 
-            '*][* keeps items outside `value[0]` to value[1]` and equal to both bounds`',
-            '*)(* keeps items outside `value[0]` to value[1]`',
-            '*](* keeps items outside `value[0]` to value[1]` and equal to `value[0]`',
-            '*)[* keeps items outside `value[0]` to value[1]` and equal to `value[1]`',
+            '*][* keeps items outside `value[0]` to `value[1]` and equal to both bounds',
+            '*)(* keeps items outside `value[0]` to `value[1]`',
+            '*](* keeps items outside `value[0]` to `value[1]` and equal to `value[0]`',
+            '*)[* keeps items outside `value[0]` to `value[1]` and equal to `value[1]`',
 
             '*{}* keeps items present in a set of values',
             '*}{* keeps items not present in a set of values'
