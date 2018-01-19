@@ -19,7 +19,6 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var filterOps = require('../../constants/filter_ops');
 var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
 var INTERVAL_OPS = filterOps.INTERVAL_OPS;
-var SET_OPS = filterOps.SET_OPS;
 
 var scatterLineAttrs = scatterAttrs.line;
 
@@ -186,7 +185,7 @@ module.exports = extendFlat({
         },
         operation: {
             valType: 'enumerated',
-            values: [].concat(COMPARISON_OPS2).concat(INTERVAL_OPS).concat(SET_OPS),
+            values: [].concat(COMPARISON_OPS2).concat(INTERVAL_OPS),
             role: 'info',
             dflt: '=',
             editType: 'calc',
@@ -231,11 +230,6 @@ module.exports = extendFlat({
                 '(' + INTERVAL_OPS + ')',
                 '*value* is expected to be 2-item array where the first item',
                 'is the lower bound and the second item is the upper bound.',
-
-                'When `operation`, is set to one of the set value',
-                '(' + SET_OPS + ')',
-                '*value* is expected to be an array with as many items as',
-                'the desired set elements.'
             ].join(' ')
         },
         editType: 'calc',
