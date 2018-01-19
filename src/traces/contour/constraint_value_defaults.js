@@ -9,7 +9,6 @@
 
 'use strict';
 
-// var constraintMapping = require('./constraint_mapping');
 var isNumeric = require('fast-isnumeric');
 var COMPARISON_OPS2 = require('../../constants/filter_ops').COMPARISON_OPS2;
 

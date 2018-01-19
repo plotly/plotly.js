@@ -10,7 +10,6 @@
 'use strict';
 
 var colorscaleDefaults = require('../../components/colorscale/defaults');
-// var Lib = require('../../lib');
 var handleLabelDefaults = require('./label_defaults');
 
 

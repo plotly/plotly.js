@@ -16,7 +16,6 @@ var attributes = require('./attributes');
 var handleConstraintDefaults = require('../contour/constraint_defaults');
 var handleContoursDefaults = require('../contour/contours_defaults');
 var handleStyleDefaults = require('../contour/style_defaults');
-var plotAttributes = require('../../plots/attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -59,10 +58,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         // Unimplemented:
         // coerce('connectgaps', hasColumns(traceOut));
 
-        // Override the trace-level showlegend default with a default that takes
-        // into account whether this is a constraint or level contours:
-        if(isConstraint) Lib.coerce(traceIn, traceOut, plotAttributes, 'showlegend');
-        else delete traceOut.showlegend;
+        // trace-level showlegend has already been set, but is only allowed if this is a constraint
+        if(!isConstraint) delete traceOut.showlegend;
 
         if(isConstraint) {
             handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor, {hasHover: false});
