@@ -13,22 +13,13 @@ var isNumeric = require('fast-isnumeric');
 
 // This syntax conforms to the existing filter transform syntax, but we don't care
 // about open vs. closed intervals for simply drawing contours constraints:
-module.exports['[]'] = makeRangeSettings('[]');
-module.exports['()'] = makeRangeSettings('()');
-module.exports['[)'] = makeRangeSettings('[)');
-module.exports['(]'] = makeRangeSettings('(]');
-
-// Inverted intervals simply flip the sign:
-module.exports[']['] = makeRangeSettings('][');
-module.exports[')('] = makeRangeSettings(')(');
-module.exports[')['] = makeRangeSettings(')[');
-module.exports[']('] = makeRangeSettings('](');
-
-module.exports['>'] = makeInequalitySettings('>');
-module.exports['>='] = makeInequalitySettings('>=');
-module.exports['<'] = makeInequalitySettings('<');
-module.exports['<='] = makeInequalitySettings('<=');
-module.exports['='] = makeInequalitySettings('=');
+module.exports = {
+    '[]': makeRangeSettings('[]'),
+    '][': makeRangeSettings(']['),
+    '>': makeInequalitySettings('>'),
+    '<': makeInequalitySettings('<'),
+    '=': makeInequalitySettings('=')
+};
 
 // This does not in any way shape or form support calendars. It's adapted from
 // transforms/filter.js.

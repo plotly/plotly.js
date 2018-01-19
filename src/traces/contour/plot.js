@@ -85,8 +85,8 @@ function plotOne(gd, plotinfo, cd) {
 
     var fillPathinfo = pathinfo;
     if(contours.type === 'constraint') {
-        fillPathinfo = convertToConstraints(pathinfo, contours.operation);
-        closeBoundaries(fillPathinfo, contours.operation, perimeter, trace);
+        fillPathinfo = convertToConstraints(pathinfo, contours._operation);
+        closeBoundaries(fillPathinfo, contours._operation, perimeter, trace);
     }
 
     // draw everything
@@ -131,7 +131,7 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
         .classed('contourfill', true);
 
     var fillitems = fillgroup.selectAll('path')
-        .data(contours.coloring === 'fill' || (contours.type === 'constraint' && contours.operation !== '=') ? pathinfo : []);
+        .data(contours.coloring === 'fill' || (contours.type === 'constraint' && contours._operation !== '=') ? pathinfo : []);
     fillitems.enter().append('path');
     fillitems.exit().remove();
     fillitems.each(function(pi) {

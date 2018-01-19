@@ -11,12 +11,12 @@
 
 // var constraintMapping = require('./constraint_mapping');
 var isNumeric = require('fast-isnumeric');
+var COMPARISON_OPS2 = require('../../constants/filter_ops').COMPARISON_OPS2;
 
 module.exports = function(coerce, contours) {
     var zvalue;
-    var scalarValuedOps = ['=', '<', '<=', '>', '>='];
 
-    if(scalarValuedOps.indexOf(contours.operation) === -1) {
+    if(COMPARISON_OPS2.indexOf(contours.operation) === -1) {
         // Requires an array of two numbers:
         coerce('contours.value', [0, 1]);
 

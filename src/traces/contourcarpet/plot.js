@@ -50,8 +50,8 @@ function plotOne(gd, plotinfo, cd) {
     var id = 'contour' + uid;
     var pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
     var isConstraint = contours.type === 'constraint';
-    var isEquality = contours.operation === '=';
-    var coloring = isConstraint ? (isEquality ? 'lines' : 'fill') : contours.coloring;
+    var operation = contours._operation;
+    var coloring = isConstraint ? (operation === '=' ? 'lines' : 'fill') : contours.coloring;
 
     // Map [a, b] (data) --> [i, j] (pixels)
     function ab2p(ab) {
@@ -88,8 +88,8 @@ function plotOne(gd, plotinfo, cd) {
     // See: https://github.com/plotly/plotly.js/issues/1356
     var fillPathinfo = pathinfo;
     if(contours.type === 'constraint') {
-        fillPathinfo = convertToConstraints(pathinfo, contours.operation);
-        closeBoundaries(fillPathinfo, contours.operation, perimeter, trace);
+        fillPathinfo = convertToConstraints(pathinfo, operation);
+        closeBoundaries(fillPathinfo, operation, perimeter, trace);
     }
 
     // Map the paths in a/b coordinates to pixel coordinates:

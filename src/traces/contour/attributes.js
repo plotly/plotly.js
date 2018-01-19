@@ -230,6 +230,8 @@ module.exports = extendFlat({
                 '(' + INTERVAL_OPS + ')',
                 '*value* is expected to be 2-item array where the first item',
                 'is the lower bound and the second item is the upper bound.',
+
+                'Open vs. closed intervals make no difference to constraint display.'
             ].join(' ')
         },
         editType: 'calc',

@@ -23,9 +23,7 @@ module.exports = function(pathinfo, operation) {
     switch(operation) {
         case '=':
         case '<':
-        case '<=':
             return pathinfo;
-        case '>=':
         case '>':
             if(pathinfo.length !== 1) {
                 Lib.warn('Contour data invalid for the specified inequality operation.');
@@ -45,18 +43,12 @@ module.exports = function(pathinfo, operation) {
             }
             return pathinfo;
         case '][':
-        case ')[':
-        case '](':
-        case ')(':
             var tmp = op0;
             op0 = op1;
             op1 = tmp;
             // It's a nice rule, except this definitely *is* what's intended here.
             /* eslint-disable: no-fallthrough */
         case '[]':
-        case '[)':
-        case '(]':
-        case '()':
             /* eslint-enable: no-fallthrough */
             if(pathinfo.length !== 2) {
                 Lib.warn('Contour data invalid for the specified inequality range operation.');

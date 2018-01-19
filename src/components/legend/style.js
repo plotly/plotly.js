@@ -67,7 +67,7 @@ module.exports = function style(s, gd) {
 
         if(contours && contours.type === 'constraint') {
             showLine = contours.showlines;
-            showFill = contours.operation !== '=';
+            showFill = contours._operation !== '=';
         }
 
         var fill = d3.select(this).select('.legendfill').selectAll('path')

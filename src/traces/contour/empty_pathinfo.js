@@ -14,7 +14,7 @@ var endPlus = require('./end_plus');
 
 module.exports = function emptyPathinfo(contours, plotinfo, cd0) {
     var contoursFinal = (contours.type === 'constraint') ?
-        constraintMapping[contours.operation](contours.value) :
+        constraintMapping[contours._operation](contours.value) :
         contours;
 
     var cs = contoursFinal.size;

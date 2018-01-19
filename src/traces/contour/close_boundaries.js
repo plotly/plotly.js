@@ -38,19 +38,16 @@ module.exports = function(pathinfo, operation, perimeter, trace) {
 
     switch(operation) {
         case '>':
-        case '>=':
             if(contours.value > boundaryMax) {
                 pi0.prefixBoundary = true;
             }
             break;
         case '<':
-        case '<=':
             if(contours.value < boundaryMin) {
                 pi0.prefixBoundary = true;
             }
             break;
         case '[]':
-        case '()':
             v1 = Math.min.apply(null, contours.value);
             v2 = Math.max.apply(null, contours.value);
             if(v2 < boundaryMin || v1 > boundaryMax) {
@@ -58,7 +55,6 @@ module.exports = function(pathinfo, operation, perimeter, trace) {
             }
             break;
         case '][':
-        case ')(':
             v1 = Math.min.apply(null, contours.value);
             v2 = Math.max.apply(null, contours.value);
             if(v1 < boundaryMin && v2 > boundaryMax) {

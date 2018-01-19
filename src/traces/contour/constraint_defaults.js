@@ -14,12 +14,14 @@ var handleLabelDefaults = require('./label_defaults');
 var Color = require('../../components/color');
 var addOpacity = Color.addOpacity;
 var opacity = Color.opacity;
+var CONSTRAINT_REDUCTION = require('../../constants/filter_ops').CONSTRAINT_REDUCTION;
 
 module.exports = function handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor, opts) {
     var contours = traceOut.contours;
     var showLines, lineColor, fillColor;
 
     var operation = coerce('contours.operation');
+    contours._operation = CONSTRAINT_REDUCTION[operation];
 
     handleConstraintValueDefaults(coerce, contours);
 
