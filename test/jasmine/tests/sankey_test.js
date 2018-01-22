@@ -12,6 +12,7 @@ var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 var supplyAllDefaults = require('../assets/supply_defaults');
+var defaultColors = require('@src/components/color/attributes').defaults;
 
 describe('sankey tests', function() {
 
@@ -20,7 +21,7 @@ describe('sankey tests', function() {
     function _supply(traceIn) {
         var traceOut = { visible: true },
             defaultColor = '#444',
-            layout = { };
+            layout = { colorway: defaultColors };
 
         Sankey.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -31,7 +32,7 @@ describe('sankey tests', function() {
         var traceOut = { visible: true },
             defaultColor = '#444';
 
-        Sankey.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        Sankey.supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({colorway: defaultColors}, layout));
 
         return traceOut;
     }
@@ -179,6 +180,25 @@ describe('sankey tests', function() {
             });
 
             expect(Lib.isArray(fullTrace.node.color)).toBe(true, 'set up color array');
+            expect(fullTrace.node.color).toEqual(['rgba(31, 119, 180, 0.8)', 'rgba(255, 127, 14, 0.8)']);
+
+        });
+
+        it('respects layout.colorway', function() {
+
+            var fullTrace = _supplyWithLayout({
+                node: {
+                    label: ['a', 'b']
+                },
+                link: {
+                    source: [0],
+                    target: [1],
+                    value: [1]
+                }
+            }, {colorway: ['rgb(255, 0, 0)', 'rgb(0, 0, 255)']});
+
+            expect(Lib.isArray(fullTrace.node.color)).toBe(true, 'set up color array');
+            expect(fullTrace.node.color).toEqual(['rgba(255, 0, 0, 0.8)', 'rgba(0, 0, 255, 0.8)']);
 
         });
 
