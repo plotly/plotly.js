@@ -192,7 +192,7 @@ describe('Test gl2d plots', function() {
     var mock = require('@mocks/gl2d_10.json');
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 4000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
         gd = createGraphDiv();
     });
 
@@ -333,7 +333,7 @@ describe('Test gl2d plots', function() {
         _mock.data[0].line.width = 5;
 
         Plotly.plot(gd, _mock)
-        .then(delay(20))
+        .then(delay(30))
         .then(function() {
             return Plotly.restyle(gd, 'visible', 'legendonly');
         })
