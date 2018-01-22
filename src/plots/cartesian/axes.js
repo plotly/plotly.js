@@ -2107,7 +2107,10 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
             if(!ax._marginPush || ax._marginPush < marginPush) {
                 ax._marginPush = marginPush;
-                var pushParams = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+                var pushParams = {
+                    x: ax.side[0] === 'r' ? 1 : 0,
+                    y: ax.side[0] === 't' ? 1 : 0,
+                    r: 0, l: 0, t: 0, b: 0};
                 pushParams[ax.side[0]] = marginPush;
                 Plots.autoMargin(gd, ax._name, pushParams);
             }

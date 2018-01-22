@@ -6,7 +6,7 @@
             "short label 1", "loooooong label 1",
             "short label 2", "loooooong label 2",
             "short label 3", "loooooong label 3",
-            "short label 4", "loooooong label 4",
+            "short label 4", "loooooongloooooongloooooong label 4",
             "short label 5", "loooooong label 5"
         ],
         "y": [
@@ -22,7 +22,7 @@
         "type": "scatter",
         "name": "loooooong y",
         "x":["looooooooooooonger"],
-        "y":["loooooonger"]
+        "y":["loooooooo"]
     }
   ],
     "layout": {
@@ -31,7 +31,7 @@
       "yaxis2": {
         "title": "Y2 Axis Title",
         "overlaying": "y",
-        "side": "right"
+        "side": "right", "titlefont": {"size": 40}
       }
       }
 }
