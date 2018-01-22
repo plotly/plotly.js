@@ -63,6 +63,8 @@ describe('Test gl3d plots', function() {
     beforeEach(function() {
         gd = createGraphDiv();
         ptData = {};
+
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 4000;
     });
 
     afterEach(function() {
@@ -1446,7 +1448,7 @@ describe('Test gl2d plots', function() {
     var mock = require('@mocks/gl2d_10.json');
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 4000;
         gd = createGraphDiv();
     });
 
@@ -1582,7 +1584,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    fit('should be able to toggle visibility', function(done) {
+    it('should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock);
         _mock.data[0].line.width = 5;
 
