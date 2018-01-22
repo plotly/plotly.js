@@ -251,6 +251,16 @@ plots.sendDataToCloud = function(gd) {
     return false;
 };
 
+var d3FormatKeys = [
+    'days', 'shortDays', 'months', 'shortMonths', 'periods',
+    'dateTime', 'date', 'time',
+    'decimal', 'thousands', 'grouping', 'currency'
+];
+
+var extraFormatKeys = [
+    'year', 'month', 'dayMonth', 'dayMonthYear'
+];
+
 // Fill in default values:
 //
 // gd.data, gd.layout:
@@ -481,16 +491,6 @@ function remapTransformedArrays(cd0, newTrace) {
         Lib.nestedProperty(cd0.trace, astr).set(transformedArrayHash[astr]);
     }
 }
-
-var d3FormatKeys = [
-    'days', 'shortDays', 'months', 'shortMonths', 'periods',
-    'dateTime', 'date', 'time',
-    'decimal', 'thousands', 'grouping', 'currency'
-];
-
-var extraFormatKeys = [
-    'year', 'month', 'dayMonth', 'dayMonthYear'
-];
 
 /**
  * getFormatObj: use _context to get the format object from locale.
