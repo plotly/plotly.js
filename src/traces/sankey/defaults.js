@@ -10,7 +10,6 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
-var colors = require('../../components/color/attributes').defaults;
 var Color = require('../../components/color');
 var tinycolor = require('tinycolor2');
 
@@ -24,6 +23,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('node.thickness');
     coerce('node.line.color');
     coerce('node.line.width');
+
+    var colors = layout.colorway;
 
     var defaultNodePalette = function(i) {return colors[i % colors.length];};
 
