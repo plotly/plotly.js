@@ -257,7 +257,7 @@ describe('Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
         })
-        .then(delay(200))
+        .then(delay(20))
         .then(function() {
             gd.on('plotly_relayout', relayoutCallback);
         })
@@ -311,7 +311,7 @@ describe('Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
         })
-        .then(delay(200))
+        .then(delay(20))
         .then(function() {
             // callback count expectation: X and back; Y and back; XY and back
             expect(relayoutCallback).toHaveBeenCalledTimes(6);
@@ -359,7 +359,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should display selection of big number of points', function(done) {
+    it('@noCI should display selection of big number of points', function(done) {
         // generate large number of points
         var x = [], y = [], n = 2e2, N = n * n;
         for(var i = 0; i < N; i++) {
@@ -377,9 +377,7 @@ describe('Test gl2d plots', function() {
         };
 
         Plotly.plot(gd, mock)
-        .then(delay(1000))
         .then(select([[160, 100], [180, 100]]))
-        .then(delay(1000))
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
