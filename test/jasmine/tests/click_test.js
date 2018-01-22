@@ -138,6 +138,31 @@ describe('Test click interactions:', function() {
             expect(evt.clientY).toEqual(pointPos[1]);
         });
 
+        it('works with fixedrange axes', function(done) {
+            Plotly.relayout(gd, {'xaxis.fixedrange': true, 'yaxis.fixedrange': true}).then(function() {
+                click(pointPos[0], pointPos[1]);
+                expect(futureData.points.length).toEqual(1);
+                expect(clickPassthroughs).toBe(2);
+                expect(contextPassthroughs).toBe(0);
+
+                var pt = futureData.points[0];
+                expect(Object.keys(pt)).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                    'x', 'y', 'xaxis', 'yaxis'
+                ]);
+                expect(pt.curveNumber).toEqual(0);
+                expect(pt.pointNumber).toEqual(11);
+                expect(pt.x).toEqual(0.125);
+                expect(pt.y).toEqual(2.125);
+
+                var evt = futureData.event;
+                expect(evt.clientX).toEqual(pointPos[0]);
+                expect(evt.clientY).toEqual(pointPos[1]);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
         var modClickOpts = {
             altKey: true,
             ctrlKey: true, // this makes it effectively into a right-click
