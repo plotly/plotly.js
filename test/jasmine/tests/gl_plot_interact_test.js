@@ -1446,7 +1446,7 @@ describe('Test gl2d plots', function() {
     var mock = require('@mocks/gl2d_10.json');
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
         gd = createGraphDiv();
     });
 
