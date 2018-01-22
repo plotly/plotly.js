@@ -1446,7 +1446,7 @@ describe('Test gl2d plots', function() {
     var mock = require('@mocks/gl2d_10.json');
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 3000;
         gd = createGraphDiv();
     });
 
@@ -1460,6 +1460,26 @@ describe('Test gl2d plots', function() {
         var dx = p1[0] - p0[0];
         var dy = p1[1] - p0[1];
         return drag(node, dx, dy, null, p0[0], p0[1]);
+    }
+
+    function select(path) {
+        return new Promise(function(resolve) {
+            gd.once('plotly_selected', resolve);
+
+            var len = path.length;
+
+            // do selection
+            Lib.clearThrottle();
+            mouseEvent('mousemove', path[0][0], path[0][1]);
+            mouseEvent('mousedown', path[0][0], path[0][1]);
+
+            path.slice(1, len).forEach(function(pt) {
+                Lib.clearThrottle();
+                mouseEvent('mousemove', pt[0], pt[1]);
+            });
+
+            mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
+        });
     }
 
     it('should respond to drag interactions', function(done) {
@@ -1562,7 +1582,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@noCI should be able to toggle visibility', function(done) {
+    it('should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock);
 
         Plotly.plot(gd, _mock)
@@ -1587,6 +1607,36 @@ describe('Test gl2d plots', function() {
         })
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should display selection of big number of points', function(done) {
+        // generate large number of points
+        var x = [], y = [], n = 2e2, N = n * n;
+        for(var i = 0; i < N; i++) {
+            x.push((i % n) / n);
+            y.push(i / N);
+        }
+
+        var mock = {
+            data: [{
+                x: x, y: y, type: 'scattergl', mode: 'markers'
+            }],
+            layout: {
+                dragmode: 'select'
+            }
+        };
+
+        Plotly.plot(gd, mock)
+        .then(delay(1000))
+        .then(select([[160, 100], [180, 100]]))
+        .then(delay(1000))
+        .then(function() {
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
         })
         .catch(fail)
         .then(done);
