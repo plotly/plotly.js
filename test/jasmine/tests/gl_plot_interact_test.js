@@ -1612,12 +1612,12 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should display selection of big number of points', function(done) {
+    fit('should display selection of big number of points', function(done) {
         // generate large number of points
-        var x = [], y = [];
-        for(var i = 0; i < 2e4; i++) {
-            x.push(Math.random());
-            y.push(Math.random());
+        var x = [], y = [], n = 2e2, N = n * n;
+        for(var i = 0; i < N; i++) {
+            x.push((i % n) / n);
+            y.push(i / N);
         }
 
         var mock = {
@@ -1630,7 +1630,9 @@ describe('Test gl2d plots', function() {
         };
 
         Plotly.plot(gd, mock)
+        .then(delay(1000))
         .then(select([[160, 100], [180, 100]]))
+        .then(delay(1000))
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
