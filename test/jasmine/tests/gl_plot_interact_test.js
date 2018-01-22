@@ -1612,7 +1612,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    fit('should display selection of big number of points', function(done) {
+    it('should display selection of big number of points', function(done) {
         // generate large number of points
         var x = [], y = [], n = 2e2, N = n * n;
         for(var i = 0; i < N; i++) {
