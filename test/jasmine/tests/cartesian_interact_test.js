@@ -63,8 +63,8 @@ describe('zoom box element', function() {
 
 describe('main plot pan', function() {
 
-    var mock = require('@mocks/10.json'),
-        gd, modeBar, relayoutCallback;
+    var mock = require('@mocks/10.json');
+    var gd, modeBar, relayoutCallback;
 
     beforeEach(function(done) {
         gd = createGraphDiv();
@@ -106,69 +106,85 @@ describe('main plot pan', function() {
         expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
         expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
+        function _drag(x0, y0, x1, y1) {
+            mouseEvent('mousedown', x0, y0);
+            mouseEvent('mousemove', x1, y1);
+            mouseEvent('mouseup', x1, y1);
+        }
+
+        function _checkAxes(xRange, yRange) {
+            expect(gd.layout.xaxis.range).toBeCloseToArray(xRange, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(yRange, precision);
+        }
+
+        function _runDrag(xr0, xr1, yr0, yr1) {
+            // Drag scene along the X axis
+            _drag(110, 150, 220, 150);
+            _checkAxes(xr1, yr0);
+
+            // Drag scene back along the X axis (not from the same starting point but same X delta)
+            _drag(280, 150, 170, 150);
+            _checkAxes(xr0, yr0);
+
+            // Drag scene along the Y axis
+            _drag(110, 150, 110, 190);
+            _checkAxes(xr0, yr1);
+
+            // Drag scene back along the Y axis (not from the same starting point but same Y delta)
+            _drag(280, 130, 280, 90);
+            _checkAxes(xr0, yr0);
+
+            // Drag scene along both the X and Y axis
+            _drag(110, 150, 220, 190);
+            _checkAxes(xr1, yr1);
+
+            // Drag scene back along the X and Y axis (not from the same starting point but same delta vector)
+            _drag(280, 130, 170, 90);
+            _checkAxes(xr0, yr0);
+        }
+
         delay(MODEBAR_DELAY)()
         .then(function() {
 
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
             relayoutCallback.calls.reset();
-
-            // Drag scene along the X axis
-
-            mouseEvent('mousedown', 110, 150);
-            mouseEvent('mousemove', 220, 150);
-            mouseEvent('mouseup', 220, 150);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-            // Drag scene back along the X axis (not from the same starting point but same X delta)
-
-            mouseEvent('mousedown', 280, 150);
-            mouseEvent('mousemove', 170, 150);
-            mouseEvent('mouseup', 170, 150);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-            // Drag scene along the Y axis
-
-            mouseEvent('mousedown', 110, 150);
-            mouseEvent('mousemove', 110, 190);
-            mouseEvent('mouseup', 110, 190);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
-
-            // Drag scene back along the Y axis (not from the same starting point but same Y delta)
-
-            mouseEvent('mousedown', 280, 130);
-            mouseEvent('mousemove', 280, 90);
-            mouseEvent('mouseup', 280, 90);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-            // Drag scene along both the X and Y axis
-
-            mouseEvent('mousedown', 110, 150);
-            mouseEvent('mousemove', 220, 190);
-            mouseEvent('mouseup', 220, 190);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
-
-            // Drag scene back along the X and Y axis (not from the same starting point but same delta vector)
-
-            mouseEvent('mousedown', 280, 130);
-            mouseEvent('mousemove', 170, 90);
-            mouseEvent('mouseup', 170, 90);
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+            _runDrag(originalX, newX, originalY, newY);
         })
         .then(delay(MODEBAR_DELAY))
         .then(function() {
             // X and back; Y and back; XY and back
+            expect(relayoutCallback).toHaveBeenCalledTimes(6);
+            return Plotly.relayout(gd, {'xaxis.fixedrange': true});
+        })
+        .then(function() {
+            relayoutCallback.calls.reset();
+            _runDrag(originalX, originalX, originalY, newY);
+        })
+        .then(delay(MODEBAR_DELAY))
+        .then(function() {
+            // Y and back; XY and back
+            // should perhaps be 4, but the noop drags still generate a relayout call.
+            // TODO: should we try and remove this call?
+            expect(relayoutCallback).toHaveBeenCalledTimes(6);
+            return Plotly.relayout(gd, {'yaxis.fixedrange': true});
+        })
+        .then(function() {
+            relayoutCallback.calls.reset();
+            _runDrag(originalX, originalX, originalY, originalY);
+        })
+        .then(delay(MODEBAR_DELAY))
+        .then(function() {
+            // both axes are fixed - no changes
+            expect(relayoutCallback).toHaveBeenCalledTimes(0);
+            return Plotly.relayout(gd, {'xaxis.fixedrange': false, dragmode: 'pan'});
+        })
+        .then(function() {
+            relayoutCallback.calls.reset();
+            _runDrag(originalX, newX, originalY, originalY);
+        })
+        .then(delay(MODEBAR_DELAY))
+        .then(function() {
+            // X and back; XY and back
             expect(relayoutCallback).toHaveBeenCalledTimes(6);
         })
         .catch(failTest)
