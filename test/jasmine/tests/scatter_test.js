@@ -713,6 +713,50 @@ describe('end-to-end scatter tests', function() {
             expect(fill()).toEqual('rgb(0, 0, 255)');
         }).catch(fail).then(done);
     });
+
+    it('clears fills tonext when either trace is emptied out', function(done) {
+        var trace0 = {y: [1, 3, 5, 7]};
+        var trace1 = {y: [1, 2, 3, 4], line: {width: 0}, mode: 'lines'};
+        var trace2 = {y: [3, 4, 5, 6], fill: 'tonexty', mode: 'none'};
+
+        function checkFill(visible, msg) {
+            var fillSelection = d3.select(gd).selectAll('.scatterlayer .js-fill');
+            expect(fillSelection.size()).toBe(1, msg);
+            expect(fillSelection.attr('d')).negateIf(visible).toBe('M0,0Z', msg);
+        }
+
+        Plotly.newPlot(gd, [trace0, trace1, trace2], {}, {scrollZoom: true})
+        .then(function() {
+            checkFill(true, 'initial');
+
+            return Plotly.restyle(gd, {y: [[null, null, null, null]]}, [1]);
+        })
+        .then(function() {
+            checkFill(false, 'null out trace 1');
+
+            return Plotly.restyle(gd, {y: [[1, 2, 3, 4]]}, [1]);
+        })
+        .then(function() {
+            checkFill(true, 'restore trace 1');
+
+            return Plotly.restyle(gd, {y: [[null, null, null, null]]}, [2]);
+        })
+        .then(function() {
+            checkFill(false, 'null out trace 2');
+
+            return Plotly.restyle(gd, {y: [[1, 2, 3, 4]]}, [2]);
+        })
+        .then(function() {
+            checkFill(true, 'restore trace 2');
+
+            return Plotly.restyle(gd, {y: [[null, null, null, null], [null, null, null, null]]}, [1, 2]);
+        })
+        .then(function() {
+            checkFill(false, 'null out both traces');
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('scatter hoverPoints', function() {
