@@ -184,6 +184,25 @@ describe('Test gl plot side effects', function() {
         })
         .then(done);
     });
+
+    it('should be able to resize canvas properly', function(done) {
+        var _mock = Lib.extendDeep({}, require('@mocks/gl2d_10.json'));
+        _mock.data[0].line.width = 5;
+
+        _mock.layout.width = 600;
+
+        Plotly.plot(gd, _mock)
+        .then(function() {
+            expect(gd.querySelector('.gl-canvas-context').width).toBe(600);
+
+            Plotly.relayout(gd, {width: 300});
+        })
+        .then(function() {
+            expect(gd.querySelector('.gl-canvas-context').width).toBe(300);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('Test gl2d plots', function() {
