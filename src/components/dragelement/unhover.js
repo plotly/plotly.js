@@ -23,7 +23,9 @@ unhover.wrapped = function(gd, evt, subplot) {
     gd = getGraphDiv(gd);
 
     // Important, clear any queued hovers
-    throttle.clear(gd._fullLayout._uid + hoverConstants.HOVERID);
+    if(gd._fullLayout) {
+        throttle.clear(gd._fullLayout._uid + hoverConstants.HOVERID);
+    }
 
     unhover.raw(gd, evt, subplot);
 };
