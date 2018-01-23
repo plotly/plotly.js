@@ -228,10 +228,11 @@ Plotly.plot = function(gd, data, layout, config) {
                 });
         }
 
-        fullLayout._glcanvas
-            .attr('width', fullLayout.width)
-            .attr('height', fullLayout.height);
-
+        if(fullLayout._glcanvas) {
+            fullLayout._glcanvas
+                .attr('width', fullLayout.width)
+                .attr('height', fullLayout.height);
+        }
 
         return Lib.syncOrAsync([
             subroutines.layoutStyles
