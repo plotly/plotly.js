@@ -225,10 +225,12 @@ Plotly.plot = function(gd, data, layout, config) {
                     'height': '100%',
                     'overflow': 'visible',
                     'pointer-events': 'none'
-                })
-                .attr('width', fullLayout.width)
-                .attr('height', fullLayout.height);
+                });
         }
+
+        fullLayout._glcanvas
+            .attr('width', fullLayout.width)
+            .attr('height', fullLayout.height);
 
         return Lib.syncOrAsync([
             subroutines.layoutStyles
