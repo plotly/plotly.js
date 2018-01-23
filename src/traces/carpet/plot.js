@@ -15,6 +15,7 @@ var map1dArray = require('./map_1d_array');
 var makepath = require('./makepath');
 var orientText = require('./orient_text');
 var svgTextUtils = require('../../lib/svg_text_utils');
+var Lib = require('../../lib');
 var alignmentConstants = require('../../constants/alignment');
 
 module.exports = function plot(gd, plotinfo, cdcarpet) {
@@ -132,7 +133,7 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
         .classed(labelClass, true);
 
     var maxExtent = 0;
-    var labelOrientation;
+    var labelOrientation = {};
 
     labelJoin.each(function(label, i) {
         // Most of the positioning is done in calc_labels. Only the parts that depend upon
@@ -187,12 +188,18 @@ function drawAxisTitles(gd, layer, trace, t, xa, ya, labelOrientationA, labelOri
     b = trace.b[0];
     xy = trace.ab2xy(a, b, true);
     dxy = trace.dxyda_rough(a, b);
+    if(labelOrientationA.angle === undefined) {
+        Lib.extendFlat(labelOrientationA, orientText(trace, xa, ya, xy, trace.dxydb_rough(a, b)));
+    }
     drawAxisTitle(gd, layer, trace, t, xy, dxy, trace.aaxis, xa, ya, labelOrientationA, 'a-title');
 
     a = trace.a[0];
     b = 0.5 * (trace.b[0] + trace.b[trace.b.length - 1]);
     xy = trace.ab2xy(a, b, true);
     dxy = trace.dxydb_rough(a, b);
+    if(labelOrientationB.angle === undefined) {
+        Lib.extendFlat(labelOrientationB, orientText(trace, xa, ya, xy, trace.dxyda_rough(a, b)));
+    }
     drawAxisTitle(gd, layer, trace, t, xy, dxy, trace.baxis, xa, ya, labelOrientationB, 'b-title');
 }
 
