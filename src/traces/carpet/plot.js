@@ -15,6 +15,8 @@ var map1dArray = require('./map_1d_array');
 var makepath = require('./makepath');
 var orientText = require('./orient_text');
 var svgTextUtils = require('../../lib/svg_text_utils');
+var Lib = require('../../lib');
+var alignmentConstants = require('../../constants/alignment');
 
 module.exports = function plot(gd, plotinfo, cdcarpet) {
     for(var i = 0; i < cdcarpet.length; i++) {
@@ -58,10 +60,10 @@ function plotOne(gd, plotinfo, cd) {
     drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
     drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
 
-    var maxAExtent = drawAxisLabels(gd, xa, ya, trace, t, labelLayer, aax._labels, 'a-label');
-    var maxBExtent = drawAxisLabels(gd, xa, ya, trace, t, labelLayer, bax._labels, 'b-label');
+    var labelOrientationA = drawAxisLabels(gd, xa, ya, trace, t, labelLayer, aax._labels, 'a-label');
+    var labelOrientationB = drawAxisLabels(gd, xa, ya, trace, t, labelLayer, bax._labels, 'b-label');
 
-    drawAxisTitles(gd, labelLayer, trace, t, xa, ya, maxAExtent, maxBExtent);
+    drawAxisTitles(gd, labelLayer, trace, t, xa, ya, labelOrientationA, labelOrientationB);
 
     drawClipPath(trace, t, clipLayer, xa, ya);
 }
@@ -131,8 +133,9 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
         .classed(labelClass, true);
 
     var maxExtent = 0;
+    var labelOrientation = {};
 
-    labelJoin.each(function(label) {
+    labelJoin.each(function(label, i) {
         // Most of the positioning is done in calc_labels. Only the parts that depend upon
         // the screen space representation of the x and y axes are here:
         var orientation;
@@ -141,6 +144,11 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
         } else {
             var angle = (label.axis.tickangle + 180.0) * Math.PI / 180.0;
             orientation = orientText(trace, xaxis, yaxis, label.xy, [Math.cos(angle), Math.sin(angle)]);
+        }
+
+        if(!i) {
+            // TODO: offsetMultiplier? Not currently used anywhere...
+            labelOrientation = {angle: orientation.angle, flip: orientation.flip};
         }
         var direction = (label.endAnchor ? -1 : 1) * orientation.flip;
 
@@ -169,29 +177,40 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
 
     labelJoin.exit().remove();
 
-    return maxExtent;
+    labelOrientation.maxExtent = maxExtent;
+    return labelOrientation;
 }
 
-function drawAxisTitles(gd, layer, trace, t, xa, ya, maxAExtent, maxBExtent) {
+function drawAxisTitles(gd, layer, trace, t, xa, ya, labelOrientationA, labelOrientationB) {
     var a, b, xy, dxy;
 
     a = 0.5 * (trace.a[0] + trace.a[trace.a.length - 1]);
     b = trace.b[0];
     xy = trace.ab2xy(a, b, true);
     dxy = trace.dxyda_rough(a, b);
-    drawAxisTitle(gd, layer, trace, t, xy, dxy, trace.aaxis, xa, ya, maxAExtent, 'a-title');
+    if(labelOrientationA.angle === undefined) {
+        Lib.extendFlat(labelOrientationA, orientText(trace, xa, ya, xy, trace.dxydb_rough(a, b)));
+    }
+    drawAxisTitle(gd, layer, trace, t, xy, dxy, trace.aaxis, xa, ya, labelOrientationA, 'a-title');
 
     a = trace.a[0];
     b = 0.5 * (trace.b[0] + trace.b[trace.b.length - 1]);
     xy = trace.ab2xy(a, b, true);
     dxy = trace.dxydb_rough(a, b);
-    drawAxisTitle(gd, layer, trace, t, xy, dxy, trace.baxis, xa, ya, maxBExtent, 'b-title');
+    if(labelOrientationB.angle === undefined) {
+        Lib.extendFlat(labelOrientationB, orientText(trace, xa, ya, xy, trace.dxyda_rough(a, b)));
+    }
+    drawAxisTitle(gd, layer, trace, t, xy, dxy, trace.baxis, xa, ya, labelOrientationB, 'b-title');
 }
 
-function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, offset, labelClass) {
+var lineSpacing = alignmentConstants.LINE_SPACING;
+var midShift = ((1 - alignmentConstants.MID_SHIFT) / lineSpacing) + 1;
+
+function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientation, labelClass) {
     var data = [];
     if(axis.title) data.push(axis.title);
     var titleJoin = layer.selectAll('text.' + labelClass).data(data);
+    var offset = labelOrientation.maxExtent;
 
     titleJoin.enter().append('text')
         .classed(labelClass, true);
@@ -205,14 +224,23 @@ function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, offset, label
         }
 
         // In addition to the size of the labels, add on some extra padding:
-        offset += axis.titlefont.size + axis.titleoffset;
+        var titleSize = axis.titlefont.size;
+        offset += titleSize + axis.titleoffset;
 
+        var labelNorm = labelOrientation.angle + (labelOrientation.flip < 0 ? 180 : 0);
+        var angleDiff = (labelNorm - orientation.angle + 450) % 360;
+        var reverseTitle = angleDiff > 90 && angleDiff < 270;
 
         var el = d3.select(this);
 
         el.text(axis.title || '')
-            .call(svgTextUtils.convertToTspans, gd)
-            .attr('transform',
+            .call(svgTextUtils.convertToTspans, gd);
+
+        if(reverseTitle) {
+            offset = (-svgTextUtils.lineCount(el) + midShift) * lineSpacing * titleSize - offset;
+        }
+
+        el.attr('transform',
                 'translate(' + orientation.p[0] + ',' + orientation.p[1] + ') ' +
                 'rotate(' + orientation.angle + ') ' +
                 'translate(0,' + offset + ')'
