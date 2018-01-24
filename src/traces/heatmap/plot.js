@@ -409,10 +409,7 @@ function findInterp(pixel, pixArray) {
 }
 
 function findInterpFromCenters(pixel, centerPixArray) {
-    // if(pixel <= centerPixArray[0]) return {bin0: 0, bin1: 0, frac: 0};
     var maxBin = centerPixArray.length - 1;
-    // if(pixel >= centerPixArray[lastCenter]) return {bin0: lastCenter, bin1: lastCenter, frac: 0};
-
     var bin = Lib.constrain(Lib.findBin(pixel, centerPixArray), 0, maxBin);
     var pix0 = centerPixArray[bin];
     var pix1 = centerPixArray[bin + 1];
