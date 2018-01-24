@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.33.0
+* plotly.js (gl3d) v1.33.1
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -11157,9 +11157,7 @@ function innerFill(order, proc, body) {
       }
     }
   }
-  if (vars.length > 0) {
-    code.push("var " + vars.join(","))
-  }  
+  code.push("var " + vars.join(","))
   //Scan loop
   for(i=dimension-1; i>=0; --i) { // Start at largest stride and work your way inwards
     idx = order[i]
@@ -11452,9 +11450,7 @@ function generateCWiseOp(proc, typesig) {
                       .concat(proc.body.thisVars)
                       .concat(proc.post.thisVars))
   vars = vars.concat(thisVars)
-  if (vars.length > 0) {
-    code.push("var " + vars.join(","))
-  }
+  code.push("var " + vars.join(","))
   for(var i=0; i<proc.arrayArgs.length; ++i) {
     code.push("p"+i+"|=0")
   }
@@ -46250,51 +46246,43 @@ function negative(points, plane) {
   return neg
 }
 },{"robust-dot-product":239,"robust-sum":247}],260:[function(require,module,exports){
-/* global window, exports, define */
-
-!function() {
-    'use strict'
-
+(function(window) {
     var re = {
         not_string: /[^s]/,
-        not_bool: /[^t]/,
-        not_type: /[^T]/,
-        not_primitive: /[^v]/,
         number: /[diefg]/,
-        numeric_arg: /[bcdiefguxX]/,
         json: /[j]/,
         not_json: /[^j]/,
         text: /^[^\x25]+/,
         modulo: /^\x25{2}/,
-        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,
+        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/,
         key: /^([a-z_][a-z_\d]*)/i,
         key_access: /^\.([a-z_][a-z_\d]*)/i,
         index_access: /^\[(\d+)\]/,
         sign: /^[\+\-]/
     }
 
-    function sprintf(key) {
-        // `arguments` is not an array, but should be fine for this call
-        return sprintf_format(sprintf_parse(key), arguments)
+    function sprintf() {
+        var key = arguments[0], cache = sprintf.cache
+        if (!(cache[key] && cache.hasOwnProperty(key))) {
+            cache[key] = sprintf.parse(key)
+        }
+        return sprintf.format.call(null, cache[key], arguments)
     }
 
-    function vsprintf(fmt, argv) {
-        return sprintf.apply(null, [fmt].concat(argv || []))
-    }
-
-    function sprintf_format(parse_tree, argv) {
-        var cursor = 1, tree_length = parse_tree.length, arg, output = '', i, k, match, pad, pad_character, pad_length, is_positive, sign
+    sprintf.format = function(parse_tree, argv) {
+        var cursor = 1, tree_length = parse_tree.length, node_type = "", arg, output = [], i, k, match, pad, pad_character, pad_length, is_positive = true, sign = ""
         for (i = 0; i < tree_length; i++) {
-            if (typeof parse_tree[i] === 'string') {
-                output += parse_tree[i]
+            node_type = get_type(parse_tree[i])
+            if (node_type === "string") {
+                output[output.length] = parse_tree[i]
             }
-            else if (Array.isArray(parse_tree[i])) {
+            else if (node_type === "array") {
                 match = parse_tree[i] // convenience purposes only
                 if (match[2]) { // keyword argument
                     arg = argv[cursor]
                     for (k = 0; k < match[2].length; k++) {
                         if (!arg.hasOwnProperty(match[2][k])) {
-                            throw new Error(sprintf('[sprintf] property "%s" does not exist', match[2][k]))
+                            throw new Error(sprintf("[sprintf] property '%s' does not exist", match[2][k]))
                         }
                         arg = arg[match[2][k]]
                     }
@@ -46306,12 +46294,12 @@ function negative(points, plane) {
                     arg = argv[cursor++]
                 }
 
-                if (re.not_type.test(match[8]) && re.not_primitive.test(match[8]) && arg instanceof Function) {
+                if (get_type(arg) == "function") {
                     arg = arg()
                 }
 
-                if (re.numeric_arg.test(match[8]) && (typeof arg !== 'number' && isNaN(arg))) {
-                    throw new TypeError(sprintf('[sprintf] expecting number but found %T', arg))
+                if (re.not_string.test(match[8]) && re.not_json.test(match[8]) && (get_type(arg) != "number" && isNaN(arg))) {
+                    throw new TypeError(sprintf("[sprintf] expecting number but found %s", get_type(arg)))
                 }
 
                 if (re.number.test(match[8])) {
@@ -46319,113 +46307,96 @@ function negative(points, plane) {
                 }
 
                 switch (match[8]) {
-                    case 'b':
-                        arg = parseInt(arg, 10).toString(2)
-                        break
-                    case 'c':
-                        arg = String.fromCharCode(parseInt(arg, 10))
-                        break
-                    case 'd':
-                    case 'i':
+                    case "b":
+                        arg = arg.toString(2)
+                    break
+                    case "c":
+                        arg = String.fromCharCode(arg)
+                    break
+                    case "d":
+                    case "i":
                         arg = parseInt(arg, 10)
-                        break
-                    case 'j':
+                    break
+                    case "j":
                         arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
-                        break
-                    case 'e':
-                        arg = match[7] ? parseFloat(arg).toExponential(match[7]) : parseFloat(arg).toExponential()
-                        break
-                    case 'f':
+                    break
+                    case "e":
+                        arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential()
+                    break
+                    case "f":
                         arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
-                        break
-                    case 'g':
-                        arg = match[7] ? String(Number(arg.toPrecision(match[7]))) : parseFloat(arg)
-                        break
-                    case 'o':
-                        arg = (parseInt(arg, 10) >>> 0).toString(8)
-                        break
-                    case 's':
-                        arg = String(arg)
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 't':
-                        arg = String(!!arg)
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'T':
-                        arg = Object.prototype.toString.call(arg).slice(8, -1).toLowerCase()
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'u':
-                        arg = parseInt(arg, 10) >>> 0
-                        break
-                    case 'v':
-                        arg = arg.valueOf()
-                        arg = (match[7] ? arg.substring(0, match[7]) : arg)
-                        break
-                    case 'x':
-                        arg = (parseInt(arg, 10) >>> 0).toString(16)
-                        break
-                    case 'X':
-                        arg = (parseInt(arg, 10) >>> 0).toString(16).toUpperCase()
-                        break
+                    break
+                    case "g":
+                        arg = match[7] ? parseFloat(arg).toPrecision(match[7]) : parseFloat(arg)
+                    break
+                    case "o":
+                        arg = arg.toString(8)
+                    break
+                    case "s":
+                        arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg)
+                    break
+                    case "u":
+                        arg = arg >>> 0
+                    break
+                    case "x":
+                        arg = arg.toString(16)
+                    break
+                    case "X":
+                        arg = arg.toString(16).toUpperCase()
+                    break
                 }
                 if (re.json.test(match[8])) {
-                    output += arg
+                    output[output.length] = arg
                 }
                 else {
                     if (re.number.test(match[8]) && (!is_positive || match[3])) {
-                        sign = is_positive ? '+' : '-'
-                        arg = arg.toString().replace(re.sign, '')
+                        sign = is_positive ? "+" : "-"
+                        arg = arg.toString().replace(re.sign, "")
                     }
                     else {
-                        sign = ''
+                        sign = ""
                     }
-                    pad_character = match[4] ? match[4] === '0' ? '0' : match[4].charAt(1) : ' '
+                    pad_character = match[4] ? match[4] === "0" ? "0" : match[4].charAt(1) : " "
                     pad_length = match[6] - (sign + arg).length
-                    pad = match[6] ? (pad_length > 0 ? pad_character.repeat(pad_length) : '') : ''
-                    output += match[5] ? sign + arg + pad : (pad_character === '0' ? sign + pad + arg : pad + sign + arg)
+                    pad = match[6] ? (pad_length > 0 ? str_repeat(pad_character, pad_length) : "") : ""
+                    output[output.length] = match[5] ? sign + arg + pad : (pad_character === "0" ? sign + pad + arg : pad + sign + arg)
                 }
             }
         }
-        return output
+        return output.join("")
     }
 
-    var sprintf_cache = Object.create(null)
+    sprintf.cache = {}
 
-    function sprintf_parse(fmt) {
-        if (sprintf_cache[fmt]) {
-            return sprintf_cache[fmt]
-        }
-
-        var _fmt = fmt, match, parse_tree = [], arg_names = 0
+    sprintf.parse = function(fmt) {
+        var _fmt = fmt, match = [], parse_tree = [], arg_names = 0
         while (_fmt) {
             if ((match = re.text.exec(_fmt)) !== null) {
-                parse_tree.push(match[0])
+                parse_tree[parse_tree.length] = match[0]
             }
             else if ((match = re.modulo.exec(_fmt)) !== null) {
-                parse_tree.push('%')
+                parse_tree[parse_tree.length] = "%"
             }
             else if ((match = re.placeholder.exec(_fmt)) !== null) {
                 if (match[2]) {
                     arg_names |= 1
                     var field_list = [], replacement_field = match[2], field_match = []
                     if ((field_match = re.key.exec(replacement_field)) !== null) {
-                        field_list.push(field_match[1])
-                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== '') {
+                        field_list[field_list.length] = field_match[1]
+                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== "") {
                             if ((field_match = re.key_access.exec(replacement_field)) !== null) {
-                                field_list.push(field_match[1])
+                                field_list[field_list.length] = field_match[1]
                             }
                             else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
-                                field_list.push(field_match[1])
+                                field_list[field_list.length] = field_match[1]
                             }
                             else {
-                                throw new SyntaxError('[sprintf] failed to parse named argument key')
+                                throw new SyntaxError("[sprintf] failed to parse named argument key")
                             }
                         }
                     }
                     else {
-                        throw new SyntaxError('[sprintf] failed to parse named argument key')
+                        throw new SyntaxError("[sprintf] failed to parse named argument key")
                     }
                     match[2] = field_list
                 }
@@ -46433,41 +46404,56 @@ function negative(points, plane) {
                     arg_names |= 2
                 }
                 if (arg_names === 3) {
-                    throw new Error('[sprintf] mixing positional and named placeholders is not (yet) supported')
+                    throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported")
                 }
-                parse_tree.push(match)
+                parse_tree[parse_tree.length] = match
             }
             else {
-                throw new SyntaxError('[sprintf] unexpected placeholder')
+                throw new SyntaxError("[sprintf] unexpected placeholder")
             }
             _fmt = _fmt.substring(match[0].length)
         }
-        return sprintf_cache[fmt] = parse_tree
+        return parse_tree
+    }
+
+    var vsprintf = function(fmt, argv, _argv) {
+        _argv = (argv || []).slice(0)
+        _argv.splice(0, 0, fmt)
+        return sprintf.apply(null, _argv)
+    }
+
+    /**
+     * helpers
+     */
+    function get_type(variable) {
+        return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase()
+    }
+
+    function str_repeat(input, multiplier) {
+        return Array(multiplier + 1).join(input)
     }
 
     /**
      * export to either browser or node.js
      */
-    /* eslint-disable quote-props */
-    if (typeof exports !== 'undefined') {
-        exports['sprintf'] = sprintf
-        exports['vsprintf'] = vsprintf
+    if (typeof exports !== "undefined") {
+        exports.sprintf = sprintf
+        exports.vsprintf = vsprintf
     }
-    if (typeof window !== 'undefined') {
-        window['sprintf'] = sprintf
-        window['vsprintf'] = vsprintf
+    else {
+        window.sprintf = sprintf
+        window.vsprintf = vsprintf
 
-        if (typeof define === 'function' && define['amd']) {
+        if (typeof define === "function" && define.amd) {
             define(function() {
                 return {
-                    'sprintf': sprintf,
-                    'vsprintf': vsprintf
+                    sprintf: sprintf,
+                    vsprintf: vsprintf
                 }
             })
         }
     }
-    /* eslint-enable quote-props */
-}()
+})(typeof window === "undefined" ? this : window);
 
 },{}],261:[function(require,module,exports){
 'use strict'
@@ -54497,7 +54483,9 @@ unhover.wrapped = function(gd, evt, subplot) {
     gd = getGraphDiv(gd);
 
     // Important, clear any queued hovers
-    throttle.clear(gd._fullLayout._uid + hoverConstants.HOVERID);
+    if(gd._fullLayout) {
+        throttle.clear(gd._fullLayout._uid + hoverConstants.HOVERID);
+    }
 
     unhover.raw(gd, evt, subplot);
 };
@@ -67492,7 +67480,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.33.0';
+exports.version = '1.33.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -74446,7 +74434,11 @@ Plotly.plot = function(gd, data, layout, config) {
                     'height': '100%',
                     'overflow': 'visible',
                     'pointer-events': 'none'
-                })
+                });
+        }
+
+        if(fullLayout._glcanvas) {
+            fullLayout._glcanvas
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
         }
@@ -82968,12 +82960,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     var dragger = makeRectDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
 
+    var allFixedRanges = !yActive && !xActive;
+
     // still need to make the element if the axes are disabled
     // but nuke its events (except for maindrag which needs them for hover)
     // and stop there
-    if(!yActive && !xActive && !isSelectOrLasso(fullLayout.dragmode)) {
+    if(allFixedRanges && !isMainDrag) {
         dragger.onmousedown = null;
-        dragger.style.pointerEvents = isMainDrag ? 'all' : 'none';
+        dragger.style.pointerEvents = 'none';
         return dragger;
     }
 
@@ -82984,24 +82978,34 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         prepFn: function(e, startX, startY) {
             var dragModeNow = gd._fullLayout.dragmode;
 
-            if(isMainDrag) {
-                // main dragger handles all drag modes, and changes
-                // to pan (or to zoom if it already is pan) on shift
-                if(e.shiftKey) {
-                    if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+            if(!allFixedRanges) {
+                if(isMainDrag) {
+                    // main dragger handles all drag modes, and changes
+                    // to pan (or to zoom if it already is pan) on shift
+                    if(e.shiftKey) {
+                        if(dragModeNow === 'pan') dragModeNow = 'zoom';
+                        else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+                    }
+                    else if(e.ctrlKey) {
+                        dragModeNow = 'pan';
+                    }
                 }
-                else if(e.ctrlKey) {
-                    dragModeNow = 'pan';
-                }
+                // all other draggers just pan
+                else dragModeNow = 'pan';
             }
-            // all other draggers just pan
-            else dragModeNow = 'pan';
 
             if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
             else dragOptions.minDrag = undefined;
 
-            if(dragModeNow === 'zoom') {
+            if(isSelectOrLasso(dragModeNow)) {
+                dragOptions.xaxes = xa;
+                dragOptions.yaxes = ya;
+                prepSelect(e, startX, startY, dragOptions, dragModeNow);
+            }
+            else if(allFixedRanges) {
+                clearSelect(zoomlayer);
+            }
+            else if(dragModeNow === 'zoom') {
                 dragOptions.moveFn = zoomMove;
                 dragOptions.doneFn = zoomDone;
 
@@ -83016,11 +83020,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 dragOptions.moveFn = plotDrag;
                 dragOptions.doneFn = dragTail;
                 clearSelect(zoomlayer);
-            }
-            else if(isSelectOrLasso(dragModeNow)) {
-                dragOptions.xaxes = xa;
-                dragOptions.yaxes = ya;
-                prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         },
         clickFn: function(numClicks, evt) {
@@ -97711,12 +97710,11 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
 'use strict';
 
 module.exports = function linkTraces(gd, plotinfo, cdscatter) {
-    var cd, trace;
+    var trace, i;
     var prevtrace = null;
 
-    for(var i = 0; i < cdscatter.length; ++i) {
-        cd = cdscatter[i];
-        trace = cd[0].trace;
+    for(i = 0; i < cdscatter.length; ++i) {
+        trace = cdscatter[i][0].trace;
 
         // Note: The check which ensures all cdscatter here are for the same axis and
         // are either cartesian or scatterternary has been removed. This code assumes
@@ -98191,6 +98189,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     Drawing.setClipUrl(lineJoin, plotinfo.layerClipId);
 
+    function clearFill(selection) {
+        transition(selection).attr('d', 'M0,0Z');
+    }
+
     if(segments.length) {
         if(ownFillEl3) {
             if(pt0 && pt1) {
@@ -98216,29 +98218,40 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 }
             }
         }
-        else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
-            // fill to next: full trace path, plus the previous path reversed
-            if(trace.fill === 'tonext') {
-                // tonext: for use by concentric shapes, like manually constructed
-                // contours, we just add the two paths closed on themselves.
-                // This makes strange results if one path is *not* entirely
-                // inside the other, but then that is a strange usage.
-                transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z')
-                    .call(Drawing.singleFillStyle);
+        else if(tonext) {
+            if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
+                // fill to next: full trace path, plus the previous path reversed
+                if(trace.fill === 'tonext') {
+                    // tonext: for use by concentric shapes, like manually constructed
+                    // contours, we just add the two paths closed on themselves.
+                    // This makes strange results if one path is *not* entirely
+                    // inside the other, but then that is a strange usage.
+                    transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z')
+                        .call(Drawing.singleFillStyle);
+                }
+                else {
+                    // tonextx/y: for now just connect endpoints with lines. This is
+                    // the correct behavior if the endpoints are at the same value of
+                    // y/x, but if they *aren't*, we should ideally do more complicated
+                    // things depending on whether the new endpoint projects onto the
+                    // existing curve or off the end of it
+                    transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z')
+                        .call(Drawing.singleFillStyle);
+                }
+                trace._polygons = trace._polygons.concat(prevPolygons);
             }
             else {
-                // tonextx/y: for now just connect endpoints with lines. This is
-                // the correct behavior if the endpoints are at the same value of
-                // y/x, but if they *aren't*, we should ideally do more complicated
-                // things depending on whether the new endpoint projects onto the
-                // existing curve or off the end of it
-                transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z')
-                    .call(Drawing.singleFillStyle);
+                clearFill(tonext);
+                trace._polygons = null;
             }
-            trace._polygons = trace._polygons.concat(prevPolygons);
         }
         trace._prevRevpath = revpath;
         trace._prevPolygons = thisPolygons;
+    }
+    else {
+        if(ownFillEl3) clearFill(ownFillEl3);
+        else if(tonext) clearFill(tonext);
+        trace._polygons = trace._prevRevpath = trace._prevPolygons = null;
     }
 
 
