@@ -10,6 +10,21 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.33.1] -- 2018-01-24
+
+### Fixed
+
+- Fix selection on `scattergl` plots with >20k points [#2266]
+- Update Spanish localization with new strings [#2268]
+- Fix test_dashboard overly rigid restriction so parcoods works there [#2273]
+- Make `layout.colorway` compatible with `sankey` traces [#2277]
+- Fix click events on `fixedrange` subplots [#2279]
+- Remove ghost fill when trace data is emptied out [#2280]
+- Fix resizing of new `scattergl` plots [#2283]
+- Fix positioning of carpet axis titles for `cheaterslope` edge cases [#2285]
+- Fix coloring and hover info for heatmaps and contour maps with nonuniform bins [#2288]
+
+
 ## [1.33.0] -- 2018-01-18
 
 ### Added
