@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v1.33.0
+* plotly.js (finance) v1.33.1
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -18910,7 +18910,9 @@ unhover.wrapped = function(gd, evt, subplot) {
     gd = getGraphDiv(gd);
 
     // Important, clear any queued hovers
-    throttle.clear(gd._fullLayout._uid + hoverConstants.HOVERID);
+    if(gd._fullLayout) {
+        throttle.clear(gd._fullLayout._uid + hoverConstants.HOVERID);
+    }
 
     unhover.raw(gd, evt, subplot);
 };
@@ -31861,7 +31863,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.33.0';
+exports.version = '1.33.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -38587,7 +38589,11 @@ Plotly.plot = function(gd, data, layout, config) {
                     'height': '100%',
                     'overflow': 'visible',
                     'pointer-events': 'none'
-                })
+                });
+        }
+
+        if(fullLayout._glcanvas) {
+            fullLayout._glcanvas
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
         }
@@ -47109,12 +47115,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     var dragger = makeRectDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
 
+    var allFixedRanges = !yActive && !xActive;
+
     // still need to make the element if the axes are disabled
     // but nuke its events (except for maindrag which needs them for hover)
     // and stop there
-    if(!yActive && !xActive && !isSelectOrLasso(fullLayout.dragmode)) {
+    if(allFixedRanges && !isMainDrag) {
         dragger.onmousedown = null;
-        dragger.style.pointerEvents = isMainDrag ? 'all' : 'none';
+        dragger.style.pointerEvents = 'none';
         return dragger;
     }
 
@@ -47125,24 +47133,34 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         prepFn: function(e, startX, startY) {
             var dragModeNow = gd._fullLayout.dragmode;
 
-            if(isMainDrag) {
-                // main dragger handles all drag modes, and changes
-                // to pan (or to zoom if it already is pan) on shift
-                if(e.shiftKey) {
-                    if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+            if(!allFixedRanges) {
+                if(isMainDrag) {
+                    // main dragger handles all drag modes, and changes
+                    // to pan (or to zoom if it already is pan) on shift
+                    if(e.shiftKey) {
+                        if(dragModeNow === 'pan') dragModeNow = 'zoom';
+                        else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+                    }
+                    else if(e.ctrlKey) {
+                        dragModeNow = 'pan';
+                    }
                 }
-                else if(e.ctrlKey) {
-                    dragModeNow = 'pan';
-                }
+                // all other draggers just pan
+                else dragModeNow = 'pan';
             }
-            // all other draggers just pan
-            else dragModeNow = 'pan';
 
             if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
             else dragOptions.minDrag = undefined;
 
-            if(dragModeNow === 'zoom') {
+            if(isSelectOrLasso(dragModeNow)) {
+                dragOptions.xaxes = xa;
+                dragOptions.yaxes = ya;
+                prepSelect(e, startX, startY, dragOptions, dragModeNow);
+            }
+            else if(allFixedRanges) {
+                clearSelect(zoomlayer);
+            }
+            else if(dragModeNow === 'zoom') {
                 dragOptions.moveFn = zoomMove;
                 dragOptions.doneFn = zoomDone;
 
@@ -47157,11 +47175,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 dragOptions.moveFn = plotDrag;
                 dragOptions.doneFn = dragTail;
                 clearSelect(zoomlayer);
-            }
-            else if(isSelectOrLasso(dragModeNow)) {
-                dragOptions.xaxes = xa;
-                dragOptions.yaxes = ya;
-                prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         },
         clickFn: function(numClicks, evt) {
@@ -66347,12 +66360,11 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
 'use strict';
 
 module.exports = function linkTraces(gd, plotinfo, cdscatter) {
-    var cd, trace;
+    var trace, i;
     var prevtrace = null;
 
-    for(var i = 0; i < cdscatter.length; ++i) {
-        cd = cdscatter[i];
-        trace = cd[0].trace;
+    for(i = 0; i < cdscatter.length; ++i) {
+        trace = cdscatter[i][0].trace;
 
         // Note: The check which ensures all cdscatter here are for the same axis and
         // are either cartesian or scatterternary has been removed. This code assumes
@@ -66827,6 +66839,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     Drawing.setClipUrl(lineJoin, plotinfo.layerClipId);
 
+    function clearFill(selection) {
+        transition(selection).attr('d', 'M0,0Z');
+    }
+
     if(segments.length) {
         if(ownFillEl3) {
             if(pt0 && pt1) {
@@ -66852,29 +66868,40 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 }
             }
         }
-        else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
-            // fill to next: full trace path, plus the previous path reversed
-            if(trace.fill === 'tonext') {
-                // tonext: for use by concentric shapes, like manually constructed
-                // contours, we just add the two paths closed on themselves.
-                // This makes strange results if one path is *not* entirely
-                // inside the other, but then that is a strange usage.
-                transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z')
-                    .call(Drawing.singleFillStyle);
+        else if(tonext) {
+            if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
+                // fill to next: full trace path, plus the previous path reversed
+                if(trace.fill === 'tonext') {
+                    // tonext: for use by concentric shapes, like manually constructed
+                    // contours, we just add the two paths closed on themselves.
+                    // This makes strange results if one path is *not* entirely
+                    // inside the other, but then that is a strange usage.
+                    transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z')
+                        .call(Drawing.singleFillStyle);
+                }
+                else {
+                    // tonextx/y: for now just connect endpoints with lines. This is
+                    // the correct behavior if the endpoints are at the same value of
+                    // y/x, but if they *aren't*, we should ideally do more complicated
+                    // things depending on whether the new endpoint projects onto the
+                    // existing curve or off the end of it
+                    transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z')
+                        .call(Drawing.singleFillStyle);
+                }
+                trace._polygons = trace._polygons.concat(prevPolygons);
             }
             else {
-                // tonextx/y: for now just connect endpoints with lines. This is
-                // the correct behavior if the endpoints are at the same value of
-                // y/x, but if they *aren't*, we should ideally do more complicated
-                // things depending on whether the new endpoint projects onto the
-                // existing curve or off the end of it
-                transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z')
-                    .call(Drawing.singleFillStyle);
+                clearFill(tonext);
+                trace._polygons = null;
             }
-            trace._polygons = trace._polygons.concat(prevPolygons);
         }
         trace._prevRevpath = revpath;
         trace._prevPolygons = thisPolygons;
+    }
+    else {
+        if(ownFillEl3) clearFill(ownFillEl3);
+        else if(tonext) clearFill(tonext);
+        trace._polygons = trace._prevRevpath = trace._prevPolygons = null;
     }
 
 
