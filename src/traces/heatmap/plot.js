@@ -25,14 +25,14 @@ module.exports = function(gd, plotinfo, cdheatmaps) {
     }
 };
 
-// From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function plotOne(gd, plotinfo, cd) {
-    var trace = cd[0].trace,
-        uid = trace.uid,
-        xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        fullLayout = gd._fullLayout,
-        id = 'hm' + uid;
+    var cd0 = cd[0];
+    var trace = cd0.trace;
+    var uid = trace.uid;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+    var fullLayout = gd._fullLayout;
+    var id = 'hm' + uid;
 
     // in case this used to be a contour map
     fullLayout._paper.selectAll('.contour' + uid).remove();
@@ -45,23 +45,21 @@ function plotOne(gd, plotinfo, cd) {
         return;
     }
 
-    var z = cd[0].z,
-        x = cd[0].x,
-        y = cd[0].y,
-        isContour = Registry.traceIs(trace, 'contour'),
-        zsmooth = isContour ? 'best' : trace.zsmooth,
+    var z = cd0.z;
+    var x = cd0.x;
+    var y = cd0.y;
+    var xc = cd0.xCenter;
+    var yc = cd0.yCenter;
+    var isContour = Registry.traceIs(trace, 'contour');
+    var zsmooth = isContour ? 'best' : trace.zsmooth;
 
-        // get z dims
-        m = z.length,
-        n = maxRowLength(z),
-        xrev = false,
-        left,
-        right,
-        temp,
-        yrev = false,
-        top,
-        bottom,
-        i;
+    // get z dims
+    var m = z.length;
+    var n = maxRowLength(z);
+    var xrev = false;
+    var yrev = false;
+
+    var left, right, temp, top, bottom, i;
 
     // TODO: if there are multiple overlapping categorical heatmaps,
     // or if we allow category sorting, then the categories may not be
@@ -113,11 +111,10 @@ function plotOne(gd, plotinfo, cd) {
     // for contours with heatmap fill, we generate the boundaries based on
     // brick centers but then use the brick edges for drawing the bricks
     if(isContour) {
-        // TODO: for 'best' smoothing, we really should use the given brick
-        // centers as well as brick bounds in calculating values, in case of
-        // nonuniform brick sizes
-        x = cd[0].xfill;
-        y = cd[0].yfill;
+        xc = x;
+        yc = y;
+        x = cd0.xfill;
+        y = cd0.yfill;
     }
 
     // make an image that goes at most half a screen off either side, to keep
@@ -201,15 +198,15 @@ function plotOne(gd, plotinfo, cd) {
 
     // get interpolated bin value. Returns {bin0:closest bin, frac:fractional dist to next, bin1:next bin}
     function findInterp(pixel, pixArray) {
-        var maxbin = pixArray.length - 2,
-            bin = Lib.constrain(Lib.findBin(pixel, pixArray), 0, maxbin),
-            pix0 = pixArray[bin],
-            pix1 = pixArray[bin + 1],
-            interp = Lib.constrain(bin + (pixel - pix0) / (pix1 - pix0) - 0.5, 0, maxbin),
-            bin0 = Math.round(interp),
-            frac = Math.abs(interp - bin0);
+        var maxBin = pixArray.length - 2;
+        var bin = Lib.constrain(Lib.findBin(pixel, pixArray), 0, maxBin);
+        var pix0 = pixArray[bin];
+        var pix1 = pixArray[bin + 1];
+        var interp = Lib.constrain(bin + (pixel - pix0) / (pix1 - pix0) - 0.5, 0, maxBin);
+        var bin0 = Math.round(interp);
+        var frac = Math.abs(interp - bin0);
 
-        if(!interp || interp === maxbin || !frac) {
+        if(!interp || interp === maxBin || !frac) {
             return {
                 bin0: bin0,
                 bin1: bin0,
@@ -220,6 +217,36 @@ function plotOne(gd, plotinfo, cd) {
             bin0: bin0,
             frac: frac,
             bin1: Math.round(bin0 + frac / (interp - bin0))
+        };
+    }
+
+    function findInterpFromCenters(pixel, centerPixArray) {
+        // if(pixel <= centerPixArray[0]) return {bin0: 0, bin1: 0, frac: 0};
+        var maxBin = centerPixArray.length - 1;
+        // if(pixel >= centerPixArray[lastCenter]) return {bin0: lastCenter, bin1: lastCenter, frac: 0};
+
+        var bin = Lib.constrain(Lib.findBin(pixel, centerPixArray), 0, maxBin);
+        var pix0 = centerPixArray[bin];
+        var pix1 = centerPixArray[bin + 1];
+        var frac = ((pixel - pix0) / (pix1 - pix0)) || 0;
+        if(frac <= 0) {
+            return {
+                bin0: bin,
+                bin1: bin,
+                frac: 0
+            };
+        }
+        if(frac < 0.5) {
+            return {
+                bin0: bin,
+                bin1: bin + 1,
+                frac: frac
+            };
+        }
+        return {
+            bin0: bin + 1,
+            bin1: bin,
+            frac: 1 - frac
         };
     }
 
@@ -303,24 +330,26 @@ function plotOne(gd, plotinfo, cd) {
         }
 
         if(zsmooth === 'best') {
-            var xPixArray = new Array(x.length),
-                yPixArray = new Array(y.length),
-                xinterpArray = new Array(imageWidth),
-                yinterp,
-                r0,
-                r1;
+            var xForPx = xc || x;
+            var yForPx = yc || y;
+            var xPixArray = new Array(xForPx.length);
+            var yPixArray = new Array(yForPx.length);
+            var xinterpArray = new Array(imageWidth);
+            var findInterpX = xc ? findInterpFromCenters : findInterp;
+            var findInterpY = yc ? findInterpFromCenters : findInterp;
+            var yinterp, r0, r1;
 
             // first make arrays of x and y pixel locations of brick boundaries
-            for(i = 0; i < x.length; i++) xPixArray[i] = Math.round(xa.c2p(x[i]) - left);
-            for(i = 0; i < y.length; i++) yPixArray[i] = Math.round(ya.c2p(y[i]) - top);
+            for(i = 0; i < xForPx.length; i++) xPixArray[i] = Math.round(xa.c2p(xForPx[i]) - left);
+            for(i = 0; i < yForPx.length; i++) yPixArray[i] = Math.round(ya.c2p(yForPx[i]) - top);
 
             // then make arrays of interpolations
             // (bin0=closest, bin1=next, frac=fractional dist.)
-            for(i = 0; i < imageWidth; i++) xinterpArray[i] = findInterp(i, xPixArray);
+            for(i = 0; i < imageWidth; i++) xinterpArray[i] = findInterpX(i, xPixArray);
 
             // now do the interpolations and fill the png
             for(j = 0; j < imageHeight; j++) {
-                yinterp = findInterp(j, yPixArray);
+                yinterp = findInterpY(j, yPixArray);
                 r0 = z[yinterp.bin0];
                 r1 = z[yinterp.bin1];
                 for(i = 0; i < imageWidth; i++, pxIndex += 4) {

@@ -594,10 +594,10 @@ describe('heatmap hover', function() {
     }
 
     function assertLabels(hoverPoint, xLabel, yLabel, zLabel, text) {
-        expect(hoverPoint.xLabelVal).toEqual(xLabel, 'have correct x label');
-        expect(hoverPoint.yLabelVal).toEqual(yLabel, 'have correct y label');
-        expect(hoverPoint.zLabelVal).toEqual(zLabel, 'have correct z label');
-        expect(hoverPoint.text).toEqual(text, 'have correct text label');
+        expect(hoverPoint.xLabelVal).toBe(xLabel, 'have correct x label');
+        expect(hoverPoint.yLabelVal).toBe(yLabel, 'have correct y label');
+        expect(hoverPoint.zLabelVal).toBe(zLabel, 'have correct z label');
+        expect(hoverPoint.text).toBe(text, 'have correct text label');
     }
 
     describe('for `heatmap_multi-trace`', function() {
@@ -658,6 +658,41 @@ describe('heatmap hover', function() {
                 expect(pt2.index).toEqual([0, 1], 'have correct index');
                 assertLabels(pt2, 2, 1, 4, 'b');
             })
+            .then(done);
+        });
+
+    });
+
+    describe('nonuniform bricks', function() {
+
+        beforeAll(function(done) {
+            gd = createGraphDiv();
+
+            var mock = require('@mocks/heatmap_contour_irregular_bricks.json');
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        afterAll(destroyGraphDiv);
+
+        function checkData() {
+            var pt = _hover(gd, -4, 6)[0];
+            assertLabels(pt, 0, 10, 1);
+
+            pt = _hover(gd, 10.5, 12.5)[0];
+            assertLabels(pt, 10, 12, 2);
+
+            pt = _hover(gd, 11.5, 4)[0];
+            assertLabels(pt, 12, 0, 3);
+        }
+
+        it('gives data positions, not brick centers', function(done) {
+            checkData();
+
+            Plotly.restyle(gd, {zsmooth: 'none'}, [0])
+            .then(checkData)
+            .catch(failTest)
             .then(done);
         });
 
