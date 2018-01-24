@@ -196,60 +196,6 @@ function plotOne(gd, plotinfo, cd) {
         };
     }
 
-    // get interpolated bin value. Returns {bin0:closest bin, frac:fractional dist to next, bin1:next bin}
-    function findInterp(pixel, pixArray) {
-        var maxBin = pixArray.length - 2;
-        var bin = Lib.constrain(Lib.findBin(pixel, pixArray), 0, maxBin);
-        var pix0 = pixArray[bin];
-        var pix1 = pixArray[bin + 1];
-        var interp = Lib.constrain(bin + (pixel - pix0) / (pix1 - pix0) - 0.5, 0, maxBin);
-        var bin0 = Math.round(interp);
-        var frac = Math.abs(interp - bin0);
-
-        if(!interp || interp === maxBin || !frac) {
-            return {
-                bin0: bin0,
-                bin1: bin0,
-                frac: 0
-            };
-        }
-        return {
-            bin0: bin0,
-            frac: frac,
-            bin1: Math.round(bin0 + frac / (interp - bin0))
-        };
-    }
-
-    function findInterpFromCenters(pixel, centerPixArray) {
-        // if(pixel <= centerPixArray[0]) return {bin0: 0, bin1: 0, frac: 0};
-        var maxBin = centerPixArray.length - 1;
-        // if(pixel >= centerPixArray[lastCenter]) return {bin0: lastCenter, bin1: lastCenter, frac: 0};
-
-        var bin = Lib.constrain(Lib.findBin(pixel, centerPixArray), 0, maxBin);
-        var pix0 = centerPixArray[bin];
-        var pix1 = centerPixArray[bin + 1];
-        var frac = ((pixel - pix0) / (pix1 - pix0)) || 0;
-        if(frac <= 0) {
-            return {
-                bin0: bin,
-                bin1: bin,
-                frac: 0
-            };
-        }
-        if(frac < 0.5) {
-            return {
-                bin0: bin,
-                bin1: bin + 1,
-                frac: frac
-            };
-        }
-        return {
-            bin0: bin + 1,
-            bin1: bin,
-            frac: 1 - frac
-        };
-    }
-
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
@@ -279,13 +225,6 @@ function plotOne(gd, plotinfo, cd) {
             return c;
         }
         return [0, 0, 0, 0];
-    }
-
-    function putColor(pixels, pxIndex, c) {
-        pixels[pxIndex] = c[0];
-        pixels[pxIndex + 1] = c[1];
-        pixels[pxIndex + 2] = c[2];
-        pixels[pxIndex + 3] = Math.round(c[3] * 255);
     }
 
     function interpColor(r0, r1, xinterp, yinterp) {
@@ -443,4 +382,65 @@ function plotOne(gd, plotinfo, cd) {
     });
 
     image3.exit().remove();
+}
+
+// get interpolated bin value. Returns {bin0:closest bin, frac:fractional dist to next, bin1:next bin}
+function findInterp(pixel, pixArray) {
+    var maxBin = pixArray.length - 2;
+    var bin = Lib.constrain(Lib.findBin(pixel, pixArray), 0, maxBin);
+    var pix0 = pixArray[bin];
+    var pix1 = pixArray[bin + 1];
+    var interp = Lib.constrain(bin + (pixel - pix0) / (pix1 - pix0) - 0.5, 0, maxBin);
+    var bin0 = Math.round(interp);
+    var frac = Math.abs(interp - bin0);
+
+    if(!interp || interp === maxBin || !frac) {
+        return {
+            bin0: bin0,
+            bin1: bin0,
+            frac: 0
+        };
+    }
+    return {
+        bin0: bin0,
+        frac: frac,
+        bin1: Math.round(bin0 + frac / (interp - bin0))
+    };
+}
+
+function findInterpFromCenters(pixel, centerPixArray) {
+    // if(pixel <= centerPixArray[0]) return {bin0: 0, bin1: 0, frac: 0};
+    var maxBin = centerPixArray.length - 1;
+    // if(pixel >= centerPixArray[lastCenter]) return {bin0: lastCenter, bin1: lastCenter, frac: 0};
+
+    var bin = Lib.constrain(Lib.findBin(pixel, centerPixArray), 0, maxBin);
+    var pix0 = centerPixArray[bin];
+    var pix1 = centerPixArray[bin + 1];
+    var frac = ((pixel - pix0) / (pix1 - pix0)) || 0;
+    if(frac <= 0) {
+        return {
+            bin0: bin,
+            bin1: bin,
+            frac: 0
+        };
+    }
+    if(frac < 0.5) {
+        return {
+            bin0: bin,
+            bin1: bin + 1,
+            frac: frac
+        };
+    }
+    return {
+        bin0: bin + 1,
+        bin1: bin,
+        frac: 1 - frac
+    };
+}
+
+function putColor(pixels, pxIndex, c) {
+    pixels[pxIndex] = c[0];
+    pixels[pxIndex + 1] = c[1];
+    pixels[pxIndex + 2] = c[2];
+    pixels[pxIndex + 3] = Math.round(c[3] * 255);
 }
