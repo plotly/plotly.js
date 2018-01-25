@@ -387,8 +387,28 @@ function sceneOptions(container, subplot, trace, positions) {
 
     if(hasMarkers) {
         markerOptions = makeMarkerOptions(markerOpts);
-        selectedOptions = trace.selected ? makeMarkerOptions(extend({}, markerOpts, trace.selected.marker)) : markerOptions;
-        unselectedOptions = trace.unselected ? makeMarkerOptions(extend({}, markerOpts, trace.unselected.marker)) : markerOptions;
+
+        if(trace.selected.marker.symbol) {
+            selectedOptions = makeMarkerOptions(extend({}, markerOpts, trace.selected.marker));
+        }
+        // shortcut simple selection logic
+        else {
+            selectedOptions = {};
+            if(trace.selected.marker.size) selectedOptions.sizes = trace.selected.marker.size;
+            if (trace.selected.marker.color) selectedOptions.colors = trace.selected.marker.color;
+            if(trace.selected.marker.opacity !== undefined) selectedOptions.opacity = trace.selected.marker.opacity;
+        }
+
+        if(trace.unselected.marker.symbol) {
+            unselectedOptions = makeMarkerOptions(extend({}, markerOpts, trace.unselected.marker));
+        }
+        // shortcut simple selection logic
+        else {
+            unselectedOptions = {};
+            if(trace.unselected.marker.size) unselectedOptions.sizes = trace.unselected.marker.size;
+            if(trace.unselected.marker.color) unselectedOptions.colors = trace.unselected.marker.color;
+            if(trace.unselected.marker.opacity !== undefined) unselectedOptions.opacity = trace.unselected.marker.opacity;
+        }
 
         markerOptions.positions = positions;
     }
@@ -911,7 +931,7 @@ function plot(container, subplot, cdata) {
             if(!scene.select2d && scene.scatter2d) {
                 var selectRegl = layout._glcanvas.data()[1].regl;
 
-                // smol hack to create scatter instance by cloning scatter2d
+                // create scatter instance by cloning scatter2d
                 scene.select2d = createScatter(selectRegl, {clone: scene.scatter2d});
                 scene.select2d.update(scene.selectedOptions);
 
