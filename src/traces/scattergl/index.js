@@ -395,7 +395,7 @@ function sceneOptions(container, subplot, trace, positions) {
         else {
             selectedOptions = {};
             if(trace.selected.marker.size) selectedOptions.sizes = trace.selected.marker.size;
-            if (trace.selected.marker.color) selectedOptions.colors = trace.selected.marker.color;
+            if(trace.selected.marker.color) selectedOptions.colors = trace.selected.marker.color;
             if(trace.selected.marker.opacity !== undefined) selectedOptions.opacity = trace.selected.marker.opacity;
         }
 
