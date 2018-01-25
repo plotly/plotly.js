@@ -378,7 +378,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@noCI should display selection of big number of points', function(done) {
+    it('@noCI should display selection of big number of regular points', function(done) {
         // generate large number of points
         var x = [], y = [], n = 2e2, N = n * n;
         for(var i = 0; i < N; i++) {
@@ -389,6 +389,46 @@ describe('Test gl2d plots', function() {
         var mock = {
             data: [{
                 x: x, y: y, type: 'scattergl', mode: 'markers'
+            }],
+            layout: {
+                dragmode: 'select'
+            }
+        };
+
+        Plotly.plot(gd, mock)
+        .then(select([[160, 100], [180, 100]]))
+        .then(function() {
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+
+    it('@noCI should display selection of big number of miscellaneous points', function(done) {
+        var colorList = [
+            '#006385', '#F06E75', '#90ed7d', '#f7a35c', '#8085e9',
+            '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1',
+            '#5DA5DA', '#F06E75', '#F15854', '#B2912F', '#B276B2',
+            '#DECF3F', '#FAA43A', '#4D4D4D', '#F17CB0', '#60BD68'
+        ];
+
+        // generate large number of points
+        var x = [], y = [], n = 2e2, N = n * n, color = [], symbol = [], size = [];
+        for(var i = 0; i < N; i++) {
+            x.push((i % n) / n);
+            y.push(i / N);
+            color.push(colorList[i % colorList.length]);
+            symbol.push('x');
+            size.push(6);
+        }
+
+        var mock = {
+            data: [{
+                x: x, y: y, type: 'scattergl', mode: 'markers',
+                marker: {symbol: symbol, size: size, color: color}
             }],
             layout: {
                 dragmode: 'select'
