@@ -111,7 +111,7 @@ A repo that demonstrates how to build plotly.js with Webpack can be found [here]
 ```js
 ...
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
                 loader: 'ify-loader'
