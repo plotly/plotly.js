@@ -11,6 +11,7 @@
 
 var createPlot = require('gl-plot3d');
 var getContext = require('webgl-context');
+var passiveSupported = require('has-passive-events');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -27,7 +28,6 @@ var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
 
-var passiveSupported = Lib.eventListenerOptionsSupported();
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 

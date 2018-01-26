@@ -11,6 +11,7 @@
 
 var mouseOffset = require('mouse-event-offset');
 var hasHover = require('has-hover');
+var supportsPassive = require('has-passive-events');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
@@ -27,7 +28,6 @@ var unhover = require('./unhover');
 dragElement.unhover = unhover.wrapped;
 dragElement.unhoverRaw = unhover.raw;
 
-var supportsPassive = Lib.eventListenerOptionsSupported();
 
 /**
  * Abstracts click & drag interactions

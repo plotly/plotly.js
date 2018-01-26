@@ -11,6 +11,7 @@
 
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
+var supportsPassive = require('has-passive-events');
 
 var Plotly = require('../../plotly');
 var Registry = require('../../registry');
@@ -34,7 +35,6 @@ var constants = require('./constants');
 var MINDRAG = constants.MINDRAG;
 var MINZOOM = constants.MINZOOM;
 
-var supportsPassive = Lib.eventListenerOptionsSupported();
 
 // flag for showing "doubleclick to zoom out" only at the beginning
 var SHOWZOOMOUTTIP = true;

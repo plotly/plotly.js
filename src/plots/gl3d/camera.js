@@ -15,8 +15,7 @@ var createView = require('3d-view');
 var mouseChange = require('mouse-change');
 var mouseWheel = require('mouse-wheel');
 var mouseOffset = require('mouse-event-offset');
-var Lib = require('../../lib');
-var supportsPassive = Lib.eventListenerOptionsSupported();
+var supportsPassive = require('has-passive-events');
 
 function createCamera(element, options) {
     element = element || document.body;
