@@ -387,30 +387,28 @@ function sceneOptions(container, subplot, trace, positions) {
 
     if(hasMarkers) {
         markerOptions = makeMarkerOptions(markerOpts);
-
-        if(trace.selected.marker.symbol) {
-            selectedOptions = makeMarkerOptions(extend({}, markerOpts, trace.selected.marker));
-        }
-        // shortcut simple selection logic
-        else {
-            selectedOptions = {};
-            if(trace.selected.marker.size) selectedOptions.sizes = trace.selected.marker.size;
-            if(trace.selected.marker.color) selectedOptions.colors = trace.selected.marker.color;
-            if(trace.selected.marker.opacity !== undefined) selectedOptions.opacity = trace.selected.marker.opacity;
-        }
-
-        if(trace.unselected.marker.symbol) {
-            unselectedOptions = makeMarkerOptions(extend({}, markerOpts, trace.unselected.marker));
-        }
-        // shortcut simple selection logic
-        else {
-            unselectedOptions = {};
-            if(trace.unselected.marker.size) unselectedOptions.sizes = trace.unselected.marker.size;
-            if(trace.unselected.marker.color) unselectedOptions.colors = trace.unselected.marker.color;
-            if(trace.unselected.marker.opacity !== undefined) unselectedOptions.opacity = trace.unselected.marker.opacity;
-        }
+        selectedOptions = makeSelectedOptions(trace.selected, markerOpts);
+        unselectedOptions = makeSelectedOptions(trace.unselected, markerOpts);
 
         markerOptions.positions = positions;
+    }
+
+    function makeSelectedOptions(selected, markerOpts) {
+        var options = {};
+
+        if(selected.marker.symbol) {
+            options = makeMarkerOptions(extend({}, markerOpts, selected.marker));
+        }
+
+        // shortcut simple selection logic
+        else {
+            options = {};
+            if(selected.marker.size) options.sizes = selected.marker.size;
+            if(selected.marker.color) options.colors = selected.marker.color;
+            if(selected.marker.opacity !== undefined) options.opacity = selected.marker.opacity;
+        }
+
+        return options;
     }
 
     function makeMarkerOptions(markerOpts) {
