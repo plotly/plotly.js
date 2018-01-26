@@ -74,7 +74,7 @@ function createCamera(scene) {
 
         ev.preventDefault();
     }, hasPassive ? {passive: false} : false);
-    element.addEventListener('touchend', function() {
+    element.addEventListener('touchend', function(ev) {
         handleInteraction(0, result.lastPos[0], result.lastPos[1]);
 
         ev.preventDefault();
