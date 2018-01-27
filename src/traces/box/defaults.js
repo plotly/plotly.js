@@ -29,6 +29,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('whiskerwidth');
     coerce('boxmean');
 
+    coerce('notched');
+    coerce('notchwidth');
+
     handlePointsDefaults(traceIn, traceOut, coerce, {prefix: 'box'});
 }
 
