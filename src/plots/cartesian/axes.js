@@ -2222,6 +2222,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         }
 
         function doAutoMargins() {
+            if(!ax.ticklabelsautomargin) { return; }
             var marginPush = ax.titlefont.size +
                 (axLetter === 'x' ? ax._boundingBox.height : ax._boundingBox.width);
 

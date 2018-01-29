@@ -344,6 +344,16 @@ module.exports = {
         editType: 'ticks',
         description: 'Determines whether or not the tick labels are drawn.'
     },
+    ticklabelsautomargin: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        editType: 'ticks',
+        description: [
+            'Determines whether long tick labels automatically grow the figure',
+            'margins.'
+        ].join(' ')
+    },
     showspikes: {
         valType: 'boolean',
         dflt: false,
