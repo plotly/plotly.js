@@ -146,10 +146,10 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
                 d3.select(this).attr('d',
                     'M' + m + ',' + posm0 + 'V' + posm1 + // median line
                     'M' + q1 + ',' + pos0 + 'V' + pos1 + // left edge
-                    (((notched === true)) ? 'H' + ln + 'L' + m + ',' + posm1 + 'L' + un + ',' + pos1 : '') + // top notched edge
+                    (notched ? 'H' + ln + 'L' + m + ',' + posm1 + 'L' + un + ',' + pos1 : '') + // top notched edge
                     'H' + q3 + // end of the top edge
                     'V' + pos0 + // right edge
-                    (((notched === true)) ? 'H' + un + 'L' + m + ',' + posm0 + 'L' + ln + ',' + pos0 : '') + // bottom notched edge
+                    (notched ? 'H' + un + 'L' + m + ',' + posm0 + 'L' + ln + ',' + pos0 : '') + // bottom notched edge
                     'Z' + // end of the box
                     'M' + q1 + ',' + posc + 'H' + lf + 'M' + q3 + ',' + posc + 'H' + uf + // whiskers
                     ((whiskerWidth === 0) ? '' : // whisker caps
@@ -158,10 +158,10 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
                 d3.select(this).attr('d',
                     'M' + posm0 + ',' + m + 'H' + posm1 + // median line
                     'M' + pos0 + ',' + q1 + 'H' + pos1 + // top of the box
-                    (((notched === true)) ? 'V' + ln + 'L' + posm1 + ',' + m + 'L' + pos1 + ',' + un : '') + // notched right edge
+                    (notched ? 'V' + ln + 'L' + posm1 + ',' + m + 'L' + pos1 + ',' + un : '') + // notched right edge
                     'V' + q3 + // end of the right edge
                     'H' + pos0 + // bottom of the box
-                    (((notched === true)) ? 'V' + un + 'L' + posm0 + ',' + m + 'L' + pos0 + ',' + ln : '') + // notched left edge
+                    (notched ? 'V' + un + 'L' + posm0 + ',' + m + 'L' + pos0 + ',' + ln : '') + // notched left edge
                     'Z' + // end of the box
                     'M' + posc + ',' + q1 + 'V' + lf + 'M' + posc + ',' + q3 + 'V' + uf + // whiskers
                     ((whiskerWidth === 0) ? '' : // whisker caps

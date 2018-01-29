@@ -282,6 +282,9 @@
       },
       "height":598,
       "width":1080,
+      "margin":{
+         "l":110
+      },
       "autosize":true
    }
 }
