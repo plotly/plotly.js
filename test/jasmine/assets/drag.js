@@ -1,3 +1,4 @@
+var isNumeric = require('fast-isnumeric');
 var mouseEvent = require('./mouse_event');
 var getNodeCoords = require('./get_node_coords');
 
@@ -6,20 +7,26 @@ var getNodeCoords = require('./get_node_coords');
  * optionally specify an edge ('n', 'se', 'w' etc)
  * to grab it by an edge or corner (otherwise the middle is used)
  */
-module.exports = function(node, dx, dy, edge) {
+module.exports = function(node, dx, dy, edge, x0, y0, nsteps) {
+    nsteps = nsteps || 1;
 
     var coords = getNodeCoords(node, edge);
-    var fromX = coords.x;
-    var fromY = coords.y;
-
-    var toX = fromX + dx;
-    var toY = fromY + dy;
+    var fromX = isNumeric(x0) ? x0 : coords.x;
+    var fromY = isNumeric(y0) ? y0 : coords.y;
 
     mouseEvent('mousemove', fromX, fromY, {element: node});
     mouseEvent('mousedown', fromX, fromY, {element: node});
 
     var promise = waitForDragCover().then(function(dragCoverNode) {
-        mouseEvent('mousemove', toX, toY, {element: dragCoverNode});
+        var toX;
+        var toY;
+
+        for(var i = 1; i <= nsteps; i++) {
+            toX = fromX + i * dx / nsteps;
+            toY = fromY + i * dy / nsteps;
+            mouseEvent('mousemove', toX, toY, {element: dragCoverNode});
+        }
+
         mouseEvent('mouseup', toX, toY, {element: dragCoverNode});
         return waitForDragCoverRemoval();
     });

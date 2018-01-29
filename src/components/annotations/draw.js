@@ -593,12 +593,10 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                                    xcenter + ',' + ycenter + ')'
                         });
                     },
-                    doneFn: function(dragged) {
-                        if(dragged) {
-                            Plotly.relayout(gd, update);
-                            var notesBox = document.querySelector('.js-notes-box-panel');
-                            if(notesBox) notesBox.redraw(notesBox.selectedObj);
-                        }
+                    doneFn: function() {
+                        Plotly.relayout(gd, update);
+                        var notesBox = document.querySelector('.js-notes-box-panel');
+                        if(notesBox) notesBox.redraw(notesBox.selectedObj);
                     }
                 });
             }
@@ -673,13 +671,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
                     setCursor(annTextGroupInner, csr);
                 },
-                doneFn: function(dragged) {
+                doneFn: function() {
                     setCursor(annTextGroupInner);
-                    if(dragged) {
-                        Plotly.relayout(gd, update);
-                        var notesBox = document.querySelector('.js-notes-box-panel');
-                        if(notesBox) notesBox.redraw(notesBox.selectedObj);
-                    }
+                    Plotly.relayout(gd, update);
+                    var notesBox = document.querySelector('.js-notes-box-panel');
+                    if(notesBox) notesBox.redraw(notesBox.selectedObj);
                 }
             });
         }

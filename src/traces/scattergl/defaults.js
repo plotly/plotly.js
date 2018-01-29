@@ -27,6 +27,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    var isOpen = traceIn.marker ? /-open/.test(traceIn.marker.symbol) : false;
+    var isBubble = subTypes.isBubble(traceIn);
+
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
@@ -41,8 +44,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
+    var dfltHoverOn = [];
+
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noSelect: true});
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
+        dfltHoverOn.push('points');
     }
 
     coerce('fill');
@@ -50,6 +57,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
+    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
+        dfltHoverOn.push('fills');
+    }
+
+    coerce('hoveron', dfltHoverOn.join('+') || 'points');
+
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
+
+    Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };

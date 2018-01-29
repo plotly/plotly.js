@@ -79,7 +79,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
                 y0: yc - rad,
                 y1: yc + rad,
-                yLabelVal: di.y
+                yLabelVal: di.y,
+
+                kink: Math.max(minRad, di.mrc || 0)
             });
 
             fillHoverText(di, trace, pointData);
@@ -134,9 +136,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                     if((y0 > yAvg) !== (y1 >= yAvg)) {
                         x0 = pts[j - 1][0];
                         x1 = pts[j][0];
-                        xCross = x0 + (x1 - x0) * (yAvg - y0) / (y1 - y0);
-                        xmin = Math.min(xmin, xCross);
-                        xmax = Math.max(xmax, xCross);
+                        if(y1 - y0) {
+                            xCross = x0 + (x1 - x0) * (yAvg - y0) / (y1 - y0);
+                            xmin = Math.min(xmin, xCross);
+                            xmax = Math.max(xmax, xCross);
+                        }
                     }
                 }
             }

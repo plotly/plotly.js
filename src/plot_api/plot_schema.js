@@ -18,8 +18,8 @@ var frameAttributes = require('../plots/frame_attributes');
 var animationAttributes = require('../plots/animation_attributes');
 
 // polar attributes are not part of the Registry yet
-var polarAreaAttrs = require('../plots/polar/area_attributes');
-var polarAxisAttrs = require('../plots/polar/axis_attributes');
+var polarAreaAttrs = require('../plots/polar/legacy/area_attributes');
+var polarAxisAttrs = require('../plots/polar/legacy/axis_attributes');
 
 var editTypes = require('./edit_types');
 

@@ -13,44 +13,14 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 var colorscales = require('../../components/colorscale/scales');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var fontAttrs = require('../../plots/font_attributes');
+var domainAttrs = require('../../plots/domain_attributes');
 
 var extend = require('../../lib/extend');
 var extendDeepAll = extend.extendDeepAll;
 var extendFlat = extend.extendFlat;
 
 module.exports = {
-
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'calc'},
-                {valType: 'number', min: 0, max: 1, editType: 'calc'}
-            ],
-            dflt: [0, 1],
-            editType: 'calc',
-            description: [
-                'Sets the horizontal domain of this `parcoords` trace',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'calc'},
-                {valType: 'number', min: 0, max: 1, editType: 'calc'}
-            ],
-            dflt: [0, 1],
-            editType: 'calc',
-            description: [
-                'Sets the vertical domain of this `parcoords` trace',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        editType: 'calc'
-    },
+    domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
 
     labelfont: fontAttrs({
         editType: 'calc',
@@ -136,6 +106,7 @@ module.exports = {
 
     line: extendFlat(
         // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
+
         // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
         extendDeepAll(
             colorAttributes('line', 'calc'),
@@ -153,7 +124,6 @@ module.exports = {
                         'The default value is false, so that `parcoords` colorscale can default to `Viridis`.'
                     ].join(' ')
                 }
-
             }
         ),
 

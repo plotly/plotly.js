@@ -18,6 +18,7 @@ var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
+var Fx = require('../../components/fx');
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../../components/dragelement');
 var FROM_TL = require('../../constants/alignment').FROM_TL;
@@ -33,6 +34,8 @@ var constants = require('./constants');
 var MINDRAG = constants.MINDRAG;
 var MINZOOM = constants.MINZOOM;
 
+var supportsPassive = Lib.eventListenerOptionsSupported();
+
 // flag for showing "doubleclick to zoom out" only at the beginning
 var SHOWZOOMOUTTIP = true;
 
@@ -45,29 +48,20 @@ var SHOWZOOMOUTTIP = true;
 //          's' - bottom only
 //          'ns' - top and bottom together, difference unchanged
 //      ew - same for horizontal axis
-module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
+function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // mouseDown stores ms of first mousedown event in the last
     // DBLCLICKDELAY ms on the drag bars
     // numClicks stores how many mousedowns have been seen
     // within DBLCLICKDELAY so we can check for click or doubleclick events
     // dragged stores whether a drag has occurred, so we don't have to
     // redraw unnecessarily, ie if no move bigger than MINDRAG or MINZOOM px
-    var fullLayout = gd._fullLayout,
-        zoomlayer = gd._fullLayout._zoomlayer,
-        isMainDrag = (ns + ew === 'nsew'),
-        subplots,
-        xa,
-        ya,
-        xs,
-        ys,
-        pw,
-        ph,
-        xActive,
-        yActive,
-        cursor,
-        isSubplotConstrained,
-        xaLinked,
-        yaLinked;
+    var fullLayout = gd._fullLayout;
+    var zoomlayer = gd._fullLayout._zoomlayer;
+    var isMainDrag = (ns + ew === 'nsew');
+    var singleEnd = (ns + ew).length === 1;
+
+    var subplots, xa, ya, xs, ys, pw, ph, xActive, yActive, cursor,
+        isSubplotConstrained, xaLinked, yaLinked;
 
     function recomputeAxisLists() {
         xa = [plotinfo.xaxis];
@@ -117,14 +111,16 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     recomputeAxisLists();
 
-    var dragger = makeDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
+    var dragger = makeRectDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
+
+    var allFixedRanges = !yActive && !xActive;
 
     // still need to make the element if the axes are disabled
     // but nuke its events (except for maindrag which needs them for hover)
     // and stop there
-    if(!yActive && !xActive && !isSelectOrLasso(fullLayout.dragmode)) {
+    if(allFixedRanges && !isMainDrag) {
         dragger.onmousedown = null;
-        dragger.style.pointerEvents = isMainDrag ? 'all' : 'none';
+        dragger.style.pointerEvents = 'none';
         return dragger;
     }
 
@@ -135,24 +131,34 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         prepFn: function(e, startX, startY) {
             var dragModeNow = gd._fullLayout.dragmode;
 
-            if(isMainDrag) {
-                // main dragger handles all drag modes, and changes
-                // to pan (or to zoom if it already is pan) on shift
-                if(e.shiftKey) {
-                    if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+            if(!allFixedRanges) {
+                if(isMainDrag) {
+                    // main dragger handles all drag modes, and changes
+                    // to pan (or to zoom if it already is pan) on shift
+                    if(e.shiftKey) {
+                        if(dragModeNow === 'pan') dragModeNow = 'zoom';
+                        else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+                    }
+                    else if(e.ctrlKey) {
+                        dragModeNow = 'pan';
+                    }
                 }
-                else if(e.ctrlKey) {
-                    dragModeNow = 'pan';
-                }
+                // all other draggers just pan
+                else dragModeNow = 'pan';
             }
-            // all other draggers just pan
-            else dragModeNow = 'pan';
 
             if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
             else dragOptions.minDrag = undefined;
 
-            if(dragModeNow === 'zoom') {
+            if(isSelectOrLasso(dragModeNow)) {
+                dragOptions.xaxes = xa;
+                dragOptions.yaxes = ya;
+                prepSelect(e, startX, startY, dragOptions, dragModeNow);
+            }
+            else if(allFixedRanges) {
+                clearSelect(zoomlayer);
+            }
+            else if(dragModeNow === 'zoom') {
                 dragOptions.moveFn = zoomMove;
                 dragOptions.doneFn = zoomDone;
 
@@ -165,13 +171,52 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
             else if(dragModeNow === 'pan') {
                 dragOptions.moveFn = plotDrag;
-                dragOptions.doneFn = dragDone;
+                dragOptions.doneFn = dragTail;
                 clearSelect(zoomlayer);
             }
-            else if(isSelectOrLasso(dragModeNow)) {
-                dragOptions.xaxes = xa;
-                dragOptions.yaxes = ya;
-                prepSelect(e, startX, startY, dragOptions, dragModeNow);
+        },
+        clickFn: function(numClicks, evt) {
+            removeZoombox(gd);
+
+            if(numClicks === 2 && !singleEnd) doubleClick();
+
+            if(isMainDrag) {
+                Fx.click(gd, evt, plotinfo.id);
+            }
+            else if(numClicks === 1 && singleEnd) {
+                var ax = ns ? ya[0] : xa[0],
+                    end = (ns === 's' || ew === 'w') ? 0 : 1,
+                    attrStr = ax._name + '.range[' + end + ']',
+                    initialText = getEndText(ax, end),
+                    hAlign = 'left',
+                    vAlign = 'middle';
+
+                if(ax.fixedrange) return;
+
+                if(ns) {
+                    vAlign = (ns === 'n') ? 'top' : 'bottom';
+                    if(ax.side === 'right') hAlign = 'right';
+                }
+                else if(ew === 'e') hAlign = 'right';
+
+                if(gd._context.showAxisRangeEntryBoxes) {
+                    d3.select(dragger)
+                        .call(svgTextUtils.makeEditable, {
+                            gd: gd,
+                            immediate: true,
+                            background: fullLayout.paper_bgcolor,
+                            text: String(initialText),
+                            fill: ax.tickfont ? ax.tickfont.color : '#444',
+                            horizontalAlign: hAlign,
+                            verticalAlign: vAlign
+                        })
+                        .on('edit', function(text) {
+                            var v = ax.d2r(text);
+                            if(v !== undefined) {
+                                Plotly.relayout(gd, attrStr, v);
+                            }
+                        });
+                }
             }
         }
     };
@@ -281,10 +326,10 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dimmed = true;
     }
 
-    function zoomDone(dragged, numClicks) {
+    function zoomDone() {
+        // more strict than dragged, which allows you to come back to where you started
+        // and still count as dragged
         if(Math.min(box.h, box.w) < MINDRAG * 2) {
-            if(numClicks === 2) doubleClick();
-
             return removeZoombox(gd);
         }
 
@@ -293,53 +338,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(zoomMode === 'xy' || zoomMode === 'y') zoomAxRanges(ya, (ph - box.b) / ph, (ph - box.t) / ph, updates, yaLinked);
 
         removeZoombox(gd);
-        dragTail(zoomMode);
-
-        if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long');
-            SHOWZOOMOUTTIP = false;
-        }
-    }
-
-    function dragDone(dragged, numClicks) {
-        var singleEnd = (ns + ew).length === 1;
-        if(dragged) dragTail();
-        else if(numClicks === 2 && !singleEnd) doubleClick();
-        else if(numClicks === 1 && singleEnd) {
-            var ax = ns ? ya[0] : xa[0],
-                end = (ns === 's' || ew === 'w') ? 0 : 1,
-                attrStr = ax._name + '.range[' + end + ']',
-                initialText = getEndText(ax, end),
-                hAlign = 'left',
-                vAlign = 'middle';
-
-            if(ax.fixedrange) return;
-
-            if(ns) {
-                vAlign = (ns === 'n') ? 'top' : 'bottom';
-                if(ax.side === 'right') hAlign = 'right';
-            }
-            else if(ew === 'e') hAlign = 'right';
-
-            if(gd._context.showAxisRangeEntryBoxes) {
-                d3.select(dragger)
-                    .call(svgTextUtils.makeEditable, {
-                        gd: gd,
-                        immediate: true,
-                        background: fullLayout.paper_bgcolor,
-                        text: String(initialText),
-                        fill: ax.tickfont ? ax.tickfont.color : '#444',
-                        horizontalAlign: hAlign,
-                        verticalAlign: vAlign
-                    })
-                    .on('edit', function(text) {
-                        var v = ax.d2r(text);
-                        if(v !== undefined) {
-                            Plotly.relayout(gd, attrStr, v);
-                        }
-                    });
-            }
-        }
+        dragTail();
+        showDoubleClickNotifier(gd);
     }
 
     // scroll zoom, on all draggers except corners
@@ -439,9 +439,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // everything but the corners gets wheel zoom
     if(ns.length * ew.length !== 1) {
-        // still seems to be some confusion about onwheel vs onmousewheel...
-        if(dragger.onwheel !== undefined) dragger.onwheel = zoomWheel;
-        else if(dragger.onmousewheel !== undefined) dragger.onmousewheel = zoomWheel;
+        attachWheelEventHandler(dragger, zoomWheel);
     }
 
     // plotDrag: move the plot in response to a drag
@@ -654,9 +652,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     // dragTail - finish a drag event with a redraw
-    function dragTail(zoommode) {
-        if(zoommode === undefined) zoommode = (ew ? 'x' : '') + (ns ? 'y' : '');
-
+    function dragTail() {
         // put the subplot viewboxes back to default (Because we're going to)
         // be repositioning the data in the relayout. But DON'T call
         // ticksAndAnnotations again - it's unnecessary and would overwrite `updates`
@@ -759,7 +755,9 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
 
             // don't scale at all if neither axis is scalable here
-            if(!xScaleFactor2 && !yScaleFactor2) continue;
+            if(!xScaleFactor2 && !yScaleFactor2) {
+                continue;
+            }
 
             // but if only one is, reset the other axis scaling
             if(!xScaleFactor2) xScaleFactor2 = 1;
@@ -792,21 +790,26 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     return dragger;
-};
+}
 
-function makeDragger(plotinfo, dragClass, cursor, x, y, w, h) {
+function makeDragger(plotinfo, nodeName, dragClass, cursor) {
     var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
 
-    dragger3.enter().append('rect')
+    dragger3.enter().append(nodeName)
         .classed('drag', true)
         .classed(dragClass, true)
         .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
 
-    dragger3.call(Drawing.setRect, x, y, w, h)
-        .call(setCursor, cursor);
+    dragger3.call(setCursor, cursor);
 
     return dragger3.node();
+}
+
+function makeRectDragger(plotinfo, dragClass, cursor, x, y, w, h) {
+    var dragger = makeDragger(plotinfo, 'rect', dragClass, cursor);
+    d3.select(dragger).call(Drawing.setRect, x, y, w, h);
+    return dragger;
 }
 
 function isDirectionActive(axList, activeVal) {
@@ -931,6 +934,10 @@ function updateZoombox(zb, corners, box, path0, dimmed, lum) {
     zb.attr('d',
         path0 + 'M' + (box.l) + ',' + (box.t) + 'v' + (box.h) +
         'h' + (box.w) + 'v-' + (box.h) + 'h-' + (box.w) + 'Z');
+    transitionZoombox(zb, corners, dimmed, lum);
+}
+
+function transitionZoombox(zb, corners, dimmed, lum) {
     if(!dimmed) {
         zb.transition()
             .style('fill', lum > 0.2 ? 'rgba(0,0,0,0.4)' :
@@ -946,6 +953,13 @@ function removeZoombox(gd) {
     d3.select(gd)
         .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
         .remove();
+}
+
+function showDoubleClickNotifier(gd) {
+    if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
+        Lib.notifier(Lib._(gd, 'Double-click to zoom back out'), 'long');
+        SHOWZOOMOUTTIP = false;
+    }
 }
 
 function isSelectOrLasso(dragmode) {
@@ -1035,3 +1049,39 @@ function calcLinks(constraintGroups, xIDs, yIDs) {
         xy: isSubplotConstrained
     };
 }
+
+// still seems to be some confusion about onwheel vs onmousewheel...
+function attachWheelEventHandler(element, handler) {
+    if(!supportsPassive) {
+        if(element.onwheel !== undefined) element.onwheel = handler;
+        else if(element.onmousewheel !== undefined) element.onmousewheel = handler;
+    }
+    else {
+        var wheelEventName = element.onwheel !== undefined ? 'wheel' : 'mousewheel';
+
+        if(element._onwheel) {
+            element.removeEventListener(wheelEventName, element._onwheel);
+        }
+        element._onwheel = handler;
+
+        element.addEventListener(wheelEventName, handler, {passive: false});
+    }
+}
+
+module.exports = {
+    makeDragBox: makeDragBox,
+
+    makeDragger: makeDragger,
+    makeRectDragger: makeRectDragger,
+    makeZoombox: makeZoombox,
+    makeCorners: makeCorners,
+
+    updateZoombox: updateZoombox,
+    xyCorners: xyCorners,
+    transitionZoombox: transitionZoombox,
+    removeZoombox: removeZoombox,
+    clearSelect: clearSelect,
+    showDoubleClickNotifier: showDoubleClickNotifier,
+
+    attachWheelEventHandler: attachWheelEventHandler
+};

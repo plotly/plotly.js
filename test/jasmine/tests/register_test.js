@@ -48,7 +48,6 @@ describe('Test Registry', function() {
         it('should return false for types it doesn\'t know', function() {
             expect(Registry.getModule('notatype')).toBe(false);
             expect(Registry.getModule({type: 'notatype'})).toBe(false);
-            expect(Registry.getModule({type: 'newtype', r: 'this is polar'})).toBe(false);
         });
 
         it('should find the categories for this type', function() {

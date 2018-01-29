@@ -12,7 +12,6 @@ var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 
 var DASHES = require('../../constants/gl2d_dashes');
-var MARKERS = require('../../constants/gl2d_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
@@ -58,14 +57,7 @@ var attrs = module.exports = overrideAll({
         }
     },
     marker: extendFlat({}, colorAttributes('marker'), {
-        symbol: {
-            valType: 'enumerated',
-            values: Object.keys(MARKERS),
-            dflt: 'circle',
-            arrayOk: true,
-            role: 'style',
-            description: 'Sets the marker symbol type.'
-        },
+        symbol: scatterMarkerAttrs.symbol,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
@@ -78,10 +70,17 @@ var attrs = module.exports = overrideAll({
         })
     }),
     connectgaps: scatterAttrs.connectgaps,
-    fill: extendFlat({}, scatterAttrs.fill, {
-        values: ['none', 'tozeroy', 'tozerox']
-    }),
+    fill: scatterAttrs.fill,
     fillcolor: scatterAttrs.fillcolor,
+
+    hoveron: scatterAttrs.hoveron,
+
+    selected: {
+        marker: scatterAttrs.selected.marker
+    },
+    unselected: {
+        marker: scatterAttrs.unselected.marker
+    },
 
     error_y: scatterAttrs.error_y,
     error_x: scatterAttrs.error_x

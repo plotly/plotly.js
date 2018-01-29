@@ -9,11 +9,11 @@
 
 'use strict';
 
-var rgba = require('color-rgba');
+var rgba = require('color-normalize');
 
 function str2RgbaArray(color) {
-    var colorOut = rgba(color);
-    return colorOut.length ? colorOut : [0, 0, 0, 1];
+    if(!color) return [0, 0, 0, 1];
+    return rgba(color);
 }
 
 module.exports = str2RgbaArray;

@@ -10,6 +10,103 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.33.1] -- 2018-01-24
+
+### Fixed
+
+- Fix selection on `scattergl` plots with >20k points [#2266]
+- Update Spanish localization with new strings [#2268]
+- Fix test_dashboard overly rigid restriction so parcoods works there [#2273]
+- Make `layout.colorway` compatible with `sankey` traces [#2277]
+- Fix click events on `fixedrange` subplots [#2279]
+- Remove ghost fill when trace data is emptied out [#2280]
+- Fix resizing of new `scattergl` plots [#2283]
+- Fix positioning of carpet axis titles for `cheaterslope` edge cases [#2285]
+- Fix coloring and hover info for heatmaps and contour maps with nonuniform bins [#2288]
+
+
+## [1.33.0] -- 2018-01-18
+
+### Added
+- Completely rewritten `scattergl` trace type using `regl` [#2258]
+- Completely rewritten polar chart renderer accompanied by new
+  `scatterpolar` and `scatterpolargl` trace types [#2200]
+- Add the ability to draw layout images and layout shapes on subplot
+  with `scattergl` traces [#2258]
+- Add `fill` capabilities to `scattergl` traces [#2258]
+- Add `spikedistance`, `hoverdistance` and `skipsnap` for more customizable
+  spikes and hover behavior on cartesian subplots [#2247]
+- Add official Spanish translation (locale `es`) [#2249]
+- Add official French translation (locale `fr`) [#2252]
+- Add locale machinery to annotation _new text_ placeholder [#2257]
+
+### Changed
+- Old polar trace types (`scatter` with `(r,t)` coordinates,
+  `bar` with `(r,t)` coordinates and `area`) are now deprecated.
+
+### Fixed
+
+- Fix `gl2d` tick label on pan interaction regression [#2258]
+- Fix `candlestick` hover label regression (bug introduced in v1.32.0) [#2264]
+- Fix several `gl2d` axis related bugs with new regl-based `scattergl` [#2258]
+  See full list under the On-par gl2d milestone https://github.com/plotly/plotly.js/milestone/3
+- Fix several polar bugs with `scatterpolar` [#2200].
+  See full list under the On-par polar milestone https://github.com/plotly/plotly.js/milestone/2
+- Fix `scattergl` marker.colorscale handling [#2258]
+- Fix ternary relayout calls involving axis tick styles and titles [#2200]
+- Fix decimal and thousands settings in `de` locale [#2246]
+- Make scroll handler _passive_, removing those annoying console warnings [#2251]
+
+
+## [1.32.0] -- 2018-01-11
+
+### Added
+
+- Add localization machinery including an official German translation (locale `de`) [#2195, #2207, #2210, #2232, #2217]
+- Add `violin` trace type [#2116]
+- Add `selected` and `unselected` attribute containers to customize selection states [#2135]
+- Add support for multi-selections [#2140]
+- Add layout `colorway` to custom the trace-to-trace color sequence [#2156]
+- Add `tickformatstops` to set tick format per cartesian axis range [#1965]
+- Add hover labels and selections to box points [#2094]
+- Histogram events & bin hover label improvements [#2113]
+- Add support for aggregation in `pie` traces [#2117]
+- Add annotations `startarrowhead`, `arrowside`, `startarrowsize` and `startstandoff` attributes [#2164]
+- Add `zhoverformat` to format `z` values in `heatmap`, `contour` and 2d histogram traces [#2106, #2127]
+- Add `marker.opacity` to bar traces [#2163]
+- Add `Cividis` colorscale [#2178]
+- Implement transform inverse mapping [#2126, #2162]
+
+### Changed
+
+- Selections are now persistent [#2135]
+- Make subplot initialization and removal more robust and consistent [#2227]
+- Share WebGL context between `gl2d` and `parcoords` subplots [#2159, #2238]
+- Rename _Save and edit plot in cloud_ mode bar button _Edit in Chart Studio_ [#2183]
+- Minify bundles using `minify-stream` instead of UglifyJS2 [#2187]
+- Update header for new year 2018 [#2231]
+- Remove `type="text/javascript"` from `<script>` tags present in our docs and test utilities [#2217]
+
+### Fixed
+
+- Fix right-click handling [#2241]
+- Miscellaneous fixes for `table` traces [#2107, #2182]
+- Fix horizontal legend items alignment edge case [#2149]
+- Fix shape and updatemenu layering [#2121]
+- Fix bar with error bar with set `ids` edge case [#2169]
+- Fix `cliponaxis: false` for non linear cartesian axes [#2177]
+- Fix heatmap non-uniform brick gaps problem [#2213]
+- Fix choropleth selection when `visible: false` trace are present on graph [#2099, #2109]
+- Fix yet another contour drawing bug [#2091]
+- Clean up pie event data [#2117]
+- Fix scatter + bar hover edge cases [#2218]
+- Allow hover labels to extend to edges of graph area [#2215]
+- Harden location-to-feature against non-string country names for geo subplot [#2122]
+- Remove obsolete `smith` attribute from plot schema [#2093]
+- Fix colorbar class name [#2139]
+- Make `Plotly.Plots.resize` accept graph ids (as well as graph divs) [#2212]
+
+
 ## [1.31.2] -- 2017-10-23
 
 ### Fixed

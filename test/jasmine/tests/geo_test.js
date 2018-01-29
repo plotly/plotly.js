@@ -1287,6 +1287,7 @@ describe('Test event property of interactions on a geo plot:', function() {
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
 
+            futureData = undefined;
             gd.on('plotly_click', function(data) {
                 futureData = data;
             });
@@ -1336,6 +1337,7 @@ describe('Test event property of interactions on a geo plot:', function() {
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
 
+            futureData = undefined;
             gd.on('plotly_click', function(data) {
                 futureData = data;
             });
@@ -1346,33 +1348,38 @@ describe('Test event property of interactions on a geo plot:', function() {
             expect(futureData).toBe(undefined);
         });
 
-        it('should contain the correct fields', function() {
+        it('does not support right-click', function() {
             click(pointPos[0], pointPos[1], clickOpts);
+            expect(futureData).toBe(undefined);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            // TODO: 'should contain the correct fields'
+            // This test passed previously, but only because assets/click
+            // incorrectly generated a click event for right click. It never
+            // worked in reality.
+            // var pt = futureData.points[0],
+            //     evt = futureData.event;
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                'lon', 'lat',
-                'location', 'text', 'marker.size'
-            ]);
+            // expect(Object.keys(pt)).toEqual([
+            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            //     'lon', 'lat',
+            //     'location', 'text', 'marker.size'
+            // ]);
 
-            expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
-            expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
-            expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
-            expect(pt.lat).toEqual(57.75, 'points[0].lat');
-            expect(pt.lon).toEqual(-101.57, 'points[0].lon');
-            expect(pt.location).toEqual('CAN', 'points[0].location');
-            expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
-            expect(pt.text).toEqual(20, 'points[0].text');
-            expect(pt['marker.size']).toEqual(20, 'points[0][\'marker.size\']');
+            // expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
+            // expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
+            // expect(typeof pt.fullData).toEqual(typeof {}, 'points[0].fullData');
+            // expect(pt.lat).toEqual(57.75, 'points[0].lat');
+            // expect(pt.lon).toEqual(-101.57, 'points[0].lon');
+            // expect(pt.location).toEqual('CAN', 'points[0].location');
+            // expect(pt.pointNumber).toEqual(0, 'points[0].pointNumber');
+            // expect(pt.text).toEqual(20, 'points[0].text');
+            // expect(pt['marker.size']).toEqual(20, 'points[0][\'marker.size\']');
 
-            expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
-            expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
-            Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
-                expect(evt[opt]).toEqual(clickOpts[opt], 'event.' + opt);
-            });
+            // expect(evt.clientX).toEqual(pointPos[0], 'event.clientX');
+            // expect(evt.clientY).toEqual(pointPos[1], 'event.clientY');
+            // Object.getOwnPropertyNames(clickOpts).forEach(function(opt) {
+            //     expect(evt[opt]).toEqual(clickOpts[opt], 'event.' + opt);
+            // });
         });
     });
 

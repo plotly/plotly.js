@@ -1,0 +1,1175 @@
+{
+  "data": [
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar2"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar3"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar4"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar5"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar6"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar7"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar8"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar9"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar10"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar11"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar12"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar13"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar14"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar15"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar16"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar17"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar18"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar19"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        2
+      ],
+      "theta": [
+        0,
+        90,
+        180,
+        250,
+        300,
+        400
+      ],
+      "line": {
+        "color": "#6a3d9a"
+      },
+      "marker": {
+        "color": "#b15928",
+        "size": 10
+      },
+      "subplot": "polar20"
+    }
+  ],
+  "layout": {
+    "margin": {
+      "l": 40,
+      "r": 40,
+      "t": 40,
+      "b": 40
+    },
+    "width": 600,
+    "height": 800,
+    "showlegend": false,
+    "polar": {
+      "sector": [
+        200,
+        400
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0,
+          0.225
+        ],
+        "y": [
+          0.81,
+          1
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar2": {
+      "sector": [
+        300,
+        420
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0,
+          0.225
+        ],
+        "y": [
+          0.6100000000000001,
+          0.79
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar3": {
+      "sector": [
+        240,
+        300
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0,
+          0.225
+        ],
+        "y": [
+          0.41000000000000003,
+          0.5900000000000001
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar4": {
+      "sector": [
+        45,
+        135
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0,
+          0.225
+        ],
+        "y": [
+          0.21000000000000002,
+          0.39
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar5": {
+      "sector": [
+        120,
+        240
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0,
+          0.225
+        ],
+        "y": [
+          0,
+          0.19
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar6": {
+      "sector": [
+        45,
+        375
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.275,
+          0.475
+        ],
+        "y": [
+          0.81,
+          1
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar7": {
+      "sector": [
+        45,
+        80
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.275,
+          0.475
+        ],
+        "y": [
+          0.6100000000000001,
+          0.79
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar8": {
+      "sector": [
+        45,
+        300
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.275,
+          0.475
+        ],
+        "y": [
+          0.41000000000000003,
+          0.5900000000000001
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar9": {
+      "sector": [
+        45,
+        360
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.275,
+          0.475
+        ],
+        "y": [
+          0.21000000000000002,
+          0.39
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar10": {
+      "sector": [
+        45,
+        360
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.275,
+          0.475
+        ],
+        "y": [
+          0,
+          0.19
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar11": {
+      "sector": [
+        180,
+        360
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.525,
+          0.725
+        ],
+        "y": [
+          0.81,
+          1
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar12": {
+      "sector": [
+        0,
+        315
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.525,
+          0.725
+        ],
+        "y": [
+          0.6100000000000001,
+          0.79
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar13": {
+      "sector": [
+        0,
+        225
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.525,
+          0.725
+        ],
+        "y": [
+          0.41000000000000003,
+          0.5900000000000001
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar14": {
+      "sector": [
+        0,
+        270
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.525,
+          0.725
+        ],
+        "y": [
+          0.21000000000000002,
+          0.39
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar15": {
+      "sector": [
+        0,
+        270
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.525,
+          0.725
+        ],
+        "y": [
+          0,
+          0.19
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar16": {
+      "sector": [
+        0,
+        45
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.775,
+          1
+        ],
+        "y": [
+          0.81,
+          1
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar17": {
+      "sector": [
+        0,
+        90
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.775,
+          1
+        ],
+        "y": [
+          0.6100000000000001,
+          0.79
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar18": {
+      "sector": [
+        0,
+        135
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.775,
+          1
+        ],
+        "y": [
+          0.41000000000000003,
+          0.5900000000000001
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar19": {
+      "sector": [
+        0,
+        180
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.775,
+          1
+        ],
+        "y": [
+          0.21000000000000002,
+          0.39
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    },
+    "polar20": {
+      "sector": [
+        -180,
+        180
+      ],
+      "bgcolor": "#d3d3d3",
+      "domain": {
+        "x": [
+          0.775,
+          1
+        ],
+        "y": [
+          0,
+          0.19
+        ]
+      },
+      "radialaxis": {
+        "range": [
+          0,
+          5
+        ],
+        "tickfont": {
+          "size": 8
+        }
+      },
+      "angularaxis": {
+        "tickfont": {
+          "size": 8
+        }
+      }
+    }
+  }
+}

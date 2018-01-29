@@ -1270,6 +1270,36 @@ describe('hover on fill', function() {
         }).then(done);
     });
 
+    it('should always show one label in the right place (symmetric fill edge case)', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            x: [6, 7, 8, 7, 6],
+            y: [5, 4, 5, 6, 5],
+            fill: 'tonext',
+            hoveron: 'fills'
+        }], {
+            width: 500,
+            height: 500,
+            margin: {l: 50, t: 50, r: 50, b: 50}
+        })
+        .then(function() {
+            return assertLabelsCorrect([200, 200], [73.75, 250], 'trace 0');
+        })
+        .then(function() {
+            return Plotly.restyle(gd, {
+                x: [[6, 7, 8, 7]],
+                y: [[5, 4, 5, 6]]
+            });
+        })
+        .then(function() {
+            // gives same results w/o closing point
+            return assertLabelsCorrect([200, 200], [73.75, 250], 'trace 0');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
     it('should work for scatterternary too', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
         var gd = createGraphDiv();
@@ -1721,5 +1751,215 @@ describe('ohlc hover interactions', function() {
         mouseEvent('mousemove', 203, 213);
 
         expect(d3.select('.hovertext').size()).toBe(1);
+    });
+});
+
+describe('hover distance', function() {
+    'use strict';
+
+    var mock = require('@mocks/19.json');
+
+    afterEach(destroyGraphDiv);
+
+    describe('closest hovermode', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'closest';
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('does not render if distance to the point is larger than default (>20)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 475, ypx: 175 };
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata).toEqual(undefined);
+        });
+
+        it('render if distance to the point is less than default (<20)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 475, ypx: 155 };
+            Fx.hover('graph', evt, 'xy');
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(1);
+            expect(hoverTrace.x).toEqual(2);
+            expect(hoverTrace.y).toEqual(3);
+
+            assertHoverLabelContent({
+                nums: '(2, 3)',
+                name: 'trace 0'
+            });
+        });
+
+        it('responds to hoverdistance change', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 475, ypx: 180 };
+            Plotly.relayout(gd, 'hoverdistance', 30);
+
+            Fx.hover('graph', evt, 'xy');
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(1);
+            expect(hoverTrace.x).toEqual(2);
+            expect(hoverTrace.y).toEqual(3);
+
+            assertHoverLabelContent({
+                nums: '(2, 3)',
+                name: 'trace 0'
+            });
+        });
+
+        it('correctly responds to setting the hoverdistance to -1 by increasing ' +
+            'the range of search for points to hover to Infinity', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 475, ypx: 180 };
+            Plotly.relayout(gd, 'hoverdistance', -1);
+
+            Fx.hover('graph', evt, 'xy');
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(1);
+            expect(hoverTrace.x).toEqual(2);
+            expect(hoverTrace.y).toEqual(3);
+
+            assertHoverLabelContent({
+                nums: '(2, 3)',
+                name: 'trace 0'
+            });
+        });
+    });
+
+    describe('x hovermode', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x';
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('does not render if distance to the point is larger than default (>20)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 450, ypx: 155 };
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata).toEqual(undefined);
+        });
+
+        it('render if distance to the point is less than default (<20)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 475, ypx: 155 };
+            Fx.hover('graph', evt, 'xy');
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(1);
+            expect(hoverTrace.x).toEqual(2);
+            expect(hoverTrace.y).toEqual(3);
+
+            assertHoverLabelContent({
+                nums: '3',
+                axis: '2',
+                name: 'trace 0'
+            });
+        });
+
+        it('responds to hoverdistance change from 10 to 30 (part 1)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 450, ypx: 155 };
+            Plotly.relayout(gd, 'hoverdistance', 10);
+
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata).toEqual(undefined);
+        });
+
+        it('responds to hoverdistance change from 10 to 30 (part 2)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 450, ypx: 155 };
+            Plotly.relayout(gd, 'hoverdistance', 30);
+
+            Fx.hover('graph', evt, 'xy');
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(1);
+            expect(hoverTrace.x).toEqual(2);
+            expect(hoverTrace.y).toEqual(3);
+
+            assertHoverLabelContent({
+                nums: '3',
+                axis: '2',
+                name: 'trace 0'
+            });
+        });
+
+        it('responds to hoverdistance change from default to 0 (part 1)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 475, ypx: 155 };
+            Fx.hover('graph', evt, 'xy');
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(1);
+            expect(hoverTrace.x).toEqual(2);
+            expect(hoverTrace.y).toEqual(3);
+
+            assertHoverLabelContent({
+                nums: '3',
+                axis: '2',
+                name: 'trace 0'
+            });
+        });
+
+        it('responds to hoverdistance change from default to 0 (part 2)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 475, ypx: 155 };
+            Plotly.relayout(gd, 'hoverdistance', 0);
+
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata).toEqual(undefined);
+        });
+
+        it('responds to setting the hoverdistance to -1 by increasing ' +
+        'the range of search for points to hover to Infinity (part 1)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 450, ypx: 155 };
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata).toEqual(undefined);
+        });
+
+        it('responds to setting the hoverdistance to -1 by increasing ' +
+            'the range of search for points to hover to Infinity (part 2)', function() {
+            var gd = document.getElementById('graph');
+            var evt = { xpx: 450, ypx: 155 };
+            Plotly.relayout(gd, 'hoverdistance', -1);
+
+            Fx.hover('graph', evt, 'xy');
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(1);
+            expect(hoverTrace.x).toEqual(2);
+            expect(hoverTrace.y).toEqual(3);
+
+            assertHoverLabelContent({
+                nums: '(2, 3)',
+                name: 'trace 0'
+            });
+        });
     });
 });

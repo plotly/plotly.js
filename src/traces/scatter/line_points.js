@@ -60,9 +60,10 @@ module.exports = function linePoints(d, opts) {
 
     // turn one calcdata point into pixel coordinates
     function getPt(index) {
-        var x = xa.c2p(d[index].x);
-        var y = ya.c2p(d[index].y);
-        if(x === BADNUM || y === BADNUM) return false;
+        var di = d[index];
+        var x = xa.c2p(di.x);
+        var y = ya.c2p(di.y);
+        if(x === BADNUM || y === BADNUM) return di.intoCenter || false;
         return [x, y];
     }
 

@@ -1,0 +1,57 @@
+{
+  "data": [{
+    "type": "scatterpolar",
+    "mode": "lines",
+    "r": [ 3, 3, 4, 3 ],
+    "theta": [ 0, 45, 0, 0 ],
+    "fill": "toself",
+    "hoveron": "fills"
+  }, {
+    "type": "scatterpolar",
+    "mode": "lines",
+    "r": [ 2, 2, 2, 2, 4, 2],
+    "theta": [ 0, 90, 180, 270, 350, 360 ],
+    "fill": "toself",
+    "hoveron": "fills"
+  }, {
+    "type": "scatterpolar",
+    "mode": "lines",
+    "r": [5, 1, 2, 4, 5],
+    "theta": [0, 90, 180, 270, 0],
+    "fill": "toself",
+    "hoveron": "fills",
+    "subplot": "polar2"
+  }, {
+    "type": "scatterpolar",
+    "mode": "markers",
+    "r": [5, 1, 1.5, 4, 5],
+    "theta": [0, 270, 180, 90, 0],
+    "fill": "toself",
+    "hoveron": "fills",
+    "subplot": "polar2"
+  }],
+  "layout": {
+    "polar": {
+      "domain": {
+        "x": [0, 1],
+        "y": [0, 0.46]
+      },
+      "radialaxis": {
+        "range": [0, 5]
+      }
+    },
+    "polar2": {
+      "domain": {
+        "x": [0, 1],
+        "y": [0.54, 1]
+      },
+      "radialaxis": {
+        "range": [2, 5]
+      }
+    },
+    "showlegend": false,
+    "margin": {"t": 40, "b": 40},
+    "width": 500,
+    "height": 800
+  }
+}

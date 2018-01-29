@@ -12,36 +12,10 @@ var annAttrs = require('../../components/annotations/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var fontAttrs = require('../../plots/font_attributes');
+var domainAttrs = require('../../plots/domain_attributes');
 
 module.exports = overrideAll({
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the horizontal domain of this `table` trace',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the vertical domain of this `table` trace',
-                '(in plot fraction).'
-            ].join(' ')
-        }
-    },
+    domain: domainAttrs({name: 'table', trace: true}),
 
     columnwidth: {
         valType: 'number',

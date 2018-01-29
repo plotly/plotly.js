@@ -27,6 +27,8 @@ var unhover = require('./unhover');
 dragElement.unhover = unhover.wrapped;
 dragElement.unhoverRaw = unhover.raw;
 
+var supportsPassive = Lib.eventListenerOptionsSupported();
+
 /**
  * Abstracts click & drag interactions
  *
@@ -38,24 +40,48 @@ dragElement.unhoverRaw = unhover.raw;
  * - Freezes the cursor: whatever mouse cursor the drag element had when the
  *   interaction started gets copied to the coverSlip for use until mouseup
  *
+ * If the user executes a drag bigger than MINDRAG, callbacks will fire as:
+ *      prepFn, moveFn (1 or more times), doneFn
+ * If the user does not drag enough, prepFn and clickFn will fire.
+ *
+ * Note: If you cancel contextmenu, clickFn will fire even with a right click
+ * (unlike native events) so you'll get a `plotly_click` event. Cancel context eg:
+ *    gd.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+ * TODO: we should probably turn this into a `config` parameter, so we can fix it
+ * such that if you *don't* cancel contextmenu, we can prevent partial drags, which
+ * put you in a weird state.
+ *
+ * If the user clicks multiple times quickly, clickFn will fire each time
+ * but numClicks will increase to help you recognize doubleclicks.
+ *
  * @param {object} options with keys:
  *      element (required) the DOM element to drag
  *      prepFn (optional) function(event, startX, startY)
  *          executed on mousedown
  *          startX and startY are the clientX and clientY pixel position
  *          of the mousedown event
- *      moveFn (optional) function(dx, dy, dragged)
- *          executed on move
+ *      moveFn (optional) function(dx, dy)
+ *          executed on move, ONLY after we've exceeded MINDRAG
+ *          (we keep executing moveFn if you move back to where you started)
  *          dx and dy are the net pixel offset of the drag,
  *          dragged is true/false, has the mouse moved enough to
  *          constitute a drag
- *      doneFn (optional) function(dragged, numClicks, e)
- *          executed on mouseup, or mouseout of window since
- *          we don't get events after that
- *          dragged is as in moveFn
+ *      doneFn (optional) function(e)
+ *          executed on mouseup, ONLY if we exceeded MINDRAG (so you can be
+ *          sure that moveFn has been called at least once)
  *          numClicks is how many clicks we've registered within
  *          a doubleclick time
- *          e is the original event
+ *          e is the original mouseup event
+ *      clickFn (optional) function(numClicks, e)
+ *          executed on mouseup if we have NOT exceeded MINDRAG (ie moveFn
+ *          has not been called at all)
+ *          numClicks is how many clicks we've registered within
+ *          a doubleclick time
+ *          e is the original mousedown event
+ *      clampFn (optional, function(dx, dy) return [dx2, dy2])
+ *          Provide custom clamping function for small displacements.
+ *          By default, clamping is done using `minDrag` to x and y displacements
+ *          independently.
  */
 dragElement.init = function init(options) {
     var gd = options.gd;
@@ -68,20 +94,36 @@ dragElement.init = function init(options) {
         newMouseDownTime,
         cursor,
         dragCover,
-        initialTarget;
+        initialEvent,
+        initialTarget,
+        rightClick;
 
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
     element.style.pointerEvents = 'all';
 
     element.onmousedown = onStart;
-    element.ontouchstart = onStart;
+
+    if(!supportsPassive) {
+        element.ontouchstart = onStart;
+    }
+    else {
+        if(element._ontouchstart) {
+            element.removeEventListener('touchstart', element._ontouchstart);
+        }
+        element._ontouchstart = onStart;
+        element.addEventListener('touchstart', onStart, {passive: false});
+    }
+
+    function _clampFn(dx, dy, minDrag) {
+        if(Math.abs(dx) < minDrag) dx = 0;
+        if(Math.abs(dy) < minDrag) dy = 0;
+        return [dx, dy];
+    }
+
+    var clampFn = options.clampFn || _clampFn;
 
     function onStart(e) {
-        if(e.buttons && e.buttons === 2) {    // right click
-            return;
-        }
-
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
@@ -90,6 +132,8 @@ dragElement.init = function init(options) {
         startX = offset[0];
         startY = offset[1];
         initialTarget = e.target;
+        initialEvent = e;
+        rightClick = (e.buttons && e.buttons === 2) || e.ctrlKey;
 
         newMouseDownTime = (new Date()).getTime();
         if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
@@ -104,11 +148,11 @@ dragElement.init = function init(options) {
 
         if(options.prepFn) options.prepFn(e, startX, startY);
 
-        if(hasHover) {
+        if(hasHover && !rightClick) {
             dragCover = coverSlip();
             dragCover.style.cursor = window.getComputedStyle(element).cursor;
         }
-        else {
+        else if(!hasHover) {
             // document acts as a dragcover for mobile, bc we can't create dragcover dynamically
             dragCover = document;
             cursor = window.getComputedStyle(document.documentElement).cursor;
@@ -125,18 +169,17 @@ dragElement.init = function init(options) {
 
     function onMove(e) {
         var offset = pointerOffset(e);
-        var dx = offset[0] - startX;
-        var dy = offset[1] - startY;
         var minDrag = options.minDrag || constants.MINDRAG;
+        var dxdy = clampFn(offset[0] - startX, offset[1] - startY, minDrag);
+        var dx = dxdy[0];
+        var dy = dxdy[1];
 
-        if(Math.abs(dx) < minDrag) dx = 0;
-        if(Math.abs(dy) < minDrag) dy = 0;
         if(dx || dy) {
             gd._dragged = true;
             dragElement.unhover(gd);
         }
 
-        if(options.moveFn) options.moveFn(dx, dy, gd._dragged);
+        if(gd._dragged && options.moveFn && !rightClick) options.moveFn(dx, dy);
 
         return Lib.pauseEvent(e);
     }
@@ -167,27 +210,36 @@ dragElement.init = function init(options) {
             numClicks = Math.max(numClicks - 1, 1);
         }
 
-        if(options.doneFn) options.doneFn(gd._dragged, numClicks, e);
+        if(gd._dragged) {
+            if(options.doneFn) options.doneFn(e);
+        }
+        else {
+            if(options.clickFn) options.clickFn(numClicks, initialEvent);
 
-        if(!gd._dragged) {
-            var e2;
+            // If we haven't dragged, this should be a click. But because of the
+            // coverSlip changing the element, the natural system might not generate one,
+            // so we need to make our own. But right clicks don't normally generate
+            // click events, only contextmenu events, which happen on mousedown.
+            if(!rightClick) {
+                var e2;
 
-            try {
-                e2 = new MouseEvent('click', e);
+                try {
+                    e2 = new MouseEvent('click', e);
+                }
+                catch(err) {
+                    var offset = pointerOffset(e);
+                    e2 = document.createEvent('MouseEvents');
+                    e2.initMouseEvent('click',
+                        e.bubbles, e.cancelable,
+                        e.view, e.detail,
+                        e.screenX, e.screenY,
+                        offset[0], offset[1],
+                        e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
+                        e.button, e.relatedTarget);
+                }
+
+                initialTarget.dispatchEvent(e2);
             }
-            catch(err) {
-                var offset = pointerOffset(e);
-                e2 = document.createEvent('MouseEvents');
-                e2.initMouseEvent('click',
-                    e.bubbles, e.cancelable,
-                    e.view, e.detail,
-                    e.screenX, e.screenY,
-                    offset[0], offset[1],
-                    e.ctrlKey, e.altKey, e.shiftKey, e.metaKey,
-                    e.button, e.relatedTarget);
-            }
-
-            initialTarget.dispatchEvent(e2);
         }
 
         finishDrag(gd);

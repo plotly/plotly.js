@@ -67,6 +67,9 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             oldTernary.plotContainer.remove();
             oldTernary.clipDef.remove();
             oldTernary.clipDefRelative.remove();
+            oldTernary.layers['a-title'].remove();
+            oldTernary.layers['b-title'].remove();
+            oldTernary.layers['c-title'].remove();
         }
     }
 };

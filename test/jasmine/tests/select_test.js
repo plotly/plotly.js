@@ -96,10 +96,13 @@ function assertEventCounts(selecting, selected, deselect, msg) {
     expect(deselectCnt).toBe(deselect, 'plotly_deselect call count: ' + msg);
 }
 
+// TODO: in v2, when we get rid of the `plotly_selected->undefined` event, these will
+// change to BOXEVENTS = [1, 1, 1], LASSOEVENTS = [4, 1, 1]. See also _run down below
+//
 // events for box or lasso select mouse moves then a doubleclick
 var NOEVENTS = [0, 0, 0];
-// deselect gives an extra plotly_selected event on the first click
-// event data is undefined
+// deselect used to give an extra plotly_selected event on the first click
+// with undefined event data - but now that's gone, since `clickFn` handles this.
 var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
 var LASSOEVENTS = [4, 2, 1];
@@ -643,15 +646,16 @@ describe('Test select box and lasso per trace:', function() {
         return (eventCounts[0] ? selectedPromise : Promise.resolve())
             .then(afterDragFn)
             .then(function() {
-                // before dblclick we also have one less plotly_selected event
-                // because the first click of the dblclick emits plotly_selected
-                // even though it does so with undefined event data.
-                assertEventCounts(eventCounts[0], Math.max(0, eventCounts[1] - 1), 0, msg);
+                // TODO: in v2 when we remove the `plotly_selecting->undefined` the Math.max(...)
+                // in the middle here will turn into just eventCounts[1].
+                // It's just here because one of the selected events is generated during
+                // doubleclick so hasn't happened yet when we're testing this.
+                assertEventCounts(eventCounts[0], Math.max(0, eventCounts[1] - 1), 0, msg + ' (before dblclick)');
                 return doubleClick(dblClickPos[0], dblClickPos[1]);
             })
             .then(eventCounts[2] ? deselectPromise : Promise.resolve())
             .then(function() {
-                assertEventCounts(eventCounts[0], eventCounts[1], eventCounts[2], msg);
+                assertEventCounts(eventCounts[0], eventCounts[1], eventCounts[2], msg + ' (after dblclick)');
             });
     }
 
@@ -862,6 +866,44 @@ describe('Test select box and lasso per trace:', function() {
         .catch(fail)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
+
+    it('should work on scatterpolar traces', function(done) {
+        var assertPoints = makeAssertPoints(['r', 'theta']);
+        var assertSelectedPoints = makeAssertSelectedPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/polar_subplots'));
+        fig.layout.width = 800;
+        fig.layout.dragmode = 'select';
+        addInvisible(fig);
+
+        Plotly.plot(gd, fig).then(function() {
+            return _run(
+                [[150, 150], [350, 250]],
+                function() {
+                    assertPoints([[1, 0], [2, 45]]);
+                    assertSelectedPoints({0: [0, 1]});
+                },
+                [200, 200],
+                BOXEVENTS, 'scatterpolar select'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run(
+                [[150, 150], [350, 150], [350, 250], [150, 250], [150, 150]],
+                function() {
+                    assertPoints([[1, 0], [2, 45]]);
+                    assertSelectedPoints({0: [0, 1]});
+                },
+                [200, 200],
+                LASSOEVENTS, 'scatterpolar lasso'
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
 
     it('should work on choropleth traces', function(done) {
         var assertPoints = makeAssertPoints(['location', 'z']);

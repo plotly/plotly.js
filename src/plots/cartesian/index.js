@@ -16,6 +16,7 @@ var getModuleCalcData = require('../get_data').getModuleCalcData;
 
 var axisIds = require('./axis_ids');
 var constants = require('./constants');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 exports.name = 'cartesian';
 
@@ -209,7 +210,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         // plot all traces of this type on this subplot at once
         var cdModule = getModuleCalcData(cdSubplot, _module);
 
-        _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+        if(_module.plot) _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }
 }
 
@@ -217,13 +218,14 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldModules = oldFullLayout._modules || [],
         newModules = newFullLayout._modules || [];
 
-    var hadScatter, hasScatter, i;
+    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo;
+
 
     for(i = 0; i < oldModules.length; i++) {
         if(oldModules[i].name === 'scatter') {
             hadScatter = true;
-            break;
         }
+        break;
     }
 
     for(i = 0; i < newModules.length; i++) {
@@ -233,12 +235,26 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 
+    for(i = 0; i < oldModules.length; i++) {
+        if(oldModules[i].name === 'scattergl') {
+            hadGl = true;
+        }
+        break;
+    }
+
+    for(i = 0; i < newModules.length; i++) {
+        if(newModules[i].name === 'scattergl') {
+            hasGl = true;
+            break;
+        }
+    }
+
     if(hadScatter && !hasScatter) {
-        var oldPlots = oldFullLayout._plots,
-            ids = Object.keys(oldPlots || {});
+        oldPlots = oldFullLayout._plots;
+        ids = Object.keys(oldPlots || {});
 
         for(i = 0; i < ids.length; i++) {
-            var subplotInfo = oldPlots[ids[i]];
+            subplotInfo = oldPlots[ids[i]];
 
             if(subplotInfo.plot) {
                 subplotInfo.plot.select('g.scatterlayer')
@@ -251,6 +267,19 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             .select('g.scatterlayer')
             .selectAll('g.trace')
             .remove();
+    }
+
+    if(hadGl && !hasGl) {
+        oldPlots = oldFullLayout._plots;
+        ids = Object.keys(oldPlots || {});
+
+        for(i = 0; i < ids.length; i++) {
+            subplotInfo = oldPlots[ids[i]];
+
+            if(subplotInfo._scene) {
+                subplotInfo._scene.destroy();
+            }
+        }
     }
 
     var oldSubplotList = oldFullLayout._subplots || {};
@@ -304,7 +333,6 @@ exports.drawFramework = function(gd) {
         plotinfo.overlays = [];
 
         makeSubplotLayer(plotinfo);
-
         // fill in list of overlay subplots
         if(plotinfo.mainplot) {
             var mainplot = fullLayout._plots[plotinfo.mainplot];
@@ -496,3 +524,28 @@ function joinLayer(parent, nodeType, className, dataVal) {
 
     return layer;
 }
+
+exports.toSVG = function(gd) {
+    var imageRoot = gd._fullLayout._glimages;
+    var root = d3.select(gd).selectAll('.svg-container');
+    var canvases = root.filter(function(d, i) {return i === root.size() - 1;})
+        .selectAll('.gl-canvas-context, .gl-canvas-focus');
+
+    function canvasToImage() {
+        var canvas = this;
+        var imageData = canvas.toDataURL('image/png');
+        var image = imageRoot.append('svg:image');
+
+        image.attr({
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': imageData,
+            preserveAspectRatio: 'none',
+            x: 0,
+            y: 0,
+            width: canvas.width,
+            height: canvas.height
+        });
+    }
+
+    canvases.each(canvasToImage);
+};

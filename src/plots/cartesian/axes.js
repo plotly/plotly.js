@@ -399,7 +399,7 @@ axes.saveRangeInitial = function(gd, overwrite) {
 axes.saveShowSpikeInitial = function(gd, overwrite) {
     var axList = axes.list(gd, '', true),
         hasOneAxisChanged = false,
-        allEnabled = 'on';
+        allSpikesEnabled = 'on';
 
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
@@ -416,11 +416,11 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
             hasOneAxisChanged = true;
         }
 
-        if(allEnabled === 'on' && !ax.showspikes) {
-            allEnabled = 'off';
+        if(allSpikesEnabled === 'on' && !ax.showspikes) {
+            allSpikesEnabled = 'off';
         }
     }
-    gd._fullLayout._cartesianSpikesEnabled = allEnabled;
+    gd._fullLayout._cartesianSpikesEnabled = allSpikesEnabled;
     return hasOneAxisChanged;
 };
 
@@ -763,6 +763,10 @@ axes.calcTicks = function calcTicks(ax) {
                 minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
                 nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
+
+            // radial axes span half their domain,
+            // multiply nticks value by two to get correct number of auto ticks.
+            if(ax._name === 'radialaxis') nt *= 2;
         }
 
         // add a couple of extra digits for filling in ticks when we
@@ -815,6 +819,12 @@ axes.calcTicks = function calcTicks(ax) {
         xPrevious = x;
 
         vals.push(x);
+    }
+
+    // If same angle over a full circle, the last tick vals is a duplicate.
+    // TODO must do something similar for angular date axes.
+    if(ax._id === 'angular' && Math.abs(rng[1] - rng[0]) === 360) {
+        vals.pop();
     }
 
     // save the last tick as well as first, so we can
@@ -884,7 +894,9 @@ var roundBase10 = [2, 5, 10],
     // approx. tick positions for log axes, showing all (1) and just 1, 2, 5 (2)
     // these don't have to be exact, just close enough to round to the right value
     roundLog1 = [-0.046, 0, 0.301, 0.477, 0.602, 0.699, 0.778, 0.845, 0.903, 0.954, 1],
-    roundLog2 = [-0.301, 0, 0.301, 0.699, 1];
+    roundLog2 = [-0.301, 0, 0.301, 0.699, 1],
+    // N.B. `thetaunit; 'radians' angular axes must be converted to degrees
+    roundAngles = [15, 30, 45, 90, 180];
 
 function roundDTick(roughDTick, base, roundingSet) {
     return base * Lib.roundUp(roughDTick / base, roundingSet);
@@ -909,6 +921,10 @@ function roundDTick(roughDTick, base, roundingSet) {
 axes.autoTicks = function(ax, roughDTick) {
     var base;
 
+    function getBase(v) {
+        return Math.pow(v, Math.floor(Math.log(roughDTick) / Math.LN10));
+    }
+
     if(ax.type === 'date') {
         ax.tick0 = Lib.dateTick0(ax.calendar);
         // the criteria below are all based on the rough spacing we calculate
@@ -917,7 +933,7 @@ axes.autoTicks = function(ax, roughDTick) {
 
         if(roughX2 > ONEAVGYEAR) {
             roughDTick /= ONEAVGYEAR;
-            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            base = getBase(10);
             ax.dtick = 'M' + (12 * roundDTick(roughDTick, base, roundBase10));
         }
         else if(roughX2 > ONEAVGMONTH) {
@@ -942,7 +958,7 @@ axes.autoTicks = function(ax, roughDTick) {
         }
         else {
             // milliseconds
-            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            base = getBase(10);
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
     }
@@ -961,7 +977,7 @@ axes.autoTicks = function(ax, roughDTick) {
             // ticks on a linear scale, labeled fully
             roughDTick = Math.abs(Math.pow(10, rng[1]) -
                 Math.pow(10, rng[0])) / nt;
-            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            base = getBase(10);
             ax.dtick = 'L' + roundDTick(roughDTick, base, roundBase10);
         }
         else {
@@ -975,10 +991,15 @@ axes.autoTicks = function(ax, roughDTick) {
         ax.tick0 = 0;
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
+    else if(ax._id === 'angular') {
+        ax.tick0 = 0;
+        base = 1;
+        ax.dtick = roundDTick(roughDTick, base, roundAngles);
+    }
     else {
         // auto ticks always start at 0
         ax.tick0 = 0;
-        base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+        base = getBase(10);
         ax.dtick = roundDTick(roughDTick, base, roundBase10);
     }
 
@@ -1206,6 +1227,7 @@ axes.tickText = function(ax, x, hover) {
     if(ax.type === 'date') formatDate(ax, out, hover, extraPrecision);
     else if(ax.type === 'log') formatLog(ax, out, hover, extraPrecision, hideexp);
     else if(ax.type === 'category') formatCategory(ax, out);
+    else if(ax._id === 'angular') formatAngle(ax, out, hover, extraPrecision, hideexp);
     else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
     // add prefix and suffix
@@ -1398,6 +1420,71 @@ function formatLinear(ax, out, hover, extraPrecision, hideexp) {
         hideexp = 'hide';
     }
     out.text = numFormat(out.x, ax, hideexp, extraPrecision);
+}
+
+function formatAngle(ax, out, hover, extraPrecision, hideexp) {
+    if(ax.thetaunit === 'radians' && !hover) {
+        var num = out.x / 180;
+
+        if(num === 0) {
+            out.text = '0';
+        } else {
+            var frac = num2frac(num);
+
+            if(frac[1] >= 100) {
+                out.text = numFormat(Lib.deg2rad(out.x), ax, hideexp, extraPrecision);
+            } else {
+                var isNeg = out.x < 0;
+
+                if(frac[1] === 1) {
+                    if(frac[0] === 1) out.text = 'π';
+                    else out.text = frac[0] + 'π';
+                } else {
+                    out.text = [
+                        '<sup>', frac[0], '</sup>',
+                        '⁄',
+                        '<sub>', frac[1], '</sub>',
+                        'π'
+                    ].join('');
+                }
+
+                if(isNeg) out.text = MINUS_SIGN + out.text;
+            }
+        }
+    } else {
+        out.text = numFormat(out.x, ax, hideexp, extraPrecision);
+    }
+}
+
+// inspired by
+// https://github.com/yisibl/num2fraction/blob/master/index.js
+function num2frac(num) {
+    function almostEq(a, b) {
+        return Math.abs(a - b) <= 1e-6;
+    }
+
+    function findGCD(a, b) {
+        return almostEq(b, 0) ? a : findGCD(b, a % b);
+    }
+
+    function findPrecision(n) {
+        var e = 1;
+        while(!almostEq(Math.round(n * e) / e, n)) {
+            e *= 10;
+        }
+        return e;
+    }
+
+    var precision = findPrecision(num);
+    var number = num * precision;
+    var gcd = Math.abs(findGCD(number, precision));
+
+    return [
+        // numerator
+        Math.round(number / gcd),
+        // denominator
+        Math.round(precision / gcd)
+    ];
 }
 
 // format a number (tick value) according to the axis settings
@@ -1748,7 +1835,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     var axLetter = axid.charAt(0),
         counterLetter = axes.counterLetter(axid),
         vals = axes.calcTicks(ax),
-        datafn = function(d) { return [d.text, d.x, ax.mirror].join('_'); },
+        datafn = function(d) { return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_'); },
         tcls = axid + 'tick',
         gcls = axid + 'grid',
         zcls = axid + 'zl',
@@ -1774,7 +1861,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     // positioning arguments for x vs y axes
     if(axLetter === 'x') {
         sides = ['bottom', 'top'];
-        transfn = function(d) {
+        transfn = ax._transfn || function(d) {
             return 'translate(' + (ax._offset + ax.l2p(d.x)) + ',0)';
         };
         tickpathfn = function(shift, len) {
@@ -1787,7 +1874,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     }
     else if(axLetter === 'y') {
         sides = ['left', 'right'];
-        transfn = function(d) {
+        transfn = ax._transfn || function(d) {
             return 'translate(0,' + (ax._offset + ax.l2p(d.x)) + ')';
         };
         tickpathfn = function(shift, len) {
@@ -1796,6 +1883,13 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 return 'M' + shift + ',0l' + (Math.cos(caRad) * len) + ',' + (-Math.sin(caRad) * len);
             }
             else return 'M' + shift + ',0h' + len;
+        };
+    }
+    else if(axid === 'angular') {
+        sides = ['left', 'right'];
+        transfn = ax._transfn;
+        tickpathfn = function(shift, len) {
+            return 'M' + shift + ',0h' + len;
         };
     }
     else {
@@ -1812,6 +1906,10 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
     if(!ax.visible) return;
 
+    if(ax._tickFilter) {
+        vals = vals.filter(ax._tickFilter);
+    }
+
     // remove zero lines, grid lines, and inside ticks if they're within
     // 1 pixel of the end
     // The key case here is removing zero lines when the axis bound is zero.
@@ -1820,6 +1918,11 @@ axes.doTicks = function(gd, axid, skipTitle) {
         return (p > 1 && p < ax._length - 1);
     }
     var valsClipped = vals.filter(clipEnds);
+
+    // don't clip angular values
+    if(ax._id === 'angular') {
+        valsClipped = vals;
+    }
 
     function drawTicks(container, tickpath) {
         var ticks = container.selectAll('path.' + tcls)
@@ -1869,7 +1972,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 return (angle * flipit < 0) ? 'end' : 'start';
             };
         }
-        else {
+        else if(axLetter === 'y') {
             flipit = (axside === 'right') ? 1 : -1;
             labely = function(d) {
                 return d.dy + d.fontSize * MID_SHIFT - labelShift * flipit;
@@ -1885,6 +1988,16 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 return axside === 'right' ? 'start' : 'end';
             };
         }
+        else if(axid === 'angular') {
+            ax._labelShift = labelShift;
+            ax._labelStandoff = labelStandoff;
+            ax._pad = pad;
+
+            labelx = ax._labelx;
+            labely = ax._labely;
+            labelanchor = ax._labelanchor;
+        }
+
         var maxFontSize = 0,
             autoangle = 0,
             labelsReady = [];
@@ -1922,9 +2035,16 @@ axes.doTicks = function(gd, axid, skipTitle) {
             maxFontSize = Math.max(maxFontSize, d.fontSize);
         });
 
+        if(axid === 'angular') {
+            tickLabels.each(function(d) {
+                d3.select(this).select('text')
+                    .call(svgTextUtils.positionText, labelx(d), labely(d));
+            });
+        }
+
         function positionLabels(s, angle) {
             s.each(function(d) {
-                var anchor = labelanchor(angle);
+                var anchor = labelanchor(angle, d);
                 var thisLabel = d3.select(this),
                     mathjaxGroup = thisLabel.select('.text-math-group'),
                     transform = transfn(d) +
@@ -2049,7 +2169,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                         top: pos,
                         bottom: pos,
                         left: ax._offset,
-                        rigth: ax._offset + ax._length,
+                        right: ax._offset + ax._length,
                         width: ax._length,
                         height: 0
                     };
@@ -2234,6 +2354,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         grid.attr('transform', transfn)
             .call(Color.stroke, ax.gridcolor || '#ddd')
             .style('stroke-width', gridWidth + 'px');
+        if(typeof gridpath === 'function') grid.attr('d', gridpath);
         grid.exit().remove();
 
         // zero line

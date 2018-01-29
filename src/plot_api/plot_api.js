@@ -22,7 +22,7 @@ var Queue = require('../lib/queue');
 var Registry = require('../registry');
 var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
-var Polar = require('../plots/polar');
+var Polar = require('../plots/polar/legacy');
 var initInteractions = require('../plots/cartesian/graph_interact');
 
 var Drawing = require('../components/drawing');
@@ -144,8 +144,11 @@ Plotly.plot = function(gd, data, layout, config) {
 
     var fullLayout = gd._fullLayout;
 
-    // Polar plots
-    if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
+    // Legacy polar plots
+    if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
+        Lib.log('Legacy polar charts are deprecated!');
+        return plotPolar(gd, data, layout);
+    }
 
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
@@ -220,16 +223,15 @@ Plotly.plot = function(gd, data, layout, config) {
                     'left': 0,
                     'width': '100%',
                     'height': '100%',
-                    'overflow': 'visible'
-                })
+                    'overflow': 'visible',
+                    'pointer-events': 'none'
+                });
+        }
+
+        if(fullLayout._glcanvas) {
+            fullLayout._glcanvas
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
-
-            fullLayout._glcanvas.filter(function(d) {
-                return !d.pick;
-            }).style({
-                'pointer-events': 'none'
-            });
         }
 
         return Lib.syncOrAsync([
@@ -1941,6 +1943,16 @@ function _relayout(gd, aobj) {
                     ax.range = (ax.range[1] > ax.range[0]) ? [1, 2] : [2, 1];
                 }
 
+                // clear polar view initial stash for radial range so that
+                // value get recomputed in correct units
+                if(Array.isArray(fullLayout._subplots.polar) &&
+                    fullLayout._subplots.polar.length &&
+                    fullLayout[p.parts[0]] &&
+                    p.parts[1] === 'radialaxis'
+                ) {
+                    delete fullLayout[p.parts[0]]._subplot.viewInitial['radialaxis.range'];
+                }
+
                 // Annotations and images also need to convert to/from linearized coords
                 // Shapes do not need this :)
                 Registry.getComponentMethod('annotations', 'convertCoords')(gd, parentFull, vi, doextra);
@@ -2804,6 +2816,7 @@ function makePlotFramework(gd) {
     // FIXME: parcoords reuses this object, not the best pattern
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
         .data([{}]);
+
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
 
@@ -2864,6 +2877,9 @@ function makePlotFramework(gd) {
 
     // single cartesian layer for the whole plot
     fullLayout._cartesianlayer = fullLayout._paper.append('g').classed('cartesianlayer', true);
+
+    // single polar layer for the whole plot
+    fullLayout._polarlayer = fullLayout._paper.append('g').classed('polarlayer', true);
 
     // single ternary layer for the whole plot
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);

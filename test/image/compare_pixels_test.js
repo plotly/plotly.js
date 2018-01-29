@@ -51,8 +51,6 @@ var QUEUE_WAIT = 10;
 var pattern = process.argv[2];
 var mockList = getMockList(pattern);
 var isInQueue = (process.argv[3] === '--queue');
-var isCI = process.env.CIRCLECI;
-
 
 if(mockList.length === 0) {
     throw new Error('No mocks found with pattern ' + pattern);
@@ -67,18 +65,12 @@ if(!pattern) {
 
 // gl2d have limited image-test support
 if(pattern === 'gl2d_*') {
-
     if(!isInQueue) {
         console.log('WARN: Running gl2d image tests in batch may lead to unwanted results\n');
     }
-
-    if(isCI) {
-        console.log('Filtering out multiple-subplot gl2d mocks:');
-        mockList = mockList
-            .filter(untestableGL2DonCIfilter)
-            .sort(sortForGL2DonCI);
-        console.log('\n');
-    }
+    console.log('\nSorting gl2d mocks to avoid gl-shader conflicts');
+    sortGl2dMockList(mockList);
+    console.log('');
 }
 
 // main
@@ -111,48 +103,32 @@ function untestableFilter(mockName) {
     return cond;
 }
 
-/* gl2d mocks that have multiple subplots
- * can't be generated properly on CircleCI
- * at the moment.
+/* gl2d pointcloud and other non-regl gl2d mock(s)
+ * must be tested first on in order to work;
+ * sort them here.
  *
- * For more info see:
- * https://github.com/plotly/plotly.js/pull/980
- *
- */
-function untestableGL2DonCIfilter(mockName) {
-    var cond = [
-        'gl2d_multiple_subplots',
-        'gl2d_simple_inset',
-        'gl2d_stacked_coupled_subplots',
-        'gl2d_stacked_subplots'
-    ].indexOf(mockName) === -1;
-
-    if(!cond) console.log(' -', mockName);
-
-    return cond;
-}
-
-/* gl2d pointcloud mock(s) must be tested first
- * on CircleCI in order to work; sort them here.
- *
- * Pointcloud relies on gl-shader@4.2.1 whereas
- * other gl2d trace modules rely on gl-shader@4.2.0,
- * we suspect that the lone gl context on CircleCI is
+ * gl-shader appears to conflict with regl.
+ * We suspect that the lone gl context on CircleCI is
  * having issues with dealing with the two different
- * gl-shader versions.
+ * program binding algorithm.
+ *
+ * The problem will be solved by switching all our
+ * WebGL-based trace types to regl.
  *
  * More info here:
  * https://github.com/plotly/plotly.js/pull/1037
  */
-function sortForGL2DonCI(a, b) {
-    var root = 'gl2d_pointcloud',
-        ai = a.indexOf(root),
-        bi = b.indexOf(root);
+function sortGl2dMockList(mockList) {
+    var mockNames = ['gl2d_pointcloud-basic', 'gl2d_heatmapgl'];
+    var pos = 0;
 
-    if(ai < bi) return 1;
-    if(ai > bi) return -1;
-
-    return 0;
+    mockNames.forEach(function(m) {
+        var ind = mockList.indexOf(m);
+        var tmp = mockList[pos];
+        mockList[pos] = m;
+        mockList[ind] = tmp;
+        pos++;
+    });
 }
 
 function runInBatch(mockList) {

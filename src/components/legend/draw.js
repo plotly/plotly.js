@@ -334,25 +334,28 @@ module.exports = function draw(gd) {
                 xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, opts.xanchor);
                 yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, opts.yanchor);
             },
-            doneFn: function(dragged, numClicks, e) {
-                if(dragged && xf !== undefined && yf !== undefined) {
+            doneFn: function() {
+                if(xf !== undefined && yf !== undefined) {
                     Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
-                } else {
-                    var clickedTrace =
-                        fullLayout._infolayer.selectAll('g.traces').filter(function() {
-                            var bbox = this.getBoundingClientRect();
-                            return (e.clientX >= bbox.left && e.clientX <= bbox.right &&
-                                e.clientY >= bbox.top && e.clientY <= bbox.bottom);
-                        });
-                    if(clickedTrace.size() > 0) {
-                        if(numClicks === 1) {
-                            legend._clickTimeout = setTimeout(function() { handleClick(clickedTrace, gd, numClicks); }, DBLCLICKDELAY);
-                        } else if(numClicks === 2) {
-                            if(legend._clickTimeout) {
-                                clearTimeout(legend._clickTimeout);
-                            }
+                }
+            },
+            clickFn: function(numClicks, e) {
+                var clickedTrace =
+                    fullLayout._infolayer.selectAll('g.traces').filter(function() {
+                        var bbox = this.getBoundingClientRect();
+                        return (e.clientX >= bbox.left && e.clientX <= bbox.right &&
+                            e.clientY >= bbox.top && e.clientY <= bbox.bottom);
+                    });
+                if(clickedTrace.size() > 0) {
+                    if(numClicks === 1) {
+                        legend._clickTimeout = setTimeout(function() {
                             handleClick(clickedTrace, gd, numClicks);
+                        }, DBLCLICKDELAY);
+                    } else if(numClicks === 2) {
+                        if(legend._clickTimeout) {
+                            clearTimeout(legend._clickTimeout);
                         }
+                        handleClick(clickedTrace, gd, numClicks);
                     }
                 }
             }

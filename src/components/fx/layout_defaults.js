@@ -27,7 +27,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
     else hovermodeDflt = 'closest';
 
-    coerce('hovermode', hovermodeDflt);
+    var hoverMode = coerce('hovermode', hovermodeDflt);
+    if(hoverMode) {
+        coerce('hoverdistance');
+        coerce('spikedistance');
+    }
 
     // if only mapbox or geo subplots is present on graph,
     // reset 'zoom' dragmode to 'pan' until 'zoom' is implemented,
