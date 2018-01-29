@@ -164,7 +164,8 @@ dragElement.init = function init(options) {
         document.addEventListener('touchmove', onMove);
         document.addEventListener('touchend', onDone);
 
-        return Lib.pauseEvent(e);
+        e.preventDefault();
+        return;
     }
 
     function onMove(e) {
@@ -181,7 +182,8 @@ dragElement.init = function init(options) {
 
         if(gd._dragged && options.moveFn && !rightClick) options.moveFn(dx, dy);
 
-        return Lib.pauseEvent(e);
+        e.preventDefault();
+        return;
     }
 
     function onDone(e) {
@@ -246,7 +248,8 @@ dragElement.init = function init(options) {
 
         gd._dragged = false;
 
-        return Lib.pauseEvent(e);
+        e.preventDefault();
+        return;
     }
 };
 

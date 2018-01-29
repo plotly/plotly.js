@@ -360,7 +360,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // If a transition is in progress, then disable any behavior:
         if(gd._transitioningWithDuration) {
-            return Lib.pauseEvent(e);
+            e.preventDefault();
+            e.stopPropagation();
+            return;
         }
 
         var pc = gd.querySelector('.plotly');
@@ -434,7 +436,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             dragTail(zoomMode);
         }, REDRAWDELAY);
 
-        return Lib.pauseEvent(e);
+        e.preventDefault();
+        return;
     }
 
     // everything but the corners gets wheel zoom
