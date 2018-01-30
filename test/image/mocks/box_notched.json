@@ -143,8 +143,8 @@
             "color":"#1c9099"
          },
          "type":"box",
-         "name":"Notch width = 0.8",
-         "notchwidth":0.8
+         "name":"Notch width = 0.1",
+         "notchwidth":0.1
       },
       {
          "y":[
@@ -216,9 +216,9 @@
             "color":"#1c9099"
          },
          "type":"box",
-         "name":"Notch width = 1",
+         "name":"Notch width = 0",
          "notched":true,
-         "notchwidth":1
+         "notchwidth":0
       },
       {
          "y":[
