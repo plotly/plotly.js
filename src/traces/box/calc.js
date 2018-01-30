@@ -111,6 +111,13 @@ module.exports = function calc(gd, trace) {
             cdi.lo = 4 * cdi.q1 - 3 * cdi.q3;
             cdi.uo = 4 * cdi.q3 - 3 * cdi.q1;
 
+
+            // lower and upper notches ~95% Confidence Intervals for median
+            var iqr = cdi.q3 - cdi.q1;
+            var mci = 1.57 * iqr / Math.sqrt(bvLen);
+            cdi.ln = cdi.med - mci;
+            cdi.un = cdi.med + mci;
+
             cd.push(cdi);
         }
     }
