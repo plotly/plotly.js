@@ -124,6 +124,8 @@ dragElement.init = function init(options) {
     var clampFn = options.clampFn || _clampFn;
 
     function onStart(e) {
+        e.preventDefault();
+
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
@@ -164,11 +166,12 @@ dragElement.init = function init(options) {
         document.addEventListener('touchmove', onMove);
         document.addEventListener('touchend', onDone);
 
-        e.preventDefault();
         return;
     }
 
     function onMove(e) {
+        e.preventDefault();
+
         var offset = pointerOffset(e);
         var minDrag = options.minDrag || constants.MINDRAG;
         var dxdy = clampFn(offset[0] - startX, offset[1] - startY, minDrag);
@@ -182,7 +185,6 @@ dragElement.init = function init(options) {
 
         if(gd._dragged && options.moveFn && !rightClick) options.moveFn(dx, dy);
 
-        e.preventDefault();
         return;
     }
 
@@ -191,6 +193,8 @@ dragElement.init = function init(options) {
         document.removeEventListener('mouseup', onDone);
         document.removeEventListener('touchmove', onMove);
         document.removeEventListener('touchend', onDone);
+
+        e.preventDefault();
 
         if(hasHover) {
             Lib.removeElement(dragCover);
@@ -248,7 +252,6 @@ dragElement.init = function init(options) {
 
         gd._dragged = false;
 
-        e.preventDefault();
         return;
     }
 };

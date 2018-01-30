@@ -294,7 +294,7 @@ function createCamera(scene) {
         scene.relayoutCallback();
 
         return true;
-    });
+    }, true);
 
     return result;
 }

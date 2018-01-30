@@ -9,6 +9,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var touchEvent = require('../assets/touch_event');
 var drag = require('../assets/drag');
 var selectButton = require('../assets/modebar_button');
 var delay = require('../assets/delay');
@@ -601,6 +602,59 @@ describe('Test gl2d plots', function() {
         })
         .then(function() {
             assertAnnotation([327, 331]);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should not scroll document while panning', function(done) {
+        var mock = {
+            data: [
+                { type: 'scattergl', y: [1, 2, 3], x: [1, 2, 3] }
+            ],
+            layout: {
+                width: 500,
+                height: 500
+            }
+        };
+
+        var sceneTarget, relayoutCallback = jasmine.createSpy('relayoutCallback');
+
+        function scroll(target, amt) {
+            return new Promise(function(resolve) {
+                target.dispatchEvent(new WheelEvent('wheel', {deltaY: amt || 1, cancelable: true}));
+                setTimeout(resolve, 0);
+            });
+        }
+
+        function touchDrag(target, start, end) {
+            return new Promise(function(resolve) {
+                touchEvent('touchstart', start[0], start[1], {element: target});
+                touchEvent('touchmove', end[0], end[1], {element: target});
+                touchEvent('touchend', end[0], end[1], {element: target});
+                setTimeout(resolve, 0);
+            });
+        }
+
+        function assertEvent(e) {
+            expect(e.defaultPrevented).toEqual(true);
+            relayoutCallback();
+        }
+
+        gd.addEventListener('touchstart', assertEvent);
+        gd.addEventListener('wheel', assertEvent);
+
+        Plotly.plot(gd, mock)
+        .then(function() {
+            sceneTarget = gd.querySelector('.nsewdrag');
+
+            return touchDrag(sceneTarget, [100, 100], [0, 0]);
+        })
+        .then(function() {
+            return scroll(sceneTarget);
+        })
+        .then(function() {
+            expect(relayoutCallback).toHaveBeenCalledTimes(1);
         })
         .catch(fail)
         .then(done);
