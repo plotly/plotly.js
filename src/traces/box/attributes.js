@@ -87,7 +87,6 @@ module.exports = {
     },
     notched: {
         valType: 'boolean',
-        dflt: false,
         role: 'style',
         editType: 'calcIfAutorange',
         description: [

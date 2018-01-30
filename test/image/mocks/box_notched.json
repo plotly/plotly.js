@@ -144,7 +144,6 @@
          },
          "type":"box",
          "name":"Notch width = 0.8",
-         "notched":true,
          "notchwidth":0.8
       },
       {
