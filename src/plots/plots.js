@@ -2252,14 +2252,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         var module = contFull._module;
 
         if(!module) continue;
-
-        if(!module.animatable) {
-            var thisUpdate = {};
-
-            for(var ai in data[i]) {
-                thisUpdate[ai] = [data[i][ai]];
-            }
-        }
     }
 
     var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, plots.rehover, executeTransitions];
