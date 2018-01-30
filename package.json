@@ -55,6 +55,7 @@
   },
   "dependencies": {
     "3d-view": "^2.0.0",
+    "3d-view-controls": "^2.2.2",
     "@plotly/d3-sankey": "^0.5.0",
     "alpha-shape": "^1.0.0",
     "bubleify": "^1.0.0",
