@@ -28,6 +28,7 @@ var createError = require('regl-error2d');
 var rgba = require('color-normalize');
 var svgSdf = require('svg-path-sdf');
 var createRegl = require('regl');
+var arrayRange = require('array-range');
 var fillHoverText = require('../scatter/fill_hover_text');
 var isNumeric = require('fast-isnumeric');
 
@@ -121,7 +122,6 @@ function calc(container, trace) {
             ids[i] = i;
         }
     }
-
 
     calcColorscales(trace);
 
@@ -599,6 +599,7 @@ function sceneUpdate(container, subplot) {
                     scene.error2d.draw(i);
                     scene.error2d.draw(i + scene.count);
                 }
+
                 if(scene.scatter2d && !scene.selectBatch) {
                     scene.scatter2d.draw(i);
                 }
@@ -740,8 +741,9 @@ function plot(container, subplot, cdata) {
     if(!cdata.length) return;
 
     var layout = container._fullLayout;
-    var stash = cdata[0][0].t;
-    var scene = stash.scene;
+    var scene = cdata[0][0].t.scene;
+    var i;
+    var dragmode = layout.dragmode;
 
     // we may have more subplots than initialized data due to Axes.getSubplots method
     if(!scene) return;
@@ -782,6 +784,7 @@ function plot(container, subplot, cdata) {
             scene.fill2d = createLine(regl);
         }
 
+        // update main marker options
         if(scene.line2d) {
             scene.line2d.update(scene.lineOptions);
         }
@@ -790,13 +793,7 @@ function plot(container, subplot, cdata) {
             scene.error2d.update(errorBatch);
         }
         if(scene.scatter2d) {
-            if(!scene.selectBatch) {
-                scene.scatter2d.update(scene.markerOptions);
-            }
-            else {
-                scene.scatter2d.update(scene.unselectedOptions);
-                scene.select2d.update(scene.selectedOptions);
-            }
+            scene.scatter2d.update(scene.markerOptions);
         }
         // fill requires linked traces, so we generate it's positions here
         if(scene.fill2d) {
@@ -886,16 +883,76 @@ function plot(container, subplot, cdata) {
 
             scene.fill2d.update(scene.fillOptions);
         }
-    }
 
-    // make sure selection layer is initialized if we require selection
-    var dragmode = layout.dragmode;
 
-    if(dragmode === 'lasso' || dragmode === 'select') {
-        if(scene.select2d && scene.selectBatch) {
-            scene.scatter2d.update(scene.unselectedOptions);
+        // update selection
+        var hasSelectedPoints = false;
+        for(i = 0; i < cdata.length; i++) {
+            if(cdata[i][0].trace.selectedpoints) {
+                hasSelectedPoints = true;
+                break;
+            }
+        }
+
+        if(scene.selectBatch || dragmode === 'lasso' || dragmode === 'select' || hasSelectedPoints) {
+            var newSelectBatch, newUnselectBatch;
+
+            // create select2d
+            if(!scene.select2d) {
+                // create scatter instance by cloning scatter2d
+                scene.select2d = createScatter(layout._glcanvas.data()[1].regl, {clone: scene.scatter2d});
+            }
+
+            // regenerate scene batch, if traces number changed during selection
+            if(scene.selectBatch || hasSelectedPoints) {
+                if(!scene.selectBatch) scene.selectBatch = [];
+                if(!scene.unselectBatch) scene.unselectBatch = [];
+
+                newSelectBatch = Array(scene.count);
+                newUnselectBatch = Array(scene.count);
+
+                for(var j = 0; j < newSelectBatch.length; j++) {
+                    var trace = cdata[j][0].trace;
+                    var stash = cdata[j][0].t;
+                    var id = stash.index;
+
+                    // form unselected batch
+                    if(!scene.unselectBatch[id]) {
+                        if(trace.selectedpoints) {
+                            newSelectBatch[id] = trace.selectedpoints;
+                            var selPts = trace.selectedpoints;
+                            var selDict = {};
+                            for(i = 0; i < selPts.length; i++) {
+                                selDict[selPts[i]] = true;
+                            }
+                            var unselPts = [];
+                            for(i = 0; i < stash.count; i++) {
+                                if(!selDict[i]) unselPts.push(i);
+                            }
+                            newUnselectBatch[id] = unselPts;
+                        }
+                        else {
+                            newSelectBatch[id] = [];
+                            newUnselectBatch[id] = arrayRange(stash.count);
+                        }
+                    }
+                    else {
+                        newSelectBatch[id] = scene.selectBatch[id];
+                        newUnselectBatch[id] = scene.unselectBatch[id];
+                    }
+                }
+
+                scene.selectBatch = newSelectBatch;
+                scene.unselectBatch = newUnselectBatch;
+
+                scene.scatter2d.update(scene.unselectedOptions);
+            }
+
+            scene.select2d.update(scene.markerOptions);
+            scene.select2d.update(scene.selectedOptions);
         }
     }
+
 
     // provide viewport and range
     var vpRange = cdata.map(function(cdscatter) {
@@ -925,41 +982,6 @@ function plot(container, subplot, cdata) {
         ];
 
         if(trace.selectedpoints || dragmode === 'lasso' || dragmode === 'select') {
-            // create select2d
-            if(!scene.select2d && scene.scatter2d) {
-                var selectRegl = layout._glcanvas.data()[1].regl;
-
-                // create scatter instance by cloning scatter2d
-                scene.select2d = createScatter(selectRegl, {clone: scene.scatter2d});
-                scene.select2d.update(scene.selectedOptions);
-
-                // create selection style once we have something selected
-                if(trace.selectedpoints && !scene.selectBatch) {
-                    scene.selectBatch = Array(scene.count);
-                    scene.unselectBatch = Array(scene.count);
-                    scene.scatter2d.update(scene.unselectedOptions);
-                }
-            }
-            else {
-                // update selection positions, since they may have changed by panning or alike
-                scene.select2d.update(scene.selectedOptions);
-            }
-
-            // form unselected batch
-            if(trace.selectedpoints && !scene.unselectBatch[stash.index]) {
-                scene.selectBatch[stash.index] = trace.selectedpoints;
-                var selPts = trace.selectedpoints;
-                var selDict = {};
-                for(i = 0; i < selPts.length; i++) {
-                    selDict[selPts[i]] = true;
-                }
-                var unselPts = [];
-                for(i = 0; i < stash.count; i++) {
-                    if(!selDict[i]) unselPts.push(i);
-                }
-                scene.unselectBatch[stash.index] = unselPts;
-            }
-
             // precalculate px coords since we are not going to pan during select
             var xpx = Array(stash.count), ypx = Array(stash.count);
             for(i = 0; i < stash.count; i++) {
@@ -1193,18 +1215,18 @@ function selectPoints(searchInfo, polygon) {
         }
     }
     else {
-        unels = Array(stash.count);
-        for(i = 0; i < stash.count; i++) {
-            unels[i] = i;
-        }
+        unels = arrayRange(stash.count);
     }
 
-    // create selection style once we have something selected
+    // make sure selectBatch is created
     if(!scene.selectBatch) {
-        scene.selectBatch = Array(scene.count);
-        scene.unselectBatch = Array(scene.count);
+        scene.selectBatch = [];
+        scene.unselectBatch = [];
+
+        // we should turn scatter2d into unselected once we have any points selected
         scene.scatter2d.update(scene.unselectedOptions);
     }
+
     scene.selectBatch[stash.index] = els;
     scene.unselectBatch[stash.index] = unels;
 

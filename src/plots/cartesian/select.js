@@ -278,7 +278,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             else {
                 // TODO: remove in v2 - this was probably never intended to work as it does,
                 // but in case anyone depends on it we don't want to break it now.
-                gd.emit('plotly_selected', undefined);
+                gd.emit('plotly_selected', {points: [], range: null});
             }
 
             Fx.click(gd, evt);
