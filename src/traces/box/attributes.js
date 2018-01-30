@@ -96,12 +96,12 @@ module.exports = {
     notchwidth: {
         valType: 'number',
         min: 0,
-        max: 1,
+        max: 0.5,
         dflt: 0.25,
         role: 'style',
         editType: 'calcIfAutorange',
         description: [
-            'Sets the width of the notches inversely proportional to',
+            'Sets the width of the notches relative to',
             'the box\' width.',
             'For example, with 0, the notches are as wide as the box(es).'
         ].join(' ')

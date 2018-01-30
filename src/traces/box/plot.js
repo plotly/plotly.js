@@ -102,7 +102,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
     var bPosPxOffset = t.bPosPxOffset || 0;
     var whiskerWidth = trace.whiskerwidth || 0;
     var notched = trace.notched || false;
-    var nw = notched ? 1 - trace.notchwidth : 1;
+    var nw = notched ? 1 - 2 * trace.notchwidth : 1;
 
     // to support for one-sided box
     var bdPos0;
