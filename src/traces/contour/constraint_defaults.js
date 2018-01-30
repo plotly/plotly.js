@@ -8,13 +8,17 @@
 
 
 'use strict';
+var isNumeric = require('fast-isnumeric');
 
-var handleConstraintValueDefaults = require('./constraint_value_defaults');
 var handleLabelDefaults = require('./label_defaults');
+
 var Color = require('../../components/color');
 var addOpacity = Color.addOpacity;
 var opacity = Color.opacity;
-var CONSTRAINT_REDUCTION = require('../../constants/filter_ops').CONSTRAINT_REDUCTION;
+
+var filterOps = require('../../constants/filter_ops');
+var CONSTRAINT_REDUCTION = filterOps.CONSTRAINT_REDUCTION;
+var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
 
 module.exports = function handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor, opts) {
     var contours = traceOut.contours;
@@ -48,3 +52,42 @@ module.exports = function handleConstraintDefaults(traceIn, traceOut, coerce, la
 
     handleLabelDefaults(coerce, layout, lineColor, opts);
 };
+
+function handleConstraintValueDefaults(coerce, contours) {
+    var zvalue;
+
+    if(COMPARISON_OPS2.indexOf(contours.operation) === -1) {
+        // Requires an array of two numbers:
+        coerce('contours.value', [0, 1]);
+
+        if(!Array.isArray(contours.value)) {
+            if(isNumeric(contours.value)) {
+                zvalue = parseFloat(contours.value);
+                contours.value = [zvalue, zvalue + 1];
+            }
+        } else if(contours.value.length > 2) {
+            contours.value = contours.value.slice(2);
+        } else if(contours.length === 0) {
+            contours.value = [0, 1];
+        } else if(contours.length < 2) {
+            zvalue = parseFloat(contours.value[0]);
+            contours.value = [zvalue, zvalue + 1];
+        } else {
+            contours.value = [
+                parseFloat(contours.value[0]),
+                parseFloat(contours.value[1])
+            ];
+        }
+    } else {
+        // Requires a single scalar:
+        coerce('contours.value', 0);
+
+        if(!isNumeric(contours.value)) {
+            if(Array.isArray(contours.value)) {
+                contours.value = parseFloat(contours.value[0]);
+            } else {
+                contours.value = 0;
+            }
+        }
+    }
+}
