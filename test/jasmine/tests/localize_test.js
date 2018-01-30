@@ -233,4 +233,54 @@ describe('localization', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('uses extraFormat to localize the autoFormatted x-axis date tick', function(done) {
+        plot('test')
+            .then(function() {
+                // test format.month
+                expect(firstXLabel()).toBe('Jan 2001');
+                return Plotly.update(gd, {x: [['2001-01-01', '2001-02-01']]});
+            })
+            .then(function() {
+                // test format.dayMonth & format.year
+                expect(firstXLabel()).toBe('Dec 312000');
+
+                return Plotly.update(gd, {x: [['2001-01-01', '2001-01-02']]});
+            })
+            .then(function() {
+                // test format.dayMonthYear
+                expect(firstXLabel()).toBe('00:00Jan 1, 2001');
+
+                Plotly.register({
+                    moduleType: 'locale',
+                    name: 'test',
+                    format: {
+                        year: 'Y%Y',
+                        month: '%Y %b',
+                        dayMonth: '%-d %b',
+                        dayMonthYear: '%-d %b %Y'
+                    }
+                });
+
+                return Plotly.update(gd, {x: [['2001-01-01', '2002-01-01']]});
+            })
+            .then(function() {
+                // test format.month
+                expect(firstXLabel()).toBe('2001 Jan');
+
+                return Plotly.update(gd, {x: [['2001-01-01', '2001-02-01']]});
+            })
+            .then(function() {
+                // test format.dayMonth & format.year
+                expect(firstXLabel()).toBe('31 DecY2000');
+
+                return Plotly.update(gd, {x: [['2001-01-01', '2001-01-02']]});
+            })
+            .then(function() {
+                // test format.dayMonthYear
+                expect(firstXLabel()).toBe('00:001 Jan 2001');
+            })
+            .catch(failTest)
+            .then(done);
+    });
 });
