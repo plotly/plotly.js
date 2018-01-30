@@ -19,22 +19,22 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     // never let a heatmap override another type as closest point
     if(pointData.distance < MAXDIST) return;
 
-    var cd0 = pointData.cd[0],
-        trace = cd0.trace,
-        xa = pointData.xa,
-        ya = pointData.ya,
-        x = cd0.x,
-        y = cd0.y,
-        z = cd0.z,
-        zmask = cd0.zmask,
-        range = [trace.zmin, trace.zmax],
-        zhoverformat = trace.zhoverformat,
-        x2 = x,
-        y2 = y,
-        xl,
-        yl,
-        nx,
-        ny;
+    var cd0 = pointData.cd[0];
+    var trace = cd0.trace;
+    var xa = pointData.xa;
+    var ya = pointData.ya;
+    var x = cd0.x;
+    var y = cd0.y;
+    var z = cd0.z;
+    var xc = cd0.xCenter;
+    var yc = cd0.yCenter;
+    var zmask = cd0.zmask;
+    var range = [trace.zmin, trace.zmax];
+    var zhoverformat = trace.zhoverformat;
+    var x2 = x;
+    var y2 = y;
+
+    var xl, yl, nx, ny;
 
     if(pointData.index !== false) {
         try {
@@ -86,11 +86,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
         yl = y[ny];
     }
     else {
-        xl = (x[nx] + x[nx + 1]) / 2;
-        yl = (y[ny] + y[ny + 1]) / 2;
+        xl = xc ? xc[nx] : ((x[nx] + x[nx + 1]) / 2);
+        yl = yc ? yc[ny] : ((y[ny] + y[ny + 1]) / 2);
         if(trace.zsmooth) {
-            x0 = x1 = (x0 + x1) / 2;
-            y0 = y1 = (y0 + y1) / 2;
+            x0 = x1 = xa.c2p(xl);
+            y0 = y1 = ya.c2p(yl);
         }
     }
 

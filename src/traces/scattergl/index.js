@@ -387,10 +387,28 @@ function sceneOptions(container, subplot, trace, positions) {
 
     if(hasMarkers) {
         markerOptions = makeMarkerOptions(markerOpts);
-        selectedOptions = trace.selected ? makeMarkerOptions(extend({}, markerOpts, trace.selected.marker)) : markerOptions;
-        unselectedOptions = trace.unselected ? makeMarkerOptions(extend({}, markerOpts, trace.unselected.marker)) : markerOptions;
+        selectedOptions = makeSelectedOptions(trace.selected, markerOpts);
+        unselectedOptions = makeSelectedOptions(trace.unselected, markerOpts);
 
         markerOptions.positions = positions;
+    }
+
+    function makeSelectedOptions(selected, markerOpts) {
+        var options = {};
+
+        if(selected.marker.symbol) {
+            options = makeMarkerOptions(extend({}, markerOpts, selected.marker));
+        }
+
+        // shortcut simple selection logic
+        else {
+            options = {};
+            if(selected.marker.size) options.sizes = selected.marker.size;
+            if(selected.marker.color) options.colors = selected.marker.color;
+            if(selected.marker.opacity !== undefined) options.opacity = selected.marker.opacity;
+        }
+
+        return options;
     }
 
     function makeMarkerOptions(markerOpts) {
@@ -911,7 +929,7 @@ function plot(container, subplot, cdata) {
             if(!scene.select2d && scene.scatter2d) {
                 var selectRegl = layout._glcanvas.data()[1].regl;
 
-                // smol hack to create scatter instance by cloning scatter2d
+                // create scatter instance by cloning scatter2d
                 scene.select2d = createScatter(selectRegl, {clone: scene.scatter2d});
                 scene.select2d.update(scene.selectedOptions);
 

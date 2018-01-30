@@ -115,11 +115,11 @@ module.exports = function calc(gd, trace) {
     }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var xlen = maxRowLength(z),
-        xIn = trace.xtype === 'scaled' ? '' : x,
-        xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa),
-        yIn = trace.ytype === 'scaled' ? '' : y,
-        yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
+    var xlen = maxRowLength(z);
+    var xIn = trace.xtype === 'scaled' ? '' : x;
+    var xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa);
+    var yIn = trace.ytype === 'scaled' ? '' : y;
+    var yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
 
     // handled in gl2d convert step
     if(!isGL2D) {
@@ -127,7 +127,15 @@ module.exports = function calc(gd, trace) {
         Axes.expand(ya, yArray);
     }
 
-    var cd0 = {x: xArray, y: yArray, z: z, text: trace.text};
+    var cd0 = {
+        x: xArray,
+        y: yArray,
+        z: z,
+        text: trace.text
+    };
+
+    if(xIn && xIn.length === xArray.length - 1) cd0.xCenter = xIn;
+    if(yIn && yIn.length === yArray.length - 1) cd0.yCenter = yIn;
 
     if(isHist) {
         cd0.xRanges = binned.xRanges;

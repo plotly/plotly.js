@@ -113,12 +113,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     var dragger = makeRectDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
 
+    var allFixedRanges = !yActive && !xActive;
+
     // still need to make the element if the axes are disabled
     // but nuke its events (except for maindrag which needs them for hover)
     // and stop there
-    if(!yActive && !xActive && !isSelectOrLasso(fullLayout.dragmode)) {
+    if(allFixedRanges && !isMainDrag) {
         dragger.onmousedown = null;
-        dragger.style.pointerEvents = isMainDrag ? 'all' : 'none';
+        dragger.style.pointerEvents = 'none';
         return dragger;
     }
 
@@ -129,24 +131,34 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         prepFn: function(e, startX, startY) {
             var dragModeNow = gd._fullLayout.dragmode;
 
-            if(isMainDrag) {
-                // main dragger handles all drag modes, and changes
-                // to pan (or to zoom if it already is pan) on shift
-                if(e.shiftKey) {
-                    if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+            if(!allFixedRanges) {
+                if(isMainDrag) {
+                    // main dragger handles all drag modes, and changes
+                    // to pan (or to zoom if it already is pan) on shift
+                    if(e.shiftKey) {
+                        if(dragModeNow === 'pan') dragModeNow = 'zoom';
+                        else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+                    }
+                    else if(e.ctrlKey) {
+                        dragModeNow = 'pan';
+                    }
                 }
-                else if(e.ctrlKey) {
-                    dragModeNow = 'pan';
-                }
+                // all other draggers just pan
+                else dragModeNow = 'pan';
             }
-            // all other draggers just pan
-            else dragModeNow = 'pan';
 
             if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
             else dragOptions.minDrag = undefined;
 
-            if(dragModeNow === 'zoom') {
+            if(isSelectOrLasso(dragModeNow)) {
+                dragOptions.xaxes = xa;
+                dragOptions.yaxes = ya;
+                prepSelect(e, startX, startY, dragOptions, dragModeNow);
+            }
+            else if(allFixedRanges) {
+                clearSelect(zoomlayer);
+            }
+            else if(dragModeNow === 'zoom') {
                 dragOptions.moveFn = zoomMove;
                 dragOptions.doneFn = zoomDone;
 
@@ -161,11 +173,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 dragOptions.moveFn = plotDrag;
                 dragOptions.doneFn = dragTail;
                 clearSelect(zoomlayer);
-            }
-            else if(isSelectOrLasso(dragModeNow)) {
-                dragOptions.xaxes = xa;
-                dragOptions.yaxes = ya;
-                prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         },
         clickFn: function(numClicks, evt) {

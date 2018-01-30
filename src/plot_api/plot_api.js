@@ -225,7 +225,11 @@ Plotly.plot = function(gd, data, layout, config) {
                     'height': '100%',
                     'overflow': 'visible',
                     'pointer-events': 'none'
-                })
+                });
+        }
+
+        if(fullLayout._glcanvas) {
+            fullLayout._glcanvas
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
         }

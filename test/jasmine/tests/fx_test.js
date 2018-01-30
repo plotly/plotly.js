@@ -231,11 +231,12 @@ describe('relayout', function() {
 
             return Plotly.relayout(gd, 'yaxis.fixedrange', true);
         }).then(function() {
-            assertMainDrag('pointer', false);
+            // still active with fixedrange because we're handling clicks here too.
+            assertMainDrag('pointer', true);
 
             return Plotly.relayout(gd, 'dragmode', 'drag');
         }).then(function() {
-            assertMainDrag('pointer', false);
+            assertMainDrag('pointer', true);
 
             return Plotly.relayout(gd, 'dragmode', 'lasso');
         }).then(function() {

@@ -9,12 +9,11 @@
 'use strict';
 
 module.exports = function linkTraces(gd, plotinfo, cdscatter) {
-    var cd, trace;
+    var trace, i;
     var prevtrace = null;
 
-    for(var i = 0; i < cdscatter.length; ++i) {
-        cd = cdscatter[i];
-        trace = cd[0].trace;
+    for(i = 0; i < cdscatter.length; ++i) {
+        trace = cdscatter[i][0].trace;
 
         // Note: The check which ensures all cdscatter here are for the same axis and
         // are either cartesian or scatterternary has been removed. This code assumes
