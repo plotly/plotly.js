@@ -190,17 +190,17 @@ module.exports = extendFlat({
             dflt: '=',
             editType: 'calc',
             description: [
-                'Sets the filter operation.',
+                'Sets the constraint operation.',
 
-                '*=* keeps items equal to `value`',
+                '*=* keeps regions equal to `value`',
 
-                '*<* and *<=* keep items less than `value`',
+                '*<* and *<=* keep regions less than `value`',
 
-                '*>* and *>=* keep items greater than `value`',
+                '*>* and *>=* keep regions greater than `value`',
 
-                '*[]*, *()*, *[)*, and *(]* keep items inside `value[0]` to `value[1]`',
+                '*[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]`',
 
-                '*][*, *)(*, *](*, *)[* keep items outside `value[0]` to value[1]`',
+                '*][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]`',
 
                 'Open vs. closed intervals make no difference to constraint display, but',
                 'all versions are allowed for consistency with filter transforms.'
@@ -212,22 +212,16 @@ module.exports = extendFlat({
             role: 'info',
             editType: 'calc',
             description: [
-                'Sets the value or values by which to filter by.',
-
-                'Values are expected to be in the same type as the data linked',
-                'to *target*.',
+                'Sets the value or values of the constraint boundary.',
 
                 'When `operation` is set to one of the comparison values',
                 '(' + COMPARISON_OPS2 + ')',
-                '*value* is expected to be a number or a string.',
+                '*value* is expected to be a number.',
 
-                'When `operation` is set to one of the interval value',
+                'When `operation` is set to one of the interval values',
                 '(' + INTERVAL_OPS + ')',
-                '*value* is expected to be 2-item array where the first item',
-                'is the lower bound and the second item is the upper bound.',
-
-                'Open vs. closed intervals make no difference to constraint display, but',
-                'all versions are allowed for consistency with filter transforms.'
+                '*value* is expected to be an array of two numbers where the first',
+                'is the lower bound and the second is the upper bound.',
             ].join(' ')
         },
         editType: 'calc',
