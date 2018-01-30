@@ -60,13 +60,14 @@ module.exports = function style(s, gd) {
     .each(stylePoints);
 
     function styleLines(d) {
-        var trace = d[0].trace,
-            showFill = trace.visible && trace.fill && trace.fill !== 'none',
-            showLine = subTypes.hasLines(trace);
+        var trace = d[0].trace;
+        var showFill = trace.visible && trace.fill && trace.fill !== 'none';
+        var showLine = subTypes.hasLines(trace);
+        var contours = trace.contours;
 
-        if(trace && trace._module && trace._module.name === 'contourcarpet') {
-            showLine = trace.contours.showlines;
-            showFill = trace.contours.coloring === 'fill';
+        if(contours && contours.type === 'constraint') {
+            showLine = contours.showlines;
+            showFill = contours._operation !== '=';
         }
 
         var fill = d3.select(this).select('.legendfill').selectAll('path')

@@ -587,6 +587,76 @@ describe('hover info', function() {
             .then(done);
         });
 
+        it('should get the right content and color for contour constraints', function(done) {
+            var contourConstraints = require('@mocks/contour_constraints.json');
+
+            Plotly.plot(gd, contourConstraints)
+            .then(function() {
+                _hover(gd, 250, 250);
+                assertHoverLabelContent({
+                    nums: [
+                        'x: 1\ny: 1\nz: 3.00', // custom zhoverformat
+                        'x: 1\ny: 1\nz: 3',
+                        'x: 1\ny: 1\nz: 10',
+                        'x: 1\ny: 1\nz: 10',
+                        'x: 1\ny: 1\nz: 10',
+                        'x: 1\ny: 1\nz: 10',
+                        'x: 1\ny: 1\nz: 10'
+                    ],
+                    name: ['[2, 4]', '=3.0001', '&gt;1', '&gt;0.25', ']6, 7[', '&lt;8', ']3, 4[']
+                });
+                var styles = [{
+                    // This first one has custom styles. The others all inherit from trace styles.
+                    bgcolor: 'rgb(200, 200, 200)',
+                    bordercolor: 'rgb(0, 0, 100)',
+                    fontSize: 20,
+                    fontFamily: 'Arial',
+                    fontColor: 'rgb(0, 100, 200)'
+                }, {
+                    bgcolor: 'rgb(255, 127, 14)',
+                    bordercolor: 'rgb(68, 68, 68)',
+                    fontSize: 13,
+                    fontFamily: 'Arial',
+                    fontColor: 'rgb(68, 68, 68)'
+                }, {
+                    bgcolor: 'rgb(0, 200, 0)',
+                    bordercolor: 'rgb(255, 255, 255)',
+                    fontSize: 13,
+                    fontFamily: 'Arial',
+                    fontColor: 'rgb(255, 255, 255)'
+                }, {
+                    bgcolor: 'rgb(150, 0, 0)',
+                    bordercolor: 'rgb(255, 255, 255)',
+                    fontSize: 13,
+                    fontFamily: 'Arial',
+                    fontColor: 'rgb(255, 255, 255)'
+                }, {
+                    bgcolor: 'rgb(150, 0, 200)',
+                    bordercolor: 'rgb(255, 255, 255)',
+                    fontSize: 13,
+                    fontFamily: 'Arial',
+                    fontColor: 'rgb(255, 255, 255)'
+                }, {
+                    bgcolor: 'rgb(140, 86, 75)',
+                    bordercolor: 'rgb(255, 255, 255)',
+                    fontSize: 13,
+                    fontFamily: 'Arial',
+                    fontColor: 'rgb(255, 255, 255)'
+                }, {
+                    bgcolor: 'rgb(227, 119, 194)',
+                    bordercolor: 'rgb(68, 68, 68)',
+                    fontSize: 13,
+                    fontFamily: 'Arial',
+                    fontColor: 'rgb(68, 68, 68)'
+                }];
+                d3.selectAll('g.hovertext').each(function(_, i) {
+                    assertHoverLabelStyle(d3.select(this), styles[i]);
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
         it('should display correct label content with specified format - histogram2d', function(done) {
             Plotly.plot(gd, [{
                 type: 'histogram2d',
