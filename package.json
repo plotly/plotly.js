@@ -44,7 +44,7 @@
     "start-image_viewer": "node devtools/image_viewer/server.js",
     "start": "npm run start-test_dashboard",
     "baseline": "node tasks/baseline.js",
-    "preversion": "npm-link-check && npm dedupe",
+    "preversion": "npm-link-check && npm dedupe && npm ls --prod",
     "version": "npm run build && git add -A dist src build",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\""
   },
