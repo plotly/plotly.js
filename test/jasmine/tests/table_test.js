@@ -206,6 +206,29 @@ describe('table', function() {
         });
     });
 
+    describe('Rendering with partial attribute support', function() {
+        var mockCopy,
+            gd;
+
+        beforeEach(function(done) {
+            mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.data[0].domain = {
+                x: [0.1, 0.9],
+                y: [0.05, 0.85]
+            };
+            delete mockCopy.data[0].cells;
+            gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('`Plotly.plot` should render all the columns even if no cell contents were supplied yet', function() {
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].header.values.length).toEqual(7);
+            expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
+            expect(document.querySelectorAll('.' + cn.columnCell).length).toEqual(7 * 2); // both column rows to render
+        });
+    });
+
     describe('basic use and basic data restyling', function() {
         var mockCopy,
             gd;
