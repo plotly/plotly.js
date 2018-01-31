@@ -670,4 +670,8 @@ describe('Test gl2d plots', function() {
         .catch(fail)
         .then(done);
     });
+
+    fit('should update selected points', function(done) {
+        // #2298
+    });
 });
