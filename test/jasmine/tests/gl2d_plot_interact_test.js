@@ -4,6 +4,7 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
+var ScatterGl = require('@src/traces/scattergl');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -13,6 +14,7 @@ var drag = require('../assets/drag');
 var selectButton = require('../assets/modebar_button');
 var delay = require('../assets/delay');
 var readPixel = require('../assets/read_pixel');
+
 
 function countCanvases() {
     return d3.selectAll('canvas').size();
@@ -406,7 +408,6 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-
     it('@noCI should display selection of big number of miscellaneous points', function(done) {
         var colorList = [
             '#006385', '#F06E75', '#90ed7d', '#f7a35c', '#8085e9',
@@ -641,6 +642,30 @@ describe('Test gl2d plots', function() {
         })
         .then(function() {
             assertAnnotation([327, 331]);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should restyle opacity', function(done) {
+        // #2299
+        spyOn(ScatterGl, 'calc');
+
+        var dat = [{
+            'x': [1, 2, 3],
+            'y': [1, 2, 3],
+            'type': 'scattergl',
+            'mode': 'markers'
+        }];
+
+        Plotly.plot(gd, dat, {width: 500, height: 500})
+        .then(function() {
+            expect(ScatterGl.calc).toHaveBeenCalledTimes(1);
+
+            return Plotly.restyle(gd, {'opacity': 0.1});
+        })
+        .then(function() {
+            expect(ScatterGl.calc).toHaveBeenCalledTimes(2);
         })
         .catch(fail)
         .then(done);
