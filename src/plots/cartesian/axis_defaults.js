@@ -75,7 +75,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
-    handleTickMarkDefaults(containerIn, containerOut, coerce, options);
+    handleTickMarkDefaults(containerIn, containerOut, coerce, {
+        automargin: true,
+        tickSuffixDflt: options.tickSuffixDflt,
+        font: options.font,
+        noHover: options.noHover
+    });
     handleLineGridDefaults(containerIn, containerOut, coerce, {
         dfltColor: dfltColor,
         bgColor: options.bgColor,

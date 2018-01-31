@@ -27,7 +27,7 @@
   ],
     "layout": {
       "xaxis": {"title": "X Axis Title", "titlefont": {"size": 80}, "ticklabelsautomargin": true},
-      "yaxis": {"title": "Y Axis Title", "titlefont": {"size": 40}, "ticklabelsautomargin": true},
+      "yaxis": {"title": "Y Axis Title", "titlefont": {"size": 40}, "ticklen": 50, "ticklabelsautomargin": true},
       "yaxis2": {
         "title": "Y2 Axis Title",
         "overlaying": "y",

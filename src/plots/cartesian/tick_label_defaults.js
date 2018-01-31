@@ -51,7 +51,8 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
 
-    if(axType === 'cartesian') coerce('ticklabelsautomargin');
+
+    if(options.automargin) coerce('ticklabelsautomargin');
 };
 
 /*
