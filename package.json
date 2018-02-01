@@ -118,7 +118,7 @@
     "cross-spawn": "^5.1.0",
     "deep-equal": "^1.0.1",
     "ecstatic": "^2.1.0",
-    "eslint": "^3.17.1",
+    "eslint": "^4.16.0",
     "falafel": "^2.0.0",
     "fs-extra": "^2.0.0",
     "fuse.js": "^2.6.1",
