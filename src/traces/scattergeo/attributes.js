@@ -89,9 +89,12 @@ module.exports = overrideAll({
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
         size: scatterMarkerAttrs.size,
+        sizemode: scatterMarkerAttrs.sizemode,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
-        sizemode: scatterMarkerAttrs.sizemode,
+        sizemax: scatterMarkerAttrs.sizemax,
+        sizedatamin: scatterMarkerAttrs.sizedatamin,
+        sizedatamax: scatterMarkerAttrs.sizedatamax,
         showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,
         line: extendFlat({

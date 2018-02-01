@@ -1,0 +1,48 @@
+{
+    "data": [
+        {
+            "type": "scatter",
+            "mode": "markers",
+            "name": "log-diameter",
+            "x": [0, 9, 18, 27, 36, 45, 54, 63, 72, 81],
+            "y": [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
+            "marker": {
+                "size": [10, 100, 1000, 20, 400, 5000, 50, 300, 7000],
+                "sizemode": "log-diameter",
+                "sizeref": 0.1
+            }
+        },
+        {
+            "type": "scatter",
+            "mode": "markers",
+            "name": "log-area",
+            "x": [0, 9, 18, 27, 36, 45, 54, 63, 72, 81],
+            "y": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+            "marker": {
+                "size": [10, 100, 1000, 20, 400, 5000, 50, 300, 7000],
+                "sizemode": "log-area",
+                "sizeref": 0.01
+            }
+        },
+        {
+            "type": "scatter",
+            "mode": "markers",
+            "name": "data min-max",
+            "x": [0, 9, 18, 27, 36, 45, 54, 63, 72, 81],
+            "y": [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+            "marker": {
+                "size": [10, 100, 1000, 20, 400, 5000, 50, 300, 7000],
+                "sizedatamin": 20,
+                "sizedatamax": 100,
+                "sizemin": 50,
+                "sizemax": 60
+            }
+        }
+    ],
+    "layout": {
+        "hovermode": "closest",
+        "showlegend": true,
+        "width": 800,
+        "height": 500
+    }
+}

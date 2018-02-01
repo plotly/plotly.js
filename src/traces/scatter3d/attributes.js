@@ -139,9 +139,12 @@ var attrs = module.exports = overrideAll({
             description: 'Sets the marker symbol type.'
         },
         size: extendFlat({}, scatterMarkerAttrs.size, {dflt: 8}),
+        sizemode: scatterMarkerAttrs.sizemode,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
-        sizemode: scatterMarkerAttrs.sizemode,
+        sizemax: scatterMarkerAttrs.sizemax,
+        sizedatamin: scatterMarkerAttrs.sizedatamin,
+        sizedatamax: scatterMarkerAttrs.sizedatamax,
         opacity: extendFlat({}, scatterMarkerAttrs.opacity, {
             arrayOk: false,
             description: [

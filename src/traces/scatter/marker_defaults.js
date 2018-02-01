@@ -67,9 +67,12 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(isBubble) {
+        coerce('marker.sizemode');
         coerce('marker.sizeref');
         coerce('marker.sizemin');
-        coerce('marker.sizemode');
+        coerce('marker.sizemax');
+        coerce('marker.sizedatamin');
+        coerce('marker.sizedatamax');
     }
 
     if(opts.gradient) {

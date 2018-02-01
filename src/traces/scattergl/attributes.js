@@ -59,9 +59,12 @@ var attrs = module.exports = overrideAll({
     marker: extendFlat({}, colorAttributes('marker'), {
         symbol: scatterMarkerAttrs.symbol,
         size: scatterMarkerAttrs.size,
+        sizemode: scatterMarkerAttrs.sizemode,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
-        sizemode: scatterMarkerAttrs.sizemode,
+        sizemax: scatterMarkerAttrs.sizemax,
+        sizedatamin: scatterMarkerAttrs.sizedatamin,
+        sizedatamax: scatterMarkerAttrs.sizedatamax,
         opacity: scatterMarkerAttrs.opacity,
         showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,

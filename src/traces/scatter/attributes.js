@@ -288,6 +288,28 @@ module.exports = {
                 '*0* corresponds to no limit.'
             ].join(' ')
         },
+
+        sizemode: {
+            valType: 'enumerated',
+            values: ['diameter', 'area', 'log-diameter', 'log-area'],
+            dflt: 'diameter',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Has an effect only if `marker.size` is set to a numerical array.',
+                'Sets the rule for which the data in `size` is converted',
+                'to pixels.',
+                'When set to *diameter*, `marker.size` data is proportional to',
+                'marker points\' diameter.',
+                'When set to *area*, `marker.size` data is proportional to',
+                'marker points\' area.',
+                'When set to *log-diameter*, the base10 log of the `marker.size` data',
+                'is proportional to marker points\' diameter .',
+                'When set to *log-area*, the base10 log of the `marker.size` data',
+                'is proportional to marker points\' area.',
+                'In each case the proportionality constant is set using `sizeref`.'
+            ].join(' ')
+        },
         sizeref: {
             valType: 'number',
             dflt: 1,
@@ -295,8 +317,8 @@ module.exports = {
             editType: 'calc',
             description: [
                 'Has an effect only if `marker.size` is set to a numerical array.',
-                'Sets the scale factor used to determine the rendered size of',
-                'marker points. Use with `sizemin` and `sizemode`.'
+                'Sets the proportionality constant in the `marker.size` data',
+                'to marker point size conversion (More info under `sizemode`).'
             ].join(' ')
         },
         sizemin: {
@@ -310,16 +332,37 @@ module.exports = {
                 'Sets the minimum size (in px) of the rendered marker points.'
             ].join(' ')
         },
-        sizemode: {
-            valType: 'enumerated',
-            values: ['diameter', 'area'],
-            dflt: 'diameter',
-            role: 'info',
+        sizemax: {
+            valType: 'number',
+            min: 0,
+            role: 'style',
             editType: 'calc',
             description: [
                 'Has an effect only if `marker.size` is set to a numerical array.',
-                'Sets the rule for which the data in `size` is converted',
-                'to pixels.'
+                'Sets the maximum size (in px) of the rendered marker points.'
+            ].join(' ')
+        },
+        sizedatamin: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            role: 'style',
+            editType: 'calc',
+            description: [
+                'Has an effect only if `marker.size` is set to a numerical array.',
+                'Sets the minimum `marker.size` value to be scaled.',
+                'Values smaller than `sizedatamin` are displayed with `sizemin`.'
+            ].join(' ')
+        },
+        sizedatamax: {
+            valType: 'number',
+            min: 0,
+            role: 'style',
+            editType: 'calc',
+            description: [
+                'Has an effect only if `marker.size` is set to a numerical array.',
+                'Sets the maximum `marker.size` value to be scaled.',
+                'Values greater than `sizedatamin` are displayed with `sizemax`.'
             ].join(' ')
         },
 

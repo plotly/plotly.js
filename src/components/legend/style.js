@@ -123,9 +123,12 @@ module.exports = function style(s, gd) {
                 dEdit.mlc = boundVal('marker.line.color', pickFirst);
                 dEdit.mlw = boundVal('marker.line.width', Lib.mean, [0, 5]);
                 tEdit.marker = {
+                    sizemode: 'diameter',
                     sizeref: 1,
                     sizemin: 1,
-                    sizemode: 'diameter'
+                    sizemax: null,
+                    sizedatamin: null,
+                    sizedatamax: null
                 };
             }
 
