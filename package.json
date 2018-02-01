@@ -44,7 +44,7 @@
     "start-image_viewer": "node devtools/image_viewer/server.js",
     "start": "npm run start-test_dashboard",
     "baseline": "node tasks/baseline.js",
-    "preversion": "npm-link-check && npm ls --prod",
+    "preversion": "check-node-version --node 8 --npm 5 && npm-link-check && npm ls --prod",
     "version": "npm run build && git add -A dist src build",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\""
   },
@@ -114,6 +114,7 @@
     "brfs": "^1.4.3",
     "browserify": "^14.1.0",
     "browserify-transform-tools": "^1.7.0",
+    "check-node-version": "^3.2.0",
     "cross-spawn": "^5.1.0",
     "deep-equal": "^1.0.1",
     "ecstatic": "^2.1.0",
