@@ -1860,7 +1860,12 @@ describe('Test axes', function() {
     describe('calcTicks and tickText', function() {
         function mockCalc(ax) {
             ax.tickfont = {};
-            Axes.setConvert(ax, {separators: '.,'});
+            Axes.setConvert(ax, {separators: '.,', _extraFormat: {
+                year: '%Y',
+                month: '%b %Y',
+                dayMonth: '%b %-d',
+                dayMonthYear: '%b %-d, %Y'
+            }});
             return Axes.calcTicks(ax).map(function(v) { return v.text; });
         }
 

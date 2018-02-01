@@ -44,31 +44,17 @@ containerCommands.getRunCmd = function(isCI, commands) {
 
 function getRunLocal(commands) {
     commands = [containerCommands.cdHome].concat(commands);
-
-    var commandsJoined = '"' + commands.join(' && ') + '"';
-
     return [
         'docker exec -i',
         constants.testContainerName,
         '/bin/bash -c',
-        commandsJoined
+        '"' + commands.join(' && ') + '"'
     ].join(' ');
 }
 
 function getRunCI(commands) {
-    commands = ['export CIRCLECI=1', containerCommands.cdHome].concat(commands);
-
-    var commandsJoined = '"' + commands.join(' && ') + '"';
-    var containerId = '$(docker inspect --format \'{{.Id}}\' ' + constants.testContainerName + ')';
-
-    return [
-        'sudo',
-        'lxc-attach',
-        '-n', containerId,
-        '-f', '/var/lib/docker/containers/' + containerId + '/config.lxc',
-        '-- bash -c',
-        commandsJoined
-    ].join(' ');
+    commands = [containerCommands.cdHome].concat(commands);
+    return commands.join(' && ');
 }
 
 module.exports = containerCommands;

@@ -10,7 +10,4 @@ npm run test-jasmine -- --tags=noCI --nowatch || EXIT_STATE=$?
 # mapbox image tests take too much resources on CI
 npm run test-image -- mapbox_* --queue || EXIT_STATE=$?
 
-# run gl2d image test again (some mocks are skipped on CI)
-npm run test-image-gl2d || EXIT_STATE=$?
-
 exit $EXIT_STATE

@@ -18,12 +18,12 @@ var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');
 var contourPlot = require('../contour/plot');
 var constants = require('../contour/constants');
-var convertToConstraints = require('./convert_to_constraints');
+var convertToConstraints = require('../contour/convert_to_constraints');
 var joinAllPaths = require('./join_all_paths');
-var emptyPathinfo = require('./empty_pathinfo');
+var emptyPathinfo = require('../contour/empty_pathinfo');
 var mapPathinfo = require('./map_pathinfo');
 var lookupCarpet = require('../carpet/lookup_carpetid');
-var closeBoundaries = require('./close_boundaries');
+var closeBoundaries = require('../contour/close_boundaries');
 
 
 module.exports = function plot(gd, plotinfo, cdcontours) {
@@ -49,7 +49,9 @@ function plotOne(gd, plotinfo, cd) {
     var fullLayout = gd._fullLayout;
     var id = 'contour' + uid;
     var pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
-    var isConstraint = trace.contours.type === 'constraint';
+    var isConstraint = contours.type === 'constraint';
+    var operation = contours._operation;
+    var coloring = isConstraint ? (operation === '=' ? 'lines' : 'fill') : contours.coloring;
 
     // Map [a, b] (data) --> [i, j] (pixels)
     function ab2p(ab) {
@@ -84,9 +86,10 @@ function plotOne(gd, plotinfo, cd) {
     // TODO: Perhaps this should be generalized and *all* paths should be drawn as
     // closed regions so that translucent contour levels would be valid.
     // See: https://github.com/plotly/plotly.js/issues/1356
-    if(trace.contours.type === 'constraint') {
-        convertToConstraints(pathinfo, trace.contours.operation);
-        closeBoundaries(pathinfo, trace.contours.operation, perimeter, trace);
+    var fillPathinfo = pathinfo;
+    if(contours.type === 'constraint') {
+        fillPathinfo = convertToConstraints(pathinfo, operation);
+        closeBoundaries(fillPathinfo, operation, perimeter, trace);
     }
 
     // Map the paths in a/b coordinates to pixel coordinates:
@@ -111,12 +114,12 @@ function plotOne(gd, plotinfo, cd) {
 
     // Draw the baseline background fill that fills in the space behind any other
     // contour levels:
-    makeBackground(plotGroup, carpetcd.clipsegments, xa, ya, isConstraint, contours.coloring);
+    makeBackground(plotGroup, carpetcd.clipsegments, xa, ya, isConstraint, coloring);
 
     // Draw the specific contour fills. As a simplification, they're assumed to be
     // fully opaque so that it's easy to draw them simply overlapping. The alternative
     // would be to flip adjacent paths and draw closed paths for each level instead.
-    makeFills(trace, plotGroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, contours.coloring, boundaryPath);
+    makeFills(trace, plotGroup, xa, ya, fillPathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath);
 
     // Draw contour lines:
     makeLinesAndLabels(plotGroup, pathinfo, gd, cd[0], contours, plotinfo, carpet);
