@@ -344,7 +344,7 @@ module.exports = {
         editType: 'ticks',
         description: 'Determines whether or not the tick labels are drawn.'
     },
-    ticklabelsautomargin: {
+    automargin: {
         valType: 'boolean',
         dflt: false,
         role: 'style',
