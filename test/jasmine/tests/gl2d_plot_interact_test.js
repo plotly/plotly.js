@@ -671,7 +671,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    fit('should update selected points', function(done) {
+    it('should update selected points', function(done) {
         // #2298
         var dat = [{
             'x': [1],
