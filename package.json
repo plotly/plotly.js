@@ -115,7 +115,6 @@
     "browserify": "^14.1.0",
     "browserify-transform-tools": "^1.7.0",
     "check-node-version": "^3.2.0",
-    "cross-spawn": "^5.1.0",
     "deep-equal": "^1.0.1",
     "ecstatic": "^2.1.0",
     "eslint": "^4.16.0",
