@@ -50,9 +50,6 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
     }
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
-
-
-    if(options.automargin) coerce('ticklabelsautomargin');
 };
 
 /*
