@@ -11,6 +11,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
@@ -18,6 +19,7 @@ var subTypes = require('./subtypes');
 var calcColorscale = require('./colorscale_calc');
 var arraysToCalcdata = require('./arrays_to_calcdata');
 var calcSelection = require('./calc_selection');
+var makeBubbleSizeFn = require('./make_bubble_size_func');
 
 function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
@@ -101,21 +103,22 @@ function calcMarkerSize(trace, serieslen) {
     // Treat size like x or y arrays --- Run d2c
     // this needs to go before ppad computation
     var marker = trace.marker;
-    var sizeref = 1.6 * (trace.marker.sizeref || 1);
-    var markerTrans;
 
-    if(trace.marker.sizemode === 'area') {
-        markerTrans = function(v) {
-            return Math.max(Math.sqrt((v || 0) / sizeref), 3);
-        };
-    } else {
-        markerTrans = function(v) {
-            return Math.max((v || 0) / sizeref, 3);
-        };
-    }
+    // use a modified version of the bubble size function
+    // with smaller sizeref (resulting in a pad factor)
+    // and making non-numeric and size-0 points count as pad=3.
+    var sizeFn = makeBubbleSizeFn({
+        marker: Lib.extendFlat({}, marker, {
+            sizemode: marker.sizemode || 'diameter',
+            sizeref: 0.8 * (marker.sizeref || 1),
+        })
+    });
+    var markerTrans = function(v) {
+        return Math.max(sizeFn(v), 3);
+    };
 
     if(Array.isArray(marker.size)) {
-        // I tried auto-type but category and dates dont make much sense.
+        // no need to auto-type as category and dates do not make much sense.
         var ax = {type: 'linear'};
         Axes.setConvert(ax);
 
@@ -123,9 +126,9 @@ function calcMarkerSize(trace, serieslen) {
         if(s.length > serieslen) s.splice(serieslen, s.length - serieslen);
 
         return s.map(markerTrans);
-    } else {
-        return markerTrans(marker.size);
     }
+
+    return markerTrans(marker.size);
 }
 
 module.exports = {
