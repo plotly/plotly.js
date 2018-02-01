@@ -24,14 +24,14 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 | `type: community` | issue left open for community input and pull requests |
 | `type: duplicate` | *self-explanatory* |
 | `type: wontfix` | *self-explanatory* |
-| `status: discussion needed` | Issue or PR that required discussion among maintaners before moving forward |
-| `status: in progress` | PRs that required some intial feedback but not ready to merge |
+| `status: discussion needed` | Issue or PR that required discussion among maintainers before moving forward |
+| `status: in progress` | PRs that required some initial feedback but not ready to merge |
 | `status: reviewable` | PRs that are completed from the author's perspective |
 | `status: on hold` | PRs that are put on hold |
 
 ## Development
 
-#### Perequisites
+#### Prerequisites
 
 - git
 - [node.js](https://nodejs.org/en/). We recommend using node.js v6.x or v4.x (both LTS).
