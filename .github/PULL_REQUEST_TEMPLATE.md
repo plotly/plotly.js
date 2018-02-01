@@ -16,6 +16,7 @@ Before opening a pull request, developer should:
 
 - `git rebase` their local branch off the latest `master`,
 - make sure to **not** `git add` the `dist/` folder (the `dist/` is updated only on version bumps),
+- make sure to commit changes to the `package-lock.json` file (if any),
 - write an overview of what the PR attempts to do,
 - select the _Allow edits from maintainers_ option (see this [article](https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/) for more details).
 
