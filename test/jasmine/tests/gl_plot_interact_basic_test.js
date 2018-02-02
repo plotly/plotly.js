@@ -55,7 +55,7 @@ function testEvents(plot) {
     });
 }
 
-describe('gl3d plots', function() {
+describe('@gl gl3d plots', function() {
 
     var gd;
 
