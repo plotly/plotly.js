@@ -302,6 +302,42 @@ describe('Test gl3d plots', function() {
         .then(done);
     });
 
+    it('should display correct hover labels (mesh3d case)', function(done) {
+        var x = [1, 1, 2, 3, 4, 2];
+        var y = [2, 1, 3, 4, 5, 3];
+        var z = [3, 7, 4, 5, 3.5, 2];
+        var text = x.map(function(_, i) {
+            return [
+                'ts: ' + x[i],
+                'hz: ' + y[i],
+                'ftt:' + z[i]
+            ].join('<br>');
+        });
+
+        function _hover() {
+            mouseEvent('mouseover', 250, 250);
+            return delay(20)();
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'mesh3d',
+            x: x,
+            y: y,
+            z: z,
+            text: text
+        }], {
+            width: 500,
+            height: 500
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverText('x: 3', 'y: 4', 'z: 5', 'ts: 3\nhz: 4\nftt:5');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
     it('should be able to reversibly change trace type', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
         var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
