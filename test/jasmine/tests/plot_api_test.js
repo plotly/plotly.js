@@ -2171,6 +2171,239 @@ describe('Test plot api', function() {
             });
         });
     });
+
+    describe('Plotly.react', function() {
+        var mockedMethods = [
+            'doTraceStyle',
+            'doColorBars',
+            'doLegend',
+            'layoutStyles',
+            'doTicksRelayout',
+            'doModeBar',
+            'doCamera'
+        ];
+
+        var gd;
+        var plotCalls;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+
+            mockedMethods.forEach(function(m) {
+                spyOn(subroutines, m).and.callThrough();
+                subroutines[m].calls.reset();
+            });
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function countPlots() {
+            plotCalls = 0;
+
+            gd.on('plotly_afterplot', function() { plotCalls++; });
+            subroutines.layoutStyles.calls.reset();
+        }
+
+        function countCalls(counts) {
+            var callsFinal = Lib.extendFlat({}, counts);
+            // TODO: do we really need to do layoutStyles twice in Plotly.plot?
+            // We get one from drawFramework and another directly from Plotly.plot.
+            callsFinal.layoutStyles = (counts.layoutStyles || 0) + 2 * (counts.plot || 0);
+
+            mockedMethods.forEach(function(m) {
+                expect(subroutines[m]).toHaveBeenCalledTimes(callsFinal[m] || 0);
+                subroutines[m].calls.reset();
+            });
+
+            expect(plotCalls).toBe(counts.plot || 0, 'calls to Plotly.plot');
+            plotCalls = 0;
+        }
+
+        it('should notice new data by ===, without layout.datarevision', function(done) {
+            var data = [{y: [1, 2, 3], mode: 'markers'}];
+            var layout = {};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                expect(d3.selectAll('.point').size()).toBe(3);
+
+                data[0].y.push(4);
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // didn't pick it up, as we modified in place!!!
+                expect(d3.selectAll('.point').size()).toBe(3);
+
+                data[0].y = [1, 2, 3, 4, 5];
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // new object, we picked it up!
+                expect(d3.selectAll('.point').size()).toBe(5);
+
+                countCalls({plot: 1});
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should notice new layout.datarevision', function(done) {
+            var data = [{y: [1, 2, 3], mode: 'markers'}];
+            var layout = {datarevision: 1};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                expect(d3.selectAll('.point').size()).toBe(3);
+
+                data[0].y.push(4);
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // didn't pick it up, as we didn't modify datarevision
+                expect(d3.selectAll('.point').size()).toBe(3);
+
+                data[0].y.push(5);
+                layout.datarevision = 'bananas';
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // new revision, we picked it up!
+                expect(d3.selectAll('.point').size()).toBe(5);
+
+                countCalls({plot: 1});
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('picks up partial redraws', function(done) {
+            var data = [{y: [1, 2, 3], mode: 'markers'}];
+            var layout = {};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                layout.title = 'XXXXX';
+                layout.hovermode = 'closest';
+                data[0].marker = {color: 'rgb(0, 100, 200)'};
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({layoutStyles: 1, doTraceStyle: 1, doModeBar: 1});
+                expect(d3.select('.gtitle').text()).toBe('XXXXX');
+                var points = d3.selectAll('.point');
+                expect(points.size()).toBe(3);
+                points.each(function() {
+                    expect(window.getComputedStyle(this).fill).toBe('rgb(0, 100, 200)');
+                });
+
+                layout.showlegend = true;
+                layout.xaxis.tick0 = 0.1;
+                layout.xaxis.dtick = 0.3;
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // legend and ticks get called initially, but then plot gets added during automargin
+                countCalls({doLegend: 1, doTicksRelayout: 1, plot: 1});
+
+                data = [{x: [0, 1], y: [0, 1], z: [[1, 2], [3, 4]], type: 'surface'}];
+                layout = {};
+
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // we get an extra call to layoutStyles from marginPushersAgain due to the colorbar.
+                // Really need to simplify that pipeline...
+                countCalls({plot: 1, layoutStyles: 1});
+
+                layout.scene.camera = {up: {x: 1, y: -1, z: 0}};
+
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({doCamera: 1});
+
+                data[0].type = 'heatmap';
+                delete layout.scene;
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({plot: 1});
+
+                // ideally we'd just do this with `surface` but colorbar attrs have editType 'calc' there
+                // TODO: can we drop them to type: 'colorbars' even for the 3D types?
+                data[0].colorbar = {len: 0.6};
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({doColorBars: 1, plot: 1});
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('can change config, and always redraws', function(done) {
+            var data = [{y: [1, 2, 3]}];
+            var layout = {};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                expect(d3.selectAll('.drag').size()).toBe(11);
+                expect(d3.selectAll('.gtitle').size()).toBe(0);
+
+                return Plotly.react(gd, data, layout, {editable: true});
+            })
+            .then(function() {
+                expect(d3.selectAll('.drag').size()).toBe(11);
+                expect(d3.selectAll('.gtitle').text()).toBe('Click to enter Plot title');
+                countCalls({plot: 1});
+
+                return Plotly.react(gd, data, layout, {staticPlot: true});
+            })
+            .then(function() {
+                expect(d3.selectAll('.drag').size()).toBe(0);
+                expect(d3.selectAll('.gtitle').size()).toBe(0);
+                countCalls({plot: 1});
+
+                return Plotly.react(gd, data, layout, {});
+            })
+            .then(function() {
+                expect(d3.selectAll('.drag').size()).toBe(11);
+                expect(d3.selectAll('.gtitle').size()).toBe(0);
+                countCalls({plot: 1});
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('can change frames without redrawing', function(done) {
+            var data = [{y: [1, 2, 3]}];
+            var layout = {};
+            var frames = [{name: 'frame1'}];
+
+            Plotly.newPlot(gd, {data: data, layout: layout, frames: frames})
+            .then(countPlots)
+            .then(function() {
+                var frameData = gd._transitionData._frames;
+                expect(frameData.length).toBe(1);
+                expect(frameData[0].name).toBe('frame1');
+
+                frames[0].name = 'frame2';
+                return Plotly.react(gd, {data: data, layout: layout, frames: frames});
+            })
+            .then(function() {
+                countCalls({});
+                var frameData = gd._transitionData._frames;
+                expect(frameData.length).toBe(1);
+                expect(frameData[0].name).toBe('frame2');
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
 });
 
 describe('plot_api helpers', function() {

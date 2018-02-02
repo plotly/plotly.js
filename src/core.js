@@ -33,6 +33,7 @@ exports.restyle = Plotly.restyle;
 exports.relayout = Plotly.relayout;
 exports.redraw = Plotly.redraw;
 exports.update = Plotly.update;
+exports.react = Plotly.react;
 exports.extendTraces = Plotly.extendTraces;
 exports.prependTraces = Plotly.prependTraces;
 exports.addTraces = Plotly.addTraces;
