@@ -535,6 +535,18 @@ describe('Test axes', function() {
                 expect(layoutOut[axName].scaleratio).toBeUndefined();
             });
         });
+
+        it('should coerce hoverformat even on visible: false axes', function() {
+            layoutIn = {
+                xaxis: {
+                    visible: false,
+                    hoverformat: 'g'
+                }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.hoverformat).toEqual('g');
+        });
     });
 
     describe('constraints relayout', function() {
