@@ -58,8 +58,25 @@ jobs:
           command: |
             sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
       - run:
-          name: Run jasmine tests
+          name: Run jasmine tests (batch 1)
           command: ./.circleci/test.sh jasmine
+
+  test-jasmine2:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: circleci/node:8.9.4-browsers
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/plotly.js
+      - run:
+          name: Set timezone to Alaska time (arbitrary timezone to test date logic)
+          command: |
+            sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
+      - run:
+          name: Run jasmine tests (batch 2)
+          command: ./.circleci/test.sh jasmine2
 
   test-image:
     docker:
@@ -98,6 +115,9 @@ workflows:
     jobs:
       - build
       - test-jasmine:
+          requires:
+            - build
+      - test-jasmine2:
           requires:
             - build
       - test-image:
