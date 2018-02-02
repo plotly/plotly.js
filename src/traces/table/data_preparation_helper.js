@@ -14,10 +14,13 @@ var isNumeric = require('fast-isnumeric');
 
 // pure functions, don't alter but passes on `gd` and parts of `trace` without deep copying
 module.exports = function calc(gd, trace) {
+    var cellsValues = trace.cells.values;
+    var slicer = function(a) {
+        return a.slice(trace.header.values.length, a.length);
+    };
     var headerValues = trace.header.values.map(function(c) {
         return Array.isArray(c) ? c : [c];
-    });
-    var cellsValues = trace.cells.values;
+    }).concat(slicer(cellsValues).map(function() {return [''];}));
     var domain = trace.domain;
     var groupWidth = Math.floor(gd._fullLayout._size.w * (domain.x[1] - domain.x[0]));
     var groupHeight = Math.floor(gd._fullLayout._size.h * (domain.y[1] - domain.y[0]));
@@ -31,7 +34,7 @@ module.exports = function calc(gd, trace) {
     var headerRowBlocks = makeRowBlock(anchorToHeaderRowBlock, []);
     var rowBlocks = makeRowBlock(anchorToRowBlock, headerRowBlocks);
     var uniqueKeys = {};
-    var columnOrder = trace._fullInput.columnorder;
+    var columnOrder = trace._fullInput.columnorder.concat(slicer(cellsValues.map(function(d, i) {return i;})));
     var columnWidths = headerValues.map(function(d, i) {
         var value = Array.isArray(trace.columnwidth) ?
             trace.columnwidth[Math.min(i, trace.columnwidth.length - 1)] :
