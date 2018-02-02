@@ -112,7 +112,7 @@
     "world-calendars": "^1.0.3"
   },
   "devDependencies": {
-    "brfs": "^1.4.3",
+    "brfs": "^1.4.4",
     "browserify": "^15.2.0",
     "browserify-transform-tools": "^1.7.0",
     "check-node-version": "^3.2.0",
@@ -127,7 +127,7 @@
     "image-size": "^0.6.2",
     "into-stream": "^3.1.0",
     "jasmine-core": "^2.4.1",
-    "jsdom": "^11.2.0",
+    "jsdom": "^11.6.2",
     "karma": "^2.0.0",
     "karma-browserify": "^5.1.1",
     "karma-chrome-launcher": "^2.0.0",
@@ -149,7 +149,7 @@
     "requirejs": "^2.3.1",
     "through2": "^2.0.3",
     "true-case-path": "^1.0.2",
-    "watchify": "^3.9.0",
+    "watchify": "^3.10.0",
     "xml2js": "^0.4.16"
   }
 }
