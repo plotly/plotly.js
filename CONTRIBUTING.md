@@ -24,19 +24,24 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 | `type: community` | issue left open for community input and pull requests |
 | `type: duplicate` | *self-explanatory* |
 | `type: wontfix` | *self-explanatory* |
-| `status: discussion needed` | Issue or PR that required discussion among maintaners before moving forward |
-| `status: in progress` | PRs that required some intial feedback but not ready to merge |
+| `status: discussion needed` | Issue or PR that required discussion among maintainers before moving forward |
+| `status: in progress` | PRs that required some initial feedback but not ready to merge |
 | `status: reviewable` | PRs that are completed from the author's perspective |
 | `status: on hold` | PRs that are put on hold |
 
 ## Development
 
-#### Perequisites
+#### Prerequisites
 
 - git
-- [node.js](https://nodejs.org/en/). We recommend using node.js v6.x or v4.x (both LTS).
-  Upgrading and managing node versions can be easily done using
-  [`nvm`](https://github.com/creationix/nvm) or its Windows alternatives.
+- [node.js](https://nodejs.org/en/). We recommend using node.js v8.x, but all
+  versions starting from v4 should work.  Upgrading and managing node versions
+  can be easily done using [`nvm`](https://github.com/creationix/nvm) or its
+  Windows alternatives.
+- [`npm`](https://www.npmjs.com/) v5.x and up (which ships by default with
+  node.js v8.x) to ensure that the
+  [`package-lock.json`](https://docs.npmjs.com/files/package-lock.json) file is
+  used and updated correctly.
 
 #### Step 1: Clone the plotly.js repo and install its dependencies
 
