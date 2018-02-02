@@ -44,8 +44,7 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
     coerce('min');
 
     handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
-    handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear',
-        { noHover: false });
+    handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear', {});
     handleTickMarkDefaults(containerIn, containerOut, coerce,
         { outerTicks: true });
 
