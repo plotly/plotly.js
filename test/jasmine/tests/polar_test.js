@@ -168,6 +168,43 @@ describe('Test polar plots defaults:', function() {
         expect(Lib.log).toHaveBeenCalledWith('Polar plots do not support date angular axes yet.');
         expect(layoutOut.polar.angularaxis.type).toBe('linear');
     });
+
+    it('should not coerce hoverformat on category axes', function() {
+        _supply({}, [{
+            type: 'scatterpolar',
+            r: ['a', 'b'],
+            theta: ['c', 'd'],
+            visible: true,
+            subplot: 'polar'
+        }]);
+
+        expect(layoutOut.polar.radialaxis.hoverformat).toBeUndefined();
+        expect(layoutOut.polar.angularaxis.hoverformat).toBeUndefined();
+    });
+
+    it('should coerce hoverformat even for `visible: false` axes', function() {
+        _supply({
+            polar: {
+                radialaxis: {
+                    visible: false,
+                    hoverformat: 'g'
+                },
+                angularaxis: {
+                    visible: false,
+                    hoverformat: 'g'
+                }
+            }
+        }, [{
+            type: 'scatterpolar',
+            r: [1, 2],
+            theta: [90, 180],
+            visible: true,
+            subplot: 'polar'
+        }]);
+
+        expect(layoutOut.polar.radialaxis.hoverformat).toBe('g');
+        expect(layoutOut.polar.angularaxis.hoverformat).toBe('g');
+    });
 });
 
 describe('Test relayout on polar subplots:', function() {
