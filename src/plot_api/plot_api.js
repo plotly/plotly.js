@@ -2631,16 +2631,21 @@ Plotly.addFrames = function(gd, frameList, indices) {
     var bigIndex = _frames.length + frameList.length * 2;
 
     var insertions = [];
+    var _frameHashLocal = {};
     for(i = frameList.length - 1; i >= 0; i--) {
         if(!Lib.isPlainObject(frameList[i])) continue;
 
-        var name = (_frameHash[frameList[i].name] || {}).name;
+        // The entire logic for checking for this type of name collision can be removed once we migrate to ES6 and
+        // use a Map instead of an Object instance, as Map keys aren't converted to strings.
+        var lookupName = frameList[i].name;
+        var name = (_frameHash[lookupName] || _frameHashLocal[lookupName] || {}).name;
         var newName = frameList[i].name;
+        var collisionPresent = _frameHash[name] || _frameHashLocal[name];
 
-        if(name && newName && typeof newName === 'number' && _frameHash[name] && numericNameWarningCount < numericNameWarningCountLimit) {
+        if(name && newName && typeof newName === 'number' && collisionPresent && numericNameWarningCount < numericNameWarningCountLimit) {
             numericNameWarningCount++;
 
-            Lib.warn('addFrames: overwriting frame "' + _frameHash[name].name +
+            Lib.warn('addFrames: overwriting frame "' + (_frameHash[name] || _frameHashLocal[name]).name +
                 '" with a frame whose name of type "number" also equates to "' +
                 name + '". This is valid but may potentially lead to unexpected ' +
                 'behavior since all plotly.js frame names are stored internally ' +
@@ -2652,6 +2657,8 @@ Plotly.addFrames = function(gd, frameList, indices) {
                     'names will be suppressed.');
             }
         }
+
+        _frameHashLocal[lookupName] = {name: lookupName};
 
         insertions.push({
             frame: Plots.supplyFrameDefaults(frameList[i]),

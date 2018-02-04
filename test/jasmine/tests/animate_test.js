@@ -684,13 +684,26 @@ describe('Animate API details', function() {
 
     it('emits warning if strings are not used and this creates ambiguity', function(done) {
         spyOn(Lib, 'warn');
-        Plotly.addFrames(gd, [{name: '8', data: [{x: [8, 7, 6]}]}])
+
+        // Test with both multiframe additions and repeated `addFrames` calls - both should count toward the warn limit
+        Plotly.addFrames(gd, [
+            {name: 8, data: [{x: [8, 7, 6]}]},
+            {name: 8888, data: [{x: [8, 7, 6]}]},
+            {name: 8, data: [{x: [8, 7, 6]}]},
+            {name: '8', data: [{x: [8, 7, 6]}]}
+        ])
+            .then(function() {
+                // so far, two warnings
+                expect(Lib.warn.calls.count()).toEqual(2);
+                return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);
+            })
             .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
             .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+            .then(function() {
+                // so far, 5 + 1 warnings
+                expect(Lib.warn.calls.count()).toEqual(5 + 1);
+                return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);
+            })
             .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
             .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
             .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
