@@ -210,22 +210,50 @@ describe('table', function() {
         var mockCopy,
             gd;
 
-        beforeEach(function(done) {
-            mockCopy = Lib.extendDeep({}, mock);
-            mockCopy.data[0].domain = {
-                x: [0.1, 0.9],
-                y: [0.05, 0.85]
-            };
-            delete mockCopy.data[0].cells;
+        afterEach(destroyGraphDiv);
+
+        it('`Plotly.plot` should render all the columns even if no cell contents were supplied yet', function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            mockCopy = Lib.extendDeep({}, mock);
+            delete mockCopy.data[0].cells;
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].header.values.length).toEqual(7);
+                expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
+                expect(document.querySelectorAll('.' + cn.columnCell).length).toEqual(7 * 2); // both column rows to render
+                done();
+            });
         });
 
-        it('`Plotly.plot` should render all the columns even if no cell contents were supplied yet', function() {
-            expect(gd.data.length).toEqual(1);
-            expect(gd.data[0].header.values.length).toEqual(7);
-            expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
-            expect(document.querySelectorAll('.' + cn.columnCell).length).toEqual(7 * 2); // both column rows to render
+        it('`Plotly.plot` should render all columns even if no header contents were supplied yet', function(done) {
+            gd = createGraphDiv();
+            mockCopy = Lib.extendDeep({}, mock);
+            delete mockCopy.data[0].header;
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].cells.values.length).toEqual(7);
+                expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
+                expect(document.querySelectorAll('.' + cn.columnCell).length).toEqual(7 * 29);
+                expect(document.querySelectorAll('#header').length).toEqual(7);
+                expect(document.querySelectorAll('#header .' + cn.columnCell).length).toEqual(7);
+                expect(document.querySelector('#header .' + cn.columnCell + ' text').textContent).toEqual('');
+                done();
+            });
+        });
+
+        it('`Plotly.plot` should render all the column headers even if not all header values were supplied', function(done) {
+            gd = createGraphDiv();
+            mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.data[0].header.values = ['A', 'S', 'D']; // doesn't cover all 7 columns
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].cells.values.length).toEqual(7);
+                expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
+                expect(document.querySelectorAll('#header').length).toEqual(7);
+                expect(document.querySelectorAll('#header .' + cn.columnCell).length).toEqual(7);
+                expect(document.querySelector('#header .' + cn.columnCell + ' text').textContent).toEqual('A');
+                done();
+            });
         });
     });
 
