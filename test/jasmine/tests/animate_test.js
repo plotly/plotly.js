@@ -685,20 +685,20 @@ describe('Animate API details', function() {
     it('emits warning if strings are not used and this creates ambiguity', function(done) {
         spyOn(Lib, 'warn');
         Plotly.addFrames(gd, [{name: '8', data: [{x: [8, 7, 6]}]}])
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}])})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}])})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}])})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}])})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}])})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}])})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}])})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}])})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}])})
-            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}])})
+            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+            .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
             .then(function() {
-            // Five (`var numericNameWarningCountLimit = 5`) warnings and one warning saying that there won't be more warnings
-            expect(Lib.warn.calls.count()).toEqual(5 + 1);
-        }).catch(fail).then(done);
+                // Five (`var numericNameWarningCountLimit = 5`) warnings and one warning saying that there won't be more warnings
+                expect(Lib.warn.calls.count()).toEqual(5 + 1);
+            }).catch(fail).then(done);
     });
 
     it('ignores null and undefined frames', function(done) {

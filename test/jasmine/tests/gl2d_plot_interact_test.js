@@ -4,6 +4,7 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
+var ScatterGl = require('@src/traces/scattergl');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -13,6 +14,7 @@ var drag = require('../assets/drag');
 var selectButton = require('../assets/modebar_button');
 var delay = require('../assets/delay');
 var readPixel = require('../assets/read_pixel');
+
 
 function countCanvases() {
     return d3.selectAll('canvas').size();
@@ -406,7 +408,6 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-
     it('@noCI should display selection of big number of miscellaneous points', function(done) {
         var colorList = [
             '#006385', '#F06E75', '#90ed7d', '#f7a35c', '#8085e9',
@@ -641,6 +642,77 @@ describe('Test gl2d plots', function() {
         })
         .then(function() {
             assertAnnotation([327, 331]);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should restyle opacity', function(done) {
+        // #2299
+        spyOn(ScatterGl, 'calc');
+
+        var dat = [{
+            'x': [1, 2, 3],
+            'y': [1, 2, 3],
+            'type': 'scattergl',
+            'mode': 'markers'
+        }];
+
+        Plotly.plot(gd, dat, {width: 500, height: 500})
+        .then(function() {
+            expect(ScatterGl.calc).toHaveBeenCalledTimes(1);
+
+            return Plotly.restyle(gd, {'opacity': 0.1});
+        })
+        .then(function() {
+            expect(ScatterGl.calc).toHaveBeenCalledTimes(2);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should update selected points', function(done) {
+        // #2298
+        var dat = [{
+            'x': [1],
+            'y': [1],
+            'type': 'scattergl',
+            'mode': 'markers',
+            'selectedpoints': [0]
+        }];
+
+        Plotly.plot(gd, dat, {
+            width: 500,
+            height: 500,
+            dragmode: 'select'
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+
+            expect(scene.count).toBe(1);
+            expect(scene.selectBatch).toEqual([[0]]);
+            expect(scene.unselectBatch).toEqual([[]]);
+            spyOn(scene.scatter2d, 'draw');
+
+            var trace = {
+                x: [2],
+                y: [1],
+                type: 'scattergl',
+                mode: 'markers',
+                marker: {color: 'red'}
+            };
+
+            return Plotly.addTraces(gd, trace);
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+
+            expect(scene.count).toBe(2);
+            expect(scene.selectBatch).toBeDefined();
+            expect(scene.unselectBatch).toBeDefined();
+            expect(scene.markerOptions.length).toBe(2);
+            expect(scene.markerOptions[1].color).toEqual(new Uint8Array([255, 0, 0, 255]));
+            expect(scene.scatter2d.draw).toHaveBeenCalled();
         })
         .catch(fail)
         .then(done);
