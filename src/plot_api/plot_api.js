@@ -42,6 +42,8 @@ var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
 var axisIds = require('../plots/cartesian/axis_ids');
 
+var numericNameWarningCount = 0;
+var numericNameWarningCountLimit = 5;
 
 /**
  * Main plot-creation function
@@ -2599,9 +2601,6 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
  */
 Plotly.addFrames = function(gd, frameList, indices) {
     gd = Lib.getGraphDiv(gd);
-
-    var numericNameWarningCount = 0;
-    var numericNameWarningCountLimit = 5;
 
     if(frameList === null || frameList === undefined) {
         return Promise.resolve();
