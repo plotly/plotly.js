@@ -11,6 +11,7 @@
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 var errorBarAttrs = require('../../components/errorbars/attributes');
+var baseAttrs = require('../../plots/attributes');
 var DASHES = require('../../constants/gl3d_dashes');
 
 var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
@@ -171,6 +172,8 @@ var attrs = module.exports = overrideAll({
     error_x: errorBarAttrs,
     error_y: errorBarAttrs,
     error_z: errorBarAttrs,
+
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'})
 }, 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';

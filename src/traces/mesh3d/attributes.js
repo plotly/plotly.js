@@ -12,9 +12,9 @@ var colorAttrs = require('../../components/colorscale/color_attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var surfaceAtts = require('../surface/attributes');
+var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
-
 
 module.exports = extendFlat(colorAttrs('', 'calc', false), {
     x: {
@@ -222,5 +222,7 @@ module.exports = extendFlat(colorAttrs('', 'calc', false), {
             description: 'Epsilon for face normals calculation avoids math issues arising from degenerate geometry.'
         },
         editType: 'calc'
-    }, surfaceAtts.lighting)
+    }, surfaceAtts.lighting),
+
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'})
 });

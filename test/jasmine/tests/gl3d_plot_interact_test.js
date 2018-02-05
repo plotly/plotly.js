@@ -36,7 +36,10 @@ describe('Test gl3d plots', function() {
     var mock3 = require('@mocks/gl3d_autocolorscale');
 
     function assertHoverText(xLabel, yLabel, zLabel, textLabel) {
-        var content = [xLabel, yLabel, zLabel];
+        var content = [];
+        if(xLabel) content.push(xLabel);
+        if(yLabel) content.push(yLabel);
+        if(zLabel) content.push(zLabel);
         if(textLabel) content.push(textLabel);
         assertHoverLabelContent({nums: content.join('\n')});
     }
@@ -193,6 +196,16 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k', 'Clementine');
+
+            return Plotly.restyle(gd, 'hoverinfo', 'text');
+        })
+        .then(function() {
+            assertHoverText(null, null, null, 'Clementine');
+
+            return Plotly.restyle(gd, 'hoverinfo', 'z');
+        })
+        .then(function() {
+            assertHoverText(null, null, '100k');
         })
         .catch(fail)
         .then(done);
@@ -273,6 +286,18 @@ describe('Test gl3d plots', function() {
                 'colorbar.tickvals': undefined,
                 'colorbar.ticktext': undefined
             });
+
+            return Plotly.restyle(gd, 'hoverinfo', 'z');
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverText(null, null, '43');
+
+            return Plotly.restyle(gd, 'hoverinfo', 'text');
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverText(null, null, null, 'one two');
         })
         .then(done);
     });
@@ -333,6 +358,24 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverText('x: 3', 'y: 4', 'z: 5', 'ts: 3\nhz: 4\nftt:5');
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'hoverinfo', 'x+y');
+        })
+        .then(function() {
+            assertHoverText('(3, 4)');
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'hoverinfo', 'text');
+        })
+        .then(function() {
+            assertHoverText('ts: 3\nhz: 4\nftt:5');
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'text', 'yo!');
+        })
+        .then(function() {
+            assertHoverText(null, null, null, 'yo!');
         })
         .catch(fail)
         .then(done);

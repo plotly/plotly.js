@@ -11,6 +11,7 @@
 var Color = require('../../components/color');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
@@ -242,7 +243,9 @@ var attrs = module.exports = overrideAll({
         zmax: extendFlat({}, colorscaleAttrs.zmax, {
             description: 'Obsolete. Use `cmax` instead.'
         })
-    }
+    },
+
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'})
 }, 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
