@@ -113,9 +113,18 @@ var attrs = module.exports = overrideAll({
     },
 
     text: {
-        valType: 'data_array',
-        description: 'Sets the text elements associated with each z value.'
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        editType: 'calc',
+        description: [
+            'Sets the text elements associated with each z value.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
+        ].join(' ')
     },
+
     surfacecolor: {
         valType: 'data_array',
         description: [

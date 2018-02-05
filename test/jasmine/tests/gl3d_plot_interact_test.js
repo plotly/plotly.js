@@ -298,6 +298,11 @@ describe('Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverText(null, null, null, 'one two');
+
+            return Plotly.restyle(gd, 'text', 'yo!');
+        })
+        .then(function() {
+            assertHoverText(null, null, null, 'yo!');
         })
         .then(done);
     });
