@@ -20,7 +20,7 @@ function countCanvases() {
     return d3.selectAll('canvas').size();
 }
 
-describe('Test removal of gl contexts', function() {
+describe('@gl Test removal of gl contexts', function() {
     var gd;
 
     beforeEach(function() {
@@ -87,7 +87,7 @@ describe('Test removal of gl contexts', function() {
     });
 });
 
-describe('Test gl plot side effects', function() {
+describe('@gl Test gl plot side effects', function() {
     var gd;
 
     beforeEach(function() {
@@ -207,7 +207,7 @@ describe('Test gl plot side effects', function() {
     });
 });
 
-describe('Test gl2d plots', function() {
+describe('@gl Test gl2d plots', function() {
     var gd;
 
     var mock = require('@mocks/gl2d_10.json');

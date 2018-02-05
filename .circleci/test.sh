@@ -9,8 +9,13 @@ EXIT_STATE=0
 case $1 in
 
     jasmine)
-        npm run test-jasmine    || EXIT_STATE=$?
-        npm run test-bundle     || EXIT_STATE=$?
+        npm run test-jasmine -- --skip-tags=gl,noCI || EXIT_STATE=$?
+        exit $EXIT_STATE
+        ;;
+
+    jasmine2)
+        npm run test-jasmine -- --tags=gl --skip-tags=noCI || EXIT_STATE=$?
+        npm run test-bundle                                || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
@@ -22,8 +27,8 @@ case $1 in
         ;;
 
     syntax)
-        npm run lint            || EXIT_STATE=$?
-        npm run test-syntax     || EXIT_STATE=$?
+        npm run lint        || EXIT_STATE=$?
+        npm run test-syntax || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 

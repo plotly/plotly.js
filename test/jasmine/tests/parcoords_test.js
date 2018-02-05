@@ -243,7 +243,7 @@ describe('parcoords initialization tests', function() {
     });
 });
 
-describe('@noCI parcoords', function() {
+describe('@gl parcoords', function() {
 
     beforeAll(function() {
         mock.data[0].dimensions.forEach(function(d) {
@@ -405,7 +405,7 @@ describe('@noCI parcoords', function() {
             });
         });
 
-        it('Works with 60 dimensions', function(done) {
+        it('@noCI Works with 60 dimensions', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -435,7 +435,7 @@ describe('@noCI parcoords', function() {
             });
         });
 
-        it('Truncates 60+ dimensions to 60', function(done) {
+        it('@noCI Truncates 60+ dimensions to 60', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -463,7 +463,7 @@ describe('@noCI parcoords', function() {
             });
         });
 
-        it('Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
+        it('@noCI Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
