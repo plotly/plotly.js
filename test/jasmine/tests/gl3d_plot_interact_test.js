@@ -652,7 +652,7 @@ describe('@gl Test gl3d modebar handlers', function() {
 });
 
 describe('@gl Test gl3d drag and wheel interactions', function() {
-    var gd, relayoutCallback;
+    var gd;
 
     function scroll(target, amt) {
         return new Promise(function(resolve) {

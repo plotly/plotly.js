@@ -697,7 +697,7 @@ describe('@gl Test gl2d plots', function() {
         })
         .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
-          
+
         })
         .catch(fail)
         .then(done);
