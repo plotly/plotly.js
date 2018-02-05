@@ -143,7 +143,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         if(visible) {
             handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
             handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
-                noHover: false,
                 tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
             });
             handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
@@ -174,7 +173,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             coerceAxis('layer');
         }
 
-        coerceAxis('hoverformat');
+        if(axType !== 'category') coerceAxis('hoverformat');
 
         axOut._input = axIn;
     }
