@@ -321,7 +321,7 @@ module.exports = function(canvasGL, d, scatter) {
                 for(d = 0; d < 16; d++) {
                     var dimP = d + 16 * abcd;
                     dims[loHi][abcd][d] = d + 16 * abcd === index ? 1 : 0;
-                    lims[loHi][abcd][d] = (!context && valid(d, 16 * abcd, panelCount) ? initialDims[dimP === 0 ? 0 : 1 + ((dimP - 1) % (initialDims.length - 1))].filter[loHi] : loHi) + (2 * loHi - 1) * filterEpsilon;
+                    lims[loHi][abcd][d] = (!context && valid(d, 16 * abcd, panelCount) ? initialDims[dimP === 0 ? 0 : 1 + ((dimP - 1) % (initialDims.length - 1))].brush.filter.getBounds()[loHi] : loHi) + (2 * loHi - 1) * filterEpsilon;
                 }
             }
         }

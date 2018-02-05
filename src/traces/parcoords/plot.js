@@ -40,19 +40,13 @@ module.exports = function plot(gd, cdparcoords) {
         gdDimensionsOriginalOrder[i] = gd.data[i].dimensions.slice();
     });
 
-    var filterChanged = function(i, originalDimensionIndex, newRange) {
+    var filterChanged = function(i, originalDimensionIndex, newRanges) {
 
         // Have updated `constraintrange` data on `gd.data` and raise `Plotly.restyle` event
         // without having to incur heavy UI blocking due to an actual `Plotly.restyle` call
 
         var gdDimension = gdDimensionsOriginalOrder[i][originalDimensionIndex];
-        var gdConstraintRange = gdDimension.constraintrange;
-
-        if(!gdConstraintRange || gdConstraintRange.length !== 2) {
-            gdConstraintRange = gdDimension.constraintrange = [];
-        }
-        gdConstraintRange[0] = newRange[0];
-        gdConstraintRange[1] = newRange[1];
+        gdDimension.constraintrange = newRanges.map(function(r) {return r.slice();});
 
         gd.emit('plotly_restyle');
     };

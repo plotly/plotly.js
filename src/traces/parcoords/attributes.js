@@ -80,8 +80,22 @@ module.exports = {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'number', editType: 'calc'},
-                {valType: 'number', editType: 'calc'}
+                {
+                    valType: 'info_array',
+                    editType: 'calc',
+                    items: [
+                        {valType: 'number', editType: 'calc'},
+                        {valType: 'number', editType: 'calc'}
+                    ]
+                },
+                {
+                    valType: 'info_array',
+                    editType: 'calc',
+                    items: [
+                        {valType: 'number', editType: 'calc'},
+                        {valType: 'number', editType: 'calc'}
+                    ]
+                }
             ],
             editType: 'calc',
             description: [

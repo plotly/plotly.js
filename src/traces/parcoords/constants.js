@@ -22,15 +22,18 @@ module.exports = {
     axisExtentOffset: 10,
     bar: {
         width: 4, // Visible width of the filter bar
-        capturewidth: 10, // Mouse-sensitive width for interaction (Fitts law)
-        fillcolor: 'magenta', // Color of the filter bar fill
-        fillopacity: 1, // Filter bar fill opacity
-        strokecolor: 'white', // Color of the filter bar side lines
-        strokeopacity: 1, // Filter bar side stroke opacity
-        strokewidth: 1, // Filter bar side stroke width in pixels
-        handleheight: 16, // Height of the filter bar vertical resize areas on top and bottom
-        handleopacity: 1, // Opacity of the filter bar vertical resize areas on top and bottom
-        handleoverlap: 0 // A larger than 0 value causes overlaps with the filter bar, represented as pixels.'
+        captureWidth: 10, // Mouse-sensitive width for interaction (Fitts law)
+        fillColor: 'magenta', // Color of the filter bar fill
+        fillOpacity: 1, // Filter bar fill opacity
+        snapDuration: 150, // tween duration in ms for brush snap for ordinal axes
+        snapRatio: 0.25, // ratio of bar extension relative to the distance between two adjacent ordinal values
+        snapDefaultRatio: 0.05, // bar extension relative to the entire axis length, for when there's no adjacent value
+        strokeColor: 'white', // Color of the filter bar side lines
+        strokeOpacity: 1, // Filter bar side stroke opacity
+        strokeWidth: 1, // Filter bar side stroke width in pixels
+        handleHeight: 8, // Height of the filter bar vertical resize areas on top and bottom
+        handleOpacity: 1, // Opacity of the filter bar vertical resize areas on top and bottom
+        handleOverlap: 0 // A larger than 0 value causes overlaps with the filter bar, represented as pixels
     },
     cn: {
         axisExtentText: 'axis-extent-text',
