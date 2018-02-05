@@ -21,7 +21,7 @@ function countCanvases() {
     return d3.selectAll('canvas').size();
 }
 
-describe('Test gl3d plots', function() {
+describe('@gl Test gl3d plots', function() {
     var gd, ptData;
 
     var mock = require('@mocks/gl3d_marker-arrays.json');
@@ -423,7 +423,7 @@ describe('Test gl3d plots', function() {
 
 });
 
-describe('Test gl3d modebar handlers', function() {
+describe('@gl Test gl3d modebar handlers', function() {
     var gd, modeBar;
 
     function assertScenes(cont, attr, val) {
@@ -651,8 +651,8 @@ describe('Test gl3d modebar handlers', function() {
     });
 });
 
-describe('Test gl3d drag and wheel interactions', function() {
-    var gd;
+describe('@gl Test gl3d drag and wheel interactions', function() {
+    var gd, relayoutCallback;
 
     function scroll(target, amt) {
         return new Promise(function(resolve) {
@@ -824,7 +824,7 @@ describe('Test gl3d drag and wheel interactions', function() {
     });
 });
 
-describe('Test gl3d relayout calls', function() {
+describe('@gl Test gl3d relayout calls', function() {
     var gd;
 
     beforeEach(function() {
@@ -890,7 +890,7 @@ describe('Test gl3d relayout calls', function() {
     });
 });
 
-describe('Test gl3d annotations', function() {
+describe('@gl Test gl3d annotations', function() {
     var gd;
 
     beforeEach(function() {
@@ -1268,7 +1268,7 @@ describe('Test gl3d annotations', function() {
     });
 });
 
-describe('Test removal of gl contexts', function() {
+describe('@gl Test removal of gl contexts', function() {
     var gd;
 
     beforeEach(function() {

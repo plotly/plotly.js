@@ -4,6 +4,7 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
+var ScatterGl = require('@src/traces/scattergl');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -15,11 +16,12 @@ var selectButton = require('../assets/modebar_button');
 var delay = require('../assets/delay');
 var readPixel = require('../assets/read_pixel');
 
+
 function countCanvases() {
     return d3.selectAll('canvas').size();
 }
 
-describe('Test removal of gl contexts', function() {
+describe('@gl Test removal of gl contexts', function() {
     var gd;
 
     beforeEach(function() {
@@ -86,7 +88,7 @@ describe('Test removal of gl contexts', function() {
     });
 });
 
-describe('Test gl plot side effects', function() {
+describe('@gl Test gl plot side effects', function() {
     var gd;
 
     beforeEach(function() {
@@ -206,7 +208,7 @@ describe('Test gl plot side effects', function() {
     });
 });
 
-describe('Test gl2d plots', function() {
+describe('@gl Test gl2d plots', function() {
     var gd;
 
     var mock = require('@mocks/gl2d_10.json');
@@ -379,7 +381,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@noCI should display selection of big number of points', function(done) {
+    it('@noCI should display selection of big number of regular points', function(done) {
         // generate large number of points
         var x = [], y = [], n = 2e2, N = n * n;
         for(var i = 0; i < N; i++) {
@@ -390,6 +392,45 @@ describe('Test gl2d plots', function() {
         var mock = {
             data: [{
                 x: x, y: y, type: 'scattergl', mode: 'markers'
+            }],
+            layout: {
+                dragmode: 'select'
+            }
+        };
+
+        Plotly.plot(gd, mock)
+        .then(select([[160, 100], [180, 100]]))
+        .then(function() {
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 168, 100)[3]).toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('@noCI should display selection of big number of miscellaneous points', function(done) {
+        var colorList = [
+            '#006385', '#F06E75', '#90ed7d', '#f7a35c', '#8085e9',
+            '#f15c80', '#e4d354', '#2b908f', '#f45b5b', '#91e8e1',
+            '#5DA5DA', '#F06E75', '#F15854', '#B2912F', '#B276B2',
+            '#DECF3F', '#FAA43A', '#4D4D4D', '#F17CB0', '#60BD68'
+        ];
+
+        // generate large number of points
+        var x = [], y = [], n = 2e2, N = n * n, color = [], symbol = [], size = [];
+        for(var i = 0; i < N; i++) {
+            x.push((i % n) / n);
+            y.push(i / N);
+            color.push(colorList[i % colorList.length]);
+            symbol.push('x');
+            size.push(6);
+        }
+
+        var mock = {
+            data: [{
+                x: x, y: y, type: 'scattergl', mode: 'markers',
+                marker: {symbol: symbol, size: size, color: color}
             }],
             layout: {
                 dragmode: 'select'
@@ -607,6 +648,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
+
     it('should not scroll document while panning', function(done) {
         var mock = {
             data: [
@@ -655,6 +697,78 @@ describe('Test gl2d plots', function() {
         })
         .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
+          
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should restyle opacity', function(done) {
+        // #2299
+        spyOn(ScatterGl, 'calc');
+
+        var dat = [{
+            'x': [1, 2, 3],
+            'y': [1, 2, 3],
+            'type': 'scattergl',
+            'mode': 'markers'
+        }];
+
+        Plotly.plot(gd, dat, {width: 500, height: 500})
+        .then(function() {
+            expect(ScatterGl.calc).toHaveBeenCalledTimes(1);
+
+            return Plotly.restyle(gd, {'opacity': 0.1});
+        })
+        .then(function() {
+            expect(ScatterGl.calc).toHaveBeenCalledTimes(2);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should update selected points', function(done) {
+        // #2298
+        var dat = [{
+            'x': [1],
+            'y': [1],
+            'type': 'scattergl',
+            'mode': 'markers',
+            'selectedpoints': [0]
+        }];
+
+        Plotly.plot(gd, dat, {
+            width: 500,
+            height: 500,
+            dragmode: 'select'
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+
+            expect(scene.count).toBe(1);
+            expect(scene.selectBatch).toEqual([[0]]);
+            expect(scene.unselectBatch).toEqual([[]]);
+            spyOn(scene.scatter2d, 'draw');
+
+            var trace = {
+                x: [2],
+                y: [1],
+                type: 'scattergl',
+                mode: 'markers',
+                marker: {color: 'red'}
+            };
+
+            return Plotly.addTraces(gd, trace);
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+
+            expect(scene.count).toBe(2);
+            expect(scene.selectBatch).toBeDefined();
+            expect(scene.unselectBatch).toBeDefined();
+            expect(scene.markerOptions.length).toBe(2);
+            expect(scene.markerOptions[1].color).toEqual(new Uint8Array([255, 0, 0, 255]));
+            expect(scene.scatter2d.draw).toHaveBeenCalled();
         })
         .catch(fail)
         .then(done);

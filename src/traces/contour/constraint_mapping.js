@@ -8,27 +8,18 @@
 
 'use strict';
 
-var constants = require('./constants');
+var filterOps = require('../../constants/filter_ops');
 var isNumeric = require('fast-isnumeric');
 
 // This syntax conforms to the existing filter transform syntax, but we don't care
 // about open vs. closed intervals for simply drawing contours constraints:
-module.exports['[]'] = makeRangeSettings('[]');
-module.exports['()'] = makeRangeSettings('()');
-module.exports['[)'] = makeRangeSettings('[)');
-module.exports['(]'] = makeRangeSettings('(]');
-
-// Inverted intervals simply flip the sign:
-module.exports[']['] = makeRangeSettings('][');
-module.exports[')('] = makeRangeSettings(')(');
-module.exports[')['] = makeRangeSettings(')[');
-module.exports[']('] = makeRangeSettings('](');
-
-module.exports['>'] = makeInequalitySettings('>');
-module.exports['>='] = makeInequalitySettings('>=');
-module.exports['<'] = makeInequalitySettings('<');
-module.exports['<='] = makeInequalitySettings('<=');
-module.exports['='] = makeInequalitySettings('=');
+module.exports = {
+    '[]': makeRangeSettings('[]'),
+    '][': makeRangeSettings(']['),
+    '>': makeInequalitySettings('>'),
+    '<': makeInequalitySettings('<'),
+    '=': makeInequalitySettings('=')
+};
 
 // This does not in any way shape or form support calendars. It's adapted from
 // transforms/filter.js.
@@ -41,13 +32,13 @@ function coerceValue(operation, value) {
         return isNumeric(value) ? (+value) : null;
     }
 
-    if(constants.INEQUALITY_OPS.indexOf(operation) !== -1) {
+    if(filterOps.COMPARISON_OPS2.indexOf(operation) !== -1) {
         coercedValue = hasArrayValue ? coerce(value[0]) : coerce(value);
-    } else if(constants.INTERVAL_OPS.indexOf(operation) !== -1) {
+    } else if(filterOps.INTERVAL_OPS.indexOf(operation) !== -1) {
         coercedValue = hasArrayValue ?
             [coerce(value[0]), coerce(value[1])] :
             [coerce(value), coerce(value)];
-    } else if(constants.SET_OPS.indexOf(operation) !== -1) {
+    } else if(filterOps.SET_OPS.indexOf(operation) !== -1) {
         coercedValue = hasArrayValue ? value.map(coerce) : [coerce(value)];
     }
 

@@ -16,6 +16,10 @@ var dash = require('../../components/drawing/attributes').dash;
 var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
+var filterOps = require('../../constants/filter_ops');
+var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
+var INTERVAL_OPS = filterOps.INTERVAL_OPS;
+
 var scatterLineAttrs = scatterAttrs.line;
 
 module.exports = extendFlat({
@@ -33,6 +37,17 @@ module.exports = extendFlat({
     zhoverformat: heatmapAttrs.zhoverformat,
 
     connectgaps: heatmapAttrs.connectgaps,
+
+    fillcolor: {
+        valType: 'color',
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'Sets the fill color if `contours.type` is *constraint*.',
+            'Defaults to a half-transparent variant of the line color,',
+            'marker color, or marker line color, whichever is available.'
+        ].join(' ')
+    },
 
     autocontour: {
         valType: 'boolean',
@@ -67,6 +82,19 @@ module.exports = extendFlat({
     },
 
     contours: {
+        type: {
+            valType: 'enumerated',
+            values: ['levels', 'constraint'],
+            dflt: 'levels',
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'If `levels`, the data is represented as a contour plot with multiple',
+                'levels displayed. If `constraint`, the data is represented as constraints',
+                'with the invalid region shaded as specified by the `operation` and',
+                '`value` parameters.'
+            ].join(' ')
+        },
         start: {
             valType: 'number',
             dflt: null,
@@ -153,6 +181,47 @@ module.exports = extendFlat({
                 'Sets the contour label formatting rule using d3 formatting',
                 'mini-language which is very similar to Python, see:',
                 'https://github.com/d3/d3-format/blob/master/README.md#locale_format.'
+            ].join(' ')
+        },
+        operation: {
+            valType: 'enumerated',
+            values: [].concat(COMPARISON_OPS2).concat(INTERVAL_OPS),
+            role: 'info',
+            dflt: '=',
+            editType: 'calc',
+            description: [
+                'Sets the constraint operation.',
+
+                '*=* keeps regions equal to `value`',
+
+                '*<* and *<=* keep regions less than `value`',
+
+                '*>* and *>=* keep regions greater than `value`',
+
+                '*[]*, *()*, *[)*, and *(]* keep regions inside `value[0]` to `value[1]`',
+
+                '*][*, *)(*, *](*, *)[* keep regions outside `value[0]` to value[1]`',
+
+                'Open vs. closed intervals make no difference to constraint display, but',
+                'all versions are allowed for consistency with filter transforms.'
+            ].join(' ')
+        },
+        value: {
+            valType: 'any',
+            dflt: 0,
+            role: 'info',
+            editType: 'calc',
+            description: [
+                'Sets the value or values of the constraint boundary.',
+
+                'When `operation` is set to one of the comparison values',
+                '(' + COMPARISON_OPS2 + ')',
+                '*value* is expected to be a number.',
+
+                'When `operation` is set to one of the interval values',
+                '(' + INTERVAL_OPS + ')',
+                '*value* is expected to be an array of two numbers where the first',
+                'is the lower bound and the second is the upper bound.',
             ].join(' ')
         },
         editType: 'calc',

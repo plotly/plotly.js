@@ -7,6 +7,7 @@ var attributes = require('@src/traces/parcoords/attributes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -242,7 +243,7 @@ describe('parcoords initialization tests', function() {
     });
 });
 
-describe('@noCI parcoords', function() {
+describe('@gl parcoords', function() {
 
     beforeAll(function() {
         mock.data[0].dimensions.forEach(function(d) {
@@ -404,7 +405,7 @@ describe('@noCI parcoords', function() {
             });
         });
 
-        it('Works with 60 dimensions', function(done) {
+        it('@noCI Works with 60 dimensions', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -434,7 +435,7 @@ describe('@noCI parcoords', function() {
             });
         });
 
-        it('Truncates 60+ dimensions to 60', function(done) {
+        it('@noCI Truncates 60+ dimensions to 60', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -462,7 +463,7 @@ describe('@noCI parcoords', function() {
             });
         });
 
-        it('Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
+        it('@noCI Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -582,7 +583,7 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[1].dimensions[10].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[1].dimensions[1].constraintrange).not.toBeDefined();
 
-                expect(document.querySelectorAll('.axis').length).toEqual(20);  // one dimension is `visible: false`
+                expect(document.querySelectorAll('.axis').length).toEqual(20); // one dimension is `visible: false`
 
                 done();
             });
@@ -773,6 +774,44 @@ describe('@noCI parcoords', function() {
 
         });
 
+        it('Calling `Plotly.animate` with patches targeting `dimensions` attributes should do the right thing', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'parcoords',
+                line: {color: 'blue'},
+                dimensions: [{
+                    range: [1, 5],
+                    constraintrange: [1, 2],
+                    label: 'A',
+                    values: [1, 4]
+                }, {
+                    range: [1, 5],
+                    label: 'B',
+                    values: [3, 1.5],
+                    tickvals: [1.5, 3, 4.5]
+                }]
+            }])
+            .then(function() {
+                return Plotly.animate(gd, {
+                    data: [{
+                        'line.color': 'red',
+                        'dimensions[0].constraintrange': [1, 4]
+                    }],
+                    traces: [0],
+                    layout: {}
+                });
+            })
+            .then(function() {
+                expect(gd.data[0].line.color).toBe('red');
+                expect(gd.data[0].dimensions[0]).toEqual({
+                    range: [1, 5],
+                    constraintrange: [1, 4],
+                    label: 'A',
+                    values: [1, 4]
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 
     describe('Lifecycle methods', function() {

@@ -482,7 +482,12 @@ describe('dates', function() {
     describe('formatDate', function() {
         function assertFormatRounds(ms, calendar, results) {
             ['y', 'm', 'd', 'M', 'S', 1, 2, 3, 4].forEach(function(tr, i) {
-                expect(Lib.formatDate(ms, '', tr, utcFormat, calendar))
+                expect(Lib.formatDate(ms, '', tr, utcFormat, calendar, {
+                    year: '%Y',
+                    month: '%b %Y',
+                    dayMonth: '%b %-d',
+                    dayMonthYear: '%b %-d, %Y'
+                }))
                     .toBe(results[i], calendar);
             });
         }
@@ -598,17 +603,23 @@ describe('dates', function() {
         });
 
         it('should remove extra fractional second zeros', function() {
-            expect(Lib.formatDate(0.1, '', 4, utcFormat)).toBe('00:00:00.0001\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 3, utcFormat)).toBe('00:00:00\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 0, utcFormat)).toBe('00:00:00\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 'S', utcFormat)).toBe('00:00:00\nJan 1, 1970');
-            expect(Lib.formatDate(0.1, '', 3, utcFormat, 'coptic'))
+            var extraFormat = {
+                year: '%Y',
+                month: '%b %Y',
+                dayMonth: '%b %-d',
+                dayMonthYear: '%b %-d, %Y'
+            };
+            expect(Lib.formatDate(0.1, '', 4, utcFormat, null, extraFormat)).toBe('00:00:00.0001\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 3, utcFormat, null, extraFormat)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 0, utcFormat, null, extraFormat)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 'S', utcFormat, null, extraFormat)).toBe('00:00:00\nJan 1, 1970');
+            expect(Lib.formatDate(0.1, '', 3, utcFormat, 'coptic', extraFormat))
                 .toBe('00:00:00\nKoi 23, 1686');
 
             // because the decimal point is explicitly part of the format
             // string here, we can't remove it OR the very first zero after it.
-            expect(Lib.formatDate(0.1, '%S.%f', null, utcFormat)).toBe('00.0001');
-            expect(Lib.formatDate(0.1, '%S.%3f', null, utcFormat)).toBe('00.0');
+            expect(Lib.formatDate(0.1, '%S.%f', null, utcFormat, null, extraFormat)).toBe('00.0001');
+            expect(Lib.formatDate(0.1, '%S.%3f', null, utcFormat, null, extraFormat)).toBe('00.0');
         });
 
     });

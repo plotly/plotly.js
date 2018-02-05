@@ -37,6 +37,44 @@ describe('Test frame api', function() {
     });
 
     describe('#addFrames', function() {
+
+        it('issues a warning if a number-named frame would overwrite a frame', function(done) {
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
+            });
+
+            // Test with both multiframe additions and repeated `addFrames` calls - both should count toward the warn limit
+            Plotly.addFrames(gd, [
+                {name: 8, data: [{x: [8, 7, 6]}]},
+                {name: 8888, data: [{x: [8, 7, 6]}]},
+                {name: 8, data: [{x: [8, 7, 6]}]},
+                {name: '8', data: [{x: [8, 7, 6]}]}
+            ])
+                .then(function() {
+                    // so far, two warnings
+                    expect(Lib.warn.calls.count()).toEqual(2);
+                    expect(warnings[0]).toMatch(/^addFrames.*overwriting/);
+                    return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);
+                })
+                .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+                .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+                .then(function() {
+                    // so far, 5 + 1 warnings
+                    expect(Lib.warn.calls.count()).toEqual(5 + 1);
+                    expect(warnings[5]).toMatch(/^addFrames.*suppressed/);
+                    return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);
+                })
+                .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+                .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+                .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+                .then(function() {return Plotly.addFrames(gd, [{name: 8, data: [{x: [3, 2, 1]}]}]);})
+                .then(function() {
+                    // Five (`var numericNameWarningCountLimit = 5`) warnings and one warning saying that there won't be more warnings
+                    expect(Lib.warn.calls.count()).toEqual(5 + 1);
+                }).catch(fail).then(done);
+        });
+
         it('treats an undefined list as a noop', function(done) {
             Plotly.addFrames(gd, undefined).then(function() {
                 expect(Object.keys(h)).toEqual([]);
@@ -99,20 +137,6 @@ describe('Test frame api', function() {
                 return Plotly.addFrames(gd, [{name: 2, layout: {foo: 'bar'}}]);
             }).then(function() {
                 expect(f).toEqual([{name: '2', layout: {foo: 'bar'}}]);
-            }).catch(fail).then(done);
-        });
-
-        it('issues a warning if a number-named frame would overwrite a frame', function(done) {
-            var warnings = [];
-            spyOn(Lib, 'warn').and.callFake(function(msg) {
-                warnings.push(msg);
-            });
-
-            Plotly.addFrames(gd, [{name: 2}]).then(function() {
-                return Plotly.addFrames(gd, [{name: 2, layout: {foo: 'bar'}}]);
-            }).then(function() {
-                expect(warnings.length).toEqual(1);
-                expect(warnings[0]).toMatch(/overwriting/);
             }).catch(fail).then(done);
         });
 
