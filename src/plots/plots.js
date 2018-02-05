@@ -1779,7 +1779,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
 plots.modifyFrames = function(gd, operations) {
     var i, op, frame;
     var _frames = gd._transitionData._frames;
-    var _hash = gd._transitionData._frameHash;
+    var _frameHash = gd._transitionData._frameHash;
 
     for(i = 0; i < operations.length; i++) {
         op = operations[i];
@@ -1788,32 +1788,32 @@ plots.modifyFrames = function(gd, operations) {
             // No reason this couldn't exist, but is currently unused/untested:
             /* case 'rename':
                 frame = _frames[op.index];
-                delete _hash[frame.name];
-                _hash[op.name] = frame;
+                delete _frameHash[frame.name];
+                _frameHash[op.name] = frame;
                 frame.name = op.name;
                 break;*/
             case 'replace':
                 frame = op.value;
                 var oldName = (_frames[op.index] || {}).name;
                 var newName = frame.name;
-                _frames[op.index] = _hash[newName] = frame;
+                _frames[op.index] = _frameHash[newName] = frame;
 
                 if(newName !== oldName) {
                     // If name has changed in addition to replacement, then update
                     // the lookup table:
-                    delete _hash[oldName];
-                    _hash[newName] = frame;
+                    delete _frameHash[oldName];
+                    _frameHash[newName] = frame;
                 }
 
                 break;
             case 'insert':
                 frame = op.value;
-                _hash[frame.name] = frame;
+                _frameHash[frame.name] = frame;
                 _frames.splice(op.index, 0, frame);
                 break;
             case 'delete':
                 frame = _frames[op.index];
-                delete _hash[frame.name];
+                delete _frameHash[frame.name];
                 _frames.splice(op.index, 1);
                 break;
         }
@@ -2252,14 +2252,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         var module = contFull._module;
 
         if(!module) continue;
-
-        if(!module.animatable) {
-            var thisUpdate = {};
-
-            for(var ai in data[i]) {
-                thisUpdate[ai] = [data[i][ai]];
-            }
-        }
     }
 
     var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, plots.rehover, executeTransitions];
