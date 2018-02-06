@@ -120,15 +120,14 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     self.div.removeChild(controlContainer);
 
     // make sure canvas does not inherit left and top css
-    map._canvas.canvas.style.left = '0px';
-    map._canvas.canvas.style.top = '0px';
+    map._canvas.style.left = '0px';
+    map._canvas.style.top = '0px';
 
     self.rejectOnError(reject);
 
     map.once('load', function() {
         self.updateData(calcData);
         self.updateLayout(fullLayout);
-
         self.resolveOnRender(resolve);
     });
 
@@ -223,22 +222,18 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
         self.styleObj = styleObj;
         map.setStyle(styleObj.style);
 
-        map.style.once('load', function() {
-
+        map.once('styledata', function() {
             // need to rebuild trace layers on reload
             // to avoid 'lost event' errors
             self.traceHash = {};
-
             self.updateData(calcData);
             self.updateLayout(fullLayout);
-
             self.resolveOnRender(resolve);
         });
     }
     else {
         self.updateData(calcData);
         self.updateLayout(fullLayout);
-
         self.resolveOnRender(resolve);
     }
 };
@@ -300,7 +295,8 @@ proto.resolveOnRender = function(resolve) {
     map.on('render', function onRender() {
         if(map.loaded()) {
             map.off('render', onRender);
-            resolve();
+            // resolve at end of render loop
+            setTimeout(resolve, 0);
         }
     });
 };
@@ -458,6 +454,7 @@ proto.destroy = function() {
 };
 
 proto.toImage = function() {
+    this.map.stop();
     return this.map.getCanvas().toDataURL();
 };
 
@@ -535,6 +532,8 @@ function getStyleObj(val) {
         styleObj.id = styleDflt;
         styleObj.style = convertStyleVal(styleDflt);
     }
+
+    styleObj.transition = {duration: 0, delay: 0};
 
     return styleObj;
 }
