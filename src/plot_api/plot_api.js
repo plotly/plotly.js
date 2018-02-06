@@ -1386,8 +1386,7 @@ function _restyle(gd, aobj, traces) {
     // for the undo / redo queue
     var redoit = {},
         undoit = {},
-        axlist,
-        flagAxForDelete = {};
+        axlist;
 
     // make a new empty vals array for undoit
     function a0() { return traces.map(function() { return undefined; }); }
@@ -1530,9 +1529,6 @@ function _restyle(gd, aobj, traces) {
                 } else if(Registry.traceIs(cont, 'cartesian')) {
                     Lib.nestedProperty(cont, 'marker.colors')
                         .set(Lib.nestedProperty(cont, 'marker.color').get());
-                    // look for axes that are no longer in use and delete them
-                    flagAxForDelete[cont.xaxis || 'x'] = true;
-                    flagAxForDelete[cont.yaxis || 'y'] = true;
                 }
             }
 
