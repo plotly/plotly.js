@@ -46,11 +46,17 @@ selProto.style = function() {
     return originalSelStyle.apply(sel, arguments);
 };
 
-function checkAttrVal(sel, key) {
+function checkAttrVal(sel, key, val) {
     // setting the transform attribute on a <clipPath> does not
     // work in Chrome, IE and Edge
     if(sel.node().nodeName === 'clipPath' && key === 'transform') {
         throw new Error('d3 selection.attr called with key \'transform\' on a clipPath node');
+    }
+
+    // make sure no double-negative string get into the DOM,
+    // their handling differs from browsers to browsers
+    if(/--/.test(val)) {
+        throw new Error('d3 selection.attr called with value ' + val + ' which includes a double negative');
     }
 }
 
