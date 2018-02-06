@@ -67,10 +67,13 @@ proto.handlePick = function(selection) {
         ];
 
         var text = this.data.text;
-        if(text && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]] !== undefined) {
+        if(Array.isArray(text) && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]] !== undefined) {
             selection.textLabel = text[selectIndex[1]][selectIndex[0]];
+        } else if(text) {
+            selection.textLabel = text;
+        } else {
+            selection.textLabel = '';
         }
-        else selection.textLabel = '';
 
         selection.data.dataCoordinate = selection.dataCoordinate.slice();
 

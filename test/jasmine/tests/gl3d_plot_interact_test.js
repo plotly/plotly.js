@@ -37,7 +37,10 @@ describe('@gl Test gl3d plots', function() {
     var mock3 = require('@mocks/gl3d_autocolorscale');
 
     function assertHoverText(xLabel, yLabel, zLabel, textLabel) {
-        var content = [xLabel, yLabel, zLabel];
+        var content = [];
+        if(xLabel) content.push(xLabel);
+        if(yLabel) content.push(yLabel);
+        if(zLabel) content.push(zLabel);
         if(textLabel) content.push(textLabel);
         assertHoverLabelContent({nums: content.join('\n')});
     }
@@ -194,6 +197,16 @@ describe('@gl Test gl3d plots', function() {
         .then(_hover)
         .then(function() {
             assertHoverText('x: 二 6, 2017', 'y: c', 'z: 100k', 'Clementine');
+
+            return Plotly.restyle(gd, 'hoverinfo', 'text');
+        })
+        .then(function() {
+            assertHoverText(null, null, null, 'Clementine');
+
+            return Plotly.restyle(gd, 'hoverinfo', 'z');
+        })
+        .then(function() {
+            assertHoverText(null, null, '100k');
         })
         .catch(fail)
         .then(done);
@@ -274,6 +287,23 @@ describe('@gl Test gl3d plots', function() {
                 'colorbar.tickvals': undefined,
                 'colorbar.ticktext': undefined
             });
+
+            return Plotly.restyle(gd, 'hoverinfo', 'z');
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverText(null, null, '43');
+
+            return Plotly.restyle(gd, 'hoverinfo', 'text');
+        })
+        .then(_hover)
+        .then(function() {
+            assertHoverText(null, null, null, 'one two');
+
+            return Plotly.restyle(gd, 'text', 'yo!');
+        })
+        .then(function() {
+            assertHoverText(null, null, null, 'yo!');
         })
         .then(done);
     });
@@ -300,6 +330,60 @@ describe('@gl Test gl3d plots', function() {
         .then(function() {
             assertEventData(140.72, -96.97, -96.97, 0, 2);
         })
+        .then(done);
+    });
+
+    it('should display correct hover labels (mesh3d case)', function(done) {
+        var x = [1, 1, 2, 3, 4, 2];
+        var y = [2, 1, 3, 4, 5, 3];
+        var z = [3, 7, 4, 5, 3.5, 2];
+        var text = x.map(function(_, i) {
+            return [
+                'ts: ' + x[i],
+                'hz: ' + y[i],
+                'ftt:' + z[i]
+            ].join('<br>');
+        });
+
+        function _hover() {
+            mouseEvent('mouseover', 250, 250);
+            return delay(20)();
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'mesh3d',
+            x: x,
+            y: y,
+            z: z,
+            text: text
+        }], {
+            width: 500,
+            height: 500
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverText('x: 3', 'y: 4', 'z: 5', 'ts: 3\nhz: 4\nftt:5');
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'hoverinfo', 'x+y');
+        })
+        .then(function() {
+            assertHoverText('(3, 4)');
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'hoverinfo', 'text');
+        })
+        .then(function() {
+            assertHoverText('ts: 3\nhz: 4\nftt:5');
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'text', 'yo!');
+        })
+        .then(function() {
+            assertHoverText(null, null, null, 'yo!');
+        })
+        .catch(fail)
         .then(done);
     });
 
