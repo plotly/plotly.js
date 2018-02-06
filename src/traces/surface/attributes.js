@@ -254,7 +254,7 @@ var attrs = module.exports = overrideAll({
         })
     },
 
-    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'})
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
 }, 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
