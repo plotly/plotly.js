@@ -117,7 +117,6 @@ var attrs = module.exports = overrideAll({
         role: 'info',
         dflt: '',
         arrayOk: true,
-        editType: 'calc',
         description: [
             'Sets the text elements associated with each z value.',
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
