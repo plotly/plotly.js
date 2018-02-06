@@ -15,6 +15,7 @@ var createView = require('3d-view');
 var mouseChange = require('mouse-change');
 var mouseWheel = require('mouse-wheel');
 var mouseOffset = require('mouse-event-offset');
+var supportsPassive = require('has-passive-events');
 
 function createCamera(element, options) {
     element = element || document.body;
@@ -188,14 +189,20 @@ function createCamera(element, options) {
         var xy = mouseOffset(ev.changedTouches[0], element);
         handleInteraction(0, xy[0], xy[1], lastMods);
         handleInteraction(1, xy[0], xy[1], lastMods);
-    });
+
+        ev.preventDefault();
+    }, supportsPassive ? {passive: false} : false);
     element.addEventListener('touchmove', function(ev) {
         var xy = mouseOffset(ev.changedTouches[0], element);
         handleInteraction(1, xy[0], xy[1], lastMods);
-    });
-    element.addEventListener('touchend', function() {
+
+        ev.preventDefault();
+    }, supportsPassive ? {passive: false} : false);
+    element.addEventListener('touchend', function(ev) {
         handleInteraction(0, lastX, lastY, lastMods);
-    });
+
+        ev.preventDefault();
+    }, supportsPassive ? {passive: false} : false);
 
     function handleInteraction(buttons, x, y, mods) {
         var keyBindingMode = camera.keyBindingMode;

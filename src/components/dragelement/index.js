@@ -11,6 +11,7 @@
 
 var mouseOffset = require('mouse-event-offset');
 var hasHover = require('has-hover');
+var supportsPassive = require('has-passive-events');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
@@ -27,7 +28,6 @@ var unhover = require('./unhover');
 dragElement.unhover = unhover.wrapped;
 dragElement.unhoverRaw = unhover.raw;
 
-var supportsPassive = Lib.eventListenerOptionsSupported();
 
 /**
  * Abstracts click & drag interactions
@@ -124,6 +124,8 @@ dragElement.init = function init(options) {
     var clampFn = options.clampFn || _clampFn;
 
     function onStart(e) {
+        e.preventDefault();
+
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
@@ -164,10 +166,12 @@ dragElement.init = function init(options) {
         document.addEventListener('touchmove', onMove);
         document.addEventListener('touchend', onDone);
 
-        return Lib.pauseEvent(e);
+        return;
     }
 
     function onMove(e) {
+        e.preventDefault();
+
         var offset = pointerOffset(e);
         var minDrag = options.minDrag || constants.MINDRAG;
         var dxdy = clampFn(offset[0] - startX, offset[1] - startY, minDrag);
@@ -181,7 +185,7 @@ dragElement.init = function init(options) {
 
         if(gd._dragged && options.moveFn && !rightClick) options.moveFn(dx, dy);
 
-        return Lib.pauseEvent(e);
+        return;
     }
 
     function onDone(e) {
@@ -189,6 +193,8 @@ dragElement.init = function init(options) {
         document.removeEventListener('mouseup', onDone);
         document.removeEventListener('touchmove', onMove);
         document.removeEventListener('touchend', onDone);
+
+        e.preventDefault();
 
         if(hasHover) {
             Lib.removeElement(dragCover);
@@ -246,7 +252,7 @@ dragElement.init = function init(options) {
 
         gd._dragged = false;
 
-        return Lib.pauseEvent(e);
+        return;
     }
 };
 

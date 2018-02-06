@@ -13,6 +13,7 @@ var mouseChange = require('mouse-change');
 var mouseWheel = require('mouse-wheel');
 var mouseOffset = require('mouse-event-offset');
 var cartesianConstants = require('../cartesian/constants');
+var hasPassive = require('has-passive-events');
 
 module.exports = createCamera;
 
@@ -63,15 +64,21 @@ function createCamera(scene) {
         var xy = mouseOffset(ev.changedTouches[0], element);
         handleInteraction(0, xy[0], xy[1]);
         handleInteraction(1, xy[0], xy[1]);
-    });
+
+        ev.preventDefault();
+    }, hasPassive ? {passive: false} : false);
     element.addEventListener('touchmove', function(ev) {
         ev.preventDefault();
         var xy = mouseOffset(ev.changedTouches[0], element);
         handleInteraction(1, xy[0], xy[1]);
-    });
-    element.addEventListener('touchend', function() {
+
+        ev.preventDefault();
+    }, hasPassive ? {passive: false} : false);
+    element.addEventListener('touchend', function(ev) {
         handleInteraction(0, result.lastPos[0], result.lastPos[1]);
-    });
+
+        ev.preventDefault();
+    }, hasPassive ? {passive: false} : false);
 
     function handleInteraction(buttons, x, y) {
         var dataBox = scene.calcDataBox(),
@@ -287,7 +294,7 @@ function createCamera(scene) {
         scene.relayoutCallback();
 
         return true;
-    });
+    }, true);
 
     return result;
 }

@@ -11,6 +11,7 @@
 
 var createPlot = require('gl-plot3d');
 var getContext = require('webgl-context');
+var passiveSupported = require('has-passive-events');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -26,6 +27,7 @@ var project = require('./project');
 var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
+
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
@@ -190,7 +192,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     };
 
     scene.glplot.canvas.addEventListener('mouseup', relayoutCallback.bind(null, scene));
-    scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene));
+    scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
 
     if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
