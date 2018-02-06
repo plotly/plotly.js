@@ -55,7 +55,7 @@ function checkAttrVal(sel, key, val) {
 
     // make sure no double-negative string get into the DOM,
     // their handling differs from browsers to browsers
-    if(/--/.test(val)) {
+    if(/--/.test(val) && isNumeric(val.split('--')[1].charAt(0))) {
         throw new Error('d3 selection.attr called with value ' + val + ' which includes a double negative');
     }
 }
