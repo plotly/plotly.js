@@ -2492,9 +2492,13 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             if(wasArray && nowArray) {
                 // don't try to diff two data arrays. If immutable we know the data changed,
                 // if not, assume it didn't and let `layout.datarevision` tell us if it did
-                if(immutable) flags.calc = true;
+                if(immutable) {
+                    flags.calc = true;
+                }
             }
-            else if(wasArray !== nowArray) flags.calc = true;
+            else if(wasArray !== nowArray) {
+                flags.calc = true;
+            }
             else changed();
         }
         else if(wasArray && nowArray) {
