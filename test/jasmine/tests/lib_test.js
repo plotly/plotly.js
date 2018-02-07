@@ -1292,14 +1292,11 @@ describe('Test lib.js:', function() {
             expect(this.array).toBe(out);
         });
 
-        it('should ignore falsy items', function() {
+        it('should ignore falsy items except 0', function() {
             Lib.pushUnique(this.array, false);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
             Lib.pushUnique(this.array, undefined);
-            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
-
-            Lib.pushUnique(this.array, 0);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
             Lib.pushUnique(this.array, null);
@@ -1307,6 +1304,9 @@ describe('Test lib.js:', function() {
 
             Lib.pushUnique(this.array, '');
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.pushUnique(this.array, 0);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, 0]);
         });
 
         it('should ignore item already in array', function() {
