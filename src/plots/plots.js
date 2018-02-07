@@ -283,8 +283,8 @@ var extraFormatKeys = [
 plots.supplyDefaults = function(gd) {
     var oldFullLayout = gd._fullLayout || {};
 
-    if(oldFullLayout._skipSD) {
-        delete oldFullLayout._skipSD;
+    if(oldFullLayout._skipDefaults) {
+        delete oldFullLayout._skipDefaults;
         return;
     }
 

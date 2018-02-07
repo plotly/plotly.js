@@ -2278,7 +2278,7 @@ Plotly.react = function(gd, data, layout, config) {
         }
 
         if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
-            gd._fullLayout._skipSD = true;
+            gd._fullLayout._skipDefaults = true;
             seq.push(Plotly.plot);
         }
         else {
