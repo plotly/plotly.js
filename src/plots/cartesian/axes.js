@@ -1817,17 +1817,6 @@ axes.doTicks = function(gd, axid, skipTitle) {
         }
     }
 
-    // make sure we only have allowed options for exponents
-    // (others can make confusing errors)
-    if(!ax.tickformat) {
-        if(['none', 'e', 'E', 'power', 'SI', 'B'].indexOf(ax.exponentformat) === -1) {
-            ax.exponentformat = 'e';
-        }
-        if(['all', 'first', 'last', 'none'].indexOf(ax.showexponent) === -1) {
-            ax.showexponent = 'all';
-        }
-    }
-
     // set scaling to pixels
     ax.setScale();
 
