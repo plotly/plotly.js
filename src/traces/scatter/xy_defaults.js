@@ -23,13 +23,6 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     if(x) {
         if(y) {
             len = Math.min(x.length, y.length);
-            // TODO: not sure we should do this here... but I think
-            // the way it works in calc is wrong, because it'll delete data
-            // which could be a problem eg in streaming / editing if x and y
-            // come in at different times
-            // so we need to revisit calc before taking this out
-            if(len < x.length) traceOut.x = x.slice(0, len);
-            if(len < y.length) traceOut.y = y.slice(0, len);
         }
         else {
             len = x.length;
@@ -44,5 +37,8 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
         coerce('x0');
         coerce('dx');
     }
+
+    traceOut._length = len;
+
     return len;
 };

@@ -219,6 +219,7 @@ exports.calcTransform = function(gd, trace, opts) {
     }
 
     opts._indexToPoints = indexToPoints;
+    trace._length = index;
 };
 
 function getFilterFunc(opts, d2c, targetCalendar) {

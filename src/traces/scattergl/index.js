@@ -53,7 +53,7 @@ function calc(container, trace) {
     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
 
-    var count = (x || y).length, i, l, xx, yy;
+    var count = trace._length, i, l, xx, yy;
 
     if(!x) {
         x = Array(count);
@@ -71,28 +71,26 @@ function calc(container, trace) {
     // get log converted positions
     var rawx, rawy;
     if(xaxis.type === 'log') {
-        rawx = Array(x.length);
-        for(i = 0, l = x.length; i < l; i++) {
-            rawx[i] = x[i];
+        rawx = x.slice(0, count);
+        for(i = 0; i < count; i++) {
             x[i] = xaxis.d2l(x[i]);
         }
     }
     else {
         rawx = x;
-        for(i = 0, l = x.length; i < l; i++) {
+        for(i = 0; i < count; i++) {
             x[i] = parseFloat(x[i]);
         }
     }
     if(yaxis.type === 'log') {
-        rawy = Array(y.length);
-        for(i = 0, l = y.length; i < l; i++) {
-            rawy[i] = y[i];
+        rawy = y.slice(0, count);
+        for(i = 0; i < count; i++) {
             y[i] = yaxis.d2l(y[i]);
         }
     }
     else {
         rawy = y;
-        for(i = 0, l = y.length; i < l; i++) {
+        for(i = 0; i < count; i++) {
             y[i] = parseFloat(y[i]);
         }
     }
