@@ -29,8 +29,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    var xlen = z[0].length;
-    var ylen = z.length;
+    traceOut._xlength = z[0].length;
+    traceOut._ylength = z.length;
 
     coerce('x');
     coerce('y');
@@ -38,21 +38,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
-    if(!Array.isArray(traceOut.x)) {
-        // build a linearly scaled x
-        traceOut.x = [];
-        for(i = 0; i < xlen; ++i) {
-            traceOut.x[i] = i;
-        }
-    }
-
     coerce('text');
-    if(!Array.isArray(traceOut.y)) {
-        traceOut.y = [];
-        for(i = 0; i < ylen; ++i) {
-            traceOut.y[i] = i;
-        }
-    }
 
     // Coerce remaining properties
     [
