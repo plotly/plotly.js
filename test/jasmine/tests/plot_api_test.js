@@ -2513,6 +2513,32 @@ describe('Test plot api', function() {
             .then(done);
         });
 
+        it('can put polar plots into staticPlot mode', function(done) {
+            // tested separately since some of the relevant code is actually
+            // in cartesian/graph_interact... hopefully we'll fix that
+            // sometime and the test will still pass.
+            var data = [{r: [1, 2, 3], theta: [0, 120, 240], type: 'scatterpolar'}];
+            var layout = {};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+
+                return Plotly.react(gd, data, layout, {staticPlot: true});
+            })
+            .then(function() {
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(0);
+
+                return Plotly.react(gd, data, layout, {});
+            })
+            .then(function() {
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
         it('can change frames without redrawing', function(done) {
             var data = [{y: [1, 2, 3]}];
             var layout = {};
