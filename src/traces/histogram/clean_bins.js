@@ -65,7 +65,7 @@ module.exports = function cleanBins(trace, ax, binDirection) {
     var autoBinAttr = 'autobin' + binDirection;
 
     if(typeof trace[autoBinAttr] !== 'boolean') {
-        trace[autoBinAttr] = !(
+        trace[autoBinAttr] = trace._input[autoBinAttr] = !(
             (bins.start || bins.start === 0) &&
             (bins.end || bins.end === 0)
         );
