@@ -10,6 +10,8 @@ var pkg = require('../../../package.json');
 var subroutines = require('@src/plot_api/subroutines');
 var helpers = require('@src/plot_api/helpers');
 var editTypes = require('@src/plot_api/edit_types');
+var annotations = require('@src/components/annotations');
+var images = require('@src/components/images');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -2193,6 +2195,10 @@ describe('Test plot api', function() {
                 spyOn(subroutines, m).and.callThrough();
                 subroutines[m].calls.reset();
             });
+
+            spyOn(annotations, 'drawOne').and.callThrough();
+            spyOn(annotations, 'draw').and.callThrough();
+            spyOn(images, 'draw').and.callThrough();
         });
 
         afterEach(destroyGraphDiv);
@@ -2202,6 +2208,9 @@ describe('Test plot api', function() {
 
             gd.on('plotly_afterplot', function() { plotCalls++; });
             subroutines.layoutStyles.calls.reset();
+            annotations.draw.calls.reset();
+            annotations.drawOne.calls.reset();
+            images.draw.calls.reset();
         }
 
         function countCalls(counts) {
@@ -2217,6 +2226,16 @@ describe('Test plot api', function() {
 
             expect(plotCalls).toBe(counts.plot || 0, 'calls to Plotly.plot');
             plotCalls = 0;
+
+            // only consider annotation and image draw calls if we *don't* do a full plot.
+            if(!counts.plot) {
+                expect(annotations.draw).toHaveBeenCalledTimes(counts.annotationDraw || 0);
+                expect(annotations.drawOne).toHaveBeenCalledTimes(counts.annotationDrawOne || 0);
+                expect(images.draw).toHaveBeenCalledTimes(counts.imageDraw || 0);
+            }
+            annotations.draw.calls.reset();
+            annotations.drawOne.calls.reset();
+            images.draw.calls.reset();
         }
 
         it('should notice new data by ===, without layout.datarevision', function(done) {
@@ -2339,6 +2358,121 @@ describe('Test plot api', function() {
             })
             .then(function() {
                 countCalls({doColorBars: 1, plot: 1});
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('redraws annotations one at a time', function(done) {
+            var data = [{y: [1, 2, 3], mode: 'markers'}];
+            var layout = {};
+            var ymax;
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                ymax = layout.yaxis.range[1];
+
+                layout.annotations = [{
+                    x: 1,
+                    y: 4,
+                    text: 'Way up high',
+                    showarrow: false
+                }, {
+                    x: 1,
+                    y: 2,
+                    text: 'On the data',
+                    showarrow: false
+                }];
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // autoranged - so we get a full replot
+                countCalls({plot: 1});
+                expect(d3.selectAll('.annotation').size()).toBe(2);
+
+                layout.annotations[1].bgcolor = 'rgb(200, 100, 0)';
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({annotationDrawOne: 1});
+                expect(window.getComputedStyle(d3.select('.annotation[data-index="1"] .bg').node()).fill)
+                    .toBe('rgb(200, 100, 0)');
+                expect(layout.yaxis.range[1]).not.toBeCloseTo(ymax, 0);
+
+                layout.annotations[0].font = {color: 'rgb(0, 255, 0)'};
+                layout.annotations[1].bgcolor = 'rgb(0, 0, 255)';
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({annotationDrawOne: 2});
+                expect(window.getComputedStyle(d3.select('.annotation[data-index="0"] text').node()).fill)
+                    .toBe('rgb(0, 255, 0)');
+                expect(window.getComputedStyle(d3.select('.annotation[data-index="1"] .bg').node()).fill)
+                    .toBe('rgb(0, 0, 255)');
+
+                Lib.extendFlat(layout.annotations[0], {yref: 'paper', y: 0.8});
+
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({plot: 1});
+                expect(layout.yaxis.range[1]).toBeCloseTo(ymax, 0);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('redraws images all at once', function(done) {
+            var data = [{y: [1, 2, 3], mode: 'markers'}];
+            var layout = {};
+            var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
+
+            var x, y, height, width;
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                layout.images = [{
+                    source: jsLogo,
+                    xref: 'paper',
+                    yref: 'paper',
+                    x: 0.1,
+                    y: 0.1,
+                    sizex: 0.2,
+                    sizey: 0.2
+                }, {
+                    source: jsLogo,
+                    xref: 'x',
+                    yref: 'y',
+                    x: 1,
+                    y: 2,
+                    sizex: 1,
+                    sizey: 1
+                }];
+                Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({imageDraw: 1});
+                expect(d3.selectAll('image').size()).toBe(2);
+
+                var n = d3.selectAll('image').node();
+                x = n.attributes.x.value;
+                y = n.attributes.y.value;
+                height = n.attributes.height.value;
+                width = n.attributes.width.value;
+
+                layout.images[0].y = 0.8;
+                layout.images[0].sizey = 0.4;
+                Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({imageDraw: 1});
+                var n = d3.selectAll('image').node();
+                expect(n.attributes.x.value).toBe(x);
+                expect(n.attributes.width.value).toBe(width);
+                expect(n.attributes.y.value).not.toBe(y);
+                expect(n.attributes.height.value).not.toBe(height);
             })
             .catch(fail)
             .then(done);
