@@ -33,13 +33,13 @@ module.exports = function calc(gd, trace) {
     if(trace._cheater) {
         var avals = aax.cheatertype === 'index' ? a.length : a;
         var bvals = bax.cheatertype === 'index' ? b.length : b;
-        trace.x = x = cheaterBasis(avals, bvals, trace.cheaterslope);
+        x = cheaterBasis(avals, bvals, trace.cheaterslope);
     } else {
         x = trace.x;
     }
 
-    trace._x = trace.x = x = clean2dArray(x);
-    trace._y = trace.y = y = clean2dArray(y);
+    trace._x = x = clean2dArray(x);
+    trace._y = y = clean2dArray(y);
 
     // Fill in any undefined values with elliptic smoothing. This doesn't take
     // into account the spacing of the values. That is, the derivatives should

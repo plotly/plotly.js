@@ -2440,8 +2440,13 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         // FIXME: ax.tick0 and dtick get filled in during plotting, and unlike other auto values
         // they don't make it back into the input, so newContainer won't have them.
         // similar for axis ranges for 3D
-        if((key === 'tick0' || key === 'dtick') && newContainer.tickmode === 'auto') continue;
+        // contourcarpet doesn't HAVE zmin/zmax, they're just auto-added. It needs them.
+        if(key === 'tick0' || key === 'dtick') {
+            var tickMode = newContainer.tickmode;
+            if(tickMode === 'auto' || tickMode === 'array' || !tickMode) continue;
+        }
         if(key === 'range' && newContainer.autorange) continue;
+        if((key === 'zmin' || key === 'zmax') && newContainer.type === 'contourcarpet') continue;
 
         var parts = outerparts.concat(key);
         valObject = getValObject(parts);
