@@ -18,24 +18,28 @@ describe('Test scatterpolar trace defaults:', function() {
         ScatterPolar.supplyDefaults(traceIn, traceOut, '#444', layout || {});
     }
 
-    it('should truncate *r* when longer than *theta*', function() {
+    it('should not truncate *r* when longer than *theta*', function() {
+        // this is handled at the calc step now via _length.
         _supply({
             r: [1, 2, 3, 4, 5],
             theta: [1, 2, 3]
         });
 
-        expect(traceOut.r).toEqual([1, 2, 3]);
+        expect(traceOut.r).toEqual([1, 2, 3, 4, 5]);
         expect(traceOut.theta).toEqual([1, 2, 3]);
+        expect(traceOut._length).toBe(3);
     });
 
-    it('should truncate *theta* when longer than *r*', function() {
+    it('should not truncate *theta* when longer than *r*', function() {
+        // this is handled at the calc step now via _length.
         _supply({
             r: [1, 2, 3],
             theta: [1, 2, 3, 4, 5]
         });
 
         expect(traceOut.r).toEqual([1, 2, 3]);
-        expect(traceOut.theta).toEqual([1, 2, 3]);
+        expect(traceOut.theta).toEqual([1, 2, 3, 4, 5]);
+        expect(traceOut._length).toBe(3);
     });
 });
 

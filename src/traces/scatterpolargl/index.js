@@ -26,6 +26,9 @@ function calc(container, trace) {
     var thetaArray = angularAxis.makeCalcdata(trace, 'theta');
     var stash = {};
 
+    if(trace._length < rArray.length) rArray = rArray.slice(0, trace._length);
+    if(trace._length < thetaArray.length) thetaArray = thetaArray.slice(0, trace._length);
+
     calcColorscales(trace);
 
     stash.r = rArray;
@@ -36,6 +39,7 @@ function calc(container, trace) {
     if(angularAxis.type !== 'linear') {
         angularAxis.autorange = true;
         Axes.expand(angularAxis, thetaArray);
+        delete angularAxis.autorange;
     }
 
     return [{x: false, y: false, t: stash, trace: trace}];
