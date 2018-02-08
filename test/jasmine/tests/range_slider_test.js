@@ -445,7 +445,7 @@ describe('the range slider', function() {
         it('should not mutate layoutIn', function() {
             var layoutIn = { xaxis: { rangeslider: { visible: true }} },
                 layoutOut = { xaxis: { rangeslider: {}} },
-                expected = { xaxis: { rangeslider: { visible: true }} };
+                expected = { xaxis: { rangeslider: { visible: true}} };
 
             _supply(layoutIn, layoutOut, 'xaxis');
             expect(layoutIn).toEqual(expected);
@@ -457,7 +457,6 @@ describe('the range slider', function() {
                 expected = {
                     visible: true,
                     autorange: true,
-                    range: [-1, 6],
                     thickness: 0.15,
                     bgcolor: '#fff',
                     borderwidth: 0,
@@ -475,7 +474,6 @@ describe('the range slider', function() {
                 expected = {
                     visible: true,
                     autorange: true,
-                    range: [-1, 6],
                     thickness: 0.15,
                     bgcolor: '#fff',
                     borderwidth: 0,
@@ -507,7 +505,6 @@ describe('the range slider', function() {
                 expected = {
                     visible: true,
                     autorange: true,
-                    range: [-1, 6],
                     thickness: 0.15,
                     bgcolor: '#fff',
                     borderwidth: 0,
@@ -516,27 +513,6 @@ describe('the range slider', function() {
                 };
 
             _supply(layoutIn, layoutOut, 'xaxis');
-            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
-        });
-
-        it('should expand the rangeslider range to axis range', function() {
-            var layoutIn = { xaxis: { rangeslider: { range: [5, 6] } } },
-                layoutOut = { xaxis: { range: [1, 10], type: 'linear'} },
-                expected = {
-                    visible: true,
-                    autorange: false,
-                    range: [1, 10],
-                    thickness: 0.15,
-                    bgcolor: '#fff',
-                    borderwidth: 0,
-                    bordercolor: '#444',
-                    _input: layoutIn.xaxis.rangeslider
-                };
-
-            _supply(layoutIn, layoutOut, 'xaxis');
-
-            // don't compare the whole layout, because we had to run setConvert which
-            // attaches all sorts of other stuff to xaxis
             expect(layoutOut.xaxis.rangeslider).toEqual(expected);
         });
 
@@ -546,7 +522,6 @@ describe('the range slider', function() {
                 expected = {
                     visible: true,
                     autorange: true,
-                    range: [-1, 6],
                     thickness: 0.15,
                     bgcolor: '#fff',
                     borderwidth: 0,
@@ -729,6 +704,17 @@ describe('the range slider', function() {
             .then(function() {
                 assertRange([-0.26, 4.26], [-0.26, 4.26]);
 
+                // smaller than xaxis.range - won't be accepted
+                return Plotly.relayout(gd, {'xaxis.rangeslider.range': [0, 2]});
+            })
+            .then(function() {
+                assertRange([-0.26, 4.26], [-0.26, 4.26]);
+
+                // will be accepted (and autorange is disabled by impliedEdits)
+                return Plotly.relayout(gd, {'xaxis.rangeslider.range': [-2, 12]});
+            })
+            .then(function() {
+                assertRange([-0.26, 4.26], [-2, 12]);
             })
             .then(done);
         });
