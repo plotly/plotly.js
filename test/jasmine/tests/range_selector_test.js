@@ -472,7 +472,7 @@ describe('range selector interactions:', function() {
 
     function checkActiveButton(activeIndex, msg) {
         d3.selectAll('.button').each(function(d, i) {
-            expect(d.isActive).toBe(activeIndex === i, msg + ': button #' + i);
+            expect(d._isActive).toBe(activeIndex === i, msg + ': button #' + i);
         });
     }
 
@@ -481,7 +481,7 @@ describe('range selector interactions:', function() {
             var rect = d3.select(this).select('rect');
 
             expect(rect.node().style.fill).toEqual(
-                d.isActive ? activeColor : bgColor
+                d._isActive ? activeColor : bgColor
             );
         });
     }
