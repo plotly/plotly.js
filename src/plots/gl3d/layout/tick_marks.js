@@ -78,7 +78,6 @@ function computeTickMarks(scene) {
 
 
             axes.tickmode = tickModeCached;
-            // axes.range = rangeCached;
         }
     }
 
