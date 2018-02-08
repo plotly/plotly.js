@@ -295,6 +295,8 @@ plots.supplyDefaults = function(gd) {
     var newFullData = gd._fullData = [];
     var newData = gd.data || [];
 
+    var context = gd._context || {};
+
     var i;
 
     // Create all the storage space for frames, but only if doesn't already exist
@@ -322,6 +324,9 @@ plots.supplyDefaults = function(gd) {
 
     var formatObj = getFormatObj(gd, d3FormatKeys);
 
+    // stash the token from context so mapbox subplots can use it as default
+    newFullLayout._mapboxAccessToken = context.mapboxAccessToken;
+
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
 
@@ -343,7 +348,7 @@ plots.supplyDefaults = function(gd) {
 
         var missingWidthOrHeight = (!newLayout.width || !newLayout.height),
             autosize = newFullLayout.autosize,
-            autosizable = gd._context && gd._context.autosizable,
+            autosizable = context.autosizable,
             initialAutoSize = missingWidthOrHeight && (autosize || autosizable);
 
         if(initialAutoSize) plots.plotAutoSize(gd, newLayout, newFullLayout);

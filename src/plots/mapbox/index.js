@@ -62,9 +62,6 @@ exports.plot = function plotMapbox(gd) {
             opts = fullLayout[id],
             mapbox = opts._subplot;
 
-        // copy access token to fullLayout (to handle the context case)
-        opts.accesstoken = accessToken;
-
         if(!mapbox) {
             mapbox = createMapbox({
                 gd: gd,
@@ -136,24 +133,17 @@ function findAccessToken(gd, mapboxIds) {
     // special case for Mapbox Atlas users
     if(context.mapboxAccessToken === '') return '';
 
-    // first look for access token in context
-    var accessToken = context.mapboxAccessToken;
-
-    // allow mapbox layout options to override it
+    // Take the first token we find in a mapbox subplot.
+    // These default to the context value but may be overridden.
     for(var i = 0; i < mapboxIds.length; i++) {
         var opts = fullLayout[mapboxIds[i]];
 
         if(opts.accesstoken) {
-            accessToken = opts.accesstoken;
-            break;
+            return opts.accesstoken;
         }
     }
 
-    if(!accessToken) {
-        throw new Error(constants.noAccessTokenErrorMsg);
-    }
-
-    return accessToken;
+    throw new Error(constants.noAccessTokenErrorMsg);
 }
 
 exports.updateFx = function(fullLayout) {

@@ -38,24 +38,28 @@ describe('scattermapbox defaults', function() {
         return traceOut;
     }
 
-    it('should truncate \'lon\' if longer than \'lat\'', function() {
+    it('should not truncate \'lon\' if longer than \'lat\'', function() {
+        // this is handled at the calc step now via _length.
         var fullTrace = _supply({
             lon: [1, 2, 3],
             lat: [2, 3]
         });
 
-        expect(fullTrace.lon).toEqual([1, 2]);
+        expect(fullTrace.lon).toEqual([1, 2, 3]);
         expect(fullTrace.lat).toEqual([2, 3]);
+        expect(fullTrace._length).toBe(2);
     });
 
-    it('should truncate \'lat\' if longer than \'lon\'', function() {
+    it('should not truncate \'lat\' if longer than \'lon\'', function() {
+        // this is handled at the calc step now via _length.
         var fullTrace = _supply({
             lon: [1, 2, 3],
             lat: [2, 3, 3, 5]
         });
 
         expect(fullTrace.lon).toEqual([1, 2, 3]);
-        expect(fullTrace.lat).toEqual([2, 3, 3]);
+        expect(fullTrace.lat).toEqual([2, 3, 3, 5]);
+        expect(fullTrace._length).toBe(3);
     });
 
     it('should set \'visible\' to false if \'lat\' and/or \'lon\' has zero length', function() {
