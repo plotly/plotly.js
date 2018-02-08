@@ -53,7 +53,7 @@ function calc(container, trace) {
     var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
     var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
 
-    var count = trace._length, i, l, xx, yy;
+    var count = trace._length, i, xx, yy;
 
     if(!x) {
         x = Array(count);

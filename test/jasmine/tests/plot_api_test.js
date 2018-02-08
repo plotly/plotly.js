@@ -19,7 +19,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
-var delay = require('../assets/delay');
 
 describe('Test plot api', function() {
     'use strict';
