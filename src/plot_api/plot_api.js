@@ -2490,6 +2490,13 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         }
         else if(canBeDataArray) {
             if(wasArray && nowArray) {
+                // hack for traces that modify the data in supplyDefaults, like
+                // converting 1D to 2D arrays, which will always create new objects
+                var inputKey = '_input_' + key;
+                var oldValIn = oldContainer[inputKey];
+                var newValIn = newContainer[inputKey];
+                if(Array.isArray(oldValIn) && oldValIn === newValIn) continue;
+
                 // don't try to diff two data arrays. If immutable we know the data changed,
                 // if not, assume it didn't and let `layout.datarevision` tell us if it did
                 if(immutable) {
