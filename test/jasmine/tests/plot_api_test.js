@@ -2327,7 +2327,7 @@ describe('Test plot api', function() {
                 // legend and ticks get called initially, but then plot gets added during automargin
                 countCalls({doLegend: 1, doTicksRelayout: 1, plot: 1});
 
-                data = [{x: [0, 1], y: [0, 1], z: [[1, 2], [3, 4]], type: 'surface'}];
+                data = [{z: [[1, 2], [3, 4]], type: 'surface'}];
                 layout = {};
 
                 return Plotly.react(gd, data, layout);
@@ -2562,6 +2562,44 @@ describe('Test plot api', function() {
             })
             .catch(fail)
             .then(done);
+        });
+
+        var mockList = [
+            ['1', require('@mocks/1.json')],
+            ['4', require('@mocks/4.json')],
+            ['5', require('@mocks/5.json')],
+            ['10', require('@mocks/10.json')],
+            ['11', require('@mocks/11.json')],
+            ['17', require('@mocks/17.json')],
+            ['21', require('@mocks/21.json')],
+            ['22', require('@mocks/22.json')],
+            // ['airfoil', require('@mocks/airfoil.json')],
+            ['annotations-autorange', require('@mocks/annotations-autorange.json')],
+            ['axes_enumerated_ticks', require('@mocks/axes_enumerated_ticks.json')],
+            ['axes_visible-false', require('@mocks/axes_visible-false.json')],
+            ['bar_and_histogram', require('@mocks/bar_and_histogram.json')],
+            ['binding', require('@mocks/binding.json')],
+            ['cheater_smooth', require('@mocks/cheater_smooth.json')],
+            ['finance_style', require('@mocks/finance_style.json')],
+            ['geo_first', require('@mocks/geo_first.json')],
+            ['gl2d_line_dash', require('@mocks/gl2d_line_dash.json')],
+            ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
+            ['gl2d_pointcloud-basic', require('@mocks/gl2d_pointcloud-basic.json')],
+            ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
+            ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')]
+        ];
+
+        mockList.forEach(function(mockSpec) {
+            it('can redraw "' + mockSpec[0] + '" with no changes as a noop', function(done) {
+                var mock = mockSpec[1];
+
+                Plotly.newPlot(gd, mock)
+                .then(countPlots)
+                .then(function() { return Plotly.react(gd, mock); })
+                .then(function() { countCalls({}); })
+                .catch(fail)
+                .then(done);
+            });
         });
     });
 });
