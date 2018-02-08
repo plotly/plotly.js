@@ -34,8 +34,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var lineWidth = coerce('marker.line.width');
     if(lineWidth) coerce('marker.line.color');
 
-    var colors = coerce('marker.colors');
-    if(!Array.isArray(colors)) traceOut.marker.colors = [];
+    coerce('marker.colors');
 
     coerce('scalegroup');
     // TODO: hole needs to be coerced to the same value within a scaleegroup
