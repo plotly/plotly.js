@@ -19,7 +19,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
-
+var delay = require('../assets/delay');
 
 describe('Test plot api', function() {
     'use strict';
@@ -2573,7 +2573,7 @@ describe('Test plot api', function() {
             ['17', require('@mocks/17.json')],
             ['21', require('@mocks/21.json')],
             ['22', require('@mocks/22.json')],
-            // ['airfoil', require('@mocks/airfoil.json')],
+            ['airfoil', require('@mocks/airfoil.json')],
             ['annotations-autorange', require('@mocks/annotations-autorange.json')],
             ['axes_enumerated_ticks', require('@mocks/axes_enumerated_ticks.json')],
             ['axes_visible-false', require('@mocks/axes_visible-false.json')],
@@ -2586,7 +2586,21 @@ describe('Test plot api', function() {
             ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
             ['gl2d_pointcloud-basic', require('@mocks/gl2d_pointcloud-basic.json')],
             ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
-            ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')]
+            ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')],
+            ['glpolar_style', require('@mocks/glpolar_style.json')],
+            ['layout_image', require('@mocks/layout_image.json')],
+            ['layout-colorway', require('@mocks/layout-colorway.json')],
+            ['polar_categories', require('@mocks/polar_categories.json')],
+            ['polar_direction', require('@mocks/polar_direction.json')],
+            ['range_selector_style', require('@mocks/range_selector_style.json')],
+            ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
+            ['sankey_energy', require('@mocks/sankey_energy.json')],
+            ['table_wrapped_birds', require('@mocks/table_wrapped_birds.json')],
+            ['ternary_fill', require('@mocks/ternary_fill.json')],
+            ['text_chart_arrays', require('@mocks/text_chart_arrays.json')],
+            ['updatemenus', require('@mocks/updatemenus.json')],
+            ['violins', require('@mocks/violins.json')],
+            ['world-cals', require('@mocks/world-cals.json')]
         ];
 
         mockList.forEach(function(mockSpec) {
