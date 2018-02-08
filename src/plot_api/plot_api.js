@@ -2557,13 +2557,35 @@ function diffConfig(oldConfig, newConfig) {
     var key;
 
     for(key in oldConfig) {
-        if(key !== 'edits') {
-            if(oldConfig[key] !== newConfig[key]) return true;
+        var oldVal = oldConfig[key];
+        var newVal = newConfig[key];
+        if(oldVal !== newVal) {
+            if(Lib.isPlainObject(oldVal) && Lib.isPlainObject(newVal)) {
+                if(diffConfig(oldVal, newVal)) {
+                    return true;
+                }
+            }
+            else if(Array.isArray(oldVal) && Array.isArray(newVal)) {
+                if(oldVal.length !== newVal.length) {
+                    return true;
+                }
+                for(var i = 0; i < oldVal.length; i++) {
+                    if(oldVal[i] !== newVal[i]) {
+                        if(Lib.isPlainObject(oldVal[i]) && Lib.isPlainObject(newVal[i])) {
+                            if(diffConfig(oldVal[i], newVal[i])) {
+                                return true;
+                            }
+                        }
+                        else {
+                            return true;
+                        }
+                    }
+                }
+            }
+            else {
+                return true;
+            }
         }
-    }
-
-    for(key in oldConfig.edits) {
-        if(oldConfig.edits[key] !== newConfig.edits[key]) return true;
     }
 }
 
