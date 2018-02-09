@@ -1375,6 +1375,8 @@ describe('hover on fill', function() {
         var gd = createGraphDiv();
 
         Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            expect(gd._fullLayout.hovermode).toBe('closest');
+
             // hover over a point when that's closest, even if you're over
             // a fill, because by default we have hoveron='points+fills'
             return assertLabelsCorrect([237, 150], [240.0, 144],
@@ -1402,7 +1404,35 @@ describe('hover on fill', function() {
         }).then(function() {
             // then make sure we can still select a *different* item afterward
             return assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
-        }).then(done);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should act like closest mode on ternary when cartesian is in compare mode', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
+        var gd = createGraphDiv();
+
+        mock.data.push({y: [7, 8, 9]});
+        mock.layout.xaxis = {domain: [0.8, 1], visible: false};
+        mock.layout.yaxis = {domain: [0.8, 1], visible: false};
+
+        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            expect(gd._fullLayout.hovermode).toBe('x');
+
+            // hover over a point when that's closest, even if you're over
+            // a fill, because by default we have hoveron='points+fills'
+            return assertLabelsCorrect([237, 150], [240.0, 144],
+                'trace 2Component A: 0.8Component B: 0.1Component C: 0.1');
+        }).then(function() {
+            // hovers over fills
+            return assertLabelsCorrect([237, 170], [247.7, 166], 'trace 2');
+        }).then(function() {
+            // hover on the cartesian trace in the corner
+            return assertLabelsCorrect([363, 122], [363, 122], 'trace 38');
+        })
+        .catch(fail)
+        .then(done);
     });
 });
 

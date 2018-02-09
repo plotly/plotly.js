@@ -175,9 +175,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         subplots = subplots.concat(overlayedSubplots);
     }
 
-    var len = subplots.length,
-        xaArray = new Array(len),
-        yaArray = new Array(len);
+    var len = subplots.length;
+    var xaArray = new Array(len);
+    var yaArray = new Array(len);
+    var supportsCompare = false;
 
     for(var i = 0; i < len; i++) {
         var spId = subplots[i];
@@ -185,6 +186,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // 'cartesian' case
         var plotObj = plots[spId];
         if(plotObj) {
+            supportsCompare = true;
 
             // TODO make sure that fullLayout_plots axis refs
             // get updated properly so that we don't have
@@ -202,6 +204,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     }
 
     var hovermode = evt.hovermode || fullLayout.hovermode;
+
+    if(hovermode && !supportsCompare) hovermode = 'closest';
 
     if(['x', 'y', 'closest'].indexOf(hovermode) === -1 || !gd.calcdata ||
             gd.querySelector('.zoombox') || gd._dragging) {

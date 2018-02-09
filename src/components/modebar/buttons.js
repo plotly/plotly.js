@@ -302,6 +302,10 @@ function handleDrag3d(gd, ev) {
         layoutUpdate[sceneIds[i] + '.' + parts[1]] = val;
     }
 
+    // for multi-type subplots
+    var val2d = (val === 'pan') ? val : 'zoom';
+    layoutUpdate.dragmode = val2d;
+
     Plotly.relayout(gd, layoutUpdate);
 }
 

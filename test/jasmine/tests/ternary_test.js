@@ -382,6 +382,34 @@ describe('ternary plots', function() {
         .then(done);
     });
 
+    it('should render a-axis and c-axis with negative offsets', function(done) {
+        var gd = createGraphDiv();
+
+        Plotly.plot(gd, [{
+            type: 'scatterternary',
+            a: [2, 1, 1],
+            b: [1, 2, 1],
+            c: [1, 1, 2.12345]
+        }], {
+            ternary: {
+                domain: {
+                    x: [0.67, 1],
+                    y: [0.5, 1]
+                },
+            },
+            margin: {t: 25, l: 25, r: 25, b: 25},
+            height: 450,
+            width: 1000
+        })
+        .then(function() {
+            var subplot = gd._fullLayout.ternary._subplot;
+            expect(subplot.aaxis._offset < 0).toBe(true);
+            expect(subplot.caxis._offset < 0).toBe(true);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
     function countTernarySubplot() {
         return d3.selectAll('.ternary').size();
     }
