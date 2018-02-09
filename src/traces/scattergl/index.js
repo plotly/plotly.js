@@ -69,36 +69,19 @@ function calc(container, trace) {
     }
 
     // get log converted positions
-    var rawx, rawy;
-    if(xaxis.type === 'log') {
-        rawx = x.slice(0, count);
-        for(i = 0; i < count; i++) {
-            x[i] = xaxis.d2l(x[i]);
-        }
-    }
-    else {
-        rawx = x;
-        for(i = 0; i < count; i++) {
-            x[i] = parseFloat(x[i]);
-        }
-    }
-    if(yaxis.type === 'log') {
-        rawy = y.slice(0, count);
-        for(i = 0; i < count; i++) {
-            y[i] = yaxis.d2l(y[i]);
-        }
-    }
-    else {
-        rawy = y;
-        for(i = 0; i < count; i++) {
-            y[i] = parseFloat(y[i]);
-        }
-    }
+    var rawx = (xaxis.type === 'log' || x.length > count) ? x.slice(0, count) : x;
+    var rawy = (yaxis.type === 'log' || y.length > count) ? y.slice(0, count) : y;
+
+    var convertX = (xaxis.type === 'log') ? xaxis.d2l : parseFloat;
+    var convertY = (yaxis.type === 'log') ? yaxis.d2l : parseFloat;
 
     // we need hi-precision for scatter2d
     positions = new Array(count * 2);
 
     for(i = 0; i < count; i++) {
+        x[i] = convertX(x[i]);
+        y[i] = convertY(y[i]);
+
         // if no x defined, we are creating simple int sequence (API)
         // we use parseFloat because it gives NaN (we need that for empty values to avoid drawing lines) and it is incredibly fast
         xx = isNumeric(x[i]) ? +x[i] : NaN;
