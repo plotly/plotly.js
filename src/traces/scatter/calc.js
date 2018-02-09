@@ -24,14 +24,11 @@ function calc(gd, trace) {
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var x = xa.makeCalcdata(trace, 'x');
     var y = ya.makeCalcdata(trace, 'y');
-    var serieslen = Math.min(x.length, y.length);
+    var serieslen = trace._length;
 
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
     ya._minDtick = 0;
-
-    if(x.length > serieslen) x.splice(serieslen, x.length - serieslen);
-    if(y.length > serieslen) y.splice(serieslen, y.length - serieslen);
 
     // check whether bounds should be tight, padded, extended to zero...
     // most cases both should be padded on both ends, so start with that.
@@ -120,9 +117,13 @@ function calcMarkerSize(trace, serieslen) {
         Axes.setConvert(ax);
 
         var s = ax.makeCalcdata(trace.marker, 'size');
-        if(s.length > serieslen) s.splice(serieslen, s.length - serieslen);
 
-        return s.map(markerTrans);
+        var sizeOut = new Array(serieslen);
+        for(var i = 0; i < serieslen; i++) {
+            sizeOut[i] = markerTrans(s[i]);
+        }
+        return sizeOut;
+
     } else {
         return markerTrans(marker.size);
     }

@@ -55,10 +55,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    // cut all data arrays down to same length
-    if(a && len < a.length) traceOut.a = a.slice(0, len);
-    if(b && len < b.length) traceOut.b = b.slice(0, len);
-    if(c && len < c.length) traceOut.c = c.slice(0, len);
+    traceOut._length = len;
 
     coerce('sum');
 

@@ -38,6 +38,7 @@ module.exports = {
         dflt: true,
         role: 'style',
         editType: 'calc',
+        impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         description: [
             'Determines whether or not the range slider range is',
             'computed in relation to the input data.',
@@ -48,10 +49,11 @@ module.exports = {
         valType: 'info_array',
         role: 'info',
         items: [
-            {valType: 'any', editType: 'calc'},
-            {valType: 'any', editType: 'calc'}
+            {valType: 'any', editType: 'calc', impliedEdits: {'^autorange': false}},
+            {valType: 'any', editType: 'calc', impliedEdits: {'^autorange': false}}
         ],
         editType: 'calc',
+        impliedEdits: {'autorange': false},
         description: [
             'Sets the range of the range slider.',
             'If not set, defaults to the full xaxis range.',

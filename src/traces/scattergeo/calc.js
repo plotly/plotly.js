@@ -20,7 +20,7 @@ var _ = require('../../lib')._;
 
 module.exports = function calc(gd, trace) {
     var hasLocationData = Array.isArray(trace.locations);
-    var len = hasLocationData ? trace.locations.length : trace.lon.length;
+    var len = hasLocationData ? trace.locations.length : trace._length;
     var calcTrace = new Array(len);
 
     for(var i = 0; i < len; i++) {

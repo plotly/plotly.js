@@ -29,6 +29,15 @@ module.exports = {
         middle: 0.5,
         top: 0
     },
+    // from bottom right: sometimes you just need the opposite of ^^
+    FROM_BR: {
+        left: 1,
+        center: 0.5,
+        right: 0,
+        bottom: 0,
+        middle: 0.5,
+        top: 1
+    },
     // multiple of fontSize to get the vertical offset between lines
     LINE_SPACING: 1.3,
 

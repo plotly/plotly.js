@@ -281,13 +281,21 @@ var extraFormatKeys = [
 //   is a list of all the transform modules invoked.
 //
 plots.supplyDefaults = function(gd) {
-    var oldFullLayout = gd._fullLayout || {},
-        newFullLayout = gd._fullLayout = {},
-        newLayout = gd.layout || {};
+    var oldFullLayout = gd._fullLayout || {};
 
-    var oldFullData = gd._fullData || [],
-        newFullData = gd._fullData = [],
-        newData = gd.data || [];
+    if(oldFullLayout._skipDefaults) {
+        delete oldFullLayout._skipDefaults;
+        return;
+    }
+
+    var newFullLayout = gd._fullLayout = {};
+    var newLayout = gd.layout || {};
+
+    var oldFullData = gd._fullData || [];
+    var newFullData = gd._fullData = [];
+    var newData = gd.data || [];
+
+    var context = gd._context || {};
 
     var i;
 
@@ -316,6 +324,9 @@ plots.supplyDefaults = function(gd) {
 
     var formatObj = getFormatObj(gd, d3FormatKeys);
 
+    // stash the token from context so mapbox subplots can use it as default
+    newFullLayout._mapboxAccessToken = context.mapboxAccessToken;
+
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
 
@@ -337,7 +348,7 @@ plots.supplyDefaults = function(gd) {
 
         var missingWidthOrHeight = (!newLayout.width || !newLayout.height),
             autosize = newFullLayout.autosize,
-            autosizable = gd._context && gd._context.autosizable,
+            autosizable = context.autosizable,
             initialAutoSize = missingWidthOrHeight && (autosize || autosizable);
 
         if(initialAutoSize) plots.plotAutoSize(gd, newLayout, newFullLayout);
@@ -1245,6 +1256,8 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('hidesources');
 
     coerce('colorway');
+
+    coerce('datarevision');
 
     Registry.getComponentMethod(
         'calendars',

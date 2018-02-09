@@ -69,9 +69,7 @@ function handleLonLatDefaults(traceIn, traceOut, coerce) {
     var lon = coerce('lon') || [];
     var lat = coerce('lat') || [];
     var len = Math.min(lon.length, lat.length);
-
-    if(len < lon.length) traceOut.lon = lon.slice(0, len);
-    if(len < lat.length) traceOut.lat = lat.slice(0, len);
+    traceOut._length = len;
 
     return len;
 }

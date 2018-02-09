@@ -20,12 +20,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         type: 'mapbox',
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
-        partition: 'y'
+        partition: 'y',
+        accessToken: layoutOut._mapboxAccessToken
     });
 };
 
-function handleDefaults(containerIn, containerOut, coerce) {
-    coerce('accesstoken');
+function handleDefaults(containerIn, containerOut, coerce, opts) {
+    coerce('accesstoken', opts.accessToken);
     coerce('style');
     coerce('center.lon');
     coerce('center.lat');

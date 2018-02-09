@@ -50,7 +50,7 @@ function mockAnnAxes(ann, scene) {
     Axes.setConvert(ann._xa);
     ann._xa._offset = size.l + domain.x[0] * size.w;
     ann._xa.l2p = function() {
-        return 0.5 * (1 + ann.pdata[0] / ann.pdata[3]) * size.w * (domain.x[1] - domain.x[0]);
+        return 0.5 * (1 + ann._pdata[0] / ann._pdata[3]) * size.w * (domain.x[1] - domain.x[0]);
     };
 
     ann._ya = {};
@@ -58,6 +58,6 @@ function mockAnnAxes(ann, scene) {
     Axes.setConvert(ann._ya);
     ann._ya._offset = size.t + (1 - domain.y[1]) * size.h;
     ann._ya.l2p = function() {
-        return 0.5 * (1 - ann.pdata[1] / ann.pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
+        return 0.5 * (1 - ann._pdata[1] / ann._pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
     };
 }

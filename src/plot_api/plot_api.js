@@ -58,6 +58,13 @@ var numericNameWarningCountLimit = 5;
  * @param {object} config
  *      configuration options (see ./plot_config.js for more info)
  *
+ * OR
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ * @param {object} figure
+ *      object containing `data`, `layout`, `config`, and `frames` members
+ *
  */
 Plotly.plot = function(gd, data, layout, config) {
     var frames;
@@ -1379,8 +1386,7 @@ function _restyle(gd, aobj, traces) {
     // for the undo / redo queue
     var redoit = {},
         undoit = {},
-        axlist,
-        flagAxForDelete = {};
+        axlist;
 
     // make a new empty vals array for undoit
     function a0() { return traces.map(function() { return undefined; }); }
@@ -1523,9 +1529,6 @@ function _restyle(gd, aobj, traces) {
                 } else if(Registry.traceIs(cont, 'cartesian')) {
                     Lib.nestedProperty(cont, 'marker.colors')
                         .set(Lib.nestedProperty(cont, 'marker.color').get());
-                    // look for axes that are no longer in use and delete them
-                    flagAxForDelete[cont.xaxis || 'x'] = true;
-                    flagAxForDelete[cont.yaxis || 'y'] = true;
                 }
             }
 
@@ -1630,26 +1633,6 @@ function _restyle(gd, aobj, traces) {
             autorangeOn = true;
             break;
         }
-    }
-
-    // check axes we've flagged for possible deletion
-    // flagAxForDelete is a hash so we can make sure we only get each axis once
-    var axListForDelete = Object.keys(flagAxForDelete);
-    axisLoop:
-    for(i = 0; i < axListForDelete.length; i++) {
-        var axId = axListForDelete[i],
-            axLetter = axId.charAt(0),
-            axAttr = axLetter + 'axis';
-
-        for(var j = 0; j < data.length; j++) {
-            if(Registry.traceIs(data[j], 'cartesian') &&
-                    (data[j][axAttr] || axLetter) === axId) {
-                continue axisLoop;
-            }
-        }
-
-        // no data on this axis - delete it.
-        doextra('LAYOUT' + Plotly.Axes.id2name(axId), null, 0);
     }
 
     // combine a few flags together;
@@ -1804,25 +1787,6 @@ function _relayout(gd, aobj) {
             undoit[attr] = undefinedToNull(p.get());
         }
         if(val !== undefined) p.set(val);
-    }
-
-    // for editing annotations or shapes - is it on autoscaled axes?
-    function refAutorange(obj, axLetter) {
-        if(!Lib.isPlainObject(obj)) return false;
-        var axRef = obj[axLetter + 'ref'] || axLetter,
-            ax = Plotly.Axes.getFromId(gd, axRef);
-
-        if(!ax && axRef.charAt(0) === axLetter) {
-            // fall back on the primary axis in case we've referenced a
-            // nonexistent axis (as we do above if axRef is missing).
-            // This assumes the object defaults to data referenced, which
-            // is the case for shapes and annotations but not for images.
-            // The only thing this is used for is to determine whether to
-            // do a full `recalc`, so the only ill effect of this error is
-            // to waste some time.
-            ax = Plotly.Axes.getFromId(gd, axLetter);
-        }
-        return (ax || {}).autorange;
     }
 
     // for constraint enforcement: keep track of all axes (as {id: name})
@@ -2018,7 +1982,7 @@ function _relayout(gd, aobj) {
                 else Lib.warn('unrecognized full object value', aobj);
             }
 
-            if(checkForAutorange && (refAutorange(objToAutorange, 'x') || refAutorange(objToAutorange, 'y'))) {
+            if(checkForAutorange && (refAutorange(gd, objToAutorange, 'x') || refAutorange(gd, objToAutorange, 'y'))) {
                 flags.calc = true;
             }
             else editTypes.update(flags, updateValObject);
@@ -2114,6 +2078,25 @@ function _relayout(gd, aobj) {
     };
 }
 
+// for editing annotations or shapes - is it on autoscaled axes?
+function refAutorange(gd, obj, axLetter) {
+    if(!Lib.isPlainObject(obj)) return false;
+    var axRef = obj[axLetter + 'ref'] || axLetter,
+        ax = Plotly.Axes.getFromId(gd, axRef);
+
+    if(!ax && axRef.charAt(0) === axLetter) {
+        // fall back on the primary axis in case we've referenced a
+        // nonexistent axis (as we do above if axRef is missing).
+        // This assumes the object defaults to data referenced, which
+        // is the case for shapes and annotations but not for images.
+        // The only thing this is used for is to determine whether to
+        // do a full `recalc`, so the only ill effect of this error is
+        // to waste some time.
+        ax = Plotly.Axes.getFromId(gd, axLetter);
+    }
+    return (ax || {}).autorange;
+}
+
 /**
  * update: update trace and layout attributes of an existing plot
  *
@@ -2207,6 +2190,404 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
         return gd;
     });
 };
+
+/**
+ * Plotly.react:
+ * A plot/update method that takes the full plot state (same API as plot/newPlot)
+ * and diffs to determine the minimal update pathway
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ * @param {array of objects} data
+ *      array of traces, containing the data and display information for each trace
+ * @param {object} layout
+ *      object describing the overall display of the plot,
+ *      all the stuff that doesn't pertain to any individual trace
+ * @param {object} config
+ *      configuration options (see ./plot_config.js for more info)
+ *
+ * OR
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ * @param {object} figure
+ *      object containing `data`, `layout`, `config`, and `frames` members
+ *
+ */
+Plotly.react = function(gd, data, layout, config) {
+    var frames, plotDone;
+
+    function addFrames() { return Plotly.addFrames(gd, frames); }
+
+    gd = Lib.getGraphDiv(gd);
+
+    var oldFullData = gd._fullData;
+    var oldFullLayout = gd._fullLayout;
+
+    // you can use this as the initial draw as well as to update
+    if(!Lib.isPlotDiv(gd) || !oldFullData || !oldFullLayout) {
+        plotDone = Plotly.newPlot(gd, data, layout, config);
+    }
+    else {
+
+        if(Lib.isPlainObject(data)) {
+            var obj = data;
+            data = obj.data;
+            layout = obj.layout;
+            config = obj.config;
+            frames = obj.frames;
+        }
+
+        var configChanged = false;
+        // assume that if there's a config at all, we're reacting to it too,
+        // and completely replace the previous config
+        if(config) {
+            var oldConfig = Lib.extendDeep({}, gd._context);
+            gd._context = undefined;
+            setPlotContext(gd, config);
+            configChanged = diffConfig(oldConfig, gd._context);
+        }
+
+        gd.data = data || [];
+        helpers.cleanData(gd.data, []);
+        gd.layout = layout || {};
+        helpers.cleanLayout(gd.layout);
+
+        Plots.supplyDefaults(gd);
+
+        var newFullData = gd._fullData;
+        var newFullLayout = gd._fullLayout;
+        var immutable = newFullLayout.datarevision === undefined;
+
+        var restyleFlags = diffData(gd, oldFullData, newFullData, immutable);
+        var relayoutFlags = diffLayout(gd, oldFullLayout, newFullLayout, immutable);
+
+        // clear calcdata if required
+        if(restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;
+
+        // Note: what restyle/relayout use impliedEdits and clearAxisTypes for
+        // must be handled by the user when using Plotly.react.
+
+        // fill in redraw sequence
+        var seq = [];
+
+        if(frames) {
+            gd._transitionData = {};
+            Plots.createTransitionData(gd);
+            seq.push(addFrames);
+        }
+
+        if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
+            gd._fullLayout._skipDefaults = true;
+            seq.push(Plotly.plot);
+        }
+        else {
+            for(var componentType in relayoutFlags.arrays) {
+                var indices = relayoutFlags.arrays[componentType];
+                if(indices.length) {
+                    var drawOne = Registry.getComponentMethod(componentType, 'drawOne');
+                    if(drawOne !== Lib.noop) {
+                        for(var i = 0; i < indices.length; i++) {
+                            drawOne(gd, indices[i]);
+                        }
+                    }
+                    else {
+                        var draw = Registry.getComponentMethod(componentType, 'draw');
+                        if(draw === Lib.noop) {
+                            throw new Error('cannot draw components: ' + componentType);
+                        }
+                        draw(gd);
+                    }
+                }
+            }
+
+            seq.push(Plots.previousPromises);
+            if(restyleFlags.style) seq.push(subroutines.doTraceStyle);
+            if(restyleFlags.colorbars) seq.push(subroutines.doColorBars);
+            if(relayoutFlags.legend) seq.push(subroutines.doLegend);
+            if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
+            if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
+            if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
+            if(relayoutFlags.camera) seq.push(subroutines.doCamera);
+        }
+
+        seq.push(Plots.rehover);
+
+        plotDone = Lib.syncOrAsync(seq, gd);
+        if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
+    }
+
+    return plotDone.then(function() {
+        gd.emit('plotly_react', {
+            data: data,
+            layout: layout
+        });
+
+        return gd;
+    });
+
+};
+
+function diffData(gd, oldFullData, newFullData, immutable) {
+    if(oldFullData.length !== newFullData.length) {
+        return {
+            fullReplot: true,
+            clearCalc: true
+        };
+    }
+
+    var flags = editTypes.traceFlags();
+    flags.arrays = {};
+    var i, trace;
+
+    function getTraceValObject(parts) {
+        return PlotSchema.getTraceValObject(trace, parts);
+    }
+
+    var diffOpts = {
+        getValObject: getTraceValObject,
+        flags: flags,
+        immutable: immutable,
+        gd: gd
+    };
+
+    for(i = 0; i < oldFullData.length; i++) {
+        trace = newFullData[i];
+        diffOpts.autoranged = trace.xaxis ? (
+            Plotly.Axes.getFromId(gd, trace.xaxis).autorange ||
+            Plotly.Axes.getFromId(gd, trace.yaxis).autorange
+        ) : false;
+        getDiffFlags(oldFullData[i], trace, [], diffOpts);
+    }
+
+    if(flags.calc || flags.plot || flags.calcIfAutorange) {
+        flags.fullReplot = true;
+    }
+
+    return flags;
+}
+
+function diffLayout(gd, oldFullLayout, newFullLayout, immutable) {
+    var flags = editTypes.layoutFlags();
+    flags.arrays = {};
+
+    function getLayoutValObject(parts) {
+        return PlotSchema.getLayoutValObject(newFullLayout, parts);
+    }
+
+    var diffOpts = {
+        getValObject: getLayoutValObject,
+        flags: flags,
+        immutable: immutable,
+        gd: gd
+    };
+
+    getDiffFlags(oldFullLayout, newFullLayout, [], diffOpts);
+
+    if(flags.plot || flags.calc) {
+        flags.layoutReplot = true;
+    }
+
+    return flags;
+}
+
+function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
+    var valObject, key;
+
+    var getValObject = opts.getValObject;
+    var flags = opts.flags;
+    var immutable = opts.immutable;
+    var inArray = opts.inArray;
+    var arrayIndex = opts.arrayIndex;
+    var gd = opts.gd;
+    var autoranged = opts.autoranged;
+
+    function changed() {
+        var editType = valObject.editType;
+        if(editType.indexOf('calcIfAutorange') !== -1 && (autoranged || (autoranged === undefined && (
+            refAutorange(gd, newContainer, 'x') || refAutorange(gd, newContainer, 'y')
+        )))) {
+            flags.calc = true;
+            return;
+        }
+        if(inArray && editType.indexOf('arraydraw') !== -1) {
+            Lib.pushUnique(flags.arrays[inArray], arrayIndex);
+            return;
+        }
+        editTypes.update(flags, valObject);
+    }
+
+    function valObjectCanBeDataArray(valObject) {
+        return valObject.valType === 'data_array' || valObject.arrayOk;
+    }
+
+    // for transforms: look at _fullInput rather than the transform result, which often
+    // contains generated arrays.
+    var newFullInput = newContainer._fullInput;
+    var oldFullInput = oldContainer._fullInput;
+    if(newFullInput && newFullInput !== newContainer) newContainer = newFullInput;
+    if(oldFullInput && oldFullInput !== oldContainer) oldContainer = oldFullInput;
+
+    for(key in oldContainer) {
+        // short-circuit based on previous calls or previous keys that already maximized the pathway
+        if(flags.calc) return;
+
+        var oldVal = oldContainer[key];
+        var newVal = newContainer[key];
+
+        if(key.charAt(0) === '_' || typeof oldVal === 'function' || oldVal === newVal) continue;
+
+        // FIXME: ax.tick0 and dtick get filled in during plotting, and unlike other auto values
+        // they don't make it back into the input, so newContainer won't have them.
+        // similar for axis ranges for 3D
+        // contourcarpet doesn't HAVE zmin/zmax, they're just auto-added. It needs them.
+        if(key === 'tick0' || key === 'dtick') {
+            var tickMode = newContainer.tickmode;
+            if(tickMode === 'auto' || tickMode === 'array' || !tickMode) continue;
+        }
+        if(key === 'range' && newContainer.autorange) continue;
+        if((key === 'zmin' || key === 'zmax') && newContainer.type === 'contourcarpet') continue;
+
+        var parts = outerparts.concat(key);
+        valObject = getValObject(parts);
+
+        // in case type changed, we may not even *have* a valObject.
+        if(!valObject) continue;
+
+        var valType = valObject.valType;
+        var i;
+
+        var canBeDataArray = valObjectCanBeDataArray(valObject);
+        var wasArray = Array.isArray(oldVal);
+        var nowArray = Array.isArray(newVal);
+
+        // hack for traces that modify the data in supplyDefaults, like
+        // converting 1D to 2D arrays, which will always create new objects
+        if(wasArray && nowArray) {
+            var inputKey = '_input_' + key;
+            var oldValIn = oldContainer[inputKey];
+            var newValIn = newContainer[inputKey];
+            if(Array.isArray(oldValIn) && oldValIn === newValIn) continue;
+        }
+
+        if(newVal === undefined) {
+            if(canBeDataArray && wasArray) flags.calc = true;
+            else changed();
+        }
+        else if(valObject._isLinkedToArray) {
+            var arrayEditIndices = [];
+            var extraIndices = false;
+            if(!inArray) flags.arrays[key] = arrayEditIndices;
+
+            var minLen = Math.min(oldVal.length, newVal.length);
+            var maxLen = Math.max(oldVal.length, newVal.length);
+            if(minLen !== maxLen) {
+                if(valObject.editType === 'arraydraw') {
+                    extraIndices = true;
+                }
+                else {
+                    changed();
+                    continue;
+                }
+            }
+
+            for(i = 0; i < minLen; i++) {
+                getDiffFlags(oldVal[i], newVal[i], parts.concat(i),
+                    // add array indices, but not if we're already in an array
+                    Lib.extendFlat({inArray: key, arrayIndex: i}, opts));
+            }
+
+            // put this at the end so that we know our collected array indices are sorted
+            // but the check for length changes happens up front so we can short-circuit
+            // diffing if appropriate
+            if(extraIndices) {
+                for(i = minLen; i < maxLen; i++) {
+                    arrayEditIndices.push(i);
+                }
+            }
+        }
+        else if(!valType && Lib.isPlainObject(oldVal)) {
+            getDiffFlags(oldVal, newVal, parts, opts);
+        }
+        else if(canBeDataArray) {
+            if(wasArray && nowArray) {
+
+                // don't try to diff two data arrays. If immutable we know the data changed,
+                // if not, assume it didn't and let `layout.datarevision` tell us if it did
+                if(immutable) {
+                    flags.calc = true;
+                }
+            }
+            else if(wasArray !== nowArray) {
+                flags.calc = true;
+            }
+            else changed();
+        }
+        else if(wasArray && nowArray) {
+            // info array, colorscale, 'any' - these are short, just stringify.
+            // I don't *think* that covers up any real differences post-validation, does it?
+            // otherwise we need to dive in 1 (info_array) or 2 (colorscale) levels and compare
+            // all elements.
+            if(oldVal.length !== newVal.length || String(oldVal) !== String(newVal)) {
+                changed();
+            }
+        }
+        else {
+            changed();
+        }
+    }
+
+    for(key in newContainer) {
+        if(!(key in oldContainer)) {
+            valObject = getValObject(outerparts.concat(key));
+
+            if(valObjectCanBeDataArray(valObject) && Array.isArray(newContainer[key])) {
+                flags.calc = true;
+                return;
+            }
+            else changed();
+        }
+    }
+}
+
+/*
+ * simple diff for config - for now, just treat all changes as equivalent
+ */
+function diffConfig(oldConfig, newConfig) {
+    var key;
+
+    for(key in oldConfig) {
+        var oldVal = oldConfig[key];
+        var newVal = newConfig[key];
+        if(oldVal !== newVal) {
+            if(Lib.isPlainObject(oldVal) && Lib.isPlainObject(newVal)) {
+                if(diffConfig(oldVal, newVal)) {
+                    return true;
+                }
+            }
+            else if(Array.isArray(oldVal) && Array.isArray(newVal)) {
+                if(oldVal.length !== newVal.length) {
+                    return true;
+                }
+                for(var i = 0; i < oldVal.length; i++) {
+                    if(oldVal[i] !== newVal[i]) {
+                        if(Lib.isPlainObject(oldVal[i]) && Lib.isPlainObject(newVal[i])) {
+                            if(diffConfig(oldVal[i], newVal[i])) {
+                                return true;
+                            }
+                        }
+                        else {
+                            return true;
+                        }
+                    }
+                }
+            }
+            else {
+                return true;
+            }
+        }
+    }
+}
 
 /**
  * Animate to a frame, sequence of frame, frame group, or frame definition

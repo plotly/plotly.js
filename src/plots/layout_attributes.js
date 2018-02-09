@@ -182,4 +182,18 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the default trace colors.'
     },
+    datarevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'If provided, a changed value tells `Plotly.react` that',
+            'one or more data arrays has changed. This way you can modify',
+            'arrays in-place rather than making a complete new copy for an',
+            'incremental change.',
+            'If NOT provided, `Plotly.react` assumes that data arrays are',
+            'being treated as immutable, thus any data array with a',
+            'different identity from its predecessor contains new data.'
+        ].join(' ')
+    }
 };

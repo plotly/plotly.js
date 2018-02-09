@@ -45,12 +45,17 @@ proto.handlePick = function(selection) {
         ];
         var traceCoordinate = [0, 0, 0];
 
-        if(Array.isArray(this.data.x[0])) {
+        if(!Array.isArray(this.data.x)) {
+            traceCoordinate[0] = selectIndex[0];
+        } else if(Array.isArray(this.data.x[0])) {
             traceCoordinate[0] = this.data.x[selectIndex[1]][selectIndex[0]];
         } else {
             traceCoordinate[0] = this.data.x[selectIndex[0]];
         }
-        if(Array.isArray(this.data.y[0])) {
+
+        if(!Array.isArray(this.data.y)) {
+            traceCoordinate[1] = selectIndex[1];
+        } else if(Array.isArray(this.data.y[0])) {
             traceCoordinate[1] = this.data.y[selectIndex[1]][selectIndex[0]];
         } else {
             traceCoordinate[1] = this.data.y[selectIndex[1]];
@@ -196,7 +201,7 @@ proto.update = function(data) {
         zaxis = sceneLayout.zaxis,
         scaleFactor = scene.dataScale,
         xlen = z[0].length,
-        ylen = z.length,
+        ylen = data._ylength,
         coords = [
             ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
             ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
@@ -226,7 +231,11 @@ proto.update = function(data) {
     });
 
     // coords x
-    if(Array.isArray(x[0])) {
+    if(!Array.isArray(x)) {
+        fill(xc, function(row) {
+            return xaxis.d2l(row, 0, xcalendar) * scaleFactor[0];
+        });
+    } else if(Array.isArray(x[0])) {
         fill(xc, function(row, col) {
             return xaxis.d2l(x[col][row], 0, xcalendar) * scaleFactor[0];
         });
@@ -238,7 +247,11 @@ proto.update = function(data) {
     }
 
     // coords y
-    if(Array.isArray(y[0])) {
+    if(!Array.isArray(x)) {
+        fill(yc, function(row, col) {
+            return yaxis.d2l(col, 0, xcalendar) * scaleFactor[1];
+        });
+    } else if(Array.isArray(y[0])) {
         fill(yc, function(row, col) {
             return yaxis.d2l(y[col][row], 0, ycalendar) * scaleFactor[1];
         });

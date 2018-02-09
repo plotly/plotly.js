@@ -20,7 +20,7 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'calcIfAutorange',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Determines whether or not this shape is visible.'
         ].join(' ')
@@ -30,7 +30,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],
         role: 'info',
-        editType: 'calcIfAutorange',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Specifies the shape type to be drawn.',
 
@@ -74,7 +74,7 @@ module.exports = {
     x0: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Sets the shape\'s starting x position.',
             'See `type` for more info.'
@@ -83,7 +83,7 @@ module.exports = {
     x1: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Sets the shape\'s end x position.',
             'See `type` for more info.'
@@ -103,7 +103,7 @@ module.exports = {
     y0: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Sets the shape\'s starting y position.',
             'See `type` for more info.'
@@ -112,7 +112,7 @@ module.exports = {
     y1: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Sets the shape\'s end y position.',
             'See `type` for more info.'
@@ -122,7 +122,7 @@ module.exports = {
     path: {
         valType: 'string',
         role: 'info',
-        editType: 'calcIfAutorange',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'For `type` *path* - a valid SVG path but with the pixel values',
             'replaced by data values. There are a few restrictions / quirks',
@@ -158,10 +158,10 @@ module.exports = {
     },
     line: {
         color: extendFlat({}, scatterLineAttrs.color, {editType: 'arraydraw'}),
-        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calcIfAutorange'}),
+        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calcIfAutorange+arraydraw'}),
         dash: extendFlat({}, dash, {editType: 'arraydraw'}),
         role: 'info',
-        editType: 'calcIfAutorange'
+        editType: 'calcIfAutorange+arraydraw'
     },
     fillcolor: {
         valType: 'color',

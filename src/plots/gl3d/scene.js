@@ -306,9 +306,15 @@ proto.recoverContext = function() {
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
-function coordinateBound(axis, coord, d, bounds, calendar) {
+function coordinateBound(axis, coord, len, d, bounds, calendar) {
     var x;
-    for(var i = 0; i < coord.length; ++i) {
+    if(!Array.isArray(coord)) {
+        bounds[0][d] = Math.min(bounds[0][d], 0);
+        bounds[1][d] = Math.max(bounds[1][d], len - 1);
+        return;
+    }
+
+    for(var i = 0; i < (len || coord.length); ++i) {
         if(Array.isArray(coord[i])) {
             for(var j = 0; j < coord[i].length; ++j) {
                 x = axis.d2l(coord[i][j], 0, calendar);
@@ -330,9 +336,9 @@ function coordinateBound(axis, coord, d, bounds, calendar) {
 
 function computeTraceBounds(scene, trace, bounds) {
     var sceneLayout = scene.fullSceneLayout;
-    coordinateBound(sceneLayout.xaxis, trace.x, 0, bounds, trace.xcalendar);
-    coordinateBound(sceneLayout.yaxis, trace.y, 1, bounds, trace.ycalendar);
-    coordinateBound(sceneLayout.zaxis, trace.z, 2, bounds, trace.zcalendar);
+    coordinateBound(sceneLayout.xaxis, trace.x, trace._xlength, 0, bounds, trace.xcalendar);
+    coordinateBound(sceneLayout.yaxis, trace.y, trace._ylength, 1, bounds, trace.ycalendar);
+    coordinateBound(sceneLayout.zaxis, trace.z, trace._zlength, 2, bounds, trace.zcalendar);
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
