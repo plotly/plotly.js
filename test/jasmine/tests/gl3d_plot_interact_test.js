@@ -483,7 +483,7 @@ describe('@gl Test gl3d modebar handlers', function() {
 
         buttonZoom3d.click();
         assertScenes(gd._fullLayout, 'dragmode', 'zoom');
-        expect(gd.layout.dragmode).toBe(undefined);
+        expect(gd.layout.dragmode).toBe('zoom'); // for multi-type subplots
         expect(gd._fullLayout.dragmode).toBe('zoom');
         expect(buttonTurntable.isActive()).toBe(false);
         expect(buttonZoom3d.isActive()).toBe(true);
@@ -504,8 +504,8 @@ describe('@gl Test gl3d modebar handlers', function() {
 
         buttonPan3d.click();
         assertScenes(gd._fullLayout, 'dragmode', 'pan');
-        expect(gd.layout.dragmode).toBe(undefined);
-        expect(gd._fullLayout.dragmode).toBe('zoom');
+        expect(gd.layout.dragmode).toBe('pan'); // for multi-type subplots
+        expect(gd._fullLayout.dragmode).toBe('pan');
         expect(buttonTurntable.isActive()).toBe(false);
         expect(buttonPan3d.isActive()).toBe(true);
 
@@ -525,7 +525,7 @@ describe('@gl Test gl3d modebar handlers', function() {
 
         buttonOrbit.click();
         assertScenes(gd._fullLayout, 'dragmode', 'orbit');
-        expect(gd.layout.dragmode).toBe(undefined);
+        expect(gd.layout.dragmode).toBe('zoom'); // fallback for multi-type subplots
         expect(gd._fullLayout.dragmode).toBe('zoom');
         expect(buttonTurntable.isActive()).toBe(false);
         expect(buttonOrbit.isActive()).toBe(true);
