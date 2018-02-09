@@ -29,11 +29,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    traceOut._xlength = z[0].length;
-    traceOut._ylength = z.length;
-
-    coerce('x');
+    var x = coerce('x');
     coerce('y');
+
+    traceOut._xlength = (Array.isArray(x) && Array.isArray(x[0])) ? z.length : z[0].length;
+    traceOut._ylength = z.length;
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);

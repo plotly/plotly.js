@@ -200,7 +200,7 @@ proto.update = function(data) {
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
         scaleFactor = scene.dataScale,
-        xlen = data._xlength,
+        xlen = z[0].length,
         ylen = data._ylength,
         coords = [
             ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
