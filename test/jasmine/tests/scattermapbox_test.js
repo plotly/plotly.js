@@ -632,49 +632,24 @@ describe('@noCI scattermapbox hover', function() {
 
 describe('@noCI Test plotly events on a scattermapbox plot:', function() {
     var mock = require('@mocks/mapbox_0.json');
+    var pointPos = [440, 290];
+    var nearPos = [460, 290];
+    var blankPos = [10, 10];
+    var mockCopy;
+    var gd;
 
-    var mockCopy, gd;
-
-    var blankPos = [10, 10],
-        pointPos,
-        nearPos;
-
-    function getPointData(gd) {
-        var cd = gd.calcdata,
-            mapbox = gd._fullLayout.mapbox._subplot;
-
-        return {
-            index: false,
-            distance: 20,
-            cd: cd[0],
-            trace: cd[0][0].trace,
-            xa: mapbox.xaxis,
-            ya: mapbox.yaxis
-        };
-    }
-
-    beforeAll(function(done) {
+    beforeAll(function() {
         Plotly.setPlotConfig({
             mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
         });
-
-        gd = createGraphDiv();
-        mockCopy = Lib.extendDeep({}, mock);
-
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-            var bb = gd._fullLayout.mapbox._subplot.div.getBoundingClientRect(),
-                xval = 10,
-                yval = 10,
-                point = ScatterMapbox.hoverPoints(getPointData(gd), xval, yval)[0];
-            pointPos = [Math.floor(bb.left + (point.x0 + point.x1) / 2),
-                Math.floor(bb.top + (point.y0 + point.y1) / 2)];
-            nearPos = [pointPos[0] - 30, pointPos[1] - 30];
-        }).then(destroyGraphDiv).then(done);
     });
 
-    beforeEach(function() {
+    beforeEach(function(done) {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.width = 800;
+        mockCopy.layout.height = 500;
+        Plotly.plot(gd, mockCopy).then(done);
     });
 
     afterEach(destroyGraphDiv);
@@ -682,9 +657,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
     describe('click events', function() {
         var futureData;
 
-        beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
-
+        beforeEach(function() {
             futureData = undefined;
             gd.on('plotly_click', function(data) {
                 futureData = data;
@@ -720,16 +693,15 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
 
     describe('modified click events', function() {
         var clickOpts = {
-                altKey: true,
-                ctrlKey: true,
-                metaKey: true,
-                shiftKey: true
-            },
-            futureData;
+            altKey: true,
+            ctrlKey: true,
+            metaKey: true,
+            shiftKey: true
+        };
 
-        beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        var futureData;
 
+        beforeEach(function() {
             futureData = undefined;
             gd.on('plotly_click', function(data) {
                 futureData = data;
@@ -774,9 +746,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
     describe('hover events', function() {
         var futureData;
 
-        beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
-
+        beforeEach(function() {
             gd.on('plotly_hover', function(data) {
                 futureData = data;
             });
@@ -786,8 +756,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
             mouseEvent('mousemove', blankPos[0], blankPos[1]);
             mouseEvent('mousemove', pointPos[0], pointPos[1]);
 
-            var pt = futureData.points[0],
-                evt = futureData.event;
+            var pt = futureData.points[0];
+            var evt = futureData.event;
 
             expect(Object.keys(pt)).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
@@ -808,9 +778,7 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
     describe('unhover events', function() {
         var futureData;
 
-        beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
-
+        beforeEach(function() {
             gd.on('plotly_unhover', function(data) {
                 futureData = data;
             });
@@ -818,8 +786,8 @@ describe('@noCI Test plotly events on a scattermapbox plot:', function() {
 
         it('should contain the correct fields', function(done) {
             move(pointPos[0], pointPos[1], nearPos[0], nearPos[1], HOVERMINTIME + 10).then(function() {
-                var pt = futureData.points[0],
-                    evt = futureData.event;
+                var pt = futureData.points[0];
+                var evt = futureData.event;
 
                 expect(Object.keys(pt)).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
