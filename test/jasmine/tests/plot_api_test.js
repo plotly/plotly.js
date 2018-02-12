@@ -2577,6 +2577,7 @@ describe('Test plot api', function() {
             ['axes_enumerated_ticks', require('@mocks/axes_enumerated_ticks.json')],
             ['axes_visible-false', require('@mocks/axes_visible-false.json')],
             ['bar_and_histogram', require('@mocks/bar_and_histogram.json')],
+            ['basic_error_bar', require('@mocks/basic_error_bar.json')],
             ['binding', require('@mocks/binding.json')],
             ['cheater_smooth', require('@mocks/cheater_smooth.json')],
             ['finance_style', require('@mocks/finance_style.json')],

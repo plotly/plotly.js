@@ -76,6 +76,7 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
             var path;
 
+            var yerror = errorbar.select('path.yerror');
             if(yObj.visible && isNumeric(coords.x) &&
                     isNumeric(coords.yh) &&
                     isNumeric(coords.ys)) {
@@ -87,8 +88,6 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
 
                 if(!coords.noYS) path += 'm-' + yw + ',0h' + (2 * yw); // shoe
-
-                var yerror = errorbar.select('path.yerror');
 
                 isNew = !yerror.size();
 
@@ -105,7 +104,9 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
                 yerror.attr('d', path);
             }
+            else yerror.remove();
 
+            var xerror = errorbar.select('path.xerror');
             if(xObj.visible && isNumeric(coords.y) &&
                     isNumeric(coords.xh) &&
                     isNumeric(coords.xs)) {
@@ -116,8 +117,6 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
                     'm0,-' + xw + 'H' + coords.xs; // bar
 
                 if(!coords.noXS) path += 'm0,-' + xw + 'v' + (2 * xw); // shoe
-
-                var xerror = errorbar.select('path.xerror');
 
                 isNew = !xerror.size();
 
@@ -134,6 +133,7 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
                 xerror.attr('d', path);
             }
+            else xerror.remove();
         });
     });
 };
