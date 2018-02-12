@@ -113,7 +113,11 @@ describe('scattermapbox defaults', function() {
 });
 
 describe('scattermapbox convert', function() {
-    'use strict';
+    var base = {
+        type: 'scattermapbox',
+        lon: [10, '20', 30, 20, null, 20, 10],
+        lat: [20, 20, '10', null, 10, 10, 20]
+    };
 
     function _convert(trace) {
         var gd = { data: [trace] };
@@ -126,11 +130,13 @@ describe('scattermapbox convert', function() {
         return convert(calcTrace);
     }
 
-    var base = {
-        type: 'scattermapbox',
-        lon: [10, '20', 30, 20, null, 20, 10],
-        lat: [20, 20, '10', null, 10, 10, 20]
-    };
+    function assertVisibility(opts, expectations) {
+        var actual = ['fill', 'line', 'circle', 'symbol'].map(function(l) {
+            return opts[l].layout.visibility;
+        });
+
+        expect(actual).toEqual(expectations, 'layer visibility');
+    }
 
     it('should generate correct output for markers + circle bubbles traces', function() {
         var opts = _convert(Lib.extendFlat({}, base, {
@@ -145,16 +151,14 @@ describe('scattermapbox convert', function() {
         assertVisibility(opts, ['none', 'none', 'visible', 'none']);
 
         expect(opts.circle.paint['circle-color']).toEqual({
-            property: 'circle-color',
-            stops: [
-                [0, 'rgb(220, 220, 220)'], [1, '#444'], [2, 'rgb(178, 10, 28)']
-            ]
-        }, 'circle-color stops');
+            property: 'mcc',
+            type: 'identity'
+        }, 'circle-color paint');
 
         expect(opts.circle.paint['circle-radius']).toEqual({
-            property: 'circle-radius',
-            stops: [ [0, 5], [1, 10], [2, 0] ]
-        }, 'circle-radius stops');
+            property: 'mrc',
+            type: 'identity'
+        }, 'circle-radius paint');
 
         expect(opts.circle.paint['circle-opacity']).toBe(0.7, 'circle-opacity');
 
@@ -164,11 +168,11 @@ describe('scattermapbox convert', function() {
 
         // N.B repeated values have same geojson props
         expect(circleProps).toEqual([
-            { 'circle-color': 0, 'circle-radius': 0 },
-            { 'circle-color': 1, 'circle-radius': 1 },
-            { 'circle-color': 2, 'circle-radius': 2 },
-            { 'circle-color': 1, 'circle-radius': 2 },
-            { 'circle-color': 1, 'circle-radius': 2 }
+            { 'mcc': 'rgb(220, 220, 220)', 'mrc': 5 },
+            { 'mcc': '#444', 'mrc': 10 },
+            { 'mcc': 'rgb(178, 10, 28)', 'mrc': 0 },
+            { 'mcc': '#444', 'mrc': 0 },
+            { 'mcc': '#444', 'mrc': 0 }
         ], 'geojson feature properties');
     });
 
@@ -189,23 +193,22 @@ describe('scattermapbox convert', function() {
         expect(opts.circle.paint['circle-radius']).toBe(5, 'circle-radius');
 
         expect(opts.circle.paint['circle-opacity']).toEqual({
-            property: 'circle-opacity',
-            stops: [ [0, 0.5], [1, 0], [2, 0.25], [6, 0.4] ]
-        }, 'circle-opacity stops');
+            property: 'mo',
+            type: 'identity'
+        }, 'circle-opacity paint');
 
         var circleProps = opts.circle.geojson.features.map(function(f) {
             return f.properties;
         });
 
-
         expect(circleProps).toEqual([
-            { 'circle-opacity': 0 },
-            { 'circle-opacity': 1 },
-            { 'circle-opacity': 2 },
+            { 'mo': 0.5 },
+            { 'mo': 0 },
+            { 'mo': 0.25 },
             // lat === null
             // lon === null
-            { 'circle-opacity': 1 },
-            { 'circle-opacity': 6 },
+            { 'mo': 0 },
+            { 'mo': 0.4 },
         ], 'geojson feature properties');
     });
 
@@ -222,19 +225,19 @@ describe('scattermapbox convert', function() {
             patch: {
                 selectedpoints: [1, 2]
             },
-            expected: {stops: [[0, 0.2], [1, 1]], props: [0, 1, 1]}
+            expected: [0.2, 1, 1]
         }, {
             patch: {
                 opacity: 0.5,
                 selectedpoints: [1, 2]
             },
-            expected: {stops: [[0, 0.1], [1, 0.5]], props: [0, 1, 1]}
+            expected: [0.1, 0.5, 0.5]
         }, {
             patch: {
                 marker: {opacity: 0.6},
                 selectedpoints: [1, 2]
             },
-            expected: {stops: [[0, 0.12], [1, 0.6]], props: [0, 1, 1]}
+            expected: [0.12, 0.6, 0.6]
         }, {
             patch: {
                 marker: {
@@ -242,27 +245,23 @@ describe('scattermapbox convert', function() {
                 },
                 selectedpoints: [0, 2]
             },
-            expected: {stops: [[0, 0.5], [1, 0.2], [2, 0.6]], props: [0, 1, 2]}
+            expected: [0.5, 0.2, 0.6]
         }, {
             patch: {
                 marker: {opacity: [2, null, -0.6]},
                 selectedpoints: [0, 1, 2]
             },
-            expected: {stops: [[0, 1], [1, 0]], props: [0, 1, 1]}
+            expected: [1, 0, 0]
         }];
 
         specs.forEach(function(s, i) {
             var msg0 = '- case ' + i + ' ';
             var opts = _convert(Lib.extendDeep({}, _base, s.patch));
 
-            expect(opts.circle.paint['circle-opacity'].stops)
-                .toEqual(s.expected.stops, msg0 + 'stops');
-
             var props = opts.circle.geojson.features.map(function(f) {
-                return f.properties['circle-opacity'];
+                return f.properties.mo;
             });
-
-            expect(props).toEqual(s.expected.props, msg0 + 'props');
+            expect(props).toEqual(s.expected, msg0 + 'props');
         });
     });
 
@@ -388,14 +387,16 @@ describe('scattermapbox convert', function() {
             marker: { size: ['5', '49', '5', ''] }
         }));
 
-        expect(opts.circle.paint['circle-radius'].stops)
-            .toBeCloseTo2DArray([[0, 2.5], [1, 24.5]], 'no replicate stops');
+        expect(opts.circle.paint['circle-radius']).toEqual({
+            property: 'mrc',
+            type: 'identity'
+        }, 'circle-radius paint');
 
         var radii = opts.circle.geojson.features.map(function(f) {
-            return f.properties['circle-radius'];
+            return f.properties.mrc;
         });
 
-        expect(radii).toBeCloseToArray([0, 1, 0], 'link features to correct stops');
+        expect(radii).toBeCloseToArray([2.5, 24.5, 2.5], 'circle radii');
     });
 
     it('should generate correct output for traces with only blank points', function() {
@@ -413,14 +414,6 @@ describe('scattermapbox convert', function() {
         expect(opts.line.geojson.coordinates).toEqual([], 'line coords');
         expect(opts.fill.geojson.coordinates).toEqual([], 'fill coords');
     });
-
-    function assertVisibility(opts, expectations) {
-        var actual = ['fill', 'line', 'circle', 'symbol'].map(function(l) {
-            return opts[l].layout.visibility;
-        });
-
-        expect(actual).toEqual(expectations, 'layer visibility');
-    }
 });
 
 describe('@noCI scattermapbox hover', function() {
