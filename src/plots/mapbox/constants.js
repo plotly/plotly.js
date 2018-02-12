@@ -32,5 +32,11 @@ module.exports = {
         'More info here: https://www.mapbox.com/help/define-access-token/'
     ].join('\n'),
 
-    mapOnErrorMsg: 'Mapbox error.'
+    mapOnErrorMsg: 'Mapbox error.',
+
+    // a subset of node_modules/mapbox-gl/dist/mapbox-gl.css
+    styleRules: {
+        map: 'overflow:hidden;position:relative;',
+        'missing-css': 'display:none',
+    }
 };
