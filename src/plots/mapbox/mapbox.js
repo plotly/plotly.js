@@ -50,9 +50,7 @@ function Mapbox(opts) {
 var proto = Mapbox.prototype;
 
 module.exports = function createMapbox(opts) {
-    var mapbox = new Mapbox(opts);
-
-    return mapbox;
+    return new Mapbox(opts);
 };
 
 proto.plot = function(calcData, fullLayout, promises) {
@@ -76,8 +74,7 @@ proto.plot = function(calcData, fullLayout, promises) {
         promise = new Promise(function(resolve, reject) {
             self.createMap(calcData, fullLayout, resolve, reject);
         });
-    }
-    else {
+    } else {
         promise = new Promise(function(resolve, reject) {
             self.updateMap(calcData, fullLayout, resolve, reject);
         });
@@ -163,7 +160,6 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         var bb = self.div.getBoundingClientRect();
 
         // some hackery to get Fx.hover to work
-
         evt.clientX = evt.point.x + bb.left;
         evt.clientY = evt.point.y + bb.top;
 
@@ -211,8 +207,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 };
 
 proto.updateMap = function(calcData, fullLayout, resolve, reject) {
-    var self = this,
-        map = self.map;
+    var self = this;
+    var map = self.map;
 
     self.rejectOnError(reject);
 
@@ -230,8 +226,7 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
             self.updateLayout(fullLayout);
             self.resolveOnRender(resolve);
         });
-    }
-    else {
+    } else {
         self.updateData(calcData);
         self.updateLayout(fullLayout);
         self.resolveOnRender(resolve);
@@ -240,7 +235,6 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
 
 proto.updateData = function(calcData) {
     var traceHash = this.traceHash;
-
     var traceObj, trace, i, j;
 
     // update or create trace objects
@@ -250,8 +244,9 @@ proto.updateData = function(calcData) {
         trace = calcTrace[0].trace;
         traceObj = traceHash[trace.uid];
 
-        if(traceObj) traceObj.update(calcTrace);
-        else if(trace._module) {
+        if(traceObj) {
+            traceObj.update(calcTrace);
+        } else if(trace._module) {
             traceHash[trace.uid] = trace._module.plot(this, calcTrace);
         }
     }
@@ -264,7 +259,6 @@ proto.updateData = function(calcData) {
 
         for(j = 0; j < calcData.length; j++) {
             trace = calcData[j][0].trace;
-
             if(id === trace.uid) continue id_loop;
         }
 
@@ -319,19 +313,15 @@ proto.createFramework = function(fullLayout) {
     var self = this;
 
     var div = self.div = document.createElement('div');
-
     div.id = self.uid;
     div.style.position = 'absolute';
-
     self.container.appendChild(div);
 
     // create mock x/y axes for hover routine
-
     self.xaxis = {
         _id: 'x',
         c2p: function(v) { return self.project(v).x; }
     };
-
     self.yaxis = {
         _id: 'y',
         c2p: function(v) { return self.project(v).y; }
@@ -398,13 +388,10 @@ proto.updateFx = function(fullLayout) {
 };
 
 proto.updateFramework = function(fullLayout) {
-    var domain = fullLayout[this.id].domain,
-        size = fullLayout._size;
+    var domain = fullLayout[this.id].domain;
+    var size = fullLayout._size;
 
     var style = this.div.style;
-
-    // TODO Is this correct? It seems to get the map zoom level wrong?
-
     style.width = size.w * (domain.x[1] - domain.x[0]) + 'px';
     style.height = size.h * (domain.y[1] - domain.y[0]) + 'px';
     style.left = size.l + domain.x[0] * size.w + 'px';
@@ -418,10 +405,10 @@ proto.updateFramework = function(fullLayout) {
 };
 
 proto.updateLayers = function() {
-    var opts = this.opts,
-        layers = opts.layers,
-        layerList = this.layerList,
-        i;
+    var opts = this.opts;
+    var layers = opts.layers;
+    var layerList = this.layerList;
+    var i;
 
     // if the layer arrays don't match,
     // don't try to be smart,
@@ -437,8 +424,7 @@ proto.updateLayers = function() {
         for(i = 0; i < layers.length; i++) {
             layerList.push(createMapboxLayer(this, i, layers[i]));
         }
-    }
-    else {
+    } else {
         for(i = 0; i < layers.length; i++) {
             layerList[i].update(layers[i]);
         }
@@ -487,21 +473,19 @@ proto.getView = function() {
 };
 
 function getStyleObj(val) {
-    var styleValues = layoutAttributes.style.values,
-        styleDflt = layoutAttributes.style.dflt,
-        styleObj = {};
+    var styleValues = layoutAttributes.style.values;
+    var styleDflt = layoutAttributes.style.dflt;
+    var styleObj = {};
 
     if(Lib.isPlainObject(val)) {
         styleObj.id = val.id;
         styleObj.style = val;
-    }
-    else if(typeof val === 'string') {
+    } else if(typeof val === 'string') {
         styleObj.id = val;
         styleObj.style = (styleValues.indexOf(val) !== -1) ?
              convertStyleVal(val) :
              val;
-    }
-    else {
+    } else {
         styleObj.id = styleDflt;
         styleObj.style = convertStyleVal(styleDflt);
     }

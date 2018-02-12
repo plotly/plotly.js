@@ -187,19 +187,18 @@ function convertOpts(opts) {
 }
 
 function convertSourceOpts(opts) {
-    var sourceType = opts.sourcetype,
-        source = opts.source,
-        sourceOpts = { type: sourceType },
-        isSourceAString = (typeof source === 'string'),
-        field;
+    var sourceType = opts.sourcetype;
+    var source = opts.source;
+    var sourceOpts = {type: sourceType};
+    var field;
 
-    if(sourceType === 'geojson') field = 'data';
-    else if(sourceType === 'vector') {
-        field = isSourceAString ? 'url' : 'tiles';
+    if(sourceType === 'geojson') {
+        field = 'data';
+    } else if(sourceType === 'vector') {
+        field = typeof source === 'string' ? 'url' : 'tiles';
     }
 
     sourceOpts[field] = source;
-
     return sourceOpts;
 }
 
