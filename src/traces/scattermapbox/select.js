@@ -6,9 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
+var Lib = require('../../lib');
 var subtypes = require('../scatter/subtypes');
 
 module.exports = function selectPoints(searchInfo, polygon) {
@@ -17,8 +17,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     var ya = searchInfo.yaxis;
     var selection = [];
     var trace = cd[0].trace;
-
-    var di, lonlat, x, y, i;
+    var i;
 
     if(!subtypes.hasMarkers(trace)) return [];
 
@@ -28,12 +27,12 @@ module.exports = function selectPoints(searchInfo, polygon) {
         }
     } else {
         for(i = 0; i < cd.length; i++) {
-            di = cd[i];
-            lonlat = di.lonlat;
-            x = xa.c2p(lonlat);
-            y = ya.c2p(lonlat);
+            var di = cd[i];
+            var lonlat = di.lonlat;
+            var lonlat2 = [Lib.wrap180(lonlat[0]), lonlat[1]];
+            var xy = [xa.c2p(lonlat2), ya.c2p(lonlat2)];
 
-            if(polygon.contains([x, y])) {
+            if(polygon.contains(xy)) {
                 selection.push({
                     pointNumber: i,
                     lon: lonlat[0],
