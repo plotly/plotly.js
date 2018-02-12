@@ -53,6 +53,10 @@ exports.plot = function plotMapbox(gd) {
     var calcData = gd.calcdata;
     var mapboxIds = fullLayout._subplots[MAPBOX];
 
+    if(mapboxgl.version !== constants.requiredVersion) {
+        throw new Error(constants.wrongVersionErrorMsg);
+    }
+
     var accessToken = findAccessToken(gd, mapboxIds);
     mapboxgl.accessToken = accessToken;
 
