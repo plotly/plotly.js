@@ -458,38 +458,11 @@ proto.toImage = function() {
     return this.map.getCanvas().toDataURL();
 };
 
-// convenience wrapper to create blank GeoJSON sources
-// and avoid 'invalid GeoJSON' errors
-proto.initSource = function(idSource) {
-    var blank = {
-        type: 'geojson',
-        data: {
-            type: 'Feature',
-            geometry: {
-                type: 'Point',
-                coordinates: []
-            }
-        }
-    };
-
-    return this.map.addSource(idSource, blank);
-};
-
-// convenience wrapper to set data of GeoJSON sources
-proto.setSourceData = function(idSource, data) {
-    this.map.getSource(idSource).setData(data);
-};
-
 // convenience wrapper to create set multiple layer
 // 'layout' or 'paint options at once.
 proto.setOptions = function(id, methodName, opts) {
-    var map = this.map,
-        keys = Object.keys(opts);
-
-    for(var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-
-        map[methodName](id, key, opts[key]);
+    for(var k in opts) {
+        this.map[methodName](id, k, opts[k]);
     }
 };
 
