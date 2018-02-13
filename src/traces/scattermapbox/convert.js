@@ -189,7 +189,7 @@ function makeCircleOpts(calcTrace) {
         if(colorFn) props.mcc = calcPt.mcc = colorFn(calcPt.mc);
         if(sizeFn) props.mrc = calcPt.mrc = sizeFn(calcPt.ms);
         if(opacityFn) props.mo = opacityFn(calcPt.mo);
-        if(selectedpoints) props.selected = calcPt.selected;
+        if(selectedpoints) props.selected = calcPt.selected || 0;
 
         features.push({
             type: 'Feature',
@@ -207,15 +207,18 @@ function makeCircleOpts(calcTrace) {
 
             var mo2 = fns.opacityFn(d);
             if(mo2 !== undefined) d.mo = addTraceOpacity(mo2);
+            else if(d.mo === undefined) d.mo = addTraceOpacity(marker.opacity);
 
             if(fns.colorFn) {
                 var mc2 = fns.colorFn(d);
                 if(mc2) d.mcc = mc2;
+                else if(!d.mcc) d.mcc = marker.color;
             }
 
             if(fns.sizeFn) {
                 var mrc2 = fns.sizeFn(d);
                 if(mrc2 !== undefined) d.mrc = mrc2;
+                else if(d.mrc === undefined) d.mrc = size2radius(marker.size);
             }
         }
     }

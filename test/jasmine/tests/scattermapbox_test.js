@@ -212,7 +212,7 @@ describe('scattermapbox convert', function() {
         ], 'geojson feature properties');
     });
 
-    it('should fill circle-opacity correctly during selections', function() {
+    it('should fill circle props correctly during selections', function() {
         var _base = {
             type: 'scattermapbox',
             mode: 'markers',
@@ -222,46 +222,179 @@ describe('scattermapbox convert', function() {
         };
 
         var specs = [{
+            msg: 'base case',
             patch: {
                 selectedpoints: [1, 2]
             },
-            expected: [0.2, 1, 1]
+            expected: {
+                opacity: [0.2, 1, 1]
+            }
         }, {
+            msg: 'with set trace opacity',
             patch: {
                 opacity: 0.5,
                 selectedpoints: [1, 2]
             },
-            expected: [0.1, 0.5, 0.5]
+            expected: {
+                opacity: [0.1, 0.5, 0.5]
+            }
         }, {
+            msg: 'with set scalar marker.opacity',
             patch: {
                 marker: {opacity: 0.6},
                 selectedpoints: [1, 2]
             },
-            expected: [0.12, 0.6, 0.6]
+            expected: {
+                opacity: [0.12, 0.6, 0.6]
+            }
         }, {
+            msg: 'width set array marker.opacity',
             patch: {
                 marker: {
                     opacity: [0.5, 1, 0.6],
                 },
                 selectedpoints: [0, 2]
             },
-            expected: [0.5, 0.2, 0.6]
+            expected: {
+                opacity: [0.5, 0.2, 0.6]
+            }
         }, {
+            msg: 'with set array marker.opacity including invalid items',
             patch: {
                 marker: {opacity: [2, null, -0.6]},
                 selectedpoints: [0, 1, 2]
             },
-            expected: [1, 0, 0]
+            expected: {
+                opacity: [1, 0, 0]
+            }
+        }, {
+            msg: 'with set selected & unselected styles',
+            patch: {
+                selected: {
+                    marker: {
+                        opacity: 1,
+                        color: 'green',
+                        size: 20
+                    }
+                },
+                unselected: {
+                    marker: {
+                        opacity: 0,
+                        color: 'red',
+                        size: 5
+                    }
+                },
+                selectedpoints: [0, 2]
+            },
+            expected: {
+                opacity: [1, 0, 1],
+                color: ['green', 'red', 'green'],
+                size: [10, 2.5, 10]
+            }
+        }, {
+            msg: 'with set selected styles only',
+            patch: {
+                selected: {
+                    marker: {
+                        opacity: 1,
+                        color: 'green',
+                        size: 20
+                    }
+                },
+                selectedpoints: [0, 2]
+            },
+            expected: {
+                opacity: [1, 0.2, 1],
+                color: ['green', '#1f77b4', 'green'],
+                size: [10, 3, 10]
+            }
+        }, {
+            msg: 'with set selected styles only + array items',
+            patch: {
+                marker: {
+                    opacity: [0.5, 0.6, 0.7],
+                    color: ['blue', 'yellow', 'cyan'],
+                    size: [50, 60, 70]
+                },
+                selected: {
+                    marker: {
+                        opacity: 1,
+                        color: 'green',
+                        size: 20
+                    }
+                },
+                selectedpoints: [0, 2]
+            },
+            expected: {
+                opacity: [1, 0.12, 1],
+                color: ['green', 'yellow', 'green'],
+                size: [10, 30, 10]
+            }
+        }, {
+            msg: 'with set unselected styles only',
+            patch: {
+                unselected: {
+                    marker: {
+                        opacity: 0,
+                        color: 'red',
+                        size: 5
+                    }
+                },
+                selectedpoints: [0, 2]
+            },
+            expected: {
+                opacity: [1, 0, 1],
+                color: ['#1f77b4', 'red', '#1f77b4'],
+                size: [3, 2.5, 3]
+
+            }
+        }, {
+            msg: 'with set unselected styles only + array items',
+            patch: {
+                marker: {
+                    opacity: [0.5, 0.6, 0.7],
+                    color: ['blue', 'yellow', 'cyan'],
+                    size: [50, 60, 70]
+                },
+                unselected: {
+                    marker: {
+                        opacity: 0,
+                        color: 'red',
+                        size: 5
+                    }
+                },
+                selectedpoints: [0, 2]
+            },
+            expected: {
+                opacity: [0.5, 0, 0.7],
+                color: ['blue', 'red', 'cyan'],
+                size: [25, 2.5, 35]
+            }
         }];
 
         specs.forEach(function(s, i) {
-            var msg0 = '- case ' + i + ' ';
+            var msg0 = s.msg + ' - case ' + i + '- ';
             var opts = _convert(Lib.extendDeep({}, _base, s.patch));
+            var features = opts.circle.geojson.features;
 
-            var props = opts.circle.geojson.features.map(function(f) {
-                return f.properties.mo;
-            });
-            expect(props).toEqual(s.expected, msg0 + 'props');
+            function _assert(kProp, kExp) {
+                var actual = features.map(function(f) { return f.properties[kProp]; });
+                var expected = s.expected[kExp];
+                var msg = msg0 + ' marker.' + kExp;
+
+                if(Array.isArray(expected)) {
+                    expect(actual).toEqual(expected, msg);
+                } else {
+                    actual.forEach(function(a) {
+                        expect(a).toBe(undefined, msg);
+                    });
+                }
+            }
+
+            _assert('mo', 'opacity');
+            _assert('mcc', 'color');
+            // N.B. sizes in props should be half of the input values
+            _assert('mrc', 'size');
         });
     });
 
