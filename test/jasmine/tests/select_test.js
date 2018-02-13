@@ -530,6 +530,28 @@ describe('Test select box and lasso in general:', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('scroll zoom should clear selection regions', function(done) {
+        var gd = createGraphDiv();
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.dragmode = 'select';
+        mockCopy.config = {scrollZoom: true};
+
+        Plotly.plot(gd, mockCopy).then(function() {
+            resetEvents(gd);
+            drag(selectPath);
+            return selectedPromise;
+        })
+        .then(function() {
+            mouseEvent('mousemove', selectPath[0][0], selectPath[0][1]);
+            mouseEvent('scroll', selectPath[0][0], selectPath[0][1], {deltaX: 0, deltaY: -20});
+        })
+        .then(function() {
+            assertSelectionNodes(0, 0);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('Test select box and lasso per trace:', function() {
