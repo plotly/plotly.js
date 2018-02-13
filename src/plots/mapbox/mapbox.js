@@ -204,6 +204,12 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
         gd.emit('plotly_doubleclick', null);
     });
+
+    // define clear select on map creation, to keep one ref per map,
+    // so that map.on / map.off in updateFx works as expected
+    self.clearSelect = function() {
+        gd._fullLayout._zoomlayer.selectAll('.select-outline').remove();
+    };
 };
 
 proto.updateMap = function(calcData, fullLayout, resolve, reject) {
@@ -362,6 +368,7 @@ proto.updateFx = function(fullLayout) {
 
     if(dragMode === 'select' || dragMode === 'lasso') {
         map.dragPan.disable();
+        map.on('zoomstart', self.clearSelect);
 
         var dragOptions = {
             element: self.div,
@@ -383,6 +390,7 @@ proto.updateFx = function(fullLayout) {
         dragElement.init(dragOptions);
     } else {
         map.dragPan.enable();
+        map.off('zoomstart', self.clearSelect);
         self.div.onmousedown = null;
     }
 };
