@@ -389,6 +389,10 @@ axes.saveRangeInitial = function(gd, overwrite) {
             ax._rangeInitial = ax.range.slice();
             hasOneAxisChanged = true;
         }
+        // store the initial range for the rangeslider if we zoom on oppaxis
+        if((isNew && ax.fixedrange === false) || (overwrite && hasChanged)) {
+            ax._rangeBeforeZoom = ax.range.slice();
+        }
     }
 
     return hasOneAxisChanged;

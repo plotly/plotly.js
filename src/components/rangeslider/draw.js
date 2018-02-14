@@ -136,13 +136,23 @@ module.exports = function(gd) {
 
         opts._rl = [range0, range1];
 
+        if(oppAxisOpts.fixedrange === false) {
+            var range0OppAxis = oppAxisOpts.r2l(oppAxisOpts._rangeBeforeZoom[0]),
+                range1OppAxis = oppAxisOpts.r2l(oppAxisOpts._rangeBeforeZoom[1]),
+                distOppAxis = range1OppAxis - range0OppAxis;
+
+            opts.d2pOppAxis = function(v) {
+                return (v - range0OppAxis) / distOppAxis * opts._height;
+            };
+        }
+
         // update inner nodes
 
         rangeSlider
             .call(drawBg, gd, axisOpts, opts)
             .call(addClipPath, gd, axisOpts, opts)
             .call(drawRangePlot, gd, axisOpts, opts)
-            .call(drawMasks, gd, axisOpts, opts)
+            .call(drawMasks, gd, axisOpts, opts, oppAxisOpts)
             .call(drawSlideBox, gd, axisOpts, opts)
             .call(drawGrabbers, gd, axisOpts, opts);
 
@@ -150,7 +160,7 @@ module.exports = function(gd) {
         setupDragElement(rangeSlider, gd, axisOpts, opts);
 
         // update current range
-        setPixelRange(rangeSlider, gd, axisOpts, opts);
+        setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts);
 
         // update margins
 
@@ -266,11 +276,15 @@ function setDataRange(rangeSlider, gd, axisOpts, opts) {
     });
 }
 
-function setPixelRange(rangeSlider, gd, axisOpts, opts) {
+function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts) {
     var hw2 = constants.handleWidth / 2;
 
     function clamp(v) {
         return Lib.constrain(v, 0, opts._width);
+    }
+
+    function clampOppAxis(v) {
+        return Lib.constrain(v, 0, opts._height);
     }
 
     function clampHandle(v) {
@@ -290,6 +304,26 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts) {
     rangeSlider.select('rect.' + constants.maskMaxClassName)
         .attr('x', pixelMax)
         .attr('width', opts._width - pixelMax);
+
+    if(oppAxisOpts.fixedrange === false) {
+        var pixelMinOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[1])),
+            pixelMaxOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[0]));
+
+        rangeSlider.select('rect.' + constants.maskMinOppAxisClassName)
+            .attr('x', pixelMin)
+            .attr('height', pixelMinOppAxis)
+            .attr('width', pixelMax - pixelMin);
+
+        rangeSlider.select('rect.' + constants.maskMaxOppAxisClassName)
+            .attr('x', pixelMin)
+            .attr('y', pixelMaxOppAxis)
+            .attr('height', opts._height - pixelMaxOppAxis)
+            .attr('width', pixelMax - pixelMin);
+
+        rangeSlider.select('rect.' + constants.slideBoxClassName)
+            .attr('y', pixelMinOppAxis)
+            .attr('height', pixelMaxOppAxis - pixelMinOppAxis);
+    }
 
     // add offset for crispier corners
     // https://github.com/plotly/plotly.js/pull/1409
@@ -394,7 +428,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         mockFigure.layout[oppAxisName] = {
             type: oppAxisOpts.type,
             domain: [0, 1],
-            range: oppAxisOpts.range.slice(),
+            range: oppAxisOpts._rangeBeforeZoom ? oppAxisOpts._rangeBeforeZoom.slice() : oppAxisOpts.range.slice(),
             calendar: oppAxisOpts.calendar
         };
 
@@ -435,7 +469,7 @@ function filterRangePlotCalcData(calcData, subplotId) {
     return out;
 }
 
-function drawMasks(rangeSlider, gd, axisOpts, opts) {
+function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisOpts) {
     var maskMin = rangeSlider.selectAll('rect.' + constants.maskMinClassName)
         .data([0]);
 
@@ -459,6 +493,34 @@ function drawMasks(rangeSlider, gd, axisOpts, opts) {
     maskMax
         .attr('height', opts._height)
         .call(Color.fill, constants.maskColor);
+
+    // masks used for oppAxis zoom
+    if(oppAxisOpts.fixedrange === false) {
+        var maskMinOppAxis = rangeSlider.selectAll('rect.' + constants.maskMinOppAxisClassName)
+            .data([0]);
+
+        maskMinOppAxis.enter().append('rect')
+            .classed(constants.maskMinOppAxisClassName, true)
+            .attr('y', 0)
+            .attr('shape-rendering', 'crispEdges');
+
+        maskMinOppAxis
+            .attr('width', opts._width)
+            .call(Color.fill, constants.maskOppColor);
+
+        var maskMaxOppAxis = rangeSlider.selectAll('rect.' + constants.maskMaxOppAxisClassName)
+            .data([0]);
+
+        maskMaxOppAxis.enter().append('rect')
+            .classed(constants.maskMaxOppAxisClassName, true)
+            .attr('y', 0)
+            .attr('shape-rendering', 'crispEdges');
+
+        maskMaxOppAxis
+            .attr('width', opts._width)
+            .style('border-top', constants.maskOppBorder)
+            .call(Color.fill, constants.maskOppColor);
+    }
 }
 
 function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
