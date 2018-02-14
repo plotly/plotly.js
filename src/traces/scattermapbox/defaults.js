@@ -39,7 +39,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true, noSelect: true});
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true});
 
         // array marker.size and marker.color are only supported with circles
 
