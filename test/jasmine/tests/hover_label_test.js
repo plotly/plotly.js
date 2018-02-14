@@ -1309,21 +1309,20 @@ describe('hover on fill', function() {
 
     function assertLabelsCorrect(mousePos, labelPos, labelText) {
         return new Promise(function(resolve) {
+            Lib.clearThrottle();
             mouseEvent('mousemove', mousePos[0], mousePos[1]);
 
-            setTimeout(function() {
-                var hoverText = d3.selectAll('g.hovertext');
-                expect(hoverText.size()).toEqual(1);
-                expect(hoverText.text()).toEqual(labelText);
+            var hoverText = d3.selectAll('g.hovertext');
+            expect(hoverText.size()).toEqual(1);
+            expect(hoverText.text()).toEqual(labelText);
 
-                var transformParts = hoverText.attr('transform').split('(');
-                expect(transformParts[0]).toEqual('translate');
-                var transformCoords = transformParts[1].split(')')[0].split(',');
-                expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1.2, labelText + ':x');
-                expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1.2, labelText + ':y');
+            var transformParts = hoverText.attr('transform').split('(');
+            expect(transformParts[0]).toEqual('translate');
+            var transformCoords = transformParts[1].split(')')[0].split(',');
+            expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1.2, labelText + ':x');
+            expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1.2, labelText + ':y');
 
-                resolve();
-            }, HOVERMINTIME);
+            resolve();
         });
     }
 
