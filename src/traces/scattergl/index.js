@@ -427,6 +427,7 @@ function sceneOptions(container, subplot, trace, positions) {
         if(multiMarker || Array.isArray(markerOpts.color) || Array.isArray(markerOpts.line.color) || Array.isArray(markerOpts.line) || Array.isArray(markerOpts.opacity)) {
             markerOptions.colors = new Array(count);
             markerOptions.borderColors = new Array(count);
+
             var colors = formatColor(markerOpts, markerOpts.opacity, count);
             var borderColors = formatColor(markerOpts.line, markerOpts.opacity, count);
 
@@ -590,6 +591,7 @@ function sceneUpdate(container, subplot) {
         // draw traces in proper order
         scene.draw = function draw() {
             var i;
+
             for(i = 0; i < scene.count; i++) {
                 if(scene.fill2d) scene.fill2d.draw(i);
             }
@@ -767,7 +769,7 @@ function plot(container, subplot, cdata) {
         });
     });
 
-    var regl = layout._glcanvas.data()[0].regl;
+    var regl = layout._glcanvas.data()[1].regl;
 
     // that is needed for fills
     linkTraces(container, subplot, cdata);
@@ -963,12 +965,12 @@ function plot(container, subplot, cdata) {
         // create select2d
         if(!scene.select2d) {
             // create scatter instance by cloning scatter2d
-            scene.select2d = createScatter(layout._glcanvas.data()[1].regl, {clone: scene.scatter2d});
+            scene.select2d = createScatter(layout._glcanvas.data()[0].regl, {clone: scene.scatter2d});
         }
 
         // update only traces with selection
         scene.scatter2d.update(scene.unselectedOptions.map(function(opts, i) {
-            return scene.selectBatch[i] ? opts : null;
+            return scene.selectBatch[i] !== null ? opts : null;
         }));
         scene.select2d.update(scene.markerOptions);
         scene.select2d.update(scene.selectedOptions);
