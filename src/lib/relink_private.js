@@ -28,6 +28,9 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
             toVal = toContainer[k];
 
         if(k.charAt(0) === '_' || typeof fromVal === 'function') {
+            // to help break circular references and improve garbage collection,
+            // remove these objects from the fromContainer
+            fromContainer[k] = null;
 
             // if it already exists at this point, it's something
             // that we recreate each time around, so ignore it
