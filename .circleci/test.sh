@@ -5,17 +5,36 @@ set +e
 set +o pipefail
 
 EXIT_STATE=0
+MAX_AUTO_RETRY=5
+
+# inspired by https://unix.stackexchange.com/a/82602
+retry () {
+    local n=0
+
+    until [ $n -ge $MAX_AUTO_RETRY ]; do
+        "$@" && break
+        n=$[$n+1]
+        echo ''
+        echo run $n of $MAX_AUTO_RETRY failed, trying again ...
+        echo ''
+        sleep 15
+    done
+
+    if [ $n -eq $MAX_AUTO_RETRY ]; then
+        EXIT_STATE=1
+    fi
+}
 
 case $1 in
 
     jasmine)
-        npm run test-jasmine -- --skip-tags=gl,noCI || EXIT_STATE=$?
+        retry npm run test-jasmine -- --skip-tags=gl,noCI
         exit $EXIT_STATE
         ;;
 
     jasmine2)
-        npm run test-jasmine -- --tags=gl --skip-tags=noCI || EXIT_STATE=$?
-        npm run test-bundle                                || EXIT_STATE=$?
+        retry npm run test-jasmine -- --tags=gl --skip-tags=noCI
+        retry npm run test-bundle
         exit $EXIT_STATE
         ;;
 
