@@ -20,12 +20,9 @@ var isPlainObject = require('./is_plain_object');
  * This prevents deepCopying massive structures like a webgl context.
  */
 module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
-    var keys = Object.keys(fromContainer || {});
-
-    for(var i = 0; i < keys.length; i++) {
-        var k = keys[i],
-            fromVal = fromContainer[k],
-            toVal = toContainer[k];
+    for(var k in fromContainer) {
+        var fromVal = fromContainer[k];
+        var toVal = toContainer[k];
 
         if(toVal === fromVal) {
             continue;
