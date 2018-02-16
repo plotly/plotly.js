@@ -1984,6 +1984,109 @@ describe('Test lib.js:', function() {
             });
         });
     });
+
+    describe('relinkPrivateKeys', function() {
+        it('ignores customdata and ids', function() {
+            var fromContainer = {
+                customdata: [{_x: 1, _y: 2, a: 3}],
+                ids: [{_i: 4, j: 5}]
+            };
+            var toContainer = {
+                customdata: [{a: 6}],
+                ids: [{j: 7}]
+            };
+
+            Lib.relinkPrivateKeys(toContainer, fromContainer);
+
+            expect(toContainer.customdata[0]._x).toBeUndefined();
+            expect(toContainer.customdata[0]._y).toBeUndefined();
+            expect(toContainer.ids[0]._i).toBeUndefined();
+        });
+
+        it('ignores any values that are ===', function() {
+            var accesses = 0;
+
+            var obj = {
+                get _x() { accesses++; return 1; },
+                set _x(v) { accesses++; }
+            };
+            var array = [obj];
+            var array2 = [obj];
+
+            var fromContainer = {
+                x: array,
+                y: array,
+                o: obj
+            };
+            var toContainer = {
+                x: array,
+                y: array2,
+                o: obj
+            };
+
+            Lib.relinkPrivateKeys(toContainer, fromContainer);
+
+            expect(accesses).toBe(0);
+
+            obj._x = 2;
+            expect(obj._x).toBe(1);
+            expect(accesses).toBe(2);
+        });
+
+        it('reinserts other private keys if they\'re not already there', function() {
+            var obj1 = {a: 10, _a: 11};
+            var obj2 = {a: 12, _a: 13};
+            function f1() { return 1; }
+            function f2() { return 2; }
+
+            var fromContainer = {
+                a: 1,
+                _a: 2,
+                _b: 3,
+                _c: obj1,
+                _d: obj1,
+                f: f1, // functions are private even without _
+                g: f1,
+                array: [{a: 3, _a: 4, _b: 5, f: f1, g: f1}],
+                o: {a: 6, _a: 7, _b: 8},
+                array2: [{a: 9, _a: 10}],
+                o2: {a: 11, _a: 12}
+            };
+            fromContainer._circular = fromContainer;
+            fromContainer._circular2 = fromContainer;
+            var toContainer = {
+                a: 21,
+                _a: 22,
+                _c: obj2,
+                f: f2,
+                array: [{a: 23, _a: 24, f: f2}],
+                o: {a: 26, _a: 27},
+                x: [28],
+                _x: 29
+            };
+            toContainer._circular = toContainer;
+
+            Lib.relinkPrivateKeys(toContainer, fromContainer);
+
+            var expected = {
+                a: 21,
+                _a: 22,
+                _b: 3,
+                _c: obj2,
+                _circular: toContainer,
+                _circular2: fromContainer,
+                _d: obj1,
+                f: f2,
+                g: f1,
+                array: [{a: 23, _a: 24, _b: 5, f: f2, g: f1}],
+                o: {a: 26, _a: 27, _b: 8},
+                x: [28],
+                _x: 29
+            };
+
+            expect(toContainer).toEqual(expected);
+        });
+    });
 });
 
 describe('Queue', function() {
