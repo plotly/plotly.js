@@ -591,7 +591,7 @@ function sceneUpdate(container, subplot) {
             }
 
             // draw traces in selection mode
-            if(scene.select2d && scene.selectBatch) {
+            if(scene.scatter2d && scene.select2d && scene.selectBatch) {
                 scene.select2d.draw(scene.selectBatch);
                 scene.scatter2d.draw(scene.unselectBatch);
             }
@@ -947,12 +947,17 @@ function plot(container, subplot, cdata) {
             scene.select2d = createScatter(layout._glcanvas.data()[1].regl, {clone: scene.scatter2d});
         }
 
-        // update only traces with selection
-        scene.scatter2d.update(scene.unselectedOptions.map(function(opts, i) {
-            return scene.selectBatch[i] ? opts : null;
-        }));
-        scene.select2d.update(scene.markerOptions);
-        scene.select2d.update(scene.selectedOptions);
+        if(scene.scatter2d) {
+            // update only traces with selection
+            scene.scatter2d.update(scene.unselectedOptions.map(function(opts, i) {
+                return scene.selectBatch[i] ? opts : null;
+            }));
+        }
+
+        if(scene.select2d) {
+            scene.select2d.update(scene.markerOptions);
+            scene.select2d.update(scene.selectedOptions);
+        }
     }
 
     // uploat viewport/range data to GPU
