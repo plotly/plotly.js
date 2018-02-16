@@ -774,7 +774,7 @@ describe('@gl parcoords', function() {
 
         });
 
-        it('Calling `Plotly.animate` with patches targeting `dimensions` attributes should do the right thing', function(done) {
+        it('@flaky Calling `Plotly.animate` with patches targeting `dimensions` attributes should do the right thing', function(done) {
             Plotly.newPlot(gd, [{
                 type: 'parcoords',
                 line: {color: 'blue'},

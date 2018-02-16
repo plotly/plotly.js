@@ -28,13 +28,14 @@ retry () {
 case $1 in
 
     jasmine)
-        retry npm run test-jasmine -- --skip-tags=gl,noCI
+        npm run test-jasmine -- --skip-tags=gl,noCI,flaky || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
     jasmine2)
-        retry npm run test-jasmine -- --tags=gl --skip-tags=noCI
-        retry npm run test-bundle
+        npm run test-jasmine -- --tags=gl --skip-tags=noCI,flaky || EXIT_STATE=$?
+        retry npm run test-jasmine -- --tags=flaky --skip-tags=noCI
+        npm run test-bundle || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 

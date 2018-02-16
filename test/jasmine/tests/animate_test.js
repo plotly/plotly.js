@@ -720,7 +720,7 @@ describe('Animating multiple axes', function() {
         destroyGraphDiv();
     });
 
-    it('updates ranges of secondary axes', function(done) {
+    it('@flaky updates ranges of secondary axes', function(done) {
         Plotly.plot(gd, [
             {y: [1, 2, 3]},
             {y: [1, 2, 3], yaxis: 'y2'}
