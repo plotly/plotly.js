@@ -250,7 +250,7 @@ describe('@gl Test gl2d plots', function() {
         });
     }
 
-    it('should respond to drag interactions', function(done) {
+    it('@flaky should respond to drag interactions', function(done) {
         var _mock = Lib.extendDeep({}, mock);
 
         var relayoutCallback = jasmine.createSpy('relayoutCallback');

@@ -107,7 +107,7 @@ var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
 var LASSOEVENTS = [4, 2, 1];
 
-describe('Test select box and lasso in general:', function() {
+describe('@flaky Test select box and lasso in general:', function() {
     var mock = require('@mocks/14.json');
     var selectPath = [[93, 193], [143, 193]];
     var lassoPath = [[316, 171], [318, 239], [335, 243], [328, 169]];
