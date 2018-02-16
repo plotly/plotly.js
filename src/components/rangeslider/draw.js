@@ -136,9 +136,9 @@ module.exports = function(gd) {
 
         opts._rl = [range0, range1];
 
-        if(oppAxisOpts.fixedrange === false) {
-            var range0OppAxis = oppAxisOpts.r2l(oppAxisOpts._rangeBeforeZoom[0]),
-                range1OppAxis = oppAxisOpts.r2l(oppAxisOpts._rangeBeforeZoom[1]),
+        if(axisOpts.rangeslider.perpendicularaxesinitialrange && oppAxisOpts.fixedrange === false) {
+            var range0OppAxis = oppAxisOpts.r2l(oppAxisOpts._rangesliderInitialRange[0]),
+                range1OppAxis = oppAxisOpts.r2l(oppAxisOpts._rangesliderInitialRange[1]),
                 distOppAxis = range1OppAxis - range0OppAxis;
 
             opts.d2pOppAxis = function(v) {
@@ -305,7 +305,7 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts) {
         .attr('x', pixelMax)
         .attr('width', opts._width - pixelMax);
 
-    if(oppAxisOpts.fixedrange === false) {
+    if(axisOpts.rangeslider.perpendicularaxesinitialrange && oppAxisOpts.fixedrange === false) {
         var pixelMinOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[1])),
             pixelMaxOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[0]));
 
@@ -428,7 +428,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         mockFigure.layout[oppAxisName] = {
             type: oppAxisOpts.type,
             domain: [0, 1],
-            range: oppAxisOpts._rangeBeforeZoom ? oppAxisOpts._rangeBeforeZoom.slice() : oppAxisOpts.range.slice(),
+            range: axisOpts.rangeslider.perpendicularaxesinitialrange ? oppAxisOpts._rangesliderInitialRange.slice() : oppAxisOpts.range.slice(),
             calendar: oppAxisOpts.calendar
         };
 
@@ -495,7 +495,7 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisOpts) {
         .call(Color.fill, constants.maskColor);
 
     // masks used for oppAxis zoom
-    if(oppAxisOpts.fixedrange === false) {
+    if(axisOpts.rangeslider.perpendicularaxesinitialrange && oppAxisOpts.fixedrange === false) {
         var maskMinOppAxis = rangeSlider.selectAll('rect.' + constants.maskMinOppAxisClassName)
             .data([0]);
 
