@@ -461,7 +461,8 @@ describe('the range slider', function() {
                     bgcolor: '#fff',
                     borderwidth: 0,
                     bordercolor: '#444',
-                    _input: layoutIn.xaxis.rangeslider
+                    _input: layoutIn.xaxis.rangeslider,
+                    perpendicularaxesinitialrange: true
                 };
 
             _supply(layoutIn, layoutOut, 'xaxis');
@@ -478,7 +479,8 @@ describe('the range slider', function() {
                     bgcolor: '#fff',
                     borderwidth: 0,
                     bordercolor: '#444',
-                    _input: layoutIn.xaxis.rangeslider
+                    _input: layoutIn.xaxis.rangeslider,
+                    perpendicularaxesinitialrange: true
                 };
 
             _supply(layoutIn, layoutOut, 'xaxis');
@@ -499,7 +501,8 @@ describe('the range slider', function() {
                     thickness: 'invalid',
                     bgcolor: 42,
                     bordercolor: 42,
-                    borderwidth: 'superfat'
+                    borderwidth: 'superfat',
+                    perpendicularaxesinitialrange: null
                 }}},
                 layoutOut = { xaxis: {} },
                 expected = {
@@ -509,7 +512,8 @@ describe('the range slider', function() {
                     bgcolor: '#fff',
                     borderwidth: 0,
                     bordercolor: '#444',
-                    _input: layoutIn.xaxis.rangeslider
+                    _input: layoutIn.xaxis.rangeslider,
+                    perpendicularaxesinitialrange: true
                 };
 
             _supply(layoutIn, layoutOut, 'xaxis');
@@ -526,7 +530,8 @@ describe('the range slider', function() {
                     bgcolor: '#fff',
                     borderwidth: 0,
                     bordercolor: '#444',
-                    _input: layoutIn.xaxis.rangeslider
+                    _input: layoutIn.xaxis.rangeslider,
+                    perpendicularaxesinitialrange: true
                 };
 
             _supply(layoutIn, layoutOut, 'xaxis');
