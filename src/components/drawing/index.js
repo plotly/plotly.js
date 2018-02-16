@@ -103,7 +103,7 @@ drawing.hideOutsideRangePoint = function(d, sel, xa, ya, xcalendar, ycalendar) {
 drawing.hideOutsideRangePoints = function(traceGroups, subplot, selector) {
     if(!subplot._hasClipOnAxisFalse) return;
 
-    selector = selector || '.point,textpoint';
+    selector = selector || '.point,.textpoint';
 
     var xa = subplot.xaxis;
     var ya = subplot.yaxis;

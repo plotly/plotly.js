@@ -14,6 +14,9 @@ var doubleClick = require('../assets/double_click');
 var getNodeCoords = require('../assets/get_node_coords');
 var delay = require('../assets/delay');
 
+var customAssertions = require('../assets/custom_assertions');
+var assertNodeDisplay = customAssertions.assertNodeDisplay;
+
 var MODEBAR_DELAY = 500;
 
 describe('zoom box element', function() {
@@ -62,7 +65,6 @@ describe('zoom box element', function() {
 
 
 describe('main plot pan', function() {
-
     var gd, modeBar, relayoutCallback;
 
     beforeEach(function() {
@@ -179,6 +181,93 @@ describe('main plot pan', function() {
         .then(function() {
             // X and back; XY and back
             expect(relayoutCallback).toHaveBeenCalledTimes(6);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should show/hide `cliponaxis: false` pts according to range', function(done) {
+        function _assert(markerDisplay, textDisplay, barTextDisplay) {
+            var gd3 = d3.select(gd);
+
+            assertNodeDisplay(
+                gd3.select('.scatterlayer').selectAll('.point'),
+                markerDisplay,
+                'marker pts'
+            );
+            assertNodeDisplay(
+                gd3.select('.scatterlayer').selectAll('.textpoint'),
+                textDisplay,
+                'text pts'
+            );
+            assertNodeDisplay(
+                gd3.select('.barlayer').selectAll('.bartext'),
+                barTextDisplay,
+                'bar text'
+            );
+        }
+
+        function _run(p0, p1, markerDisplay, textDisplay, barTextDisplay) {
+            mouseEvent('mousedown', p0[0], p0[1]);
+            mouseEvent('mousemove', p1[0], p1[1]);
+
+            _assert(markerDisplay, textDisplay, barTextDisplay);
+
+            mouseEvent('mouseup', p1[0], p1[1]);
+        }
+
+        Plotly.newPlot(gd, [{
+            mode: 'markers+text',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            text: ['a', 'b', 'c'],
+            cliponaxis: false
+        }, {
+            type: 'bar',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            text: ['a', 'b', 'c'],
+            textposition: 'outside',
+            cliponaxis: false
+        }], {
+            xaxis: {range: [0, 4]},
+            yaxis: {range: [0, 4]},
+            width: 500,
+            height: 500,
+            dragmode: 'pan'
+        })
+        .then(function() {
+            _assert(
+                [null, null, null],
+                [null, null, null],
+                [null, null, null]
+            );
+        })
+        .then(function() {
+            _run(
+                [250, 250], [250, 150],
+                [null, null, 'none'],
+                [null, null, 'none'],
+                [null, null, 'none']
+            );
+            expect(gd._fullLayout.yaxis.range[1]).toBeLessThan(3);
+        })
+        .then(function() {
+            _run(
+                [250, 250], [150, 250],
+                ['none', null, 'none'],
+                ['none', null, 'none'],
+                ['none', null, 'none']
+            );
+            expect(gd._fullLayout.xaxis.range[0]).toBeGreaterThan(1);
+        })
+        .then(function() {
+            _run(
+                [250, 250], [350, 350],
+                [null, null, null],
+                [null, null, null],
+                [null, null, null]
+            );
         })
         .catch(failTest)
         .then(done);
