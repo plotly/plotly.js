@@ -63,48 +63,23 @@ describe('zoom box element', function() {
 
 describe('main plot pan', function() {
 
-    var mock = require('@mocks/10.json');
     var gd, modeBar, relayoutCallback;
 
-    beforeEach(function(done) {
+    beforeEach(function() {
         gd = createGraphDiv();
-
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
-
-            modeBar = gd._fullLayout._modeBar;
-            relayoutCallback = jasmine.createSpy('relayoutCallback');
-
-            gd.on('plotly_relayout', relayoutCallback);
-        })
-        .catch(failTest)
-        .then(done);
     });
 
     afterEach(destroyGraphDiv);
 
     it('should respond to pan interactions', function(done) {
-
+        var mock = require('@mocks/10.json');
         var precision = 5;
-
-        var buttonPan = selectButton(modeBar, 'pan2d');
 
         var originalX = [-0.6225, 5.5];
         var originalY = [-1.6340975059013805, 7.166241526218911];
 
         var newX = [-2.0255729166666665, 4.096927083333333];
         var newY = [-0.3769062155984817, 8.42343281652181];
-
-        expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-        expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
-
-        // Switch to pan mode
-        expect(buttonPan.isActive()).toBe(false); // initially, zoom is active
-        buttonPan.click();
-        expect(buttonPan.isActive()).toBe(true); // switched on dragmode
-
-        // Switching mode must not change visible range
-        expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-        expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
         function _drag(x0, y0, x1, y1) {
             mouseEvent('mousedown', x0, y0);
@@ -143,9 +118,27 @@ describe('main plot pan', function() {
             _checkAxes(xr0, yr0);
         }
 
-        delay(MODEBAR_DELAY)()
-        .then(function() {
+        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            modeBar = gd._fullLayout._modeBar;
+            relayoutCallback = jasmine.createSpy('relayoutCallback');
+            gd.on('plotly_relayout', relayoutCallback);
 
+            var buttonPan = selectButton(modeBar, 'pan2d');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+
+            // Switch to pan mode
+            expect(buttonPan.isActive()).toBe(false); // initially, zoom is active
+            buttonPan.click();
+            expect(buttonPan.isActive()).toBe(true); // switched on dragmode
+
+            // Switching mode must not change visible range
+            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+        })
+        .then(delay(MODEBAR_DELAY))
+        .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
             relayoutCallback.calls.reset();
             _runDrag(originalX, newX, originalY, newY);
