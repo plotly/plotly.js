@@ -462,7 +462,7 @@ describe('the range slider', function() {
                     borderwidth: 0,
                     bordercolor: '#444',
                     _input: layoutIn.xaxis.rangeslider,
-                    perpendicularaxesinitialrange: true
+                    fixedyrange: true
                 };
 
             _supply(layoutIn, layoutOut, 'xaxis');
@@ -480,7 +480,7 @@ describe('the range slider', function() {
                     borderwidth: 0,
                     bordercolor: '#444',
                     _input: layoutIn.xaxis.rangeslider,
-                    perpendicularaxesinitialrange: true
+                    fixedyrange: true
                 };
 
             _supply(layoutIn, layoutOut, 'xaxis');
@@ -502,7 +502,7 @@ describe('the range slider', function() {
                     bgcolor: 42,
                     bordercolor: 42,
                     borderwidth: 'superfat',
-                    perpendicularaxesinitialrange: null
+                    fixedyrange: null
                 }}},
                 layoutOut = { xaxis: {} },
                 expected = {
@@ -513,7 +513,7 @@ describe('the range slider', function() {
                     borderwidth: 0,
                     bordercolor: '#444',
                     _input: layoutIn.xaxis.rangeslider,
-                    perpendicularaxesinitialrange: true
+                    fixedyrange: true
                 };
 
             _supply(layoutIn, layoutOut, 'xaxis');
@@ -531,7 +531,7 @@ describe('the range slider', function() {
                     borderwidth: 0,
                     bordercolor: '#444',
                     _input: layoutIn.xaxis.rangeslider,
-                    perpendicularaxesinitialrange: true
+                    fixedyrange: true
                 };
 
             _supply(layoutIn, layoutOut, 'xaxis');

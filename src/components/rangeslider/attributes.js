@@ -89,7 +89,7 @@ module.exports = {
             'If visible, perpendicular axes will be set to `fixedrange`'
         ].join(' ')
     },
-    perpendicularaxesinitialrange: {
+    fixedyrange: {
         valType: 'boolean',
         dflt: true,
         role: 'style',
