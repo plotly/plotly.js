@@ -1308,22 +1308,18 @@ describe('hover on fill', function() {
     afterEach(destroyGraphDiv);
 
     function assertLabelsCorrect(mousePos, labelPos, labelText) {
-        return new Promise(function(resolve) {
-            Lib.clearThrottle();
-            mouseEvent('mousemove', mousePos[0], mousePos[1]);
+        Lib.clearThrottle();
+        mouseEvent('mousemove', mousePos[0], mousePos[1]);
 
-            var hoverText = d3.selectAll('g.hovertext');
-            expect(hoverText.size()).toEqual(1);
-            expect(hoverText.text()).toEqual(labelText);
+        var hoverText = d3.selectAll('g.hovertext');
+        expect(hoverText.size()).toEqual(1);
+        expect(hoverText.text()).toEqual(labelText);
 
-            var transformParts = hoverText.attr('transform').split('(');
-            expect(transformParts[0]).toEqual('translate');
-            var transformCoords = transformParts[1].split(')')[0].split(',');
-            expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1.2, labelText + ':x');
-            expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1.2, labelText + ':y');
-
-            resolve();
-        });
+        var transformParts = hoverText.attr('transform').split('(');
+        expect(transformParts[0]).toEqual('translate');
+        var transformCoords = transformParts[1].split(')')[0].split(',');
+        expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1.2, labelText + ':x');
+        expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1.2, labelText + ':y');
     }
 
     it('should always show one label in the right place', function(done) {
@@ -1331,11 +1327,9 @@ describe('hover on fill', function() {
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
 
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
-            return assertLabelsCorrect([242, 142], [252, 133.8], 'trace 2');
-        }).then(function() {
-            return assertLabelsCorrect([242, 292], [233, 210], 'trace 1');
-        }).then(function() {
-            return assertLabelsCorrect([147, 252], [158.925, 248.1], 'trace 0');
+            assertLabelsCorrect([242, 142], [252, 133.8], 'trace 2');
+            assertLabelsCorrect([242, 292], [233, 210], 'trace 1');
+            assertLabelsCorrect([147, 252], [158.925, 248.1], 'trace 0');
         }).then(done);
     });
 
@@ -1353,9 +1347,8 @@ describe('hover on fill', function() {
             margin: {l: 50, t: 50, r: 50, b: 50}
         })
         .then(function() {
-            return assertLabelsCorrect([200, 200], [73.75, 250], 'trace 0');
-        })
-        .then(function() {
+            assertLabelsCorrect([200, 200], [73.75, 250], 'trace 0');
+
             return Plotly.restyle(gd, {
                 x: [[6, 7, 8, 7]],
                 y: [[5, 4, 5, 6]]
@@ -1363,7 +1356,7 @@ describe('hover on fill', function() {
         })
         .then(function() {
             // gives same results w/o closing point
-            return assertLabelsCorrect([200, 200], [73.75, 250], 'trace 0');
+            assertLabelsCorrect([200, 200], [73.75, 250], 'trace 0');
         })
         .catch(fail)
         .then(done);
@@ -1378,16 +1371,14 @@ describe('hover on fill', function() {
 
             // hover over a point when that's closest, even if you're over
             // a fill, because by default we have hoveron='points+fills'
-            return assertLabelsCorrect([237, 150], [240.0, 144],
+            assertLabelsCorrect([237, 150], [240.0, 144],
                 'trace 2Component A: 0.8Component B: 0.1Component C: 0.1');
-        }).then(function() {
+
             // the rest are hovers over fills
-            return assertLabelsCorrect([237, 170], [247.7, 166], 'trace 2');
-        }).then(function() {
-            return assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
-        }).then(function() {
-            return assertLabelsCorrect([237, 240], [247.7, 254], 'trace 0');
-        }).then(function() {
+            assertLabelsCorrect([237, 170], [247.7, 166], 'trace 2');
+            assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
+            assertLabelsCorrect([237, 240], [247.7, 254], 'trace 0');
+
             // zoom in to test clipping of large out-of-viewport shapes
             return Plotly.relayout(gd, {
                 'ternary.aaxis.min': 0.5,
@@ -1396,13 +1387,13 @@ describe('hover on fill', function() {
         }).then(function() {
             // this particular one has a hover label disconnected from the shape itself
             // so if we ever fix this, the test will have to be fixed too.
-            return assertLabelsCorrect([295, 218], [275.1, 166], 'trace 2');
-        }).then(function() {
+            assertLabelsCorrect([295, 218], [275.1, 166], 'trace 2');
+
             // trigger an autoscale redraw, which goes through dragElement
             return doubleClick(237, 251);
         }).then(function() {
             // then make sure we can still select a *different* item afterward
-            return assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
+            assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
         })
         .catch(fail)
         .then(done);
@@ -1421,14 +1412,14 @@ describe('hover on fill', function() {
 
             // hover over a point when that's closest, even if you're over
             // a fill, because by default we have hoveron='points+fills'
-            return assertLabelsCorrect([237, 150], [240.0, 144],
+            assertLabelsCorrect([237, 150], [240.0, 144],
                 'trace 2Component A: 0.8Component B: 0.1Component C: 0.1');
-        }).then(function() {
+
             // hovers over fills
-            return assertLabelsCorrect([237, 170], [247.7, 166], 'trace 2');
-        }).then(function() {
+            assertLabelsCorrect([237, 170], [247.7, 166], 'trace 2');
+
             // hover on the cartesian trace in the corner
-            return assertLabelsCorrect([363, 122], [363, 122], 'trace 38');
+            assertLabelsCorrect([363, 122], [363, 122], 'trace 38');
         })
         .catch(fail)
         .then(done);
@@ -1441,29 +1432,25 @@ describe('hover updates', function() {
     afterEach(destroyGraphDiv);
 
     function assertLabelsCorrect(mousePos, labelPos, labelText, msg) {
-        return new Promise(function(resolve) {
-            if(mousePos) {
-                mouseEvent('mousemove', mousePos[0], mousePos[1]);
-            }
+        Lib.clearThrottle();
 
-            setTimeout(function() {
-                var hoverText = d3.selectAll('g.hovertext');
-                if(labelPos) {
-                    expect(hoverText.size()).toBe(1, msg);
-                    expect(hoverText.text()).toBe(labelText, msg);
+        if(mousePos) {
+            mouseEvent('mousemove', mousePos[0], mousePos[1]);
+        }
 
-                    var transformParts = hoverText.attr('transform').split('(');
-                    expect(transformParts[0]).toBe('translate', msg);
-                    var transformCoords = transformParts[1].split(')')[0].split(',');
-                    expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1, labelText + ':x ' + msg);
-                    expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1, labelText + ':y ' + msg);
-                } else {
-                    expect(hoverText.size()).toEqual(0);
-                }
+        var hoverText = d3.selectAll('g.hovertext');
+        if(labelPos) {
+            expect(hoverText.size()).toBe(1, msg);
+            expect(hoverText.text()).toBe(labelText, msg);
 
-                resolve();
-            }, HOVERMINTIME);
-        });
+            var transformParts = hoverText.attr('transform').split('(');
+            expect(transformParts[0]).toBe('translate', msg);
+            var transformCoords = transformParts[1].split(')')[0].split(',');
+            expect(+transformCoords[0]).toBeCloseTo(labelPos[0], -1, labelText + ':x ' + msg);
+            expect(+transformCoords[1]).toBeCloseTo(labelPos[1], -1, labelText + ':y ' + msg);
+        } else {
+            expect(hoverText.size()).toEqual(0);
+        }
     }
 
     it('should update the labels on animation', function(done) {
@@ -1484,28 +1471,30 @@ describe('hover updates', function() {
         var gd = createGraphDiv();
         Plotly.plot(gd, mock).then(function() {
             // The label text gets concatenated together when queried. Such is life.
-            return assertLabelsCorrect([100, 100], [103, 100], 'trace 00.5', 'animation/update 0');
+            assertLabelsCorrect([100, 100], [103, 100], 'trace 00.5', 'animation/update 0');
         }).then(function() {
             return Plotly.animate(gd, [{
                 data: [{x: [0], y: [0]}, {x: [0.5], y: [0.5]}],
                 traces: [0, 1],
             }], {frame: {redraw: false, duration: 0}});
-        }).then(function() {
+        })
+        .then(delay(HOVERMINTIME))
+        .then(function() {
             // No mouse event this time. Just change the data and check the label.
             // Ditto on concatenation. This is "trace 1" + "0.5"
-            return assertLabelsCorrect(null, [103, 100], 'trace 10.5', 'animation/update 1');
-        }).then(function() {
+            assertLabelsCorrect(null, [103, 100], 'trace 10.5', 'animation/update 1');
+
             // Restyle to move the point out of the window:
             return Plotly.relayout(gd, {'xaxis.range': [2, 3]});
         }).then(function() {
             // Assert label removed:
-            return assertLabelsCorrect(null, null, null, 'animation/update 2');
-        }).then(function() {
+            assertLabelsCorrect(null, null, null, 'animation/update 2');
+
             // Move back to the original xaxis range:
             return Plotly.relayout(gd, {'xaxis.range': [0, 1]});
         }).then(function() {
             // Assert label restored:
-            return assertLabelsCorrect(null, [103, 100], 'trace 10.5', 'animation/update 3');
+            assertLabelsCorrect(null, [103, 100], 'trace 10.5', 'animation/update 3');
         }).catch(fail).then(done);
     });
 
@@ -1514,12 +1503,8 @@ describe('hover updates', function() {
         var colors0 = ['#000000', '#000000', '#000000', '#000000', '#000000', '#000000', '#000000'];
 
         function unhover() {
-            return new Promise(function(resolve) {
-                mouseEvent('mousemove', 394, 285);
-                setTimeout(function() {
-                    resolve();
-                }, HOVERMINTIME);
-            });
+            Lib.clearThrottle();
+            mouseEvent('mousemove', 394, 285);
         }
 
         var hoverCnt = 0;
@@ -1549,17 +1534,15 @@ describe('hover updates', function() {
                 Plotly.restyle(gd, 'marker.color', [colors0.slice()]);
             });
 
-            return assertLabelsCorrect([351, 251], [358, 272], '2', 'events 0');
-        })
-        .then(unhover)
-        .then(function() {
+            assertLabelsCorrect([351, 251], [358, 272], '2', 'events 0');
+
+            unhover();
             expect(hoverCnt).toEqual(1);
             expect(unHoverCnt).toEqual(1);
 
-            return assertLabelsCorrect([420, 100], [435, 198], '3', 'events 1');
-        })
-        .then(unhover)
-        .then(function() {
+            assertLabelsCorrect([420, 100], [435, 198], '3', 'events 1');
+
+            unhover();
             expect(hoverCnt).toEqual(2);
             expect(unHoverCnt).toEqual(2);
         })
