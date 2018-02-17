@@ -459,4 +459,24 @@ describe('spikeline hover', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('does not show spikes on scatter fills', function(done) {
+        Plotly.newPlot(gd, [{
+            x: [0, 0, 1, 1, 0], y: [0, 2, 2, 0, 0], fill: 'toself'
+        }], Lib.extendFlat({}, spikeLayout(), {hovermode: 'closest'}))
+        .then(function() {
+            // center of the fill: no spikes
+            _hover({xval: 0.5, yval: 1});
+            _assert([], []);
+
+            // sanity check: points still generate spikes
+            _hover({xval: 0, yval: 0});
+            _assert(
+                [[200, 500, 200, 400], [100, 400, 200, 400]],
+                [[200, 500], [100, 400]]
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
