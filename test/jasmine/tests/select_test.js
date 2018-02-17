@@ -554,7 +554,7 @@ describe('@flaky Test select box and lasso in general:', function() {
     });
 });
 
-describe('Test select box and lasso per trace:', function() {
+describe('@flaky Test select box and lasso per trace:', function() {
     var gd;
 
     beforeEach(function() {
