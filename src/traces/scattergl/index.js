@@ -14,7 +14,6 @@ var ErrorBars = require('../../components/errorbars');
 var extend = require('object-assign');
 var Axes = require('../../plots/cartesian/axes');
 var kdtree = require('kdgrass');
-var Fx = require('../../components/fx');
 var subTypes = require('../scatter/subtypes');
 var calcColorscales = require('../scatter/colorscale_calc');
 var Drawing = require('../../components/drawing');
