@@ -51,6 +51,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('constraintext');
         coerce('selected.textfont.color');
         coerce('unselected.textfont.color');
+        coerce('cliponaxis');
     }
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
