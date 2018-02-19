@@ -20,7 +20,6 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var lineAttrs = scatterGeoAttrs.line;
 var markerAttrs = scatterGeoAttrs.marker;
 
-
 module.exports = overrideAll({
     lon: scatterGeoAttrs.lon,
     lat: scatterGeoAttrs.lat,
@@ -108,14 +107,10 @@ module.exports = overrideAll({
     textposition: mapboxAttrs.layers.symbol.textposition,
 
     selected: {
-        marker: {
-            opacity: scatterAttrs.selected.marker.opacity
-        }
+        marker: scatterAttrs.selected.marker
     },
     unselected: {
-        marker: {
-            opacity: scatterAttrs.unselected.marker.opacity
-        }
+        marker: scatterAttrs.unselected.marker
     },
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {

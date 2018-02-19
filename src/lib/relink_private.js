@@ -20,13 +20,13 @@ var isPlainObject = require('./is_plain_object');
  * This prevents deepCopying massive structures like a webgl context.
  */
 module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
-    var keys = Object.keys(fromContainer || {});
+    for(var k in fromContainer) {
+        var fromVal = fromContainer[k];
+        var toVal = toContainer[k];
 
-    for(var i = 0; i < keys.length; i++) {
-        var k = keys[i],
-            fromVal = fromContainer[k],
-            toVal = toContainer[k];
-
+        if(toVal === fromVal) {
+            continue;
+        }
         if(k.charAt(0) === '_' || typeof fromVal === 'function') {
 
             // if it already exists at this point, it's something
@@ -37,9 +37,15 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
         }
         else if(isArray(fromVal) && isArray(toVal) && isPlainObject(fromVal[0])) {
 
+            // filter out data_array items that can contain user objects
+            // most of the time the toVal === fromVal check will catch these early
+            // but if the user makes new ones we also don't want to recurse in.
+            if(k === 'customdata' || k === 'ids') continue;
+
             // recurse into arrays containers
-            for(var j = 0; j < fromVal.length; j++) {
-                if(isPlainObject(fromVal[j]) && isPlainObject(toVal[j])) {
+            var minLen = Math.min(fromVal.length, toVal.length);
+            for(var j = 0; j < minLen; j++) {
+                if((toVal[j] !== fromVal[j]) && isPlainObject(fromVal[j]) && isPlainObject(toVal[j])) {
                     relinkPrivateKeys(toVal[j], fromVal[j]);
                 }
             }

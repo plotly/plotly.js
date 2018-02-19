@@ -107,7 +107,7 @@ var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
 var LASSOEVENTS = [4, 2, 1];
 
-describe('Test select box and lasso in general:', function() {
+describe('@flaky Test select box and lasso in general:', function() {
     var mock = require('@mocks/14.json');
     var selectPath = [[93, 193], [143, 193]];
     var lassoPath = [[316, 171], [318, 239], [335, 243], [328, 169]];
@@ -526,6 +526,28 @@ describe('Test select box and lasso in general:', function() {
             expect(selectedData.points.length).toBe(1);
             expect(selectedData.points[0].x).toBe(0);
             expect(selectedData.points[0].y).toBe(0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('scroll zoom should clear selection regions', function(done) {
+        var gd = createGraphDiv();
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.dragmode = 'select';
+        mockCopy.config = {scrollZoom: true};
+
+        Plotly.plot(gd, mockCopy).then(function() {
+            resetEvents(gd);
+            drag(selectPath);
+            return selectedPromise;
+        })
+        .then(function() {
+            mouseEvent('mousemove', selectPath[0][0], selectPath[0][1]);
+            mouseEvent('scroll', selectPath[0][0], selectPath[0][1], {deltaX: 0, deltaY: -20});
+        })
+        .then(function() {
+            assertSelectionNodes(0, 0);
         })
         .catch(fail)
         .then(done);

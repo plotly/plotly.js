@@ -46,6 +46,29 @@
           "opacity": 0.5
         }
       }
+    },
+    {
+      "type": "scattermapbox",
+      "selectedpoints": [0, 2],
+      "mode": "markers",
+      "lon": [-10, -20, -30],
+      "lat": [-10, -20, -30],
+      "marker": {"size": 20},
+      "selected": {
+        "marker": {
+          "size": 40,
+          "color": "green"
+        }
+      },
+      "unselected": {
+        "marker": {
+          "size": 10,
+          "color": "red"
+        }
+      },
+      "hoverlabel": {
+        "bgcolor": "grey"
+      }
     }
   ],
   "layout": {
@@ -56,6 +79,7 @@
     "showlegend": false,
     "height": 450,
     "width": 600,
-    "margin": {"l": 10}
+    "margin": {"l": 10},
+    "dragmode": "select"
   }
 }

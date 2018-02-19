@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var mapboxgl = require('mapbox-gl');
@@ -20,6 +19,9 @@ var constants = require('./constants');
 
 var MAPBOX = 'mapbox';
 
+for(var k in constants.styleRules) {
+    Lib.addStyleRule('.mapboxgl-' + k, constants.styleRules[k]);
+}
 
 exports.name = MAPBOX;
 
@@ -52,6 +54,10 @@ exports.plot = function plotMapbox(gd) {
     var fullLayout = gd._fullLayout;
     var calcData = gd.calcdata;
     var mapboxIds = fullLayout._subplots[MAPBOX];
+
+    if(mapboxgl.version !== constants.requiredVersion) {
+        throw new Error(constants.wrongVersionErrorMsg);
+    }
 
     var accessToken = findAccessToken(gd, mapboxIds);
     mapboxgl.accessToken = accessToken;
