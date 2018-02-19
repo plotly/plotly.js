@@ -1296,7 +1296,8 @@ describe('bar hover', function() {
             cd: cd[0],
             trace: cd[0][0].trace,
             xa: subplot.xaxis,
-            ya: subplot.yaxis
+            ya: subplot.yaxis,
+            maxHoverDistance: 20
         };
     }
 

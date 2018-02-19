@@ -14,7 +14,6 @@ var ErrorBars = require('../../components/errorbars');
 var extend = require('object-assign');
 var Axes = require('../../plots/cartesian/axes');
 var kdtree = require('kdgrass');
-var Fx = require('../../components/fx');
 var subTypes = require('../scatter/subtypes');
 var calcColorscales = require('../scatter/colorscale_calc');
 var Drawing = require('../../components/drawing');
@@ -32,7 +31,6 @@ var arrayRange = require('array-range');
 var fillHoverText = require('../scatter/fill_hover_text');
 var isNumeric = require('fast-isnumeric');
 
-var MAXDIST = Fx.constants.MAXDIST;
 var SYMBOL_SDF_SIZE = 200;
 var SYMBOL_SIZE = 20;
 var SYMBOL_STROKE = SYMBOL_SIZE / 20;
@@ -983,23 +981,24 @@ function plot(container, subplot, cdata) {
 }
 
 function hoverPoints(pointData, xval, yval, hovermode) {
-    var cd = pointData.cd,
-        stash = cd[0].t,
-        trace = cd[0].trace,
-        xa = pointData.xa,
-        ya = pointData.ya,
-        x = stash.rawx,
-        y = stash.rawy,
-        xpx = xa.c2p(xval),
-        ypx = ya.c2p(yval),
-        ids;
+    var cd = pointData.cd;
+    var stash = cd[0].t;
+    var trace = cd[0].trace;
+    var xa = pointData.xa;
+    var ya = pointData.ya;
+    var x = stash.rawx;
+    var y = stash.rawy;
+    var xpx = xa.c2p(xval);
+    var ypx = ya.c2p(yval);
+    var maxDistance = pointData.distance;
+    var ids;
 
     // FIXME: make sure this is a proper way to calc search radius
     if(stash.tree) {
-        var xl = xa.p2c(xpx - MAXDIST),
-            xr = xa.p2c(xpx + MAXDIST),
-            yl = ya.p2c(ypx - MAXDIST),
-            yr = ya.p2c(ypx + MAXDIST);
+        var xl = xa.p2c(xpx - maxDistance);
+        var xr = xa.p2c(xpx + maxDistance);
+        var yl = ya.p2c(ypx - maxDistance);
+        var yr = ya.p2c(ypx + maxDistance);
 
         if(hovermode === 'x') {
             ids = stash.tree.range(
@@ -1021,14 +1020,17 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     // pick the id closest to the point
     // note that point possibly may not be found
-    var min = MAXDIST, id, ptx, pty, i, dx, dy, dist;
+    var minDist = maxDistance;
+    var id, ptx, pty, i, dx, dy, dist, dxy;
 
     if(hovermode === 'x') {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
             dx = Math.abs(xa.c2p(ptx) - xpx);
-            if(dx < min) {
-                min = dx;
+            if(dx < minDist) {
+                minDist = dx;
+                dy = ya.c2p(y[ids[i]]) - ypx;
+                dxy = Math.sqrt(dx * dx + dy * dy);
                 id = ids[i];
             }
         }
@@ -1037,11 +1039,12 @@ function hoverPoints(pointData, xval, yval, hovermode) {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
             pty = y[ids[i]];
-            dx = xa.c2p(ptx) - xpx, dy = ya.c2p(pty) - ypx;
+            dx = xa.c2p(ptx) - xpx;
+            dy = ya.c2p(pty) - ypx;
 
             dist = Math.sqrt(dx * dx + dy * dy);
-            if(dist < min) {
-                min = dist;
+            if(dist < minDist) {
+                minDist = dxy = dist;
                 id = ids[i];
             }
         }
@@ -1124,7 +1127,9 @@ function hoverPoints(pointData, xval, yval, hovermode) {
         y1: yc + rad,
         yLabelVal: di.y,
 
-        cd: fakeCd
+        cd: fakeCd,
+        distance: minDist,
+        spikeDistance: dxy
     });
 
     if(di.htx) pointData.text = di.htx;
