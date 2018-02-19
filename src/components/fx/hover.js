@@ -1190,7 +1190,9 @@ function cleanPoint(d, hovermode) {
     fill('fontColor', 'htc', 'hoverlabel.font.color');
     fill('nameLength', 'hnl', 'hoverlabel.namelength');
 
-    d.posref = hovermode === 'y' ? (d.x0 + d.x1) / 2 : (d.y0 + d.y1) / 2;
+    d.posref = hovermode === 'y' ?
+        (d.xa._offset + (d.x0 + d.x1) / 2) :
+        (d.ya._offset + (d.y0 + d.y1) / 2);
 
     // then constrain all the positions to be on the plot
     d.x0 = Lib.constrain(d.x0, 0, d.xa._length);

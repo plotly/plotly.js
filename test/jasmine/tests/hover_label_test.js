@@ -1082,42 +1082,68 @@ describe('hover info on stacked subplots', function() {
     afterEach(destroyGraphDiv);
 
     describe('hover info on stacked subplots with shared x-axis', function() {
-        var mock = require('@mocks/stacked_coupled_subplots.json');
+        var mock = Lib.extendDeep({},
+            require('@mocks/stacked_coupled_subplots.json'),
+            {data: [
+                // Tweak the mock so the higher subplot sometimes has points
+                // higher *within the subplot*, sometimes lower.
+                // This was the problem in #2370
+                {}, {y: [100, 120, 100]}
+            ]});
+
+        var gd;
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+            gd = createGraphDiv();
+            Plotly.plot(gd, mock.data, mock.layout).then(done);
         });
 
-        it('responds to hover', function() {
-            var gd = document.getElementById('graph');
-            Plotly.Fx.hover(gd, {xval: 3}, ['xy', 'xy2', 'xy3']);
+        function _check(xval, ptSpec1, ptSpec2) {
+            Lib.clearThrottle();
+            Plotly.Fx.hover(gd, {xval: xval}, ['xy', 'xy2', 'xy3']);
 
-            expect(gd._hoverdata.length).toEqual(2);
+            expect(gd._hoverdata.length).toBe(2);
 
             expect(gd._hoverdata[0]).toEqual(jasmine.objectContaining(
                 {
-                    curveNumber: 1,
-                    pointNumber: 1,
-                    x: 3,
-                    y: 110
+                    curveNumber: ptSpec1[0],
+                    pointNumber: ptSpec1[1],
+                    x: xval,
+                    y: ptSpec1[2]
                 }));
 
             expect(gd._hoverdata[1]).toEqual(jasmine.objectContaining(
                 {
-                    curveNumber: 2,
-                    pointNumber: 0,
-                    x: 3,
-                    y: 1000
+                    curveNumber: ptSpec2[0],
+                    pointNumber: ptSpec2[1],
+                    x: xval,
+                    y: ptSpec2[2]
                 }));
 
             assertHoverLabelContent({
                 // There should be 2 pts being hovered over,
                 // in two different traces, one in each plot.
-                nums: ['110', '1000'],
-                name: ['trace 1', 'trace 2'],
-                // There should be a single label on the x-axis with the shared x value, 3'
-                axis: '3'
+                nums: [String(ptSpec1[2]), String(ptSpec2[2])],
+                name: [ptSpec1[3], ptSpec2[3]],
+                // There should be a single label on the x-axis with the shared x value
+                axis: String(xval)
             });
+
+            // ensure the hover label bounding boxes don't overlap, except a little margin of 5 px
+            // testing #2370
+            var bBoxes = [];
+            d3.selectAll('g.hovertext').each(function() {
+                bBoxes.push(this.getBoundingClientRect());
+            });
+            expect(bBoxes.length).toBe(2);
+            var disjointY = bBoxes[0].top >= bBoxes[1].bottom - 5 || bBoxes[1].top >= bBoxes[0].bottom - 5;
+            expect(disjointY).toBe(true, bBoxes.map(function(bb) { return {top: bb.top, bottom: bb.bottom}; }));
+        }
+
+        it('responds to hover and keeps the labels from crossing', function() {
+            _check(2, [0, 2, 12, 'trace 0'], [1, 0, 100, 'trace 1']);
+            _check(3, [1, 1, 120, 'trace 1'], [2, 0, 1000, 'trace 2']);
+            _check(4, [1, 2, 100, 'trace 1'], [2, 1, 1100, 'trace 2']);
         });
     });
 
