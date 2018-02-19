@@ -52,8 +52,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         };
 
     function _positionFn(_minPos, _maxPos) {
+        // add a little to the pseudo-distance for wider bars, so that like scatter,
+        // if you are over two overlapping bars, the narrower one wins.
         return Fx.inbox(_minPos - posVal, _maxPos - posVal,
-            maxHoverDistance - Math.min(1, Math.abs(_maxPos - _minPos) / pRangeCalc));
+            maxHoverDistance + Math.min(1, Math.abs(_maxPos - _minPos) / pRangeCalc) - 1);
     }
 
     function positionFn(di) {
