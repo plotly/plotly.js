@@ -89,17 +89,5 @@ module.exports = {
             'If visible, perpendicular axes will be set to `fixedrange`'
         ].join(' ')
     },
-    fixedyrange: {
-        valType: 'boolean',
-        dflt: true,
-        role: 'style',
-        editType: 'calc',
-        description: [
-            'Determine whether the perpendicular axes in the rangeslider',
-            'use (or not) their initial range when they are zoomed in the plot',
-            'To allow zoom one (or more) perpendicular axe(s) while the rangeslider is visible',
-            'you must set the attributes `fixedrange` to *true* on said axe(s).'
-        ].join(' ')
-    },
     editType: 'calc'
 };

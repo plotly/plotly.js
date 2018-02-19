@@ -37,7 +37,6 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
 
     coerce('autorange', !axOut.isValidRange(containerIn.range));
     coerce('range');
-    coerce('fixedyrange');
 
     // to map back range slider (auto) range
     containerOut._input = containerIn;

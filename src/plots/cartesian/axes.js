@@ -352,6 +352,7 @@ axes.doAutoRange = function(ax) {
 
     // TODO do we really need this?
     var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
+    var axIn;
 
     if(ax.autorange && hasDeps) {
         ax.range = axes.getAutoRange(ax);
@@ -362,9 +363,15 @@ axes.doAutoRange = function(ax) {
         // doAutoRange will get called on fullLayout,
         // but we want to report its results back to layout
 
-        var axIn = ax._input;
+        axIn = ax._input;
         axIn.range = ax.range.slice();
         axIn.autorange = ax.autorange;
+    }
+
+    if(ax.rangesliderFixedrange === 'auto') {
+        ax.rangesliderRange = hasDeps ? axes.getAutoRange(ax) : ax.range.slice();
+        axIn = ax._input;
+        axIn.rangesliderRange = ax.rangesliderRange.slice();
     }
 };
 
@@ -388,10 +395,6 @@ axes.saveRangeInitial = function(gd, overwrite) {
         if((isNew && ax.autorange === false) || (overwrite && hasChanged)) {
             ax._rangeInitial = ax.range.slice();
             hasOneAxisChanged = true;
-        }
-        // store the initial range for the rangeslider if we zoom on oppaxis
-        if((isNew && ax.fixedrange === false) || (overwrite && hasChanged)) {
-            ax._rangesliderInitialRange = ax.range.slice();
         }
     }
 
