@@ -104,6 +104,15 @@ module.exports = {
         ].join(' ')
     },
 
+    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, {
+        description: [
+            'Determines whether the text nodes',
+            'are clipped about the subplot axes.',
+            'To show the text nodes above axis lines and tick labels,',
+            'make sure to set `xaxis.layer` and `yaxis.layer` to *below traces*.'
+        ].join(' ')
+    }),
+
     orientation: {
         valType: 'enumerated',
         role: 'info',
