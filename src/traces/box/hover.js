@@ -54,31 +54,29 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     var isViolin = trace.type === 'violin';
     var closeBoxData = [];
 
-    var pLetter, vLetter, pAxis, vAxis, vVal, pVal, dx, dy;
+    var pLetter, vLetter, pAxis, vAxis, vVal, pVal, dx, dy, dPos,
+        hoverPseudoDistance, spikePseudoDistance;
 
-    // closest mode: handicap box plots a little relative to others
-    // adjust inbox w.r.t. to calculate box size
-    var boxDelta = (hovermode === 'closest' && !isViolin) ? 2.5 * t.bdPos : t.bdPos;
+    var boxDelta = t.bdPos;
     var shiftPos = function(di) { return di.pos + t.bPos - pVal; };
-    var dPos;
 
     if(isViolin && trace.side !== 'both') {
         if(trace.side === 'positive') {
             dPos = function(di) {
                 var pos = shiftPos(di);
-                return Fx.inbox(pos, pos + boxDelta);
+                return Fx.inbox(pos, pos + boxDelta, hoverPseudoDistance);
             };
         }
         if(trace.side === 'negative') {
             dPos = function(di) {
                 var pos = shiftPos(di);
-                return Fx.inbox(pos - boxDelta, pos);
+                return Fx.inbox(pos - boxDelta, pos, hoverPseudoDistance);
             };
         }
     } else {
         dPos = function(di) {
             var pos = shiftPos(di);
-            return Fx.inbox(pos - boxDelta, pos + boxDelta);
+            return Fx.inbox(pos - boxDelta, pos + boxDelta, hoverPseudoDistance);
         };
     }
 
@@ -86,11 +84,11 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
     if(isViolin) {
         dVal = function(di) {
-            return Fx.inbox(di.span[0] - vVal, di.span[1] - vVal);
+            return Fx.inbox(di.span[0] - vVal, di.span[1] - vVal, hoverPseudoDistance);
         };
     } else {
         dVal = function(di) {
-            return Fx.inbox(di.min - vVal, di.max - vVal);
+            return Fx.inbox(di.min - vVal, di.max - vVal, hoverPseudoDistance);
         };
     }
 
@@ -114,7 +112,13 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         vAxis = ya;
     }
 
-    var distfn = Fx.getDistanceFunction(hovermode, dx, dy);
+    // if two boxes are overlaying, let the narrowest one win
+    var pseudoDistance = Math.min(1, boxDelta / Math.abs(pAxis.r2c(pAxis.range[1]) - pAxis.r2c(pAxis.range[0])));
+    hoverPseudoDistance = pointData.maxHoverDistance - pseudoDistance;
+    spikePseudoDistance = pointData.maxSpikeDistance - pseudoDistance;
+
+    function dxy(di) { return (dx(di) + dy(di)) / 2; }
+    var distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
     Fx.getClosest(cd, distfn, pointData);
 
     // skip the rest (for this trace) if we didn't find a close point
@@ -134,6 +138,10 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
     Axes.tickText(pAxis, pAxis.c2l(di.pos), 'hover').text;
     pointData[pLetter + 'LabelVal'] = di.pos;
+
+    var spikePosAttr = pLetter + 'Spike';
+    pointData.spikeDistance = dxy(di) * spikePseudoDistance / hoverPseudoDistance;
+    pointData[spikePosAttr] = pAxis.c2p(di.pos, true);
 
     // box plots: each "point" gets many labels
     var usedVals = {};
@@ -164,8 +172,10 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
             pointData2[vLetter + 'err'] = di.sd;
         }
-        // only keep name on the first item (median)
+        // only keep name and spikes on the first item (median)
         pointData.name = '';
+        pointData.spikeDistance = undefined;
+        pointData[spikePosAttr] = undefined;
 
         closeBoxData.push(pointData2);
     }
@@ -229,8 +239,12 @@ function hoverOnPoints(pointData, xval, yval) {
         xLabelVal: pt.x,
         y0: yc - rad,
         y1: yc + rad,
-        yLabelVal: pt.y
+        yLabelVal: pt.y,
+        spikeDistance: pointData.distance
     });
+    var pLetter = trace.orientation === 'h' ? 'y' : 'x';
+    var pa = trace.orientation === 'h' ? ya : xa;
+    closePtData[pLetter + 'Spike'] = pa.c2p(di.pos, true);
     fillHoverText(pt, trace, closePtData);
 
     return closePtData;

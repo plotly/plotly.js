@@ -266,6 +266,7 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
+        pos: [215, 200],
         nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
         name: ['radishes', '', '', '', ''],
         axis: 'day 1'
