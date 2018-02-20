@@ -629,7 +629,7 @@ describe('Test shapes: a plot with shapes and an overlaid axis', function() {
     });
 });
 
-describe('Test shapes', function() {
+describe('@flaky Test shapes', function() {
     'use strict';
 
     var gd, data, layout, config;

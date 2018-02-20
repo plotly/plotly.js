@@ -100,8 +100,10 @@ drawing.hideOutsideRangePoint = function(d, sel, xa, ya, xcalendar, ycalendar) {
     );
 };
 
-drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
+drawing.hideOutsideRangePoints = function(traceGroups, subplot, selector) {
     if(!subplot._hasClipOnAxisFalse) return;
+
+    selector = selector || '.point,.textpoint';
 
     var xa = subplot.xaxis;
     var ya = subplot.yaxis;
@@ -111,7 +113,7 @@ drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
         var xcalendar = trace.xcalendar;
         var ycalendar = trace.ycalendar;
 
-        traceGroups.selectAll('.point,.textpoint').each(function(d) {
+        traceGroups.selectAll(selector).each(function(d) {
             drawing.hideOutsideRangePoint(d, d3.select(this), xa, ya, xcalendar, ycalendar);
         });
     });

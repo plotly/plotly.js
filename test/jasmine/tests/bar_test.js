@@ -13,6 +13,10 @@ var fail = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
 
+var customAssertions = require('../assets/custom_assertions');
+var assertClip = customAssertions.assertClip;
+var assertNodeDisplay = customAssertions.assertNodeDisplay;
+
 var d3 = require('d3');
 
 describe('Bar.supplyDefaults', function() {
@@ -1292,7 +1296,8 @@ describe('bar hover', function() {
             cd: cd[0],
             trace: cd[0][0].trace,
             xa: subplot.xaxis,
-            ya: subplot.yaxis
+            ya: subplot.yaxis,
+            maxHoverDistance: 20
         };
     }
 
@@ -1508,6 +1513,96 @@ describe('bar hover', function() {
             .catch(fail)
             .then(done);
         });
+    });
+
+    it('should show/hide text in clipped and non-clipped layers', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/bar_cliponaxis-false.json'));
+        gd = createGraphDiv();
+
+        // only show one trace
+        fig.data = [fig.data[0]];
+
+        function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
+            var subplotLayer = d3.select('.plot');
+            var barLayer = subplotLayer.select('.barlayer');
+
+            assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
+            assertClip(subplotLayer.select('.maplayer'), layerClips[1], 1, 'some other trace layer');
+            assertClip(barLayer, layerClips[2], 1, 'bar layer');
+
+            assertNodeDisplay(
+                barLayer.selectAll('.point'),
+                barDisplays,
+                'bar points (never hidden by display attr)'
+            );
+            assertNodeDisplay(
+                barLayer.selectAll('.bartext'),
+                barTextDisplays,
+                'bar text'
+            );
+
+            assertClip(
+                barLayer.selectAll('.point > path'),
+                barClips[0], barClips[1],
+                'bar clips'
+            );
+        }
+
+        Plotly.newPlot(gd, fig).then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                [null, null, 'none'],
+                [true, 3]
+            );
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            _assert(
+                [true, false, false],
+                [],
+                [],
+                [false, 0]
+            );
+            return Plotly.restyle(gd, {visible: true, cliponaxis: null});
+        })
+        .then(function() {
+            _assert(
+                [true, false, false],
+                [null, null, null],
+                [null, null, null],
+                [false, 3]
+            );
+            return Plotly.restyle(gd, 'cliponaxis', false);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                [null, null, 'none'],
+                [true, 3]
+            );
+            return Plotly.relayout(gd, 'yaxis.range', [0, 1]);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                ['none', 'none', 'none'],
+                [true, 3]
+            );
+            return Plotly.relayout(gd, 'yaxis.range', [0, 4]);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                [null, null, null],
+                [true, 3]
+            );
+        })
+        .catch(fail)
+        .then(done);
     });
 });
 
