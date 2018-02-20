@@ -368,10 +368,10 @@ axes.doAutoRange = function(ax) {
         axIn.autorange = ax.autorange;
     }
 
-    if(ax.rangesliderFixedrange === 'auto') {
-        ax.rangesliderRange = hasDeps ? axes.getAutoRange(ax) : ax.range.slice();
+    if(ax.rangeslidermode === 'auto') {
+        ax.rangesliderrange = hasDeps ? axes.getAutoRange(ax) : ax.range.slice();
         axIn = ax._input;
-        axIn.rangesliderRange = ax.rangesliderRange.slice();
+        axIn.rangesliderrange = ax.rangesliderrange.slice();
     }
 };
 

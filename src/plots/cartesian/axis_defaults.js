@@ -54,11 +54,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('range');
     containerOut.cleanRange();
 
-    coerce('rangesliderFixedrange', containerIn.rangesliderRange ?
-        containerOut.isValidRange(containerIn.rangesliderRange) : 'auto');
+    coerce('rangeslidermode', containerIn.rangesliderrange ?
+        containerOut.isValidRange(containerIn.rangesliderrange) : 'auto');
 
-    coerce('rangesliderRange');
-    containerOut.cleanRange('rangesliderRange');
+    coerce('rangesliderrange');
+    containerOut.cleanRange('rangesliderrange');
 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce);
     containerOut._initialCategories = axType === 'category' ?

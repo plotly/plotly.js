@@ -78,8 +78,8 @@ module.exports = overrideAll({
     autorange: axesAttrs.autorange,
     rangemode: axesAttrs.rangemode,
     range: axesAttrs.range,
-    rangesliderFixedrange: axesAttrs.rangesliderFixedrange,
-    rangesliderRange: axesAttrs.rangesliderRange,
+    rangeslidermode: axesAttrs.rangeslidermode,
+    rangesliderrange: axesAttrs.rangesliderrange,
     // ticks
     tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,

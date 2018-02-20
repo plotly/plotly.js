@@ -136,9 +136,9 @@ module.exports = function(gd) {
 
         opts._rl = [range0, range1];
 
-        if(oppAxisOpts.rangesliderFixedrange) {
-            var range0OppAxis = oppAxisOpts.r2l(oppAxisOpts.rangesliderRange[0]),
-                range1OppAxis = oppAxisOpts.r2l(oppAxisOpts.rangesliderRange[1]),
+        if(oppAxisOpts.rangeslidermode) {
+            var range0OppAxis = oppAxisOpts.r2l(oppAxisOpts.rangesliderrange[0]),
+                range1OppAxis = oppAxisOpts.r2l(oppAxisOpts.rangesliderrange[1]),
                 distOppAxis = range1OppAxis - range0OppAxis;
 
             opts.d2pOppAxis = function(v) {
@@ -305,7 +305,7 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts) {
         .attr('x', pixelMax)
         .attr('width', opts._width - pixelMax);
 
-    if(oppAxisOpts.rangesliderFixedrange) {
+    if(oppAxisOpts.rangeslidermode) {
         var pixelMinOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[1])),
             pixelMaxOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[0]));
 
@@ -428,7 +428,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         mockFigure.layout[oppAxisName] = {
             type: oppAxisOpts.type,
             domain: [0, 1],
-            range: oppAxisOpts.rangesliderFixedrange ? oppAxisOpts.rangesliderRange.slice() : oppAxisOpts.range.slice(),
+            range: oppAxisOpts.rangeslidermode ? oppAxisOpts.rangesliderrange.slice() : oppAxisOpts.range.slice(),
             calendar: oppAxisOpts.calendar
         };
 
@@ -495,7 +495,7 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisOpts) {
         .call(Color.fill, constants.maskColor);
 
     // masks used for oppAxis zoom
-    if(oppAxisOpts.rangesliderFixedrange) {
+    if(oppAxisOpts.rangeslidermode) {
         var maskMinOppAxis = rangeSlider.selectAll('rect.' + constants.maskMinOppAxisClassName)
             .data([0]);
 

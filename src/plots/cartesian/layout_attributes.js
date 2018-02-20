@@ -128,7 +128,7 @@ module.exports = {
             'If true, then zoom is disabled.'
         ].join(' ')
     },
-    rangesliderFixedrange: {
+    rangeslidermode: {
         valType: 'enumerated',
         values: ['auto', true, false],
         dflt: 'auto',
@@ -139,11 +139,11 @@ module.exports = {
             'the rangeslider use the same value than in the main plot',
             'when zooming in/out.',
             'If *auto*, the autorange will be used.',
-            'If *true*, the `rangesliderRange` is used.',
+            'If *true*, the `rangesliderrange` is used.',
             'If *false*, the current range is used.'
         ].join(' ')
     },
-    rangesliderRange: {
+    rangesliderrange: {
         valType: 'info_array',
         role: 'style',
         items: [
