@@ -791,7 +791,6 @@ describe('@gl Test gl2d plots', function() {
     });
 
     it('should be able to draw more than 4096 colors', function(done) {
-        var gd = createGraphDiv();
         var x = [];
         var color = [];
         var N = 1e5;
