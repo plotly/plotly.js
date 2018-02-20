@@ -18,7 +18,7 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
     coerce('line.color', defaultColor);
 
-    if(hasColorscale(traceIn, 'line') && Lib.isArray(traceIn.line.color)) {
+    if(hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(traceIn.line.color)) {
         coerce('line.colorscale');
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
     }

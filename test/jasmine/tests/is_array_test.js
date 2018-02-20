@@ -1,10 +1,6 @@
 var Lib = require('@src/lib');
 
-describe('isArray', function() {
-    'use strict';
-
-    var isArray = Lib.isArray;
-
+describe('isArrayOrTypedArray', function() {
     function A() {}
 
     var shouldPass = [
@@ -35,13 +31,13 @@ describe('isArray', function() {
 
     shouldPass.forEach(function(obj) {
         it('treats ' + JSON.stringify(obj) + ' as an array', function() {
-            expect(isArray(obj)).toBe(true);
+            expect(Lib.isArrayOrTypedArray(obj)).toBe(true);
         });
     });
 
     shouldFail.forEach(function(obj) {
         it('treats ' + JSON.stringify(obj !== window ? obj : 'window') + ' as NOT an array', function() {
-            expect(isArray(obj)).toBe(false);
+            expect(Lib.isArrayOrTypedArray(obj)).toBe(false);
         });
     });
 });

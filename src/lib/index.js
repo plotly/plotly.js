@@ -22,11 +22,13 @@ lib.nestedProperty = require('./nested_property');
 lib.keyedContainer = require('./keyed_container');
 lib.relativeAttr = require('./relative_attr');
 lib.isPlainObject = require('./is_plain_object');
-lib.isArray = require('./is_array');
 lib.mod = require('./mod');
 lib.toLogRange = require('./to_log_range');
 lib.relinkPrivateKeys = require('./relink_private');
 lib.ensureArray = require('./ensure_array');
+
+var isArrayModule = require('./is_array');
+lib.isArrayOrTypedArray = isArrayModule.isArrayOrTypedArray
 
 var coerceModule = require('./coerce');
 lib.valObjectMeta = coerceModule.valObjectMeta;
