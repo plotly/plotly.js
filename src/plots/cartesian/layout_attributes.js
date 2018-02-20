@@ -130,7 +130,7 @@ module.exports = {
     },
     rangeslidermode: {
         valType: 'enumerated',
-        values: ['auto', true, false],
+        values: ['auto', 'fixed', 'match'],
         dflt: 'auto',
         role: 'style',
         editType: 'calc',
@@ -139,8 +139,8 @@ module.exports = {
             'the rangeslider use the same value than in the main plot',
             'when zooming in/out.',
             'If *auto*, the autorange will be used.',
-            'If *true*, the `rangesliderrange` is used.',
-            'If *false*, the current range is used.'
+            'If *fixed*, the `rangesliderrange` is used.',
+            'If *match*, the current range is used.'
         ].join(' ')
     },
     rangesliderrange: {

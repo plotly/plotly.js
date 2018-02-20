@@ -55,8 +55,13 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     containerOut.cleanRange();
 
     if(letter === 'y') {
-        coerce('rangeslidermode', containerIn.rangesliderrange ?
-            containerOut.isValidRange(containerIn.rangesliderrange) : 'auto');
+        if(containerIn.rangesliderrange) {
+            coerce('rangeslidermode', 'auto');
+        } else if(containerOut.isValidRange(containerIn.rangesliderrange)) {
+            coerce('rangeslidermode', 'fixed');
+        } else {
+            coerce('rangeslidermode', 'match');
+        }
 
         coerce('rangesliderrange');
         containerOut.cleanRange('rangesliderrange');
