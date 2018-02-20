@@ -648,7 +648,6 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-
     it('should not scroll document while panning', function(done) {
         var mock = {
             data: [
@@ -769,6 +768,23 @@ describe('@gl Test gl2d plots', function() {
             expect(scene.markerOptions.length).toBe(2);
             expect(scene.markerOptions[1].color).toEqual(new Uint8Array([255, 0, 0, 255]));
             expect(scene.scatter2d.draw).toHaveBeenCalled();
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should remove fill2d', function(done) {
+        var mock = require('@mocks/gl2d_axes_labels2.json');
+
+        Plotly.plot(gd, mock.data, mock.layout)
+        .then(delay(1000))
+        .then(function() {
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 100, 80)[0]).not.toBe(0);
+
+            return Plotly.restyle(gd, {fill: 'none'});
+        })
+        .then(function() {
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 100, 80)[0]).toBe(0);
         })
         .catch(fail)
         .then(done);

@@ -947,7 +947,7 @@ function plot(container, subplot, cdata) {
             scene.select2d = createScatter(layout._glcanvas.data()[1].regl, {clone: scene.scatter2d});
         }
 
-        if(scene.scatter2d) {
+        if(scene.scatter2d && scene.selectBatch && scene.selectBatch.length) {
             // update only traces with selection
             scene.scatter2d.update(scene.unselectedOptions.map(function(opts, i) {
                 return scene.selectBatch[i] ? opts : null;
