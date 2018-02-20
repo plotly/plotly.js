@@ -789,4 +789,47 @@ describe('@gl Test gl2d plots', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should be able to draw more than 4096 colors', function(done) {
+        var gd = createGraphDiv();
+        var x = [];
+        var color = [];
+        var N = 1e5;
+        var w = 500;
+        var h = 500;
+
+        for(var i = 0; i < N; i++) {
+            x.push(i);
+            color.push(Math.random());
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'scattergl',
+            mode: 'markers',
+            x: x,
+            y: color,
+            marker: {
+                color: color,
+                colorscale: [
+                    [0, 'rgb(255, 0, 0)'],
+                    [0.5, 'rgb(0, 255, 0)'],
+                    [1.0, 'rgb(0, 0, 255)']
+                ]
+            }
+        }], {
+            width: w,
+            height: h,
+            margin: {l: 0, t: 0, b: 0, r: 0}
+        })
+        .then(function() {
+            var total = readPixel(gd.querySelector('.gl-canvas-context'), 0, 0, w, h)
+                .reduce(function(acc, v) { return acc + v; }, 0);
+
+            // the total value was 3762487 before PR
+            // https://github.com/plotly/plotly.js/pull/2377
+            expect(total).toBeGreaterThan(4e6);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
