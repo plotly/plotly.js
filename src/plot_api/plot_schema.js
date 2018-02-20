@@ -191,7 +191,7 @@ exports.findArrayAttributes = function(trace) {
 
         var astr = toAttrString(stack);
         var val = Lib.nestedProperty(trace, astr).get();
-        if(!Array.isArray(val)) return;
+        if(!Lib.isArrayOrTypedArray(val)) return;
 
         arrayAttributes.push(astr);
     }

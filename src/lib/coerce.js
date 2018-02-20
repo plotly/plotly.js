@@ -322,7 +322,7 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
      * individual form (eg. some array vals can be numbers, even if the
      * single values must be color strings)
      */
-    if(opts.arrayOk && Array.isArray(v)) {
+    if(opts.arrayOk && isArrayOrTypedArray(v)) {
         propOut.set(v);
         return v;
     }
@@ -419,7 +419,7 @@ exports.coerceSelectionMarkerOpacity = function(traceOut, coerce) {
     //
     // Only give [un]selected.marker.opacity a default value if you don't
     // set any other [un]selected attributes.
-    if(!Array.isArray(mo) && !traceOut.selected && !traceOut.unselected) {
+    if(!isArrayOrTypedArray(mo) && !traceOut.selected && !traceOut.unselected) {
         smoDflt = mo;
         usmoDflt = DESELECTDIM * mo;
     }
@@ -431,7 +431,7 @@ exports.coerceSelectionMarkerOpacity = function(traceOut, coerce) {
 exports.validate = function(value, opts) {
     var valObjectDef = exports.valObjectMeta[opts.valType];
 
-    if(opts.arrayOk && Array.isArray(value)) return true;
+    if(opts.arrayOk && isArrayOrTypedArray(value)) return true;
 
     if(valObjectDef.validateFunction) {
         return valObjectDef.validateFunction(value, opts);

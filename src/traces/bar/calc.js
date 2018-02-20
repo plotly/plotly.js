@@ -11,6 +11,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleCalc = require('../../components/colorscale/calc');
@@ -63,7 +64,7 @@ module.exports = function calc(gd, trace) {
     var base = trace.base,
         b;
 
-    if(Array.isArray(base)) {
+    if(Lib.isArrayOrTypedArray(base)) {
         for(i = 0; i < Math.min(base.length, cd.length); i++) {
             b = sa.d2c(base[i], 0, scalendar);
             if(isNumeric(b)) {

@@ -21,7 +21,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var vals = coerce('values');
     var labels = coerce('labels');
     if(!Array.isArray(labels)) {
-        if(!Array.isArray(vals) || !vals.length) {
+        if(!Lib.isArrayOrTypedArray(vals) || !vals.length) {
             // must have at least one of vals or labels
             traceOut.visible = false;
             return;

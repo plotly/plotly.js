@@ -111,7 +111,7 @@ function calc(container, trace) {
         Axes.expand(xaxis, rawx, { padded: true });
         Axes.expand(yaxis, rawy, { padded: true });
     }
-    else if(Array.isArray(options.markers.sizes)) {
+    else if(Lib.isArrayOrTypedArray(options.markers.sizes)) {
         var sizes = options.markers.sizes;
         Axes.expand(xaxis, rawx, { padded: true, ppad: sizes });
         Axes.expand(yaxis, rawy, { padded: true, ppad: sizes });
@@ -1076,16 +1076,16 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     var marker = trace.marker;
     if(marker) {
-        di.ms = Array.isArray(marker.size) ? marker.size[id] : marker.size;
-        di.mo = Array.isArray(marker.opacity) ? marker.opacity[id] : marker.opacity;
+        di.ms = Lib.isArrayOrTypedArray(marker.size) ? marker.size[id] : marker.size;
+        di.mo = Lib.isArrayOrTypedArray(marker.opacity) ? marker.opacity[id] : marker.opacity;
         di.mx = Array.isArray(marker.symbol) ? marker.symbol[id] : marker.symbol;
-        di.mc = Array.isArray(marker.color) ? marker.color[id] : marker.color;
+        di.mc = Lib.isArrayOrTypedArray(marker.color) ? marker.color[id] : marker.color;
     }
 
     var line = marker && marker.line;
     if(line) {
         di.mlc = Array.isArray(line.color) ? line.color[id] : line.color;
-        di.mlw = Array.isArray(line.width) ? line.width[id] : line.width;
+        di.mlw = Lib.isArrayOrTypedArray(line.width) ? line.width[id] : line.width;
     }
 
     var grad = marker && marker.gradient;

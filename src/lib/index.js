@@ -392,7 +392,7 @@ lib.noneOrAll = function(containerIn, containerOut, attrList) {
  * @param {string} cdAttr : calcdata key
  */
 lib.mergeArray = function(traceAttr, cd, cdAttr) {
-    if(Array.isArray(traceAttr)) {
+    if(lib.isArrayOrTypedArray(traceAttr)) {
         var imax = Math.min(traceAttr.length, cd.length);
         for(var i = 0; i < imax; i++) cd[i][cdAttr] = traceAttr[i];
     }
@@ -411,7 +411,7 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
 lib.fillArray = function(traceAttr, cd, cdAttr, fn) {
     fn = fn || lib.identity;
 
-    if(Array.isArray(traceAttr)) {
+    if(lib.isArrayOrTypedArray(traceAttr)) {
         for(var i = 0; i < cd.length; i++) {
             cd[i][cdAttr] = fn(traceAttr[i]);
         }
@@ -432,7 +432,8 @@ lib.castOption = function(trace, ptNumber, astr, fn) {
 
     var val = lib.nestedProperty(trace, astr).get();
 
-    if(Array.isArray(val)) {
+    if(lib.isArrayOrTypedArray(val)) {
+        // TODO what to do with 2d arrays?
         if(Array.isArray(ptNumber) && Array.isArray(val[ptNumber[0]])) {
             return fn(val[ptNumber[0]][ptNumber[1]]);
         } else {

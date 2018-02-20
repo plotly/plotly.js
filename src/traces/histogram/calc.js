@@ -72,7 +72,7 @@ module.exports = function calc(gd, trace) {
     var pr2c = function(v) { return pa.r2c(v, 0, calendar); };
     var rawCounterData;
 
-    if(Array.isArray(trace[counterData]) && func !== 'count') {
+    if(Lib.isArrayOrTypedArray(trace[counterData]) && func !== 'count') {
         rawCounterData = trace[counterData];
         isAvg = func === 'avg';
         binFunc = binFunctions[func];
@@ -199,7 +199,7 @@ module.exports = function calc(gd, trace) {
 
     arraysToCalcdata(cd, trace);
 
-    if(Array.isArray(trace.selectedpoints)) {
+    if(Lib.isArrayOrTypedArray(trace.selectedpoints)) {
         Lib.tagSelected(cd, trace, ptNumber2cdIndex);
     }
 

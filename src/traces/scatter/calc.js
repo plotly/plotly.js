@@ -6,11 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
@@ -111,7 +111,7 @@ function calcMarkerSize(trace, serieslen) {
         };
     }
 
-    if(Array.isArray(marker.size)) {
+    if(Lib.isArrayOrTypedArray(marker.size)) {
         // I tried auto-type but category and dates dont make much sense.
         var ax = {type: 'linear'};
         Axes.setConvert(ax);
