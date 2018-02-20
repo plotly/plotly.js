@@ -28,7 +28,8 @@ lib.relinkPrivateKeys = require('./relink_private');
 lib.ensureArray = require('./ensure_array');
 
 var isArrayModule = require('./is_array');
-lib.isArrayOrTypedArray = isArrayModule.isArrayOrTypedArray
+lib.isTypedArray = isArrayModule.isTypedArray;
+lib.isArrayOrTypedArray = isArrayModule.isArrayOrTypedArray;
 
 var coerceModule = require('./coerce');
 lib.valObjectMeta = coerceModule.valObjectMeta;

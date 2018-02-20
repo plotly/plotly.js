@@ -13,6 +13,8 @@ var ab = (typeof ArrayBuffer === 'undefined' || !ArrayBuffer.isView) ?
     {isView: function() { return false; }} :
     ArrayBuffer;
 
+exports.isTypedArray = ab.isView;
+
 exports.isArrayOrTypedArray = function(a) {
     return Array.isArray(a) || ab.isView(a);
 };

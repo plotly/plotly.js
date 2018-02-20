@@ -405,10 +405,15 @@ module.exports = function setConvert(ax, fullLayout) {
         if(axLetter in trace) {
             arrayIn = trace[axLetter];
             len = trace._length || arrayIn.length;
-            arrayOut = new Array(len);
 
-            for(i = 0; i < len; i++) {
-                arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
+            if(ax.type === 'linear' && Lib.isTypedArray(arrayIn) && arrayIn.subarray) {
+                arrayOut = arrayIn.subarray(0, len);
+            } else {
+                arrayOut = new Array(len);
+
+                for(i = 0; i < len; i++) {
+                    arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
+                }
             }
         }
         else {
