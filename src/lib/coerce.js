@@ -19,18 +19,20 @@ var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
 var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 var wrap180 = require('./angles').wrap180;
+var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
 
 exports.valObjectMeta = {
     data_array: {
         // You can use *dflt=[] to force said array to exist though.
         description: [
             'An {array} of data.',
-            'The value MUST be an {array}, or we ignore it.'
+            'The value MUST be an {array}, or we ignore it.',
+            'Note that typed arrays (e.g. Float32Array) are supported.'
         ].join(' '),
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            if(Array.isArray(v)) propOut.set(v);
+            if(isArrayOrTypedArray(v)) propOut.set(v);
             else if(dflt !== undefined) propOut.set(dflt);
         }
     },
