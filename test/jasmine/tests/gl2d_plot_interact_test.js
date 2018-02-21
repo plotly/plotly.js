@@ -16,7 +16,6 @@ var selectButton = require('../assets/modebar_button');
 var delay = require('../assets/delay');
 var readPixel = require('../assets/read_pixel');
 
-
 function countCanvases() {
     return d3.selectAll('canvas').size();
 }
@@ -797,9 +796,11 @@ describe('@gl Test gl2d plots', function() {
         var w = 500;
         var h = 500;
 
+        Lib.seedPseudoRandom();
+
         for(var i = 0; i < N; i++) {
             x.push(i);
-            color.push(Math.random());
+            color.push(Lib.pseudoRandom());
         }
 
         Plotly.newPlot(gd, [{
@@ -824,8 +825,9 @@ describe('@gl Test gl2d plots', function() {
             var total = readPixel(gd.querySelector('.gl-canvas-context'), 0, 0, w, h)
                 .reduce(function(acc, v) { return acc + v; }, 0);
 
-            // the total value was 3762487 before PR
+            // the total value was 3777134 before PR
             // https://github.com/plotly/plotly.js/pull/2377
+            // and 105545275 after.
             expect(total).toBeGreaterThan(4e6);
         })
         .catch(fail)
