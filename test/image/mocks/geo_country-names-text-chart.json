@@ -389,8 +389,7 @@
                 "Libya",
                 "Mauritania",
                 "Pakistan"
-            ],
-            "uid": "2d49ab"
+            ]
         },
         {
             "type": "scattergeo",
@@ -782,8 +781,7 @@
                 "Mauritania",
                 "Pakistan"
             ],
-            "geo": "geo2",
-            "uid": "58011b"
+            "geo": "geo2"
         }
     ],
     "layout": {

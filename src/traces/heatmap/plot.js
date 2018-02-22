@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -25,14 +25,14 @@ module.exports = function(gd, plotinfo, cdheatmaps) {
     }
 };
 
-// From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function plotOne(gd, plotinfo, cd) {
-    var trace = cd[0].trace,
-        uid = trace.uid,
-        xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        fullLayout = gd._fullLayout,
-        id = 'hm' + uid;
+    var cd0 = cd[0];
+    var trace = cd0.trace;
+    var uid = trace.uid;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+    var fullLayout = gd._fullLayout;
+    var id = 'hm' + uid;
 
     // in case this used to be a contour map
     fullLayout._paper.selectAll('.contour' + uid).remove();
@@ -45,23 +45,21 @@ function plotOne(gd, plotinfo, cd) {
         return;
     }
 
-    var z = cd[0].z,
-        x = cd[0].x,
-        y = cd[0].y,
-        isContour = Registry.traceIs(trace, 'contour'),
-        zsmooth = isContour ? 'best' : trace.zsmooth,
+    var z = cd0.z;
+    var x = cd0.x;
+    var y = cd0.y;
+    var xc = cd0.xCenter;
+    var yc = cd0.yCenter;
+    var isContour = Registry.traceIs(trace, 'contour');
+    var zsmooth = isContour ? 'best' : trace.zsmooth;
 
-        // get z dims
-        m = z.length,
-        n = maxRowLength(z),
-        xrev = false,
-        left,
-        right,
-        temp,
-        yrev = false,
-        top,
-        bottom,
-        i;
+    // get z dims
+    var m = z.length;
+    var n = maxRowLength(z);
+    var xrev = false;
+    var yrev = false;
+
+    var left, right, temp, top, bottom, i;
 
     // TODO: if there are multiple overlapping categorical heatmaps,
     // or if we allow category sorting, then the categories may not be
@@ -113,11 +111,10 @@ function plotOne(gd, plotinfo, cd) {
     // for contours with heatmap fill, we generate the boundaries based on
     // brick centers but then use the brick edges for drawing the bricks
     if(isContour) {
-        // TODO: for 'best' smoothing, we really should use the given brick
-        // centers as well as brick bounds in calculating values, in case of
-        // nonuniform brick sizes
-        x = cd[0].xfill;
-        y = cd[0].yfill;
+        xc = x;
+        yc = y;
+        x = cd0.xfill;
+        y = cd0.yfill;
     }
 
     // make an image that goes at most half a screen off either side, to keep
@@ -199,90 +196,20 @@ function plotOne(gd, plotinfo, cd) {
         };
     }
 
-    // get interpolated bin value. Returns {bin0:closest bin, frac:fractional dist to next, bin1:next bin}
-    function findInterp(pixel, pixArray) {
-        var maxbin = pixArray.length - 2,
-            bin = Lib.constrain(Lib.findBin(pixel, pixArray), 0, maxbin),
-            pix0 = pixArray[bin],
-            pix1 = pixArray[bin + 1],
-            interp = Lib.constrain(bin + (pixel - pix0) / (pix1 - pix0) - 0.5, 0, maxbin),
-            bin0 = Math.round(interp),
-            frac = Math.abs(interp - bin0);
-
-        if(!interp || interp === maxbin || !frac) {
-            return {
-                bin0: bin0,
-                bin1: bin0,
-                frac: 0
-            };
-        }
-        return {
-            bin0: bin0,
-            frac: frac,
-            bin1: Math.round(bin0 + frac / (interp - bin0))
-        };
-    }
-
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
-    var yi = ypx(0),
-        yb = [yi, yi],
-        xbi = xrev ? 0 : 1,
-        ybi = yrev ? 0 : 1,
-        // for collecting an average luminosity of the heatmap
-        pixcount = 0,
-        rcount = 0,
-        gcount = 0,
-        bcount = 0,
-        brickWithPadding,
-        xb,
-        j,
-        xi,
-        v,
-        row,
-        c;
+    var yi = ypx(0);
+    var yb = [yi, yi];
+    var xbi = xrev ? 0 : 1;
+    var ybi = yrev ? 0 : 1;
+    // for collecting an average luminosity of the heatmap
+    var pixcount = 0;
+    var rcount = 0;
+    var gcount = 0;
+    var bcount = 0;
 
-    function applyBrickPadding(trace, x0, x1, y0, y1, xIndex, xLength, yIndex, yLength) {
-        var padding = {
-                x0: x0,
-                x1: x1,
-                y0: y0,
-                y1: y1
-            },
-            xEdgeGap = trace.xgap * 2 / 3,
-            yEdgeGap = trace.ygap * 2 / 3,
-            xCenterGap = trace.xgap / 3,
-            yCenterGap = trace.ygap / 3;
-
-        if(yIndex === yLength - 1) { // top edge brick
-            padding.y1 = y1 - yEdgeGap;
-        }
-
-        if(xIndex === xLength - 1) { // right edge brick
-            padding.x0 = x0 + xEdgeGap;
-        }
-
-        if(yIndex === 0) { // bottom edge brick
-            padding.y0 = y0 + yEdgeGap;
-        }
-
-        if(xIndex === 0) { // left edge brick
-            padding.x1 = x1 - xEdgeGap;
-        }
-
-        if(xIndex > 0 && xIndex < xLength - 1) { // brick in the center along x
-            padding.x0 = x0 + xCenterGap;
-            padding.x1 = x1 - xCenterGap;
-        }
-
-        if(yIndex > 0 && yIndex < yLength - 1) { // brick in the center along y
-            padding.y0 = y0 + yCenterGap;
-            padding.y1 = y1 - yCenterGap;
-        }
-
-        return padding;
-    }
+    var xb, j, xi, v, row, c;
 
     function setColor(v, pixsize) {
         if(v !== undefined) {
@@ -298,13 +225,6 @@ function plotOne(gd, plotinfo, cd) {
             return c;
         }
         return [0, 0, 0, 0];
-    }
-
-    function putColor(pixels, pxIndex, c) {
-        pixels[pxIndex] = c[0];
-        pixels[pxIndex + 1] = c[1];
-        pixels[pxIndex + 2] = c[2];
-        pixels[pxIndex + 3] = Math.round(c[3] * 255);
     }
 
     function interpColor(r0, r1, xinterp, yinterp) {
@@ -349,24 +269,26 @@ function plotOne(gd, plotinfo, cd) {
         }
 
         if(zsmooth === 'best') {
-            var xPixArray = new Array(x.length),
-                yPixArray = new Array(y.length),
-                xinterpArray = new Array(imageWidth),
-                yinterp,
-                r0,
-                r1;
+            var xForPx = xc || x;
+            var yForPx = yc || y;
+            var xPixArray = new Array(xForPx.length);
+            var yPixArray = new Array(yForPx.length);
+            var xinterpArray = new Array(imageWidth);
+            var findInterpX = xc ? findInterpFromCenters : findInterp;
+            var findInterpY = yc ? findInterpFromCenters : findInterp;
+            var yinterp, r0, r1;
 
             // first make arrays of x and y pixel locations of brick boundaries
-            for(i = 0; i < x.length; i++) xPixArray[i] = Math.round(xa.c2p(x[i]) - left);
-            for(i = 0; i < y.length; i++) yPixArray[i] = Math.round(ya.c2p(y[i]) - top);
+            for(i = 0; i < xForPx.length; i++) xPixArray[i] = Math.round(xa.c2p(xForPx[i]) - left);
+            for(i = 0; i < yForPx.length; i++) yPixArray[i] = Math.round(ya.c2p(yForPx[i]) - top);
 
             // then make arrays of interpolations
             // (bin0=closest, bin1=next, frac=fractional dist.)
-            for(i = 0; i < imageWidth; i++) xinterpArray[i] = findInterp(i, xPixArray);
+            for(i = 0; i < imageWidth; i++) xinterpArray[i] = findInterpX(i, xPixArray);
 
             // now do the interpolations and fill the png
             for(j = 0; j < imageHeight; j++) {
-                yinterp = findInterp(j, yPixArray);
+                yinterp = findInterpY(j, yPixArray);
                 r0 = z[yinterp.bin0];
                 r1 = z[yinterp.bin1];
                 for(i = 0; i < imageWidth; i++, pxIndex += 4) {
@@ -401,6 +323,14 @@ function plotOne(gd, plotinfo, cd) {
 
         context.putImageData(imageData, 0, 0);
     } else { // zsmooth = false -> filling potentially large bricks works fastest with fillRect
+
+        // gaps do not need to be exact integers, but if they *are* we will get
+        // cleaner edges by rounding at least one edge
+        var xGap = trace.xgap;
+        var yGap = trace.ygap;
+        var xGapLeft = Math.floor(xGap / 2);
+        var yGapTop = Math.floor(yGap / 2);
+
         for(j = 0; j < m; j++) {
             row = z[j];
             yb.reverse();
@@ -421,20 +351,8 @@ function plotOne(gd, plotinfo, cd) {
                 c = setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
                 context.fillStyle = 'rgba(' + c.join(',') + ')';
 
-                brickWithPadding = applyBrickPadding(trace,
-                                                     xb[0],
-                                                     xb[1],
-                                                     yb[0],
-                                                     yb[1],
-                                                     i,
-                                                     n,
-                                                     j,
-                                                     m);
-
-                context.fillRect(brickWithPadding.x0,
-                                 brickWithPadding.y0,
-                                (brickWithPadding.x1 - brickWithPadding.x0),
-                                (brickWithPadding.y1 - brickWithPadding.y0));
+                context.fillRect(xb[0] + xGapLeft, yb[0] + yGapTop,
+                    xb[1] - xb[0] - xGap, yb[1] - yb[0] - yGap);
             }
         }
     }
@@ -464,4 +382,62 @@ function plotOne(gd, plotinfo, cd) {
     });
 
     image3.exit().remove();
+}
+
+// get interpolated bin value. Returns {bin0:closest bin, frac:fractional dist to next, bin1:next bin}
+function findInterp(pixel, pixArray) {
+    var maxBin = pixArray.length - 2;
+    var bin = Lib.constrain(Lib.findBin(pixel, pixArray), 0, maxBin);
+    var pix0 = pixArray[bin];
+    var pix1 = pixArray[bin + 1];
+    var interp = Lib.constrain(bin + (pixel - pix0) / (pix1 - pix0) - 0.5, 0, maxBin);
+    var bin0 = Math.round(interp);
+    var frac = Math.abs(interp - bin0);
+
+    if(!interp || interp === maxBin || !frac) {
+        return {
+            bin0: bin0,
+            bin1: bin0,
+            frac: 0
+        };
+    }
+    return {
+        bin0: bin0,
+        frac: frac,
+        bin1: Math.round(bin0 + frac / (interp - bin0))
+    };
+}
+
+function findInterpFromCenters(pixel, centerPixArray) {
+    var maxBin = centerPixArray.length - 1;
+    var bin = Lib.constrain(Lib.findBin(pixel, centerPixArray), 0, maxBin);
+    var pix0 = centerPixArray[bin];
+    var pix1 = centerPixArray[bin + 1];
+    var frac = ((pixel - pix0) / (pix1 - pix0)) || 0;
+    if(frac <= 0) {
+        return {
+            bin0: bin,
+            bin1: bin,
+            frac: 0
+        };
+    }
+    if(frac < 0.5) {
+        return {
+            bin0: bin,
+            bin1: bin + 1,
+            frac: frac
+        };
+    }
+    return {
+        bin0: bin + 1,
+        bin1: bin,
+        frac: 1 - frac
+    };
+}
+
+function putColor(pixels, pxIndex, c) {
+    pixels[pxIndex] = c[0];
+    pixels[pxIndex + 1] = c[1];
+    pixels[pxIndex + 2] = c[2];
+    pixels[pxIndex + 3] = Math.round(c[3] * 255);
 }

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,7 +20,7 @@ Surface.plot = require('./convert');
 Surface.moduleType = 'trace';
 Surface.name = 'surface';
 Surface.basePlotModule = require('../../plots/gl3d');
-Surface.categories = ['gl3d', 'noOpacity'];
+Surface.categories = ['gl3d', '2dMap', 'noOpacity'];
 Surface.meta = {
     description: [
         'The data the describes the coordinates of the surface is set in `z`.',

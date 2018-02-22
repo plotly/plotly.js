@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,60 +11,43 @@
 
 var subtypes = require('./subtypes');
 
-var DESELECTDIM = 0.2;
-
 module.exports = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd,
         xa = searchInfo.xaxis,
         ya = searchInfo.yaxis,
         selection = [],
         trace = cd[0].trace,
-        curveNumber = trace.index,
-        marker = trace.marker,
         i,
         di,
         x,
         y;
 
-    // TODO: include lines? that would require per-segment line properties
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
-    if(trace.visible !== true || hasOnlyLines) return;
-
-    var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
+    if(hasOnlyLines) return [];
 
     if(polygon === false) { // clear selection
-        for(i = 0; i < cd.length; i++) cd[i].dim = 0;
+        for(i = 0; i < cd.length; i++) {
+            cd[i].selected = 0;
+        }
     }
     else {
         for(i = 0; i < cd.length; i++) {
             di = cd[i];
             x = xa.c2p(di.x);
             y = ya.c2p(di.y);
+
             if(polygon.contains([x, y])) {
                 selection.push({
-                    curveNumber: curveNumber,
                     pointNumber: i,
-                    x: di.x,
-                    y: di.y,
-                    id: di.id
+                    x: xa.c2d(di.x),
+                    y: ya.c2d(di.y)
                 });
-                di.dim = 0;
+                di.selected = 1;
+            } else {
+                di.selected = 0;
             }
-            else di.dim = 1;
         }
     }
-
-    // do the dimming here, as well as returning the selection
-    // The logic here duplicates Drawing.pointStyle, but I don't want
-    // d.dim in pointStyle in case something goes wrong with selection.
-    cd[0].node3.selectAll('path.point')
-        .style('opacity', function(d) {
-            return ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
-        });
-    cd[0].node3.selectAll('text')
-        .style('opacity', function(d) {
-            return d.dim ? DESELECTDIM : 1;
-        });
 
     return selection;
 };

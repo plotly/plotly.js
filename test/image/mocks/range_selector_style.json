@@ -494,8 +494,7 @@
                 "24",
                 "14"
             ],
-            "name": "raw",
-            "uid": "3154a7"
+            "name": "raw"
         },
         {
             "mode": "lines",
@@ -996,8 +995,7 @@
             ],
             "xaxis": "x2",
             "yaxis": "y2",
-            "name": "dev from mean",
-            "uid": "d16487"
+            "name": "dev from mean"
         }
     ],
     "layout": {
@@ -1062,7 +1060,7 @@
                         "step": "year",
                         "stepmode": "todate",
                         "count": 1,
-                        "label": "year<br>to<br>date"
+                        "label": "<i>year<br>to<br>date</i>"
                     },
                     {
                         "step": "all",
@@ -1104,8 +1102,7 @@
             "y": 1.02,
             "yanchor": "bottom"
         },
-        "height": 450,
-        "width": 1000,
-        "autosize": true
+        "height": 500,
+        "width": 700
     }
 }

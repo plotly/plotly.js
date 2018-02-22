@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -37,18 +37,6 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
 
     coerce('autorange', !axOut.isValidRange(containerIn.range));
     coerce('range');
-
-    // Expand slider range to the axis range
-    // TODO: what if the ranges are reversed?
-    if(containerOut.range) {
-        var outRange = containerOut.range,
-            axRange = axOut.range;
-
-        outRange[0] = axOut.l2r(Math.min(axOut.r2l(outRange[0]), axOut.r2l(axRange[0])));
-        outRange[1] = axOut.l2r(Math.max(axOut.r2l(outRange[1]), axOut.r2l(axRange[1])));
-    }
-
-    axOut.cleanRange('rangeslider.range');
 
     // to map back range slider (auto) range
     containerOut._input = containerIn;

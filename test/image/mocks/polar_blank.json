@@ -1,0 +1,75 @@
+{
+  "data": [{
+    "type": "scatterpolar",
+    "r": [],
+    "theta": []
+  }, {
+    "type": "scatterpolar",
+    "r": [],
+    "theta": [],
+    "subplot": "polar2"
+  }, {
+    "type": "scatterpolar",
+    "r": [],
+    "theta": [],
+    "subplot": "polar3"
+  }, {
+    "type": "scatterpolar",
+    "mode": "markers+text",
+    "r": [0],
+    "theta": [0],
+    "text": "<b>N.B.</b><br>radial<br>auotrange<br>for (0,0)<br>gives [0,1]",
+    "textposition": "left",
+    "subplot": "polar4"
+  }],
+  "layout": {
+    "polar": {
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0.56, 1]
+      },
+      "radialaxis": {
+        "title": "blank",
+        "angle": 180
+      }
+    },
+    "polar2": {
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0, 0.44]
+      },
+      "angularaxis": {
+        "showline": true,
+        "showgrid": false,
+        "showticklabels": false,
+        "ticks": ""
+      },
+      "radialaxis": {
+        "showline": false,
+        "showgrid": false,
+        "showticklabels": false,
+        "ticks": ""
+      }
+    },
+    "polar3": {
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0.56, 1]
+      },
+      "radialaxis": {
+        "title": "blank",
+        "side": "counterclockwise"
+      },
+      "angularaxis": {"visible": false}
+    },
+    "polar4": {
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0, 0.44]
+      },
+      "radialaxis": {"visible": false}
+    },
+    "width": 600,
+    "height": 500
+  }
+}

@@ -21,8 +21,7 @@
                 "end": 8,
                 "size": 1
             },
-            "type": "histogram",
-            "uid": "b7f050"
+            "type": "histogram"
         }
     ],
     "layout": {

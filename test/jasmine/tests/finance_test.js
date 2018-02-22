@@ -5,6 +5,7 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var mock0 = {
     open: [33.01, 33.31, 33.50, 32.06, 34.12, 33.05, 33.31, 33.50],
@@ -29,7 +30,7 @@ describe('finance charts defaults:', function() {
             layout: layout
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
 
         return gd;
     }
@@ -383,26 +384,43 @@ describe('finance charts calc transforms:', function() {
         return calcTrace[0].trace;
     }
 
-    function _calc(data, layout) {
+    function _calcRaw(data, layout) {
         var gd = {
             data: data,
             layout: layout || {}
         };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         Plots.doCalcdata(gd);
+        return gd.calcdata;
+    }
 
-        return gd.calcdata.map(calcDatatoTrace);
+    function _calc(data, layout) {
+        return _calcRaw(data, layout).map(calcDatatoTrace);
+    }
+
+    // add some points that shouldn't make it into calcdata because
+    // one of o, h, l, c is not numeric
+    function addJunk(trace) {
+        // x filtering happens in other ways
+        if(trace.x) trace.x.push(1, 1, 1, 1);
+
+        trace.open.push('', 1, 1, 1);
+        trace.high.push(1, null, 1, 1);
+        trace.low.push(1, 1, [1], 1);
+        trace.close.push(1, 1, 1, 'close');
     }
 
     it('should fill when *x* is not present', function() {
         var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
         });
+        addJunk(trace0);
 
         var trace1 = Lib.extendDeep({}, mock0, {
             type: 'candlestick',
         });
+        addJunk(trace1);
 
         var out = _calc([trace0, trace1]);
 
@@ -460,10 +478,10 @@ describe('finance charts calc transforms:', function() {
 
         expect(out[0].hoverinfo).toEqual('x+text+name');
         expect(out[0].text[0])
-            .toEqual('Open: 33.01<br>High: 34.2<br>Low: 31.7<br>Close: 34.1<br>A');
+            .toEqual('open: 33.01<br>high: 34.2<br>low: 31.7<br>close: 34.1<br>A');
         expect(out[0].hoverinfo).toEqual('x+text+name');
         expect(out[1].text[0])
-            .toEqual('Open: 33.31<br>High: 34.37<br>Low: 30.75<br>Close: 31.93<br>B');
+            .toEqual('open: 33.31<br>high: 34.37<br>low: 30.75<br>close: 31.93<br>B');
 
         expect(out[2].hoverinfo).toEqual('x+text');
         expect(out[2].text[0]).toEqual('IMPORTANT');
@@ -473,10 +491,10 @@ describe('finance charts calc transforms:', function() {
 
         expect(out[4].hoverinfo).toEqual('text');
         expect(out[4].text[0])
-            .toEqual('Open: 33.01<br>High: 34.2<br>Low: 31.7<br>Close: 34.1');
+            .toEqual('open: 33.01<br>high: 34.2<br>low: 31.7<br>close: 34.1');
         expect(out[5].hoverinfo).toEqual('text');
         expect(out[5].text[0])
-            .toEqual('Open: 33.31<br>High: 34.37<br>Low: 30.75<br>Close: 31.93');
+            .toEqual('open: 33.31<br>high: 34.37<br>low: 30.75<br>close: 31.93');
 
         expect(out[6].hoverinfo).toEqual('x');
         expect(out[6].text[0]).toEqual('');
@@ -703,6 +721,54 @@ describe('finance charts calc transforms:', function() {
 
         expect(out[1].x).toEqual([]);
         expect(out[3].x).toEqual([]);
+    });
+
+    it('should handle cases where \'open\' and \'close\' entries are equal', function() {
+        var out = _calc([{
+            type: 'ohlc',
+            open: [0, 1, 0, 2, 1, 1, 2, 2],
+            high: [3, 3, 3, 3, 3, 3, 3, 3],
+            low: [-1, -1, -1, -1, -1, -1, -1, -1],
+            close: [0, 2, 0, 1, 1, 1, 2, 2],
+            tickwidth: 0
+        }, {
+            type: 'candlestick',
+            open: [0, 2, 0, 1],
+            high: [3, 3, 3, 3],
+            low: [-1, -1, -1, -1],
+            close: [0, 1, 0, 2]
+        }]);
+
+        expect(out[0].x).toEqual([
+            0, 0, 0, 0, 0, 0, null,
+            1, 1, 1, 1, 1, 1, null,
+            6, 6, 6, 6, 6, 6, null,
+            7, 7, 7, 7, 7, 7, null
+        ]);
+        expect(out[1].x).toEqual([
+            2, 2, 2, 2, 2, 2, null,
+            3, 3, 3, 3, 3, 3, null,
+            4, 4, 4, 4, 4, 4, null,
+            5, 5, 5, 5, 5, 5, null
+        ]);
+
+        expect(out[2].x).toEqual([
+            0, 0, 0, 0, 0, 0,
+            3, 3, 3, 3, 3, 3
+        ]);
+        expect(out[3].x).toEqual([
+            1, 1, 1, 1, 1, 1,
+            2, 2, 2, 2, 2, 2
+        ]);
+    });
+
+    it('should not include box hover labels prefix in candlestick calcdata', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'candlestick',
+        });
+        var out = _calcRaw([trace0]);
+
+        expect(out[0][0].t.labels).toBeUndefined();
     });
 });
 

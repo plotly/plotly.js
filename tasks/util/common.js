@@ -44,8 +44,7 @@ exports.doesFileExist = function(filePath) {
 exports.formatTime = function(date) {
     return [
         date.toLocaleDateString(),
-        date.toLocaleTimeString(),
-        date.toString().match(/\(([A-Za-z\s].*)\)/)[1]
+        date.toLocaleTimeString()
     ].join(' ');
 };
 

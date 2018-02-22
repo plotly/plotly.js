@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -18,6 +18,11 @@ var Drawing = require('../drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var anchorUtils = require('../legend/anchor_utils');
+
+var alignmentConstants = require('../../constants/alignment');
+var LINE_SPACING = alignmentConstants.LINE_SPACING;
+var FROM_TL = alignmentConstants.FROM_TL;
+var FROM_BR = alignmentConstants.FROM_BR;
 
 var constants = require('./constants');
 var getUpdateObject = require('./get_update_object');
@@ -56,10 +61,10 @@ module.exports = function draw(gd) {
             var button = d3.select(this);
             var update = getUpdateObject(axisLayout, d);
 
-            d.isActive = isActive(axisLayout, d, update);
+            d._isActive = isActive(axisLayout, d, update);
 
             button.call(drawButtonRect, selectorLayout, d);
-            button.call(drawButtonText, selectorLayout, d);
+            button.call(drawButtonText, selectorLayout, d, gd);
 
             button.on('click', function() {
                 if(gd._dragged) return;
@@ -68,22 +73,17 @@ module.exports = function draw(gd) {
             });
 
             button.on('mouseover', function() {
-                d.isHovered = true;
+                d._isHovered = true;
                 button.call(drawButtonRect, selectorLayout, d);
             });
 
             button.on('mouseout', function() {
-                d.isHovered = false;
+                d._isHovered = false;
                 button.call(drawButtonRect, selectorLayout, d);
             });
         });
 
-        // N.B. this mutates selectorLayout
-        reposition(gd, buttons, selectorLayout, axisLayout._name);
-
-        selector.attr('transform', 'translate(' +
-            selectorLayout.lx + ',' + selectorLayout.ly +
-        ')');
+        reposition(gd, buttons, selectorLayout, axisLayout._name, selector);
     });
 
 };
@@ -141,16 +141,14 @@ function drawButtonRect(button, selectorLayout, d) {
 }
 
 function getFillColor(selectorLayout, d) {
-    return (d.isActive || d.isHovered) ?
+    return (d._isActive || d._isHovered) ?
         selectorLayout.activecolor :
         selectorLayout.bgcolor;
 }
 
-function drawButtonText(button, selectorLayout, d) {
+function drawButtonText(button, selectorLayout, d, gd) {
     function textLayout(s) {
-        svgTextUtils.convertToTspans(s);
-
-        // TODO do we need anything else here?
+        svgTextUtils.convertToTspans(s, gd);
     }
 
     var text = button.selectAll('text')
@@ -175,33 +173,30 @@ function getLabel(opts) {
     return opts.count + opts.step.charAt(0);
 }
 
-function reposition(gd, buttons, opts, axName) {
-    opts.width = 0;
-    opts.height = 0;
+function reposition(gd, buttons, opts, axName, selector) {
+    var width = 0;
+    var height = 0;
 
     var borderWidth = opts.borderwidth;
 
     buttons.each(function() {
-        var button = d3.select(this),
-            text = button.select('.selector-text'),
-            tspans = text.selectAll('tspan');
+        var button = d3.select(this);
+        var text = button.select('.selector-text');
 
-        var tHeight = opts.font.size * 1.3,
-            tLines = tspans[0].length || 1,
-            hEff = Math.max(tHeight * tLines, 16) + 3;
+        var tHeight = opts.font.size * LINE_SPACING;
+        var hEff = Math.max(tHeight * svgTextUtils.lineCount(text), 16) + 3;
 
-        opts.height = Math.max(opts.height, hEff);
+        height = Math.max(height, hEff);
     });
 
     buttons.each(function() {
-        var button = d3.select(this),
-            rect = button.select('.selector-rect'),
-            text = button.select('.selector-text'),
-            tspans = text.selectAll('tspan');
+        var button = d3.select(this);
+        var rect = button.select('.selector-rect');
+        var text = button.select('.selector-text');
 
-        var tWidth = text.node() && Drawing.bBox(text.node()).width,
-            tHeight = opts.font.size * 1.3,
-            tLines = tspans[0].length || 1;
+        var tWidth = text.node() && Drawing.bBox(text.node()).width;
+        var tHeight = opts.font.size * LINE_SPACING;
+        var tLines = svgTextUtils.lineCount(text);
 
         var wEff = Math.max(tWidth + 10, constants.minButtonWidth);
 
@@ -210,64 +205,59 @@ function reposition(gd, buttons, opts, axName) {
         // TODO add buttongap attribute
 
         button.attr('transform', 'translate(' +
-            (borderWidth + opts.width) + ',' + borderWidth +
+            (borderWidth + width) + ',' + borderWidth +
         ')');
 
         rect.attr({
             x: 0,
             y: 0,
             width: wEff,
-            height: opts.height
+            height: height
         });
 
-        var textAttrs = {
-            x: wEff / 2,
-            y: opts.height / 2 - ((tLines - 1) * tHeight / 2) + 3
-        };
+        svgTextUtils.positionText(text, wEff / 2,
+            height / 2 - ((tLines - 1) * tHeight / 2) + 3);
 
-        text.attr(textAttrs);
-        tspans.attr(textAttrs);
-
-        opts.width += wEff + 5;
+        width += wEff + 5;
     });
 
-    buttons.selectAll('rect').attr('height', opts.height);
-
     var graphSize = gd._fullLayout._size;
-    opts.lx = graphSize.l + graphSize.w * opts.x;
-    opts.ly = graphSize.t + graphSize.h * (1 - opts.y);
+    var lx = graphSize.l + graphSize.w * opts.x;
+    var ly = graphSize.t + graphSize.h * (1 - opts.y);
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(opts)) {
-        opts.lx -= opts.width;
+        lx -= width;
         xanchor = 'right';
     }
     if(anchorUtils.isCenterAnchor(opts)) {
-        opts.lx -= opts.width / 2;
+        lx -= width / 2;
         xanchor = 'center';
     }
 
     var yanchor = 'top';
     if(anchorUtils.isBottomAnchor(opts)) {
-        opts.ly -= opts.height;
+        ly -= height;
         yanchor = 'bottom';
     }
     if(anchorUtils.isMiddleAnchor(opts)) {
-        opts.ly -= opts.height / 2;
+        ly -= height / 2;
         yanchor = 'middle';
     }
 
-    opts.width = Math.ceil(opts.width);
-    opts.height = Math.ceil(opts.height);
-    opts.lx = Math.round(opts.lx);
-    opts.ly = Math.round(opts.ly);
+    width = Math.ceil(width);
+    height = Math.ceil(height);
+    lx = Math.round(lx);
+    ly = Math.round(ly);
 
     Plots.autoMargin(gd, axName + '-range-selector', {
         x: opts.x,
         y: opts.y,
-        l: opts.width * ({right: 1, center: 0.5}[xanchor] || 0),
-        r: opts.width * ({left: 1, center: 0.5}[xanchor] || 0),
-        b: opts.height * ({top: 1, middle: 0.5}[yanchor] || 0),
-        t: opts.height * ({bottom: 1, middle: 0.5}[yanchor] || 0)
+        l: width * FROM_TL[xanchor],
+        r: width * FROM_BR[xanchor],
+        b: height * FROM_BR[yanchor],
+        t: height * FROM_TL[yanchor]
     });
+
+    selector.attr('transform', 'translate(' + lx + ',' + ly + ')');
 }

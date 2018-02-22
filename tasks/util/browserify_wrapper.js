@@ -2,11 +2,11 @@ var fs = require('fs');
 var path = require('path');
 
 var browserify = require('browserify');
-var UglifyJS = require('uglify-js');
+var minify = require('minify-stream');
 
 var constants = require('./constants');
 var compressAttributes = require('./compress_attributes');
-var patchMinified = require('./patch_minified');
+var strictD3 = require('./strict_d3');
 
 /** Convenience browserify wrapper
  *
@@ -32,36 +32,41 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts) {
     opts = opts || {};
 
     // do we output a minified file?
-    var pathToMinBundle = opts.pathToMinBundle,
-        outputMinified = !!pathToMinBundle && !opts.debug;
+    var pathToMinBundle = opts.pathToMinBundle;
+    var outputMinified = !!pathToMinBundle;
 
     var browserifyOpts = {};
     browserifyOpts.standalone = opts.standalone;
     browserifyOpts.debug = opts.debug;
     browserifyOpts.transform = outputMinified ? [compressAttributes] : [];
 
-    var b = browserify(pathToIndex, browserifyOpts),
-        bundleWriteStream = fs.createWriteStream(pathToBundle);
+    if(opts.debug) {
+        browserifyOpts.transform.push(strictD3);
+    }
 
-    bundleWriteStream.on('finish', function() {
-        logger(pathToBundle);
+    var b = browserify(pathToIndex, browserifyOpts);
+
+    var bundleStream = b.bundle(function(err) {
+        if(err) throw err;
     });
 
-    b.bundle(function(err, buf) {
-        if(err) throw err;
-
-        if(outputMinified) {
-            var minifiedCode = UglifyJS.minify(buf.toString(), constants.uglifyOptions).code;
-            minifiedCode = patchMinified(minifiedCode);
-
-            fs.writeFile(pathToMinBundle, minifiedCode, function(err) {
-                if(err) throw err;
-
+    if(outputMinified) {
+        bundleStream
+            .pipe(minify(constants.uglifyOptions))
+            .pipe(fs.createWriteStream(pathToMinBundle))
+            .on('finish', function() {
                 logger(pathToMinBundle);
             });
-        }
-    })
-    .pipe(bundleWriteStream);
+    }
+
+    bundleStream
+        .pipe(fs.createWriteStream(pathToBundle))
+        .on('finish', function() {
+            logger(pathToBundle);
+            if(opts.then) {
+                opts.then();
+            }
+        });
 };
 
 function logger(pathToOutput) {

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -63,7 +63,7 @@ proto.handlePick = function(pickResult) {
         ],
         textLabel: this.textLabels[index],
         name: this.name,
-        pointIndex: [xIndex, yIndex],
+        pointIndex: [yIndex, xIndex],
         hoverinfo: this.hoverinfo
     };
 };
@@ -71,6 +71,7 @@ proto.handlePick = function(pickResult) {
 proto.update = function(fullTrace, calcTrace) {
     var calcPt = calcTrace[0];
 
+    this.index = fullTrace.index;
     this.name = fullTrace.name;
     this.hoverinfo = fullTrace.hoverinfo;
 

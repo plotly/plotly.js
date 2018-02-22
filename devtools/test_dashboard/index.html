@@ -19,9 +19,12 @@
   </div>
   <div id="snapshot"></div>
 
-  <script type="text/javascript" src="../../dist/extras/mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
-  <script id="source" type="text/javascript" src="../../build/plotly.js"></script>
-  <script type="text/javascript" src="../../test/image/strict-d3.js" charset="utf-8"></script>
-  <script type="text/javascript" src="../../build/test_dashboard-bundle.js"></script>
+  <!-- uncomment below for IE9/10 support -->
+  <!-- <script>if(typeof window.Int16Array !== 'function')document.write("<scri"+"pt src='../../dist/extras/typedarray.min.js'></scr"+"ipt>");</script>
+  <script>document.write("<scri"+"pt src='../../dist/extras/request_animation_frame.js'></scr"+"ipt>");</script> -->
+
+  <script src="../../dist/extras/mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+  <script id="source" src="../../build/plotly.js"></script>
+  <script src="../../build/test_dashboard-bundle.js"></script>
 </body>
 </html>

@@ -1,0 +1,72 @@
+{
+  "data": [{
+    "mode": "lines+markers+text",
+    "x": [1, 2, 3, 4, 5, 6],
+    "y": [1, 3, 2, 4, 5, 7],
+    "ids": ["a", "b", "c", "d", "e", "f"],
+    "text": ["a", "b", "c", "d", "e", "f"],
+    "marker": {
+      "color": "#67353E",
+      "size": 12
+    },
+    "textposition": "top left",
+    "selectedpoints": [1, 2, 3],
+    "selected": {
+      "marker": {
+        "color": "blue",
+        "size": 20
+      }
+    },
+    "unselected": {
+      "marker": {
+        "color": "green",
+        "opacity": 0.5
+      }
+    },
+    "transforms": [{
+      "type": "filter",
+      "target": "x",
+      "operation": "][",
+      "value": [3.5, 4.5]
+    }]
+  }, {
+    "mode": "lines+markers+text",
+    "x": [1, 2, 3, 4, 5, 6],
+    "y": [6, 5, 6, 5, 4, 3],
+    "ids": ["a", "b", "c", "d", "e", "f"],
+    "text": ["a", "b", "c", "d", "e", "f"],
+    "marker": {
+      "color": "#34ABA2",
+      "size": 12
+    },
+    "textposition": "top left",
+    "selectedpoints": [],
+    "selected": {
+      "marker": {
+        "color": "green"
+      }
+    },
+    "unselected": {
+      "marker": {
+        "color": "blue",
+        "opacity": 0.5
+      }
+    },
+    "transforms": [{
+      "type": "filter",
+      "target": "x",
+      "operation": "][",
+      "value": [3.5, 4.5]
+    }]
+  }],
+  "layout": {
+    "dragmode": "lasso",
+    "legend": {
+      "x": 0,
+      "y": 1,
+      "xanchor": "left",
+      "yanchor": "bottom"
+    },
+    "width": 600
+  }
+}

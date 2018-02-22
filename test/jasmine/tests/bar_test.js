@@ -3,13 +3,21 @@ var Plotly = require('@lib/index');
 var Bar = require('@src/traces/bar');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
+var Drawing = require('@src/components/drawing');
 
-var PlotlyInternal = require('@src/plotly');
-var Axes = PlotlyInternal.Axes;
+var Axes = require('@src/plots/cartesian/axes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var customMatchers = require('../assets/custom_matchers');
+var fail = require('../assets/fail_test');
+var checkTicks = require('../assets/custom_assertions').checkTicks;
+var supplyAllDefaults = require('../assets/supply_defaults');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertClip = customAssertions.assertClip;
+var assertNodeDisplay = customAssertions.assertNodeDisplay;
+
+var d3 = require('d3');
 
 describe('Bar.supplyDefaults', function() {
     'use strict';
@@ -94,6 +102,7 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.texfont).toBeUndefined();
         expect(traceOut.insidetexfont).toBeUndefined();
         expect(traceOut.outsidetexfont).toBeUndefined();
+        expect(traceOut.constraintext).toBeUndefined();
     });
 
     it('should default textfont to layout.font', function() {
@@ -115,6 +124,7 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.insidetextfont).not.toBe(layout.font);
         expect(traceOut.insidetextfont).not.toBe(traceOut.textfont);
         expect(traceOut.outsidetexfont).toBeUndefined();
+        expect(traceOut.constraintext).toBe('both');
     });
 
     it('should inherit layout.calendar', function() {
@@ -146,10 +156,6 @@ describe('Bar.supplyDefaults', function() {
 
 describe('bar calc / setPositions', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     it('should fill in calc pt fields (stack case)', function() {
         var gd = mockBarPlot([{
@@ -262,10 +268,6 @@ describe('bar calc / setPositions', function() {
 describe('Bar.calc', function() {
     'use strict';
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     it('should guard against invalid base items', function() {
         var gd = mockBarPlot([{
             base: [null, 1, 2],
@@ -283,14 +285,43 @@ describe('Bar.calc', function() {
         var cd = gd.calcdata;
         assertPointField(cd, 'b', [[0, 1, 2], [0, 1, 0], [0, 0]]);
     });
+
+    it('should not exclude items with non-numeric x/y from calcdata', function() {
+        var gd = mockBarPlot([{
+            x: [5, NaN, 15, 20, null, 21],
+            y: [20, NaN, 23, 25, null, 26]
+        }]);
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[5, NaN, 15, 20, NaN, 21]]);
+        assertPointField(cd, 'y', [[20, NaN, 23, 25, NaN, 26]]);
+    });
+
+    it('should not exclude items with non-numeric y from calcdata (to plots gaps correctly)', function() {
+        var gd = mockBarPlot([{
+            x: ['a', 'b', 'c', 'd'],
+            y: [1, null, 'nonsense', 15]
+        }]);
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[0, 1, 2, 3]]);
+        assertPointField(cd, 'y', [[1, NaN, NaN, 15]]);
+    });
+
+    it('should not exclude items with non-numeric x from calcdata (to plots gaps correctly)', function() {
+        var gd = mockBarPlot([{
+            x: [1, null, 'nonsense', 15],
+            y: [1, 2, 10, 30]
+        }]);
+
+        var cd = gd.calcdata;
+        assertPointField(cd, 'x', [[1, NaN, NaN, 15]]);
+        assertPointField(cd, 'y', [[1, 2, 10, 30]]);
+    });
 });
 
 describe('Bar.setPositions', function() {
     'use strict';
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     it('should guard against invalid offset items', function() {
         var gd = mockBarPlot([{
@@ -681,21 +712,32 @@ describe('Bar.setPositions', function() {
         expect(Axes.getAutoRange(ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
     });
 
-    it('should skip placeholder trace in position computations', function() {
-        var gd = mockBarPlot([{
-            x: [1, 2, 3],
-            y: [2, 1, 2]
-        }, {
-            x: [null],
-            y: [null]
-        }]);
+    it('should include explicit base in size axis range', function() {
+        var barmodes = ['stack', 'group', 'overlay'];
+        barmodes.forEach(function(barmode) {
+            var gd = mockBarPlot([
+                {y: [3, 4, -5], base: [-1, -2, 7]}
+            ], {
+                barmode: barmode
+            });
 
-        expect(gd.calcdata[0][0].t.barwidth).toEqual(0.8);
+            var ya = gd._fullLayout.yaxis;
+            expect(Axes.getAutoRange(ya)).toBeCloseToArray([-2.5, 7.5]);
+        });
+    });
 
-        expect(gd.calcdata[1][0].x).toBe(false);
-        expect(gd.calcdata[1][0].y).toBe(false);
-        expect(gd.calcdata[1][0].placeholder).toBe(true);
-        expect(gd.calcdata[1][0].t.barwidth).toBeUndefined();
+    it('should not include date zero (1970) in date axis range', function() {
+        var barmodes = ['stack', 'group', 'overlay'];
+        barmodes.forEach(function(barmode) {
+            var gd = mockBarPlot([
+                {y: ['2017-01-01', '2017-01-03', '2017-01-19']}
+            ], {
+                barmode: barmode
+            });
+
+            var ya = gd._fullLayout.yaxis;
+            expect(Axes.getAutoRange(ya)).toEqual(['2016-12-31', '2017-01-20']);
+        });
     });
 
     it('works with log axes (grouped bars)', function() {
@@ -743,8 +785,10 @@ describe('Bar.setPositions', function() {
 describe('A bar plot', function() {
     'use strict';
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
     });
 
     afterEach(destroyGraphDiv);
@@ -811,15 +855,13 @@ describe('A bar plot', function() {
     }
 
     it('should show bar texts (inside case)', function(done) {
-        var gd = createGraphDiv(),
-            data = [{
-                y: [10, 20, 30],
-                type: 'bar',
-                text: ['1', 'Very very very very very long bar text'],
-                textposition: 'inside',
-            }],
-            layout = {
-            };
+        var data = [{
+            y: [10, 20, 30],
+            type: 'bar',
+            text: ['1', 'Very very very very very long bar text'],
+            textposition: 'inside',
+        }];
+        var layout = {};
 
         Plotly.plot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd),
@@ -837,22 +879,21 @@ describe('A bar plot', function() {
             }
 
             expect(foundTextNodes).toBe(true);
-
-            done();
-        });
+        })
+        .catch(fail)
+        .then(done);
     });
 
     it('should show bar texts (outside case)', function(done) {
-        var gd = createGraphDiv(),
-            data = [{
-                y: [10, -20, 30],
-                type: 'bar',
-                text: ['1', 'Very very very very very long bar text'],
-                textposition: 'outside',
-            }],
-            layout = {
-                barmode: 'relative'
-            };
+        var data = [{
+            y: [10, -20, 30],
+            type: 'bar',
+            text: ['1', 'Very very very very very long bar text'],
+            textposition: 'outside',
+        }];
+        var layout = {
+            barmode: 'relative'
+        };
 
         Plotly.plot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd),
@@ -871,21 +912,19 @@ describe('A bar plot', function() {
             }
 
             expect(foundTextNodes).toBe(true);
-
-            done();
-        });
+        })
+        .catch(fail)
+        .then(done);
     });
 
     it('should show bar texts (horizontal case)', function(done) {
-        var gd = createGraphDiv(),
-            data = [{
-                x: [10, -20, 30],
-                type: 'bar',
-                text: ['Very very very very very long bar text', -20],
-                textposition: 'outside',
-            }],
-            layout = {
-            };
+        var data = [{
+            x: [10, -20, 30],
+            type: 'bar',
+            text: ['Very very very very very long bar text', -20],
+            textposition: 'outside',
+        }];
+        var layout = {};
 
         Plotly.plot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd),
@@ -904,23 +943,22 @@ describe('A bar plot', function() {
             }
 
             expect(foundTextNodes).toBe(true);
-
-            done();
-        });
+        })
+        .catch(fail)
+        .then(done);
     });
 
     it('should show bar texts (barnorm case)', function(done) {
-        var gd = createGraphDiv(),
-            data = [{
-                x: [100, -100, 100],
-                type: 'bar',
-                text: [100, -100, 100],
-                textposition: 'outside',
-            }],
-            layout = {
-                barmode: 'relative',
-                barnorm: 'percent'
-            };
+        var data = [{
+            x: [100, -100, 100],
+            type: 'bar',
+            text: [100, -100, 100],
+            textposition: 'outside',
+        }];
+        var layout = {
+            barmode: 'relative',
+            barnorm: 'percent'
+        };
 
         Plotly.plot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd),
@@ -939,14 +977,13 @@ describe('A bar plot', function() {
             }
 
             expect(foundTextNodes).toBe(true);
-
-            done();
-        });
+        })
+        .catch(fail)
+        .then(done);
     });
 
     it('should be able to restyle', function(done) {
-        var gd = createGraphDiv(),
-            mock = Lib.extendDeep({}, require('@mocks/bar_attrs_relative'));
+        var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_relative'));
 
         Plotly.plot(gd, mock.data, mock.layout).then(function() {
             var cd = gd.calcdata;
@@ -1027,6 +1064,17 @@ describe('A bar plot', function() {
             assertTextIsInsidePath(text20, path20); // inside
             assertTextIsBelowPath(text30, path30); // outside
 
+            // clear bounding box cache - somehow when you cache
+            // text size too early sometimes it changes later...
+            // we've had this issue before, where we've had to
+            // redraw annotations to get final sizes, I wish we
+            // could get some signal that fonts are really ready
+            // and not start drawing until then (or invalidate
+            // the bbox cache when that happens?)
+            // without this change, we get an error at
+            // assertTextIsInsidePath(text30, path30);
+            Drawing.savedBBoxes = {};
+
             return Plotly.restyle(gd, 'textposition', 'inside');
         }).then(function() {
             var cd = gd.calcdata;
@@ -1078,33 +1126,32 @@ describe('A bar plot', function() {
             assertTextIsInsidePath(text12, path12); // inside
             assertTextIsInsidePath(text20, path20); // inside
             assertTextIsInsidePath(text30, path30); // inside
-
-            done();
-        });
+        })
+        .catch(fail)
+        .then(done);
     });
 
     it('should coerce text-related attributes', function(done) {
-        var gd = createGraphDiv(),
-            data = [{
-                y: [10, 20, 30, 40],
-                type: 'bar',
-                text: ['T1P1', 'T1P2', 13, 14],
-                textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
-                textfont: {
-                    family: ['"comic sans"'],
-                    color: ['red', 'green'],
-                },
-                insidetextfont: {
-                    size: [8, 12, 16],
-                    color: ['black'],
-                },
-                outsidetextfont: {
-                    size: [null, 24, 32]
-                }
-            }],
-            layout = {
-                font: {family: 'arial', color: 'blue', size: 13}
-            };
+        var data = [{
+            y: [10, 20, 30, 40],
+            type: 'bar',
+            text: ['T1P1', 'T1P2', 13, 14],
+            textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
+            textfont: {
+                family: ['"comic sans"'],
+                color: ['red', 'green'],
+            },
+            insidetextfont: {
+                size: [8, 12, 16],
+                color: ['black'],
+            },
+            outsidetextfont: {
+                size: [null, 24, 32]
+            }
+        }];
+        var layout = {
+            font: {family: 'arial', color: 'blue', size: 13}
+        };
 
         var expected = {
             y: [10, 20, 30, 40],
@@ -1160,9 +1207,75 @@ describe('A bar plot', function() {
             assertTextFont(textNodes[0], expected.insidetextfont, 0);
             assertTextFont(textNodes[1], expected.outsidetextfont, 1);
             assertTextFont(textNodes[2], expected.insidetextfont, 2);
+        })
+        .catch(fail)
+        .then(done);
+    });
 
-            done();
-        });
+    it('can change orientation and correctly sets axis types', function(done) {
+        function checkBarsMatch(dims, msg) {
+            var bars = d3.selectAll('.bars .point');
+            var bbox1 = bars.node().getBoundingClientRect();
+            bars.each(function(d, i) {
+                if(!i) return;
+                var bbox = this.getBoundingClientRect();
+                ['left', 'right', 'top', 'bottom', 'width', 'height'].forEach(function(dim) {
+                    expect(bbox[dim]).negateIf(dims.indexOf(dim) === -1)
+                        .toBeWithin(bbox1[dim], 0.1, msg + ' (' + i + '): ' + dim);
+                });
+            });
+        }
+
+        Plotly.newPlot(gd, [{
+            x: ['a', 'b', 'c'],
+            y: [1, 2, 3],
+            type: 'bar'
+        }], {
+            width: 400, height: 400
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'initial x');
+            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'initial y');
+
+            checkBarsMatch(['bottom', 'width'], 'initial');
+
+            // turn implicit "v" into explicit "v" - a noop but specifically
+            // for orientation this was broken at one point...
+            return Plotly.restyle(gd, {orientation: 'v'});
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'explicit v x');
+            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'explicit v y');
+
+            checkBarsMatch(['bottom', 'width'], 'explicit v');
+
+            // back to implicit v
+            return Plotly.restyle(gd, {orientation: null});
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'implicit v x');
+            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'implicit v y');
+
+            checkBarsMatch(['bottom', 'width'], 'implicit v');
+
+            return Plotly.restyle(gd, {orientation: 'h'});
+        })
+        .then(function() {
+            checkTicks('x', ['0', '1', '2', '3'], 'h x');
+            checkTicks('y', ['a', 'b', 'c'], 'h y');
+
+            checkBarsMatch(['left', 'height'], 'initial');
+
+            return Plotly.restyle(gd, {orientation: 'v'});
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'final x');
+            checkTicks('y', ['0', '0.5', '1', '1.5', '2', '2.5', '3'], 'final y');
+
+            checkBarsMatch(['bottom', 'width'], 'final');
+        })
+        .catch(fail)
+        .then(done);
     });
 });
 
@@ -1170,10 +1283,6 @@ describe('bar hover', function() {
     'use strict';
 
     var gd;
-
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
 
     afterEach(destroyGraphDiv);
 
@@ -1187,17 +1296,22 @@ describe('bar hover', function() {
             cd: cd[0],
             trace: cd[0][0].trace,
             xa: subplot.xaxis,
-            ya: subplot.yaxis
+            ya: subplot.yaxis,
+            maxHoverDistance: 20
         };
     }
 
-    function _hover(gd, xval, yval, closest) {
+    function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pt = Bar.hoverPoints(pointData, xval, yval, closest)[0];
+        var pts = Bar.hoverPoints(pointData, xval, yval, hovermode);
+        if(!pts) return false;
+
+        var pt = pts[0];
 
         return {
             style: [pt.index, pt.color, pt.xLabelVal, pt.yLabelVal],
-            pos: [pt.x0, pt.x1, pt.y0, pt.y1]
+            pos: [pt.x0, pt.x1, pt.y0, pt.y1],
+            text: pt.text
         };
     }
 
@@ -1215,7 +1329,9 @@ describe('bar hover', function() {
 
             var mock = Lib.extendDeep({}, require('@mocks/11.json'));
 
-            Plotly.plot(gd, mock.data, mock.layout).then(done);
+            Plotly.plot(gd, mock.data, mock.layout)
+            .catch(fail)
+            .then(done);
         });
 
         it('should return the correct hover point data (case x)', function() {
@@ -1239,7 +1355,9 @@ describe('bar hover', function() {
 
             var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_group_norm.json'));
 
-            Plotly.plot(gd, mock.data, mock.layout).then(done);
+            Plotly.plot(gd, mock.data, mock.layout)
+            .catch(fail)
+            .then(done);
         });
 
         it('should return the correct hover point data (case y)', function() {
@@ -1274,6 +1392,218 @@ describe('bar hover', function() {
         });
     });
 
+    describe('text labels', function() {
+
+        it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
+            gd = createGraphDiv();
+
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            mock.data.forEach(function(t) { t.type = 'bar'; });
+
+            Plotly.plot(gd, mock).then(function() {
+                var out = _hover(gd, -0.25, 0.5, 'closest');
+                expect(out.text).toEqual('Hover text\nA', 'hover text');
+
+                return Plotly.restyle(gd, 'hovertext', null);
+            })
+            .then(function() {
+                var out = _hover(gd, -0.25, 0.5, 'closest');
+                expect(out.text).toEqual('Text\nA', 'hover text');
+
+                return Plotly.restyle(gd, 'text', ['APPLE', 'BANANA', 'ORANGE']);
+            })
+            .then(function() {
+                var out = _hover(gd, -0.25, 0.5, 'closest');
+                expect(out.text).toEqual('APPLE', 'hover text');
+
+                return Plotly.restyle(gd, 'hovertext', ['apple', 'banana', 'orange']);
+            })
+            .then(function() {
+                var out = _hover(gd, -0.25, 0.5, 'closest');
+                expect(out.text).toEqual('apple', 'hover text');
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
+
+    describe('with special width/offset combinations', function() {
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        it('should return correct hover data (single bar, trace width)', function(done) {
+            Plotly.plot(gd, [{
+                type: 'bar',
+                x: [1],
+                y: [2],
+                width: 10,
+                marker: { color: 'red' }
+            }], {
+                xaxis: { range: [-200, 200] }
+            })
+            .then(function() {
+                // all these x, y, hovermode should give the same (the only!) hover label
+                [
+                    [0, 0, 'closest'],
+                    [-3.9, 1, 'closest'],
+                    [5.9, 1.9, 'closest'],
+                    [-3.9, -10, 'x'],
+                    [5.9, 19, 'x']
+                ].forEach(function(hoverSpec) {
+                    var out = _hover(gd, hoverSpec[0], hoverSpec[1], hoverSpec[2]);
+
+                    expect(out.style).toEqual([0, 'red', 1, 2], hoverSpec);
+                    assertPos(out.pos, [264, 278, 14, 14], hoverSpec);
+                });
+
+                // then a few that are off the edge so yield nothing
+                [
+                    [1, -0.1, 'closest'],
+                    [1, 2.1, 'closest'],
+                    [-4.1, 1, 'closest'],
+                    [6.1, 1, 'closest'],
+                    [-4.1, 1, 'x'],
+                    [6.1, 1, 'x']
+                ].forEach(function(hoverSpec) {
+                    var out = _hover(gd, hoverSpec[0], hoverSpec[1], hoverSpec[2]);
+
+                    expect(out).toBe(false, hoverSpec);
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should return correct hover data (two bars, array width)', function(done) {
+            Plotly.plot(gd, [{
+                type: 'bar',
+                x: [1, 200],
+                y: [2, 1],
+                width: [10, 20],
+                marker: { color: 'red' }
+            }, {
+                type: 'bar',
+                x: [1, 200],
+                y: [1, 2],
+                width: [20, 10],
+                marker: { color: 'green' }
+            }], {
+                xaxis: { range: [-200, 300] },
+                width: 500,
+                height: 500
+            })
+            .then(function() {
+                var out = _hover(gd, -36, 1.5, 'closest');
+
+                expect(out.style).toEqual([0, 'red', 1, 2]);
+                assertPos(out.pos, [99, 106, 13, 13]);
+
+                out = _hover(gd, 164, 0.8, 'closest');
+
+                expect(out.style).toEqual([1, 'red', 200, 1]);
+                assertPos(out.pos, [222, 235, 168, 168]);
+
+                out = _hover(gd, 125, 0.8, 'x');
+
+                expect(out.style).toEqual([1, 'red', 200, 1]);
+                assertPos(out.pos, [203, 304, 168, 168]);
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
+
+    it('should show/hide text in clipped and non-clipped layers', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/bar_cliponaxis-false.json'));
+        gd = createGraphDiv();
+
+        // only show one trace
+        fig.data = [fig.data[0]];
+
+        function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
+            var subplotLayer = d3.select('.plot');
+            var barLayer = subplotLayer.select('.barlayer');
+
+            assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
+            assertClip(subplotLayer.select('.maplayer'), layerClips[1], 1, 'some other trace layer');
+            assertClip(barLayer, layerClips[2], 1, 'bar layer');
+
+            assertNodeDisplay(
+                barLayer.selectAll('.point'),
+                barDisplays,
+                'bar points (never hidden by display attr)'
+            );
+            assertNodeDisplay(
+                barLayer.selectAll('.bartext'),
+                barTextDisplays,
+                'bar text'
+            );
+
+            assertClip(
+                barLayer.selectAll('.point > path'),
+                barClips[0], barClips[1],
+                'bar clips'
+            );
+        }
+
+        Plotly.newPlot(gd, fig).then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                [null, null, 'none'],
+                [true, 3]
+            );
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            _assert(
+                [true, false, false],
+                [],
+                [],
+                [false, 0]
+            );
+            return Plotly.restyle(gd, {visible: true, cliponaxis: null});
+        })
+        .then(function() {
+            _assert(
+                [true, false, false],
+                [null, null, null],
+                [null, null, null],
+                [false, 3]
+            );
+            return Plotly.restyle(gd, 'cliponaxis', false);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                [null, null, 'none'],
+                [true, 3]
+            );
+            return Plotly.relayout(gd, 'yaxis.range', [0, 1]);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                ['none', 'none', 'none'],
+                [true, 3]
+            );
+            return Plotly.relayout(gd, 'yaxis.range', [0, 4]);
+        })
+        .then(function() {
+            _assert(
+                [false, true, false],
+                [null, null, null],
+                [null, null, null],
+                [true, 3]
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 function mockBarPlot(dataWithoutTraceType, layout) {
@@ -1285,11 +1615,12 @@ function mockBarPlot(dataWithoutTraceType, layout) {
 
     var gd = {
         data: dataWithTraceType,
-        layout: layout,
-        calcdata: []
+        layout: layout || {},
+        calcdata: [],
+        _context: {locale: 'en', locales: {}}
     };
 
-    Plots.supplyDefaults(gd);
+    supplyAllDefaults(gd);
     Plots.doCalcdata(gd);
 
     var plotinfo = {
@@ -1304,8 +1635,6 @@ function mockBarPlot(dataWithoutTraceType, layout) {
 }
 
 function assertArrayField(calcData, prop, expectation) {
-    // Note that this functions requires to add `customMatchers` to jasmine
-    // matchers; i.e: `jasmine.addMatchers(customMatchers);`.
     var values = Lib.nestedProperty(calcData, prop).get();
     if(!Array.isArray(values)) values = [values];
 
@@ -1313,8 +1642,6 @@ function assertArrayField(calcData, prop, expectation) {
 }
 
 function assertPointField(calcData, prop, expectation) {
-    // Note that this functions requires to add `customMatchers` to jasmine
-    // matchers; i.e: `jasmine.addMatchers(customMatchers);`.
     var values = [];
 
     calcData.forEach(function(calcTrace) {
@@ -1329,8 +1656,6 @@ function assertPointField(calcData, prop, expectation) {
 }
 
 function assertTraceField(calcData, prop, expectation) {
-    // Note that this functions requires to add `customMatchers` to jasmine
-    // matchers; i.e: `jasmine.addMatchers(customMatchers);`.
     var values = calcData.map(function(calcTrace) {
         return Lib.nestedProperty(calcTrace[0], prop).get();
     });

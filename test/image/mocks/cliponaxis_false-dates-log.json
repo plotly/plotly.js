@@ -1,0 +1,58 @@
+{
+  "data": [{
+    "name": "gregorian input dates",
+    "x": ["2017-11-1", "2017-11-2", "2017-11-3", "2017-11-4", "2017-11-5", "2017-11-6", "2017-11-7"],
+    "y": [4734, 7793, 7784, 6628, 5644, 6224, 5058],
+    "text": [4734, 7793, 7784, 6628, 5644, 6224, 5058],
+    "mode": "lines+markers+text",
+    "marker": {"size": 30},
+    "textposition": "top right",
+    "hoverinfo": "x+y",
+    "cliponaxis": false
+  }, {
+    "name": "julian input dates",
+    "y": ["2017-11-1", "2017-11-2", "2017-11-3", "2017-11-4", "2017-11-5", "2017-11-6", "2017-11-7"],
+    "x": [4734, 7793, 7784, 6628, 5644, 6224, 5058],
+    "text": [4734, 7793, 7784, 6628, 5644, 6224, 5058],
+    "mode": "lines+markers+text",
+    "marker": {"size": 30},
+    "textposition": "bottom left",
+    "hoverinfo": "x+y",
+    "cliponaxis": false,
+    "ycalendar": "julian",
+    "xaxis": "x2",
+    "yaxis": "y2"
+  }],
+  "layout": {
+    "dragmode": "pan",
+    "width": 700,
+    "height": 400,
+    "xaxis": {
+      "domain": [0, 0.48],
+      "title": "gregorian date axis",
+      "range": ["2017-11-1", "2017-11-7"]
+    },
+    "yaxis": {
+      "type": "log" ,
+      "title": "log axis"
+    },
+    "xaxis2": {
+      "type": "log",
+      "domain": [0.52, 1],
+      "title": "log axis",
+      "anchor": "y2"
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "side": "right",
+      "title": "gregorian date axis",
+      "range": ["2017-11-14", "2017-11-20"]
+    },
+    "legend": {
+      "x": 0,
+      "y": 1.1,
+      "xanchor": "left",
+      "yanchor": "bottom"
+    }
+  }
+}

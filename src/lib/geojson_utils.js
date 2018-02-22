@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,6 +8,8 @@
 
 
 'use strict';
+
+var BADNUM = require('../constants/numerical').BADNUM;
 
 /**
  * Convert calcTrace to GeoJSON 'MultiLineString' coordinate arrays
@@ -21,18 +23,19 @@
  *
  */
 exports.calcTraceToLineCoords = function(calcTrace) {
-    var trace = calcTrace[0].trace,
-        connectgaps = trace.connectgaps;
+    var trace = calcTrace[0].trace;
+    var connectgaps = trace.connectgaps;
 
-    var coords = [],
-        lineString = [];
+    var coords = [];
+    var lineString = [];
 
     for(var i = 0; i < calcTrace.length; i++) {
         var calcPt = calcTrace[i];
+        var lonlat = calcPt.lonlat;
 
-        lineString.push(calcPt.lonlat);
-
-        if(!connectgaps && calcPt.gapAfter && lineString.length > 0) {
+        if(lonlat[0] !== BADNUM) {
+            lineString.push(lonlat);
+        } else if(!connectgaps && lineString.length > 0) {
             coords.push(lineString);
             lineString = [];
         }
@@ -51,32 +54,22 @@ exports.calcTraceToLineCoords = function(calcTrace) {
  *
  * @param {array} coords
  *  results form calcTraceToLineCoords
- * @param {object} trace
- *  (optional) full trace object to be added on to output
- *
  * @return {object} out
  *  GeoJSON object
  *
  */
-exports.makeLine = function(coords, trace) {
-    var out = {};
-
+exports.makeLine = function(coords) {
     if(coords.length === 1) {
-        out = {
+        return {
             type: 'LineString',
             coordinates: coords[0]
         };
-    }
-    else {
-        out = {
+    } else {
+        return {
             type: 'MultiLineString',
             coordinates: coords
         };
     }
-
-    if(trace) out.trace = trace;
-
-    return out;
 };
 
 /**
@@ -84,37 +77,27 @@ exports.makeLine = function(coords, trace) {
  *
  * @param {array} coords
  *  results form calcTraceToLineCoords
- * @param {object} trace
- *  (optional) full trace object to be added on to output
- *
  * @return {object} out
  *  GeoJSON object
  */
-exports.makePolygon = function(coords, trace) {
-    var out = {};
-
+exports.makePolygon = function(coords) {
     if(coords.length === 1) {
-        out = {
+        return {
             type: 'Polygon',
             coordinates: coords
         };
-    }
-    else {
+    } else {
         var _coords = new Array(coords.length);
 
         for(var i = 0; i < coords.length; i++) {
             _coords[i] = [coords[i]];
         }
 
-        out = {
+        return {
             type: 'MultiPolygon',
             coordinates: _coords
         };
     }
-
-    if(trace) out.trace = trace;
-
-    return out;
 };
 
 /**

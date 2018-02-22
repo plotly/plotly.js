@@ -144,7 +144,7 @@ function makePlot(gd, mock, done) {
         .then(done);
 }
 
-describe('contourgl plots', function() {
+describe('@gl pointcloud traces', function() {
 
     var gd;
 

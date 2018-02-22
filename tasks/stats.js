@@ -1,6 +1,5 @@
 var path = require('path');
 var fs = require('fs');
-var spawn = require('child_process').spawn;
 
 var falafel = require('falafel');
 var gzipSize = require('gzip-size');
@@ -11,7 +10,6 @@ var constants = require('./util/constants');
 var pkg = require('../package.json');
 
 var pathDistREADME = path.join(constants.pathToDist, 'README.md');
-var pathDistNpmLs = path.join(constants.pathToDist, 'npm-ls.json');
 var cdnRoot = 'https://cdn.plot.ly/plotly-';
 var coreModules = ['scatter'];
 
@@ -20,17 +18,7 @@ var JS = '.js';
 var MINJS = '.min.js';
 
 // main
-writeNpmLs();
 common.writeFile(pathDistREADME, getReadMeContent());
-
-function writeNpmLs() {
-    if(common.doesFileExist(pathDistNpmLs)) fs.unlinkSync(pathDistNpmLs);
-
-    var ws = fs.createWriteStream(pathDistNpmLs, { flags: 'a' });
-    var proc = spawn('npm', ['ls', '--json', '--only', 'prod']);
-
-    proc.stdout.pipe(ws);
-}
 
 function getReadMeContent() {
     return []
@@ -51,31 +39,55 @@ function getInfoContent() {
         'Import plotly.js as:',
         '',
         '```html',
-        '<script type="text/javascript" src="plotly.min.js"></script>',
+        '<script src="plotly.min.js"></script>',
         '```',
         '',
         'or the un-minified version as:',
         '',
         '```html',
-        '<script type="text/javascript" src="plotly.js" charset="utf-8"></script>',
+        '<script src="plotly.js" charset="utf-8"></script>',
         '```',
         '',
-        'To support IE9, put:',
+        '### To support IE9',
+        '',
+        '*Before* the plotly.js script tag, add:',
         '',
         '```html',
         '<script>if(typeof window.Int16Array !== \'function\')document.write("<scri"+"pt src=\'extras/typedarray.min.js\'></scr"+"ipt>");</script>',
         '<script>document.write("<scri"+"pt src=\'extras/request_animation_frame.js\'></scr"+"ipt>");</script>',
         '```',
         '',
-        'before the plotly.js script tag.',
+        '### To support MathJax',
         '',
-        'To add MathJax, put',
+        '*Before* the plotly.js script tag, add:',
         '',
         '```html',
-        '<script type="text/javascript" src="mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>',
+        '<script src="mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>',
         '```',
         '',
-        'before the plotly.js script tag. You can grab the relevant MathJax files in `./dist/extras/mathjax/`.',
+        'You can grab the relevant MathJax files in `./dist/extras/mathjax/`.',
+        '',
+        '### To include localization',
+        '',
+        'Plotly.js defaults to US English (en-US) and includes British English (en) in the standard bundle.',
+        'Many other localizations are available - here is an example using Swiss-German (de-CH),',
+        'see the contents of this directory for the full list.',
+        'They are also available on our CDN as ' + cdnRoot + 'locale-de-ch-latest.js OR ' + cdnRoot + 'locale-de-ch-' + pkg.version + '.js',
+        'Note that the file names are all lowercase, even though the region is uppercase when you apply a locale.',
+        '',
+        '*After* the plotly.js script tag, add:',
+        '',
+        '```html',
+        '<script src="plotly-locale-de-ch.js"></script>',
+        '<script>Plotly.setPlotConfig({locale: \'de-CH\'})</script>',
+        '```',
+        '',
+        'The first line loads and registers the locale definition with plotly.js, the second sets it as the default for all Plotly plots.',
+        'You can also include multiple locale definitions and apply them to each plot separately as a `config` parameter:',
+        '',
+        '```js',
+        'Plotly.newPlot(graphDiv, data, layout, {locale: \'de-CH\'})',
+        '```',
         ''
     ];
 }

@@ -1,0 +1,22 @@
+{
+  "data": [{
+    "type": "scatter3d",
+    "x": [1, 2, 3],
+    "y": [1, 2, 3],
+    "z": [1, 2, 0]
+  }],
+  "layout": {
+    "scene": {
+      "xaxis": { "visible": false },
+      "yaxis": { "visible": false },
+      "zaxis": { "visible": false },
+      "camera": {
+        "eye": {
+          "x": -0.1,
+          "y": 0.2,
+          "z": 2.1
+        }
+      }
+    }
+  }
+}

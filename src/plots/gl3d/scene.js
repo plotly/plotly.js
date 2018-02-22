@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,11 +11,13 @@
 
 var createPlot = require('gl-plot3d');
 var getContext = require('webgl-context');
+var passiveSupported = require('has-passive-events');
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 
 var Axes = require('../../plots/cartesian/axes');
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 
 var str2RGBAarray = require('../../lib/str2rgbarray');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
@@ -26,10 +28,10 @@ var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
 
+
 var STATIC_CANVAS, STATIC_CONTEXT;
 
 function render(scene) {
-
     var trace;
 
     // update size of svg container
@@ -67,7 +69,8 @@ function render(scene) {
     if(lastPicked !== null) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
         trace = lastPicked.data;
-        var hoverinfo = trace.hoverinfo;
+        var ptNumber = selection.index;
+        var hoverinfo = Fx.castHoverinfo(trace, scene.fullLayout, ptNumber);
 
         var xVal = formatter('xaxis', selection.traceCoordinate[0]),
             yVal = formatter('yaxis', selection.traceCoordinate[1]),
@@ -91,23 +94,30 @@ function render(scene) {
                 zLabel: zVal,
                 text: selection.textLabel,
                 name: lastPicked.name,
-                color: lastPicked.color
+                color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || lastPicked.color,
+                borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
+                fontFamily: Fx.castHoverOption(trace, ptNumber, 'font.family'),
+                fontSize: Fx.castHoverOption(trace, ptNumber, 'font.size'),
+                fontColor: Fx.castHoverOption(trace, ptNumber, 'font.color')
             }, {
-                container: svgContainer
+                container: svgContainer,
+                gd: scene.graphDiv
             });
         }
 
-        var eventData = {
-            points: [{
-                x: xVal,
-                y: yVal,
-                z: zVal,
-                data: trace._input,
-                fullData: trace,
-                curveNumber: trace.index,
-                pointNumber: selection.data.index
-            }]
+        var pointData = {
+            x: selection.traceCoordinate[0],
+            y: selection.traceCoordinate[1],
+            z: selection.traceCoordinate[2],
+            data: trace._input,
+            fullData: trace,
+            curveNumber: trace.index,
+            pointNumber: ptNumber
         };
+
+        Fx.appendArrayPointValue(pointData, trace, ptNumber);
+
+        var eventData = {points: [pointData]};
 
         if(selection.buttons && selection.distance < 5) {
             scene.graphDiv.emit('plotly_click', eventData);
@@ -122,6 +132,8 @@ function render(scene) {
         Fx.loneUnhover(svgContainer);
         scene.graphDiv.emit('plotly_unhover', oldEventData);
     }
+
+    scene.drawAnnotations(scene);
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
@@ -174,13 +186,13 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         if(scene.fullSceneLayout.dragmode === false) return;
 
         var update = {};
-        update[scene.id] = getLayoutCamera(scene.camera);
+        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
         scene.saveCamera(scene.graphDiv.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
 
     scene.glplot.canvas.addEventListener('mouseup', relayoutCallback.bind(null, scene));
-    scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene));
+    scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
 
     if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
@@ -264,6 +276,9 @@ function Scene(options, fullLayout) {
 
     this.contourLevels = [ [], [], [] ];
 
+    this.convertAnnotations = Registry.getComponentMethod('annotations3d', 'convert');
+    this.drawAnnotations = Registry.getComponentMethod('annotations3d', 'draw');
+
     if(!initializeGLPlot(this, fullLayout)) return; // todo check the necessity for this line
 }
 
@@ -291,9 +306,15 @@ proto.recoverContext = function() {
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
-function coordinateBound(axis, coord, d, bounds, calendar) {
+function coordinateBound(axis, coord, len, d, bounds, calendar) {
     var x;
-    for(var i = 0; i < coord.length; ++i) {
+    if(!Array.isArray(coord)) {
+        bounds[0][d] = Math.min(bounds[0][d], 0);
+        bounds[1][d] = Math.max(bounds[1][d], len - 1);
+        return;
+    }
+
+    for(var i = 0; i < (len || coord.length); ++i) {
         if(Array.isArray(coord[i])) {
             for(var j = 0; j < coord[i].length; ++j) {
                 x = axis.d2l(coord[i][j], 0, calendar);
@@ -315,9 +336,9 @@ function coordinateBound(axis, coord, d, bounds, calendar) {
 
 function computeTraceBounds(scene, trace, bounds) {
     var sceneLayout = scene.fullSceneLayout;
-    coordinateBound(sceneLayout.xaxis, trace.x, 0, bounds, trace.xcalendar);
-    coordinateBound(sceneLayout.yaxis, trace.y, 1, bounds, trace.ycalendar);
-    coordinateBound(sceneLayout.zaxis, trace.z, 2, bounds, trace.zcalendar);
+    coordinateBound(sceneLayout.xaxis, trace.x, trace._xlength, 0, bounds, trace.xcalendar);
+    coordinateBound(sceneLayout.yaxis, trace.y, trace._ylength, 1, bounds, trace.ycalendar);
+    coordinateBound(sceneLayout.zaxis, trace.z, trace._zlength, 2, bounds, trace.zcalendar);
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
@@ -388,6 +409,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Save scale
     this.dataScale = dataScale;
 
+    // after computeTraceBounds where ax._categories are filled in
+    this.convertAnnotations(this);
+
     // Update traces
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
@@ -447,13 +471,28 @@ proto.plot = function(sceneData, fullLayout, layout) {
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
-            for(j = 0; j < this.glplot.objects.length; ++j) {
-                var objBounds = this.glplot.objects[j].bounds;
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i],
-                  objBounds[0][i] / dataScale[i]);
-                sceneBounds[1][i] = Math.max(sceneBounds[1][i],
-                  objBounds[1][i] / dataScale[i]);
+
+            var objects = this.glplot.objects;
+            var annotations = this.fullSceneLayout.annotations || [];
+            var axLetter = axis._name.charAt(0);
+
+            for(j = 0; j < objects.length; j++) {
+                var objBounds = objects[j].bounds;
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i]);
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i]);
             }
+
+            for(j = 0; j < annotations.length; j++) {
+                var ann = annotations[j];
+
+                // N.B. not taking into consideration the arrowhead
+                if(ann.visible) {
+                    var pos = axis.r2l(ann[axLetter]);
+                    sceneBounds[0][i] = Math.min(sceneBounds[0][i], pos);
+                    sceneBounds[1][i] = Math.max(sceneBounds[1][i], pos);
+                }
+            }
+
             if('rangemode' in axis && axis.rangemode === 'tozero') {
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i], 0);
                 sceneBounds[1][i] = Math.max(sceneBounds[1][i], 0);
@@ -467,9 +506,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 sceneBounds[1][i] += d / 32.0;
             }
         } else {
-            var range = fullSceneLayout[axisProperties[i]].range;
-            sceneBounds[0][i] = range[0];
-            sceneBounds[1][i] = range[1];
+            var range = axis.range;
+            sceneBounds[0][i] = axis.r2l(range[0]);
+            sceneBounds[1][i] = axis.r2l(range[1]);
         }
         if(sceneBounds[0][i] === sceneBounds[1][i]) {
             sceneBounds[0][i] -= 1;
@@ -562,10 +601,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
 };
 
 proto.destroy = function() {
+    if(!this.glplot) return;
+
+    this.camera.mouseListener.enabled = false;
+    this.container.removeEventListener('wheel', this.camera.wheelListener);
+    this.camera = this.glplot.camera = null;
     this.glplot.dispose();
     this.container.parentNode.removeChild(this.container);
-
-    // Remove reference to glplot
     this.glplot = null;
 };
 
@@ -711,9 +753,10 @@ proto.toImage = function(format) {
 };
 
 proto.setConvert = function() {
-    for(var i = 0; i < 3; ++i) {
+    for(var i = 0; i < 3; i++) {
         var ax = this.fullSceneLayout[axisProperties[i]];
         Axes.setConvert(ax, this.fullLayout);
+        ax.setScale = Lib.noop;
     }
 };
 

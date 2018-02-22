@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -23,13 +23,15 @@ var setCursor = require('../../lib/setcursor');
 var Drawing = require('../drawing');
 var Color = require('../color');
 var Titles = require('../titles');
+var svgTextUtils = require('../../lib/svg_text_utils');
+var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
 
 var handleAxisDefaults = require('../../plots/cartesian/axis_defaults');
 var handleAxisPositionDefaults = require('../../plots/cartesian/position_defaults');
 var axisLayoutAttrs = require('../../plots/cartesian/layout_attributes');
 
 var attributes = require('./attributes');
-
+var cn = require('./constants').cn;
 
 module.exports = function draw(gd, id) {
     // opts: options object, containing everything from attributes
@@ -63,20 +65,23 @@ module.exports = function draw(gd, id) {
             return;
         }
         var zrange = d3.extent(((typeof opts.fillcolor === 'function') ?
-                opts.fillcolor : opts.line.color).domain()),
-            linelevels = [],
-            filllevels = [],
-            l,
-            linecolormap = typeof opts.line.color === 'function' ?
-                opts.line.color : function() { return opts.line.color; },
-            fillcolormap = typeof opts.fillcolor === 'function' ?
-                opts.fillcolor : function() { return opts.fillcolor; };
+            opts.fillcolor : opts.line.color).domain());
+        var linelevels = [];
+        var filllevels = [];
+        var linecolormap = typeof opts.line.color === 'function' ?
+            opts.line.color : function() { return opts.line.color; };
+        var fillcolormap = typeof opts.fillcolor === 'function' ?
+            opts.fillcolor : function() { return opts.fillcolor; };
+        var l;
+        var i;
 
         var l0 = opts.levels.end + opts.levels.size / 100,
             ls = opts.levels.size,
             zr0 = (1.001 * zrange[0] - 0.001 * zrange[1]),
             zr1 = (1.001 * zrange[1] - 0.001 * zrange[0]);
-        for(l = opts.levels.start; (l - l0) * ls < 0; l += ls) {
+        for(i = 0; i < 1e5; i++) {
+            l = opts.levels.start + i * ls;
+            if(ls > 0 ? (l >= l0) : (l <= l0)) break;
             if(l > zr0 && l < zr1) linelevels.push(l);
         }
 
@@ -84,7 +89,9 @@ module.exports = function draw(gd, id) {
             if(opts.filllevels) {
                 l0 = opts.filllevels.end + opts.filllevels.size / 100;
                 ls = opts.filllevels.size;
-                for(l = opts.filllevels.start; (l - l0) * ls < 0; l += ls) {
+                for(i = 0; i < 1e5; i++) {
+                    l = opts.filllevels.start + i * ls;
+                    if(ls > 0 ? (l >= l0) : (l <= l0)) break;
                     if(l > zrange[0] && l < zrange[1]) filllevels.push(l);
                 }
             }
@@ -167,10 +174,14 @@ module.exports = function draw(gd, id) {
                 ticksuffix: opts.ticksuffix,
                 title: opts.title,
                 titlefont: opts.titlefont,
+                showline: true,
                 anchor: 'free',
                 position: 1
             },
-            cbAxisOut = {},
+            cbAxisOut = {
+                type: 'linear',
+                _id: 'y' + id
+            },
             axisOptions = {
                 letter: 'y',
                 font: fullLayout.font,
@@ -187,8 +198,6 @@ module.exports = function draw(gd, id) {
         // Prepare the Plotly axis object
         handleAxisDefaults(cbAxisIn, cbAxisOut, coerce, axisOptions, fullLayout);
         handleAxisPositionDefaults(cbAxisIn, cbAxisOut, coerce, axisOptions);
-
-        cbAxisOut._id = 'y' + id;
 
         // position can't go in through supplyDefaults
         // because that restricts it to [0,1]
@@ -239,15 +248,16 @@ module.exports = function draw(gd, id) {
         // now draw the elements
         var container = fullLayout._infolayer.selectAll('g.' + id).data([0]);
         container.enter().append('g').classed(id, true)
+            .classed(cn.colorbar, true)
             .each(function() {
                 var s = d3.select(this);
-                s.append('rect').classed('cbbg', true);
-                s.append('g').classed('cbfills', true);
-                s.append('g').classed('cblines', true);
-                s.append('g').classed('cbaxis', true).classed('crisp', true);
-                s.append('g').classed('cbtitleunshift', true)
-                    .append('g').classed('cbtitle', true);
-                s.append('rect').classed('cboutline', true);
+                s.append('rect').classed(cn.cbbg, true);
+                s.append('g').classed(cn.cbfills, true);
+                s.append('g').classed(cn.cblines, true);
+                s.append('g').classed(cn.cbaxis, true).classed(cn.crisp, true);
+                s.append('g').classed(cn.cbtitleunshift, true)
+                    .append('g').classed(cn.cbtitle, true);
+                s.append('rect').classed(cn.cboutline, true);
                 s.select('.cbtitle').datum(0);
             });
         container.attr('transform', 'translate(' + Math.round(gs.l) +
@@ -295,7 +305,7 @@ module.exports = function draw(gd, id) {
                     lineSize = 15.6;
                 if(titleText.node()) {
                     lineSize =
-                        parseInt(titleText.style('font-size'), 10) * 1.3;
+                        parseInt(titleText.node().style.fontSize, 10) * LINE_SPACING;
                 }
                 if(mathJaxNode) {
                     titleHeight = Drawing.bBox(mathJaxNode).height;
@@ -306,9 +316,8 @@ module.exports = function draw(gd, id) {
                     }
                 }
                 else if(titleText.node() &&
-                        !titleText.classed('js-placeholder')) {
-                    titleHeight = Drawing.bBox(
-                        titleGroup.node()).height;
+                        !titleText.classed(cn.jsPlaceholder)) {
+                    titleHeight = Drawing.bBox(titleText.node()).height;
                 }
                 if(titleHeight) {
                     // buffer btwn colorbar and title
@@ -321,8 +330,7 @@ module.exports = function draw(gd, id) {
                     }
                     else {
                         cbAxisOut.domain[0] += titleHeight / gs.h;
-                        var nlines = Math.max(1,
-                            titleText.selectAll('tspan.line').size());
+                        var nlines = svgTextUtils.lineCount(titleText);
                         titleTrans[1] += (1 - nlines) * lineSize;
                     }
 
@@ -333,15 +341,18 @@ module.exports = function draw(gd, id) {
                 }
             }
 
-            container.selectAll('.cbfills,.cblines,.cbaxis')
+            container.selectAll('.cbfills,.cblines')
                 .attr('transform', 'translate(0,' +
                     Math.round(gs.h * (1 - cbAxisOut.domain[1])) + ')');
+
+            cbAxisOut._axislayer.attr('transform', 'translate(0,' +
+                Math.round(-gs.t) + ')');
 
             var fills = container.select('.cbfills')
                 .selectAll('rect.cbfill')
                     .data(filllevels);
             fills.enter().append('rect')
-                .classed('cbfill', true)
+                .classed(cn.cbfill, true)
                 .style('stroke', 'none');
             fills.exit().remove();
             fills.each(function(d, i) {
@@ -382,7 +393,7 @@ module.exports = function draw(gd, id) {
                     .data(opts.line.color && opts.line.width ?
                         linelevels : []);
             lines.enter().append('path')
-                .classed('cbline', true);
+                .classed(cn.cbline, true);
             lines.exit().remove();
             lines.each(function(d) {
                 d3.select(this)
@@ -425,7 +436,7 @@ module.exports = function draw(gd, id) {
                                 selection: d3.select(gd).selectAll('g.' + cbAxisOut._id + 'tick'),
                                 side: opts.titleside,
                                 offsetLeft: gs.l,
-                                offsetTop: gs.t,
+                                offsetTop: 0,
                                 maxShift: fullLayout.width
                             },
                             attributes: {x: x, y: y, 'text-anchor': 'middle'},
@@ -447,7 +458,7 @@ module.exports = function draw(gd, id) {
                 propContainer: cbAxisOut,
                 propName: propName,
                 traceIndex: trace.index,
-                dfltName: 'colorscale',
+                placeholder: fullLayout._dfltTitle.colorbar,
                 containerGroup: container.select('.cbtitle')
             };
 
@@ -472,7 +483,7 @@ module.exports = function draw(gd, id) {
             var innerWidth = thickPx + opts.outlinewidth / 2 +
                     Drawing.bBox(cbAxisOut._axislayer.node()).width;
             titleEl = titleCont.select('text');
-            if(titleEl.node() && !titleEl.classed('js-placeholder')) {
+            if(titleEl.node() && !titleEl.classed(cn.jsPlaceholder)) {
                 var mathJaxNode = titleCont
                         .select('.h' + cbAxisOut._id + 'title-math-group')
                         .node(),
@@ -548,13 +559,14 @@ module.exports = function draw(gd, id) {
         if(cbDone && cbDone.then) (gd._promises || []).push(cbDone);
 
         // dragging...
-        if(gd._context.editable) {
+        if(gd._context.edits.colorbarPosition) {
             var t0,
                 xf,
                 yf;
 
             dragElement.init({
                 element: container.node(),
+                gd: gd,
                 prepFn: function() {
                     t0 = container.attr('transform');
                     setCursor(container);
@@ -572,10 +584,10 @@ module.exports = function draw(gd, id) {
                         opts.xanchor, opts.yanchor);
                     setCursor(container, csr);
                 },
-                doneFn: function(dragged) {
+                doneFn: function() {
                     setCursor(container);
 
-                    if(dragged && xf !== undefined && yf !== undefined) {
+                    if(xf !== undefined && yf !== undefined) {
                         Plotly.restyle(gd,
                             {'colorbar.x': xf, 'colorbar.y': yf},
                             getTrace().index);

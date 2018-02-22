@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,6 +14,8 @@ var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
+
 
 var commonList = [
     'z',
@@ -37,4 +39,4 @@ extendFlat(
     { colorbar: colorbarAttrs }
 );
 
-module.exports = attrs;
+module.exports = overrideAll(attrs, 'calc', 'nested');

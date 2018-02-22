@@ -160,11 +160,7 @@ describe('config argument', function() {
 
             var link = document.getElementsByClassName('js-plot-link-container')[0];
 
-            expect(link.textContent).toBe('');
-
-            var bBox = link.getBoundingClientRect();
-            expect(bBox.width).toBe(0);
-            expect(bBox.height).toBe(0);
+            expect(link).toBeUndefined();
         });
 
         it('should display a link when true', function() {
@@ -185,10 +181,15 @@ describe('config argument', function() {
 
         var gd;
 
-        beforeEach(function(done) {
+        beforeEach(function() {
             gd = createGraphDiv();
+        });
 
-            Plotly.plot(gd, [
+        function initPlot(editFlag) {
+            var edits = {};
+            edits[editFlag] = true;
+
+            return Plotly.plot(gd, [
                 { x: [1, 2, 3], y: [1, 2, 3] },
                 { x: [1, 2, 3], y: [3, 2, 1] }
             ], {
@@ -197,77 +198,157 @@ describe('config argument', function() {
                 annotations: [
                     { text: 'testing', x: 1, y: 1, showarrow: true }
                 ]
-            }, { editable: true })
-            .then(done);
-        });
+            }, { editable: false, edits: edits });
+        }
 
         afterEach(destroyGraphDiv);
 
         function checkIfEditable(elClass, text) {
-            var label = document.getElementsByClassName(elClass)[0];
+            return function() {
+                var label = document.getElementsByClassName(elClass)[0];
 
-            expect(label.textContent).toBe(text);
+                expect(label.textContent).toBe(text);
 
-            var labelBox = label.getBoundingClientRect(),
-                labelX = labelBox.left + labelBox.width / 2,
-                labelY = labelBox.top + labelBox.height / 2;
+                var labelBox = label.getBoundingClientRect(),
+                    labelX = labelBox.left + labelBox.width / 2,
+                    labelY = labelBox.top + labelBox.height / 2;
 
-            mouseEvent('click', labelX, labelY);
+                mouseEvent('click', labelX, labelY);
 
-            var editBox = document.getElementsByClassName('plugin-editable editable')[0];
-            expect(editBox).toBeDefined();
-            expect(editBox.textContent).toBe(text);
-            expect(editBox.getAttribute('contenteditable')).toBe('true');
+                var editBox = document.getElementsByClassName('plugin-editable editable')[0];
+                expect(editBox).toBeDefined();
+                expect(editBox.textContent).toBe(text);
+                expect(editBox.getAttribute('contenteditable')).toBe('true');
+            };
         }
 
         function checkIfDraggable(elClass) {
-            var el = document.getElementsByClassName(elClass)[0];
+            return function() {
+                var el = document.getElementsByClassName(elClass)[0];
 
-            var elBox = el.getBoundingClientRect(),
-                elX = elBox.left + elBox.width / 2,
-                elY = elBox.top + elBox.height / 2;
+                var elBox = el.getBoundingClientRect(),
+                    elX = elBox.left + elBox.width / 2,
+                    elY = elBox.top + elBox.height / 2;
 
-            mouseEvent('mousedown', elX, elY);
-            mouseEvent('mousemove', elX - 20, elY + 20);
+                mouseEvent('mousedown', elX, elY);
+                mouseEvent('mousemove', elX - 20, elY + 20);
 
-            var movedBox = el.getBoundingClientRect();
+                var movedBox = el.getBoundingClientRect();
 
-            expect(movedBox.left).toBe(elBox.left - 20);
-            expect(movedBox.top).toBe(elBox.top + 20);
+                expect(movedBox.left).toBe(elBox.left - 20);
+                expect(movedBox.top).toBe(elBox.top + 20);
 
-            mouseEvent('mouseup', elX - 20, elY + 20);
+                mouseEvent('mouseup', elX - 20, elY + 20);
+            };
         }
 
-        it('should make titles editable', function() {
-            checkIfEditable('gtitle', 'Click to enter Plot title');
+        it('should let edits override editable', function(done) {
+            var data = [{y: [1, 2, 3]}];
+            var layout = {width: 600, height: 400};
+            Plotly.newPlot(gd, data, layout, {editable: true})
+            .then(function() {
+                expect(gd._context.edits).toEqual({
+                    annotationPosition: true,
+                    annotationTail: true,
+                    annotationText: true,
+                    axisTitleText: true,
+                    colorbarPosition: true,
+                    colorbarTitleText: true,
+                    legendPosition: true,
+                    legendText: true,
+                    shapePosition: true,
+                    titleText: true
+                });
+            })
+            .then(function() {
+                return Plotly.newPlot(gd, data, layout, {
+                    edits: {annotationPosition: false, annotationTail: false},
+                    editable: true
+                });
+            })
+            .then(function() {
+                expect(gd._context.edits).toEqual({
+                    annotationPosition: false,
+                    annotationTail: false,
+                    annotationText: true,
+                    axisTitleText: true,
+                    colorbarPosition: true,
+                    colorbarTitleText: true,
+                    legendPosition: true,
+                    legendText: true,
+                    shapePosition: true,
+                    titleText: true
+                });
+            })
+            .then(function() {
+                return Plotly.newPlot(gd, data, layout, {
+                    edits: {annotationText: true, axisTitleText: true},
+                    editable: false
+                });
+            })
+            .then(function() {
+                expect(gd._context.edits).toEqual({
+                    annotationPosition: false,
+                    annotationTail: false,
+                    annotationText: true,
+                    axisTitleText: true,
+                    colorbarPosition: false,
+                    colorbarTitleText: false,
+                    legendPosition: false,
+                    legendText: false,
+                    shapePosition: false,
+                    titleText: false
+                });
+            })
+            .then(done);
         });
 
-        it('should make x axes labels editable', function() {
-            checkIfEditable('g-xtitle', 'Click to enter X axis title');
+        it('should make titles editable', function(done) {
+            initPlot('titleText')
+            .then(checkIfEditable('gtitle', 'Click to enter Plot title'))
+            .then(done);
         });
 
-        it('should make y axes labels editable', function() {
-            checkIfEditable('g-ytitle', 'Click to enter Y axis title');
+        it('should make x axes labels editable', function(done) {
+            initPlot('axisTitleText')
+            .then(checkIfEditable('g-xtitle', 'Click to enter X axis title'))
+            .then(done);
         });
 
-        it('should make legend labels editable', function() {
-            checkIfEditable('legendtext', 'trace 0');
+        it('should make y axes labels editable', function(done) {
+            initPlot('axisTitleText')
+            .then(checkIfEditable('g-ytitle', 'Click to enter Y axis title'))
+            .then(done);
         });
 
-        it('should make annotation labels editable', function() {
-            checkIfEditable('annotation-text-g', 'testing');
+        it('should make legend labels editable', function(done) {
+            initPlot('legendText')
+            .then(checkIfEditable('legendtext', 'trace 0'))
+            .then(done);
         });
 
-        it('should make annotation labels draggable', function() {
-            checkIfDraggable('annotation-text-g');
+        it('should make annotation labels editable', function(done) {
+            initPlot('annotationText')
+            .then(checkIfEditable('annotation-text-g', 'testing'))
+            .then(done);
         });
 
-        it('should make annotation arrows draggable', function() {
-            checkIfDraggable('annotation-arrow-g');
+        it('should make annotation labels draggable', function(done) {
+            initPlot('annotationTail')
+            .then(checkIfDraggable('annotation-text-g'))
+            .then(done);
         });
 
-        it('should make legends draggable', function() {
-            checkIfDraggable('legend');
+        it('should make annotation arrows draggable', function(done) {
+            initPlot('annotationPosition')
+            .then(checkIfDraggable('annotation-arrow-g'))
+            .then(done);
+        });
+
+        it('should make legends draggable', function(done) {
+            initPlot('legendPosition')
+            .then(checkIfDraggable('legend'))
+            .then(done);
         });
 
     });

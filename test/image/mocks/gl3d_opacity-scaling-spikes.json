@@ -2837,7 +2837,6 @@
         2.9089125541536123
       ],
       "type": "scatter3d",
-      "uid": "dc285c",
       "projection": {
         "y": {
           "show": true
@@ -2994,8 +2993,7 @@
         -1.0329530246873673,
         1.4231843273210043
       ],
-      "type": "scatter3d",
-      "uid": "9f5973"
+      "type": "scatter3d"
     }
   ],
   "layout": {

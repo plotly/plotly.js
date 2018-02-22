@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -95,14 +95,16 @@ function stepsDefaults(sliderIn, sliderOut) {
         valueIn = valuesIn[i];
         valueOut = {};
 
-        if(!Lib.isPlainObject(valueIn) || !Array.isArray(valueIn.args)) {
+        coerce('method');
+
+        if(!Lib.isPlainObject(valueIn) || (valueOut.method !== 'skip' && !Array.isArray(valueIn.args))) {
             continue;
         }
 
-        coerce('method');
         coerce('args');
         coerce('label', 'step-' + i);
         coerce('value', valueOut.label);
+        coerce('execute');
 
         valuesOut.push(valueOut);
     }

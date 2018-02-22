@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,12 +20,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         type: 'mapbox',
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
-        partition: 'y'
+        partition: 'y',
+        accessToken: layoutOut._mapboxAccessToken
     });
 };
 
-function handleDefaults(containerIn, containerOut, coerce) {
-    coerce('accesstoken');
+function handleDefaults(containerIn, containerOut, coerce, opts) {
+    coerce('accesstoken', opts.accessToken);
     coerce('style');
     coerce('center.lon');
     coerce('center.lat');

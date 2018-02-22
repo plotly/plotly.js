@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -15,12 +15,12 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
-var extendDeep = require('../../lib/extend').extendDeep;
 
-var textFontAttrs = extendDeep({}, fontAttrs);
-textFontAttrs.family.arrayOk = true;
-textFontAttrs.size.arrayOk = true;
-textFontAttrs.color.arrayOk = true;
+var textFontAttrs = fontAttrs({
+    editType: 'calc',
+    arrayOk: true,
+    description: ''
+});
 
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
@@ -28,17 +28,28 @@ var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 var markerLineWidth = extendFlat({},
     scatterMarkerLineAttrs.width, { dflt: 0 });
 
-var markerLine = extendFlat({}, {
-    width: markerLineWidth
+var markerLine = extendFlat({
+    width: markerLineWidth,
+    editType: 'calc'
 }, colorAttributes('marker.line'));
 
-var marker = extendFlat({}, {
-    line: markerLine
+var marker = extendFlat({
+    line: markerLine,
+    editType: 'calc'
 }, colorAttributes('marker'), {
     showscale: scatterMarkerAttrs.showscale,
-    colorbar: colorbarAttrs
+    colorbar: colorbarAttrs,
+    opacity: {
+        valType: 'number',
+        arrayOk: true,
+        dflt: 1,
+        min: 0,
+        max: 1,
+        role: 'style',
+        editType: 'style',
+        description: 'Sets the opacity of the bars.'
+    }
 });
-
 
 module.exports = {
     x: scatterAttrs.x,
@@ -49,6 +60,7 @@ module.exports = {
     dy: scatterAttrs.dy,
 
     text: scatterAttrs.text,
+    hovertext: scatterAttrs.hovertext,
 
     textposition: {
         valType: 'enumerated',
@@ -56,6 +68,7 @@ module.exports = {
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'none',
         arrayOk: true,
+        editType: 'calc',
         description: [
             'Specifies the location of the `text`.',
             '*inside* positions `text` inside, next to the bar end',
@@ -79,10 +92,32 @@ module.exports = {
         description: 'Sets the font used for `text` lying outside the bar.'
     }),
 
+    constraintext: {
+        valType: 'enumerated',
+        values: ['inside', 'outside', 'both', 'none'],
+        role: 'info',
+        dflt: 'both',
+        editType: 'calc',
+        description: [
+            'Constrain the size of text inside or outside a bar to be no',
+            'larger than the bar itself.'
+        ].join(' ')
+    },
+
+    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, {
+        description: [
+            'Determines whether the text nodes',
+            'are clipped about the subplot axes.',
+            'To show the text nodes above axis lines and tick labels,',
+            'make sure to set `xaxis.layer` and `yaxis.layer` to *below traces*.'
+        ].join(' ')
+    }),
+
     orientation: {
         valType: 'enumerated',
         role: 'info',
         values: ['v', 'h'],
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets the orientation of the bars.',
             'With *v* (*h*), the value of the each bar spans',
@@ -95,6 +130,7 @@ module.exports = {
         dflt: null,
         arrayOk: true,
         role: 'info',
+        editType: 'calc',
         description: [
             'Sets where the bar base is drawn (in position axis units).',
             'In *stack* or *relative* barmode,',
@@ -108,6 +144,7 @@ module.exports = {
         dflt: null,
         arrayOk: true,
         role: 'info',
+        editType: 'calc',
         description: [
             'Shifts the position where the bar is drawn',
             '(in position axis units).',
@@ -123,12 +160,32 @@ module.exports = {
         min: 0,
         arrayOk: true,
         role: 'info',
+        editType: 'calc',
         description: [
             'Sets the bar width (in position axis units).'
         ].join(' ')
     },
 
     marker: marker,
+
+    selected: {
+        marker: {
+            opacity: scatterAttrs.selected.marker.opacity,
+            color: scatterAttrs.selected.marker.color,
+            editType: 'style'
+        },
+        textfont: scatterAttrs.selected.textfont,
+        editType: 'style'
+    },
+    unselected: {
+        marker: {
+            opacity: scatterAttrs.unselected.marker.opacity,
+            color: scatterAttrs.unselected.marker.color,
+            editType: 'style'
+        },
+        textfont: scatterAttrs.unselected.textfont,
+        editType: 'style'
+    },
 
     r: scatterAttrs.r,
     t: scatterAttrs.t,
@@ -140,6 +197,7 @@ module.exports = {
         bardir: {
             valType: 'enumerated',
             role: 'info',
+            editType: 'calc',
             values: ['v', 'h'],
             description: 'Renamed to `orientation`.'
         }

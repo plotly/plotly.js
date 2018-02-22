@@ -40,8 +40,12 @@
                 "top left",
                 "top left"
             ],
-            "type": "scatter",
-            "uid": "459c77"
+            "hovertext": [
+                "Hover text\nA",
+                "Hover text\rB",
+                "Hover text\r\nC"
+            ],
+            "type": "scatter"
         },
         {
             "x": [
@@ -83,8 +87,12 @@
                 "bottom left",
                 "bottom left"
             ],
-            "type": "scatter",
-            "uid": "f8361c"
+            "hovertext": [
+                "Hover text G",
+                "Hover text H",
+                "Hover text I"
+            ],
+            "type": "scatter"
         },
         {
             "x": [
@@ -103,6 +111,11 @@
                 "a",
                 "",
                 "b"
+            ],
+            "hovertext": [
+                "a (hover)",
+                "",
+                "b (hover)"
             ]
         }
     ],

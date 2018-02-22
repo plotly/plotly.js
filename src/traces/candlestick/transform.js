@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,6 +8,8 @@
 
 
 'use strict';
+
+var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var helpers = require('../ohlc/helpers');
@@ -115,7 +117,7 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
     };
 
     for(var i = 0; i < len; i++) {
-        if(filterFn(open[i], close[i])) {
+        if(filterFn(open[i], close[i]) && isNumeric(high[i]) && isNumeric(low[i])) {
             appendX(i);
             appendY(open[i], high[i], low[i], close[i]);
         }

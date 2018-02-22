@@ -1,0 +1,249 @@
+{
+  "data": [
+    {
+      "carpet":"c",
+      "type":"contourcarpet",
+      "autocontour":false,
+      "contours":{
+        "start":1,
+        "end":14,
+        "size":1,
+        "showlabels": true,
+        "labelfont": {"size": 9, "color": "#ff0"}
+      },
+      "line":{
+        "width":2,
+        "smoothing":0
+      },
+      "colorbar": {
+        "len": 0.4,
+        "y": 0.25,
+        "x": 0.45
+      },
+      "z":[1, 1.96, 2.56, 3.0625, 4, 5.0625, 1, 7.5625, 9, 12.25, 15.21, 14.0625],
+      "a":[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+      "b":[4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+      "xaxis":"x",
+      "yaxis":"y"
+    },
+    {
+      "carpet":"c",
+      "a":[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+      "b":[4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+      "y":[1, 1.4, 1.6, 1.75, 2, 2.5, 2.7, 2.75, 3, 3.5, 3.7, 3.75],
+      "x":[2, 3, 4, 5, 2.2, 3.1, 4.1, 5.1, 1.5, 2.5, 3.5, 4.5],
+      "type":"carpet",
+      "aaxis":{
+        "tickprefix":"a = ",
+        "smoothing":0,
+        "minorgridcount":9,
+        "type":"linear"
+      },
+      "baxis":{
+        "tickprefix":"b = ",
+        "smoothing":0,
+        "minorgridcount":9,
+        "type":"linear"
+      },
+      "xaxis":"x",
+      "yaxis":"y"
+    },
+    {
+      "carpet":"c2",
+      "type":"contourcarpet",
+      "autocontour":false,
+      "contours":{
+        "start":1,
+        "end":14,
+        "size":1,
+        "coloring": "lines",
+        "showlabels": true
+      },
+      "line":{
+        "width":2
+      },
+      "colorbar": {
+        "len": 0.4,
+        "y": 0.75,
+        "x": 0.45
+      },
+      "z":[1, 1.96, 2.56, 3.0625, 4, 5.0625, 1, 7.5625, 9, 12.25, 15.21, 14.0625],
+      "a":[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+      "b":[4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+      "xaxis":"x",
+      "yaxis":"y2",
+      "zmin":1,
+      "zmax":15.21,
+      "zauto":true
+    },
+    {
+      "carpet":"c2",
+      "a":[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+      "b":[4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+      "y":[1, 1.4, 1.6, 1.75, 2, 2.5, 2.7, 2.75, 3, 3.5, 3.7, 3.75],
+      "x":[2, 3, 4, 5, 2.2, 3.1, 4.1, 5.1, 1.5, 2.5, 3.5, 4.5],
+      "type":"carpet",
+      "aaxis":{
+        "tickprefix":"a = ",
+        "smoothing":1,
+        "minorgridcount":9,
+        "type":"linear"
+      },
+      "baxis":{
+        "tickprefix":"b = ",
+        "smoothing":1,
+        "minorgridcount":9,
+        "type":"linear"
+      },
+      "xaxis":"x",
+      "yaxis":"y2"
+    },
+    {
+      "carpet":"c3",
+      "type":"contourcarpet",
+      "autocontour":false,
+      "contours":{
+        "start":-5,
+        "end":20,
+        "size":1,
+        "coloring": "lines"
+      },
+      "line":{
+        "width":2,
+        "smoothing":0
+      },
+      "colorbar": {
+        "len": 0.4,
+        "y": 0.25
+      },
+      "z":[1, 1.96, 2.56, 3.0625, 4, 5.0625, 1, 7.5625, 9, 12.25, 15.21, 14.0625],
+      "a":[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+      "b":[4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+      "xaxis":"x2",
+      "yaxis":"y"
+    },
+    {
+      "carpet":"c3",
+      "a":[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+      "b":[4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+      "y":[1, 1.4, 1.6, 1.75, 2, 2.5, 2.7, 2.75, 3, 3.5, 3.7, 3.75],
+      "x":[2, 3, 4, 5, 2.2, 3.1, 4.1, 5.1, 1.5, 2.5, 3.5, 4.5],
+      "type":"carpet",
+      "aaxis":{
+        "tickprefix":"a = ",
+        "smoothing":0,
+        "minorgridcount":9,
+        "type":"linear"
+      },
+      "baxis":{
+        "tickprefix":"b = ",
+        "smoothing":0,
+        "minorgridcount":9,
+        "type":"linear"
+      },
+      "xaxis":"x2",
+      "yaxis":"y"
+    },
+    {
+      "carpet":"c4",
+      "type":"contourcarpet",
+      "autocontour":false,
+      "contours":{
+        "start":-5,
+        "end":20,
+        "size":1,
+        "showlabels": true
+      },
+      "line":{
+        "width":2,
+        "color": "#fff"
+      },
+      "colorbar": {
+        "len": 0.4,
+        "y": 0.75
+      },
+      "z":[1, 1.96, 2.56, 3.0625, 4, 5.0625, 1, 7.5625, 9, 12.25, 15.21, 14.0625],
+      "a":[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+      "b":[4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+      "xaxis":"x2",
+      "yaxis":"y2",
+      "zmin":1,
+      "zmax":15.21,
+      "zauto":true
+    },
+    {
+      "carpet":"c4",
+      "a":[0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3],
+      "b":[4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6],
+      "y":[1, 1.4, 1.6, 1.75, 2, 2.5, 2.7, 2.75, 3, 3.5, 3.7, 3.75],
+      "x":[2, 3, 4, 5, 2.2, 3.1, 4.1, 5.1, 1.5, 2.5, 3.5, 4.5],
+      "type":"carpet",
+      "aaxis":{
+        "tickprefix":"a = ",
+        "smoothing":1,
+        "minorgridcount":9,
+        "type":"linear"
+      },
+      "baxis":{
+        "tickprefix":"b = ",
+        "smoothing":1,
+        "minorgridcount":9,
+        "type":"linear"
+      },
+      "xaxis":"x2",
+      "yaxis":"y2"
+    }
+  ],
+  "layout": {
+    "width": 1000,
+    "height": 600,
+    "title": "Cheater plot with 1D input",
+    "margin":{
+      "t":40,
+      "r":30,
+      "b":30,
+      "l":30
+    },
+    "dragmode":"pan",
+    "yaxis":{
+      "domain":[
+        0,
+        0.48
+      ],
+      "range":[
+        0.38830491032049386,
+        4.361695089679506
+      ]
+    },
+    "yaxis2":{
+      "domain":[
+        0.52,
+        1
+      ],
+      "range":[
+        0.38830491032049386,
+        4.361695089679506
+      ]
+    },
+    "xaxis":{
+      "domain": [
+        0,
+        0.48
+      ],
+      "range":[
+        0.6676731793960924,
+        5.932326820603907
+      ]
+    },
+    "xaxis2":{
+      "domain": [
+        0.52,
+        1
+      ],
+      "range":[
+        0.6676731793960924,
+        5.932326820603907
+      ]
+    }
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "data": [
+    {
+      "type": "carpet",
+      "a": [0, 1, 2],
+      "b": [0, 1, 2, 3],
+      "y": [[0, 1, 2], [0, 1, 2], [0, 1, 2], [0, 1, 2]],
+      "cheaterslope": -2,
+      "aaxis": {
+        "minorgridcount": 1
+      },
+      "baxis": {
+        "minorgridcount": 1
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "z": [[0, 0, 0], [1, 1, 1], [2, -1, 2], [3, 3, 3]],
+      "name": "almost filled",
+      "contours": {
+        "type": "constraint",
+        "value": 0.05,
+        "operation": "<"
+      }
+    },
+    {
+      "type": "contourcarpet",
+      "name": "fully filled",
+      "z": [[0, 0, 0], [1, 1, 1], [2, -1, 2], [3, 3, 3]],
+      "contours": {
+        "type": "constraint",
+        "value": -0.05,
+        "operation": "<"
+      }
+    }
+  ],
+  "layout": {
+    "title": "Fully filled carpet with a hole",
+    "annotations": [{
+      "text": "These two fills differ only in a tiny threshold that affects whether the<br>contour fills the whole region or cuts off a sliver on the left side.<br> They should be effectively identical, not complementary.",
+      "align": "left",
+      "showarrow": false,
+      "x": 0.5,
+      "y": 2.5,
+      "xref": "x",
+      "yref": "y"
+    }],
+    "margin": {
+      "t": 60,
+      "r": 30,
+      "b": 30,
+      "l": 30
+    }
+  }
+}

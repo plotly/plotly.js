@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,7 +9,10 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var Lib = require('../../lib');
+var _ = Lib._;
 var helpers = require('./helpers');
 var Axes = require('../../plots/cartesian/axes');
 var axisIds = require('../../plots/cartesian/axis_ids');
@@ -130,6 +133,11 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
         close = trace.close,
         textIn = trace.text;
 
+    var openName = _(gd, 'open:') + ' ';
+    var highName = _(gd, 'high:') + ' ';
+    var lowName = _(gd, 'low:') + ' ';
+    var closeName = _(gd, 'close:') + ' ';
+
     var len = open.length,
         x = [],
         y = [],
@@ -181,10 +189,10 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
         var t = [];
 
         if(hasY) {
-            t.push('Open: ' + format(ya, o));
-            t.push('High: ' + format(ya, h));
-            t.push('Low: ' + format(ya, l));
-            t.push('Close: ' + format(ya, c));
+            t.push(openName + format(ya, o));
+            t.push(highName + format(ya, h));
+            t.push(lowName + format(ya, l));
+            t.push(closeName + format(ya, c));
         }
 
         if(hasText) t.push(getTextItem(i));
@@ -195,7 +203,7 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
     };
 
     for(var i = 0; i < len; i++) {
-        if(filterFn(open[i], close[i])) {
+        if(filterFn(open[i], close[i]) && isNumeric(high[i]) && isNumeric(low[i])) {
             appendX(i);
             appendY(open[i], high[i], low[i], close[i]);
             appendText(i, open[i], high[i], low[i], close[i]);
@@ -205,6 +213,7 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
     trace.x = x;
     trace.y = y;
     trace.text = textOut;
+    trace._length = x.length;
 };
 
 function convertTickWidth(gd, xa, trace) {

@@ -1,0 +1,23 @@
+{
+    "data": [
+        {
+            "xbins": {
+                "start": -1.5,
+                "end": 4.5,
+                "size": 1
+            },
+            "marker": {
+                "cmin": 0,
+                "colorscale": "Earth",
+                "color": [ 0, 1, 2, 3, 4, 5 ],
+                "cmax": 5
+            },
+            "x": [ 0, 1, 1, 2, 2, 2, 3, 3, 4 ],
+            "type": "histogram"
+        }
+    ],
+    "layout": {
+        "height": 500,
+        "width": 700
+    }
+}

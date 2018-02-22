@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -65,11 +65,14 @@ module.exports = function cleanBins(trace, ax, binDirection) {
     var autoBinAttr = 'autobin' + binDirection;
 
     if(typeof trace[autoBinAttr] !== 'boolean') {
-        trace[autoBinAttr] = !(
+        trace[autoBinAttr] = trace._fullInput[autoBinAttr] = trace._input[autoBinAttr] = !(
             (bins.start || bins.start === 0) &&
             (bins.end || bins.end === 0)
         );
     }
 
-    if(!trace[autoBinAttr]) delete trace['nbins' + binDirection];
+    if(!trace[autoBinAttr]) {
+        delete trace['nbins' + binDirection];
+        delete trace._fullInput['nbins' + binDirection];
+    }
 };

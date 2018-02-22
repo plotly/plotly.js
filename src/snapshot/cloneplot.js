@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,7 +10,6 @@
 'use strict';
 
 var Lib = require('../lib');
-var Plots = require('../plots/plots');
 
 var extendFlat = Lib.extendFlat;
 var extendDeep = Lib.extendDeep;
@@ -70,6 +69,7 @@ module.exports = function clonePlot(graphObj, options) {
     var oldLayout = graphObj.layout;
     var newData = extendDeep([], oldData);
     var newLayout = extendDeep({}, oldLayout, cloneLayoutOverride(options.tileClass));
+    var context = graphObj._context || {};
 
     if(options.width) newLayout.width = options.width;
     if(options.height) newLayout.height = options.height;
@@ -100,8 +100,11 @@ module.exports = function clonePlot(graphObj, options) {
         }
     }
 
-    var sceneIds = Plots.getSubplotIds(newLayout, 'gl3d');
-
+    // TODO: does this scene modification really belong here?
+    // If we still need it, can it move into the gl3d module?
+    var sceneIds = Object.keys(newLayout).filter(function(key) {
+        return key.match(/^scene\d*$/);
+    });
     if(sceneIds.length) {
         var axesImageOverride = {};
         if(options.tileClass === 'thumbnail') {
@@ -153,7 +156,8 @@ module.exports = function clonePlot(graphObj, options) {
                 options.plotGlPixelRatio,
             displaylogo: options.displaylogo || false,
             showLink: options.showLink || false,
-            showTips: options.showTips || false
+            showTips: options.showTips || false,
+            mapboxAccessToken: context.mapboxAccessToken
         }
     };
 

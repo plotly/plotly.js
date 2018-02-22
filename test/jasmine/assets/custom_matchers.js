@@ -1,10 +1,25 @@
+/*
+ * custom_matchers - to be included in karma.conf.js, so it can
+ * add these matchers to jasmine globally and all suites have access.
+ *
+ * Also adds `.negateIf` which is not a matcher but a conditional `.not`:
+ *
+ *     expect(x).negateIf(condition).toBe(0);
+ *
+ * is equivalent to:
+ *
+ *     if(condition) expect(x).toBe(0);
+ *     else expect(x).not.toBe(0);
+ */
+
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var Lib = require('@src/lib');
+var isPlainObject = require('../../../src/lib/is_plain_object');
+var extendDeep = require('../../../src/lib/extend').extendDeep;
 var deepEqual = require('deep-equal');
 
-module.exports = {
+var matchers = {
     // toEqual except with sparse arrays populated. This arises because:
     //
     //   var x = new Array(2)
@@ -21,7 +36,7 @@ module.exports = {
                 for(i = 0; i < x.length; i++) {
                     x[i] = x[i];
                 }
-            } else if(Lib.isPlainObject(x)) {
+            } else if(isPlainObject(x)) {
                 var keys = Object.keys(x);
                 for(i = 0; i < keys.length; i++) {
                     populateUndefinedArrayEls(x[keys[i]]);
@@ -32,8 +47,8 @@ module.exports = {
 
         return {
             compare: function(actual, expected, msgExtra) {
-                var actualExpanded = populateUndefinedArrayEls(Lib.extendDeep({}, actual));
-                var expectedExpanded = populateUndefinedArrayEls(Lib.extendDeep({}, expected));
+                var actualExpanded = populateUndefinedArrayEls(extendDeep({}, actual));
+                var expectedExpanded = populateUndefinedArrayEls(extendDeep({}, expected));
 
                 var passed = deepEqual(actualExpanded, expectedExpanded);
 
@@ -55,14 +70,19 @@ module.exports = {
             compare: function(actual, expected, precision, msgExtra) {
                 precision = coercePosition(precision);
 
-                var tested = actual.map(function(element, i) {
-                    return isClose(element, expected[i], precision);
-                });
+                var passed;
 
-                var passed = (
-                    expected.length === actual.length &&
-                    tested.indexOf(false) < 0
-                );
+                if(Array.isArray(actual) && Array.isArray(expected)) {
+                    var tested = actual.map(function(element, i) {
+                        return isClose(element, expected[i], precision);
+                    });
+
+                    passed = (
+                        expected.length === actual.length &&
+                        tested.indexOf(false) < 0
+                    );
+                }
+                else passed = false;
 
                 var message = [
                     'Expected', actual, 'to be close to', expected, msgExtra
@@ -107,7 +127,7 @@ module.exports = {
                     'to be close to',
                     arrayToStr(expected.map(arrayToStr)),
                     msgExtra
-                ].join(' ');
+                ].join('\n');
 
                 return {
                     pass: passed,
@@ -143,7 +163,10 @@ function isClose(actual, expected, precision) {
         return Math.abs(actual - expected) < precision;
     }
 
-    return actual === expected;
+    return (
+        actual === expected ||
+        (isNaN(actual) && isNaN(expected))
+    );
 }
 
 function coercePosition(precision) {
@@ -157,3 +180,12 @@ function coercePosition(precision) {
 function arrayToStr(array) {
     return '[ ' + array.join(', ') + ' ]';
 }
+
+beforeAll(function() {
+    jasmine.addMatchers(matchers);
+
+    jasmine.Expectation.prototype.negateIf = function(negate) {
+        if(negate) return this.not;
+        return this;
+    };
+});

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,7 +12,12 @@
 var Loggers = require('./lib/loggers');
 var noop = require('./lib/noop');
 var pushUnique = require('./lib/push_unique');
+var ExtendModule = require('./lib/extend');
+var extendFlat = ExtendModule.extendFlat;
+var extendDeepAll = ExtendModule.extendDeepAll;
+
 var basePlotAttributes = require('./plots/attributes');
+var baseLayoutAttributes = require('./plots/layout_attributes');
 
 exports.modules = {};
 exports.allCategories = {};
@@ -22,6 +27,8 @@ exports.transformsRegistry = {};
 exports.componentsRegistry = {};
 exports.layoutArrayContainers = [];
 exports.layoutArrayRegexes = [];
+exports.traceLayoutAttributes = {};
+exports.localeRegistry = {};
 
 /**
  * register a module as the handler for a trace type
@@ -54,6 +61,19 @@ exports.register = function(_module, thisType, categoriesIn, meta) {
     }
 
     exports.allTypes.push(thisType);
+
+    for(var componentName in exports.componentsRegistry) {
+        mergeComponentAttrsToTrace(componentName, thisType);
+    }
+
+    /*
+     * Collect all trace layout attributes in one place for easier lookup later
+     * but don't merge them into the base schema as it would confuse the docs
+     * (at least after https://github.com/plotly/documentation/issues/202 gets done!)
+     */
+    if(_module.layoutAttributes) {
+        extendFlat(exports.traceLayoutAttributes, _module.layoutAttributes);
+    }
 };
 
 /**
@@ -90,6 +110,10 @@ exports.registerSubplot = function(_module) {
 
     // not sure what's best for the 'cartesian' type at this point
     exports.subplotsRegistry[plotType] = _module;
+
+    for(var componentName in exports.componentsRegistry) {
+        mergeComponentAttrsToSubplot(componentName, _module.name);
+    }
 };
 
 exports.registerComponent = function(_module) {
@@ -102,6 +126,30 @@ exports.registerComponent = function(_module) {
             pushUnique(exports.layoutArrayContainers, name);
         }
         findArrayRegexps(_module);
+    }
+
+    for(var traceType in exports.modules) {
+        mergeComponentAttrsToTrace(name, traceType);
+    }
+
+    for(var subplotName in exports.subplotsRegistry) {
+        mergeComponentAttrsToSubplot(name, subplotName);
+    }
+
+    for(var transformType in exports.transformsRegistry) {
+        mergeComponentAttrsToTransform(name, transformType);
+    }
+
+    if(_module.schema && _module.schema.layout) {
+        extendDeepAll(baseLayoutAttributes, _module.schema.layout);
+    }
+};
+
+exports.registerTransform = function(_module) {
+    exports.transformsRegistry[_module.name] = _module;
+
+    for(var componentName in exports.componentsRegistry) {
+        mergeComponentAttrsToTransform(componentName, _module.name);
     }
 };
 
@@ -116,6 +164,41 @@ function findArrayRegexps(_module) {
     }
 }
 
+function mergeComponentAttrsToTrace(componentName, traceType) {
+    var componentSchema = exports.componentsRegistry[componentName].schema;
+    if(!componentSchema || !componentSchema.traces) return;
+
+    var traceAttrs = componentSchema.traces[traceType];
+    if(traceAttrs) {
+        extendDeepAll(exports.modules[traceType]._module.attributes, traceAttrs);
+    }
+}
+
+function mergeComponentAttrsToTransform(componentName, transformType) {
+    var componentSchema = exports.componentsRegistry[componentName].schema;
+    if(!componentSchema || !componentSchema.transforms) return;
+
+    var transformAttrs = componentSchema.transforms[transformType];
+    if(transformAttrs) {
+        extendDeepAll(exports.transformsRegistry[transformType].attributes, transformAttrs);
+    }
+}
+
+function mergeComponentAttrsToSubplot(componentName, subplotName) {
+    var componentSchema = exports.componentsRegistry[componentName].schema;
+    if(!componentSchema || !componentSchema.subplots) return;
+
+    var subplotModule = exports.subplotsRegistry[subplotName];
+    var subplotAttrs = subplotModule.layoutAttributes;
+    var subplotAttr = subplotModule.attr === 'subplot' ? subplotModule.name : subplotModule.attr;
+    if(Array.isArray(subplotAttr)) subplotAttr = subplotAttr[0];
+
+    var componentLayoutAttrs = componentSchema.subplots[subplotAttr];
+    if(subplotAttrs && componentLayoutAttrs) {
+        extendDeepAll(subplotAttrs, componentLayoutAttrs);
+    }
+}
+
 /**
  * Get registered module using trace object or trace type
  *
@@ -125,14 +208,6 @@ function findArrayRegexps(_module) {
  *  module object corresponding to trace type
  */
 exports.getModule = function(trace) {
-    if(trace.r !== undefined) {
-        Loggers.warn('Tried to put a polar trace ' +
-            'on an incompatible graph of cartesian ' +
-            'data. Ignoring this dataset.', trace
-        );
-        return false;
-    }
-
     var _module = exports.modules[getTraceType(trace)];
     if(!_module) return false;
     return _module._module;
@@ -167,6 +242,48 @@ exports.traceIs = function(traceType, category) {
 };
 
 /**
+ * Determine if this trace has a transform of the given type and return
+ * array of matching indices.
+ *
+ * @param {object} data
+ *  a trace object (member of data or fullData)
+ * @param {string} type
+ *  type of trace to test
+ * @return {array}
+ *  array of matching indices. If none found, returns []
+ */
+exports.getTransformIndices = function(data, type) {
+    var indices = [];
+    var transforms = data.transforms || [];
+    for(var i = 0; i < transforms.length; i++) {
+        if(transforms[i].type === type) {
+            indices.push(i);
+        }
+    }
+    return indices;
+};
+
+/**
+ * Determine if this trace has a transform of the given type
+ *
+ * @param {object} data
+ *  a trace object (member of data or fullData)
+ * @param {string} type
+ *  type of trace to test
+ * @return {boolean}
+ */
+exports.hasTransform = function(data, type) {
+    var transforms = data.transforms || [];
+    for(var i = 0; i < transforms.length; i++) {
+        if(transforms[i].type === type) {
+            return true;
+        }
+    }
+    return false;
+
+};
+
+/**
  * Retrieve component module method. Falls back on noop if either the
  * module or the method is missing, so the result can always be safely called
  *
@@ -187,3 +304,58 @@ function getTraceType(traceType) {
     if(typeof traceType === 'object') traceType = traceType.type;
     return traceType;
 }
+
+/**
+ * Register a new locale dictionary
+ *
+ * @param {object} module
+ * @param {string} moduleType
+ *  should be 'locale' so that Plotly.register will forward to this function
+ * @param {string} module.name
+ *  the locale name. Should be a 2-digit language string ('en', 'de')
+ *  optionally with a country/region code ('en-GB', 'de-CH'). If a country
+ *  code is used but the base language locale has not yet been supplied,
+ *  we will use this locale for the base as well.
+ * @param {object} module.dictionary
+ *  the dictionary mapping input strings to localized strings
+ *  generally the keys should be the literal input strings, but
+ *  if default translations are provided you can use any string as a key.
+ * @param {object} module.format
+ *  a `d3.locale` format specifier for this locale
+ *  any omitted keys we'll fall back on en-US
+ */
+exports.registerLocale = function(_module) {
+    var locale = _module.name;
+    var baseLocale = locale.split('-')[0];
+
+    var newDict = _module.dictionary;
+    var newFormat = _module.format;
+    var hasDict = newDict && Object.keys(newDict).length;
+    var hasFormat = newFormat && Object.keys(newFormat).length;
+
+    var locales = exports.localeRegistry;
+
+    var localeObj = locales[locale];
+    if(!localeObj) locales[locale] = localeObj = {};
+
+    // Should we use this dict for the base locale?
+    // In case we're overwriting a previous dict for this locale, check
+    // whether the base matches the full locale dict now. If we're not
+    // overwriting, locales[locale] is undefined so this just checks if
+    // baseLocale already had a dict or not.
+    // Same logic for dateFormats
+    if(baseLocale !== locale) {
+        var baseLocaleObj = locales[baseLocale];
+        if(!baseLocaleObj) locales[baseLocale] = baseLocaleObj = {};
+
+        if(hasDict && baseLocaleObj.dictionary === localeObj.dictionary) {
+            baseLocaleObj.dictionary = newDict;
+        }
+        if(hasFormat && baseLocaleObj.format === localeObj.format) {
+            baseLocaleObj.format = newFormat;
+        }
+    }
+
+    if(hasDict) localeObj.dictionary = newDict;
+    if(hasFormat) localeObj.format = newFormat;
+};

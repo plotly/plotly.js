@@ -38,7 +38,7 @@ function verifyInteractionEffects(tuple) {
     expect(tuple.relayoutCallback).toHaveBeenCalledTimes(1);
 
     // Check structure of event callback value contents
-    expect(tuple.relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({scene: cameraStructure}));
+    expect(tuple.relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({'scene.camera': cameraStructure}));
 
     // Check camera contents on the DIV layout
     var divCamera = tuple.graphDiv.layout.scene.camera;
@@ -55,7 +55,7 @@ function testEvents(plot) {
     });
 }
 
-describe('gl3d plots', function() {
+describe('@gl gl3d plots', function() {
 
     var gd;
 

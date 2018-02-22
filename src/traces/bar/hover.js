@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,82 +9,136 @@
 
 'use strict';
 
-var Fx = require('../../plots/cartesian/graph_interact');
+var Fx = require('../../components/fx');
 var ErrorBars = require('../../components/errorbars');
 var Color = require('../../components/color');
-
+var fillHoverText = require('../scatter/fill_hover_text');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
-    var cd = pointData.cd,
-        trace = cd[0].trace,
-        t = cd[0].t,
-        xa = pointData.xa,
-        ya = pointData.ya,
-        barDelta = (hovermode === 'closest') ?
-            t.barwidth / 2 :
-            t.bargroupwidth / 2,
-        barPos;
+    var cd = pointData.cd;
+    var trace = cd[0].trace;
+    var t = cd[0].t;
+    var isClosest = (hovermode === 'closest');
+    var maxHoverDistance = pointData.maxHoverDistance;
+    var maxSpikeDistance = pointData.maxSpikeDistance;
 
-    if(hovermode !== 'closest') barPos = function(di) { return di.p; };
-    else if(trace.orientation === 'h') barPos = function(di) { return di.y; };
-    else barPos = function(di) { return di.x; };
+    var posVal, sizeVal, posLetter, sizeLetter, dx, dy, pRangeCalc;
 
-    var dx, dy;
+    function thisBarMinPos(di) { return di[posLetter] - di.w / 2; }
+    function thisBarMaxPos(di) { return di[posLetter] + di.w / 2; }
+
+    var minPos = isClosest ?
+        thisBarMinPos :
+        function(di) {
+            /*
+             * In compare mode, accept a bar if you're on it *or* its group.
+             * Nearly always it's the group that matters, but in case the bar
+             * was explicitly set wider than its group we'd better accept the
+             * whole bar.
+             *
+             * use `bardelta` instead of `bargroupwidth` so we accept hover
+             * in the gap. That way hover doesn't flash on and off as you
+             * mouse over the plot in compare modes.
+             * In 'closest' mode though the flashing seems inevitable,
+             * without far more complex logic
+             */
+            return Math.min(thisBarMinPos(di), di.p - t.bardelta / 2);
+        };
+
+    var maxPos = isClosest ?
+        thisBarMaxPos :
+        function(di) {
+            return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
+        };
+
+    function _positionFn(_minPos, _maxPos) {
+        // add a little to the pseudo-distance for wider bars, so that like scatter,
+        // if you are over two overlapping bars, the narrower one wins.
+        return Fx.inbox(_minPos - posVal, _maxPos - posVal,
+            maxHoverDistance + Math.min(1, Math.abs(_maxPos - _minPos) / pRangeCalc) - 1);
+    }
+
+    function positionFn(di) {
+        return _positionFn(minPos(di), maxPos(di));
+    }
+
+    function thisBarPositionFn(di) {
+        return _positionFn(thisBarMinPos(di), thisBarMaxPos(di));
+    }
+
+    function sizeFn(di) {
+        // add a gradient so hovering near the end of a
+        // bar makes it a little closer match
+        return Fx.inbox(di.b - sizeVal, di[sizeLetter] - sizeVal,
+            maxHoverDistance + (di[sizeLetter] - sizeVal) / (di[sizeLetter] - di.b) - 1);
+    }
+
     if(trace.orientation === 'h') {
-        dx = function(di) {
-            // add a gradient so hovering near the end of a
-            // bar makes it a little closer match
-            return Fx.inbox(di.b - xval, di.x - xval) + (di.x - xval) / (di.x - di.b);
-        };
-        dy = function(di) {
-            var centerPos = barPos(di) - yval;
-            return Fx.inbox(centerPos - barDelta, centerPos + barDelta);
-        };
+        posVal = yval;
+        sizeVal = xval;
+        posLetter = 'y';
+        sizeLetter = 'x';
+        dx = sizeFn;
+        dy = positionFn;
     }
     else {
-        dy = function(di) {
-            return Fx.inbox(di.b - yval, di.y - yval) + (di.y - yval) / (di.y - di.b);
-        };
-        dx = function(di) {
-            var centerPos = barPos(di) - xval;
-            return Fx.inbox(centerPos - barDelta, centerPos + barDelta);
-        };
+        posVal = xval;
+        sizeVal = yval;
+        posLetter = 'x';
+        sizeLetter = 'y';
+        dy = sizeFn;
+        dx = positionFn;
     }
 
-    var distfn = Fx.getDistanceFunction(hovermode, dx, dy);
+    var pa = pointData[posLetter + 'a'];
+    var sa = pointData[sizeLetter + 'a'];
+
+    pRangeCalc = Math.abs(pa.r2c(pa.range[1]) - pa.r2c(pa.range[0]));
+
+    function dxy(di) { return (dx(di) + dy(di)) / 2; }
+    var distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
     Fx.getClosest(cd, distfn, pointData);
 
     // skip the rest (for this trace) if we didn't find a close point
     if(pointData.index === false) return;
 
+    // if we get here and we're not in 'closest' mode, push min/max pos back
+    // onto the group - even though that means occasionally the mouse will be
+    // over the hover label.
+    if(!isClosest) {
+        minPos = function(di) {
+            return Math.min(thisBarMinPos(di), di.p - t.bargroupwidth / 2);
+        };
+        maxPos = function(di) {
+            return Math.max(thisBarMaxPos(di), di.p + t.bargroupwidth / 2);
+        };
+    }
+
     // the closest data point
-    var di = cd[pointData.index],
-        mc = di.mcc || trace.marker.color,
-        mlc = di.mlcc || trace.marker.line.color,
-        mlw = di.mlw || trace.marker.line.width;
+    var index = pointData.index;
+    var di = cd[index];
+    var mc = di.mcc || trace.marker.color;
+    var mlc = di.mlcc || trace.marker.line.color;
+    var mlw = di.mlw || trace.marker.line.width;
+
     if(Color.opacity(mc)) pointData.color = mc;
     else if(Color.opacity(mlc) && mlw) pointData.color = mlc;
 
     var size = (trace.base) ? di.b + di.s : di.s;
-    if(trace.orientation === 'h') {
-        pointData.x0 = pointData.x1 = xa.c2p(di.x, true);
-        pointData.xLabelVal = size;
+    pointData[sizeLetter + '0'] = pointData[sizeLetter + '1'] = sa.c2p(di[sizeLetter], true);
+    pointData[sizeLetter + 'LabelVal'] = size;
 
-        pointData.y0 = ya.c2p(barPos(di) - barDelta, true);
-        pointData.y1 = ya.c2p(barPos(di) + barDelta, true);
-        pointData.yLabelVal = di.p;
-    }
-    else {
-        pointData.y0 = pointData.y1 = ya.c2p(di.y, true);
-        pointData.yLabelVal = size;
+    pointData[posLetter + '0'] = pa.c2p(minPos(di), true);
+    pointData[posLetter + '1'] = pa.c2p(maxPos(di), true);
+    pointData[posLetter + 'LabelVal'] = di.p;
 
-        pointData.x0 = xa.c2p(barPos(di) - barDelta, true);
-        pointData.x1 = xa.c2p(barPos(di) + barDelta, true);
-        pointData.xLabelVal = di.p;
-    }
+    // spikelines always want "closest" distance regardless of hovermode
+    pointData.spikeDistance = (sizeFn(di) + thisBarPositionFn(di)) / 2 + maxSpikeDistance - maxHoverDistance;
+    // they also want to point to the data value, regardless of where the label goes
+    // in case of bars shifted within groups
+    pointData[posLetter + 'Spike'] = pa.c2p(di.p, true);
 
-    if(di.tx) pointData.text = di.tx;
-
+    fillHoverText(di, trace, pointData);
     ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];

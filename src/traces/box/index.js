@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,18 +12,19 @@ var Box = {};
 
 Box.attributes = require('./attributes');
 Box.layoutAttributes = require('./layout_attributes');
-Box.supplyDefaults = require('./defaults');
-Box.supplyLayoutDefaults = require('./layout_defaults');
+Box.supplyDefaults = require('./defaults').supplyDefaults;
+Box.supplyLayoutDefaults = require('./layout_defaults').supplyLayoutDefaults;
 Box.calc = require('./calc');
-Box.setPositions = require('./set_positions');
-Box.plot = require('./plot');
+Box.setPositions = require('./set_positions').setPositions;
+Box.plot = require('./plot').plot;
 Box.style = require('./style');
-Box.hoverPoints = require('./hover');
+Box.hoverPoints = require('./hover').hoverPoints;
+Box.selectPoints = require('./select');
 
 Box.moduleType = 'trace';
 Box.name = 'box';
 Box.basePlotModule = require('../../plots/cartesian');
-Box.categories = ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'];
+Box.categories = ['cartesian', 'symbols', 'oriented', 'box-violin', 'showLegend'];
 Box.meta = {
     description: [
         'In vertical (horizontal) box plots,',

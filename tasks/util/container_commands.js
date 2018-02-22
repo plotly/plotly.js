@@ -29,7 +29,7 @@ containerCommands.dockerRun = [
     '--name', constants.testContainerName,
     '-v', constants.pathToRoot + ':' + constants.testContainerHome,
     '-p', constants.testContainerPort + ':' + constants.testContainerPort,
-    'plotly/testbed:latest'
+    constants.testContainerImage
 ].join(' ');
 
 containerCommands.getRunCmd = function(isCI, commands) {
@@ -44,29 +44,17 @@ containerCommands.getRunCmd = function(isCI, commands) {
 
 function getRunLocal(commands) {
     commands = [containerCommands.cdHome].concat(commands);
-
-    var commandsJoined = '"' + commands.join(' && ') + '"';
-
     return [
         'docker exec -i',
         constants.testContainerName,
         '/bin/bash -c',
-        commandsJoined
+        '"' + commands.join(' && ') + '"'
     ].join(' ');
 }
 
 function getRunCI(commands) {
-    commands = ['export CIRCLECI=1', containerCommands.cdHome].concat(commands);
-
-    var commandsJoined = '"' + commands.join(' && ') + '"';
-
-    return [
-        'sudo',
-        'lxc-attach -n',
-        '$(docker inspect --format \'{{.Id}}\' ' + constants.testContainerName + ')',
-        '-- bash -c',
-        commandsJoined
-    ].join(' ');
+    commands = [containerCommands.cdHome].concat(commands);
+    return commands.join(' && ');
 }
 
 module.exports = containerCommands;

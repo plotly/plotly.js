@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -20,6 +20,11 @@ module.exports = function makeColorMap(trace) {
         cs = contours.size || 1,
         nc = Math.floor((end - start) / cs) + 1,
         extra = contours.coloring === 'lines' ? 0 : 1;
+
+    if(!isFinite(cs)) {
+        cs = 1;
+        nc = 1;
+    }
 
     var scl = trace.colorscale,
         len = scl.length;

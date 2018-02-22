@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,9 +12,11 @@
 var d3 = require('d3');
 var Lib = require('../../lib');
 var Plots = require('../plots');
+var getModuleCalcData = require('../get_data').getModuleCalcData;
 
 var axisIds = require('./axis_ids');
 var constants = require('./constants');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 exports.name = 'cartesian';
 
@@ -30,13 +32,92 @@ exports.attributes = require('./attributes');
 
 exports.layoutAttributes = require('./layout_attributes');
 
+exports.supplyLayoutDefaults = require('./layout_defaults');
+
 exports.transitionAxes = require('./transition_axes');
 
+exports.finalizeSubplots = function(layoutIn, layoutOut) {
+    var subplots = layoutOut._subplots;
+    var xList = subplots.xaxis;
+    var yList = subplots.yaxis;
+    var spSVG = subplots.cartesian;
+    var spAll = spSVG.concat(subplots.gl2d || []);
+    var allX = {};
+    var allY = {};
+    var i, xi, yi;
+
+    for(i = 0; i < spAll.length; i++) {
+        var parts = spAll[i].split('y');
+        allX[parts[0]] = 1;
+        allY['y' + parts[1]] = 1;
+    }
+
+    // check for x axes with no subplot, and make one from the anchor of that x axis
+    for(i = 0; i < xList.length; i++) {
+        xi = xList[i];
+        if(!allX[xi]) {
+            yi = (layoutIn[axisIds.id2name(xi)] || {}).anchor;
+            if(!constants.idRegex.y.test(yi)) yi = 'y';
+            spSVG.push(xi + yi);
+            spAll.push(xi + yi);
+
+            if(!allY[yi]) {
+                allY[yi] = 1;
+                Lib.pushUnique(yList, yi);
+            }
+        }
+    }
+
+    // same for y axes with no subplot
+    for(i = 0; i < yList.length; i++) {
+        yi = yList[i];
+        if(!allY[yi]) {
+            xi = (layoutIn[axisIds.id2name(yi)] || {}).anchor;
+            if(!constants.idRegex.x.test(xi)) xi = 'x';
+            spSVG.push(xi + yi);
+            spAll.push(xi + yi);
+
+            if(!allX[xi]) {
+                allX[xi] = 1;
+                Lib.pushUnique(xList, xi);
+            }
+        }
+    }
+
+    // finally, if we've gotten here we're supposed to show cartesian...
+    // so if there are NO subplots at all, make one from the first
+    // x & y axes in the input layout
+    if(!spAll.length) {
+        var keys = Object.keys(layoutIn);
+        xi = '';
+        yi = '';
+        for(i = 0; i < keys.length; i++) {
+            var ki = keys[i];
+            if(constants.attrRegex.test(ki)) {
+                var axLetter = ki.charAt(0);
+                if(axLetter === 'x') {
+                    if(!xi || (+ki.substr(5) < +xi.substr(5))) {
+                        xi = ki;
+                    }
+                }
+                else if(!yi || (+ki.substr(5) < +yi.substr(5))) {
+                    yi = ki;
+                }
+            }
+        }
+        xi = xi ? axisIds.name2id(xi) : 'x';
+        yi = yi ? axisIds.name2id(yi) : 'y';
+        xList.push(xi);
+        yList.push(yi);
+        spSVG.push(xi + yi);
+    }
+};
+
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
-    var fullLayout = gd._fullLayout,
-        subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
-        calcdata = gd.calcdata,
-        i;
+    var fullLayout = gd._fullLayout;
+    var subplots = fullLayout._subplots.cartesian;
+    var calcdata = gd.calcdata;
+    var i;
 
     // If traces is not provided, then it's a complete replot and missing
     // traces are removed
@@ -46,6 +127,17 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
         for(i = 0; i < calcdata.length; i++) {
             traces.push(i);
         }
+    }
+
+    // clear gl frame, if any, since we preserve drawing buffer
+    if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
+        fullLayout._glcanvas.each(function(d) {
+            if(d.regl) {
+                d.regl.clear({
+                    color: true
+                });
+            }
+        });
     }
 
     for(i = 0; i < subplots.length; i++) {
@@ -63,8 +155,11 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
             // Skip trace if whitelist provided and it's not whitelisted:
             // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
             if(trace.xaxis + trace.yaxis === subplot) {
+                // XXX: Should trace carpet dependencies. Only replot all carpet plots if the carpet
+                // axis has actually changed:
+                //
                 // If this trace is specifically requested, add it to the list:
-                if(traces.indexOf(trace.index) !== -1) {
+                if(traces.indexOf(trace.index) !== -1 || trace.carpet) {
                     // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
                     // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
                     // is outdated. So this retroactively adds the previous trace if the
@@ -113,17 +208,9 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         if(_module.basePlotModule.name !== 'cartesian') continue;
 
         // plot all traces of this type on this subplot at once
-        var cdModule = [];
-        for(var k = 0; k < cdSubplot.length; k++) {
-            var cd = cdSubplot[k],
-                trace = cd[0].trace;
+        var cdModule = getModuleCalcData(cdSubplot, _module);
 
-            if((trace._module === _module) && (trace.visible === true)) {
-                cdModule.push(cd);
-            }
-        }
-
-        _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+        if(_module.plot) _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }
 }
 
@@ -131,13 +218,14 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldModules = oldFullLayout._modules || [],
         newModules = newFullLayout._modules || [];
 
-    var hadScatter, hasScatter, i;
+    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo;
+
 
     for(i = 0; i < oldModules.length; i++) {
         if(oldModules[i].name === 'scatter') {
             hadScatter = true;
-            break;
         }
+        break;
     }
 
     for(i = 0; i < newModules.length; i++) {
@@ -147,12 +235,26 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 
+    for(i = 0; i < oldModules.length; i++) {
+        if(oldModules[i].name === 'scattergl') {
+            hadGl = true;
+        }
+        break;
+    }
+
+    for(i = 0; i < newModules.length; i++) {
+        if(newModules[i].name === 'scattergl') {
+            hasGl = true;
+            break;
+        }
+    }
+
     if(hadScatter && !hasScatter) {
-        var oldPlots = oldFullLayout._plots,
-            ids = Object.keys(oldPlots || {});
+        oldPlots = oldFullLayout._plots;
+        ids = Object.keys(oldPlots || {});
 
         for(i = 0; i < ids.length; i++) {
-            var subplotInfo = oldPlots[ids[i]];
+            subplotInfo = oldPlots[ids[i]];
 
             if(subplotInfo.plot) {
                 subplotInfo.plot.select('g.scatterlayer')
@@ -167,19 +269,42 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             .remove();
     }
 
+    if(hadGl && !hasGl) {
+        oldPlots = oldFullLayout._plots;
+        ids = Object.keys(oldPlots || {});
+
+        for(i = 0; i < ids.length; i++) {
+            subplotInfo = oldPlots[ids[i]];
+
+            if(subplotInfo._scene) {
+                subplotInfo._scene.destroy();
+            }
+        }
+    }
+
+    var oldSubplotList = oldFullLayout._subplots || {};
+    var newSubplotList = newFullLayout._subplots || {xaxis: [], yaxis: []};
+
+    // delete any titles we don't need anymore
+    // check if axis list has changed, and if so clear old titles
+    if(oldSubplotList.xaxis && oldSubplotList.yaxis) {
+        var oldAxIDs = oldSubplotList.xaxis.concat(oldSubplotList.yaxis);
+        var newAxIDs = newSubplotList.xaxis.concat(newSubplotList.yaxis);
+
+        for(i = 0; i < oldAxIDs.length; i++) {
+            if(newAxIDs.indexOf(oldAxIDs[i]) === -1) {
+                oldFullLayout._infolayer.selectAll('.g-' + oldAxIDs[i] + 'title').remove();
+            }
+        }
+    }
+
+    // if we've gotten rid of all cartesian traces, remove all the subplot svg items
     var hadCartesian = (oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = (newFullLayout._has && newFullLayout._has('cartesian'));
 
     if(hadCartesian && !hasCartesian) {
-        var subplotLayers = oldFullLayout._cartesianlayer.selectAll('.subplot');
-        var axIds = axisIds.listIds({ _fullLayout: oldFullLayout });
-
-        subplotLayers.call(purgeSubplotLayers, oldFullLayout);
+        purgeSubplotLayers(oldFullLayout._cartesianlayer.selectAll('.subplot'), oldFullLayout);
         oldFullLayout._defs.selectAll('.axesclip').remove();
-
-        for(i = 0; i < axIds.length; i++) {
-            oldFullLayout._infolayer.select('.' + axIds[i] + 'title').remove();
-        }
     }
 };
 
@@ -208,7 +333,6 @@ exports.drawFramework = function(gd) {
         plotinfo.overlays = [];
 
         makeSubplotLayer(plotinfo);
-
         // fill in list of overlay subplots
         if(plotinfo.mainplot) {
             var mainplot = fullLayout._plots[plotinfo.mainplot];
@@ -239,40 +363,16 @@ function makeSubplotData(gd) {
         var subplot = subplots[i],
             plotinfo = fullLayout._plots[subplot];
 
-        var xa = plotinfo.xaxis,
-            ya = plotinfo.yaxis;
-
-        // is this subplot overlaid on another?
-        // ax.overlaying is the id of another axis of the same
-        // dimension that this one overlays to be an overlaid subplot,
-        // the main plot must exist make sure we're not trying to
-        // overlay on an axis that's already overlaying another
-        var xa2 = axisIds.getFromId(gd, xa.overlaying) || xa;
-        if(xa2 !== xa && xa2.overlaying) {
-            xa2 = xa;
-            xa.overlaying = false;
-        }
-
-        var ya2 = axisIds.getFromId(gd, ya.overlaying) || ya;
-        if(ya2 !== ya && ya2.overlaying) {
-            ya2 = ya;
-            ya.overlaying = false;
-        }
+        var xa = plotinfo.xaxis;
+        var ya = plotinfo.yaxis;
+        var xa2 = xa._mainAxis;
+        var ya2 = ya._mainAxis;
 
         var mainplot = xa2._id + ya2._id;
         if(mainplot !== subplot && subplots.indexOf(mainplot) !== -1) {
             plotinfo.mainplot = mainplot;
             plotinfo.mainplotinfo = fullLayout._plots[mainplot];
             overlays.push(subplot);
-
-            // for now force overlays to overlay completely... so they
-            // can drag together correctly and share backgrounds.
-            // Later perhaps we make separate axis domain and
-            // tick/line domain or something, so they can still share
-            // the (possibly larger) dragger and background but don't
-            // have to both be drawn over that whole domain
-            xa.domain = xa2.domain.slice();
-            ya.domain = ya2.domain.slice();
         }
         else {
             subplotData.push(subplot);
@@ -286,23 +386,10 @@ function makeSubplotData(gd) {
 }
 
 function makeSubplotLayer(plotinfo) {
-    var plotgroup = plotinfo.plotgroup,
-        id = plotinfo.id;
-
-    // Layers to keep plot types in the right order.
-    // from back to front:
-    // 1. heatmaps, 2D histos and contour maps
-    // 2. bars / 1D histos
-    // 3. errorbars for bars and scatter
-    // 4. scatter
-    // 5. box plots
-    function joinPlotLayers(parent) {
-        joinLayer(parent, 'g', 'imagelayer');
-        joinLayer(parent, 'g', 'maplayer');
-        joinLayer(parent, 'g', 'barlayer');
-        joinLayer(parent, 'g', 'boxlayer');
-        joinLayer(parent, 'g', 'scatterlayer');
-    }
+    var plotgroup = plotinfo.plotgroup;
+    var id = plotinfo.id;
+    var xLayer = constants.layerValue2layerClass[plotinfo.xaxis.layer];
+    var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
 
     if(!plotinfo.mainplot) {
         var backLayer = joinLayer(plotgroup, 'g', 'layer-subplot');
@@ -310,42 +397,76 @@ function makeSubplotLayer(plotinfo) {
         plotinfo.imagelayer = joinLayer(backLayer, 'g', 'imagelayer');
 
         plotinfo.gridlayer = joinLayer(plotgroup, 'g', 'gridlayer');
-        plotinfo.overgrid = joinLayer(plotgroup, 'g', 'overgrid');
 
         plotinfo.zerolinelayer = joinLayer(plotgroup, 'g', 'zerolinelayer');
-        plotinfo.overzero = joinLayer(plotgroup, 'g', 'overzero');
+
+        joinLayer(plotgroup, 'path', 'xlines-below');
+        joinLayer(plotgroup, 'path', 'ylines-below');
+        plotinfo.overlinesBelow = joinLayer(plotgroup, 'g', 'overlines-below');
+
+        joinLayer(plotgroup, 'g', 'xaxislayer-below');
+        joinLayer(plotgroup, 'g', 'yaxislayer-below');
+        plotinfo.overaxesBelow = joinLayer(plotgroup, 'g', 'overaxes-below');
 
         plotinfo.plot = joinLayer(plotgroup, 'g', 'plot');
         plotinfo.overplot = joinLayer(plotgroup, 'g', 'overplot');
 
-        plotinfo.xlines = joinLayer(plotgroup, 'path', 'xlines');
-        plotinfo.ylines = joinLayer(plotgroup, 'path', 'ylines');
-        plotinfo.overlines = joinLayer(plotgroup, 'g', 'overlines');
+        joinLayer(plotgroup, 'path', 'xlines-above');
+        joinLayer(plotgroup, 'path', 'ylines-above');
+        plotinfo.overlinesAbove = joinLayer(plotgroup, 'g', 'overlines-above');
 
-        plotinfo.xaxislayer = joinLayer(plotgroup, 'g', 'xaxislayer');
-        plotinfo.yaxislayer = joinLayer(plotgroup, 'g', 'yaxislayer');
-        plotinfo.overaxes = joinLayer(plotgroup, 'g', 'overaxes');
+        joinLayer(plotgroup, 'g', 'xaxislayer-above');
+        joinLayer(plotgroup, 'g', 'yaxislayer-above');
+        plotinfo.overaxesAbove = joinLayer(plotgroup, 'g', 'overaxes-above');
+
+        // set refs to correct layers as determined by 'axis.layer'
+        plotinfo.xlines = plotgroup.select('.xlines-' + xLayer);
+        plotinfo.ylines = plotgroup.select('.ylines-' + yLayer);
+        plotinfo.xaxislayer = plotgroup.select('.xaxislayer-' + xLayer);
+        plotinfo.yaxislayer = plotgroup.select('.yaxislayer-' + yLayer);
     }
     else {
         var mainplotinfo = plotinfo.mainplotinfo;
+        var mainplotgroup = mainplotinfo.plotgroup;
+        var xId = id + '-x';
+        var yId = id + '-y';
 
         // now make the components of overlaid subplots
         // overlays don't have backgrounds, and append all
         // their other components to the corresponding
         // extra groups of their main plots.
 
-        plotinfo.gridlayer = joinLayer(mainplotinfo.overgrid, 'g', id);
-        plotinfo.zerolinelayer = joinLayer(mainplotinfo.overzero, 'g', id);
+        plotinfo.gridlayer = mainplotinfo.gridlayer;
+        plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
+
+        joinLayer(mainplotinfo.overlinesBelow, 'path', xId);
+        joinLayer(mainplotinfo.overlinesBelow, 'path', yId);
+        joinLayer(mainplotinfo.overaxesBelow, 'g', xId);
+        joinLayer(mainplotinfo.overaxesBelow, 'g', yId);
 
         plotinfo.plot = joinLayer(mainplotinfo.overplot, 'g', id);
-        plotinfo.xlines = joinLayer(mainplotinfo.overlines, 'path', id);
-        plotinfo.ylines = joinLayer(mainplotinfo.overlines, 'path', id);
-        plotinfo.xaxislayer = joinLayer(mainplotinfo.overaxes, 'g', id);
-        plotinfo.yaxislayer = joinLayer(mainplotinfo.overaxes, 'g', id);
+
+        joinLayer(mainplotinfo.overlinesAbove, 'path', xId);
+        joinLayer(mainplotinfo.overlinesAbove, 'path', yId);
+        joinLayer(mainplotinfo.overaxesAbove, 'g', xId);
+        joinLayer(mainplotinfo.overaxesAbove, 'g', yId);
+
+        // set refs to correct layers as determined by 'abovetraces'
+        plotinfo.xlines = mainplotgroup.select('.overlines-' + xLayer).select('.' + xId);
+        plotinfo.ylines = mainplotgroup.select('.overlines-' + yLayer).select('.' + yId);
+        plotinfo.xaxislayer = mainplotgroup.select('.overaxes-' + xLayer).select('.' + xId);
+        plotinfo.yaxislayer = mainplotgroup.select('.overaxes-' + yLayer).select('.' + yId);
     }
 
+    joinLayer(plotinfo.gridlayer, 'g', plotinfo.xaxis._id, plotinfo.xaxis._id);
+    joinLayer(plotinfo.gridlayer, 'g', plotinfo.yaxis._id, plotinfo.yaxis._id);
+    plotinfo.gridlayer.selectAll('g').sort(axisIds.idSort);
+
     // common attributes for all subplots, overlays or not
-    plotinfo.plot.call(joinPlotLayers);
+
+    for(var i = 0; i < constants.traceLayerClasses.length; i++) {
+        joinLayer(plotinfo.plot, 'g', constants.traceLayerClasses[i]);
+    }
 
     plotinfo.xlines
         .style('fill', 'none')
@@ -359,25 +480,72 @@ function makeSubplotLayer(plotinfo) {
 function purgeSubplotLayers(layers, fullLayout) {
     if(!layers) return;
 
-    layers.each(function(subplot) {
-        var plotgroup = d3.select(this),
-            clipId = 'clip' + fullLayout._uid + subplot + 'plot';
+    var overlayIdsToRemove = {};
+
+    layers.each(function(subplotId) {
+        var plotgroup = d3.select(this);
+        var clipId = 'clip' + fullLayout._uid + subplotId + 'plot';
 
         plotgroup.remove();
-        fullLayout._draggers.selectAll('g.' + subplot).remove();
+        fullLayout._draggers.selectAll('g.' + subplotId).remove();
         fullLayout._defs.select('#' + clipId).remove();
+
+        overlayIdsToRemove[subplotId] = true;
 
         // do not remove individual axis <clipPath>s here
         // as other subplots may need them
     });
+
+    // must remove overlaid subplot trace layers 'manually'
+
+    var subplots = fullLayout._plots;
+    var subplotIds = Object.keys(subplots);
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplotInfo = subplots[subplotIds[i]];
+        var overlays = subplotInfo.overlays || [];
+
+        for(var j = 0; j < overlays.length; j++) {
+            var overlayInfo = overlays[j];
+
+            if(overlayIdsToRemove[overlayInfo.id]) {
+                overlayInfo.plot.selectAll('.trace').remove();
+            }
+        }
+    }
 }
 
-function joinLayer(parent, nodeType, className) {
+function joinLayer(parent, nodeType, className, dataVal) {
     var layer = parent.selectAll('.' + className)
-        .data([0]);
+        .data([dataVal || 0]);
 
     layer.enter().append(nodeType)
         .classed(className, true);
 
     return layer;
 }
+
+exports.toSVG = function(gd) {
+    var imageRoot = gd._fullLayout._glimages;
+    var root = d3.select(gd).selectAll('.svg-container');
+    var canvases = root.filter(function(d, i) {return i === root.size() - 1;})
+        .selectAll('.gl-canvas-context, .gl-canvas-focus');
+
+    function canvasToImage() {
+        var canvas = this;
+        var imageData = canvas.toDataURL('image/png');
+        var image = imageRoot.append('svg:image');
+
+        image.attr({
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': imageData,
+            preserveAspectRatio: 'none',
+            x: 0,
+            y: 0,
+            width: canvas.width,
+            height: canvas.height
+        });
+    }
+
+    canvases.each(canvasToImage);
+};

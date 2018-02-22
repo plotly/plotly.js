@@ -36,8 +36,7 @@
             "name": "Revenue",
             "xaxis": "x",
             "yaxis": "y",
-            "type": "bar",
-            "uid": "33011d"
+            "type": "bar"
         },
         {
             "x": [
@@ -76,8 +75,7 @@
             "name": "Take Rate",
             "xaxis": "x",
             "yaxis": "y2",
-            "type": "scatter",
-            "uid": "31ba98"
+            "type": "scatter"
         }
     ],
     "layout": {

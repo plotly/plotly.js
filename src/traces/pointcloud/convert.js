@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -48,7 +48,6 @@ function Pointcloud(scene, uid) {
 var proto = Pointcloud.prototype;
 
 proto.handlePick = function(pickResult) {
-
     var index = this.idToIndex[pickResult.pointId];
 
     // prefer the readout from XY, if present
@@ -69,7 +68,7 @@ proto.handlePick = function(pickResult) {
 };
 
 proto.update = function(options) {
-
+    this.index = options.index;
     this.textLabels = options.text;
     this.name = options.name;
     this.hoverinfo = options.hoverinfo;

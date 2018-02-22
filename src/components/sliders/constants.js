@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -44,9 +44,6 @@ module.exports = {
 
     // padding around item text
     textPadX: 40,
-
-    // font size to height scale
-    fontSizeToHeight: 1.3,
 
     // arrow offset off right edge
     arrowOffsetX: 4,

@@ -177,7 +177,11 @@ describe('Plotly.validate', function() {
     });
 
     it('should work with isLinkedToArray attributes', function() {
-        var out = Plotly.validate([], {
+        var out = Plotly.validate([
+            {y: [1, 2]},
+            {y: [1, 2], xaxis: 'x2'},
+            {y: [1, 2], xaxis: 'x3'}
+        ], {
             annotations: [{
                 text: 'some text'
             }, {
@@ -390,6 +394,50 @@ describe('Plotly.validate', function() {
             out[4], 'value', 'data', 2,
             ['transforms', 0, 'type'], 'transforms[0].type',
             'In data trace 2, key transforms[0].type is set to an invalid value (no gonna work)'
+        );
+    });
+
+    it('should catch input errors for attribute with dynamic defaults', function() {
+        var out = Plotly.validate([
+            {y: [1, 2]},
+            {y: [1, 2], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            xaxis: {
+                constrain: 'domain',
+                constraintoward: 'bottom'
+            },
+            yaxis: {
+                constrain: 'domain',
+                constraintoward: 'left'
+            },
+            xaxis2: {
+                anchor: 'x3'
+            },
+            yaxis2: {
+                overlaying: 'x'
+            }
+        });
+
+        expect(out.length).toBe(4);
+        assertErrorContent(
+            out[0], 'dynamic', 'layout', null,
+            ['xaxis', 'constraintoward'], 'xaxis.constraintoward',
+            'In layout, key xaxis.constraintoward (set to \'bottom\') got reset to \'center\' during defaults.'
+        );
+        assertErrorContent(
+            out[1], 'dynamic', 'layout', null,
+            ['yaxis', 'constraintoward'], 'yaxis.constraintoward',
+            'In layout, key yaxis.constraintoward (set to \'left\') got reset to \'middle\' during defaults.'
+        );
+        assertErrorContent(
+            out[2], 'dynamic', 'layout', null,
+            ['xaxis2', 'anchor'], 'xaxis2.anchor',
+            'In layout, key xaxis2.anchor (set to \'x3\') got reset to \'y\' during defaults.'
+        );
+        assertErrorContent(
+            out[3], 'dynamic', 'layout', null,
+            ['yaxis2', 'overlaying'], 'yaxis2.overlaying',
+            'In layout, key yaxis2.overlaying (set to \'x\') got reset to \'false\' during defaults.'
         );
     });
 });

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,7 +17,8 @@ Histogram2D.calc = require('../heatmap/calc');
 Histogram2D.plot = require('../heatmap/plot');
 Histogram2D.colorbar = require('../heatmap/colorbar');
 Histogram2D.style = require('../heatmap/style');
-Histogram2D.hoverPoints = require('../heatmap/hover');
+Histogram2D.hoverPoints = require('./hover');
+Histogram2D.eventData = require('../histogram/event_data');
 
 Histogram2D.moduleType = 'trace';
 Histogram2D.name = 'histogram2d';

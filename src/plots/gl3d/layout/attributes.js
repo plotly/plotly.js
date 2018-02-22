@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,6 +14,7 @@ module.exports = {
         valType: 'subplotid',
         role: 'info',
         dflt: 'scene',
+        editType: 'calc+clearAxisTypes',
         description: [
             'Sets a reference between this trace\'s 3D coordinate system and',
             'a 3D scene.',

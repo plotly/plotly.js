@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -17,6 +17,7 @@ var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var Color = require('../color');
 var Drawing = require('../drawing');
+var Fx = require('../fx');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../dragelement');
@@ -35,7 +36,8 @@ var drawArrowHead = require('./draw_arrow_head');
 
 module.exports = {
     draw: draw,
-    drawOne: drawOne
+    drawOne: drawOne,
+    drawRaw: drawRaw
 };
 
 /*
@@ -56,32 +58,63 @@ function draw(gd) {
 }
 
 /*
- * drawOne: draw a single annotation, potentially with modifications
+ * drawOne: draw a single cartesian or paper-ref annotation, potentially with modifications
  *
  * index (int): the annotation to draw
  */
 function drawOne(gd, index) {
-    var layout = gd.layout,
-        fullLayout = gd._fullLayout,
-        gs = gd._fullLayout._size;
+    var fullLayout = gd._fullLayout;
+    var options = fullLayout.annotations[index] || {};
+    var xa = Axes.getFromId(gd, options.xref);
+    var ya = Axes.getFromId(gd, options.yref);
+
+    drawRaw(gd, options, index, false, xa, ya);
+}
+
+/**
+ * drawRaw: draw a single annotation, potentially with modifications
+ *
+ * @param {DOM element} gd
+ * @param {object} options : this annotation's fullLayout options
+ * @param {integer} index : index in 'annotations' container of the annotation to draw
+ * @param {string} subplotId : id of the annotation's subplot
+ *  - use false for 2d (i.e. cartesian or paper-ref) annotations
+ * @param {object | undefined} xa : full x-axis object to compute subplot pos-to-px
+ * @param {object | undefined} ya : ... y-axis
+ */
+function drawRaw(gd, options, index, subplotId, xa, ya) {
+    var fullLayout = gd._fullLayout;
+    var gs = gd._fullLayout._size;
+    var edits = gd._context.edits;
+
+    var className;
+    var annbase;
+
+    if(subplotId) {
+        className = 'annotation-' + subplotId;
+        annbase = subplotId + '.annotations[' + index + ']';
+    } else {
+        className = 'annotation';
+        annbase = 'annotations[' + index + ']';
+    }
 
     // remove the existing annotation if there is one
-    fullLayout._infolayer.selectAll('.annotation[data-index="' + index + '"]').remove();
+    fullLayout._infolayer
+        .selectAll('.' + className + '[data-index="' + index + '"]')
+        .remove();
 
-    // remember a few things about what was already there,
-    var optionsIn = (layout.annotations || [])[index],
-        options = fullLayout.annotations[index];
+    var annClipID = 'clip' + fullLayout._uid + '_ann' + index;
 
     // this annotation is gone - quit now after deleting it
     // TODO: use d3 idioms instead of deleting and redrawing every time
-    if(!optionsIn || options.visible === false) return;
+    if(!options._input || options.visible === false) {
+        d3.selectAll('#' + annClipID).remove();
+        return;
+    }
 
-    var xa = Axes.getFromId(gd, options.xref),
-        ya = Axes.getFromId(gd, options.yref),
-
-        // calculated pixel positions
-        // x & y each will get text, head, and tail as appropriate
-        annPosPx = {x: {}, y: {}},
+    // calculated pixel positions
+    // x & y each will get text, head, and tail as appropriate
+    var annPosPx = {x: {}, y: {}},
         textangle = +options.textangle || 0;
 
     // create the components
@@ -89,24 +122,65 @@ function drawOne(gd, index) {
     // with border/arrow together this could handle a whole bunch of
     // cleanup at this point, but works for now
     var annGroup = fullLayout._infolayer.append('g')
-        .classed('annotation', true)
+        .classed(className, true)
         .attr('data-index', String(index))
-        .style('opacity', options.opacity)
-        .on('click', function() {
-            gd._dragging = false;
-            gd.emit('plotly_clickannotation', {
-                index: index,
-                annotation: optionsIn,
-                fullAnnotation: options
-            });
-        });
+        .style('opacity', options.opacity);
 
     // another group for text+background so that they can rotate together
     var annTextGroup = annGroup.append('g')
-        .classed('annotation-text-g', true)
-        .attr('data-index', String(index));
+        .classed('annotation-text-g', true);
 
-    var annTextGroupInner = annTextGroup.append('g');
+    var editTextPosition = edits[options.showarrow ? 'annotationTail' : 'annotationPosition'];
+    var textEvents = options.captureevents || edits.annotationText || editTextPosition;
+
+    var annTextGroupInner = annTextGroup.append('g')
+        .style('pointer-events', textEvents ? 'all' : null)
+        .call(setCursor, 'default')
+        .on('click', function() {
+            gd._dragging = false;
+
+            var eventData = {
+                index: index,
+                annotation: options._input,
+                fullAnnotation: options,
+                event: d3.event
+            };
+
+            if(subplotId) {
+                eventData.subplotId = subplotId;
+            }
+
+            gd.emit('plotly_clickannotation', eventData);
+        });
+
+    if(options.hovertext) {
+        annTextGroupInner
+        .on('mouseover', function() {
+            var hoverOptions = options.hoverlabel;
+            var hoverFont = hoverOptions.font;
+            var bBox = this.getBoundingClientRect();
+            var bBoxRef = gd.getBoundingClientRect();
+
+            Fx.loneHover({
+                x0: bBox.left - bBoxRef.left,
+                x1: bBox.right - bBoxRef.left,
+                y: (bBox.top + bBox.bottom) / 2 - bBoxRef.top,
+                text: options.hovertext,
+                color: hoverOptions.bgcolor,
+                borderColor: hoverOptions.bordercolor,
+                fontFamily: hoverFont.family,
+                fontSize: hoverFont.size,
+                fontColor: hoverFont.color
+            }, {
+                container: fullLayout._hoverlayer.node(),
+                outerContainer: fullLayout._paper.node(),
+                gd: gd
+            });
+        })
+        .on('mouseout', function() {
+            Fx.loneUnhover(fullLayout._hoverlayer.node());
+        });
+    }
 
     var borderwidth = options.borderwidth,
         borderpad = options.borderpad,
@@ -118,11 +192,22 @@ function drawOne(gd, index) {
         .call(Color.stroke, options.bordercolor)
         .call(Color.fill, options.bgcolor);
 
+    var isSizeConstrained = options.width || options.height;
+
+    var annTextClip = fullLayout._topclips
+        .selectAll('#' + annClipID)
+        .data(isSizeConstrained ? [0] : []);
+
+    annTextClip.enter().append('clipPath')
+        .classed('annclip', true)
+        .attr('id', annClipID)
+      .append('rect');
+    annTextClip.exit().remove();
+
     var font = options.font;
 
     var annText = annTextGroupInner.append('text')
-        .classed('annotation', true)
-        .attr('data-unformatted', options.text)
+        .classed('annotation-text', true)
         .text(options.text);
 
     function textLayout(s) {
@@ -134,29 +219,38 @@ function drawOne(gd, index) {
             }[options.align] || 'middle'
         });
 
-        svgTextUtils.convertToTspans(s, drawGraphicalElements);
+        svgTextUtils.convertToTspans(s, gd, drawGraphicalElements);
         return s;
     }
 
     function drawGraphicalElements() {
+        // if the text has *only* a link, make the whole box into a link
+        var anchor3 = annText.selectAll('a');
+        if(anchor3.size() === 1 && anchor3.text() === annText.text()) {
+            var wholeLink = annTextGroupInner.insert('a', ':first-child').attr({
+                'xlink:xlink:href': anchor3.attr('xlink:href'),
+                'xlink:xlink:show': anchor3.attr('xlink:show')
+            })
+            .style({cursor: 'pointer'});
 
-        // make sure lines are aligned the way they will be
-        // at the end, even if their position changes
-        annText.selectAll('tspan.line').attr({y: 0, x: 0});
+            wholeLink.node().appendChild(annTextBG.node());
+        }
 
-        var mathjaxGroup = annTextGroupInner.select('.annotation-math-group'),
-            hasMathjax = !mathjaxGroup.empty(),
-            anntextBB = Drawing.bBox(
-                (hasMathjax ? mathjaxGroup : annText).node()),
-            annwidth = anntextBB.width,
-            annheight = anntextBB.height,
-            outerwidth = Math.round(annwidth + 2 * borderfull),
-            outerheight = Math.round(annheight + 2 * borderfull);
+        var mathjaxGroup = annTextGroupInner.select('.annotation-text-math-group');
+        var hasMathjax = !mathjaxGroup.empty();
+        var anntextBB = Drawing.bBox(
+                (hasMathjax ? mathjaxGroup : annText).node());
+        var textWidth = anntextBB.width;
+        var textHeight = anntextBB.height;
+        var annWidth = options.width || textWidth;
+        var annHeight = options.height || textHeight;
+        var outerWidth = Math.round(annWidth + 2 * borderfull);
+        var outerHeight = Math.round(annHeight + 2 * borderfull);
 
 
         // save size in the annotation object for use by autoscale
-        options._w = annwidth;
-        options._h = annheight;
+        options._w = annWidth;
+        options._h = annHeight;
 
         function shiftFraction(v, anchor) {
             if(anchor === 'auto') {
@@ -175,17 +269,21 @@ function drawOne(gd, index) {
         }
 
         var annotationIsOffscreen = false;
-        ['x', 'y'].forEach(function(axLetter) {
-            var axRef = options[axLetter + 'ref'] || axLetter,
+        var letters = ['x', 'y'];
+
+        for(var i = 0; i < letters.length; i++) {
+            var axLetter = letters[i],
+                axRef = options[axLetter + 'ref'] || axLetter,
                 tailRef = options['a' + axLetter + 'ref'],
-                ax = Axes.getFromId(gd, axRef),
+                ax = {x: xa, y: ya}[axLetter],
                 dimAngle = (textangle + (axLetter === 'x' ? 0 : -90)) * Math.PI / 180,
                 // note that these two can be either positive or negative
-                annSizeFromWidth = outerwidth * Math.cos(dimAngle),
-                annSizeFromHeight = outerheight * Math.sin(dimAngle),
+                annSizeFromWidth = outerWidth * Math.cos(dimAngle),
+                annSizeFromHeight = outerHeight * Math.sin(dimAngle),
                 // but this one is the positive total size
                 annSize = Math.abs(annSizeFromWidth) + Math.abs(annSizeFromHeight),
                 anchor = options[axLetter + 'anchor'],
+                overallShift = options[axLetter + 'shift'] * (axLetter === 'x' ? 1 : -1),
                 posPx = annPosPx[axLetter],
                 basePx,
                 textPadShift,
@@ -217,7 +315,7 @@ function drawOne(gd, index) {
                         annotationIsOffscreen = true;
                     }
 
-                    if(annotationIsOffscreen) return;
+                    if(annotationIsOffscreen) continue;
                 }
                 basePx = ax._offset + ax.r2p(options[axLetter]);
                 autoAlignFraction = 0.5;
@@ -276,6 +374,9 @@ function drawOne(gd, index) {
                         posPx.text -= shiftMinus;
                     }
                 }
+
+                posPx.tail += overallShift;
+                posPx.head += overallShift;
             }
             else {
                 // with no arrow, the text rotates and *then* we put the anchor
@@ -285,6 +386,10 @@ function drawOne(gd, index) {
                 posPx.text = basePx + textShift;
             }
 
+            posPx.text += overallShift;
+            textShift += overallShift;
+            textPadShift += overallShift;
+
             // padplus/minus are used by autorange
             options['_' + axLetter + 'padplus'] = (annSize / 2) + textPadShift;
             options['_' + axLetter + 'padminus'] = (annSize / 2) - textPadShift;
@@ -292,29 +397,47 @@ function drawOne(gd, index) {
             // size/shift are used during dragging
             options['_' + axLetter + 'size'] = annSize;
             options['_' + axLetter + 'shift'] = textShift;
-        });
+        }
 
         if(annotationIsOffscreen) {
             annTextGroupInner.remove();
             return;
         }
 
+        var xShift = 0;
+        var yShift = 0;
+
+        if(options.align !== 'left') {
+            xShift = (annWidth - textWidth) * (options.align === 'center' ? 0.5 : 1);
+        }
+        if(options.valign !== 'top') {
+            yShift = (annHeight - textHeight) * (options.valign === 'middle' ? 0.5 : 1);
+        }
+
         if(hasMathjax) {
-            mathjaxGroup.select('svg').attr({x: borderfull - 1, y: borderfull});
+            mathjaxGroup.select('svg').attr({
+                x: borderfull + xShift - 1,
+                y: borderfull + yShift
+            })
+            .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
         }
         else {
-            var texty = borderfull - anntextBB.top,
-                textx = borderfull - anntextBB.left;
-            annText.attr({x: textx, y: texty});
-            annText.selectAll('tspan.line').attr({y: texty, x: textx});
+            var texty = borderfull + yShift - anntextBB.top;
+            var textx = borderfull + xShift - anntextBB.left;
+
+            annText.call(svgTextUtils.positionText, textx, texty)
+                .call(Drawing.setClipUrl, isSizeConstrained ? annClipID : null);
         }
 
+        annTextClip.select('rect').call(Drawing.setRect, borderfull, borderfull,
+            annWidth, annHeight);
+
         annTextBG.call(Drawing.setRect, borderwidth / 2, borderwidth / 2,
-            outerwidth - borderwidth, outerheight - borderwidth);
+            outerWidth - borderwidth, outerHeight - borderwidth);
 
         annTextGroupInner.call(Drawing.setTranslate,
-            Math.round(annPosPx.x.text - outerwidth / 2),
-            Math.round(annPosPx.y.text - outerheight / 2));
+            Math.round(annPosPx.x.text - outerWidth / 2),
+            Math.round(annPosPx.y.text - outerHeight / 2));
 
         /*
          * rotate text and background
@@ -325,8 +448,6 @@ function drawOne(gd, index) {
         annTextGroup.attr({transform: 'rotate(' + textangle + ',' +
                             annPosPx.x.text + ',' + annPosPx.y.text + ')'});
 
-        var annbase = 'annotations[' + index + ']';
-
         /*
          * add the arrow
          * uses options[arrowwidth,arrowcolor,arrowhead] for styling
@@ -334,8 +455,8 @@ function drawOne(gd, index) {
          * while the head stays put, dx and dy are the pixel offsets
          */
         var drawArrow = function(dx, dy) {
-            d3.select(gd)
-                .selectAll('.annotation-arrow-g[data-index="' + index + '"]')
+            annGroup
+                .selectAll('.annotation-arrow-g')
                 .remove();
 
             var headX = annPosPx.x.head,
@@ -371,7 +492,7 @@ function drawOne(gd, index) {
             // to get the parity of the number of intersections.
             if(edges.reduce(function(a, x) {
                 return a ^
-                    !!lineIntersect(headX, headY, headX + 1e6, headY + 1e6,
+                    !!Lib.segmentsIntersect(headX, headY, headX + 1e6, headY + 1e6,
                             x[0], x[1], x[2], x[3]);
             }, false)) {
                 // no line or arrow - so quit drawArrow now
@@ -379,7 +500,7 @@ function drawOne(gd, index) {
             }
 
             edges.forEach(function(x) {
-                var p = lineIntersect(tailX, tailY, headX, headY,
+                var p = Lib.segmentsIntersect(tailX, tailY, headX, headY,
                             x[0], x[1], x[2], x[3]);
                 if(p) {
                     tailX = p.x;
@@ -388,23 +509,23 @@ function drawOne(gd, index) {
             });
 
             var strokewidth = options.arrowwidth,
-                arrowColor = options.arrowcolor;
+                arrowColor = options.arrowcolor,
+                arrowSide = options.arrowside;
 
             var arrowGroup = annGroup.append('g')
                 .style({opacity: Color.opacity(arrowColor)})
-                .classed('annotation-arrow-g', true)
-                .attr('data-index', String(index));
+                .classed('annotation-arrow-g', true);
 
             var arrow = arrowGroup.append('path')
                 .attr('d', 'M' + tailX + ',' + tailY + 'L' + headX + ',' + headY)
                 .style('stroke-width', strokewidth + 'px')
                 .call(Color.stroke, Color.rgb(arrowColor));
 
-            drawArrowHead(arrow, options.arrowhead, 'end', options.arrowsize, options.standoff);
+            drawArrowHead(arrow, arrowSide, options);
 
             // the arrow dragger is a small square right at the head, then a line to the tail,
             // all expanded by a stroke width of 6px plus the arrow line width
-            if(gd._context.editable && arrow.node().parentNode) {
+            if(edits.annotationPosition && arrow.node().parentNode && !subplotId) {
                 var arrowDragHeadX = headX;
                 var arrowDragHeadY = headY;
                 if(options.standoff) {
@@ -413,10 +534,9 @@ function drawOne(gd, index) {
                     arrowDragHeadY += options.standoff * (tailY - headY) / arrowLength;
                 }
                 var arrowDrag = arrowGroup.append('path')
-                    .classed('annotation', true)
+                    .classed('annotation-arrow', true)
                     .classed('anndrag', true)
                     .attr({
-                        'data-index': String(index),
                         d: 'M3,3H-3V-3H3ZM0,0L' + (tailX - arrowDragHeadX) + ',' + (tailY - arrowDragHeadY),
                         transform: 'translate(' + arrowDragHeadX + ',' + arrowDragHeadY + ')'
                     })
@@ -432,6 +552,7 @@ function drawOne(gd, index) {
                 // (head/tail/text) all together
                 dragElement.init({
                     element: arrowDrag.node(),
+                    gd: gd,
                     prepFn: function() {
                         var pos = Drawing.getTranslate(annTextGroupInner);
 
@@ -453,21 +574,17 @@ function drawOne(gd, index) {
 
                         update[annbase + '.x'] = xa ?
                             xa.p2r(xa.r2p(options.x) + dx) :
-                            ((headX + dx - gs.l) / gs.w);
+                            (options.x + (dx / gs.w));
                         update[annbase + '.y'] = ya ?
                             ya.p2r(ya.r2p(options.y) + dy) :
-                            (1 - ((headY + dy - gs.t) / gs.h));
+                            (options.y - (dy / gs.h));
 
                         if(options.axref === options.xref) {
-                            update[annbase + '.ax'] = xa ?
-                                xa.p2r(xa.r2p(options.ax) + dx) :
-                                ((headX + dx - gs.l) / gs.w);
+                            update[annbase + '.ax'] = xa.p2r(xa.r2p(options.ax) + dx);
                         }
 
                         if(options.ayref === options.yref) {
-                            update[annbase + '.ay'] = ya ?
-                                ya.p2r(ya.r2p(options.ay) + dy) :
-                                (1 - ((headY + dy - gs.t) / gs.h));
+                            update[annbase + '.ay'] = ya.p2r(ya.r2p(options.ay) + dy);
                         }
 
                         arrowGroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
@@ -476,12 +593,10 @@ function drawOne(gd, index) {
                                    xcenter + ',' + ycenter + ')'
                         });
                     },
-                    doneFn: function(dragged) {
-                        if(dragged) {
-                            Plotly.relayout(gd, update);
-                            var notesBox = document.querySelector('.js-notes-box-panel');
-                            if(notesBox) notesBox.redraw(notesBox.selectedObj);
-                        }
+                    doneFn: function() {
+                        Plotly.relayout(gd, update);
+                        var notesBox = document.querySelector('.js-notes-box-panel');
+                        if(notesBox) notesBox.redraw(notesBox.selectedObj);
                     }
                 });
             }
@@ -490,7 +605,7 @@ function drawOne(gd, index) {
         if(options.showarrow) drawArrow(0, 0);
 
         // user dragging the annotation (text, not arrow)
-        if(gd._context.editable) {
+        if(editTextPosition) {
             var update,
                 baseTextTransform;
 
@@ -498,6 +613,7 @@ function drawOne(gd, index) {
             // textbox and tail, leave the head untouched
             dragElement.init({
                 element: annTextGroupInner.node(),
+                gd: gd,
                 prepFn: function() {
                     baseTextTransform = annTextGroup.attr('transform');
                     update = {};
@@ -519,20 +635,25 @@ function drawOne(gd, index) {
 
                         drawArrow(dx, dy);
                     }
-                    else {
-                        if(xa) update[annbase + '.x'] = options.x + dx / xa._m;
-                        else {
+                    else if(!subplotId) {
+                        if(xa) {
+                            update[annbase + '.x'] = xa.p2r(xa.r2p(options.x) + dx);
+
+                        } else {
                             var widthFraction = options._xsize / gs.w,
-                                xLeft = options.x + options._xshift / gs.w - widthFraction / 2;
+                                xLeft = options.x + (options._xshift - options.xshift) / gs.w -
+                                    widthFraction / 2;
 
                             update[annbase + '.x'] = dragElement.align(xLeft + dx / gs.w,
                                 widthFraction, 0, 1, options.xanchor);
                         }
 
-                        if(ya) update[annbase + '.y'] = options.y + dy / ya._m;
-                        else {
+                        if(ya) {
+                            update[annbase + '.y'] = ya.p2r(ya.r2p(options.y) + dy);
+                        } else {
                             var heightFraction = options._ysize / gs.h,
-                                yBottom = options.y - options._yshift / gs.h - heightFraction / 2;
+                                yBottom = options.y - (options._yshift + options.yshift) / gs.h -
+                                    heightFraction / 2;
 
                             update[annbase + '.y'] = dragElement.align(yBottom - dy / gs.h,
                                 heightFraction, 0, 1, options.yanchor);
@@ -545,6 +666,7 @@ function drawOne(gd, index) {
                             );
                         }
                     }
+                    else return;
 
                     annTextGroup.attr({
                         transform: 'translate(' + dx + ',' + dy + ')' + baseTextTransform
@@ -552,56 +674,35 @@ function drawOne(gd, index) {
 
                     setCursor(annTextGroupInner, csr);
                 },
-                doneFn: function(dragged) {
+                doneFn: function() {
                     setCursor(annTextGroupInner);
-                    if(dragged) {
-                        Plotly.relayout(gd, update);
-                        var notesBox = document.querySelector('.js-notes-box-panel');
-                        if(notesBox) notesBox.redraw(notesBox.selectedObj);
-                    }
+                    Plotly.relayout(gd, update);
+                    var notesBox = document.querySelector('.js-notes-box-panel');
+                    if(notesBox) notesBox.redraw(notesBox.selectedObj);
                 }
             });
         }
     }
 
-    if(gd._context.editable) {
-        annText.call(svgTextUtils.makeEditable, annTextGroupInner)
+    if(edits.annotationText) {
+        annText.call(svgTextUtils.makeEditable, {delegate: annTextGroupInner, gd: gd})
             .call(textLayout)
             .on('edit', function(_text) {
                 options.text = _text;
-                this.attr({'data-unformatted': options.text});
                 this.call(textLayout);
+
                 var update = {};
-                update['annotations[' + index + '].text'] = options.text;
+                update[annbase + '.text'] = options.text;
+
                 if(xa && xa.autorange) {
                     update[xa._name + '.autorange'] = true;
                 }
                 if(ya && ya.autorange) {
                     update[ya._name + '.autorange'] = true;
                 }
+
                 Plotly.relayout(gd, update);
             });
     }
     else annText.call(textLayout);
-}
-
-// look for intersection of two line segments
-//   (1->2 and 3->4) - returns array [x,y] if they do, null if not
-function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
-    var a = x2 - x1,
-        b = x3 - x1,
-        c = x4 - x3,
-        d = y2 - y1,
-        e = y3 - y1,
-        f = y4 - y3,
-        det = a * f - c * d;
-    // parallel lines? intersection is undefined
-    // ignore the case where they are colinear
-    if(det === 0) return null;
-    var t = (b * f - c * e) / det,
-        u = (b * d - a * e) / det;
-    // segments do not intersect?
-    if(u < 0 || u > 1 || t < 0 || t > 1) return null;
-
-    return {x: x1 + a * t, y: y1 + d * t};
 }

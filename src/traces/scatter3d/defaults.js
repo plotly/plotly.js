@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -34,6 +34,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
+    coerce('hovertext');
     coerce('mode');
 
     if(subTypes.hasLines(traceOut)) {
@@ -42,11 +43,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noSelect: true});
     }
 
     if(subTypes.hasText(traceOut)) {
-        handleTextDefaults(traceIn, traceOut, layout, coerce);
+        handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
     }
 
     var lineColor = (traceOut.line || {}).color,
@@ -77,10 +78,9 @@ function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     if(x && y && z) {
+        // TODO: what happens if one is missing?
         len = Math.min(x.length, y.length, z.length);
-        if(len < x.length) traceOut.x = x.slice(0, len);
-        if(len < y.length) traceOut.y = y.slice(0, len);
-        if(len < z.length) traceOut.z = z.slice(0, len);
+        traceOut._xlength = traceOut._ylength = traceOut._zlength = len;
     }
 
     return len;

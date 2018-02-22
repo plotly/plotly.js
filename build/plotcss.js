@@ -14,6 +14,7 @@ var rules = {
     "X svg a:hover": "fill:#3c6dc5;",
     "X .main-svg": "position:absolute;top:0;left:0;pointer-events:none;",
     "X .main-svg .draglayer": "pointer-events:all;",
+    "X .cursor-default": "cursor:default;",
     "X .cursor-pointer": "cursor:pointer;",
     "X .cursor-crosshair": "cursor:crosshair;",
     "X .cursor-move": "cursor:move;",
@@ -49,7 +50,7 @@ var rules = {
     "X .select-outline-2": "stroke:black;stroke-dasharray:2px 2px;",
     Y: "font-family:'Open Sans';position:fixed;top:50px;right:20px;z-index:10000;font-size:10pt;max-width:180px;",
     "Y p": "margin:0;",
-    "Y .notifier-note": "min-width:180px;max-width:250px;border:1px solid #fff;z-index:3000;margin:0;background-color:#8c97af;background-color:rgba(140,151,175,0.9);color:#fff;padding:10px;",
+    "Y .notifier-note": "min-width:180px;max-width:250px;border:1px solid #fff;z-index:3000;margin:0;background-color:#8c97af;background-color:rgba(140,151,175,0.9);color:#fff;padding:10px;overflow-wrap:break-word;word-wrap:break-word;-ms-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;",
     "Y .notifier-close": "color:#fff;opacity:0.8;float:right;padding:0 5px;background:none;border:none;font-size:20px;font-weight:bold;line-height:20px;",
     "Y .notifier-close:hover": "color:#444;text-decoration:none;cursor:pointer;"
 };

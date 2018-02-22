@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,8 +11,10 @@
 var Color = require('../../components/color');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 function makeContourProjAttr(axLetter) {
     return {
@@ -96,7 +98,7 @@ function makeContourAttr(axLetter) {
     };
 }
 
-module.exports = {
+var attrs = module.exports = overrideAll({
     z: {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
@@ -111,9 +113,17 @@ module.exports = {
     },
 
     text: {
-        valType: 'data_array',
-        description: 'Sets the text elements associated with each z value.'
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        description: [
+            'Sets the text elements associated with each z value.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
+        ].join(' ')
     },
+
     surfacecolor: {
         valType: 'data_array',
         description: [
@@ -122,7 +132,6 @@ module.exports = {
         ].join(' ')
     },
 
-    // Todo this block has a structure of colorscale/attributes.js but with colorscale/color_attributes.js names
     cauto: colorscaleAttrs.zauto,
     cmin: colorscaleAttrs.zmin,
     cmax: colorscaleAttrs.zmax,
@@ -242,5 +251,9 @@ module.exports = {
         zmax: extendFlat({}, colorscaleAttrs.zmax, {
             description: 'Obsolete. Use `cmax` instead.'
         })
-    }
-};
+    },
+
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
+}, 'calc', 'nested');
+
+attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';

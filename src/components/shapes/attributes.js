@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -9,10 +9,9 @@
 'use strict';
 
 var annAttrs = require('../annotations/attributes');
-var scatterAttrs = require('../../traces/scatter/attributes');
+var scatterLineAttrs = require('../../traces/scatter/attributes').line;
+var dash = require('../drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
-
-var scatterLineAttrs = scatterAttrs.line;
 
 module.exports = {
     _isLinkedToArray: 'shape',
@@ -21,6 +20,7 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Determines whether or not this shape is visible.'
         ].join(' ')
@@ -30,6 +30,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],
         role: 'info',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Specifies the shape type to be drawn.',
 
@@ -52,6 +53,7 @@ module.exports = {
         values: ['below', 'above'],
         dflt: 'above',
         role: 'info',
+        editType: 'arraydraw',
         description: 'Specifies whether shapes are drawn below or above traces.'
     },
 
@@ -72,6 +74,7 @@ module.exports = {
     x0: {
         valType: 'any',
         role: 'info',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Sets the shape\'s starting x position.',
             'See `type` for more info.'
@@ -80,6 +83,7 @@ module.exports = {
     x1: {
         valType: 'any',
         role: 'info',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Sets the shape\'s end x position.',
             'See `type` for more info.'
@@ -99,6 +103,7 @@ module.exports = {
     y0: {
         valType: 'any',
         role: 'info',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Sets the shape\'s starting y position.',
             'See `type` for more info.'
@@ -107,6 +112,7 @@ module.exports = {
     y1: {
         valType: 'any',
         role: 'info',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'Sets the shape\'s end y position.',
             'See `type` for more info.'
@@ -116,6 +122,7 @@ module.exports = {
     path: {
         valType: 'string',
         role: 'info',
+        editType: 'calcIfAutorange+arraydraw',
         description: [
             'For `type` *path* - a valid SVG path but with the pixel values',
             'replaced by data values. There are a few restrictions / quirks',
@@ -146,20 +153,24 @@ module.exports = {
         max: 1,
         dflt: 1,
         role: 'info',
+        editType: 'arraydraw',
         description: 'Sets the opacity of the shape.'
     },
     line: {
-        color: scatterLineAttrs.color,
-        width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash,
-        role: 'info'
+        color: extendFlat({}, scatterLineAttrs.color, {editType: 'arraydraw'}),
+        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calcIfAutorange+arraydraw'}),
+        dash: extendFlat({}, dash, {editType: 'arraydraw'}),
+        role: 'info',
+        editType: 'calcIfAutorange+arraydraw'
     },
     fillcolor: {
         valType: 'color',
         dflt: 'rgba(0,0,0,0)',
         role: 'info',
+        editType: 'arraydraw',
         description: [
             'Sets the color filling the shape\'s interior.'
         ].join(' ')
-    }
+    },
+    editType: 'arraydraw'
 };

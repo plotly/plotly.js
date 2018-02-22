@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,7 +13,7 @@ var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
 
-module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
+module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
     var markerColor = (traceIn.marker || {}).color;
 
     coerce('line.color', defaultColor);
@@ -27,5 +27,5 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     }
 
     coerce('line.width');
-    coerce('line.dash');
+    if(!(opts || {}).noDash) coerce('line.dash');
 };

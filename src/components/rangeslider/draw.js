@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -79,6 +79,21 @@ module.exports = function(gd) {
         var rangeSlider = d3.select(this),
             opts = axisOpts[constants.name],
             oppAxisOpts = fullLayout[Axes.id2name(axisOpts.anchor)];
+
+        // update range
+        // Expand slider range to the axis range
+        // TODO: what if the ranges are reversed?
+        if(opts.range) {
+            var outRange = opts.range;
+            var axRange = axisOpts.range;
+
+            outRange[0] = axisOpts.l2r(Math.min(axisOpts.r2l(outRange[0]), axisOpts.r2l(axRange[0])));
+            outRange[1] = axisOpts.l2r(Math.max(axisOpts.r2l(outRange[1]), axisOpts.r2l(axRange[1])));
+            opts._input.range = outRange.slice();
+        }
+
+        axisOpts.cleanRange('rangeslider.range');
+
 
         // update range slider dimensions
 
@@ -372,7 +387,8 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
                 width: opts._width,
                 height: opts._height,
                 margin: { t: 0, b: 0, l: 0, r: 0 }
-            }
+            },
+            _context: gd._context
         };
 
         mockFigure.layout[oppAxisName] = {

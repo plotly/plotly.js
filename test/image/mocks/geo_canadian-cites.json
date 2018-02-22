@@ -69,8 +69,7 @@
                 "bottom left",
                 "top right",
                 "top right"
-            ],
-            "uid": "630416"
+            ]
         }
     ],
     "layout": {
@@ -95,6 +94,9 @@
                     40,
                     70
                 ]
+            },
+            "center": {
+                "lat": 57
             },
             "showrivers": true,
             "rivercolor": "#fff",

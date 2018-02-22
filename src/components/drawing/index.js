@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,6 +11,7 @@
 
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Color = require('../color');
@@ -19,6 +20,10 @@ var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var alignment = require('../../constants/alignment');
+var LINE_SPACING = alignment.LINE_SPACING;
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
+
 var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 
@@ -30,7 +35,7 @@ var drawing = module.exports = {};
 
 drawing.font = function(s, family, size, color) {
     // also allow the form font(s, {family, size, color})
-    if(family && family.family) {
+    if(Lib.isPlainObject(family)) {
         color = family.color;
         size = family.size;
         family = family.family;
@@ -40,16 +45,32 @@ drawing.font = function(s, family, size, color) {
     if(color) s.call(Color.fill, color);
 };
 
+/*
+ * Positioning helpers
+ * Note: do not use `setPosition` with <text> nodes modified by
+ * `svgTextUtils.convertToTspans`. Use `svgTextUtils.positionText`
+ * instead, so that <tspan.line> elements get updated to match.
+ */
 drawing.setPosition = function(s, x, y) { s.attr('x', x).attr('y', y); };
 drawing.setSize = function(s, w, h) { s.attr('width', w).attr('height', h); };
 drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
+/** Translate node
+ *
+ * @param {object} d : calcdata point item
+ * @param {sel} sel : d3 selction of node to translate
+ * @param {object} xa : corresponding full xaxis object
+ * @param {object} ya : corresponding full yaxis object
+ *
+ * @return {boolean} :
+ *  true if selection got translated
+ *  false if selection could not get translated
+ */
 drawing.translatePoint = function(d, sel, xa, ya) {
-    // put xp and yp into d if pixel scaling is already done
-    var x = d.xp || xa.c2p(d.x),
-        y = d.yp || ya.c2p(d.y);
+    var x = xa.c2p(d.x);
+    var y = ya.c2p(d.y);
 
     if(isNumeric(x) && isNumeric(y) && sel.node()) {
         // for multiline text this works better
@@ -58,21 +79,44 @@ drawing.translatePoint = function(d, sel, xa, ya) {
         } else {
             sel.attr('transform', 'translate(' + x + ',' + y + ')');
         }
+    } else {
+        return false;
     }
-    else sel.remove();
+
+    return true;
 };
 
-drawing.translatePoints = function(s, xa, ya, trace) {
+drawing.translatePoints = function(s, xa, ya) {
     s.each(function(d) {
         var sel = d3.select(this);
-        drawing.translatePoint(d, sel, xa, ya, trace);
+        drawing.translatePoint(d, sel, xa, ya);
     });
 };
 
-drawing.getPx = function(s, styleAttr) {
-    // helper to pull out a px value from a style that may contain px units
-    // s is a d3 selection (will pull from the first one)
-    return Number(s.style(styleAttr).replace(/px$/, ''));
+drawing.hideOutsideRangePoint = function(d, sel, xa, ya, xcalendar, ycalendar) {
+    sel.attr(
+        'display',
+        (xa.isPtWithinRange(d, xcalendar) && ya.isPtWithinRange(d, ycalendar)) ? null : 'none'
+    );
+};
+
+drawing.hideOutsideRangePoints = function(traceGroups, subplot, selector) {
+    if(!subplot._hasClipOnAxisFalse) return;
+
+    selector = selector || '.point,.textpoint';
+
+    var xa = subplot.xaxis;
+    var ya = subplot.yaxis;
+
+    traceGroups.each(function(d) {
+        var trace = d[0].trace;
+        var xcalendar = trace.xcalendar;
+        var ycalendar = trace.ycalendar;
+
+        traceGroups.selectAll(selector).each(function(d) {
+            drawing.hideOutsideRangePoint(d, d3.select(this), xa, ya, xcalendar, ycalendar);
+        });
+    });
 };
 
 drawing.crispRound = function(gd, lineWidth, dflt) {
@@ -113,6 +157,17 @@ drawing.lineGroupStyle = function(s, lw, lc, ld) {
 
 drawing.dashLine = function(s, dash, lineWidth) {
     lineWidth = +lineWidth || 0;
+
+    dash = drawing.dashStyle(dash, lineWidth);
+
+    s.style({
+        'stroke-dasharray': dash,
+        'stroke-width': lineWidth + 'px'
+    });
+};
+
+drawing.dashStyle = function(dash, lineWidth) {
+    lineWidth = +lineWidth || 1;
     var dlw = Math.max(lineWidth, 3);
 
     if(dash === 'solid') dash = '';
@@ -127,10 +182,17 @@ drawing.dashLine = function(s, dash, lineWidth) {
     }
     // otherwise user wrote the dasharray themselves - leave it be
 
-    s.style({
-        'stroke-dasharray': dash,
-        'stroke-width': lineWidth + 'px'
-    });
+    return dash;
+};
+
+// Same as fillGroupStyle, except in this case the selection may be a transition
+drawing.singleFillStyle = function(sel) {
+    var node = d3.select(sel.node());
+    var data = node.data();
+    var fillcolor = (((data[0] || [])[0] || {}).trace || {}).fillcolor;
+    if(fillcolor) {
+        sel.call(Color.fill, fillcolor);
+    }
 };
 
 drawing.fillGroupStyle = function(s) {
@@ -153,6 +215,7 @@ drawing.symbolNames = [];
 drawing.symbolFuncs = [];
 drawing.symbolNeedLines = {};
 drawing.symbolNoDot = {};
+drawing.symbolNoFill = {};
 drawing.symbolList = [];
 
 Object.keys(SYMBOLDEFS).forEach(function(k) {
@@ -170,6 +233,9 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     else {
         drawing.symbolList = drawing.symbolList.concat(
             [symDef.n + 200, k + '-dot', symDef.n + 300, k + '-open-dot']);
+    }
+    if(symDef.noFill) {
+        drawing.symbolNoFill[symDef.n] = true;
     }
 });
 var MAXSYMBOL = drawing.symbolNames.length,
@@ -194,9 +260,12 @@ drawing.symbolNumber = function(v) {
     return Math.floor(Math.max(v, 0));
 };
 
-function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine) {
-    // only scatter & box plots get marker path and opacity
-    // bars, histograms don't
+function makePointPath(symbolNumber, r) {
+    var base = symbolNumber % 100;
+    return drawing.symbolFuncs[base](r) + (symbolNumber >= 200 ? DOTPATH : '');
+}
+
+function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine, gd) {
     if(Registry.traceIs(trace, 'symbols')) {
         var sizeFn = makeBubbleSizeFn(trace);
 
@@ -204,8 +273,9 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
             var r;
 
             // handle multi-trace graph edit case
-            if(d.ms === 'various' || marker.size === 'various') r = 3;
-            else {
+            if(d.ms === 'various' || marker.size === 'various') {
+                r = 3;
+            } else {
                 r = subTypes.isBubble(trace) ?
                         sizeFn(d.ms) : (marker.size || 6) / 2;
             }
@@ -214,20 +284,21 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
             d.mrc = r;
 
             // turn the symbol into a sanitized number
-            var x = drawing.symbolNumber(d.mx || marker.symbol) || 0,
-                xBase = x % 100;
+            var x = drawing.symbolNumber(d.mx || marker.symbol) || 0;
 
             // save if this marker is open
             // because that impacts how to handle colors
             d.om = x % 200 >= 100;
 
-            return drawing.symbolFuncs[xBase](r) +
-                (x >= 200 ? DOTPATH : '');
-        })
-        .style('opacity', function(d) {
-            return (d.mo + 1 || marker.opacity + 1) - 1;
+            return makePointPath(x, r);
         });
     }
+
+    sel.style('opacity', function(d) {
+        return (d.mo + 1 || marker.opacity + 1) - 1;
+    });
+
+    var perPointGradient = false;
 
     // 'so' is suspected outliers, for box plots
     var fillColor,
@@ -248,8 +319,12 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
         else if(Array.isArray(markerLine.color)) lineColor = Color.defaultLine;
         else lineColor = markerLine.color;
 
+        if(Array.isArray(marker.color)) {
+            fillColor = Color.defaultLine;
+            perPointGradient = true;
+        }
+
         if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-        else if(Array.isArray(marker.color)) fillColor = Color.defaultLine;
         else fillColor = marker.color || 'rgba(0,0,0,0)';
     }
 
@@ -263,39 +338,203 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
             });
     }
     else {
-        sel.style('stroke-width', lineWidth + 'px')
-            .call(Color.fill, fillColor);
+        sel.style('stroke-width', lineWidth + 'px');
+
+        var markerGradient = marker.gradient;
+
+        var gradientType = d.mgt;
+        if(gradientType) perPointGradient = true;
+        else gradientType = markerGradient && markerGradient.type;
+
+        if(gradientType && gradientType !== 'none') {
+            var gradientColor = d.mgc;
+            if(gradientColor) perPointGradient = true;
+            else gradientColor = markerGradient.color;
+
+            var gradientID = 'g' + gd._fullLayout._uid + '-' + trace.uid;
+            if(perPointGradient) gradientID += '-' + d.i;
+
+            sel.call(drawing.gradient, gd, gradientID, gradientType, fillColor, gradientColor);
+        }
+        else {
+            sel.call(Color.fill, fillColor);
+        }
+
         if(lineWidth) {
             sel.call(Color.stroke, lineColor);
         }
     }
 }
 
-drawing.singlePointStyle = function(d, sel, trace) {
-    var marker = trace.marker,
-        markerLine = marker.line;
+var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
+var VERTGRADIENT = {x1: 0, x2: 0, y1: 1, y2: 0};
 
-    // allow array marker and marker line colors to be
-    // scaled by given max and min to colorscales
-    var markerScale = drawing.tryColorscale(marker, ''),
-        lineScale = drawing.tryColorscale(marker, 'line');
+drawing.gradient = function(sel, gd, gradientID, type, color1, color2) {
+    var gradient = gd._fullLayout._defs.select('.gradients')
+        .selectAll('#' + gradientID)
+        .data([type + color1 + color2], Lib.identity);
 
-    singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine);
+    gradient.exit().remove();
 
+    gradient.enter()
+        .append(type === 'radial' ? 'radialGradient' : 'linearGradient')
+        .each(function() {
+            var el = d3.select(this);
+            if(type === 'horizontal') el.attr(HORZGRADIENT);
+            else if(type === 'vertical') el.attr(VERTGRADIENT);
+
+            el.attr('id', gradientID);
+
+            var tc1 = tinycolor(color1);
+            var tc2 = tinycolor(color2);
+
+            el.append('stop').attr({
+                offset: '0%',
+                'stop-color': Color.tinyRGB(tc2),
+                'stop-opacity': tc2.getAlpha()
+            });
+
+            el.append('stop').attr({
+                offset: '100%',
+                'stop-color': Color.tinyRGB(tc1),
+                'stop-opacity': tc1.getAlpha()
+            });
+        });
+
+    sel.style({
+        fill: 'url(#' + gradientID + ')',
+        'fill-opacity': null
+    });
 };
 
-drawing.pointStyle = function(s, trace) {
+/*
+ * Make the gradients container and clear out any previous gradients.
+ * We never collect all the gradients we need in one place,
+ * so we can't ever remove gradients that have stopped being useful,
+ * except all at once before a full redraw.
+ * The upside of this is arbitrary points can share gradient defs
+ */
+drawing.initGradients = function(gd) {
+    var gradientsGroup = gd._fullLayout._defs.selectAll('.gradients').data([0]);
+    gradientsGroup.enter().append('g').classed('gradients', true);
+
+    gradientsGroup.selectAll('linearGradient,radialGradient').remove();
+};
+
+drawing.singlePointStyle = function(d, sel, trace, markerScale, lineScale, gd) {
+    var marker = trace.marker;
+
+    singlePointStyle(d, sel, trace, markerScale, lineScale, marker, marker.line, gd);
+};
+
+drawing.pointStyle = function(s, trace, gd) {
     if(!s.size()) return;
 
     // allow array marker and marker line colors to be
     // scaled by given max and min to colorscales
     var marker = trace.marker;
-    var markerScale = drawing.tryColorscale(marker, ''),
-        lineScale = drawing.tryColorscale(marker, 'line');
+    var markerScale = drawing.tryColorscale(marker, '');
+    var lineScale = drawing.tryColorscale(marker, 'line');
 
     s.each(function(d) {
-        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale);
+        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale, gd);
     });
+};
+
+drawing.makeSelectedPointStyleFns = function(trace) {
+    var out = {};
+
+    var selectedAttrs = trace.selected || {};
+    var unselectedAttrs = trace.unselected || {};
+
+    var marker = trace.marker || {};
+    var selectedMarker = selectedAttrs.marker || {};
+    var unselectedMarker = unselectedAttrs.marker || {};
+
+    var mo = marker.opacity;
+    var smo = selectedMarker.opacity;
+    var usmo = unselectedMarker.opacity;
+    var smoIsDefined = smo !== undefined;
+    var usmoIsDefined = usmo !== undefined;
+
+    out.opacityFn = function(d) {
+        var dmo = d.mo;
+        var dmoIsDefined = dmo !== undefined;
+
+        if(dmoIsDefined || smoIsDefined || usmoIsDefined) {
+            if(d.selected) {
+                if(smoIsDefined) return smo;
+            } else {
+                if(usmoIsDefined) return usmo;
+                return DESELECTDIM * (dmoIsDefined ? dmo : mo);
+            }
+        }
+    };
+
+    var smc = selectedMarker.color;
+    var usmc = unselectedMarker.color;
+
+    if(smc || usmc) {
+        out.colorFn = function(d) {
+            if(d.selected) {
+                if(smc) return smc;
+            } else {
+                if(usmc) return usmc;
+            }
+        };
+    }
+
+    var sms = selectedMarker.size;
+    var usms = unselectedMarker.size;
+    var smsIsDefined = sms !== undefined;
+    var usmsIsDefined = usms !== undefined;
+
+    if(smsIsDefined || usmsIsDefined) {
+        out.sizeFn = function(d) {
+            var mrc = d.mrc;
+            if(d.selected) {
+                return smsIsDefined ? sms / 2 : mrc;
+            } else {
+                return usmsIsDefined ? usms / 2 : mrc;
+            }
+        };
+    }
+
+    return out;
+};
+
+drawing.selectedPointStyle = function(s, trace) {
+    if(!s.size() || !trace.selectedpoints) return;
+
+    var fns = drawing.makeSelectedPointStyleFns(trace);
+    var marker = trace.marker || {};
+
+    s.each(function(d) {
+        var pt = d3.select(this);
+        var mo2 = fns.opacityFn(d);
+        if(mo2 !== undefined) pt.style('opacity', mo2);
+    });
+
+    if(fns.colorFn) {
+        s.each(function(d) {
+            var pt = d3.select(this);
+            var mc2 = fns.colorFn(d);
+            if(mc2) Color.fill(pt, mc2);
+        });
+    }
+
+    if(Registry.traceIs(trace, 'symbols') && fns.sizeFn) {
+        s.each(function(d) {
+            var pt = d3.select(this);
+            var mx = d.mx || marker.symbol || 0;
+            var mrc2 = fns.sizeFn(d);
+
+            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2));
+
+            // save for selectedTextStyle
+            d.mrc2 = mrc2;
+        });
+    }
 };
 
 drawing.tryColorscale = function(marker, prefix) {
@@ -311,55 +550,86 @@ drawing.tryColorscale = function(marker, prefix) {
     else return Lib.identity;
 };
 
-// draw text at points
-var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1},
-    LINEEXPAND = 1.3;
-drawing.textPointStyle = function(s, trace) {
-    s.each(function(d) {
-        var p = d3.select(this),
-            text = d.tx || trace.text;
+var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1};
 
-        if(!text || Array.isArray(text)) {
-            // isArray test handles the case of (intentionally) missing
-            // or empty text within a text array
+function textPointPosition(s, textPosition, fontSize, markerRadius) {
+    var group = d3.select(s.node().parentNode);
+
+    var v = textPosition.indexOf('top') !== -1 ?
+        'top' :
+        textPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
+    var h = textPosition.indexOf('left') !== -1 ?
+        'end' :
+        textPosition.indexOf('right') !== -1 ? 'start' : 'middle';
+
+    // if markers are shown, offset a little more than
+    // the nominal marker size
+    // ie 2/1.6 * nominal, bcs some markers are a bit bigger
+    var r = markerRadius ? markerRadius / 0.8 + 1 : 0;
+
+    var numLines = (svgTextUtils.lineCount(s) - 1) * LINE_SPACING + 1;
+    var dx = TEXTOFFSETSIGN[h] * r;
+    var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
+            (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
+
+    // fix the overall text group position
+    s.attr('text-anchor', h);
+    group.attr('transform', 'translate(' + dx + ',' + dy + ')');
+}
+
+function extracTextFontSize(d, trace) {
+    var fontSize = d.ts || trace.textfont.size;
+    return (isNumeric(fontSize) && fontSize > 0) ? fontSize : 0;
+}
+
+// draw text at points
+drawing.textPointStyle = function(s, trace, gd) {
+    s.each(function(d) {
+        var p = d3.select(this);
+        var text = Lib.extractOption(d, trace, 'tx', 'text');
+
+        if(!text) {
             p.remove();
             return;
         }
 
-        var pos = d.tp || trace.textposition,
-            v = pos.indexOf('top') !== -1 ? 'top' :
-                pos.indexOf('bottom') !== -1 ? 'bottom' : 'middle',
-            h = pos.indexOf('left') !== -1 ? 'end' :
-                pos.indexOf('right') !== -1 ? 'start' : 'middle',
-            fontSize = d.ts || trace.textfont.size,
-            // if markers are shown, offset a little more than
-            // the nominal marker size
-            // ie 2/1.6 * nominal, bcs some markers are a bit bigger
-            r = d.mrc ? (d.mrc / 0.8 + 1) : 0;
-
-        fontSize = (isNumeric(fontSize) && fontSize > 0) ? fontSize : 0;
+        var pos = d.tp || trace.textposition;
+        var fontSize = extracTextFontSize(d, trace);
 
         p.call(drawing.font,
                 d.tf || trace.textfont.family,
                 fontSize,
                 d.tc || trace.textfont.color)
-            .attr('text-anchor', h)
             .text(text)
-            .call(svgTextUtils.convertToTspans);
-        var pgroup = d3.select(this.parentNode),
-            tspans = p.selectAll('tspan.line'),
-            numLines = ((tspans[0].length || 1) - 1) * LINEEXPAND + 1,
-            dx = TEXTOFFSETSIGN[h] * r,
-            dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
-                (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
+            .call(svgTextUtils.convertToTspans, gd)
+            .call(textPointPosition, pos, fontSize, d.mrc);
+    });
+};
 
-        // fix the overall text group position
-        pgroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
+drawing.selectedTextStyle = function(s, trace) {
+    if(!s.size() || !trace.selectedpoints) return;
 
-        // then fix multiline text
-        if(numLines > 1) {
-            tspans.attr({ x: p.attr('x'), y: p.attr('y') });
+    var selectedAttrs = trace.selected || {};
+    var unselectedAttrs = trace.unselected || {};
+
+    s.each(function(d) {
+        var tx = d3.select(this);
+        var tc = d.tc || trace.textfont.color;
+        var tp = d.tp || trace.textposition;
+        var fontSize = extracTextFontSize(d, trace);
+        var stc = (selectedAttrs.textfont || {}).color;
+        var utc = (unselectedAttrs.textfont || {}).color;
+        var tc2;
+
+        if(d.selected) {
+            if(stc) tc2 = stc;
+        } else {
+            if(utc) tc2 = utc;
+            else if(!stc) tc2 = Color.addOpacity(tc, DESELECTDIM);
         }
+
+        if(tc2) Color.fill(tx, tc2);
+        textPointPosition(tx, tp, fontSize, d.mrc2 || d.mrc);
     });
 };
 
@@ -457,11 +727,8 @@ drawing.steps = function(shape) {
 };
 
 // off-screen svg render testing element, shared by the whole page
-// uses the id 'js-plotly-tester' and stores it in gd._tester
-// makes a hash of cached text items in tester.node()._cache
-// so we can add references to rendered text (including all info
-// needed to fully determine its bounding rect)
-drawing.makeTester = function(gd) {
+// uses the id 'js-plotly-tester' and stores it in drawing.tester
+drawing.makeTester = function() {
     var tester = d3.select('body')
         .selectAll('#js-plotly-tester')
         .data([0]);
@@ -490,46 +757,119 @@ drawing.makeTester = function(gd) {
             fill: 'black'
         });
 
-    if(!tester.node()._cache) {
-        tester.node()._cache = {};
-    }
-
-    gd._tester = tester;
-    gd._testref = testref;
+    drawing.tester = tester;
+    drawing.testref = testref;
 };
 
-// use our offscreen tester to get a clientRect for an element,
-// in a reference frame where it isn't translated and its anchor
-// point is at (0,0)
-// always returns a copy of the bbox, so the caller can modify it safely
-var savedBBoxes = [],
-    maxSavedBBoxes = 10000;
-drawing.bBox = function(node) {
-    // cache elements we've already measured so we don't have to
-    // remeasure the same thing many times
-    var saveNum = node.attributes['data-bb'];
-    if(saveNum && saveNum.value) {
-        return Lib.extendFlat({}, savedBBoxes[saveNum.value]);
+/*
+ * use our offscreen tester to get a clientRect for an element,
+ * in a reference frame where it isn't translated (or transformed) and
+ * its anchor point is at (0,0)
+ * always returns a copy of the bbox, so the caller can modify it safely
+ *
+ * @param {SVGElement} node: the element to measure. If possible this should be
+ *   a <text> or MathJax <g> element that's already passed through
+ *   `convertToTspans` because in that case we can cache the results, but it's
+ *   possible to pass in any svg element.
+ *
+ * @param {boolean} inTester: is this element already in `drawing.tester`?
+ *   If you are measuring a dummy element, rather than one you really intend
+ *   to use on the plot, making it in `drawing.tester` in the first place
+ *   allows us to test faster because it cuts out cloning and appending it.
+ *
+ * @param {string} hash: for internal use only, if we already know the cache key
+ *   for this element beforehand.
+ *
+ * @return {object}: a plain object containing the width, height, left, right,
+ *   top, and bottom of `node`
+ */
+drawing.savedBBoxes = {};
+var savedBBoxesCount = 0;
+var maxSavedBBoxes = 10000;
+
+drawing.bBox = function(node, inTester, hash) {
+    /*
+     * Cache elements we've already measured so we don't have to
+     * remeasure the same thing many times
+     * We have a few bBox callers though who pass a node larger than
+     * a <text> or a MathJax <g>, such as an axis group containing many labels.
+     * These will not generate a hash (unless we figure out an appropriate
+     * hash key for them) and thus we will not hash them.
+     */
+    if(!hash) hash = nodeHash(node);
+    var out;
+    if(hash) {
+        out = drawing.savedBBoxes[hash];
+        if(out) return Lib.extendFlat({}, out);
+    }
+    else if(node.childNodes.length === 1) {
+        /*
+         * If we have only one child element, which is itself hashable, make
+         * a new hash from this element plus its x,y,transform
+         * These bounding boxes *include* x,y,transform - mostly for use by
+         * callers trying to avoid overlaps (ie titles)
+         */
+        var innerNode = node.childNodes[0];
+
+        hash = nodeHash(innerNode);
+        if(hash) {
+            var x = +innerNode.getAttribute('x') || 0;
+            var y = +innerNode.getAttribute('y') || 0;
+            var transform = innerNode.getAttribute('transform');
+
+            if(!transform) {
+                // in this case, just varying x and y, don't bother caching
+                // the final bBox because the alteration is quick.
+                var innerBB = drawing.bBox(innerNode, false, hash);
+                if(x) {
+                    innerBB.left += x;
+                    innerBB.right += x;
+                }
+                if(y) {
+                    innerBB.top += y;
+                    innerBB.bottom += y;
+                }
+                return innerBB;
+            }
+            /*
+             * else we have a transform - rather than make a complicated
+             * (and error-prone and probably slow) transform parser/calculator,
+             * just continue on calculating the boundingClientRect of the group
+             * and use the new composite hash to cache it.
+             * That said, `innerNode.transform.baseVal` is an array of
+             * `SVGTransform` objects, that *do* seem to have a nice matrix
+             * multiplication interface that we could use to avoid making
+             * another getBoundingClientRect call...
+             */
+            hash += '~' + x + '~' + y + '~' + transform;
+
+            out = drawing.savedBBoxes[hash];
+            if(out) return Lib.extendFlat({}, out);
+        }
+    }
+    var testNode, tester;
+    if(inTester) {
+        testNode = node;
+    }
+    else {
+        tester = drawing.tester.node();
+
+        // copy the node to test into the tester
+        testNode = node.cloneNode(true);
+        tester.appendChild(testNode);
     }
 
-    var test3 = d3.select('#js-plotly-tester'),
-        tester = test3.node();
+    // standardize its position (and newline tspans if any)
+    d3.select(testNode)
+        .attr('transform', null)
+        .call(svgTextUtils.positionText, 0, 0);
 
-    // copy the node to test into the tester
-    var testNode = node.cloneNode(true);
-    tester.appendChild(testNode);
-    // standardize its position... do we really want to do this?
-    d3.select(testNode).attr({
-        x: 0,
-        y: 0,
-        transform: ''
-    });
+    var testRect = testNode.getBoundingClientRect();
+    var refRect = drawing.testref
+        .node()
+        .getBoundingClientRect();
 
-    var testRect = testNode.getBoundingClientRect(),
-        refRect = test3.select('.js-reference-point')
-            .node().getBoundingClientRect();
-
-    tester.removeChild(testNode);
+    if(!inTester) tester.removeChild(testNode);
 
     var bb = {
         height: testRect.height,
@@ -543,17 +883,28 @@ drawing.bBox = function(node) {
     // make sure we don't have too many saved boxes,
     // or a long session could overload on memory
     // by saving boxes for long-gone elements
-    if(savedBBoxes.length >= maxSavedBBoxes) {
-        d3.selectAll('[data-bb]').attr('data-bb', null);
-        savedBBoxes = [];
+    if(savedBBoxesCount >= maxSavedBBoxes) {
+        drawing.savedBBoxes = {};
+        savedBBoxesCount = 0;
     }
 
     // cache this bbox
-    node.setAttribute('data-bb', savedBBoxes.length);
-    savedBBoxes.push(bb);
+    if(hash) drawing.savedBBoxes[hash] = bb;
+    savedBBoxesCount++;
 
     return Lib.extendFlat({}, bb);
 };
+
+// capture everything about a node (at least in our usage) that
+// impacts its bounding box, given that bBox clears x, y, and transform
+function nodeHash(node) {
+    var inputText = node.getAttribute('data-unformatted');
+    if(inputText === null) return;
+    return inputText +
+        node.getAttribute('data-math') +
+        node.getAttribute('text-anchor') +
+        node.getAttribute('style');
+}
 
 /*
  * make a robust clipPath url from a local id
@@ -677,4 +1028,37 @@ drawing.setPointGroupScale = function(selection, x, y) {
     });
 
     return scale;
+};
+
+var TEXT_POINT_LAST_TRANSLATION_RE = /translate\([^)]*\)\s*$/;
+
+drawing.setTextPointsScale = function(selection, xScale, yScale) {
+    selection.each(function() {
+        var transforms;
+        var el = d3.select(this);
+        var text = el.select('text');
+
+        if(!text.node()) return;
+
+        var x = parseFloat(text.attr('x') || 0);
+        var y = parseFloat(text.attr('y') || 0);
+
+        var existingTransform = (el.attr('transform') || '').match(TEXT_POINT_LAST_TRANSLATION_RE);
+
+        if(xScale === 1 && yScale === 1) {
+            transforms = [];
+        } else {
+            transforms = [
+                'translate(' + x + ',' + y + ')',
+                'scale(' + xScale + ',' + yScale + ')',
+                'translate(' + (-x) + ',' + (-y) + ')',
+            ];
+        }
+
+        if(existingTransform) {
+            transforms.push(existingTransform);
+        }
+
+        el.attr('transform', transforms.join(' '));
+    });
 };

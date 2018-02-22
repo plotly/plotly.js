@@ -2,18 +2,23 @@ var Plotly = require('@lib/index');
 var PlotlyInternal = require('@src/plotly');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
+var Queue = require('@src/lib/queue');
 var Scatter = require('@src/traces/scatter');
 var Bar = require('@src/traces/bar');
 var Legend = require('@src/components/legend');
 var pkg = require('../../../package.json');
 var subroutines = require('@src/plot_api/subroutines');
 var helpers = require('@src/plot_api/helpers');
+var editTypes = require('@src/plot_api/edit_types');
+var annotations = require('@src/components/annotations');
+var images = require('@src/components/images');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
-
+var checkTicks = require('../assets/custom_assertions').checkTicks;
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('Test plot api', function() {
     'use strict';
@@ -107,9 +112,18 @@ describe('Test plot api', function() {
 
         beforeEach(function() {
             gd = createGraphDiv();
+
+            // some of these tests use the undo/redo queue
+            // OK, this is weird... the undo/redo queue length is a global config only.
+            // It's ignored on the plot, even though the queue itself is per-plot.
+            // We may ditch this later, but probably not until v2
+            Plotly.setPlotConfig({queueLength: 3});
         });
 
-        afterEach(destroyGraphDiv);
+        afterEach(function() {
+            destroyGraphDiv();
+            Plotly.setPlotConfig({queueLength: 0});
+        });
 
         it('should update the plot clipPath if the plot is resized', function(done) {
 
@@ -237,9 +251,323 @@ describe('Test plot api', function() {
                 })
                 .then(done);
         });
+
+        it('should skip empty axis objects', function(done) {
+            Plotly.plot(gd, [{
+                x: [1, 2, 3],
+                y: [1, 2, 1]
+            }], {
+                xaxis: { title: 'x title' },
+                yaxis: { title: 'y title' }
+            })
+            .then(function() {
+                return Plotly.relayout(gd, { zaxis: {} });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('annotations, shapes and images linked to category axes should update properly on zoom/pan', function(done) {
+            var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
+
+            function getPos(sel) {
+                var rect = sel.node().getBoundingClientRect();
+                return [rect.left, rect.bottom];
+            }
+
+            function getAnnotationPos() {
+                return getPos(d3.select('.annotation'));
+            }
+
+            function getShapePos() {
+                return getPos(d3.select('.layer-above').select('.shapelayer').select('path'));
+            }
+
+            function getImagePos() {
+                return getPos(d3.select('.layer-above').select('.imagelayer').select('image'));
+            }
+
+            Plotly.plot(gd, [{
+                x: ['a', 'b', 'c'],
+                y: [1, 2, 1]
+            }], {
+                xaxis: {range: [-1, 5]},
+                annotations: [{
+                    xref: 'x',
+                    yref: 'y',
+                    x: 'b',
+                    y: 2
+                }],
+                shapes: [{
+                    xref: 'x',
+                    yref: 'y',
+                    type: 'line',
+                    x0: 'c',
+                    x1: 'c',
+                    y0: -1,
+                    y1: 4
+                }],
+                images: [{
+                    xref: 'x',
+                    yref: 'y',
+                    source: jsLogo,
+                    x: 'a',
+                    y: 1,
+                    sizex: 0.2,
+                    sizey: 0.2
+                }]
+            })
+            .then(function() {
+                expect(getAnnotationPos()).toBeCloseToArray([247.5, 210.1], -0.5);
+                expect(getShapePos()).toBeCloseToArray([350, 369]);
+                expect(getImagePos()).toBeCloseToArray([170, 272.52]);
+
+                return Plotly.relayout(gd, 'xaxis.range', [0, 2]);
+            })
+            .then(function() {
+                expect(getAnnotationPos()).toBeCloseToArray([337.5, 210.1], -0.5);
+                expect(getShapePos()).toBeCloseToArray([620, 369]);
+                expect(getImagePos()).toBeCloseToArray([80, 272.52]);
+
+                return Plotly.relayout(gd, 'xaxis.range', [-1, 5]);
+            })
+            .then(function() {
+                expect(getAnnotationPos()).toBeCloseToArray([247.5, 210.1], -0.5);
+                expect(getShapePos()).toBeCloseToArray([350, 369]);
+                expect(getImagePos()).toBeCloseToArray([170, 272.52]);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('clears autorange when you modify a range or part of a range', function(done) {
+            var initialXRange;
+            var initialYRange;
+
+            Plotly.plot(gd, [{x: [1, 2], y: [1, 2]}])
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBe(true);
+                expect(gd.layout.yaxis.autorange).toBe(true);
+
+                initialXRange = gd.layout.xaxis.range.slice();
+                initialYRange = gd.layout.yaxis.range.slice();
+
+                return Plotly.relayout(gd, {'xaxis.range': [0, 1], 'yaxis.range[1]': 3});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBe(false);
+                expect(gd.layout.xaxis.range).toEqual([0, 1]);
+                expect(gd.layout.yaxis.autorange).toBe(false);
+                expect(gd.layout.yaxis.range[1]).toBe(3);
+
+                return Plotly.relayout(gd, {'xaxis.autorange': true, 'yaxis.autorange': true});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toEqual(initialXRange);
+                expect(gd.layout.yaxis.range).toEqual(initialYRange);
+
+                // finally, test that undoing autorange puts back the previous explicit range
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBe(false);
+                expect(gd.layout.xaxis.range).toEqual([0, 1]);
+                expect(gd.layout.yaxis.autorange).toBe(false);
+                expect(gd.layout.yaxis.range[1]).toBe(3);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('sets aspectmode to manual when you provide any aspectratio', function(done) {
+            Plotly.plot(gd, [{x: [1, 2], y: [1, 2], z: [1, 2], type: 'scatter3d'}])
+            .then(function() {
+                expect(gd.layout.scene.aspectmode).toBe('auto');
+
+                return Plotly.relayout(gd, {'scene.aspectratio.x': 2});
+            })
+            .then(function() {
+                expect(gd.layout.scene.aspectmode).toBe('manual');
+
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                expect(gd.layout.scene.aspectmode).toBe('auto');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('sets tickmode to linear when you edit tick0 or dtick', function(done) {
+            Plotly.plot(gd, [{x: [1, 2], y: [1, 2]}])
+            .then(function() {
+                expect(gd.layout.xaxis.tickmode).toBeUndefined();
+                expect(gd.layout.yaxis.tickmode).toBeUndefined();
+
+                return Plotly.relayout(gd, {'xaxis.tick0': 0.23, 'yaxis.dtick': 0.34});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.tickmode).toBe('linear');
+                expect(gd.layout.yaxis.tickmode).toBe('linear');
+
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.tickmode).toBeUndefined();
+                expect(gd.layout.yaxis.tickmode).toBeUndefined();
+
+                expect(gd.layout.xaxis.tick0).toBeUndefined();
+                expect(gd.layout.yaxis.dtick).toBeUndefined();
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('updates non-auto ranges for linear/log changes', function(done) {
+            Plotly.plot(gd, [{x: [3, 5], y: [3, 5]}], {
+                xaxis: {range: [1, 10]},
+                yaxis: {type: 'log', range: [0, 1]}
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {'xaxis.type': 'log', 'yaxis.type': 'linear'});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 1], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([1, 10], 5);
+
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([1, 10], 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0, 1], 5);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('respects reversed autorange when switching linear to log', function(done) {
+            Plotly.plot(gd, [{x: [1, 2], y: [1, 2]}])
+            .then(function() {
+                // Ideally we should change this to xaxis.autorange: 'reversed'
+                // but that's a weird disappearing setting used just to force
+                // an initial reversed autorange. Proposed v2 change at:
+                // https://github.com/plotly/plotly.js/issues/420#issuecomment-323435082
+                return Plotly.relayout(gd, 'xaxis.reverse', true);
+            })
+            .then(function() {
+                var xRange = gd.layout.xaxis.range;
+                expect(xRange[1]).toBeLessThan(xRange[0]);
+                expect(xRange[0]).toBeGreaterThan(1);
+
+                return Plotly.relayout(gd, 'xaxis.type', 'log');
+            })
+            .then(function() {
+                var xRange = gd.layout.xaxis.range;
+                expect(xRange[1]).toBeLessThan(xRange[0]);
+                // make sure it's a real loggy range
+                expect(xRange[0]).toBeLessThan(1);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('autoranges automatically when switching to/from any other axis type than linear <-> log', function(done) {
+            Plotly.plot(gd, [{x: ['1.5', '0.8'], y: [1, 2]}], {xaxis: {range: [0.6, 1.7]}})
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBeUndefined();
+                expect(gd._fullLayout.xaxis.type).toBe('linear');
+                expect(gd.layout.xaxis.range).toEqual([0.6, 1.7]);
+
+                return Plotly.relayout(gd, 'xaxis.type', 'category');
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBe(true);
+                expect(gd._fullLayout.xaxis.type).toBe('category');
+                expect(gd.layout.xaxis.range[0]).toBeLessThan(0);
+
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.autorange).toBeUndefined();
+                expect(gd._fullLayout.xaxis.type).toBe('linear');
+                expect(gd.layout.xaxis.range).toEqual([0.6, 1.7]);
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 
-    describe('Plotly.restyle', function() {
+    describe('Plotly.relayout subroutines switchboard', function() {
+        var mockedMethods = [
+            'layoutReplot',
+            'doLegend',
+            'layoutStyles',
+            'doTicksRelayout',
+            'doModeBar',
+            'doCamera'
+        ];
+
+        beforeAll(function() {
+            mockedMethods.forEach(function(m) {
+                spyOn(subroutines, m);
+            });
+        });
+
+        function mock(gd) {
+            mockedMethods.forEach(function(m) {
+                subroutines[m].calls.reset();
+            });
+
+            supplyAllDefaults(gd);
+            Plots.doCalcdata(gd);
+            return gd;
+        }
+
+        it('should trigger recalc when switching into select or lasso dragmode', function() {
+            var gd = mock({
+                data: [{
+                    type: 'scattergl',
+                    x: [1, 2, 3],
+                    y: [1, 2, 3]
+                }],
+                layout: {
+                    dragmode: 'zoom'
+                }
+            });
+
+            function expectModeBarOnly() {
+                expect(gd.calcdata).toBeDefined();
+                expect(subroutines.doModeBar).toHaveBeenCalled();
+                expect(subroutines.layoutReplot).not.toHaveBeenCalled();
+            }
+
+            function expectRecalc() {
+                expect(gd.calcdata).toBeUndefined();
+                expect(subroutines.doModeBar).not.toHaveBeenCalled();
+                expect(subroutines.layoutReplot).toHaveBeenCalled();
+            }
+
+            Plotly.relayout(gd, 'dragmode', 'pan');
+            expectModeBarOnly();
+
+            Plotly.relayout(mock(gd), 'dragmode', 'lasso');
+            expectRecalc();
+
+            Plotly.relayout(mock(gd), 'dragmode', 'select');
+            expectModeBarOnly();
+
+            Plotly.relayout(mock(gd), 'dragmode', 'lasso');
+            expectModeBarOnly();
+
+            Plotly.relayout(mock(gd), 'dragmode', 'zoom');
+            expectModeBarOnly();
+
+            Plotly.relayout(mock(gd), 'dragmode', 'select');
+            expectRecalc();
+        });
+    });
+
+    describe('Plotly.restyle subroutines switchboard', function() {
         beforeEach(function() {
             spyOn(PlotlyInternal, 'plot');
             spyOn(Plots, 'previousPromises');
@@ -250,7 +578,7 @@ describe('Test plot api', function() {
         });
 
         function mockDefaultsAndCalc(gd) {
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
             gd.calcdata = gd._fullData.map(function(trace) {
                 return [{x: 1, y: 1, trace: trace}];
             });
@@ -315,6 +643,55 @@ describe('Test plot api', function() {
             expect(PlotlyInternal.plot).toHaveBeenCalled();
         });
 
+        it('should do full replot when arrayOk base attributes are updated', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'green', 'blue']]);
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+            mockDefaultsAndCalc(gd);
+            PlotlyInternal.plot.calls.reset();
+            Plotly.restyle(gd, 'hoverlabel.bgcolor', 'yellow');
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+            mockDefaultsAndCalc(gd);
+            PlotlyInternal.plot.calls.reset();
+            Plotly.restyle(gd, 'hoverlabel.bgcolor', 'blue');
+            expect(gd.calcdata).toBeDefined();
+            expect(PlotlyInternal.plot).not.toHaveBeenCalled();
+
+            mockDefaultsAndCalc(gd);
+            PlotlyInternal.plot.calls.reset();
+            Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'blue', 'green']]);
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+        });
+
+        it('should do full replot when attribute container are updated', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
+                layout: {
+                    xaxis: { range: [0, 4] },
+                    yaxis: { range: [0, 4] }
+                }
+            };
+
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, {
+                marker: {
+                    color: ['red', 'blue', 'green']
+                }
+            });
+            expect(gd.calcdata).toBeUndefined();
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+        });
+
         it('calls plot on xgap and ygap styling', function() {
             var gd = {
                 data: [{z: [[1, 2, 3], [4, 5, 6], [7, 8, 9]], showscale: false, type: 'heatmap'}],
@@ -327,6 +704,72 @@ describe('Test plot api', function() {
 
             Plotly.restyle(gd, {'ygap': 2});
             expect(PlotlyInternal.plot.calls.count()).toEqual(2);
+        });
+
+        it('should clear calcdata when restyling \'zmin\' and \'zmax\' on contour traces', function() {
+            var contour = {
+                data: [{
+                    type: 'contour',
+                    z: [[1, 2, 3], [1, 2, 1]]
+                }]
+            };
+
+            var histogram2dcontour = {
+                data: [{
+                    type: 'histogram2dcontour',
+                    x: [1, 1, 2, 2, 2, 3],
+                    y: [0, 0, 0, 0, 1, 3]
+                }]
+            };
+
+            var mocks = [contour, histogram2dcontour];
+
+            mocks.forEach(function(gd) {
+                mockDefaultsAndCalc(gd);
+                PlotlyInternal.plot.calls.reset();
+                Plotly.restyle(gd, 'zmin', 0);
+                expect(gd.calcdata).toBeUndefined();
+                expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+                mockDefaultsAndCalc(gd);
+                PlotlyInternal.plot.calls.reset();
+                Plotly.restyle(gd, 'zmax', 10);
+                expect(gd.calcdata).toBeUndefined();
+                expect(PlotlyInternal.plot).toHaveBeenCalled();
+            });
+        });
+
+        it('should not clear calcdata when restyling \'zmin\' and \'zmax\' on heatmap traces', function() {
+            var heatmap = {
+                data: [{
+                    type: 'heatmap',
+                    z: [[1, 2, 3], [1, 2, 1]]
+                }]
+            };
+
+            var histogram2d = {
+                data: [{
+                    type: 'histogram2d',
+                    x: [1, 1, 2, 2, 2, 3],
+                    y: [0, 0, 0, 0, 1, 3]
+                }]
+            };
+
+            var mocks = [heatmap, histogram2d];
+
+            mocks.forEach(function(gd) {
+                mockDefaultsAndCalc(gd);
+                PlotlyInternal.plot.calls.reset();
+                Plotly.restyle(gd, 'zmin', 0);
+                expect(gd.calcdata).toBeDefined();
+                expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+                mockDefaultsAndCalc(gd);
+                PlotlyInternal.plot.calls.reset();
+                Plotly.restyle(gd, 'zmax', 10);
+                expect(gd.calcdata).toBeDefined();
+                expect(PlotlyInternal.plot).toHaveBeenCalled();
+            });
         });
 
         it('ignores undefined values', function() {
@@ -393,10 +836,17 @@ describe('Test plot api', function() {
 
         beforeEach(function() {
             gd = createGraphDiv();
+
+            // some of these tests use the undo/redo queue
+            // OK, this is weird... the undo/redo queue length is a global config only.
+            // It's ignored on the plot, even though the queue itself is per-plot.
+            // We may ditch this later, but probably not until v2
+            Plotly.setPlotConfig({queueLength: 3});
         });
 
         afterEach(function() {
             destroyGraphDiv();
+            Plotly.setPlotConfig({queueLength: 0});
         });
 
         it('should redo auto z/contour when editing z array', function(done) {
@@ -453,6 +903,315 @@ describe('Test plot api', function() {
                 })
                 .catch(fail)
                 .then(done);
+        });
+
+        it('turns off zauto when you edit zmin or zmax', function(done) {
+            var zmin0 = 2;
+            var zmax1 = 10;
+
+            function check(auto, msg) {
+                expect(gd.data[0].zmin).negateIf(auto).toBe(zmin0, msg);
+                expect(gd.data[0].zauto).toBe(auto, msg);
+                expect(gd.data[1].zmax).negateIf(auto).toBe(zmax1, msg);
+                expect(gd.data[1].zauto).toBe(auto, msg);
+            }
+
+            Plotly.plot(gd, [
+                {z: [[1, 2], [3, 4]], type: 'heatmap'},
+                {x: [2, 3], z: [[5, 6], [7, 8]], type: 'contour'}
+            ])
+            .then(function() {
+                check(true, 'initial');
+                return Plotly.restyle(gd, 'zmin', zmin0, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'zmax', zmax1, [1]);
+            })
+            .then(function() {
+                check(false, 'set min/max');
+                return Plotly.restyle(gd, 'zauto', true);
+            })
+            .then(function() {
+                check(true, 'reset');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('turns off cauto (autocolorscale) when you edit cmin or cmax (colorscale)', function(done) {
+            var autocscale = require('@src/components/colorscale/scales').Reds;
+
+            var mcmin0 = 3;
+            var mcscl0 = 'rainbow';
+            var mlcmax1 = 6;
+            var mlcscl1 = 'greens';
+
+            function check(auto, msg) {
+                expect(gd.data[0].marker.cauto).toBe(auto, msg);
+                expect(gd.data[0].marker.cmin).negateIf(auto).toBe(mcmin0);
+                expect(gd._fullData[0].marker.autocolorscale).toBe(auto, msg);
+                expect(gd.data[0].marker.colorscale).toEqual(auto ? autocscale : mcscl0);
+                expect(gd.data[1].marker.line.cauto).toBe(auto, msg);
+                expect(gd.data[1].marker.line.cmax).negateIf(auto).toBe(mlcmax1);
+                expect(gd._fullData[1].marker.line.autocolorscale).toBe(auto, msg);
+                expect(gd.data[1].marker.line.colorscale).toEqual(auto ? autocscale : mlcscl1);
+            }
+
+            Plotly.plot(gd, [
+                {y: [1, 2], mode: 'markers', marker: {color: [1, 10]}},
+                {y: [2, 1], mode: 'markers', marker: {line: {width: 2, color: [3, 4]}}}
+            ])
+            .then(function() {
+                check(true, 'initial');
+                return Plotly.restyle(gd, {'marker.cmin': mcmin0, 'marker.colorscale': mcscl0}, null, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, {'marker.line.cmax': mlcmax1, 'marker.line.colorscale': mlcscl1}, null, [1]);
+            })
+            .then(function() {
+                check(false, 'set min/max/scale');
+                return Plotly.restyle(gd, {'marker.cauto': true, 'marker.autocolorscale': true}, null, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, {'marker.line.cauto': true, 'marker.line.autocolorscale': true}, null, [1]);
+            })
+            .then(function() {
+                check(true, 'reset');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('turns off autobin when you edit bin specs', function(done) {
+            var start0 = 0.2;
+            var end1 = 6;
+            var size1 = 0.5;
+
+            function check(auto, msg) {
+                expect(gd.data[0].autobinx).toBe(auto, msg);
+                expect(gd.data[0].xbins.start).negateIf(auto).toBe(start0, msg);
+                expect(gd.data[1].autobinx).toBe(auto, msg);
+                expect(gd.data[1].autobiny).toBe(auto, msg);
+                expect(gd.data[1].xbins.end).negateIf(auto).toBe(end1, msg);
+                expect(gd.data[1].ybins.size).negateIf(auto).toBe(size1, msg);
+            }
+
+            Plotly.plot(gd, [
+                {x: [1, 1, 1, 1, 2, 2, 2, 3, 3, 4], type: 'histogram'},
+                {x: [1, 1, 2, 2, 3, 3, 4, 4], y: [1, 1, 2, 2, 3, 3, 4, 4], type: 'histogram2d'}
+            ])
+            .then(function() {
+                check(true, 'initial');
+                return Plotly.restyle(gd, 'xbins.start', start0, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, {'xbins.end': end1, 'ybins.size': size1}, null, [1]);
+            })
+            .then(function() {
+                check(false, 'set start/end/size');
+                return Plotly.restyle(gd, {autobinx: true, autobiny: true});
+            })
+            .then(function() {
+                check(true, 'reset');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('turns off autocontour when you edit contour specs', function(done) {
+            var start0 = 1.7;
+            var size1 = 0.6;
+
+            function check(auto, msg) {
+                expect(gd.data[0].autocontour).toBe(auto, msg);
+                expect(gd.data[1].autocontour).toBe(auto, msg);
+                expect(gd.data[0].contours.start).negateIf(auto).toBe(start0, msg);
+                expect(gd.data[1].contours.size).negateIf(auto).toBe(size1, msg);
+            }
+
+            Plotly.plot(gd, [
+                {z: [[1, 2], [3, 4]], type: 'contour'},
+                {x: [1, 2, 3, 4], y: [3, 4, 5, 6], type: 'histogram2dcontour'}
+            ])
+            .then(function() {
+                check(true, 'initial');
+                return Plotly.restyle(gd, 'contours.start', start0, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'contours.size', size1, [1]);
+            })
+            .then(function() {
+                check(false, 'set start/size');
+                return Plotly.restyle(gd, 'autocontour', true);
+            })
+            .then(function() {
+                check(true, 'reset');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('sets x/ytype scaled when editing heatmap x0/dx/y0/dy', function(done) {
+            var x0 = 3;
+            var dy = 5;
+
+            function check(scaled, msg) {
+                expect(gd.data[0].x0).negateIf(!scaled).toBe(x0, msg);
+                expect(gd.data[0].xtype).toBe(scaled ? 'scaled' : undefined, msg);
+                expect(gd.data[0].dy).negateIf(!scaled).toBe(dy, msg);
+                expect(gd.data[0].ytype).toBe(scaled ? 'scaled' : undefined, msg);
+            }
+
+            Plotly.plot(gd, [{x: [1, 2, 4], y: [2, 3, 5], z: [[1, 2], [3, 4]], type: 'heatmap'}])
+            .then(function() {
+                check(false, 'initial');
+                return Plotly.restyle(gd, {x0: x0, dy: dy});
+            })
+            .then(function() {
+                check(true, 'set x0 & dy');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('sets colorbar.tickmode to linear when editing colorbar.tick0/dtick', function(done) {
+            // note: this *should* apply to marker.colorbar etc too but currently that's not implemented
+            // once we get this all in the schema it will work though.
+            var tick00 = 0.33;
+            var dtick1 = 0.8;
+
+            function check(auto, msg) {
+                expect(gd._fullData[0].colorbar.tick0).negateIf(auto).toBe(tick00, msg);
+                expect(gd._fullData[0].colorbar.tickmode).toBe(auto ? 'auto' : 'linear', msg);
+                expect(gd._fullData[1].colorbar.dtick).negateIf(auto).toBe(dtick1, msg);
+                expect(gd._fullData[1].colorbar.tickmode).toBe(auto ? 'auto' : 'linear', msg);
+            }
+
+            Plotly.plot(gd, [
+                {z: [[1, 2], [3, 4]], type: 'heatmap'},
+                {x: [2, 3], z: [[1, 2], [3, 4]], type: 'heatmap'}
+            ])
+            .then(function() {
+                check(true, 'initial');
+                return Plotly.restyle(gd, 'colorbar.tick0', tick00, [0]);
+            })
+            .then(function() {
+                return Plotly.restyle(gd, 'colorbar.dtick', dtick1, [1]);
+            })
+            .then(function() {
+                check(false, 'change tick0, dtick');
+                return Plotly.restyle(gd, 'colorbar.tickmode', 'auto');
+            })
+            .then(function() {
+                check(true, 'reset');
+                return Queue.undo(gd);
+            })
+            .then(function() {
+                check(false, 'undo');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('updates colorbars when editing bar charts', function(done) {
+            var mock = require('@mocks/bar-colorscale-colorbar.json');
+
+            Plotly.newPlot(gd, mock.data, mock.layout)
+            .then(function() {
+                expect(d3.select('.cbaxis text').node().style.fill).not.toBe('rgb(255, 0, 0)');
+
+                return Plotly.restyle(gd, {'marker.colorbar.tickfont.color': 'rgb(255, 0, 0)'});
+            })
+            .then(function() {
+                expect(d3.select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
+
+                return Plotly.restyle(gd, {'marker.showscale': false});
+            })
+            .then(function() {
+                expect(d3.select('.cbaxis').size()).toBe(0);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('updates colorbars when editing gl3d plots', function(done) {
+            Plotly.newPlot(gd, [{z: [[1, 2], [3, 6]], type: 'surface'}])
+            .then(function() {
+                expect(d3.select('.cbaxis text').node().style.fill).not.toBe('rgb(255, 0, 0)');
+
+                return Plotly.restyle(gd, {'colorbar.tickfont.color': 'rgb(255, 0, 0)'});
+            })
+            .then(function() {
+                expect(d3.select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
+
+                return Plotly.restyle(gd, {'showscale': false});
+            })
+            .then(function() {
+                expect(d3.select('.cbaxis').size()).toBe(0);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('updates box position and axis type when it falls back to name', function(done) {
+            Plotly.newPlot(gd, [{name: 'A', y: [1, 2, 3, 4, 5], type: 'box'}],
+                {width: 400, height: 400, xaxis: {nticks: 3}}
+            )
+            .then(function() {
+                checkTicks('x', ['A'], 'initial');
+                expect(gd._fullLayout.xaxis.type).toBe('category');
+
+                return Plotly.restyle(gd, {name: 'B'});
+            })
+            .then(function() {
+                checkTicks('x', ['B'], 'changed category');
+                expect(gd._fullLayout.xaxis.type).toBe('category');
+
+                return Plotly.restyle(gd, {x0: 12.3});
+            })
+            .then(function() {
+                checkTicks('x', ['12', '12.5'], 'switched to numeric');
+                expect(gd._fullLayout.xaxis.type).toBe('linear');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('updates scene axis types automatically', function(done) {
+            Plotly.newPlot(gd, [{x: [1, 2], y: [1, 2], z: [1, 2], type: 'scatter3d'}])
+            .then(function() {
+                expect(gd._fullLayout.scene.xaxis.type).toBe('linear');
+
+                return Plotly.restyle(gd, {z: [['a', 'b']]});
+            })
+            .then(function() {
+                expect(gd._fullLayout.scene.zaxis.type).toBe('category');
+            })
+            .catch(fail)
+            .then(done);
         });
     });
 
@@ -1413,6 +2172,450 @@ describe('Test plot api', function() {
             });
         });
     });
+
+    describe('Plotly.react', function() {
+        var mockedMethods = [
+            'doTraceStyle',
+            'doColorBars',
+            'doLegend',
+            'layoutStyles',
+            'doTicksRelayout',
+            'doModeBar',
+            'doCamera'
+        ];
+
+        var gd;
+        var plotCalls;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+
+            mockedMethods.forEach(function(m) {
+                spyOn(subroutines, m).and.callThrough();
+                subroutines[m].calls.reset();
+            });
+
+            spyOn(annotations, 'drawOne').and.callThrough();
+            spyOn(annotations, 'draw').and.callThrough();
+            spyOn(images, 'draw').and.callThrough();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function countPlots() {
+            plotCalls = 0;
+
+            gd.on('plotly_afterplot', function() { plotCalls++; });
+            subroutines.layoutStyles.calls.reset();
+            annotations.draw.calls.reset();
+            annotations.drawOne.calls.reset();
+            images.draw.calls.reset();
+        }
+
+        function countCalls(counts) {
+            var callsFinal = Lib.extendFlat({}, counts);
+            // TODO: do we really need to do layoutStyles twice in Plotly.plot?
+            // We get one from drawFramework and another directly from Plotly.plot.
+            callsFinal.layoutStyles = (counts.layoutStyles || 0) + 2 * (counts.plot || 0);
+
+            mockedMethods.forEach(function(m) {
+                expect(subroutines[m]).toHaveBeenCalledTimes(callsFinal[m] || 0);
+                subroutines[m].calls.reset();
+            });
+
+            expect(plotCalls).toBe(counts.plot || 0, 'calls to Plotly.plot');
+            plotCalls = 0;
+
+            // only consider annotation and image draw calls if we *don't* do a full plot.
+            if(!counts.plot) {
+                expect(annotations.draw).toHaveBeenCalledTimes(counts.annotationDraw || 0);
+                expect(annotations.drawOne).toHaveBeenCalledTimes(counts.annotationDrawOne || 0);
+                expect(images.draw).toHaveBeenCalledTimes(counts.imageDraw || 0);
+            }
+            annotations.draw.calls.reset();
+            annotations.drawOne.calls.reset();
+            images.draw.calls.reset();
+        }
+
+        it('should notice new data by ===, without layout.datarevision', function(done) {
+            var data = [{y: [1, 2, 3], mode: 'markers'}];
+            var layout = {};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                expect(d3.selectAll('.point').size()).toBe(3);
+
+                data[0].y.push(4);
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // didn't pick it up, as we modified in place!!!
+                expect(d3.selectAll('.point').size()).toBe(3);
+
+                data[0].y = [1, 2, 3, 4, 5];
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // new object, we picked it up!
+                expect(d3.selectAll('.point').size()).toBe(5);
+
+                countCalls({plot: 1});
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('should notice new layout.datarevision', function(done) {
+            var data = [{y: [1, 2, 3], mode: 'markers'}];
+            var layout = {datarevision: 1};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                expect(d3.selectAll('.point').size()).toBe(3);
+
+                data[0].y.push(4);
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // didn't pick it up, as we didn't modify datarevision
+                expect(d3.selectAll('.point').size()).toBe(3);
+
+                data[0].y.push(5);
+                layout.datarevision = 'bananas';
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // new revision, we picked it up!
+                expect(d3.selectAll('.point').size()).toBe(5);
+
+                countCalls({plot: 1});
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('picks up partial redraws', function(done) {
+            var data = [{y: [1, 2, 3], mode: 'markers'}];
+            var layout = {};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                layout.title = 'XXXXX';
+                layout.hovermode = 'closest';
+                data[0].marker = {color: 'rgb(0, 100, 200)'};
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({layoutStyles: 1, doTraceStyle: 1, doModeBar: 1});
+                expect(d3.select('.gtitle').text()).toBe('XXXXX');
+                var points = d3.selectAll('.point');
+                expect(points.size()).toBe(3);
+                points.each(function() {
+                    expect(window.getComputedStyle(this).fill).toBe('rgb(0, 100, 200)');
+                });
+
+                layout.showlegend = true;
+                layout.xaxis.tick0 = 0.1;
+                layout.xaxis.dtick = 0.3;
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // legend and ticks get called initially, but then plot gets added during automargin
+                countCalls({doLegend: 1, doTicksRelayout: 1, plot: 1});
+
+                data = [{z: [[1, 2], [3, 4]], type: 'surface'}];
+                layout = {};
+
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // we get an extra call to layoutStyles from marginPushersAgain due to the colorbar.
+                // Really need to simplify that pipeline...
+                countCalls({plot: 1, layoutStyles: 1});
+
+                layout.scene.camera = {up: {x: 1, y: -1, z: 0}};
+
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({doCamera: 1});
+
+                data[0].type = 'heatmap';
+                delete layout.scene;
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({plot: 1});
+
+                // ideally we'd just do this with `surface` but colorbar attrs have editType 'calc' there
+                // TODO: can we drop them to type: 'colorbars' even for the 3D types?
+                data[0].colorbar = {len: 0.6};
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({doColorBars: 1, plot: 1});
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('redraws annotations one at a time', function(done) {
+            var data = [{y: [1, 2, 3], mode: 'markers'}];
+            var layout = {};
+            var ymax;
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                ymax = layout.yaxis.range[1];
+
+                layout.annotations = [{
+                    x: 1,
+                    y: 4,
+                    text: 'Way up high',
+                    showarrow: false
+                }, {
+                    x: 1,
+                    y: 2,
+                    text: 'On the data',
+                    showarrow: false
+                }];
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                // autoranged - so we get a full replot
+                countCalls({plot: 1});
+                expect(d3.selectAll('.annotation').size()).toBe(2);
+
+                layout.annotations[1].bgcolor = 'rgb(200, 100, 0)';
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({annotationDrawOne: 1});
+                expect(window.getComputedStyle(d3.select('.annotation[data-index="1"] .bg').node()).fill)
+                    .toBe('rgb(200, 100, 0)');
+                expect(layout.yaxis.range[1]).not.toBeCloseTo(ymax, 0);
+
+                layout.annotations[0].font = {color: 'rgb(0, 255, 0)'};
+                layout.annotations[1].bgcolor = 'rgb(0, 0, 255)';
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({annotationDrawOne: 2});
+                expect(window.getComputedStyle(d3.select('.annotation[data-index="0"] text').node()).fill)
+                    .toBe('rgb(0, 255, 0)');
+                expect(window.getComputedStyle(d3.select('.annotation[data-index="1"] .bg').node()).fill)
+                    .toBe('rgb(0, 0, 255)');
+
+                Lib.extendFlat(layout.annotations[0], {yref: 'paper', y: 0.8});
+
+                return Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({plot: 1});
+                expect(layout.yaxis.range[1]).toBeCloseTo(ymax, 0);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('redraws images all at once', function(done) {
+            var data = [{y: [1, 2, 3], mode: 'markers'}];
+            var layout = {};
+            var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
+
+            var x, y, height, width;
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                layout.images = [{
+                    source: jsLogo,
+                    xref: 'paper',
+                    yref: 'paper',
+                    x: 0.1,
+                    y: 0.1,
+                    sizex: 0.2,
+                    sizey: 0.2
+                }, {
+                    source: jsLogo,
+                    xref: 'x',
+                    yref: 'y',
+                    x: 1,
+                    y: 2,
+                    sizex: 1,
+                    sizey: 1
+                }];
+                Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({imageDraw: 1});
+                expect(d3.selectAll('image').size()).toBe(2);
+
+                var n = d3.selectAll('image').node();
+                x = n.attributes.x.value;
+                y = n.attributes.y.value;
+                height = n.attributes.height.value;
+                width = n.attributes.width.value;
+
+                layout.images[0].y = 0.8;
+                layout.images[0].sizey = 0.4;
+                Plotly.react(gd, data, layout);
+            })
+            .then(function() {
+                countCalls({imageDraw: 1});
+                var n = d3.selectAll('image').node();
+                expect(n.attributes.x.value).toBe(x);
+                expect(n.attributes.width.value).toBe(width);
+                expect(n.attributes.y.value).not.toBe(y);
+                expect(n.attributes.height.value).not.toBe(height);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('can change config, and always redraws', function(done) {
+            var data = [{y: [1, 2, 3]}];
+            var layout = {};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                expect(d3.selectAll('.drag').size()).toBe(11);
+                expect(d3.selectAll('.gtitle').size()).toBe(0);
+
+                return Plotly.react(gd, data, layout, {editable: true});
+            })
+            .then(function() {
+                expect(d3.selectAll('.drag').size()).toBe(11);
+                expect(d3.selectAll('.gtitle').text()).toBe('Click to enter Plot title');
+                countCalls({plot: 1});
+
+                return Plotly.react(gd, data, layout, {staticPlot: true});
+            })
+            .then(function() {
+                expect(d3.selectAll('.drag').size()).toBe(0);
+                expect(d3.selectAll('.gtitle').size()).toBe(0);
+                countCalls({plot: 1});
+
+                return Plotly.react(gd, data, layout, {});
+            })
+            .then(function() {
+                expect(d3.selectAll('.drag').size()).toBe(11);
+                expect(d3.selectAll('.gtitle').size()).toBe(0);
+                countCalls({plot: 1});
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('can put polar plots into staticPlot mode', function(done) {
+            // tested separately since some of the relevant code is actually
+            // in cartesian/graph_interact... hopefully we'll fix that
+            // sometime and the test will still pass.
+            var data = [{r: [1, 2, 3], theta: [0, 120, 240], type: 'scatterpolar'}];
+            var layout = {};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+
+                return Plotly.react(gd, data, layout, {staticPlot: true});
+            })
+            .then(function() {
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(0);
+
+                return Plotly.react(gd, data, layout, {});
+            })
+            .then(function() {
+                expect(d3.select(gd).selectAll('.drag').size()).toBe(3);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('can change frames without redrawing', function(done) {
+            var data = [{y: [1, 2, 3]}];
+            var layout = {};
+            var frames = [{name: 'frame1'}];
+
+            Plotly.newPlot(gd, {data: data, layout: layout, frames: frames})
+            .then(countPlots)
+            .then(function() {
+                var frameData = gd._transitionData._frames;
+                expect(frameData.length).toBe(1);
+                expect(frameData[0].name).toBe('frame1');
+
+                frames[0].name = 'frame2';
+                return Plotly.react(gd, {data: data, layout: layout, frames: frames});
+            })
+            .then(function() {
+                countCalls({});
+                var frameData = gd._transitionData._frames;
+                expect(frameData.length).toBe(1);
+                expect(frameData[0].name).toBe('frame2');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        var mockList = [
+            ['1', require('@mocks/1.json')],
+            ['4', require('@mocks/4.json')],
+            ['5', require('@mocks/5.json')],
+            ['10', require('@mocks/10.json')],
+            ['11', require('@mocks/11.json')],
+            ['17', require('@mocks/17.json')],
+            ['21', require('@mocks/21.json')],
+            ['22', require('@mocks/22.json')],
+            ['airfoil', require('@mocks/airfoil.json')],
+            ['annotations-autorange', require('@mocks/annotations-autorange.json')],
+            ['axes_enumerated_ticks', require('@mocks/axes_enumerated_ticks.json')],
+            ['axes_visible-false', require('@mocks/axes_visible-false.json')],
+            ['bar_and_histogram', require('@mocks/bar_and_histogram.json')],
+            ['basic_error_bar', require('@mocks/basic_error_bar.json')],
+            ['binding', require('@mocks/binding.json')],
+            ['cheater_smooth', require('@mocks/cheater_smooth.json')],
+            ['finance_style', require('@mocks/finance_style.json')],
+            ['geo_first', require('@mocks/geo_first.json')],
+            ['gl2d_line_dash', require('@mocks/gl2d_line_dash.json')],
+            ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
+            ['gl2d_pointcloud-basic', require('@mocks/gl2d_pointcloud-basic.json')],
+            ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
+            ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')],
+            ['glpolar_style', require('@mocks/glpolar_style.json')],
+            ['layout_image', require('@mocks/layout_image.json')],
+            ['layout-colorway', require('@mocks/layout-colorway.json')],
+            ['polar_categories', require('@mocks/polar_categories.json')],
+            ['polar_direction', require('@mocks/polar_direction.json')],
+            ['range_selector_style', require('@mocks/range_selector_style.json')],
+            ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
+            ['sankey_energy', require('@mocks/sankey_energy.json')],
+            ['table_wrapped_birds', require('@mocks/table_wrapped_birds.json')],
+            ['ternary_fill', require('@mocks/ternary_fill.json')],
+            ['text_chart_arrays', require('@mocks/text_chart_arrays.json')],
+            ['updatemenus', require('@mocks/updatemenus.json')],
+            ['violins', require('@mocks/violins.json')],
+            ['world-cals', require('@mocks/world-cals.json')]
+        ];
+
+        mockList.forEach(function(mockSpec) {
+            it('can redraw "' + mockSpec[0] + '" with no changes as a noop', function(done) {
+                var mock = mockSpec[1];
+
+                Plotly.newPlot(gd, mock)
+                .then(countPlots)
+                .then(function() { return Plotly.react(gd, mock); })
+                .then(function() { countCalls({}); })
+                .catch(fail)
+                .then(done);
+            });
+        });
+    });
 });
 
 describe('plot_api helpers', function() {
@@ -1461,5 +2664,49 @@ describe('plot_api helpers', function() {
             // but hasParent doesn't look at the values in aobj, just its keys.
             expect(helpers.hasParent({'marker.line': 1}, attr2)).toBe(true);
         });
+    });
+});
+
+describe('plot_api edit_types', function() {
+    it('initializes flags with all false', function() {
+        ['traceFlags', 'layoutFlags'].forEach(function(container) {
+            var initFlags = editTypes[container]();
+            Object.keys(initFlags).forEach(function(key) {
+                expect(initFlags[key]).toBe(false, container + '.' + key);
+            });
+        });
+    });
+
+    it('makes no changes if editType is not included', function() {
+        var flags = {calc: false, style: true};
+
+        editTypes.update(flags, {
+            valType: 'boolean',
+            dflt: true,
+            role: 'style'
+        });
+
+        expect(flags).toEqual({calc: false, style: true});
+
+        editTypes.update(flags, {
+            family: {valType: 'string', dflt: 'Comic sans'},
+            size: {valType: 'number', dflt: 96},
+            color: {valType: 'color', dflt: 'red'}
+        });
+
+        expect(flags).toEqual({calc: false, style: true});
+    });
+
+    it('gets updates from the outer object and ignores nested items', function() {
+        var flags = {calc: false, legend: true};
+
+        editTypes.update(flags, {
+            editType: 'calc+style',
+            valType: 'number',
+            dflt: 1,
+            role: 'style'
+        });
+
+        expect(flags).toEqual({calc: true, legend: true, style: true});
     });
 });

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -38,6 +38,10 @@ module.exports = function register(_modules) {
 
             case 'component':
                 registerComponentModule(newModule);
+                break;
+
+            case 'locale':
+                Registry.registerLocale(newModule);
                 break;
 
             default:
@@ -85,7 +89,7 @@ function registerTransformModule(newModule) {
         Lib.log(prefix + ' registered without a *supplyDefaults* method.');
     }
 
-    Registry.transformsRegistry[newModule.name] = newModule;
+    Registry.registerTransform(newModule);
 }
 
 function registerComponentModule(newModule) {

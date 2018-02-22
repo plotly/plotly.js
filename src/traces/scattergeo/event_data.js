@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,7 +13,7 @@
 module.exports = function eventData(out, pt) {
     out.lon = pt.lon;
     out.lat = pt.lat;
-    out.location = pt.lon ? pt.lon : null;
+    out.location = pt.loc ? pt.loc : null;
 
     return out;
 };

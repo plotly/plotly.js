@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -42,17 +42,20 @@ module.exports = function plot(gd, plotinfo, cdbar) {
     bartraces.enter().append('g')
         .attr('class', 'trace bars');
 
+    bartraces.each(function(d) {
+        d[0].node3 = d3.select(this);
+    });
+
     bartraces.append('g')
         .attr('class', 'points')
         .each(function(d) {
-            var t = d[0].t,
-                trace = d[0].trace,
-                poffset = t.poffset,
-                poffsetIsArray = Array.isArray(poffset),
-                barwidth = t.barwidth,
-                barwidthIsArray = Array.isArray(barwidth);
+            var sel = d3.select(this);
+            var t = d[0].t;
+            var trace = d[0].trace;
+            var poffset = t.poffset;
+            var poffsetIsArray = Array.isArray(poffset);
 
-            d3.select(this).selectAll('g.point')
+            sel.selectAll('g.point')
                 .data(Lib.identity)
               .enter().append('g').classed('point', true)
                 .each(function(di, i) {
@@ -61,7 +64,7 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                     // log values go off-screen by plotwidth
                     // so you see them continue if you drag the plot
                     var p0 = di.p + ((poffsetIsArray) ? poffset[i] : poffset),
-                        p1 = p0 + ((barwidthIsArray) ? barwidth[i] : barwidth),
+                        p1 = p0 + di.w,
                         s0 = di.b,
                         s1 = s0 + di.s;
 
@@ -71,12 +74,18 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                         y1 = ya.c2p(p1, true);
                         x0 = xa.c2p(s0, true);
                         x1 = xa.c2p(s1, true);
+
+                        // for selections
+                        di.ct = [x1, (y0 + y1) / 2];
                     }
                     else {
                         x0 = xa.c2p(p0, true);
                         x1 = xa.c2p(p1, true);
                         y0 = ya.c2p(s0, true);
                         y1 = ya.c2p(s1, true);
+
+                        // for selections
+                        di.ct = [(x0 + x1) / 2, y1];
                     }
 
                     if(!isNumeric(x0) || !isNumeric(x1) ||
@@ -126,37 +135,47 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                     // append bar path and text
                     var bar = d3.select(this);
 
-                    bar.append('path').attr('d',
-                        'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z');
+                    bar.append('path')
+                        .style('vector-effect', 'non-scaling-stroke')
+                        .attr('d',
+                            'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
+                        .call(Drawing.setClipUrl, plotinfo.layerClipId);
 
                     appendBarText(gd, bar, d, i, x0, x1, y0, y1);
+
+                    if(plotinfo.layerClipId) {
+                        Drawing.hideOutsideRangePoint(d[i], bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
+                    }
                 });
         });
 
     // error bars are on the top
     bartraces.call(ErrorBars.plot, plotinfo);
 
+    // lastly, clip points groups of `cliponaxis !== false` traces
+    // on `plotinfo._hasClipOnAxisFalse === true` subplots
+    bartraces.each(function(d) {
+        var hasClipOnAxisFalse = d[0].trace.cliponaxis === false;
+        Drawing.setClipUrl(d3.select(this), hasClipOnAxisFalse ? null : plotinfo.layerClipId);
+    });
 };
 
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
+    var textPosition;
+
     function appendTextNode(bar, text, textFont) {
         var textSelection = bar.append('text')
-            // prohibit tex interpretation until we can handle
-            // tex and regular text together
-            .attr('data-notex', 1)
             .text(text)
             .attr({
-                'class': 'bartext',
+                'class': 'bartext bartext-' + textPosition,
                 transform: '',
-                'data-bb': '',
                 'text-anchor': 'middle',
-                x: 0,
-                y: 0
+                // prohibit tex interpretation until we can handle
+                // tex and regular text together
+                'data-notex': 1
             })
-            .call(Drawing.font, textFont);
-
-        textSelection.call(svgTextUtils.convertToTspans);
-        textSelection.selectAll('tspan.line').attr({x: 0, y: 0});
+            .call(Drawing.font, textFont)
+            .call(svgTextUtils.convertToTspans, gd);
 
         return textSelection;
     }
@@ -168,7 +187,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     var text = getText(trace, i);
     if(!text) return;
 
-    var textPosition = getTextPosition(trace, i);
+    textPosition = getTextPosition(trace, i);
     if(textPosition === 'none') return;
 
     var textFont = getTextFont(trace, i, gd._fullLayout.font),
@@ -199,6 +218,7 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     if(textPosition === 'auto') {
         if(isOutmostBar) {
             // draw text using insideTextFont and check if it fits inside bar
+            textPosition = 'inside';
             textSelection = appendTextNode(bar, text, insideTextFont);
 
             textBB = Drawing.bBox(textSelection.node()),
@@ -242,20 +262,22 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
     }
 
     // compute text transform
-    var transform;
+    var transform, constrained;
     if(textPosition === 'outside') {
+        constrained = trace.constraintext === 'both' || trace.constraintext === 'outside';
         transform = getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB,
-            orientation);
+            orientation, constrained);
     }
     else {
+        constrained = trace.constraintext === 'both' || trace.constraintext === 'inside';
         transform = getTransformToMoveInsideBar(x0, x1, y0, y1, textBB,
-            orientation);
+            orientation, constrained);
     }
 
     textSelection.attr('transform', transform);
 }
 
-function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
+function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
     // compute text and target positions
     var textWidth = textBB.width,
         textHeight = textBB.height,
@@ -294,12 +316,12 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
     else if((textWidth < textHeight) === (barWidth < barHeight)) {
         // only scale is required
         rotate = false;
-        scale = Math.min(barWidth / textWidth, barHeight / textHeight);
+        scale = constrained ? Math.min(barWidth / textWidth, barHeight / textHeight) : 1;
     }
     else {
         // both scale and rotation are required
         rotate = true;
-        scale = Math.min(barHeight / textWidth, barWidth / textHeight);
+        scale = constrained ? Math.min(barHeight / textWidth, barWidth / textHeight) : 1;
     }
 
     if(rotate) rotate = 90;  // rotate clockwise
@@ -340,23 +362,25 @@ function getTransformToMoveInsideBar(x0, x1, y0, y1, textBB, orientation) {
     return getTransform(textX, textY, targetX, targetY, scale, rotate);
 }
 
-function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
+function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation, constrained) {
     var barWidth = (orientation === 'h') ?
             Math.abs(y1 - y0) :
             Math.abs(x1 - x0),
         textpad;
 
-    // apply text padding if possible
+    // Keep the padding so the text doesn't sit right against
+    // the bars, but don't factor it into barWidth
     if(barWidth > 2 * TEXTPAD) {
         textpad = TEXTPAD;
-        barWidth -= 2 * textpad;
     }
 
     // compute rotation and scale
-    var rotate = false,
+    var scale = 1;
+    if(constrained) {
         scale = (orientation === 'h') ?
             Math.min(1, barWidth / textBB.height) :
             Math.min(1, barWidth / textBB.width);
+    }
 
     // compute text and target positions
     var textX = (textBB.left + textBB.right) / 2,
@@ -365,14 +389,9 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
         targetHeight,
         targetX,
         targetY;
-    if(rotate) {
-        targetWidth = scale * textBB.height;
-        targetHeight = scale * textBB.width;
-    }
-    else {
-        targetWidth = scale * textBB.width;
-        targetHeight = scale * textBB.height;
-    }
+
+    targetWidth = scale * textBB.width;
+    targetHeight = scale * textBB.height;
 
     if(orientation === 'h') {
         if(x1 < x0) {
@@ -397,7 +416,7 @@ function getTransformToMoveOutsideBar(x0, x1, y0, y1, textBB, orientation) {
         }
     }
 
-    return getTransform(textX, textY, targetX, targetY, scale, rotate);
+    return getTransform(textX, textY, targetX, targetY, scale, false);
 }
 
 function getTransform(textX, textY, targetX, targetY, scale, rotate) {

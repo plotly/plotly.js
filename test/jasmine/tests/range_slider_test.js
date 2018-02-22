@@ -1,5 +1,4 @@
 var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var setConvert = require('@src/plots/cartesian/set_convert');
 
@@ -11,7 +10,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
-var customMatchers = require('../assets/custom_matchers');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 var TOL = 6;
 
@@ -43,10 +42,6 @@ describe('the range slider', function() {
     }
 
     describe('when specified as visible', function() {
-
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
 
         beforeEach(function(done) {
             gd = createGraphDiv();
@@ -450,7 +445,7 @@ describe('the range slider', function() {
         it('should not mutate layoutIn', function() {
             var layoutIn = { xaxis: { rangeslider: { visible: true }} },
                 layoutOut = { xaxis: { rangeslider: {}} },
-                expected = { xaxis: { rangeslider: { visible: true }} };
+                expected = { xaxis: { rangeslider: { visible: true}} };
 
             _supply(layoutIn, layoutOut, 'xaxis');
             expect(layoutIn).toEqual(expected);
@@ -462,7 +457,6 @@ describe('the range slider', function() {
                 expected = {
                     visible: true,
                     autorange: true,
-                    range: [-1, 6],
                     thickness: 0.15,
                     bgcolor: '#fff',
                     borderwidth: 0,
@@ -480,7 +474,6 @@ describe('the range slider', function() {
                 expected = {
                     visible: true,
                     autorange: true,
-                    range: [-1, 6],
                     thickness: 0.15,
                     bgcolor: '#fff',
                     borderwidth: 0,
@@ -512,7 +505,6 @@ describe('the range slider', function() {
                 expected = {
                     visible: true,
                     autorange: true,
-                    range: [-1, 6],
                     thickness: 0.15,
                     bgcolor: '#fff',
                     borderwidth: 0,
@@ -521,27 +513,6 @@ describe('the range slider', function() {
                 };
 
             _supply(layoutIn, layoutOut, 'xaxis');
-            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
-        });
-
-        it('should expand the rangeslider range to axis range', function() {
-            var layoutIn = { xaxis: { rangeslider: { range: [5, 6] } } },
-                layoutOut = { xaxis: { range: [1, 10], type: 'linear'} },
-                expected = {
-                    visible: true,
-                    autorange: false,
-                    range: [1, 10],
-                    thickness: 0.15,
-                    bgcolor: '#fff',
-                    borderwidth: 0,
-                    bordercolor: '#444',
-                    _input: layoutIn.xaxis.rangeslider
-                };
-
-            _supply(layoutIn, layoutOut, 'xaxis');
-
-            // don't compare the whole layout, because we had to run setConvert which
-            // attaches all sorts of other stuff to xaxis
             expect(layoutOut.xaxis.rangeslider).toEqual(expected);
         });
 
@@ -551,7 +522,6 @@ describe('the range slider', function() {
                 expected = {
                     visible: true,
                     autorange: true,
-                    range: [-1, 6],
                     thickness: 0.15,
                     bgcolor: '#fff',
                     borderwidth: 0,
@@ -582,6 +552,11 @@ describe('the range slider', function() {
 
         it('should default to *true* when range slider is visible', function() {
             var mock = {
+                data: [
+                    {y: [1, 2]},
+                    {y: [1, 2], yaxis: 'y2'},
+                    {y: [1, 2], yaxis: 'y3'}
+                ],
                 layout: {
                     xaxis: { rangeslider: {} },
                     yaxis: { anchor: 'x' },
@@ -590,7 +565,7 @@ describe('the range slider', function() {
                 }
             };
 
-            Plots.supplyDefaults(mock);
+            supplyAllDefaults(mock);
 
             expect(mock._fullLayout.xaxis.rangeslider.visible).toBe(true);
             expect(mock._fullLayout.yaxis.fixedrange).toBe(true);
@@ -600,6 +575,11 @@ describe('the range slider', function() {
 
         it('should honor user settings', function() {
             var mock = {
+                data: [
+                    {y: [1, 2]},
+                    {y: [1, 2], yaxis: 'y2'},
+                    {y: [1, 2], yaxis: 'y3'}
+                ],
                 layout: {
                     xaxis: { rangeslider: {} },
                     yaxis: { anchor: 'x', fixedrange: false },
@@ -608,7 +588,7 @@ describe('the range slider', function() {
                 }
             };
 
-            Plots.supplyDefaults(mock);
+            supplyAllDefaults(mock);
 
             expect(mock._fullLayout.xaxis.rangeslider.visible).toBe(true);
             expect(mock._fullLayout.yaxis.fixedrange).toBe(false);
@@ -619,10 +599,6 @@ describe('the range slider', function() {
     });
 
     describe('in general', function() {
-
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -728,6 +704,17 @@ describe('the range slider', function() {
             .then(function() {
                 assertRange([-0.26, 4.26], [-0.26, 4.26]);
 
+                // smaller than xaxis.range - won't be accepted
+                return Plotly.relayout(gd, {'xaxis.rangeslider.range': [0, 2]});
+            })
+            .then(function() {
+                assertRange([-0.26, 4.26], [-0.26, 4.26]);
+
+                // will be accepted (and autorange is disabled by impliedEdits)
+                return Plotly.relayout(gd, {'xaxis.rangeslider.range': [-2, 12]});
+            })
+            .then(function() {
+                assertRange([-0.26, 4.26], [-2, 12]);
             })
             .then(done);
         });

@@ -7,7 +7,9 @@ var attributes = require('@src/traces/parcoords/attributes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 // mock with two dimensions (one panel); special case, e.g. left and right panel is obv. the same
 var mock2 = require('@mocks/gl2d_parcoords_2.json');
@@ -28,12 +30,44 @@ describe('parcoords initialization tests', function() {
 
     'use strict';
 
+    describe('parcoords global defaults', function() {
+
+        it('should not coerce trace opacity', function() {
+            var gd = Lib.extendDeep({}, mock1);
+
+            supplyAllDefaults(gd);
+
+            expect(gd._fullData[0].opacity).toBeUndefined();
+        });
+
+        it('should use global font as label, tick and range font defaults', function() {
+            var gd = Lib.extendDeep({}, mock1);
+            gd.layout.font = {
+                family: 'Gravitas',
+                size: 20,
+                color: 'blue'
+            };
+
+            supplyAllDefaults(gd);
+
+            var expected = {
+                family: 'Gravitas',
+                size: 17,
+                color: 'blue'
+            };
+
+            expect(gd._fullData[0].labelfont).toEqual(expected);
+            expect(gd._fullData[0].tickfont).toEqual(expected);
+            expect(gd._fullData[0].rangefont).toEqual(expected);
+        });
+    });
+
     describe('parcoords defaults', function() {
 
         function _supply(traceIn) {
             var traceOut = { visible: true },
                 defaultColor = '#444',
-                layout = { };
+                layout = { font: Plots.layoutAttributes.font };
 
             Parcoords.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
@@ -137,7 +171,7 @@ describe('parcoords initialization tests', function() {
         function _calc(trace) {
             var gd = { data: [trace] };
 
-            Plots.supplyDefaults(gd);
+            supplyAllDefaults(gd);
 
             var fullTrace = gd._fullData[0];
             Parcoords.calc(gd, fullTrace);
@@ -185,14 +219,11 @@ describe('parcoords initialization tests', function() {
             }));
 
             expect(fullTrace.line).toEqual({
-                color: [0.5, 0.5, 0.5, 0.5],
-                colorscale: [[0, '#444'], [1, '#444']],
-                cmin: 0,
-                cmax: 1
+                color: '#444'
             });
         });
 
-        it('use a singular \'color\' even if a \'colorscale\' is supplied', function() {
+        it('use a singular \'color\' even if a \'colorscale\' is supplied as \'color\' is not an array', function() {
 
             var fullTrace = _calc(Lib.extendDeep({}, base, {
                 line: {
@@ -206,20 +237,13 @@ describe('parcoords initialization tests', function() {
             }));
 
             expect(fullTrace.line).toEqual({
-                color: [0.5, 0.5, 0.5, 0.5],
-                colorscale: [[0, '#444'], [1, '#444']],
-                autocolorscale: false,
-                showscale: false,
-                reversescale: false,
-                cauto: true,
-                cmin: 0,
-                cmax: 1
+                color: '#444'
             });
         });
     });
 });
 
-describe('@noCI parcoords', function() {
+describe('@gl parcoords', function() {
 
     beforeAll(function() {
         mock.data[0].dimensions.forEach(function(d) {
@@ -381,7 +405,7 @@ describe('@noCI parcoords', function() {
             });
         });
 
-        it('Works with 60 dimensions', function(done) {
+        it('@noCI Works with 60 dimensions', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -411,7 +435,7 @@ describe('@noCI parcoords', function() {
             });
         });
 
-        it('Truncates 60+ dimensions to 60', function(done) {
+        it('@noCI Truncates 60+ dimensions to 60', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -439,7 +463,7 @@ describe('@noCI parcoords', function() {
             });
         });
 
-        it('Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
+        it('@noCI Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -559,7 +583,7 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[1].dimensions[10].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[1].dimensions[1].constraintrange).not.toBeDefined();
 
-                expect(document.querySelectorAll('.axis').length).toEqual(20);  // one dimension is `visible: false`
+                expect(document.querySelectorAll('.axis').length).toEqual(20); // one dimension is `visible: false`
 
                 done();
             });
@@ -750,6 +774,44 @@ describe('@noCI parcoords', function() {
 
         });
 
+        it('@flaky Calling `Plotly.animate` with patches targeting `dimensions` attributes should do the right thing', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'parcoords',
+                line: {color: 'blue'},
+                dimensions: [{
+                    range: [1, 5],
+                    constraintrange: [1, 2],
+                    label: 'A',
+                    values: [1, 4]
+                }, {
+                    range: [1, 5],
+                    label: 'B',
+                    values: [3, 1.5],
+                    tickvals: [1.5, 3, 4.5]
+                }]
+            }])
+            .then(function() {
+                return Plotly.animate(gd, {
+                    data: [{
+                        'line.color': 'red',
+                        'dimensions[0].constraintrange': [1, 4]
+                    }],
+                    traces: [0],
+                    layout: {}
+                });
+            })
+            .then(function() {
+                expect(gd.data[0].line.color).toBe('red');
+                expect(gd.data[0].dimensions[0]).toEqual({
+                    range: [1, 5],
+                    constraintrange: [1, 4],
+                    label: 'A',
+                    values: [1, 4]
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 
     describe('Lifecycle methods', function() {
@@ -766,7 +828,7 @@ describe('@noCI parcoords', function() {
                 expect(gd.data.length).toEqual(1);
 
                 Plotly.deleteTraces(gd, 0).then(function() {
-                    expect(d3.selectAll('.parcoords-line-layers').node()).toEqual(null);
+                    expect(d3.selectAll('.gl-canvas').node(0)).toEqual(null);
                     expect(gd.data.length).toEqual(0);
                     done();
                 });
@@ -784,23 +846,23 @@ describe('@noCI parcoords', function() {
             Plotly.plot(gd, mockCopy)
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(document.querySelectorAll('.yAxis').length).toEqual(10);
+                    expect(document.querySelectorAll('.y-axis').length).toEqual(10);
                     return Plotly.plot(gd, mockCopy2);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(2);
-                    expect(document.querySelectorAll('.yAxis').length).toEqual(10 + 7);
+                    expect(document.querySelectorAll('.y-axis').length).toEqual(10 + 7);
                     return Plotly.deleteTraces(gd, [0]);
                 })
                 .then(function() {
-                    expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
-                    expect(document.querySelectorAll('.yAxis').length).toEqual(7);
+                    expect(document.querySelectorAll('.gl-canvas').length).toEqual(3);
+                    expect(document.querySelectorAll('.y-axis').length).toEqual(7);
                     expect(gd.data.length).toEqual(1);
                     return Plotly.deleteTraces(gd, 0);
                 })
                 .then(function() {
-                    expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(0);
-                    expect(document.querySelectorAll('.yAxis').length).toEqual(0);
+                    expect(document.querySelectorAll('.gl-canvas').length).toEqual(0);
+                    expect(document.querySelectorAll('.y-axis').length).toEqual(0);
                     expect(gd.data.length).toEqual(0);
                     done();
                 });
@@ -847,13 +909,13 @@ describe('@noCI parcoords', function() {
                 mockCopy2.data[0].domain = {x: [0.55, 1]};
                 mockCopy2.data[0].dimensions.splice(3, 4);
 
-                expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(0);
+                expect(document.querySelectorAll('.gl-container').length).toEqual(0);
 
                 Plotly.plot(gd, mockCopy)
                     .then(function() {
 
                         expect(1).toEqual(1);
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(1);
 
                         return Plotly.plot(gd, mockCopy2);
@@ -861,7 +923,7 @@ describe('@noCI parcoords', function() {
                     .then(function() {
 
                         expect(1).toEqual(1);
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(2);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(2);
 
                         done();
@@ -877,19 +939,18 @@ describe('@noCI parcoords', function() {
                 mockCopy2.data[0].domain = {y: [0.65, 1]};
                 mockCopy2.data[0].dimensions.splice(3, 4);
 
-                expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(0);
+                expect(document.querySelectorAll('.gl-container').length).toEqual(0);
 
                 Plotly.plot(gd, mockCopy)
                     .then(function() {
 
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(1);
 
                         return Plotly.addTraces(gd, [mockCopy2.data[0]]);
                     })
                     .then(function() {
-
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(2);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(2);
 
                         done();
@@ -923,12 +984,12 @@ describe('@noCI parcoords', function() {
                 mockCopy2.data[0].dimensions[2].tickvals = [0, 1, 2, 2.5, 3];
                 mockCopy2.data[0].dimensions[2].values = mockCopy2.data[0].dimensions[2].values.map(numberUpdater);
 
-                expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(0);
+                expect(document.querySelectorAll('.gl-container').length).toEqual(0);
 
                 Plotly.plot(gd, mockCopy)
                     .then(function() {
 
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(1);
 
                         return Plotly.restyle(gd, {
@@ -938,7 +999,7 @@ describe('@noCI parcoords', function() {
                     })
                     .then(function() {
 
-                        expect(document.querySelectorAll('.parcoords-line-layers').length).toEqual(1);
+                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(1);
 
                         done();

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -12,13 +12,14 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var Drawing = require('../drawing');
 var subTypes = require('../../traces/scatter/subtypes');
 
 module.exports = function plot(traces, plotinfo, transitionOpts) {
     var isNew;
 
-    var xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
 
     var hasAnimation = transitionOpts && transitionOpts.duration > 0;
 
@@ -42,12 +43,17 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
             trace.marker.maxdisplayed > 0
         );
 
-        if(!yObj.visible && !xObj.visible) return;
+        if(!yObj.visible && !xObj.visible) d = [];
 
         var errorbars = d3.select(this).selectAll('g.errorbar')
             .data(d, keyFunc);
 
         errorbars.exit().remove();
+
+        if(!d.length) return;
+
+        if(!xObj.visible) errorbars.selectAll('path.xerror').remove();
+        if(!yObj.visible) errorbars.selectAll('path.yerror').remove();
 
         errorbars.style('opacity', 1);
 
@@ -60,6 +66,8 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
                 .style('opacity', 1);
         }
 
+        Drawing.setClipUrl(errorbars, plotinfo.layerClipId);
+
         errorbars.each(function(d) {
             var errorbar = d3.select(this);
             var coords = errorCoords(d, xa, ya);
@@ -68,6 +76,7 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
             var path;
 
+            var yerror = errorbar.select('path.yerror');
             if(yObj.visible && isNumeric(coords.x) &&
                     isNumeric(coords.yh) &&
                     isNumeric(coords.ys)) {
@@ -80,12 +89,11 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
                 if(!coords.noYS) path += 'm-' + yw + ',0h' + (2 * yw); // shoe
 
-                var yerror = errorbar.select('path.yerror');
-
                 isNew = !yerror.size();
 
                 if(isNew) {
                     yerror = errorbar.append('path')
+                        .style('vector-effect', 'non-scaling-stroke')
                         .classed('yerror', true);
                 } else if(hasAnimation) {
                     yerror = yerror
@@ -96,7 +104,9 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
                 yerror.attr('d', path);
             }
+            else yerror.remove();
 
+            var xerror = errorbar.select('path.xerror');
             if(xObj.visible && isNumeric(coords.y) &&
                     isNumeric(coords.xh) &&
                     isNumeric(coords.xs)) {
@@ -108,12 +118,11 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
                 if(!coords.noXS) path += 'm0,-' + xw + 'v' + (2 * xw); // shoe
 
-                var xerror = errorbar.select('path.xerror');
-
                 isNew = !xerror.size();
 
                 if(isNew) {
                     xerror = errorbar.append('path')
+                        .style('vector-effect', 'non-scaling-stroke')
                         .classed('xerror', true);
                 } else if(hasAnimation) {
                     xerror = xerror
@@ -124,6 +133,7 @@ module.exports = function plot(traces, plotinfo, transitionOpts) {
 
                 xerror.attr('d', path);
             }
+            else xerror.remove();
         });
     });
 };

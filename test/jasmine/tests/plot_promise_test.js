@@ -461,6 +461,8 @@ describe('Plotly.___ methods', function() {
             Plotly.plot(initialDiv, data, {}).then(done);
         });
 
+        afterEach(destroyGraphDiv);
+
         it('should return a resolved promise of the gd', function(done) {
             Plotly.Plots.resize(initialDiv).then(function(gd) {
                 expect(gd).toBeDefined();
@@ -469,11 +471,29 @@ describe('Plotly.___ methods', function() {
             }).then(done);
         });
 
-        it('should return a rejected promise with no argument', function(done) {
-            Plotly.Plots.resize().then(null, function(err) {
+        it('should return a rejected promise if gd is hidden', function(done) {
+            initialDiv.style.display = 'none';
+            Plotly.Plots.resize(initialDiv).then(function() {
+                expect(1).toBe(0, 'We were supposed to get an error.');
+            }, function(err) {
                 expect(err).toBeDefined();
-                expect(err.message).toBe('Resize must be passed a plot div element.');
+                expect(err.message).toBe('Resize must be passed a displayed plot div element.');
             }).then(done);
+        });
+
+        it('should return a rejected promise if gd is detached from the DOM', function(done) {
+            destroyGraphDiv();
+            Plotly.Plots.resize(initialDiv).then(function() {
+                expect(1).toBe(0, 'We were supposed to get an error.');
+            }, function(err) {
+                expect(err).toBeDefined();
+                expect(err.message).toBe('Resize must be passed a displayed plot div element.');
+            }).then(done);
+        });
+
+        it('errors before even generating a promise if gd is not defined', function() {
+            expect(function() { Plotly.Plots.resize(); })
+                .toThrow(new Error('DOM element provided is null or undefined'));
         });
     });
 

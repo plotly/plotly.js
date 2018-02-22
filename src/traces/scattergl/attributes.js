@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -8,19 +8,19 @@
 
 'use strict';
 
+var plotAttrs = require('../../plots/attributes');
 var scatterAttrs = require('../scatter/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttrs = require('../../components/colorscale/color_attributes');
 
 var DASHES = require('../../constants/gl2d_dashes');
-var MARKERS = require('../../constants/gl_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
-var extendDeep = require('../../lib/extend').extendDeep;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var scatterLineAttrs = scatterAttrs.line,
     scatterMarkerAttrs = scatterAttrs.marker,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
-module.exports = {
+var attrs = module.exports = overrideAll({
     x: scatterAttrs.x,
     x0: scatterAttrs.x0,
     dx: scatterAttrs.dx,
@@ -57,15 +57,8 @@ module.exports = {
             description: 'Sets the style of the lines.'
         }
     },
-    marker: extendDeep({}, colorAttributes('marker'), {
-        symbol: {
-            valType: 'enumerated',
-            values: Object.keys(MARKERS),
-            dflt: 'circle',
-            arrayOk: true,
-            role: 'style',
-            description: 'Sets the marker symbol type.'
-        },
+    marker: extendFlat({}, colorAttrs('marker'), {
+        symbol: scatterMarkerAttrs.symbol,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
@@ -73,16 +66,29 @@ module.exports = {
         opacity: scatterMarkerAttrs.opacity,
         showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,
-        line: extendDeep({}, colorAttributes('marker.line'), {
+        line: extendFlat({}, colorAttrs('marker.line'), {
             width: scatterMarkerLineAttrs.width
         })
     }),
     connectgaps: scatterAttrs.connectgaps,
-    fill: extendFlat({}, scatterAttrs.fill, {
-        values: ['none', 'tozeroy', 'tozerox']
-    }),
+    fill: scatterAttrs.fill,
     fillcolor: scatterAttrs.fillcolor,
+
+    hoveron: scatterAttrs.hoveron,
+
+    selected: {
+        marker: scatterAttrs.selected.marker
+    },
+    unselected: {
+        marker: scatterAttrs.unselected.marker
+    },
+
+    opacity: extendFlat({}, plotAttrs.opacity, {
+        editType: 'calc'
+    }),
 
     error_y: scatterAttrs.error_y,
     error_x: scatterAttrs.error_x
-};
+}, 'calc', 'nested');
+
+attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';

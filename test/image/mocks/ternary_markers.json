@@ -2,7 +2,7 @@
     "data": [
         {
             "type": "scatterternary",
-            "mode": "markers",
+            "mode": "markers+lines+text",
             "a": [
                 75,
                 70,
@@ -55,6 +55,22 @@
                 "point 10",
                 "point 11"
             ],
+            "textposition": [
+                "left",
+                "right",
+                "top right",
+                "top",
+                "bottom right",
+                "left",
+                "top",
+                "left",
+                "right",
+                "bottom",
+                "top"
+            ],
+            "textfont": {
+                "color": "#DB7365"
+            },
             "marker": {
                 "symbol": 100,
                 "color": "#DB7365",
@@ -63,7 +79,7 @@
                     "width": 2
                 }
             },
-            "uid": "de1eca"
+            "cliponaxis": false
         }
     ],
     "layout": {
@@ -84,6 +100,7 @@
                 "tickangle": 0
             },
             "baxis": {
+                "min": 20,
                 "titlefont": {
                     "size": 20
                 },

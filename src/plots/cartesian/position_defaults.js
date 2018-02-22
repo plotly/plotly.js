@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -58,6 +58,8 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         if(domain[0] > domain[1] - 0.01) containerOut.domain = [0, 1];
         Lib.noneOrAll(containerIn.domain, containerOut.domain, [0, 1]);
     }
+
+    coerce('layer');
 
     return containerOut;
 };

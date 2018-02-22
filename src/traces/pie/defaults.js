@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,13 +19,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var coerceFont = Lib.coerceFont;
 
     var vals = coerce('values');
-    if(!Array.isArray(vals) || !vals.length) {
-        traceOut.visible = false;
-        return;
-    }
-
     var labels = coerce('labels');
     if(!Array.isArray(labels)) {
+        if(!Array.isArray(vals) || !vals.length) {
+            // must have at least one of vals or labels
+            traceOut.visible = false;
+            return;
+        }
+
         coerce('label0');
         coerce('dlabel');
     }
@@ -33,20 +34,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var lineWidth = coerce('marker.line.width');
     if(lineWidth) coerce('marker.line.color');
 
-    var colors = coerce('marker.colors');
-    if(!Array.isArray(colors)) traceOut.marker.colors = []; // later this will get padded with default colors
+    coerce('marker.colors');
 
     coerce('scalegroup');
-    // TODO: tilt, depth, and hole all need to be coerced to the same values within a scaleegroup
-    // (ideally actually, depth would get set the same *after* scaling, ie the same absolute depth)
-    // and if colors aren't specified we should match these up - potentially even if separate pies
-    // are NOT in the same sharegroup
-
+    // TODO: hole needs to be coerced to the same value within a scaleegroup
 
     var textData = coerce('text');
     var textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
-
-    coerce('hoverinfo', (layout._dataLength === 1) ? 'label+text+value+percent' : undefined);
+    coerce('hovertext');
 
     if(textInfo && textInfo !== 'none') {
         var textPosition = coerce('textposition'),
@@ -63,14 +58,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('domain.x');
     coerce('domain.y');
-
-    // 3D attributes commented out until I finish them in a later PR
-    // var tilt = coerce('tilt');
-    // if(tilt) {
-    //     coerce('tiltaxis');
-    //     coerce('depth');
-    //     coerce('shading');
-    // }
 
     coerce('hole');
 

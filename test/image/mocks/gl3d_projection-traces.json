@@ -24,10 +24,6 @@
       ],
       "name": "Col3",
       "type": "scatter3d",
-      "xsrc": ":662aee",
-      "ysrc": ":ea6288",
-      "zsrc": ":b51348",
-      "uid": "b6ca71",
       "line": {
         "width": 6,
         "color": "rgb(31, 119, 180)"
@@ -78,10 +74,6 @@
       ],
       "name": "Col7",
       "type": "scatter3d",
-      "xsrc": ":c837b1",
-      "ysrc": ":8ef02b",
-      "zsrc": ":3709d5",
-      "uid": "c8324f",
       "mode": "lines",
       "projection": {
         "x": {

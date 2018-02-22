@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -57,7 +57,7 @@ function draw(gd) {
 function drawOne(gd, index) {
     // remove the existing shape if there is one.
     // because indices can change, we need to look in all shape layers
-    gd._fullLayout._paper
+    gd._fullLayout._paperdiv
         .selectAll('.shapelayer [data-index="' + index + '"]')
         .remove();
 
@@ -77,7 +77,7 @@ function drawOne(gd, index) {
     else {
         var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
         if(plotinfo) {
-            var mainPlot = plotinfo.mainplot || plotinfo;
+            var mainPlot = plotinfo.mainplotinfo || plotinfo;
             drawShape(mainPlot.shapelayer);
         }
         else {
@@ -114,7 +114,7 @@ function drawOne(gd, index) {
             null
         );
 
-        if(gd._context.editable) setupDragElement(gd, path, options, index);
+        if(gd._context.edits.shapePosition) setupDragElement(gd, path, options, index);
     }
 }
 
@@ -130,8 +130,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
     var xa, ya, x2p, y2p, p2x, p2y;
 
     var dragOptions = {
-            setCursor: updateDragMode,
             element: shapePath.node(),
+            gd: gd,
             prepFn: startDrag,
             doneFn: endDrag
         },
@@ -139,6 +139,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
         dragMode;
 
     dragElement.init(dragOptions);
+
+    shapePath.node().onmousemove = updateDragMode;
 
     function updateDragMode(evt) {
         // choose 'move' or 'resize'
@@ -209,11 +211,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
         dragOptions.moveFn = (dragMode === 'move') ? moveShape : resizeShape;
     }
 
-    function endDrag(dragged) {
+    function endDrag() {
         setCursor(shapePath);
-        if(dragged) {
-            Plotly.relayout(gd, update);
-        }
+        Plotly.relayout(gd, update);
     }
 
     function moveShape(dx, dy) {

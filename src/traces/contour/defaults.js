@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -13,13 +13,19 @@ var Lib = require('../../lib');
 
 var hasColumns = require('../heatmap/has_columns');
 var handleXYZDefaults = require('../heatmap/xyz_defaults');
-var handleStyleDefaults = require('../contour/style_defaults');
+var handleConstraintDefaults = require('./constraint_defaults');
+var handleContoursDefaults = require('./contours_defaults');
+var handleStyleDefaults = require('./style_defaults');
 var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+
+    function coerce2(attr) {
+        return Lib.coerce2(traceIn, traceOut, attributes, attr);
     }
 
     var len = handleXYZDefaults(traceIn, traceOut, coerce, layout);
@@ -29,23 +35,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
+    var isConstraint = (coerce('contours.type') === 'constraint');
     coerce('connectgaps', hasColumns(traceOut));
 
-    var contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start'),
-        contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end'),
-        missingEnd = (contourStart === false) || (contourEnd === false),
+    // trace-level showlegend has already been set, but is only allowed if this is a constraint
+    if(!isConstraint) delete traceOut.showlegend;
 
-        // normally we only need size if autocontour is off. But contour.calc
-        // pushes its calculated contour size back to the input trace, so for
-        // things like restyle that can call supplyDefaults without calc
-        // after the initial draw, we can just reuse the previous calculation
-        contourSize = coerce('contours.size'),
-        autoContour;
-
-    if(missingEnd) autoContour = traceOut.autocontour = true;
-    else autoContour = coerce('autocontour', false);
-
-    if(autoContour || !contourSize) coerce('ncontours');
-
-    handleStyleDefaults(traceIn, traceOut, coerce, layout);
+    if(isConstraint) {
+        handleConstraintDefaults(traceIn, traceOut, coerce, layout, defaultColor);
+    }
+    else {
+        handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
+        handleStyleDefaults(traceIn, traceOut, coerce, layout);
+    }
 };

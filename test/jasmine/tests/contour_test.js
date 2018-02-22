@@ -1,3 +1,4 @@
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
@@ -5,7 +6,11 @@ var Contour = require('@src/traces/contour');
 var makeColorMap = require('@src/traces/contour/make_color_map');
 var colorScales = require('@src/components/colorscale/scales');
 
-var customMatchers = require('../assets/custom_matchers');
+var fail = require('../assets/fail_test');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var checkTicks = require('../assets/custom_assertions').checkTicks;
+var supplyAllDefaults = require('../assets/supply_defaults');
 
 
 describe('contour defaults', function() {
@@ -16,7 +21,8 @@ describe('contour defaults', function() {
 
     var defaultColor = '#444',
         layout = {
-            font: Plots.layoutAttributes.font
+            font: Plots.layoutAttributes.font,
+            _dfltTitle: {colorbar: 'cb'}
         };
 
     var supplyDefaults = Contour.supplyDefaults;
@@ -60,7 +66,7 @@ describe('contour defaults', function() {
             y: [1, 2],
             z: [[1, 2], [3, 4]]
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -76,7 +82,7 @@ describe('contour defaults', function() {
             xcalendar: 'coptic',
             ycalendar: 'ethiopian'
         };
-        supplyDefaults(traceIn, traceOut, defaultColor, {calendar: 'islamic'});
+        supplyDefaults(traceIn, traceOut, defaultColor, Lib.extendFlat({calendar: 'islamic'}, layout));
 
         // we always fill calendar attributes, because it's hard to tell if
         // we're on a date axis at this point.
@@ -173,16 +179,12 @@ describe('contour makeColorMap', function() {
 describe('contour calc', function() {
     'use strict';
 
-    beforeAll(function() {
-        jasmine.addMatchers(customMatchers);
-    });
-
     function _calc(opts) {
         var base = { type: 'contour' },
             trace = Lib.extendFlat({}, base, opts),
             gd = { data: [trace] };
 
-        Plots.supplyDefaults(gd);
+        supplyAllDefaults(gd);
         var fullTrace = gd._fullData[0];
 
         var out = Contour.calc(gd, fullTrace)[0];
@@ -342,5 +344,48 @@ describe('contour calc', function() {
                 });
             });
         });
+    });
+});
+
+describe('contour edits', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+    afterEach(destroyGraphDiv);
+
+    it('can restyle x/y to different types', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'contour',
+            x: [1, 2, 3],
+            y: [3, 4, 5],
+            z: [[10, 11, 12], [13, 14, 15], [17, 18, 19]]
+        }], {width: 400, height: 400})
+        .then(function() {
+            checkTicks('x', ['1', '1.5', '2', '2.5', '3'], 'linear x');
+            expect(gd._fullLayout.xaxis.type).toBe('linear');
+            checkTicks('y', ['3', '3.5', '4', '4.5', '5'], 'linear y');
+            expect(gd._fullLayout.yaxis.type).toBe('linear');
+
+            return Plotly.restyle(gd, {x: [['a', 'b', 'c']], y: [['2016-01', '2016-02', '2016-03']]});
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'category x');
+            expect(gd._fullLayout.xaxis.type).toBe('category');
+            checkTicks('y', ['Jan 102016', 'Jan 24', 'Feb 7', 'Feb 21'], 'date y');
+            expect(gd._fullLayout.yaxis.type).toBe('date');
+
+            // should be a noop, but one that raises no errors!
+            return Plotly.relayout(gd, {'xaxis.type': '-', 'yaxis.type': '-'});
+        })
+        .then(function() {
+            checkTicks('x', ['a', 'b', 'c'], 'category x #2');
+            expect(gd._fullLayout.xaxis.type).toBe('category');
+            checkTicks('y', ['Jan 102016', 'Jan 24', 'Feb 7', 'Feb 21'], 'date y #2');
+            expect(gd._fullLayout.yaxis.type).toBe('date');
+        })
+        .catch(fail)
+        .then(done);
     });
 });

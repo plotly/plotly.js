@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -19,7 +19,9 @@ var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
-
+var initInteractions = require('../plots/cartesian/graph_interact');
+var cartesianConstants = require('../plots/cartesian/constants');
+var alignmentConstants = require('../constants/alignment');
 
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, exports.lsInner], gd);
@@ -41,13 +43,55 @@ function overlappingDomain(xDomain, yDomain, domains) {
 }
 
 exports.lsInner = function(gd) {
-    var fullLayout = gd._fullLayout,
-        gs = fullLayout._size,
-        axList = Plotly.Axes.list(gd),
-        i;
+    var fullLayout = gd._fullLayout;
+    var gs = fullLayout._size;
+    var pad = gs.p;
+    var axList = Plotly.Axes.list(gd);
 
-    // clear axis line positions, to be set in the subplot loop below
-    for(i = 0; i < axList.length; i++) axList[i]._linepositions = {};
+    // _has('cartesian') means SVG specifically, not GL2D - but GL2D
+    // can still get here because it makes some of the SVG structure
+    // for shared features like selections.
+    var hasSVGCartesian = fullLayout._has('cartesian');
+    var i;
+
+    function getLinePosition(ax, counterAx, side) {
+        var lwHalf = ax._lw / 2;
+
+        if(ax._id.charAt(0) === 'x') {
+            if(!counterAx) return gs.t + gs.h * (1 - (ax.position || 0)) + (lwHalf % 1);
+            else if(side === 'top') return counterAx._offset - pad - lwHalf;
+            return counterAx._offset + counterAx._length + pad + lwHalf;
+        }
+
+        if(!counterAx) return gs.l + gs.w * (ax.position || 0) + (lwHalf % 1);
+        else if(side === 'right') return counterAx._offset + counterAx._length + pad + lwHalf;
+        return counterAx._offset - pad - lwHalf;
+    }
+
+    // some preparation of axis position info
+    for(i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+
+        // reset scale in case the margins have changed
+        ax.setScale();
+
+        var counterAx = ax._anchorAxis;
+
+        // clear axis line positions, to be set in the subplot loop below
+        ax._linepositions = {};
+
+        // stash crispRounded linewidth so we don't need to pass gd all over the place
+        ax._lw = Drawing.crispRound(gd, ax.linewidth, 1);
+
+        // figure out the main axis line and main mirror line position.
+        // it's easier to follow the logic if we handle these separately from
+        // ax._linepositions, which are really only used by mirror=allticks
+        // for the non-main-subplot ticks.
+        ax._mainLinePosition = getLinePosition(ax, counterAx, ax.side);
+        ax._mainMirrorPosition = (ax.mirror && counterAx) ?
+            getLinePosition(ax, counterAx,
+                alignmentConstants.OPPOSITE_SIDE[ax.side]) : null;
+    }
 
     fullLayout._paperdiv
         .style({
@@ -79,11 +123,9 @@ exports.lsInner = function(gd) {
             return;
         }
 
-        var xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
-            ya = Plotly.Axes.getFromId(gd, subplot, 'y'),
-            xDomain = xa.domain,
-            yDomain = ya.domain,
-            plotgroupBgData = [];
+        var xDomain = plotinfo.xaxis.domain;
+        var yDomain = plotinfo.yaxis.domain;
+        var plotgroupBgData = [];
 
         if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
             plotgroupBgData = [0];
@@ -124,21 +166,16 @@ exports.lsInner = function(gd) {
         fullLayout._plots[subplot].bg = d3.select(this);
     });
 
-    var freefinished = [];
     subplotSelection.each(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot],
-            xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
-            ya = Plotly.Axes.getFromId(gd, subplot, 'y');
+        var plotinfo = fullLayout._plots[subplot];
+        var xa = plotinfo.xaxis;
+        var ya = plotinfo.yaxis;
 
-        // reset scale in case the margins have changed
-        xa.setScale();
-        ya.setScale();
-
-        if(plotinfo.bg) {
+        if(plotinfo.bg && hasSVGCartesian) {
             plotinfo.bg
                 .call(Drawing.setRect,
-                    xa._offset - gs.p, ya._offset - gs.p,
-                    xa._length + 2 * gs.p, ya._length + 2 * gs.p)
+                    xa._offset - pad, ya._offset - pad,
+                    xa._length + 2 * pad, ya._length + 2 * pad)
                 .call(Color.fill, fullLayout.plot_bgcolor)
                 .style('stroke-width', 0);
         }
@@ -146,8 +183,7 @@ exports.lsInner = function(gd) {
         // Clip so that data only shows up on the plot area.
         plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        var plotClip = fullLayout._defs.selectAll('g.clips')
-            .selectAll('#' + plotinfo.clipId)
+        var plotClip = fullLayout._clips.selectAll('#' + plotinfo.clipId)
             .data([0]);
 
         plotClip.enter().append('clipPath')
@@ -163,128 +199,142 @@ exports.lsInner = function(gd) {
                 'height': ya._length
             });
 
+        Drawing.setTranslate(plotinfo.plot, xa._offset, ya._offset);
 
-        plotinfo.plot.call(Drawing.setTranslate, xa._offset, ya._offset);
-        plotinfo.plot.call(Drawing.setClipUrl, plotinfo.clipId);
+        var plotClipId;
+        var layerClipId;
 
-        var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
-            ylw = Drawing.crispRound(gd, ya.linewidth, 1),
-            xp = gs.p + ylw,
-            xpathPrefix = 'M' + (-xp) + ',',
-            xpathSuffix = 'h' + (xa._length + 2 * xp),
-            showfreex = xa.anchor === 'free' &&
-                freefinished.indexOf(xa._id) === -1,
-            freeposx = gs.h * (1 - (xa.position||0)) + ((xlw / 2) % 1),
-            showbottom =
-                (xa.anchor === ya._id && (xa.mirror || xa.side !== 'top')) ||
-                xa.mirror === 'all' || xa.mirror === 'allticks' ||
-                (xa.mirrors && xa.mirrors[ya._id + 'bottom']),
-            bottompos = ya._length + gs.p + xlw / 2,
-            showtop =
-                (xa.anchor === ya._id && (xa.mirror || xa.side === 'top')) ||
-                xa.mirror === 'all' || xa.mirror === 'allticks' ||
-                (xa.mirrors && xa.mirrors[ya._id + 'top']),
-            toppos = -gs.p - xlw / 2,
-
-            // shorten y axis lines so they don't overlap x axis lines
-            yp = gs.p,
-            // except where there's no x line
-            // TODO: this gets more complicated with multiple x and y axes
-            ypbottom = showbottom ? 0 : xlw,
-            yptop = showtop ? 0 : xlw,
-            ypathSuffix = ',' + (-yp - yptop) +
-                'v' + (ya._length + 2 * yp + yptop + ypbottom),
-            showfreey = ya.anchor === 'free' &&
-                freefinished.indexOf(ya._id) === -1,
-            freeposy = gs.w * (ya.position||0) + ((ylw / 2) % 1),
-            showleft =
-                (ya.anchor === xa._id && (ya.mirror || ya.side !== 'right')) ||
-                ya.mirror === 'all' || ya.mirror === 'allticks' ||
-                (ya.mirrors && ya.mirrors[xa._id + 'left']),
-            leftpos = -gs.p - ylw / 2,
-            showright =
-                (ya.anchor === xa._id && (ya.mirror || ya.side === 'right')) ||
-                ya.mirror === 'all' || ya.mirror === 'allticks' ||
-                (ya.mirrors && ya.mirrors[xa._id + 'right']),
-            rightpos = xa._length + gs.p + ylw / 2;
-
-        // save axis line positions for ticks, draggers, etc to reference
-        // each subplot gets an entry:
-        //    [left or bottom, right or top, free, main]
-        // main is the position at which to draw labels and draggers, if any
-        xa._linepositions[subplot] = [
-            showbottom ? bottompos : undefined,
-            showtop ? toppos : undefined,
-            showfreex ? freeposx : undefined
-        ];
-        if(xa.anchor === ya._id) {
-            xa._linepositions[subplot][3] = xa.side === 'top' ?
-                toppos : bottompos;
-        }
-        else if(showfreex) {
-            xa._linepositions[subplot][3] = freeposx;
+        if(plotinfo._hasClipOnAxisFalse) {
+            plotClipId = null;
+            layerClipId = plotinfo.clipId;
+        } else {
+            plotClipId = plotinfo.clipId;
+            layerClipId = null;
         }
 
-        ya._linepositions[subplot] = [
-            showleft ? leftpos : undefined,
-            showright ? rightpos : undefined,
-            showfreey ? freeposy : undefined
-        ];
-        if(ya.anchor === xa._id) {
-            ya._linepositions[subplot][3] = ya.side === 'right' ?
-                rightpos : leftpos;
-        }
-        else if(showfreey) {
-            ya._linepositions[subplot][3] = freeposy;
+        Drawing.setClipUrl(plotinfo.plot, plotClipId);
+
+        for(i = 0; i < cartesianConstants.traceLayerClasses.length; i++) {
+            var layer = cartesianConstants.traceLayerClasses[i];
+            if(layer !== 'scatterlayer' && layer !== 'barlayer') {
+                plotinfo.plot.selectAll('g.' + layer).call(Drawing.setClipUrl, layerClipId);
+            }
         }
 
-        // translate all the extra stuff to have the
-        // same origin as the plot area or axes
-        var origin = 'translate(' + xa._offset + ',' + ya._offset + ')',
-            originx = origin,
-            originy = origin;
-        if(showfreex) {
-            originx = 'translate(' + xa._offset + ',' + gs.t + ')';
-            toppos += ya._offset - gs.t;
-            bottompos += ya._offset - gs.t;
+        // stash layer clipId value (null or same as clipId)
+        // to DRY up Drawing.setClipUrl calls downstream
+        plotinfo.layerClipId = layerClipId;
+
+        // figure out extra axis line and tick positions as needed
+        if(!hasSVGCartesian) return;
+
+        var xLinesXLeft, xLinesXRight, xLinesYBottom, xLinesYTop,
+            leftYLineWidth, rightYLineWidth;
+        var yLinesYBottom, yLinesYTop, yLinesXLeft, yLinesXRight,
+            connectYBottom, connectYTop;
+        var extraSubplot;
+
+        function xLinePath(y) {
+            return 'M' + xLinesXLeft + ',' + y + 'H' + xLinesXRight;
         }
-        if(showfreey) {
-            originy = 'translate(' + gs.l + ',' + ya._offset + ')';
-            leftpos += xa._offset - gs.l;
-            rightpos += xa._offset - gs.l;
+
+        function xLinePathFree(y) {
+            return 'M' + xa._offset + ',' + y + 'h' + xa._length;
         }
 
-        plotinfo.xlines
-            .attr('transform', originx)
-            .attr('d', (
-                (showbottom ? (xpathPrefix + bottompos + xpathSuffix) : '') +
-                (showtop ? (xpathPrefix + toppos + xpathSuffix) : '') +
-                (showfreex ? (xpathPrefix + freeposx + xpathSuffix) : '')) ||
-                // so it doesn't barf with no lines shown
-                'M0,0')
-            .style('stroke-width', xlw + 'px')
-            .call(Color.stroke, xa.showline ?
-                xa.linecolor : 'rgba(0,0,0,0)');
-        plotinfo.ylines
-            .attr('transform', originy)
-            .attr('d', (
-                (showleft ? ('M' + leftpos + ypathSuffix) : '') +
-                (showright ? ('M' + rightpos + ypathSuffix) : '') +
-                (showfreey ? ('M' + freeposy + ypathSuffix) : '')) ||
-                'M0,0')
-            .attr('stroke-width', ylw + 'px')
-            .call(Color.stroke, ya.showline ?
-                ya.linecolor : 'rgba(0,0,0,0)');
+        function yLinePath(x) {
+            return 'M' + x + ',' + yLinesYTop + 'V' + yLinesYBottom;
+        }
 
-        plotinfo.xaxislayer.attr('transform', originx);
-        plotinfo.yaxislayer.attr('transform', originy);
-        plotinfo.gridlayer.attr('transform', origin);
-        plotinfo.zerolinelayer.attr('transform', origin);
-        plotinfo.draglayer.attr('transform', origin);
+        function yLinePathFree(x) {
+            return 'M' + x + ',' + ya._offset + 'v' + ya._length;
+        }
 
-        // mark free axes as displayed, so we don't draw them again
-        if(showfreex) { freefinished.push(xa._id); }
-        if(showfreey) { freefinished.push(ya._id); }
+        function mainPath(ax, pathFn, pathFnFree) {
+            if(!ax.showline || subplot !== ax._mainSubplot) return '';
+            if(!ax._anchorAxis) return pathFnFree(ax._mainLinePosition);
+            var out = pathFn(ax._mainLinePosition);
+            if(ax.mirror) out += pathFn(ax._mainMirrorPosition);
+            return out;
+        }
+
+        /*
+         * x lines get longer where they meet y lines, to make a crisp corner.
+         * The x lines get the padding (margin.pad) plus the y line width to
+         * fill up the corner nicely. Free x lines are excluded - they always
+         * span exactly the data area of the plot
+         *
+         *  | XXXXX
+         *  | XXXXX
+         *  |
+         *  +------
+         *     x1
+         *    -----
+         *     x2
+         */
+        if(shouldShowLinesOrTicks(xa, subplot)) {
+            leftYLineWidth = findCounterAxisLineWidth(xa, 'left', ya, axList);
+            xLinesXLeft = xa._offset - (leftYLineWidth ? (pad + leftYLineWidth) : 0);
+            rightYLineWidth = findCounterAxisLineWidth(xa, 'right', ya, axList);
+            xLinesXRight = xa._offset + xa._length + (rightYLineWidth ? (pad + rightYLineWidth) : 0);
+            xLinesYBottom = getLinePosition(xa, ya, 'bottom');
+            xLinesYTop = getLinePosition(xa, ya, 'top');
+
+            // save axis line positions for extra ticks to reference
+            // each subplot that gets ticks from "allticks" gets an entry:
+            //    [left or bottom, right or top]
+            extraSubplot = (!xa._anchorAxis || subplot !== xa._mainSubplot);
+            if(extraSubplot && xa.ticks && xa.mirror === 'allticks') {
+                xa._linepositions[subplot] = [xLinesYBottom, xLinesYTop];
+            }
+
+            var xPath = mainPath(xa, xLinePath, xLinePathFree);
+            if(extraSubplot && xa.showline && (xa.mirror === 'all' || xa.mirror === 'allticks')) {
+                xPath += xLinePath(xLinesYBottom) + xLinePath(xLinesYTop);
+            }
+
+            plotinfo.xlines
+                .attr('d', xPath || 'M0,0')
+                .style('stroke-width', xa._lw + 'px')
+                .call(Color.stroke, xa.showline ?
+                    xa.linecolor : 'rgba(0,0,0,0)');
+        }
+
+        /*
+         * y lines that meet x axes get longer only by margin.pad, because
+         * the x axes fill in the corner space. Free y axes, like free x axes,
+         * always span exactly the data area of the plot
+         *
+         *   |   | XXXX
+         * y2| y1| XXXX
+         *   |   | XXXX
+         *       |
+         *       +-----
+         */
+        if(shouldShowLinesOrTicks(ya, subplot)) {
+            connectYBottom = findCounterAxisLineWidth(ya, 'bottom', xa, axList);
+            yLinesYBottom = ya._offset + ya._length + (connectYBottom ? pad : 0);
+            connectYTop = findCounterAxisLineWidth(ya, 'top', xa, axList);
+            yLinesYTop = ya._offset - (connectYTop ? pad : 0);
+            yLinesXLeft = getLinePosition(ya, xa, 'left');
+            yLinesXRight = getLinePosition(ya, xa, 'right');
+
+            extraSubplot = (!ya._anchorAxis || subplot !== xa._mainSubplot);
+            if(extraSubplot && ya.ticks && ya.mirror === 'allticks') {
+                ya._linepositions[subplot] = [yLinesXLeft, yLinesXRight];
+            }
+
+            var yPath = mainPath(ya, yLinePath, yLinePathFree);
+            if(extraSubplot && ya.showline && (ya.mirror === 'all' || ya.mirror === 'allticks')) {
+                yPath += yLinePath(yLinesXLeft) + yLinePath(yLinesXRight);
+            }
+
+            plotinfo.ylines
+                .attr('d', yPath || 'M0,0')
+                .style('stroke-width', ya._lw + 'px')
+                .call(Color.stroke, ya.showline ?
+                    ya.linecolor : 'rgba(0,0,0,0)');
+        }
     });
 
     Plotly.Axes.makeClipPaths(gd);
@@ -294,13 +344,64 @@ exports.lsInner = function(gd) {
     return gd._promises.length && Promise.all(gd._promises);
 };
 
+function shouldShowLinesOrTicks(ax, subplot) {
+    return (ax.ticks || ax.showline) &&
+        (subplot === ax._mainSubplot || ax.mirror === 'all' || ax.mirror === 'allticks');
+}
+
+/*
+ * should we draw a line on counterAx at this side of ax?
+ * It's assumed that counterAx is known to overlay the subplot we're working on
+ * but it may not be its main axis.
+ */
+function shouldShowLineThisSide(ax, side, counterAx) {
+    // does counterAx get a line at all?
+    if(!counterAx.showline || !counterAx._lw) return false;
+
+    // are we drawing *all* lines for counterAx?
+    if(counterAx.mirror === 'all' || counterAx.mirror === 'allticks') return true;
+
+    var anchorAx = counterAx._anchorAxis;
+
+    // is this a free axis? free axes can only have a subplot side-line with all(ticks)? mirroring
+    if(!anchorAx) return false;
+
+    // in order to handle cases where the user forgot to anchor this axis correctly
+    // (because its default anchor has the same domain on the relevant end)
+    // check whether the relevant position is the same.
+    var sideIndex = alignmentConstants.FROM_BL[side];
+    if(counterAx.side === side) {
+        return anchorAx.domain[sideIndex] === ax.domain[sideIndex];
+    }
+    return counterAx.mirror && anchorAx.domain[1 - sideIndex] === ax.domain[1 - sideIndex];
+}
+
+/*
+ * Is there another axis intersecting `side` end of `ax`?
+ * First look at `counterAx` (the axis for this subplot),
+ * then at all other potential counteraxes on or overlaying this subplot.
+ * Take the line width from the first one that has a line.
+ */
+function findCounterAxisLineWidth(ax, side, counterAx, axList) {
+    if(shouldShowLineThisSide(ax, side, counterAx)) {
+        return counterAx._lw;
+    }
+    for(var i = 0; i < axList.length; i++) {
+        var axi = axList[i];
+        if(axi._mainAxis === counterAx._mainAxis && shouldShowLineThisSide(ax, side, axi)) {
+            return axi._lw;
+        }
+    }
+    return 0;
+}
+
 exports.drawMainTitle = function(gd) {
     var fullLayout = gd._fullLayout;
 
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
         propName: 'title',
-        dfltName: 'Plot',
+        placeholder: fullLayout._dfltTitle.plot,
         attributes: {
             x: fullLayout.width / 2,
             y: fullLayout._size.t / 2,
@@ -375,30 +476,25 @@ exports.doTicksRelayout = function(gd) {
 
 exports.doModeBar = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotIds, i;
 
     ModeBar.manage(gd);
-    Plotly.Fx.init(gd);
+    initInteractions(gd);
 
-    subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
-    for(i = 0; i < subplotIds.length; i++) {
-        var scene = fullLayout[subplotIds[i]]._scene;
-        scene.updateFx(fullLayout.dragmode, fullLayout.hovermode);
+    for(var i = 0; i < fullLayout._basePlotModules.length; i++) {
+        var updateFx = fullLayout._basePlotModules[i].updateFx;
+        if(updateFx) updateFx(fullLayout);
     }
-
-    // no need to do this for gl2d subplots,
-    // Plots.linkSubplots takes care of it all.
 
     return Plots.previousPromises(gd);
 };
 
 exports.doCamera = function(gd) {
-    var fullLayout = gd._fullLayout,
-        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
+    var fullLayout = gd._fullLayout;
+    var sceneIds = fullLayout._subplots.gl3d;
 
     for(var i = 0; i < sceneIds.length; i++) {
-        var sceneLayout = fullLayout[sceneIds[i]],
-            scene = sceneLayout._scene;
+        var sceneLayout = fullLayout[sceneIds[i]];
+        var scene = sceneLayout._scene;
 
         scene.setCamera(sceneLayout.camera);
     }

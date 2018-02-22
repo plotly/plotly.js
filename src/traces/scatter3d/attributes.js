@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,13 +11,16 @@
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 var errorBarAttrs = require('../../components/errorbars/attributes');
+var baseAttrs = require('../../plots/attributes');
+var DASHES = require('../../constants/gl3d_dashes');
 
-var MARKER_SYMBOLS = require('../../constants/gl_markers');
+var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-var scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+var scatterLineAttrs = scatterAttrs.line;
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 function makeProjectionAttr(axLetter) {
     return {
@@ -52,15 +55,9 @@ function makeProjectionAttr(axLetter) {
     };
 }
 
-module.exports = {
-    x: {
-        valType: 'data_array',
-        description: 'Sets the x coordinates.'
-    },
-    y: {
-        valType: 'data_array',
-        description: 'Sets the y coordinates.'
-    },
+var attrs = module.exports = overrideAll({
+    x: scatterAttrs.x,
+    y: scatterAttrs.y,
     z: {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
@@ -72,9 +69,22 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y,z) coordinates.'
+            'this trace\'s (x,y,z) coordinates.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
         ].join(' ')
     }),
+    hovertext: extendFlat({}, scatterAttrs.hovertext, {
+        description: [
+            'Sets text elements associated with each (x,y,z) triplet.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y,z) coordinates.',
+            'To be seen, trace `hoverinfo` must contain a *text* flag.'
+        ].join(' ')
+    }),
+
     mode: extendFlat({}, scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),
     surfaceaxis: {
@@ -99,9 +109,15 @@ module.exports = {
         z: makeProjectionAttr('z')
     },
     connectgaps: scatterAttrs.connectgaps,
-    line: extendFlat({}, {
+    line: extendFlat({
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash,
+        dash: {
+            valType: 'enumerated',
+            values: Object.keys(DASHES),
+            dflt: 'solid',
+            role: 'style',
+            description: 'Sets the dash style of the lines.'
+        },
         showscale: {
             valType: 'boolean',
             role: 'info',
@@ -114,7 +130,7 @@ module.exports = {
     },
         colorAttributes('line')
     ),
-    marker: extendFlat({}, {  // Parity with scatter.js?
+    marker: extendFlat({  // Parity with scatter.js?
         symbol: {
             valType: 'enumerated',
             values: Object.keys(MARKER_SYMBOLS),
@@ -141,8 +157,9 @@ module.exports = {
         showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,
 
-        line: extendFlat({},
-            {width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false})},
+        line: extendFlat({
+            width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false})
+        },
             colorAttributes('marker.line')
         )
     },
@@ -155,4 +172,8 @@ module.exports = {
     error_x: errorBarAttrs,
     error_y: errorBarAttrs,
     error_z: errorBarAttrs,
-};
+
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
+}, 'calc', 'nested');
+
+attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';

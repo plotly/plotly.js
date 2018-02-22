@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -14,13 +14,13 @@ var styleOne = require('./style_one');
 
 module.exports = function style(gd) {
     gd._fullLayout._pielayer.selectAll('.trace').each(function(cd) {
-        var cd0 = cd[0],
-            trace = cd0.trace,
-            traceSelection = d3.select(this);
+        var cd0 = cd[0];
+        var trace = cd0.trace;
+        var traceSelection = d3.select(this);
 
         traceSelection.style({opacity: trace.opacity});
 
-        traceSelection.selectAll('.top path.surface').each(function(pt) {
+        traceSelection.selectAll('path.surface').each(function(pt) {
             d3.select(this).call(styleOne, pt, trace);
         });
     });

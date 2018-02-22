@@ -79,7 +79,7 @@ describe('The legend', function() {
             var legend = getLegend(),
                 scrollBox = getScrollBox(),
                 legendHeight = getLegendHeight(gd),
-                scrollBoxYMax = gd._fullLayout.legend.height - legendHeight,
+                scrollBoxYMax = gd._fullLayout.legend._height - legendHeight,
                 scrollBarYMax = legendHeight -
                     constants.scrollBarHeight -
                     2 * constants.scrollBarMargin,

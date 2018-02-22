@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -16,7 +16,7 @@ var Axes = require('../../plots/cartesian/axes');
 var histogram2dCalc = require('../histogram2d/calc');
 var colorscaleCalc = require('../../components/colorscale/calc');
 var hasColumns = require('./has_columns');
-var convertColumnXYZ = require('./convert_column_xyz');
+var convertColumnData = require('./convert_column_xyz');
 var maxRowLength = require('./max_row_length');
 var clean2dArray = require('./clean_2d_array');
 var interp2d = require('./interp2d');
@@ -40,14 +40,15 @@ module.exports = function calc(gd, trace) {
         y0,
         dy,
         z,
-        i;
+        i,
+        binned;
 
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
     ya._minDtick = 0;
 
     if(isHist) {
-        var binned = histogram2dCalc(gd, trace);
+        binned = histogram2dCalc(gd, trace);
         x = binned.x;
         x0 = binned.x0;
         dx = binned.dx;
@@ -57,10 +58,15 @@ module.exports = function calc(gd, trace) {
         z = binned.z;
     }
     else {
-        if(hasColumns(trace)) convertColumnXYZ(trace, xa, ya);
+        if(hasColumns(trace)) {
+            convertColumnData(trace, xa, ya, 'x', 'y', ['z']);
+            x = trace.x;
+            y = trace.y;
+        } else {
+            x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
+            y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
+        }
 
-        x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
-        y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
         x0 = trace.x0 || 0;
         dx = trace.dx || 1;
         y0 = trace.y0 || 0;
@@ -76,7 +82,7 @@ module.exports = function calc(gd, trace) {
 
     function noZsmooth(msg) {
         zsmooth = trace._input.zsmooth = trace.zsmooth = false;
-        Lib.notifier('cannot fast-zsmooth: ' + msg);
+        Lib.warn('cannot use zsmooth: "fast": ' + msg);
     }
 
     // check whether we really can smooth (ie all boxes are about the same size)
@@ -109,11 +115,11 @@ module.exports = function calc(gd, trace) {
     }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var xlen = maxRowLength(z),
-        xIn = trace.xtype === 'scaled' ? '' : x,
-        xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa),
-        yIn = trace.ytype === 'scaled' ? '' : y,
-        yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
+    var xlen = maxRowLength(z);
+    var xIn = trace.xtype === 'scaled' ? '' : x;
+    var xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa);
+    var yIn = trace.ytype === 'scaled' ? '' : y;
+    var yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
 
     // handled in gl2d convert step
     if(!isGL2D) {
@@ -121,10 +127,26 @@ module.exports = function calc(gd, trace) {
         Axes.expand(ya, yArray);
     }
 
-    var cd0 = {x: xArray, y: yArray, z: z, text: trace.text};
+    var cd0 = {
+        x: xArray,
+        y: yArray,
+        z: z,
+        text: trace.text
+    };
+
+    if(xIn && xIn.length === xArray.length - 1) cd0.xCenter = xIn;
+    if(yIn && yIn.length === yArray.length - 1) cd0.yCenter = yIn;
+
+    if(isHist) {
+        cd0.xRanges = binned.xRanges;
+        cd0.yRanges = binned.yRanges;
+        cd0.pts = binned.pts;
+    }
 
     // auto-z and autocolorscale if applicable
-    colorscaleCalc(trace, z, '', 'z');
+    if(!isContour || trace.contours.type !== 'constraint') {
+        colorscaleCalc(trace, z, '', 'z');
+    }
 
     if(isContour && trace.contours && trace.contours.coloring === 'heatmap') {
         var dummyTrace = {

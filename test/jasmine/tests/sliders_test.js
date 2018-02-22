@@ -99,15 +99,18 @@ describe('sliders defaults', function() {
         expect(layoutOut.sliders[0].steps).toEqual([{
             method: 'relayout',
             label: 'Label #1',
-            value: 'label-1'
+            value: 'label-1',
+            execute: true
         }, {
             method: 'update',
             label: 'Label #2',
-            value: 'Label #2'
+            value: 'Label #2',
+            execute: true
         }, {
             method: 'animate',
             label: 'step-2',
-            value: 'lacks-label'
+            value: 'lacks-label',
+            execute: true
         }]);
     });
 
@@ -131,6 +134,7 @@ describe('sliders defaults', function() {
             args: ['title', 'Hello World'],
             label: 'step-1',
             value: 'step-1',
+            execute: true
         });
     });
 
@@ -155,8 +159,37 @@ describe('sliders defaults', function() {
             args: ['title', 'Hello World'],
             label: 'step-1',
             value: 'step-1',
+            execute: true
         });
     });
+
+    it('allow the `skip` method', function() {
+        layoutIn.sliders = [{
+            steps: [{
+                method: 'skip',
+            }, {
+                method: 'skip',
+                args: ['title', 'Hello World']
+            }]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.sliders[0].steps.length).toEqual(2);
+        expect(layoutOut.sliders[0].steps[0]).toEqual({
+            method: 'skip',
+            label: 'step-0',
+            value: 'step-0',
+            execute: true,
+        }, {
+            method: 'skip',
+            args: ['title', 'Hello World'],
+            label: 'step-1',
+            value: 'step-1',
+            execute: true,
+        });
+    });
+
 
     it('should keep ref to input update menu container', function() {
         layoutIn.sliders = [{
@@ -339,7 +372,7 @@ describe('sliders interactions', function() {
         var railNode = firstGroup.node();
         var touchRect = railNode.getBoundingClientRect();
 
-        var originalFill = firstGrip.style('fill');
+        var originalFill = firstGrip.node().style.fill;
 
         // Dispatch a click on the right side of the bar:
         railNode.dispatchEvent(new MouseEvent('mousedown', {
@@ -348,7 +381,7 @@ describe('sliders interactions', function() {
         }));
 
         expect(mockCopy.layout.sliders[0].active).toEqual(5);
-        var mousedownFill = firstGrip.style('fill');
+        var mousedownFill = firstGrip.node().style.fill;
         expect(mousedownFill).not.toEqual(originalFill);
 
         // Drag to the left side:
@@ -357,7 +390,7 @@ describe('sliders interactions', function() {
             clientX: touchRect.left + 5,
         }));
 
-        var mousemoveFill = firstGrip.style('fill');
+        var mousemoveFill = firstGrip.node().style.fill;
         expect(mousemoveFill).toEqual(mousedownFill);
 
         setTimeout(function() {
@@ -365,7 +398,7 @@ describe('sliders interactions', function() {
 
             gd.dispatchEvent(new MouseEvent('mouseup'));
 
-            var mouseupFill = firstGrip.style('fill');
+            var mouseupFill = firstGrip.node().style.fill;
             expect(mouseupFill).toEqual(originalFill);
             expect(mockCopy.layout.sliders[0].active).toEqual(0);
 

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -44,12 +44,10 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 
     if(type === 'data') {
-        var array = coerce('array');
-        if(!array) containerOut.array = [];
+        coerce('array');
         coerce('traceref');
         if(!symmetric) {
-            var arrayminus = coerce('arrayminus');
-            if(!arrayminus) containerOut.arrayminus = [];
+            coerce('arrayminus');
             coerce('tracerefminus');
         }
     }

@@ -83,8 +83,29 @@
                 "shape": "spline",
                 "width": 3
             },
-            "connectgaps": true,
-            "uid": "35ff50"
+            "connectgaps": true
+        },
+        {
+            "type": "scatterternary",
+            "mode": "markers",
+            "a": [0.1, 0.3, 0.2],
+            "b": [0.1, 0.9, 0.4],
+            "c": [0.1, 0.2, 0.1],
+            "selectedpoints": [0, 2],
+            "selected": {
+                "marker": {
+                    "color": "green",
+                    "opacity": 1,
+                    "size": 20
+                }
+            },
+            "unselected": {
+                "marker": {
+                    "color": "red",
+                    "opacity": 0.5,
+                    "size": 10
+                }
+            }
         }
     ],
     "layout": {

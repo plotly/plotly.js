@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -46,18 +46,18 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
     // the z-order of fill layers is correct.
     linkTraces(gd, plotinfo, cdscatter);
 
-    createFills(gd, scatterlayer);
+    createFills(gd, scatterlayer, plotinfo);
 
     // Sort the traces, once created, so that the ordering is preserved even when traces
     // are shown and hidden. This is needed since we're not just wiping everything out
     // and recreating on every update.
-    for(i = 0, uids = []; i < cdscatter.length; i++) {
-        uids[i] = cdscatter[i][0].trace.uid;
+    for(i = 0, uids = {}; i < cdscatter.length; i++) {
+        uids[cdscatter[i][0].trace.uid] = i;
     }
 
     scatterlayer.selectAll('g.trace').sort(function(a, b) {
-        var idx1 = uids.indexOf(a[0].trace.uid);
-        var idx2 = uids.indexOf(b[0].trace.uid);
+        var idx1 = uids[a[0].trace.uid];
+        var idx2 = uids[b[0].trace.uid];
         return idx1 > idx2 ? 1 : -1;
     });
 
@@ -100,7 +100,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
     scatterlayer.selectAll('path:not([d])').remove();
 };
 
-function createFills(gd, scatterlayer) {
+function createFills(gd, scatterlayer, plotinfo) {
     var trace;
 
     scatterlayer.selectAll('g.trace').each(function(d) {
@@ -138,6 +138,8 @@ function createFills(gd, scatterlayer) {
             tr.selectAll('.js-fill.js-tozero').remove();
             trace._ownFill = null;
         }
+
+        tr.selectAll('.js-fill').call(Drawing.setClipUrl, plotinfo.layerClipId);
     });
 }
 
@@ -202,7 +204,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     // initialize line join data / method
     var segments = [],
-        lineSegments = [],
         makeUpdate = Lib.noop;
 
     ownFillEl3 = trace._ownFill;
@@ -223,7 +224,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         else if(line.shape === 'spline') {
             pathfn = revpathbase = function(pts) {
                 var pLast = pts[pts.length - 1];
-                if(pts[0][0] === pLast[0] && pts[0][1] === pLast[1]) {
+                if(pts.length > 1 && pts[0][0] === pLast[0] && pts[0][1] === pLast[1]) {
                     // identical start and end points: treat it as a
                     // closed curve so we don't get a kink
                     return Drawing.smoothclosed(pts.slice(1), line.smoothing);
@@ -249,7 +250,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             yaxis: ya,
             connectGaps: trace.connectgaps,
             baseTolerance: Math.max(line.width || 1, 3) / 4,
-            linear: line.shape === 'linear',
+            shape: line.shape,
             simplify: line.simplify
         });
 
@@ -267,10 +268,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             lastSegment = segments[segments.length - 1];
             pt1 = lastSegment[lastSegment.length - 1];
         }
-
-        lineSegments = segments.filter(function(s) {
-            return s.length > 1;
-        });
 
         makeUpdate = function(isEnter) {
             return function(pts) {
@@ -310,7 +307,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         };
     }
 
-    var lineJoin = tr.selectAll('.js-line').data(lineSegments);
+    var lineJoin = tr.selectAll('.js-line').data(segments);
 
     transition(lineJoin.exit())
         .style('opacity', 0)
@@ -323,6 +320,12 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         .style('vector-effect', 'non-scaling-stroke')
         .call(Drawing.lineGroupStyle)
         .each(makeUpdate(true));
+
+    Drawing.setClipUrl(lineJoin, plotinfo.layerClipId);
+
+    function clearFill(selection) {
+        transition(selection).attr('d', 'M0,0Z');
+    }
 
     if(segments.length) {
         if(ownFillEl3) {
@@ -340,34 +343,49 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // For the sake of animations, wrap the points around so that
                     // the points on the axes are the first two points. Otherwise
                     // animations get a little crazy if the number of points changes.
-                    transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1));
+                    transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1))
+                        .call(Drawing.singleFillStyle);
                 } else {
                     // fill to self: just join the path to itself
-                    transition(ownFillEl3).attr('d', fullpath + 'Z');
+                    transition(ownFillEl3).attr('d', fullpath + 'Z')
+                        .call(Drawing.singleFillStyle);
                 }
             }
         }
-        else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
-            // fill to next: full trace path, plus the previous path reversed
-            if(trace.fill === 'tonext') {
-                // tonext: for use by concentric shapes, like manually constructed
-                // contours, we just add the two paths closed on themselves.
-                // This makes strange results if one path is *not* entirely
-                // inside the other, but then that is a strange usage.
-                transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z');
+        else if(tonext) {
+            if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
+                // fill to next: full trace path, plus the previous path reversed
+                if(trace.fill === 'tonext') {
+                    // tonext: for use by concentric shapes, like manually constructed
+                    // contours, we just add the two paths closed on themselves.
+                    // This makes strange results if one path is *not* entirely
+                    // inside the other, but then that is a strange usage.
+                    transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z')
+                        .call(Drawing.singleFillStyle);
+                }
+                else {
+                    // tonextx/y: for now just connect endpoints with lines. This is
+                    // the correct behavior if the endpoints are at the same value of
+                    // y/x, but if they *aren't*, we should ideally do more complicated
+                    // things depending on whether the new endpoint projects onto the
+                    // existing curve or off the end of it
+                    transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z')
+                        .call(Drawing.singleFillStyle);
+                }
+                trace._polygons = trace._polygons.concat(prevPolygons);
             }
             else {
-                // tonextx/y: for now just connect endpoints with lines. This is
-                // the correct behavior if the endpoints are at the same value of
-                // y/x, but if they *aren't*, we should ideally do more complicated
-                // things depending on whether the new endpoint projects onto the
-                // existing curve or off the end of it
-                transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z');
+                clearFill(tonext);
+                trace._polygons = null;
             }
-            trace._polygons = trace._polygons.concat(prevPolygons);
         }
         trace._prevRevpath = revpath;
         trace._prevPolygons = thisPolygons;
+    }
+    else {
+        if(ownFillEl3) clearFill(ownFillEl3);
+        else if(tonext) clearFill(tonext);
+        trace._polygons = trace._prevRevpath = trace._prevPolygons = null;
     }
 
 
@@ -391,7 +409,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     }
 
     function makePoints(d) {
-        var join, selection;
+        var join, selection, hasNode;
 
         var trace = d[0].trace,
             s = d3.select(this),
@@ -403,11 +421,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             textFilter = hideFilter;
 
         if(showMarkers) {
-            markerFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
+            markerFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : Lib.identity;
         }
 
         if(showText) {
-            textFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
+            textFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : Lib.identity;
         }
 
         // marker points
@@ -419,22 +437,37 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var enter = join.enter().append('path')
             .classed('point', true);
 
-        enter.call(Drawing.pointStyle, trace)
-            .call(Drawing.translatePoints, xa, ya, trace);
-
         if(hasTransition) {
-            enter.style('opacity', 0).transition()
+            enter
+                .call(Drawing.pointStyle, trace, gd)
+                .call(Drawing.translatePoints, xa, ya)
+                .style('opacity', 0)
+                .transition()
                 .style('opacity', 1);
         }
+
+        var markerScale = showMarkers && Drawing.tryColorscale(trace.marker, '');
+        var lineScale = showMarkers && Drawing.tryColorscale(trace.marker, 'line');
+
+        join.order();
 
         join.each(function(d) {
             var el = d3.select(this);
             var sel = transition(el);
-            Drawing.translatePoint(d, sel, xa, ya);
-            Drawing.singlePointStyle(d, sel, trace);
+            hasNode = Drawing.translatePoint(d, sel, xa, ya);
 
-            if(trace.customdata) {
-                el.classed('plotly-customdata', d.data !== null && d.data !== undefined);
+            if(hasNode) {
+                Drawing.singlePointStyle(d, sel, trace, markerScale, lineScale, gd);
+
+                if(plotinfo.layerClipId) {
+                    Drawing.hideOutsideRangePoint(d, sel, xa, ya, trace.xcalendar, trace.ycalendar);
+                }
+
+                if(trace.customdata) {
+                    el.classed('plotly-customdata', d.data !== null && d.data !== undefined);
+                }
+            } else {
+                sel.remove();
             }
         });
 
@@ -452,25 +485,33 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         // each text needs to go in its own 'g' in case
         // it gets converted to mathjax
-        join.enter().append('g').append('text');
+        join.enter().append('g').classed('textpoint', true).append('text');
+
+        join.order();
 
         join.each(function(d) {
-            var sel = transition(d3.select(this).select('text'));
-            Drawing.translatePoint(d, sel, xa, ya);
+            var g = d3.select(this);
+            var sel = transition(g.select('text'));
+            hasNode = Drawing.translatePoint(d, sel, xa, ya);
+
+            if(hasNode) {
+                if(plotinfo.layerClipId) {
+                    Drawing.hideOutsideRangePoint(d, g, xa, ya, trace.xcalendar, trace.ycalendar);
+                }
+            } else {
+                g.remove();
+            }
         });
 
         join.selectAll('text')
-            .call(Drawing.textPointStyle, trace)
+            .call(Drawing.textPointStyle, trace, gd)
             .each(function(d) {
-
                 // This just *has* to be totally custom becuase of SVG text positioning :(
                 // It's obviously copied from translatePoint; we just can't use that
-                //
-                // put xp and yp into d if pixel scaling is already done
-                var x = d.xp || xa.c2p(d.x),
-                    y = d.yp || ya.c2p(d.y);
+                var x = xa.c2p(d.x);
+                var y = ya.c2p(d.y);
 
-                d3.select(this).selectAll('tspan').each(function() {
+                d3.select(this).selectAll('tspan.line').each(function() {
                     transition(d3.select(this)).attr({x: x, y: y});
                 });
             });
@@ -493,6 +534,13 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         .each(makePoints);
 
     join.exit().remove();
+
+    // lastly, clip points groups of `cliponaxis !== false` traces
+    // on `plotinfo._hasClipOnAxisFalse === true` subplots
+    join.each(function(d) {
+        var hasClipOnAxisFalse = d[0].trace.cliponaxis === false;
+        Drawing.setClipUrl(d3.select(this), hasClipOnAxisFalse ? null : plotinfo.layerClipId);
+    });
 }
 
 function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {

@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -24,7 +24,8 @@ exports.defaultConfig = require('./plot_api/plot_config');
 // plots
 exports.Plots = require('./plots/plots');
 exports.Axes = require('./plots/cartesian/axes');
-exports.Fx = require('./plots/cartesian/graph_interact');
+
+// components
 exports.ModeBar = require('./components/modebar');
 
 // plot api

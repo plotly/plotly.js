@@ -1,0 +1,151 @@
+{
+  "data":[
+    {
+      "type":"carpet",
+      "name": "carpet axis",
+      "a":[
+        0.1, 0.1, 0.1, 0.1,
+        0.3, 0.3, 0.3, 0.3,
+        0.5, 0.5, 0.5, 0.5
+      ],
+      "b":[
+        1.01, 1.24, 1.56, 1.82,
+        1.01, 1.24, 1.56, 1.82,
+        1.01, 1.24, 1.56, 1.82
+      ],
+      "y":[
+        4, 4.4, 4.8, 5,
+        6.2, 6.6, 7, 7.2,
+        8.8, 9.2, 9.6, 9.8
+      ],
+      "cheaterslope":2,
+      "aaxis":{
+        "title":"area, <span style='color:red'>cm<sup>2</sup></span><br>of fingernails",
+        "tickformat":".1f",
+        "type":"linear",
+        "smoothing": 0,
+        "ticksuffix": "&times;10<sup>2</sup>"
+      },
+      "baxis":{
+        "title":"height, m<br>with shoes",
+        "tickformat":".2f",
+        "type":"linear",
+        "smoothing": 0,
+        "tickprefix": "<span style='color:#ccc'>*</span>"
+      }
+    },
+    {
+      "type":"contourcarpet",
+      "name":"Power",
+      "z":[
+        100, 120, 180, 260,
+        300, 320, 380, 460,
+        500, 520, 580, 660
+      ],
+      "opacity":0.4,
+      "contours":{
+        "type":"constraint",
+        "operation":"][",
+        "value":[
+          400,
+          540
+        ],
+        "showlabels": true
+      },
+      "line": {
+        "smoothing": 0
+      },
+      "colorscale":[
+        [ 0, "red" ],
+        [ 1, "red" ]
+      ],
+      "a":[
+        0.1, 0.1, 0.1, 0.1,
+        0.3, 0.3, 0.3, 0.3,
+        0.5, 0.5, 0.5, 0.5
+      ],
+      "b":[
+        1.01, 1.24, 1.56, 1.82,
+        1.01, 1.24, 1.56, 1.82,
+        1.01, 1.24, 1.56, 1.82
+      ]
+    },
+    {
+      "type":"contourcarpet",
+      "name":"Strength",
+      "z":[
+        0.1, 0.3, 0.5, 0.6,
+        0.14, 0.34, 0.54, 0.64,
+        0.18, 0.38, 0.58, 0.68
+      ],
+      "opacity":0.4,
+      "contours":{
+        "type":"constraint",
+        "operation":"<",
+        "value":[
+          0.5
+        ],
+        "showlabels": true
+      },
+      "line": {
+        "smoothing": 0
+      },
+      "colorscale":[
+        [ 0, "blue" ],
+        [ 1, "blue" ]
+      ],
+      "a":[
+        0.1, 0.1, 0.1, 0.1,
+        0.3, 0.3, 0.3, 0.3,
+        0.5, 0.5, 0.5, 0.5
+      ],
+      "b":[
+        1.01, 1.24, 1.56, 1.82,
+        1.01, 1.24, 1.56, 1.82,
+        1.01, 1.24, 1.56, 1.82
+      ]
+    },
+    {
+      "type":"contourcarpet",
+      "name":"Agility",
+      "z":[
+        800, 802, 804, 805,
+        820, 822, 824, 825,
+        840, 842, 844, 845
+      ],
+      "opacity":0.4,
+      "contours":{
+        "type":"constraint",
+        "operation":">",
+        "value":810,
+        "showlabels": true
+      },
+      "colorscale":[
+        [ 0, "green" ],
+        [ 1, "green" ]
+      ],
+      "line": {
+        "smoothing": 0
+      },
+      "a":[
+        0.1, 0.1, 0.1, 0.1,
+        0.3, 0.3, 0.3, 0.3,
+        0.5, 0.5, 0.5, 0.5
+      ],
+      "b":[
+        1.01, 1.24, 1.56, 1.82,
+        1.01, 1.24, 1.56, 1.82,
+        1.01, 1.24, 1.56, 1.82
+      ]
+    }
+  ],
+  "layout":{
+    "dragmode":"pan",
+    "width":800,
+    "height":600,
+    "yaxis":{
+      "tickprefix":"€",
+      "tickformat":".2f"
+    }
+  }
+}

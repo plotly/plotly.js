@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -32,13 +32,20 @@ var proto = Mesh3DTrace.prototype;
 
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
-        var selectIndex = selection.data.index;
+        var selectIndex = selection.index = selection.data.index;
 
         selection.traceCoordinate = [
             this.data.x[selectIndex],
             this.data.y[selectIndex],
             this.data.z[selectIndex]
         ];
+
+        var text = this.data.text;
+        if(Array.isArray(text) && text[selectIndex] !== undefined) {
+            selection.textLabel = text[selectIndex];
+        } else if(text) {
+            selection.textLabel = text;
+        }
 
         return true;
     }
@@ -124,10 +131,11 @@ proto.update = function(data) {
     if(data.intensity) {
         this.color = '#fff';
         config.vertexIntensity = data.intensity;
+        config.vertexIntensityBounds = [data.cmin, data.cmax];
         config.colormap = parseColorScale(data.colorscale);
     }
     else if(data.vertexcolor) {
-        this.color = data.vertexcolors[0];
+        this.color = data.vertexcolor[0];
         config.vertexColors = parseColorArray(data.vertexcolor);
     }
     else if(data.facecolor) {

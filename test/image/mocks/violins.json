@@ -538,12 +538,9 @@
                 "(pdf(y), y)=(0.12, 2.05)",
                 "(pdf(y), y)=(0.12, 2.09)"
             ],
-            "textsrc": "chelsea_lyn:13597:c50a88",
             "type": "scatter",
             "xaxis": "x1",
-            "xsrc": "chelsea_lyn:13597:783289",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:75effa"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -562,9 +559,7 @@
             "name": "",
             "type": "scatter",
             "xaxis": "x1",
-            "xsrc": "chelsea_lyn:13597:a94dd5",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:757147"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -585,12 +580,9 @@
                 "lower-quartile: -1.18",
                 "upper-quartile: 1.06"
             ],
-            "textsrc": "chelsea_lyn:13597:d4f68a",
             "type": "scatter",
             "xaxis": "x1",
-            "xsrc": "chelsea_lyn:13597:a94dd5",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:6d297f"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -608,12 +600,9 @@
             "text": [
                 "median: -0.59"
             ],
-            "textsrc": "chelsea_lyn:13597:ab8ead",
             "type": "scatter",
             "xaxis": "x1",
-            "xsrc": "chelsea_lyn:13597:c2cc3e",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:f652c0"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -648,9 +637,7 @@
             "showlegend": false,
             "type": "scatter",
             "xaxis": "x1",
-            "xsrc": "chelsea_lyn:13597:41cf2b",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:1cb5f1"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -970,12 +957,9 @@
                 "(pdf(y), y)=(-0.18, 1.37)",
                 "(pdf(y), y)=(-0.17, 1.41)"
             ],
-            "textsrc": "chelsea_lyn:13597:85c963",
             "type": "scatter",
             "xaxis": "x2",
-            "xsrc": "chelsea_lyn:13597:8b1a21",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:22ff2a"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -1295,12 +1279,9 @@
                 "(pdf(y), y)=(0.18, 1.37)",
                 "(pdf(y), y)=(0.17, 1.41)"
             ],
-            "textsrc": "chelsea_lyn:13597:5602cd",
             "type": "scatter",
             "xaxis": "x2",
-            "xsrc": "chelsea_lyn:13597:3c2c15",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:22ff2a"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -1319,9 +1300,7 @@
             "name": "",
             "type": "scatter",
             "xaxis": "x2",
-            "xsrc": "chelsea_lyn:13597:a94dd5",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:551288"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -1342,12 +1321,9 @@
                 "lower-quartile: -2.92",
                 "upper-quartile: 1.41"
             ],
-            "textsrc": "chelsea_lyn:13597:ee9c71",
             "type": "scatter",
             "xaxis": "x2",
-            "xsrc": "chelsea_lyn:13597:a94dd5",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:551288"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -1365,12 +1341,9 @@
             "text": [
                 "median: 0.30"
             ],
-            "textsrc": "chelsea_lyn:13597:818917",
             "type": "scatter",
             "xaxis": "x2",
-            "xsrc": "chelsea_lyn:13597:c2cc3e",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:fcb796"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -1395,9 +1368,7 @@
             "showlegend": false,
             "type": "scatter",
             "xaxis": "x2",
-            "xsrc": "chelsea_lyn:13597:c80db0",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:8edb0a"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -1717,12 +1688,9 @@
                 "(pdf(y), y)=(-0.29, 0.85)",
                 "(pdf(y), y)=(-0.28, 0.88)"
             ],
-            "textsrc": "chelsea_lyn:13597:77d5f8",
             "type": "scatter",
             "xaxis": "x3",
-            "xsrc": "chelsea_lyn:13597:1188e4",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:d66e1a"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2042,12 +2010,9 @@
                 "(pdf(y), y)=(0.29, 0.85)",
                 "(pdf(y), y)=(0.28, 0.88)"
             ],
-            "textsrc": "chelsea_lyn:13597:b51028",
             "type": "scatter",
             "xaxis": "x3",
-            "xsrc": "chelsea_lyn:13597:87c7a6",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:d66e1a"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2066,9 +2031,7 @@
             "name": "",
             "type": "scatter",
             "xaxis": "x3",
-            "xsrc": "chelsea_lyn:13597:a94dd5",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:5eae65"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2089,12 +2052,9 @@
                 "lower-quartile: -1.22",
                 "upper-quartile: 0.79"
             ],
-            "textsrc": "chelsea_lyn:13597:ee780d",
             "type": "scatter",
             "xaxis": "x3",
-            "xsrc": "chelsea_lyn:13597:a94dd5",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:436608"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2112,12 +2072,9 @@
             "text": [
                 "median: -0.01"
             ],
-            "textsrc": "chelsea_lyn:13597:fb1115",
             "type": "scatter",
             "xaxis": "x3",
-            "xsrc": "chelsea_lyn:13597:c2cc3e",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:b87de2"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2146,9 +2103,7 @@
             "showlegend": false,
             "type": "scatter",
             "xaxis": "x3",
-            "xsrc": "chelsea_lyn:13597:6958d7",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:f5bc3a"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2468,12 +2423,9 @@
                 "(pdf(y), y)=(-0.27, 1.03)",
                 "(pdf(y), y)=(-0.27, 1.06)"
             ],
-            "textsrc": "chelsea_lyn:13597:a70746",
             "type": "scatter",
             "xaxis": "x4",
-            "xsrc": "chelsea_lyn:13597:5290fa",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:f4c2fb"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2793,12 +2745,9 @@
                 "(pdf(y), y)=(0.27, 1.03)",
                 "(pdf(y), y)=(0.27, 1.06)"
             ],
-            "textsrc": "chelsea_lyn:13597:134786",
             "type": "scatter",
             "xaxis": "x4",
-            "xsrc": "chelsea_lyn:13597:d5b3f6",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:f4c2fb"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2817,9 +2766,7 @@
             "name": "",
             "type": "scatter",
             "xaxis": "x4",
-            "xsrc": "chelsea_lyn:13597:a94dd5",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:e51828"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2840,12 +2787,9 @@
                 "lower-quartile: -1.21",
                 "upper-quartile: 1.06"
             ],
-            "textsrc": "chelsea_lyn:13597:bdd781",
             "type": "scatter",
             "xaxis": "x4",
-            "xsrc": "chelsea_lyn:13597:a94dd5",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:e51828"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2863,12 +2807,9 @@
             "text": [
                 "median: 0.15"
             ],
-            "textsrc": "chelsea_lyn:13597:63a415",
             "type": "scatter",
             "xaxis": "x4",
-            "xsrc": "chelsea_lyn:13597:c2cc3e",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:b3ea06"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -2893,9 +2834,7 @@
             "showlegend": false,
             "type": "scatter",
             "xaxis": "x4",
-            "xsrc": "chelsea_lyn:13597:773c60",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:478d96"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -3215,12 +3154,9 @@
                 "(pdf(y), y)=(-0.25, -2.22)",
                 "(pdf(y), y)=(-0.25, -2.20)"
             ],
-            "textsrc": "chelsea_lyn:13597:2e321a",
             "type": "scatter",
             "xaxis": "x5",
-            "xsrc": "chelsea_lyn:13597:5f6618",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:60b60c"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -3438,12 +3374,9 @@
             "mode": "lines",
             "name": "",
             "opacity": 0.5,
-            "textsrc": "chelsea_lyn:13597:838119",
             "type": "scatter",
             "xaxis": "x5",
-            "xsrc": "chelsea_lyn:13597:bd2290",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:60b60c"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -3462,9 +3395,7 @@
             "name": "",
             "type": "scatter",
             "xaxis": "x5",
-            "xsrc": "chelsea_lyn:13597:a94dd5",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:8b4cf0"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -3485,12 +3416,9 @@
                 "lower-quartile: -3.85",
                 "upper-quartile: -2.20"
             ],
-            "textsrc": "chelsea_lyn:13597:ab9a6b",
             "type": "scatter",
             "xaxis": "x5",
-            "xsrc": "chelsea_lyn:13597:a94dd5",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:8b4cf0"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -3508,12 +3436,9 @@
             "text": [
                 "median: -3.03"
             ],
-            "textsrc": "chelsea_lyn:13597:2d529f",
             "type": "scatter",
             "xaxis": "x5",
-            "xsrc": "chelsea_lyn:13597:c2cc3e",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:a0d205"
+            "yaxis": "y1"
         },
         {
             "x": [
@@ -3534,9 +3459,7 @@
             "showlegend": false,
             "type": "scatter",
             "xaxis": "x5",
-            "xsrc": "chelsea_lyn:13597:09895d",
-            "yaxis": "y1",
-            "ysrc": "chelsea_lyn:13597:8b4cf0"
+            "yaxis": "y1"
         }
     ],
     "layout": {

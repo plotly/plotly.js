@@ -6,16 +6,43 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var assertDims = require('../assets/assert_dims');
-var assertStyle = require('../assets/assert_style');
+var customAssertions = require('../assets/custom_assertions');
+var supplyAllDefaults = require('../assets/supply_defaults');
+
+var assertDims = customAssertions.assertDims;
+var assertStyle = customAssertions.assertStyle;
+
+var mockFullLayout = {
+    _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
+    _modules: [],
+    _basePlotModules: [],
+    _has: function() {},
+    _dfltTitle: {x: 'xxx', y: 'yyy'}
+};
 
 
 describe('general transforms:', function() {
     'use strict';
 
-    var fullLayout = { _transformModules: [] };
+    var fullLayout = {
+        _transformModules: [],
+        _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
+        _modules: [],
+        _basePlotModules: []
+    };
 
     var traceIn, traceOut;
+
+    it('passes through empty transforms', function() {
+        traceIn = {
+            y: [2, 1, 2],
+            transforms: [{}]
+        };
+
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+
+        expect(traceOut.transforms).toEqual([{}]);
+    });
 
     it('supplyTraceDefaults should supply the transform defaults', function() {
         traceIn = {
@@ -31,6 +58,7 @@ describe('general transforms:', function() {
             operation: '=',
             value: 0,
             target: 'x',
+            preservegaps: false,
             _module: Filter
         }]);
     });
@@ -46,7 +74,7 @@ describe('general transforms:', function() {
         expect(traceOut.y).toBe(traceIn.y);
     });
 
-    it('supplyTraceDefaults should honored global transforms', function() {
+    it('supplyTraceDefaults should honor global transforms', function() {
         traceIn = {
             y: [2, 1, 2],
             transforms: [{
@@ -61,28 +89,31 @@ describe('general transforms:', function() {
             _transformModules: [],
             _globalTransforms: [{
                 type: 'filter'
-            }]
+            }],
+            _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
+            _modules: [],
+            _basePlotModules: []
         };
 
         traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
 
-        expect(traceOut.transforms[0]).toEqual({
+        expect(traceOut.transforms[0]).toEqual(jasmine.objectContaining({
             type: 'filter',
             enabled: true,
             operation: '=',
             value: 0,
             target: 'x',
             _module: Filter
-        }, '- global first');
+        }), '- global first');
 
-        expect(traceOut.transforms[1]).toEqual({
+        expect(traceOut.transforms[1]).toEqual(jasmine.objectContaining({
             type: 'filter',
             enabled: true,
             operation: '>',
             value: 0,
             target: 'x',
             _module: Filter
-        }, '- trace second');
+        }), '- trace second');
 
         expect(layout._transformModules).toEqual([Filter]);
     });
@@ -103,7 +134,7 @@ describe('general transforms:', function() {
         }];
 
         var dataOut = [];
-        Plots.supplyDataDefaults(dataIn, dataOut, {}, []);
+        Plots.supplyDataDefaults(dataIn, dataOut, {}, mockFullLayout);
 
         var msg;
 
@@ -118,14 +149,14 @@ describe('general transforms:', function() {
         }], msg);
 
         msg = 'supplying the transform defaults';
-        expect(dataOut[1].transforms[0]).toEqual({
+        expect(dataOut[1].transforms[0]).toEqual(jasmine.objectContaining({
             type: 'filter',
             enabled: true,
             operation: '>',
             value: 0,
             target: 'x',
             _module: Filter
-        }, msg);
+        }), msg);
 
         msg = 'keeping refs to user data';
         expect(dataOut[1]._input.x).toEqual([-2, -1, -2, 0, 1, 2, 3], msg);
@@ -144,6 +175,7 @@ describe('general transforms:', function() {
             operation: '>',
             value: 0,
             target: 'x',
+            preservegaps: false,
             _module: Filter
         }], msg);
 
@@ -165,18 +197,24 @@ describe('user-defined transforms:', function() {
         var transformIn = { type: 'fake' };
         var transformOut = {};
 
+        var calledSupplyDefaults = false;
+        var calledTransform = false;
+        var calledSupplyLayoutDefaults = false;
+
         var dataIn = [{
             transforms: [transformIn]
         }];
 
-        var fullData = [],
-            layout = {},
-            fullLayout = { _has: function() {} },
-            transitionData = {};
+        var fullData = [];
+        var layout = {};
+        var fullLayout = Lib.extendDeep({}, mockFullLayout);
+        var transitionData = {};
 
         function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
             expect(_transformIn).toBe(transformIn);
             expect(_layout).toBe(fullLayout);
+
+            calledSupplyDefaults = true;
 
             return transformOut;
         }
@@ -188,6 +226,8 @@ describe('user-defined transforms:', function() {
             expect(opts.layout).toBe(layout);
             expect(opts.fullLayout).toBe(fullLayout);
 
+            calledTransform = true;
+
             return dataOut;
         }
 
@@ -196,6 +236,8 @@ describe('user-defined transforms:', function() {
             expect(_fullLayout).toBe(fullLayout);
             expect(_fullData).toBe(fullData);
             expect(_transitionData).toBe(transitionData);
+
+            calledSupplyLayoutDefaults = true;
         }
 
         var fakeTransformModule = {
@@ -211,12 +253,19 @@ describe('user-defined transforms:', function() {
         Plots.supplyDataDefaults(dataIn, fullData, layout, fullLayout);
         Plots.supplyLayoutModuleDefaults(layout, fullLayout, fullData, transitionData);
         delete Plots.transformsRegistry.fake;
+        expect(calledSupplyDefaults).toBe(true);
+        expect(calledTransform).toBe(true);
+        expect(calledSupplyLayoutDefaults).toBe(true);
     });
 
 });
 
 describe('multiple transforms:', function() {
     'use strict';
+
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
 
     var mockData0 = [{
         mode: 'markers',
@@ -225,7 +274,13 @@ describe('multiple transforms:', function() {
         transforms: [{
             type: 'groupby',
             groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-            style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+            styles: [{
+                target: 'a',
+                value: {marker: {color: 'red'}}
+            }, {
+                target: 'b',
+                value: {marker: {color: 'blue'}}
+            }]
         }, {
             type: 'filter',
             operation: '>'
@@ -239,7 +294,13 @@ describe('multiple transforms:', function() {
         transforms: [{
             type: 'groupby',
             groups: ['b', 'a', 'b', 'b', 'b', 'a', 'a'],
-            style: { a: {marker: {color: 'green'}}, b: {marker: {color: 'black'}} }
+            styles: [{
+                target: 'a',
+                value: {marker: {color: 'green'}}
+            }, {
+                target: 'b',
+                value: {marker: {color: 'black'}}
+            }]
         }, {
             type: 'filter',
             operation: '<',
@@ -247,12 +308,62 @@ describe('multiple transforms:', function() {
         }]
     }];
 
+    var mockData2 = [{
+        x: [1, 2, 3, 4, 5],
+        y: [2, 3, 1, 7, 9],
+        marker: {size: [10, 20, 20, 20, 10]},
+        transforms: [
+            {
+                type: 'filter',
+                operation: '>',
+                value: 2,
+                target: 'y'
+            },
+            {
+                type: 'aggregate',
+                groups: 'marker.size',
+                aggregations: [
+                    {target: 'x', func: 'sum'}, // 20: 6, 10: 5
+                    {target: 'y', func: 'avg'}  // 20: 5, 10: 9
+                ]
+            },
+            {
+                type: 'filter',
+                operation: '<',
+                value: 6,
+                target: 'x'
+            }
+        ]
+    }];
+
     afterEach(destroyGraphDiv);
+
+    it('Plotly.plot should plot the transform traces - filter|aggregate|filter', function(done) {
+        var data = Lib.extendDeep([], mockData2);
+
+        Plotly.plot(gd, data).then(function() {
+            expect(gd.data.length).toEqual(1);
+
+            // this would be the result if we didn't have a second filter - kept for test case overview
+            // expect(gd._fullData[0].x).toEqual([6, 5]);
+            // expect(gd._fullData[0].y).toEqual([5, 9]);
+            // expect(gd._fullData[0].marker.size).toEqual([20, 10]);
+
+            expect(gd._fullData[0].x).toEqual([5]);
+            expect(gd._fullData[0].y).toEqual([9]);
+            expect(gd._fullData[0].marker.size).toEqual([10]);
+
+            expect(gd._fullData[0].transforms[0]._indexToPoints).toEqual({0: [1], 1: [3], 2: [4]});
+            expect(gd._fullData[0].transforms[1]._indexToPoints).toEqual({0: [1, 3], 1: [4]});
+            expect(gd._fullData[0].transforms[2]._indexToPoints).toEqual({0: [4]});
+
+            done();
+        });
+    });
+
 
     it('Plotly.plot should plot the transform traces', function(done) {
         var data = Lib.extendDeep([], mockData0);
-
-        var gd = createGraphDiv();
 
         Plotly.plot(gd, data).then(function() {
             expect(gd.data.length).toEqual(1);
@@ -276,8 +387,6 @@ describe('multiple transforms:', function() {
 
         data[0].transforms.slice().reverse();
 
-        var gd = createGraphDiv();
-
         Plotly.plot(gd, data).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
@@ -299,7 +408,6 @@ describe('multiple transforms:', function() {
         var data = Lib.extendDeep([], mockData0);
         data[0].marker = { size: 20 };
 
-        var gd = createGraphDiv();
         var dims = [2, 2];
 
         Plotly.plot(gd, data).then(function() {
@@ -329,7 +437,13 @@ describe('multiple transforms:', function() {
             expect(gd._fullData[1].marker.opacity).toEqual(1);
 
             return Plotly.restyle(gd, {
-                'transforms[0].style': { a: {marker: {color: 'green'}}, b: {marker: {color: 'red'}} },
+                'transforms[0].styles': [[{
+                    target: 'a',
+                    value: {marker: {color: 'green'}}
+                }, {
+                    target: 'b',
+                    value: {marker: {color: 'red'}}
+                }]],
                 'marker.opacity': 0.4
             });
         }).then(function() {
@@ -344,8 +458,6 @@ describe('multiple transforms:', function() {
 
     it('Plotly.extendTraces should work', function(done) {
         var data = Lib.extendDeep([], mockData0);
-
-        var gd = createGraphDiv();
 
         Plotly.plot(gd, data).then(function() {
             expect(gd.data[0].x.length).toEqual(7);
@@ -373,8 +485,6 @@ describe('multiple transforms:', function() {
     it('Plotly.deleteTraces should work', function(done) {
         var data = Lib.extendDeep([], mockData1);
 
-        var gd = createGraphDiv();
-
         Plotly.plot(gd, data).then(function() {
             assertDims([2, 2, 2, 2]);
 
@@ -392,8 +502,6 @@ describe('multiple transforms:', function() {
 
     it('toggling trace visibility should work', function(done) {
         var data = Lib.extendDeep([], mockData1);
-
-        var gd = createGraphDiv();
 
         Plotly.plot(gd, data).then(function() {
             assertDims([2, 2, 2, 2]);
@@ -414,6 +522,108 @@ describe('multiple transforms:', function() {
         });
     });
 
+    it('executes filter and aggregate in the order given', function() {
+        // filter and aggregate do not commute!
+
+        var trace1 = {
+            x: [0, -5, 7, 4, 5],
+            y: [2, 4, 6, 8, 10],
+            transforms: [{
+                type: 'aggregate',
+                groups: [1, 2, 2, 1, 1],
+                aggregations: [
+                    {target: 'x', func: 'sum'},
+                    {target: 'y', func: 'avg'}
+                ]
+            }, {
+                type: 'filter',
+                target: 'x',
+                operation: '<',
+                value: 5
+            }]
+        };
+
+        var trace2 = Lib.extendDeep({}, trace1);
+        trace2.transforms.reverse();
+
+        Plotly.newPlot(gd, [trace1, trace2]);
+
+        var trace1Out = gd._fullData[0];
+        expect(trace1Out.x).toEqual([2]);
+        expect(trace1Out.y).toEqual([5]);
+
+        var trace2Out = gd._fullData[1];
+        expect(trace2Out.x).toEqual([4, -5]);
+        expect(trace2Out.y).toEqual([5, 4]);
+    });
+
+    it('always executes groupby before aggregate', function() {
+        // aggregate and groupby wouldn't commute, but groupby always happens first
+        // because it has a `transform`, and aggregate has a `calcTransform`
+
+        var trace1 = {
+            x: [1, 2, 3, 4, 5],
+            y: [2, 4, 6, 8, 10],
+            transforms: [{
+                type: 'groupby',
+                groups: [1, 1, 2, 2, 2]
+            }, {
+                type: 'aggregate',
+                groups: [1, 2, 2, 1, 1],
+                aggregations: [
+                    {target: 'x', func: 'sum'},
+                    {target: 'y', func: 'avg'}
+                ]
+            }]
+        };
+
+        var trace2 = Lib.extendDeep({}, trace1);
+        trace2.transforms.reverse();
+
+        Plotly.newPlot(gd, [trace1, trace2]);
+
+        var t1g1 = gd._fullData[0];
+        var t1g2 = gd._fullData[1];
+        var t2g1 = gd._fullData[2];
+        var t2g2 = gd._fullData[3];
+
+        expect(t1g1.x).toEqual([1, 2]);
+        expect(t1g1.y).toEqual([2, 4]);
+        // group 2 has its aggregations switched, since group 2 comes first
+        expect(t1g2.x).toEqual([3, 9]);
+        expect(t1g2.y).toEqual([6, 9]);
+
+        // if we had done aggregation first, we'd implicitly get the first val
+        // for each of the groupby groups, which is [1, 1]
+        // so we'd only make 1 output trace, and it would look like:
+        // {x: [10, 5], y: [20/3, 5]}
+        // (and if we got some other groupby groups values, the most it could do
+        // is break ^^ into two separate traces)
+        expect(t2g1.x).toEqual(t1g1.x);
+        expect(t2g1.y).toEqual(t1g1.y);
+        expect(t2g2.x).toEqual(t1g2.x);
+        expect(t2g2.y).toEqual(t1g2.y);
+    });
+});
+
+describe('invalid transforms', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('ignores them', function(done) {
+        Plotly.plot(gd, [{
+            y: [1, 2, 3],
+            transforms: [{}]
+        }]).then(function() {
+            expect(gd._fullData[0].transforms.length).toEqual(1);
+            done();
+        });
+    });
 });
 
 describe('multiple traces with transforms:', function() {
@@ -437,7 +647,13 @@ describe('multiple traces with transforms:', function() {
         transforms: [{
             type: 'groupby',
             groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-            style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+            styles: [{
+                target: 'a',
+                value: {marker: {color: 'red'}},
+            }, {
+                target: 'b',
+                value: {marker: {color: 'blue'}}
+            }]
         }, {
             type: 'filter',
             operation: '>'
@@ -508,7 +724,13 @@ describe('multiple traces with transforms:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'transforms[0].style': { a: {marker: {color: 'green'}}, b: {marker: {color: 'red'}} },
+                'transforms[0].styles': [[{
+                    target: 'a',
+                    value: {marker: {color: 'green'}},
+                }, {
+                    target: 'b',
+                    value: {marker: {color: 'red'}}
+                }]],
                 'marker.opacity': [0.4, 0.6]
             });
         }).then(function() {
@@ -662,4 +884,167 @@ describe('restyle applied on transforms:', function() {
         .then(done);
     });
 
+});
+
+describe('supplyDefaults with groupby + filter', function() {
+    function calcDatatoTrace(calcTrace) {
+        return calcTrace[0].trace;
+    }
+
+    function _transform(data, layout) {
+        var gd = {
+            data: data,
+            layout: layout || {}
+        };
+
+        supplyAllDefaults(gd);
+        Plots.doCalcdata(gd);
+
+        return gd.calcdata.map(calcDatatoTrace);
+    }
+
+    it('filter + groupby with blank target', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 6, 8, 9],
+            transforms: [{
+                type: 'filter',
+                operation: '<',
+                value: 6.5
+            }, {
+                type: 'groupby',
+                groups: [1, 1, 1, 2, 2, 2, 2]
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([1, 2, 3]);
+        expect(out[0].y).toEqual([4, 6, 5]);
+
+        expect(out[1].x).toEqual([4, 5, 6]);
+        expect(out[1].y).toEqual([7, 6, 8]);
+    });
+
+    it('fiter + groupby', function() {
+        var out = _transform([{
+            x: [5, 4, 3],
+            y: [6, 5, 4],
+        }, {
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 8, 9, 10],
+            transforms: [{
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: '<',
+                value: 6.5
+            }, {
+                type: 'groupby',
+                groups: [1, 1, 1, 2, 2, 2, 2]
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([5, 4, 3]);
+        expect(out[0].y).toEqual([6, 5, 4]);
+
+        expect(out[1].x).toEqual([1, 2, 3]);
+        expect(out[1].y).toEqual([4, 6, 5]);
+
+        expect(out[2].x).toEqual([4, 5, 6]);
+        expect(out[2].y).toEqual([7, 8, 9]);
+    });
+
+    it('groupby + filter', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 6, 8, 9],
+            transforms: [{
+                type: 'groupby',
+                groups: [1, 1, 1, 2, 2, 2, 2]
+            }, {
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: '<',
+                value: 6.5
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([1, 2, 3]);
+        expect(out[0].y).toEqual([4, 6, 5]);
+
+        expect(out[1].x).toEqual([4, 5, 6]);
+        expect(out[1].y).toEqual([7, 6, 8]);
+    });
+
+    it('groupby + groupby', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7, 8],
+            y: [4, 6, 5, 7, 6, 8, 9, 10],
+            transforms: [{
+                type: 'groupby',
+                groups: [1, 1, 1, 1, 2, 2, 2, 2]
+            }, {
+                type: 'groupby',
+                groups: [3, 4, 3, 4, 3, 4, 3, 5],
+            }]
+        }]);
+        //               |  |  |  |  |  |  |  |
+        //               v  v  v  v  v  v  v  v
+        // Trace number: 0  1  0  1  2  3  2  4
+
+        expect(out.length).toEqual(5);
+        expect(out[0].x).toEqual([1, 3]);
+        expect(out[1].x).toEqual([2, 4]);
+        expect(out[2].x).toEqual([5, 7]);
+        expect(out[3].x).toEqual([6]);
+        expect(out[4].x).toEqual([8]);
+    });
+
+    it('groupby + groupby + filter', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7, 8],
+            y: [4, 6, 5, 7, 6, 8, 9, 10],
+            transforms: [{
+                type: 'groupby',
+                groups: [1, 1, 1, 1, 2, 2, 2, 2]
+            }, {
+                type: 'groupby',
+                groups: [3, 4, 3, 4, 3, 4, 3, 5],
+            }, {
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7, 8],
+                operation: '<',
+                value: 4.5
+            }]
+        }]);
+        //               |  |  |  |  |  |  |  |
+        //               v  v  v  v  v  v  v  v
+        // Trace number: 0  1  0  1  2  3  2  4
+
+        expect(out.length).toEqual(5);
+        expect(out[0].x).toEqual([1, 3]);
+        expect(out[1].x).toEqual([2, 4]);
+        expect(out[2].x).toEqual([]);
+        expect(out[3].x).toEqual([]);
+        expect(out[4].x).toEqual([]);
+    });
+
+    it('fiter + filter', function() {
+        var out = _transform([{
+            x: [1, 2, 3, 4, 5, 6, 7],
+            y: [4, 6, 5, 7, 8, 9, 10],
+            transforms: [{
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: '<',
+                value: 6.5
+            }, {
+                type: 'filter',
+                target: [1, 2, 3, 4, 5, 6, 7],
+                operation: '>',
+                value: 1.5
+            }]
+        }]);
+
+        expect(out[0].x).toEqual([2, 3, 4, 5, 6]);
+        expect(out[0].y).toEqual([6, 5, 7, 8, 9]);
+    });
 });

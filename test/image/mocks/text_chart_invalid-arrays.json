@@ -40,8 +40,7 @@
                 "top left",
                 "top left"
             ],
-            "type": "scatter",
-            "uid": "a8eecb"
+            "type": "scatter"
         },
         {
             "x": [
@@ -83,8 +82,7 @@
                 "bottom left",
                 "bottom left"
             ],
-            "type": "scatter",
-            "uid": "cbf13d"
+            "type": "scatter"
         }
     ],
     "layout": {

@@ -4,8 +4,14 @@
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
-plotly.js is a high-level, declarative charting library. plotly.js ships with 20
-chart types, including 3D charts, statistical graphs, and SVG maps.
+plotly.js is a high-level, declarative charting library. plotly.js ships with over 20
+chart types, including scientific charts, 3D graphs, statistical charts, SVG maps, financial charts,
+and more.
+
+<p align="center">
+    <a href="https://www.plot.ly/javascript" target="_blank">
+    <img src="https://raw.githubusercontent.com/cldougl/plot_images/add_r_img/plotly_2017.png">
+</a></p>
 
 [Contact us](https://plot.ly/products/consulting-and-oem/) for Plotly.js consulting, dashboard development, application integration, and feature additions.
 
@@ -48,13 +54,13 @@ and require plotly.js using CommonJS as `var Plotly = require('plotly.js');` or 
 #### Use the plotly.js CDN hosted by Fastly
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
-<script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <!-- OR use a specific plotly.js release (e.g. version 1.5.0) -->
-<script type="text/javascript" src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
 
 <!-- OR an un-minified version is also available -->
-<script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.js"></script>
 ```
 
 and use the `Plotly` object in the window scope.
@@ -93,13 +99,27 @@ To learn more about the plotly.js module architecture, refer to our [modularizin
 Important: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `charset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
 
 ```html
-<script type="text/javascript" src="my-plotly-bundle.js" charset="utf-8"></script>
+<script src="my-plotly-bundle.js" charset="utf-8"></script>
 ```
 
 
-#### Webpack Usage with Modules
+#### Building plotly.js with Webpack
 
-Browserify [transforms](https://github.com/substack/browserify-handbook#transforms) are required to build plotly.js, namely, [glslify](https://github.com/stackgl/glslify) to transform WebGL shaders and [cwise](https://github.com/scijs/cwise) to compile component-wise array operations. To make the trace module system work with Webpack, you will need to install [ify-loader](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json` for your build to correctly bundle plotly.js files.
+For plotly.js to build with Webpack you will need to install [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json`. This adds Browserify transform compatibility to Webpack which is necessary for some plotly.js dependencies.
+
+A repo that demonstrates how to build plotly.js with Webpack can be found [here](https://github.com/rreusser/plotly-webpack). In short add `ify-loader` to the `module` section in your `webpack.config.js`:
+```js
+...
+    module: {
+        rules: [
+            {
+                test: /\.js$/,
+                loader: 'ify-loader'
+            }
+        ]
+    },
+...
+```
 
 ## Bugs and feature requests
 
@@ -125,7 +145,7 @@ Please read through our [contributing guidelines](https://github.com/plotly/plot
 * Implementation help may be found on community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)) or
   on Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
 * Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/browse/keyword/plotly).
-* Direct developer email support can be purchased through a [Plotly Pro](https://plot.ly/products/cloud/) plan.
+* Direct developer email support can be purchased through a [Plotly Support Plan](https://support.plot.ly/libraries/javascript).
 
 ## Versioning
 
@@ -146,7 +166,7 @@ Open-source clients to the plotly.js APIs are available at these links:
 |**node.js cloud client**| [plotly/plotly-nodejs](https://github.com/plotly/plotly-nodejs) | [plot.ly/nodejs/getting-started](https://plot.ly/nodejs/getting-started) |
 |**Julia**| [plotly/Plotly.jl](https://github.com/plotly/Plotly.jl) | [plot.ly/julia/getting-started](https://plot.ly/julia/getting-started) |
 
-plotly.js charts can also be created and saved online for free at [plot.ly/plot](https://plot.ly/plot).
+plotly.js charts can also be created and saved online for free at [plot.ly/create](https://plot.ly/create).
 
 ## Creators
 
@@ -154,7 +174,10 @@ plotly.js charts can also be created and saved online for free at [plot.ly/plot]
 |---|--------|---------|
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) |
-|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) | |
+|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) |
+|**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) |
+|**Robert Monfera**| [@monfera](https://github.com/monfera) | [@monfera](https://twitter.com/monfera) |
+|**Nicolas Riesco**| [@n-riesco](https://github.com/n-riesco) | |
 |**Miklós Tusz**| [@mdtusz](https://github.com/mdtusz) | [@mdtusz](https://twitter.com/mdtusz)|
 |**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | |
 |**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | |
@@ -164,7 +187,7 @@ plotly.js charts can also be created and saved online for free at [plot.ly/plot]
 
 ## Copyright and license
 
-Code and documentation copyright 2017 Plotly, Inc.
+Code and documentation copyright 2018 Plotly, Inc.
 
 Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
 

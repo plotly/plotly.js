@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -34,7 +34,9 @@ Histogram.setPositions = require('../bar/set_positions');
 Histogram.plot = require('../bar/plot');
 Histogram.style = require('../bar/style');
 Histogram.colorbar = require('../scatter/colorbar');
-Histogram.hoverPoints = require('../bar/hover');
+Histogram.hoverPoints = require('./hover');
+Histogram.selectPoints = require('../bar/select');
+Histogram.eventData = require('./event_data');
 
 Histogram.moduleType = 'trace';
 Histogram.name = 'histogram';

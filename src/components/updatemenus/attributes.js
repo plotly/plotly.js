@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -11,6 +11,7 @@
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var padAttrs = require('../../plots/pad_attributes');
 
 var buttonsAttrs = {
@@ -18,11 +19,15 @@ var buttonsAttrs = {
 
     method: {
         valType: 'enumerated',
-        values: ['restyle', 'relayout', 'animate', 'update'],
+        values: ['restyle', 'relayout', 'animate', 'update', 'skip'],
         dflt: 'restyle',
         role: 'info',
         description: [
-            'Sets the Plotly method to be called on click.'
+            'Sets the Plotly method to be called on click.',
+            'If the `skip` method is used, the API updatemenu will function as normal',
+            'but will perform no API calls and will not bind automatically to state',
+            'updates. This may be used to create a component interface and attach to',
+            'updatemenu events manually via JavaScript.'
         ].join(' ')
     },
     args: {
@@ -30,9 +35,9 @@ var buttonsAttrs = {
         role: 'info',
         freeLength: true,
         items: [
-            { valType: 'any' },
-            { valType: 'any' },
-            { valType: 'any' }
+            {valType: 'any'},
+            {valType: 'any'},
+            {valType: 'any'}
         ],
         description: [
             'Sets the arguments values to be passed to the Plotly',
@@ -44,10 +49,22 @@ var buttonsAttrs = {
         role: 'info',
         dflt: '',
         description: 'Sets the text label to appear on the button.'
+    },
+    execute: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: [
+            'When true, the API method is executed. When false, all other behaviors are the same',
+            'and command execution is skipped. This may be useful when hooking into, for example,',
+            'the `plotly_buttonclicked` method and executing the API command manually without losing',
+            'the benefit of the updatemenu automatically binding to the state of the plot through the',
+            'specification of `method` and `args`.'
+        ].join(' ')
     }
 };
 
-module.exports = {
+module.exports = overrideAll({
     _isLinkedToArray: 'updatemenu',
     _arrayAttrRegexps: [/^updatemenus\[(0|[1-9][0-9]+)\]\.buttons/],
 
@@ -146,7 +163,7 @@ module.exports = {
         description: 'Sets the padding around the buttons or dropdown menu.'
     }),
 
-    font: extendFlat({}, fontAttrs, {
+    font: fontAttrs({
         description: 'Sets the font of the update menu button text.'
     }),
 
@@ -166,6 +183,7 @@ module.exports = {
         min: 0,
         dflt: 1,
         role: 'style',
+        editType: 'arraydraw',
         description: 'Sets the width (in px) of the border enclosing the update menu.'
     }
-};
+}, 'arraydraw', 'from-root');

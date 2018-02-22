@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2017, Plotly, Inc.
+* Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -10,6 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
@@ -37,8 +38,7 @@ module.exports = function setPositions(gd, plotinfo) {
             fullTrace.visible === true &&
             Registry.traceIs(fullTrace, 'bar') &&
             fullTrace.xaxis === xa._id &&
-            fullTrace.yaxis === ya._id &&
-            !calcTraces[i][0].placeholder
+            fullTrace.yaxis === ya._id
         ) {
             if(fullTrace.orientation === 'h') {
                 calcTracesHorizontal.push(calcTraces[i]);
@@ -188,7 +188,7 @@ function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces) {
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
 
-            if(!isNumeric(bar.s)) continue;
+            if(bar.s === BADNUM) continue;
 
             var isOutmostBar = ((bar.b + bar.s) === sieve.get(bar.p, bar.s));
             if(isOutmostBar) bar._outmost = true;
@@ -227,6 +227,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
+        t.bardelta = minDiff;
     }
 
     // stack bars that only differ by rounding
@@ -236,7 +237,7 @@ function setOffsetAndWidth(gd, pa, sieve) {
     applyAttributes(sieve);
 
     // store the bar center in each calcdata item
-    setBarCenter(gd, pa, sieve);
+    setBarCenterAndWidth(gd, pa, sieve);
 
     // update position axes
     updatePositionAxis(gd, pa, sieve);
@@ -277,6 +278,7 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
         t.barwidth = barWidth;
         t.poffset = offsetFromCenter;
         t.bargroupwidth = barGroupWidth;
+        t.bardelta = minDiff;
     }
 
     // stack bars that only differ by rounding
@@ -286,7 +288,7 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve) {
     applyAttributes(sieve);
 
     // store the bar center in each calcdata item
-    setBarCenter(gd, pa, sieve);
+    setBarCenterAndWidth(gd, pa, sieve);
 
     // update position axes
     updatePositionAxis(gd, pa, sieve, overlap);
@@ -377,7 +379,7 @@ function applyAttributes(sieve) {
 }
 
 
-function setBarCenter(gd, pa, sieve) {
+function setBarCenterAndWidth(gd, pa, sieve) {
     var calcTraces = sieve.traces,
         pLetter = getAxisLetter(pa);
 
@@ -392,9 +394,13 @@ function setBarCenter(gd, pa, sieve) {
         for(var j = 0; j < calcTrace.length; j++) {
             var calcBar = calcTrace[j];
 
+            // store the actual bar width and position, for use by hover
+            var width = calcBar.w = (barwidthIsArray) ? barwidth[j] : barwidth;
             calcBar[pLetter] = calcBar.p +
                 ((poffsetIsArray) ? poffset[j] : poffset) +
-                ((barwidthIsArray) ? barwidth[j] : barwidth) / 2;
+                width / 2;
+
+
         }
     }
 }
@@ -463,8 +469,7 @@ function setBaseAndTop(gd, sa, sieve) {
     // along with the bases and tops of each bar.
     var traces = sieve.traces,
         sLetter = getAxisLetter(sa),
-        s0 = sa.l2c(sa.c2l(0)),
-        sRange = [s0, s0];
+        sRange = [null, null];
 
     for(var i = 0; i < traces.length; i++) {
         var trace = traces[i];
@@ -477,7 +482,7 @@ function setBaseAndTop(gd, sa, sieve) {
             bar[sLetter] = barTop;
 
             if(isNumeric(sa.c2l(barTop))) expandRange(sRange, barTop);
-            if(isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
+            if(bar.hasB && isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
         }
     }
 
@@ -493,8 +498,7 @@ function stackBars(gd, sa, sieve) {
         i, trace,
         j, bar;
 
-    var s0 = sa.l2c(sa.c2l(0)),
-        sRange = [s0, s0];
+    var sRange = [null, null];
 
     for(i = 0; i < traces.length; i++) {
         trace = traces[i];
@@ -502,7 +506,7 @@ function stackBars(gd, sa, sieve) {
         for(j = 0; j < trace.length; j++) {
             bar = trace[j];
 
-            if(!isNumeric(bar.s)) continue;
+            if(bar.s === BADNUM) continue;
 
             // stack current bar and get previous sum
             var barBase = sieve.put(bar.p, bar.b + bar.s),
@@ -514,7 +518,7 @@ function stackBars(gd, sa, sieve) {
 
             if(!barnorm) {
                 if(isNumeric(sa.c2l(barTop))) expandRange(sRange, barTop);
-                if(isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
+                if(bar.hasB && isNumeric(sa.c2l(barBase))) expandRange(sRange, barBase);
             }
         }
     }
@@ -533,7 +537,7 @@ function sieveBars(gd, sa, sieve) {
         for(var j = 0; j < trace.length; j++) {
             var bar = trace[j];
 
-            if(isNumeric(bar.s)) sieve.put(bar.p, bar.b + bar.s);
+            if(bar.s !== BADNUM) sieve.put(bar.p, bar.b + bar.s);
         }
     }
 }
@@ -569,7 +573,7 @@ function normalizeBars(gd, sa, sieve) {
         for(var j = 0; j < trace.length; j++) {
             var bar = trace[j];
 
-            if(!isNumeric(bar.s)) continue;
+            if(bar.s === BADNUM) continue;
 
             var scale = Math.abs(sTop / sieve.get(bar.p, bar.s));
             bar.b *= scale;
@@ -580,7 +584,7 @@ function normalizeBars(gd, sa, sieve) {
             bar[sLetter] = barTop;
 
             maybeExpand(barTop);
-            maybeExpand(barBase);
+            if(bar.hasB) maybeExpand(barBase);
         }
     }
 

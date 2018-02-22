@@ -26,7 +26,7 @@
       "anchor": "y2",
       "domain": [ 0.55, 1 ],
       "rangeslider": {
-        "range": [ -1, 4 ]
+        "range": [ -2, 4 ]
       }
     },
     "yaxis": {
