@@ -779,9 +779,9 @@ function plot(container, subplot, cdata) {
         }
         // fill requires linked traces, so we generate it's positions here
         if(scene.fill2d) {
-            scene.fillOptions.forEach(function(fillOptions, i) {
+            scene.fillOptions = scene.fillOptions.map(function(fillOptions, i) {
                 var cdscatter = cdata[i];
-                if(!fillOptions || !cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
+                if(!fillOptions || !cdscatter || !cdscatter[0] || !cdscatter[0].trace) return null;
                 var cd = cdscatter[0];
                 var trace = cd.trace;
                 var stash = cd.t;
@@ -861,6 +861,8 @@ function plot(container, subplot, cdata) {
 
                 fillOptions.opacity = trace.opacity;
                 fillOptions.positions = pos;
+
+                return fillOptions;
             });
 
             scene.fill2d.update(scene.fillOptions);
@@ -945,7 +947,7 @@ function plot(container, subplot, cdata) {
             scene.select2d = createScatter(layout._glcanvas.data()[1].regl, {clone: scene.scatter2d});
         }
 
-        if(scene.scatter2d) {
+        if(scene.scatter2d && scene.selectBatch && scene.selectBatch.length) {
             // update only traces with selection
             scene.scatter2d.update(scene.unselectedOptions.map(function(opts, i) {
                 return scene.selectBatch[i] ? opts : null;
