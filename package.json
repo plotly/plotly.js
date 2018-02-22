@@ -133,7 +133,7 @@
     "karma": "^2.0.0",
     "karma-browserify": "^5.2.0",
     "karma-benchmark": "^0.7.1",
-    "karma-benchmark-json-reporter": "^0.1.0",
+    "karma-benchmark-json-reporter": "^1.0.1",
     "karma-benchmarkjs-reporter": "^1.0.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.0.0",
