@@ -876,3 +876,19 @@ lib.subplotSort = function(a, b) {
     }
     return numB - numA;
 };
+
+// repeatable pseudorandom generator
+var randSeed = 2000000000;
+
+lib.seedPseudoRandom = function() {
+    randSeed = 2000000000;
+};
+
+lib.pseudoRandom = function() {
+    var lastVal = randSeed;
+    randSeed = (69069 * randSeed + 1) % 4294967296;
+    // don't let consecutive vals be too close together
+    // gets away from really trying to be random, in favor of better local uniformity
+    if(Math.abs(randSeed - lastVal) < 429496729) return lib.pseudoRandom();
+    return randSeed / 4294967296;
+};
