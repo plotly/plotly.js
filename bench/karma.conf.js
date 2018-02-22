@@ -3,6 +3,12 @@
 var pkg = require('../package.json');
 var execSync = require('child_process').execSync;
 
+function func(config) {
+    func.defaultConfig.logLevel = config.LOG_INFO;
+    func.defaultConfig.browserConsoleLogOptions = {level: 'log'};
+    config.set(func.defaultConfig);
+}
+
 func.defaultConfig = {
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
