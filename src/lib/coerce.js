@@ -257,19 +257,56 @@ exports.valObjectMeta = {
             'An {array} of plot information.'
         ].join(' '),
         requiredOpts: ['items'],
-        otherOpts: ['dflt', 'freeLength'],
+        // set dimensions=2 for a 2D array
+        // `items` may be a single object instead of an array, in which case
+        // `freeLength` must be true.
+        otherOpts: ['dflt', 'freeLength', 'dimensions'],
         coerceFunction: function(v, propOut, dflt, opts) {
+
+            // simplified coerce function just for array items
+            function coercePart(v, opts, dflt) {
+                var out;
+                var propPart = {set: function(v) { out = v; }};
+
+                if(dflt === undefined) dflt = opts.dflt;
+
+                exports.valObjectMeta[opts.valType].coerceFunction(v, propPart, dflt, opts);
+
+                return out;
+            }
+
+            var twoD = opts.dimensions === 2;
+
             if(!Array.isArray(v)) {
                 propOut.set(dflt);
                 return;
             }
 
-            var items = opts.items,
-                vOut = [];
+            var items = opts.items;
+            var vOut = [];
+            var arrayItems = Array.isArray(items);
+            var len = arrayItems ? items.length : v.length;
+
+            var i, j, len2, vNew;
+
             dflt = Array.isArray(dflt) ? dflt : [];
 
-            for(var i = 0; i < items.length; i++) {
-                exports.coerce(v, vOut, items, '[' + i + ']', dflt[i]);
+            if(twoD) {
+                for(i = 0; i < len; i++) {
+                    vOut[i] = [];
+                    var row = Array.isArray(v[i]) ? v[i] : [];
+                    len2 = arrayItems ? items[i].length : row.length;
+                    for(j = 0; j < len2; j++) {
+                        vNew = coercePart(row[j], arrayItems ? items[i][j] : items, (dflt[i] || [])[j]);
+                        if(vNew !== undefined) vOut[i][j] = vNew;
+                    }
+                }
+            }
+            else {
+                for(i = 0; i < len; i++) {
+                    vNew = coercePart(v[i], arrayItems ? items[i] : items, dflt[i]);
+                    if(vNew !== undefined) vOut[i] = vNew;
+                }
             }
 
             propOut.set(vOut);
@@ -278,15 +315,25 @@ exports.valObjectMeta = {
             if(!Array.isArray(v)) return false;
 
             var items = opts.items;
+            var arrayItems = Array.isArray(items);
+            var twoD = opts.dimensions === 2;
 
             // when free length is off, input and declared lengths must match
             if(!opts.freeLength && v.length !== items.length) return false;
 
             // valid when all input items are valid
             for(var i = 0; i < v.length; i++) {
-                var isItemValid = exports.validate(v[i], opts.items[i]);
-
-                if(!isItemValid) return false;
+                if(twoD) {
+                    if(!Array.isArray(v[i]) || (!opts.freeLength && v[i].length !== items[i].length)) {
+                        return false;
+                    }
+                    for(var j = 0; j < v[i].length; j++) {
+                        if(!exports.validate(v[i][j], arrayItems ? items[i][j] : items)) {
+                            return false;
+                        }
+                    }
+                }
+                else if(!exports.validate(v[i], arrayItems ? items[i] : items)) return false;
             }
 
             return true;
