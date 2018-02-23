@@ -11,7 +11,7 @@
 
 var Lib = require('../../lib');
 var defaultLine = require('../../components/color').defaultLine;
-var domainAttrs = require('../domain_attributes');
+var domainAttrs = require('../domain').attributes;
 var fontAttrs = require('../font_attributes');
 var textposition = require('../../traces/scatter/attributes').textposition;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;

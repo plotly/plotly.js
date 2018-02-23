@@ -10,6 +10,7 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
+var handleDomainDefaults = require('../../plots/domain').defaults;
 
 function defaultColumnOrder(traceOut, coerce) {
     var specifiedColumnOrder = traceOut.columnorder || [];
@@ -28,8 +29,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    coerce('domain.x');
-    coerce('domain.y');
+    handleDomainDefaults(traceOut, layout, coerce);
 
     coerce('columnwidth');
 

@@ -13,6 +13,7 @@ var attributes = require('./attributes');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var maxDimensionCount = require('./constants').maxDimensionCount;
+var handleDomainDefaults = require('../../plots/domain').defaults;
 
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
@@ -90,8 +91,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
-    coerce('domain.x');
-    coerce('domain.y');
+    handleDomainDefaults(traceOut, layout, coerce);
 
     if(!Array.isArray(dimensions) || !dimensions.length) {
         traceOut.visible = false;

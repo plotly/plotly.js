@@ -20,6 +20,8 @@ var extendFlat = require('../lib/extend').extendFlat;
  *     opts.trace: set to true for trace containers
  *   @param {string}
  *     opts.editType: editType for all pieces
+ *   @param {boolean}
+ *     opts.noGridCell: set to true to omit `row` and `column`
  *
  * @param {object} extra
  *   @param {string}
@@ -29,7 +31,7 @@ var extendFlat = require('../lib/extend').extendFlat;
  *
  * @return {object} attributes object containing {x,y} as specified
  */
-module.exports = function(opts, extra) {
+exports.attributes = function(opts, extra) {
     opts = opts || {};
     extra = extra || {};
 
@@ -48,7 +50,7 @@ module.exports = function(opts, extra) {
     var contPart = opts.trace ? 'trace ' : 'subplot ';
     var descPart = extra.description ? ' ' + extra.description : '';
 
-    return {
+    var out = {
         x: extendFlat({}, base, {
             description: [
                 'Sets the horizontal domain of this ',
@@ -69,4 +71,60 @@ module.exports = function(opts, extra) {
         }),
         editType: opts.editType
     };
+
+    if(!opts.noGridCell) {
+        out.row = {
+            valType: 'integer',
+            min: 0,
+            role: 'info',
+            editType: opts.editType,
+            description: [
+                'If there is a layout grid, use the domain ',
+                'for this row in the grid for this ',
+                namePart,
+                contPart,
+                '.',
+                descPart
+            ].join('')
+        };
+        out.column = {
+            valType: 'integer',
+            min: 0,
+            role: 'info',
+            editType: opts.editType,
+            description: [
+                'If there is a layout grid, use the domain ',
+                'for this column in the grid for this ',
+                namePart,
+                contPart,
+                '.',
+                descPart
+            ].join('')
+        };
+    }
+
+    return out;
+};
+
+exports.defaults = function(containerOut, layout, coerce, dfltDomains) {
+    var dfltX = (dfltDomains && dfltDomains.x) || [0, 1];
+    var dfltY = (dfltDomains && dfltDomains.y) || [0, 1];
+
+    var grid = layout.grid;
+    if(grid) {
+        var column = coerce('domain.column');
+        if(column !== undefined) {
+            if(column < grid.columns) dfltX = grid._domains.x[column];
+            else delete containerOut.domain.column;
+        }
+
+        var row = coerce('domain.row');
+        if(row !== undefined) {
+            if(row < grid.rows) dfltY = grid._domains.y[row];
+            else delete containerOut.domain.row;
+        }
+    }
+
+    coerce('domain.x', dfltX);
+    coerce('domain.y', dfltY);
 };

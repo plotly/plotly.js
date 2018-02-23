@@ -7,7 +7,7 @@
 */
 
 'use strict';
-var counterRegex = require('../../lib').counterRegex;
+var counterRegex = require('../../lib/regex').counter;
 
 
 module.exports = {
