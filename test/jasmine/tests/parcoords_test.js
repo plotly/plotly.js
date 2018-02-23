@@ -118,7 +118,7 @@ describe('parcoords initialization tests', function() {
                     alienProperty: 'Alpha Centauri'
                 }]
             });
-            expect(fullTrace.dimensions).toEqual([{values: [1], visible: true, tickformat: '3s', _index: 0}]);
+            expect(fullTrace.dimensions).toEqual([{values: [1], visible: true, tickformat: '3s', _index: 0, _length: 1}]);
         });
 
         it('\'dimension.visible\' should be set to false, and other props just passed through if \'values\' is not provided', function() {
@@ -127,7 +127,7 @@ describe('parcoords initialization tests', function() {
                     alienProperty: 'Alpha Centauri'
                 }]
             });
-            expect(fullTrace.dimensions).toEqual([{visible: false, values: [], _index: 0}]);
+            expect(fullTrace.dimensions).toEqual([{visible: false, _index: 0}]);
         });
 
         it('\'dimension.visible\' should be set to false, and other props just passed through if \'values\' is an empty array', function() {
@@ -147,22 +147,17 @@ describe('parcoords initialization tests', function() {
                     alienProperty: 'Alpha Centauri'
                 }]
             });
-            expect(fullTrace.dimensions).toEqual([{visible: false, values: [], _index: 0}]);
+            expect(fullTrace.dimensions).toEqual([{visible: false, _index: 0}]);
         });
 
-        it('\'dimension.values\' should get truncated to a common shortest length', function() {
+        it('\'dimension.values\' should get truncated to a common shortest *nonzero* length', function() {
             var fullTrace = _supply({dimensions: [
                 {values: [321, 534, 542, 674]},
                 {values: [562, 124, 942]},
                 {values: [], visible: true},
-                {values: [1, 2], visible: false} // shouldn't be truncated to as false
+                {values: [1, 2], visible: false} // shouldn't be truncated to as visible: false
             ]});
-            expect(fullTrace.dimensions).toEqual([
-                {values: [], visible: true, tickformat: '3s', _index: 0},
-                {values: [], visible: true, tickformat: '3s', _index: 1},
-                {values: [], visible: true, tickformat: '3s', _index: 2},
-                {values: [1, 2], visible: false, _index: 3}
-            ]);
+            expect(fullTrace._commonLength).toBe(3);
         });
     });
 

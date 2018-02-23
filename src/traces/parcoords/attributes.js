@@ -92,7 +92,6 @@ module.exports = {
         values: {
             valType: 'data_array',
             role: 'info',
-            dflt: [],
             editType: 'calc',
             description: [
                 'Dimension values. `values[n]` represents the value of the `n`th point in the dataset,',
