@@ -76,6 +76,7 @@ exports.attributes = function(opts, extra) {
         out.row = {
             valType: 'integer',
             min: 0,
+            dflt: 0,
             role: 'info',
             editType: opts.editType,
             description: [
@@ -90,6 +91,7 @@ exports.attributes = function(opts, extra) {
         out.column = {
             valType: 'integer',
             min: 0,
+            dflt: 0,
             role: 'info',
             editType: opts.editType,
             description: [
