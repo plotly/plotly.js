@@ -109,20 +109,6 @@ var gridAttrs = exports.attributes = {
             'then iterating rows according to `roworder`.'
         ].join(' ')
     },
-    gap: {
-        valType: 'number',
-        min: 0,
-        max: 1,
-        dflt: 0.1,
-        role: 'info',
-        editType: 'calc',
-        description: [
-            'Space between grid cells, expressed as a fraction of the total',
-            'width or height available to one cell. You can also use `xgap`',
-            'and `ygap` to space x and y differently. Defaults to 0.1 for',
-            'coupled-axes grids and 0.25 for independent grids.'
-        ].join(' ')
-    },
     xgap: {
         valType: 'number',
         min: 0,
@@ -131,7 +117,8 @@ var gridAttrs = exports.attributes = {
         editType: 'calc',
         description: [
             'Horizontal space between grid cells, expressed as a fraction',
-            'of the total width available to one cell.'
+            'of the total width available to one cell. Defaults to 0.1',
+            'for coupled-axes grids and 0.2 for independent grids.'
         ].join(' ')
     },
     ygap: {
@@ -142,7 +129,8 @@ var gridAttrs = exports.attributes = {
         editType: 'calc',
         description: [
             'Vertical space between grid cells, expressed as a fraction',
-            'of the total height available to one cell.'
+            'of the total height available to one cell. Defaults to 0.1',
+            'for coupled-axes grids and 0.3 for independent grids.'
         ].join(' ')
     },
     domain: domainAttrs({name: 'grid', editType: 'calc', noGridCell: true}, {
@@ -218,17 +206,16 @@ exports.sizeDefaults = function(layoutIn, layoutOut) {
 
     var rowOrder = coerce('roworder');
     var reversed = rowOrder === 'top to bottom';
-    var gap = coerce('gap', hasSubplotGrid ? 0.25 : 0.1);
 
     gridOut._domains = {
-        x: fillGridPositions('x', coerce, gap, columns),
-        y: fillGridPositions('y', coerce, gap, rows, reversed)
+        x: fillGridPositions('x', coerce, hasSubplotGrid ? 0.2 : 0.1, columns),
+        y: fillGridPositions('y', coerce, hasSubplotGrid ? 0.3 : 0.1, rows, reversed)
     };
 };
 
 // coerce x or y sizing attributes and return an array of domains for this direction
-function fillGridPositions(axLetter, coerce, gap, len, reversed) {
-    var dirGap = coerce(axLetter + 'gap', gap);
+function fillGridPositions(axLetter, coerce, dfltGap, len, reversed) {
+    var dirGap = coerce(axLetter + 'gap', dfltGap);
     var domain = coerce('domain.' + axLetter);
     coerce(axLetter + 'side');
 

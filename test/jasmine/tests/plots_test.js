@@ -940,12 +940,12 @@ describe('grids', function() {
         )
         .then(function() {
             _assertDomains({
-                xaxis2: [1 / 2.75, 1.75 / 2.75],
-                yaxis2: [2 / 2.75, 1],
-                xaxis3: [2 / 2.75, 1],
-                yaxis3: [2 / 2.75, 1],
-                xaxis4: [0, 0.75 / 2.75],
-                yaxis4: [1 / 2.75, 1.75 / 2.75]
+                xaxis2: [1 / 2.8, 1.8 / 2.8],
+                yaxis2: [2 / 2.7, 1],
+                xaxis3: [2 / 2.8, 1],
+                yaxis3: [2 / 2.7, 1],
+                xaxis4: [0, 0.8 / 2.8],
+                yaxis4: [1 / 2.7, 1.7 / 2.7]
             });
             _assertMissing(['xaxis', 'yaxis']);
 
@@ -955,12 +955,12 @@ describe('grids', function() {
         })
         .then(function() {
             _assertDomains({
-                xaxis2: [1 / 2.75, 1.75 / 2.75],
-                yaxis2: [0, 0.75 / 2.75],
-                xaxis3: [2 / 2.75, 1],
-                yaxis3: [2 / 2.75, 1],
-                xaxis4: [0, 0.75 / 2.75],
-                yaxis4: [2 / 2.75, 1]
+                xaxis2: [1 / 2.8, 1.8 / 2.8],
+                yaxis2: [0, 0.7 / 2.7],
+                xaxis3: [2 / 2.8, 1],
+                yaxis3: [2 / 2.7, 1],
+                xaxis4: [0, 0.8 / 2.8],
+                yaxis4: [2 / 2.7, 1]
             });
             _assertMissing(['xaxis', 'yaxis']);
 
@@ -968,12 +968,12 @@ describe('grids', function() {
         })
         .then(function() {
             _assertDomains({
-                xaxis2: [1 / 2.75, 1.75 / 2.75],
-                yaxis2: [2 / 2.75, 1],
-                xaxis3: [2 / 2.75, 1],
-                yaxis3: [0, 0.75 / 2.75],
-                xaxis4: [0, 0.75 / 2.75],
-                yaxis4: [0, 0.75 / 2.75]
+                xaxis2: [1 / 2.8, 1.8 / 2.8],
+                yaxis2: [2 / 2.7, 1],
+                xaxis3: [2 / 2.8, 1],
+                yaxis3: [0, 0.7 / 2.7],
+                xaxis4: [0, 0.8 / 2.8],
+                yaxis4: [0, 0.7 / 2.7]
             });
             _assertMissing(['xaxis', 'yaxis']);
         })
@@ -981,7 +981,7 @@ describe('grids', function() {
         .then(done);
     });
 
-    it('can set x and y gaps together or separately and change domain', function(done) {
+    it('can set x and y gaps and change domain', function(done) {
         Plotly.newPlot(gd,
             // leave some empty rows/columns
             makeData(['xy', 'x2y2']),
@@ -995,24 +995,14 @@ describe('grids', function() {
                 yaxis2: [0, 0.9 / 1.9]
             });
 
-            return Plotly.relayout(gd, {'grid.gap': 0.4});
-        })
-        .then(function() {
-            _assertDomains({
-                xaxis: [0, 0.6 / 1.6],
-                yaxis: [1 / 1.6, 1],
-                xaxis2: [1 / 1.6, 1],
-                yaxis2: [0, 0.6 / 1.6]
-            });
-
             return Plotly.relayout(gd, {'grid.xgap': 0.2});
         })
         .then(function() {
             _assertDomains({
                 xaxis: [0, 0.8 / 1.8],
-                yaxis: [1 / 1.6, 1],
+                yaxis: [1 / 1.9, 1],
                 xaxis2: [1 / 1.8, 1],
-                yaxis2: [0, 0.6 / 1.6]
+                yaxis2: [0, 0.9 / 1.9]
             });
 
             return Plotly.relayout(gd, {'grid.ygap': 0.3});

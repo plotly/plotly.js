@@ -22,7 +22,7 @@
     "yaxis2": {"title": "y2"},
     "xaxis3": {"title": "x3"},
     "yaxis3": {"title": "y3"},
-    "grid": {"rows": 3, "columns": 3, "gap": 0.3},
+    "grid": {"rows": 3, "columns": 3, "xgap": 0.3, "ygap": 0.3},
     "scene": {"domain": {"row": 1, "column": 1}},
     "ternary": {"domain": {"row": 1, "column": 2}},
     "geo": {"domain": {"row": 2, "column": 1}},
