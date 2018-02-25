@@ -19,7 +19,7 @@ var gridAttrs = exports.attributes = {
         valType: 'integer',
         min: 1,
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'The number of rows in the grid. If you provide a 2D `subplots`',
             'array or a `yaxes` array, its length is used as the default.',
@@ -32,7 +32,7 @@ var gridAttrs = exports.attributes = {
         values: ['top to bottom', 'bottom to top'],
         dflt: 'top to bottom',
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Is the first row the top or the bottom? Note that columns',
             'are always enumerated from left to right.'
@@ -42,7 +42,7 @@ var gridAttrs = exports.attributes = {
         valType: 'integer',
         min: 1,
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'The number of columns in the grid. If you provide a 2D `subplots`',
             'array, the length of its longest row is used as the default.',
@@ -57,7 +57,7 @@ var gridAttrs = exports.attributes = {
         dimensions: 2,
         items: {valType: 'enumerated', values: [counterRegex('xy').toString(), '']},
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Used for freeform grids, where some axes may be shared across subplots',
             'but others are not. Each entry should be a cartesian subplot id, like',
@@ -72,7 +72,7 @@ var gridAttrs = exports.attributes = {
         freeLength: true,
         items: {valType: 'enumerated', values: [cartesianIdRegex.x.toString(), '']},
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Used with `yaxes` when the x and y axes are shared across columns and rows.',
             'Each entry should be an x axis id like *x*, *x2*, etc., or ** to',
@@ -86,7 +86,7 @@ var gridAttrs = exports.attributes = {
         freeLength: true,
         items: {valType: 'enumerated', values: [cartesianIdRegex.y.toString(), '']},
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Used with `yaxes` when the x and y axes are shared across columns and rows.',
             'Each entry should be an y axis id like *y*, *y2*, etc., or ** to',
@@ -100,7 +100,7 @@ var gridAttrs = exports.attributes = {
         values: ['independent', 'coupled'],
         dflt: 'coupled',
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'If no `subplots`, `xaxes`, or `yaxes` are given but we do have `rows` and `columns`,',
             'we can generate defaults using consecutive axis IDs, in two ways:',
@@ -114,7 +114,7 @@ var gridAttrs = exports.attributes = {
         min: 0,
         max: 1,
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Horizontal space between grid cells, expressed as a fraction',
             'of the total width available to one cell. Defaults to 0.1',
@@ -126,14 +126,14 @@ var gridAttrs = exports.attributes = {
         min: 0,
         max: 1,
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Vertical space between grid cells, expressed as a fraction',
             'of the total height available to one cell. Defaults to 0.1',
             'for coupled-axes grids and 0.3 for independent grids.'
         ].join(' ')
     },
-    domain: domainAttrs({name: 'grid', editType: 'calc', noGridCell: true}, {
+    domain: domainAttrs({name: 'grid', editType: 'plot', noGridCell: true}, {
         description: [
             'The first and last cells end exactly at the domain',
             'edges, with no grout around the edges.'
@@ -163,7 +163,7 @@ var gridAttrs = exports.attributes = {
             'that each y axis is used in. *right* and *right plot* are similar.'
         ].join(' ')
     },
-    editType: 'calc'
+    editType: 'plot'
 };
 
 // the shape of the grid - this needs to be done BEFORE supplyDataDefaults
