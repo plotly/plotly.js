@@ -440,4 +440,69 @@ describe('Plotly.validate', function() {
             'In layout, key yaxis2.overlaying (set to \'x\') got reset to \'false\' during defaults.'
         );
     });
+
+    it('catches bad axes in grid definitions', function() {
+        var out = Plotly.validate([
+            {y: [1, 2]},
+            {y: [1, 2], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            grid: {xaxes: ['x3', '', 'x2', 4], yaxes: ['y', 3, '', 'y4']},
+            // while we're at it check on another info_array
+            xaxis: {range: [5, 'lots']}
+        });
+
+        expect(out.length).toBe(5);
+        assertErrorContent(
+            out[0], 'dynamic', 'layout', null,
+            ['grid', 'xaxes', 0], 'grid.xaxes[0]',
+            'In layout, key grid.xaxes[0] (set to \'x3\') got reset to \'\' during defaults.'
+        );
+        assertErrorContent(
+            out[1], 'value', 'layout', null,
+            ['grid', 'xaxes', 3], 'grid.xaxes[3]',
+            'In layout, key grid.xaxes[3] is set to an invalid value (4)'
+        );
+        assertErrorContent(
+            out[2], 'value', 'layout', null,
+            ['grid', 'yaxes', 1], 'grid.yaxes[1]',
+            'In layout, key grid.yaxes[1] is set to an invalid value (3)'
+        );
+        assertErrorContent(
+            out[3], 'dynamic', 'layout', null,
+            ['grid', 'yaxes', 3], 'grid.yaxes[3]',
+            'In layout, key grid.yaxes[3] (set to \'y4\') got reset to \'\' during defaults.'
+        );
+        assertErrorContent(
+            out[4], 'dynamic', 'layout', null,
+            ['xaxis', 'range', 1], 'xaxis.range[1]',
+            'In layout, key xaxis.range[1] (set to \'lots\') got reset to \'50\' during defaults.'
+        );
+    });
+
+    it('catches bad subplots in grid definitions', function() {
+        var out = Plotly.validate([
+            {y: [1, 2]},
+            {y: [1, 2], xaxis: 'x2', yaxis: 'y2'},
+            {y: [1, 2], xaxis: 'x2'}
+        ], {
+            grid: {subplots: [['xy', 'x2y3'], ['x2y', 'x2y2'], [5, '']]},
+        });
+
+        expect(out.length).toBe(3);
+        assertErrorContent(
+            out[0], 'dynamic', 'layout', null,
+            ['grid', 'subplots', 0, 1], 'grid.subplots[0][1]',
+            'In layout, key grid.subplots[0][1] (set to \'x2y3\') got reset to \'\' during defaults.'
+        );
+        assertErrorContent(
+            out[1], 'dynamic', 'layout', null,
+            ['grid', 'subplots', 1, 0], 'grid.subplots[1][0]',
+            'In layout, key grid.subplots[1][0] (set to \'x2y\') got reset to \'\' during defaults.'
+        );
+        assertErrorContent(
+            out[2], 'value', 'layout', null,
+            ['grid', 'subplots', 2, 0], 'grid.subplots[2][0]',
+            'In layout, key grid.subplots[2][0] is set to an invalid value (5)'
+        );
+    });
 });

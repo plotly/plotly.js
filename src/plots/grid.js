@@ -276,6 +276,8 @@ exports.contentDefaults = function(layoutIn, layoutOut) {
                 }
                 else subplotId = rowIn[j];
 
+                rowOut[j] = '';
+
                 if(subplots.cartesian.indexOf(subplotId) !== -1) {
                     yPos = subplotId.indexOf('y');
                     xId = subplotId.slice(0, yPos);
@@ -390,6 +392,7 @@ function fillGridAxes(axesIn, axesAllowed, len, axisMap, axLetter) {
             out[i] = axisId;
             axisMap[axisId] = i;
         }
+        else out[i] = '';
     }
 
     if(Array.isArray(axesIn)) {
