@@ -12,13 +12,13 @@ var Cartesian = require('@src/plots/cartesian');
 var Axes = require('@src/plots/cartesian/axes');
 var Fx = require('@src/components/fx');
 var supplyLayoutDefaults = require('@src/plots/cartesian/layout_defaults');
+var BADNUM = require('@src/constants/numerical').BADNUM;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var selectButton = require('../assets/modebar_button');
 var supplyDefaults = require('../assets/supply_defaults');
-
 
 describe('Test axes', function() {
     'use strict';
@@ -2444,6 +2444,89 @@ describe('Test axes', function() {
                 end: 5.5,
                 size: 2,
                 _count: 3
+            });
+        });
+    });
+
+    describe('makeCalcdata', function() {
+        function _makeCalcdata(trace, axLetter, axType) {
+            var ax = {type: axType};
+            Axes.setConvert(ax);
+            ax._categories = [];
+            return ax.makeCalcdata(trace, axLetter);
+        }
+
+        describe('should convert items', function() {
+            it('- linear case', function() {
+                var out = _makeCalcdata({
+                    x: ['1', NaN, null, 2],
+                }, 'x', 'linear');
+                expect(out).toEqual([1, BADNUM, BADNUM, 2]);
+            });
+
+            it('- date case', function() {
+                var out = _makeCalcdata({
+                    x: ['2000-01-01', NaN, null, new Date(2000, 0, 1).getTime()],
+                }, 'x', 'date');
+                expect(out).toEqual([946684800000, BADNUM, BADNUM, 946684800000]);
+            });
+
+            it('- category case', function() {
+                var out = _makeCalcdata({
+                    x: ['a', 'b', null, 4],
+                }, 'x', 'category');
+
+                expect(out).toEqual([0, 1, BADNUM, 2]);
+            });
+        });
+
+        describe('should fill item to other coordinate length if not present', function() {
+            it('- base case', function() {
+                var out = _makeCalcdata({
+                    y: [1, 2, 1],
+                }, 'x', 'linear');
+                expect(out).toEqual([0, 1, 2]);
+            });
+
+            it('- x0/dx case', function() {
+                var out = _makeCalcdata({
+                    y: [1, 2, 1],
+                    x0: 2,
+                    dx: 10,
+                    _length: 3
+                }, 'x', 'linear');
+                expect(out).toEqual([2, 12, 22]);
+            });
+
+            it('- other length case', function() {
+                var out = _makeCalcdata({
+                    _length: 5,
+                    y: [1, 2, 1],
+                }, 'x', 'linear');
+                expect(out).toEqual([0, 1, 2, 3, 4]);
+            });
+        });
+
+        describe('should subarray typed arrays', function() {
+            it('- same length case', function() {
+                var x = new Float32Array([1, 2, 3]);
+                var out = _makeCalcdata({
+                    _length: 3,
+                    x: x
+                }, 'x', 'linear');
+                expect(out).toBe(x);
+            });
+
+            it('- subarray case', function() {
+                var x = new Float32Array([1, 2, 3]);
+                var out = _makeCalcdata({
+                    _length: 2,
+                    x: x
+                }, 'x', 'linear');
+                expect(out).toEqual(new Float32Array([1, 2]));
+                // check that in and out are linked to same buffer
+                expect(out.buffer).toBeDefined();
+                expect(out.buffer).toEqual(x.buffer);
             });
         });
     });

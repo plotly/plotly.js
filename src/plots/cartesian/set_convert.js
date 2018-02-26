@@ -406,29 +406,33 @@ module.exports = function setConvert(ax, fullLayout) {
             arrayIn = trace[axLetter];
             len = trace._length || arrayIn.length;
 
-            if(ax.type === 'linear' && Lib.isTypedArray(arrayIn) && arrayIn.subarray) {
-                arrayOut = arrayIn.subarray(0, len);
-            } else {
-                arrayOut = new Array(len);
-
-                for(i = 0; i < len; i++) {
-                    arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
+            if(Lib.isTypedArray(arrayIn)) {
+                if(len === arrayIn.length) {
+                    return arrayIn;
+                } else if(arrayIn.subarray) {
+                    return arrayIn.subarray(0, len);
                 }
+            }
+
+            arrayOut = new Array(len);
+            for(i = 0; i < len; i++) {
+                arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
             }
         }
         else {
-            var v0 = ((axLetter + '0') in trace) ?
-                    ax.d2c(trace[axLetter + '0'], 0, cal) : 0,
-                dv = (trace['d' + axLetter]) ?
-                    Number(trace['d' + axLetter]) : 1;
+            var v0 = ((axLetter + '0') in trace) ? ax.d2c(trace[axLetter + '0'], 0, cal) : 0;
+            var dv = (trace['d' + axLetter]) ? Number(trace['d' + axLetter]) : 1;
 
             // the opposing data, for size if we have x and dx etc
             arrayIn = trace[{x: 'y', y: 'x'}[axLetter]];
             len = trace._length || arrayIn.length;
             arrayOut = new Array(len);
 
-            for(i = 0; i < len; i++) arrayOut[i] = v0 + i * dv;
+            for(i = 0; i < len; i++) {
+                arrayOut[i] = v0 + i * dv;
+            }
         }
+
         return arrayOut;
     };
 
