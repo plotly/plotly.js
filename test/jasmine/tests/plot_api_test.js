@@ -523,7 +523,7 @@ describe('Test plot api', function() {
             return gd;
         }
 
-        it('should trigger recalc when switching into select or lasso dragmode', function() {
+        it('should trigger replot (but not recalc) when switching into select or lasso dragmode for scattergl traces', function() {
             var gd = mock({
                 data: [{
                     type: 'scattergl',
@@ -541,8 +541,8 @@ describe('Test plot api', function() {
                 expect(subroutines.layoutReplot).not.toHaveBeenCalled();
             }
 
-            function expectRecalc() {
-                expect(gd.calcdata).toBeUndefined();
+            function expectReplot() {
+                expect(gd.calcdata).toBeDefined();
                 expect(subroutines.doModeBar).not.toHaveBeenCalled();
                 expect(subroutines.layoutReplot).toHaveBeenCalled();
             }
@@ -551,7 +551,7 @@ describe('Test plot api', function() {
             expectModeBarOnly();
 
             Plotly.relayout(mock(gd), 'dragmode', 'lasso');
-            expectRecalc();
+            expectReplot();
 
             Plotly.relayout(mock(gd), 'dragmode', 'select');
             expectModeBarOnly();
@@ -563,7 +563,7 @@ describe('Test plot api', function() {
             expectModeBarOnly();
 
             Plotly.relayout(mock(gd), 'dragmode', 'select');
-            expectRecalc();
+            expectReplot();
         });
     });
 

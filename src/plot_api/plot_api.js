@@ -2008,12 +2008,12 @@ function _relayout(gd, aobj) {
             else flags.plot = true;
         }
         else {
-            if((fullLayout._has('gl2d') || fullLayout._has('regl')) &&
+            if((fullLayout._has('scatter-like') && fullLayout._has('regl')) &&
                 (ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
             ) {
-                flags.calc = true;
+                flags.plot = true;
             }
             else if(valObject) editTypes.update(flags, valObject);
             else flags.calc = true;
