@@ -852,3 +852,259 @@ describe('Test Plots', function() {
         });
     });
 });
+
+describe('grids', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function makeData(subplots) {
+        var data = [];
+        for(var i = 0; i < subplots.length; i++) {
+            var subplot = subplots[i];
+            var yPos = subplot.indexOf('y');
+            data.push({
+                y: [1, 2],
+                xaxis: subplot.slice(0, yPos),
+                yaxis: subplot.slice(yPos)
+            });
+        }
+        return data;
+    }
+
+    function _assertDomains(domains) {
+        for(var axName in domains) {
+            expect(gd._fullLayout[axName].domain)
+                .toBeCloseToArray(domains[axName], 3, axName);
+        }
+    }
+
+    function _assertMissing(axList) {
+        axList.forEach(function(axName) {
+            expect(gd._fullLayout[axName]).toBeUndefined(axName);
+        });
+    }
+
+    it('defaults to a coupled layout', function(done) {
+        Plotly.newPlot(gd,
+            // leave some empty rows/columns
+            makeData(['x2y2', 'x3y3']),
+            {grid: {rows: 4, columns: 4}}
+        )
+        .then(function() {
+            _assertDomains({
+                xaxis2: [1 / 3.9, 1.9 / 3.9],
+                yaxis2: [2 / 3.9, 2.9 / 3.9],
+                xaxis3: [2 / 3.9, 2.9 / 3.9],
+                yaxis3: [1 / 3.9, 1.9 / 3.9]
+            });
+            _assertMissing(['xaxis', 'yaxis', 'xaxis4', 'yaxis4']);
+
+            return Plotly.relayout(gd, {
+                'grid.xaxes': ['x2', 'x', '', 'x3'],
+                'grid.yaxes': ['y3', '', 'y', 'y2']
+            });
+        })
+        .then(function() {
+            _assertDomains({
+                xaxis2: [0, 0.9 / 3.9],
+                yaxis2: [0, 0.9 / 3.9],
+                xaxis3: [3 / 3.9, 1],
+                yaxis3: [3 / 3.9, 1]
+            });
+            _assertMissing(['xaxis', 'yaxis', 'xaxis4', 'yaxis4']);
+
+            return Plotly.relayout(gd, {'grid.roworder': 'bottom to top'});
+        })
+        .then(function() {
+            _assertDomains({
+                xaxis2: [0, 0.9 / 3.9],
+                yaxis2: [3 / 3.9, 1],
+                xaxis3: [3 / 3.9, 1],
+                yaxis3: [0, 0.9 / 3.9]
+            });
+            _assertMissing(['xaxis', 'yaxis', 'xaxis4', 'yaxis4']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('has a bigger default gap with independent layout', function(done) {
+        Plotly.newPlot(gd,
+            makeData(['x2y2', 'x3y3', 'x4y4']),
+            {grid: {rows: 3, columns: 3, pattern: 'independent'}}
+        )
+        .then(function() {
+            _assertDomains({
+                xaxis2: [1 / 2.8, 1.8 / 2.8],
+                yaxis2: [2 / 2.7, 1],
+                xaxis3: [2 / 2.8, 1],
+                yaxis3: [2 / 2.7, 1],
+                xaxis4: [0, 0.8 / 2.8],
+                yaxis4: [1 / 2.7, 1.7 / 2.7]
+            });
+            _assertMissing(['xaxis', 'yaxis']);
+
+            return Plotly.relayout(gd, {
+                'grid.subplots': [['x4y4', '', 'x3y3'], [], ['', 'x2y2']]
+            });
+        })
+        .then(function() {
+            _assertDomains({
+                xaxis2: [1 / 2.8, 1.8 / 2.8],
+                yaxis2: [0, 0.7 / 2.7],
+                xaxis3: [2 / 2.8, 1],
+                yaxis3: [2 / 2.7, 1],
+                xaxis4: [0, 0.8 / 2.8],
+                yaxis4: [2 / 2.7, 1]
+            });
+            _assertMissing(['xaxis', 'yaxis']);
+
+            return Plotly.relayout(gd, {'grid.roworder': 'bottom to top'});
+        })
+        .then(function() {
+            _assertDomains({
+                xaxis2: [1 / 2.8, 1.8 / 2.8],
+                yaxis2: [2 / 2.7, 1],
+                xaxis3: [2 / 2.8, 1],
+                yaxis3: [0, 0.7 / 2.7],
+                xaxis4: [0, 0.8 / 2.8],
+                yaxis4: [0, 0.7 / 2.7]
+            });
+            _assertMissing(['xaxis', 'yaxis']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('can set x and y gaps and change domain', function(done) {
+        Plotly.newPlot(gd,
+            // leave some empty rows/columns
+            makeData(['xy', 'x2y2']),
+            {grid: {rows: 2, columns: 2}}
+        )
+        .then(function() {
+            _assertDomains({
+                xaxis: [0, 0.9 / 1.9],
+                yaxis: [1 / 1.9, 1],
+                xaxis2: [1 / 1.9, 1],
+                yaxis2: [0, 0.9 / 1.9]
+            });
+
+            return Plotly.relayout(gd, {'grid.xgap': 0.2});
+        })
+        .then(function() {
+            _assertDomains({
+                xaxis: [0, 0.8 / 1.8],
+                yaxis: [1 / 1.9, 1],
+                xaxis2: [1 / 1.8, 1],
+                yaxis2: [0, 0.9 / 1.9]
+            });
+
+            return Plotly.relayout(gd, {'grid.ygap': 0.3});
+        })
+        .then(function() {
+            _assertDomains({
+                xaxis: [0, 0.8 / 1.8],
+                yaxis: [1 / 1.7, 1],
+                xaxis2: [1 / 1.8, 1],
+                yaxis2: [0, 0.7 / 1.7]
+            });
+
+            return Plotly.relayout(gd, {'grid.domain': {x: [0.2, 0.7], y: [0, 0.5]}});
+        })
+        .then(function() {
+            _assertDomains({
+                xaxis: [0.2, 0.2 + 0.4 / 1.8],
+                yaxis: [0.5 / 1.7, 0.5],
+                xaxis2: [0.2 + 0.5 / 1.8, 0.7],
+                yaxis2: [0, 0.35 / 1.7]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('responds to xside and yside', function(done) {
+        function checkAxis(axName, anchor, side, position) {
+            var ax = gd._fullLayout[axName];
+            expect(ax.anchor).toBe(anchor, axName);
+            expect(ax.side).toBe(side, axName);
+            expect(ax.position).toBe(position, axName);
+        }
+
+        Plotly.newPlot(gd,
+            // leave some empty rows/columns
+            makeData(['xy', 'x2y2']),
+            {grid: {rows: 2, columns: 2}}
+        )
+        .then(function() {
+            checkAxis('xaxis', 'y', 'bottom');
+            checkAxis('yaxis', 'x', 'left');
+            checkAxis('xaxis2', 'y2', 'bottom');
+            checkAxis('yaxis2', 'x2', 'left');
+
+            return Plotly.relayout(gd, {'grid.xside': 'top plot', 'grid.yside': 'right plot'});
+        })
+        .then(function() {
+            checkAxis('xaxis', 'y', 'top');
+            checkAxis('yaxis', 'x', 'right');
+            checkAxis('xaxis2', 'y2', 'top');
+            checkAxis('yaxis2', 'x2', 'right');
+
+            return Plotly.relayout(gd, {'grid.xside': 'top', 'grid.yside': 'right'});
+        })
+        .then(function() {
+            checkAxis('xaxis', 'free', 'top', 1);
+            checkAxis('yaxis', 'free', 'right', 1);
+            checkAxis('xaxis2', 'free', 'top', 1);
+            checkAxis('yaxis2', 'free', 'right', 1);
+
+            return Plotly.relayout(gd, {'grid.xside': 'bottom', 'grid.yside': 'left'});
+        })
+        .then(function() {
+            checkAxis('xaxis', 'free', 'bottom', 0);
+            checkAxis('yaxis', 'free', 'left', 0);
+            checkAxis('xaxis2', 'free', 'bottom', 0);
+            checkAxis('yaxis2', 'free', 'left', 0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('places other subplots in the grid by default', function(done) {
+        function checkDomain(container, column, row, x, y) {
+            var domain = container.domain;
+            expect(domain.row).toBe(row);
+            expect(domain.column).toBe(column);
+            expect(domain.x).toBeCloseToArray(x, 3);
+            expect(domain.y).toBeCloseToArray(y, 3);
+        }
+        Plotly.newPlot(gd, [{
+            type: 'pie', labels: ['a', 'b'], values: [1, 2]
+        }, {
+            type: 'scattergeo', lon: [10, 20], lat: [20, 10]
+        }], {
+            grid: {rows: 2, columns: 2, xgap: 1 / 3, ygap: 1 / 3}
+        })
+        .then(function() {
+            // defaults to cell (0, 0)
+            // we're not smart enough to keep them from overlapping each other... should we try?
+            checkDomain(gd._fullData[0], 0, 0, [0, 0.4], [0.6, 1]);
+            checkDomain(gd._fullLayout.geo, 0, 0, [0, 0.4], [0.6, 1]);
+
+            return Plotly.update(gd, {'domain.column': 1}, {'geo.domain.row': 1}, [0]);
+        })
+        .then(function() {
+            // change row OR column, the other keeps its previous default
+            checkDomain(gd._fullData[0], 1, 0, [0.6, 1], [0.6, 1]);
+            checkDomain(gd._fullLayout.geo, 0, 1, [0, 0.4], [0, 0.4]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});

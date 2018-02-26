@@ -12,7 +12,7 @@ var fontAttrs = require('../../plots/font_attributes');
 var plotAttrs = require('../../plots/attributes');
 var colorAttrs = require('../../components/color/attributes');
 var fxAttrs = require('../../components/fx/attributes');
-var domainAttrs = require('../../plots/domain_attributes');
+var domainAttrs = require('../../plots/domain').attributes;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;

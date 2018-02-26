@@ -20,6 +20,7 @@ var Lib = require('../lib');
 var _ = Lib._;
 var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
+var Grid = require('./grid');
 
 var plots = module.exports = {};
 
@@ -1250,6 +1251,8 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     if(layoutIn.width && layoutIn.height) plots.sanitizeMargins(layoutOut);
 
+    Grid.sizeDefaults(layoutIn, layoutOut);
+
     coerce('paper_bgcolor');
 
     coerce('separators', formatObj.decimal + formatObj.thousands);
@@ -1387,6 +1390,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 
     // ensure all cartesian axes have at least one subplot
     if(layoutOut._has('cartesian')) {
+        Grid.contentDefaults(layoutIn, layoutOut);
         Cartesian.finalizeSubplots(layoutIn, layoutOut);
     }
 

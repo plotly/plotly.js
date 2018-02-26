@@ -797,6 +797,77 @@ describe('Test lib.js:', function() {
                 expect(coerce({domain: [0, 0.5, 1]}, {}, infoArrayAttrs, 'domain'))
                     .toEqual([0, 0.5]);
             });
+
+            it('supports bounded freeLength attributes', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        items: [
+                            {valType: 'integer', min: 0},
+                            {valType: 'integer', max: -1}
+                        ],
+                        dflt: [1, -2]
+                    },
+                };
+                expect(coerce({}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: [5]}, {}, attrs, 'x')).toEqual([5, -2]);
+                expect(coerce({x: [-5]}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: [5, -5]}, {}, attrs, 'x')).toEqual([5, -5]);
+                expect(coerce({x: [3, -3, 3]}, {}, attrs, 'x')).toEqual([3, -3]);
+            });
+
+            it('supports unbounded freeLength attributes', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        items: {valType: 'integer', min: 0, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [3]}, {}, attrs, 'x')).toEqual([3]);
+                expect(coerce({x: [-3]}, {}, attrs, 'x')).toEqual([1]);
+                expect(coerce({x: [-1, 4, 'hi', 5]}, {}, attrs, 'x'))
+                    .toEqual([1, 4, 1, 5]);
+            });
+
+            it('supports 2D fixed-size arrays', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        dimensions: 2,
+                        items: [
+                            [{valType: 'integer', min: 0, max: 2}, {valType: 'integer', min: 3, max: 5}],
+                            [{valType: 'integer', min: 6, max: 8}, {valType: 'integer', min: 9, max: 11}]
+                        ],
+                        dflt: [[1, 4], [7, 10]]
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toEqual([[1, 4], [7, 10]]);
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([[1, 4], [7, 10]]);
+                expect(coerce({x: [[0, 3], [8, 11]]}, {}, attrs, 'x'))
+                    .toEqual([[0, 3], [8, 11]]);
+                expect(coerce({x: [[10, 5, 10], [6], [1, 2, 3]]}, {}, attrs, 'x'))
+                    .toEqual([[1, 5], [6, 10]]);
+            });
+
+            it('supports unbounded 2D freeLength arrays', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        dimensions: 2,
+                        items: {valType: 'integer', min: 0, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [[], [0], [-1, 2], [5, 'a', 4, 6.6]]}, {}, attrs, 'x'))
+                    .toEqual([[], [0], [1, 2], [5, 1, 4, 1]]);
+            });
         });
 
         describe('subplotid valtype', function() {

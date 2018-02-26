@@ -10,6 +10,7 @@
 'use strict';
 
 var Lib = require('../lib');
+var handleDomainDefaults = require('./domain').defaults;
 
 
 /**
@@ -63,8 +64,9 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
 
         layoutOut[id] = subplotLayoutOut = {};
 
-        coerce('domain.' + partition, [i / idsLength, (i + 1) / idsLength]);
-        coerce('domain.' + {x: 'y', y: 'x'}[partition]);
+        var dfltDomains = {};
+        dfltDomains[partition] = [i / idsLength, (i + 1) / idsLength];
+        handleDomainDefaults(subplotLayoutOut, layoutOut, coerce, dfltDomains);
 
         opts.id = id;
         handleDefaults(subplotLayoutIn, subplotLayoutOut, coerce, opts);

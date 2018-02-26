@@ -12,7 +12,7 @@ var annAttrs = require('../../components/annotations/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var fontAttrs = require('../../plots/font_attributes');
-var domainAttrs = require('../../plots/domain_attributes');
+var domainAttrs = require('../../plots/domain').attributes;
 
 module.exports = overrideAll({
     domain: domainAttrs({name: 'table', trace: true}),
