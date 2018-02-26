@@ -2600,7 +2600,13 @@ describe('Test plot api', function() {
             ['text_chart_arrays', require('@mocks/text_chart_arrays.json')],
             ['updatemenus', require('@mocks/updatemenus.json')],
             ['violins', require('@mocks/violins.json')],
-            ['world-cals', require('@mocks/world-cals.json')]
+            ['world-cals', require('@mocks/world-cals.json')],
+            ['typed arrays', {
+                data: [{
+                    x: new Float32Array([1, 2, 3]),
+                    y: new Float32Array([1, 2, 1])
+                }]
+            }]
         ];
 
         mockList.forEach(function(mockSpec) {
