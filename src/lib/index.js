@@ -433,8 +433,7 @@ lib.castOption = function(trace, ptNumber, astr, fn) {
     var val = lib.nestedProperty(trace, astr).get();
 
     if(lib.isArrayOrTypedArray(val)) {
-        // TODO what to do with 2d arrays?
-        if(Array.isArray(ptNumber) && Array.isArray(val[ptNumber[0]])) {
+        if(Array.isArray(ptNumber) && lib.isArrayOrTypedArray(val[ptNumber[0]])) {
             return fn(val[ptNumber[0]][ptNumber[1]]);
         } else {
             return fn(val[ptNumber]);

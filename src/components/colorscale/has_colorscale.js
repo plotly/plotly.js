@@ -6,15 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-
 var Lib = require('../../lib');
-
 var isValidScale = require('./is_valid_scale');
-
 
 module.exports = function hasColorscale(trace, containerStr) {
     var container = containerStr ?
@@ -23,7 +19,9 @@ module.exports = function hasColorscale(trace, containerStr) {
         color = container.color,
         isArrayWithOneNumber = false;
 
-    if(Array.isArray(color)) {
+    if(Lib.isTypedArray(color)) {
+        isArrayWithOneNumber = true;
+    } else if(Array.isArray(color)) {
         for(var i = 0; i < color.length; i++) {
             if(isNumeric(color[i])) {
                 isArrayWithOneNumber = true;
