@@ -209,7 +209,6 @@ describe('@gl Test gl plot side effects', function() {
 
 describe('@gl Test gl2d plots', function() {
     var gd;
-
     var mock = require('@mocks/gl2d_10.json');
 
     beforeEach(function() {
@@ -255,9 +254,9 @@ describe('@gl Test gl2d plots', function() {
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
         var originalX = [-0.3037383177570093, 5.303738317757009];
-        var originalY = [-0.5, 6.1];
-        var newX = [-0.5, 5];
-        var newY = [-1.7, 4.95];
+        var originalY = [-0.5806379476536665, 6.218528262566369];
+        var newX = [-0.5516431924882629, 5.082159624413145];
+        var newY = [-1.7947747709072441, 5.004391439312791];
         var precision = 1;
 
         Plotly.newPlot(gd, _mock)
@@ -584,8 +583,8 @@ describe('@gl Test gl2d plots', function() {
             });
         })
         .then(function() {
-            expect(gd.layout.xaxis.range).toBeCloseToArray([-7.6, 23.6], 1);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([0.2, 15.8], 1);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-8.2, 24.2], 1);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([-0.12, 16.1], 1);
         })
         .catch(fail)
         .then(done);
