@@ -1075,4 +1075,36 @@ describe('grids', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('places other subplots in the grid by default', function(done) {
+        function checkDomain(container, column, row, x, y) {
+            var domain = container.domain;
+            expect(domain.row).toBe(row);
+            expect(domain.column).toBe(column);
+            expect(domain.x).toBeCloseToArray(x, 3);
+            expect(domain.y).toBeCloseToArray(y, 3);
+        }
+        Plotly.newPlot(gd, [{
+            type: 'pie', labels: ['a', 'b'], values: [1, 2]
+        }, {
+            type: 'scattergeo', lon: [10, 20], lat: [20, 10]
+        }], {
+            grid: {rows: 2, columns: 2, xgap: 1 / 3, ygap: 1 / 3}
+        })
+        .then(function() {
+            // defaults to cell (0, 0)
+            // we're not smart enough to keep them from overlapping each other... should we try?
+            checkDomain(gd._fullData[0], 0, 0, [0, 0.4], [0.6, 1]);
+            checkDomain(gd._fullLayout.geo, 0, 0, [0, 0.4], [0.6, 1]);
+
+            return Plotly.update(gd, {'domain.column': 1}, {'geo.domain.row': 1}, [0]);
+        })
+        .then(function() {
+            // change row OR column, the other keeps its previous default
+            checkDomain(gd._fullData[0], 1, 0, [0.6, 1], [0.6, 1]);
+            checkDomain(gd._fullLayout.geo, 0, 1, [0, 0.4], [0, 0.4]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
