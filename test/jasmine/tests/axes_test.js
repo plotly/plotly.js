@@ -2369,7 +2369,7 @@ describe('Test axes', function() {
                 start: -0.5,
                 end: 2.5,
                 size: 1,
-                _count: 3
+                _dataSpan: 2
             });
         });
 
@@ -2383,7 +2383,7 @@ describe('Test axes', function() {
                 start: undefined,
                 end: undefined,
                 size: 2,
-                _count: NaN
+                _dataSpan: NaN
             });
         });
 
@@ -2397,7 +2397,7 @@ describe('Test axes', function() {
                 start: undefined,
                 end: undefined,
                 size: 2,
-                _count: NaN
+                _dataSpan: NaN
             });
         });
 
@@ -2411,7 +2411,7 @@ describe('Test axes', function() {
                 start: undefined,
                 end: undefined,
                 size: 2,
-                _count: NaN
+                _dataSpan: NaN
             });
         });
 
@@ -2425,7 +2425,7 @@ describe('Test axes', function() {
                 start: 0.5,
                 end: 4.5,
                 size: 1,
-                _count: 4
+                _dataSpan: 3
             });
         });
 
@@ -2443,7 +2443,7 @@ describe('Test axes', function() {
                 start: -0.5,
                 end: 5.5,
                 size: 2,
-                _count: 3
+                _dataSpan: 3
             });
         });
     });

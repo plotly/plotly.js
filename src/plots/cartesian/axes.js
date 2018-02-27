@@ -568,7 +568,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
             start: dataMin - 0.5,
             end: dataMax + 0.5,
             size: 1,
-            _count: dataMax - dataMin + 1
+            _dataSpan: dataMax - dataMin,
         };
     }
 
@@ -648,7 +648,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
         start: ax.c2r(binStart, 0, calendar),
         end: ax.c2r(binEnd, 0, calendar),
         size: dummyAx.dtick,
-        _count: bincount
+        _dataSpan: dataMax - dataMin
     };
 };
 
