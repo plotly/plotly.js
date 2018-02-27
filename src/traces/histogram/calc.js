@@ -253,7 +253,7 @@ function calcAllAutoBins(gd, trace, pa, mainData, _overlayEdgeCase) {
 
                 // Edge case: single-valued histogram overlaying others
                 // Use them all together to calculate the bin size for the single-valued one
-                if(isOverlay && binSpec._count === 1 && pa.type !== 'category') {
+                if(isOverlay && binSpec._dataSpan === 0 && pa.type !== 'category') {
                     // Several single-valued histograms! Stop infinite recursion,
                     // just return an extra flag that tells handleSingleValueOverlays
                     // to sort out this trace too
