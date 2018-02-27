@@ -37,7 +37,7 @@ module.exports = function calcGridlines(trace, cd, axisLetter, crossAxisLetter) 
     var na = trace.a.length;
     var nb = trace.b.length;
 
-    Axes.calcTicks(axis);
+    Axes.prepTicks(axis);
 
     // don't leave tickvals in axis looking like an attribute
     if(axis.tickmode === 'array') delete axis.tickvals;

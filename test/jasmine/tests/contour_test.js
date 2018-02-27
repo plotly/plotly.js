@@ -347,7 +347,7 @@ describe('contour calc', function() {
     });
 });
 
-describe('contour edits', function() {
+describe('contour plotting and editing', function() {
     var gd;
 
     beforeEach(function() {
@@ -384,6 +384,25 @@ describe('contour edits', function() {
             expect(gd._fullLayout.xaxis.type).toBe('category');
             checkTicks('y', ['Jan 102016', 'Jan 24', 'Feb 7', 'Feb 21'], 'date y #2');
             expect(gd._fullLayout.yaxis.type).toBe('date');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('works and draws labels when explicitly specifying ncontours=1', function(done) {
+        Plotly.newPlot(gd, [{
+            z: [[0.20, 0.57], [0.3, 0.4]],
+            type: 'contour',
+            zmin: 0.4,
+            zmax: 0.41,
+            ncontours: 1,
+            showscale: false,
+            contours: {showlabels: true}
+        }], {
+            width: 500, height: 500
+        })
+        .then(function() {
+            expect(gd.querySelector('.contourlabels text').textContent).toBe('0.41');
         })
         .catch(fail)
         .then(done);
