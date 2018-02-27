@@ -1124,10 +1124,6 @@ function alignHoverText(hoverLabels, rotateLabels) {
             tx2x = txx + alignShift * (d.txwidth + HOVERTEXTPAD),
             offsetX = 0,
             offsetY = d.offset;
-        if(d.anchor === 'middle') {
-            txx -= d.tx2width / 2;
-            tx2x -= d.tx2width / 2;
-        }
         if(rotateLabels) {
             offsetY *= -YSHIFTY;
             offsetX = d.offset * YSHIFTX;

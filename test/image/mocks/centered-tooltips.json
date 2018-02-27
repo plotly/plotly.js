@@ -1,0 +1,58 @@
+{
+    "data": [
+        {
+            "y": [
+                1,
+                2,
+                6,
+                3,
+                5,
+                6
+            ],
+            "x": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "text": [
+                "short label",
+                "short label",
+                "Very long label named San Francisco",
+                "Very long label named San Francisco",
+                "Very long label named San Francisco"
+            ]
+        },
+        {
+            "y": [
+                6,
+                5,
+                1,
+                4,
+                1,
+                0
+            ],
+            "x": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "text": [
+                "short label",
+                "short label",
+                "Very long label named San Francisco",
+                "Very long label named San Francisco",
+                "Very long label named San Francisco"
+            ]
+        }
+    ],
+    "layout": {
+        "width": 400,
+        "height": 300
+    }
+}
