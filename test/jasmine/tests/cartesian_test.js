@@ -268,6 +268,37 @@ describe('relayout', function() {
 
     });
 
+    describe('axis line visibility', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('can show and hide axis lines', function(done) {
+            Plotly.newPlot(gd, [{y: [1, 2]}], {width: 400, height: 400})
+            .then(function() {
+                expect(gd.querySelector('.xlines-above').attributes.d.value).toBe('M0,0');
+                expect(gd.querySelector('.ylines-above').attributes.d.value).toBe('M0,0');
+
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'yaxis.showline': true});
+            })
+            .then(function() {
+                expect(gd.querySelector('.xlines-above').attributes.d.value).not.toBe('M0,0');
+                expect(gd.querySelector('.ylines-above').attributes.d.value).not.toBe('M0,0');
+
+                return Plotly.relayout(gd, {'xaxis.showline': false, 'yaxis.showline': false});
+            })
+            .then(function() {
+                expect(gd.querySelector('.xlines-above').attributes.d.value).toBe('M0,0');
+                expect(gd.querySelector('.ylines-above').attributes.d.value).toBe('M0,0');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('subplot creation / deletion:', function() {

@@ -272,6 +272,7 @@ exports.lsInner = function(gd) {
          *    -----
          *     x2
          */
+        var xPath = 'M0,0';
         if(shouldShowLinesOrTicks(xa, subplot)) {
             leftYLineWidth = findCounterAxisLineWidth(xa, 'left', ya, axList);
             xLinesXLeft = xa._offset - (leftYLineWidth ? (pad + leftYLineWidth) : 0);
@@ -288,17 +289,17 @@ exports.lsInner = function(gd) {
                 xa._linepositions[subplot] = [xLinesYBottom, xLinesYTop];
             }
 
-            var xPath = mainPath(xa, xLinePath, xLinePathFree);
+            xPath = mainPath(xa, xLinePath, xLinePathFree);
             if(extraSubplot && xa.showline && (xa.mirror === 'all' || xa.mirror === 'allticks')) {
                 xPath += xLinePath(xLinesYBottom) + xLinePath(xLinesYTop);
             }
 
             plotinfo.xlines
-                .attr('d', xPath || 'M0,0')
                 .style('stroke-width', xa._lw + 'px')
                 .call(Color.stroke, xa.showline ?
                     xa.linecolor : 'rgba(0,0,0,0)');
         }
+        plotinfo.xlines.attr('d', xPath);
 
         /*
          * y lines that meet x axes get longer only by margin.pad, because
@@ -311,6 +312,7 @@ exports.lsInner = function(gd) {
          *       |
          *       +-----
          */
+        var yPath = 'M0,0';
         if(shouldShowLinesOrTicks(ya, subplot)) {
             connectYBottom = findCounterAxisLineWidth(ya, 'bottom', xa, axList);
             yLinesYBottom = ya._offset + ya._length + (connectYBottom ? pad : 0);
@@ -324,17 +326,17 @@ exports.lsInner = function(gd) {
                 ya._linepositions[subplot] = [yLinesXLeft, yLinesXRight];
             }
 
-            var yPath = mainPath(ya, yLinePath, yLinePathFree);
+            yPath = mainPath(ya, yLinePath, yLinePathFree);
             if(extraSubplot && ya.showline && (ya.mirror === 'all' || ya.mirror === 'allticks')) {
                 yPath += yLinePath(yLinesXLeft) + yLinePath(yLinesXRight);
             }
 
             plotinfo.ylines
-                .attr('d', yPath || 'M0,0')
                 .style('stroke-width', ya._lw + 'px')
                 .call(Color.stroke, ya.showline ?
                     ya.linecolor : 'rgba(0,0,0,0)');
         }
+        plotinfo.ylines.attr('d', yPath);
     });
 
     Plotly.Axes.makeClipPaths(gd);
