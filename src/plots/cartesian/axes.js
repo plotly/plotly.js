@@ -742,11 +742,8 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 // Ticks and grids
 // ----------------------------------------------------
 
-// calculate the ticks: text, values, positioning
-// if ticks are set to automatic, determine the right values (tick0,dtick)
-// in any case, set tickround to # of digits to round tick labels to,
-// or codes to this effect for log and date scales
-axes.calcTicks = function calcTicks(ax) {
+// ensure we have tick0, dtick, and tick rounding calculated
+axes.prepTicks = function(ax) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
 
     // calculate max number of (auto) ticks to display based on plot size
@@ -787,6 +784,15 @@ axes.calcTicks = function calcTicks(ax) {
 
     // now figure out rounding of tick values
     autoTickRound(ax);
+};
+
+// calculate the ticks: text, values, positioning
+// if ticks are set to automatic, determine the right values (tick0,dtick)
+// in any case, set tickround to # of digits to round tick labels to,
+// or codes to this effect for log and date scales
+axes.calcTicks = function calcTicks(ax) {
+    axes.prepTicks(ax);
+    var rng = Lib.simpleMap(ax.range, ax.r2l);
 
     // now that we've figured out the auto values for formatting
     // in case we're missing some ticktext, we can break out for array ticks
