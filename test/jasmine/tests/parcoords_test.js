@@ -6,6 +6,7 @@ var Parcoords = require('@src/traces/parcoords');
 var attributes = require('@src/traces/parcoords/attributes');
 
 var createGraphDiv = require('../assets/create_graph_div');
+var delay = require('../assets/delay');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
@@ -239,7 +240,6 @@ describe('parcoords initialization tests', function() {
 });
 
 describe('@gl parcoords', function() {
-
     beforeAll(function() {
         mock.data[0].dimensions.forEach(function(d) {
             d.values = d.values.slice(lineStart, lineStart + lineCount);
@@ -247,7 +247,13 @@ describe('@gl parcoords', function() {
         mock.data[0].line.color = mock.data[0].line.color.slice(lineStart, lineStart + lineCount);
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function(done) {
+        var gd = d3.select('.js-plotly-plot').node();
+        if(gd) Plotly.purge(gd);
+        destroyGraphDiv();
+
+        return delay(50)().then(done);
+    });
 
     describe('edge cases', function() {
 
@@ -496,7 +502,7 @@ describe('@gl parcoords', function() {
             .then(done);
         });
 
-        it('@flaky Skip dimensions which are not plain objects or whose `values` is not an array', function(done) {
+        it('Skip dimensions which are not plain objects or whose `values` is not an array', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
