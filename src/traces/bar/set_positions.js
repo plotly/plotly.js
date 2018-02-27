@@ -105,6 +105,8 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
             setGroupPositionsInOverlayMode(gd, pa, sa, excluded);
         }
     }
+
+    collectExtents(calcTraces, pa);
 }
 
 
@@ -595,4 +597,55 @@ function normalizeBars(gd, sa, sieve) {
 
 function getAxisLetter(ax) {
     return ax._id.charAt(0);
+}
+
+// find the full position span of bars at each position
+// for use by hover, to ensure labels move in if bars are
+// narrower than the space they're in.
+// run once per trace group (subplot & direction) and
+// the same mapping is attached to all calcdata traces
+function collectExtents(calcTraces, pa) {
+    var posLetter = pa._id.charAt(0);
+    var extents = {};
+    var pMin = Infinity;
+    var pMax = -Infinity;
+
+    var i, j, cd;
+    for(i = 0; i < calcTraces.length; i++) {
+        cd = calcTraces[i];
+        for(j = 0; j < cd.length; j++) {
+            var p = cd[j].p;
+            if(isNumeric(p)) {
+                pMin = Math.min(pMin, p);
+                pMax = Math.max(pMax, p);
+            }
+        }
+    }
+
+    // this is just for positioning of hover labels, and nobody will care if
+    // the label is 1px too far out; so round positions to 1/10K in case
+    // position values don't exactly match from trace to trace
+    var roundFactor = 10000 / (pMax - pMin);
+    var round = extents.round = function(p) {
+        return String(Math.round(roundFactor * (p - pMin)));
+    };
+
+    for(i = 0; i < calcTraces.length; i++) {
+        cd = calcTraces[i];
+        cd[0].t.extents = extents;
+        for(j = 0; j < cd.length; j++) {
+            var di = cd[j];
+            var p0 = di[posLetter] - di.w / 2;
+            if(isNumeric(p0)) {
+                var p1 = di[posLetter] + di.w / 2;
+                var pVal = round(di.p);
+                if(extents[pVal]) {
+                    extents[pVal] = [Math.min(p0, extents[pVal][0]), Math.max(p1, extents[pVal][1])];
+                }
+                else {
+                    extents[pVal] = [p0, p1];
+                }
+            }
+        }
+    }
 }
