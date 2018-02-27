@@ -306,6 +306,17 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         purgeSubplotLayers(oldFullLayout._cartesianlayer.selectAll('.subplot'), oldFullLayout);
         oldFullLayout._defs.selectAll('.axesclip').remove();
     }
+    // otherwise look for subplots we need to remove
+    else if(oldSubplotList.cartesian) {
+        for(i = 0; i < oldSubplotList.cartesian.length; i++) {
+            var oldSubplotId = oldSubplotList.cartesian[i];
+            if(newSubplotList.cartesian.indexOf(oldSubplotId) === -1) {
+                var selector = '.' + oldSubplotId + ',.' + oldSubplotId + '-x,.' + oldSubplotId + '-y';
+                oldFullLayout._cartesianlayer.selectAll(selector).remove();
+                removeSubplotExtras(oldSubplotId, oldFullLayout);
+            }
+        }
+    }
 };
 
 exports.drawFramework = function(gd) {
@@ -484,11 +495,9 @@ function purgeSubplotLayers(layers, fullLayout) {
 
     layers.each(function(subplotId) {
         var plotgroup = d3.select(this);
-        var clipId = 'clip' + fullLayout._uid + subplotId + 'plot';
 
         plotgroup.remove();
-        fullLayout._draggers.selectAll('g.' + subplotId).remove();
-        fullLayout._defs.select('#' + clipId).remove();
+        removeSubplotExtras(subplotId, fullLayout);
 
         overlayIdsToRemove[subplotId] = true;
 
@@ -513,6 +522,11 @@ function purgeSubplotLayers(layers, fullLayout) {
             }
         }
     }
+}
+
+function removeSubplotExtras(subplotId, fullLayout) {
+    fullLayout._draggers.selectAll('g.' + subplotId).remove();
+    fullLayout._defs.select('#clip' + fullLayout._uid + subplotId + 'plot').remove();
 }
 
 function joinLayer(parent, nodeType, className, dataVal) {
