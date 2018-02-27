@@ -39,7 +39,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true, noSelect: true});
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true});
 
         // array marker.size and marker.color are only supported with circles
 
@@ -69,9 +69,7 @@ function handleLonLatDefaults(traceIn, traceOut, coerce) {
     var lon = coerce('lon') || [];
     var lat = coerce('lat') || [];
     var len = Math.min(lon.length, lat.length);
-
-    if(len < lon.length) traceOut.lon = lon.slice(0, len);
-    if(len < lat.length) traceOut.lat = lat.slice(0, len);
+    traceOut._length = len;
 
     return len;
 }

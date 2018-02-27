@@ -13,22 +13,6 @@ var d3 = require('d3');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 
-// repeatable pseudorandom generator
-var randSeed = 2000000000;
-
-function seed() {
-    randSeed = 2000000000;
-}
-
-function rand() {
-    var lastVal = randSeed;
-    randSeed = (69069 * randSeed + 1) % 4294967296;
-    // don't let consecutive vals be too close together
-    // gets away from really trying to be random, in favor of better local uniformity
-    if(Math.abs(randSeed - lastVal) < 429496729) return rand();
-    return randSeed / 4294967296;
-}
-
 // constants for dynamic jitter (ie less jitter for sparser points)
 var JITTERCOUNT = 5; // points either side of this to include
 var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
@@ -179,8 +163,8 @@ function plotPoints(sel, axes, trace, t) {
     // to support violin points
     var mode = trace.boxpoints || trace.points;
 
-    // repeatable pseudorandom number generator
-    seed();
+    // repeatable pseudo-random number generator
+    Lib.seedPseudoRandom();
 
     sel.selectAll('g.points')
         // since box plot points get an extra level of nesting, each
@@ -247,7 +231,7 @@ function plotPoints(sel, axes, trace, t) {
                 var v = pt.v;
 
                 var jitterOffset = trace.jitter ?
-                    (newJitter * jitterFactors[i] * (rand() - 0.5)) :
+                    (newJitter * jitterFactors[i] * (Lib.pseudoRandom() - 0.5)) :
                     0;
 
                 var posPx = d.pos + bPos + bdPos * (trace.pointpos + jitterOffset);

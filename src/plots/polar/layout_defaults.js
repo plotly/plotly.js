@@ -87,6 +87,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         switch(axName) {
             case 'radialaxis':
                 var autoRange = coerceAxis('autorange', !axOut.isValidRange(axIn.range));
+                axIn.autorange = autoRange;
                 if(autoRange) coerceAxis('rangemode');
                 if(autoRange === 'reversed') axOut._m = -1;
 
@@ -143,7 +144,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         if(visible) {
             handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
             handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
-                noHover: false,
                 tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
             });
             handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
@@ -174,7 +174,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             coerceAxis('layer');
         }
 
-        coerceAxis('hoverformat');
+        if(axType !== 'category') coerceAxis('hoverformat');
 
         axOut._input = axIn;
     }

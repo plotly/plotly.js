@@ -151,20 +151,6 @@ lib.swapAttrs = function(cont, attrList, part1, part2) {
 };
 
 /**
- * to prevent event bubbling, in particular text selection during drag.
- * see http://stackoverflow.com/questions/5429827/
- *      how-can-i-prevent-text-element-selection-with-cursor-drag
- * for maximum effect use:
- *      return pauseEvent(e);
- */
-lib.pauseEvent = function(e) {
-    if(e.stopPropagation) e.stopPropagation();
-    if(e.preventDefault) e.preventDefault();
-    e.cancelBubble = true;
-    return false;
-};
-
-/**
  * SVG painter's algo worked around with reinsertion
  */
 lib.raiseToTop = function raiseToTop(elem) {
@@ -891,24 +877,18 @@ lib.subplotSort = function(a, b) {
     return numB - numA;
 };
 
-/*
- * test if event listener options supported
- */
-lib.eventListenerOptionsSupported = function() {
-    var supported = false;
+// repeatable pseudorandom generator
+var randSeed = 2000000000;
 
-    try {
-        var opts = Object.defineProperty({}, 'passive', {
-            get: function() {
-                supported = true;
-            }
-        });
+lib.seedPseudoRandom = function() {
+    randSeed = 2000000000;
+};
 
-        window.addEventListener('test', null, opts);
-        window.removeEventListener('test', null, opts);
-    } catch(e) {
-        supported = false;
-    }
-
-    return supported;
+lib.pseudoRandom = function() {
+    var lastVal = randSeed;
+    randSeed = (69069 * randSeed + 1) % 4294967296;
+    // don't let consecutive vals be too close together
+    // gets away from really trying to be random, in favor of better local uniformity
+    if(Math.abs(randSeed - lastVal) < 429496729) return lib.pseudoRandom();
+    return randSeed / 4294967296;
 };

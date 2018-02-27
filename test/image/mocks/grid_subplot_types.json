@@ -1,0 +1,32 @@
+{
+  "data": [
+    {"y": [1, 2, 3]},
+    {"y": [4, 6, 5], "xaxis": "x2"},
+    {"x": [1, 2, 3], "y": [8, 9, 7], "yaxis": "y2"},
+    {"type": "surface", "z": [[1, 2], [4, 1]], "showscale": false},
+    {"type": "pie", "labels": ["a", "b"], "values": [1, 6], "domain": {"row": 0, "column": 2}},
+    {"type": "scatterternary", "a": [1, 1, 3], "b": [1, 3, 1], "c": [3, 1, 1], "mode": "markers"},
+    {
+      "type": "table",
+      "header": {"values": ["a", "b"]},
+      "cells": {"values": [["c", "d"], ["e", "f"]]},
+      "domain": {"row": 2, "column": 0}
+    },
+    {"type": "scattergeo", "lon": [0, -75], "lat": [0, 45], "marker": {"size": [20, 30]}},
+    {"type": "heatmap", "z": [[1, 2], [4, 1]], "showscale": false, "xaxis": "x3", "yaxis": "y3"}
+  ],
+  "layout": {
+    "xaxis": {"title": "x"},
+    "xaxis2": {"title": "x2"},
+    "yaxis": {"title": "y"},
+    "yaxis2": {"title": "y2"},
+    "xaxis3": {"title": "x3"},
+    "yaxis3": {"title": "y3"},
+    "grid": {"rows": 3, "columns": 3, "xgap": 0.3, "ygap": 0.3},
+    "scene": {"domain": {"row": 1, "column": 1}},
+    "ternary": {"domain": {"row": 1, "column": 2}},
+    "geo": {"domain": {"row": 2, "column": 1}},
+    "width": 700,
+    "height": 700
+  }
+}

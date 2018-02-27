@@ -3,7 +3,7 @@ var Plotly = require('@lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-describe('date axis', function() {
+describe('@gl date axis', function() {
 
     var gd;
 

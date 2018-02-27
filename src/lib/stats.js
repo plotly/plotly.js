@@ -28,7 +28,7 @@ var isNumeric = require('fast-isnumeric');
 exports.aggNums = function(f, v, a, len) {
     var i,
         b;
-    if(!len) len = a.length;
+    if(!len || len > a.length) len = a.length;
     if(!isNumeric(v)) v = false;
     if(Array.isArray(a[0])) {
         b = new Array(len);

@@ -3,24 +3,24 @@ version: 2.0
 # Inspired by:
 # https://github.com/CircleCI-Public/circleci-demo-workflows/blob/workspace-forwarding/.circleci/config.yml
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
+#
+# For list of official CircleCI node.js images, go to:
+# https://hub.docker.com/r/circleci/node/tags/
 
 jobs:
   build:
     docker:
-      - image: circleci/node:6.10.3
+      - image: circleci/node:8.9.4
     working_directory: ~/plotly.js
     steps:
       - checkout
       - restore_cache:
           keys:
-            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ checksum "package.json" }}
-            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-master-{{ checksum "package.json" }}
+            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-{{ .Branch }}-{{ checksum "package-lock.json" }}
+            - v{{ .Environment.CIRCLE_CACHE_VERSION }}-deps-master-{{ checksum "package-lock.json" }}
       - run:
           name: Install dependencies
           command: |
-            npm install
-            npm dedupe
-            npm prune
             npm install
       - run:
           name: List dependency versions
@@ -47,7 +47,7 @@ jobs:
   test-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:6.10.3-browsers
+      - image: circleci/node:8.9.4-browsers
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -58,8 +58,25 @@ jobs:
           command: |
             sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
       - run:
-          name: Run jasmine tests
+          name: Run jasmine tests (batch 1)
           command: ./.circleci/test.sh jasmine
+
+  test-jasmine2:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: circleci/node:8.9.4-browsers
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/plotly.js
+      - run:
+          name: Set timezone to Alaska time (arbitrary timezone to test date logic)
+          command: |
+            sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
+      - run:
+          name: Run jasmine tests (batch 2)
+          command: ./.circleci/test.sh jasmine2
 
   test-image:
     docker:
@@ -82,7 +99,7 @@ jobs:
 
   test-syntax:
     docker:
-      - image: circleci/node:6.10.3
+      - image: circleci/node:8.9.4
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -98,6 +115,9 @@ workflows:
     jobs:
       - build
       - test-jasmine:
+          requires:
+            - build
+      - test-jasmine2:
           requires:
             - build
       - test-image:

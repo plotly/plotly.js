@@ -78,10 +78,9 @@ function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     if(x && y && z) {
+        // TODO: what happens if one is missing?
         len = Math.min(x.length, y.length, z.length);
-        if(len < x.length) traceOut.x = x.slice(0, len);
-        if(len < y.length) traceOut.y = y.slice(0, len);
-        if(len < z.length) traceOut.z = z.slice(0, len);
+        traceOut._xlength = traceOut._ylength = traceOut._zlength = len;
     }
 
     return len;

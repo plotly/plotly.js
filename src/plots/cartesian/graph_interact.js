@@ -9,6 +9,8 @@
 
 'use strict';
 
+var d3 = require('d3');
+
 var Fx = require('../../components/fx');
 var dragElement = require('../../components/dragelement');
 
@@ -18,7 +20,13 @@ var makeDragBox = require('./dragbox').makeDragBox;
 module.exports = function initInteractions(gd) {
     var fullLayout = gd._fullLayout;
 
-    if((!fullLayout._has('cartesian') && !fullLayout._has('gl2d')) || gd._context.staticPlot) return;
+    if(gd._context.staticPlot) {
+        // this sweeps up more than just cartesian drag elements...
+        d3.select(gd).selectAll('.drag').remove();
+        return;
+    }
+
+    if(!fullLayout._has('cartesian') && !fullLayout._has('gl2d')) return;
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a, b) {
         // sort overlays last, then by x axis number, then y axis number

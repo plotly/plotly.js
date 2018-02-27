@@ -1189,7 +1189,7 @@ describe('Test scatter *clipnaxis*:', function() {
             var scatterLayer = subplotLayer.select('.scatterlayer');
 
             assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
-            assertClip(subplotLayer.select('.barlayer'), layerClips[1], 1, 'bar layer');
+            assertClip(subplotLayer.select('.maplayer'), layerClips[1], 1, 'some other trace layer');
             assertClip(scatterLayer, layerClips[2], 1, 'scatter layer');
 
             assertNodeDisplay(

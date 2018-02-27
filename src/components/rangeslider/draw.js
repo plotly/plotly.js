@@ -80,6 +80,21 @@ module.exports = function(gd) {
             opts = axisOpts[constants.name],
             oppAxisOpts = fullLayout[Axes.id2name(axisOpts.anchor)];
 
+        // update range
+        // Expand slider range to the axis range
+        // TODO: what if the ranges are reversed?
+        if(opts.range) {
+            var outRange = opts.range;
+            var axRange = axisOpts.range;
+
+            outRange[0] = axisOpts.l2r(Math.min(axisOpts.r2l(outRange[0]), axisOpts.r2l(axRange[0])));
+            outRange[1] = axisOpts.l2r(Math.max(axisOpts.r2l(outRange[1]), axisOpts.r2l(axRange[1])));
+            opts._input.range = outRange.slice();
+        }
+
+        axisOpts.cleanRange('rangeslider.range');
+
+
         // update range slider dimensions
 
         var margin = fullLayout.margin,

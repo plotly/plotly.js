@@ -175,7 +175,11 @@ describe('ModeBar', function() {
                 expectedButtonCount += group.length;
             });
 
-            expect(modeBar.hasButtons(buttons)).toBe(true, 'modeBar.hasButtons');
+            var actualButtons = modeBar.buttons.map(function(group) {
+                return group.map(function(button) { return button.name; }).join(', ');
+            }).join(' - ');
+
+            expect(modeBar.hasButtons(buttons)).toBe(true, 'modeBar.hasButtons: ' + actualButtons);
             expect(countGroups(modeBar)).toBe(expectedGroupCount, 'correct group count');
             expect(countButtons(modeBar)).toBe(expectedButtonCount, 'correct button count');
             expect(countLogo(modeBar)).toBe(1, 'correct logo count');
@@ -323,7 +327,8 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['pan2d'],
-                ['resetViewMapbox', 'toggleHover']
+                ['resetViewMapbox'],
+                ['toggleHover']
             ]);
 
             var gd = getMockGraphInfo();
@@ -339,7 +344,8 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['pan2d', 'select2d', 'lasso2d'],
-                ['resetViewMapbox', 'toggleHover']
+                ['resetViewMapbox'],
+                ['toggleHover']
             ]);
 
             var gd = getMockGraphInfo();
@@ -393,7 +399,9 @@ describe('ModeBar', function() {
         it('creates mode bar (cartesian + gl3d version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
-                ['resetViews', 'toggleHover']
+                ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
+                ['resetViews'],
+                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
             var gd = getMockGraphInfo();
@@ -405,14 +413,41 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
-        it('creates mode bar (cartesian + geo version)', function() {
+        it('creates mode bar (cartesian + geo unselectable version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
-                ['resetViews', 'toggleHover']
+                ['zoom2d', 'pan2d'],
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetViews'],
+                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
-            var gd = getMockGraphInfo();
+            var gd = getMockGraphInfo(['x'], ['y']);
             gd._fullLayout._basePlotModules = [{ name: 'cartesian' }, { name: 'geo' }];
+            gd._fullLayout.xaxis = {fixedrange: false};
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (cartesian + geo selectable version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetViews'],
+                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+            ]);
+
+            var gd = getMockGraphInfo(['x'], ['y']);
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }, { name: 'geo' }];
+            gd._fullLayout.xaxis = {fixedrange: false};
+            gd._fullData = [{
+                type: 'scatter',
+                visible: true,
+                mode: 'markers',
+                _module: {selectPoints: true}
+            }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -425,7 +460,7 @@ describe('ModeBar', function() {
                 ['toImage', 'sendDataToCloud'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
-                ['toggleHover']
+                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
             var gd = getMockGraphInfo(['x'], ['y']);
@@ -447,7 +482,9 @@ describe('ModeBar', function() {
         it('creates mode bar (gl3d + geo version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
-                ['resetViews', 'toggleHover']
+                ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
+                ['resetViews'],
+                ['toggleHover']
             ]);
 
             var gd = getMockGraphInfo();
@@ -462,7 +499,8 @@ describe('ModeBar', function() {
         it('creates mode bar (un-selectable ternary version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
-                ['zoom2d', 'pan2d']
+                ['zoom2d', 'pan2d'],
+                ['toggleHover']
             ]);
 
             var gd = getMockGraphInfo();
@@ -477,7 +515,8 @@ describe('ModeBar', function() {
         it('creates mode bar (selectable ternary version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
-                ['zoom2d', 'pan2d', 'select2d', 'lasso2d']
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
+                ['toggleHover']
             ]);
 
             var gd = getMockGraphInfo();
@@ -514,7 +553,9 @@ describe('ModeBar', function() {
         it('creates mode bar (ternary + gl3d version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
-                ['resetViews', 'toggleHover']
+                ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
+                ['resetViews'],
+                ['toggleHover']
             ]);
 
             var gd = getMockGraphInfo();

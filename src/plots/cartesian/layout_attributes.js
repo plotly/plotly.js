@@ -695,11 +695,11 @@ module.exports = {
         valType: 'info_array',
         role: 'info',
         items: [
-            {valType: 'number', min: 0, max: 1, editType: 'calc'},
-            {valType: 'number', min: 0, max: 1, editType: 'calc'}
+            {valType: 'number', min: 0, max: 1, editType: 'plot'},
+            {valType: 'number', min: 0, max: 1, editType: 'plot'}
         ],
         dflt: [0, 1],
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Sets the domain of this axis (in plot fraction).'
         ].join(' ')

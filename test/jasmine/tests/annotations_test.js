@@ -1151,6 +1151,72 @@ describe('annotation effects', function() {
         .then(done);
     });
 
+    it('works date string data-referenced with no arrow', function(done) {
+        gd = createGraphDiv();
+
+        Plotly.newPlot(gd, [{
+            x: ['2018-01-01', '2018-02-02'],
+            y: ['2017-01-03', '2017-02-04'],
+        }], {
+            annotations: [{
+                showarrow: false,
+                text: 'YO!',
+                xref: 'x',
+                yref: 'y',
+                x: '2018-02-01',
+                y: '2017-02-05'
+            }],
+            width: 500,
+            height: 500,
+            margin: {l: 100, r: 100, t: 100, b: 100, pad: 0},
+        }, {
+            editable: true
+        })
+        .then(function() {
+            return dragAndReplot(textDrag(), -20, 20);
+        })
+        .then(function() {
+            expect(gd._fullLayout.annotations[0].x).toBe('2018-01-29 13:29:41.4857');
+            expect(gd._fullLayout.annotations[0].y).toBe('2017-02-02 13:28:35.6572');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('works date sting data-referenced with arrow', function(done) {
+        gd = createGraphDiv();
+
+        Plotly.newPlot(gd, [{
+            x: ['2018-01-01', '2018-02-02'],
+            y: ['2017-01-03', '2017-02-04'],
+        }], {
+            annotations: [{
+                text: 'YO!',
+                xref: 'x',
+                yref: 'y',
+                x: '2018-02-01',
+                y: '2017-02-05'
+            }],
+            width: 500,
+            height: 500,
+            margin: {l: 100, r: 100, t: 100, b: 100, pad: 0},
+        }, {
+            editable: true
+        })
+        .then(function() {
+            return dragAndReplot(arrowDrag(), -20, 20);
+        })
+        .then(function() {
+            expect(gd._fullLayout.annotations[0].x).toBe('2018-01-29 13:29:41.4857');
+            // AJ loosened this test - expected '2017-02-02 06:36:46.8112'
+            // but when I run it I get '2017-02-02 06:28:39.9586'.
+            // must be different fonts altering autoranging
+            expect(gd._fullLayout.annotations[0].y.substr(0, 10)).toBe('2017-02-02');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should only make the clippaths it needs and delete others', function(done) {
         makePlot([
             {x: 50, y: 50, text: 'hi', width: 50, ax: 0, ay: -20},

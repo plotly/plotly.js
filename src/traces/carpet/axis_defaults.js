@@ -29,7 +29,6 @@ var autoType = require('../../plots/cartesian/axis_autotype');
  *  font: the default font to inherit
  *  outerTicks: boolean, should ticks default to outside?
  *  showGrid: boolean, should gridlines be shown by default?
- *  noHover: boolean, this axis doesn't support hover effects?
  *  data: the plot data to use in choosing auto type
  *  bgColor: the plot background color, to calculate default gridline colors
  */
@@ -37,8 +36,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     var letter = options.letter,
         font = options.font || {},
         attributes = carpetAttrs[letter + 'axis'];
-
-    options.noHover = true;
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);

@@ -15,26 +15,43 @@ var Lib = require('../../lib');
 
 
 module.exports = function handlePositionDefaults(containerIn, containerOut, coerce, options) {
-    var counterAxes = options.counterAxes || [],
-        overlayableAxes = options.overlayableAxes || [],
-        letter = options.letter;
+    var counterAxes = options.counterAxes || [];
+    var overlayableAxes = options.overlayableAxes || [];
+    var letter = options.letter;
+    var grid = options.grid;
+
+    var dfltAnchor, dfltDomain, dfltSide, dfltPosition;
+
+    if(grid) {
+        dfltDomain = grid._domains[letter][grid._axisMap[containerOut._id]];
+        dfltAnchor = grid._anchors[containerOut._id];
+        if(dfltDomain) {
+            dfltSide = grid[letter + 'side'].split(' ')[0];
+            dfltPosition = grid.domain[letter][dfltSide === 'right' || dfltSide === 'top' ? 1 : 0];
+        }
+    }
+
+    // Even if there's a grid, this axis may not be in it - fall back on non-grid defaults
+    dfltDomain = dfltDomain || [0, 1];
+    dfltAnchor = dfltAnchor || (isNumeric(containerIn.position) ? 'free' : (counterAxes[0] || 'free'));
+    dfltSide = dfltSide || (letter === 'x' ? 'bottom' : 'left');
+    dfltPosition = dfltPosition || 0;
 
     var anchor = Lib.coerce(containerIn, containerOut, {
         anchor: {
             valType: 'enumerated',
             values: ['free'].concat(counterAxes),
-            dflt: isNumeric(containerIn.position) ? 'free' :
-                (counterAxes[0] || 'free')
+            dflt: dfltAnchor
         }
     }, 'anchor');
 
-    if(anchor === 'free') coerce('position');
+    if(anchor === 'free') coerce('position', dfltPosition);
 
     Lib.coerce(containerIn, containerOut, {
         side: {
             valType: 'enumerated',
             values: letter === 'x' ? ['bottom', 'top'] : ['left', 'right'],
-            dflt: letter === 'x' ? 'bottom' : 'left'
+            dflt: dfltSide
         }
     }, 'side');
 
@@ -54,9 +71,9 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         // in ax.setscale()... but this means we still need (imperfect) logic
         // in the axes popover to hide domain for the overlaying axis.
         // perhaps I should make a private version _domain that all axes get???
-        var domain = coerce('domain');
-        if(domain[0] > domain[1] - 0.01) containerOut.domain = [0, 1];
-        Lib.noneOrAll(containerIn.domain, containerOut.domain, [0, 1]);
+        var domain = coerce('domain', dfltDomain);
+        if(domain[0] > domain[1] - 0.01) containerOut.domain = dfltDomain;
+        Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
     }
 
     coerce('layer');

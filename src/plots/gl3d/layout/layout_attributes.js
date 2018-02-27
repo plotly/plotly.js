@@ -10,7 +10,7 @@
 'use strict';
 
 var gl3dAxisAttrs = require('./axis_attributes');
-var domainAttrs = require('../../domain_attributes');
+var domainAttrs = require('../../domain').attributes;
 var extendFlat = require('../../../lib/extend').extendFlat;
 var counterRegex = require('../../../lib').counterRegex;
 

@@ -10,20 +10,22 @@
 'use strict';
 
 var Fx = require('../../components/fx');
+var Lib = require('../../lib');
 var getTraceColor = require('../scatter/get_trace_color');
 var fillHoverText = require('../scatter/fill_hover_text');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function hoverPoints(pointData, xval, yval) {
-    var cd = pointData.cd,
-        trace = cd[0].trace,
-        xa = pointData.xa,
-        ya = pointData.ya;
+    var cd = pointData.cd;
+    var trace = cd[0].trace;
+    var xa = pointData.xa;
+    var ya = pointData.ya;
+    var subplot = pointData.subplot;
 
     // compute winding number about [-180, 180] globe
     var winding = (xval >= 0) ?
-            Math.floor((xval + 180) / 360) :
-            Math.ceil((xval - 180) / 360);
+        Math.floor((xval + 180) / 360) :
+        Math.ceil((xval - 180) / 360);
 
     // shift longitude to [-180, 180] to determine closest point
     var lonShift = winding * 360;
@@ -31,11 +33,13 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     function distFn(d) {
         var lonlat = d.lonlat;
-
         if(lonlat[0] === BADNUM) return Infinity;
 
-        var dx = Math.abs(xa.c2p(lonlat) - xa.c2p([xval2, lonlat[1]]));
-        var dy = Math.abs(ya.c2p(lonlat) - ya.c2p([lonlat[0], yval]));
+        var lon = Lib.wrap180(lonlat[0]);
+        var lat = lonlat[1];
+        var pt = subplot.project([lon, lat]);
+        var dx = pt.x - xa.c2p([xval2, lat]);
+        var dy = pt.y - ya.c2p([lon, yval]);
         var rad = Math.max(3, d.mrc || 0);
 
         return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
@@ -46,14 +50,14 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     // skip the rest (for this trace) if we didn't find a close point
     if(pointData.index === false) return;
 
-    var di = cd[pointData.index],
-        lonlat = di.lonlat,
-        lonlatShifted = [lonlat[0] + lonShift, lonlat[1]];
+    var di = cd[pointData.index];
+    var lonlat = di.lonlat;
+    var lonlatShifted = [Lib.wrap180(lonlat[0]) + lonShift, lonlat[1]];
 
     // shift labels back to original winded globe
-    var xc = xa.c2p(lonlatShifted),
-        yc = ya.c2p(lonlatShifted),
-        rad = di.mrc || 1;
+    var xc = xa.c2p(lonlatShifted);
+    var yc = ya.c2p(lonlatShifted);
+    var rad = di.mrc || 1;
 
     pointData.x0 = xc - rad;
     pointData.x1 = xc + rad;
@@ -72,7 +76,6 @@ function getExtraText(trace, di, labels) {
     var isAll = parts.indexOf('all') !== -1;
     var hasLon = parts.indexOf('lon') !== -1;
     var hasLat = parts.indexOf('lat') !== -1;
-
     var lonlat = di.lonlat;
     var text = [];
 

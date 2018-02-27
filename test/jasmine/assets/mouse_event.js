@@ -4,7 +4,8 @@ module.exports = function(type, x, y, opts) {
     var fullOpts = {
         bubbles: true,
         clientX: x,
-        clientY: y
+        clientY: y,
+        cancelable: true
     };
 
     // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent

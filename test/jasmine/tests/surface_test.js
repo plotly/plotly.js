@@ -25,14 +25,15 @@ describe('Test surface', function() {
             expect(traceOut.visible).toBe(false);
         });
 
-        it('should fill \'x\' and \'y\' if not provided', function() {
+        it('should NOT fill \'x\' and \'y\' if not provided', function() {
+            // this happens later on now
             traceIn = {
                 z: [[1, 2, 3], [2, 1, 2]]
             };
 
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.x).toEqual([0, 1, 2]);
-            expect(traceOut.y).toEqual([0, 1]);
+            expect(traceOut.x).toBeUndefined();
+            expect(traceOut.y).toBeUndefined();
         });
 
         it('should coerce \'project\' if contours or highlight lines are enabled', function() {

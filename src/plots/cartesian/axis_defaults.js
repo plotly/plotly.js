@@ -59,6 +59,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
         [];
 
+
+    if(axType !== 'category' && !options.noHover) coerce('hoverformat');
+
     if(!visible) return containerOut;
 
     var dfltColor = coerce('color');

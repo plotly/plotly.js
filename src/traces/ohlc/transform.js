@@ -213,6 +213,7 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
     trace.x = x;
     trace.y = y;
     trace.text = textOut;
+    trace._length = x.length;
 };
 
 function convertTickWidth(gd, xa, trace) {

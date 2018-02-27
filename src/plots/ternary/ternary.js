@@ -328,12 +328,12 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     _this.layers.bgrid.attr('transform', bTransform);
 
     var aTransform = 'translate(' + (x0 + w / 2) + ',' + y0 +
-        ')rotate(30)translate(0,-' + aaxis._offset + ')';
+        ')rotate(30)translate(0,' + -aaxis._offset + ')';
     _this.layers.aaxis.attr('transform', aTransform);
     _this.layers.agrid.attr('transform', aTransform);
 
     var cTransform = 'translate(' + (x0 + w / 2) + ',' + y0 +
-        ')rotate(-30)translate(0,-' + caxis._offset + ')';
+        ')rotate(-30)translate(0,' + -caxis._offset + ')';
     _this.layers.caxis.attr('transform', cTransform);
     _this.layers.cgrid.attr('transform', cTransform);
 

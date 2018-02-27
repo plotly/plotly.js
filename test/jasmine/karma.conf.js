@@ -43,6 +43,10 @@ if(argv.info) {
         '    No need to add the `_test.js` suffix, we expand them correctly here.',
         '  - `--bundleTest` set the bundle test suite `test/jasmine/bundle_tests/ to be run.',
         '    Note that only one bundle test can be run at a time.',
+        '  - Use `--tags` to specify which `@` tags to test (if any) e.g `npm run test-jasmine -- --tags=gl`',
+        '    will run only gl tests.',
+        '  - Use `--skip-tags` to specify which `@` tags to skip (if any) e.g `npm run test-jasmine -- --skip-tags=gl`',
+        '    will skip all gl tests.',
         '',
         'Other options:',
         '  - `--info`: show this info message',
@@ -101,9 +105,7 @@ var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToIE9mock = path.join(__dirname, 'assets', 'ie9_mock.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 
-
 function func(config) {
-
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     //
@@ -202,9 +204,17 @@ func.defaultConfig = {
         debug: true
     },
 
-    // unfortunately a few tests don't behave well on CI
-    // using `karma-jasmine-spec-tags`
+    // Options for `karma-jasmine-spec-tags`
+    // see https://www.npmjs.com/package/karma-jasmine-spec-tags
+    //
+    // A few tests don't behave well on CI
     // add @noCI to the spec description to skip a spec on CI
+    //
+    // Label tests that require a WebGL-context by @gl so that
+    // they can be skipped using:
+    // - $ npm run test-jasmine -- --skip-tags=gl
+    // or run is isolation easily using:
+    // - $ npm run test-jasmine -- --tags=gl
     client: {
         tagPrefix: '@',
         skipTags: isCI ? 'noCI' : null

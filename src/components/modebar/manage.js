@@ -82,10 +82,13 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
     var hasPolar = fullLayout._has('polar');
+    var allAxesFixed = areAllAxesFixed(fullLayout);
 
     var groups = [];
 
     function addGroup(newGroup) {
+        if(!newGroup.length) return;
+
         var out = [];
 
         for(var i = 0; i < newGroup.length; i++) {
@@ -100,55 +103,71 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     // buttons common to all plot types
     addGroup(['toImage', 'sendDataToCloud']);
 
-    // graphs with more than one plot types get 'union buttons'
-    // which reset the view or toggle hover labels across all subplots.
-    if((hasCartesian || hasGL2D || hasPie || hasTernary) + hasGeo + hasGL3D > 1) {
-        addGroup(['resetViews', 'toggleHover']);
-        return appendButtonsToGroups(groups, buttonsToAdd);
+    var zoomGroup = [];
+    var hoverGroup = [];
+    var resetGroup = [];
+    var dragModeGroup = [];
+
+    if((hasCartesian || hasGL2D || hasPie || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
+        // graphs with more than one plot types get 'union buttons'
+        // which reset the view or toggle hover labels across all subplots.
+        hoverGroup = ['toggleHover'];
+        resetGroup = ['resetViews'];
+    }
+    else if(hasGeo) {
+        zoomGroup = ['zoomInGeo', 'zoomOutGeo'];
+        hoverGroup = ['hoverClosestGeo'];
+        resetGroup = ['resetGeo'];
+    }
+    else if(hasGL3D) {
+        hoverGroup = ['hoverClosest3d'];
+        resetGroup = ['resetCameraDefault3d', 'resetCameraLastSave3d'];
+    }
+    else if(hasMapbox) {
+        hoverGroup = ['toggleHover'];
+        resetGroup = ['resetViewMapbox'];
+    }
+    else if(hasGL2D) {
+        hoverGroup = ['hoverClosestGl2d'];
+    }
+    else if(hasPie) {
+        hoverGroup = ['hoverClosestPie'];
+    }
+    else { // hasPolar, hasTernary
+        // always show at least one hover icon.
+        hoverGroup = ['toggleHover'];
+    }
+    // if we have cartesian, allow switching between closest and compare
+    // regardless of what other types are on the plot, since they'll all
+    // just treat any truthy hovermode as 'closest'
+    if(hasCartesian) {
+        hoverGroup = ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian'];
+    }
+
+    if((hasCartesian || hasGL2D) && !allAxesFixed) {
+        zoomGroup = ['zoomIn2d', 'zoomOut2d', 'autoScale2d'];
+        if(resetGroup[0] !== 'resetViews') resetGroup = ['resetScale2d'];
     }
 
     if(hasGL3D) {
-        addGroup(['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation']);
-        addGroup(['resetCameraDefault3d', 'resetCameraLastSave3d']);
-        addGroup(['hoverClosest3d']);
+        dragModeGroup = ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'];
     }
-
-    var allAxesFixed = areAllAxesFixed(fullLayout),
-        dragModeGroup = [];
-
-    if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
+    else if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     }
-    if(hasMapbox || hasGeo) {
+    else if(hasMapbox || hasGeo) {
         dragModeGroup = ['pan2d'];
     }
-    if(hasPolar) {
+    else if(hasPolar) {
         dragModeGroup = ['zoom2d'];
     }
     if(isSelectable(fullData)) {
-        dragModeGroup.push('select2d');
-        dragModeGroup.push('lasso2d');
-    }
-    if(dragModeGroup.length) addGroup(dragModeGroup);
-
-    if((hasCartesian || hasGL2D) && !allAxesFixed && !hasTernary) {
-        addGroup(['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']);
+        dragModeGroup.push('select2d', 'lasso2d');
     }
 
-    if(hasCartesian && hasPie) {
-        addGroup(['toggleHover']);
-    } else if(hasGL2D) {
-        addGroup(['hoverClosestGl2d']);
-    } else if(hasCartesian) {
-        addGroup(['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']);
-    } else if(hasPie) {
-        addGroup(['hoverClosestPie']);
-    } else if(hasMapbox) {
-        addGroup(['resetViewMapbox', 'toggleHover']);
-    } else if(hasGeo) {
-        addGroup(['zoomInGeo', 'zoomOutGeo', 'resetGeo']);
-        addGroup(['hoverClosestGeo']);
-    }
+    addGroup(dragModeGroup);
+    addGroup(zoomGroup.concat(resetGroup));
+    addGroup(hoverGroup);
 
     return appendButtonsToGroups(groups, buttonsToAdd);
 }

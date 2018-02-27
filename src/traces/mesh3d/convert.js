@@ -40,6 +40,13 @@ proto.handlePick = function(selection) {
             this.data.z[selectIndex]
         ];
 
+        var text = this.data.text;
+        if(Array.isArray(text) && text[selectIndex] !== undefined) {
+            selection.textLabel = text[selectIndex];
+        } else if(text) {
+            selection.textLabel = text;
+        }
+
         return true;
     }
 };

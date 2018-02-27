@@ -39,8 +39,8 @@ describe('Test scatterpolargl hover:', function() {
 
     [{
         desc: 'base',
-        nums: 'r: 2.920135\nθ: 138.2489°',
-        name: 'Trial 4'
+        nums: 'r: 3.886013\nθ: 125.2822°',
+        name: 'Trial 3'
     }, {
         desc: '(no labels - out of sector)',
         patch: function(fig) {
@@ -56,8 +56,8 @@ describe('Test scatterpolargl hover:', function() {
             fig.layout.polar.angularaxis.thetaunit = 'radians';
             return fig;
         },
-        nums: 'r: 2.920135\nθ: 2.412898',
-        name: 'Trial 4'
+        nums: 'r: 3.886013\nθ: 2.186586',
+        name: 'Trial 3'
     }, {
         desc: 'on log radial axis',
         patch: function(fig) {

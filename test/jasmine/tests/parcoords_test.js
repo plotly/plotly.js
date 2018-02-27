@@ -6,7 +6,9 @@ var Parcoords = require('@src/traces/parcoords');
 var attributes = require('@src/traces/parcoords/attributes');
 
 var createGraphDiv = require('../assets/create_graph_div');
+var delay = require('../assets/delay');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -117,7 +119,7 @@ describe('parcoords initialization tests', function() {
                     alienProperty: 'Alpha Centauri'
                 }]
             });
-            expect(fullTrace.dimensions).toEqual([{values: [1], visible: true, tickformat: '3s', _index: 0}]);
+            expect(fullTrace.dimensions).toEqual([{values: [1], visible: true, tickformat: '3s', _index: 0, _length: 1}]);
         });
 
         it('\'dimension.visible\' should be set to false, and other props just passed through if \'values\' is not provided', function() {
@@ -126,7 +128,7 @@ describe('parcoords initialization tests', function() {
                     alienProperty: 'Alpha Centauri'
                 }]
             });
-            expect(fullTrace.dimensions).toEqual([{visible: false, values: [], _index: 0}]);
+            expect(fullTrace.dimensions).toEqual([{visible: false, _index: 0}]);
         });
 
         it('\'dimension.visible\' should be set to false, and other props just passed through if \'values\' is an empty array', function() {
@@ -146,22 +148,17 @@ describe('parcoords initialization tests', function() {
                     alienProperty: 'Alpha Centauri'
                 }]
             });
-            expect(fullTrace.dimensions).toEqual([{visible: false, values: [], _index: 0}]);
+            expect(fullTrace.dimensions).toEqual([{visible: false, _index: 0}]);
         });
 
-        it('\'dimension.values\' should get truncated to a common shortest length', function() {
+        it('\'dimension.values\' should get truncated to a common shortest *nonzero* length', function() {
             var fullTrace = _supply({dimensions: [
                 {values: [321, 534, 542, 674]},
                 {values: [562, 124, 942]},
                 {values: [], visible: true},
-                {values: [1, 2], visible: false} // shouldn't be truncated to as false
+                {values: [1, 2], visible: false} // shouldn't be truncated to as visible: false
             ]});
-            expect(fullTrace.dimensions).toEqual([
-                {values: [], visible: true, tickformat: '3s', _index: 0},
-                {values: [], visible: true, tickformat: '3s', _index: 1},
-                {values: [], visible: true, tickformat: '3s', _index: 2},
-                {values: [1, 2], visible: false, _index: 3}
-            ]);
+            expect(fullTrace._commonLength).toBe(3);
         });
     });
 
@@ -242,8 +239,7 @@ describe('parcoords initialization tests', function() {
     });
 });
 
-describe('@noCI parcoords', function() {
-
+describe('@gl parcoords', function() {
     beforeAll(function() {
         mock.data[0].dimensions.forEach(function(d) {
             d.values = d.values.slice(lineStart, lineStart + lineCount);
@@ -251,7 +247,13 @@ describe('@noCI parcoords', function() {
         mock.data[0].line.color = mock.data[0].line.color.slice(lineStart, lineStart + lineCount);
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function(done) {
+        var gd = d3.select('.js-plotly-plot').node();
+        if(gd) Plotly.purge(gd);
+        destroyGraphDiv();
+
+        return delay(50)().then(done);
+    });
 
     describe('edge cases', function() {
 
@@ -271,9 +273,9 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[0].dimensions[1].range).toBeDefined();
                 expect(gd.data[0].dimensions[1].range).toEqual([0, 700000]);
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
-
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
         it('Do something sensible if there is no panel i.e. dimension count is less than 2', function(done) {
@@ -290,9 +292,9 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[0].dimensions[0].range).not.toBeDefined();
                 expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
                 expect(gd.data[0].dimensions[0].constraintrange).toEqual([200, 700]);
-
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
         it('Does not error with zero dimensions', function(done) {
@@ -301,11 +303,13 @@ describe('@noCI parcoords', function() {
             var gd = createGraphDiv();
 
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].dimensions.length).toEqual(0);
                 expect(document.querySelectorAll('.axis').length).toEqual(0);
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
         it('Works with duplicate dimension labels', function(done) {
@@ -321,8 +325,9 @@ describe('@noCI parcoords', function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].dimensions.length).toEqual(2);
                 expect(document.querySelectorAll('.axis').length).toEqual(2);
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
         it('Works with a single line; also, use a longer color array than the number of lines', function(done) {
@@ -348,8 +353,9 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[0].dimensions.length).toEqual(2);
                 expect(document.querySelectorAll('.axis').length).toEqual(2);
                 expect(gd.data[0].dimensions[0].values.length).toEqual(1);
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
         it('Does not raise an error with zero lines and no specified range', function(done) {
@@ -372,8 +378,9 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[0].dimensions.length).toEqual(2);
                 expect(document.querySelectorAll('.axis').length).toEqual(0);
                 expect(gd.data[0].dimensions[0].values.length).toEqual(0);
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
         it('Works with non-finite `values` elements', function(done) {
@@ -400,11 +407,12 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[0].dimensions.length).toEqual(2);
                 expect(document.querySelectorAll('.axis').length).toEqual(2);
                 expect(gd.data[0].dimensions[0].values.length).toEqual(values[0].length);
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
-        it('Works with 60 dimensions', function(done) {
+        it('@noCI Works with 60 dimensions', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -430,11 +438,12 @@ describe('@noCI parcoords', function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].dimensions.length).toEqual(60);
                 expect(document.querySelectorAll('.axis').length).toEqual(60);
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
-        it('Truncates 60+ dimensions to 60', function(done) {
+        it('@noCI Truncates 60+ dimensions to 60', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -458,11 +467,12 @@ describe('@noCI parcoords', function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].dimensions.length).toEqual(60);
                 expect(document.querySelectorAll('.axis').length).toEqual(60);
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
-        it('Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
+        it('@noCI Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
 
             var mockCopy = Lib.extendDeep({}, mock1);
             var newDimension, i, j;
@@ -487,8 +497,9 @@ describe('@noCI parcoords', function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].dimensions.length).toEqual(60);
                 expect(document.querySelectorAll('.axis').length).toEqual(60);
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
         it('Skip dimensions which are not plain objects or whose `values` is not an array', function(done) {
@@ -520,8 +531,9 @@ describe('@noCI parcoords', function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].dimensions.length).toEqual(5); // it's still five, but ...
                 expect(document.querySelectorAll('.axis').length).toEqual(3); // only 3 axes shown
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
 
@@ -538,7 +550,9 @@ describe('@noCI parcoords', function() {
                 y: [0.05, 0.85]
             };
             gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .catch(fail)
+            .then(done);
         });
 
         it('`Plotly.plot` should have proper fields on `gd.data` on initial rendering', function() {
@@ -582,10 +596,10 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[1].dimensions[10].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[1].dimensions[1].constraintrange).not.toBeDefined();
 
-                expect(document.querySelectorAll('.axis').length).toEqual(20);  // one dimension is `visible: false`
-
-                done();
-            });
+                expect(document.querySelectorAll('.axis').length).toEqual(20); // one dimension is `visible: false`
+            })
+            .catch(fail)
+            .then(done);
 
         });
 
@@ -603,9 +617,9 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
                 expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
-
-                done();
-            });
+            })
+            .catch(fail)
+            .then(done);
 
         });
 
@@ -631,6 +645,7 @@ describe('@noCI parcoords', function() {
                 .then(restyleDimension('constraintrange', [[0, 1]]))
                 .then(restyleDimension('values', [[0, 0.1, 0.4, 1, 2, 0, 0.1, 0.4, 1, 2]]))
                 .then(restyleDimension('visible', false))
+                .catch(fail)
                 .then(done);
         });
 
@@ -651,11 +666,9 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
                 expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
-
-                done();
-            });
-
-
+            })
+            .catch(fail)
+            .then(done);
         });
 
         it('Should emit a \'plotly_restyle\' event', function(done) {
@@ -676,10 +689,11 @@ describe('@noCI parcoords', function() {
 
             expect(tester.get()).toBe(false);
             Plotly.restyle(gd, 'line.colorscale', 'Viridis')
-                .then(window.setTimeout(function() {
-                    expect(tester.get()).toBe(true);
-                    done();
-                }, 0));
+            .then(function() {
+                expect(tester.get()).toBe(true);
+            })
+            .catch(fail)
+            .then(done);
 
         });
 
@@ -714,20 +728,24 @@ describe('@noCI parcoords', function() {
             mouseEvent('mousemove', 315, 218);
             mouseEvent('mouseover', 315, 218);
 
-            window.setTimeout(function() {
-
-                expect(hoverTester.get()).toBe(true);
-
-                mouseEvent('mousemove', 329, 153);
-                mouseEvent('mouseover', 329, 153);
-
+            new Promise(function(resolve) {
                 window.setTimeout(function() {
 
-                    expect(unhoverTester.get()).toBe(true);
-                    done();
-                }, 20);
+                    expect(hoverTester.get()).toBe(true);
 
-            }, 20);
+                    mouseEvent('mousemove', 329, 153);
+                    mouseEvent('mouseover', 329, 153);
+
+                    window.setTimeout(function() {
+
+                        expect(unhoverTester.get()).toBe(true);
+                        resolve();
+                    }, 20);
+
+                }, 20);
+            })
+            .catch(fail)
+            .then(done);
 
         });
 
@@ -746,10 +764,9 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
                 expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
-
-                done();
-            });
-
+            })
+            .catch(fail)
+            .then(done);
         });
 
         it('Calling `Plotly.relayout`with object should amend the preexisting parcoords', function(done) {
@@ -767,12 +784,49 @@ describe('@noCI parcoords', function() {
                 expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
                 expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
-
-                done();
-            });
-
+            })
+            .catch(fail)
+            .then(done);
         });
 
+        it('@flaky Calling `Plotly.animate` with patches targeting `dimensions` attributes should do the right thing', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'parcoords',
+                line: {color: 'blue'},
+                dimensions: [{
+                    range: [1, 5],
+                    constraintrange: [1, 2],
+                    label: 'A',
+                    values: [1, 4]
+                }, {
+                    range: [1, 5],
+                    label: 'B',
+                    values: [3, 1.5],
+                    tickvals: [1.5, 3, 4.5]
+                }]
+            }])
+            .then(function() {
+                return Plotly.animate(gd, {
+                    data: [{
+                        'line.color': 'red',
+                        'dimensions[0].constraintrange': [1, 4]
+                    }],
+                    traces: [0],
+                    layout: {}
+                });
+            })
+            .then(function() {
+                expect(gd.data[0].line.color).toBe('red');
+                expect(gd.data[0].dimensions[0]).toEqual({
+                    range: [1, 5],
+                    constraintrange: [1, 4],
+                    label: 'A',
+                    values: [1, 4]
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 
     describe('Lifecycle methods', function() {
@@ -788,12 +842,13 @@ describe('@noCI parcoords', function() {
 
                 expect(gd.data.length).toEqual(1);
 
-                Plotly.deleteTraces(gd, 0).then(function() {
+                return Plotly.deleteTraces(gd, 0).then(function() {
                     expect(d3.selectAll('.gl-canvas').node(0)).toEqual(null);
                     expect(gd.data.length).toEqual(0);
-                    done();
                 });
-            });
+            })
+            .catch(fail)
+            .then(done);
         });
 
         it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
@@ -825,8 +880,9 @@ describe('@noCI parcoords', function() {
                     expect(document.querySelectorAll('.gl-canvas').length).toEqual(0);
                     expect(document.querySelectorAll('.y-axis').length).toEqual(0);
                     expect(gd.data.length).toEqual(0);
-                    done();
-                });
+                })
+                .catch(fail)
+                .then(done);
         });
 
         it('Calling `Plotly.restyle` with zero panels left should erase lines', function(done) {
@@ -855,8 +911,9 @@ describe('@noCI parcoords', function() {
                         } while(!foundPixel && i < imageArray.length);
                         expect(foundPixel).toEqual(false);
                     });
-                    done();
-                });
+                })
+                .catch(fail)
+                .then(done);
         });
 
         describe('Having two datasets', function() {
@@ -886,9 +943,9 @@ describe('@noCI parcoords', function() {
                         expect(1).toEqual(1);
                         expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(2);
-
-                        done();
-                    });
+                    })
+                    .catch(fail)
+                    .then(done);
             });
 
             it('Plotly.addTraces should add a new parcoords row', function(done) {
@@ -913,10 +970,9 @@ describe('@noCI parcoords', function() {
                     .then(function() {
                         expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(2);
-
-                        done();
-                    });
-
+                    })
+                    .catch(fail)
+                    .then(done);
             });
 
             it('Plotly.restyle should update the existing parcoords row', function(done) {
@@ -962,10 +1018,9 @@ describe('@noCI parcoords', function() {
 
                         expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(1);
-
-                        done();
-                    });
-
+                    })
+                    .catch(fail)
+                    .then(done);
             });
         });
     });

@@ -81,7 +81,8 @@ module.exports = {
         editType: 'calc',
         description: [
             'Assigns id labels to each datum.',
-            'These ids for object constancy of data points during animation.'
+            'These ids for object constancy of data points during animation.',
+            'Should be an array of strings, not numbers or any other type.'
         ].join(' ')
     },
     customdata: {

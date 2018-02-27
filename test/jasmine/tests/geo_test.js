@@ -1072,7 +1072,7 @@ describe('Test geo interactions', function() {
         .then(done);
     });
 
-    it('@noCI should clear hover label when cursor slips off subplot', function(done) {
+    it('should clear hover label when cursor slips off subplot', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/geo_orthographic.json'));
 

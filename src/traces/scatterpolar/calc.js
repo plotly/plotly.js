@@ -26,7 +26,7 @@ module.exports = function calc(gd, trace) {
     var angularAxis = fullLayout[subplotId].angularaxis;
     var rArray = radialAxis.makeCalcdata(trace, 'r');
     var thetaArray = angularAxis.makeCalcdata(trace, 'theta');
-    var len = rArray.length;
+    var len = trace._length;
     var cd = new Array(len);
 
     function c2rad(v) {
@@ -53,6 +53,7 @@ module.exports = function calc(gd, trace) {
     if(angularAxis.type !== 'linear') {
         angularAxis.autorange = true;
         Axes.expand(angularAxis, thetaArray);
+        delete angularAxis.autorange;
     }
 
     calcColorscale(trace);

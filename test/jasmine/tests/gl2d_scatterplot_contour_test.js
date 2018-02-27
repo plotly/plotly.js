@@ -167,7 +167,7 @@ function makePlot(gd, mock, done) {
         .then(done);
 }
 
-describe('contourgl plots', function() {
+describe('@gl contourgl plots', function() {
 
     var gd;
 

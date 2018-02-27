@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var mapboxgl = require('mapbox-gl');
@@ -20,6 +19,9 @@ var constants = require('./constants');
 
 var MAPBOX = 'mapbox';
 
+for(var k in constants.styleRules) {
+    Lib.addStyleRule('.mapboxgl-' + k, constants.styleRules[k]);
+}
 
 exports.name = MAPBOX;
 
@@ -53,6 +55,10 @@ exports.plot = function plotMapbox(gd) {
     var calcData = gd.calcdata;
     var mapboxIds = fullLayout._subplots[MAPBOX];
 
+    if(mapboxgl.version !== constants.requiredVersion) {
+        throw new Error(constants.wrongVersionErrorMsg);
+    }
+
     var accessToken = findAccessToken(gd, mapboxIds);
     mapboxgl.accessToken = accessToken;
 
@@ -61,9 +67,6 @@ exports.plot = function plotMapbox(gd) {
             subplotCalcData = getSubplotCalcData(calcData, MAPBOX, id),
             opts = fullLayout[id],
             mapbox = opts._subplot;
-
-        // copy access token to fullLayout (to handle the context case)
-        opts.accesstoken = accessToken;
 
         if(!mapbox) {
             mapbox = createMapbox({
@@ -136,24 +139,17 @@ function findAccessToken(gd, mapboxIds) {
     // special case for Mapbox Atlas users
     if(context.mapboxAccessToken === '') return '';
 
-    // first look for access token in context
-    var accessToken = context.mapboxAccessToken;
-
-    // allow mapbox layout options to override it
+    // Take the first token we find in a mapbox subplot.
+    // These default to the context value but may be overridden.
     for(var i = 0; i < mapboxIds.length; i++) {
         var opts = fullLayout[mapboxIds[i]];
 
         if(opts.accesstoken) {
-            accessToken = opts.accesstoken;
-            break;
+            return opts.accesstoken;
         }
     }
 
-    if(!accessToken) {
-        throw new Error(constants.noAccessTokenErrorMsg);
-    }
-
-    return accessToken;
+    throw new Error(constants.noAccessTokenErrorMsg);
 }
 
 exports.updateFx = function(fullLayout) {

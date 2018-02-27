@@ -162,7 +162,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var positioningOptions = {
             letter: axLetter,
             counterAxes: counterAxes[axLetter],
-            overlayableAxes: overlayableAxes
+            overlayableAxes: overlayableAxes,
+            grid: layoutOut.grid
         };
 
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
