@@ -1528,7 +1528,7 @@ function numFormat(v, ax, fmtoverride, hover) {
     if(hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {
-            exponentformat: ax.exponentformat,
+            exponentformat: exponentFormat,
             dtick: ax.showexponent === 'none' ? ax.dtick :
                 (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent
