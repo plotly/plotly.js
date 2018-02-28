@@ -45,26 +45,28 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     coerce('range');
 
     var subplots = layoutOut._subplots;
-    var yIds = subplots.yaxis;
-    var yNames = Lib.simpleMap(yIds, axisIds.id2name);
-    for(var i = 0; i < yNames.length; i++) {
-        var yName = yNames[i];
-        if(!containerIn[yName]) {
-            containerIn[yName] = {};
-        }
-        if(!containerOut[yName]) {
-            containerOut[yName] = {};
-        }
+    if(subplots) {
+        var yIds = subplots.yaxis;
+        var yNames = Lib.simpleMap(yIds, axisIds.id2name);
+        for(var i = 0; i < yNames.length; i++) {
+            var yName = yNames[i];
+            if(!containerIn[yName]) {
+                containerIn[yName] = {};
+            }
+            if(!containerOut[yName]) {
+                containerOut[yName] = {};
+            }
 
-        if(containerIn[yName].range && layoutOut[yName].isValidRange(containerIn[yName].range)) {
-            coerceRange(yName, 'rangemode', 'fixed');
-        } else {
-            coerceRange(yName, 'rangemode', 'auto');
-        }
+            if(containerIn[yName].range && layoutOut[yName].isValidRange(containerIn[yName].range)) {
+                coerceRange(yName, 'rangemode', 'fixed');
+            } else {
+                coerceRange(yName, 'rangemode', 'auto');
+            }
 
-        layoutOut[yName].cleanRange('rangeslider.' + yName + '.range');
-        coerceRange(yName, 'range', layoutOut[yName].rangeslider[yName].range.slice());
-        delete layoutOut[yName].rangeslider;
+            layoutOut[yName].cleanRange('rangeslider.' + yName + '.range');
+            coerceRange(yName, 'range', layoutOut[yName].rangeslider[yName].range.slice());
+            delete layoutOut[yName].rangeslider;
+        }
     }
 
     // to map back range slider (auto) range

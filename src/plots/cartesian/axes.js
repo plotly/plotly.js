@@ -370,7 +370,7 @@ axes.doAutoRange = function(ax) {
 
     if(ax.rangeslider) {
         var anchorAxis = ax._anchorAxis;
-        if(ax.rangeslider[anchorAxis._name].rangemode === 'auto') {
+        if(ax.rangeslider[anchorAxis._name] && ax.rangeslider[anchorAxis._name].rangemode === 'auto') {
             hasDeps = (anchorAxis._min && anchorAxis._max && anchorAxis._min.length && anchorAxis._max.length);
             ax.rangeslider[anchorAxis._name].range = hasDeps ? axes.getAutoRange(anchorAxis) : anchorAxis.range.slice();
             axIn = ax._input;
