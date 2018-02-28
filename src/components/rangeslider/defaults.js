@@ -10,6 +10,8 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
+var rangeAttributes = require('./range_attributes');
+var axisIds = require('../../plots/cartesian/axis_ids');
 
 module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     if(!layoutIn[axName].rangeslider) return;
@@ -27,6 +29,10 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 
+    function coerceRange(yName, attr, dflt) {
+        return Lib.coerce(containerIn[yName], containerOut[yName], rangeAttributes, attr, dflt);
+    }
+
     var visible = coerce('visible');
     if(!visible) return;
 
@@ -37,7 +43,30 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
 
     coerce('autorange', !axOut.isValidRange(containerIn.range));
     coerce('range');
-    containerOut.yaxis = containerIn.yaxis;
+
+    var subplots = layoutOut._subplots;
+    var yIds = subplots.yaxis;
+    var yNames = Lib.simpleMap(yIds, axisIds.id2name);
+    for(var i = 0; i < yNames.length; i++) {
+        var yName = yNames[i];
+        if(!containerIn[yName]) {
+            containerIn[yName] = {};
+        }
+        if(!containerOut[yName]) {
+            containerOut[yName] = {};
+        }
+
+        if(containerIn[yName].range && layoutOut[yName].isValidRange(containerIn[yName].range)) {
+            coerceRange(yName, 'rangemode', 'fixed');
+        } else {
+            coerceRange(yName, 'rangemode', 'auto');
+        }
+
+        coerceRange(yName, 'range');
+        layoutOut[yName].cleanRange('rangeslider.' + yName + '.range');
+        layoutOut[axName].rangeslider[yName].range = layoutOut[yName].rangeslider[yName].range.slice();
+        delete layoutOut[yName].rangeslider;
+    }
 
     // to map back range slider (auto) range
     containerOut._input = containerIn;
