@@ -10,9 +10,9 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Sieve = require('./sieve.js');
@@ -314,7 +314,7 @@ function applyAttributes(sieve) {
             initialPoffset = t.poffset,
             newPoffset;
 
-        if(Lib.isArrayOrTypedArray(offset)) {
+        if(isArrayOrTypedArray(offset)) {
             // if offset is an array, then clone it into t.poffset.
             newPoffset = offset.slice(0, calcTrace.length);
 
@@ -340,7 +340,7 @@ function applyAttributes(sieve) {
         var width = fullTrace.width,
             initialBarwidth = t.barwidth;
 
-        if(Lib.isArrayOrTypedArray(width)) {
+        if(isArrayOrTypedArray(width)) {
             // if width is an array, then clone it into t.barwidth.
             var newBarwidth = width.slice(0, calcTrace.length);
 

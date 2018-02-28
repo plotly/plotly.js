@@ -8,8 +8,8 @@
 
 'use strict';
 
-var Lib = require('../../lib');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 module.exports = function(trace) {
-    return !Lib.isArrayOrTypedArray(trace.z[0]);
+    return !isArrayOrTypedArray(trace.z[0]);
 };

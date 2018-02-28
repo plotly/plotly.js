@@ -8,7 +8,7 @@
 
 'use strict';
 
-var Lib = require('../../lib');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
@@ -21,7 +21,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
     }
     else {
-        var lineColorDflt = (Lib.isArrayOrTypedArray(markerColor) ? false : markerColor) || defaultColor;
+        var lineColorDflt = (isArrayOrTypedArray(markerColor) ? false : markerColor) || defaultColor;
         coerce('line.color', lineColorDflt);
     }
 

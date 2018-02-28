@@ -10,7 +10,7 @@
 'use strict';
 
 var Color = require('../../components/color');
-var Lib = require('../../lib');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coerce) {
     var inheritColorFromMarker = false;
@@ -20,10 +20,10 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
         var markerColor = traceOut.marker.color,
             markerLineColor = (traceOut.marker.line || {}).color;
 
-        if(markerColor && !Lib.isArrayOrTypedArray(markerColor)) {
+        if(markerColor && !isArrayOrTypedArray(markerColor)) {
             inheritColorFromMarker = markerColor;
         }
-        else if(markerLineColor && !Lib.isArrayOrTypedArray(markerLineColor)) {
+        else if(markerLineColor && !isArrayOrTypedArray(markerLineColor)) {
             inheritColorFromMarker = markerLineColor;
         }
     }

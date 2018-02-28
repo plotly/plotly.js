@@ -10,8 +10,8 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
-var Lib = require('../../lib');
 var Registry = require('../../registry');
 var hasColumns = require('./has_columns');
 
@@ -76,7 +76,7 @@ function isValidZ(z) {
 
     for(var i = 0; i < z.length; i++) {
         zi = z[i];
-        if(!Lib.isArrayOrTypedArray(zi)) {
+        if(!isArrayOrTypedArray(zi)) {
             allRowsAreArrays = false;
             break;
         }
