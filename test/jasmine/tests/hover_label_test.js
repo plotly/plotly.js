@@ -4,6 +4,7 @@ var Plotly = require('@lib/index');
 var Fx = require('@src/components/fx');
 var Lib = require('@src/lib');
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
+var MINUS_SIGN = require('@src/constants/numerical').MINUS_SIGN;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -501,8 +502,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 2',
@@ -538,12 +538,50 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
                     name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('provides exponents correctly for z data', function(done) {
+            function expFmt(val, exp) {
+                return val + '×10\u200b<tspan style="font-size:70%" dy="-0.6em">' +
+                    (exp < 0 ? MINUS_SIGN + -exp : exp) +
+                    '</tspan><tspan dy="0.42em">\u200b</tspan>';
+            }
+            Plotly.plot(gd, [{
+                type: 'heatmap',
+                y: [0, 1, 2, 3],
+                z: [
+                    [-1.23456789e23, -1e10, -1e4],
+                    [-1e-2, -1e-8, 0],
+                    [1.23456789e-23, 1e-8, 1e-2],
+                    [123.456789, 1.23456789e10, 1e23]
+                ],
+                showscale: false
+            }], {
+                width: 600,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                [
+                    [expFmt(MINUS_SIGN + '1.234568', 23), MINUS_SIGN + '10B', MINUS_SIGN + '10k'],
+                    [MINUS_SIGN + '0.01', MINUS_SIGN + '10n', '0'],
+                    [expFmt('1.234568', -23), '10n', '0.01'],
+                    ['123.4568', '12.34568B', expFmt('1', 23)]
+                ]
+                .forEach(function(row, y) {
+                    row.forEach(function(zVal, x) {
+                        _hover(gd, (x + 0.5) * 200, (3.5 - y) * 100);
+                        assertHoverLabelContent({nums: 'x: ' + x + '\ny: ' + y + '\nz: ' + zVal}, zVal);
+                    });
                 });
             })
             .catch(fail)
@@ -575,8 +613,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
@@ -684,8 +721,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
@@ -723,8 +759,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 270);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
