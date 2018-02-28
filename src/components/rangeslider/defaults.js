@@ -66,6 +66,12 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
         layoutOut[yName].cleanRange('rangeslider.' + yName + '.range');
         layoutOut[axName].rangeslider[yName].range = layoutOut[yName].rangeslider[yName].range.slice();
         delete layoutOut[yName].rangeslider;
+
+        /*if(ax.rangeslidermode === 'auto') {
+            ax.rangesliderrange = hasDeps ? axes.getAutoRange(ax) : ax.range.slice();
+            axIn = ax._input;
+            axIn.rangesliderrange = ax.rangesliderrange.slice();
+        }*/
     }
 
     // to map back range slider (auto) range

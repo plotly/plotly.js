@@ -367,12 +367,6 @@ axes.doAutoRange = function(ax) {
         axIn.range = ax.range.slice();
         axIn.autorange = ax.autorange;
     }
-
-    if(ax.rangeslidermode === 'auto') {
-        ax.rangesliderrange = hasDeps ? axes.getAutoRange(ax) : ax.range.slice();
-        axIn = ax._input;
-        axIn.rangesliderrange = ax.rangesliderrange.slice();
-    }
 };
 
 // save a copy of the initial axis ranges in fullLayout
