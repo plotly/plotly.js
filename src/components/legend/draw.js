@@ -282,13 +282,19 @@ module.exports = function draw(gd) {
         scrollBar.on('.drag', null);
         scrollBox.on('.drag', null);
 
-        var drag = d3.behavior.drag().on('drag', function() {
-            var e3 = d3.event;
-            var e = e3.sourceEvent;
+        var eventY0, scrollBarY0;
+
+        var drag = d3.behavior.drag()
+        .on('dragstart', function() {
+            eventY0 = d3.event.sourceEvent.clientY;
+            scrollBarY0 = scrollBarY;
+        })
+        .on('drag', function() {
+            var e = d3.event.sourceEvent;
             if(e.buttons === 2 || e.ctrlKey) return;
 
             scrollBarY = Lib.constrain(
-                e3.y - constants.scrollBarHeight / 2,
+                e.clientY - eventY0 + scrollBarY0,
                 constants.scrollBarMargin,
                 constants.scrollBarMargin + scrollBarYMax);
             scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /

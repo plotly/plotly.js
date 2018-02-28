@@ -79,10 +79,11 @@ describe('The legend', function() {
         it('should scroll when there\'s a wheel event', function() {
             var legend = getLegend();
             var scrollBox = getScrollBox();
+            var scrollBar = getScrollBar();
             var legendHeight = getLegendHeight(gd);
             var scrollBoxYMax = gd._fullLayout.legend._height - legendHeight;
             var scrollBarYMax = legendHeight -
-                constants.scrollBarHeight -
+                scrollBar.getBoundingClientRect().height -
                 2 * constants.scrollBarMargin;
             var initialDataScroll = scrollBox.getAttribute('data-scroll');
             var wheelDeltaY = 100;
@@ -100,10 +101,11 @@ describe('The legend', function() {
         function dragScroll(element, rightClick) {
             var scrollBox = getScrollBox();
             var scrollBar = getScrollBar();
+            var scrollBarBB = scrollBar.getBoundingClientRect();
             var legendHeight = getLegendHeight(gd);
             var scrollBoxYMax = gd._fullLayout.legend._height - legendHeight;
             var scrollBarYMax = legendHeight -
-                constants.scrollBarHeight -
+                scrollBarBB.height -
                 2 * constants.scrollBarMargin;
             var initialDataScroll = scrollBox.getAttribute('data-scroll');
             var dy = 50;
@@ -111,8 +113,7 @@ describe('The legend', function() {
                 dy / scrollBarYMax * scrollBoxYMax,
                 -scrollBoxYMax, 0);
 
-            var scrollBarBB = scrollBar.getBoundingClientRect();
-            var y0 = scrollBarBB.top + scrollBarBB.height / 2;
+            var y0 = scrollBarBB.top + scrollBarBB.height / 5;
             var y1 = y0 + dy;
 
             var elBB = element.getBoundingClientRect();
