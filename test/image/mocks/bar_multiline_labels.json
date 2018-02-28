@@ -1,0 +1,14 @@
+{
+    "data":[
+        {
+            "x":["1","2","3"],
+            "y":["hello","multiple<br>lines","one<br>two<br>three"],
+            "type":"bar",
+            "orientation": "h"
+        }
+    ],
+    "layout":{
+        "height":400,
+        "width":400
+    }
+}
