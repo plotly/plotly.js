@@ -128,8 +128,9 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     pointData[sizeLetter + '0'] = pointData[sizeLetter + '1'] = sa.c2p(di[sizeLetter], true);
     pointData[sizeLetter + 'LabelVal'] = size;
 
-    pointData[posLetter + '0'] = pa.c2p(minPos(di), true);
-    pointData[posLetter + '1'] = pa.c2p(maxPos(di), true);
+    var extent = t.extents[t.extents.round(di.p)];
+    pointData[posLetter + '0'] = pa.c2p(isClosest ? minPos(di) : extent[0], true);
+    pointData[posLetter + '1'] = pa.c2p(isClosest ? maxPos(di) : extent[1], true);
     pointData[posLetter + 'LabelVal'] = di.p;
 
     // spikelines always want "closest" distance regardless of hovermode

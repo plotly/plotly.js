@@ -13,7 +13,7 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 var colorscales = require('../../components/colorscale/scales');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var fontAttrs = require('../../plots/font_attributes');
-var domainAttrs = require('../../plots/domain_attributes');
+var domainAttrs = require('../../plots/domain').attributes;
 
 var extend = require('../../lib/extend');
 var extendDeepAll = extend.extendDeepAll;
@@ -92,7 +92,6 @@ module.exports = {
         values: {
             valType: 'data_array',
             role: 'info',
-            dflt: [],
             editType: 'calc',
             description: [
                 'Dimension values. `values[n]` represents the value of the `n`th point in the dataset,',

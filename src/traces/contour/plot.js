@@ -428,19 +428,19 @@ exports.labelFormatter = function(contours, colorbar, fullLayout) {
                     formatAxis.range = [value[0], value[value.length - 1]];
                 }
                 else formatAxis.range = [value, value];
-
-                if(formatAxis.range[0] === formatAxis.range[1]) {
-                    formatAxis.range[1] += formatAxis.range[0] || 1;
-                }
-                formatAxis.nticks = 1000;
             }
             else {
                 formatAxis.range = [contours.start, contours.end];
                 formatAxis.nticks = (contours.end - contours.start) / contours.size;
             }
 
+            if(formatAxis.range[0] === formatAxis.range[1]) {
+                formatAxis.range[1] += formatAxis.range[0] || 1;
+            }
+            if(!formatAxis.nticks) formatAxis.nticks = 1000;
+
             setConvert(formatAxis, fullLayout);
-            Axes.calcTicks(formatAxis);
+            Axes.prepTicks(formatAxis);
             formatAxis._tmin = null;
             formatAxis._tmax = null;
         }

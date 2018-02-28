@@ -383,7 +383,8 @@ function recurseIntoValObject(valObject, parts, i) {
     }
 
     // now recurse as far as we can. Occasionally we have an attribute
-    // setting an internal part below what's
+    // setting an internal part below what's in the schema; just return
+    // the innermost schema item we find.
     for(; i < parts.length; i++) {
         var newValObject = valObject[parts[i]];
         if(Lib.isPlainObject(newValObject)) valObject = newValObject;
@@ -398,8 +399,23 @@ function recurseIntoValObject(valObject, parts, i) {
         else if(valObject.valType === 'info_array') {
             i++;
             var index = parts[i];
-            if(!isIndex(index) || index >= valObject.items.length) return false;
-            valObject = valObject.items[index];
+            if(!isIndex(index)) return false;
+
+            var items = valObject.items;
+            if(Array.isArray(items)) {
+                if(index >= items.length) return false;
+                if(valObject.dimensions === 2) {
+                    i++;
+                    if(parts.length === i) return valObject;
+                    var index2 = parts[i];
+                    if(!isIndex(index2)) return false;
+                    valObject = items[index][index2];
+                }
+                else valObject = items[index];
+            }
+            else {
+                valObject = items;
+            }
         }
     }
 
