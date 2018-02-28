@@ -2449,8 +2449,10 @@ describe('Test axes', function() {
     });
 
     describe('makeCalcdata', function() {
+        var ax;
+
         function _makeCalcdata(trace, axLetter, axType) {
-            var ax = {type: axType};
+            ax = {type: axType};
             Axes.setConvert(ax);
             ax._categories = [];
             return ax.makeCalcdata(trace, axLetter);
@@ -2508,12 +2510,21 @@ describe('Test axes', function() {
         });
 
         describe('should subarray typed arrays', function() {
-            it('- same length case', function() {
+            it('- same length linear case', function() {
                 var x = new Float32Array([1, 2, 3]);
                 var out = _makeCalcdata({
                     _length: 3,
                     x: x
                 }, 'x', 'linear');
+                expect(out).toBe(x);
+            });
+
+            it('- same length log case', function() {
+                var x = new Float32Array([1, 2, 3]);
+                var out = _makeCalcdata({
+                    _length: 3,
+                    x: x
+                }, 'x', 'log');
                 expect(out).toBe(x);
             });
 
@@ -2527,6 +2538,29 @@ describe('Test axes', function() {
                 // check that in and out are linked to same buffer
                 expect(out.buffer).toBeDefined();
                 expect(out.buffer).toEqual(x.buffer);
+            });
+        });
+
+        describe('should convert typed arrays to plain array', function() {
+            it('- on a category axis', function() {
+                var out = _makeCalcdata({
+                    x: new Float32Array([3, 1, 2]),
+                }, 'x', 'category');
+                expect(out).toEqual([0, 1, 2]);
+                expect(ax._categories).toEqual([3, 1, 2]);
+            });
+
+            it('- on a date axis', function() {
+                var dates = [[2000, 0, 1], [2001, 0, 1], [2002, 0, 1]]
+                    .map(function(d) { return new Date(d[0], d[1], d[2]).getTime(); });
+
+                // We could make this work down the road (in v2),
+                // when address our timezone problems.
+                var out = _makeCalcdata({
+                    x: new Float64Array(dates)
+                }, 'x', 'date');
+
+                expect(out).toEqual([946684800000, 978307200000, 1009843200000]);
             });
         });
     });

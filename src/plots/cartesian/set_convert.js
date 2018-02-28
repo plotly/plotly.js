@@ -400,13 +400,14 @@ module.exports = function setConvert(ax, fullLayout) {
     ax.makeCalcdata = function(trace, axLetter) {
         var arrayIn, arrayOut, i, len;
 
-        var cal = ax.type === 'date' && trace[axLetter + 'calendar'];
+        var axType = ax.type;
+        var cal = axType === 'date' && trace[axLetter + 'calendar'];
 
         if(axLetter in trace) {
             arrayIn = trace[axLetter];
             len = trace._length || arrayIn.length;
 
-            if(Lib.isTypedArray(arrayIn)) {
+            if(Lib.isTypedArray(arrayIn) && (axType === 'linear' || axType === 'log')) {
                 if(len === arrayIn.length) {
                     return arrayIn;
                 } else if(arrayIn.subarray) {
