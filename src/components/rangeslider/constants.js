@@ -37,7 +37,7 @@ module.exports = {
     // style constants
 
     maskColor: 'rgba(0,0,0,0.4)',
-    maskOppColor: 'rgba(0,0,0,0.2)',
+    maskOppAxisColor: 'rgba(0,0,0,0.2)',
 
     slideBoxFill: 'transparent',
     slideBoxCursor: 'ew-resize',
