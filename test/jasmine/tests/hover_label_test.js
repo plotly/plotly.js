@@ -502,8 +502,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 2',
@@ -539,8 +538,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
@@ -615,8 +613,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
@@ -724,8 +721,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
@@ -763,8 +759,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 270);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
