@@ -3,6 +3,9 @@ var Lib = require('@src/lib');
 describe('isArrayOrTypedArray', function() {
     function A() {}
 
+    var buffer = new ArrayBuffer(2);
+    var dv = new DataView(buffer);
+
     var shouldPass = [
         [],
         new Array(10),
@@ -26,7 +29,8 @@ describe('isArrayOrTypedArray', function() {
         '\n',
         new Date(),
         new RegExp('foo'),
-        new String('string')
+        new String('string'),
+        dv
     ];
 
     shouldPass.forEach(function(obj) {
@@ -45,6 +49,9 @@ describe('isArrayOrTypedArray', function() {
 describe('isTypedArray', function() {
     function A() {}
 
+    var buffer = new ArrayBuffer(2);
+    var dv = new DataView(buffer);
+
     var shouldPass = [
         new Float32Array(1),
         new Int32Array([1, 2, 3])
@@ -68,7 +75,8 @@ describe('isTypedArray', function() {
         '\n',
         new Date(),
         new RegExp('foo'),
-        new String('string')
+        new String('string'),
+        dv
     ];
 
     shouldPass.forEach(function(obj) {

@@ -8,13 +8,20 @@
 
 'use strict';
 
-// IE9 fallback
+// IE9 fallbacks
+
 var ab = (typeof ArrayBuffer === 'undefined' || !ArrayBuffer.isView) ?
     {isView: function() { return false; }} :
     ArrayBuffer;
 
-exports.isTypedArray = ab.isView;
+var dv = (typeof DataView === 'undefined') ?
+    function() {} :
+    DataView;
+
+exports.isTypedArray = function(a) {
+    return ab.isView(a) && !(a instanceof dv);
+};
 
 exports.isArrayOrTypedArray = function(a) {
-    return Array.isArray(a) || ab.isView(a);
+    return Array.isArray(a) || exports.isTypedArray(a);
 };
