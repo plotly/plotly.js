@@ -18,7 +18,7 @@ var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 module.exports = function mapArray(out, data, func) {
     var i, j;
 
-    if(!isArrayOrTypedArray(out)) {
+    if(!Array.isArray(out)) {
         // If not an array, make it an array:
         out = [];
     } else if(out.length > data.length) {
