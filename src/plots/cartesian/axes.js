@@ -2211,12 +2211,19 @@ axes.doTicks = function(gd, axid, skipTitle) {
         }
 
         function doAutoMargins() {
-            if(!ax.automargin) { return; }
-            var marginPush = ax.titlefont.size +
-                (axLetter === 'x' ? ax._boundingBox.height : ax._boundingBox.width);
 
-            if(!ax._marginPush || ax._marginPush < marginPush) {
-                ax._marginPush = marginPush;
+            var marginPush = 0;
+            if(ax.automargin) {
+                marginPush = ax.titlefont.size +
+                    (axLetter === 'x' ? ax._boundingBox.height : ax._boundingBox.width);
+            }
+
+            if(!fullLayout._replotting ||
+                    !ax._marginPush || ax._marginPush[ax.side[0]] < marginPush) {
+
+                ax._marginPush = {r: 0, l: 0, t: 0, b: 0};
+                ax._marginPush[ax.side[0]] = marginPush;
+
                 var pushParams = {
                     x: ax.side[0] === 'r' ? ax.domain[1] : ax.domain[0],
                     y: ax.side[0] === 't' ? ax.domain[1] : ax.domain[0],
@@ -2224,6 +2231,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 pushParams[ax.side[0]] = marginPush;
                 Plots.autoMargin(gd, ax._name, pushParams);
             }
+
         }
 
         var done = Lib.syncOrAsync([

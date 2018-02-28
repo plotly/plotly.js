@@ -2447,6 +2447,137 @@ describe('Test axes', function() {
             });
         });
     });
+
+    describe('automargin', function() {
+        var data = [{
+                x: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooongloooooongloooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ],
+                y: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ]
+            }],
+            gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should grow and shrink margins', function(done) {
+
+            Plotly.plot(gd, data)
+            .then(function() {
+                var size = gd._fullLayout._size;
+                // these are the defaults
+                expect(size.l).toBe(80);
+                expect(size.r).toBe(80);
+                expect(size.b).toBe(80);
+                expect(size.t).toBe(100);
+                expect(gd._fullLayout.xaxis._lastangle).toBe(30);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {'yaxis.automargin': true});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(133); // left side grows
+                expect(size.r).toBe(80);
+                expect(size.b).toBe(80);
+                expect(size.t).toBe(100);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {'xaxis.automargin': true});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(133);
+                expect(size.r).toBe(80);
+                expect(size.b).toBe(154); // bottom grows
+                expect(size.t).toBe(100);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {'xaxis.tickangle': 45});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(133);
+                expect(size.r).toBe(80);
+                expect(size.b).toBe(200); // bottom grows more
+                expect(size.t).toBe(100);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {'xaxis.tickangle': 30});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(133);
+                expect(size.r).toBe(80);
+                expect(size.b).toBe(154); // bottom shrinks back
+                expect(size.t).toBe(100);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {'yaxis.ticklen': 30});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(165); // left grows for tick length
+                expect(size.r).toBe(80);
+                expect(size.b).toBe(154);
+                expect(size.t).toBe(100);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {'yaxis.titlefont.size': 30});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(181); // left grows for axis title font size
+                expect(size.r).toBe(80);
+                expect(size.b).toBe(154);
+                expect(size.t).toBe(100);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {
+                    'yaxis.side': 'right',
+                    'xaxis.side': 'top'
+                });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                // left-right and top-bottom swap
+                expect(size.l).toBe(80);
+                expect(size.r).toBe(181);
+                expect(size.b).toBe(80);
+                expect(size.t).toBe(154);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {
+                    'xaxis.automargin': false,
+                    'yaxis.automargin': false
+                });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                // back to the defaults
+                expect(size.l).toBe(80);
+                expect(size.r).toBe(80);
+                expect(size.b).toBe(80);
+                expect(size.t).toBe(100);
+            })
+            .catch(failTest)
+            .then(done);
+
+        });
+    });
 });
 
 function getZoomInButton(gd) {
