@@ -207,13 +207,6 @@ module.exports = function draw(gd) {
     // legend, background and border, scroll box and scroll bar
     Drawing.setTranslate(legend, lx, ly);
 
-    var scrollBarYMax = legendHeight -
-            constants.scrollBarHeight -
-            2 * constants.scrollBarMargin,
-        scrollBoxYMax = opts._height - legendHeight,
-        scrollBarY,
-        scrollBoxY;
-
     if(opts._height <= legendHeight || gd._context.staticPlot) {
         // if scrollbar should not be shown.
         bg.attr({
@@ -235,8 +228,15 @@ module.exports = function draw(gd) {
         scrollBox.call(Drawing.setClipUrl, clipId);
     }
     else {
-        scrollBarY = constants.scrollBarMargin,
-        scrollBoxY = scrollBox.attr('data-scroll') || 0;
+        var scrollBarHeight = Math.max(constants.scrollBarMinHeight,
+            legendHeight * legendHeight / opts._height);
+        var scrollBarYMax = legendHeight -
+            scrollBarHeight -
+            2 * constants.scrollBarMargin;
+        var scrollBoxYMax = opts._height - legendHeight;
+
+        var scrollBarY = constants.scrollBarMargin;
+        var scrollBoxY = scrollBox.attr('data-scroll') || 0;
 
         // increase the background and clip-path width
         // by the scrollbar width and margin
@@ -262,7 +262,7 @@ module.exports = function draw(gd) {
 
         scrollBox.call(Drawing.setClipUrl, clipId);
 
-        if(firstRender) scrollHandler(scrollBarY, scrollBoxY);
+        if(firstRender) scrollHandler(scrollBarY, scrollBoxY, scrollBarHeight);
 
         legend.on('wheel', null);  // to be safe, remove previous listeners
         legend.on('wheel', function() {
@@ -272,7 +272,7 @@ module.exports = function draw(gd) {
                 -scrollBoxYMax, 0);
             scrollBarY = constants.scrollBarMargin -
                 scrollBoxY / scrollBoxYMax * scrollBarYMax;
-            scrollHandler(scrollBarY, scrollBoxY);
+            scrollHandler(scrollBarY, scrollBoxY, scrollBarHeight);
             if(scrollBoxY !== 0 && scrollBoxY !== -scrollBoxYMax) {
                 d3.event.preventDefault();
             }
@@ -299,14 +299,14 @@ module.exports = function draw(gd) {
                 constants.scrollBarMargin + scrollBarYMax);
             scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
                 scrollBarYMax * scrollBoxYMax;
-            scrollHandler(scrollBarY, scrollBoxY);
+            scrollHandler(scrollBarY, scrollBoxY, scrollBarHeight);
         });
 
         scrollBar.call(drag);
     }
 
 
-    function scrollHandler(scrollBarY, scrollBoxY) {
+    function scrollHandler(scrollBarY, scrollBoxY, scrollBarHeight) {
         scrollBox
             .attr('data-scroll', scrollBoxY)
             .call(Drawing.setTranslate, 0, scrollBoxY);
@@ -316,7 +316,7 @@ module.exports = function draw(gd) {
             legendWidth,
             scrollBarY,
             constants.scrollBarWidth,
-            constants.scrollBarHeight
+            scrollBarHeight
         );
         clipPath.select('rect').attr({
             y: opts.borderwidth - scrollBoxY

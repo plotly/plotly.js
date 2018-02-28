@@ -138,27 +138,30 @@ describe('The legend', function() {
             var finalDataScroll = dragScroll(getScrollBar());
             var scrollBox = getScrollBox();
 
-            expect(scrollBox.getAttribute('data-scroll')).toBe(finalDataScroll);
+            var dataScroll = scrollBox.getAttribute('data-scroll');
+            expect(dataScroll).toBeCloseTo(finalDataScroll, 3);
             expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + finalDataScroll + ')');
+                'translate(0, ' + dataScroll + ')');
         });
 
         it('should not scroll on dragging the scrollbox', function() {
             var scrollBox = getScrollBox();
             var finalDataScroll = dragScroll(scrollBox);
 
-            expect(scrollBox.getAttribute('data-scroll')).not.toBe(finalDataScroll);
-            expect(scrollBox.getAttribute('transform')).not.toBe(
-                'translate(0, ' + finalDataScroll + ')');
+            var dataScroll = scrollBox.getAttribute('data-scroll');
+            expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + dataScroll + ')');
         });
 
         it('should not scroll on dragging the scrollbar with a right click', function() {
             var finalDataScroll = dragScroll(getScrollBar(), true);
             var scrollBox = getScrollBox();
 
-            expect(scrollBox.getAttribute('data-scroll')).not.toBe(finalDataScroll);
-            expect(scrollBox.getAttribute('transform')).not.toBe(
-                'translate(0, ' + finalDataScroll + ')');
+            var dataScroll = scrollBox.getAttribute('data-scroll');
+            expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + dataScroll + ')');
         });
 
         it('should keep the scrollbar position after a toggle event', function(done) {
@@ -237,13 +240,18 @@ describe('The legend', function() {
                 scrollBar = getScrollBar(),
                 legendHeight = getLegendHeight(gd);
 
-            // The scrollbar is 20px tall and has 4px margins
+            // The scrollbar is >20px tall and has 4px margins
+            var scrollBarHeight = scrollBar.getBoundingClientRect().height;
+            // in this mock there are 22 traces, and 13 are visible in the legend
+            // at any given time
+            expect(scrollBarHeight).toBeCloseTo(legendHeight * 13 / 22, -1);
 
             legend.dispatchEvent(scrollTo(-1000));
-            expect(+scrollBar.getAttribute('y')).toBe(4);
+            expect(+scrollBar.getAttribute('y')).toBeCloseTo(4, 3);
 
             legend.dispatchEvent(scrollTo(10000));
-            expect(+scrollBar.getAttribute('y')).toBe(legendHeight - 4 - 20);
+            expect(+scrollBar.getAttribute('y'))
+                .toBeCloseTo(legendHeight - 4 - scrollBarHeight, 3);
         });
 
         it('should be removed from DOM when \'showlegend\' is relayout\'ed to false', function(done) {

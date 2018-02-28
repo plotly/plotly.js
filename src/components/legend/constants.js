@@ -10,7 +10,7 @@
 
 module.exports = {
     scrollBarWidth: 6,
-    scrollBarHeight: 20,
+    scrollBarMinHeight: 20,
     scrollBarColor: '#808BA4',
     scrollBarMargin: 4
 };
