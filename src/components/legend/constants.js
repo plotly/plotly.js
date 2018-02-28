@@ -9,7 +9,7 @@
 'use strict';
 
 module.exports = {
-    scrollBarWidth: 4,
+    scrollBarWidth: 6,
     scrollBarHeight: 20,
     scrollBarColor: '#808BA4',
     scrollBarMargin: 4

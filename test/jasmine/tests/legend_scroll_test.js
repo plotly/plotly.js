@@ -7,6 +7,7 @@ var d3 = require('d3');
 var createGraph = require('../assets/create_graph_div');
 var destroyGraph = require('../assets/destroy_graph_div');
 var getBBox = require('../assets/get_bbox');
+var mouseEvent = require('../assets/mouse_event');
 var mock = require('../../image/mocks/legend_scroll.json');
 
 describe('The legend', function() {
@@ -76,23 +77,86 @@ describe('The legend', function() {
         });
 
         it('should scroll when there\'s a wheel event', function() {
-            var legend = getLegend(),
-                scrollBox = getScrollBox(),
-                legendHeight = getLegendHeight(gd),
-                scrollBoxYMax = gd._fullLayout.legend._height - legendHeight,
-                scrollBarYMax = legendHeight -
-                    constants.scrollBarHeight -
-                    2 * constants.scrollBarMargin,
-                initialDataScroll = scrollBox.getAttribute('data-scroll'),
-                wheelDeltaY = 100,
-                finalDataScroll = '' + Lib.constrain(initialDataScroll -
-                    wheelDeltaY / scrollBarYMax * scrollBoxYMax,
-                    -scrollBoxYMax, 0);
+            var legend = getLegend();
+            var scrollBox = getScrollBox();
+            var legendHeight = getLegendHeight(gd);
+            var scrollBoxYMax = gd._fullLayout.legend._height - legendHeight;
+            var scrollBarYMax = legendHeight -
+                constants.scrollBarHeight -
+                2 * constants.scrollBarMargin;
+            var initialDataScroll = scrollBox.getAttribute('data-scroll');
+            var wheelDeltaY = 100;
+            var finalDataScroll = '' + Lib.constrain(initialDataScroll -
+                wheelDeltaY / scrollBarYMax * scrollBoxYMax,
+                -scrollBoxYMax, 0);
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
 
             expect(scrollBox.getAttribute('data-scroll')).toBe(finalDataScroll);
             expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + finalDataScroll + ')');
+        });
+
+        function dragScroll(element, rightClick) {
+            var scrollBox = getScrollBox();
+            var scrollBar = getScrollBar();
+            var legendHeight = getLegendHeight(gd);
+            var scrollBoxYMax = gd._fullLayout.legend._height - legendHeight;
+            var scrollBarYMax = legendHeight -
+                constants.scrollBarHeight -
+                2 * constants.scrollBarMargin;
+            var initialDataScroll = scrollBox.getAttribute('data-scroll');
+            var dy = 50;
+            var finalDataScroll = '' + Lib.constrain(initialDataScroll -
+                dy / scrollBarYMax * scrollBoxYMax,
+                -scrollBoxYMax, 0);
+
+            var scrollBarBB = scrollBar.getBoundingClientRect();
+            var y0 = scrollBarBB.top + scrollBarBB.height / 2;
+            var y1 = y0 + dy;
+
+            var elBB = element.getBoundingClientRect();
+            var x = elBB.left + elBB.width / 2;
+
+            var opts = {element: element};
+            if(rightClick) {
+                opts.button = 2;
+                opts.buttons = 2;
+            }
+
+            mouseEvent('mousedown', x, y0, opts);
+            mouseEvent('mousemove', x, y1, opts);
+            mouseEvent('mouseup', x, y1, opts);
+
+            expect(finalDataScroll).not.toBe(initialDataScroll);
+
+            return finalDataScroll;
+        }
+
+        it('should scroll on dragging the scrollbar', function() {
+            var finalDataScroll = dragScroll(getScrollBar());
+            var scrollBox = getScrollBox();
+
+            expect(scrollBox.getAttribute('data-scroll')).toBe(finalDataScroll);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + finalDataScroll + ')');
+        });
+
+        it('should not scroll on dragging the scrollbox', function() {
+            var scrollBox = getScrollBox();
+            var finalDataScroll = dragScroll(scrollBox);
+
+            expect(scrollBox.getAttribute('data-scroll')).not.toBe(finalDataScroll);
+            expect(scrollBox.getAttribute('transform')).not.toBe(
+                'translate(0, ' + finalDataScroll + ')');
+        });
+
+        it('should not scroll on dragging the scrollbar with a right click', function() {
+            var finalDataScroll = dragScroll(getScrollBar(), true);
+            var scrollBox = getScrollBox();
+
+            expect(scrollBox.getAttribute('data-scroll')).not.toBe(finalDataScroll);
+            expect(scrollBox.getAttribute('transform')).not.toBe(
                 'translate(0, ' + finalDataScroll + ')');
         });
 

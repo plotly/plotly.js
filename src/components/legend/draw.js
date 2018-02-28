@@ -94,10 +94,10 @@ module.exports = function draw(gd) {
     scrollBar.enter().append('rect')
         .attr({
             'class': 'scrollbar',
-            'rx': 20,
-            'ry': 2,
-            'width': 0,
-            'height': 0
+            rx: 20,
+            ry: 3,
+            width: 0,
+            height: 0
         })
         .call(Color.fill, '#808BA4');
 
@@ -283,8 +283,12 @@ module.exports = function draw(gd) {
         scrollBox.on('.drag', null);
 
         var drag = d3.behavior.drag().on('drag', function() {
+            var e3 = d3.event;
+            var e = e3.sourceEvent;
+            if(e.buttons === 2 || e.ctrlKey) return;
+
             scrollBarY = Lib.constrain(
-                d3.event.y - constants.scrollBarHeight / 2,
+                e3.y - constants.scrollBarHeight / 2,
                 constants.scrollBarMargin,
                 constants.scrollBarMargin + scrollBarYMax);
             scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
@@ -293,7 +297,6 @@ module.exports = function draw(gd) {
         });
 
         scrollBar.call(drag);
-        scrollBox.call(drag);
     }
 
 
