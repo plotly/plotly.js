@@ -1545,8 +1545,7 @@ describe('Test plot api', function() {
         });
     });
 
-
-    describe('Plotly.ExtendTraces', function() {
+    describe('Plotly.extendTraces / Plotly.prependTraces', function() {
         var gd;
 
         beforeEach(function() {
@@ -1592,7 +1591,6 @@ describe('Test plot api', function() {
             }).toThrow(new Error('update must be a key:value object'));
 
         });
-
 
         it('should throw an error when indices are omitted', function() {
 
@@ -1741,7 +1739,6 @@ describe('Test plot api', function() {
             expect(gd.data).toEqual(cachedData);
         });
 
-
         it('extend is the inverse of prepend - no maxPoints', function() {
             var cachedData = Lib.extendDeep([], gd.data);
 
@@ -1759,7 +1756,6 @@ describe('Test plot api', function() {
             expect(gd.data).toEqual(cachedData);
         });
 
-
         it('prepend is the inverse of extend - with maxPoints', function() {
             var maxPoints = 3;
             var cachedData = Lib.extendDeep([], gd.data);
@@ -1776,6 +1772,173 @@ describe('Test plot api', function() {
             Plotly.prependTraces.apply(null, undoArgs);
 
             expect(gd.data).toEqual(cachedData);
+        });
+
+        it('should throw when trying to extend a plain array with a typed array', function() {
+            gd.data = [{
+                x: new Float32Array([1, 2, 3]),
+                marker: {size: new Float32Array([20, 30, 10])}
+            }];
+
+            expect(function() {
+                Plotly.extendTraces(gd, {x: [[1]]}, [0]);
+            }).toThrow(new Error('cannot extend array with an array of a different type: x'));
+        });
+
+        it('should throw when trying to extend a typed array with a plain array', function() {
+            gd.data = [{
+                x: [1, 2, 3],
+                marker: {size: [20, 30, 10]}
+            }];
+
+            expect(function() {
+                Plotly.extendTraces(gd, {x: [new Float32Array([1])]}, [0]);
+            }).toThrow(new Error('cannot extend array with an array of a different type: x'));
+        });
+
+        it('should extend traces with update keys (typed array case)', function() {
+            gd.data = [{
+                x: new Float32Array([1, 2, 3]),
+                marker: {size: new Float32Array([20, 30, 10])}
+            }];
+
+            Plotly.extendTraces(gd, {
+                x: [new Float32Array([4, 5])],
+                'marker.size': [new Float32Array([40, 30])]
+            }, [0]);
+
+            expect(gd.data[0].x).toEqual(new Float32Array([1, 2, 3, 4, 5]));
+            expect(gd.data[0].marker.size).toEqual(new Float32Array([20, 30, 10, 40, 30]));
+        });
+
+        describe('should extend/prepend and window traces with update keys linked', function() {
+            function _base(method, args, expectations) {
+                gd.data = [{
+                    x: [1, 2, 3]
+                }, {
+                    x: new Float32Array([1, 2, 3])
+                }];
+
+                Plotly[method](gd, {
+                    x: [args.newPts, new Float32Array(args.newPts)]
+                }, [0, 1], args.maxp);
+
+                expect(PlotlyInternal.redraw).toHaveBeenCalled();
+                expect(Plotly.Queue.add).toHaveBeenCalled();
+
+                expect(gd.data[0].x).toEqual(expectations.newArray);
+                expect(gd.data[1].x).toEqual(new Float32Array(expectations.newArray));
+
+                var cont = Plotly.Queue.add.calls.first().args[2][1].x;
+                expect(cont[0]).toEqual(expectations.remainder);
+                expect(cont[1]).toEqual(new Float32Array(expectations.remainder));
+            }
+
+            function _extendTraces(args, expectations) {
+                return _base('extendTraces', args, expectations);
+            }
+
+            function _prependTraces(args, expectations) {
+                return _base('prependTraces', args, expectations);
+            }
+
+            it('- extend no maxp', function() {
+                _extendTraces({
+                    newPts: [4, 5]
+                }, {
+                    newArray: [1, 2, 3, 4, 5],
+                    remainder: []
+                });
+            });
+
+            it('- extend maxp === insert.length', function() {
+                _extendTraces({
+                    newPts: [4, 5],
+                    maxp: 2
+                }, {
+                    newArray: [4, 5],
+                    remainder: [1, 2, 3]
+                });
+            });
+
+            it('- extend maxp < insert.length', function() {
+                _extendTraces({
+                    newPts: [4, 5],
+                    maxp: 1
+                }, {
+                    newArray: [5],
+                    remainder: [1, 2, 3, 4]
+                });
+            });
+
+            it('- extend maxp > insert.length', function() {
+                _extendTraces({
+                    newPts: [4, 5],
+                    maxp: 4
+                }, {
+                    newArray: [2, 3, 4, 5],
+                    remainder: [1]
+                });
+            });
+
+            it('- extend maxp === 0', function() {
+                _extendTraces({
+                    newPts: [4, 5],
+                    maxp: 0
+                }, {
+                    newArray: [],
+                    remainder: [1, 2, 3, 4, 5]
+                });
+            });
+
+            it('- prepend no maxp', function() {
+                _prependTraces({
+                    newPts: [-1, 0]
+                }, {
+                    newArray: [-1, 0, 1, 2, 3],
+                    remainder: []
+                });
+            });
+
+            it('- prepend maxp === insert.length', function() {
+                _prependTraces({
+                    newPts: [-1, 0],
+                    maxp: 2
+                }, {
+                    newArray: [-1, 0],
+                    remainder: [1, 2, 3]
+                });
+            });
+
+            it('- prepend maxp < insert.length', function() {
+                _prependTraces({
+                    newPts: [-1, 0],
+                    maxp: 1
+                }, {
+                    newArray: [-1],
+                    remainder: [0, 1, 2, 3]
+                });
+            });
+
+            it('- prepend maxp > insert.length', function() {
+                _prependTraces({
+                    newPts: [-1, 0],
+                    maxp: 4
+                }, {
+                    newArray: [-1, 0, 1, 2],
+                    remainder: [3]
+                });
+            });
+
+            it('- prepend maxp === 0', function() {
+                _prependTraces({
+                    newPts: [-1, 0],
+                    maxp: 0
+                }, {
+                    newArray: [],
+                    remainder: [-1, 0, 1, 2, 3]
+                });
+            });
         });
     });
 
