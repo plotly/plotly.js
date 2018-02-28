@@ -6,10 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 var Axes = require('../../plots/cartesian/axes');
 var BADNUM = require('../../constants/numerical').BADNUM;
@@ -25,6 +25,31 @@ function calc(gd, trace) {
     var x = xa.makeCalcdata(trace, 'x');
     var y = ya.makeCalcdata(trace, 'y');
     var serieslen = trace._length;
+    var cd = new Array(serieslen);
+
+    var ppad = calcMarkerSize(trace, serieslen);
+    calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
+
+    for(var i = 0; i < serieslen; i++) {
+        cd[i] = (isNumeric(x[i]) && isNumeric(y[i])) ?
+            {x: x[i], y: y[i]} :
+            {x: BADNUM, y: BADNUM};
+
+        if(trace.ids) {
+            cd[i].id = String(trace.ids[i]);
+        }
+    }
+
+    arraysToCalcdata(cd, trace);
+    calcColorscale(trace);
+    calcSelection(cd, trace);
+
+    gd.firstscatter = false;
+    return cd;
+}
+
+function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
+    var serieslen = trace._length;
 
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
@@ -35,8 +60,9 @@ function calc(gd, trace) {
     var xOptions = {padded: true};
     var yOptions = {padded: true};
 
-    var ppad = calcMarkerSize(trace, serieslen);
-    if(ppad) xOptions.ppad = yOptions.ppad = ppad;
+    if(ppad) {
+        xOptions.ppad = yOptions.ppad = ppad;
+    }
 
     // TODO: text size
 
@@ -72,24 +98,6 @@ function calc(gd, trace) {
 
     Axes.expand(xa, x, xOptions);
     Axes.expand(ya, y, yOptions);
-
-    // create the "calculated data" to plot
-    var cd = new Array(serieslen);
-    for(var i = 0; i < serieslen; i++) {
-        cd[i] = (isNumeric(x[i]) && isNumeric(y[i])) ?
-            {x: x[i], y: y[i]} : {x: BADNUM, y: BADNUM};
-
-        if(trace.ids) {
-            cd[i].id = String(trace.ids[i]);
-        }
-    }
-
-    arraysToCalcdata(cd, trace);
-    calcColorscale(trace);
-    calcSelection(cd, trace);
-
-    gd.firstscatter = false;
-    return cd;
 }
 
 function calcMarkerSize(trace, serieslen) {
@@ -111,7 +119,7 @@ function calcMarkerSize(trace, serieslen) {
         };
     }
 
-    if(Array.isArray(marker.size)) {
+    if(isArrayOrTypedArray(marker.size)) {
         // I tried auto-type but category and dates dont make much sense.
         var ax = {type: 'linear'};
         Axes.setConvert(ax);
@@ -131,5 +139,6 @@ function calcMarkerSize(trace, serieslen) {
 
 module.exports = {
     calc: calc,
-    calcMarkerSize: calcMarkerSize
+    calcMarkerSize: calcMarkerSize,
+    calcAxisExpansion: calcAxisExpansion
 };

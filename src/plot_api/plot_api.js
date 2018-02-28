@@ -890,11 +890,14 @@ function getExtendProperties(gd, update, indices, maxPoints) {
             target = prop.get();
             insert = update[key][j];
 
-            if(!Array.isArray(insert)) {
+            if(!Lib.isArrayOrTypedArray(insert)) {
                 throw new Error('attribute: ' + key + ' index: ' + j + ' must be an array');
             }
-            if(!Array.isArray(target)) {
+            if(!Lib.isArrayOrTypedArray(target)) {
                 throw new Error('cannot extend missing or non-array attribute: ' + key);
+            }
+            if(target.constructor !== insert.constructor) {
+                throw new Error('cannot extend array with an array of a different type: ' + key);
             }
 
             /*
@@ -931,62 +934,41 @@ function getExtendProperties(gd, update, indices, maxPoints) {
  * @param {Object} update
  * @param {Number[]} indices
  * @param {Number||Object} maxPoints
- * @param {Function} lengthenArray
- * @param {Function} spliceArray
+ * @param {Function} updateArray
  * @return {Object}
  */
-function spliceTraces(gd, update, indices, maxPoints, lengthenArray, spliceArray) {
-
+function spliceTraces(gd, update, indices, maxPoints, updateArray) {
     assertExtendTracesArgs(gd, update, indices, maxPoints);
 
-    var updateProps = getExtendProperties(gd, update, indices, maxPoints),
-        remainder = [],
-        undoUpdate = {},
-        undoPoints = {};
-    var target, prop, maxp;
+    var updateProps = getExtendProperties(gd, update, indices, maxPoints);
+    var undoUpdate = {};
+    var undoPoints = {};
 
     for(var i = 0; i < updateProps.length; i++) {
+        var prop = updateProps[i].prop;
+        var maxp = updateProps[i].maxp;
 
-        /*
-         * prop is the object returned by Lib.nestedProperties
-         */
-        prop = updateProps[i].prop;
-        maxp = updateProps[i].maxp;
+        // return new array and remainder
+        var out = updateArray(updateProps[i].target, updateProps[i].insert, maxp);
+        prop.set(out[0]);
 
-        target = lengthenArray(updateProps[i].target, updateProps[i].insert);
-
-        /*
-         * If maxp is set within post-extension trace.length, splice to maxp length.
-         * Otherwise skip function call as splice op will have no effect anyway.
-         */
-        if(maxp >= 0 && maxp < target.length) remainder = spliceArray(target, maxp);
-
-        /*
-         * to reverse this operation we need the size of the original trace as the reverse
-         * operation will need to window out any lengthening operation performed in this pass.
-         */
-        maxp = updateProps[i].target.length;
-
-        /*
-         * Magic happens here! update gd.data.trace[key] with new array data.
-         */
-        prop.set(target);
-
+        // build the inverse update object for the undo operation
         if(!Array.isArray(undoUpdate[prop.astr])) undoUpdate[prop.astr] = [];
+        undoUpdate[prop.astr].push(out[1]);
+
+         // build the matching maxPoints undo object containing original trace lengths
         if(!Array.isArray(undoPoints[prop.astr])) undoPoints[prop.astr] = [];
-
-        /*
-         * build the inverse update object for the undo operation
-         */
-        undoUpdate[prop.astr].push(remainder);
-
-        /*
-         * build the matching maxPoints undo object containing original trace lengths.
-         */
-        undoPoints[prop.astr].push(maxp);
+        undoPoints[prop.astr].push(updateProps[i].target.length);
     }
 
     return {update: undoUpdate, maxPoints: undoPoints};
+}
+
+function concatTypedArray(arr0, arr1) {
+    var arr2 = new arr0.constructor(arr0.length + arr1.length);
+    arr2.set(arr0);
+    arr2.set(arr1, arr0.length);
+    return arr2;
 }
 
 /**
@@ -1009,24 +991,55 @@ function spliceTraces(gd, update, indices, maxPoints, lengthenArray, spliceArray
 Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
     gd = Lib.getGraphDiv(gd);
 
-    var undo = spliceTraces(gd, update, indices, maxPoints,
+    function updateArray(target, insert, maxp) {
+        var newArray, remainder;
 
-                           /*
-                            * The Lengthen operation extends trace from end with insert
-                            */
-                            function(target, insert) {
-                                return target.concat(insert);
-                            },
+        if(Lib.isTypedArray(target)) {
+            if(maxp < 0) {
+                var none = new target.constructor(0);
+                var both = concatTypedArray(target, insert);
 
-                            /*
-                             * Window the trace keeping maxPoints, counting back from the end
-                             */
-                            function(target, maxPoints) {
-                                return target.splice(0, target.length - maxPoints);
-                            });
+                if(maxp < 0) {
+                    newArray = both;
+                    remainder = none;
+                } else {
+                    newArray = none;
+                    remainder = both;
+                }
+            } else {
+                newArray = new target.constructor(maxp);
+                remainder = new target.constructor(target.length + insert.length - maxp);
 
+                if(maxp === insert.length) {
+                    newArray.set(insert);
+                    remainder.set(target);
+                } else if(maxp < insert.length) {
+                    var numberOfItemsFromInsert = insert.length - maxp;
+
+                    newArray.set(insert.subarray(numberOfItemsFromInsert));
+                    remainder.set(target);
+                    remainder.set(insert.subarray(0, numberOfItemsFromInsert), target.length);
+                } else {
+                    var numberOfItemsFromTarget = maxp - insert.length;
+                    var targetBegin = target.length - numberOfItemsFromTarget;
+
+                    newArray.set(target.subarray(targetBegin));
+                    newArray.set(insert, numberOfItemsFromTarget);
+                    remainder.set(target.subarray(0, targetBegin));
+                }
+            }
+        } else {
+            newArray = target.concat(insert);
+            remainder = (maxp >= 0 && maxp < newArray.length) ?
+                newArray.splice(0, newArray.length - maxp) :
+                [];
+        }
+
+        return [newArray, remainder];
+    }
+
+    var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
     var promise = Plotly.redraw(gd);
-
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
 
@@ -1036,24 +1049,54 @@ Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
 Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
     gd = Lib.getGraphDiv(gd);
 
-    var undo = spliceTraces(gd, update, indices, maxPoints,
+    function updateArray(target, insert, maxp) {
+        var newArray, remainder;
 
-                           /*
-                            * The Lengthen operation extends trace by appending insert to start
-                            */
-                            function(target, insert) {
-                                return insert.concat(target);
-                            },
+        if(Lib.isTypedArray(target)) {
+            if(maxp <= 0) {
+                var none = new target.constructor(0);
+                var both = concatTypedArray(insert, target);
 
-                            /*
-                             * Window the trace keeping maxPoints, counting forward from the start
-                             */
-                            function(target, maxPoints) {
-                                return target.splice(maxPoints, target.length);
-                            });
+                if(maxp < 0) {
+                    newArray = both;
+                    remainder = none;
+                } else {
+                    newArray = none;
+                    remainder = both;
+                }
+            } else {
+                newArray = new target.constructor(maxp);
+                remainder = new target.constructor(target.length + insert.length - maxp);
 
+                if(maxp === insert.length) {
+                    newArray.set(insert);
+                    remainder.set(target);
+                } else if(maxp < insert.length) {
+                    var numberOfItemsFromInsert = insert.length - maxp;
+
+                    newArray.set(insert.subarray(0, numberOfItemsFromInsert));
+                    remainder.set(insert.subarray(numberOfItemsFromInsert));
+                    remainder.set(target, numberOfItemsFromInsert);
+                } else {
+                    var numberOfItemsFromTarget = maxp - insert.length;
+
+                    newArray.set(insert);
+                    newArray.set(target.subarray(0, numberOfItemsFromTarget), insert.length);
+                    remainder.set(target.subarray(numberOfItemsFromTarget));
+                }
+            }
+        } else {
+            newArray = insert.concat(target);
+            remainder = (maxp >= 0 && maxp < newArray.length) ?
+                newArray.splice(maxp, newArray.length) :
+                [];
+        }
+
+        return [newArray, remainder];
+    }
+
+    var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
     var promise = Plotly.redraw(gd);
-
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
 
@@ -1568,7 +1611,9 @@ function _restyle(gd, aobj, traces) {
             else {
                 if(valObject) {
                     // must redo calcdata when restyling array values of arrayOk attributes
-                    if(valObject.arrayOk && (Array.isArray(newVal) || Array.isArray(oldVal))) {
+                    if(valObject.arrayOk && (
+                        Lib.isArrayOrTypedArray(newVal) || Lib.isArrayOrTypedArray(oldVal))
+                    ) {
                         flags.calc = true;
                     }
                     else editTypes.update(flags, valObject);
@@ -2008,12 +2053,12 @@ function _relayout(gd, aobj) {
             else flags.plot = true;
         }
         else {
-            if((fullLayout._has('gl2d') || fullLayout._has('regl')) &&
+            if((fullLayout._has('scatter-like') && fullLayout._has('regl')) &&
                 (ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
             ) {
-                flags.calc = true;
+                flags.plot = true;
             }
             else if(valObject) editTypes.update(flags, valObject);
             else flags.calc = true;

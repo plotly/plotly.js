@@ -6,9 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
-
 
 var Lib = require('../lib');
 var Plots = require('../plots/plots');
@@ -17,7 +15,7 @@ var dfltConfig = require('./plot_config');
 
 var isPlainObject = Lib.isPlainObject;
 var isArray = Array.isArray;
-
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 
 /**
  * Validate a data array and layout object.
@@ -257,7 +255,7 @@ function crawl(objIn, objOut, schema, list, base, path) {
         else if(!isPlainObject(valIn) && isPlainObject(valOut)) {
             list.push(format('object', base, p, valIn));
         }
-        else if(!isArray(valIn) && isArray(valOut) && !isInfoArray && !isColorscale) {
+        else if(!isArrayOrTypedArray(valIn) && isArrayOrTypedArray(valOut) && !isInfoArray && !isColorscale) {
             list.push(format('array', base, p, valIn));
         }
         else if(!(k in objOut)) {

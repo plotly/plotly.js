@@ -628,7 +628,7 @@ describe('@gl parcoords', function() {
             function restyleDimension(key, setterValue) {
 
                 // array values need to be wrapped in an array; unwrapping here for value comparison
-                var value = Lib.isArray(setterValue) ? setterValue[0] : setterValue;
+                var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
 
                 return function() {
                     return Plotly.restyle(gd, 'dimensions[2].' + key, setterValue).then(function() {
@@ -892,7 +892,7 @@ describe('@gl parcoords', function() {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout);
 
             function restyleDimension(key, dimIndex, setterValue) {
-                var value = Lib.isArray(setterValue) ? setterValue[0] : setterValue;
+                var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
                 return function() {
                     return Plotly.restyle(gd, 'dimensions[' + dimIndex + '].' + key, setterValue).then(function() {
                         expect(gd.data[0].dimensions[dimIndex][key]).toEqual(value, 'for dimension attribute \'' + key + '\'');

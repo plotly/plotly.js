@@ -652,6 +652,24 @@ describe('Test lib.js:', function() {
             expect(cOut).toBe(outObj.b.c);
         });
 
+        describe('data_array valType', function() {
+            var attrs = {
+                d: {valType: 'data_array'}
+            };
+
+            it('should pass ref to out object (plain array case)', function() {
+                var arr = [1, 2, 3];
+                out = coerce({d: arr}, {}, attrs, 'd');
+                expect(out).toBe(arr);
+            });
+
+            it('should pass ref to out object (typed array case)', function() {
+                var arr = new Float32Array([1, 2, 3]);
+                out = coerce({d: arr}, {}, attrs, 'd');
+                expect(out).toBe(arr);
+            });
+        });
+
         describe('string valType', function() {
             var dflt = 'Jabberwock',
                 stringAttrs = {

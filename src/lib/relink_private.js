@@ -9,7 +9,7 @@
 
 'use strict';
 
-var isArray = require('./is_array');
+var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
 var isPlainObject = require('./is_plain_object');
 
 /**
@@ -35,7 +35,7 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
 
             toContainer[k] = fromVal;
         }
-        else if(isArray(fromVal) && isArray(toVal) && isPlainObject(fromVal[0])) {
+        else if(isArrayOrTypedArray(fromVal) && isArrayOrTypedArray(toVal) && isPlainObject(fromVal[0])) {
 
             // filter out data_array items that can contain user objects
             // most of the time the toVal === fromVal check will catch these early

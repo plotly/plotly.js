@@ -29,6 +29,6 @@ module.exports = {
 
     isBubble: function(trace) {
         return Lib.isPlainObject(trace.marker) &&
-            Array.isArray(trace.marker.size);
+            Lib.isArrayOrTypedArray(trace.marker.size);
     }
 };

@@ -17,6 +17,7 @@
     "Int16Array": true,
     "Int32Array": true,
     "ArrayBuffer": true,
+    "DataView": true,
     "SVGElement": false
   },
   "rules": {

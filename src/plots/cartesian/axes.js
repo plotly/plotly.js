@@ -423,6 +423,13 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
     return hasOneAxisChanged;
 };
 
+axes.doesAxisNeedAutoRange = function(ax) {
+    return (
+        ax.autorange ||
+        !!Lib.nestedProperty(ax, 'rangeslider.autorange').get()
+    );
+};
+
 // axes.expand: if autoranging, include new data in the outer limits
 // for this axis
 // data is an array of numbers (ie already run through ax.d2c)
@@ -436,12 +443,7 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
 //      tozero: (boolean) make sure to include zero if axis is linear,
 //          and make it a tight bound if possible
 axes.expand = function(ax, data, options) {
-    var needsAutorange = (
-        ax.autorange ||
-        !!Lib.nestedProperty(ax, 'rangeslider.autorange').get()
-    );
-
-    if(!needsAutorange || !data) return;
+    if(!axes.doesAxisNeedAutoRange(ax) || !data) return;
 
     if(!ax._min) ax._min = [];
     if(!ax._max) ax._max = [];
