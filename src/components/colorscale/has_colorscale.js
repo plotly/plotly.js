@@ -14,14 +14,12 @@ var isValidScale = require('./is_valid_scale');
 
 module.exports = function hasColorscale(trace, containerStr) {
     var container = containerStr ?
-            Lib.nestedProperty(trace, containerStr).get() || {} :
-            trace,
-        color = container.color,
-        isArrayWithOneNumber = false;
+        Lib.nestedProperty(trace, containerStr).get() || {} :
+        trace;
+    var color = container.color;
 
-    if(Lib.isTypedArray(color)) {
-        isArrayWithOneNumber = true;
-    } else if(Array.isArray(color)) {
+    var isArrayWithOneNumber = false;
+    if(Lib.isArrayOrTypedArray(color)) {
         for(var i = 0; i < color.length; i++) {
             if(isNumeric(color[i])) {
                 isArrayWithOneNumber = true;
