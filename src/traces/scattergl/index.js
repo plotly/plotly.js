@@ -71,12 +71,12 @@ function calc(gd, trace) {
 
     if(xa.type === 'log') {
         for(i = 0; i < count2; i += 2) {
-            positions[i] = xa.d2l(positions[i]);
+            positions[i] = xa.c2l(positions[i]);
         }
     }
     if(ya.type === 'log') {
         for(i = 1; i < count2; i += 2) {
-            positions[i] = ya.d2l(positions[i]);
+            positions[i] = ya.c2l(positions[i]);
         }
     }
 
