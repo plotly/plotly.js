@@ -12,6 +12,7 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var Color = require('../../components/color');
 var tinycolor = require('tinycolor2');
+var handleDomainDefaults = require('../../plots/domain').defaults;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -45,8 +46,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             'rgba(0, 0, 0, 0.2)';
     }));
 
-    coerce('domain.x');
-    coerce('domain.y');
+    handleDomainDefaults(traceOut, layout, coerce);
+
     coerce('orientation');
     coerce('valueformat');
     coerce('valuesuffix');

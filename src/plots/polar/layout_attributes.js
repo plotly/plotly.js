@@ -10,7 +10,7 @@
 
 var colorAttrs = require('../../components/color/attributes');
 var axesAttrs = require('../cartesian/layout_attributes');
-var domainAttrs = require('../domain_attributes');
+var domainAttrs = require('../domain').attributes;
 var extendFlat = require('../../lib').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 

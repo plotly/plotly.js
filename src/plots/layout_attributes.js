@@ -10,6 +10,7 @@
 
 var fontAttrs = require('./font_attributes');
 var colorAttrs = require('../components/color/attributes');
+var gridAttrs = require('./grid').attributes;
 
 var globalFont = fontAttrs({
     editType: 'calc',
@@ -195,5 +196,6 @@ module.exports = {
             'being treated as immutable, thus any data array with a',
             'different identity from its predecessor contains new data.'
         ].join(' ')
-    }
+    },
+    grid: gridAttrs
 };
