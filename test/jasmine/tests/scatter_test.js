@@ -768,8 +768,15 @@ describe('end-to-end scatter tests', function() {
     });
 
     it('should work with typed arrays', function(done) {
-        var colors = ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 'rgb(0, 255, 0)'];
-        var sizes = [20, 30, 10];
+        function _assert(colors, sizes) {
+            var pts = d3.selectAll('.point');
+            expect(pts.size()).toBe(3, '# of pts');
+
+            pts.each(function(_, i) {
+                expect(getColor(this)).toBe(colors[i], 'color ' + i);
+                expect(getMarkerSize(this)).toBe(sizes[i], 'size ' + i);
+            });
+        }
 
         Plotly.newPlot(gd, [{
             x: new Float32Array([1, 2, 3]),
@@ -787,13 +794,21 @@ describe('end-to-end scatter tests', function() {
             }
         }])
         .then(function() {
-            var pts = d3.selectAll('.point');
-            expect(pts.size()).toBe(3, '# of pts');
+            _assert(
+                ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 'rgb(0, 255, 0)'],
+                [20, 30, 10]
+            );
 
-            pts.each(function(_, i) {
-                expect(getColor(this)).toBe(colors[i], 'color ' + i);
-                expect(getMarkerSize(this)).toBe(sizes[i], 'size ' + i);
+            return Plotly.restyle(gd, {
+                'marker.size': [new Float32Array([40, 30, 20])],
+                'marker.color': [new Float32Array([20, 30, 10])]
             });
+        })
+        .then(function() {
+            _assert(
+                ['rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 0)'],
+                [40, 30, 20]
+            );
         })
         .catch(fail)
         .then(done);

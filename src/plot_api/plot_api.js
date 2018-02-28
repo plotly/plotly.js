@@ -1568,7 +1568,9 @@ function _restyle(gd, aobj, traces) {
             else {
                 if(valObject) {
                     // must redo calcdata when restyling array values of arrayOk attributes
-                    if(valObject.arrayOk && (Array.isArray(newVal) || Array.isArray(oldVal))) {
+                    if(valObject.arrayOk && (
+                        Lib.isArrayOrTypedArray(newVal) || Lib.isArrayOrTypedArray(oldVal))
+                    ) {
                         flags.calc = true;
                     }
                     else editTypes.update(flags, valObject);
