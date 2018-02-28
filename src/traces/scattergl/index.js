@@ -58,13 +58,10 @@ function calc(gd, trace) {
 
     // we need hi-precision for scatter2d,
     // regl-scatter2d uses NaNs for bad/missing values
-    //
-    // TODO should this be a Float32Array ??
     var positions = new Array(count2);
     for(i = 0; i < count; i++) {
         xx = x[i];
         yy = y[i];
-        // TODO does d2c output any other bad value as BADNUM ever?
         positions[i * 2] = xx === BADNUM ? NaN : xx;
         positions[i * 2 + 1] = yy === BADNUM ? NaN : yy;
     }
