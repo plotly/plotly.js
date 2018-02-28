@@ -31,6 +31,7 @@ var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
+var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
 
 var axes = module.exports = {};
 
@@ -1869,7 +1870,9 @@ axes.doTicks = function(gd, axid, skipTitle) {
     else if(axLetter === 'y') {
         sides = ['left', 'right'];
         transfn = ax._transfn || function(d) {
-            return 'translate(0,' + (ax._offset + ax.l2p(d.x)) + ')';
+            var multilineCorrection = d.text ?
+              -0.5 * (d.text.split('<br>').length - 1) * LINE_SPACING * d.fontSize : 0;
+            return 'translate(0,' + (ax._offset + ax.l2p(d.x) + multilineCorrection) + ')';
         };
         tickpathfn = function(shift, len) {
             if(ax._counterangle) {
