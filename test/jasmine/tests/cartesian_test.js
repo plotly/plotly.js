@@ -268,6 +268,37 @@ describe('relayout', function() {
 
     });
 
+    describe('axis line visibility', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('can show and hide axis lines', function(done) {
+            Plotly.newPlot(gd, [{y: [1, 2]}], {width: 400, height: 400})
+            .then(function() {
+                expect(gd.querySelector('.xlines-above').attributes.d.value).toBe('M0,0');
+                expect(gd.querySelector('.ylines-above').attributes.d.value).toBe('M0,0');
+
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'yaxis.showline': true});
+            })
+            .then(function() {
+                expect(gd.querySelector('.xlines-above').attributes.d.value).not.toBe('M0,0');
+                expect(gd.querySelector('.ylines-above').attributes.d.value).not.toBe('M0,0');
+
+                return Plotly.relayout(gd, {'xaxis.showline': false, 'yaxis.showline': false});
+            })
+            .then(function() {
+                expect(gd.querySelector('.xlines-above').attributes.d.value).toBe('M0,0');
+                expect(gd.querySelector('.ylines-above').attributes.d.value).toBe('M0,0');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('subplot creation / deletion:', function() {
@@ -309,6 +340,29 @@ describe('subplot creation / deletion:', function() {
         })
         .then(function() {
             assertOrphanSubplot(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should remove unused axes when deleting traces', function(done) {
+        Plotly.newPlot(gd,
+            [{y: [1, 2, 3]}, {y: [10, 30, 20], yaxis: 'y2'}],
+            {yaxis2: {side: 'right', overlaying: 'y', title: 'Hi!'}}
+        )
+        .then(function() {
+            expect(gd.querySelectorAll('.xy2,.xy2-x,.xy2-y').length).not.toBe(0);
+            expect(gd.querySelectorAll('.y2title').length).toBe(1);
+            expect(gd._fullLayout._subplots.cartesian).toEqual(['xy', 'xy2']);
+            expect(gd._fullLayout._subplots.yaxis).toEqual(['y', 'y2']);
+
+            return Plotly.deleteTraces(gd, [1]);
+        })
+        .then(function() {
+            expect(gd.querySelectorAll('.xy2,.xy2-x,.xy2-y').length).toBe(0);
+            expect(gd.querySelectorAll('.y2title').length).toBe(0);
+            expect(gd._fullLayout._subplots.cartesian).toEqual(['xy']);
+            expect(gd._fullLayout._subplots.yaxis).toEqual(['y']);
         })
         .catch(failTest)
         .then(done);
