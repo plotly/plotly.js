@@ -78,9 +78,9 @@ module.exports = function draw(gd) {
         'shape-rendering': 'crispEdges'
     });
 
-    bg.call(Color.stroke, opts.bordercolor);
-    bg.call(Color.fill, opts.bgcolor);
-    bg.style('stroke-width', opts.borderwidth + 'px');
+    bg.call(Color.stroke, opts.bordercolor)
+        .call(Color.fill, opts.bgcolor)
+        .style('stroke-width', opts.borderwidth + 'px');
 
     var scrollBox = legend.selectAll('g.scrollbox')
         .data([0]);
@@ -229,7 +229,7 @@ module.exports = function draw(gd) {
             y: opts.borderwidth
         });
 
-        scrollBox.call(Drawing.setClipUrl, clipId);
+        Drawing.setClipUrl(scrollBox, clipId);
 
         Drawing.setRect(scrollBar, 0, 0, 0, 0);
         delete opts._scrollY;
@@ -268,7 +268,7 @@ module.exports = function draw(gd) {
             y: opts.borderwidth - scrollBoxY
         });
 
-        scrollBox.call(Drawing.setClipUrl, clipId);
+        Drawing.setClipUrl(scrollBox, clipId);
 
         scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
 
@@ -306,11 +306,10 @@ module.exports = function draw(gd) {
 
     function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
         opts._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
-        scrollBox
-            .call(Drawing.setTranslate, 0, scrollBoxY);
+        Drawing.setTranslate(scrollBox, 0, scrollBoxY);
 
-        scrollBar.call(
-            Drawing.setRect,
+        Drawing.setRect(
+            scrollBar,
             legendWidth,
             constants.scrollBarMargin - scrollBoxY * scrollRatio,
             constants.scrollBarWidth,
@@ -441,7 +440,7 @@ function drawTexts(g, gd) {
                 return Plotly.restyle(gd, update, traceIndex);
             });
     } else {
-        text.call(textLayout);
+        textLayout(text);
     }
 }
 
@@ -671,7 +670,7 @@ function computeLegendDimensions(gd, groups, traces) {
         var legendItem = d[0],
             bg = d3.select(this).select('.legendtoggle');
 
-        bg.call(Drawing.setRect,
+        Drawing.setRect(bg,
             0,
             -legendItem.height / 2,
             (gd._context.edits.legendText ? 0 : opts._width) + extraWidth,
