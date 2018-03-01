@@ -14,7 +14,6 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 var hasHover = require('has-hover');
 
-var Plotly = require('../plotly');
 var Lib = require('../lib');
 var Events = require('../lib/events');
 var Queue = require('../lib/queue');
@@ -25,6 +24,7 @@ var Plots = require('../plots/plots');
 var Polar = require('../plots/polar/legacy');
 var initInteractions = require('../plots/cartesian/graph_interact');
 
+var Axes = require('../plots/cartesian/axes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
@@ -176,7 +176,7 @@ exports.plot = function(gd, data, layout, config) {
     Drawing.initGradients(gd);
 
     // save initial show spikes once per graph
-    if(graphWasEmpty) Plotly.Axes.saveShowSpikeInitial(gd);
+    if(graphWasEmpty) Axes.saveShowSpikeInitial(gd);
 
     // prepare the data and find the autorange
 
@@ -327,24 +327,24 @@ exports.plot = function(gd, data, layout, config) {
     function doAutoRangeAndConstraints() {
         if(gd._transitioning) return;
 
-        var axList = Plotly.Axes.list(gd, '', true);
+        var axList = Axes.list(gd, '', true);
         for(var i = 0; i < axList.length; i++) {
             var ax = axList[i];
             cleanAxisConstraints(gd, ax);
 
-            Plotly.Axes.doAutoRange(ax);
+            Axes.doAutoRange(ax);
         }
 
         enforceAxisConstraints(gd);
 
         // store initial ranges *after* enforcing constraints, otherwise
         // we will never look like we're at the initial ranges
-        if(graphWasEmpty) Plotly.Axes.saveRangeInitial(gd);
+        if(graphWasEmpty) Axes.saveRangeInitial(gd);
     }
 
     // draw ticks, titles, and calculate axis scaling (._b, ._m)
     function drawAxes() {
-        return Plotly.Axes.doTicks(gd, 'redraw');
+        return Axes.doTicks(gd, 'redraw');
     }
 
     // Now plot the data
@@ -1440,7 +1440,7 @@ function _restyle(gd, aobj, traces) {
 
     // for autoranging multiple axes
     function addToAxlist(axid) {
-        var axName = Plotly.Axes.id2name(axid);
+        var axName = Axes.id2name(axid);
         if(axlist.indexOf(axName) === -1) axlist.push(axName);
     }
 
@@ -1639,7 +1639,7 @@ function _restyle(gd, aobj, traces) {
 
         // swap the data attributes of the relevant x and y axes?
         if(['swapxyaxes', 'orientationaxes'].indexOf(ai) !== -1) {
-            Plotly.Axes.swap(gd, traces);
+            Axes.swap(gd, traces);
         }
 
         // swap hovermode if set to "compare x/y data"
@@ -1676,7 +1676,7 @@ function _restyle(gd, aobj, traces) {
 
     // do we need to force a recalc?
     var autorangeOn = false;
-    var axList = Plotly.Axes.list(gd);
+    var axList = Axes.list(gd);
     for(i = 0; i < axList.length; i++) {
         if(axList[i].autorange) {
             autorangeOn = true;
@@ -1721,7 +1721,7 @@ function _restyle(gd, aobj, traces) {
  *  attribute object `{astr1: val1, astr2: val2 ...}`
  *  allows setting multiple attributes simultaneously
  */
-Plotly.relayout = function relayout(gd, astr, val) {
+exports.relayout = function relayout(gd, astr, val) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
@@ -1787,7 +1787,7 @@ function _relayout(gd, aobj) {
     var layout = gd.layout,
         fullLayout = gd._fullLayout,
         keys = Object.keys(aobj),
-        axes = Plotly.Axes.list(gd),
+        axes = Axes.list(gd),
         arrayEdits = {},
         arrayStr,
         i,
@@ -2131,7 +2131,7 @@ function _relayout(gd, aobj) {
 function refAutorange(gd, obj, axLetter) {
     if(!Lib.isPlainObject(obj)) return false;
     var axRef = obj[axLetter + 'ref'] || axLetter,
-        ax = Plotly.Axes.getFromId(gd, axRef);
+        ax = Axes.getFromId(gd, axRef);
 
     if(!ax && axRef.charAt(0) === axLetter) {
         // fall back on the primary axis in case we've referenced a
@@ -2141,7 +2141,7 @@ function refAutorange(gd, obj, axLetter) {
         // The only thing this is used for is to determine whether to
         // do a full `recalc`, so the only ill effect of this error is
         // to waste some time.
-        ax = Plotly.Axes.getFromId(gd, axLetter);
+        ax = Axes.getFromId(gd, axLetter);
     }
     return (ax || {}).autorange;
 }
@@ -2403,8 +2403,8 @@ function diffData(gd, oldFullData, newFullData, immutable) {
     for(i = 0; i < oldFullData.length; i++) {
         trace = newFullData[i];
         diffOpts.autoranged = trace.xaxis ? (
-            Plotly.Axes.getFromId(gd, trace.xaxis).autorange ||
-            Plotly.Axes.getFromId(gd, trace.yaxis).autorange
+            Axes.getFromId(gd, trace.xaxis).autorange ||
+            Axes.getFromId(gd, trace.yaxis).autorange
         ) : false;
         getDiffFlags(oldFullData[i], trace, [], diffOpts);
     }
