@@ -152,7 +152,7 @@ function calculateSymbol(symbolIn) {
 function formatParam(paramIn, len, calculate, dflt, extraFn) {
     var paramOut = null;
 
-    if(Array.isArray(paramIn)) {
+    if(Lib.isArrayOrTypedArray(paramIn)) {
         paramOut = [];
 
         for(var i = 0; i < len; i++) {

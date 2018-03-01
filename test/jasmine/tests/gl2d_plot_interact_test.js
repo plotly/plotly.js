@@ -209,7 +209,6 @@ describe('@gl Test gl plot side effects', function() {
 
 describe('@gl Test gl2d plots', function() {
     var gd;
-
     var mock = require('@mocks/gl2d_10.json');
 
     beforeEach(function() {
@@ -255,9 +254,9 @@ describe('@gl Test gl2d plots', function() {
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
 
         var originalX = [-0.3037383177570093, 5.303738317757009];
-        var originalY = [-0.5, 6.1];
-        var newX = [-0.5, 5];
-        var newY = [-1.7, 4.95];
+        var originalY = [-0.5806379476536665, 6.218528262566369];
+        var newX = [-0.5516431924882629, 5.082159624413145];
+        var newY = [-1.7947747709072441, 5.004391439312791];
         var precision = 1;
 
         Plotly.newPlot(gd, _mock)
@@ -584,8 +583,8 @@ describe('@gl Test gl2d plots', function() {
             });
         })
         .then(function() {
-            expect(gd.layout.xaxis.range).toBeCloseToArray([-7.6, 23.6], 1);
-            expect(gd.layout.yaxis.range).toBeCloseToArray([0.2, 15.8], 1);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([-8.2, 24.2], 1);
+            expect(gd.layout.yaxis.range).toBeCloseToArray([-0.12, 16.1], 1);
         })
         .catch(fail)
         .then(done);
@@ -832,5 +831,105 @@ describe('@gl Test gl2d plots', function() {
         })
         .catch(fail)
         .then(done);
+    });
+});
+
+describe('Test scattergl autorange:', function() {
+    afterEach(destroyGraphDiv);
+
+    describe('should return the same value as SVG scatter for ~small~ data', function() {
+        var specs = [
+            {name: 'lines+markers', fig: require('@mocks/gl2d_10.json')},
+            {name: 'bubbles', fig: require('@mocks/gl2d_12.json')},
+            {name: 'line on log axes', fig: require('@mocks/gl2d_14.json')},
+            {name: 'fill to zero', fig: require('@mocks/gl2d_axes_labels2.json')},
+            {name: 'annotations', fig: require('@mocks/gl2d_annotations.json')}
+        ];
+
+        specs.forEach(function(s) {
+            it('- case ' + s.name, function(done) {
+                var gd = createGraphDiv();
+                var glRangeX;
+                var glRangeY;
+
+                // ensure the mocks have auto-range turned on
+                var glFig = Lib.extendDeep({}, s.fig);
+                Lib.extendDeep(glFig.layout, {xaxis: {autorange: true}});
+                Lib.extendDeep(glFig.layout, {yaxis: {autorange: true}});
+
+                var svgFig = Lib.extendDeep({}, glFig);
+                svgFig.data.forEach(function(t) { t.type = 'scatter'; });
+
+                Plotly.newPlot(gd, glFig).then(function() {
+                    glRangeX = gd._fullLayout.xaxis.range;
+                    glRangeY = gd._fullLayout.yaxis.range;
+                })
+                .then(function() {
+                    return Plotly.newPlot(gd, svgFig);
+                })
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.range).toBeCloseToArray(glRangeX, 'x range');
+                    expect(gd._fullLayout.yaxis.range).toBeCloseToArray(glRangeY, 'y range');
+                })
+                .catch(fail)
+                .then(done);
+            });
+        });
+    });
+
+    describe('should return the approximative values for ~big~ data', function() {
+        beforeEach(function() {
+            spyOn(ScatterGl, 'plot');
+        });
+
+        // threshold for 'fast' axis expansion routine
+        var N = 1e5;
+        var x = new Array(N);
+        var y = new Array(N);
+        var ms = new Array(N);
+
+        Lib.seedPseudoRandom();
+
+        for(var i = 0; i < N; i++) {
+            x[i] = Lib.pseudoRandom();
+            y[i] = Lib.pseudoRandom();
+            ms[i] = 10 * Lib.pseudoRandom() + 20;
+        }
+
+        it('- case scalar marker.size', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.newPlot(gd, [{
+                type: 'scattergl',
+                mode: 'markers',
+                x: x,
+                y: y,
+                marker: {size: 10}
+            }])
+            .then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.02, 1.02], 'x range');
+                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.04, 1.04], 'y range');
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('- case array marker.size', function(done) {
+            var gd = createGraphDiv();
+
+            Plotly.newPlot(gd, [{
+                type: 'scattergl',
+                mode: 'markers',
+                x: x,
+                y: y,
+                marker: {size: ms}
+            }])
+            .then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.05, 1.05], 'x range');
+                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.11, 1.11], 'y range');
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 });

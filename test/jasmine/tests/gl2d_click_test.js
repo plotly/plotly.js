@@ -534,11 +534,22 @@ describe('@gl Test hover and click interactions', function() {
 
 describe('@noCI @gl Test gl2d lasso/select:', function() {
     var mockFancy = require('@mocks/gl2d_14.json');
+    delete mockFancy.layout.xaxis.autorange;
+    delete mockFancy.layout.yaxis.autorange;
+    mockFancy.layout.xaxis.range = [-2.951309064136961, 2.0954721318818916];
+    mockFancy.layout.yaxis.range = [-0.9248866483012275, 1.3232607344525835];
+
     var mockFast = Lib.extendDeep({}, mockFancy, {
         data: [{mode: 'markers'}],
         layout: {
-            xaxis: {type: 'linear'},
-            yaxis: {type: 'linear'}
+            xaxis: {
+                type: 'linear',
+                range: [-3.869222222222223, 73.55522222222223]
+            },
+            yaxis: {
+                type: 'linear',
+                range: [-0.7402222222222222, 17.144222222222222]
+            }
         }
     });
 

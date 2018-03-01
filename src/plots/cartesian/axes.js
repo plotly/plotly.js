@@ -424,6 +424,13 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
     return hasOneAxisChanged;
 };
 
+axes.doesAxisNeedAutoRange = function(ax) {
+    return (
+        ax.autorange ||
+        !!Lib.nestedProperty(ax, 'rangeslider.autorange').get()
+    );
+};
+
 // axes.expand: if autoranging, include new data in the outer limits
 // for this axis
 // data is an array of numbers (ie already run through ax.d2c)
@@ -437,12 +444,7 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
 //      tozero: (boolean) make sure to include zero if axis is linear,
 //          and make it a tight bound if possible
 axes.expand = function(ax, data, options) {
-    var needsAutorange = (
-        ax.autorange ||
-        !!Lib.nestedProperty(ax, 'rangeslider.autorange').get()
-    );
-
-    if(!needsAutorange || !data) return;
+    if(!axes.doesAxisNeedAutoRange(ax) || !data) return;
 
     if(!ax._min) ax._min = [];
     if(!ax._max) ax._max = [];
@@ -569,7 +571,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
             start: dataMin - 0.5,
             end: dataMax + 0.5,
             size: 1,
-            _count: dataMax - dataMin + 1
+            _dataSpan: dataMax - dataMin,
         };
     }
 
@@ -649,7 +651,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
         start: ax.c2r(binStart, 0, calendar),
         end: ax.c2r(binEnd, 0, calendar),
         size: dummyAx.dtick,
-        _count: bincount
+        _dataSpan: dataMax - dataMin
     };
 };
 
@@ -743,11 +745,8 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 // Ticks and grids
 // ----------------------------------------------------
 
-// calculate the ticks: text, values, positioning
-// if ticks are set to automatic, determine the right values (tick0,dtick)
-// in any case, set tickround to # of digits to round tick labels to,
-// or codes to this effect for log and date scales
-axes.calcTicks = function calcTicks(ax) {
+// ensure we have tick0, dtick, and tick rounding calculated
+axes.prepTicks = function(ax) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
 
     // calculate max number of (auto) ticks to display based on plot size
@@ -788,6 +787,15 @@ axes.calcTicks = function calcTicks(ax) {
 
     // now figure out rounding of tick values
     autoTickRound(ax);
+};
+
+// calculate the ticks: text, values, positioning
+// if ticks are set to automatic, determine the right values (tick0,dtick)
+// in any case, set tickround to # of digits to round tick labels to,
+// or codes to this effect for log and date scales
+axes.calcTicks = function calcTicks(ax) {
+    axes.prepTicks(ax);
+    var rng = Lib.simpleMap(ax.range, ax.r2l);
 
     // now that we've figured out the auto values for formatting
     // in case we're missing some ticktext, we can break out for array ticks
@@ -1523,7 +1531,7 @@ function numFormat(v, ax, fmtoverride, hover) {
     if(hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {
-            exponentformat: ax.exponentformat,
+            exponentformat: exponentFormat,
             dtick: ax.showexponent === 'none' ? ax.dtick :
                 (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent

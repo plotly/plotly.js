@@ -316,10 +316,10 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
 
         if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
         // weird case: array wasn't long enough to apply to every point
-        else if(Array.isArray(markerLine.color)) lineColor = Color.defaultLine;
+        else if(Lib.isArrayOrTypedArray(markerLine.color)) lineColor = Color.defaultLine;
         else lineColor = markerLine.color;
 
-        if(Array.isArray(marker.color)) {
+        if(Lib.isArrayOrTypedArray(marker.color)) {
             fillColor = Color.defaultLine;
             perPointGradient = true;
         }
@@ -542,7 +542,7 @@ drawing.tryColorscale = function(marker, prefix) {
         scl = cont.colorscale,
         colorArray = cont.color;
 
-    if(scl && Array.isArray(colorArray)) {
+    if(scl && Lib.isArrayOrTypedArray(colorArray)) {
         return Colorscale.makeColorScaleFunc(
             Colorscale.extractScale(scl, cont.cmin, cont.cmax)
         );

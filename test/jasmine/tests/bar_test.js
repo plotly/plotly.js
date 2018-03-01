@@ -1508,7 +1508,37 @@ describe('bar hover', function() {
                 out = _hover(gd, 125, 0.8, 'x');
 
                 expect(out.style).toEqual([1, 'red', 200, 1]);
-                assertPos(out.pos, [203, 304, 168, 168]);
+                assertPos(out.pos, [222, 280, 168, 168]);
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('positions labels correctly w.r.t. narrow bars', function(done) {
+            Plotly.newPlot(gd, [{
+                x: [0, 10, 20],
+                y: [1, 3, 2],
+                type: 'bar',
+                width: 1
+            }], {
+                width: 500,
+                height: 500,
+                margin: {l: 100, r: 100, t: 100, b: 100}
+            })
+            .then(function() {
+                // you can still hover over the gap (14) but the label will
+                // get pushed in to the bar
+                var out = _hover(gd, 14, 2, 'x');
+                assertPos(out.pos, [145, 155, 15, 15]);
+
+                // in closest mode you must be over the bar though
+                out = _hover(gd, 14, 2, 'closest');
+                expect(out).toBe(false);
+
+                // now for a single bar trace, closest and compare modes give the same
+                // positioning of hover labels
+                out = _hover(gd, 10, 2, 'closest');
+                assertPos(out.pos, [145, 155, 15, 15]);
             })
             .catch(fail)
             .then(done);

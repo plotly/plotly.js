@@ -18,12 +18,13 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 describe('Bundle with IE9 supported trace types:', function() {
-
     afterEach(destroyGraphDiv);
 
-    it(' check that ie9_mock.js did its job', function() {
+    it('check that ie9_mock.js did its job', function() {
         expect(function() { return ArrayBuffer; })
             .toThrow(new ReferenceError('ArrayBuffer is not defined'));
+        expect(function() { return DataView; })
+            .toThrow(new ReferenceError('DataView is not defined'));
         expect(function() { return Uint8Array; })
             .toThrow(new ReferenceError('Uint8Array is not defined'));
     });

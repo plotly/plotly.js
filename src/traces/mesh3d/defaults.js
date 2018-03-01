@@ -24,7 +24,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         var ret = array.map(function(attr) {
             var result = coerce(attr);
 
-            if(result && Array.isArray(result)) return result;
+            if(result && Lib.isArrayOrTypedArray(result)) return result;
             return null;
         });
 

@@ -10,7 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var isArray = require('./is_array');
+var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
 var isPlainObject = require('./is_plain_object');
 var containerArrayMatch = require('../plot_api/container_array_match');
 
@@ -96,7 +96,7 @@ function npGet(cont, parts) {
                 }
                 return allSame ? out[0] : out;
             }
-            if(typeof curPart === 'number' && !isArray(curCont)) {
+            if(typeof curPart === 'number' && !isArrayOrTypedArray(curCont)) {
                 return undefined;
             }
             curCont = curCont[curPart];
@@ -144,7 +144,7 @@ function isDeletable(val, propStr) {
     ) {
         return false;
     }
-    if(!isArray(val)) return true;
+    if(!isArrayOrTypedArray(val)) return true;
 
     if(propStr.match(INFO_PATTERNS)) return true;
 
@@ -167,7 +167,7 @@ function npSet(cont, parts, propStr) {
         for(i = 0; i < parts.length - 1; i++) {
             curPart = parts[i];
 
-            if(typeof curPart === 'number' && !isArray(curCont)) {
+            if(typeof curPart === 'number' && !isArrayOrTypedArray(curCont)) {
                 throw 'array index but container is not an array';
             }
 
@@ -211,7 +211,7 @@ function joinPropStr(propStr, newPart) {
 
 // handle special -1 array index
 function setArrayAll(containerArray, innerParts, val, propStr) {
-    var arrayVal = isArray(val),
+    var arrayVal = isArrayOrTypedArray(val),
         allSet = true,
         thisVal = val,
         thisPropStr = propStr.replace('-1', 0),
@@ -261,7 +261,7 @@ function pruneContainers(containerLevels) {
         propPart = containerLevels[i][1];
 
         remainingKeys = false;
-        if(isArray(curCont)) {
+        if(isArrayOrTypedArray(curCont)) {
             for(j = curCont.length - 1; j >= 0; j--) {
                 if(isDeletable(curCont[j], joinPropStr(propPart, j))) {
                     if(remainingKeys) curCont[j] = undefined;
@@ -287,7 +287,7 @@ function pruneContainers(containerLevels) {
 function emptyObj(obj) {
     if(obj === undefined || obj === null) return true;
     if(typeof obj !== 'object') return false; // any plain value
-    if(isArray(obj)) return !obj.length; // []
+    if(isArrayOrTypedArray(obj)) return !obj.length; // []
     return !Object.keys(obj).length; // {}
 }
 

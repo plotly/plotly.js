@@ -8,7 +8,7 @@
 
 'use strict';
 
-var isArray = require('../../lib').isArray;
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 /*
  * Construct a 2D array of cheater values given a, b, and a slope.
@@ -18,10 +18,10 @@ module.exports = function(a, b, cheaterslope) {
     var i, j, ascal, bscal, aval, bval;
     var data = [];
 
-    var na = isArray(a) ? a.length : a;
-    var nb = isArray(b) ? b.length : b;
-    var adata = isArray(a) ? a : null;
-    var bdata = isArray(b) ? b : null;
+    var na = isArrayOrTypedArray(a) ? a.length : a;
+    var nb = isArrayOrTypedArray(b) ? b.length : b;
+    var adata = isArrayOrTypedArray(a) ? a : null;
+    var bdata = isArrayOrTypedArray(b) ? b : null;
 
     // If we're using data, scale it so that for data that's just barely
     // not evenly spaced, the switch to value-based indexing is continuous.

@@ -10,10 +10,10 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 var Registry = require('../../registry');
 var hasColumns = require('./has_columns');
-
 
 module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, xName, yName) {
     var z = coerce('z');
@@ -76,7 +76,7 @@ function isValidZ(z) {
 
     for(var i = 0; i < z.length; i++) {
         zi = z[i];
-        if(!Array.isArray(zi)) {
+        if(!isArrayOrTypedArray(zi)) {
             allRowsAreArrays = false;
             break;
         }

@@ -16,10 +16,9 @@ var maxDimensionCount = require('./constants').maxDimensionCount;
 var handleDomainDefaults = require('../../plots/domain').defaults;
 
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
-
     var lineColor = coerce('line.color', defaultColor);
 
-    if(hasColorscale(traceIn, 'line') && Lib.isArray(lineColor)) {
+    if(hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
         if(lineColor.length) {
             coerce('line.colorscale');
             colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
