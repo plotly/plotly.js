@@ -2211,25 +2211,27 @@ axes.doTicks = function(gd, axid, skipTitle) {
         }
 
         function doAutoMargins() {
-
+            if(axLetter !== 'x' && axLetter !== 'y') { return; }
             var marginPush = 0;
             if(ax.automargin) {
-                marginPush = ax.titlefont.size +
-                    (axLetter === 'x' ? ax._boundingBox.height : ax._boundingBox.width);
+                var axisTitleHeight = (ax.title !== fullLayout._dfltTitle[axLetter] ?
+                    ax.titlefont.size : 0);
+                var axisHeight = (axLetter === 'x' ? ax._boundingBox.height : ax._boundingBox.width);
+                marginPush = axisTitleHeight + axisHeight;
             }
 
-            if(!fullLayout._replotting ||
-                    !ax._marginPush || ax._marginPush[ax.side[0]] < marginPush) {
+            var pushKey = ax._name + '.automargin';
+            var existingPush = fullLayout._pushmargin[pushKey];
 
-                ax._marginPush = {r: 0, l: 0, t: 0, b: 0};
-                ax._marginPush[ax.side[0]] = marginPush;
+            if(!fullLayout._replotting ||
+                    !existingPush || existingPush[ax.side[0]].size < marginPush) {
 
                 var pushParams = {
                     x: ax.side[0] === 'r' ? ax.domain[1] : ax.domain[0],
                     y: ax.side[0] === 't' ? ax.domain[1] : ax.domain[0],
                     r: 0, l: 0, t: 0, b: 0};
                 pushParams[ax.side[0]] = marginPush;
-                Plots.autoMargin(gd, ax._name, pushParams);
+                Plots.autoMargin(gd, pushKey, pushParams);
             }
 
         }
