@@ -26,6 +26,10 @@ require('../build/plotcss');
 // inject default MathJax config
 require('./fonts/mathjax_config');
 
+// include registry module and expose register method
+var Registry = require('./registry');
+var register = exports.register = Registry.register;
+
 // plot api
 exports.plot = Plotly.plot;
 exports.newPlot = Plotly.newPlot;
@@ -41,7 +45,6 @@ exports.deleteTraces = Plotly.deleteTraces;
 exports.moveTraces = Plotly.moveTraces;
 exports.purge = Plotly.purge;
 exports.setPlotConfig = require('./plot_api/set_plot_config');
-exports.register = require('./plot_api/register');
 exports.toImage = require('./plot_api/to_image');
 exports.downloadImage = require('./snapshot/download');
 exports.validate = require('./plot_api/validate');
