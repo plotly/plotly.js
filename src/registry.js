@@ -30,6 +30,7 @@ exports.layoutArrayContainers = [];
 exports.layoutArrayRegexes = [];
 exports.traceLayoutAttributes = {};
 exports.localeRegistry = {};
+exports.apiMethodRegistry = {};
 
 /**
  * Top-level register routine, exported as Plotly.register
@@ -65,6 +66,9 @@ exports.localeRegistry = {};
  *  - name {string} : the component name, used it with Register.getComponentMethod()
  *                    to employ component method.
  *
+ *  A valid `moduleType: 'apiMethod'` module has fields:
+ *  - name {string} : the api method name.
+ *  - fn {function} : the api method called with Register.call();
  *
  */
 exports.register = function register(_modules) {
@@ -93,6 +97,10 @@ exports.register = function register(_modules) {
                 break;
             case 'locale':
                 registerLocale(newModule);
+                break;
+            case 'apiMethod':
+                var name = newModule.name;
+                exports.apiMethodRegistry[name] = newModule.fn;
                 break;
             default:
                 throw new Error('Invalid module was attempted to be registered!');
