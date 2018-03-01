@@ -2212,28 +2212,34 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
         function doAutoMargins() {
             if(axLetter !== 'x' && axLetter !== 'y') { return; }
-            var marginPush = 0;
-            if(ax.automargin) {
-                var axisTitleHeight = (ax.title !== fullLayout._dfltTitle[axLetter] ?
-                    ax.titlefont.size : 0);
-                var axisHeight = (axLetter === 'x' ? ax._boundingBox.height : ax._boundingBox.width);
-                marginPush = axisTitleHeight + axisHeight;
+            var pushKey = ax._name + '.automargin';
+            var sideLetter = ax.side[0];
+            var existingPush = fullLayout._pushmargin[pushKey];
+            var pushParams = {
+                x: sideLetter === 'r' ? ax.domain[1] : ax.domain[0],
+                y: sideLetter === 't' ? ax.domain[1] : ax.domain[0],
+                r: 0, l: 0, t: 0, b: 0};
+
+            if(!ax.automargin) {
+                if(existingPush && !(
+                    existingPush.r.size === 0 && existingPush.l.size === 0 &&
+                    existingPush.b.size === 0 && existingPush.t.size === 0)) {
+                    Plots.autoMargin(gd, pushKey, pushParams);
+                }
+                return;
             }
 
-            var pushKey = ax._name + '.automargin';
-            var existingPush = fullLayout._pushmargin[pushKey];
+            var axisTitleHeight = (ax.title !== fullLayout._dfltTitle[axLetter] ?
+                ax.titlefont.size : 0);
+            var axisHeight = (axLetter === 'x' ?
+                ax._boundingBox.height : ax._boundingBox.width);
+            var marginPush = axisTitleHeight + axisHeight;
 
             if(!fullLayout._replotting ||
-                    !existingPush || existingPush[ax.side[0]].size < marginPush) {
-
-                var pushParams = {
-                    x: ax.side[0] === 'r' ? ax.domain[1] : ax.domain[0],
-                    y: ax.side[0] === 't' ? ax.domain[1] : ax.domain[0],
-                    r: 0, l: 0, t: 0, b: 0};
-                pushParams[ax.side[0]] = marginPush;
+                    !existingPush || existingPush[sideLetter].size < marginPush) {
+                pushParams[sideLetter] = marginPush;
                 Plots.autoMargin(gd, pushKey, pushParams);
             }
-
         }
 
         var done = Lib.syncOrAsync([
