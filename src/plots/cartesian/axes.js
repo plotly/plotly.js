@@ -1870,9 +1870,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     else if(axLetter === 'y') {
         sides = ['left', 'right'];
         transfn = ax._transfn || function(d) {
-            var multilineCorrection = d.text ?
-              -0.5 * (d.text.split('<br>').length - 1) * LINE_SPACING * d.fontSize : 0;
-            return 'translate(0,' + (ax._offset + ax.l2p(d.x) + multilineCorrection) + ')';
+            return 'translate(0,' + (ax._offset + ax.l2p(d.x)) + ')';
         };
         tickpathfn = function(shift, len) {
             if(ax._counterangle) {
@@ -2049,6 +2047,23 @@ axes.doTicks = function(gd, axid, skipTitle) {
                         (' rotate(' + angle + ',' + labelx(d) + ',' +
                             (labely(d) - d.fontSize / 2) + ')') :
                         '');
+                var extraHeight = d.text ?
+                  (d.text.split('<br>').length - 1) * LINE_SPACING * d.fontSize : 0;
+                if (axLetter === 'x') {
+                  if (angle < -20 || 20 < angle) {
+                    transform += ' translate(0, ' + (-0.5 * extraHeight) + ')';
+                  } else if (axside === 'top') {
+                    transform += ' translate(0, ' + (-extraHeight) + ')';
+                  }
+                } else {
+                  var textAngle = isNumeric(angle) ? +angle : 0;
+                  textAngle *= axside === 'left' ? 1 : -1;
+                  if (textAngle < -20) {
+                    transform += ' translate(0, ' + (-extraHeight) + ')';
+                  } else if (textAngle < 20) {
+                    transform += ' translate(0, ' + (-0.5 * extraHeight) + ')';
+                  }
+                }
                 if(mathjaxGroup.empty()) {
                     thisLabel.select('text').attr({
                         transform: transform,
