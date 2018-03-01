@@ -63,7 +63,8 @@ exports.register([
     require('./components/updatemenus'),
     require('./components/sliders'),
     require('./components/rangeslider'),
-    require('./components/rangeselector')
+    require('./components/rangeselector'),
+    require('./components/grid'),
 ]);
 
 // locales en and en-US are required for default behavior

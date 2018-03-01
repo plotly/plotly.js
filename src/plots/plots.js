@@ -19,8 +19,8 @@ var axisIDs = require('../plots/cartesian/axis_ids');
 var Lib = require('../lib');
 var _ = Lib._;
 var Color = require('../components/color');
+var Grid = require('../components/grid');
 var BADNUM = require('../constants/numerical').BADNUM;
-var Grid = require('./grid');
 
 var plots = module.exports = {};
 

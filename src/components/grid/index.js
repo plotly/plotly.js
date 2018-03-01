@@ -8,13 +8,12 @@
 
 'use strict';
 
-var Lib = require('../lib');
-var domainAttrs = require('./domain').attributes;
-var counterRegex = require('../lib/regex').counter;
-var cartesianIdRegex = require('./cartesian/constants').idRegex;
+var Lib = require('../../lib');
+var counterRegex = require('../../lib/regex').counter;
+var domainAttrs = require('../../plots/domain').attributes;
+var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
 
-
-var gridAttrs = exports.attributes = {
+var gridAttrs = {
     rows: {
         valType: 'integer',
         min: 1,
@@ -168,7 +167,7 @@ var gridAttrs = exports.attributes = {
 
 // the shape of the grid - this needs to be done BEFORE supplyDataDefaults
 // so that non-subplot traces can place themselves in the grid
-exports.sizeDefaults = function(layoutIn, layoutOut) {
+function sizeDefaults(layoutIn, layoutOut) {
     var gridIn = layoutIn.grid;
     if(!gridIn) return;
 
@@ -211,7 +210,7 @@ exports.sizeDefaults = function(layoutIn, layoutOut) {
         x: fillGridPositions('x', coerce, hasSubplotGrid ? 0.2 : 0.1, columns),
         y: fillGridPositions('y', coerce, hasSubplotGrid ? 0.3 : 0.1, rows, reversed)
     };
-};
+}
 
 // coerce x or y sizing attributes and return an array of domains for this direction
 function fillGridPositions(axLetter, coerce, dfltGap, len, reversed) {
@@ -232,7 +231,7 @@ function fillGridPositions(axLetter, coerce, dfltGap, len, reversed) {
 
 // the (cartesian) contents of the grid - this needs to happen AFTER supplyDataDefaults
 // so that we know what cartesian subplots are available
-exports.contentDefaults = function(layoutIn, layoutOut) {
+function contentDefaults(layoutIn, layoutOut) {
     var gridOut = layoutOut.grid;
     // make sure we got to the end of handleGridSizing
     if(!gridOut || !gridOut._domains) return;
@@ -368,7 +367,7 @@ exports.contentDefaults = function(layoutIn, layoutOut) {
             }
         }
     }
-};
+}
 
 function fillGridAxes(axesIn, axesAllowed, len, axisMap, axLetter) {
     var out = new Array(len);
@@ -397,3 +396,16 @@ function fillGridAxes(axesIn, axesAllowed, len, axisMap, axLetter) {
 
     return out;
 }
+
+module.exports = {
+    moduleType: 'component',
+    name: 'grid',
+
+    schema: {
+        layout: {grid: gridAttrs}
+    },
+
+    layoutAttributes: gridAttrs,
+    sizeDefaults: sizeDefaults,
+    contentDefaults: contentDefaults
+};
