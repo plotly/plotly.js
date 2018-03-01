@@ -2223,12 +2223,9 @@ axes.doTicks = function(gd, axid, skipTitle) {
             var pushKey = ax._name + '.automargin';
             var sideLetter = ax.side[0];
             var existingPush = fullLayout._pushmargin[pushKey];
-            var pushParams = {
-                x: sideLetter === 'r' ? ax.domain[1] : ax.domain[0],
-                y: sideLetter === 't' ? ax.domain[1] : ax.domain[0],
-                r: 0, l: 0, t: 0, b: 0};
+            var pushParams = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
 
-            if(!ax.automargin) {
+            if(!ax.automargin || ax.anchor === 'free' || !ax._anchorAxis) {
                 if(existingPush && !(
                     existingPush.r.size === 0 && existingPush.l.size === 0 &&
                     existingPush.b.size === 0 && existingPush.t.size === 0)) {
@@ -2237,11 +2234,18 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 return;
             }
 
-            var axisTitleHeight = (ax.title !== fullLayout._dfltTitle[axLetter] ?
+            var axisDim;
+            if(axLetter === 'x') {
+                pushParams.y = ax._anchorAxis.domain[sideLetter === 't' ? 1 : 0];
+                axisDim = ax._boundingBox.height;
+            }
+            else {
+                pushParams.x = ax._anchorAxis.domain[sideLetter === 'r' ? 1 : 0];
+                axisDim = ax._boundingBox.width;
+            }
+            var axisTitleDim = (ax.title !== fullLayout._dfltTitle[axLetter] ?
                 ax.titlefont.size : 0);
-            var axisHeight = (axLetter === 'x' ?
-                ax._boundingBox.height : ax._boundingBox.width);
-            var marginPush = axisTitleHeight + axisHeight;
+            var marginPush = axisTitleDim + axisDim;
 
             if(!fullLayout._replotting ||
                     !existingPush || existingPush[sideLetter].size < marginPush) {
