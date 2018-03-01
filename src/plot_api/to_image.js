@@ -8,7 +8,7 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
+var Registry = require('../registry');
 var Lib = require('../lib');
 
 var helpers = require('../snapshot/helpers');
@@ -155,7 +155,7 @@ function toImage(gd, opts) {
             var width = clonedGd._fullLayout.width;
             var height = clonedGd._fullLayout.height;
 
-            Plotly.purge(clonedGd);
+            Registry.call('purge', [clonedGd]);
             document.body.removeChild(clonedGd);
 
             if(format === 'svg') {
@@ -196,7 +196,7 @@ function toImage(gd, opts) {
     }
 
     return new Promise(function(resolve, reject) {
-        Plotly.plot(clonedGd, data, layoutImage, configImage)
+        Registry.call('plot', [clonedGd, data, layoutImage, configImage])
             .then(redrawFunc)
             .then(wait)
             .then(convert)

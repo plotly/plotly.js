@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var Color = require('../color');
@@ -213,7 +213,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
 
     function endDrag() {
         setCursor(shapePath);
-        Plotly.relayout(gd, update);
+        Registry.call('relayout', [gd, update]);
     }
 
     function moveShape(dx, dy) {

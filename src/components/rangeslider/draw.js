@@ -10,7 +10,7 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 
 var Lib = require('../../lib');
@@ -24,7 +24,6 @@ var dragElement = require('../dragelement');
 var setCursor = require('../../lib/setcursor');
 
 var constants = require('./constants');
-
 
 module.exports = function(gd) {
     var fullLayout = gd._fullLayout,
@@ -262,7 +261,7 @@ function setDataRange(rangeSlider, gd, axisOpts, opts) {
         dataMax = clamp(opts.p2d(opts._pixelMax));
 
     window.requestAnimationFrame(function() {
-        Plotly.relayout(gd, axisOpts._name + '.range', [dataMin, dataMax]);
+        Registry.call('relayout', [gd, axisOpts._name + '.range', [dataMin, dataMax]]);
     });
 }
 

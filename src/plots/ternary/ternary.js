@@ -12,7 +12,7 @@
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var _ = Lib._;
 var Color = require('../../components/color');
@@ -26,7 +26,6 @@ var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select');
 var constants = require('../cartesian/constants');
-
 
 function Ternary(options, fullLayout) {
     this.id = options.id;
@@ -496,7 +495,7 @@ proto.initInteractions = function() {
                 attrs[_this.id + '.baxis.min'] = 0;
                 attrs[_this.id + '.caxis.min'] = 0;
                 gd.emit('plotly_doubleclick', null);
-                Plotly.relayout(gd, attrs);
+                Registry.call('relayout', [gd, attrs]);
             }
             Fx.click(gd, evt, _this.id);
         }
@@ -601,7 +600,7 @@ proto.initInteractions = function() {
         attrs[_this.id + '.baxis.min'] = mins.b;
         attrs[_this.id + '.caxis.min'] = mins.c;
 
-        Plotly.relayout(gd, attrs);
+        Registry.call('relayout', [gd, attrs]);
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
             Lib.notifier(_(gd, 'Double-click to zoom back out'), 'long');
@@ -680,7 +679,7 @@ proto.initInteractions = function() {
         attrs[_this.id + '.baxis.min'] = mins.b;
         attrs[_this.id + '.caxis.min'] = mins.c;
 
-        Plotly.relayout(gd, attrs);
+        Registry.call('relayout', [gd, attrs]);
     }
 
     function clearSelect() {

@@ -12,7 +12,7 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
@@ -208,7 +208,7 @@ proto.updateProjection = function(fullLayout, geoLayout) {
         this.viewInitial = null;
 
         Lib.warn(msg);
-        gd._promises.push(Plotly.relayout(gd, updateObj));
+        gd._promises.push(Registry.call('relayout', [gd, updateObj]));
         return msg;
     }
 
@@ -365,7 +365,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
             updateObj[_this.id + '.' + k] = viewInitial[k];
         }
 
-        Plotly.relayout(gd, updateObj);
+        Registry.call('relayout', [gd, updateObj]);
         gd.emit('plotly_doubleclick', null);
     }
 

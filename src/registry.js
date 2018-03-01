@@ -209,8 +209,16 @@ exports.getComponentMethod = function(name, method) {
 };
 
 /**
+ * Call registered api method.
  *
+ * @param {string} name : api method name
+ * @param {array} args : array of argument passed to api method
+ * @return {any} : returns api method output
  */
+exports.call = function(name, args) {
+    return exports.apiMethodRegistry[name].apply(null, args);
+};
+
 function registerTraceModule(_module) {
     var thisType = _module.name;
     var categoriesIn = _module.categories;

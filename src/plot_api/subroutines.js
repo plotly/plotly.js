@@ -462,7 +462,7 @@ exports.doColorBars = function(gd) {
 exports.layoutReplot = function(gd) {
     var layout = gd.layout;
     gd.layout = undefined;
-    return Plotly.plot(gd, '', layout);
+    return Registry.call('plot', [gd, '', layout]);
 };
 
 exports.doLegend = function(gd) {
