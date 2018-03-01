@@ -1109,7 +1109,7 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
         coerce('customdata');
         coerce('ids');
 
-        if(plots.traceIs(traceOut, 'showLegend')) {
+        if(Registry.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
             coerce('legendgroup');
         }
@@ -1126,9 +1126,9 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
             Lib.coerceHoverinfo(traceIn, traceOut, layout);
         }
 
-        if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
+        if(!Registry.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
-        if(plots.traceIs(traceOut, 'notLegendIsolatable')) {
+        if(Registry.traceIs(traceOut, 'notLegendIsolatable')) {
             // This clears out the legendonly state for traces like carpet that
             // cannot be isolated in the legend
             traceOut.visible = !!traceOut.visible;
