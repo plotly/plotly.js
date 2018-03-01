@@ -68,6 +68,7 @@ exports.register([
     require('./components/rangeslider'),
     require('./components/rangeselector'),
     require('./components/grid'),
+    require('./components/errorbars')
 ]);
 
 // locales en and en-US are required for default behavior

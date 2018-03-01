@@ -10,7 +10,6 @@
 
 var barAttrs = require('../bar/attributes');
 
-
 module.exports = {
     x: {
         valType: 'data_array',
@@ -193,9 +192,6 @@ module.exports = {
 
     selected: barAttrs.selected,
     unselected: barAttrs.unselected,
-
-    error_y: barAttrs.error_y,
-    error_x: barAttrs.error_x,
 
     _deprecated: {
         bardir: barAttrs._deprecated.bardir
