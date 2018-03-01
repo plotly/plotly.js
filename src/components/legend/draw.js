@@ -207,6 +207,10 @@ module.exports = function draw(gd) {
     // legend, background and border, scroll box and scroll bar
     Drawing.setTranslate(legend, lx, ly);
 
+    // to be safe, remove previous listeners
+    scrollBar.on('.drag', null);
+    legend.on('wheel', null);
+
     if(opts._height <= legendHeight || gd._context.staticPlot) {
         // if scrollbar should not be shown.
         bg.attr({
@@ -226,6 +230,9 @@ module.exports = function draw(gd) {
         });
 
         scrollBox.call(Drawing.setClipUrl, clipId);
+
+        Drawing.setRect(scrollBar, 0, 0, 0, 0);
+        delete opts._scrollY;
     }
     else {
         var scrollBarHeight = Math.max(constants.scrollBarMinHeight,
@@ -234,9 +241,10 @@ module.exports = function draw(gd) {
             scrollBarHeight -
             2 * constants.scrollBarMargin;
         var scrollBoxYMax = opts._height - legendHeight;
+        var scrollRatio = scrollBarYMax / scrollBoxYMax;
 
-        var scrollBarY = constants.scrollBarMargin;
-        var scrollBoxY = scrollBox.attr('data-scroll') || 0;
+        // scrollBoxY is 0 or a negative number
+        var scrollBoxY = Math.max(opts._scrollY || 0, -scrollBoxYMax);
 
         // increase the background and clip-path width
         // by the scrollbar width and margin
@@ -262,59 +270,49 @@ module.exports = function draw(gd) {
 
         scrollBox.call(Drawing.setClipUrl, clipId);
 
-        if(firstRender) scrollHandler(scrollBarY, scrollBoxY, scrollBarHeight);
+        scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
 
-        legend.on('wheel', null);  // to be safe, remove previous listeners
         legend.on('wheel', function() {
             scrollBoxY = Lib.constrain(
-                scrollBox.attr('data-scroll') -
+                opts._scrollY -
                     d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
                 -scrollBoxYMax, 0);
-            scrollBarY = constants.scrollBarMargin -
-                scrollBoxY / scrollBoxYMax * scrollBarYMax;
-            scrollHandler(scrollBarY, scrollBoxY, scrollBarHeight);
+            scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
             if(scrollBoxY !== 0 && scrollBoxY !== -scrollBoxYMax) {
                 d3.event.preventDefault();
             }
         });
 
-        // to be safe, remove previous listeners
-        scrollBar.on('.drag', null);
-        scrollBox.on('.drag', null);
-
-        var eventY0, scrollBarY0;
+        var eventY0, scrollBoxY0;
 
         var drag = d3.behavior.drag()
         .on('dragstart', function() {
             eventY0 = d3.event.sourceEvent.clientY;
-            scrollBarY0 = scrollBarY;
+            scrollBoxY0 = scrollBoxY;
         })
         .on('drag', function() {
             var e = d3.event.sourceEvent;
             if(e.buttons === 2 || e.ctrlKey) return;
 
-            scrollBarY = Lib.constrain(
-                e.clientY - eventY0 + scrollBarY0,
-                constants.scrollBarMargin,
-                constants.scrollBarMargin + scrollBarYMax);
-            scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
-                scrollBarYMax * scrollBoxYMax;
-            scrollHandler(scrollBarY, scrollBoxY, scrollBarHeight);
+            scrollBoxY = Lib.constrain(
+                (eventY0 - e.clientY) / scrollRatio + scrollBoxY0,
+                -scrollBoxYMax, 0);
+            scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
         });
 
         scrollBar.call(drag);
     }
 
 
-    function scrollHandler(scrollBarY, scrollBoxY, scrollBarHeight) {
+    function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
+        opts._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
         scrollBox
-            .attr('data-scroll', scrollBoxY)
             .call(Drawing.setTranslate, 0, scrollBoxY);
 
         scrollBar.call(
             Drawing.setRect,
             legendWidth,
-            scrollBarY,
+            constants.scrollBarMargin - scrollBoxY * scrollRatio,
             constants.scrollBarWidth,
             scrollBarHeight
         );
