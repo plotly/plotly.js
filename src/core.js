@@ -24,7 +24,6 @@ require('./fonts/mathjax_config');
 var Registry = require('./registry');
 var register = exports.register = Registry.register;
 
-exports.setPlotConfig = require('./plot_api/set_plot_config');
 // expose plot api methods
 var plotApi = require('./plot_api');
 var methodNames = Object.keys(plotApi);
@@ -67,7 +66,7 @@ register([
 exports.Icons = require('../build/ploticon');
 
 // unofficial 'beta' plot methods, use at your own risk
-exports.Plots = Plotly.Plots;
+exports.Plots = require('./plots/plots');
 exports.Fx = require('./components/fx');
 exports.Snapshot = require('./snapshot');
 exports.PlotSchema = require('./plot_api/plot_schema');

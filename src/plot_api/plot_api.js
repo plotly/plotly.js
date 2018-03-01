@@ -30,6 +30,7 @@ var Color = require('../components/color');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
 
+var defaultConfig = require('./plot_config');
 var manageArrays = require('./manage_arrays');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
@@ -447,6 +448,10 @@ exports.plot = function(gd, data, layout, config) {
     });
 };
 
+exports.setPlotConfig = function setPlotConfig(obj) {
+    return Lib.extendFlat(defaultConfig, obj);
+};
+
 function setBackground(gd, bgColor) {
     try {
         gd._fullLayout._paper.style('background', bgColor);
@@ -461,7 +466,7 @@ function opaqueSetBackground(gd, bgColor) {
 }
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Lib.extendDeep({}, Plotly.defaultConfig);
+    if(!gd._context) gd._context = Lib.extendDeep({}, defaultConfig);
     var context = gd._context;
 
     var i, keys, key;

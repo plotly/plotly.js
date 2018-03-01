@@ -26,6 +26,7 @@ exports.purge = main.purge;
 exports.addFrames = main.addFrames;
 exports.deleteFrames = main.deleteFrames;
 exports.animate = main.animate;
+exports.setPlotConfig = main.setPlotConfig;
 
 exports.toImage = require('./to_image');
 exports.validate = require('./validate');
