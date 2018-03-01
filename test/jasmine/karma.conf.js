@@ -260,9 +260,7 @@ if(isFullSuite) {
     }
 } else {
     // Add lib/index.js to non-full-suite runs,
-    // to avoid import conflicts due to plotly.js
-    // circular dependencies.
-
+    // to make sure the registry is set-up correctly.
     func.defaultConfig.files.push(
         pathToJQuery,
         pathToMain
