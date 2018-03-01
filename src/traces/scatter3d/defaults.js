@@ -16,10 +16,8 @@ var subTypes = require('../scatter/subtypes');
 var handleMarkerDefaults = require('../scatter/marker_defaults');
 var handleLineDefaults = require('../scatter/line_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
-var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
 
 var attributes = require('./attributes');
-
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
@@ -63,6 +61,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
+    var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});

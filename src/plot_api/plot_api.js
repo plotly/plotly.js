@@ -27,7 +27,6 @@ var initInteractions = require('../plots/cartesian/graph_interact');
 
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
-var ErrorBars = require('../components/errorbars');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
 
@@ -312,7 +311,7 @@ Plotly.plot = function(gd, data, layout, config) {
         }
 
         // calc and autorange for errorbars
-        ErrorBars.calc(gd);
+        Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         // TODO: autosize extra for text markers and images
         // see https://github.com/plotly/plotly.js/issues/1111

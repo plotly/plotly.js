@@ -10,7 +10,7 @@
 
 var Lib = require('../../lib');
 var Fx = require('../../components/fx');
-var ErrorBars = require('../../components/errorbars');
+var Registry = require('../../registry');
 var getTraceColor = require('./get_trace_color');
 var Color = require('../../components/color');
 var fillHoverText = require('./fill_hover_text');
@@ -83,7 +83,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             });
 
             fillHoverText(di, trace, pointData);
-            ErrorBars.hoverInfo(di, trace, pointData);
+            Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
             return [pointData];
         }

@@ -42,8 +42,6 @@ plots.fontWeight = 'normal';
 
 var transformsRegistry = plots.transformsRegistry;
 
-var ErrorBars = require('../components/errorbars');
-
 var commandModule = require('./command');
 plots.executeAPICommand = commandModule.executeAPICommand;
 plots.computeAPICommandBindings = commandModule.computeAPICommandBindings;
@@ -2118,7 +2116,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         plots.doCalcdata(gd);
 
-        ErrorBars.calc(gd);
+        Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
     }
