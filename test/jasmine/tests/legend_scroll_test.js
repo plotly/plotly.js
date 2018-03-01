@@ -99,15 +99,15 @@ describe('The legend', function() {
                 2 * constants.scrollBarMargin;
             var initialDataScroll = getScroll(gd);
             var wheelDeltaY = 100;
-            var finalDataScroll = Lib.constrain(initialDataScroll -
+            var finalDataScroll = Lib.constrain(initialDataScroll +
                 wheelDeltaY / scrollBarYMax * scrollBoxYMax,
-                -scrollBoxYMax, 0);
+                0, scrollBoxYMax);
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
 
             expect(getScroll(gd)).toBe(finalDataScroll);
             expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + finalDataScroll + ')');
+                'translate(0, ' + -finalDataScroll + ')');
         });
 
         function dragScroll(element, rightClick) {
@@ -120,9 +120,9 @@ describe('The legend', function() {
                 2 * constants.scrollBarMargin;
             var initialDataScroll = getScroll(gd);
             var dy = 50;
-            var finalDataScroll = Lib.constrain(initialDataScroll -
+            var finalDataScroll = Lib.constrain(initialDataScroll +
                 dy / scrollBarYMax * scrollBoxYMax,
-                -scrollBoxYMax, 0);
+                0, scrollBoxYMax);
 
             var y0 = scrollBarBB.top + scrollBarBB.height / 5;
             var y1 = y0 + dy;
@@ -152,7 +152,7 @@ describe('The legend', function() {
             var dataScroll = getScroll(gd);
             expect(dataScroll).toBeCloseTo(finalDataScroll, 3);
             expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + dataScroll + ')');
+                'translate(0, ' + -dataScroll + ')');
         });
 
         it('should not scroll on dragging the scrollbox', function() {
@@ -162,7 +162,7 @@ describe('The legend', function() {
             var dataScroll = getScroll(gd);
             expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
             expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + dataScroll + ')');
+                'translate(0, ' + -dataScroll + ')');
         });
 
         it('should not scroll on dragging the scrollbar with a right click', function() {
@@ -172,7 +172,7 @@ describe('The legend', function() {
             var dataScroll = getScroll(gd);
             expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
             expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + dataScroll + ')');
+                'translate(0, ' + -dataScroll + ')');
         });
 
         it('removes scroll bar and handlers when switching to horizontal', function(done) {
@@ -214,15 +214,15 @@ describe('The legend', function() {
                 expect(scrollBarHeight1).toBeGreaterThan(scrollBarHeight);
 
                 // we haven't quite removed the scrollbar, but we should have clipped the scroll value
-                return Plotly.deleteTraces(gd, [0, 1, 2, 3, 4, 5, 6, 7]);
+                return Plotly.deleteTraces(gd, [0, 1, 2, 3, 4, 5, 6]);
             })
             .then(function() {
-                expect(getScroll(gd)).toBeGreaterThan(dataScroll + 1);
+                expect(getScroll(gd)).toBeLessThan(dataScroll - 1);
                 var scrollBarHeight2 = getScrollBar().getBoundingClientRect().height;
                 expect(scrollBarHeight2).toBeGreaterThan(scrollBarHeight1);
 
                 // now no more scrollBar
-                return Plotly.deleteTraces(gd, [0, 1]);
+                return Plotly.deleteTraces(gd, [0, 1, 2]);
             })
             .then(function() {
                 expect(hasScrollBar()).toBe(false);
@@ -251,7 +251,7 @@ describe('The legend', function() {
                 expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
                 expect(getScroll(gd)).toBe(dataScroll);
                 expect(scrollBox.getAttribute('transform')).toBe(
-                    'translate(0, ' + dataScroll + ')');
+                    'translate(0, ' + -dataScroll + ')');
                 done();
             }, DBLCLICKDELAY * 2);
         });
@@ -289,7 +289,7 @@ describe('The legend', function() {
                 expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
                 expect(getScroll(gd)).toBe(dataScroll);
                 expect(scrollBox.getAttribute('transform')).toBe(
-                    'translate(0, ' + dataScroll + ')');
+                    'translate(0, ' + -dataScroll + ')');
                 expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
                 expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
                 done();

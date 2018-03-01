@@ -243,8 +243,7 @@ module.exports = function draw(gd) {
         var scrollBoxYMax = opts._height - legendHeight;
         var scrollRatio = scrollBarYMax / scrollBoxYMax;
 
-        // scrollBoxY is 0 or a negative number
-        var scrollBoxY = Math.max(opts._scrollY || 0, -scrollBoxYMax);
+        var scrollBoxY = Math.min(opts._scrollY || 0, scrollBoxYMax);
 
         // increase the background and clip-path width
         // by the scrollbar width and margin
@@ -265,7 +264,7 @@ module.exports = function draw(gd) {
                 constants.scrollBarMargin,
             height: legendHeight - 2 * opts.borderwidth,
             x: opts.borderwidth,
-            y: opts.borderwidth - scrollBoxY
+            y: opts.borderwidth + scrollBoxY
         });
 
         Drawing.setClipUrl(scrollBox, clipId);
@@ -274,11 +273,11 @@ module.exports = function draw(gd) {
 
         legend.on('wheel', function() {
             scrollBoxY = Lib.constrain(
-                opts._scrollY -
+                opts._scrollY +
                     d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
-                -scrollBoxYMax, 0);
+                0, scrollBoxYMax);
             scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
-            if(scrollBoxY !== 0 && scrollBoxY !== -scrollBoxYMax) {
+            if(scrollBoxY !== 0 && scrollBoxY !== scrollBoxYMax) {
                 d3.event.preventDefault();
             }
         });
@@ -295,8 +294,8 @@ module.exports = function draw(gd) {
             if(e.buttons === 2 || e.ctrlKey) return;
 
             scrollBoxY = Lib.constrain(
-                (eventY0 - e.clientY) / scrollRatio + scrollBoxY0,
-                -scrollBoxYMax, 0);
+                (e.clientY - eventY0) / scrollRatio + scrollBoxY0,
+                0, scrollBoxYMax);
             scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
         });
 
@@ -306,17 +305,17 @@ module.exports = function draw(gd) {
 
     function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
         opts._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
-        Drawing.setTranslate(scrollBox, 0, scrollBoxY);
+        Drawing.setTranslate(scrollBox, 0, -scrollBoxY);
 
         Drawing.setRect(
             scrollBar,
             legendWidth,
-            constants.scrollBarMargin - scrollBoxY * scrollRatio,
+            constants.scrollBarMargin + scrollBoxY * scrollRatio,
             constants.scrollBarWidth,
             scrollBarHeight
         );
         clipPath.select('rect').attr({
-            y: opts.borderwidth - scrollBoxY
+            y: opts.borderwidth + scrollBoxY
         });
     }
 
