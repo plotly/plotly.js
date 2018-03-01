@@ -78,9 +78,9 @@ module.exports = function draw(gd) {
         'shape-rendering': 'crispEdges'
     });
 
-    bg.call(Color.stroke, opts.bordercolor);
-    bg.call(Color.fill, opts.bgcolor);
-    bg.style('stroke-width', opts.borderwidth + 'px');
+    bg.call(Color.stroke, opts.bordercolor)
+        .call(Color.fill, opts.bgcolor)
+        .style('stroke-width', opts.borderwidth + 'px');
 
     var scrollBox = legend.selectAll('g.scrollbox')
         .data([0]);
@@ -94,10 +94,10 @@ module.exports = function draw(gd) {
     scrollBar.enter().append('rect')
         .attr({
             'class': 'scrollbar',
-            'rx': 20,
-            'ry': 2,
-            'width': 0,
-            'height': 0
+            rx: 20,
+            ry: 3,
+            width: 0,
+            height: 0
         })
         .call(Color.fill, '#808BA4');
 
@@ -207,12 +207,9 @@ module.exports = function draw(gd) {
     // legend, background and border, scroll box and scroll bar
     Drawing.setTranslate(legend, lx, ly);
 
-    var scrollBarYMax = legendHeight -
-            constants.scrollBarHeight -
-            2 * constants.scrollBarMargin,
-        scrollBoxYMax = opts._height - legendHeight,
-        scrollBarY,
-        scrollBoxY;
+    // to be safe, remove previous listeners
+    scrollBar.on('.drag', null);
+    legend.on('wheel', null);
 
     if(opts._height <= legendHeight || gd._context.staticPlot) {
         // if scrollbar should not be shown.
@@ -232,11 +229,21 @@ module.exports = function draw(gd) {
             y: opts.borderwidth
         });
 
-        scrollBox.call(Drawing.setClipUrl, clipId);
+        Drawing.setClipUrl(scrollBox, clipId);
+
+        Drawing.setRect(scrollBar, 0, 0, 0, 0);
+        delete opts._scrollY;
     }
     else {
-        scrollBarY = constants.scrollBarMargin,
-        scrollBoxY = scrollBox.attr('data-scroll') || 0;
+        var scrollBarHeight = Math.max(constants.scrollBarMinHeight,
+            legendHeight * legendHeight / opts._height);
+        var scrollBarYMax = legendHeight -
+            scrollBarHeight -
+            2 * constants.scrollBarMargin;
+        var scrollBoxYMax = opts._height - legendHeight;
+        var scrollRatio = scrollBarYMax / scrollBoxYMax;
+
+        var scrollBoxY = Math.min(opts._scrollY || 0, scrollBoxYMax);
 
         // increase the background and clip-path width
         // by the scrollbar width and margin
@@ -257,60 +264,58 @@ module.exports = function draw(gd) {
                 constants.scrollBarMargin,
             height: legendHeight - 2 * opts.borderwidth,
             x: opts.borderwidth,
-            y: opts.borderwidth - scrollBoxY
+            y: opts.borderwidth + scrollBoxY
         });
 
-        scrollBox.call(Drawing.setClipUrl, clipId);
+        Drawing.setClipUrl(scrollBox, clipId);
 
-        if(firstRender) scrollHandler(scrollBarY, scrollBoxY);
+        scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
 
-        legend.on('wheel', null);  // to be safe, remove previous listeners
         legend.on('wheel', function() {
             scrollBoxY = Lib.constrain(
-                scrollBox.attr('data-scroll') -
+                opts._scrollY +
                     d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
-                -scrollBoxYMax, 0);
-            scrollBarY = constants.scrollBarMargin -
-                scrollBoxY / scrollBoxYMax * scrollBarYMax;
-            scrollHandler(scrollBarY, scrollBoxY);
-            if(scrollBoxY !== 0 && scrollBoxY !== -scrollBoxYMax) {
+                0, scrollBoxYMax);
+            scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
+            if(scrollBoxY !== 0 && scrollBoxY !== scrollBoxYMax) {
                 d3.event.preventDefault();
             }
         });
 
-        // to be safe, remove previous listeners
-        scrollBar.on('.drag', null);
-        scrollBox.on('.drag', null);
+        var eventY0, scrollBoxY0;
 
-        var drag = d3.behavior.drag().on('drag', function() {
-            scrollBarY = Lib.constrain(
-                d3.event.y - constants.scrollBarHeight / 2,
-                constants.scrollBarMargin,
-                constants.scrollBarMargin + scrollBarYMax);
-            scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
-                scrollBarYMax * scrollBoxYMax;
-            scrollHandler(scrollBarY, scrollBoxY);
+        var drag = d3.behavior.drag()
+        .on('dragstart', function() {
+            eventY0 = d3.event.sourceEvent.clientY;
+            scrollBoxY0 = scrollBoxY;
+        })
+        .on('drag', function() {
+            var e = d3.event.sourceEvent;
+            if(e.buttons === 2 || e.ctrlKey) return;
+
+            scrollBoxY = Lib.constrain(
+                (e.clientY - eventY0) / scrollRatio + scrollBoxY0,
+                0, scrollBoxYMax);
+            scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
         });
 
         scrollBar.call(drag);
-        scrollBox.call(drag);
     }
 
 
-    function scrollHandler(scrollBarY, scrollBoxY) {
-        scrollBox
-            .attr('data-scroll', scrollBoxY)
-            .call(Drawing.setTranslate, 0, scrollBoxY);
+    function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
+        opts._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
+        Drawing.setTranslate(scrollBox, 0, -scrollBoxY);
 
-        scrollBar.call(
-            Drawing.setRect,
+        Drawing.setRect(
+            scrollBar,
             legendWidth,
-            scrollBarY,
+            constants.scrollBarMargin + scrollBoxY * scrollRatio,
             constants.scrollBarWidth,
-            constants.scrollBarHeight
+            scrollBarHeight
         );
         clipPath.select('rect').attr({
-            y: opts.borderwidth - scrollBoxY
+            y: opts.borderwidth + scrollBoxY
         });
     }
 
@@ -434,7 +439,7 @@ function drawTexts(g, gd) {
                 return Plotly.restyle(gd, update, traceIndex);
             });
     } else {
-        text.call(textLayout);
+        textLayout(text);
     }
 }
 
@@ -664,7 +669,7 @@ function computeLegendDimensions(gd, groups, traces) {
         var legendItem = d[0],
             bg = d3.select(this).select('.legendtoggle');
 
-        bg.call(Drawing.setRect,
+        Drawing.setRect(bg,
             0,
             -legendItem.height / 2,
             (gd._context.edits.legendText ? 0 : opts._width) + extraWidth,

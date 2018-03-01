@@ -135,7 +135,7 @@ dragElement.init = function init(options) {
         startY = offset[1];
         initialTarget = e.target;
         initialEvent = e;
-        rightClick = (e.buttons && e.buttons === 2) || e.ctrlKey;
+        rightClick = e.buttons === 2 || e.ctrlKey;
 
         newMouseDownTime = (new Date()).getTime();
         if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
