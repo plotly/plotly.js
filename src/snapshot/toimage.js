@@ -10,14 +10,13 @@
 
 var EventEmitter = require('events').EventEmitter;
 
-var Plotly = require('../plotly');
+var Registry = require('../registry');
 var Lib = require('../lib');
 
 var helpers = require('./helpers');
 var clonePlot = require('./cloneplot');
 var toSVG = require('./tosvg');
 var svgToImg = require('./svgtoimg');
-
 
 /**
  * @param {object} gd figure Object
@@ -64,7 +63,7 @@ function toImage(gd, opts) {
 
     var redrawFunc = helpers.getRedrawFunc(clonedGd);
 
-    Plotly.plot(clonedGd, clone.data, clone.layout, clone.config)
+    Registry.call('plot', clonedGd, clone.data, clone.layout, clone.config)
         .then(redrawFunc)
         .then(wait)
         .catch(function(err) {

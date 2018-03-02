@@ -3,18 +3,15 @@ var helpers = require('@src/components/shapes/helpers');
 var constants = require('@src/components/shapes/constants');
 
 var Plotly = require('@lib/index');
-var PlotlyInternal = require('@src/plotly');
 var Lib = require('@src/lib');
-
-var Plots = PlotlyInternal.Plots;
-var Axes = PlotlyInternal.Axes;
+var Plots = require('@src/plots/plots');
+var Axes = require('@src/plots/cartesian/axes');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var drag = require('../assets/drag');
-
 
 describe('Test shapes defaults:', function() {
     'use strict';

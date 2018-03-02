@@ -10,7 +10,7 @@
 'use strict';
 
 var Fx = require('../../components/fx');
-var ErrorBars = require('../../components/errorbars');
+var Registry = require('../../registry');
 var Color = require('../../components/color');
 var fillHoverText = require('../scatter/fill_hover_text');
 
@@ -140,7 +140,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     pointData[posLetter + 'Spike'] = pa.c2p(di.p, true);
 
     fillHoverText(di, trace, pointData);
-    ErrorBars.hoverInfo(di, trace, pointData);
+    Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
     return [pointData];
 };

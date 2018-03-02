@@ -14,7 +14,6 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 var hasHover = require('has-hover');
 
-var Plotly = require('../plotly');
 var Lib = require('../lib');
 var Events = require('../lib/events');
 var Queue = require('../lib/queue');
@@ -25,12 +24,13 @@ var Plots = require('../plots/plots');
 var Polar = require('../plots/polar/legacy');
 var initInteractions = require('../plots/cartesian/graph_interact');
 
+var Axes = require('../plots/cartesian/axes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
-var ErrorBars = require('../components/errorbars');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
 
+var defaultConfig = require('./plot_config');
 var manageArrays = require('./manage_arrays');
 var helpers = require('./helpers');
 var subroutines = require('./subroutines');
@@ -66,7 +66,7 @@ var numericNameWarningCountLimit = 5;
  *      object containing `data`, `layout`, `config`, and `frames` members
  *
  */
-Plotly.plot = function(gd, data, layout, config) {
+exports.plot = function(gd, data, layout, config) {
     var frames;
 
     gd = Lib.getGraphDiv(gd);
@@ -94,7 +94,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function addFrames() {
         if(frames) {
-            return Plotly.addFrames(gd, frames);
+            return exports.addFrames(gd, frames);
         }
     }
 
@@ -176,7 +176,7 @@ Plotly.plot = function(gd, data, layout, config) {
     Drawing.initGradients(gd);
 
     // save initial show spikes once per graph
-    if(graphWasEmpty) Plotly.Axes.saveShowSpikeInitial(gd);
+    if(graphWasEmpty) Axes.saveShowSpikeInitial(gd);
 
     // prepare the data and find the autorange
 
@@ -312,7 +312,7 @@ Plotly.plot = function(gd, data, layout, config) {
         }
 
         // calc and autorange for errorbars
-        ErrorBars.calc(gd);
+        Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         // TODO: autosize extra for text markers and images
         // see https://github.com/plotly/plotly.js/issues/1111
@@ -327,24 +327,24 @@ Plotly.plot = function(gd, data, layout, config) {
     function doAutoRangeAndConstraints() {
         if(gd._transitioning) return;
 
-        var axList = Plotly.Axes.list(gd, '', true);
+        var axList = Axes.list(gd, '', true);
         for(var i = 0; i < axList.length; i++) {
             var ax = axList[i];
             cleanAxisConstraints(gd, ax);
 
-            Plotly.Axes.doAutoRange(ax);
+            Axes.doAutoRange(ax);
         }
 
         enforceAxisConstraints(gd);
 
         // store initial ranges *after* enforcing constraints, otherwise
         // we will never look like we're at the initial ranges
-        if(graphWasEmpty) Plotly.Axes.saveRangeInitial(gd);
+        if(graphWasEmpty) Axes.saveRangeInitial(gd);
     }
 
     // draw ticks, titles, and calculate axis scaling (._b, ._m)
     function drawAxes() {
-        return Plotly.Axes.doTicks(gd, 'redraw');
+        return Axes.doTicks(gd, 'redraw');
     }
 
     // Now plot the data
@@ -448,6 +448,10 @@ Plotly.plot = function(gd, data, layout, config) {
     });
 };
 
+exports.setPlotConfig = function setPlotConfig(obj) {
+    return Lib.extendFlat(defaultConfig, obj);
+};
+
 function setBackground(gd, bgColor) {
     try {
         gd._fullLayout._paper.style('background', bgColor);
@@ -462,7 +466,7 @@ function opaqueSetBackground(gd, bgColor) {
 }
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Lib.extendDeep({}, Plotly.defaultConfig);
+    if(!gd._context) gd._context = Lib.extendDeep({}, defaultConfig);
     var context = gd._context;
 
     var i, keys, key;
@@ -628,7 +632,7 @@ function plotPolar(gd, data, layout) {
 }
 
 // convenience function to force a full redraw, mostly for use by plotly.js
-Plotly.redraw = function(gd) {
+exports.redraw = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
@@ -639,7 +643,7 @@ Plotly.redraw = function(gd) {
     helpers.cleanLayout(gd.layout);
 
     gd.calcdata = undefined;
-    return Plotly.plot(gd).then(function() {
+    return exports.plot(gd).then(function() {
         gd.emit('plotly_redraw');
         return gd;
     });
@@ -653,14 +657,14 @@ Plotly.redraw = function(gd) {
  * @param {Object} layout
  * @param {Object} config
  */
-Plotly.newPlot = function(gd, data, layout, config) {
+exports.newPlot = function(gd, data, layout, config) {
     gd = Lib.getGraphDiv(gd);
 
     // remove gl contexts
     Plots.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {});
 
     Plots.purge(gd);
-    return Plotly.plot(gd, data, layout, config);
+    return exports.plot(gd, data, layout, config);
 };
 
 /**
@@ -988,7 +992,7 @@ function concatTypedArray(arr0, arr1) {
  * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening.
  *
  */
-Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
+exports.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -1039,14 +1043,14 @@ Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = Plotly.redraw(gd);
+    var promise = exports.redraw(gd);
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
+    Queue.add(gd, exports.prependTraces, undoArgs, extendTraces, arguments);
 
     return promise;
 };
 
-Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
+exports.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
     gd = Lib.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
@@ -1096,9 +1100,9 @@ Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = Plotly.redraw(gd);
+    var promise = exports.redraw(gd);
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
+    Queue.add(gd, exports.extendTraces, undoArgs, prependTraces, arguments);
 
     return promise;
 };
@@ -1112,11 +1116,11 @@ Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
  * @param {Number[]|Number} [newIndices=[gd.data.length]] Locations to add traces
  *
  */
-Plotly.addTraces = function addTraces(gd, traces, newIndices) {
+exports.addTraces = function addTraces(gd, traces, newIndices) {
     gd = Lib.getGraphDiv(gd);
 
     var currentIndices = [],
-        undoFunc = Plotly.deleteTraces,
+        undoFunc = exports.deleteTraces,
         redoFunc = addTraces,
         undoArgs = [gd, currentIndices],
         redoArgs = [gd, traces],  // no newIndices here
@@ -1151,7 +1155,7 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     // if the user didn't define newIndices, they just want the traces appended
     // i.e., we can simply redraw and be done
     if(typeof newIndices === 'undefined') {
-        promise = Plotly.redraw(gd);
+        promise = exports.redraw(gd);
         Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         return promise;
     }
@@ -1177,7 +1181,7 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     // this requires some extra work that moveTraces will do
     Queue.startSequence(gd);
     Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
-    promise = Plotly.moveTraces(gd, currentIndices, newIndices);
+    promise = exports.moveTraces(gd, currentIndices, newIndices);
     Queue.stopSequence(gd);
     return promise;
 };
@@ -1189,11 +1193,11 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
  * @param {Object[]} gd.data The array of traces we're removing from
  * @param {Number|Number[]} indices The indices
  */
-Plotly.deleteTraces = function deleteTraces(gd, indices) {
+exports.deleteTraces = function deleteTraces(gd, indices) {
     gd = Lib.getGraphDiv(gd);
 
     var traces = [],
-        undoFunc = Plotly.addTraces,
+        undoFunc = exports.addTraces,
         redoFunc = deleteTraces,
         undoArgs = [gd, traces, indices],
         redoArgs = [gd, indices],
@@ -1218,7 +1222,7 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
         traces.push(deletedTrace);
     }
 
-    var promise = Plotly.redraw(gd);
+    var promise = exports.redraw(gd);
     Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
@@ -1255,7 +1259,7 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
  *      // reorder all traces (assume there are 5--a, b, c, d, e)
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
-Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
+exports.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     gd = Lib.getGraphDiv(gd);
 
     var newData = [],
@@ -1316,7 +1320,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 
     gd.data = newData;
 
-    var promise = Plotly.redraw(gd);
+    var promise = exports.redraw(gd);
     Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
@@ -1352,7 +1356,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
  * If the array is too short, it will wrap around (useful for
  * style files that want to specify cyclical default values).
  */
-Plotly.restyle = function restyle(gd, astr, val, _traces) {
+exports.restyle = function restyle(gd, astr, val, _traces) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
@@ -1383,7 +1387,7 @@ Plotly.restyle = function restyle(gd, astr, val, _traces) {
     var seq = [];
 
     if(flags.fullReplot) {
-        seq.push(Plotly.plot);
+        seq.push(exports.plot);
     } else {
         seq.push(Plots.previousPromises);
 
@@ -1436,7 +1440,7 @@ function _restyle(gd, aobj, traces) {
 
     // for autoranging multiple axes
     function addToAxlist(axid) {
-        var axName = Plotly.Axes.id2name(axid);
+        var axName = Axes.id2name(axid);
         if(axlist.indexOf(axName) === -1) axlist.push(axName);
     }
 
@@ -1635,7 +1639,7 @@ function _restyle(gd, aobj, traces) {
 
         // swap the data attributes of the relevant x and y axes?
         if(['swapxyaxes', 'orientationaxes'].indexOf(ai) !== -1) {
-            Plotly.Axes.swap(gd, traces);
+            Axes.swap(gd, traces);
         }
 
         // swap hovermode if set to "compare x/y data"
@@ -1672,7 +1676,7 @@ function _restyle(gd, aobj, traces) {
 
     // do we need to force a recalc?
     var autorangeOn = false;
-    var axList = Plotly.Axes.list(gd);
+    var axList = Axes.list(gd);
     for(i = 0; i < axList.length; i++) {
         if(axList[i].autorange) {
             autorangeOn = true;
@@ -1717,7 +1721,7 @@ function _restyle(gd, aobj, traces) {
  *  attribute object `{astr1: val1, astr2: val2 ...}`
  *  allows setting multiple attributes simultaneously
  */
-Plotly.relayout = function relayout(gd, astr, val) {
+exports.relayout = function relayout(gd, astr, val) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
@@ -1783,7 +1787,7 @@ function _relayout(gd, aobj) {
     var layout = gd.layout,
         fullLayout = gd._fullLayout,
         keys = Object.keys(aobj),
-        axes = Plotly.Axes.list(gd),
+        axes = Axes.list(gd),
         arrayEdits = {},
         arrayStr,
         i,
@@ -2127,7 +2131,7 @@ function _relayout(gd, aobj) {
 function refAutorange(gd, obj, axLetter) {
     if(!Lib.isPlainObject(obj)) return false;
     var axRef = obj[axLetter + 'ref'] || axLetter,
-        ax = Plotly.Axes.getFromId(gd, axRef);
+        ax = Axes.getFromId(gd, axRef);
 
     if(!ax && axRef.charAt(0) === axLetter) {
         // fall back on the primary axis in case we've referenced a
@@ -2137,7 +2141,7 @@ function refAutorange(gd, obj, axLetter) {
         // The only thing this is used for is to determine whether to
         // do a full `recalc`, so the only ill effect of this error is
         // to waste some time.
-        ax = Plotly.Axes.getFromId(gd, axLetter);
+        ax = Axes.getFromId(gd, axLetter);
     }
     return (ax || {}).autorange;
 }
@@ -2157,7 +2161,7 @@ function refAutorange(gd, obj, axLetter) {
  *  integer or array of integers for the traces to alter (all if omitted)
  *
  */
-Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
+exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
@@ -2195,10 +2199,10 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
         gd.data = undefined;
         gd.layout = undefined;
 
-        seq.push(function() { return Plotly.plot(gd, data, layout); });
+        seq.push(function() { return exports.plot(gd, data, layout); });
     }
     else if(restyleFlags.fullReplot) {
-        seq.push(Plotly.plot);
+        seq.push(exports.plot);
     }
     else if(relayoutFlags.layoutReplot) {
         seq.push(subroutines.layoutReplot);
@@ -2259,10 +2263,10 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
  *      object containing `data`, `layout`, `config`, and `frames` members
  *
  */
-Plotly.react = function(gd, data, layout, config) {
+exports.react = function(gd, data, layout, config) {
     var frames, plotDone;
 
-    function addFrames() { return Plotly.addFrames(gd, frames); }
+    function addFrames() { return exports.addFrames(gd, frames); }
 
     gd = Lib.getGraphDiv(gd);
 
@@ -2271,7 +2275,7 @@ Plotly.react = function(gd, data, layout, config) {
 
     // you can use this as the initial draw as well as to update
     if(!Lib.isPlotDiv(gd) || !oldFullData || !oldFullLayout) {
-        plotDone = Plotly.newPlot(gd, data, layout, config);
+        plotDone = exports.newPlot(gd, data, layout, config);
     }
     else {
 
@@ -2324,7 +2328,7 @@ Plotly.react = function(gd, data, layout, config) {
 
         if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
             gd._fullLayout._skipDefaults = true;
-            seq.push(Plotly.plot);
+            seq.push(exports.plot);
         }
         else {
             for(var componentType in relayoutFlags.arrays) {
@@ -2399,8 +2403,8 @@ function diffData(gd, oldFullData, newFullData, immutable) {
     for(i = 0; i < oldFullData.length; i++) {
         trace = newFullData[i];
         diffOpts.autoranged = trace.xaxis ? (
-            Plotly.Axes.getFromId(gd, trace.xaxis).autorange ||
-            Plotly.Axes.getFromId(gd, trace.yaxis).autorange
+            Axes.getFromId(gd, trace.xaxis).autorange ||
+            Axes.getFromId(gd, trace.yaxis).autorange
         ) : false;
         getDiffFlags(oldFullData[i], trace, [], diffOpts);
     }
@@ -2661,7 +2665,7 @@ function diffConfig(oldConfig, newConfig) {
  * @param {object} animationOpts
  *      configuration for the animation
  */
-Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
+exports.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
     gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
@@ -3025,7 +3029,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
  *      provided, an index will be provided in serial order. If already used, the frame
  *      will be overwritten.
  */
-Plotly.addFrames = function(gd, frameList, indices) {
+exports.addFrames = function(gd, frameList, indices) {
     gd = Lib.getGraphDiv(gd);
 
     if(frameList === null || frameList === undefined) {
@@ -3154,7 +3158,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
  * @param {array of integers} frameList
  *      list of integer indices of frames to be deleted
  */
-Plotly.deleteFrames = function(gd, frameList) {
+exports.deleteFrames = function(gd, frameList) {
     gd = Lib.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
@@ -3198,7 +3202,7 @@ Plotly.deleteFrames = function(gd, frameList) {
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  */
-Plotly.purge = function purge(gd) {
+exports.purge = function purge(gd) {
     gd = Lib.getGraphDiv(gd);
 
     var fullLayout = gd._fullLayout || {},

@@ -10,7 +10,6 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
 var Registry = require('../../registry');
@@ -344,7 +343,7 @@ module.exports = function draw(gd) {
             },
             doneFn: function() {
                 if(xf !== undefined && yf !== undefined) {
-                    Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
+                    Registry.call('relayout', gd, {'legend.x': xf, 'legend.y': yf});
                 }
             },
             clickFn: function(numClicks, e) {
@@ -436,7 +435,7 @@ function drawTexts(g, gd) {
                     update.name = text;
                 }
 
-                return Plotly.restyle(gd, update, traceIndex);
+                return Registry.call('restyle', gd, update, traceIndex);
             });
     } else {
         textLayout(text);

@@ -17,10 +17,10 @@ var rgba = require('color-normalize');
 var svgSdf = require('svg-path-sdf');
 var arrayRange = require('array-range');
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var Drawing = require('../../components/drawing');
-var ErrorBars = require('../../components/errorbars');
 var formatColor = require('../../lib/gl_format_color');
 
 var subTypes = require('../scatter/subtypes');
@@ -194,7 +194,9 @@ function sceneOptions(gd, subplot, trace, positions) {
     var linePositions;
 
     // get error values
-    var errorVals = hasError ? ErrorBars.calcFromTrace(trace, fullLayout) : null;
+    var errorVals = hasError ?
+        Registry.getComponentMethod('errorbars', 'calcFromTrace')(trace, fullLayout) :
+        null;
 
     if(hasErrorX) {
         errorXOptions = {};
@@ -1129,7 +1131,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     else if(trace.text) pointData.text = trace.text;
 
     fillHoverText(di, trace, pointData);
-    ErrorBars.hoverInfo(di, trace, pointData);
+    Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
     return [pointData];
 }

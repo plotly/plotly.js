@@ -6,10 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var register = require('../../plot_api/register');
+var Registry = require('../../registry');
 
 module.exports = {
     moduleType: 'trace',
@@ -36,5 +35,5 @@ module.exports = {
     supplyDefaults: require('./defaults'),
 };
 
-register(require('../scatter'));
-register(require('./transform'));
+Registry.register(require('../scatter'));
+Registry.register(require('./transform'));

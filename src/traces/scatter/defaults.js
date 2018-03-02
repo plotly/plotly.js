@@ -6,10 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
+var Registry = require('../../registry');
 
 var attributes = require('./attributes');
 var constants = require('./constants');
@@ -20,7 +20,6 @@ var handleLineDefaults = require('./line_defaults');
 var handleLineShapeDefaults = require('./line_shape_defaults');
 var handleTextDefaults = require('./text_defaults');
 var handleFillColorDefaults = require('./fillcolor_defaults');
-var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -73,6 +72,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
 
+    var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 

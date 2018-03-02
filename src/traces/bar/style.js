@@ -11,7 +11,7 @@
 
 var d3 = require('d3');
 var Drawing = require('../../components/drawing');
-var ErrorBars = require('../../components/errorbars');
+var Registry = require('../../registry');
 
 module.exports = function style(gd, cd) {
     var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.bars');
@@ -64,5 +64,5 @@ module.exports = function style(gd, cd) {
         Drawing.selectedTextStyle(txs, trace);
     });
 
-    ErrorBars.style(s);
+    Registry.getComponentMethod('errorbars', 'style')(s);
 };

@@ -10,7 +10,6 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
-var errorBarAttrs = require('../../components/errorbars/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 
@@ -189,9 +188,6 @@ module.exports = {
 
     r: scatterAttrs.r,
     t: scatterAttrs.t,
-
-    error_y: errorBarAttrs,
-    error_x: errorBarAttrs,
 
     _deprecated: {
         bardir: {

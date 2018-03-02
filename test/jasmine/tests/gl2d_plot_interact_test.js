@@ -348,7 +348,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should be able to toggle visibility', function(done) {
+    it('@flaky should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock);
         _mock.data[0].line.width = 5;
 

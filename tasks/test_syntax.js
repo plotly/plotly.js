@@ -260,12 +260,9 @@ function assertCircularDeps() {
         var circularDeps = res.circular();
         var logs = [];
 
-        // see https://github.com/plotly/plotly.js/milestone/9
-        var MAX_ALLOWED_CIRCULAR_DEPS = 16;
-
-        if(circularDeps.length > MAX_ALLOWED_CIRCULAR_DEPS) {
+        if(circularDeps.length) {
             console.log(circularDeps.join('\n'));
-            logs.push('some new circular dependencies were added to src/');
+            logs.push('some circular dependencies were found in src/');
         }
 
         log('circular dependencies: ' + circularDeps.length, logs);
