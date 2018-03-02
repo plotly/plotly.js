@@ -260,7 +260,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _pos: 0, // _this.xaxis.domain[0] * graphSize.w,
         _id: 'y',
         _length: w,
-        _gridpath: 'M0,0l' + h + ',-' + (w / 2)
+        _gridpath: 'M0,0l' + h + ',-' + (w / 2),
+        automargin: false // don't use automargins routine for labels
     });
     setConvert(aaxis, _this.graphDiv._fullLayout);
     aaxis.setScale();
@@ -279,7 +280,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _pos: 0, // (1 - yDomain0) * graphSize.h,
         _id: 'x',
         _length: w,
-        _gridpath: 'M0,0l-' + (w / 2) + ',-' + h
+        _gridpath: 'M0,0l-' + (w / 2) + ',-' + h,
+        automargin: false // don't use automargins routine for labels
     });
     setConvert(baxis, _this.graphDiv._fullLayout);
     baxis.setScale();
@@ -300,7 +302,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _pos: 0, // _this.xaxis.domain[1] * graphSize.w,
         _id: 'y',
         _length: w,
-        _gridpath: 'M0,0l-' + h + ',' + (w / 2)
+        _gridpath: 'M0,0l-' + h + ',' + (w / 2),
+        automargin: false // don't use automargins routine for labels
     });
     setConvert(caxis, _this.graphDiv._fullLayout);
     caxis.setScale();

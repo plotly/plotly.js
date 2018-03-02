@@ -285,7 +285,10 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         position: 0,
 
         // dummy truthy value to make Axes.doTicks draw the grid
-        _counteraxis: true
+        _counteraxis: true,
+
+        // don't use automargins routine for labels
+        automargin: false
     });
 
     setScale(ax, radialLayout, fullLayout);
@@ -409,7 +412,10 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         position: 0,
 
         // dummy truthy value to make Axes.doTicks draw the grid
-        _counteraxis: true
+        _counteraxis: true,
+
+        // don't use automargins routine for labels
+        automargin: false
     });
 
     // Set the angular range in degrees to make auto-tick computation cleaner,

@@ -2564,6 +2564,178 @@ describe('Test axes', function() {
             });
         });
     });
+
+    describe('automargin', function() {
+        var data = [{
+                x: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooongloooooongloooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ],
+                y: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ]
+            }],
+            gd, initialSize, previousSize, savedBottom;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should grow and shrink margins', function(done) {
+
+            Plotly.plot(gd, data)
+            .then(function() {
+                initialSize = Lib.extendDeep({}, gd._fullLayout._size);
+                expect(gd._fullLayout.xaxis._lastangle).toBe(30);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'yaxis.automargin': true});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeGreaterThan(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'xaxis.automargin': true});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBeGreaterThan(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                savedBottom = previousSize.b;
+                return Plotly.relayout(gd, {'xaxis.tickangle': 45});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBeGreaterThan(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'xaxis.tickangle': 30});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(savedBottom);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'yaxis.ticklen': 30});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeGreaterThan(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'yaxis.titlefont.size': 30});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size).toEqual(previousSize);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'yaxis.title': 'hello'});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeGreaterThan(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, { 'yaxis.anchor': 'free' });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, { 'yaxis.position': 0.1});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeLessThan(previousSize.l, 'axis moved right');
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, { 'yaxis.anchor': 'x' });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeGreaterThan(previousSize.l, 'axis snapped back');
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {
+                    'yaxis.side': 'right',
+                    'xaxis.side': 'top'
+                });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                // left to right and bottom to top
+                expect(size.l).toBe(initialSize.r);
+                expect(size.r).toBe(previousSize.l);
+                expect(size.b).toBe(initialSize.b);
+                expect(size.t).toBe(previousSize.b);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {
+                    'xaxis.automargin': false,
+                    'yaxis.automargin': false
+                });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                // back to the defaults
+                expect(size).toEqual(initialSize);
+            })
+            .catch(failTest)
+            .then(done);
+
+        });
+    });
 });
 
 function getZoomInButton(gd) {

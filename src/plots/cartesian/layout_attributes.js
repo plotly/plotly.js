@@ -42,11 +42,11 @@ module.exports = {
     title: {
         valType: 'string',
         role: 'info',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: 'Sets the title of this axis.'
     },
     titlefont: fontAttrs({
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'Sets this axis\' title font.'
         ].join(' ')
@@ -100,10 +100,10 @@ module.exports = {
         valType: 'info_array',
         role: 'info',
         items: [
-            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
-            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
+            {valType: 'any', editType: 'plot+margins', impliedEdits: {'^autorange': false}},
+            {valType: 'any', editType: 'plot+margins', impliedEdits: {'^autorange': false}}
         ],
-        editType: 'plot',
+        editType: 'plot+margins',
         impliedEdits: {'autorange': false},
         description: [
             'Sets the range of this axis.',
@@ -198,7 +198,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['auto', 'linear', 'array'],
         role: 'info',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         impliedEdits: {tick0: undefined, dtick: undefined},
         description: [
             'Sets the tick mode for this axis.',
@@ -216,7 +216,7 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'Specifies the maximum number of ticks for the particular axis.',
             'The actual number of ticks will be chosen automatically to be',
@@ -227,7 +227,7 @@ module.exports = {
     tick0: {
         valType: 'any',
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         impliedEdits: {tickmode: 'linear'},
         description: [
             'Sets the placement of the first tick on this axis.',
@@ -243,7 +243,7 @@ module.exports = {
     dtick: {
         valType: 'any',
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         impliedEdits: {tickmode: 'linear'},
         description: [
             'Sets the step in-between ticks on this axis. Use with `tick0`.',
@@ -269,7 +269,7 @@ module.exports = {
     },
     tickvals: {
         valType: 'data_array',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'Sets the values at which ticks on this axis appear.',
             'Only has an effect if `tickmode` is set to *array*.',
@@ -278,7 +278,7 @@ module.exports = {
     },
     ticktext: {
         valType: 'data_array',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'Sets the text displayed at the ticks position via `tickvals`.',
             'Only has an effect if `tickmode` is set to *array*.',
@@ -289,7 +289,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['outside', 'inside', ''],
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'Determines whether ticks are drawn or not.',
             'If **, this axis\' ticks are not drawn.',
@@ -341,8 +341,18 @@ module.exports = {
         valType: 'boolean',
         dflt: true,
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: 'Determines whether or not the tick labels are drawn.'
+    },
+    automargin: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        editType: 'ticks+margins',
+        description: [
+            'Determines whether long tick labels automatically grow the figure',
+            'margins.'
+        ].join(' ')
     },
     showspikes: {
         valType: 'boolean',
@@ -396,14 +406,14 @@ module.exports = {
         description: 'Determines whether spikelines are stuck to the cursor or to the closest datapoints.'
     },
     tickfont: fontAttrs({
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: 'Sets the tick font.'
     }),
     tickangle: {
         valType: 'angle',
         dflt: 'auto',
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'Sets the angle of the tick labels with respect to the horizontal.',
             'For example, a `tickangle` of -90 draws the tick labels',
@@ -414,7 +424,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: 'Sets a tick label prefix.'
     },
     showtickprefix: {
@@ -422,7 +432,7 @@ module.exports = {
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'If *all*, all tick labels are displayed with a prefix.',
             'If *first*, only the first tick is displayed with a prefix.',
@@ -434,7 +444,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: 'Sets a tick label suffix.'
     },
     showticksuffix: {
@@ -442,7 +452,7 @@ module.exports = {
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: 'Same as `showtickprefix` but for tick suffixes.'
     },
     showexponent: {
@@ -450,7 +460,7 @@ module.exports = {
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'If *all*, all exponents are shown besides their significands.',
             'If *first*, only the exponent of the first tick is shown.',
@@ -463,7 +473,7 @@ module.exports = {
         values: ['none', 'e', 'E', 'power', 'SI', 'B'],
         dflt: 'B',
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'Determines a formatting rule for the tick exponents.',
             'For example, consider the number 1,000,000,000.',
@@ -479,7 +489,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'If "true", even 4-digit integers are separated'
         ].join(' ')
@@ -488,7 +498,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         role: 'style',
-        editType: 'ticks',
+        editType: 'ticks+margins',
         description: [
             'Sets the tick label formatting rule using d3 formatting mini-languages',
             'which are very similar to those in Python. For numbers, see:',
@@ -507,10 +517,10 @@ module.exports = {
             valType: 'info_array',
             role: 'info',
             items: [
-                {valType: 'any', editType: 'ticks'},
-                {valType: 'any', editType: 'ticks'}
+                {valType: 'any', editType: 'ticks+margins'},
+                {valType: 'any', editType: 'ticks+margins'}
             ],
-            editType: 'ticks',
+            editType: 'ticks+margins',
             description: [
                 'range [*min*, *max*], where *min*, *max* - dtick values',
                 'which describe some zoom level, it is possible to omit *min*',
@@ -521,12 +531,12 @@ module.exports = {
             valType: 'string',
             dflt: '',
             role: 'style',
-            editType: 'ticks',
+            editType: 'ticks+margins',
             description: [
                 'string - dtickformat for described zoom level, the same as *tickformat*'
             ].join(' ')
         },
-        editType: 'ticks'
+        editType: 'ticks+margins'
     },
     hoverformat: {
         valType: 'string',
@@ -628,7 +638,7 @@ module.exports = {
             constants.idRegex.y.toString()
         ],
         role: 'info',
-        editType: 'plot',
+        editType: 'plot+margins',
         description: [
             'If set to an opposite-letter axis id (e.g. `x2`, `y`), this axis is bound to',
             'the corresponding opposite-letter axis.',
@@ -641,7 +651,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['top', 'bottom', 'left', 'right'],
         role: 'info',
-        editType: 'plot',
+        editType: 'plot+margins',
         description: [
             'Determines whether a x (y) axis is positioned',
             'at the *bottom* (*left*) or *top* (*right*)',
@@ -685,11 +695,11 @@ module.exports = {
         valType: 'info_array',
         role: 'info',
         items: [
-            {valType: 'number', min: 0, max: 1, editType: 'plot'},
-            {valType: 'number', min: 0, max: 1, editType: 'plot'}
+            {valType: 'number', min: 0, max: 1, editType: 'plot+margins'},
+            {valType: 'number', min: 0, max: 1, editType: 'plot+margins'}
         ],
         dflt: [0, 1],
-        editType: 'plot',
+        editType: 'plot+margins',
         description: [
             'Sets the domain of this axis (in plot fraction).'
         ].join(' ')
@@ -700,7 +710,7 @@ module.exports = {
         max: 1,
         dflt: 0,
         role: 'style',
-        editType: 'plot',
+        editType: 'plot+margins',
         description: [
             'Sets the position of this axis in the plotting space',
             '(in normalized coordinates).',
@@ -744,7 +754,7 @@ module.exports = {
         autotick: {
             valType: 'boolean',
             role: 'info',
-            editType: 'ticks',
+            editType: 'ticks+margins',
             description: [
                 'Obsolete.',
                 'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
