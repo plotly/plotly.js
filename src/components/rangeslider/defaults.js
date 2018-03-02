@@ -29,8 +29,8 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 
-    function coerceRange(yName, attr, dflt) {
-        return Lib.coerce(containerIn[yName], containerOut[yName], rangeAttributes, attr, dflt);
+    function coerceRange(rangeContainerIn, rangeContainerOut, attr, dflt) {
+        return Lib.coerce(rangeContainerIn, rangeContainerOut, rangeAttributes, attr, dflt);
     }
 
     var visible = coerce('visible');
@@ -50,21 +50,18 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
         var yNames = Lib.simpleMap(yIds, axisIds.id2name);
         for(var i = 0; i < yNames.length; i++) {
             var yName = yNames[i];
-            if(!containerIn[yName]) {
-                containerIn[yName] = {};
-            }
-            if(!containerOut[yName]) {
-                containerOut[yName] = {};
-            }
 
-            if(containerIn[yName].range && layoutOut[yName].isValidRange(containerIn[yName].range)) {
-                coerceRange(yName, 'rangemode', 'fixed');
+            var rangeContainerIn = containerIn[yName] || {};
+            var rangeContainerOut = containerOut[yName] = {};
+
+            if(rangeContainerIn.range && layoutOut[yName].isValidRange(rangeContainerIn.range)) {
+                coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode', 'fixed');
             } else {
-                coerceRange(yName, 'rangemode', 'auto');
+                coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode', 'auto');
             }
 
             layoutOut[yName].cleanRange('rangeslider.' + yName + '.range');
-            coerceRange(yName, 'range', layoutOut[yName].rangeslider[yName].range.slice());
+            coerceRange(rangeContainerIn, rangeContainerOut, 'range', layoutOut[yName].rangeslider[yName].range.slice());
             delete layoutOut[yName].rangeslider;
         }
     }
