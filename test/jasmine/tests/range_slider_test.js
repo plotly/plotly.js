@@ -11,6 +11,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var failTest = require('../assets/fail_test');
 
 var TOL = 6;
 
@@ -95,7 +96,9 @@ describe('the range slider', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([4, 49], -0.5);
                 expect(maskMin.getAttribute('width')).toEqual(String(diff));
                 expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 2.5) + ',0.5)');
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should react to resizing the maximum handle', function(done) {
@@ -114,7 +117,9 @@ describe('the range slider', function() {
                 expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
 
                 testTranslate1D(handleMax, dataMaxStart + diff);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should react to moving the slidebox left to right', function(done) {
@@ -132,7 +137,9 @@ describe('the range slider', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([3.96, 49], -0.5);
                 expect(+maskMin.getAttribute('width')).toBeCloseTo(String(diff));
                 testTranslate1D(handleMin, dataMinStart + diff - 3);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should react to moving the slidebox right to left', function(done) {
@@ -150,7 +157,9 @@ describe('the range slider', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([0, 45.04], -0.5);
                 expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
                 testTranslate1D(handleMax, dataMaxStart + diff);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should resize the main plot when rangeslider has moved', function(done) {
@@ -186,6 +195,7 @@ describe('the range slider', function() {
                 testTranslate1D(handleMin, 123.32);
                 testTranslate1D(handleMax, 252.65);
             })
+            .catch(failTest)
             .then(done);
         });
 
@@ -201,6 +211,7 @@ describe('the range slider', function() {
                 testTranslate1D(handleMin, 123.32);
                 testTranslate1D(handleMax, 617);
             })
+            .catch(failTest)
             .then(done);
         });
 
