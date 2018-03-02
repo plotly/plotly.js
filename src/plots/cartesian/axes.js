@@ -370,20 +370,22 @@ axes.doAutoRange = function(ax) {
 
     if(ax._anchorAxis && ax._anchorAxis.rangeslider) {
         var axeRangeOpts = ax._anchorAxis.rangeslider[ax._name];
-        switch(axeRangeOpts.rangemode) {
-            case 'auto':
-                axeRangeOpts.range = hasDeps ? axes.getAutoRange(ax) : ax.range.slice();
-                break;
-            case 'match':
-                axeRangeOpts.range = ax.range.slice();
-                break;
-            default:
-                axeRangeOpts.range = ax.range.slice();
-                break;
+        if(axeRangeOpts) {
+            switch(axeRangeOpts.rangemode) {
+                case 'auto':
+                    axeRangeOpts.range = hasDeps ? axes.getAutoRange(ax) : ax.range.slice();
+                    break;
+                case 'match':
+                    axeRangeOpts.range = ax.range.slice();
+                    break;
+                default:
+                    axeRangeOpts.range = ax.range.slice();
+                    break;
+            }
+            axIn = ax._anchorAxis._input;
+            axIn.rangeslider[ax._name].range = axeRangeOpts.range.slice();
+            axIn.rangeslider[ax._name].rangemode = axeRangeOpts.rangemode;
         }
-        axIn = ax._anchorAxis._input;
-        axIn.rangeslider[ax._name].range = axeRangeOpts.range.slice();
-        axIn.rangeslider[ax._name].rangemode = axeRangeOpts.rangemode;
     }
 };
 
