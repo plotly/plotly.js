@@ -338,7 +338,7 @@ module.exports = function draw(gd) {
             },
             doneFn: function() {
                 if(xf !== undefined && yf !== undefined) {
-                    Registry.call('relayout', [gd, {'legend.x': xf, 'legend.y': yf}]);
+                    Registry.call('relayout', gd, {'legend.x': xf, 'legend.y': yf});
                 }
             },
             clickFn: function(numClicks, e) {
@@ -430,7 +430,7 @@ function drawTexts(g, gd) {
                     update.name = text;
                 }
 
-                return Registry.call('restyle', [gd, update, traceIndex]);
+                return Registry.call('restyle', gd, update, traceIndex);
             });
     } else {
         text.call(textLayout);

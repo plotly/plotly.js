@@ -208,7 +208,7 @@ proto.updateProjection = function(fullLayout, geoLayout) {
         this.viewInitial = null;
 
         Lib.warn(msg);
-        gd._promises.push(Registry.call('relayout', [gd, updateObj]));
+        gd._promises.push(Registry.call('relayout', gd, updateObj));
         return msg;
     }
 
@@ -365,7 +365,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
             updateObj[_this.id + '.' + k] = viewInitial[k];
         }
 
-        Registry.call('relayout', [gd, updateObj]);
+        Registry.call('relayout', gd, updateObj);
         gd.emit('plotly_doubleclick', null);
     }
 

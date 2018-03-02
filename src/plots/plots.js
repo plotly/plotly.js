@@ -102,7 +102,7 @@ plots.resize = function(gd) {
             // nor should it be included in the undo queue
             gd.autoplay = true;
 
-            Registry.call('relayout', [gd, { autosize: true }]).then(function() {
+            Registry.call('relayout', gd, {autosize: true}).then(function() {
                 gd.changed = oldchanged;
                 resolve(gd);
             });
@@ -1670,7 +1670,7 @@ plots.doAutoMargin = function(gd) {
     // if things changed and we're not already redrawing, trigger a redraw
     if(!fullLayout._replotting && oldmargins !== '{}' &&
             oldmargins !== JSON.stringify(fullLayout._size)) {
-        return Registry.call('plot', [gd]);
+        return Registry.call('plot', gd);
     }
 };
 
@@ -2162,7 +2162,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
             if(frameOpts.redraw) {
                 gd._transitionData._interruptCallbacks.push(function() {
-                    return Registry.call('redraw', [gd]);
+                    return Registry.call('redraw', gd);
                 });
             }
 
@@ -2234,7 +2234,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         return Promise.resolve().then(function() {
             if(frameOpts.redraw) {
-                return Registry.call('redraw', [gd]);
+                return Registry.call('redraw', gd);
             }
         }).then(function() {
             // Set transitioning false again once the redraw has occurred. This is used, for example,

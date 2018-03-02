@@ -249,7 +249,7 @@ function handleCartesian(gd, ev) {
         aobj[astr] = val;
     }
 
-    Registry.call('relayout', [gd, aobj]);
+    Registry.call('relayout', gd, aobj);
 }
 
 modeBarButtons.zoom3d = {
@@ -305,7 +305,7 @@ function handleDrag3d(gd, ev) {
     var val2d = (val === 'pan') ? val : 'zoom';
     layoutUpdate.dragmode = val2d;
 
-    Registry.call('relayout', [gd, layoutUpdate]);
+    Registry.call('relayout', gd, layoutUpdate);
 }
 
 modeBarButtons.resetCameraDefault3d = {
@@ -344,7 +344,7 @@ function handleCamera3d(gd, ev) {
         }
     }
 
-    Registry.call('relayout', [gd, aobj]);
+    Registry.call('relayout', gd, aobj);
 }
 
 modeBarButtons.hoverClosest3d = {
@@ -405,7 +405,7 @@ function handleHover3d(gd, ev) {
         button._previousVal = Lib.extendDeep({}, currentSpikes);
     }
 
-    Registry.call('relayout', [gd, layoutUpdate]);
+    Registry.call('relayout', gd, layoutUpdate);
 }
 
 modeBarButtons.zoomInGeo = {
@@ -461,7 +461,7 @@ function handleGeo(gd, ev) {
             var scale = geoLayout.projection.scale;
             var newScale = (val === 'in') ? 2 * scale : 0.5 * scale;
 
-            Registry.call('relayout', [gd, id + '.projection.scale', newScale]);
+            Registry.call('relayout', gd, id + '.projection.scale', newScale);
         } else if(attr === 'reset') {
             resetView(gd, 'geo');
         }
@@ -500,7 +500,7 @@ function toggleHover(gd) {
 
     var newHover = gd._fullLayout.hovermode ? false : onHoverVal;
 
-    Registry.call('relayout', [gd, 'hovermode', newHover]);
+    Registry.call('relayout', gd, 'hovermode', newHover);
 }
 
 // buttons when more then one plot types are present
@@ -555,7 +555,7 @@ modeBarButtons.toggleSpikelines = {
 
         var aobj = setSpikelineVisibility(gd);
 
-        Registry.call('relayout', [gd, aobj]);
+        Registry.call('relayout', gd, aobj);
     }
 };
 
@@ -602,5 +602,5 @@ function resetView(gd, subplotType) {
         }
     }
 
-    Registry.call('relayout', [gd, aObj]);
+    Registry.call('relayout', gd, aObj);
 }

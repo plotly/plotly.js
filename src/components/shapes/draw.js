@@ -213,7 +213,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
 
     function endDrag() {
         setCursor(shapePath);
-        Registry.call('relayout', [gd, update]);
+        Registry.call('relayout', gd, update);
     }
 
     function moveShape(dx, dy) {

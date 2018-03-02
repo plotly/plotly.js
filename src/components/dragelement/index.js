@@ -278,7 +278,7 @@ dragElement.coverSlip = coverSlip;
 
 function finishDrag(gd) {
     gd._dragging = false;
-    if(gd._replotPending) Registry.call('plot', [gd]);
+    if(gd._replotPending) Registry.call('plot', gd);
 }
 
 function pointerOffset(e) {

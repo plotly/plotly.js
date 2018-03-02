@@ -587,11 +587,11 @@ module.exports = function draw(gd, id) {
                     setCursor(container);
 
                     if(xf !== undefined && yf !== undefined) {
-                        Registry.call('restyle', [
+                        Registry.call('restyle',
                             gd,
                             {'colorbar.x': xf, 'colorbar.y': yf},
                             getTrace().index
-                        ]);
+                        );
                     }
                 }
             });

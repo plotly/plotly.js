@@ -684,7 +684,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             radialRange[0] + r1 * drange / radius
         ];
 
-        Registry.call('relayout', [gd, updateObj]);
+        Registry.call('relayout', gd, updateObj);
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {
@@ -718,7 +718,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             }
 
             gd.emit('plotly_doubleclick', null);
-            Registry.call('relayout', [gd, updateObj]);
+            Registry.call('relayout', gd, updateObj);
         }
 
         Fx.click(gd, evt, _this.id);
@@ -788,9 +788,9 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
 
     function doneFn() {
         if(angle1 !== null) {
-            Registry.call('relayout', [gd, _this.id + '.radialaxis.angle', angle1]);
+            Registry.call('relayout', gd, _this.id + '.radialaxis.angle', angle1);
         } else if(rng1 !== null) {
-            Registry.call('relayout', [gd, _this.id + '.radialaxis.range[1]', rng1]);
+            Registry.call('relayout', gd, _this.id + '.radialaxis.range[1]', rng1);
         }
     }
 
@@ -970,7 +970,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
         scatterTextPoints.select('text').attr('transform', null);
         var updateObj = {};
         updateObj[_this.id + '.angularaxis.rotation'] = rot1;
-        Registry.call('relayout', [gd, updateObj]);
+        Registry.call('relayout', gd, updateObj);
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {

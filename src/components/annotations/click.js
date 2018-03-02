@@ -57,7 +57,7 @@ function onClick(gd, hoverData) {
         update['annotations[' + offSet[i] + '].visible'] = false;
     }
 
-    return Registry.call('update', [gd, {}, update]);
+    return Registry.call('update', gd, {}, update);
 }
 
 /*

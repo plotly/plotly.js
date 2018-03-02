@@ -63,7 +63,7 @@ function toImage(gd, opts) {
 
     var redrawFunc = helpers.getRedrawFunc(clonedGd);
 
-    Registry.call('plot', [clonedGd, clone.data, clone.layout, clone.config])
+    Registry.call('plot', clonedGd, clone.data, clone.layout, clone.config)
         .then(redrawFunc)
         .then(wait)
         .catch(function(err) {

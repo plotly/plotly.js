@@ -68,7 +68,7 @@ module.exports = function draw(gd) {
             button.on('click', function() {
                 if(gd._dragged) return;
 
-                Registry.call('relayout', [gd, update]);
+                Registry.call('relayout', gd, update);
             });
 
             button.on('mouseover', function() {

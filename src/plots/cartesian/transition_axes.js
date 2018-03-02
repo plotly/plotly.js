@@ -272,7 +272,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         // Signal that this transition has completed:
         onComplete && onComplete();
 
-        return Registry.call('relayout', [gd, aobj]).then(function() {
+        return Registry.call('relayout', gd, aobj).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }
@@ -289,7 +289,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             axi.range = axi._r.slice();
         }
 
-        return Registry.call('relayout', [gd, aobj]).then(function() {
+        return Registry.call('relayout', gd, aobj).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }

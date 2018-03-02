@@ -263,6 +263,7 @@ function bindingValueHasChanged(gd, binding, cache) {
 exports.executeAPICommand = function(gd, method, args) {
     if(method === 'skip') return Promise.resolve();
 
+    var _method = Registry.apiMethodRegistry[method];
     var allArgs = [gd];
     if(!Array.isArray(args)) args = [];
 
@@ -270,7 +271,7 @@ exports.executeAPICommand = function(gd, method, args) {
         allArgs.push(args[i]);
     }
 
-    return Registry.call(method, allArgs).catch(function(err) {
+    return _method.apply(null, allArgs).catch(function(err) {
         Lib.warn('API call to Plotly.' + method + ' rejected.', err);
         return Promise.reject(err);
     });

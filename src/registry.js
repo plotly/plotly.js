@@ -212,10 +212,12 @@ exports.getComponentMethod = function(name, method) {
  * Call registered api method.
  *
  * @param {string} name : api method name
- * @param {array} args : array of argument passed to api method
+ * @param {...array} args : arguments passed to api method
  * @return {any} : returns api method output
  */
-exports.call = function(name, args) {
+exports.call = function() {
+    var name = arguments[0];
+    var args = [].slice.call(arguments, 1);
     return exports.apiMethodRegistry[name].apply(null, args);
 };
 
