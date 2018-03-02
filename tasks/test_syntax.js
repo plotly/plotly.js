@@ -262,7 +262,7 @@ function assertCircularDeps() {
 
         if(circularDeps.length) {
             console.log(circularDeps.join('\n'));
-            logs.push('some circular dependencies were found to src/');
+            logs.push('some circular dependencies were found in src/');
         }
 
         log('circular dependencies: ' + circularDeps.length, logs);
