@@ -471,7 +471,7 @@ function filterRangePlotCalcData(calcData, subplotId) {
     return out;
 }
 
-function drawMasks(rangeSlider, gd, axisOpts, opts, yAxisOpts) {
+function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisOpts) {
     var maskMin = rangeSlider.selectAll('rect.' + constants.maskMinClassName)
         .data([0]);
 
@@ -497,7 +497,7 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, yAxisOpts) {
         .call(Color.fill, constants.maskColor);
 
     // masks used for oppAxis zoom
-    if(yAxisOpts.rangemode === 'auto' || yAxisOpts.rangemode === 'fixed') {
+    if(oppAxisOpts.rangemode === 'auto' || oppAxisOpts.rangemode === 'fixed') {
         var maskMinOppAxis = rangeSlider.selectAll('rect.' + constants.maskMinOppAxisClassName)
             .data([0]);
 
