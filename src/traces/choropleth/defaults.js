@@ -29,7 +29,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var z = coerce('z');
-    if(!Array.isArray(z)) {
+    if(!Lib.isArrayOrTypedArray(z)) {
         traceOut.visible = false;
         return;
     }

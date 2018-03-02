@@ -19,18 +19,21 @@ var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
 var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 var wrap180 = require('./angles').wrap180;
+var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
 
 exports.valObjectMeta = {
     data_array: {
         // You can use *dflt=[] to force said array to exist though.
         description: [
             'An {array} of data.',
-            'The value MUST be an {array}, or we ignore it.'
+            'The value MUST be an {array}, or we ignore it.',
+            'Note that typed arrays (e.g. Float32Array) are supported.'
         ].join(' '),
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            if(Array.isArray(v)) propOut.set(v);
+            // TODO maybe `v: {type: 'float32', vals: [/* ... */]}` also
+            if(isArrayOrTypedArray(v)) propOut.set(v);
             else if(dflt !== undefined) propOut.set(dflt);
         }
     },
@@ -367,7 +370,7 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
      * individual form (eg. some array vals can be numbers, even if the
      * single values must be color strings)
      */
-    if(opts.arrayOk && Array.isArray(v)) {
+    if(opts.arrayOk && isArrayOrTypedArray(v)) {
         propOut.set(v);
         return v;
     }
@@ -464,7 +467,7 @@ exports.coerceSelectionMarkerOpacity = function(traceOut, coerce) {
     //
     // Only give [un]selected.marker.opacity a default value if you don't
     // set any other [un]selected attributes.
-    if(!Array.isArray(mo) && !traceOut.selected && !traceOut.unselected) {
+    if(!isArrayOrTypedArray(mo) && !traceOut.selected && !traceOut.unselected) {
         smoDflt = mo;
         usmoDflt = DESELECTDIM * mo;
     }
@@ -476,7 +479,7 @@ exports.coerceSelectionMarkerOpacity = function(traceOut, coerce) {
 exports.validate = function(value, opts) {
     var valObjectDef = exports.valObjectMeta[opts.valType];
 
-    if(opts.arrayOk && Array.isArray(value)) return true;
+    if(opts.arrayOk && isArrayOrTypedArray(value)) return true;
 
     if(valObjectDef.validateFunction) {
         return valObjectDef.validateFunction(value, opts);

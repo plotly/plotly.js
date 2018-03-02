@@ -220,7 +220,7 @@ function arraysToCalcdata(pt, trace, i) {
 }
 
 function calcSelection(cd, trace) {
-    if(Array.isArray(trace.selectedpoints)) {
+    if(Lib.isArrayOrTypedArray(trace.selectedpoints)) {
         for(var i = 0; i < cd.length; i++) {
             var pts = cd[i].pts || [];
             var ptNumber2cdIndex = {};

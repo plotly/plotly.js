@@ -449,6 +449,34 @@ describe('heatmap calc', function() {
             [100, 255, 1010]
         ]);
     });
+
+    it('should fill in bricks if x/y not given (typed array case)', function() {
+        var out = _calc({
+            z: [
+                new Float32Array([1, 2, 3]),
+                new Float32Array([3, 1, 2])
+            ]
+        });
+
+        expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should convert x/y coordinates into bricks (typed array case)', function() {
+        var out = _calc({
+            x: new Float32Array([1, 2, 3]),
+            y: new Float32Array([2, 6]),
+            z: [
+                new Float32Array([1, 2, 3]),
+                new Float32Array([3, 1, 2])
+            ]
+        });
+
+        expect(out.x).toBeCloseToArray([0.5, 1.5, 2.5, 3.5]);
+        expect(out.y).toBeCloseToArray([0, 4, 8]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
 });
 
 describe('heatmap plot', function() {

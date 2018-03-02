@@ -400,30 +400,40 @@ module.exports = function setConvert(ax, fullLayout) {
     ax.makeCalcdata = function(trace, axLetter) {
         var arrayIn, arrayOut, i, len;
 
-        var cal = ax.type === 'date' && trace[axLetter + 'calendar'];
+        var axType = ax.type;
+        var cal = axType === 'date' && trace[axLetter + 'calendar'];
 
         if(axLetter in trace) {
             arrayIn = trace[axLetter];
             len = trace._length || arrayIn.length;
-            arrayOut = new Array(len);
 
+            if(Lib.isTypedArray(arrayIn) && (axType === 'linear' || axType === 'log')) {
+                if(len === arrayIn.length) {
+                    return arrayIn;
+                } else if(arrayIn.subarray) {
+                    return arrayIn.subarray(0, len);
+                }
+            }
+
+            arrayOut = new Array(len);
             for(i = 0; i < len; i++) {
                 arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
             }
         }
         else {
-            var v0 = ((axLetter + '0') in trace) ?
-                    ax.d2c(trace[axLetter + '0'], 0, cal) : 0,
-                dv = (trace['d' + axLetter]) ?
-                    Number(trace['d' + axLetter]) : 1;
+            var v0 = ((axLetter + '0') in trace) ? ax.d2c(trace[axLetter + '0'], 0, cal) : 0;
+            var dv = (trace['d' + axLetter]) ? Number(trace['d' + axLetter]) : 1;
 
             // the opposing data, for size if we have x and dx etc
             arrayIn = trace[{x: 'y', y: 'x'}[axLetter]];
             len = trace._length || arrayIn.length;
             arrayOut = new Array(len);
 
-            for(i = 0; i < len; i++) arrayOut[i] = v0 + i * dv;
+            for(i = 0; i < len; i++) {
+                arrayOut[i] = v0 + i * dv;
+            }
         }
+
         return arrayOut;
     };
 
