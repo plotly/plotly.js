@@ -152,7 +152,7 @@ module.exports = function(gd) {
         rangeSlider
             .call(drawBg, gd, axisOpts, opts)
             .call(addClipPath, gd, axisOpts, opts)
-            .call(drawRangePlot, gd, axisOpts, opts, oppAxisRangeOpts)
+            .call(drawRangePlot, gd, axisOpts, opts)
             .call(drawMasks, gd, axisOpts, opts, oppAxisRangeOpts)
             .call(drawSlideBox, gd, axisOpts, opts)
             .call(drawGrabbers, gd, axisOpts, opts);
@@ -386,7 +386,7 @@ function addClipPath(rangeSlider, gd, axisOpts, opts) {
     });
 }
 
-function drawRangePlot(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
+function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
     var subplotData = Axes.getSubplots(gd, axisOpts),
         calcData = gd.calcdata;
 
@@ -408,7 +408,8 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
             isMainPlot = (i === 0);
 
         var oppAxisOpts = Axes.getFromId(gd, id, 'y'),
-            oppAxisName = oppAxisOpts._name;
+            oppAxisName = oppAxisOpts._name,
+            oppAxisRangeOpts = opts[oppAxisName];
 
         var mockFigure = {
             data: [],
@@ -429,7 +430,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
         mockFigure.layout[oppAxisName] = {
             type: oppAxisOpts.type,
             domain: [0, 1],
-            range: (oppAxisRangeOpts.rangemode === 'auto' || oppAxisRangeOpts.rangemode === 'fixed') ? oppAxisRangeOpts.range.slice() : oppAxisOpts.range.slice(),
+            range: oppAxisRangeOpts.range.slice(),
             calendar: oppAxisOpts.calendar
         };
 
