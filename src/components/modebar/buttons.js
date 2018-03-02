@@ -13,7 +13,6 @@ var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var Lib = require('../../lib');
-var downloadImage = require('../../snapshot/download');
 var Icons = require('../../../build/ploticon');
 
 var _ = Lib._;
@@ -60,7 +59,7 @@ modeBarButtons.toImage = {
             format = 'svg';
         }
 
-        downloadImage(gd, {'format': format})
+        Registry.call('downloadImage', gd, {'format': format})
           .then(function(filename) {
               Lib.notifier(_(gd, 'Snapshot succeeded') + ' - ' + filename, 'long');
           })
