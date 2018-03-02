@@ -2219,38 +2219,31 @@ axes.doTicks = function(gd, axid, skipTitle) {
         }
 
         function doAutoMargins() {
+            if(!ax.automargin) { return; }
             if(axLetter !== 'x' && axLetter !== 'y') { return; }
-            var pushKey = ax._name + '.automargin';
-            var sideLetter = ax.side[0];
-            var existingPush = fullLayout._pushmargin[pushKey];
-            var pushParams = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
 
-            if(!ax.automargin || ax.anchor === 'free' || !ax._anchorAxis) {
-                if(existingPush && !(
-                    existingPush.r.size === 0 && existingPush.l.size === 0 &&
-                    existingPush.b.size === 0 && existingPush.t.size === 0)) {
-                    Plots.autoMargin(gd, pushKey, pushParams);
-                }
-                return;
-            }
+            var s = ax.side[0];
+            var push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
 
-            var axisDim;
             if(axLetter === 'x') {
-                pushParams.y = ax._anchorAxis.domain[sideLetter === 't' ? 1 : 0];
-                axisDim = ax._boundingBox.height;
+                push.y = (ax.anchor === 'free' ? ax.position :
+                        ax._anchorAxis.domain[s === 't' ? 1 : 0]);
+                push[s] += ax._boundingBox.height;
             }
             else {
-                pushParams.x = ax._anchorAxis.domain[sideLetter === 'r' ? 1 : 0];
-                axisDim = ax._boundingBox.width;
+                push.x = (ax.anchor === 'free' ? ax.position :
+                        ax._anchorAxis.domain[s === 'r' ? 1 : 0]);
+                push[s] += ax._boundingBox.width;
             }
-            var axisTitleDim = (ax.title !== fullLayout._dfltTitle[axLetter] ?
-                ax.titlefont.size : 0);
-            var marginPush = axisTitleDim + axisDim;
 
-            if(!fullLayout._replotting ||
-                    !existingPush || existingPush[sideLetter].size < marginPush) {
-                pushParams[sideLetter] = marginPush;
-                Plots.autoMargin(gd, pushKey, pushParams);
+            if(ax.title !== fullLayout._dfltTitle[axLetter]) {
+                push[s] += ax.titlefont.size;
+            }
+
+            var pushKey = ax._name + '.automargin';
+            var prevPush = fullLayout._pushmargin[pushKey];
+            if(!prevPush || prevPush[s].size < push[s]) {
+                Plots.autoMargin(gd, pushKey, push);
             }
         }
 

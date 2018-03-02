@@ -2674,6 +2674,39 @@ describe('Test axes', function() {
             })
             .then(function() {
                 previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, { 'yaxis.anchor': 'free' });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, { 'yaxis.position': 0.1});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeLessThan(previousSize.l, 'axis moved right');
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, { 'yaxis.anchor': 'x' });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeGreaterThan(previousSize.l, 'axis snapped back');
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
                 return Plotly.relayout(gd, {
                     'yaxis.side': 'right',
                     'xaxis.side': 'top'
