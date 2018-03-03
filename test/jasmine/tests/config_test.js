@@ -49,23 +49,44 @@ describe('config argument', function() {
                 width: relayoutWidth
             };
 
-            var container = document.getElementById('graph');
-            container.style.width = containerWidthBeforePlot + 'px';
-            container.style.height = containerHeightBeforePlot + 'px';
+            var layout2 = Lib.extendDeep({}, layout);
 
-            Plotly.plot(gd, data, layout, config).then(function() {
+            gd.style.width = containerWidthBeforePlot + 'px';
+            gd.style.height = containerHeightBeforePlot + 'px';
+
+            function beforeResize() {
                 checkLayoutSize(layoutWidth, layoutHeight);
                 if(!autosize) compareLayoutAndFullLayout(gd);
 
-                container.style.width = containerWidthBeforeRelayout + 'px';
-                container.style.height = containerHeightBeforeRelayout + 'px';
+                gd.style.width = containerWidthBeforeRelayout + 'px';
+                gd.style.height = containerHeightBeforeRelayout + 'px';
+            }
+
+            function afterResize() {
+                checkLayoutSize(relayoutWidth, relayoutHeight);
+                if(!autosize) compareLayoutAndFullLayout(gd);
+            }
+
+            Plotly.plot(gd, data, layout, config).then(function() {
+                beforeResize();
 
                 return Plotly.relayout(gd, relayout);
             })
+            .then(afterResize)
+            // now redo with Plotly.react
             .then(function() {
-                checkLayoutSize(relayoutWidth, relayoutHeight);
-                if(!autosize) compareLayoutAndFullLayout(gd);
+                gd.style.width = containerWidthBeforePlot + 'px';
+                gd.style.height = containerHeightBeforePlot + 'px';
+
+                return Plotly.newPlot(gd, data, layout2, config);
             })
+            .then(function() {
+                beforeResize();
+
+                layout2.width = relayoutWidth;
+                return Plotly.react(gd, data, layout2, config);
+            })
+            .then(afterResize)
             .catch(failTest)
             .then(done);
         }

@@ -19,7 +19,8 @@ var arrayRange = require('array-range');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var Axes = require('../../plots/cartesian/axes');
+var AxisIDs = require('../../plots/cartesian/axis_ids');
+var needsAutorange = require('../../plots/cartesian/autorange').needsAutorange;
 var Drawing = require('../../components/drawing');
 var formatColor = require('../../lib/gl_format_color');
 
@@ -45,8 +46,8 @@ var OPEN_RE = /-open/;
 
 function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
-    var xa = Axes.getFromId(gd, trace.xaxis);
-    var ya = Axes.getFromId(gd, trace.yaxis);
+    var xa = AxisIDs.getFromId(gd, trace.xaxis);
+    var ya = AxisIDs.getFromId(gd, trace.yaxis);
     var subplot = fullLayout._plots[trace.xaxis + trace.yaxis];
     var count = trace._length;
     var count2 = count * 2;
@@ -142,7 +143,7 @@ function calc(gd, trace) {
 
 // Approximate Axes.expand results with speed
 function fastAxisExpand(ax, vals, ppad) {
-    if(!Axes.doesAxisNeedAutoRange(ax) || !vals) return;
+    if(!needsAutorange(ax) || !vals) return;
 
     var b0 = Infinity;
     var b1 = -Infinity;
@@ -165,8 +166,8 @@ function sceneOptions(gd, subplot, trace, positions) {
     var fullLayout = gd._fullLayout;
     var count = positions.length / 2;
     var markerOpts = trace.marker;
-    var xaxis = Axes.getFromId(gd, trace.xaxis);
-    var yaxis = Axes.getFromId(gd, trace.yaxis);
+    var xaxis = AxisIDs.getFromId(gd, trace.xaxis);
+    var yaxis = AxisIDs.getFromId(gd, trace.yaxis);
     var ptrX = 0;
     var ptrY = 0;
     var i;
@@ -872,8 +873,8 @@ function plot(gd, subplot, cdata) {
         var x = stash.x;
         var y = stash.y;
 
-        var xaxis = subplot.xaxis || Axes.getFromId(gd, trace.xaxis || 'x');
-        var yaxis = subplot.yaxis || Axes.getFromId(gd, trace.yaxis || 'y');
+        var xaxis = subplot.xaxis || AxisIDs.getFromId(gd, trace.xaxis || 'x');
+        var yaxis = subplot.yaxis || AxisIDs.getFromId(gd, trace.yaxis || 'y');
         var i;
 
         var range = [

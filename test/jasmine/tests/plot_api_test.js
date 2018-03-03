@@ -2785,6 +2785,43 @@ describe('Test plot api', function() {
             });
         });
     });
+
+    describe('resizing with Plotly.relayout and Plotly.react', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('recalculates autoranges when height/width change', function(done) {
+            Plotly.newPlot(gd,
+                [{y: [1, 2], marker: {size: 100}}],
+                {width: 400, height: 400, margin: {l: 100, r: 100, t: 100, b: 100}}
+            )
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-1.31818, 2.31818], 3);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.31818, 3.31818], 3);
+
+                return Plotly.relayout(gd, {height: 800, width: 800});
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.22289, 1.22289], 3);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.77711, 2.22289], 3);
+
+                gd.layout.width = 500;
+                gd.layout.height = 500;
+                return Plotly.react(gd, gd.data, gd.layout);
+            })
+            .then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-0.53448, 1.53448], 3);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.46552, 2.53448], 3);
+            })
+            .catch(fail)
+            .then(done);
+        });
+    });
 });
 
 describe('plot_api helpers', function() {

@@ -25,6 +25,7 @@ var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 var axisConstraints = require('../cartesian/constraints');
 var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
+var doAutoRange = require('../cartesian/autorange').doAutoRange;
 
 var AXES = ['xaxis', 'yaxis'];
 var STATIC_CANVAS, STATIC_CONTEXT;
@@ -76,8 +77,6 @@ function Scene2D(options, fullLayout) {
     // it's OK if this says true when it's not, so long as
     // when we get a mouseout we set it to false before handling
     this.isMouseOver = true;
-
-    this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
 
     // flag to stop render loop
     this.stopped = false;
@@ -261,7 +260,7 @@ proto.updateSize = function(canvas) {
     }
 
     // make sure plots render right thing
-    if(this.redraw) this.redraw();
+    // if(this.redraw) this.redraw();
 
     return canvas;
 };
@@ -394,6 +393,8 @@ proto.plot = function(fullData, calcData, fullLayout) {
     var glplot = this.glplot;
 
     this.updateRefs(fullLayout);
+    this.xaxis.clearCalc();
+    this.yaxis.clearCalc();
     this.updateTraces(fullData, calcData);
     this.updateFx(fullLayout.dragmode);
 
@@ -432,32 +433,13 @@ proto.plot = function(fullData, calcData, fullLayout) {
     this.mouseContainer.style.left = size.l + domainX[0] * size.w + 'px';
     this.mouseContainer.style.top = size.t + (1 - domainY[1]) * size.h + 'px';
 
-    var bounds = this.bounds;
-    bounds[0] = bounds[1] = Infinity;
-    bounds[2] = bounds[3] = -Infinity;
-
-    var traceIds = Object.keys(this.traces);
     var ax, i;
 
-    for(i = 0; i < traceIds.length; ++i) {
-        var traceObj = this.traces[traceIds[i]];
-
-        for(var k = 0; k < 2; ++k) {
-            bounds[k] = Math.min(bounds[k], traceObj.bounds[k]);
-            bounds[k + 2] = Math.max(bounds[k + 2], traceObj.bounds[k + 2]);
-        }
-    }
-
     for(i = 0; i < 2; ++i) {
-        if(bounds[i] > bounds[i + 2]) {
-            bounds[i] = -1;
-            bounds[i + 2] = 1;
-        }
-
         ax = this[AXES[i]];
         ax._length = options.viewBox[i + 2] - options.viewBox[i];
 
-        Axes.doAutoRange(ax);
+        doAutoRange(ax);
         ax.setScale();
     }
 

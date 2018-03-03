@@ -21,7 +21,6 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 
 var constants = require('../../constants/numerical');
-var FP_SAFE = constants.FP_SAFE;
 var ONEAVGYEAR = constants.ONEAVGYEAR;
 var ONEAVGMONTH = constants.ONEAVGMONTH;
 var ONEDAY = constants.ONEDAY;
@@ -40,11 +39,16 @@ var autoType = require('./axis_autotype');
 
 var axisIds = require('./axis_ids');
 axes.id2name = axisIds.id2name;
+axes.name2id = axisIds.name2id;
 axes.cleanId = axisIds.cleanId;
 axes.list = axisIds.list;
 axes.listIds = axisIds.listIds;
 axes.getFromId = axisIds.getFromId;
 axes.getFromTrace = axisIds.getFromTrace;
+
+var autorange = require('./autorange');
+axes.expand = autorange.expand;
+axes.getAutoRange = autorange.getAutoRange;
 
 /*
  * find the list of possible axes to reference with an xref or yref attribute
@@ -218,157 +222,6 @@ axes.minDtick = function(ax, newDiff, newFirst, allow) {
     }
 };
 
-// Find the autorange for this axis
-//
-// assumes ax._min and ax._max have already been set by calling axes.expand
-// using calcdata from all traces. These are arrays of:
-// {val: calcdata value, pad: extra pixels beyond this value}
-//
-// Returns an array of [min, max]. These are calcdata for log and category axes
-// and data for linear and date axes.
-//
-// TODO: we want to change log to data as well, but it's hard to do this
-// maintaining backward compatibility. category will always have to use calcdata
-// though, because otherwise values between categories (or outside all categories)
-// would be impossible.
-axes.getAutoRange = function(ax) {
-    var newRange = [];
-
-    var minmin = ax._min[0].val,
-        maxmax = ax._max[0].val,
-        i;
-
-    for(i = 1; i < ax._min.length; i++) {
-        if(minmin !== maxmax) break;
-        minmin = Math.min(minmin, ax._min[i].val);
-    }
-    for(i = 1; i < ax._max.length; i++) {
-        if(minmin !== maxmax) break;
-        maxmax = Math.max(maxmax, ax._max[i].val);
-    }
-
-    var j, minpt, maxpt, minbest, maxbest, dp, dv,
-        mbest = 0,
-        axReverse = false;
-
-    if(ax.range) {
-        var rng = Lib.simpleMap(ax.range, ax.r2l);
-        axReverse = rng[1] < rng[0];
-    }
-
-    // one-time setting to easily reverse the axis
-    // when plotting from code
-    if(ax.autorange === 'reversed') {
-        axReverse = true;
-        ax.autorange = true;
-    }
-
-    for(i = 0; i < ax._min.length; i++) {
-        minpt = ax._min[i];
-        for(j = 0; j < ax._max.length; j++) {
-            maxpt = ax._max[j];
-            dv = maxpt.val - minpt.val;
-            dp = ax._length - minpt.pad - maxpt.pad;
-            if(dv > 0 && dp > 0 && dv / dp > mbest) {
-                minbest = minpt;
-                maxbest = maxpt;
-                mbest = dv / dp;
-            }
-        }
-    }
-
-    if(minmin === maxmax) {
-        var lower = minmin - 1;
-        var upper = minmin + 1;
-        if(ax.rangemode === 'tozero') {
-            newRange = minmin < 0 ? [lower, 0] : [0, upper];
-        }
-        else if(ax.rangemode === 'nonnegative') {
-            newRange = [Math.max(0, lower), Math.max(0, upper)];
-        }
-        else {
-            newRange = [lower, upper];
-        }
-    }
-    else if(mbest) {
-        if(ax.type === 'linear' || ax.type === '-') {
-            if(ax.rangemode === 'tozero') {
-                if(minbest.val >= 0) {
-                    minbest = {val: 0, pad: 0};
-                }
-                if(maxbest.val <= 0) {
-                    maxbest = {val: 0, pad: 0};
-                }
-            }
-            else if(ax.rangemode === 'nonnegative') {
-                if(minbest.val - mbest * minbest.pad < 0) {
-                    minbest = {val: 0, pad: 0};
-                }
-                if(maxbest.val < 0) {
-                    maxbest = {val: 1, pad: 0};
-                }
-            }
-
-            // in case it changed again...
-            mbest = (maxbest.val - minbest.val) /
-                (ax._length - minbest.pad - maxbest.pad);
-
-        }
-
-        newRange = [
-            minbest.val - mbest * minbest.pad,
-            maxbest.val + mbest * maxbest.pad
-        ];
-    }
-
-    // don't let axis have zero size, while still respecting tozero and nonnegative
-    if(newRange[0] === newRange[1]) {
-        if(ax.rangemode === 'tozero') {
-            if(newRange[0] < 0) {
-                newRange = [newRange[0], 0];
-            }
-            else if(newRange[0] > 0) {
-                newRange = [0, newRange[0]];
-            }
-            else {
-                newRange = [0, 1];
-            }
-        }
-        else {
-            newRange = [newRange[0] - 1, newRange[0] + 1];
-            if(ax.rangemode === 'nonnegative') {
-                newRange[0] = Math.max(0, newRange[0]);
-            }
-        }
-    }
-
-    // maintain reversal
-    if(axReverse) newRange.reverse();
-
-    return Lib.simpleMap(newRange, ax.l2r || Number);
-};
-
-axes.doAutoRange = function(ax) {
-    if(!ax._length) ax.setScale();
-
-    // TODO do we really need this?
-    var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
-
-    if(ax.autorange && hasDeps) {
-        ax.range = axes.getAutoRange(ax);
-
-        ax._r = ax.range.slice();
-        ax._rl = Lib.simpleMap(ax._r, ax.r2l);
-
-        // doAutoRange will get called on fullLayout,
-        // but we want to report its results back to layout
-
-        var axIn = ax._input;
-        axIn.range = ax.range.slice();
-        axIn.autorange = ax.autorange;
-    }
-};
-
 // save a copy of the initial axis ranges in fullLayout
 // use them in mode bar and dblclick events
 axes.saveRangeInitial = function(gd, overwrite) {
@@ -422,142 +275,6 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
     }
     gd._fullLayout._cartesianSpikesEnabled = allSpikesEnabled;
     return hasOneAxisChanged;
-};
-
-axes.doesAxisNeedAutoRange = function(ax) {
-    return (
-        ax.autorange ||
-        !!Lib.nestedProperty(ax, 'rangeslider.autorange').get()
-    );
-};
-
-// axes.expand: if autoranging, include new data in the outer limits
-// for this axis
-// data is an array of numbers (ie already run through ax.d2c)
-// available options:
-//      vpad: (number or number array) pad values (data value +-vpad)
-//      ppad: (number or number array) pad pixels (pixel location +-ppad)
-//      ppadplus, ppadminus, vpadplus, vpadminus:
-//          separate padding for each side, overrides symmetric
-//      padded: (boolean) add 5% padding to both ends
-//          (unless one end is overridden by tozero)
-//      tozero: (boolean) make sure to include zero if axis is linear,
-//          and make it a tight bound if possible
-axes.expand = function(ax, data, options) {
-    if(!axes.doesAxisNeedAutoRange(ax) || !data) return;
-
-    if(!ax._min) ax._min = [];
-    if(!ax._max) ax._max = [];
-    if(!options) options = {};
-    if(!ax._m) ax.setScale();
-
-    var len = data.length,
-        extrappad = options.padded ? ax._length * 0.05 : 0,
-        tozero = options.tozero && (ax.type === 'linear' || ax.type === '-'),
-        i, j, v, di, dmin, dmax,
-        ppadiplus, ppadiminus, includeThis, vmin, vmax;
-
-    // domain-constrained axes: base extrappad on the unconstrained
-    // domain so it's consistent as the domain changes
-    if(extrappad && (ax.constrain === 'domain') && ax._inputDomain) {
-        extrappad *= (ax._inputDomain[1] - ax._inputDomain[0]) /
-            (ax.domain[1] - ax.domain[0]);
-    }
-
-    function getPad(item) {
-        if(Array.isArray(item)) {
-            return function(i) { return Math.max(Number(item[i]||0), 0); };
-        }
-        else {
-            var v = Math.max(Number(item||0), 0);
-            return function() { return v; };
-        }
-    }
-    var ppadplus = getPad((ax._m > 0 ?
-            options.ppadplus : options.ppadminus) || options.ppad || 0),
-        ppadminus = getPad((ax._m > 0 ?
-            options.ppadminus : options.ppadplus) || options.ppad || 0),
-        vpadplus = getPad(options.vpadplus || options.vpad),
-        vpadminus = getPad(options.vpadminus || options.vpad);
-
-    function addItem(i) {
-        di = data[i];
-        if(!isNumeric(di)) return;
-        ppadiplus = ppadplus(i) + extrappad;
-        ppadiminus = ppadminus(i) + extrappad;
-        vmin = di - vpadminus(i);
-        vmax = di + vpadplus(i);
-        // special case for log axes: if vpad makes this object span
-        // more than an order of mag, clip it to one order. This is so
-        // we don't have non-positive errors or absurdly large lower
-        // range due to rounding errors
-        if(ax.type === 'log' && vmin < vmax / 10) { vmin = vmax / 10; }
-
-        dmin = ax.c2l(vmin);
-        dmax = ax.c2l(vmax);
-
-        if(tozero) {
-            dmin = Math.min(0, dmin);
-            dmax = Math.max(0, dmax);
-        }
-
-        // In order to stop overflow errors, don't consider points
-        // too close to the limits of js floating point
-        function goodNumber(v) {
-            return isNumeric(v) && Math.abs(v) < FP_SAFE;
-        }
-
-        if(goodNumber(dmin)) {
-            includeThis = true;
-            // take items v from ax._min and compare them to the
-            // presently active point:
-            // - if the item supercedes the new point, set includethis false
-            // - if the new pt supercedes the item, delete it from ax._min
-            for(j = 0; j < ax._min.length && includeThis; j++) {
-                v = ax._min[j];
-                if(v.val <= dmin && v.pad >= ppadiminus) {
-                    includeThis = false;
-                }
-                else if(v.val >= dmin && v.pad <= ppadiminus) {
-                    ax._min.splice(j, 1);
-                    j--;
-                }
-            }
-            if(includeThis) {
-                ax._min.push({
-                    val: dmin,
-                    pad: (tozero && dmin === 0) ? 0 : ppadiminus
-                });
-            }
-        }
-
-        if(goodNumber(dmax)) {
-            includeThis = true;
-            for(j = 0; j < ax._max.length && includeThis; j++) {
-                v = ax._max[j];
-                if(v.val >= dmax && v.pad >= ppadiplus) {
-                    includeThis = false;
-                }
-                else if(v.val <= dmax && v.pad <= ppadiplus) {
-                    ax._max.splice(j, 1);
-                    j--;
-                }
-            }
-            if(includeThis) {
-                ax._max.push({
-                    val: dmax,
-                    pad: (tozero && dmax === 0) ? 0 : ppadiplus
-                });
-            }
-        }
-    }
-
-    // For efficiency covering monotonic or near-monotonic data,
-    // check a few points at both ends first and then sweep
-    // through the middle
-    for(i = 0; i < 6; i++) addItem(i);
-    for(i = len - 1; i > 5; i--) addItem(i);
-
 };
 
 axes.autoBin = function(data, ax, nbins, is2d, calendar) {

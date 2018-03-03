@@ -86,7 +86,7 @@ module.exports = {
         values: ['normal', 'tozero', 'nonnegative'],
         dflt: 'normal',
         role: 'style',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'If *normal*, the range is computed in relation to the extrema',
             'of the input data.',
@@ -137,7 +137,7 @@ module.exports = {
             constants.idRegex.y.toString()
         ],
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'If set to another axis id (e.g. `x2`, `y`), the range of this axis',
             'changes together with the range of the corresponding axis',
@@ -159,7 +159,7 @@ module.exports = {
         min: 0,
         dflt: 1,
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'If this axis is linked to another by `scaleanchor`, this determines the pixel',
             'to unit scale ratio. For example, if this value is 10, then every unit on',
@@ -173,7 +173,7 @@ module.exports = {
         values: ['range', 'domain'],
         dflt: 'range',
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'If this axis needs to be compressed (either due to its own `scaleanchor` and',
             '`scaleratio` or those of the other axis), determines how that happens:',
@@ -185,7 +185,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['left', 'center', 'right', 'top', 'middle', 'bottom'],
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'If this axis needs to be compressed (either due to its own `scaleanchor` and',
             '`scaleratio` or those of the other axis), determines which direction we push',
@@ -669,7 +669,7 @@ module.exports = {
             constants.idRegex.y.toString()
         ],
         role: 'info',
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'If set a same-letter axis id, this axis is overlaid on top of',
             'the corresponding same-letter axis.',
