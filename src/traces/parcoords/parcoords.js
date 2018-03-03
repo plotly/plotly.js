@@ -223,7 +223,6 @@ function viewModel(state, callbacks, model) {
             tickvals: dimension.tickvals,
             ticktext: dimension.ticktext,
             ordinal: !!dimension.tickvals,
-            scatter: c.scatter || dimension.scatter,
             xIndex: i,
             crossfilterDimensionIndex: i,
             visibleIndex: dimension._index,
@@ -400,7 +399,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     var yAxis = parcoordsControlView.selectAll('.' + c.cn.yAxis)
         .data(function(vm) {return vm.dimensions;}, keyFun);
 
-    function updatePanelLayoutParcoords(yAxis, vm) {
+    function updatePanelLayout(yAxis, vm) {
         var panels = vm.panels || (vm.panels = []);
         var yAxes = yAxis.each(function(d) {return d;})[vm.key].map(function(e) {return e.__data__;});
         var panelCount = yAxes.length - 1;
@@ -421,31 +420,6 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
         }
     }
 
-    function updatePanelLayoutScatter(yAxis, vm) {
-        var panels = vm.panels || (vm.panels = []);
-        var yAxes = yAxis.each(function(d) {return d;})[vm.key].map(function(e) {return e.__data__;});
-        var panelCount = yAxes.length - 1;
-        var rowCount = panelCount;
-        for(var row = 0; row < panelCount; row++) {
-            for(var p = 0; p < panelCount; p++) {
-                var panel = panels[p + row * panelCount] || (panels[p + row * panelCount] = {});
-                var dim1 = yAxes[p];
-                var dim2 = yAxes[p + 1];
-                panel.dim1 = yAxes[row + 1];
-                panel.dim2 = dim2;
-                panel.canvasX = dim1.canvasX;
-                panel.panelSizeX = dim2.canvasX - dim1.canvasX;
-                panel.panelSizeY = vm.model.canvasHeight / rowCount;
-                panel.y = row * panel.panelSizeY;
-                panel.canvasY = vm.model.canvasHeight - panel.y - panel.panelSizeY;
-            }
-        }
-    }
-
-    function updatePanelLayout(yAxis, vm) {
-        return (c.scatter ? updatePanelLayoutScatter : updatePanelLayoutParcoords)(yAxis, vm);
-    }
-
     yAxis.enter()
         .append('g')
         .classed(c.cn.yAxis, true);
@@ -457,7 +431,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     parcoordsLineLayer
         .filter(function(d) {return !!d.viewModel;})
         .each(function(d) {
-            d.lineLayer = lineLayerMaker(this, d, c.scatter);
+            d.lineLayer = lineLayerMaker(this, d);
             d.viewModel[d.key] = d.lineLayer;
             d.lineLayer.render(d.viewModel.panels, !d.context);
         });

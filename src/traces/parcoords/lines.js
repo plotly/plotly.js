@@ -11,6 +11,7 @@
 var glslify = require('glslify');
 var c = require('./constants');
 var vertexShaderSource = glslify('./shaders/vertex.glsl');
+var contextShaderSource = glslify('./shaders/context_vertex.glsl');
 var pickVertexShaderSource = glslify('./shaders/pick_vertex.glsl');
 var fragmentShaderSource = glslify('./shaders/fragment.glsl');
 
@@ -19,6 +20,8 @@ var depthLimitEpsilon = 1e-6; // don't change; otherwise near/far plane lines ar
 var gpuDimensionCount = 64;
 var sectionVertexCount = 2;
 var vec4NumberCount = 4;
+var bitsPerByte = 8;
+var channelCount = gpuDimensionCount / bitsPerByte; // == 8 bytes needed to have 64 bits
 
 var contextColor = [119, 119, 119]; // middle gray to not drawn the focus; looks good on a black or white background
 
@@ -165,7 +168,7 @@ function valid(i, offset, panelCount) {
     return i + offset <= panelCount;
 }
 
-module.exports = function(canvasGL, d, scatter) {
+module.exports = function(canvasGL, d) {
     var model = d.model,
         vm = d.viewModel,
         domain = model.domain;
@@ -263,7 +266,7 @@ module.exports = function(canvasGL, d, scatter) {
 
         dither: false,
 
-        vert: pick ? pickVertexShaderSource : vertexShaderSource,
+        vert: pick ? pickVertexShaderSource : context ? contextShaderSource : vertexShaderSource,
 
         frag: fragmentShaderSource,
 
@@ -291,8 +294,8 @@ module.exports = function(canvasGL, d, scatter) {
             loD: regl.prop('loD'),
             hiD: regl.prop('hiD'),
             palette: paletteTexture,
-            colorClamp: regl.prop('colorClamp'),
-            scatter: regl.prop('scatter')
+            mask: regl.prop('maskTexture'),
+            colorClamp: regl.prop('colorClamp')
         },
         offset: regl.prop('offset'),
         count: regl.prop('count')
@@ -307,7 +310,7 @@ module.exports = function(canvasGL, d, scatter) {
 
     var previousAxisOrder = [];
 
-    function makeItem(i, ii, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, scatter, I, leftmost, rightmost) {
+    function makeItem(i, ii, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, I, leftmost, rightmost) {
         var loHi, abcd, d, index;
         var leftRight = [i, ii];
         var filterEpsilon = c.verticalPadding / canvasPanelSizeY;
@@ -321,12 +324,16 @@ module.exports = function(canvasGL, d, scatter) {
                 for(d = 0; d < 16; d++) {
                     var dimP = d + 16 * abcd;
                     dims[loHi][abcd][d] = d + 16 * abcd === index ? 1 : 0;
-                    lims[loHi][abcd][d] = (!context && valid(d, 16 * abcd, panelCount) ? initialDims[dimP === 0 ? 0 : 1 + ((dimP - 1) % (initialDims.length - 1))].brush.filter.getBounds()[loHi] : loHi) + (2 * loHi - 1) * filterEpsilon;
+                    if(!context) {
+                        lims[loHi][abcd][d] = (valid(d, 16 * abcd, panelCount) ? initialDims[dimP === 0 ? 0 : 1 + ((dimP - 1) % (initialDims.length - 1))].brush.filter.getBounds()[loHi] : loHi) + (2 * loHi - 1) * filterEpsilon;
+                    }
                 }
             }
         }
 
-        return {
+        var mask, maskTexture;
+
+        var vm = {
             key: crossfilterDimensionIndex,
             resolution: [canvasWidth, canvasHeight],
             viewBoxPosition: [x + overdrag, y],
@@ -343,17 +350,7 @@ module.exports = function(canvasGL, d, scatter) {
             dim2C: dims[1][2],
             dim2D: dims[1][3],
 
-            loA: lims[0][0],
-            loB: lims[0][1],
-            loC: lims[0][2],
-            loD: lims[0][3],
-            hiA: lims[1][0],
-            hiB: lims[1][1],
-            hiC: lims[1][2],
-            hiD: lims[1][3],
-
             colorClamp: colorClamp,
-            scatter: scatter || 0,
 
             scissorX: (I === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
             scissorWidth: (I === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (I === leftmost ? x + overdrag : 0),
@@ -365,6 +362,54 @@ module.exports = function(canvasGL, d, scatter) {
             viewportWidth: canvasWidth,
             viewportHeight: canvasHeight
         };
+
+        if(!context) {
+            mask = Array.apply(null, new Array(canvasHeight * channelCount)).map(function() {
+                return 255;
+            });
+            for(var dimIndex = 0; dimIndex < dimensionCount; dimIndex++) {
+                var bitIndex = dimIndex % bitsPerByte;
+                var byteIndex = (dimIndex - bitIndex) / bitsPerByte;
+                var bitMask = Math.pow(2, bitIndex);
+                var dim = initialDims[dimIndex];
+                var ranges = dim.brush.filter.get();
+                if(ranges.length < 2) continue; // bail if the bounding box based filter is sufficient
+                var pi, pixelRange;
+                var boundingBox = dim.brush.filter.getBounds();
+                pixelRange = boundingBox.map(dim.unitScaleInOrder);
+                for(pi = Math.max(0, Math.floor(pixelRange[0])); pi <= Math.min(canvasHeight - 1, Math.ceil(pixelRange[1])); pi++) {
+                    mask[pi * channelCount + byteIndex] &= ~bitMask; // clear bits
+                }
+                for(var r = 0; r < ranges.length; r++) {
+                    pixelRange = ranges[r].map(dim.unitScaleInOrder);
+                    for(pi = Math.max(0, Math.floor(pixelRange[0])); pi <= Math.min(canvasHeight - 1, Math.ceil(pixelRange[1])); pi++) {
+                        mask[pi * channelCount + byteIndex] |= bitMask;
+                    }
+                }
+            }
+
+            maskTexture = regl.texture({
+                shape: [channelCount, canvasHeight], // 8 units x 8 bits = 64 bits, just sufficient for the almost 64 dimensions we support
+                format: 'alpha',
+                type: 'uint8',
+                mag: 'nearest',
+                min: 'nearest',
+                data: mask
+            });
+
+            vm.maskTexture = maskTexture;
+
+            vm.loA = lims[0][0];
+            vm.loB = lims[0][1];
+            vm.loC = lims[0][2];
+            vm.loD = lims[0][3];
+            vm.hiA = lims[1][0];
+            vm.hiB = lims[1][1];
+            vm.hiC = lims[1][2];
+            vm.hiD = lims[1][3];
+        }
+
+        return vm;
     }
 
     function renderGLParcoords(panels, setChanged, clearOnly) {
@@ -402,7 +447,7 @@ module.exports = function(canvasGL, d, scatter) {
             var xTo = x + panelSizeX;
             if(setChanged || !previousAxisOrder[i] || previousAxisOrder[i][0] !== x || previousAxisOrder[i][1] !== xTo) {
                 previousAxisOrder[i] = [x, xTo];
-                var item = makeItem(i, ii, x, y, panelSizeX, panelSizeY, dim1.crossfilterDimensionIndex, scatter || dim1.scatter ? 1 : 0, I, leftmost, rightmost);
+                var item = makeItem(i, ii, x, y, panelSizeX, panelSizeY, dim1.crossfilterDimensionIndex, I, leftmost, rightmost);
                 renderState.clearOnly = clearOnly;
                 renderBlock(regl, glAes, renderState, setChanged ? lines.blockLineCount : sampleCount, sampleCount, item);
             }
@@ -435,6 +480,7 @@ module.exports = function(canvasGL, d, scatter) {
     function destroy() {
         canvasGL.style['pointer-events'] = 'none';
         paletteTexture.destroy();
+        maskTexture.destroy();
     }
 
     return {

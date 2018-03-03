@@ -16,7 +16,6 @@ module.exports = {
     tickDistance: 50,
     canvasPixelRatio: 1,
     blockLineCount: 5000,
-    scatter: false,
     layers: ['contextLineLayer', 'focusLineLayer', 'pickLineLayer'],
     axisTitleOffset: 28,
     axisExtentOffset: 10,
