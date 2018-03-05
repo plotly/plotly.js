@@ -1179,24 +1179,20 @@ describe('hover info', function() {
             expect(elem1BB.top - elem2BB.top).toBeWithin(0, tolerance, msg);
         }
 
-        it('renders labels inside boxes', function(done) {
+        it('renders labels inside boxes', function() {
             _hover(gd, 300, 150);
 
             var nodes = ensureCentered(centeredHoverInfoNodes());
             assertElemInside(nodes.primaryText, nodes.primaryBox, 'Primary text inside box');
             assertElemInside(nodes.secondaryText, nodes.secondaryBox, 'Secondary text inside box');
-
-            done();
         });
 
-        it('renders secondary info box right to primary info box', function(done) {
+        it('renders secondary info box right to primary info box', function() {
             _hover(gd, 300, 150);
 
             var nodes = ensureCentered(centeredHoverInfoNodes());
             assertElemRightTo(nodes.secondaryBox, nodes.primaryBox, 'Secondary box right to primary box');
             assertTopsAligned(nodes.secondaryBox, nodes.primaryBox, 'Top edges of primary and secondary boxes aligned');
-
-            done();
         });
     });
 });
