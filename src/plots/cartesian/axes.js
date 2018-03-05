@@ -2044,16 +2044,16 @@ axes.doTicks = function(gd, axid, skipTitle) {
         function getAnchorHeight(lineCount, lineHeight, angle) {
             var h = (lineCount - 1) * lineHeight;
             if(axLetter === 'x') {
-                if(angle < -20 || 20 < angle) {
+                if(angle < -60 || 60 < angle) {
                     return -0.5 * h;
                 } else if(axside === 'top') {
                     return -h;
                 }
             } else {
                 angle *= axside === 'left' ? 1 : -1;
-                if(angle < -20) {
+                if(angle < -30) {
                     return -h;
-                } else if(angle < 20) {
+                } else if(angle < 30) {
                     return -0.5 * h;
                 }
             }

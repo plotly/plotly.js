@@ -3,7 +3,7 @@
         {
             "type": "bar",
             "x":["x 1","multiple<br>lines","one<br >two<BR>three"],
-            "y":["x 2","multiple<br>lines","one<br >two<BR>three"]
+            "y":["y 1","multiple<br>lines","one<br >two<BR>three"]
         },
         {
             "type": "bar",
