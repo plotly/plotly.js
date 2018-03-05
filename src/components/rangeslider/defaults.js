@@ -66,9 +66,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
                 coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode');
             }
 
-            layoutOut[yName].cleanRange('rangeslider.' + yName + '.range');
-            coerceRange(rangeContainerIn, rangeContainerOut, 'range', layoutOut[yName].rangeslider[yName].range.slice());
-            delete layoutOut[yName].rangeslider;
+            coerceRange(rangeContainerIn, rangeContainerOut, 'range', layoutOut[yName].range.slice());
         }
     }
 
