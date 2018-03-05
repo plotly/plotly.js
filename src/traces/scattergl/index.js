@@ -165,13 +165,9 @@ function sceneOptions(gd, subplot, trace, positions) {
     var fullLayout = gd._fullLayout;
     var count = positions.length / 2;
     var markerOpts = trace.marker;
-    var xaxis = Axes.getFromId(gd, trace.xaxis);
-    var yaxis = Axes.getFromId(gd, trace.yaxis);
-    var ptrX = 0;
-    var ptrY = 0;
     var i;
 
-    var hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
+    var hasLines, hasErrorX, hasErrorY, hasMarkers, hasFill;
 
     if(trace.visible !== true) {
         hasLines = false;
@@ -183,7 +179,6 @@ function sceneOptions(gd, subplot, trace, positions) {
         hasLines = subTypes.hasLines(trace) && positions.length > 1;
         hasErrorX = trace.error_x && trace.error_x.visible === true;
         hasErrorY = trace.error_y && trace.error_y.visible === true;
-        hasError = hasErrorX || hasErrorY;
         hasMarkers = subTypes.hasMarkers(trace);
         hasFill = !!trace.fill && trace.fill !== 'none';
     }
@@ -193,67 +188,16 @@ function sceneOptions(gd, subplot, trace, positions) {
     var selectedOptions, unselectedOptions;
     var linePositions;
 
-    // get error values
-    var errorVals = hasError ?
-        Registry.getComponentMethod('errorbars', 'calcFromTrace')(trace, fullLayout) :
-        null;
+    if(hasErrorX || hasErrorY) {
+        var calcFromTrace = Registry.getComponentMethod('errorbars', 'calcFromTrace');
+        var errorVals = calcFromTrace(trace, fullLayout);
 
-    if(hasErrorX) {
-        errorXOptions = {};
-        errorXOptions.positions = positions;
-        var errorsX = new Float64Array(4 * count);
-
-        if(xaxis.type === 'log') {
-            for(i = 0; i < count; ++i) {
-                errorsX[ptrX++] = positions[i * 2] - xaxis.d2l(errorVals[i].xs) || 0;
-                errorsX[ptrX++] = xaxis.d2l(errorVals[i].xh) - positions[i * 2] || 0;
-                errorsX[ptrX++] = 0;
-                errorsX[ptrX++] = 0;
-            }
-        } else {
-            for(i = 0; i < count; ++i) {
-                errorsX[ptrX++] = positions[i * 2] - errorVals[i].xs || 0;
-                errorsX[ptrX++] = errorVals[i].xh - positions[i * 2] || 0;
-                errorsX[ptrX++] = 0;
-                errorsX[ptrX++] = 0;
-            }
+        if(hasErrorX) {
+            errorXOptions = makeErrorOptions('x', trace.error_x, errorVals);
         }
-
-        if(trace.error_x.copy_ystyle) {
-            trace.error_x = trace.error_y;
+        if(hasErrorY) {
+            errorYOptions = makeErrorOptions('y', trace.error_y, errorVals);
         }
-
-        errorXOptions.errors = errorsX;
-        errorXOptions.capSize = trace.error_x.width * 2;
-        errorXOptions.lineWidth = trace.error_x.thickness;
-        errorXOptions.color = trace.error_x.color;
-    }
-
-    if(hasErrorY) {
-        errorYOptions = {};
-        errorYOptions.positions = positions;
-        var errorsY = new Float64Array(4 * count);
-
-        if(yaxis.type === 'log') {
-            for(i = 0; i < count; ++i) {
-                errorsY[ptrY++] = 0;
-                errorsY[ptrY++] = 0;
-                errorsY[ptrY++] = positions[i * 2 + 1] - yaxis.d2l(errorVals[i].ys) || 0;
-                errorsY[ptrY++] = yaxis.d2l(errorVals[i].yh) - positions[i * 2 + 1] || 0;
-            }
-        } else {
-            for(i = 0; i < count; ++i) {
-                errorsY[ptrY++] = 0;
-                errorsY[ptrY++] = 0;
-                errorsY[ptrY++] = positions[i * 2 + 1] - errorVals[i].ys || 0;
-                errorsY[ptrY++] = errorVals[i].yh - positions[i * 2 + 1] || 0;
-            }
-        }
-
-        errorYOptions.errors = errorsY;
-        errorYOptions.capSize = trace.error_y.width * 2;
-        errorYOptions.lineWidth = trace.error_y.thickness;
-        errorYOptions.color = trace.error_y.color;
     }
 
     if(hasLines) {
@@ -352,6 +296,33 @@ function sceneOptions(gd, subplot, trace, positions) {
         selectedOptions = makeSelectedOptions(trace.selected, markerOpts);
         unselectedOptions = makeSelectedOptions(trace.unselected, markerOpts);
         markerOptions.positions = positions;
+    }
+
+    function makeErrorOptions(axLetter, errorOpts, vals) {
+        var options = {};
+        options.positions = positions;
+
+        var ax = Axes.getFromId(gd, trace[axLetter + 'axis']);
+        var errors = options.errors = new Float64Array(4 * count);
+        var pOffset = {x: 0, y: 1}[axLetter];
+        var eOffset = {x: [0, 1, 2, 3], y: [2, 3, 0, 1]}[axLetter];
+
+        for(var i = 0, p = 0; i < count; i++, p += 4) {
+            errors[p + eOffset[0]] = positions[i * 2 + pOffset] - ax.d2l(vals[i][axLetter + 's']) || 0;
+            errors[p + eOffset[1]] = ax.d2l(vals[i][axLetter + 'h']) - positions[i * 2 + pOffset] || 0;
+            errors[p + eOffset[2]] = 0;
+            errors[p + eOffset[3]] = 0;
+        }
+
+        if(errorOpts.copy_ystyle) {
+            errorOpts = trace.error_y;
+        }
+
+        options.capSize = errorOpts.width * 2;
+        options.lineWidth = errorOpts.thickness;
+        options.color = errorOpts.color;
+
+        return options;
     }
 
     function makeSelectedOptions(selected, markerOpts) {
@@ -510,47 +481,34 @@ function sceneUpdate(gd, subplot) {
     var scene = subplot._scene;
     var fullLayout = gd._fullLayout;
 
+    var reset = {
+        // number of traces in subplot, since scene:subplot → 1:1
+        count: 0,
+        // whether scene requires init hook in plot call (dirty plot call)
+        dirty: true,
+        // last used options
+        lineOptions: [],
+        fillOptions: [],
+        markerOptions: [],
+        selectedOptions: [],
+        unselectedOptions: [],
+        errorXOptions: [],
+        errorYOptions: []
+    };
+
+    var first = {
+        selectBatch: null,
+        unselectBatch: null,
+        // regl- component stubs, initialized in dirty plot call
+        fill2d: false,
+        scatter2d: false,
+        error2d: false,
+        line2d: false,
+        select2d: null
+    };
+
     if(!subplot._scene) {
-        scene = subplot._scene = {
-            // number of traces in subplot, since scene:subplot → 1:1
-            count: 0,
-
-            // whether scene requires init hook in plot call (dirty plot call)
-            dirty: true,
-
-            // last used options
-            lineOptions: [],
-            fillOptions: [],
-            markerOptions: [],
-            selectedOptions: [],
-            unselectedOptions: [],
-            errorXOptions: [],
-            errorYOptions: [],
-            selectBatch: null,
-            unselectBatch: null,
-
-            // regl- component stubs, initialized in dirty plot call
-            fill2d: false,
-            scatter2d: false,
-            error2d: false,
-            line2d: false,
-            select2d: null
-        };
-
-        // apply new option to all regl components
-        scene.update = function update(opt) {
-            var opts = Array(scene.count);
-            for(var i = 0; i < scene.count; i++) {
-                opts[i] = opt;
-            }
-            if(scene.fill2d) scene.fill2d.update(opts);
-            if(scene.scatter2d) scene.scatter2d.update(opts);
-            if(scene.line2d) scene.line2d.update(opts);
-            if(scene.error2d) scene.error2d.update(opts.concat(opts));
-            if(scene.select2d) scene.select2d.update(opts);
-
-            scene.draw();
-        };
+        scene = subplot._scene = Lib.extendFlat({}, reset, first);
 
         // draw traces in proper order
         scene.draw = function draw() {
@@ -666,15 +624,7 @@ function sceneUpdate(gd, subplot) {
 
     // In case if we have scene from the last calc - reset data
     if(!scene.dirty) {
-        scene.dirty = true;
-        scene.count = 0;
-        scene.lineOptions = [];
-        scene.fillOptions = [];
-        scene.markerOptions = [];
-        scene.selectedOptions = [];
-        scene.unselectedOptions = [];
-        scene.errorXOptions = [];
-        scene.errorYOptions = [];
+        Lib.extendFlat(scene, reset);
     }
 
     return scene;
