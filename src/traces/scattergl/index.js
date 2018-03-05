@@ -556,21 +556,24 @@ function sceneUpdate(gd, subplot) {
         scene.draw = function draw() {
             var i;
             for(i = 0; i < scene.count; i++) {
-                if(scene.fill2d) scene.fill2d.draw(i);
+                if(scene.fill2d && scene.fillOptions[i]) {
+                    // must do all fills first
+                    scene.fill2d.draw(i);
+                }
             }
             for(i = 0; i < scene.count; i++) {
-                if(scene.line2d) {
+                if(scene.line2d && scene.lineOptions[i]) {
                     scene.line2d.draw(i);
                 }
-                if(scene.error2d) {
+                if(scene.error2d && scene.errorXOptions[i]) {
                     scene.error2d.draw(i);
+                }
+                if(scene.error2d && scene.errorYOptions[i]) {
                     scene.error2d.draw(i + scene.count);
                 }
-                if(scene.scatter2d) {
+                if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
                     // traces in no-selection mode
-                    if(!scene.selectBatch || !scene.selectBatch[i]) {
-                        scene.scatter2d.draw(i);
-                    }
+                    scene.scatter2d.draw(i);
                 }
             }
 

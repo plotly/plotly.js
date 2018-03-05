@@ -379,6 +379,48 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
+    it('should be able to toggle trace with different modes', function(done) {
+        Plotly.newPlot(gd, [{
+            // a trace with all regl2d objects
+            type: 'scattergl',
+            y: [1, 2, 1],
+            error_x: {value: 10},
+            error_y: {value: 10},
+            fill: 'tozeroy'
+        }, {
+            type: 'scattergl',
+            mode: 'markers',
+            y: [0, 1, -1]
+        }])
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            spyOn(scene.fill2d, 'draw');
+            spyOn(scene.line2d, 'draw');
+            spyOn(scene.error2d, 'draw');
+            spyOn(scene.scatter2d, 'draw');
+
+            return Plotly.restyle(gd, 'visible', 'legendonly', [0]);
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            expect(scene.fill2d.draw).toHaveBeenCalledTimes(0);
+            expect(scene.line2d.draw).toHaveBeenCalledTimes(0);
+            expect(scene.error2d.draw).toHaveBeenCalledTimes(0);
+            expect(scene.scatter2d.draw).toHaveBeenCalledTimes(1);
+
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            expect(scene.fill2d.draw).toHaveBeenCalledTimes(1);
+            expect(scene.line2d.draw).toHaveBeenCalledTimes(1);
+            expect(scene.error2d.draw).toHaveBeenCalledTimes(2, 'twice for x AND y');
+            expect(scene.scatter2d.draw).toHaveBeenCalledTimes(3, 'both traces have markers');
+        })
+        .catch(fail)
+        .then(done);
+    });
+
     it('@noCI should display selection of big number of regular points', function(done) {
         // generate large number of points
         var x = [], y = [], n = 2e2, N = n * n;
