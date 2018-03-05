@@ -2072,7 +2072,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     LINE_SPACING * d.fontSize,
                     isNumeric(angle) ? +angle : 0);
                 if (anchorHeight) {
-                  //transform += ' translate(0, ' + anchorHeight + ')';
+                  transform += ' translate(0, ' + anchorHeight + ')';
                 }
                 if(mathjaxGroup.empty()) {
                     thisLabel.select('text').attr({
