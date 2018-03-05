@@ -199,18 +199,25 @@ function needsAutorange(ax) {
     return ax.autorange || !!(ax.rangeslider || {}).autorange;
 }
 
-// expand: if autoranging, include new data in the outer limits
-// for this axis
-// data is an array of numbers (ie already run through ax.d2c)
-// available options:
-//      vpad: (number or number array) pad values (data value +-vpad)
-//      ppad: (number or number array) pad pixels (pixel location +-ppad)
-//      ppadplus, ppadminus, vpadplus, vpadminus:
-//          separate padding for each side, overrides symmetric
-//      padded: (boolean) add 5% padding to both ends
-//          (unless one end is overridden by tozero)
-//      tozero: (boolean) make sure to include zero if axis is linear,
-//          and make it a tight bound if possible
+/*
+ * expand: if autoranging, include new data in the outer limits for this axis.
+ * Note that `expand` is called during `calc`, when we don't yet know the axis
+ * length; all the inputs should be based solely on the trace data, nothing
+ * about the axis layout.
+ *
+ * @param {object} ax: the axis being expanded. The result will be more entries
+ *      in ax._min and ax._max if necessary to include the new data
+ * @param {array} data: an array of numbers (ie already run through ax.d2c)
+ * @param {object} options: available keys are:
+ *      vpad: (number or number array) pad values (data value +-vpad)
+ *      ppad: (number or number array) pad pixels (pixel location +-ppad)
+ *      ppadplus, ppadminus, vpadplus, vpadminus:
+ *          separate padding for each side, overrides symmetric
+ *      padded: (boolean) add 5% padding to both ends
+ *          (unless one end is overridden by tozero)
+ *      tozero: (boolean) make sure to include zero if axis is linear,
+ *          and make it a tight bound if possible
+ */
 function expand(ax, data, options) {
     if(!needsAutorange(ax) || !data) return;
 
@@ -225,7 +232,7 @@ function expand(ax, data, options) {
 
     var i, j, k, v, di, dmin, dmax, ppadiplus, ppadiminus, includeThis, vmin, vmax;
 
-    function getPad(item) {
+    function makePadAccessor(item) {
         if(Array.isArray(item)) {
             return function(i) { return Math.max(Number(item[i]||0), 0); };
         }
@@ -234,12 +241,12 @@ function expand(ax, data, options) {
             return function() { return v; };
         }
     }
-    var ppadplus = getPad((ax._m > 0 ?
+    var ppadplus = makePadAccessor((ax._m > 0 ?
             options.ppadplus : options.ppadminus) || options.ppad || 0),
-        ppadminus = getPad((ax._m > 0 ?
+        ppadminus = makePadAccessor((ax._m > 0 ?
             options.ppadminus : options.ppadplus) || options.ppad || 0),
-        vpadplus = getPad(options.vpadplus || options.vpad),
-        vpadminus = getPad(options.vpadminus || options.vpad);
+        vpadplus = makePadAccessor(options.vpadplus || options.vpad),
+        vpadminus = makePadAccessor(options.vpadminus || options.vpad);
 
     function addItem(i) {
         di = data[i];
