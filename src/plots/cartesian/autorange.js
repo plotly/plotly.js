@@ -18,7 +18,6 @@ module.exports = {
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
-    needsAutorange: needsAutorange,
     expand: expand
 };
 
@@ -229,11 +228,15 @@ function expand(ax, data, options) {
     var len = data.length;
     var extrapad = options.padded || false;
     var tozero = options.tozero && (ax.type === 'linear' || ax.type === '-');
+    var isLog = (ax.type === 'log');
 
     var i, j, k, v, di, dmin, dmax, ppadiplus, ppadiminus, includeThis, vmin, vmax;
 
+    var hasArrayOption = false;
+
     function makePadAccessor(item) {
         if(Array.isArray(item)) {
+            hasArrayOption = true;
             return function(i) { return Math.max(Number(item[i]||0), 0); };
         }
         else {
@@ -241,12 +244,32 @@ function expand(ax, data, options) {
             return function() { return v; };
         }
     }
+
     var ppadplus = makePadAccessor((ax._m > 0 ?
-            options.ppadplus : options.ppadminus) || options.ppad || 0),
-        ppadminus = makePadAccessor((ax._m > 0 ?
-            options.ppadminus : options.ppadplus) || options.ppad || 0),
-        vpadplus = makePadAccessor(options.vpadplus || options.vpad),
-        vpadminus = makePadAccessor(options.vpadminus || options.vpad);
+        options.ppadplus : options.ppadminus) || options.ppad || 0);
+    var ppadminus = makePadAccessor((ax._m > 0 ?
+        options.ppadminus : options.ppadplus) || options.ppad || 0);
+    var vpadplus = makePadAccessor(options.vpadplus || options.vpad);
+    var vpadminus = makePadAccessor(options.vpadminus || options.vpad);
+
+    if(!hasArrayOption) {
+        // with no arrays other than `data` we don't need to consider
+        // every point, only the extreme data points
+        vmin = Infinity;
+        vmax = -Infinity;
+
+        for(i = 0; i < data.length; i++) {
+            v = data[i];
+            if(Math.abs(v) < FP_SAFE) {
+                // data is not linearized yet so we still have to filter out negative logs
+                if(v < vmin && (!isLog || v > 0)) vmin = v;
+                if(v > vmax) vmax = v;
+            }
+        }
+
+        data = [vmin, vmax];
+        len = 2;
+    }
 
     function addItem(i) {
         di = data[i];
@@ -259,7 +282,7 @@ function expand(ax, data, options) {
         // more than an order of mag, clip it to one order. This is so
         // we don't have non-positive errors or absurdly large lower
         // range due to rounding errors
-        if(ax.type === 'log' && vmin < vmax / 10) vmin = vmax / 10;
+        if(isLog && vmin < vmax / 10) vmin = vmax / 10;
 
         dmin = ax.c2l(vmin);
         dmax = ax.c2l(vmax);
@@ -268,15 +291,6 @@ function expand(ax, data, options) {
             dmin = Math.min(0, dmin);
             dmax = Math.max(0, dmax);
         }
-
-        // In order to stop overflow errors, don't consider points
-        // too close to the limits of js floating point
-        function goodNumber(v) {
-            return isNumeric(v) && Math.abs(v) < FP_SAFE;
-        }
-
-        function lessOrEqual(v0, v1) { return v0 <= v1; }
-        function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
         for(k = 0; k < 2; k++) {
             var newVal = k ? dmax : dmin;
@@ -329,3 +343,12 @@ function expand(ax, data, options) {
     for(i = 0; i < 6; i++) addItem(i);
     for(i = len - 1; i > 5; i--) addItem(i);
 }
+
+// In order to stop overflow errors, don't consider points
+// too close to the limits of js floating point
+function goodNumber(v) {
+    return isNumeric(v) && Math.abs(v) < FP_SAFE;
+}
+
+function lessOrEqual(v0, v1) { return v0 <= v1; }
+function greaterOrEqual(v0, v1) { return v0 >= v1; }
