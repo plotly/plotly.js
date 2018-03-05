@@ -54,7 +54,7 @@ var gridAttrs = {
         valType: 'info_array',
         freeLength: true,
         dimensions: 2,
-        items: {valType: 'enumerated', values: [counterRegex('xy').toString(), '']},
+        items: {valType: 'enumerated', values: [counterRegex('xy').toString(), ''], editType: 'plot'},
         role: 'info',
         editType: 'plot',
         description: [
@@ -69,7 +69,7 @@ var gridAttrs = {
     xaxes: {
         valType: 'info_array',
         freeLength: true,
-        items: {valType: 'enumerated', values: [cartesianIdRegex.x.toString(), '']},
+        items: {valType: 'enumerated', values: [cartesianIdRegex.x.toString(), ''], editType: 'plot'},
         role: 'info',
         editType: 'plot',
         description: [
@@ -83,7 +83,7 @@ var gridAttrs = {
     yaxes: {
         valType: 'info_array',
         freeLength: true,
-        items: {valType: 'enumerated', values: [cartesianIdRegex.y.toString(), '']},
+        items: {valType: 'enumerated', values: [cartesianIdRegex.y.toString(), ''], editType: 'plot'},
         role: 'info',
         editType: 'plot',
         description: [

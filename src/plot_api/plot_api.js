@@ -1857,20 +1857,21 @@ function _relayout(gd, aobj) {
             throw new Error('cannot set ' + ai + 'and a parent attribute simultaneously');
         }
 
-        var p = Lib.nestedProperty(layout, ai),
-            vi = aobj[ai],
-            plen = p.parts.length,
-            // p.parts may end with an index integer if the property is an array
-            pend = typeof p.parts[plen - 1] === 'string' ? (plen - 1) : (plen - 2),
-            // last property in chain (leaf node)
-            pleaf = p.parts[pend],
-            // leaf plus immediate parent
-            pleafPlus = p.parts[pend - 1] + '.' + pleaf,
-            // trunk nodes (everything except the leaf)
-            ptrunk = p.parts.slice(0, pend).join('.'),
-            parentIn = Lib.nestedProperty(gd.layout, ptrunk).get(),
-            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get(),
-            vOld = p.get();
+        var p = Lib.nestedProperty(layout, ai);
+        var vi = aobj[ai];
+        var plen = p.parts.length;
+        // p.parts may end with an index integer if the property is an array
+        var pend = plen - 1;
+        while(pend > 0 && typeof p.parts[plen - 1] !== 'string') { pend--; }
+        // last property in chain (leaf node)
+        var pleaf = p.parts[pend];
+        // leaf plus immediate parent
+        var pleafPlus = p.parts[pend - 1] + '.' + pleaf;
+        // trunk nodes (everything except the leaf)
+        var ptrunk = p.parts.slice(0, pend).join('.');
+        var parentIn = Lib.nestedProperty(gd.layout, ptrunk).get();
+        var parentFull = Lib.nestedProperty(fullLayout, ptrunk).get();
+        var vOld = p.get();
 
         if(vi === undefined) continue;
 
