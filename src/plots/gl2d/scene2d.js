@@ -259,9 +259,6 @@ proto.updateSize = function(canvas) {
         canvas.height = pixelHeight;
     }
 
-    // make sure plots render right thing
-    // if(this.redraw) this.redraw();
-
     return canvas;
 };
 
