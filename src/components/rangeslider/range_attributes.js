@@ -12,7 +12,7 @@ module.exports = {
     rangemode: {
         valType: 'enumerated',
         values: ['auto', 'fixed', 'match'],
-        dflt: 'auto',
+        dflt: 'match',
         role: 'style',
         editType: 'calc',
         description: [

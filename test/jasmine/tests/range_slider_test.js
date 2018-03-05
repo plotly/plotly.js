@@ -91,7 +91,7 @@ describe('the range slider', function() {
 
             slide(start, sliderY, end, sliderY).then(function() {
                 var maskMin = children[2],
-                    handleMin = children[7];
+                    handleMin = children[5];
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray([4, 49], -0.5);
                 expect(maskMin.getAttribute('width')).toEqual(String(diff));
@@ -111,7 +111,7 @@ describe('the range slider', function() {
 
             slide(start, sliderY, end, sliderY).then(function() {
                 var maskMax = children[3],
-                    handleMax = children[8];
+                    handleMax = children[6];
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray([0, 32.77], -0.5);
                 expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
@@ -132,7 +132,7 @@ describe('the range slider', function() {
 
             slide(start, sliderY, end, sliderY).then(function() {
                 var maskMin = children[2],
-                    handleMin = children[7];
+                    handleMin = children[5];
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray([3.96, 49], -0.5);
                 expect(+maskMin.getAttribute('width')).toBeCloseTo(String(diff));
@@ -152,7 +152,7 @@ describe('the range slider', function() {
 
             slide(start, sliderY, end, sliderY).then(function() {
                 var maskMax = children[3],
-                    handleMax = children[8];
+                    handleMax = children[6];
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray([0, 45.04], -0.5);
                 expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
@@ -187,8 +187,8 @@ describe('the range slider', function() {
             Plotly.relayout(gd, 'xaxis.range', [10, 20]).then(function() {
                 var maskMin = children[2],
                     maskMax = children[3],
-                    handleMin = children[7],
-                    handleMax = children[8];
+                    handleMin = children[5],
+                    handleMax = children[6];
 
                 expect(+maskMin.getAttribute('width')).toBeWithin(125, TOL);
                 expect(+maskMax.getAttribute('width')).toBeWithin(365, TOL);
@@ -203,8 +203,8 @@ describe('the range slider', function() {
             Plotly.relayout(gd, 'xaxis.range[0]', 10).then(function() {
                 var maskMin = children[2],
                     maskMax = children[3],
-                    handleMin = children[7],
-                    handleMax = children[8];
+                    handleMin = children[5],
+                    handleMax = children[6];
 
                 expect(+maskMin.getAttribute('width')).toBeWithin(126, TOL);
                 expect(+maskMax.getAttribute('width')).toEqual(0);

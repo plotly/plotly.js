@@ -373,12 +373,10 @@ axes.doAutoRange = function(ax) {
         if(axeRangeOpts) {
             if(axeRangeOpts.rangemode === 'auto') {
                 axeRangeOpts.range = hasDeps ? axes.getAutoRange(ax) : ax.range.slice();
-            } else {
-                axeRangeOpts.range = ax.range.slice();
             }
         }
         axIn = ax._anchorAxis._input;
-        axIn.rangeslider[ax._name] = Object.assign({}, axeRangeOpts);
+        axIn.rangeslider[ax._name] = Lib.extendFlat({}, axeRangeOpts);
     }
 };
 

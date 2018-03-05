@@ -63,7 +63,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
             if(rangeContainerIn.range && layoutOut[yName].isValidRange(rangeContainerIn.range)) {
                 coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode', 'fixed');
             } else {
-                coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode', 'auto');
+                coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode');
             }
 
             layoutOut[yName].cleanRange('rangeslider.' + yName + '.range');
