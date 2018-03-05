@@ -32,6 +32,7 @@ var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
+var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
 
 var axes = module.exports = {};
 
@@ -2039,6 +2040,26 @@ axes.doTicks = function(gd, axid, skipTitle) {
             });
         }
 
+        // How much to shift a multi-line label to center it vertically.
+        function getAnchorHeight(lineCount, lineHeight, angle) {
+            var h = (lineCount - 1) * lineHeight;
+            if(axLetter === 'x') {
+                if(angle < -60 || 60 < angle) {
+                    return -0.5 * h;
+                } else if(axside === 'top') {
+                    return -h;
+                }
+            } else {
+                angle *= axside === 'left' ? 1 : -1;
+                if(angle < -30) {
+                    return -h;
+                } else if(angle < 30) {
+                    return -0.5 * h;
+                }
+            }
+            return 0;
+        }
+
         function positionLabels(s, angle) {
             s.each(function(d) {
                 var anchor = labelanchor(angle, d);
@@ -2049,6 +2070,13 @@ axes.doTicks = function(gd, axid, skipTitle) {
                         (' rotate(' + angle + ',' + labelx(d) + ',' +
                             (labely(d) - d.fontSize / 2) + ')') :
                         '');
+                var anchorHeight = getAnchorHeight(
+                    svgTextUtils.lineCount(thisLabel),
+                    LINE_SPACING * d.fontSize,
+                    isNumeric(angle) ? +angle : 0);
+                if(anchorHeight) {
+                    transform += ' translate(0, ' + anchorHeight + ')';
+                }
                 if(mathjaxGroup.empty()) {
                     thisLabel.select('text').attr({
                         transform: transform,
