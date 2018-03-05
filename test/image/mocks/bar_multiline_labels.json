@@ -1,46 +1,56 @@
 {
     "data":[
         {
-            "x":["x 1","multiple<br>lines","one<br>two<br>three"],
-            "y":["x 2","multiple<br>lines","one<br>two<br>three"]
+            "type": "bar",
+            "x":["x 1","multiple<br>lines","one<br >two<BR>three"],
+            "y":["x 2","multiple<br>lines","one<br >two<BR>three"]
         },
         {
+            "type": "bar",
             "x":["x 2","multiple<br>lines","one<br>two<br>three"],
             "y":["y 2","multiple<br>lines","one<br>two<br>three"],
             "xaxis": "x2",
             "yaxis": "y2"
         },
         {
+            "type": "bar",
             "x":["x 3","multiple<br>lines","one<br>two<br>three"],
             "y":["y 3","multiple<br>lines","one<br>two<br>three"],
             "xaxis": "x3",
             "yaxis": "y3"
         },
         {
+            "type": "bar",
             "x":["x 4","multiple<br>lines","one<br>two<br>three"],
             "y":["y 4","multiple<br>lines","one<br>two<br>three"],
             "xaxis": "x4",
             "yaxis": "y4"
         },
         {
+            "type": "bar",
+            "orientation": "h",
             "x":["x 5","multiple<br>lines","one<br>two<br>three"],
             "y":["y 5","multiple<br>lines","one<br>two<br>three"],
             "xaxis": "x5",
             "yaxis": "y5"
         },
         {
+            "type": "bar",
+            "orientation": "h",
             "x":["x 6","multiple<br>lines","one<br>two<br>three"],
             "y":["y 6","multiple<br>lines","one<br>two<br>three"],
             "xaxis": "x6",
             "yaxis": "y6"
         },
         {
+            "type": "scatter",
             "x":["x 7","multiple<br>lines","one<br>two<br>three"],
             "y":["y 7","multiple<br>lines","one<br>two<br>three"],
             "xaxis": "x7",
             "yaxis": "y7"
         },
         {
+            "type": "scatter",
             "x":["x 8","multiple<br>lines","one<br>two<br>three"],
             "y":["y 8","multiple<br>lines","one<br>two<br>three"],
             "xaxis": "x8",
