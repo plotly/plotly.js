@@ -6,18 +6,19 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Loggers = require('./lib/loggers');
 var noop = require('./lib/noop');
 var pushUnique = require('./lib/push_unique');
+var isPlainObject = require('./lib/is_plain_object');
 var ExtendModule = require('./lib/extend');
-var extendFlat = ExtendModule.extendFlat;
-var extendDeepAll = ExtendModule.extendDeepAll;
 
 var basePlotAttributes = require('./plots/attributes');
 var baseLayoutAttributes = require('./plots/layout_attributes');
+
+var extendFlat = ExtendModule.extendFlat;
+var extendDeepAll = ExtendModule.extendDeepAll;
 
 exports.modules = {};
 exports.allCategories = {};
@@ -29,175 +30,83 @@ exports.layoutArrayContainers = [];
 exports.layoutArrayRegexes = [];
 exports.traceLayoutAttributes = {};
 exports.localeRegistry = {};
+exports.apiMethodRegistry = {};
 
 /**
- * register a module as the handler for a trace type
+ * Top-level register routine, exported as Plotly.register
  *
- * @param {object} _module the module that will handle plotting this trace type
- * @param {string} thisType
- * @param {array of strings} categoriesIn all the categories this type is in,
- *     tested by calls: traceIs(trace, oneCategory)
- * @param {object} meta meta information about the trace type
+ * @param {object array or array of objects} _modules :
+ *  module object or list of module object to register.
+ *
+ *  A valid `moduleType: 'trace'` module has fields:
+ *  - name {string} : the trace type
+ *  - categories {array} : categories associated with this trace type,
+ *                         tested with Register.traceIs()
+ *  - meta {object} : meta info (mostly for plot-schema)
+ *
+ *  A valid `moduleType: 'locale'` module has fields:
+ *  - name {string} : the locale name. Should be a 2-digit language string ('en', 'de')
+ *                    optionally with a country/region code ('en-GB', 'de-CH'). If a country
+ *                    code is used but the base language locale has not yet been supplied,
+ *                    we will use this locale for the base as well.
+ *  - dictionary {object} : the dictionary mapping input strings to localized strings
+ *                          generally the keys should be the literal input strings, but
+ *                          if default translations are provided you can use any string as a key.
+ *  - format {object} : a `d3.locale` format specifier for this locale
+ *                      any omitted keys we'll fall back on en-US.
+ *
+ *  A valid `moduleType: 'transform'` module has fields:
+ *  - name {string} : transform name
+ *  - transform {function} : default-level transform function
+ *  - calcTransform {function} : calc-level transform function
+ *  - attributes {object} : transform attributes declarations
+ *  - supplyDefaults {function} : attributes default-supply function
+ *
+ *  A valid `moduleType: 'component'` module has fields:
+ *  - name {string} : the component name, used it with Register.getComponentMethod()
+ *                    to employ component method.
+ *
+ *  A valid `moduleType: 'apiMethod'` module has fields:
+ *  - name {string} : the api method name.
+ *  - fn {function} : the api method called with Register.call();
+ *
  */
-exports.register = function(_module, thisType, categoriesIn, meta) {
-    if(exports.modules[thisType]) {
-        Loggers.log('Type ' + thisType + ' already registered');
-        return;
+exports.register = function register(_modules) {
+    if(!_modules) {
+        throw new Error('No argument passed to Plotly.register.');
+    } else if(_modules && !Array.isArray(_modules)) {
+        _modules = [_modules];
     }
 
-    var categoryObj = {};
-    for(var i = 0; i < categoriesIn.length; i++) {
-        categoryObj[categoriesIn[i]] = true;
-        exports.allCategories[categoriesIn[i]] = true;
-    }
+    for(var i = 0; i < _modules.length; i++) {
+        var newModule = _modules[i];
 
-    exports.modules[thisType] = {
-        _module: _module,
-        categories: categoryObj
-    };
-
-    if(meta && Object.keys(meta).length) {
-        exports.modules[thisType].meta = meta;
-    }
-
-    exports.allTypes.push(thisType);
-
-    for(var componentName in exports.componentsRegistry) {
-        mergeComponentAttrsToTrace(componentName, thisType);
-    }
-
-    /*
-     * Collect all trace layout attributes in one place for easier lookup later
-     * but don't merge them into the base schema as it would confuse the docs
-     * (at least after https://github.com/plotly/documentation/issues/202 gets done!)
-     */
-    if(_module.layoutAttributes) {
-        extendFlat(exports.traceLayoutAttributes, _module.layoutAttributes);
-    }
-};
-
-/**
- * register a subplot type
- *
- * @param {object} _module subplot module:
- *
- *      @param {string or array of strings} attr
- *          attribute name in traces and layout
- *      @param {string or array of strings} idRoot
- *          root of id (setting the possible value for attrName)
- *      @param {object} attributes
- *          attribute(s) for traces of this subplot type
- *
- * In trace objects `attr` is the object key taking a valid `id` as value
- * (the set of all valid ids is generated below and stored in idRegex).
- *
- * In the layout object, a or several valid `attr` name(s) can be keys linked
- * to a nested attribute objects
- * (the set of all valid attr names is generated below and stored in attrRegex).
- */
-exports.registerSubplot = function(_module) {
-    var plotType = _module.name;
-
-    if(exports.subplotsRegistry[plotType]) {
-        Loggers.log('Plot type ' + plotType + ' already registered.');
-        return;
-    }
-
-    // relayout array handling will look for component module methods with this
-    // name and won't find them because this is a subplot module... but that
-    // should be fine, it will just fall back on redrawing the plot.
-    findArrayRegexps(_module);
-
-    // not sure what's best for the 'cartesian' type at this point
-    exports.subplotsRegistry[plotType] = _module;
-
-    for(var componentName in exports.componentsRegistry) {
-        mergeComponentAttrsToSubplot(componentName, _module.name);
-    }
-};
-
-exports.registerComponent = function(_module) {
-    var name = _module.name;
-
-    exports.componentsRegistry[name] = _module;
-
-    if(_module.layoutAttributes) {
-        if(_module.layoutAttributes._isLinkedToArray) {
-            pushUnique(exports.layoutArrayContainers, name);
+        if(!newModule) {
+            throw new Error('Invalid module was attempted to be registered!');
         }
-        findArrayRegexps(_module);
-    }
 
-    for(var traceType in exports.modules) {
-        mergeComponentAttrsToTrace(name, traceType);
-    }
-
-    for(var subplotName in exports.subplotsRegistry) {
-        mergeComponentAttrsToSubplot(name, subplotName);
-    }
-
-    for(var transformType in exports.transformsRegistry) {
-        mergeComponentAttrsToTransform(name, transformType);
-    }
-
-    if(_module.schema && _module.schema.layout) {
-        extendDeepAll(baseLayoutAttributes, _module.schema.layout);
-    }
-};
-
-exports.registerTransform = function(_module) {
-    exports.transformsRegistry[_module.name] = _module;
-
-    for(var componentName in exports.componentsRegistry) {
-        mergeComponentAttrsToTransform(componentName, _module.name);
-    }
-};
-
-function findArrayRegexps(_module) {
-    if(_module.layoutAttributes) {
-        var arrayAttrRegexps = _module.layoutAttributes._arrayAttrRegexps;
-        if(arrayAttrRegexps) {
-            for(var i = 0; i < arrayAttrRegexps.length; i++) {
-                pushUnique(exports.layoutArrayRegexes, arrayAttrRegexps[i]);
-            }
+        switch(newModule.moduleType) {
+            case 'trace':
+                registerTraceModule(newModule);
+                break;
+            case 'transform':
+                registerTransformModule(newModule);
+                break;
+            case 'component':
+                registerComponentModule(newModule);
+                break;
+            case 'locale':
+                registerLocale(newModule);
+                break;
+            case 'apiMethod':
+                var name = newModule.name;
+                exports.apiMethodRegistry[name] = newModule.fn;
+                break;
+            default:
+                throw new Error('Invalid module was attempted to be registered!');
         }
     }
-}
-
-function mergeComponentAttrsToTrace(componentName, traceType) {
-    var componentSchema = exports.componentsRegistry[componentName].schema;
-    if(!componentSchema || !componentSchema.traces) return;
-
-    var traceAttrs = componentSchema.traces[traceType];
-    if(traceAttrs) {
-        extendDeepAll(exports.modules[traceType]._module.attributes, traceAttrs);
-    }
-}
-
-function mergeComponentAttrsToTransform(componentName, transformType) {
-    var componentSchema = exports.componentsRegistry[componentName].schema;
-    if(!componentSchema || !componentSchema.transforms) return;
-
-    var transformAttrs = componentSchema.transforms[transformType];
-    if(transformAttrs) {
-        extendDeepAll(exports.transformsRegistry[transformType].attributes, transformAttrs);
-    }
-}
-
-function mergeComponentAttrsToSubplot(componentName, subplotName) {
-    var componentSchema = exports.componentsRegistry[componentName].schema;
-    if(!componentSchema || !componentSchema.subplots) return;
-
-    var subplotModule = exports.subplotsRegistry[subplotName];
-    var subplotAttrs = subplotModule.layoutAttributes;
-    var subplotAttr = subplotModule.attr === 'subplot' ? subplotModule.name : subplotModule.attr;
-    if(Array.isArray(subplotAttr)) subplotAttr = subplotAttr[0];
-
-    var componentLayoutAttrs = componentSchema.subplots[subplotAttr];
-    if(subplotAttrs && componentLayoutAttrs) {
-        extendDeepAll(subplotAttrs, componentLayoutAttrs);
-    }
-}
+};
 
 /**
  * Get registered module using trace object or trace type
@@ -280,7 +189,6 @@ exports.hasTransform = function(data, type) {
         }
     }
     return false;
-
 };
 
 /**
@@ -300,31 +208,151 @@ exports.getComponentMethod = function(name, method) {
     return _module[method] || noop;
 };
 
-function getTraceType(traceType) {
-    if(typeof traceType === 'object') traceType = traceType.type;
-    return traceType;
+/**
+ * Call registered api method.
+ *
+ * @param {string} name : api method name
+ * @param {...array} args : arguments passed to api method
+ * @return {any} : returns api method output
+ */
+exports.call = function() {
+    var name = arguments[0];
+    var args = [].slice.call(arguments, 1);
+    return exports.apiMethodRegistry[name].apply(null, args);
+};
+
+function registerTraceModule(_module) {
+    var thisType = _module.name;
+    var categoriesIn = _module.categories;
+    var meta = _module.meta;
+
+    if(exports.modules[thisType]) {
+        Loggers.log('Type ' + thisType + ' already registered');
+        return;
+    }
+
+    if(!exports.subplotsRegistry[_module.basePlotModule.name]) {
+        registerSubplot(_module.basePlotModule);
+    }
+
+    var categoryObj = {};
+    for(var i = 0; i < categoriesIn.length; i++) {
+        categoryObj[categoriesIn[i]] = true;
+        exports.allCategories[categoriesIn[i]] = true;
+    }
+
+    exports.modules[thisType] = {
+        _module: _module,
+        categories: categoryObj
+    };
+
+    if(meta && Object.keys(meta).length) {
+        exports.modules[thisType].meta = meta;
+    }
+
+    exports.allTypes.push(thisType);
+
+    for(var componentName in exports.componentsRegistry) {
+        mergeComponentAttrsToTrace(componentName, thisType);
+    }
+
+    /*
+     * Collect all trace layout attributes in one place for easier lookup later
+     * but don't merge them into the base schema as it would confuse the docs
+     * (at least after https://github.com/plotly/documentation/issues/202 gets done!)
+     */
+    if(_module.layoutAttributes) {
+        extendFlat(exports.traceLayoutAttributes, _module.layoutAttributes);
+    }
 }
 
-/**
- * Register a new locale dictionary
- *
- * @param {object} module
- * @param {string} moduleType
- *  should be 'locale' so that Plotly.register will forward to this function
- * @param {string} module.name
- *  the locale name. Should be a 2-digit language string ('en', 'de')
- *  optionally with a country/region code ('en-GB', 'de-CH'). If a country
- *  code is used but the base language locale has not yet been supplied,
- *  we will use this locale for the base as well.
- * @param {object} module.dictionary
- *  the dictionary mapping input strings to localized strings
- *  generally the keys should be the literal input strings, but
- *  if default translations are provided you can use any string as a key.
- * @param {object} module.format
- *  a `d3.locale` format specifier for this locale
- *  any omitted keys we'll fall back on en-US
- */
-exports.registerLocale = function(_module) {
+function registerSubplot(_module) {
+    var plotType = _module.name;
+
+    if(exports.subplotsRegistry[plotType]) {
+        Loggers.log('Plot type ' + plotType + ' already registered.');
+        return;
+    }
+
+    // relayout array handling will look for component module methods with this
+    // name and won't find them because this is a subplot module... but that
+    // should be fine, it will just fall back on redrawing the plot.
+    findArrayRegexps(_module);
+
+    // not sure what's best for the 'cartesian' type at this point
+    exports.subplotsRegistry[plotType] = _module;
+
+    for(var componentName in exports.componentsRegistry) {
+        mergeComponentAttrsToSubplot(componentName, _module.name);
+    }
+}
+
+function registerComponentModule(_module) {
+    if(typeof _module.name !== 'string') {
+        throw new Error('Component module *name* must be a string.');
+    }
+
+    var name = _module.name;
+    exports.componentsRegistry[name] = _module;
+
+    if(_module.layoutAttributes) {
+        if(_module.layoutAttributes._isLinkedToArray) {
+            pushUnique(exports.layoutArrayContainers, name);
+        }
+        findArrayRegexps(_module);
+    }
+
+    for(var traceType in exports.modules) {
+        mergeComponentAttrsToTrace(name, traceType);
+    }
+
+    for(var subplotName in exports.subplotsRegistry) {
+        mergeComponentAttrsToSubplot(name, subplotName);
+    }
+
+    for(var transformType in exports.transformsRegistry) {
+        mergeComponentAttrsToTransform(name, transformType);
+    }
+
+    if(_module.schema && _module.schema.layout) {
+        extendDeepAll(baseLayoutAttributes, _module.schema.layout);
+    }
+}
+
+function registerTransformModule(_module) {
+    if(typeof _module.name !== 'string') {
+        throw new Error('Transform module *name* must be a string.');
+    }
+
+    var prefix = 'Transform module ' + _module.name;
+    var hasTransform = typeof _module.transform === 'function';
+    var hasCalcTransform = typeof _module.calcTransform === 'function';
+
+    if(!hasTransform && !hasCalcTransform) {
+        throw new Error(prefix + ' is missing a *transform* or *calcTransform* method.');
+    }
+    if(hasTransform && hasCalcTransform) {
+        Loggers.log([
+            prefix + ' has both a *transform* and *calcTransform* methods.',
+            'Please note that all *transform* methods are executed',
+            'before all *calcTransform* methods.'
+        ].join(' '));
+    }
+    if(!isPlainObject(_module.attributes)) {
+        Loggers.log(prefix + ' registered without an *attributes* object.');
+    }
+    if(typeof _module.supplyDefaults !== 'function') {
+        Loggers.log(prefix + ' registered without a *supplyDefaults* method.');
+    }
+
+    exports.transformsRegistry[_module.name] = _module;
+
+    for(var componentName in exports.componentsRegistry) {
+        mergeComponentAttrsToTransform(componentName, _module.name);
+    }
+}
+
+function registerLocale(_module) {
     var locale = _module.name;
     var baseLocale = locale.split('-')[0];
 
@@ -358,4 +386,55 @@ exports.registerLocale = function(_module) {
 
     if(hasDict) localeObj.dictionary = newDict;
     if(hasFormat) localeObj.format = newFormat;
-};
+}
+
+function findArrayRegexps(_module) {
+    if(_module.layoutAttributes) {
+        var arrayAttrRegexps = _module.layoutAttributes._arrayAttrRegexps;
+        if(arrayAttrRegexps) {
+            for(var i = 0; i < arrayAttrRegexps.length; i++) {
+                pushUnique(exports.layoutArrayRegexes, arrayAttrRegexps[i]);
+            }
+        }
+    }
+}
+
+function mergeComponentAttrsToTrace(componentName, traceType) {
+    var componentSchema = exports.componentsRegistry[componentName].schema;
+    if(!componentSchema || !componentSchema.traces) return;
+
+    var traceAttrs = componentSchema.traces[traceType];
+    if(traceAttrs) {
+        extendDeepAll(exports.modules[traceType]._module.attributes, traceAttrs);
+    }
+}
+
+function mergeComponentAttrsToTransform(componentName, transformType) {
+    var componentSchema = exports.componentsRegistry[componentName].schema;
+    if(!componentSchema || !componentSchema.transforms) return;
+
+    var transformAttrs = componentSchema.transforms[transformType];
+    if(transformAttrs) {
+        extendDeepAll(exports.transformsRegistry[transformType].attributes, transformAttrs);
+    }
+}
+
+function mergeComponentAttrsToSubplot(componentName, subplotName) {
+    var componentSchema = exports.componentsRegistry[componentName].schema;
+    if(!componentSchema || !componentSchema.subplots) return;
+
+    var subplotModule = exports.subplotsRegistry[subplotName];
+    var subplotAttrs = subplotModule.layoutAttributes;
+    var subplotAttr = subplotModule.attr === 'subplot' ? subplotModule.name : subplotModule.attr;
+    if(Array.isArray(subplotAttr)) subplotAttr = subplotAttr[0];
+
+    var componentLayoutAttrs = componentSchema.subplots[subplotAttr];
+    if(subplotAttrs && componentLayoutAttrs) {
+        extendDeepAll(subplotAttrs, componentLayoutAttrs);
+    }
+}
+
+function getTraceType(traceType) {
+    if(typeof traceType === 'object') traceType = traceType.type;
+    return traceType;
+}

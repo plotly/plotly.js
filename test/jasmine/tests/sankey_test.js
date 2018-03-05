@@ -179,7 +179,7 @@ describe('sankey tests', function() {
                 }
             });
 
-            expect(Lib.isArray(fullTrace.node.color)).toBe(true, 'set up color array');
+            expect(Array.isArray(fullTrace.node.color)).toBe(true, 'set up color array');
             expect(fullTrace.node.color).toEqual(['rgba(31, 119, 180, 0.8)', 'rgba(255, 127, 14, 0.8)']);
 
         });
@@ -197,7 +197,7 @@ describe('sankey tests', function() {
                 }
             }, {colorway: ['rgb(255, 0, 0)', 'rgb(0, 0, 255)']});
 
-            expect(Lib.isArray(fullTrace.node.color)).toBe(true, 'set up color array');
+            expect(Array.isArray(fullTrace.node.color)).toBe(true, 'set up color array');
             expect(fullTrace.node.color).toEqual(['rgba(255, 0, 0, 0.8)', 'rgba(0, 0, 255, 0.8)']);
 
         });
@@ -215,7 +215,7 @@ describe('sankey tests', function() {
                 }
             });
 
-            expect(Lib.isArray(fullTrace.link.label)).toBe(true, 'must be an array');
+            expect(Array.isArray(fullTrace.link.label)).toBe(true, 'must be an array');
             expect(fullTrace.link.label).toEqual([], 'an array of empty strings');
         });
 
@@ -233,7 +233,7 @@ describe('sankey tests', function() {
                 }
             });
 
-            expect(Lib.isArray(fullTrace.link.label)).toBe(true, 'must be an array');
+            expect(Array.isArray(fullTrace.link.label)).toBe(true, 'must be an array');
             expect(fullTrace.link.label).toEqual(['a', 'b'], 'an array of the supplied values');
         });
     });

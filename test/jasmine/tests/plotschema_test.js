@@ -317,6 +317,32 @@ describe('plot schema', function() {
         expect(plotSchema.frames.items.frames_entry).toBeDefined();
         expect(plotSchema.frames.items.frames_entry.role).toEqual('object');
     });
+
+    it('should list trace-dependent & direction-dependent error bar attributes', function() {
+        var scatterSchema = plotSchema.traces.scatter.attributes;
+        expect(scatterSchema.error_x.copy_ystyle).toBeDefined();
+        expect(scatterSchema.error_x.copy_ystyle.editType).toBe('plot');
+        expect(scatterSchema.error_x.copy_zstyle).toBeUndefined();
+        expect(scatterSchema.error_y.copy_ystyle).toBeUndefined();
+        expect(scatterSchema.error_y.copy_zstyle).toBeUndefined();
+
+        var scatter3dSchema = plotSchema.traces.scatter3d.attributes;
+        expect(scatter3dSchema.error_x.copy_ystyle).toBeUndefined();
+        expect(scatter3dSchema.error_x.copy_zstyle).toBeDefined();
+        expect(scatter3dSchema.error_x.copy_zstyle.editType).toBe('calc');
+        expect(scatter3dSchema.error_y.copy_ystyle).toBeUndefined();
+        expect(scatter3dSchema.error_y.copy_zstyle).toBeDefined();
+        expect(scatter3dSchema.error_y.copy_zstyle.editType).toBe('calc');
+        expect(scatter3dSchema.error_z.copy_ystyle).toBeUndefined();
+        expect(scatter3dSchema.error_z.copy_zstyle).toBeUndefined();
+
+        var scatterglSchema = plotSchema.traces.scattergl.attributes;
+        expect(scatterglSchema.error_x.copy_ystyle).toBeDefined();
+        expect(scatterglSchema.error_x.copy_ystyle.editType).toBe('calc');
+        expect(scatterglSchema.error_x.copy_zstyle).toBeUndefined();
+        expect(scatterglSchema.error_y.copy_ystyle).toBeUndefined();
+        expect(scatterglSchema.error_y.copy_zstyle).toBeUndefined();
+    });
 });
 
 describe('getTraceValObject', function() {

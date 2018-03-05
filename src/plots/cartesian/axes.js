@@ -11,6 +11,7 @@
 
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+var Plots = require('../../plots/plots');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -424,6 +425,13 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
     return hasOneAxisChanged;
 };
 
+axes.doesAxisNeedAutoRange = function(ax) {
+    return (
+        ax.autorange ||
+        !!Lib.nestedProperty(ax, 'rangeslider.autorange').get()
+    );
+};
+
 // axes.expand: if autoranging, include new data in the outer limits
 // for this axis
 // data is an array of numbers (ie already run through ax.d2c)
@@ -437,12 +445,7 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
 //      tozero: (boolean) make sure to include zero if axis is linear,
 //          and make it a tight bound if possible
 axes.expand = function(ax, data, options) {
-    var needsAutorange = (
-        ax.autorange ||
-        !!Lib.nestedProperty(ax, 'rangeslider.autorange').get()
-    );
-
-    if(!needsAutorange || !data) return;
+    if(!axes.doesAxisNeedAutoRange(ax) || !data) return;
 
     if(!ax._min) ax._min = [];
     if(!ax._max) ax._max = [];
@@ -1529,7 +1532,7 @@ function numFormat(v, ax, fmtoverride, hover) {
     if(hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {
-            exponentformat: ax.exponentformat,
+            exponentformat: exponentFormat,
             dtick: ax.showexponent === 'none' ? ax.dtick :
                 (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent
@@ -2243,10 +2246,40 @@ axes.doTicks = function(gd, axid, skipTitle) {
             }
         }
 
+        function doAutoMargins() {
+            if(!ax.automargin) { return; }
+            if(axLetter !== 'x' && axLetter !== 'y') { return; }
+
+            var s = ax.side[0];
+            var push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
+
+            if(axLetter === 'x') {
+                push.y = (ax.anchor === 'free' ? ax.position :
+                        ax._anchorAxis.domain[s === 't' ? 1 : 0]);
+                push[s] += ax._boundingBox.height;
+            }
+            else {
+                push.x = (ax.anchor === 'free' ? ax.position :
+                        ax._anchorAxis.domain[s === 'r' ? 1 : 0]);
+                push[s] += ax._boundingBox.width;
+            }
+
+            if(ax.title !== fullLayout._dfltTitle[axLetter]) {
+                push[s] += ax.titlefont.size;
+            }
+
+            var pushKey = ax._name + '.automargin';
+            var prevPush = fullLayout._pushmargin[pushKey];
+            if(!prevPush || prevPush[s].size < push[s]) {
+                Plots.autoMargin(gd, pushKey, push);
+            }
+        }
+
         var done = Lib.syncOrAsync([
             allLabelsReady,
             fixLabelOverlaps,
-            calcBoundingBox
+            calcBoundingBox,
+            doAutoMargins
         ]);
         if(done && done.then) gd._promises.push(done);
         return done;

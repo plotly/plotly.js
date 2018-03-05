@@ -13,7 +13,6 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var supportsPassive = require('has-passive-events');
 
-var Plotly = require('../../plotly');
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -213,7 +212,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                         .on('edit', function(text) {
                             var v = ax.d2r(text);
                             if(v !== undefined) {
-                                Plotly.relayout(gd, attrStr, v);
+                                Registry.call('relayout', gd, attrStr, v);
                             }
                         });
                 }
@@ -655,7 +654,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         gd.emit('plotly_doubleclick', null);
-        Plotly.relayout(gd, attrs);
+        Registry.call('relayout', gd, attrs);
     }
 
     // dragTail - finish a drag event with a redraw
@@ -669,7 +668,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // accumulated MathJax promises - wait for them before we relayout.
         Lib.syncOrAsync([
             Plots.previousPromises,
-            function() { Plotly.relayout(gd, updates); }
+            function() { Registry.call('relayout', gd, updates); }
         ], gd);
     }
 

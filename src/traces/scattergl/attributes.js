@@ -87,8 +87,6 @@ var attrs = module.exports = overrideAll({
         editType: 'calc'
     }),
 
-    error_y: scatterAttrs.error_y,
-    error_x: scatterAttrs.error_x
 }, 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'calc+clearAxisTypes';

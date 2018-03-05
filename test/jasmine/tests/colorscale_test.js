@@ -190,6 +190,41 @@ describe('Test colorscale:', function() {
             expect(hasColorscale(trace, 'marker')).toBe(true);
             expect(hasColorscale(trace, 'marker.line')).toBe(true);
         });
+
+        it('should return true when marker color is a typed array with at least one non-NaN', function() {
+            trace = {
+                marker: {
+                    color: new Float32Array([1, 2, 3]),
+                    line: {
+                        color: new Float32Array([2, 3, 4])
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(true);
+            expect(hasColorscale(trace, 'marker.line')).toBe(true);
+
+            trace = {
+                marker: {
+                    color: new Float32Array([1, NaN, 3]),
+                    line: {
+                        color: new Float32Array([2, 3, NaN])
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(true);
+            expect(hasColorscale(trace, 'marker.line')).toBe(true);
+
+            trace = {
+                marker: {
+                    color: new Float32Array([NaN, undefined, 'not-a-number']),
+                    line: {
+                        color: new Float32Array(['not-a-number', NaN, undefined])
+                    }
+                }
+            };
+            expect(hasColorscale(trace, 'marker')).toBe(false);
+            expect(hasColorscale(trace, 'marker.line')).toBe(false);
+        });
     });
 
     describe('handleDefaults (heatmap-like version)', function() {

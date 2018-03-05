@@ -11,7 +11,6 @@
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
-var Plotly = require('../../plotly');
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
@@ -286,7 +285,10 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         position: 0,
 
         // dummy truthy value to make Axes.doTicks draw the grid
-        _counteraxis: true
+        _counteraxis: true,
+
+        // don't use automargins routine for labels
+        automargin: false
     });
 
     setScale(ax, radialLayout, fullLayout);
@@ -410,7 +412,10 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         position: 0,
 
         // dummy truthy value to make Axes.doTicks draw the grid
-        _counteraxis: true
+        _counteraxis: true,
+
+        // don't use automargins routine for labels
+        automargin: false
     });
 
     // Set the angular range in degrees to make auto-tick computation cleaner,
@@ -685,7 +690,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             radialRange[0] + r1 * drange / radius
         ];
 
-        Plotly.relayout(gd, updateObj);
+        Registry.call('relayout', gd, updateObj);
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {
@@ -719,7 +724,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             }
 
             gd.emit('plotly_doubleclick', null);
-            Plotly.relayout(gd, updateObj);
+            Registry.call('relayout', gd, updateObj);
         }
 
         Fx.click(gd, evt, _this.id);
@@ -789,9 +794,9 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
 
     function doneFn() {
         if(angle1 !== null) {
-            Plotly.relayout(gd, _this.id + '.radialaxis.angle', angle1);
+            Registry.call('relayout', gd, _this.id + '.radialaxis.angle', angle1);
         } else if(rng1 !== null) {
-            Plotly.relayout(gd, _this.id + '.radialaxis.range[1]', rng1);
+            Registry.call('relayout', gd, _this.id + '.radialaxis.range[1]', rng1);
         }
     }
 
@@ -971,7 +976,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
         scatterTextPoints.select('text').attr('transform', null);
         var updateObj = {};
         updateObj[_this.id + '.angularaxis.rotation'] = rot1;
-        Plotly.relayout(gd, updateObj);
+        Registry.call('relayout', gd, updateObj);
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {

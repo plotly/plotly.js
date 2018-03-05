@@ -138,6 +138,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             data: fullData,
             bgColor: bgColor,
             calendar: layoutOut.calendar,
+            automargin: true,
             cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName]
         };
 

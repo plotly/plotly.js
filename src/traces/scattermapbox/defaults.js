@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -48,8 +47,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         marker.line = {width: 0};
 
         if(marker.symbol !== 'circle') {
-            if(Array.isArray(marker.size)) marker.size = marker.size[0];
-            if(Array.isArray(marker.color)) marker.color = marker.color[0];
+            if(Lib.isArrayOrTypedArray(marker.size)) marker.size = marker.size[0];
+            if(Lib.isArrayOrTypedArray(marker.color)) marker.color = marker.color[0];
         }
     }
 

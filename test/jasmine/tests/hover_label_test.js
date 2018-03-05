@@ -4,6 +4,7 @@ var Plotly = require('@lib/index');
 var Fx = require('@src/components/fx');
 var Lib = require('@src/lib');
 var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
+var MINUS_SIGN = require('@src/constants/numerical').MINUS_SIGN;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -501,8 +502,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 2',
@@ -538,12 +538,50 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
                     name: 'one'
+                });
+            })
+            .catch(fail)
+            .then(done);
+        });
+
+        it('provides exponents correctly for z data', function(done) {
+            function expFmt(val, exp) {
+                return val + '×10\u200b<tspan style="font-size:70%" dy="-0.6em">' +
+                    (exp < 0 ? MINUS_SIGN + -exp : exp) +
+                    '</tspan><tspan dy="0.42em">\u200b</tspan>';
+            }
+            Plotly.plot(gd, [{
+                type: 'heatmap',
+                y: [0, 1, 2, 3],
+                z: [
+                    [-1.23456789e23, -1e10, -1e4],
+                    [-1e-2, -1e-8, 0],
+                    [1.23456789e-23, 1e-8, 1e-2],
+                    [123.456789, 1.23456789e10, 1e23]
+                ],
+                showscale: false
+            }], {
+                width: 600,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0}
+            })
+            .then(function() {
+                [
+                    [expFmt(MINUS_SIGN + '1.234568', 23), MINUS_SIGN + '10B', MINUS_SIGN + '10k'],
+                    [MINUS_SIGN + '0.01', MINUS_SIGN + '10n', '0'],
+                    [expFmt('1.234568', -23), '10n', '0.01'],
+                    ['123.4568', '12.34568B', expFmt('1', 23)]
+                ]
+                .forEach(function(row, y) {
+                    row.forEach(function(zVal, x) {
+                        _hover(gd, (x + 0.5) * 200, (3.5 - y) * 100);
+                        assertHoverLabelContent({nums: 'x: ' + x + '\ny: ' + y + '\nz: ' + zVal}, zVal);
+                    });
                 });
             })
             .catch(fail)
@@ -575,8 +613,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
@@ -684,8 +721,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 300);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
@@ -723,8 +759,7 @@ describe('hover info', function() {
                     nums: 'x: 1\ny: 3\nz: 2',
                     name: 'two'
                 });
-            })
-            .then(function() {
+
                 _hover(gd, 250, 270);
                 assertHoverLabelContent({
                     nums: 'x: 1\ny: 1\nz: 5.56',
@@ -1073,6 +1108,92 @@ describe('hover info', function() {
             .then(done);
         });
 
+    });
+
+    describe('centered', function() {
+        var trace1 = {
+            x: ['giraffes'],
+            y: [5],
+            name: 'LA Zoo',
+            type: 'bar',
+            text: ['Way too long hover info!']
+        };
+        var trace2 = {
+            x: ['giraffes'],
+            y: [5],
+            name: 'SF Zoo',
+            type: 'bar',
+            text: ['San Francisco']
+        };
+        var data = [trace1, trace2];
+        var layout = {width: 600, height: 300, barmode: 'stack'};
+
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, data, layout).then(done);
+        });
+
+        function centeredHoverInfoNodes() {
+            var g = d3.selectAll('g.hoverlayer g.hovertext').filter(function() {
+                return !d3.select(this).select('[data-unformatted="LA Zoo"]').empty();
+            });
+
+            return {
+                primaryText: g.select('text:not([data-unformatted="LA Zoo"])').node(),
+                primaryBox: g.select('path').node(),
+                secondaryText: g.select('[data-unformatted="LA Zoo"]').node(),
+                secondaryBox: g.select('rect').node()
+            };
+        }
+
+        function ensureCentered(hoverInfoNodes) {
+            expect(hoverInfoNodes.primaryText.getAttribute('text-anchor')).toBe('middle');
+            expect(hoverInfoNodes.secondaryText.getAttribute('text-anchor')).toBe('middle');
+            return hoverInfoNodes;
+        }
+
+        function assertElemInside(elem, container, msg) {
+            var elemBB = elem.getBoundingClientRect();
+            var contBB = container.getBoundingClientRect();
+            expect(contBB.left < elemBB.left &&
+              contBB.right > elemBB.right &&
+              contBB.top < elemBB.top &&
+              contBB.bottom > elemBB.bottom).toBe(true, msg);
+        }
+
+        function assertElemRightTo(elem, refElem, msg) {
+            var elemBB = elem.getBoundingClientRect();
+            var refElemBB = refElem.getBoundingClientRect();
+            expect(elemBB.left >= refElemBB.right).toBe(true, msg);
+        }
+
+        function assertTopsAligned(elem1, elem2, msg) {
+            var elem1BB = elem1.getBoundingClientRect();
+            var elem2BB = elem2.getBoundingClientRect();
+
+            // Hint: toBeWithin tolerance is exclusive, hence a
+            // diff of exactly 1 would fail the test
+            var tolerance = 1.1;
+            expect(elem1BB.top - elem2BB.top).toBeWithin(0, tolerance, msg);
+        }
+
+        it('renders labels inside boxes', function() {
+            _hover(gd, 300, 150);
+
+            var nodes = ensureCentered(centeredHoverInfoNodes());
+            assertElemInside(nodes.primaryText, nodes.primaryBox, 'Primary text inside box');
+            assertElemInside(nodes.secondaryText, nodes.secondaryBox, 'Secondary text inside box');
+        });
+
+        it('renders secondary info box right to primary info box', function() {
+            _hover(gd, 300, 150);
+
+            var nodes = ensureCentered(centeredHoverInfoNodes());
+            assertElemRightTo(nodes.secondaryBox, nodes.primaryBox, 'Secondary box right to primary box');
+            assertTopsAligned(nodes.secondaryBox, nodes.primaryBox, 'Top edges of primary and secondary boxes aligned');
+        });
     });
 });
 

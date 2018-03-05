@@ -9,6 +9,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var tinycolor = require('tinycolor2');
 
 var Color = require('../../components/color');
@@ -16,7 +17,7 @@ var helpers = require('./helpers');
 
 module.exports = function calc(gd, trace) {
     var vals = trace.values;
-    var hasVals = Array.isArray(vals) && vals.length;
+    var hasVals = isArrayOrTypedArray(vals) && vals.length;
     var labels = trace.labels;
     var colors = trace.marker.colors || [];
     var cd = [];

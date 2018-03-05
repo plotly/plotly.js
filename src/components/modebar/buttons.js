@@ -9,13 +9,11 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var Lib = require('../../lib');
-var downloadImage = require('../../snapshot/download');
 var Icons = require('../../../build/ploticon');
-
 
 var _ = Lib._;
 
@@ -61,7 +59,7 @@ modeBarButtons.toImage = {
             format = 'svg';
         }
 
-        downloadImage(gd, {'format': format})
+        Registry.call('downloadImage', gd, {'format': format})
           .then(function(filename) {
               Lib.notifier(_(gd, 'Snapshot succeeded') + ' - ' + filename, 'long');
           })
@@ -250,7 +248,7 @@ function handleCartesian(gd, ev) {
         aobj[astr] = val;
     }
 
-    Plotly.relayout(gd, aobj);
+    Registry.call('relayout', gd, aobj);
 }
 
 modeBarButtons.zoom3d = {
@@ -306,7 +304,7 @@ function handleDrag3d(gd, ev) {
     var val2d = (val === 'pan') ? val : 'zoom';
     layoutUpdate.dragmode = val2d;
 
-    Plotly.relayout(gd, layoutUpdate);
+    Registry.call('relayout', gd, layoutUpdate);
 }
 
 modeBarButtons.resetCameraDefault3d = {
@@ -345,7 +343,7 @@ function handleCamera3d(gd, ev) {
         }
     }
 
-    Plotly.relayout(gd, aobj);
+    Registry.call('relayout', gd, aobj);
 }
 
 modeBarButtons.hoverClosest3d = {
@@ -406,7 +404,7 @@ function handleHover3d(gd, ev) {
         button._previousVal = Lib.extendDeep({}, currentSpikes);
     }
 
-    Plotly.relayout(gd, layoutUpdate);
+    Registry.call('relayout', gd, layoutUpdate);
 }
 
 modeBarButtons.zoomInGeo = {
@@ -462,7 +460,7 @@ function handleGeo(gd, ev) {
             var scale = geoLayout.projection.scale;
             var newScale = (val === 'in') ? 2 * scale : 0.5 * scale;
 
-            Plotly.relayout(gd, id + '.projection.scale', newScale);
+            Registry.call('relayout', gd, id + '.projection.scale', newScale);
         } else if(attr === 'reset') {
             resetView(gd, 'geo');
         }
@@ -501,7 +499,7 @@ function toggleHover(gd) {
 
     var newHover = gd._fullLayout.hovermode ? false : onHoverVal;
 
-    Plotly.relayout(gd, 'hovermode', newHover);
+    Registry.call('relayout', gd, 'hovermode', newHover);
 }
 
 // buttons when more then one plot types are present
@@ -556,7 +554,7 @@ modeBarButtons.toggleSpikelines = {
 
         var aobj = setSpikelineVisibility(gd);
 
-        Plotly.relayout(gd, aobj);
+        Registry.call('relayout', gd, aobj);
     }
 };
 
@@ -603,5 +601,5 @@ function resetView(gd, subplotType) {
         }
     }
 
-    Plotly.relayout(gd, aObj);
+    Registry.call('relayout', gd, aObj);
 }

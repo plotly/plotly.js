@@ -10,6 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 var Registry = require('../../registry');
@@ -313,7 +314,7 @@ function applyAttributes(sieve) {
             initialPoffset = t.poffset,
             newPoffset;
 
-        if(Array.isArray(offset)) {
+        if(isArrayOrTypedArray(offset)) {
             // if offset is an array, then clone it into t.poffset.
             newPoffset = offset.slice(0, calcTrace.length);
 
@@ -339,7 +340,7 @@ function applyAttributes(sieve) {
         var width = fullTrace.width,
             initialBarwidth = t.barwidth;
 
-        if(Array.isArray(width)) {
+        if(isArrayOrTypedArray(width)) {
             // if width is an array, then clone it into t.barwidth.
             var newBarwidth = width.slice(0, calcTrace.length);
 

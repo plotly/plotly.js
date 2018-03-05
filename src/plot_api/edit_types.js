@@ -35,7 +35,7 @@ var layoutOpts = {
     valType: 'flaglist',
     extras: ['none'],
     flags: [
-        'calc', 'calcIfAutorange', 'plot', 'legend', 'ticks',
+        'calc', 'calcIfAutorange', 'plot', 'legend', 'ticks', 'margins',
         'layoutstyle', 'modebar', 'camera', 'arraydraw'
     ],
     description: [
@@ -47,6 +47,7 @@ var layoutOpts = {
         '*plot* calls `Plotly.plot` but without first clearing `gd.calcdata`.',
         '*legend* only redraws the legend.',
         '*ticks* only redraws axis ticks, labels, and gridlines.',
+        '*margins* recomputes ticklabel automargins.',
         '*layoutstyle* reapplies global and SVG cartesian axis styles.',
         '*modebar* just updates the modebar.',
         '*camera* just updates the camera settings for gl3d scenes.',

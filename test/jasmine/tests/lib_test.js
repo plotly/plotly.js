@@ -5,10 +5,9 @@ var config = require('@src/plot_api/plot_config');
 
 var d3 = require('d3');
 var Plotly = require('@lib');
-var PlotlyInternal = require('@src/plotly');
+var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var Plots = PlotlyInternal.Plots;
 var failTest = require('../assets/fail_test');
 
 describe('Test lib.js:', function() {
@@ -650,6 +649,24 @@ describe('Test lib.js:', function() {
             expect(aOut).toBe(outObj.a);
             expect(cOut).toBe(cVal);
             expect(cOut).toBe(outObj.b.c);
+        });
+
+        describe('data_array valType', function() {
+            var attrs = {
+                d: {valType: 'data_array'}
+            };
+
+            it('should pass ref to out object (plain array case)', function() {
+                var arr = [1, 2, 3];
+                out = coerce({d: arr}, {}, attrs, 'd');
+                expect(out).toBe(arr);
+            });
+
+            it('should pass ref to out object (typed array case)', function() {
+                var arr = new Float32Array([1, 2, 3]);
+                out = coerce({d: arr}, {}, attrs, 'd');
+                expect(out).toBe(arr);
+            });
         });
 
         describe('string valType', function() {

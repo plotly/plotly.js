@@ -9,6 +9,7 @@
 'use strict';
 
 var Registry = require('../../registry');
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
 module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var arrayOut = [],
@@ -19,7 +20,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
         dv,
         i;
 
-    var isArrayOfTwoItemsOrMore = Array.isArray(arrayIn) && arrayIn.length > 1;
+    var isArrayOfTwoItemsOrMore = isArrayOrTypedArray(arrayIn) && arrayIn.length > 1;
 
     if(isArrayOfTwoItemsOrMore && !isHist && (ax.type !== 'category')) {
         var len = arrayIn.length;
@@ -67,7 +68,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
         var calendar = trace[ax._id.charAt(0) + 'calendar'];
 
         if(isHist || ax.type === 'category') v0 = ax.r2c(v0In, 0, calendar) || 0;
-        else if(Array.isArray(arrayIn) && arrayIn.length === 1) v0 = arrayIn[0];
+        else if(isArrayOrTypedArray(arrayIn) && arrayIn.length === 1) v0 = arrayIn[0];
         else if(v0In === undefined) v0 = 0;
         else v0 = ax.d2c(v0In, 0, calendar);
 

@@ -13,7 +13,7 @@ var mouseOffset = require('mouse-event-offset');
 var hasHover = require('has-hover');
 var supportsPassive = require('has-passive-events');
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 
 var constants = require('../../plots/cartesian/constants');
@@ -135,7 +135,7 @@ dragElement.init = function init(options) {
         startY = offset[1];
         initialTarget = e.target;
         initialEvent = e;
-        rightClick = (e.buttons && e.buttons === 2) || e.ctrlKey;
+        rightClick = e.buttons === 2 || e.ctrlKey;
 
         newMouseDownTime = (new Date()).getTime();
         if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
@@ -278,7 +278,7 @@ dragElement.coverSlip = coverSlip;
 
 function finishDrag(gd) {
     gd._dragging = false;
-    if(gd._replotPending) Plotly.plot(gd);
+    if(gd._replotPending) Registry.call('plot', gd);
 }
 
 function pointerOffset(e) {

@@ -87,7 +87,7 @@ function sankeyModel(layout, d, i) {
         return {
             pointNumber: i,
             label: l,
-            color: Lib.isArray(nodeSpec.color) ? nodeSpec.color[i] : nodeSpec.color
+            color: Lib.isArrayOrTypedArray(nodeSpec.color) ? nodeSpec.color[i] : nodeSpec.color
         };
     });
 
@@ -95,7 +95,7 @@ function sankeyModel(layout, d, i) {
         return {
             pointNumber: i,
             label: linkSpec.label[i],
-            color: Lib.isArray(linkSpec.color) ? linkSpec.color[i] : linkSpec.color,
+            color: Lib.isArrayOrTypedArray(linkSpec.color) ? linkSpec.color[i] : linkSpec.color,
             source: linkSpec.source[i],
             target: linkSpec.target[i],
             value: d

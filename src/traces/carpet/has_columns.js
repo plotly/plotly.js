@@ -6,9 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
+
 module.exports = function(data) {
-    return Array.isArray(data[0]);
+    return isArrayOrTypedArray(data[0]);
 };

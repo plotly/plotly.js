@@ -145,9 +145,9 @@ function makeCircleOpts(calcTrace) {
     var trace = calcTrace[0].trace;
     var marker = trace.marker;
     var selectedpoints = trace.selectedpoints;
-    var arrayColor = Array.isArray(marker.color);
-    var arraySize = Array.isArray(marker.size);
-    var arrayOpacity = Array.isArray(marker.opacity);
+    var arrayColor = Lib.isArrayOrTypedArray(marker.color);
+    var arraySize = Lib.isArrayOrTypedArray(marker.size);
+    var arrayOpacity = Lib.isArrayOrTypedArray(marker.opacity);
     var i;
 
     function addTraceOpacity(o) { return trace.opacity * o; }
@@ -279,7 +279,7 @@ function makeSymbolGeoJSON(calcTrace) {
 }
 
 function getFillFunc(attr) {
-    if(Array.isArray(attr)) {
+    if(Lib.isArrayOrTypedArray(attr)) {
         return function(v) { return v; };
     }
     else if(attr) {

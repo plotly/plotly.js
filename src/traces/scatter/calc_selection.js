@@ -11,7 +11,7 @@
 var Lib = require('../../lib');
 
 module.exports = function calcSelection(cd, trace) {
-    if(Array.isArray(trace.selectedpoints)) {
+    if(Lib.isArrayOrTypedArray(trace.selectedpoints)) {
         Lib.tagSelected(cd, trace);
     }
 };

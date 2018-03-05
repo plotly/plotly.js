@@ -308,14 +308,14 @@ var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
 function coordinateBound(axis, coord, len, d, bounds, calendar) {
     var x;
-    if(!Array.isArray(coord)) {
+    if(!Lib.isArrayOrTypedArray(coord)) {
         bounds[0][d] = Math.min(bounds[0][d], 0);
         bounds[1][d] = Math.max(bounds[1][d], len - 1);
         return;
     }
 
     for(var i = 0; i < (len || coord.length); ++i) {
-        if(Array.isArray(coord[i])) {
+        if(Lib.isArrayOrTypedArray(coord[i])) {
             for(var j = 0; j < coord[i].length; ++j) {
                 x = axis.d2l(coord[i][j], 0, calendar);
                 if(!isNaN(x) && isFinite(x)) {

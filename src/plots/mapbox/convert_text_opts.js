@@ -11,7 +11,6 @@
 
 var Lib = require('../../lib');
 
-
 /**
  * Convert plotly.js 'textposition' to mapbox-gl 'anchor' and 'offset'
  * (with the help of the icon size).
@@ -29,7 +28,7 @@ module.exports = function convertTextOpts(textposition, iconSize) {
         hPos = parts[1];
 
     // ballpack values
-    var factor = Array.isArray(iconSize) ? Lib.mean(iconSize) : iconSize,
+    var factor = Lib.isArrayOrTypedArray(iconSize) ? Lib.mean(iconSize) : iconSize,
         xInc = 0.5 + (factor / 100),
         yInc = 1.5 + (factor / 100);
 

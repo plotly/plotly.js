@@ -32,7 +32,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var x = coerce('x');
     coerce('y');
 
-    traceOut._xlength = (Array.isArray(x) && Array.isArray(x[0])) ? z.length : z[0].length;
+    traceOut._xlength = (Array.isArray(x) && Lib.isArrayOrTypedArray(x[0])) ? z.length : z[0].length;
     traceOut._ylength = z.length;
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');

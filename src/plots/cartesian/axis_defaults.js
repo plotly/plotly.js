@@ -88,5 +88,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     if(containerOut.showline || containerOut.ticks) coerce('mirror');
 
+    if(options.automargin) coerce('automargin');
+
     return containerOut;
 };
