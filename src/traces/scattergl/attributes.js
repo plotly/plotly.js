@@ -83,7 +83,7 @@ var attrs = module.exports = overrideAll({
         marker: scatterAttrs.unselected.marker
     },
 
-    opacity: extendFlat({}, plotAttrs.opacity)
+    opacity: plotAttrs.opacity
 
 }, 'calc', 'nested');
 
