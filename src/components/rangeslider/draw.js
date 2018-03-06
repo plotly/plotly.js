@@ -137,7 +137,7 @@ module.exports = function(gd) {
 
         opts._rl = [range0, range1];
 
-        if(oppAxisRangeOpts.rangemode === 'auto' || oppAxisRangeOpts.rangemode === 'fixed') {
+        if(oppAxisRangeOpts.rangemode !== 'match') {
             var range0OppAxis = oppAxisOpts.r2l(oppAxisRangeOpts.range[0]),
                 range1OppAxis = oppAxisOpts.r2l(oppAxisRangeOpts.range[1]),
                 distOppAxis = range1OppAxis - range0OppAxis;
@@ -306,7 +306,7 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts, oppAxisRang
         .attr('x', pixelMax)
         .attr('width', opts._width - pixelMax);
 
-    if(oppAxisRangeOpts.rangemode === 'auto' || oppAxisRangeOpts.rangemode === 'fixed') {
+    if(oppAxisRangeOpts.rangemode !== 'match') {
         var pixelMinOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[1])),
             pixelMaxOppAxis = opts._height - clampOppAxis(opts.d2pOppAxis(oppAxisOpts._rl[0]));
 
@@ -430,7 +430,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         mockFigure.layout[oppAxisName] = {
             type: oppAxisOpts.type,
             domain: [0, 1],
-            range: oppAxisRangeOpts.rangemode === 'auto' || oppAxisRangeOpts.rangemode === 'fixed' ? oppAxisRangeOpts.range.slice() : oppAxisOpts.range.slice(),
+            range: oppAxisRangeOpts.rangemode !== 'match' ? oppAxisRangeOpts.range.slice() : oppAxisOpts.range.slice(),
             calendar: oppAxisOpts.calendar
         };
 
@@ -471,7 +471,7 @@ function filterRangePlotCalcData(calcData, subplotId) {
     return out;
 }
 
-function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisOpts) {
+function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
     var maskMin = rangeSlider.selectAll('rect.' + constants.maskMinClassName)
         .data([0]);
 
@@ -497,7 +497,7 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisOpts) {
         .call(Color.fill, constants.maskColor);
 
     // masks used for oppAxis zoom
-    if(oppAxisOpts.rangemode === 'auto' || oppAxisOpts.rangemode === 'fixed') {
+    if(oppAxisRangeOpts.rangemode !== 'match') {
         var maskMinOppAxis = rangeSlider.selectAll('rect.' + constants.maskMinOppAxisClassName)
             .data([0]);
 
