@@ -282,10 +282,16 @@ describe('@gl Test gl2d plots', function() {
             gd.on('plotly_relayout', relayoutCallback);
         })
         .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            spyOn(scene, 'draw');
+
             // Drag scene along the X axis
             return mouseTo([200, 200], [220, 200]);
         })
         .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            expect(scene.draw).toHaveBeenCalledTimes(3);
+
             expect(gd.layout.xaxis.autorange).toBe(false);
             expect(gd.layout.yaxis.autorange).toBe(false);
             expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);

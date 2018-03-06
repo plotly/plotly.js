@@ -486,6 +486,22 @@ function sceneUpdate(gd, subplot) {
     if(!subplot._scene) {
         scene = subplot._scene = Lib.extendFlat({}, reset, first);
 
+        // apply new option to all regl components (used on drag)
+        scene.update = function update(opt) {
+            var opts = new Array(scene.count);
+            for(var i = 0; i < scene.count; i++) {
+                opts[i] = opt;
+            }
+
+            if(scene.fill2d) scene.fill2d.update(opts);
+            if(scene.scatter2d) scene.scatter2d.update(opts);
+            if(scene.line2d) scene.line2d.update(opts);
+            if(scene.error2d) scene.error2d.update(opts.concat(opts));
+            if(scene.select2d) scene.select2d.update(opts);
+
+            scene.draw();
+        };
+
         // draw traces in proper order
         scene.draw = function draw() {
             var i;
