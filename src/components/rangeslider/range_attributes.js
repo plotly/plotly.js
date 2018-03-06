@@ -21,15 +21,15 @@ module.exports = {
             'when zooming in/out.',
             'If *auto*, the autorange will be used.',
             'If *fixed*, the `range` is used.',
-            'If *match*, the current range is used.'
+            'If *match*, the current range of the corresponding y-axis on the main subplot is used.'
         ].join(' ')
     },
     range: {
         valType: 'info_array',
         role: 'style',
         items: [
-            {valType: 'any', editType: 'calc'},
-            {valType: 'any', editType: 'calc'}
+            {valType: 'any', editType: 'plot'},
+            {valType: 'any', editType: 'plot'}
         ],
         editType: 'calc',
         description: [
