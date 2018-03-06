@@ -258,12 +258,19 @@ function expand(ax, data, options) {
         vmin = Infinity;
         vmax = -Infinity;
 
-        for(i = 0; i < data.length; i++) {
-            v = data[i];
-            if(Math.abs(v) < FP_SAFE) {
+        if(isLog) {
+            for(i = 0; i < len; i++) {
+                v = data[i];
                 // data is not linearized yet so we still have to filter out negative logs
-                if(v < vmin && (!isLog || v > 0)) vmin = v;
-                if(v > vmax) vmax = v;
+                if(v < vmin && v > 0) vmin = v;
+                if(v > vmax && v < FP_SAFE) vmax = v;
+            }
+        }
+        else {
+            for(i = 0; i < len; i++) {
+                v = data[i];
+                if(v < vmin && v > -FP_SAFE) vmin = v;
+                if(v > vmax && v < FP_SAFE) vmax = v;
             }
         }
 
@@ -340,8 +347,9 @@ function expand(ax, data, options) {
     // For efficiency covering monotonic or near-monotonic data,
     // check a few points at both ends first and then sweep
     // through the middle
-    for(i = 0; i < 6; i++) addItem(i);
-    for(i = len - 1; i > 5; i--) addItem(i);
+    var iMax = Math.min(6, len);
+    for(i = 0; i < iMax; i++) addItem(i);
+    for(i = len - 1; i >= iMax; i--) addItem(i);
 }
 
 // In order to stop overflow errors, don't consider points
