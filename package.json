@@ -114,6 +114,7 @@
   },
   "devDependencies": {
     "brfs": "^1.4.4",
+    "browser-pack-flat": "^3.0.8",
     "browserify": "^15.2.0",
     "browserify-transform-tools": "^1.7.0",
     "check-node-version": "^3.2.0",

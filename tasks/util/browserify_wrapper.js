@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 
 var browserify = require('browserify');
+var packFlat = require('browser-pack-flat/plugin');
 var minify = require('minify-stream');
 
 var constants = require('./constants');
@@ -12,16 +13,14 @@ var strictD3 = require('./strict_d3');
  *
  * @param {string} pathToIndex path to index file to bundle
  * @param {string} pathToBunlde path to destination bundle
- *
  * @param {object} opts
- *
  *  Browserify options:
  *  - standalone {string}
  *  - debug {boolean} [optional]
- *
  *  Additional option:
  *  - pathToMinBundle {string} path to destination minified bundle
  *  - compressAttrs {boolean} do we compress attribute meta?
+ *  - packFlat {boolean} do we use browser-pack-flat plugin?
  * @param {function} cb callback
  *
  * Outputs one bundle (un-minified) file if opts.pathToMinBundle is omitted
@@ -49,6 +48,9 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     var b = browserify(pathToIndex, browserifyOpts);
 
+    if(opts.packFlat) {
+        b.plugin(packFlat);
+    }
 
     var pending = opts.pathToMinBundle ? 2 : 1;
 
