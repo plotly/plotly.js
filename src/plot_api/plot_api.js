@@ -40,7 +40,7 @@ var cartesianConstants = require('../plots/cartesian/constants');
 var axisConstraints = require('../plots/cartesian/constraints');
 var enforceAxisConstraints = axisConstraints.enforce;
 var cleanAxisConstraints = axisConstraints.clean;
-var axisIds = require('../plots/cartesian/axis_ids');
+var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
 
 var numericNameWarningCount = 0;
 var numericNameWarningCountLimit = 5;
@@ -283,7 +283,7 @@ exports.plot = function(gd, data, layout, config) {
 
     function positionAndAutorange() {
         if(!recalc) {
-            enforceAxisConstraints(gd);
+            doAutoRangeAndConstraints();
             return;
         }
 
@@ -332,7 +332,7 @@ exports.plot = function(gd, data, layout, config) {
             var ax = axList[i];
             cleanAxisConstraints(gd, ax);
 
-            Axes.doAutoRange(ax);
+            doAutoRange(ax);
         }
 
         enforceAxisConstraints(gd);
@@ -1846,7 +1846,7 @@ function _relayout(gd, aobj) {
     var axId;
 
     function recordAlteredAxis(pleafPlus) {
-        var axId = axisIds.name2id(pleafPlus.split('.')[0]);
+        var axId = Axes.name2id(pleafPlus.split('.')[0]);
         rangesAltered[axId] = 1;
         return axId;
     }
@@ -1857,20 +1857,21 @@ function _relayout(gd, aobj) {
             throw new Error('cannot set ' + ai + 'and a parent attribute simultaneously');
         }
 
-        var p = Lib.nestedProperty(layout, ai),
-            vi = aobj[ai],
-            plen = p.parts.length,
-            // p.parts may end with an index integer if the property is an array
-            pend = typeof p.parts[plen - 1] === 'string' ? (plen - 1) : (plen - 2),
-            // last property in chain (leaf node)
-            pleaf = p.parts[pend],
-            // leaf plus immediate parent
-            pleafPlus = p.parts[pend - 1] + '.' + pleaf,
-            // trunk nodes (everything except the leaf)
-            ptrunk = p.parts.slice(0, pend).join('.'),
-            parentIn = Lib.nestedProperty(gd.layout, ptrunk).get(),
-            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get(),
-            vOld = p.get();
+        var p = Lib.nestedProperty(layout, ai);
+        var vi = aobj[ai];
+        var plen = p.parts.length;
+        // p.parts may end with an index integer if the property is an array
+        var pend = plen - 1;
+        while(pend > 0 && typeof p.parts[plen - 1] !== 'string') { pend--; }
+        // last property in chain (leaf node)
+        var pleaf = p.parts[pend];
+        // leaf plus immediate parent
+        var pleafPlus = p.parts[pend - 1] + '.' + pleaf;
+        // trunk nodes (everything except the leaf)
+        var ptrunk = p.parts.slice(0, pend).join('.');
+        var parentIn = Lib.nestedProperty(gd.layout, ptrunk).get();
+        var parentFull = Lib.nestedProperty(fullLayout, ptrunk).get();
+        var vOld = p.get();
 
         if(vi === undefined) continue;
 
@@ -2093,25 +2094,18 @@ function _relayout(gd, aobj) {
                 flags.calc = true;
                 for(var groupAxId in group) {
                     if(!rangesAltered[groupAxId]) {
-                        axisIds.getFromId(gd, groupAxId)._constraintShrinkable = true;
+                        Axes.getFromId(gd, groupAxId)._constraintShrinkable = true;
                     }
                 }
             }
         }
     }
 
-    var oldWidth = fullLayout.width,
-        oldHeight = fullLayout.height;
-
-    // calculate autosizing
-    if(gd.layout.autosize) Plots.plotAutoSize(gd, gd.layout, fullLayout);
-
-    // avoid unnecessary redraws
-    var hasSizechanged = aobj.height || aobj.width ||
-        (fullLayout.width !== oldWidth) ||
-        (fullLayout.height !== oldHeight);
-
-    if(hasSizechanged) flags.calc = true;
+    // If the autosize changed or height or width was explicitly specified,
+    // this triggers a redraw
+    // TODO: do we really need special aobj.height/width handling here?
+    // couldn't editType do this?
+    if(updateAutosize(gd) || aobj.height || aobj.width) flags.plot = true;
 
     if(flags.plot || flags.calc) {
         flags.layoutReplot = true;
@@ -2126,6 +2120,22 @@ function _relayout(gd, aobj) {
         redoit: redoit,
         eventData: Lib.extendDeep({}, redoit)
     };
+}
+
+/*
+ * updateAutosize: we made a change, does it change the autosize result?
+ * puts the new size into fullLayout
+ * returns true if either height or width changed
+ */
+function updateAutosize(gd) {
+    var fullLayout = gd._fullLayout;
+    var oldWidth = fullLayout.width;
+    var oldHeight = fullLayout.height;
+
+    // calculate autosizing
+    if(gd.layout.autosize) Plots.plotAutoSize(gd, gd.layout, fullLayout);
+
+    return (fullLayout.width !== oldWidth) || (fullLayout.height !== oldHeight);
 }
 
 // for editing annotations or shapes - is it on autoscaled axes?
@@ -2312,6 +2322,17 @@ exports.react = function(gd, data, layout, config) {
 
         var restyleFlags = diffData(gd, oldFullData, newFullData, immutable);
         var relayoutFlags = diffLayout(gd, oldFullLayout, newFullLayout, immutable);
+
+        // TODO: how to translate this part of relayout to Plotly.react?
+        // // Setting width or height to null must reset the graph's width / height
+        // // back to its initial value as computed during the first pass in Plots.plotAutoSize.
+        // //
+        // // To do so, we must manually set them back here using the _initialAutoSize cache.
+        // if(['width', 'height'].indexOf(ai) !== -1 && vi === null) {
+        //     fullLayout[ai] = gd._initialAutoSize[ai];
+        // }
+
+        if(updateAutosize(gd)) relayoutFlags.layoutReplot = true;
 
         // clear calcdata if required
         if(restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;

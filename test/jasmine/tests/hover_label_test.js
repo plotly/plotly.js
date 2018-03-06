@@ -1110,6 +1110,68 @@ describe('hover info', function() {
 
     });
 
+    function hoverInfoNodes(traceName) {
+        var g = d3.selectAll('g.hoverlayer g.hovertext').filter(function() {
+            return !d3.select(this).select('[data-unformatted="' + traceName + '"]').empty();
+        });
+
+        return {
+            primaryText: g.select('text:not([data-unformatted="' + traceName + '"])').node(),
+            primaryBox: g.select('path').node(),
+            secondaryText: g.select('[data-unformatted="' + traceName + '"]').node(),
+            secondaryBox: g.select('rect').node()
+        };
+    }
+
+    function ensureCentered(hoverInfoNodes) {
+        expect(hoverInfoNodes.primaryText.getAttribute('text-anchor')).toBe('middle');
+        expect(hoverInfoNodes.secondaryText.getAttribute('text-anchor')).toBe('middle');
+        return hoverInfoNodes;
+    }
+
+    function assertLabelsInsideBoxes(nodes, msgPrefix) {
+        var msgPrefixFmt = msgPrefix ? '[' + msgPrefix + '] ' : '';
+
+        assertElemInside(nodes.primaryText, nodes.primaryBox,
+          msgPrefixFmt + 'Primary text inside box');
+        assertElemInside(nodes.secondaryText, nodes.secondaryBox,
+          msgPrefixFmt + 'Secondary text inside box');
+
+        function assertElemInside(elem, container, msg) {
+            var elemBB = elem.getBoundingClientRect();
+            var contBB = container.getBoundingClientRect();
+            expect(contBB.left < elemBB.left &&
+              contBB.right > elemBB.right &&
+              contBB.top < elemBB.top &&
+              contBB.bottom > elemBB.bottom).toBe(true, msg);
+        }
+    }
+
+    function assertSecondaryRightToPrimaryBox(nodes, msgPrefix) {
+        var msgPrefixFmt = msgPrefix ? '[' + msgPrefix + '] ' : '';
+
+        assertElemRightTo(nodes.secondaryBox, nodes.primaryBox,
+          msgPrefixFmt + 'Secondary box right to primary box');
+        assertElemTopsAligned(nodes.secondaryBox, nodes.primaryBox,
+          msgPrefixFmt + 'Top edges of primary and secondary boxes aligned');
+
+        function assertElemRightTo(elem, refElem, msg) {
+            var elemBB = elem.getBoundingClientRect();
+            var refElemBB = refElem.getBoundingClientRect();
+            expect(elemBB.left >= refElemBB.right).toBe(true, msg);
+        }
+
+        function assertElemTopsAligned(elem1, elem2, msg) {
+            var elem1BB = elem1.getBoundingClientRect();
+            var elem2BB = elem2.getBoundingClientRect();
+
+            // Hint: toBeWithin tolerance is exclusive, hence a
+            // diff of exactly 1 would fail the test
+            var tolerance = 1.1;
+            expect(elem1BB.top - elem2BB.top).toBeWithin(0, tolerance, msg);
+        }
+    }
+
     describe('centered', function() {
         var trace1 = {
             x: ['giraffes'],
@@ -1135,64 +1197,78 @@ describe('hover info', function() {
             Plotly.plot(gd, data, layout).then(done);
         });
 
-        function centeredHoverInfoNodes() {
-            var g = d3.selectAll('g.hoverlayer g.hovertext').filter(function() {
-                return !d3.select(this).select('[data-unformatted="LA Zoo"]').empty();
-            });
-
-            return {
-                primaryText: g.select('text:not([data-unformatted="LA Zoo"])').node(),
-                primaryBox: g.select('path').node(),
-                secondaryText: g.select('[data-unformatted="LA Zoo"]').node(),
-                secondaryBox: g.select('rect').node()
-            };
-        }
-
-        function ensureCentered(hoverInfoNodes) {
-            expect(hoverInfoNodes.primaryText.getAttribute('text-anchor')).toBe('middle');
-            expect(hoverInfoNodes.secondaryText.getAttribute('text-anchor')).toBe('middle');
-            return hoverInfoNodes;
-        }
-
-        function assertElemInside(elem, container, msg) {
-            var elemBB = elem.getBoundingClientRect();
-            var contBB = container.getBoundingClientRect();
-            expect(contBB.left < elemBB.left &&
-              contBB.right > elemBB.right &&
-              contBB.top < elemBB.top &&
-              contBB.bottom > elemBB.bottom).toBe(true, msg);
-        }
-
-        function assertElemRightTo(elem, refElem, msg) {
-            var elemBB = elem.getBoundingClientRect();
-            var refElemBB = refElem.getBoundingClientRect();
-            expect(elemBB.left >= refElemBB.right).toBe(true, msg);
-        }
-
-        function assertTopsAligned(elem1, elem2, msg) {
-            var elem1BB = elem1.getBoundingClientRect();
-            var elem2BB = elem2.getBoundingClientRect();
-
-            // Hint: toBeWithin tolerance is exclusive, hence a
-            // diff of exactly 1 would fail the test
-            var tolerance = 1.1;
-            expect(elem1BB.top - elem2BB.top).toBeWithin(0, tolerance, msg);
-        }
-
         it('renders labels inside boxes', function() {
             _hover(gd, 300, 150);
 
-            var nodes = ensureCentered(centeredHoverInfoNodes());
-            assertElemInside(nodes.primaryText, nodes.primaryBox, 'Primary text inside box');
-            assertElemInside(nodes.secondaryText, nodes.secondaryBox, 'Secondary text inside box');
+            var nodes = ensureCentered(hoverInfoNodes('LA Zoo'));
+            assertLabelsInsideBoxes(nodes);
         });
 
         it('renders secondary info box right to primary info box', function() {
             _hover(gd, 300, 150);
 
-            var nodes = ensureCentered(centeredHoverInfoNodes());
-            assertElemRightTo(nodes.secondaryBox, nodes.primaryBox, 'Secondary box right to primary box');
-            assertTopsAligned(nodes.secondaryBox, nodes.primaryBox, 'Top edges of primary and secondary boxes aligned');
+            var nodes = ensureCentered(hoverInfoNodes('LA Zoo'));
+            assertSecondaryRightToPrimaryBox(nodes);
+        });
+    });
+
+    describe('centered', function() {
+        var trace1 = {
+            x: ['giraffes'],
+            y: [5],
+            name: 'LA Zoo',
+            type: 'bar',
+            text: ['Way too long hover info!']
+        };
+        var trace2 = {
+            x: ['giraffes'],
+            y: [5],
+            name: 'SF Zoo',
+            type: 'bar',
+            text: ['Way too looooong hover info!']
+        };
+        var trace3 = {
+            x: ['giraffes'],
+            y: [5],
+            name: 'NY Zoo',
+            type: 'bar',
+            text: ['New York']
+        };
+        var data = [trace1, trace2, trace3];
+        var layout = {width: 600, height: 300};
+
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, data, layout).then(done);
+        });
+
+        function calcLineOverlap(minA, maxA, minB, maxB) {
+            expect(minA).toBeLessThan(maxA);
+            expect(minB).toBeLessThan(maxB);
+
+            var overlap = Math.min(maxA, maxB) - Math.max(minA, minB);
+            return Math.max(0, overlap);
+        }
+
+        it('stacks nicely upon each other', function() {
+            _hover(gd, 300, 150);
+
+            var nodesLA = ensureCentered(hoverInfoNodes('LA Zoo'));
+            var nodesSF = ensureCentered(hoverInfoNodes('SF Zoo'));
+
+            // Ensure layout correct
+            assertLabelsInsideBoxes(nodesLA, 'LA Zoo');
+            assertLabelsInsideBoxes(nodesSF, 'SF Zoo');
+            assertSecondaryRightToPrimaryBox(nodesLA, 'LA Zoo');
+            assertSecondaryRightToPrimaryBox(nodesSF, 'SF Zoo');
+
+            // Ensure stacking, finally
+            var boxLABB = nodesLA.primaryBox.getBoundingClientRect();
+            var boxSFBB = nodesSF.primaryBox.getBoundingClientRect();
+            expect(calcLineOverlap(boxLABB.top, boxLABB.bottom, boxSFBB.top, boxSFBB.bottom))
+              .toBeWithin(0, 1); // Be robust against floating point arithmetic and subtle future layout changes
         });
     });
 });

@@ -455,11 +455,26 @@ module.exports = function setConvert(ax, fullLayout) {
         );
     };
 
-    // for autoranging: arrays of objects:
-    //      {val: axis value, pad: pixel padding}
-    // on the low and high sides
-    ax._min = [];
-    ax._max = [];
+    ax.clearCalc = function() {
+        // for autoranging: arrays of objects:
+        // {
+        //     val: axis value,
+        //     pad: pixel padding,
+        //     extrapad: boolean, should this val get 5% additional padding
+        // }
+        ax._min = [];
+        ax._max = [];
+
+        // initialize the category list, if there is one, so we start over
+        // to be filled in later by ax.d2c
+        ax._categories = (ax._initialCategories || []).slice();
+
+        // Build the lookup map for initialized categories
+        ax._categoriesMap = {};
+        for(var j = 0; j < ax._categories.length; j++) {
+            ax._categoriesMap[ax._categories[j]] = j;
+        }
+    };
 
     // Propagate localization into the axis so that
     // methods in Axes can use it w/o having to pass fullLayout

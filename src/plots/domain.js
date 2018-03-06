@@ -40,8 +40,8 @@ exports.attributes = function(opts, extra) {
         role: 'info',
         editType: opts.editType,
         items: [
-            {valType: 'number', min: 0, max: 1},
-            {valType: 'number', min: 0, max: 1}
+            {valType: 'number', min: 0, max: 1, editType: opts.editType},
+            {valType: 'number', min: 0, max: 1, editType: opts.editType}
         ],
         dflt: [0, 1]
     };

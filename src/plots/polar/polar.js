@@ -17,6 +17,7 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
+var doAutoRange = require('../cartesian/autorange').doAutoRange;
 var dragElement = require('../../components/dragelement');
 var dragBox = require('../cartesian/dragbox');
 var Fx = require('../../components/fx');
@@ -292,7 +293,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     });
 
     setScale(ax, radialLayout, fullLayout);
-    Axes.doAutoRange(ax);
+    doAutoRange(ax);
     radialLayout.range = ax.range.slice();
     radialLayout._input.range = ax.range.slice();
     _this.fillViewInitialKey('radialaxis.range', ax.range.slice());
@@ -448,7 +449,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     }
 
     setScale(ax, angularLayout, fullLayout);
-    Axes.doAutoRange(ax);
+    doAutoRange(ax);
 
     // wrapper around c2rad from setConvertAngular
     // note that linear ranges are always set in degrees for Axes.doTicks

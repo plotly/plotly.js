@@ -5,18 +5,20 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
+var failTest = require('../assets/fail_test');
 
 describe('config argument', function() {
 
     describe('attribute layout.autosize', function() {
-        var layoutWidth = 1111,
-            relayoutWidth = 555,
-            containerWidthBeforePlot = 888,
-            containerWidthBeforeRelayout = 666,
-            containerHeightBeforePlot = 543,
-            containerHeightBeforeRelayout = 321,
-            data = [],
-            gd;
+        var layoutWidth = 1111;
+        var relayoutWidth = 555;
+        var containerWidthBeforePlot = 888;
+        var containerWidthBeforeRelayout = 666;
+        var containerHeightBeforePlot = 543;
+        var containerHeightBeforeRelayout = 321;
+        var data = [];
+
+        var gd;
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -40,106 +42,135 @@ describe('config argument', function() {
 
         function testAutosize(autosize, config, layoutHeight, relayoutHeight, done) {
             var layout = {
-                    autosize: autosize,
-                    width: layoutWidth
+                autosize: autosize,
+                width: layoutWidth
+            };
+            var relayout = {
+                width: relayoutWidth
+            };
 
-                },
-                relayout = {
-                    width: relayoutWidth
-                };
+            var layout2 = Lib.extendDeep({}, layout);
 
-            var container = document.getElementById('graph');
-            container.style.width = containerWidthBeforePlot + 'px';
-            container.style.height = containerHeightBeforePlot + 'px';
+            gd.style.width = containerWidthBeforePlot + 'px';
+            gd.style.height = containerHeightBeforePlot + 'px';
 
-            Plotly.plot(gd, data, layout, config).then(function() {
+            function beforeResize() {
                 checkLayoutSize(layoutWidth, layoutHeight);
                 if(!autosize) compareLayoutAndFullLayout(gd);
 
-                container.style.width = containerWidthBeforeRelayout + 'px';
-                container.style.height = containerHeightBeforeRelayout + 'px';
+                gd.style.width = containerWidthBeforeRelayout + 'px';
+                gd.style.height = containerHeightBeforeRelayout + 'px';
+            }
 
-                Plotly.relayout(gd, relayout).then(function() {
-                    checkLayoutSize(relayoutWidth, relayoutHeight);
-                    if(!autosize) compareLayoutAndFullLayout(gd);
-                    done();
-                });
-            });
+            function afterResize() {
+                checkLayoutSize(relayoutWidth, relayoutHeight);
+                if(!autosize) compareLayoutAndFullLayout(gd);
+            }
+
+            Plotly.plot(gd, data, layout, config).then(function() {
+                beforeResize();
+
+                return Plotly.relayout(gd, relayout);
+            })
+            .then(afterResize)
+            // now redo with Plotly.react
+            .then(function() {
+                gd.style.width = containerWidthBeforePlot + 'px';
+                gd.style.height = containerHeightBeforePlot + 'px';
+
+                return Plotly.newPlot(gd, data, layout2, config);
+            })
+            .then(function() {
+                beforeResize();
+
+                layout2.width = relayoutWidth;
+                return Plotly.react(gd, data, layout2, config);
+            })
+            .then(afterResize)
+            .catch(failTest)
+            .then(done);
         }
 
         it('should fill the frame when autosize: false, fillFrame: true, frameMargins: undefined', function(done) {
-            var autosize = false,
-                config = {
-                    autosizable: true,
-                    fillFrame: true
-                },
-                layoutHeight = window.innerHeight,
-                relayoutHeight = layoutHeight;
+            var autosize = false;
+            var config = {
+                autosizable: true,
+                fillFrame: true
+            };
+            var layoutHeight = window.innerHeight;
+            var relayoutHeight = layoutHeight;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the frame when autosize: true, fillFrame: true and frameMargins: undefined', function(done) {
-            var autosize = true,
-                config = {
-                    fillFrame: true
-                },
-                layoutHeight = window.innerHeight,
-                relayoutHeight = window.innerHeight;
+            var autosize = true;
+            var config = {
+                fillFrame: true
+            };
+            var layoutHeight = window.innerHeight;
+            var relayoutHeight = window.innerHeight;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: false, fillFrame: false and frameMargins: undefined', function(done) {
-            var autosize = false,
-                config = {
-                    autosizable: true,
-                    fillFrame: false
-                },
-                layoutHeight = containerHeightBeforePlot,
-                relayoutHeight = layoutHeight;
+            var autosize = false;
+            var config = {
+                autosizable: true,
+                fillFrame: false
+            };
+            var layoutHeight = containerHeightBeforePlot;
+            var relayoutHeight = layoutHeight;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: true, fillFrame: false and frameMargins: undefined', function(done) {
-            var autosize = true,
-                config = {
-                    fillFrame: false
-                },
-                layoutHeight = containerHeightBeforePlot,
-                relayoutHeight = containerHeightBeforeRelayout;
+            var autosize = true;
+            var config = {
+                fillFrame: false
+            };
+            var layoutHeight = containerHeightBeforePlot;
+            var relayoutHeight = containerHeightBeforeRelayout;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: false, fillFrame: false and frameMargins: 0.1', function(done) {
-            var autosize = false,
-                config = {
-                    autosizable: true,
-                    fillFrame: false,
-                    frameMargins: 0.1
-                },
-                layoutHeight = 360,
-                relayoutHeight = layoutHeight;
+            var autosize = false;
+            var config = {
+                autosizable: true,
+                fillFrame: false,
+                frameMargins: 0.1
+            };
+            var layoutHeight = 360;
+            var relayoutHeight = layoutHeight;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: true, fillFrame: false and frameMargins: 0.1', function(done) {
-            var autosize = true,
-                config = {
-                    fillFrame: false,
-                    frameMargins: 0.1
-                },
-                layoutHeight = 360,
-                relayoutHeight = 288;
+            var autosize = true;
+            var config = {
+                fillFrame: false,
+                frameMargins: 0.1
+            };
+            var layoutHeight = 360;
+            var relayoutHeight = 288;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should respect attribute autosizable: false', function(done) {
-            var autosize = false,
-                config = {
-                    autosizable: false,
-                    fillFrame: true
-                },
-                layoutHeight = Plots.layoutAttributes.height.dflt,
-                relayoutHeight = layoutHeight;
+            var autosize = false;
+            var config = {
+                autosizable: false,
+                fillFrame: true
+            };
+            var layoutHeight = Plots.layoutAttributes.height.dflt;
+            var relayoutHeight = layoutHeight;
+
             testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
     });
@@ -148,9 +179,8 @@ describe('config argument', function() {
 
         var gd;
 
-        beforeEach(function(done) {
+        beforeEach(function() {
             gd = createGraphDiv();
-            done();
         });
 
         afterEach(destroyGraphDiv);
@@ -185,6 +215,8 @@ describe('config argument', function() {
             gd = createGraphDiv();
         });
 
+        afterEach(destroyGraphDiv);
+
         function initPlot(editFlag) {
             var edits = {};
             edits[editFlag] = true;
@@ -201,17 +233,15 @@ describe('config argument', function() {
             }, { editable: false, edits: edits });
         }
 
-        afterEach(destroyGraphDiv);
-
         function checkIfEditable(elClass, text) {
             return function() {
                 var label = document.getElementsByClassName(elClass)[0];
 
                 expect(label.textContent).toBe(text);
 
-                var labelBox = label.getBoundingClientRect(),
-                    labelX = labelBox.left + labelBox.width / 2,
-                    labelY = labelBox.top + labelBox.height / 2;
+                var labelBox = label.getBoundingClientRect();
+                var labelX = labelBox.left + labelBox.width / 2;
+                var labelY = labelBox.top + labelBox.height / 2;
 
                 mouseEvent('click', labelX, labelY);
 
@@ -226,9 +256,9 @@ describe('config argument', function() {
             return function() {
                 var el = document.getElementsByClassName(elClass)[0];
 
-                var elBox = el.getBoundingClientRect(),
-                    elX = elBox.left + elBox.width / 2,
-                    elY = elBox.top + elBox.height / 2;
+                var elBox = el.getBoundingClientRect();
+                var elX = elBox.left + elBox.width / 2;
+                var elY = elBox.top + elBox.height / 2;
 
                 mouseEvent('mousedown', elX, elY);
                 mouseEvent('mousemove', elX - 20, elY + 20);
@@ -300,54 +330,63 @@ describe('config argument', function() {
                     titleText: false
                 });
             })
+            .catch(failTest)
             .then(done);
         });
 
         it('should make titles editable', function(done) {
             initPlot('titleText')
             .then(checkIfEditable('gtitle', 'Click to enter Plot title'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make x axes labels editable', function(done) {
             initPlot('axisTitleText')
             .then(checkIfEditable('g-xtitle', 'Click to enter X axis title'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make y axes labels editable', function(done) {
             initPlot('axisTitleText')
             .then(checkIfEditable('g-ytitle', 'Click to enter Y axis title'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make legend labels editable', function(done) {
             initPlot('legendText')
             .then(checkIfEditable('legendtext', 'trace 0'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make annotation labels editable', function(done) {
             initPlot('annotationText')
             .then(checkIfEditable('annotation-text-g', 'testing'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make annotation labels draggable', function(done) {
             initPlot('annotationTail')
             .then(checkIfDraggable('annotation-text-g'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make annotation arrows draggable', function(done) {
             initPlot('annotationPosition')
             .then(checkIfDraggable('annotation-arrow-g'))
+            .catch(failTest)
             .then(done);
         });
 
         it('should make legends draggable', function(done) {
             initPlot('legendPosition')
             .then(checkIfDraggable('legend'))
+            .catch(failTest)
             .then(done);
         });
 
@@ -367,55 +406,25 @@ describe('config argument', function() {
 
         afterEach(destroyGraphDiv);
 
+        function testDraggers(len) {
+            [
+                'nw', 'ne', 'sw', 'se', 'ew', 'w', 'e', 'ns', 'n', 's'
+            ].forEach(function(dir) {
+                var draggers = document.getElementsByClassName('drag ' + dir + 'drag');
+                expect(draggers.length).toBe(len, dir);
+            });
+        }
+
         it('should have drag rectangles cursors by default', function() {
             Plotly.plot(gd, mockCopy.data, {});
 
-            var nwdrag = document.getElementsByClassName('drag nwdrag');
-            expect(nwdrag.length).toBe(1);
-            var nedrag = document.getElementsByClassName('drag nedrag');
-            expect(nedrag.length).toBe(1);
-            var swdrag = document.getElementsByClassName('drag swdrag');
-            expect(swdrag.length).toBe(1);
-            var sedrag = document.getElementsByClassName('drag sedrag');
-            expect(sedrag.length).toBe(1);
-            var ewdrag = document.getElementsByClassName('drag ewdrag');
-            expect(ewdrag.length).toBe(1);
-            var wdrag = document.getElementsByClassName('drag wdrag');
-            expect(wdrag.length).toBe(1);
-            var edrag = document.getElementsByClassName('drag edrag');
-            expect(edrag.length).toBe(1);
-            var nsdrag = document.getElementsByClassName('drag nsdrag');
-            expect(nsdrag.length).toBe(1);
-            var sdrag = document.getElementsByClassName('drag sdrag');
-            expect(sdrag.length).toBe(1);
-            var ndrag = document.getElementsByClassName('drag ndrag');
-            expect(ndrag.length).toBe(1);
-
+            testDraggers(1);
         });
 
         it('should not have drag rectangles when disabled', function() {
             Plotly.plot(gd, mockCopy.data, {}, { showAxisDragHandles: false });
 
-            var nwdrag = document.getElementsByClassName('drag nwdrag');
-            expect(nwdrag.length).toBe(0);
-            var nedrag = document.getElementsByClassName('drag nedrag');
-            expect(nedrag.length).toBe(0);
-            var swdrag = document.getElementsByClassName('drag swdrag');
-            expect(swdrag.length).toBe(0);
-            var sedrag = document.getElementsByClassName('drag sedrag');
-            expect(sedrag.length).toBe(0);
-            var ewdrag = document.getElementsByClassName('drag ewdrag');
-            expect(ewdrag.length).toBe(0);
-            var wdrag = document.getElementsByClassName('drag wdrag');
-            expect(wdrag.length).toBe(0);
-            var edrag = document.getElementsByClassName('drag edrag');
-            expect(edrag.length).toBe(0);
-            var nsdrag = document.getElementsByClassName('drag nsdrag');
-            expect(nsdrag.length).toBe(0);
-            var sdrag = document.getElementsByClassName('drag sdrag');
-            expect(sdrag.length).toBe(0);
-            var ndrag = document.getElementsByClassName('drag ndrag');
-            expect(ndrag.length).toBe(0);
+            testDraggers(0);
         });
 
     });
@@ -423,8 +432,7 @@ describe('config argument', function() {
     describe('axis range entry attribute', function() {
         var mock = require('@mocks/14.json');
 
-        var gd;
-        var mockCopy;
+        var gd, mockCopy;
 
         beforeEach(function(done) {
             gd = createGraphDiv();
@@ -434,14 +442,13 @@ describe('config argument', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('show allow axis range entry by default', function() {
+        it('allows axis range entry by default', function() {
             Plotly.plot(gd, mockCopy.data, {});
 
             var corner = document.getElementsByClassName('edrag')[0];
-
-            var cornerBox = corner.getBoundingClientRect(),
-                cornerX = cornerBox.left + cornerBox.width / 2,
-                cornerY = cornerBox.top + cornerBox.height / 2;
+            var cornerBox = corner.getBoundingClientRect();
+            var cornerX = cornerBox.left + cornerBox.width / 2;
+            var cornerY = cornerBox.top + cornerBox.height / 2;
 
             click(cornerX, cornerY);
 
@@ -450,14 +457,13 @@ describe('config argument', function() {
             expect(editBox.getAttribute('contenteditable')).toBe('true');
         });
 
-        it('show not allow axis range entry when', function() {
+        it('disallows axis range entry when disabled', function() {
             Plotly.plot(gd, mockCopy.data, {}, { showAxisRangeEntryBoxes: false });
 
             var corner = document.getElementsByClassName('edrag')[0];
-
-            var cornerBox = corner.getBoundingClientRect(),
-                cornerX = cornerBox.left + cornerBox.width / 2,
-                cornerY = cornerBox.top + cornerBox.height / 2;
+            var cornerBox = corner.getBoundingClientRect();
+            var cornerX = cornerBox.left + cornerBox.width / 2;
+            var cornerY = cornerBox.top + cornerBox.height / 2;
 
             click(cornerX, cornerY);
 

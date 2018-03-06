@@ -1135,7 +1135,7 @@ function alignHoverText(hoverLabels, rotateLabels) {
 
         g.select('path').attr('d', d.anchor === 'middle' ?
             // middle aligned: rect centered on data
-            ('M-' + (d.bx / 2 + d.tx2width / 2) + ',-' + (d.by / 2) +
+            ('M-' + (d.bx / 2 + d.tx2width / 2) + ',' + (offsetY - d.by / 2) +
               'h' + d.bx + 'v' + d.by + 'h-' + d.bx + 'Z') :
             // left or right aligned: side rect with arrow to data
             ('M0,0L' + (horzSign * HOVERARROWSIZE + offsetX) + ',' + (HOVERARROWSIZE + offsetY) +
