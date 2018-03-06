@@ -60,13 +60,15 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
             var rangeContainerIn = containerIn[yName] || {};
             var rangeContainerOut = containerOut[yName] = {};
 
+            var rangemodeDflt;
             if(rangeContainerIn.range && layoutOut[yName].isValidRange(rangeContainerIn.range)) {
-                coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode', 'fixed');
-            } else {
-                coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode');
+                rangemodeDflt = 'fixed';
             }
 
-            coerceRange(rangeContainerIn, rangeContainerOut, 'range', layoutOut[yName].range.slice());
+            var rangeMode = coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode', rangemodeDflt);
+            if(rangeMode !== 'match') {
+                coerceRange(rangeContainerIn, rangeContainerOut, 'range', layoutOut[yName].range.slice());
+            }
         }
     }
 
