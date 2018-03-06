@@ -282,10 +282,16 @@ describe('@gl Test gl2d plots', function() {
             gd.on('plotly_relayout', relayoutCallback);
         })
         .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            spyOn(scene, 'draw');
+
             // Drag scene along the X axis
             return mouseTo([200, 200], [220, 200]);
         })
         .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            expect(scene.draw).toHaveBeenCalledTimes(3);
+
             expect(gd.layout.xaxis.autorange).toBe(false);
             expect(gd.layout.yaxis.autorange).toBe(false);
             expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
@@ -374,6 +380,48 @@ describe('@gl Test gl2d plots', function() {
         })
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('should be able to toggle trace with different modes', function(done) {
+        Plotly.newPlot(gd, [{
+            // a trace with all regl2d objects
+            type: 'scattergl',
+            y: [1, 2, 1],
+            error_x: {value: 10},
+            error_y: {value: 10},
+            fill: 'tozeroy'
+        }, {
+            type: 'scattergl',
+            mode: 'markers',
+            y: [0, 1, -1]
+        }])
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            spyOn(scene.fill2d, 'draw');
+            spyOn(scene.line2d, 'draw');
+            spyOn(scene.error2d, 'draw');
+            spyOn(scene.scatter2d, 'draw');
+
+            return Plotly.restyle(gd, 'visible', 'legendonly', [0]);
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            expect(scene.fill2d.draw).toHaveBeenCalledTimes(0);
+            expect(scene.line2d.draw).toHaveBeenCalledTimes(0);
+            expect(scene.error2d.draw).toHaveBeenCalledTimes(0);
+            expect(scene.scatter2d.draw).toHaveBeenCalledTimes(1);
+
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            expect(scene.fill2d.draw).toHaveBeenCalledTimes(1);
+            expect(scene.line2d.draw).toHaveBeenCalledTimes(1);
+            expect(scene.error2d.draw).toHaveBeenCalledTimes(2, 'twice for x AND y');
+            expect(scene.scatter2d.draw).toHaveBeenCalledTimes(3, 'both traces have markers');
         })
         .catch(fail)
         .then(done);
