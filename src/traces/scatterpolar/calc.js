@@ -50,12 +50,6 @@ module.exports = function calc(gd, trace) {
     var ppad = calcMarkerSize(trace, len);
     Axes.expand(radialAxis, rArray, {ppad: ppad});
 
-    if(angularAxis.type !== 'linear') {
-        angularAxis.autorange = true;
-        Axes.expand(angularAxis, thetaArray);
-        delete angularAxis.autorange;
-    }
-
     calcColorscale(trace);
     arraysToCalcdata(cd, trace);
     calcSelection(cd, trace);
