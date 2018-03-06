@@ -1419,7 +1419,9 @@ describe('Test axes', function() {
         it('returns reasonable range without explicit rangemode or autorange', function() {
             ax = {
                 _min: [
-                    {val: 1, pad: 20},
+                    // add in an extrapad to verify that it gets used on _min
+                    // with a _length of 100, extrapad increases pad by 5
+                    {val: 1, pad: 15, extrapad: true},
                     {val: 3, pad: 0},
                     {val: 2, pad: 10}
                 ],
@@ -1540,7 +1542,8 @@ describe('Test axes', function() {
                     {val: 2, pad: 10}
                 ],
                 _max: [
-                    {val: 6, pad: 20},
+                    // add in an extrapad to verify that it gets used on _max
+                    {val: 6, pad: 15, extrapad: true},
                     {val: 7, pad: 0},
                     {val: 5, pad: 10},
                 ],
@@ -1653,7 +1656,6 @@ describe('Test axes', function() {
                 autorange: true,
                 c2l: Number,
                 type: 'linear',
-                _length: 100,
                 _m: 1
             };
         }
@@ -1664,8 +1666,8 @@ describe('Test axes', function() {
 
             expand(ax, data);
 
-            expect(ax._min).toEqual([{val: 1, pad: 0}]);
-            expect(ax._max).toEqual([{val: 7, pad: 0}]);
+            expect(ax._min).toEqual([{val: 1, pad: 0, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 7, pad: 0, extrapad: false}]);
         });
 
         it('calls ax.setScale if necessary', function() {
@@ -1692,8 +1694,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -1, pad: 10}]);
-            expect(ax._max).toEqual([{val: 9, pad: 10}]);
+            expect(ax._min).toEqual([{val: -1, pad: 10, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 9, pad: 10, extrapad: false}]);
         });
 
         it('handles symmetric pads as number arrays', function() {
@@ -1706,8 +1708,14 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -6, pad: 15}, {val: -4, pad: 20}]);
-            expect(ax._max).toEqual([{val: 14, pad: 15}, {val: 8, pad: 20}]);
+            expect(ax._min).toEqual([
+                {val: -6, pad: 15, extrapad: false},
+                {val: -4, pad: 20, extrapad: false}
+            ]);
+            expect(ax._max).toEqual([
+                {val: 14, pad: 15, extrapad: false},
+                {val: 8, pad: 20, extrapad: false}
+            ]);
         });
 
         it('handles separate pads as numbers', function() {
@@ -1722,8 +1730,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -4, pad: 10}]);
-            expect(ax._max).toEqual([{val: 11, pad: 20}]);
+            expect(ax._min).toEqual([{val: -4, pad: 10, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 11, pad: 20, extrapad: false}]);
         });
 
         it('handles separate pads as number arrays', function() {
@@ -1738,8 +1746,15 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: 1, pad: 30}, {val: -3, pad: 10}]);
-            expect(ax._max).toEqual([{val: 9, pad: 0}, {val: 3, pad: 40}, {val: 8, pad: 20}]);
+            expect(ax._min).toEqual([
+                {val: 1, pad: 30, extrapad: false},
+                {val: -3, pad: 10, extrapad: false}
+            ]);
+            expect(ax._max).toEqual([
+                {val: 9, pad: 0, extrapad: false},
+                {val: 3, pad: 40, extrapad: false},
+                {val: 8, pad: 20, extrapad: false}
+            ]);
         });
 
         it('overrides symmetric pads with separate pads', function() {
@@ -1756,8 +1771,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -1, pad: 20}]);
-            expect(ax._max).toEqual([{val: 9, pad: 40}]);
+            expect(ax._min).toEqual([{val: -1, pad: 20, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 9, pad: 40, extrapad: false}]);
         });
 
         it('adds 5% padding if specified by flag', function() {
@@ -1771,8 +1786,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: 0, pad: 15}]);
-            expect(ax._max).toEqual([{val: 6, pad: 15}]);
+            expect(ax._min).toEqual([{val: 0, pad: 10, extrapad: true}]);
+            expect(ax._max).toEqual([{val: 6, pad: 10, extrapad: true}]);
         });
 
         it('has lower bound zero with all positive data if tozero is sset', function() {
@@ -1786,8 +1801,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: 0, pad: 0}]);
-            expect(ax._max).toEqual([{val: 6, pad: 10}]);
+            expect(ax._min).toEqual([{val: 0, pad: 0, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 6, pad: 10, extrapad: false}]);
         });
 
         it('has upper bound zero with all negative data if tozero is set', function() {
@@ -1801,8 +1816,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -8, pad: 10}]);
-            expect(ax._max).toEqual([{val: 0, pad: 0}]);
+            expect(ax._min).toEqual([{val: -8, pad: 10, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 0, pad: 0, extrapad: false}]);
         });
 
         it('sets neither bound to zero with positive and negative data if tozero is set', function() {
@@ -1816,8 +1831,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -8, pad: 10}]);
-            expect(ax._max).toEqual([{val: 5, pad: 10}]);
+            expect(ax._min).toEqual([{val: -8, pad: 10, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 5, pad: 10, extrapad: false}]);
         });
 
         it('overrides padded with tozero', function() {
@@ -1832,8 +1847,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: 0, pad: 0}]);
-            expect(ax._max).toEqual([{val: 6, pad: 15}]);
+            expect(ax._min).toEqual([{val: 0, pad: 0, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 6, pad: 10, extrapad: true}]);
         });
 
         it('should return early if no data is given', function() {
@@ -1864,8 +1879,8 @@ describe('Test axes', function() {
             ax.rangeslider = { autorange: true };
 
             expand(ax, data, {});
-            expect(ax._min).toEqual([{val: 2, pad: 0}]);
-            expect(ax._max).toEqual([{val: 5, pad: 0}]);
+            expect(ax._min).toEqual([{val: 2, pad: 0, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 5, pad: 0, extrapad: false}]);
         });
     });
 

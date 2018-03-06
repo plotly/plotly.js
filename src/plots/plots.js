@@ -2337,7 +2337,7 @@ plots.doCalcdata = function(gd, traces) {
         );
     }
 
-    initCategories(axList);
+    clearAxesCalc(axList);
 
     var hasCalcTransform = false;
 
@@ -2367,15 +2367,7 @@ plots.doCalcdata = function(gd, traces) {
     }
 
     // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) {
-        for(i = 0; i < axList.length; i++) {
-            axList[i]._min = [];
-            axList[i]._max = [];
-            axList[i]._categories = [];
-            axList[i]._categoriesMap = {};
-        }
-        initCategories(axList);
-    }
+    if(hasCalcTransform) clearAxesCalc(axList);
 
     // 'regular' loop
     for(i = 0; i < fullData.length; i++) {
@@ -2422,17 +2414,9 @@ plots.doCalcdata = function(gd, traces) {
     Registry.getComponentMethod('fx', 'calc')(gd);
 };
 
-// initialize the category list, if there is one, so we start over
-// to be filled in later by ax.d2c
-function initCategories(axList) {
+function clearAxesCalc(axList) {
     for(var i = 0; i < axList.length; i++) {
-        axList[i]._categories = axList[i]._initialCategories.slice();
-
-        // Build the lookup map for initialized categories
-        axList[i]._categoriesMap = {};
-        for(var j = 0; j < axList[i]._categories.length; j++) {
-            axList[i]._categoriesMap[axList[i]._categories[j]] = j;
-        }
+        axList[i].clearCalc();
     }
 }
 

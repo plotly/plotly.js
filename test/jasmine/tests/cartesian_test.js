@@ -266,6 +266,41 @@ describe('relayout', function() {
             .then(done);
         });
 
+        it('should autorange correctly with margin pushers', function(done) {
+            // lock down https://github.com/plotly/plotly.js/issues/2428
+            var expectedXRange = [-0.3068, 1.3068];
+            var expectedYRange = [0.5184, 2.4816];
+            var foundXRange, foundYRange;
+            Plotly.newPlot(gd, [{
+                // really long name, so legend pushes margins and decreases xaxis._length
+                name: 'loooooooooooongloooooooooooong',
+                y: [1, 2],
+                // really big markers, so autorange depends on length
+                // and with markers x range is padded (and 5% padding depends on length)
+                marker: {size: 100}
+            }], {
+                showlegend: true,
+                width: 800,
+                height: 500
+            })
+            .then(function() {
+                foundXRange = gd.layout.xaxis.range;
+                foundYRange = gd.layout.yaxis.range;
+                // less stringent test at first - for some reason I get a slightly different
+                // legend size even in my regular browser from when I run the tests locally
+                expect(foundXRange).toBeCloseToArray(expectedXRange, 1.5);
+                expect(foundYRange).toBeCloseToArray(expectedYRange, 1.5);
+
+                return Plotly.relayout(gd, {'xaxis.autorange': true, 'yaxis.autorange': true});
+            })
+            .then(function() {
+                // the most important thing is that the ranges don't change when you re-autorange
+                expect(gd.layout.xaxis.range).toBeCloseToArray(foundXRange, 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(foundYRange, 5);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('axis line visibility', function() {

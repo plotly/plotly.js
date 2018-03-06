@@ -907,8 +907,8 @@ describe('Test scattergl autorange:', function() {
                 marker: {size: 10}
             }])
             .then(function() {
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.02, 1.02], 'x range');
-                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.04, 1.04], 'y range');
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.079, 1.079], 2, 'x range');
+                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.105, 1.105], 2, 'y range');
             })
             .catch(fail)
             .then(done);
@@ -925,8 +925,8 @@ describe('Test scattergl autorange:', function() {
                 marker: {size: ms}
             }])
             .then(function() {
-                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.05, 1.05], 'x range');
-                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.11, 1.11], 'y range');
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.119, 1.119], 2, 'x range');
+                expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.199, 1.199], 2, 'y range');
             })
             .catch(fail)
             .then(done);

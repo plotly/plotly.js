@@ -8,11 +8,12 @@
 
 'use strict';
 
-var Axes = require('../../plots/cartesian/axes');
+var listAxes = require('../../plots/cartesian/axis_ids').list;
+var getAutoRange = require('../../plots/cartesian/autorange').getAutoRange;
 var constants = require('./constants');
 
 module.exports = function calcAutorange(gd) {
-    var axes = Axes.list(gd, 'x', true);
+    var axes = listAxes(gd, 'x', true);
 
     // Compute new slider range using axis autorange if necessary.
     //
@@ -28,7 +29,7 @@ module.exports = function calcAutorange(gd) {
 
         if(opts && opts.visible && opts.autorange && ax._min.length && ax._max.length) {
             opts._input.autorange = true;
-            opts._input.range = opts.range = Axes.getAutoRange(ax);
+            opts._input.range = opts.range = getAutoRange(ax);
         }
     }
 };
