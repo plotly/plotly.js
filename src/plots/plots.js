@@ -12,15 +12,13 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../plotly');
-var PlotSchema = require('../plot_api/plot_schema');
 var Registry = require('../registry');
+var PlotSchema = require('../plot_api/plot_schema');
 var axisIDs = require('../plots/cartesian/axis_ids');
 var Lib = require('../lib');
 var _ = Lib._;
 var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
-var Grid = require('./grid');
 
 var plots = module.exports = {};
 
@@ -41,8 +39,6 @@ plots.layoutAttributes = require('./layout_attributes');
 plots.fontWeight = 'normal';
 
 var transformsRegistry = plots.transformsRegistry;
-
-var ErrorBars = require('../components/errorbars');
 
 var commandModule = require('./command');
 plots.executeAPICommand = commandModule.executeAPICommand;
@@ -106,7 +102,7 @@ plots.resize = function(gd) {
             // nor should it be included in the undo queue
             gd.autoplay = true;
 
-            Plotly.relayout(gd, { autosize: true }).then(function() {
+            Registry.call('relayout', gd, {autosize: true}).then(function() {
                 gd.changed = oldchanged;
                 resolve(gd);
             });
@@ -1111,7 +1107,7 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
         coerce('customdata');
         coerce('ids');
 
-        if(plots.traceIs(traceOut, 'showLegend')) {
+        if(Registry.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
             coerce('legendgroup');
         }
@@ -1128,9 +1124,9 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
             Lib.coerceHoverinfo(traceIn, traceOut, layout);
         }
 
-        if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
+        if(!Registry.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
-        if(plots.traceIs(traceOut, 'notLegendIsolatable')) {
+        if(Registry.traceIs(traceOut, 'notLegendIsolatable')) {
             // This clears out the legendonly state for traces like carpet that
             // cannot be isolated in the legend
             traceOut.visible = !!traceOut.visible;
@@ -1251,7 +1247,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     if(layoutIn.width && layoutIn.height) plots.sanitizeMargins(layoutOut);
 
-    Grid.sizeDefaults(layoutIn, layoutOut);
+    Registry.getComponentMethod('grid', 'sizeDefaults')(layoutIn, layoutOut);
 
     coerce('paper_bgcolor');
 
@@ -1390,7 +1386,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 
     // ensure all cartesian axes have at least one subplot
     if(layoutOut._has('cartesian')) {
-        Grid.contentDefaults(layoutIn, layoutOut);
+        Registry.getComponentMethod('grid', 'contentDefaults')(layoutIn, layoutOut);
         Cartesian.finalizeSubplots(layoutIn, layoutOut);
     }
 
@@ -1674,7 +1670,7 @@ plots.doAutoMargin = function(gd) {
     // if things changed and we're not already redrawing, trigger a redraw
     if(!fullLayout._replotting && oldmargins !== '{}' &&
             oldmargins !== JSON.stringify(fullLayout._size)) {
-        return Plotly.plot(gd);
+        return Registry.call('plot', gd);
     }
 };
 
@@ -2118,7 +2114,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         plots.doCalcdata(gd);
 
-        ErrorBars.calc(gd);
+        Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
     }
@@ -2166,7 +2162,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
             if(frameOpts.redraw) {
                 gd._transitionData._interruptCallbacks.push(function() {
-                    return Plotly.redraw(gd);
+                    return Registry.call('redraw', gd);
                 });
             }
 
@@ -2238,7 +2234,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         return Promise.resolve().then(function() {
             if(frameOpts.redraw) {
-                return Plotly.redraw(gd);
+                return Registry.call('redraw', gd);
             }
         }).then(function() {
             // Set transitioning false again once the redraw has occurred. This is used, for example,
@@ -2341,7 +2337,7 @@ plots.doCalcdata = function(gd, traces) {
         );
     }
 
-    initCategories(axList);
+    clearAxesCalc(axList);
 
     var hasCalcTransform = false;
 
@@ -2371,15 +2367,7 @@ plots.doCalcdata = function(gd, traces) {
     }
 
     // clear stuff that should recomputed in 'regular' loop
-    if(hasCalcTransform) {
-        for(i = 0; i < axList.length; i++) {
-            axList[i]._min = [];
-            axList[i]._max = [];
-            axList[i]._categories = [];
-            axList[i]._categoriesMap = {};
-        }
-        initCategories(axList);
-    }
+    if(hasCalcTransform) clearAxesCalc(axList);
 
     // 'regular' loop
     for(i = 0; i < fullData.length; i++) {
@@ -2426,17 +2414,9 @@ plots.doCalcdata = function(gd, traces) {
     Registry.getComponentMethod('fx', 'calc')(gd);
 };
 
-// initialize the category list, if there is one, so we start over
-// to be filled in later by ax.d2c
-function initCategories(axList) {
+function clearAxesCalc(axList) {
     for(var i = 0; i < axList.length; i++) {
-        axList[i]._categories = axList[i]._initialCategories.slice();
-
-        // Build the lookup map for initialized categories
-        axList[i]._categoriesMap = {};
-        for(var j = 0; j < axList[i]._categories.length; j++) {
-            axList[i]._categoriesMap[axList[i]._categories[j]] = j;
-        }
+        axList[i].clearCalc();
     }
 }
 

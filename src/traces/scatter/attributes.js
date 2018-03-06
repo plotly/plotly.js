@@ -9,7 +9,6 @@
 'use strict';
 
 var colorAttributes = require('../../components/colorscale/color_attributes');
-var errorBarAttrs = require('../../components/errorbars/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;
@@ -490,8 +489,5 @@ module.exports = {
             'Please switch to *scatterpolar* trace type.',
             'Sets the angular coordinates.'
         ].join('')
-    },
-
-    error_y: errorBarAttrs,
-    error_x: errorBarAttrs
+    }
 };

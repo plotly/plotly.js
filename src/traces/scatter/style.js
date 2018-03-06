@@ -11,7 +11,7 @@
 
 var d3 = require('d3');
 var Drawing = require('../../components/drawing');
-var ErrorBars = require('../../components/errorbars');
+var Registry = require('../../registry');
 
 function style(gd, cd) {
     var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.scatter');
@@ -32,7 +32,7 @@ function style(gd, cd) {
     s.selectAll('g.trace path.js-fill')
         .call(Drawing.fillGroupStyle);
 
-    s.call(ErrorBars.style);
+    Registry.getComponentMethod('errorbars', 'style')(s);
 }
 
 function stylePoints(sel, trace, gd) {

@@ -10,7 +10,6 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
-var errorBarAttrs = require('../../components/errorbars/attributes');
 var baseAttrs = require('../../plots/attributes');
 var DASHES = require('../../constants/gl3d_dashes');
 
@@ -168,10 +167,6 @@ var attrs = module.exports = overrideAll({
 
     textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: scatterAttrs.textfont,
-
-    error_x: errorBarAttrs,
-    error_y: errorBarAttrs,
-    error_z: errorBarAttrs,
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
 }, 'calc', 'nested');

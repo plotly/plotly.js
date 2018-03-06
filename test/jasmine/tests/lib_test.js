@@ -5,10 +5,9 @@ var config = require('@src/plot_api/plot_config');
 
 var d3 = require('d3');
 var Plotly = require('@lib');
-var PlotlyInternal = require('@src/plotly');
+var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var Plots = PlotlyInternal.Plots;
 var failTest = require('../assets/fail_test');
 
 describe('Test lib.js:', function() {

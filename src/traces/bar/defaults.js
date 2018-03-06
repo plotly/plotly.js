@@ -11,10 +11,10 @@
 
 var Lib = require('../../lib');
 var Color = require('../../components/color');
+var Registry = require('../../registry');
 
 var handleXYDefaults = require('../scatter/xy_defaults');
 var handleStyleDefaults = require('../bar/style_defaults');
-var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
 var attributes = require('./attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -57,6 +57,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
     // override defaultColor for error bars with defaultLine
+    var errorBarsSupplyDefaults = Registry.getComponentMethod('errorbars', 'supplyDefaults');
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 

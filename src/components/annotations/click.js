@@ -6,11 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Plotly = require('../../plotly');
-
+var Registry = require('../../registry');
 
 module.exports = {
     hasClickToShow: hasClickToShow,
@@ -59,7 +57,7 @@ function onClick(gd, hoverData) {
         update['annotations[' + offSet[i] + '].visible'] = false;
     }
 
-    return Plotly.update(gd, {}, update);
+    return Registry.call('update', gd, {}, update);
 }
 
 /*

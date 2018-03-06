@@ -1126,7 +1126,7 @@ function alignHoverText(hoverLabels, rotateLabels) {
             offsetY = d.offset;
         if(d.anchor === 'middle') {
             txx -= d.tx2width / 2;
-            tx2x -= d.tx2width / 2;
+            tx2x += d.txwidth / 2 + HOVERTEXTPAD;
         }
         if(rotateLabels) {
             offsetY *= -YSHIFTY;
@@ -1135,7 +1135,8 @@ function alignHoverText(hoverLabels, rotateLabels) {
 
         g.select('path').attr('d', d.anchor === 'middle' ?
             // middle aligned: rect centered on data
-            ('M-' + (d.bx / 2) + ',-' + (d.by / 2) + 'h' + d.bx + 'v' + d.by + 'h-' + d.bx + 'Z') :
+            ('M-' + (d.bx / 2 + d.tx2width / 2) + ',' + (offsetY - d.by / 2) +
+              'h' + d.bx + 'v' + d.by + 'h-' + d.bx + 'Z') :
             // left or right aligned: side rect with arrow to data
             ('M0,0L' + (horzSign * HOVERARROWSIZE + offsetX) + ',' + (HOVERARROWSIZE + offsetY) +
                 'v' + (d.by / 2 - HOVERARROWSIZE) +

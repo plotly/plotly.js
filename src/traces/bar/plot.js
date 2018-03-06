@@ -18,7 +18,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
-var ErrorBars = require('../../components/errorbars');
+var Registry = require('../../registry');
 
 var attributes = require('./attributes'),
     attributeText = attributes.text,
@@ -150,7 +150,7 @@ module.exports = function plot(gd, plotinfo, cdbar) {
         });
 
     // error bars are on the top
-    bartraces.call(ErrorBars.plot, plotinfo);
+    Registry.getComponentMethod('errorbars', 'plot')(bartraces, plotinfo);
 
     // lastly, clip points groups of `cliponaxis !== false` traces
     // on `plotinfo._hasClipOnAxisFalse === true` subplots

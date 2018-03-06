@@ -11,9 +11,9 @@
 
 var d3 = require('d3');
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
-var ErrorBars = require('../../components/errorbars');
 
 var subTypes = require('./subtypes');
 var linePoints = require('./line_points');
@@ -164,9 +164,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         line = trace.line,
         tr = d3.select(element);
 
-    // (so error bars can find them along with bars)
     // error bars are at the bottom
-    tr.call(ErrorBars.plot, plotinfo, transitionOpts);
+    Registry.getComponentMethod('errorbars', 'plot')(tr, plotinfo, transitionOpts);
 
     if(trace.visible !== true) return;
 
