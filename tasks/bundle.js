@@ -1,5 +1,6 @@
 var path = require('path');
 var glob = require('glob');
+var runSeries = require('run-series');
 
 var constants = require('./util/constants');
 var common = require('./util/common');
@@ -30,35 +31,6 @@ if(!doesFileExist(constants.pathToCSSBuild) || !doesFileExist(constants.pathToFo
     ].join('\n'));
 }
 
-// Browserify plotly.js
-_bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
-    standalone: 'Plotly',
-    debug: DEV,
-    pathToMinBundle: constants.pathToPlotlyDistMin
-});
-
-
-// Browserify the geo assets
-_bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
-    standalone: 'PlotlyGeoAssets'
-});
-
-// Browserify the plotly.js with meta
-_bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
-    standalone: 'Plotly',
-    debug: DEV,
-    then: makeSchema(constants.pathToPlotlyDistWithMeta, constants.pathToSchema)
-});
-
-// Browserify the plotly.js partial bundles
-constants.partialBundlePaths.forEach(function(pathObj) {
-    _bundle(pathObj.index, pathObj.dist, {
-        standalone: 'Plotly',
-        debug: DEV,
-        pathToMinBundle: pathObj.distMin
-    });
-});
-
 // "Browserify" the locales
 var localeGlob = path.join(constants.pathToLib, 'locales', '*.js');
 glob(localeGlob, function(err, files) {
@@ -67,4 +39,52 @@ glob(localeGlob, function(err, files) {
         var outPath = path.join(constants.pathToDist, outName);
         wrapLocale(file, outPath);
     });
+});
+
+// list of tasks to pass to run-series to not blow up
+// memory consumption.
+var tasks = [];
+
+// Browserify plotly.js
+tasks.push(function(cb) {
+    _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
+        standalone: 'Plotly',
+        debug: DEV,
+        compressAttrs: true,
+        pathToMinBundle: constants.pathToPlotlyDistMin
+    }, cb);
+});
+
+// Browserify the geo assets
+tasks.push(function(cb) {
+    _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
+        standalone: 'PlotlyGeoAssets'
+    }, cb);
+});
+
+// Browserify the plotly.js with meta
+tasks.push(function(cb) {
+    _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
+        standalone: 'Plotly',
+        debug: DEV,
+    }, function() {
+        makeSchema(constants.pathToPlotlyDistWithMeta, constants.pathToSchema)();
+        cb();
+    });
+});
+
+// Browserify the plotly.js partial bundles
+constants.partialBundlePaths.forEach(function(pathObj) {
+    tasks.push(function(cb) {
+        _bundle(pathObj.index, pathObj.dist, {
+            standalone: 'Plotly',
+            debug: DEV,
+            compressAttrs: true,
+            pathToMinBundle: pathObj.distMin
+        }, cb);
+    });
+});
+
+runSeries(tasks, function(err) {
+    if(err) throw err;
 });

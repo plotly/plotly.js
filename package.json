@@ -148,6 +148,7 @@
     "prettysize": "1.1.0",
     "read-last-lines": "^1.1.0",
     "requirejs": "^2.3.1",
+    "run-series": "^1.1.4",
     "through2": "^2.0.3",
     "true-case-path": "^1.0.2",
     "watchify": "^3.10.0",
