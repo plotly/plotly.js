@@ -559,6 +559,69 @@ describe('the range slider', function() {
         });
     });
 
+    fdescribe('yaxis options', function() {
+
+        it('should be set one yaxis is present', function() {
+            var mock = {
+                layout: {
+                    xaxis: { rangeslider: {} },
+                    yaxis: { }
+                }
+            };
+
+            supplyAllDefaults(mock);
+
+            expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
+        });
+
+        it('should set multiple yaxis with data are present', function() {
+            var mock = {
+                data: [
+                    {y: [1, 2]},
+                    {y: [1, 2], yaxis: 'y2'}
+                ],
+                layout: {
+                    xaxis: { rangeslider: {} },
+                    yaxis: { },
+                    yaxis2: { },
+                    yaxis3: { }
+                }
+            };
+
+            supplyAllDefaults(mock);
+
+            expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
+            expect(mock._fullLayout.xaxis.rangeslider.yaxis2).toEqual({ rangemode: 'match' });
+            expect(mock._fullLayout.xaxis.rangeslider.yaxis3).toEqual(undefined);
+        });
+
+        it('should honor user settings', function() {
+            var mock = {
+                data: [
+                    {y: [1, 2]},
+                    {y: [1, 2], yaxis: 'y2'},
+                    {y: [1, 2], yaxis: 'y3'}
+                ],
+                layout: {
+                    xaxis: { rangeslider: {
+                        yaxis: { rangemode: 'auto' },
+                        yaxis2: { rangemode: 'fixed' },
+                        yaxis3: { range: [0, 1] }
+                    } },
+                    yaxis: { },
+                    yaxis2: { },
+                    yaxis3: { }
+                }
+            };
+
+            supplyAllDefaults(mock);
+
+            expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'auto', range: [-1, 4] });
+            expect(mock._fullLayout.xaxis.rangeslider.yaxis2).toEqual({ rangemode: 'fixed', range: [-1, 4] });
+            expect(mock._fullLayout.xaxis.rangeslider.yaxis3).toEqual({ rangemode: 'fixed', range: [0, 1] });
+        });
+    });
+
     describe('anchored axes fixedrange', function() {
 
         it('should default to *true* when range slider is visible', function() {
