@@ -126,9 +126,15 @@ describe('plot schema', function() {
     });
 
     it('all subplot objects should contain _isSubplotObj', function() {
-        var IS_SUBPLOT_OBJ = '_isSubplotObj',
-            astrs = ['xaxis', 'yaxis', 'scene', 'geo', 'ternary', 'mapbox', 'polar'],
-            cnt = 0;
+        var IS_SUBPLOT_OBJ = '_isSubplotObj';
+        var cnt = 0;
+
+        var astrs = [
+            'xaxis', 'yaxis', 'scene', 'geo', 'ternary', 'mapbox', 'polar',
+            // not really a 'subplot' object but supports yaxis, yaxis2, yaxis3,
+            // ... counters, so list it here
+            'xaxis.rangeslider.yaxis'
+        ];
 
         // check if the subplot objects have '_isSubplotObj'
         astrs.forEach(function(astr) {

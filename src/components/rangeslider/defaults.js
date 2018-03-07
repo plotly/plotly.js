@@ -10,6 +10,8 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
+var oppAxisAttrs = require('./oppaxis_attributes');
+var axisIds = require('../../plots/cartesian/axis_ids');
 
 module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     if(!layoutIn[axName].rangeslider) return;
@@ -27,6 +29,10 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 
+    function coerceRange(rangeContainerIn, rangeContainerOut, attr, dflt) {
+        return Lib.coerce(rangeContainerIn, rangeContainerOut, oppAxisAttrs, attr, dflt);
+    }
+
     var visible = coerce('visible');
     if(!visible) return;
 
@@ -35,8 +41,39 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     coerce('borderwidth');
     coerce('thickness');
 
-    coerce('autorange', !axOut.isValidRange(containerIn.range));
+    axOut._rangesliderAutorange = coerce('autorange', !axOut.isValidRange(containerIn.range));
     coerce('range');
+
+    var subplots = layoutOut._subplots;
+    if(subplots) {
+        var yIds = subplots.cartesian
+            .filter(function(subplotId) {
+                return subplotId.substr(0, subplotId.indexOf('y')) === axisIds.name2id(axName);
+            })
+            .map(function(subplotId) {
+                return subplotId.substr(subplotId.indexOf('y'), subplotId.length);
+            });
+        var yNames = Lib.simpleMap(yIds, axisIds.id2name);
+        for(var i = 0; i < yNames.length; i++) {
+            var yName = yNames[i];
+
+            var rangeContainerIn = containerIn[yName] || {};
+            var rangeContainerOut = containerOut[yName] = {};
+
+            var yAxOut = layoutOut[yName];
+
+            var rangemodeDflt;
+            if(rangeContainerIn.range && yAxOut.isValidRange(rangeContainerIn.range)) {
+                rangemodeDflt = 'fixed';
+            }
+
+            var rangeMode = coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode', rangemodeDflt);
+            if(rangeMode !== 'match') {
+                coerceRange(rangeContainerIn, rangeContainerOut, 'range', yAxOut.range.slice());
+            }
+            yAxOut._rangesliderAutorange = (rangeMode === 'auto');
+        }
+    }
 
     // to map back range slider (auto) range
     containerOut._input = containerIn;

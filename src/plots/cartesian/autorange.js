@@ -174,10 +174,11 @@ function makePadFn(ax) {
 }
 
 function doAutoRange(ax) {
-    ax.setScale();
+    if(!ax._length) ax.setScale();
 
     // TODO do we really need this?
     var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
+    var axIn;
 
     if(ax.autorange && hasDeps) {
         ax.range = getAutoRange(ax);
@@ -188,14 +189,29 @@ function doAutoRange(ax) {
         // doAutoRange will get called on fullLayout,
         // but we want to report its results back to layout
 
-        var axIn = ax._input;
+        axIn = ax._input;
         axIn.range = ax.range.slice();
         axIn.autorange = ax.autorange;
+    }
+
+    if(ax._anchorAxis && ax._anchorAxis.rangeslider) {
+        var axeRangeOpts = ax._anchorAxis.rangeslider[ax._name];
+        if(axeRangeOpts) {
+            if(axeRangeOpts.rangemode === 'auto') {
+                if(hasDeps) {
+                    axeRangeOpts.range = getAutoRange(ax);
+                } else {
+                    axeRangeOpts.range = ax._rangeInitial ? ax._rangeInitial.slice() : ax.range.slice();
+                }
+            }
+        }
+        axIn = ax._anchorAxis._input;
+        axIn.rangeslider[ax._name] = Lib.extendFlat({}, axeRangeOpts);
     }
 }
 
 function needsAutorange(ax) {
-    return ax.autorange || !!(ax.rangeslider || {}).autorange;
+    return ax.autorange || ax._rangesliderAutorange;
 }
 
 /*

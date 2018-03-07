@@ -1876,7 +1876,7 @@ describe('Test axes', function() {
             data = [2, 5];
 
             ax.autorange = false;
-            ax.rangeslider = { autorange: true };
+            ax._rangesliderAutorange = true;
 
             expand(ax, data, {});
             expect(ax._min).toEqual([{val: 2, pad: 0, extrapad: false}]);

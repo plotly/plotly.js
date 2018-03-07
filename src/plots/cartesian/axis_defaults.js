@@ -49,6 +49,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     var autoRange = coerce('autorange', !containerOut.isValidRange(containerIn.range));
 
+    // both x and y axes may need autorange done just for the range slider's purposes
+    // the logic is complicated to figure this out later, particularly for y axes since
+    // the settings can be spread out in the x axes... so instead we'll collect them
+    // during supplyDefaults
+    containerOut._rangesliderAutorange = false;
+
     if(autoRange) coerce('rangemode');
 
     coerce('range');
