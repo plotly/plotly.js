@@ -65,7 +65,7 @@ describe('Visible rangesliders', function() {
         .then(done);
     });
 
-    it('should have the correct width and height', function(done) {
+    it('should have the correct style and size and be able to update these', function(done) {
         plotMock().then(function() {
             var bg = getRangeSliderChild(0);
 
@@ -75,18 +75,26 @@ describe('Visible rangesliders', function() {
             // width incorporates border widths
             expect(+bg.getAttribute('width')).toEqual(expectedWidth);
             expect(+bg.getAttribute('height')).toEqual(66);
-        })
-        .catch(failTest)
-        .then(done);
-    });
-
-    it('should have the correct style', function(done) {
-        plotMock().then(function() {
-            var bg = getRangeSliderChild(0);
 
             expect(bg.getAttribute('fill')).toBe('#fafafa');
             expect(bg.getAttribute('stroke')).toBe('black');
-            expect(bg.getAttribute('stroke-width')).toBe('2');
+            expect(+bg.getAttribute('stroke-width')).toBe(2);
+
+            return Plotly.relayout(gd, {
+                'xaxis.rangeslider.thickness': 0.1,
+                'xaxis.rangeslider.bgcolor': '#ffff80',
+                'xaxis.rangeslider.bordercolor': '#404040',
+                'xaxis.rangeslider.borderwidth': 1
+            });
+        })
+        .then(function() {
+            var bg = getRangeSliderChild(0);
+
+            expect(+bg.getAttribute('height')).toEqual(32);
+
+            expect(bg.getAttribute('fill')).toBe('#ffff80');
+            expect(bg.getAttribute('stroke')).toBe('#404040');
+            expect(+bg.getAttribute('stroke-width')).toBe(1);
         })
         .catch(failTest)
         .then(done);
