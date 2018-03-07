@@ -41,7 +41,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     coerce('borderwidth');
     coerce('thickness');
 
-    coerce('autorange', !axOut.isValidRange(containerIn.range));
+    axOut._rangesliderAutorange = coerce('autorange', !axOut.isValidRange(containerIn.range));
     coerce('range');
 
     var subplots = layoutOut._subplots;
@@ -60,15 +60,18 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
             var rangeContainerIn = containerIn[yName] || {};
             var rangeContainerOut = containerOut[yName] = {};
 
+            var yAxOut = layoutOut[yName];
+
             var rangemodeDflt;
-            if(rangeContainerIn.range && layoutOut[yName].isValidRange(rangeContainerIn.range)) {
+            if(rangeContainerIn.range && yAxOut.isValidRange(rangeContainerIn.range)) {
                 rangemodeDflt = 'fixed';
             }
 
             var rangeMode = coerceRange(rangeContainerIn, rangeContainerOut, 'rangemode', rangemodeDflt);
             if(rangeMode !== 'match') {
-                coerceRange(rangeContainerIn, rangeContainerOut, 'range', layoutOut[yName].range.slice());
+                coerceRange(rangeContainerIn, rangeContainerOut, 'range', yAxOut.range.slice());
             }
+            yAxOut._rangesliderAutorange = (rangeMode === 'auto');
         }
     }
 

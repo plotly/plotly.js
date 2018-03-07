@@ -211,7 +211,7 @@ function doAutoRange(ax) {
 }
 
 function needsAutorange(ax) {
-    return ax.autorange || !!(ax.rangeslider || {}).autorange;
+    return ax.autorange || ax._rangesliderAutorange;
 }
 
 /*

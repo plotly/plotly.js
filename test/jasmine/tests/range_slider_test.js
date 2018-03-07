@@ -16,55 +16,58 @@ var failTest = require('../assets/fail_test');
 var TOL = 6;
 
 
-describe('the range slider', function() {
+function getRangeSlider() {
+    var className = constants.containerClassName;
+    return document.getElementsByClassName(className)[0];
+}
 
-    var gd,
-        rangeSlider,
-        children;
+function getRangeSliderChild(index) {
+    return getRangeSlider().children[index];
+}
 
-    var sliderY = 393;
+function countRangeSliderClipPaths() {
+    return d3.selectAll('defs').selectAll('*').filter(function() {
+        return this.id.indexOf('rangeslider') !== -1;
+    }).size();
+}
 
-    function getRangeSlider() {
-        var className = constants.containerClassName;
-        return document.getElementsByClassName(className)[0];
-    }
+function testTranslate1D(node, val) {
+    var transformParts = node.getAttribute('transform').split('(');
 
-    function countRangeSliderClipPaths() {
-        return d3.selectAll('defs').selectAll('*').filter(function() {
-            return this.id.indexOf('rangeslider') !== -1;
-        }).size();
-    }
+    expect(transformParts[0]).toEqual('translate');
+    expect(+transformParts[1].split(',0.5)')[0]).toBeWithin(val, TOL);
+}
 
-    function testTranslate1D(node, val) {
-        var transformParts = node.getAttribute('transform').split('(');
+describe('Visible rangesliders', function() {
+    var gd, sliderY;
 
-        expect(transformParts[0]).toEqual('translate');
-        expect(+transformParts[1].split(',0.5)')[0]).toBeWithin(val, TOL);
-    }
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
 
-    describe('when specified as visible', function() {
+    afterEach(destroyGraphDiv);
 
-        beforeEach(function(done) {
-            gd = createGraphDiv();
+    function plotMock() {
+        var mockCopy = Lib.extendDeep({}, mock);
 
-            var mockCopy = Lib.extendDeep({}, mock);
-
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                rangeSlider = getRangeSlider();
-                children = rangeSlider.children;
-
-                done();
-            });
+        return Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            var bb = getRangeSlider().getBoundingClientRect();
+            sliderY = bb.top + bb.height / 2;
+            expect(sliderY).toBeCloseTo(387, -1);
         });
+    }
 
-        afterEach(destroyGraphDiv);
+    it('should be added to the DOM when specified', function(done) {
+        plotMock().then(function() {
+            expect(getRangeSlider()).toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-        it('should be added to the DOM when specified', function() {
-            expect(rangeSlider).toBeDefined();
-        });
-
-        it('should have the correct width and height', function() {
-            var bg = children[0];
+    it('should have the correct width and height', function(done) {
+        plotMock().then(function() {
+            var bg = getRangeSliderChild(0);
 
             var options = mock.layout.xaxis.rangeslider,
                 expectedWidth = gd._fullLayout._size.w + options.borderwidth;
@@ -72,755 +75,843 @@ describe('the range slider', function() {
             // width incorporates border widths
             expect(+bg.getAttribute('width')).toEqual(expectedWidth);
             expect(+bg.getAttribute('height')).toEqual(66);
-        });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-        it('should have the correct style', function() {
-            var bg = children[0];
+    it('should have the correct style', function(done) {
+        plotMock().then(function() {
+            var bg = getRangeSliderChild(0);
 
             expect(bg.getAttribute('fill')).toBe('#fafafa');
             expect(bg.getAttribute('stroke')).toBe('black');
             expect(bg.getAttribute('stroke-width')).toBe('2');
-        });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-        it('should react to resizing the minimum handle', function(done) {
-            var start = 85,
-                end = 140,
-                diff = end - start;
+    it('should react to resizing the minimum handle', function(done) {
+        var start = 85,
+            end = 140,
+            diff = end - start;
+
+        plotMock().then(function() {
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
+
+            return slide(start, sliderY, end, sliderY);
+        })
+        .then(function() {
+            var maskMin = getRangeSliderChild(2),
+                handleMin = getRangeSliderChild(5);
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([4, 49], -0.5);
+            expect(maskMin.getAttribute('width')).toEqual(String(diff));
+            expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 2.5) + ',0.5)');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should react to resizing the maximum handle', function(done) {
+        var start = 695;
+        var end = 490;
+        var diff = end - start;
+
+        var dataMaxStart;
+
+        plotMock().then(function() {
+            dataMaxStart = gd._fullLayout.xaxis.rangeslider.d2p(49);
 
             expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
 
-            slide(start, sliderY, end, sliderY).then(function() {
-                var maskMin = children[2],
-                    handleMin = children[5];
+            return slide(start, sliderY, end, sliderY);
+        })
+        .then(function() {
+            var maskMax = getRangeSliderChild(3),
+                handleMax = getRangeSliderChild(6);
 
-                expect(gd.layout.xaxis.range).toBeCloseToArray([4, 49], -0.5);
-                expect(maskMin.getAttribute('width')).toEqual(String(diff));
-                expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 2.5) + ',0.5)');
-            })
-            .catch(failTest)
-            .then(done);
-        });
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 32.77], -0.5);
+            expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
 
-        it('should react to resizing the maximum handle', function(done) {
-            var start = 695,
-                end = 490,
-                dataMaxStart = gd._fullLayout.xaxis.rangeslider.d2p(49),
-                diff = end - start;
+            testTranslate1D(handleMax, dataMaxStart + diff);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should react to moving the slidebox left to right', function(done) {
+        var start = 250;
+        var end = 300;
+        var diff = end - start;
+
+        var dataMinStart;
+
+        plotMock().then(function() {
+            dataMinStart = gd._fullLayout.xaxis.rangeslider.d2p(0);
 
             expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
 
-            slide(start, sliderY, end, sliderY).then(function() {
-                var maskMax = children[3],
-                    handleMax = children[6];
+            return slide(start, sliderY, end, sliderY);
+        })
+        .then(function() {
+            var maskMin = getRangeSliderChild(2),
+                handleMin = getRangeSliderChild(5);
 
-                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 32.77], -0.5);
-                expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
+            expect(gd.layout.xaxis.range).toBeCloseToArray([3.96, 49], -0.5);
+            expect(+maskMin.getAttribute('width')).toBeCloseTo(String(diff));
+            testTranslate1D(handleMin, dataMinStart + diff - 3);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-                testTranslate1D(handleMax, dataMaxStart + diff);
-            })
-            .catch(failTest)
-            .then(done);
-        });
+    it('should react to moving the slidebox right to left', function(done) {
+        var start = 300;
+        var end = 250;
+        var diff = end - start;
 
-        it('should react to moving the slidebox left to right', function(done) {
-            var start = 250,
-                end = 300,
-                dataMinStart = gd._fullLayout.xaxis.rangeslider.d2p(0),
-                diff = end - start;
+        var dataMaxStart;
+
+        plotMock().then(function() {
+            dataMaxStart = gd._fullLayout.xaxis.rangeslider.d2p(49);
 
             expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
 
-            slide(start, sliderY, end, sliderY).then(function() {
-                var maskMin = children[2],
-                    handleMin = children[5];
+            return slide(start, sliderY, end, sliderY);
+        })
+        .then(function() {
+            var maskMax = getRangeSliderChild(3),
+                handleMax = getRangeSliderChild(6);
 
-                expect(gd.layout.xaxis.range).toBeCloseToArray([3.96, 49], -0.5);
-                expect(+maskMin.getAttribute('width')).toBeCloseTo(String(diff));
-                testTranslate1D(handleMin, dataMinStart + diff - 3);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('should react to moving the slidebox right to left', function(done) {
-            var start = 300,
-                end = 250,
-                dataMaxStart = gd._fullLayout.xaxis.rangeslider.d2p(49),
-                diff = end - start;
-
-            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
-
-            slide(start, sliderY, end, sliderY).then(function() {
-                var maskMax = children[3],
-                    handleMax = children[6];
-
-                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 45.04], -0.5);
-                expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
-                testTranslate1D(handleMax, dataMaxStart + diff);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('should resize the main plot when rangeslider has moved', function(done) {
-            var start = 300,
-                end = 400,
-                rangeDiff1 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0],
-                rangeDiff2,
-                rangeDiff3;
-
-            slide(start, sliderY, end, sliderY).then(function() {
-                rangeDiff2 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
-                expect(rangeDiff2).toBeLessThan(rangeDiff1);
-            }).then(function() {
-                start = 400;
-                end = 200;
-
-                return slide(start, sliderY, end, sliderY);
-            }).then(function() {
-                rangeDiff3 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
-                expect(rangeDiff3).toBeLessThan(rangeDiff2);
-            }).then(done);
-        });
-
-        it('should relayout with relayout "array syntax"', function(done) {
-            Plotly.relayout(gd, 'xaxis.range', [10, 20]).then(function() {
-                var maskMin = children[2],
-                    maskMax = children[3],
-                    handleMin = children[5],
-                    handleMax = children[6];
-
-                expect(+maskMin.getAttribute('width')).toBeWithin(125, TOL);
-                expect(+maskMax.getAttribute('width')).toBeWithin(365, TOL);
-                testTranslate1D(handleMin, 123.32);
-                testTranslate1D(handleMax, 252.65);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('should relayout with relayout "element syntax"', function(done) {
-            Plotly.relayout(gd, 'xaxis.range[0]', 10).then(function() {
-                var maskMin = children[2],
-                    maskMax = children[3],
-                    handleMin = children[5],
-                    handleMax = children[6];
-
-                expect(+maskMin.getAttribute('width')).toBeWithin(126, TOL);
-                expect(+maskMax.getAttribute('width')).toEqual(0);
-                testTranslate1D(handleMin, 123.32);
-                testTranslate1D(handleMax, 617);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('should relayout with style options', function(done) {
-            var bg = children[0],
-                maskMin = children[2],
-                maskMax = children[3];
-
-            var maskMinWidth, maskMaxWidth;
-
-            Plotly.relayout(gd, 'xaxis.range', [5, 10]).then(function() {
-                maskMinWidth = +maskMin.getAttribute('width'),
-                maskMaxWidth = +maskMax.getAttribute('width');
-
-                return Plotly.relayout(gd, 'xaxis.rangeslider.bgcolor', 'red');
-            })
-            .then(function() {
-                expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
-                expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
-
-                expect(bg.getAttribute('fill')).toBe('red');
-                expect(bg.getAttribute('stroke')).toBe('black');
-                expect(bg.getAttribute('stroke-width')).toBe('2');
-
-                return Plotly.relayout(gd, 'xaxis.rangeslider.bordercolor', 'blue');
-            })
-            .then(function() {
-                expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
-                expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
-
-                expect(bg.getAttribute('fill')).toBe('red');
-                expect(bg.getAttribute('stroke')).toBe('blue');
-                expect(bg.getAttribute('stroke-width')).toBe('2');
-
-                return Plotly.relayout(gd, 'xaxis.rangeslider.borderwidth', 3);
-            })
-            .then(function() {
-                expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
-                expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
-
-                expect(bg.getAttribute('fill')).toBe('red');
-                expect(bg.getAttribute('stroke')).toBe('blue');
-                expect(bg.getAttribute('stroke-width')).toBe('3');
-            })
-            .then(done);
-        });
-
-        it('should relayout on size / domain udpate', function(done) {
-            var maskMin = children[2],
-                maskMax = children[3];
-
-            Plotly.relayout(gd, 'xaxis.range', [5, 10]).then(function() {
-                expect(+maskMin.getAttribute('width')).toBeWithin(63.16, TOL);
-                expect(+maskMax.getAttribute('width')).toBeWithin(492.67, TOL);
-
-                return Plotly.relayout(gd, 'xaxis.domain', [0.3, 0.7]);
-            })
-            .then(function() {
-                var maskMin = children[2],
-                    maskMax = children[3];
-
-                expect(+maskMin.getAttribute('width')).toBeWithin(25.26, TOL);
-                expect(+maskMax.getAttribute('width')).toBeWithin(197.06, TOL);
-
-                return Plotly.relayout(gd, 'width', 400);
-            })
-            .then(function() {
-                var maskMin = children[2],
-                    maskMax = children[3];
-
-                expect(+maskMin.getAttribute('width')).toBeWithin(9.22, TOL);
-                expect(+maskMax.getAttribute('width')).toBeWithin(71.95, TOL);
-
-            })
-            .then(done);
-        });
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 45.04], -0.5);
+            expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
+            testTranslate1D(handleMax, dataMaxStart + diff);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
+    it('should resize the main plot when rangeslider has moved', function(done) {
+        var start = 300;
+        var end = 400;
+        var rangeDiff1;
 
-    describe('visibility property', function() {
-        beforeEach(function() {
-            gd = createGraphDiv();
-        });
+        var rangeDiff2, rangeDiff3;
 
-        afterEach(destroyGraphDiv);
+        plotMock().then(function() {
+            rangeDiff1 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
 
-        it('should not add the slider to the DOM by default', function(done) {
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
-            .then(function() {
-                var rangeSlider = getRangeSlider();
-                expect(rangeSlider).not.toBeDefined();
-            })
-            .then(done);
-        });
+            return slide(start, sliderY, end, sliderY);
+        })
+        .then(function() {
+            rangeDiff2 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
+            expect(rangeDiff2).toBeLessThan(rangeDiff1);
+        })
+        .then(function() {
+            start = 400;
+            end = 200;
 
-        it('should add the slider if rangeslider is set to anything', function(done) {
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
-            .then(function() {
-                return Plotly.relayout(gd, 'xaxis.rangeslider', 'exists');
-            })
-            .then(function() {
-                var rangeSlider = getRangeSlider();
-                expect(rangeSlider).toBeDefined();
-            })
-            .then(done);
-        });
-
-        it('should add the slider if visible changed to `true`', function(done) {
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
-            .then(function() {
-                return Plotly.relayout(gd, 'xaxis.rangeslider.visible', true);
-            })
-            .then(function() {
-                var rangeSlider = getRangeSlider();
-                expect(rangeSlider).toBeDefined();
-                expect(countRangeSliderClipPaths()).toEqual(1);
-            })
-            .then(done);
-        });
-
-        it('should remove the slider if changed to `false` or `undefined`', function(done) {
-            Plotly.plot(gd, [{
-                x: [1, 2, 3],
-                y: [2, 3, 4]
-            }], {
-                xaxis: {
-                    rangeslider: { visible: true }
-                }
-            })
-            .then(function() {
-                return Plotly.relayout(gd, 'xaxis.rangeslider.visible', false);
-            })
-            .then(function() {
-                var rangeSlider = getRangeSlider();
-                expect(rangeSlider).not.toBeDefined();
-                expect(countRangeSliderClipPaths()).toEqual(0);
-            })
-            .then(done);
-        });
-
-        it('should clear traces in range plot when needed', function(done) {
-
-            function count(query) {
-                return d3.select(getRangeSlider()).selectAll(query).size();
-            }
-
-            Plotly.plot(gd, [{
-                type: 'scatter',
-                x: [1, 2, 3],
-                y: [2, 1, 2]
-            }, {
-                type: 'bar',
-                x: [1, 2, 3],
-                y: [2, 5, 2]
-            }], {
-                xaxis: {
-                    rangeslider: { visible: true }
-                }
-            })
-            .then(function() {
-                expect(count('g.scatterlayer > g.trace')).toEqual(1);
-                expect(count('g.barlayer > g.trace')).toEqual(1);
-
-                return Plotly.restyle(gd, 'visible', false);
-            })
-            .then(function() {
-                expect(count('g.scatterlayer > g.trace')).toEqual(0);
-                expect(count('g.barlayer > g.trace')).toEqual(0);
-
-                return Plotly.restyle(gd, 'visible', true);
-            })
-            .then(function() {
-                expect(count('g.scatterlayer > g.trace')).toEqual(1);
-                expect(count('g.barlayer > g.trace')).toEqual(1);
-
-                return Plotly.deleteTraces(gd, [0, 1]);
-            })
-            .then(function() {
-                expect(count('g.scatterlayer > g.trace')).toEqual(0);
-                expect(count('g.barlayer > g.trace')).toEqual(0);
-
-                return Plotly.addTraces(gd, [{
-                    type: 'heatmap',
-                    z: [[1, 2, 3], [2, 1, 3]]
-                }]);
-            })
-            .then(function() {
-                expect(count('g.imagelayer > g.hm')).toEqual(1);
-
-                return Plotly.restyle(gd, 'visible', false);
-            })
-            .then(function() {
-                expect(count('g.imagelayer > g.hm')).toEqual(0);
-
-                return Plotly.restyle(gd, {
-                    visible: true,
-                    type: 'contour'
-                });
-            })
-            .then(function() {
-                expect(count('g.maplayer > g.contour')).toEqual(1);
-
-                return Plotly.restyle(gd, 'type', 'heatmap');
-            })
-            .then(function() {
-                expect(count('g.imagelayer > g.hm')).toEqual(1);
-                expect(count('g.maplayer > g.contour')).toEqual(0);
-
-                return Plotly.restyle(gd, 'type', 'contour');
-            })
-            .then(function() {
-                expect(count('g.imagelayer > g.hm')).toEqual(0);
-                expect(count('g.maplayer > g.contour')).toEqual(1);
-
-                return Plotly.deleteTraces(gd, [0]);
-            })
-            .then(function() {
-                expect(count('g.imagelayer > g.hm')).toEqual(0);
-                expect(count('g.maplayer > g.contour')).toEqual(0);
-            })
-            .then(done);
-
-        });
+            return slide(start, sliderY, end, sliderY);
+        })
+        .then(function() {
+            rangeDiff3 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
+            expect(rangeDiff3).toBeLessThan(rangeDiff2);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
-    describe('handleDefaults function', function() {
+    it('should relayout with relayout "array syntax"', function(done) {
+        plotMock().then(function() {
+            return Plotly.relayout(gd, 'xaxis.range', [10, 20]);
+        })
+        .then(function() {
+            var maskMin = getRangeSliderChild(2),
+                maskMax = getRangeSliderChild(3),
+                handleMin = getRangeSliderChild(5),
+                handleMax = getRangeSliderChild(6);
 
-        function _supply(layoutIn, layoutOut, axName) {
-            setConvert(layoutOut[axName]);
-            RangeSlider.handleDefaults(layoutIn, layoutOut, axName);
-        }
-
-        it('should not coerce anything if rangeslider isn\'t set', function() {
-            var layoutIn = { xaxis: {} },
-                layoutOut = { xaxis: {} },
-                expected = { xaxis: {} };
-
-            _supply(layoutIn, layoutOut, 'xaxis');
-            expect(layoutIn).toEqual(expected);
-        });
-
-        it('should not mutate layoutIn', function() {
-            var layoutIn = { xaxis: { rangeslider: { visible: true }} },
-                layoutOut = { xaxis: { rangeslider: {}} },
-                expected = { xaxis: { rangeslider: { visible: true}} };
-
-            _supply(layoutIn, layoutOut, 'xaxis');
-            expect(layoutIn).toEqual(expected);
-        });
-
-        it('should set defaults if rangeslider is set to anything truthy', function() {
-            var layoutIn = { xaxis: { rangeslider: {} }},
-                layoutOut = { xaxis: {} },
-                expected = {
-                    visible: true,
-                    autorange: true,
-                    thickness: 0.15,
-                    bgcolor: '#fff',
-                    borderwidth: 0,
-                    bordercolor: '#444',
-                    _input: layoutIn.xaxis.rangeslider
-                };
-
-            _supply(layoutIn, layoutOut, 'xaxis');
-            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
-        });
-
-        it('should set defaults if rangeslider.visible is true', function() {
-            var layoutIn = { xaxis: { rangeslider: { visible: true }} },
-                layoutOut = { xaxis: { rangeslider: {}} },
-                expected = {
-                    visible: true,
-                    autorange: true,
-                    thickness: 0.15,
-                    bgcolor: '#fff',
-                    borderwidth: 0,
-                    bordercolor: '#444',
-                    _input: layoutIn.xaxis.rangeslider
-                };
-
-            _supply(layoutIn, layoutOut, 'xaxis');
-            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
-        });
-
-        it('should return early if *visible: false*', function() {
-            var layoutIn = { xaxis: { rangeslider: { visible: false, range: [10, 20] }} },
-                layoutOut = { xaxis: { rangeslider: {}} };
-
-            _supply(layoutIn, layoutOut, 'xaxis');
-            expect(layoutOut.xaxis.rangeslider).toEqual({ visible: false });
-        });
-
-        it('should set defaults if properties are invalid', function() {
-            var layoutIn = { xaxis: { rangeslider: {
-                    visible: 'invalid',
-                    thickness: 'invalid',
-                    bgcolor: 42,
-                    bordercolor: 42,
-                    borderwidth: 'superfat'
-                }}},
-                layoutOut = { xaxis: {} },
-                expected = {
-                    visible: true,
-                    autorange: true,
-                    thickness: 0.15,
-                    bgcolor: '#fff',
-                    borderwidth: 0,
-                    bordercolor: '#444',
-                    _input: layoutIn.xaxis.rangeslider
-                };
-
-            _supply(layoutIn, layoutOut, 'xaxis');
-            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
-        });
-
-        it('should set autorange to true when range input is invalid', function() {
-            var layoutIn = { xaxis: { rangeslider: { range: 'not-gonna-work'}} },
-                layoutOut = { xaxis: {} },
-                expected = {
-                    visible: true,
-                    autorange: true,
-                    thickness: 0.15,
-                    bgcolor: '#fff',
-                    borderwidth: 0,
-                    bordercolor: '#444',
-                    _input: layoutIn.xaxis.rangeslider
-                };
-
-            _supply(layoutIn, layoutOut, 'xaxis');
-            expect(layoutOut.xaxis.rangeslider).toEqual(expected);
-        });
-
-        it('should default \'bgcolor\' to layout \'plot_bgcolor\'', function() {
-            var layoutIn = {
-                xaxis: { rangeslider: true }
-            };
-
-            var layoutOut = {
-                xaxis: { range: [2, 40]},
-                plot_bgcolor: 'blue'
-            };
-
-            _supply(layoutIn, layoutOut, 'xaxis');
-            expect(layoutOut.xaxis.rangeslider.bgcolor).toEqual('blue');
-        });
+            expect(+maskMin.getAttribute('width')).toBeWithin(125, TOL);
+            expect(+maskMax.getAttribute('width')).toBeWithin(365, TOL);
+            testTranslate1D(handleMin, 123.32);
+            testTranslate1D(handleMax, 252.65);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
-    describe('yaxis options', function() {
+    it('should relayout with relayout "element syntax"', function(done) {
+        plotMock().then(function() {
+            return Plotly.relayout(gd, 'xaxis.range[0]', 10);
+        })
+        .then(function() {
+            var maskMin = getRangeSliderChild(2),
+                maskMax = getRangeSliderChild(3),
+                handleMin = getRangeSliderChild(5),
+                handleMax = getRangeSliderChild(6);
 
-        it('should be set one yaxis is present', function() {
-            var mock = {
-                layout: {
-                    xaxis: { rangeslider: {} },
-                    yaxis: { }
-                }
-            };
-
-            supplyAllDefaults(mock);
-
-            expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
-        });
-
-        it('should set multiple yaxis with data are present', function() {
-            var mock = {
-                data: [
-                    {y: [1, 2]},
-                    {y: [1, 2], yaxis: 'y2'}
-                ],
-                layout: {
-                    xaxis: { rangeslider: {} },
-                    yaxis: { },
-                    yaxis2: { },
-                    yaxis3: { }
-                }
-            };
-
-            supplyAllDefaults(mock);
-
-            expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
-            expect(mock._fullLayout.xaxis.rangeslider.yaxis2).toEqual({ rangemode: 'match' });
-            expect(mock._fullLayout.xaxis.rangeslider.yaxis3).toEqual(undefined);
-        });
-
-        it('should honor user settings', function() {
-            var mock = {
-                data: [
-                    {y: [1, 2]},
-                    {y: [1, 2], yaxis: 'y2'},
-                    {y: [1, 2], yaxis: 'y3'}
-                ],
-                layout: {
-                    xaxis: { rangeslider: {
-                        yaxis: { rangemode: 'auto' },
-                        yaxis2: { rangemode: 'fixed' },
-                        yaxis3: { range: [0, 1] }
-                    } },
-                    yaxis: { },
-                    yaxis2: { },
-                    yaxis3: { }
-                }
-            };
-
-            supplyAllDefaults(mock);
-
-            expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'auto', range: [-1, 4] });
-            expect(mock._fullLayout.xaxis.rangeslider.yaxis2).toEqual({ rangemode: 'fixed', range: [-1, 4] });
-            expect(mock._fullLayout.xaxis.rangeslider.yaxis3).toEqual({ rangemode: 'fixed', range: [0, 1] });
-        });
+            expect(+maskMin.getAttribute('width')).toBeWithin(126, TOL);
+            expect(+maskMax.getAttribute('width')).toEqual(0);
+            testTranslate1D(handleMin, 123.32);
+            testTranslate1D(handleMax, 617);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
-    describe('anchored axes fixedrange', function() {
+    it('should relayout with style options', function(done) {
+        var bg, maskMin, maskMax, maskMinWidth, maskMaxWidth;
 
-        it('should default to *true* when range slider is visible', function() {
-            var mock = {
-                data: [
-                    {y: [1, 2]},
-                    {y: [1, 2], yaxis: 'y2'},
-                    {y: [1, 2], yaxis: 'y3'}
-                ],
-                layout: {
-                    xaxis: { rangeslider: {} },
-                    yaxis: { anchor: 'x' },
-                    yaxis2: { anchor: 'x' },
-                    yaxis3: { anchor: 'free' }
-                }
-            };
+        plotMock().then(function() {
+            bg = getRangeSliderChild(0);
+            maskMin = getRangeSliderChild(2);
+            maskMax = getRangeSliderChild(3);
 
-            supplyAllDefaults(mock);
+            return Plotly.relayout(gd, 'xaxis.range', [5, 10]);
+        })
+        .then(function() {
+            maskMinWidth = +maskMin.getAttribute('width'),
+            maskMaxWidth = +maskMax.getAttribute('width');
 
-            expect(mock._fullLayout.xaxis.rangeslider.visible).toBe(true);
-            expect(mock._fullLayout.yaxis.fixedrange).toBe(true);
-            expect(mock._fullLayout.yaxis2.fixedrange).toBe(true);
-            expect(mock._fullLayout.yaxis3.fixedrange).toBe(false);
-        });
+            return Plotly.relayout(gd, 'xaxis.rangeslider.bgcolor', 'red');
+        })
+        .then(function() {
+            expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
+            expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
 
-        it('should honor user settings', function() {
-            var mock = {
-                data: [
-                    {y: [1, 2]},
-                    {y: [1, 2], yaxis: 'y2'},
-                    {y: [1, 2], yaxis: 'y3'}
-                ],
-                layout: {
-                    xaxis: { rangeslider: {} },
-                    yaxis: { anchor: 'x', fixedrange: false },
-                    yaxis2: { anchor: 'x', fixedrange: false },
-                    yaxis3: { anchor: 'free' }
-                }
-            };
+            expect(bg.getAttribute('fill')).toBe('red');
+            expect(bg.getAttribute('stroke')).toBe('black');
+            expect(bg.getAttribute('stroke-width')).toBe('2');
 
-            supplyAllDefaults(mock);
+            return Plotly.relayout(gd, 'xaxis.rangeslider.bordercolor', 'blue');
+        })
+        .then(function() {
+            expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
+            expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
 
-            expect(mock._fullLayout.xaxis.rangeslider.visible).toBe(true);
-            expect(mock._fullLayout.yaxis.fixedrange).toBe(false);
-            expect(mock._fullLayout.yaxis2.fixedrange).toBe(false);
-            expect(mock._fullLayout.yaxis3.fixedrange).toBe(false);
-        });
+            expect(bg.getAttribute('fill')).toBe('red');
+            expect(bg.getAttribute('stroke')).toBe('blue');
+            expect(bg.getAttribute('stroke-width')).toBe('2');
 
+            return Plotly.relayout(gd, 'xaxis.rangeslider.borderwidth', 3);
+        })
+        .then(function() {
+            expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
+            expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
+
+            expect(bg.getAttribute('fill')).toBe('red');
+            expect(bg.getAttribute('stroke')).toBe('blue');
+            expect(bg.getAttribute('stroke-width')).toBe('3');
+        })
+        .catch(failTest)
+        .then(done);
     });
 
-    describe('in general', function() {
+    it('should relayout on size / domain udpate', function(done) {
+        var maskMin, maskMax;
 
-        beforeEach(function() {
-            gd = createGraphDiv();
-        });
+        plotMock().then(function() {
+            maskMin = getRangeSliderChild(2),
+            maskMax = getRangeSliderChild(3);
 
-        afterEach(destroyGraphDiv);
+            return Plotly.relayout(gd, 'xaxis.range', [5, 10]);
+        })
+        .then(function() {
+            expect(+maskMin.getAttribute('width')).toBeWithin(63.16, TOL);
+            expect(+maskMax.getAttribute('width')).toBeWithin(492.67, TOL);
 
-        function assertRange(axRange, rsRange) {
-            // lower toBeCloseToArray precision for FF38 on CI
-            var precision = 1e-2;
+            return Plotly.relayout(gd, 'xaxis.domain', [0.3, 0.7]);
+        })
+        .then(function() {
+            var maskMin = getRangeSliderChild(2),
+                maskMax = getRangeSliderChild(3);
 
-            expect(gd.layout.xaxis.range).toBeCloseToArray(axRange, precision);
-            expect(gd.layout.xaxis.rangeslider.range).toBeCloseToArray(rsRange, precision);
-        }
+            expect(+maskMin.getAttribute('width')).toBeWithin(25.26, TOL);
+            expect(+maskMax.getAttribute('width')).toBeWithin(197.06, TOL);
 
-        it('should plot when only x data is provided', function(done) {
-            Plotly.plot(gd, [{ x: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
-                .then(function() {
-                    var rangeSlider = getRangeSlider();
+            return Plotly.relayout(gd, 'width', 400);
+        })
+        .then(function() {
+            var maskMin = getRangeSliderChild(2),
+                maskMax = getRangeSliderChild(3);
 
-                    expect(rangeSlider).toBeDefined();
-                })
-                .then(done);
-        });
+            expect(+maskMin.getAttribute('width')).toBeWithin(9.22, TOL);
+            expect(+maskMax.getAttribute('width')).toBeWithin(71.95, TOL);
 
-        it('should plot when only y data is provided', function(done) {
-            Plotly.plot(gd, [{ y: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
-                .then(function() {
-                    var rangeSlider = getRangeSlider();
-
-                    expect(rangeSlider).toBeDefined();
-                })
-                .then(done);
-        });
-
-        it('should expand its range in accordance with new data arrays', function(done) {
-            Plotly.plot(gd, [{
-                y: [2, 1, 2]
-            }], {
-                xaxis: { rangeslider: {} }
-            })
-            .then(function() {
-                assertRange([-0.13, 2.13], [-0.13, 2.13]);
-
-                return Plotly.restyle(gd, 'y', [[2, 1, 2, 1]]);
-            })
-            .then(function() {
-                assertRange([-0.19, 3.19], [-0.19, 3.19]);
-
-                return Plotly.extendTraces(gd, { y: [[2, 1]] }, [0]);
-            })
-            .then(function() {
-                assertRange([-0.32, 5.32], [-0.32, 5.32]);
-
-                return Plotly.addTraces(gd, { x: [0, 10], y: [2, 1] });
-            })
-            .then(function() {
-                assertRange([-0.68, 10.68], [-0.68, 10.68]);
-
-                return Plotly.deleteTraces(gd, [1]);
-            })
-            .then(function() {
-                assertRange([-0.31, 5.31], [-0.31, 5.31]);
-            })
-            .then(done);
-        });
-
-        it('should not expand its range when range slider range is set', function(done) {
-            Plotly.plot(gd, [{
-                y: [2, 1, 2]
-            }], {
-                xaxis: { rangeslider: { range: [-1, 11] } }
-            })
-            .then(function() {
-                assertRange([-0.13, 2.13], [-1, 11]);
-
-                return Plotly.restyle(gd, 'y', [[2, 1, 2, 1]]);
-            })
-            .then(function() {
-                assertRange([-0.19, 3.19], [-1, 11]);
-
-                return Plotly.extendTraces(gd, { y: [[2, 1]] }, [0]);
-            })
-            .then(function() {
-                assertRange([-0.32, 5.32], [-1, 11]);
-
-                return Plotly.addTraces(gd, { x: [0, 10], y: [2, 1] });
-            })
-            .then(function() {
-                assertRange([-0.68, 10.68], [-1, 11]);
-
-                return Plotly.deleteTraces(gd, [1]);
-            })
-            .then(function() {
-                assertRange([-0.31, 5.31], [-1, 11]);
-
-                return Plotly.update(gd, {
-                    y: [[2, 1, 2, 1, 2]]
-                }, {
-                    'xaxis.rangeslider.autorange': true
-                });
-            })
-            .then(function() {
-                assertRange([-0.26, 4.26], [-0.26, 4.26]);
-
-                // smaller than xaxis.range - won't be accepted
-                return Plotly.relayout(gd, {'xaxis.rangeslider.range': [0, 2]});
-            })
-            .then(function() {
-                assertRange([-0.26, 4.26], [-0.26, 4.26]);
-
-                // will be accepted (and autorange is disabled by impliedEdits)
-                return Plotly.relayout(gd, {'xaxis.rangeslider.range': [-2, 12]});
-            })
-            .then(function() {
-                assertRange([-0.26, 4.26], [-2, 12]);
-            })
-            .then(done);
-        });
-
-        it('should configure yaxis opts on relayout', function(done) {
-            Plotly.plot(gd, [{
-                y: [2, 1, 2]
-            }], {
-                xaxis: { rangeslider: { yaxis: { range: [-10, 20] } } }
-            })
-                .then(function() {
-                    expect(gd.layout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'fixed', range: [-10, 20] });
-
-                    return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'auto');
-                })
-                .then(function() {
-                    var precision = 1e-2;
-
-                    expect(gd.layout.xaxis.rangeslider.yaxis.rangemode).toEqual('auto');
-                    expect(gd.layout.xaxis.rangeslider.yaxis.range)
-                        .toBeCloseToArray([0.920, 2.079], precision);
-
-                    return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'match');
-                })
-                .then(function() {
-                    expect(gd.layout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
-                })
-                .then(done);
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 
+describe('Rangeslider visibility property', function() {
+    var gd;
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should not add the slider to the DOM by default', function(done) {
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
+        .then(function() {
+            var rangeSlider = getRangeSlider();
+            expect(rangeSlider).not.toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should add the slider if rangeslider is set to anything', function(done) {
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
+        .then(function() {
+            return Plotly.relayout(gd, 'xaxis.rangeslider', 'exists');
+        })
+        .then(function() {
+            var rangeSlider = getRangeSlider();
+            expect(rangeSlider).toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should add the slider if visible changed to `true`', function(done) {
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
+        .then(function() {
+            return Plotly.relayout(gd, 'xaxis.rangeslider.visible', true);
+        })
+        .then(function() {
+            var rangeSlider = getRangeSlider();
+            expect(rangeSlider).toBeDefined();
+            expect(countRangeSliderClipPaths()).toEqual(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should remove the slider if changed to `false` or `undefined`', function(done) {
+        Plotly.plot(gd, [{
+            x: [1, 2, 3],
+            y: [2, 3, 4]
+        }], {
+            xaxis: {
+                rangeslider: { visible: true }
+            }
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'xaxis.rangeslider.visible', false);
+        })
+        .then(function() {
+            var rangeSlider = getRangeSlider();
+            expect(rangeSlider).not.toBeDefined();
+            expect(countRangeSliderClipPaths()).toEqual(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should clear traces in range plot when needed', function(done) {
+
+        function count(query) {
+            return d3.select(getRangeSlider()).selectAll(query).size();
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatter',
+            x: [1, 2, 3],
+            y: [2, 1, 2]
+        }, {
+            type: 'bar',
+            x: [1, 2, 3],
+            y: [2, 5, 2]
+        }], {
+            xaxis: {
+                rangeslider: { visible: true }
+            }
+        })
+        .then(function() {
+            expect(count('g.scatterlayer > g.trace')).toEqual(1);
+            expect(count('g.barlayer > g.trace')).toEqual(1);
+
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            expect(count('g.scatterlayer > g.trace')).toEqual(0);
+            expect(count('g.barlayer > g.trace')).toEqual(0);
+
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            expect(count('g.scatterlayer > g.trace')).toEqual(1);
+            expect(count('g.barlayer > g.trace')).toEqual(1);
+
+            return Plotly.deleteTraces(gd, [0, 1]);
+        })
+        .then(function() {
+            expect(count('g.scatterlayer > g.trace')).toEqual(0);
+            expect(count('g.barlayer > g.trace')).toEqual(0);
+
+            return Plotly.addTraces(gd, [{
+                type: 'heatmap',
+                z: [[1, 2, 3], [2, 1, 3]]
+            }]);
+        })
+        .then(function() {
+            expect(count('g.imagelayer > g.hm')).toEqual(1);
+
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            expect(count('g.imagelayer > g.hm')).toEqual(0);
+
+            return Plotly.restyle(gd, {
+                visible: true,
+                type: 'contour'
+            });
+        })
+        .then(function() {
+            expect(count('g.maplayer > g.contour')).toEqual(1);
+
+            return Plotly.restyle(gd, 'type', 'heatmap');
+        })
+        .then(function() {
+            expect(count('g.imagelayer > g.hm')).toEqual(1);
+            expect(count('g.maplayer > g.contour')).toEqual(0);
+
+            return Plotly.restyle(gd, 'type', 'contour');
+        })
+        .then(function() {
+            expect(count('g.imagelayer > g.hm')).toEqual(0);
+            expect(count('g.maplayer > g.contour')).toEqual(1);
+
+            return Plotly.deleteTraces(gd, [0]);
+        })
+        .then(function() {
+            expect(count('g.imagelayer > g.hm')).toEqual(0);
+            expect(count('g.maplayer > g.contour')).toEqual(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('Rangeslider handleDefaults function', function() {
+
+    function _supply(layoutIn, layoutOut, axName) {
+        setConvert(layoutOut[axName]);
+        RangeSlider.handleDefaults(layoutIn, layoutOut, axName);
+    }
+
+    it('should not coerce anything if rangeslider isn\'t set', function() {
+        var layoutIn = { xaxis: {} },
+            layoutOut = { xaxis: {} },
+            expected = { xaxis: {} };
+
+        _supply(layoutIn, layoutOut, 'xaxis');
+        expect(layoutIn).toEqual(expected);
+    });
+
+    it('should not mutate layoutIn', function() {
+        var layoutIn = { xaxis: { rangeslider: { visible: true }} },
+            layoutOut = { xaxis: { rangeslider: {}} },
+            expected = { xaxis: { rangeslider: { visible: true}} };
+
+        _supply(layoutIn, layoutOut, 'xaxis');
+        expect(layoutIn).toEqual(expected);
+    });
+
+    it('should set defaults if rangeslider is set to anything truthy', function() {
+        var layoutIn = { xaxis: { rangeslider: {} }},
+            layoutOut = { xaxis: {} },
+            expected = {
+                visible: true,
+                autorange: true,
+                thickness: 0.15,
+                bgcolor: '#fff',
+                borderwidth: 0,
+                bordercolor: '#444',
+                _input: layoutIn.xaxis.rangeslider
+            };
+
+        _supply(layoutIn, layoutOut, 'xaxis');
+        expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+    });
+
+    it('should set defaults if rangeslider.visible is true', function() {
+        var layoutIn = { xaxis: { rangeslider: { visible: true }} },
+            layoutOut = { xaxis: { rangeslider: {}} },
+            expected = {
+                visible: true,
+                autorange: true,
+                thickness: 0.15,
+                bgcolor: '#fff',
+                borderwidth: 0,
+                bordercolor: '#444',
+                _input: layoutIn.xaxis.rangeslider
+            };
+
+        _supply(layoutIn, layoutOut, 'xaxis');
+        expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+    });
+
+    it('should return early if *visible: false*', function() {
+        var layoutIn = { xaxis: { rangeslider: { visible: false, range: [10, 20] }} },
+            layoutOut = { xaxis: { rangeslider: {}} };
+
+        _supply(layoutIn, layoutOut, 'xaxis');
+        expect(layoutOut.xaxis.rangeslider).toEqual({ visible: false });
+    });
+
+    it('should set defaults if properties are invalid', function() {
+        var layoutIn = { xaxis: { rangeslider: {
+                visible: 'invalid',
+                thickness: 'invalid',
+                bgcolor: 42,
+                bordercolor: 42,
+                borderwidth: 'superfat'
+            }}},
+            layoutOut = { xaxis: {} },
+            expected = {
+                visible: true,
+                autorange: true,
+                thickness: 0.15,
+                bgcolor: '#fff',
+                borderwidth: 0,
+                bordercolor: '#444',
+                _input: layoutIn.xaxis.rangeslider
+            };
+
+        _supply(layoutIn, layoutOut, 'xaxis');
+        expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+    });
+
+    it('should set autorange to true when range input is invalid', function() {
+        var layoutIn = { xaxis: { rangeslider: { range: 'not-gonna-work'}} },
+            layoutOut = { xaxis: {} },
+            expected = {
+                visible: true,
+                autorange: true,
+                thickness: 0.15,
+                bgcolor: '#fff',
+                borderwidth: 0,
+                bordercolor: '#444',
+                _input: layoutIn.xaxis.rangeslider
+            };
+
+        _supply(layoutIn, layoutOut, 'xaxis');
+        expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+    });
+
+    it('should default \'bgcolor\' to layout \'plot_bgcolor\'', function() {
+        var layoutIn = {
+            xaxis: { rangeslider: true }
+        };
+
+        var layoutOut = {
+            xaxis: { range: [2, 40]},
+            plot_bgcolor: 'blue'
+        };
+
+        _supply(layoutIn, layoutOut, 'xaxis');
+        expect(layoutOut.xaxis.rangeslider.bgcolor).toEqual('blue');
+    });
+});
+
+describe('Rangeslider yaxis options', function() {
+
+    it('should be set one yaxis is present', function() {
+        var mock = {
+            layout: {
+                xaxis: { rangeslider: {} },
+                yaxis: { }
+            }
+        };
+
+        supplyAllDefaults(mock);
+
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
+    });
+
+    it('should set multiple yaxis with data are present', function() {
+        var mock = {
+            data: [
+                {y: [1, 2]},
+                {y: [1, 2], yaxis: 'y2'}
+            ],
+            layout: {
+                xaxis: { rangeslider: {} },
+                yaxis: { },
+                yaxis2: { },
+                yaxis3: { }
+            }
+        };
+
+        supplyAllDefaults(mock);
+
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis2).toEqual({ rangemode: 'match' });
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis3).toEqual(undefined);
+    });
+
+    it('should honor user settings', function() {
+        var mock = {
+            data: [
+                {y: [1, 2]},
+                {y: [1, 2], yaxis: 'y2'},
+                {y: [1, 2], yaxis: 'y3'}
+            ],
+            layout: {
+                xaxis: { rangeslider: {
+                    yaxis: { rangemode: 'auto' },
+                    yaxis2: { rangemode: 'fixed' },
+                    yaxis3: { range: [0, 1] }
+                } },
+                yaxis: { },
+                yaxis2: { },
+                yaxis3: { }
+            }
+        };
+
+        supplyAllDefaults(mock);
+
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'auto', range: [-1, 4] });
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis2).toEqual({ rangemode: 'fixed', range: [-1, 4] });
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis3).toEqual({ rangemode: 'fixed', range: [0, 1] });
+    });
+});
+
+describe('Rangeslider anchored axes fixedrange', function() {
+
+    it('should default to *true* when range slider is visible', function() {
+        var mock = {
+            data: [
+                {y: [1, 2]},
+                {y: [1, 2], yaxis: 'y2'},
+                {y: [1, 2], yaxis: 'y3'}
+            ],
+            layout: {
+                xaxis: { rangeslider: {} },
+                yaxis: { anchor: 'x' },
+                yaxis2: { anchor: 'x' },
+                yaxis3: { anchor: 'free' }
+            }
+        };
+
+        supplyAllDefaults(mock);
+
+        expect(mock._fullLayout.xaxis.rangeslider.visible).toBe(true);
+        expect(mock._fullLayout.yaxis.fixedrange).toBe(true);
+        expect(mock._fullLayout.yaxis2.fixedrange).toBe(true);
+        expect(mock._fullLayout.yaxis3.fixedrange).toBe(false);
+    });
+
+    it('should honor user settings', function() {
+        var mock = {
+            data: [
+                {y: [1, 2]},
+                {y: [1, 2], yaxis: 'y2'},
+                {y: [1, 2], yaxis: 'y3'}
+            ],
+            layout: {
+                xaxis: { rangeslider: {} },
+                yaxis: { anchor: 'x', fixedrange: false },
+                yaxis2: { anchor: 'x', fixedrange: false },
+                yaxis3: { anchor: 'free' }
+            }
+        };
+
+        supplyAllDefaults(mock);
+
+        expect(mock._fullLayout.xaxis.rangeslider.visible).toBe(true);
+        expect(mock._fullLayout.yaxis.fixedrange).toBe(false);
+        expect(mock._fullLayout.yaxis2.fixedrange).toBe(false);
+        expect(mock._fullLayout.yaxis3.fixedrange).toBe(false);
+    });
+
+});
+
+describe('rangesliders in general', function() {
+    var gd;
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertRange(axRange, rsRange) {
+        // lower toBeCloseToArray precision for FF38 on CI
+        var precision = 1e-2;
+
+        expect(gd.layout.xaxis.range).toBeCloseToArray(axRange, precision);
+        expect(gd.layout.xaxis.rangeslider.range).toBeCloseToArray(rsRange, precision);
+    }
+
+    it('should plot when only x data is provided', function(done) {
+        Plotly.plot(gd, [{ x: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
+        .then(function() {
+            var rangeSlider = getRangeSlider();
+
+            expect(rangeSlider).toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should plot when only y data is provided', function(done) {
+        Plotly.plot(gd, [{ y: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
+        .then(function() {
+            var rangeSlider = getRangeSlider();
+
+            expect(rangeSlider).toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should expand its range in accordance with new data arrays', function(done) {
+        Plotly.plot(gd, [{
+            y: [2, 1, 2]
+        }], {
+            xaxis: { rangeslider: {} }
+        })
+        .then(function() {
+            assertRange([-0.13, 2.13], [-0.13, 2.13]);
+
+            return Plotly.restyle(gd, 'y', [[2, 1, 2, 1]]);
+        })
+        .then(function() {
+            assertRange([-0.19, 3.19], [-0.19, 3.19]);
+
+            return Plotly.extendTraces(gd, { y: [[2, 1]] }, [0]);
+        })
+        .then(function() {
+            assertRange([-0.32, 5.32], [-0.32, 5.32]);
+
+            return Plotly.addTraces(gd, { x: [0, 10], y: [2, 1] });
+        })
+        .then(function() {
+            assertRange([-0.68, 10.68], [-0.68, 10.68]);
+
+            return Plotly.deleteTraces(gd, [1]);
+        })
+        .then(function() {
+            assertRange([-0.31, 5.31], [-0.31, 5.31]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not expand its range when range slider range is set', function(done) {
+        Plotly.plot(gd, [{
+            y: [2, 1, 2]
+        }], {
+            xaxis: { rangeslider: { range: [-1, 11] } }
+        })
+        .then(function() {
+            assertRange([-0.13, 2.13], [-1, 11]);
+
+            return Plotly.restyle(gd, 'y', [[2, 1, 2, 1]]);
+        })
+        .then(function() {
+            assertRange([-0.19, 3.19], [-1, 11]);
+
+            return Plotly.extendTraces(gd, { y: [[2, 1]] }, [0]);
+        })
+        .then(function() {
+            assertRange([-0.32, 5.32], [-1, 11]);
+
+            return Plotly.addTraces(gd, { x: [0, 10], y: [2, 1] });
+        })
+        .then(function() {
+            assertRange([-0.68, 10.68], [-1, 11]);
+
+            return Plotly.deleteTraces(gd, [1]);
+        })
+        .then(function() {
+            assertRange([-0.31, 5.31], [-1, 11]);
+
+            return Plotly.update(gd, {
+                y: [[2, 1, 2, 1, 2]]
+            }, {
+                'xaxis.rangeslider.autorange': true
+            });
+        })
+        .then(function() {
+            assertRange([-0.26, 4.26], [-0.26, 4.26]);
+
+            // smaller than xaxis.range - won't be accepted
+            return Plotly.relayout(gd, {'xaxis.rangeslider.range': [0, 2]});
+        })
+        .then(function() {
+            assertRange([-0.26, 4.26], [-0.26, 4.26]);
+
+            // will be accepted (and autorange is disabled by impliedEdits)
+            return Plotly.relayout(gd, {'xaxis.rangeslider.range': [-2, 12]});
+        })
+        .then(function() {
+            assertRange([-0.26, 4.26], [-2, 12]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should configure yaxis opts on relayout', function(done) {
+        Plotly.plot(gd, [{
+            y: [2, 1, 2]
+        }], {
+            xaxis: { rangeslider: { yaxis: { range: [-10, 20] } } }
+        })
+        .then(function() {
+            expect(gd.layout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'fixed', range: [-10, 20] });
+
+            return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'auto');
+        })
+        .then(function() {
+            var precision = 2;
+
+            expect(gd.layout.xaxis.rangeslider.yaxis.rangemode).toEqual('auto');
+            expect(gd.layout.xaxis.rangeslider.yaxis.range)
+                .toBeCloseToArray([0.920, 2.079], precision);
+
+            return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'match');
+        })
+        .then(function() {
+            expect(gd.layout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update rangeslider x/y ranges when data changes even if main axes are not autoranged', function(done) {
+        Plotly.plot(gd, [{
+            // use a heatmap because it doesn't add any padding
+            x0: 0, dx: 1,
+            y0: 1, dy: 1,
+            z: [[1, 2, 3], [2, 3, 4], [3, 4, 5]],
+            type: 'heatmap'
+        }], {
+            xaxis: {
+                range: [0, 2],
+                rangeslider: {yaxis: {rangemode: 'auto'}}
+            },
+            yaxis: {range: [1.1, 3.1]}
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([-0.5, 2.5], 3);
+            expect(gd._fullLayout.xaxis.rangeslider.yaxis.range).toBeCloseToArray([0.5, 3.5], 3);
+
+            return Plotly.restyle(gd, {dx: 2, dy: 4});
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([-1, 5], 3);
+            expect(gd._fullLayout.xaxis.rangeslider.yaxis.range).toBeCloseToArray([-1, 11], 3);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
 
 function slide(fromX, fromY, toX, toY) {
     return new Promise(function(resolve) {
@@ -830,7 +921,7 @@ function slide(fromX, fromY, toX, toY) {
         mouseEvent('mouseup', toX, toY);
 
         setTimeout(function() {
-            return resolve();
+            resolve();
         }, 20);
     });
 }
