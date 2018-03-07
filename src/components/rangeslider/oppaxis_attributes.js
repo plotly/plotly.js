@@ -9,6 +9,11 @@
 'use strict';
 
 module.exports = {
+    // not really a 'subplot' attribute container,
+    // but this is the flag we use to denote attributes that
+    // support yaxis, yaxis2, yaxis3, ... counters
+    _isSubplotObj: true,
+
     rangemode: {
         valType: 'enumerated',
         values: ['auto', 'fixed', 'match'],
