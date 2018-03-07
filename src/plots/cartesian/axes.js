@@ -2010,8 +2010,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
         // configure their own titles.
         var ax = axisIds.getFromId(gd, axid);
 
-        // rangeslider takes over the title so drop it here
-        if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox) return;
+        // rangeslider takes over a bottom title so drop it here
+        if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox && ax.side === 'bottom') return;
 
         var avoidSelection = d3.select(gd).selectAll('g.' + axid + 'tick');
         var avoid = {

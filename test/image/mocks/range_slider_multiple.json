@@ -21,7 +21,8 @@
       "domain": [ 0, 0.45 ],
       "range": [ 1, 2 ],
       "rangeslider": {},
-      "title": "X"
+      "title": "X",
+      "side": "top"
     },
     "xaxis2": {
       "anchor": "y2",

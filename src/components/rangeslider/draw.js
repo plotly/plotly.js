@@ -159,16 +159,18 @@ module.exports = function(gd) {
 
         // title goes next to range slider instead of tick labels, so
         // just take it over and draw it from here
-        Titles.draw(gd, axisOpts._id + 'title', {
-            propContainer: axisOpts,
-            propName: axisOpts._name + '.title',
-            placeholder: fullLayout._dfltTitle.x,
-            attributes: {
-                x: axisOpts._offset + axisOpts._length / 2,
-                y: y + opts._height + opts._offsetShift + 10 + 1.5 * axisOpts.titlefont.size,
-                'text-anchor': 'middle'
-            }
-        });
+        if(axisOpts.side === 'bottom') {
+            Titles.draw(gd, axisOpts._id + 'title', {
+                propContainer: axisOpts,
+                propName: axisOpts._name + '.title',
+                placeholder: fullLayout._dfltTitle.x,
+                attributes: {
+                    x: axisOpts._offset + axisOpts._length / 2,
+                    y: y + opts._height + opts._offsetShift + 10 + 1.5 * axisOpts.titlefont.size,
+                    'text-anchor': 'middle'
+                }
+            });
+        }
 
         // update margins
         Plots.autoMargin(gd, opts._id, {
