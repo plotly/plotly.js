@@ -911,6 +911,67 @@ describe('rangesliders in general', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to turn on rangeslider x/y autorange if initially specified', function(done) {
+        Plotly.plot(gd, [{
+            // use a heatmap because it doesn't add any padding
+            x0: 0, dx: 1,
+            y0: 1, dy: 1,
+            z: [[1, 2, 3], [2, 3, 4], [3, 4, 5]],
+            type: 'heatmap'
+        }], {
+            xaxis: {
+                range: [0.1, 1.9],
+                rangeslider: {range: [0, 2], yaxis: {range: [1, 3]}}
+            },
+            yaxis: {range: [1.1, 2.9]}
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([0, 2], 3);
+            expect(gd._fullLayout.xaxis.rangeslider.yaxis.range).toBeCloseToArray([1, 3], 3);
+
+            return Plotly.relayout(gd, {'xaxis.rangeslider.yaxis.rangemode': 'auto'});
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([0, 2], 3);
+            expect(gd._fullLayout.xaxis.rangeslider.yaxis.range).toBeCloseToArray([0.5, 3.5], 3);
+
+            return Plotly.relayout(gd, {'xaxis.rangeslider.autorange': true});
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([-0.5, 2.5], 3);
+            expect(gd._fullLayout.xaxis.rangeslider.yaxis.range).toBeCloseToArray([0.5, 3.5], 3);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to turn on rangeslider x/y autorange implicitly by deleting x range', function(done) {
+        // this does not apply to y ranges, because the default there is 'match'
+        Plotly.plot(gd, [{
+            // use a heatmap because it doesn't add any padding
+            x0: 0, dx: 1,
+            y0: 1, dy: 1,
+            z: [[1, 2, 3], [2, 3, 4], [3, 4, 5]],
+            type: 'heatmap'
+        }], {
+            xaxis: {
+                range: [0.1, 1.9],
+                rangeslider: {range: [0, 2], yaxis: {range: [1, 3]}}
+            },
+            yaxis: {range: [1.1, 2.9]}
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([0, 2], 3);
+
+            return Plotly.relayout(gd, {'xaxis.rangeslider.range': null});
+        })
+        .then(function() {
+            expect(gd._fullLayout.xaxis.rangeslider.range).toBeCloseToArray([-0.5, 2.5], 3);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 function slide(fromX, fromY, toX, toY) {

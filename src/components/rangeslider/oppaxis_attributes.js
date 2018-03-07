@@ -36,7 +36,7 @@ module.exports = {
             {valType: 'any', editType: 'plot'},
             {valType: 'any', editType: 'plot'}
         ],
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Sets the range of this axis for the rangeslider.'
         ].join(' ')
