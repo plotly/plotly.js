@@ -808,7 +808,7 @@ describe('the range slider', function() {
                     var precision = 1e-2;
 
                     expect(gd.layout.xaxis.rangeslider.yaxis.rangemode).toEqual('auto');
-                    expect(gd.layout.xaxis.rangeslider.yaxis.rangemode.range)
+                    expect(gd.layout.xaxis.rangeslider.yaxis.range)
                         .toBeCloseToArray([0.920, 2.079], precision);
 
                     return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'match');
