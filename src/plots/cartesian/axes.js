@@ -2008,20 +2008,23 @@ axes.doTicks = function(gd, axid, skipTitle) {
         // now this only applies to regular cartesian axes; colorbars and
         // others ALWAYS call doTicks with skipTitle=true so they can
         // configure their own titles.
-        var ax = axisIds.getFromId(gd, axid),
-            avoidSelection = d3.select(gd).selectAll('g.' + axid + 'tick'),
-            avoid = {
-                selection: avoidSelection,
-                side: ax.side
-            },
-            axLetter = axid.charAt(0),
-            gs = gd._fullLayout._size,
-            offsetBase = 1.5,
-            fontSize = ax.titlefont.size,
-            transform,
-            counterAxis,
-            x,
-            y;
+        var ax = axisIds.getFromId(gd, axid);
+
+        // rangeslider takes over the title so drop it here
+        if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox) return;
+
+        var avoidSelection = d3.select(gd).selectAll('g.' + axid + 'tick');
+        var avoid = {
+            selection: avoidSelection,
+            side: ax.side
+        };
+        var axLetter = axid.charAt(0);
+        var gs = gd._fullLayout._size;
+        var offsetBase = 1.5;
+        var fontSize = ax.titlefont.size;
+
+        var transform, counterAxis, x, y;
+
         if(avoidSelection.size()) {
             var translation = Drawing.getTranslate(avoidSelection.node().parentNode);
             avoid.offsetLeft = translation.x;
@@ -2037,6 +2040,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 axisIds.getFromId(gd, ax.anchor);
 
             x = ax._offset + ax._length / 2;
+
             if(ax.side === 'top') {
                 y = -titleStandoff - fontSize * (ax.showticklabels ? 1 : 0);
             }
@@ -2045,11 +2049,6 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     fontSize * (ax.showticklabels ? 1.5 : 0.5);
             }
             y += counterAxis._offset;
-
-            if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox) {
-                y += (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) *
-                    ax.rangeslider.thickness + ax._boundingBox.height;
-            }
 
             if(!avoid.side) avoid.side = 'bottom';
         }

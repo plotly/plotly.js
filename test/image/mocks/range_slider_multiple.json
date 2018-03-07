@@ -20,14 +20,16 @@
     "xaxis": {
       "domain": [ 0, 0.45 ],
       "range": [ 1, 2 ],
-      "rangeslider": {}
+      "rangeslider": {},
+      "title": "X"
     },
     "xaxis2": {
       "anchor": "y2",
       "domain": [ 0.55, 1 ],
       "rangeslider": {
         "range": [ -2, 4 ]
-      }
+      },
+      "title": "X2"
     },
     "yaxis": {
       "domain": [ 0.3, 0.8 ],
