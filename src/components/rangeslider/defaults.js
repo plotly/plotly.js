@@ -10,7 +10,7 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
-var rangeAttributes = require('./range_attributes');
+var oppAxisAttrs = require('./oppaxis_attributes');
 var axisIds = require('../../plots/cartesian/axis_ids');
 
 module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
@@ -30,7 +30,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     }
 
     function coerceRange(rangeContainerIn, rangeContainerOut, attr, dflt) {
-        return Lib.coerce(rangeContainerIn, rangeContainerOut, rangeAttributes, attr, dflt);
+        return Lib.coerce(rangeContainerIn, rangeContainerOut, oppAxisAttrs, attr, dflt);
     }
 
     var visible = coerce('visible');

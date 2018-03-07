@@ -505,4 +505,25 @@ describe('Plotly.validate', function() {
             'In layout, key grid.subplots[2][0] is set to an invalid value (5)'
         );
     });
+
+    it('should detect opposite axis range slider attributes', function() {
+        var out = Plotly.validate([
+            {y: [1, 2]},
+            {y: [1, 2], yaxis: 'y2'},
+            {y: [1, 2], yaxis: 'y3'}
+        ], {
+            xaxis: {
+                rangeslider: {
+                    yaxis: { rangemode: 'auto' },
+                    yaxis2: { rangemode: 'fixed' },
+                    yaxis3: { range: [0, 1] }
+                }
+            },
+            yaxis: {},
+            yaxis2: {},
+            yaxis3: {}
+        });
+
+        expect(out).toBeUndefined();
+    });
 });
