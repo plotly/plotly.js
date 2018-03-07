@@ -114,6 +114,7 @@
   },
   "devDependencies": {
     "brfs": "^1.4.4",
+    "browser-pack-flat": "^3.0.8",
     "browserify": "^15.2.0",
     "browserify-transform-tools": "^1.7.0",
     "check-node-version": "^3.2.0",
@@ -148,6 +149,7 @@
     "prettysize": "1.1.0",
     "read-last-lines": "^1.1.0",
     "requirejs": "^2.3.1",
+    "run-series": "^1.1.4",
     "through2": "^2.0.3",
     "true-case-path": "^1.0.2",
     "watchify": "^3.10.0",
