@@ -522,22 +522,27 @@ axes.calcTicks = function calcTicks(ax) {
     // find the first tick
     ax._tmin = axes.tickFirst(ax);
 
+    // add a tiny bit so we get ticks which may have rounded out
+    var startTick = rng[0] * 1.0001 - rng[1] * 0.0001;
+    var endTick = rng[1] * 1.0001 - rng[0] * 0.0001;
     // check for reversed axis
     var axrev = (rng[1] < rng[0]);
 
+    // No visible ticks? Quit.
+    // I've only seen this on category axes with all categories off the edge.
+    if((ax._tmin < startTick) !== axrev) return [];
+
     // return the full set of tick vals
-    var vals = [],
-        // add a tiny bit so we get ticks which may have rounded out
-        endtick = rng[1] * 1.0001 - rng[0] * 0.0001;
+    var vals = [];
     if(ax.type === 'category') {
-        endtick = (axrev) ? Math.max(-0.5, endtick) :
-            Math.min(ax._categories.length - 0.5, endtick);
+        endTick = (axrev) ? Math.max(-0.5, endTick) :
+            Math.min(ax._categories.length - 0.5, endTick);
     }
 
     var xPrevious = null;
     var maxTicks = Math.max(1000, ax._length || 0);
     for(var x = ax._tmin;
-            (axrev) ? (x >= endtick) : (x <= endtick);
+            (axrev) ? (x >= endTick) : (x <= endTick);
             x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)) {
         // prevent infinite loops - no more than one tick per pixel,
         // and make sure each value is different from the previous
