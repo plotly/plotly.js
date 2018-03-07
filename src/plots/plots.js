@@ -701,11 +701,6 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
     var i, j, id, ax;
 
-    // sort subplot lists
-    for(var subplotType in newSubplotList) {
-        newSubplotList[subplotType].sort(Lib.subplotSort);
-    }
-
     for(i = 0; i < ids.length; i++) {
         id = ids[i];
         var oldSubplot = oldSubplots[id];
@@ -1388,6 +1383,11 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
     if(layoutOut._has('cartesian')) {
         Registry.getComponentMethod('grid', 'contentDefaults')(layoutIn, layoutOut);
         Cartesian.finalizeSubplots(layoutIn, layoutOut);
+    }
+
+    // sort subplot lists
+    for(var subplotType in layoutOut._subplots) {
+        layoutOut._subplots[subplotType].sort(Lib.subplotSort);
     }
 
     // base plot module layout defaults
