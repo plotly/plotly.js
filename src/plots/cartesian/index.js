@@ -88,11 +88,9 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
     // so if there are NO subplots at all, make one from the first
     // x & y axes in the input layout
     if(!spAll.length) {
-        var keys = Object.keys(layoutIn);
         xi = '';
         yi = '';
-        for(i = 0; i < keys.length; i++) {
-            var ki = keys[i];
+        for(var ki in layoutIn) {
             if(constants.attrRegex.test(ki)) {
                 var axLetter = ki.charAt(0);
                 if(axLetter === 'x') {

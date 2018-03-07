@@ -416,14 +416,15 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         _counteraxis: true,
 
         // don't use automargins routine for labels
-        automargin: false
+        automargin: false,
+
+        // don't pass through autorange logic
+        autorange: false
     });
 
     // Set the angular range in degrees to make auto-tick computation cleaner,
     // changing rotation/direction should not affect the angular tick labels.
     if(ax.type === 'linear') {
-        ax.autorange = false;
-
         if(isFullCircle(sector)) {
             ax.range = sector.slice();
         } else {
@@ -435,11 +436,18 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             ax.tick0 = rad2deg(ax.tick0);
             ax.dtick = rad2deg(ax.dtick);
         }
+
     }
     // Use tickval filter for category axes instead of tweaking
     // the range w.r.t sector, so that sectors that cross 360 can
     // show all their ticks.
     else if(ax.type === 'category') {
+        var period = angularLayout.period ?
+            Math.max(angularLayout.period, angularLayout._categories.length) :
+            angularLayout._categories.length;
+
+        ax.range = [0, period];
+
         ax._tickFilter = function(d) {
             return _this.isPtWithinSector({
                 r: _this.radialAxis.range[1],
@@ -449,7 +457,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     }
 
     setScale(ax, angularLayout, fullLayout);
-    doAutoRange(ax);
 
     // wrapper around c2rad from setConvertAngular
     // note that linear ranges are always set in degrees for Axes.doTicks
