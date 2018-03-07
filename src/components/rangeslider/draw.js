@@ -16,6 +16,7 @@ var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 var Drawing = require('../drawing');
 var Color = require('../color');
+var Titles = require('../titles');
 
 var Cartesian = require('../../plots/cartesian');
 var Axes = require('../../plots/cartesian/axes');
@@ -76,8 +77,7 @@ module.exports = function(gd) {
     // for all present range sliders
     rangeSliders.each(function(axisOpts) {
         var rangeSlider = d3.select(this),
-            opts = axisOpts[constants.name],
-            oppAxisOpts = fullLayout[Axes.id2name(axisOpts.anchor)];
+            opts = axisOpts[constants.name];
 
         // update range
         // Expand slider range to the axis range
@@ -96,11 +96,17 @@ module.exports = function(gd) {
 
         // update range slider dimensions
 
-        var margin = fullLayout.margin,
-            graphSize = fullLayout._size,
-            domain = axisOpts.domain,
-            oppDomain = oppAxisOpts.domain,
-            tickHeight = (axisOpts._boundingBox || {}).height || 0;
+        var margin = fullLayout.margin;
+        var graphSize = fullLayout._size;
+        var domain = axisOpts.domain;
+        var tickHeight = (axisOpts._boundingBox || {}).height || 0;
+
+        var oppBottom = Infinity;
+        var subplotData = Axes.getSubplots(gd, axisOpts);
+        for(var i = 0; i < subplotData.length; i++) {
+            var oppAxis = Axes.getFromId(gd, subplotData[i].substr(subplotData[i].indexOf('y')));
+            oppBottom = Math.min(oppBottom, oppAxis.domain[0]);
+        }
 
         opts._id = constants.name + axisOpts._id;
         opts._clipId = opts._id + '-' + fullLayout._uid;
@@ -112,7 +118,7 @@ module.exports = function(gd) {
         var x = Math.round(margin.l + (graphSize.w * domain[0]));
 
         var y = Math.round(
-            margin.t + graphSize.h * (1 - oppDomain[0]) +
+            graphSize.t + graphSize.h * (1 - oppBottom) +
             tickHeight +
             opts._offsetShift + constants.extraPad
         );
@@ -151,18 +157,31 @@ module.exports = function(gd) {
         // update current range
         setPixelRange(rangeSlider, gd, axisOpts, opts);
 
-        // update margins
+        // title goes next to range slider instead of tick labels, so
+        // just take it over and draw it from here
+        if(axisOpts.side === 'bottom') {
+            Titles.draw(gd, axisOpts._id + 'title', {
+                propContainer: axisOpts,
+                propName: axisOpts._name + '.title',
+                placeholder: fullLayout._dfltTitle.x,
+                attributes: {
+                    x: axisOpts._offset + axisOpts._length / 2,
+                    y: y + opts._height + opts._offsetShift + 10 + 1.5 * axisOpts.titlefont.size,
+                    'text-anchor': 'middle'
+                }
+            });
+        }
 
+        // update margins
         Plots.autoMargin(gd, opts._id, {
             x: domain[0],
-            y: oppDomain[0],
+            y: oppBottom,
             l: 0,
             r: 0,
             t: 0,
             b: opts._height + margin.b + tickHeight,
             pad: constants.extraPad + opts._offsetShift * 2
         });
-
     });
 };
 
