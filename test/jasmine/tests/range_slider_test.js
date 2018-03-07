@@ -559,7 +559,7 @@ describe('the range slider', function() {
         });
     });
 
-    fdescribe('yaxis options', function() {
+    describe('yaxis options', function() {
 
         it('should be set one yaxis is present', function() {
             var mock = {
@@ -791,6 +791,28 @@ describe('the range slider', function() {
                 assertRange([-0.26, 4.26], [-2, 12]);
             })
             .then(done);
+        });
+
+        it('should configure yaxis opts on relayout', function(done) {
+            Plotly.plot(gd, [{
+                y: [2, 1, 2]
+            }], {
+                xaxis: { rangeslider: { yaxis: { range: [-10, 20] } } }
+            })
+                .then(function() {
+                    expect(gd.layout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'fixed', range: [-10, 20] });
+
+                    return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'auto');
+                })
+                .then(function() {
+                    expect(gd.layout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'auto', range: [0.9201631701631702, 2.0798368298368297] });
+
+                    return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'match');
+                })
+                .then(function() {
+                    expect(gd.layout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
+                })
+                .then(done);
         });
     });
 });
