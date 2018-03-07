@@ -805,7 +805,11 @@ describe('the range slider', function() {
                     return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'auto');
                 })
                 .then(function() {
-                    expect(gd.layout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'auto', range: [0.9201631701631702, 2.0798368298368297] });
+                    var precision = 1e-2;
+
+                    expect(gd.layout.xaxis.rangeslider.yaxis.rangemode).toEqual('auto');
+                    expect(gd.layout.xaxis.rangeslider.yaxis.rangemode.range)
+                        .toBeCloseToArray([0.920, 2.079], precision);
 
                     return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'match');
                 })
