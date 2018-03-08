@@ -39,7 +39,7 @@ describe('@gl Test removal of gl contexts', function() {
             expect(gd._fullLayout._plots.xy._scene).toBeDefined();
             Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
 
-            expect(gd._fullLayout._plots.xy._scene).toBeUndefined();
+            expect(!!gd._fullLayout._plots.xy._scene).toBe(false);
         })
         .then(done);
     });

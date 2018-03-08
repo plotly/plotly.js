@@ -610,7 +610,9 @@ function sceneUpdate(gd, subplot) {
             scene.selectBatch = null;
             scene.unselectBatch = null;
 
-            delete subplot._scene;
+            // we can't just delete _scene, because `destroy` is called in the
+            // middle of supplyDefaults, before relinkPrivateKeys which will put it back.
+            subplot._scene = null;
         };
     }
 
