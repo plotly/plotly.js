@@ -159,6 +159,58 @@ describe('restyle', function() {
             .then(done);
 
         });
+
+        it('can legend-hide the second and only scatter trace', function(done) {
+            Plotly.plot(gd, [
+                {y: [1, 2, 3], type: 'bar'},
+                {y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2', type: 'scatter'}
+            ], {
+                xaxis: {domain: [0, 0.4]},
+                xaxis2: {domain: [0.6, 1]},
+                yaxis2: {anchor: 'x2'},
+                width: 600,
+                height: 400
+            })
+            .then(function() {
+                expect(d3.select('.scatter').size()).toBe(1);
+                return Plotly.restyle(gd, {visible: 'legendonly'}, 1);
+            })
+            .then(function() {
+                expect(d3.select('.scatter').size()).toBe(0);
+                return Plotly.restyle(gd, {visible: true}, 1);
+            })
+            .then(function() {
+                expect(d3.select('.scatter').size()).toBe(1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can legend-hide the second and only scattergl trace', function(done) {
+            Plotly.plot(gd, [
+                {y: [1, 2, 3], type: 'bar'},
+                {y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2', type: 'scattergl'}
+            ], {
+                xaxis: {domain: [0, 0.4]},
+                xaxis2: {domain: [0.6, 1]},
+                yaxis2: {anchor: 'x2'},
+                width: 600,
+                height: 400
+            })
+            .then(function() {
+                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
+                return Plotly.restyle(gd, {visible: 'legendonly'}, 1);
+            })
+            .then(function() {
+                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(false);
+                return Plotly.restyle(gd, {visible: true}, 1);
+            })
+            .then(function() {
+                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
 

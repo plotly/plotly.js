@@ -216,35 +216,19 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldModules = oldFullLayout._modules || [],
         newModules = newFullLayout._modules || [];
 
-    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo;
+    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo, moduleName;
 
 
     for(i = 0; i < oldModules.length; i++) {
-        if(oldModules[i].name === 'scatter') {
-            hadScatter = true;
-        }
-        break;
+        moduleName = oldModules[i].name;
+        if(moduleName === 'scatter') hadScatter = true;
+        else if(moduleName === 'scattergl') hadGl = true;
     }
 
     for(i = 0; i < newModules.length; i++) {
-        if(newModules[i].name === 'scatter') {
-            hasScatter = true;
-            break;
-        }
-    }
-
-    for(i = 0; i < oldModules.length; i++) {
-        if(oldModules[i].name === 'scattergl') {
-            hadGl = true;
-        }
-        break;
-    }
-
-    for(i = 0; i < newModules.length; i++) {
-        if(newModules[i].name === 'scattergl') {
-            hasGl = true;
-            break;
-        }
+        moduleName = newModules[i].name;
+        if(moduleName === 'scatter') hasScatter = true;
+        else if(moduleName === 'scattergl') hasGl = true;
     }
 
     if(hadScatter && !hasScatter) {
