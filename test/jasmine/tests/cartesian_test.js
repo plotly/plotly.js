@@ -186,7 +186,7 @@ describe('restyle', function() {
             .then(done);
         });
 
-        it('can legend-hide the second and only scattergl trace', function(done) {
+        it('@gl can legend-hide the second and only scattergl trace', function(done) {
             Plotly.plot(gd, [
                 {y: [1, 2, 3], type: 'bar'},
                 {y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2', type: 'scattergl'}
