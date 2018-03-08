@@ -2226,6 +2226,29 @@ describe('Test axes', function() {
             expect(ax._categories).toEqual(['a', 'b', 'c', 'd']);
         });
 
+        it('notices when all categories are off the edge', function() {
+            var ax = {
+                type: 'category',
+                _categories: ['a', 'b', 'c', 'd'],
+                _categoriesMap: {'a': 0, 'b': 1, 'c': 2, 'd': 3},
+                tickmode: 'linear',
+                tick0: 0,
+                dtick: 1,
+                range: [-0.5, 3.5]
+            };
+
+            // baseline
+            expect(mockCalc(ax)).toEqual(['a', 'b', 'c', 'd']);
+            // reversed baseline
+            ax.range = [3.5, -0.5];
+            expect(mockCalc(ax)).toEqual(['d', 'c', 'b', 'a']);
+
+            [[-5, -1], [-1, -5], [5, 10], [10, 5]].forEach(function(rng) {
+                ax.range = rng;
+                expect(mockCalc(ax).length).toBe(0, rng);
+            });
+        });
+
         it('should always start at year for date axis hover', function() {
             var ax = {
                 type: 'date',
@@ -2321,10 +2344,8 @@ describe('Test axes', function() {
                 range: [1e200, 2e200]
             });
 
-            // This actually gives text '-Infinity' because it can't
-            // calculate the first tick properly, but since it's not going to
-            // be able to do any better with the rest, we don't much care.
-            expect(textOut.length).toBe(1);
+            // with the fix for #1645 we're not even getting the '-Infinity' we used to :tada:
+            expect(textOut.length).toBe(0);
         });
 
         it('truncates at the greater of 1001 ticks or one per pixel', function() {
