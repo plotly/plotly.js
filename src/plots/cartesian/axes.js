@@ -1787,7 +1787,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 var anchor = labelanchor(angle, d);
                 var thisLabel = d3.select(this),
                     mathjaxGroup = thisLabel.select('.text-math-group'),
-                    transform = transfn(d) +
+                    transform = transfn.call(thisLabel.node(), d) +
                         ((isNumeric(angle) && +angle !== 0) ?
                         (' rotate(' + angle + ',' + labelx(d) + ',' +
                             (labely(d) - d.fontSize / 2) + ')') :
