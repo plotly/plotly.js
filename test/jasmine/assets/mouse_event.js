@@ -1,6 +1,11 @@
 var Lib = require('../../../src/lib');
 
 module.exports = function(type, x, y, opts) {
+    var visibility = document.visibilityState;
+    if(visibility && visibility !== 'visible') {
+        throw new Error('document.visibilityState = "' + visibility + '" - Please make the window visible.');
+    }
+
     var fullOpts = {
         bubbles: true,
         clientX: x,
