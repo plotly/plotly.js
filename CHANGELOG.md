@@ -10,6 +10,15 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.35.2] -- 2018-03-09
+
+### Fixed
+- Ping `mapbox-gl` to `0.44.1` so that users on fresh
+  `npm install` do not get the wrong mapbox-gl version message [#2467]
+- Fix swapping between `scatter` and `scatter3d` traces and other
+  potential problems caused by incorrect axis constraints resetting [#2465]
+
+
 ## [1.35.1] -- 2018-03-08
 
 ### Fixed
