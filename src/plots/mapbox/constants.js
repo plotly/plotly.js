@@ -6,10 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var requiredVersion = '0.44.0';
+var requiredVersion = '0.44.1';
 
 module.exports = {
     requiredVersion: requiredVersion,
