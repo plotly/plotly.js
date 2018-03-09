@@ -153,6 +153,8 @@ exports.plot = function(gd, data, layout, config) {
 
     var fullLayout = gd._fullLayout;
 
+    var hasCartesian = fullLayout._has('cartesian');
+
     // Legacy polar plots
     if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
         Lib.log('Legacy polar charts are deprecated!');
@@ -426,16 +428,18 @@ exports.plot = function(gd, data, layout, config) {
         addFrames,
         drawFramework,
         marginPushers,
-        marginPushersAgain,
-        positionAndAutorange,
-        subroutines.layoutStyles,
-        drawAxes,
+        marginPushersAgain
+    ];
+    if(hasCartesian) seq.push(positionAndAutorange);
+    seq.push(subroutines.layoutStyles);
+    if(hasCartesian) seq.push(drawAxes);
+    seq.push(
         drawData,
         finalDraw,
         initInteractions,
         Plots.rehover,
         Plots.previousPromises
-    ];
+    );
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
@@ -2611,7 +2615,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
     }
 
     for(key in newContainer) {
-        if(!(key in oldContainer)) {
+        if(!(key in oldContainer || key.charAt(0) === '_' || typeof newContainer[key] === 'function')) {
             valObject = getValObject(outerparts.concat(key));
 
             if(valObjectCanBeDataArray(valObject) && Array.isArray(newContainer[key])) {

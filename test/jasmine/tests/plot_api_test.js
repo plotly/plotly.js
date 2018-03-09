@@ -1261,6 +1261,21 @@ describe('Test plot api', function() {
             .catch(fail)
             .then(done);
         });
+
+        it('can drop Cartesian while constraints are active', function(done) {
+            Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, 3, 2], z: [2, 3, 1]}], {xaxis: {scaleanchor: 'y'}})
+            .then(function() {
+                expect(gd._fullLayout._axisConstraintGroups).toBeDefined();
+                expect(gd._fullLayout.scene !== undefined).toBe(false);
+                return Plotly.restyle(gd, {type: 'scatter3d'});
+            })
+            .then(function() {
+                expect(gd._fullLayout._axisConstraintGroups).toBeUndefined();
+                expect(gd._fullLayout.scene !== undefined).toBe(true);
+            })
+            .catch(fail)
+            .then(done);
+        });
     });
 
     describe('Plotly.deleteTraces', function() {
