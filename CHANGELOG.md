@@ -10,6 +10,15 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.35.1] -- 2018-03-08
+
+### Fixed
+- Fix `scatterpolar` in dist and CDN bundles
+  (due to `browser-pack-flat` discrepancy introduced in 1.35.0) [#2458]
+- Fix removing and adding scatter(gl) as not the first module [#2455]
+- Ensure we don't draw ticks if there are none to draw [#2454]
+
+
 ## [1.35.0] -- 2018-03-07
 
 ### Added
