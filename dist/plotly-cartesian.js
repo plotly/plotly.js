@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.35.0
+* plotly.js (cartesian) v1.35.1
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -27486,22 +27486,27 @@ axes.calcTicks = function calcTicks(ax) {
     // find the first tick
     ax._tmin = axes.tickFirst(ax);
 
+    // add a tiny bit so we get ticks which may have rounded out
+    var startTick = rng[0] * 1.0001 - rng[1] * 0.0001;
+    var endTick = rng[1] * 1.0001 - rng[0] * 0.0001;
     // check for reversed axis
     var axrev = (rng[1] < rng[0]);
 
+    // No visible ticks? Quit.
+    // I've only seen this on category axes with all categories off the edge.
+    if((ax._tmin < startTick) !== axrev) return [];
+
     // return the full set of tick vals
-    var vals = [],
-        // add a tiny bit so we get ticks which may have rounded out
-        endtick = rng[1] * 1.0001 - rng[0] * 0.0001;
+    var vals = [];
     if(ax.type === 'category') {
-        endtick = (axrev) ? Math.max(-0.5, endtick) :
-            Math.min(ax._categories.length - 0.5, endtick);
+        endTick = (axrev) ? Math.max(-0.5, endTick) :
+            Math.min(ax._categories.length - 0.5, endTick);
     }
 
     var xPrevious = null;
     var maxTicks = Math.max(1000, ax._length || 0);
     for(var x = ax._tmin;
-            (axrev) ? (x >= endtick) : (x <= endtick);
+            (axrev) ? (x >= endTick) : (x <= endTick);
             x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)) {
         // prevent infinite loops - no more than one tick per pixel,
         // and make sure each value is different from the previous
@@ -28746,7 +28751,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 var anchor = labelanchor(angle, d);
                 var thisLabel = _$d3_15.select(this),
                     mathjaxGroup = thisLabel.select('.text-math-group'),
-                    transform = transfn(d) +
+                    transform = transfn.call(thisLabel.node(), d) +
                         ((_$fastIsnumeric_18(angle) && +angle !== 0) ?
                         (' rotate(' + angle + ',' + labelx(d) + ',' +
                             (labely(d) - d.fontSize / 2) + ')') :
@@ -29964,35 +29969,19 @@ _$cartesian_224.clean = function(newFullData, newFullLayout, oldFullData, oldFul
     var oldModules = oldFullLayout._modules || [],
         newModules = newFullLayout._modules || [];
 
-    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo;
+    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo, moduleName;
 
 
     for(i = 0; i < oldModules.length; i++) {
-        if(oldModules[i].name === 'scatter') {
-            hadScatter = true;
-        }
-        break;
+        moduleName = oldModules[i].name;
+        if(moduleName === 'scatter') hadScatter = true;
+        else if(moduleName === 'scattergl') hadGl = true;
     }
 
     for(i = 0; i < newModules.length; i++) {
-        if(newModules[i].name === 'scatter') {
-            hasScatter = true;
-            break;
-        }
-    }
-
-    for(i = 0; i < oldModules.length; i++) {
-        if(oldModules[i].name === 'scattergl') {
-            hadGl = true;
-        }
-        break;
-    }
-
-    for(i = 0; i < newModules.length; i++) {
-        if(newModules[i].name === 'scattergl') {
-            hasGl = true;
-            break;
-        }
+        moduleName = newModules[i].name;
+        if(moduleName === 'scatter') hasScatter = true;
+        else if(moduleName === 'scattergl') hasGl = true;
     }
 
     if(hadScatter && !hasScatter) {
@@ -69430,7 +69419,7 @@ var _$core_157 = {};
 'use strict';
 
 // package version injected by `npm run preprocess`
-_$core_157.version = '1.35.0';
+_$core_157.version = '1.35.1';
 
 // inject promise polyfill
 _$es6Promise_16.polyfill();
