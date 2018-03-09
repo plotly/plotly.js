@@ -133,16 +133,26 @@ function differentInterval(int1) {
     };
 }
 
+// is the cursor over the north, middle, or south of a bar?
+// the end handles extend over the last 10% of the bar
 function north(fPix, y) {
-    return fPix[1] <= y && y <= fPix[1] + c.bar.handleHeight;
+    return north90(fPix) <= y && y <= fPix[1] + c.bar.handleHeight;
 }
 
 function south(fPix, y) {
-    return fPix[0] - c.bar.handleHeight <= y && y <= fPix[0];
+    return fPix[0] - c.bar.handleHeight <= y && y <= south90(fPix);
 }
 
 function middle(fPix, y) {
-    return fPix[0] < y && y < fPix[1];
+    return south90(fPix) < y && y < north90(fPix);
+}
+
+function north90(fPix) {
+    return 0.9 * fPix[1] + 0.1 * fPix[0];
+}
+
+function south90(fPix) {
+    return 0.9 * fPix[0] + 0.1 * fPix[1];
 }
 
 function clearCursor() {
@@ -220,7 +230,7 @@ function attachDragBehavior(selection) {
             if(d.parent.inBrushDrag) {
                 return;
             }
-            var y = d.unitScaleInOrder(d.unitScale.invert(d3.mouse(this)[1]));
+            var y = d.unitScaleInOrder(d.unitScale.invert(d3.mouse(this)[1] + c.verticalPadding));
             var interval = getInterval(b, d.unitScaleInOrder, y);
             d3.select(document.body)
                 .style('cursor', interval.n ? 'n-resize' : interval.s ? 's-resize' : !interval.m ? 'crosshair' : filterActive(b) ? 'ns-resize' : 'crosshair');
@@ -235,13 +245,13 @@ function attachDragBehavior(selection) {
             .on('dragstart', function(d) {
                 var e = d3.event;
                 e.sourceEvent.stopPropagation();
-                var y = d.unitScaleInOrder(d.unitScale.invert(d3.mouse(this)[1]));
+                var y = d.unitScaleInOrder(d.unitScale.invert(d3.mouse(this)[1] + c.verticalPadding));
                 var unitLocation = d.unitScaleInOrder.invert(y);
                 var b = d.brush;
                 var intData = getInterval(b, d.unitScaleInOrder, y);
                 var unitRange = intData.interval;
                 var pixelRange = unitRange.map(d.unitScaleInOrder);
-                var s = b.svgBrush2;
+                var s = b.svgBrush;
                 var active = filterActive(b);
                 var barInteraction = unitRange && (intData.m || intData.s || intData.n);
                 s.wasDragged = false; // we start assuming there won't be a drag - useful for reset
@@ -264,8 +274,8 @@ function attachDragBehavior(selection) {
             })
             .on('drag', function(d) {
                 var e = d3.event;
-                var y = d.unitScaleInOrder(d.unitScale.invert(e.y));
-                var s = d.brush.svgBrush2;
+                var y = d.unitScaleInOrder(d.unitScale.invert(e.y + c.verticalPadding));
+                var s = d.brush.svgBrush;
                 s.wasDragged = true;
                 e.sourceEvent.stopPropagation();
 
@@ -300,7 +310,7 @@ function attachDragBehavior(selection) {
                 e.sourceEvent.stopPropagation();
                 var brush = d.brush;
                 var filter = brush.filter;
-                var s = brush.svgBrush2;
+                var s = brush.svgBrush;
                 var grabbingBar = s.grabbingBar;
                 s.grabbingBar = false;
                 s.grabLocation = undefined;
@@ -311,10 +321,10 @@ function attachDragBehavior(selection) {
                     if(grabbingBar) {
                         s.extent = s.stayingIntervals;
                         if(s.extent.length === 0) {
-                            clearBrushExtent(brush);
+                            brushClear(brush);
                         }
                     } else {
-                        clearBrushExtent(brush);
+                        brushClear(brush);
                     }
                     s.brushCallback(d);
                     renderHighlight(this.parentElement);
@@ -403,37 +413,20 @@ function ensureAxisBrush(axisOverlays) {
     var axisBrush = axisOverlays.selectAll('.' + c.cn.axisBrush)
         .data(repeat, keyFun);
 
-    var axisBrushEnter = axisBrush.enter()
+    axisBrush.enter()
         .append('g')
         .classed(c.cn.axisBrush, true);
 
-    var axisBrush2 = axisOverlays.selectAll('.' + c.cn.axisBrush + '2')
-        .data(repeat, keyFun);
-
-    axisBrush2.enter()
-        .append('g')
-        .classed(c.cn.axisBrush + '2', true);
-
-    setAxisBrush(axisBrush, axisBrushEnter);
-    renderAxisBrush(axisBrush2);
-}
-
-function clearBrushExtent(brush) {
-    brushClear(brush);
-}
-
-function setBrushExtent(brush, range) {
-    brush.svgBrush2.extent[0] = range[0];
-    brush.svgBrush2.extent[1] = range[1];
+    renderAxisBrush(axisBrush);
 }
 
 function getBrushExtent(brush) {
-    return brush.svgBrush2.extent.map(function(e) {return e.slice();});
+    return brush.svgBrush.extent.map(function(e) {return e.slice();});
 }
 
 function brushClear(brush) {
     brush.filterSpecified = false;
-    brush.svgBrush2.extent = [[0, 1]];
+    brush.svgBrush.extent = [[0, 1]];
 }
 
 
@@ -449,21 +442,6 @@ function axisBrushMoved(callback) {
         brush.filter.set(newExtent);
         callback();
     };
-}
-
-function setAxisBrush(axisBrush, root) {
-    axisBrush
-        .each(function updateBrushExtent(d) {
-            // Set the brush programmatically if data requires so, eg. Plotly `constraintrange` specifies a proper subset.
-            // This is only to ensure the SVG brush is correct; WebGL lines are controlled from `d.brush.filter` directly.
-            var b = d.brush;
-            var f = b.filter.getBounds();
-            if(filterActive(b)) {
-                setBrushExtent(b, f);
-            } else {
-                clearBrushExtent(b, root);
-            }
-        });
 }
 
 function dedupeRealRanges(intervals) {
@@ -503,8 +481,8 @@ function makeBrush(state, rangeSpecified, initialRange, brushStartCallback, brus
     return {
         filter: filter,
         filterSpecified: rangeSpecified, // there's a difference between not filtering and filtering a non-proper subset
-        svgBrush2: {
-            extent: [], // this is where the svgBrush2 writes contents into
+        svgBrush: {
+            extent: [], // this is where the svgBrush writes contents into
             brushStartCallback: brushStartCallback,
             brushCallback: axisBrushMoved(brushCallback),
             brushEndCallback: brushEndCallback
