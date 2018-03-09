@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.35.1
+* plotly.js (mapbox) v1.35.2
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -41224,6 +41224,7 @@ _$cartesian_216.clean = function(newFullData, newFullLayout, oldFullData, oldFul
     if(hadCartesian && !hasCartesian) {
         purgeSubplotLayers(oldFullLayout._cartesianlayer.selectAll('.subplot'), oldFullLayout);
         oldFullLayout._defs.selectAll('.axesclip').remove();
+        delete oldFullLayout._axisConstraintGroups;
     }
     // otherwise look for subplots we need to remove
     else if(oldSubplotList.cartesian) {
@@ -54013,6 +54014,8 @@ _$plot_api_194.plot = function(gd, data, layout, config) {
 
     var fullLayout = gd._fullLayout;
 
+    var hasCartesian = fullLayout._has('cartesian');
+
     // Legacy polar plots
     if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
         _$lib_163.log('Legacy polar charts are deprecated!');
@@ -54286,16 +54289,18 @@ _$plot_api_194.plot = function(gd, data, layout, config) {
         addFrames,
         drawFramework,
         marginPushers,
-        marginPushersAgain,
-        positionAndAutorange,
-        _$subroutines_197.layoutStyles,
-        drawAxes,
+        marginPushersAgain
+    ];
+    if(hasCartesian) seq.push(positionAndAutorange);
+    seq.push(_$subroutines_197.layoutStyles);
+    if(hasCartesian) seq.push(drawAxes);
+    seq.push(
         drawData,
         finalDraw,
         _$initInteractions_214,
         _$plots_245.rehover,
         _$plots_245.previousPromises
-    ];
+    );
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
@@ -56471,7 +56476,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
     }
 
     for(key in newContainer) {
-        if(!(key in oldContainer)) {
+        if(!(key in oldContainer || key.charAt(0) === '_' || typeof newContainer[key] === 'function')) {
             valObject = getValObject(outerparts.concat(key));
 
             if(valObjectCanBeDataArray(valObject) && Array.isArray(newContainer[key])) {
@@ -61430,7 +61435,7 @@ var _$core_148 = {};
 'use strict';
 
 // package version injected by `npm run preprocess`
-_$core_148.version = '1.35.1';
+_$core_148.version = '1.35.2';
 
 // inject promise polyfill
 _$es6Promise_7.polyfill();
@@ -61608,7 +61613,7 @@ var _$mapboxGl_14 = { exports: {} };
                 var wgs84 = _dereq_('wgs84');
                 module.exports.geometry = geometry, module.exports.ring = ringArea;
             },
-            { 'wgs84': 36 }
+            { 'wgs84': 37 }
         ],
         2: [
             function (_dereq_, module, exports) {
@@ -62322,6 +62327,990 @@ var _$mapboxGl_14 = { exports: {} };
         ],
         13: [
             function (_dereq_, module, exports) {
+                function clamp_css_byte(e) {
+                    return e = Math.round(e), e < 0 ? 0 : e > 255 ? 255 : e;
+                }
+                function clamp_css_float(e) {
+                    return e < 0 ? 0 : e > 1 ? 1 : e;
+                }
+                function parse_css_int(e) {
+                    return clamp_css_byte('%' === e[e.length - 1] ? parseFloat(e) / 100 * 255 : parseInt(e));
+                }
+                function parse_css_float(e) {
+                    return clamp_css_float('%' === e[e.length - 1] ? parseFloat(e) / 100 : parseFloat(e));
+                }
+                function css_hue_to_rgb(e, r, l) {
+                    return l < 0 ? l += 1 : l > 1 && (l -= 1), 6 * l < 1 ? e + (r - e) * l * 6 : 2 * l < 1 ? r : 3 * l < 2 ? e + (r - e) * (2 / 3 - l) * 6 : e;
+                }
+                function parseCSSColor(e) {
+                    var r = e.replace(/ /g, '').toLowerCase();
+                    if (r in kCSSColorTable) {
+                        return kCSSColorTable[r].slice();
+                    }
+                    if ('#' === r[0]) {
+                        if (4 === r.length) {
+                            var l = parseInt(r.substr(1), 16);
+                            return l >= 0 && l <= 4095 ? [
+                                (3840 & l) >> 4 | (3840 & l) >> 8,
+                                240 & l | (240 & l) >> 4,
+                                15 & l | (15 & l) << 4,
+                                1
+                            ] : null;
+                        }
+                        if (7 === r.length) {
+                            var l = parseInt(r.substr(1), 16);
+                            return l >= 0 && l <= 16777215 ? [
+                                (16711680 & l) >> 16,
+                                (65280 & l) >> 8,
+                                255 & l,
+                                1
+                            ] : null;
+                        }
+                        return null;
+                    }
+                    var a = r.indexOf('('), t = r.indexOf(')');
+                    if (-1 !== a && t + 1 === r.length) {
+                        var n = r.substr(0, a), s = r.substr(a + 1, t - (a + 1)).split(','), o = 1;
+                        switch (n) {
+                        case 'rgba':
+                            if (4 !== s.length) {
+                                return null;
+                            }
+                            o = parse_css_float(s.pop());
+                        case 'rgb':
+                            return 3 !== s.length ? null : [
+                                parse_css_int(s[0]),
+                                parse_css_int(s[1]),
+                                parse_css_int(s[2]),
+                                o
+                            ];
+                        case 'hsla':
+                            if (4 !== s.length) {
+                                return null;
+                            }
+                            o = parse_css_float(s.pop());
+                        case 'hsl':
+                            if (3 !== s.length) {
+                                return null;
+                            }
+                            var i = (parseFloat(s[0]) % 360 + 360) % 360 / 360, u = parse_css_float(s[1]), g = parse_css_float(s[2]), d = g <= 0.5 ? g * (u + 1) : g + u - g * u, c = 2 * g - d;
+                            return [
+                                clamp_css_byte(255 * css_hue_to_rgb(c, d, i + 1 / 3)),
+                                clamp_css_byte(255 * css_hue_to_rgb(c, d, i)),
+                                clamp_css_byte(255 * css_hue_to_rgb(c, d, i - 1 / 3)),
+                                o
+                            ];
+                        default:
+                            return null;
+                        }
+                    }
+                    return null;
+                }
+                var kCSSColorTable = {
+                    transparent: [
+                        0,
+                        0,
+                        0,
+                        0
+                    ],
+                    aliceblue: [
+                        240,
+                        248,
+                        255,
+                        1
+                    ],
+                    antiquewhite: [
+                        250,
+                        235,
+                        215,
+                        1
+                    ],
+                    aqua: [
+                        0,
+                        255,
+                        255,
+                        1
+                    ],
+                    aquamarine: [
+                        127,
+                        255,
+                        212,
+                        1
+                    ],
+                    azure: [
+                        240,
+                        255,
+                        255,
+                        1
+                    ],
+                    beige: [
+                        245,
+                        245,
+                        220,
+                        1
+                    ],
+                    bisque: [
+                        255,
+                        228,
+                        196,
+                        1
+                    ],
+                    black: [
+                        0,
+                        0,
+                        0,
+                        1
+                    ],
+                    blanchedalmond: [
+                        255,
+                        235,
+                        205,
+                        1
+                    ],
+                    blue: [
+                        0,
+                        0,
+                        255,
+                        1
+                    ],
+                    blueviolet: [
+                        138,
+                        43,
+                        226,
+                        1
+                    ],
+                    brown: [
+                        165,
+                        42,
+                        42,
+                        1
+                    ],
+                    burlywood: [
+                        222,
+                        184,
+                        135,
+                        1
+                    ],
+                    cadetblue: [
+                        95,
+                        158,
+                        160,
+                        1
+                    ],
+                    chartreuse: [
+                        127,
+                        255,
+                        0,
+                        1
+                    ],
+                    chocolate: [
+                        210,
+                        105,
+                        30,
+                        1
+                    ],
+                    coral: [
+                        255,
+                        127,
+                        80,
+                        1
+                    ],
+                    cornflowerblue: [
+                        100,
+                        149,
+                        237,
+                        1
+                    ],
+                    cornsilk: [
+                        255,
+                        248,
+                        220,
+                        1
+                    ],
+                    crimson: [
+                        220,
+                        20,
+                        60,
+                        1
+                    ],
+                    cyan: [
+                        0,
+                        255,
+                        255,
+                        1
+                    ],
+                    darkblue: [
+                        0,
+                        0,
+                        139,
+                        1
+                    ],
+                    darkcyan: [
+                        0,
+                        139,
+                        139,
+                        1
+                    ],
+                    darkgoldenrod: [
+                        184,
+                        134,
+                        11,
+                        1
+                    ],
+                    darkgray: [
+                        169,
+                        169,
+                        169,
+                        1
+                    ],
+                    darkgreen: [
+                        0,
+                        100,
+                        0,
+                        1
+                    ],
+                    darkgrey: [
+                        169,
+                        169,
+                        169,
+                        1
+                    ],
+                    darkkhaki: [
+                        189,
+                        183,
+                        107,
+                        1
+                    ],
+                    darkmagenta: [
+                        139,
+                        0,
+                        139,
+                        1
+                    ],
+                    darkolivegreen: [
+                        85,
+                        107,
+                        47,
+                        1
+                    ],
+                    darkorange: [
+                        255,
+                        140,
+                        0,
+                        1
+                    ],
+                    darkorchid: [
+                        153,
+                        50,
+                        204,
+                        1
+                    ],
+                    darkred: [
+                        139,
+                        0,
+                        0,
+                        1
+                    ],
+                    darksalmon: [
+                        233,
+                        150,
+                        122,
+                        1
+                    ],
+                    darkseagreen: [
+                        143,
+                        188,
+                        143,
+                        1
+                    ],
+                    darkslateblue: [
+                        72,
+                        61,
+                        139,
+                        1
+                    ],
+                    darkslategray: [
+                        47,
+                        79,
+                        79,
+                        1
+                    ],
+                    darkslategrey: [
+                        47,
+                        79,
+                        79,
+                        1
+                    ],
+                    darkturquoise: [
+                        0,
+                        206,
+                        209,
+                        1
+                    ],
+                    darkviolet: [
+                        148,
+                        0,
+                        211,
+                        1
+                    ],
+                    deeppink: [
+                        255,
+                        20,
+                        147,
+                        1
+                    ],
+                    deepskyblue: [
+                        0,
+                        191,
+                        255,
+                        1
+                    ],
+                    dimgray: [
+                        105,
+                        105,
+                        105,
+                        1
+                    ],
+                    dimgrey: [
+                        105,
+                        105,
+                        105,
+                        1
+                    ],
+                    dodgerblue: [
+                        30,
+                        144,
+                        255,
+                        1
+                    ],
+                    firebrick: [
+                        178,
+                        34,
+                        34,
+                        1
+                    ],
+                    floralwhite: [
+                        255,
+                        250,
+                        240,
+                        1
+                    ],
+                    forestgreen: [
+                        34,
+                        139,
+                        34,
+                        1
+                    ],
+                    fuchsia: [
+                        255,
+                        0,
+                        255,
+                        1
+                    ],
+                    gainsboro: [
+                        220,
+                        220,
+                        220,
+                        1
+                    ],
+                    ghostwhite: [
+                        248,
+                        248,
+                        255,
+                        1
+                    ],
+                    gold: [
+                        255,
+                        215,
+                        0,
+                        1
+                    ],
+                    goldenrod: [
+                        218,
+                        165,
+                        32,
+                        1
+                    ],
+                    gray: [
+                        128,
+                        128,
+                        128,
+                        1
+                    ],
+                    green: [
+                        0,
+                        128,
+                        0,
+                        1
+                    ],
+                    greenyellow: [
+                        173,
+                        255,
+                        47,
+                        1
+                    ],
+                    grey: [
+                        128,
+                        128,
+                        128,
+                        1
+                    ],
+                    honeydew: [
+                        240,
+                        255,
+                        240,
+                        1
+                    ],
+                    hotpink: [
+                        255,
+                        105,
+                        180,
+                        1
+                    ],
+                    indianred: [
+                        205,
+                        92,
+                        92,
+                        1
+                    ],
+                    indigo: [
+                        75,
+                        0,
+                        130,
+                        1
+                    ],
+                    ivory: [
+                        255,
+                        255,
+                        240,
+                        1
+                    ],
+                    khaki: [
+                        240,
+                        230,
+                        140,
+                        1
+                    ],
+                    lavender: [
+                        230,
+                        230,
+                        250,
+                        1
+                    ],
+                    lavenderblush: [
+                        255,
+                        240,
+                        245,
+                        1
+                    ],
+                    lawngreen: [
+                        124,
+                        252,
+                        0,
+                        1
+                    ],
+                    lemonchiffon: [
+                        255,
+                        250,
+                        205,
+                        1
+                    ],
+                    lightblue: [
+                        173,
+                        216,
+                        230,
+                        1
+                    ],
+                    lightcoral: [
+                        240,
+                        128,
+                        128,
+                        1
+                    ],
+                    lightcyan: [
+                        224,
+                        255,
+                        255,
+                        1
+                    ],
+                    lightgoldenrodyellow: [
+                        250,
+                        250,
+                        210,
+                        1
+                    ],
+                    lightgray: [
+                        211,
+                        211,
+                        211,
+                        1
+                    ],
+                    lightgreen: [
+                        144,
+                        238,
+                        144,
+                        1
+                    ],
+                    lightgrey: [
+                        211,
+                        211,
+                        211,
+                        1
+                    ],
+                    lightpink: [
+                        255,
+                        182,
+                        193,
+                        1
+                    ],
+                    lightsalmon: [
+                        255,
+                        160,
+                        122,
+                        1
+                    ],
+                    lightseagreen: [
+                        32,
+                        178,
+                        170,
+                        1
+                    ],
+                    lightskyblue: [
+                        135,
+                        206,
+                        250,
+                        1
+                    ],
+                    lightslategray: [
+                        119,
+                        136,
+                        153,
+                        1
+                    ],
+                    lightslategrey: [
+                        119,
+                        136,
+                        153,
+                        1
+                    ],
+                    lightsteelblue: [
+                        176,
+                        196,
+                        222,
+                        1
+                    ],
+                    lightyellow: [
+                        255,
+                        255,
+                        224,
+                        1
+                    ],
+                    lime: [
+                        0,
+                        255,
+                        0,
+                        1
+                    ],
+                    limegreen: [
+                        50,
+                        205,
+                        50,
+                        1
+                    ],
+                    linen: [
+                        250,
+                        240,
+                        230,
+                        1
+                    ],
+                    magenta: [
+                        255,
+                        0,
+                        255,
+                        1
+                    ],
+                    maroon: [
+                        128,
+                        0,
+                        0,
+                        1
+                    ],
+                    mediumaquamarine: [
+                        102,
+                        205,
+                        170,
+                        1
+                    ],
+                    mediumblue: [
+                        0,
+                        0,
+                        205,
+                        1
+                    ],
+                    mediumorchid: [
+                        186,
+                        85,
+                        211,
+                        1
+                    ],
+                    mediumpurple: [
+                        147,
+                        112,
+                        219,
+                        1
+                    ],
+                    mediumseagreen: [
+                        60,
+                        179,
+                        113,
+                        1
+                    ],
+                    mediumslateblue: [
+                        123,
+                        104,
+                        238,
+                        1
+                    ],
+                    mediumspringgreen: [
+                        0,
+                        250,
+                        154,
+                        1
+                    ],
+                    mediumturquoise: [
+                        72,
+                        209,
+                        204,
+                        1
+                    ],
+                    mediumvioletred: [
+                        199,
+                        21,
+                        133,
+                        1
+                    ],
+                    midnightblue: [
+                        25,
+                        25,
+                        112,
+                        1
+                    ],
+                    mintcream: [
+                        245,
+                        255,
+                        250,
+                        1
+                    ],
+                    mistyrose: [
+                        255,
+                        228,
+                        225,
+                        1
+                    ],
+                    moccasin: [
+                        255,
+                        228,
+                        181,
+                        1
+                    ],
+                    navajowhite: [
+                        255,
+                        222,
+                        173,
+                        1
+                    ],
+                    navy: [
+                        0,
+                        0,
+                        128,
+                        1
+                    ],
+                    oldlace: [
+                        253,
+                        245,
+                        230,
+                        1
+                    ],
+                    olive: [
+                        128,
+                        128,
+                        0,
+                        1
+                    ],
+                    olivedrab: [
+                        107,
+                        142,
+                        35,
+                        1
+                    ],
+                    orange: [
+                        255,
+                        165,
+                        0,
+                        1
+                    ],
+                    orangered: [
+                        255,
+                        69,
+                        0,
+                        1
+                    ],
+                    orchid: [
+                        218,
+                        112,
+                        214,
+                        1
+                    ],
+                    palegoldenrod: [
+                        238,
+                        232,
+                        170,
+                        1
+                    ],
+                    palegreen: [
+                        152,
+                        251,
+                        152,
+                        1
+                    ],
+                    paleturquoise: [
+                        175,
+                        238,
+                        238,
+                        1
+                    ],
+                    palevioletred: [
+                        219,
+                        112,
+                        147,
+                        1
+                    ],
+                    papayawhip: [
+                        255,
+                        239,
+                        213,
+                        1
+                    ],
+                    peachpuff: [
+                        255,
+                        218,
+                        185,
+                        1
+                    ],
+                    peru: [
+                        205,
+                        133,
+                        63,
+                        1
+                    ],
+                    pink: [
+                        255,
+                        192,
+                        203,
+                        1
+                    ],
+                    plum: [
+                        221,
+                        160,
+                        221,
+                        1
+                    ],
+                    powderblue: [
+                        176,
+                        224,
+                        230,
+                        1
+                    ],
+                    purple: [
+                        128,
+                        0,
+                        128,
+                        1
+                    ],
+                    rebeccapurple: [
+                        102,
+                        51,
+                        153,
+                        1
+                    ],
+                    red: [
+                        255,
+                        0,
+                        0,
+                        1
+                    ],
+                    rosybrown: [
+                        188,
+                        143,
+                        143,
+                        1
+                    ],
+                    royalblue: [
+                        65,
+                        105,
+                        225,
+                        1
+                    ],
+                    saddlebrown: [
+                        139,
+                        69,
+                        19,
+                        1
+                    ],
+                    salmon: [
+                        250,
+                        128,
+                        114,
+                        1
+                    ],
+                    sandybrown: [
+                        244,
+                        164,
+                        96,
+                        1
+                    ],
+                    seagreen: [
+                        46,
+                        139,
+                        87,
+                        1
+                    ],
+                    seashell: [
+                        255,
+                        245,
+                        238,
+                        1
+                    ],
+                    sienna: [
+                        160,
+                        82,
+                        45,
+                        1
+                    ],
+                    silver: [
+                        192,
+                        192,
+                        192,
+                        1
+                    ],
+                    skyblue: [
+                        135,
+                        206,
+                        235,
+                        1
+                    ],
+                    slateblue: [
+                        106,
+                        90,
+                        205,
+                        1
+                    ],
+                    slategray: [
+                        112,
+                        128,
+                        144,
+                        1
+                    ],
+                    slategrey: [
+                        112,
+                        128,
+                        144,
+                        1
+                    ],
+                    snow: [
+                        255,
+                        250,
+                        250,
+                        1
+                    ],
+                    springgreen: [
+                        0,
+                        255,
+                        127,
+                        1
+                    ],
+                    steelblue: [
+                        70,
+                        130,
+                        180,
+                        1
+                    ],
+                    tan: [
+                        210,
+                        180,
+                        140,
+                        1
+                    ],
+                    teal: [
+                        0,
+                        128,
+                        128,
+                        1
+                    ],
+                    thistle: [
+                        216,
+                        191,
+                        216,
+                        1
+                    ],
+                    tomato: [
+                        255,
+                        99,
+                        71,
+                        1
+                    ],
+                    turquoise: [
+                        64,
+                        224,
+                        208,
+                        1
+                    ],
+                    violet: [
+                        238,
+                        130,
+                        238,
+                        1
+                    ],
+                    wheat: [
+                        245,
+                        222,
+                        179,
+                        1
+                    ],
+                    white: [
+                        255,
+                        255,
+                        255,
+                        1
+                    ],
+                    whitesmoke: [
+                        245,
+                        245,
+                        245,
+                        1
+                    ],
+                    yellow: [
+                        255,
+                        255,
+                        0,
+                        1
+                    ],
+                    yellowgreen: [
+                        154,
+                        205,
+                        50,
+                        1
+                    ]
+                };
+                try {
+                    exports.parseCSSColor = parseCSSColor;
+                } catch (e) {
+                }
+            },
+            {}
+        ],
+        14: [
+            function (_dereq_, module, exports) {
                 'use strict';
                 function earcut(e, n, r) {
                     r = r || 2;
@@ -62615,7 +63604,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        14: [
+        15: [
             function (_dereq_, module, exports) {
                 function rewind(r, e) {
                     switch (r && r.type || null) {
@@ -62656,7 +63645,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             { '@mapbox/geojson-area': 1 }
         ],
-        15: [
+        16: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function clip(i, n, e, t, l, r, u) {
@@ -62722,9 +63711,9 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = clip;
                 var createFeature = _dereq_('./feature');
             },
-            { './feature': 17 }
+            { './feature': 18 }
         ],
-        16: [
+        17: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function convert(e, t) {
@@ -62802,11 +63791,11 @@ var _$mapboxGl_14 = { exports: {} };
                 var simplify = _dereq_('./simplify'), createFeature = _dereq_('./feature');
             },
             {
-                './feature': 17,
-                './simplify': 19
+                './feature': 18,
+                './simplify': 20
             }
         ],
-        17: [
+        18: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function createFeature(e, n, t, i) {
@@ -62847,7 +63836,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        18: [
+        19: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function geojsonvt(e, t) {
@@ -62937,14 +63926,14 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                './clip': 15,
-                './convert': 16,
-                './tile': 20,
-                './transform': 21,
-                './wrap': 22
+                './clip': 16,
+                './convert': 17,
+                './tile': 21,
+                './transform': 22,
+                './wrap': 23
             }
         ],
-        19: [
+        20: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function simplify(i, t, r, s) {
@@ -62966,7 +63955,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        20: [
+        21: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function createTile(n, e, i, t, r, u) {
@@ -63045,7 +64034,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        21: [
+        22: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function transformTile(r, t) {
@@ -63081,7 +64070,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        22: [
+        23: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function wrap(e, r) {
@@ -63122,11 +64111,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = wrap;
             },
             {
-                './clip': 15,
-                './feature': 17
+                './clip': 16,
+                './feature': 18
             }
         ],
-        23: [
+        24: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function GridIndex(t, r, e) {
@@ -63209,7 +64198,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        24: [
+        25: [
             function (_dereq_, module, exports) {
                 exports.read = function (a, o, t, r, h) {
                     var M, p, w = 8 * h - r - 1, f = (1 << w) - 1, e = f >> 1, i = -7, N = t ? h - 1 : 0, n = t ? -1 : 1, s = a[o + N];
@@ -63241,7 +64230,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        25: [
+        26: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function kdbush(t, i, e, s, n) {
@@ -63272,12 +64261,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                './range': 26,
-                './sort': 27,
-                './within': 28
+                './range': 27,
+                './sort': 28,
+                './within': 29
             }
         ],
-        26: [
+        27: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function range(p, r, s, u, h, e, o) {
@@ -63304,7 +64293,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        27: [
+        28: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function sortKD(t, a, o, s, r, e) {
@@ -63342,7 +64331,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        28: [
+        29: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function within(s, p, r, t, u, h) {
@@ -63373,7 +64362,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        29: [
+        30: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function Pbf(t) {
@@ -63798,9 +64787,9 @@ var _$mapboxGl_14 = { exports: {} };
                     }
                 };
             },
-            { 'ieee754': 24 }
+            { 'ieee754': 25 }
         ],
-        30: [
+        31: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function partialSort(a, t, r, o, p) {
@@ -63832,7 +64821,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        31: [
+        32: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function supercluster(t) {
@@ -64030,9 +65019,9 @@ var _$mapboxGl_14 = { exports: {} };
                     }
                 };
             },
-            { 'kdbush': 25 }
+            { 'kdbush': 26 }
         ],
-        32: [
+        33: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function TinyQueue(t, i) {
@@ -64086,7 +65075,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        33: [
+        34: [
             function (_dereq_, module, exports) {
                 function fromVectorTileJs(e) {
                     var r = new Pbf();
@@ -64164,11 +65153,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = fromVectorTileJs, module.exports.fromVectorTileJs = fromVectorTileJs, module.exports.fromGeojsonVt = fromGeojsonVt, module.exports.GeoJSONWrapper = GeoJSONWrapper;
             },
             {
-                './lib/geojson_wrapper': 34,
-                'pbf': 29
+                './lib/geojson_wrapper': 35,
+                'pbf': 30
             }
         ],
-        34: [
+        35: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function GeoJSONWrapper(e) {
@@ -64212,7 +65201,7 @@ var _$mapboxGl_14 = { exports: {} };
                 '@mapbox/vector-tile': 8
             }
         ],
-        35: [
+        36: [
             function (_dereq_, module, exports) {
                 var bundleFn = arguments[3], sources = arguments[4], cache = arguments[5], stringify = JSON.stringify;
                 module.exports = function (r, e) {
@@ -64260,19 +65249,19 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        36: [
+        37: [
             function (_dereq_, module, exports) {
                 module.exports.RADIUS = 6378137, module.exports.FLATTENING = 1 / 298.257223563, module.exports.POLAR_RADIUS = 6356752.3142;
             },
             {}
         ],
-        37: [
+        38: [
             function (_dereq_, module, exports) {
-                module.exports = { 'version': '0.44.0' };
+                module.exports = { 'version': '0.44.1' };
             },
             {}
         ],
-        38: [
+        39: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../util/struct_array'), StructArray = ref.StructArray, ref$1 = _dereq_('../util/struct_array'), Struct = ref$1.Struct, ref$2 = _dereq_('../util/web_worker_transfer'), register = ref$2.register, Point = _dereq_('@mapbox/point-geometry'), StructArrayLayout2i4 = function (t) {
@@ -64832,12 +65821,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../util/struct_array': 272,
-                '../util/web_worker_transfer': 279,
+                '../util/struct_array': 271,
+                '../util/web_worker_transfer': 278,
                 '@mapbox/point-geometry': 4
             }
         ],
-        39: [
+        40: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = {
@@ -64863,7 +65852,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        40: [
+        41: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../../util/struct_array'), createLayout = ref.createLayout;
@@ -64873,9 +65862,9 @@ var _$mapboxGl_14 = { exports: {} };
                         type: 'Int16'
                     }], 4);
             },
-            { '../../util/struct_array': 272 }
+            { '../../util/struct_array': 271 }
         ],
-        41: [
+        42: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function addCircleVertex(e, r, t, a, i) {
@@ -64914,26 +65903,26 @@ var _$mapboxGl_14 = { exports: {} };
                 }, register('CircleBucket', CircleBucket, { omit: ['layers'] }), module.exports = CircleBucket;
             },
             {
-                '../../util/web_worker_transfer': 279,
-                '../array_types': 38,
-                '../extent': 52,
-                '../index_array_type': 54,
-                '../load_geometry': 55,
-                '../program_configuration': 57,
-                '../segment': 59,
-                './circle_attributes': 40
-            }
-        ],
-        42: [
-            function (_dereq_, module, exports) {
-                arguments[4][40][0].apply(exports, arguments);
-            },
-            {
-                '../../util/struct_array': 272,
-                'dup': 40
+                '../../util/web_worker_transfer': 278,
+                '../array_types': 39,
+                '../extent': 53,
+                '../index_array_type': 55,
+                '../load_geometry': 56,
+                '../program_configuration': 58,
+                '../segment': 60,
+                './circle_attributes': 41
             }
         ],
         43: [
+            function (_dereq_, module, exports) {
+                arguments[4][41][0].apply(exports, arguments);
+            },
+            {
+                '../../util/struct_array': 271,
+                'dup': 41
+            }
+        ],
+        44: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../array_types'), FillLayoutArray = ref.FillLayoutArray, layoutAttributes = _dereq_('./fill_attributes').members, ref$1 = _dereq_('../segment'), SegmentVector = ref$1.SegmentVector, ref$2 = _dereq_('../program_configuration'), ProgramConfigurationSet = ref$2.ProgramConfigurationSet, ref$3 = _dereq_('../index_array_type'), LineIndexArray = ref$3.LineIndexArray, TriangleIndexArray = ref$3.TriangleIndexArray, loadGeometry = _dereq_('../load_geometry'), earcut = _dereq_('earcut'), classifyRings = _dereq_('../../util/classify_rings'), EARCUT_MAX_RINGS = 500, ref$4 = _dereq_('../../util/web_worker_transfer'), register = ref$4.register, FillBucket = function (e) {
@@ -64981,18 +65970,18 @@ var _$mapboxGl_14 = { exports: {} };
                 }, register('FillBucket', FillBucket, { omit: ['layers'] }), module.exports = FillBucket;
             },
             {
-                '../../util/classify_rings': 256,
-                '../../util/web_worker_transfer': 279,
-                '../array_types': 38,
-                '../index_array_type': 54,
-                '../load_geometry': 55,
-                '../program_configuration': 57,
-                '../segment': 59,
-                './fill_attributes': 42,
-                'earcut': 13
+                '../../util/classify_rings': 255,
+                '../../util/web_worker_transfer': 278,
+                '../array_types': 39,
+                '../index_array_type': 55,
+                '../load_geometry': 56,
+                '../program_configuration': 58,
+                '../segment': 60,
+                './fill_attributes': 43,
+                'earcut': 14
             }
         ],
-        44: [
+        45: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../../util/struct_array'), createLayout = ref.createLayout;
@@ -65009,9 +65998,9 @@ var _$mapboxGl_14 = { exports: {} };
                     }
                 ], 4);
             },
-            { '../../util/struct_array': 272 }
+            { '../../util/struct_array': 271 }
         ],
-        45: [
+        46: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function addVertex(e, r, t, i, a, n, o, u) {
@@ -65093,19 +66082,19 @@ var _$mapboxGl_14 = { exports: {} };
                 }, register('FillExtrusionBucket', FillExtrusionBucket, { omit: ['layers'] }), module.exports = FillExtrusionBucket;
             },
             {
-                '../../util/classify_rings': 256,
-                '../../util/web_worker_transfer': 279,
-                '../array_types': 38,
-                '../extent': 52,
-                '../index_array_type': 54,
-                '../load_geometry': 55,
-                '../program_configuration': 57,
-                '../segment': 59,
-                './fill_extrusion_attributes': 44,
-                'earcut': 13
+                '../../util/classify_rings': 255,
+                '../../util/web_worker_transfer': 278,
+                '../array_types': 39,
+                '../extent': 53,
+                '../index_array_type': 55,
+                '../load_geometry': 56,
+                '../program_configuration': 58,
+                '../segment': 60,
+                './fill_extrusion_attributes': 45,
+                'earcut': 14
             }
         ],
-        46: [
+        47: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var CircleBucket = _dereq_('./circle_bucket'), ref = _dereq_('../../util/web_worker_transfer'), register = ref.register, HeatmapBucket = function (e) {
@@ -65117,11 +66106,11 @@ var _$mapboxGl_14 = { exports: {} };
                 register('HeatmapBucket', HeatmapBucket, { omit: ['layers'] }), module.exports = HeatmapBucket;
             },
             {
-                '../../util/web_worker_transfer': 279,
-                './circle_bucket': 41
+                '../../util/web_worker_transfer': 278,
+                './circle_bucket': 42
             }
         ],
-        47: [
+        48: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../../util/struct_array'), createLayout = ref.createLayout;
@@ -65138,9 +66127,9 @@ var _$mapboxGl_14 = { exports: {} };
                     }
                 ], 4);
             },
-            { '../../util/struct_array': 272 }
+            { '../../util/struct_array': 271 }
         ],
-        48: [
+        49: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function addLineVertex(e, t, r, i, a, n, s) {
@@ -65244,18 +66233,18 @@ var _$mapboxGl_14 = { exports: {} };
                 }, register('LineBucket', LineBucket, { omit: ['layers'] }), module.exports = LineBucket;
             },
             {
-                '../../util/web_worker_transfer': 279,
-                '../array_types': 38,
-                '../extent': 52,
-                '../index_array_type': 54,
-                '../load_geometry': 55,
-                '../program_configuration': 57,
-                '../segment': 59,
-                './line_attributes': 47,
+                '../../util/web_worker_transfer': 278,
+                '../array_types': 39,
+                '../extent': 53,
+                '../index_array_type': 55,
+                '../load_geometry': 56,
+                '../program_configuration': 58,
+                '../segment': 60,
+                './line_attributes': 48,
                 '@mapbox/vector-tile': 8
             }
         ],
-        49: [
+        50: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../../util/struct_array'), createLayout = ref.createLayout, symbolLayoutAttributes = createLayout([
@@ -65445,9 +66434,9 @@ var _$mapboxGl_14 = { exports: {} };
                     };
                 module.exports = symbolAttributes;
             },
-            { '../../util/struct_array': 272 }
+            { '../../util/struct_array': 271 }
         ],
-        50: [
+        51: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function addVertex(e, t, r, o, i, a, n, s) {
@@ -65669,24 +66658,24 @@ var _$mapboxGl_14 = { exports: {} };
                 }), SymbolBucket.MAX_GLYPHS = 65535, SymbolBucket.addDynamicAttributes = addDynamicAttributes, module.exports = SymbolBucket;
             },
             {
-                '../../symbol/anchor': 214,
-                '../../symbol/mergelines': 222,
-                '../../symbol/symbol_size': 229,
-                '../../symbol/transform_text': 230,
-                '../../util/script_detection': 270,
-                '../../util/verticalize_punctuation': 278,
-                '../../util/web_worker_transfer': 279,
-                '../array_types': 38,
-                '../index_array_type': 54,
-                '../load_geometry': 55,
-                '../program_configuration': 57,
-                '../segment': 59,
-                './symbol_attributes': 49,
+                '../../symbol/anchor': 213,
+                '../../symbol/mergelines': 221,
+                '../../symbol/symbol_size': 228,
+                '../../symbol/transform_text': 229,
+                '../../util/script_detection': 269,
+                '../../util/verticalize_punctuation': 277,
+                '../../util/web_worker_transfer': 278,
+                '../array_types': 39,
+                '../index_array_type': 55,
+                '../load_geometry': 56,
+                '../program_configuration': 58,
+                '../segment': 60,
+                './symbol_attributes': 50,
                 '@mapbox/point-geometry': 4,
                 '@mapbox/vector-tile': 8
             }
         ],
-        51: [
+        52: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../util/image'), RGBAImage = ref.RGBAImage, util = _dereq_('../util/util'), ref$1 = _dereq_('../util/web_worker_transfer'), register = ref$1.register, Level = function (e, t, i) {
@@ -65759,19 +66748,19 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../util/image': 264,
-                '../util/util': 276,
-                '../util/web_worker_transfer': 279
+                '../util/image': 263,
+                '../util/util': 275,
+                '../util/web_worker_transfer': 278
             }
         ],
-        52: [
+        53: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = 8192;
             },
             {}
         ],
-        53: [
+        54: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function topDownFeatureComparator(e, r) {
@@ -65848,28 +66837,27 @@ var _$mapboxGl_14 = { exports: {} };
                 }, register('FeatureIndex', FeatureIndex, {
                     omit: [
                         'rawTileData',
-                        'sourceLayerCoder',
-                        'collisionIndex'
+                        'sourceLayerCoder'
                     ]
                 }), module.exports = FeatureIndex;
             },
             {
-                '../source/tile_id': 113,
-                '../style-spec/feature_filter': 147,
-                '../util/dictionary_coder': 258,
-                '../util/util': 276,
-                '../util/vectortile_to_geojson': 277,
-                '../util/web_worker_transfer': 279,
-                './array_types': 38,
-                './extent': 52,
-                './load_geometry': 55,
+                '../source/tile_id': 114,
+                '../style-spec/feature_filter': 148,
+                '../util/dictionary_coder': 257,
+                '../util/util': 275,
+                '../util/vectortile_to_geojson': 276,
+                '../util/web_worker_transfer': 278,
+                './array_types': 39,
+                './extent': 53,
+                './load_geometry': 56,
                 '@mapbox/point-geometry': 4,
                 '@mapbox/vector-tile': 8,
-                'grid-index': 23,
-                'pbf': 29
+                'grid-index': 24,
+                'pbf': 30
             }
         ],
-        54: [
+        55: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = {
@@ -65877,9 +66865,9 @@ var _$mapboxGl_14 = { exports: {} };
                     TriangleIndexArray: _dereq_('./array_types').TriangleIndexArray
                 };
             },
-            { './array_types': 38 }
+            { './array_types': 39 }
         ],
-        55: [
+        56: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function createBounds(e) {
@@ -65900,11 +66888,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../util/util': 276,
-                './extent': 52
+                '../util/util': 275,
+                './extent': 53
             }
         ],
-        56: [
+        57: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../util/struct_array'), createLayout = ref.createLayout;
@@ -65914,9 +66902,9 @@ var _$mapboxGl_14 = { exports: {} };
                         components: 2
                     }]);
             },
-            { '../util/struct_array': 272 }
+            { '../util/struct_array': 271 }
         ],
-        57: [
+        58: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function packColor(r) {
@@ -66103,14 +67091,14 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../shaders/encode_attribute': 95,
-                '../style-spec/util/color': 154,
-                '../style/properties': 189,
-                '../util/web_worker_transfer': 279,
-                './array_types': 38
+                '../shaders/encode_attribute': 96,
+                '../style-spec/util/color': 153,
+                '../style/properties': 188,
+                '../util/web_worker_transfer': 278,
+                './array_types': 39
             }
         ],
-        58: [
+        59: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../util/struct_array'), createLayout = ref.createLayout;
@@ -66127,9 +67115,9 @@ var _$mapboxGl_14 = { exports: {} };
                     }
                 ]);
             },
-            { '../util/struct_array': 272 }
+            { '../util/struct_array': 271 }
         ],
-        59: [
+        60: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../util/util'), warnOnce = ref.warnOnce, ref$1 = _dereq_('../util/web_worker_transfer'), register = ref$1.register, MAX_VERTEX_ARRAY_LENGTH = Math.pow(2, 16) - 1, SegmentVector = function (e) {
@@ -66158,11 +67146,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../util/util': 276,
-                '../util/web_worker_transfer': 279
+                '../util/util': 275,
+                '../util/web_worker_transfer': 278
             }
         ],
-        60: [
+        61: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Coordinate = function (o, t, n) {
@@ -66183,7 +67171,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        61: [
+        62: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var wrap = _dereq_('../util/util').wrap, LngLat = function (t, n) {
@@ -66220,11 +67208,11 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = LngLat;
             },
             {
-                '../util/util': 276,
-                './lng_lat_bounds': 62
+                '../util/util': 275,
+                './lng_lat_bounds': 63
             }
         ],
-        62: [
+        63: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var LngLat = _dereq_('./lng_lat'), LngLatBounds = function (t, n) {
@@ -66284,9 +67272,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return !t || t instanceof LngLatBounds ? t : new LngLatBounds(t);
                 }, module.exports = LngLatBounds;
             },
-            { './lng_lat': 61 }
+            { './lng_lat': 62 }
         ],
-        63: [
+        64: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var LngLat = _dereq_('./lng_lat'), Point = _dereq_('@mapbox/point-geometry'), Coordinate = _dereq_('./coordinate'), util = _dereq_('../util/util'), interp = _dereq_('../style-spec/util/interpolate').number, tileCover = _dereq_('../util/tile_cover'), ref = _dereq_('../source/tile_id'), CanonicalTileID = ref.CanonicalTileID, UnwrappedTileID = ref.UnwrappedTileID, EXTENT = _dereq_('../data/extent'), glmatrix = _dereq_('@mapbox/gl-matrix'), vec4 = glmatrix.vec4, mat4 = glmatrix.mat4, mat2 = glmatrix.mat2, Transform = function (t, i, o) {
@@ -66531,18 +67519,18 @@ var _$mapboxGl_14 = { exports: {} };
                 }, Object.defineProperties(Transform.prototype, prototypeAccessors), module.exports = Transform;
             },
             {
-                '../data/extent': 52,
-                '../source/tile_id': 113,
-                '../style-spec/util/interpolate': 159,
-                '../util/tile_cover': 274,
-                '../util/util': 276,
-                './coordinate': 60,
-                './lng_lat': 61,
+                '../data/extent': 53,
+                '../source/tile_id': 114,
+                '../style-spec/util/interpolate': 158,
+                '../util/tile_cover': 273,
+                '../util/util': 275,
+                './coordinate': 61,
+                './lng_lat': 62,
                 '@mapbox/gl-matrix': 2,
                 '@mapbox/point-geometry': 4
             }
         ],
-        64: [
+        65: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Color = _dereq_('../style-spec/util/color'), ZERO = 0, ONE = 1, ONE_MINUS_SRC_ALPHA = 771, ColorMode = function (o, e, l) {
@@ -66571,9 +67559,9 @@ var _$mapboxGl_14 = { exports: {} };
                     !0
                 ]), module.exports = ColorMode;
             },
-            { '../style-spec/util/color': 154 }
+            { '../style-spec/util/color': 153 }
         ],
-        65: [
+        66: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var IndexBuffer = _dereq_('./index_buffer'), VertexBuffer = _dereq_('./vertex_buffer'), Framebuffer = _dereq_('./framebuffer'), DepthMode = _dereq_('./depth_mode'), StencilMode = _dereq_('./stencil_mode'), ColorMode = _dereq_('./color_mode'), util = _dereq_('../util/util'), ref = _dereq_('./value'), ClearColor = ref.ClearColor, ClearDepth = ref.ClearDepth, ClearStencil = ref.ClearStencil, ColorMask = ref.ColorMask, DepthMask = ref.DepthMask, StencilMask = ref.StencilMask, StencilFunc = ref.StencilFunc, StencilOp = ref.StencilOp, StencilTest = ref.StencilTest, DepthRange = ref.DepthRange, DepthTest = ref.DepthTest, DepthFunc = ref.DepthFunc, Blend = ref.Blend, BlendFunc = ref.BlendFunc, BlendColor = ref.BlendColor, Program = ref.Program, LineWidth = ref.LineWidth, ActiveTextureUnit = ref.ActiveTextureUnit, Viewport = ref.Viewport, BindFramebuffer = ref.BindFramebuffer, BindRenderbuffer = ref.BindRenderbuffer, BindTexture = ref.BindTexture, BindVertexBuffer = ref.BindVertexBuffer, BindElementBuffer = ref.BindElementBuffer, BindVertexArrayOES = ref.BindVertexArrayOES, PixelStoreUnpack = ref.PixelStoreUnpack, PixelStoreUnpackPremultiplyAlpha = ref.PixelStoreUnpackPremultiplyAlpha, Context = function (e) {
@@ -66613,17 +67601,17 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Context;
             },
             {
-                '../util/util': 276,
-                './color_mode': 64,
-                './depth_mode': 66,
-                './framebuffer': 67,
-                './index_buffer': 68,
-                './stencil_mode': 69,
-                './value': 70,
-                './vertex_buffer': 71
+                '../util/util': 275,
+                './color_mode': 65,
+                './depth_mode': 67,
+                './framebuffer': 68,
+                './index_buffer': 69,
+                './stencil_mode': 70,
+                './value': 71,
+                './vertex_buffer': 72
             }
         ],
-        66: [
+        67: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ALWAYS = 519, DepthMode = function (e, t, d) {
@@ -66636,7 +67624,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        67: [
+        68: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('./value'), ColorAttachment = ref.ColorAttachment, DepthAttachment = ref.DepthAttachment, Framebuffer = function (t, e, r) {
@@ -66651,9 +67639,9 @@ var _$mapboxGl_14 = { exports: {} };
                     r && t.deleteRenderbuffer(r), t.deleteFramebuffer(this.framebuffer);
                 }, module.exports = Framebuffer;
             },
-            { './value': 70 }
+            { './value': 71 }
         ],
-        68: [
+        69: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var IndexBuffer = function (e, t, r) {
@@ -66675,7 +67663,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        69: [
+        70: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ALWAYS = 519, KEEP = 7680, StencilMode = function (t, e, i, s, d, l) {
@@ -66688,7 +67676,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        70: [
+        71: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Color = _dereq_('../style-spec/util/color'), util = _dereq_('../util/util'), ClearColor = function (t) {
@@ -67036,11 +68024,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../style-spec/util/color': 154,
-                '../util/util': 276
+                '../style-spec/util/color': 153,
+                '../util/util': 275
             }
         ],
-        71: [
+        72: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var AttributeType = {
@@ -67078,7 +68066,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        72: [
+        73: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var supported = _dereq_('@mapbox/mapbox-gl-supported'), browser = _dereq_('./util/browser'), version = _dereq_('../package.json').version, Map = _dereq_('./ui/map'), NavigationControl = _dereq_('./ui/control/navigation_control'), GeolocateControl = _dereq_('./ui/control/geolocate_control'), AttributionControl = _dereq_('./ui/control/attribution_control'), ScaleControl = _dereq_('./ui/control/scale_control'), FullscreenControl = _dereq_('./ui/control/fullscreen_control'), Popup = _dereq_('./ui/popup'), Marker = _dereq_('./ui/marker'), Style = _dereq_('./style/style'), LngLat = _dereq_('./geo/lng_lat'), LngLatBounds = _dereq_('./geo/lng_lat_bounds'), Point = _dereq_('@mapbox/point-geometry'), Evented = _dereq_('./util/evented'), config = _dereq_('./util/config'), rtlTextPlugin = _dereq_('./source/rtl_text_plugin');
@@ -67110,27 +68098,27 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../package.json': 37,
-                './geo/lng_lat': 61,
-                './geo/lng_lat_bounds': 62,
-                './source/rtl_text_plugin': 108,
-                './style/style': 191,
-                './ui/control/attribution_control': 233,
-                './ui/control/fullscreen_control': 234,
-                './ui/control/geolocate_control': 235,
-                './ui/control/navigation_control': 237,
-                './ui/control/scale_control': 238,
-                './ui/map': 248,
-                './ui/marker': 249,
-                './ui/popup': 250,
-                './util/browser': 253,
-                './util/config': 257,
-                './util/evented': 261,
+                '../package.json': 38,
+                './geo/lng_lat': 62,
+                './geo/lng_lat_bounds': 63,
+                './source/rtl_text_plugin': 109,
+                './style/style': 190,
+                './ui/control/attribution_control': 232,
+                './ui/control/fullscreen_control': 233,
+                './ui/control/geolocate_control': 234,
+                './ui/control/navigation_control': 236,
+                './ui/control/scale_control': 237,
+                './ui/map': 247,
+                './ui/marker': 248,
+                './ui/popup': 249,
+                './util/browser': 252,
+                './util/config': 256,
+                './util/evented': 260,
                 '@mapbox/mapbox-gl-supported': 3,
                 '@mapbox/point-geometry': 4
             }
         ],
-        73: [
+        74: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function drawBackground(e, t, r) {
@@ -67168,12 +68156,12 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = drawBackground;
             },
             {
-                '../gl/depth_mode': 66,
-                '../gl/stencil_mode': 69,
-                './pattern': 90
+                '../gl/depth_mode': 67,
+                '../gl/stencil_mode': 70,
+                './pattern': 91
             }
         ],
-        74: [
+        75: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function drawCircles(e, t, r, i) {
@@ -67203,12 +68191,12 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = drawCircles;
             },
             {
-                '../gl/depth_mode': 66,
-                '../gl/stencil_mode': 69,
-                '../source/pixels_to_tile_units': 103
+                '../gl/depth_mode': 67,
+                '../gl/stencil_mode': 70,
+                '../source/pixels_to_tile_units': 104
             }
         ],
-        75: [
+        76: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function drawCollisionDebugGeometry(e, o, i, r, t) {
@@ -67233,12 +68221,12 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = drawCollisionDebug;
             },
             {
-                '../gl/depth_mode': 66,
-                '../gl/stencil_mode': 69,
-                '../source/pixels_to_tile_units': 103
+                '../gl/depth_mode': 67,
+                '../gl/stencil_mode': 70,
+                '../source/pixels_to_tile_units': 104
             }
         ],
-        76: [
+        77: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function drawDebug(e, r, t) {
@@ -70167,17 +71155,17 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../data/array_types': 38,
-                '../data/extent': 52,
-                '../data/pos_attributes': 56,
-                '../gl/depth_mode': 66,
-                '../gl/stencil_mode': 69,
-                '../util/browser': 253,
-                './vertex_array_object': 94,
+                '../data/array_types': 39,
+                '../data/extent': 53,
+                '../data/pos_attributes': 57,
+                '../gl/depth_mode': 67,
+                '../gl/stencil_mode': 70,
+                '../util/browser': 252,
+                './vertex_array_object': 95,
                 '@mapbox/gl-matrix': 2
             }
         ],
-        77: [
+        78: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function drawFill(t, e, r, o) {
@@ -70213,12 +71201,12 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = drawFill;
             },
             {
-                '../gl/depth_mode': 66,
-                '../style-spec/util/color': 154,
-                './pattern': 90
+                '../gl/depth_mode': 67,
+                '../style-spec/util/color': 153,
+                './pattern': 91
             }
         ],
-        78: [
+        79: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function draw(e, t, r, i) {
@@ -70282,15 +71270,15 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = draw;
             },
             {
-                '../gl/depth_mode': 66,
-                '../gl/stencil_mode': 69,
-                '../style-spec/util/color': 154,
-                './pattern': 90,
-                './texture': 92,
+                '../gl/depth_mode': 67,
+                '../gl/stencil_mode': 70,
+                '../style-spec/util/color': 153,
+                './pattern': 91,
+                './texture': 93,
                 '@mapbox/gl-matrix': 2
             }
         ],
-        79: [
+        80: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function drawHeatmap(e, t, r, o) {
@@ -70363,16 +71351,16 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = drawHeatmap;
             },
             {
-                '../gl/color_mode': 64,
-                '../gl/depth_mode': 66,
-                '../gl/stencil_mode': 69,
-                '../source/pixels_to_tile_units': 103,
-                '../style-spec/util/color': 154,
-                './texture': 92,
+                '../gl/color_mode': 65,
+                '../gl/depth_mode': 67,
+                '../gl/stencil_mode': 70,
+                '../source/pixels_to_tile_units': 104,
+                '../style-spec/util/color': 153,
+                './texture': 93,
                 '@mapbox/gl-matrix': 2
             }
         ],
-        80: [
+        81: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function drawHillshade(e, r, t, a) {
@@ -70467,15 +71455,15 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = drawHillshade;
             },
             {
-                '../data/extent': 52,
-                '../geo/coordinate': 60,
-                '../gl/depth_mode': 66,
-                '../gl/stencil_mode': 69,
-                './texture': 92,
+                '../data/extent': 53,
+                '../geo/coordinate': 61,
+                '../gl/depth_mode': 67,
+                '../gl/stencil_mode': 70,
+                './texture': 93,
                 '@mapbox/gl-matrix': 2
             }
         ],
-        81: [
+        82: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function drawLineTile(e, i, t, r, n, a, o, s, u) {
@@ -70521,12 +71509,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../gl/depth_mode': 66,
-                '../source/pixels_to_tile_units': 103,
-                '../util/browser': 253
+                '../gl/depth_mode': 67,
+                '../source/pixels_to_tile_units': 104,
+                '../util/browser': 252
             }
         ],
-        82: [
+        83: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function drawRaster(e, r, t, a) {
@@ -70596,14 +71584,14 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = drawRaster;
             },
             {
-                '../gl/depth_mode': 66,
-                '../gl/stencil_mode': 69,
-                '../source/image_source': 101,
-                '../util/browser': 253,
-                '../util/util': 276
+                '../gl/depth_mode': 67,
+                '../gl/stencil_mode': 70,
+                '../source/image_source': 102,
+                '../util/browser': 252,
+                '../util/util': 275
             }
         ],
-        83: [
+        84: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function drawSymbols(t, e, o, i) {
@@ -70657,17 +71645,17 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = drawSymbols;
             },
             {
-                '../gl/depth_mode': 66,
-                '../gl/stencil_mode': 69,
-                '../source/pixels_to_tile_units': 103,
-                '../style/style_layer/symbol_style_layer_properties': 210,
-                '../symbol/projection': 225,
-                '../symbol/symbol_size': 229,
-                './draw_collision_debug': 75,
+                '../gl/depth_mode': 67,
+                '../gl/stencil_mode': 70,
+                '../source/pixels_to_tile_units': 104,
+                '../style/style_layer/symbol_style_layer_properties': 209,
+                '../symbol/projection': 224,
+                '../symbol/symbol_size': 228,
+                './draw_collision_debug': 76,
                 '@mapbox/gl-matrix': 2
             }
         ],
-        84: [
+        85: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function makeGlyphAtlas(a) {
@@ -70709,11 +71697,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = { makeGlyphAtlas: makeGlyphAtlas };
             },
             {
-                '../util/image': 264,
+                '../util/image': 263,
                 '@mapbox/shelf-pack': 5
             }
         ],
-        85: [
+        86: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var loadGlyphRange = _dereq_('../style/load_glyph_range'), TinySDF = _dereq_('@mapbox/tiny-sdf'), isChar = _dereq_('../util/is_char_in_unicode_block'), ref = _dereq_('../util/util'), asyncAll = ref.asyncAll, ref$1 = _dereq_('../util/image'), AlphaImage = ref$1.AlphaImage, GlyphManager = function (e, r) {
@@ -70816,14 +71804,14 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = GlyphManager;
             },
             {
-                '../style/load_glyph_range': 185,
-                '../util/image': 264,
-                '../util/is_char_in_unicode_block': 266,
-                '../util/util': 276,
+                '../style/load_glyph_range': 184,
+                '../util/image': 263,
+                '../util/is_char_in_unicode_block': 265,
+                '../util/util': 275,
                 '@mapbox/tiny-sdf': 6
             }
         ],
-        86: [
+        87: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function imagePosition(a, i) {
@@ -70883,11 +71871,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../util/image': 264,
+                '../util/image': 263,
                 '@mapbox/shelf-pack': 5
             }
         ],
-        87: [
+        88: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ShelfPack = _dereq_('@mapbox/shelf-pack'), ref = _dereq_('../util/image'), RGBAImage = ref.RGBAImage, ref$1 = _dereq_('./image_atlas'), imagePosition = ref$1.imagePosition, Texture = _dereq_('./texture'), padding = 1, ImageManager = function () {
@@ -71014,13 +72002,13 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = ImageManager;
             },
             {
-                '../util/image': 264,
-                './image_atlas': 86,
-                './texture': 92,
+                '../util/image': 263,
+                './image_atlas': 87,
+                './texture': 93,
                 '@mapbox/shelf-pack': 5
             }
         ],
-        88: [
+        89: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../util/util'), LineAtlas = function (t, i) {
@@ -71068,9 +72056,9 @@ var _$mapboxGl_14 = { exports: {} };
                     this.texture ? (i.bindTexture(i.TEXTURE_2D, this.texture), this.dirty && (this.dirty = !1, i.texSubImage2D(i.TEXTURE_2D, 0, 0, 0, this.width, this.height, i.RGBA, i.UNSIGNED_BYTE, this.data))) : (this.texture = i.createTexture(), i.bindTexture(i.TEXTURE_2D, this.texture), i.texParameteri(i.TEXTURE_2D, i.TEXTURE_WRAP_S, i.REPEAT), i.texParameteri(i.TEXTURE_2D, i.TEXTURE_WRAP_T, i.REPEAT), i.texParameteri(i.TEXTURE_2D, i.TEXTURE_MIN_FILTER, i.LINEAR), i.texParameteri(i.TEXTURE_2D, i.TEXTURE_MAG_FILTER, i.LINEAR), i.texImage2D(i.TEXTURE_2D, 0, i.RGBA, this.width, this.height, 0, i.RGBA, i.UNSIGNED_BYTE, this.data));
                 }, module.exports = LineAtlas;
             },
-            { '../util/util': 276 }
+            { '../util/util': 275 }
         ],
-        89: [
+        90: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var browser = _dereq_('../util/browser'), mat4 = _dereq_('@mapbox/gl-matrix').mat4, SourceCache = _dereq_('../source/source_cache'), EXTENT = _dereq_('../data/extent'), pixelsToTileUnits = _dereq_('../source/pixels_to_tile_units'), util = _dereq_('../util/util'), VertexArrayObject = _dereq_('./vertex_array_object'), ref = _dereq_('../data/array_types'), RasterBoundsArray = ref.RasterBoundsArray, PosArray = ref.PosArray, rasterBoundsAttributes = _dereq_('../data/raster_bounds_attributes'), posAttributes = _dereq_('../data/pos_attributes'), ref$1 = _dereq_('../data/program_configuration'), ProgramConfiguration = ref$1.ProgramConfiguration, CrossTileSymbolIndex = _dereq_('../symbol/cross_tile_symbol_index'), shaders = _dereq_('../shaders'), Program = _dereq_('./program'), Context = _dereq_('../gl/context'), DepthMode = _dereq_('../gl/depth_mode'), StencilMode = _dereq_('../gl/stencil_mode'), ColorMode = _dereq_('../gl/color_mode'), Texture = _dereq_('./texture'), updateTileMasks = _dereq_('./tile_mask'), Color = _dereq_('../style-spec/util/color'), draw = {
@@ -71247,40 +72235,40 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Painter;
             },
             {
-                '../data/array_types': 38,
-                '../data/extent': 52,
-                '../data/pos_attributes': 56,
-                '../data/program_configuration': 57,
-                '../data/raster_bounds_attributes': 58,
-                '../gl/color_mode': 64,
-                '../gl/context': 65,
-                '../gl/depth_mode': 66,
-                '../gl/stencil_mode': 69,
-                '../shaders': 96,
-                '../source/pixels_to_tile_units': 103,
-                '../source/source_cache': 110,
-                '../style-spec/util/color': 154,
-                '../symbol/cross_tile_symbol_index': 219,
-                '../util/browser': 253,
-                '../util/util': 276,
-                './draw_background': 73,
-                './draw_circle': 74,
-                './draw_debug': 76,
-                './draw_fill': 77,
-                './draw_fill_extrusion': 78,
-                './draw_heatmap': 79,
-                './draw_hillshade': 80,
-                './draw_line': 81,
-                './draw_raster': 82,
-                './draw_symbol': 83,
-                './program': 91,
-                './texture': 92,
-                './tile_mask': 93,
-                './vertex_array_object': 94,
+                '../data/array_types': 39,
+                '../data/extent': 53,
+                '../data/pos_attributes': 57,
+                '../data/program_configuration': 58,
+                '../data/raster_bounds_attributes': 59,
+                '../gl/color_mode': 65,
+                '../gl/context': 66,
+                '../gl/depth_mode': 67,
+                '../gl/stencil_mode': 70,
+                '../shaders': 97,
+                '../source/pixels_to_tile_units': 104,
+                '../source/source_cache': 111,
+                '../style-spec/util/color': 153,
+                '../symbol/cross_tile_symbol_index': 218,
+                '../util/browser': 252,
+                '../util/util': 275,
+                './draw_background': 74,
+                './draw_circle': 75,
+                './draw_debug': 77,
+                './draw_fill': 78,
+                './draw_fill_extrusion': 79,
+                './draw_heatmap': 80,
+                './draw_hillshade': 81,
+                './draw_line': 82,
+                './draw_raster': 83,
+                './draw_symbol': 84,
+                './program': 92,
+                './texture': 93,
+                './tile_mask': 94,
+                './vertex_array_object': 95,
                 '@mapbox/gl-matrix': 2
             }
         ],
-        90: [
+        91: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var pixelsToTileUnits = _dereq_('../source/pixels_to_tile_units');
@@ -71305,9 +72293,9 @@ var _$mapboxGl_14 = { exports: {} };
                     t.uniform2f(r.uniforms.u_pixel_coord_upper, a >> 16, u >> 16), t.uniform2f(r.uniforms.u_pixel_coord_lower, 65535 & a, 65535 & u);
                 };
             },
-            { '../source/pixels_to_tile_units': 103 }
+            { '../source/pixels_to_tile_units': 104 }
         ],
-        91: [
+        92: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var browser = _dereq_('../util/browser'), shaders = _dereq_('../shaders'), ref = _dereq_('../data/program_configuration'), ProgramConfiguration = ref.ProgramConfiguration, VertexArrayObject = _dereq_('./vertex_array_object'), Context = _dereq_('../gl/context'), Program = function (r, e, t, a) {
@@ -71340,14 +72328,14 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Program;
             },
             {
-                '../data/program_configuration': 57,
-                '../gl/context': 65,
-                '../shaders': 96,
-                '../util/browser': 253,
-                './vertex_array_object': 94
+                '../data/program_configuration': 58,
+                '../gl/context': 66,
+                '../shaders': 97,
+                '../util/browser': 252,
+                './vertex_array_object': 95
             }
         ],
-        92: [
+        93: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../util/window'), HTMLImageElement = ref.HTMLImageElement, HTMLCanvasElement = ref.HTMLCanvasElement, HTMLVideoElement = ref.HTMLVideoElement, ImageData = ref.ImageData, Texture = function (e, t, i, r) {
@@ -71373,9 +72361,9 @@ var _$mapboxGl_14 = { exports: {} };
                     this.context.gl.deleteTexture(this.texture), this.texture = null;
                 }, module.exports = Texture;
             },
-            { '../util/window': 255 }
+            { '../util/window': 254 }
         ],
-        93: [
+        94: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function computeTileMasks(e, i, l, a, r) {
@@ -71407,9 +72395,9 @@ var _$mapboxGl_14 = { exports: {} };
                     }
                 };
             },
-            { '../source/tile_id': 113 }
+            { '../source/tile_id': 114 }
         ],
-        94: [
+        95: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var VertexArrayObject = function () {
@@ -71449,7 +72437,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        95: [
+        96: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../util/util');
@@ -71457,9 +72445,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return t = util.clamp(Math.floor(t), 0, 255), l = util.clamp(Math.floor(l), 0, 255), 256 * t + l;
                 };
             },
-            { '../util/util': 276 }
+            { '../util/util': 275 }
         ],
-        96: [
+        97: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var shaders = {
@@ -71579,7 +72567,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        97: [
+        98: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ImageSource = _dereq_('./image_source'), window = _dereq_('../util/window'), rasterBoundsAttributes = _dereq_('../data/raster_bounds_attributes'), VertexArrayObject = _dereq_('../render/vertex_array_object'), Texture = _dereq_('../render/texture'), CanvasSource = function (t) {
@@ -71635,14 +72623,14 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = CanvasSource;
             },
             {
-                '../data/raster_bounds_attributes': 58,
-                '../render/texture': 92,
-                '../render/vertex_array_object': 94,
-                '../util/window': 255,
-                './image_source': 101
+                '../data/raster_bounds_attributes': 59,
+                '../render/texture': 93,
+                '../render/vertex_array_object': 95,
+                '../util/window': 254,
+                './image_source': 102
             }
         ],
-        98: [
+        99: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function resolveURL(e) {
@@ -71742,15 +72730,15 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = GeoJSONSource;
             },
             {
-                '../data/extent': 52,
-                '../util/ajax': 252,
-                '../util/browser': 253,
-                '../util/evented': 261,
-                '../util/util': 276,
-                '../util/window': 255
+                '../data/extent': 53,
+                '../util/ajax': 251,
+                '../util/browser': 252,
+                '../util/evented': 260,
+                '../util/util': 275,
+                '../util/window': 254
             }
         ],
-        99: [
+        100: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function loadGeoJSONTile(e, r) {
@@ -71818,17 +72806,17 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = GeoJSONWorkerSource;
             },
             {
-                '../util/ajax': 252,
-                '../util/performance': 269,
-                './geojson_wrapper': 100,
-                './vector_tile_worker_source': 115,
-                'geojson-rewind': 14,
-                'geojson-vt': 18,
-                'supercluster': 31,
-                'vt-pbf': 33
+                '../util/ajax': 251,
+                '../util/performance': 268,
+                './geojson_wrapper': 101,
+                './vector_tile_worker_source': 116,
+                'geojson-rewind': 15,
+                'geojson-vt': 19,
+                'supercluster': 32,
+                'vt-pbf': 34
             }
         ],
-        100: [
+        101: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Point = _dereq_('@mapbox/point-geometry'), toGeoJSON = _dereq_('@mapbox/vector-tile').VectorTileFeature.prototype.toGeoJSON, EXTENT = _dereq_('../data/extent'), FeatureWrapper = function (e) {
@@ -71862,12 +72850,12 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = GeoJSONWrapper;
             },
             {
-                '../data/extent': 52,
+                '../data/extent': 53,
                 '@mapbox/point-geometry': 4,
                 '@mapbox/vector-tile': 8
             }
         ],
-        101: [
+        102: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../util/util'), ref = _dereq_('./tile_id'), CanonicalTileID = ref.CanonicalTileID, LngLat = _dereq_('../geo/lng_lat'), Point = _dereq_('@mapbox/point-geometry'), Evented = _dereq_('../util/evented'), ajax = _dereq_('../util/ajax'), browser = _dereq_('../util/browser'), EXTENT = _dereq_('../data/extent'), ref$1 = _dereq_('../data/array_types'), RasterBoundsArray = ref$1.RasterBoundsArray, rasterBoundsAttributes = _dereq_('../data/raster_bounds_attributes'), VertexArrayObject = _dereq_('../render/vertex_array_object'), Texture = _dereq_('../render/texture'), ImageSource = function (t) {
@@ -71925,21 +72913,21 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = ImageSource;
             },
             {
-                '../data/array_types': 38,
-                '../data/extent': 52,
-                '../data/raster_bounds_attributes': 58,
-                '../geo/lng_lat': 61,
-                '../render/texture': 92,
-                '../render/vertex_array_object': 94,
-                '../util/ajax': 252,
-                '../util/browser': 253,
-                '../util/evented': 261,
-                '../util/util': 276,
-                './tile_id': 113,
+                '../data/array_types': 39,
+                '../data/extent': 53,
+                '../data/raster_bounds_attributes': 59,
+                '../geo/lng_lat': 62,
+                '../render/texture': 93,
+                '../render/vertex_array_object': 95,
+                '../util/ajax': 251,
+                '../util/browser': 252,
+                '../util/evented': 260,
+                '../util/util': 275,
+                './tile_id': 114,
                 '@mapbox/point-geometry': 4
             }
         ],
-        102: [
+        103: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../util/util'), ajax = _dereq_('../util/ajax'), browser = _dereq_('../util/browser'), normalizeURL = _dereq_('../util/mapbox').normalizeSourceURL;
@@ -71968,13 +72956,13 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../util/ajax': 252,
-                '../util/browser': 253,
-                '../util/mapbox': 268,
-                '../util/util': 276
+                '../util/ajax': 251,
+                '../util/browser': 252,
+                '../util/mapbox': 267,
+                '../util/util': 275
             }
         ],
-        103: [
+        104: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var EXTENT = _dereq_('../data/extent');
@@ -71982,9 +72970,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return t * (EXTENT / (e.tileSize * Math.pow(2, r - e.tileID.overscaledZ)));
                 };
             },
-            { '../data/extent': 52 }
+            { '../data/extent': 53 }
         ],
-        104: [
+        105: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function sortTilesIn(e, r) {
@@ -72026,7 +73014,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        105: [
+        106: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ajax = _dereq_('../util/ajax'), util = _dereq_('../util/util'), Evented = _dereq_('../util/evented'), normalizeURL = _dereq_('../util/mapbox').normalizeTileURL, browser = _dereq_('../util/browser'), ref = _dereq_('./tile_id'), OverscaledTileID = ref.OverscaledTileID, RasterTileSource = _dereq_('./raster_tile_source'), RasterDEMTileSource = function (e) {
@@ -72076,16 +73064,16 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = RasterDEMTileSource;
             },
             {
-                '../util/ajax': 252,
-                '../util/browser': 253,
-                '../util/evented': 261,
-                '../util/mapbox': 268,
-                '../util/util': 276,
-                './raster_tile_source': 107,
-                './tile_id': 113
+                '../util/ajax': 251,
+                '../util/browser': 252,
+                '../util/evented': 260,
+                '../util/mapbox': 267,
+                '../util/util': 275,
+                './raster_tile_source': 108,
+                './tile_id': 114
             }
         ],
-        106: [
+        107: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../data/dem_data'), DEMData = ref.DEMData, RasterDEMTileWorkerSource = function () {
@@ -72101,9 +73089,9 @@ var _$mapboxGl_14 = { exports: {} };
                     a && a[o] && delete a[o];
                 }, module.exports = RasterDEMTileWorkerSource;
             },
-            { '../data/dem_data': 51 }
+            { '../data/dem_data': 52 }
         ],
-        107: [
+        108: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../util/util'), ajax = _dereq_('../util/ajax'), Evented = _dereq_('../util/evented'), loadTileJSON = _dereq_('./load_tilejson'), normalizeURL = _dereq_('../util/mapbox').normalizeTileURL, TileBounds = _dereq_('./tile_bounds'), Texture = _dereq_('../render/texture'), RasterTileSource = function (e) {
@@ -72155,16 +73143,16 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = RasterTileSource;
             },
             {
-                '../render/texture': 92,
-                '../util/ajax': 252,
-                '../util/evented': 261,
-                '../util/mapbox': 268,
-                '../util/util': 276,
-                './load_tilejson': 102,
-                './tile_bounds': 112
+                '../render/texture': 93,
+                '../util/ajax': 251,
+                '../util/evented': 260,
+                '../util/mapbox': 267,
+                '../util/util': 275,
+                './load_tilejson': 103,
+                './tile_bounds': 113
             }
         ],
-        108: [
+        109: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ajax = _dereq_('../util/ajax'), Evented = _dereq_('../util/evented'), window = _dereq_('../util/window'), pluginRequested = !1, pluginBlobURL = null;
@@ -72190,12 +73178,12 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports.applyArabicShaping = null, module.exports.processBidirectionalText = null;
             },
             {
-                '../util/ajax': 252,
-                '../util/evented': 261,
-                '../util/window': 255
+                '../util/ajax': 251,
+                '../util/evented': 260,
+                '../util/window': 254
             }
         ],
-        109: [
+        110: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../util/util'), sourceTypes = {
@@ -72226,17 +73214,17 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../source/canvas_source': 97,
-                '../source/geojson_source': 98,
-                '../source/image_source': 101,
-                '../source/raster_dem_tile_source': 105,
-                '../source/raster_tile_source': 107,
-                '../source/vector_tile_source': 114,
-                '../source/video_source': 116,
-                '../util/util': 276
+                '../source/canvas_source': 98,
+                '../source/geojson_source': 99,
+                '../source/image_source': 102,
+                '../source/raster_dem_tile_source': 106,
+                '../source/raster_tile_source': 108,
+                '../source/vector_tile_source': 115,
+                '../source/video_source': 117,
+                '../util/util': 275
             }
         ],
-        110: [
+        111: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function coordinateToTilePoint(e, t) {
@@ -72566,20 +73554,20 @@ var _$mapboxGl_14 = { exports: {} };
                 SourceCache.maxOverzooming = 10, SourceCache.maxUnderzooming = 3, module.exports = SourceCache;
             },
             {
-                '../data/extent': 52,
-                '../geo/coordinate': 60,
-                '../gl/context': 65,
-                '../util/browser': 253,
-                '../util/evented': 261,
-                '../util/lru_cache': 267,
-                '../util/util': 276,
-                './source': 109,
-                './tile': 111,
-                './tile_id': 113,
+                '../data/extent': 53,
+                '../geo/coordinate': 61,
+                '../gl/context': 66,
+                '../util/browser': 252,
+                '../util/evented': 260,
+                '../util/lru_cache': 266,
+                '../util/util': 275,
+                './source': 110,
+                './tile': 112,
+                './tile_id': 114,
                 '@mapbox/point-geometry': 4
             }
         ],
-        111: [
+        112: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../util/util'), deserializeBucket = _dereq_('../data/bucket').deserialize, FeatureIndex = _dereq_('../data/feature_index'), vt = _dereq_('@mapbox/vector-tile'), Protobuf = _dereq_('pbf'), GeoJSONFeature = _dereq_('../util/vectortile_to_geojson'), featureFilter = _dereq_('../style-spec/feature_filter'), CollisionIndex = _dereq_('../symbol/collision_index'), SymbolBucket = _dereq_('../data/bucket/symbol_bucket'), ref = _dereq_('../data/array_types'), RasterBoundsArray = ref.RasterBoundsArray, CollisionBoxArray = ref.CollisionBoxArray, rasterBoundsAttributes = _dereq_('../data/raster_bounds_attributes'), EXTENT = _dereq_('../data/extent'), Point = _dereq_('@mapbox/point-geometry'), Texture = _dereq_('../render/texture'), ref$1 = _dereq_('../data/segment'), SegmentVector = ref$1.SegmentVector, ref$2 = _dereq_('../data/index_array_type'), TriangleIndexArray = ref$2.TriangleIndexArray, browser = _dereq_('../util/browser'), CLOCK_SKEW_RETRY_TIMEOUT = 30000, Tile = function (e, t) {
@@ -72709,26 +73697,26 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Tile;
             },
             {
-                '../data/array_types': 38,
-                '../data/bucket': 39,
-                '../data/bucket/symbol_bucket': 50,
-                '../data/extent': 52,
-                '../data/feature_index': 53,
-                '../data/index_array_type': 54,
-                '../data/raster_bounds_attributes': 58,
-                '../data/segment': 59,
-                '../render/texture': 92,
-                '../style-spec/feature_filter': 147,
-                '../symbol/collision_index': 218,
-                '../util/browser': 253,
-                '../util/util': 276,
-                '../util/vectortile_to_geojson': 277,
+                '../data/array_types': 39,
+                '../data/bucket': 40,
+                '../data/bucket/symbol_bucket': 51,
+                '../data/extent': 53,
+                '../data/feature_index': 54,
+                '../data/index_array_type': 55,
+                '../data/raster_bounds_attributes': 59,
+                '../data/segment': 60,
+                '../render/texture': 93,
+                '../style-spec/feature_filter': 148,
+                '../symbol/collision_index': 217,
+                '../util/browser': 252,
+                '../util/util': 275,
+                '../util/vectortile_to_geojson': 276,
                 '@mapbox/point-geometry': 4,
                 '@mapbox/vector-tile': 8,
-                'pbf': 29
+                'pbf': 30
             }
         ],
-        112: [
+        113: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var LngLatBounds = _dereq_('../geo/lng_lat_bounds'), clamp = _dereq_('../util/util').clamp, TileBounds = function (t, n, o) {
@@ -72762,11 +73750,11 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = TileBounds;
             },
             {
-                '../geo/lng_lat_bounds': 62,
-                '../util/util': 276
+                '../geo/lng_lat_bounds': 63,
+                '../util/util': 275
             }
         ],
-        113: [
+        114: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function calculateKey(e, i, a, t) {
@@ -72830,12 +73818,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../geo/coordinate': 60,
-                '../util/web_worker_transfer': 279,
+                '../geo/coordinate': 61,
+                '../util/web_worker_transfer': 278,
                 '@mapbox/whoots-js': 12
             }
         ],
-        114: [
+        115: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Evented = _dereq_('../util/evented'), util = _dereq_('../util/util'), loadTileJSON = _dereq_('./load_tilejson'), normalizeURL = _dereq_('../util/mapbox').normalizeTileURL, TileBounds = _dereq_('./tile_bounds'), ResourceType = _dereq_('../util/ajax').ResourceType, browser = _dereq_('../util/browser'), VectorTileSource = function (e) {
@@ -72902,16 +73890,16 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = VectorTileSource;
             },
             {
-                '../util/ajax': 252,
-                '../util/browser': 253,
-                '../util/evented': 261,
-                '../util/mapbox': 268,
-                '../util/util': 276,
-                './load_tilejson': 102,
-                './tile_bounds': 112
+                '../util/ajax': 251,
+                '../util/browser': 252,
+                '../util/evented': 260,
+                '../util/mapbox': 267,
+                '../util/util': 275,
+                './load_tilejson': 103,
+                './tile_bounds': 113
             }
         ],
-        115: [
+        116: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function loadVectorTile(e, r) {
@@ -72974,15 +73962,15 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = VectorTileWorkerSource;
             },
             {
-                '../util/ajax': 252,
-                '../util/performance': 269,
-                '../util/util': 276,
-                './worker_tile': 118,
+                '../util/ajax': 251,
+                '../util/performance': 268,
+                '../util/util': 275,
+                './worker_tile': 119,
                 '@mapbox/vector-tile': 8,
-                'pbf': 29
+                'pbf': 30
             }
         ],
-        116: [
+        117: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ajax = _dereq_('../util/ajax'), ImageSource = _dereq_('./image_source'), rasterBoundsAttributes = _dereq_('../data/raster_bounds_attributes'), VertexArrayObject = _dereq_('../render/vertex_array_object'), Texture = _dereq_('../render/texture'), VideoSource = function (e) {
@@ -73023,14 +74011,14 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = VideoSource;
             },
             {
-                '../data/raster_bounds_attributes': 58,
-                '../render/texture': 92,
-                '../render/vertex_array_object': 94,
-                '../util/ajax': 252,
-                './image_source': 101
+                '../data/raster_bounds_attributes': 59,
+                '../render/texture': 93,
+                '../render/vertex_array_object': 95,
+                '../util/ajax': 251,
+                './image_source': 102
             }
         ],
-        117: [
+        118: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Actor = _dereq_('../util/actor'), StyleLayerIndex = _dereq_('../style/style_layer_index'), VectorTileWorkerSource = _dereq_('./vector_tile_worker_source'), RasterDEMTileWorkerSource = _dereq_('./raster_dem_tile_worker_source'), GeoJSONWorkerSource = _dereq_('./geojson_worker_source'), globalRTLTextPlugin = _dereq_('./rtl_text_plugin'), Worker = function (e) {
@@ -73102,15 +74090,15 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../style/style_layer_index': 211,
-                '../util/actor': 251,
-                './geojson_worker_source': 99,
-                './raster_dem_tile_worker_source': 106,
-                './rtl_text_plugin': 108,
-                './vector_tile_worker_source': 115
+                '../style/style_layer_index': 210,
+                '../util/actor': 250,
+                './geojson_worker_source': 100,
+                './raster_dem_tile_worker_source': 107,
+                './rtl_text_plugin': 109,
+                './vector_tile_worker_source': 116
             }
         ],
-        118: [
+        119: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function recalculateLayers(e, r) {
@@ -73199,19 +74187,19 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = WorkerTile;
             },
             {
-                '../data/array_types': 38,
-                '../data/bucket/symbol_bucket': 50,
-                '../data/feature_index': 53,
-                '../render/glyph_atlas': 84,
-                '../render/image_atlas': 86,
-                '../style/evaluation_parameters': 183,
-                '../symbol/symbol_layout': 228,
-                '../util/dictionary_coder': 258,
-                '../util/util': 276,
-                './tile_id': 113
+                '../data/array_types': 39,
+                '../data/bucket/symbol_bucket': 51,
+                '../data/feature_index': 54,
+                '../render/glyph_atlas': 85,
+                '../render/image_atlas': 87,
+                '../style/evaluation_parameters': 182,
+                '../symbol/symbol_layout': 227,
+                '../util/dictionary_coder': 257,
+                '../util/util': 275,
+                './tile_id': 114
             }
         ],
-        119: [
+        120: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function deref(r, e) {
@@ -73236,9 +74224,9 @@ var _$mapboxGl_14 = { exports: {} };
                 var refProperties = _dereq_('./util/ref_properties');
                 module.exports = derefLayers;
             },
-            { './util/ref_properties': 160 }
+            { './util/ref_properties': 159 }
         ],
-        120: [
+        121: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function addSource(e, r, o) {
@@ -73474,9 +74462,9 @@ var _$mapboxGl_14 = { exports: {} };
                     };
                 module.exports = diffStyles, module.exports.operations = operations;
             },
-            { './util/deep_equal': 156 }
+            { './util/deep_equal': 155 }
         ],
-        121: [
+        122: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function ValidationError(i, e, l) {
@@ -73486,7 +74474,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        122: [
+        123: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function varargs(r) {
@@ -73563,12 +74551,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                './evaluation_context': 137,
-                './parsing_context': 140,
-                './types': 145
+                './evaluation_context': 138,
+                './parsing_context': 141,
+                './types': 146
             }
         ],
-        123: [
+        124: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../types'), toString = ref.toString, array = ref.array, ValueType = ref.ValueType, StringType = ref.StringType, NumberType = ref.NumberType, BooleanType = ref.BooleanType, checkSubtype = ref.checkSubtype, ref$1 = _dereq_('../values'), typeOf = ref$1.typeOf, RuntimeError = _dereq_('../runtime_error'), types = {
@@ -73613,12 +74601,12 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = ArrayAssertion;
             },
             {
-                '../runtime_error': 142,
-                '../types': 145,
-                '../values': 146
+                '../runtime_error': 143,
+                '../types': 146,
+                '../values': 147
             }
         ],
-        124: [
+        125: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../types'), ObjectType = ref.ObjectType, ValueType = ref.ValueType, StringType = ref.StringType, NumberType = ref.NumberType, BooleanType = ref.BooleanType, RuntimeError = _dereq_('../runtime_error'), ref$1 = _dereq_('../types'), checkSubtype = ref$1.checkSubtype, toString = ref$1.toString, ref$2 = _dereq_('../values'), typeOf = ref$2.typeOf, types = {
@@ -73662,12 +74650,12 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Assertion;
             },
             {
-                '../runtime_error': 142,
-                '../types': 145,
-                '../values': 146
+                '../runtime_error': 143,
+                '../types': 146,
+                '../values': 147
             }
         ],
-        125: [
+        126: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../types'), array = ref.array, ValueType = ref.ValueType, NumberType = ref.NumberType, RuntimeError = _dereq_('../runtime_error'), At = function (e, t, r) {
@@ -73699,11 +74687,11 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = At;
             },
             {
-                '../runtime_error': 142,
-                '../types': 145
+                '../runtime_error': 143,
+                '../types': 146
             }
         ],
-        126: [
+        127: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../types'), BooleanType = ref.BooleanType, Case = function (e, t, r) {
@@ -73756,9 +74744,9 @@ var _$mapboxGl_14 = { exports: {} };
                     var e;
                 }, module.exports = Case;
             },
-            { '../types': 145 }
+            { '../types': 146 }
         ],
-        127: [
+        128: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../types'), checkSubtype = ref.checkSubtype, ValueType = ref.ValueType, Coalesce = function (e, t) {
@@ -73796,9 +74784,9 @@ var _$mapboxGl_14 = { exports: {} };
                     var e;
                 }, module.exports = Coalesce;
             },
-            { '../types': 145 }
+            { '../types': 146 }
         ],
-        128: [
+        129: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../types'), ColorType = ref.ColorType, ValueType = ref.ValueType, NumberType = ref.NumberType, ref$1 = _dereq_('../values'), Color = ref$1.Color, validateRGBA = ref$1.validateRGBA, RuntimeError = _dereq_('../runtime_error'), types = {
@@ -73853,12 +74841,12 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Coercion;
             },
             {
-                '../runtime_error': 142,
-                '../types': 145,
-                '../values': 146
+                '../runtime_error': 143,
+                '../types': 146,
+                '../values': 147
             }
         ],
-        129: [
+        130: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function isComparableType(e) {
@@ -73901,9 +74889,9 @@ var _$mapboxGl_14 = { exports: {} };
                     })
                 };
             },
-            { '../types': 145 }
+            { '../types': 146 }
         ],
-        130: [
+        131: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function rgba(e, r) {
@@ -74635,26 +75623,26 @@ var _$mapboxGl_14 = { exports: {} };
                 }), module.exports = expressions;
             },
             {
-                '../compound_expression': 122,
-                '../runtime_error': 142,
-                '../types': 145,
-                '../values': 146,
-                './array': 123,
-                './assertion': 124,
-                './at': 125,
-                './case': 126,
-                './coalesce': 127,
-                './coercion': 128,
-                './equals': 129,
-                './interpolate': 131,
-                './let': 132,
-                './literal': 133,
-                './match': 134,
-                './step': 135,
-                './var': 136
+                '../compound_expression': 123,
+                '../runtime_error': 143,
+                '../types': 146,
+                '../values': 147,
+                './array': 124,
+                './assertion': 125,
+                './at': 126,
+                './case': 127,
+                './coalesce': 128,
+                './coercion': 129,
+                './equals': 130,
+                './interpolate': 132,
+                './let': 133,
+                './literal': 134,
+                './match': 135,
+                './step': 136,
+                './var': 137
             }
         ],
-        131: [
+        132: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function exponentialInterpolation(e, t, r, n) {
@@ -74769,13 +75757,13 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Interpolate;
             },
             {
-                '../../util/interpolate': 159,
-                '../stops': 144,
-                '../types': 145,
-                '@mapbox/unitbezier': 150
+                '../../util/interpolate': 158,
+                '../stops': 145,
+                '../types': 146,
+                '@mapbox/unitbezier': 7
             }
         ],
-        132: [
+        133: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Let = function (t, e) {
@@ -74819,7 +75807,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        133: [
+        134: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../values'), isValue = ref.isValue, typeOf = ref.typeOf, Literal = function (e, r) {
@@ -74841,9 +75829,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return [this.value];
                 }, module.exports = Literal;
             },
-            { '../values': 146 }
+            { '../values': 147 }
         ],
-        134: [
+        135: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../values'), typeOf = ref.typeOf, Match = function (e, t, r, n, u, s) {
@@ -74912,9 +75900,9 @@ var _$mapboxGl_14 = { exports: {} };
                     var e;
                 }, module.exports = Match;
             },
-            { '../values': 146 }
+            { '../values': 147 }
         ],
-        135: [
+        136: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../types'), NumberType = ref.NumberType, ref$1 = _dereq_('../stops'), findStopLessThanOrEqualTo = ref$1.findStopLessThanOrEqualTo, Step = function (e, t, r) {
@@ -74981,11 +75969,11 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Step;
             },
             {
-                '../stops': 144,
-                '../types': 145
+                '../stops': 145,
+                '../types': 146
             }
         ],
-        136: [
+        137: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Var = function (e, r) {
@@ -75006,7 +75994,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        137: [
+        138: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Scope = _dereq_('./scope'), ref = _dereq_('./values'), Color = ref.Color, geometryTypes = [
@@ -75033,11 +76021,11 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = EvaluationContext;
             },
             {
-                './scope': 143,
-                './values': 146
+                './scope': 144,
+                './values': 147
             }
         ],
-        138: [
+        139: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function isExpression(e) {
@@ -75181,25 +76169,25 @@ var _$mapboxGl_14 = { exports: {} };
                 var ref$4 = _dereq_('./types'), ColorType = ref$4.ColorType, StringType = ref$4.StringType, NumberType = ref$4.NumberType, BooleanType = ref$4.BooleanType, ValueType = ref$4.ValueType, array = ref$4.array;
             },
             {
-                '../function': 148,
-                '../util/extend': 157,
-                '../util/result': 161,
-                './compound_expression': 122,
-                './definitions': 130,
-                './definitions/coalesce': 127,
-                './definitions/interpolate': 131,
-                './definitions/let': 132,
-                './definitions/step': 135,
-                './evaluation_context': 137,
-                './is_constant': 139,
-                './parsing_context': 140,
-                './parsing_error': 141,
-                './runtime_error': 142,
-                './types': 145,
-                './values': 146
+                '../function': 149,
+                '../util/extend': 156,
+                '../util/result': 160,
+                './compound_expression': 123,
+                './definitions': 131,
+                './definitions/coalesce': 128,
+                './definitions/interpolate': 132,
+                './definitions/let': 133,
+                './definitions/step': 136,
+                './evaluation_context': 138,
+                './is_constant': 140,
+                './parsing_context': 141,
+                './parsing_error': 142,
+                './runtime_error': 143,
+                './types': 146,
+                './values': 147
             }
         ],
-        139: [
+        140: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function isFeatureConstant(n) {
@@ -75237,9 +76225,9 @@ var _$mapboxGl_14 = { exports: {} };
                     isGlobalPropertyConstant: isGlobalPropertyConstant
                 };
             },
-            { './compound_expression': 122 }
+            { './compound_expression': 123 }
         ],
-        140: [
+        141: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function isConstant(e) {
@@ -75330,20 +76318,20 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = ParsingContext;
             },
             {
-                './compound_expression': 122,
-                './definitions/array': 123,
-                './definitions/assertion': 124,
-                './definitions/coercion': 128,
-                './definitions/literal': 133,
-                './definitions/var': 136,
-                './evaluation_context': 137,
-                './is_constant': 139,
-                './parsing_error': 141,
-                './scope': 143,
-                './types': 145
+                './compound_expression': 123,
+                './definitions/array': 124,
+                './definitions/assertion': 125,
+                './definitions/coercion': 129,
+                './definitions/literal': 134,
+                './definitions/var': 137,
+                './evaluation_context': 138,
+                './is_constant': 140,
+                './parsing_error': 142,
+                './scope': 144,
+                './types': 146
             }
         ],
-        141: [
+        142: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ParsingError = function (r) {
@@ -75356,7 +76344,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        142: [
+        143: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var RuntimeError = function (r) {
@@ -75368,7 +76356,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        143: [
+        144: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Scope = function (t, n) {
@@ -75395,7 +76383,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        144: [
+        145: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function findStopLessThanOrEqualTo(r, e) {
@@ -75417,9 +76405,9 @@ var _$mapboxGl_14 = { exports: {} };
                 var RuntimeError = _dereq_('./runtime_error');
                 module.exports = { findStopLessThanOrEqualTo: findStopLessThanOrEqualTo };
             },
-            { './runtime_error': 142 }
+            { './runtime_error': 143 }
         ],
-        145: [
+        146: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function array(e, r) {
@@ -75484,7 +76472,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        146: [
+        147: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function validateRGBA(e, r, t, n) {
@@ -75582,11 +76570,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../util/color': 154,
-                './types': 145
+                '../util/color': 153,
+                './types': 146
             }
         ],
-        147: [
+        148: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function isExpressionFilter(e) {
@@ -75741,9 +76729,9 @@ var _$mapboxGl_14 = { exports: {} };
                     'zoom-function': !0
                 };
             },
-            { '../expression': 138 }
+            { '../expression': 139 }
         ],
-        148: [
+        149: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function isFunction(e) {
@@ -75920,15 +76908,15 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../expression/definitions/interpolate': 131,
-                '../util/color': 154,
-                '../util/color_spaces': 155,
-                '../util/extend': 157,
-                '../util/get_type': 158,
-                '../util/interpolate': 159
+                '../expression/definitions/interpolate': 132,
+                '../util/color': 153,
+                '../util/color_spaces': 154,
+                '../util/extend': 156,
+                '../util/get_type': 157,
+                '../util/interpolate': 158
             }
         ],
-        149: [
+        150: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function stringify(r) {
@@ -75967,1006 +76955,16 @@ var _$mapboxGl_14 = { exports: {} };
                 var refProperties = _dereq_('./util/ref_properties');
                 module.exports = groupByLayout;
             },
-            { './util/ref_properties': 160 }
-        ],
-        150: [
-            function (_dereq_, module, exports) {
-                arguments[4][7][0].apply(exports, arguments);
-            },
-            { 'dup': 7 }
+            { './util/ref_properties': 159 }
         ],
         151: [
-            function (_dereq_, module, exports) {
-                function clamp_css_byte(e) {
-                    return e = Math.round(e), e < 0 ? 0 : e > 255 ? 255 : e;
-                }
-                function clamp_css_float(e) {
-                    return e < 0 ? 0 : e > 1 ? 1 : e;
-                }
-                function parse_css_int(e) {
-                    return clamp_css_byte('%' === e[e.length - 1] ? parseFloat(e) / 100 * 255 : parseInt(e));
-                }
-                function parse_css_float(e) {
-                    return clamp_css_float('%' === e[e.length - 1] ? parseFloat(e) / 100 : parseFloat(e));
-                }
-                function css_hue_to_rgb(e, r, l) {
-                    return l < 0 ? l += 1 : l > 1 && (l -= 1), 6 * l < 1 ? e + (r - e) * l * 6 : 2 * l < 1 ? r : 3 * l < 2 ? e + (r - e) * (2 / 3 - l) * 6 : e;
-                }
-                function parseCSSColor(e) {
-                    var r = e.replace(/ /g, '').toLowerCase();
-                    if (r in kCSSColorTable) {
-                        return kCSSColorTable[r].slice();
-                    }
-                    if ('#' === r[0]) {
-                        if (4 === r.length) {
-                            var l = parseInt(r.substr(1), 16);
-                            return l >= 0 && l <= 4095 ? [
-                                (3840 & l) >> 4 | (3840 & l) >> 8,
-                                240 & l | (240 & l) >> 4,
-                                15 & l | (15 & l) << 4,
-                                1
-                            ] : null;
-                        }
-                        if (7 === r.length) {
-                            var l = parseInt(r.substr(1), 16);
-                            return l >= 0 && l <= 16777215 ? [
-                                (16711680 & l) >> 16,
-                                (65280 & l) >> 8,
-                                255 & l,
-                                1
-                            ] : null;
-                        }
-                        return null;
-                    }
-                    var a = r.indexOf('('), t = r.indexOf(')');
-                    if (-1 !== a && t + 1 === r.length) {
-                        var n = r.substr(0, a), s = r.substr(a + 1, t - (a + 1)).split(','), o = 1;
-                        switch (n) {
-                        case 'rgba':
-                            if (4 !== s.length) {
-                                return null;
-                            }
-                            o = parse_css_float(s.pop());
-                        case 'rgb':
-                            return 3 !== s.length ? null : [
-                                parse_css_int(s[0]),
-                                parse_css_int(s[1]),
-                                parse_css_int(s[2]),
-                                o
-                            ];
-                        case 'hsla':
-                            if (4 !== s.length) {
-                                return null;
-                            }
-                            o = parse_css_float(s.pop());
-                        case 'hsl':
-                            if (3 !== s.length) {
-                                return null;
-                            }
-                            var i = (parseFloat(s[0]) % 360 + 360) % 360 / 360, u = parse_css_float(s[1]), g = parse_css_float(s[2]), d = g <= 0.5 ? g * (u + 1) : g + u - g * u, c = 2 * g - d;
-                            return [
-                                clamp_css_byte(255 * css_hue_to_rgb(c, d, i + 1 / 3)),
-                                clamp_css_byte(255 * css_hue_to_rgb(c, d, i)),
-                                clamp_css_byte(255 * css_hue_to_rgb(c, d, i - 1 / 3)),
-                                o
-                            ];
-                        default:
-                            return null;
-                        }
-                    }
-                    return null;
-                }
-                var kCSSColorTable = {
-                    transparent: [
-                        0,
-                        0,
-                        0,
-                        0
-                    ],
-                    aliceblue: [
-                        240,
-                        248,
-                        255,
-                        1
-                    ],
-                    antiquewhite: [
-                        250,
-                        235,
-                        215,
-                        1
-                    ],
-                    aqua: [
-                        0,
-                        255,
-                        255,
-                        1
-                    ],
-                    aquamarine: [
-                        127,
-                        255,
-                        212,
-                        1
-                    ],
-                    azure: [
-                        240,
-                        255,
-                        255,
-                        1
-                    ],
-                    beige: [
-                        245,
-                        245,
-                        220,
-                        1
-                    ],
-                    bisque: [
-                        255,
-                        228,
-                        196,
-                        1
-                    ],
-                    black: [
-                        0,
-                        0,
-                        0,
-                        1
-                    ],
-                    blanchedalmond: [
-                        255,
-                        235,
-                        205,
-                        1
-                    ],
-                    blue: [
-                        0,
-                        0,
-                        255,
-                        1
-                    ],
-                    blueviolet: [
-                        138,
-                        43,
-                        226,
-                        1
-                    ],
-                    brown: [
-                        165,
-                        42,
-                        42,
-                        1
-                    ],
-                    burlywood: [
-                        222,
-                        184,
-                        135,
-                        1
-                    ],
-                    cadetblue: [
-                        95,
-                        158,
-                        160,
-                        1
-                    ],
-                    chartreuse: [
-                        127,
-                        255,
-                        0,
-                        1
-                    ],
-                    chocolate: [
-                        210,
-                        105,
-                        30,
-                        1
-                    ],
-                    coral: [
-                        255,
-                        127,
-                        80,
-                        1
-                    ],
-                    cornflowerblue: [
-                        100,
-                        149,
-                        237,
-                        1
-                    ],
-                    cornsilk: [
-                        255,
-                        248,
-                        220,
-                        1
-                    ],
-                    crimson: [
-                        220,
-                        20,
-                        60,
-                        1
-                    ],
-                    cyan: [
-                        0,
-                        255,
-                        255,
-                        1
-                    ],
-                    darkblue: [
-                        0,
-                        0,
-                        139,
-                        1
-                    ],
-                    darkcyan: [
-                        0,
-                        139,
-                        139,
-                        1
-                    ],
-                    darkgoldenrod: [
-                        184,
-                        134,
-                        11,
-                        1
-                    ],
-                    darkgray: [
-                        169,
-                        169,
-                        169,
-                        1
-                    ],
-                    darkgreen: [
-                        0,
-                        100,
-                        0,
-                        1
-                    ],
-                    darkgrey: [
-                        169,
-                        169,
-                        169,
-                        1
-                    ],
-                    darkkhaki: [
-                        189,
-                        183,
-                        107,
-                        1
-                    ],
-                    darkmagenta: [
-                        139,
-                        0,
-                        139,
-                        1
-                    ],
-                    darkolivegreen: [
-                        85,
-                        107,
-                        47,
-                        1
-                    ],
-                    darkorange: [
-                        255,
-                        140,
-                        0,
-                        1
-                    ],
-                    darkorchid: [
-                        153,
-                        50,
-                        204,
-                        1
-                    ],
-                    darkred: [
-                        139,
-                        0,
-                        0,
-                        1
-                    ],
-                    darksalmon: [
-                        233,
-                        150,
-                        122,
-                        1
-                    ],
-                    darkseagreen: [
-                        143,
-                        188,
-                        143,
-                        1
-                    ],
-                    darkslateblue: [
-                        72,
-                        61,
-                        139,
-                        1
-                    ],
-                    darkslategray: [
-                        47,
-                        79,
-                        79,
-                        1
-                    ],
-                    darkslategrey: [
-                        47,
-                        79,
-                        79,
-                        1
-                    ],
-                    darkturquoise: [
-                        0,
-                        206,
-                        209,
-                        1
-                    ],
-                    darkviolet: [
-                        148,
-                        0,
-                        211,
-                        1
-                    ],
-                    deeppink: [
-                        255,
-                        20,
-                        147,
-                        1
-                    ],
-                    deepskyblue: [
-                        0,
-                        191,
-                        255,
-                        1
-                    ],
-                    dimgray: [
-                        105,
-                        105,
-                        105,
-                        1
-                    ],
-                    dimgrey: [
-                        105,
-                        105,
-                        105,
-                        1
-                    ],
-                    dodgerblue: [
-                        30,
-                        144,
-                        255,
-                        1
-                    ],
-                    firebrick: [
-                        178,
-                        34,
-                        34,
-                        1
-                    ],
-                    floralwhite: [
-                        255,
-                        250,
-                        240,
-                        1
-                    ],
-                    forestgreen: [
-                        34,
-                        139,
-                        34,
-                        1
-                    ],
-                    fuchsia: [
-                        255,
-                        0,
-                        255,
-                        1
-                    ],
-                    gainsboro: [
-                        220,
-                        220,
-                        220,
-                        1
-                    ],
-                    ghostwhite: [
-                        248,
-                        248,
-                        255,
-                        1
-                    ],
-                    gold: [
-                        255,
-                        215,
-                        0,
-                        1
-                    ],
-                    goldenrod: [
-                        218,
-                        165,
-                        32,
-                        1
-                    ],
-                    gray: [
-                        128,
-                        128,
-                        128,
-                        1
-                    ],
-                    green: [
-                        0,
-                        128,
-                        0,
-                        1
-                    ],
-                    greenyellow: [
-                        173,
-                        255,
-                        47,
-                        1
-                    ],
-                    grey: [
-                        128,
-                        128,
-                        128,
-                        1
-                    ],
-                    honeydew: [
-                        240,
-                        255,
-                        240,
-                        1
-                    ],
-                    hotpink: [
-                        255,
-                        105,
-                        180,
-                        1
-                    ],
-                    indianred: [
-                        205,
-                        92,
-                        92,
-                        1
-                    ],
-                    indigo: [
-                        75,
-                        0,
-                        130,
-                        1
-                    ],
-                    ivory: [
-                        255,
-                        255,
-                        240,
-                        1
-                    ],
-                    khaki: [
-                        240,
-                        230,
-                        140,
-                        1
-                    ],
-                    lavender: [
-                        230,
-                        230,
-                        250,
-                        1
-                    ],
-                    lavenderblush: [
-                        255,
-                        240,
-                        245,
-                        1
-                    ],
-                    lawngreen: [
-                        124,
-                        252,
-                        0,
-                        1
-                    ],
-                    lemonchiffon: [
-                        255,
-                        250,
-                        205,
-                        1
-                    ],
-                    lightblue: [
-                        173,
-                        216,
-                        230,
-                        1
-                    ],
-                    lightcoral: [
-                        240,
-                        128,
-                        128,
-                        1
-                    ],
-                    lightcyan: [
-                        224,
-                        255,
-                        255,
-                        1
-                    ],
-                    lightgoldenrodyellow: [
-                        250,
-                        250,
-                        210,
-                        1
-                    ],
-                    lightgray: [
-                        211,
-                        211,
-                        211,
-                        1
-                    ],
-                    lightgreen: [
-                        144,
-                        238,
-                        144,
-                        1
-                    ],
-                    lightgrey: [
-                        211,
-                        211,
-                        211,
-                        1
-                    ],
-                    lightpink: [
-                        255,
-                        182,
-                        193,
-                        1
-                    ],
-                    lightsalmon: [
-                        255,
-                        160,
-                        122,
-                        1
-                    ],
-                    lightseagreen: [
-                        32,
-                        178,
-                        170,
-                        1
-                    ],
-                    lightskyblue: [
-                        135,
-                        206,
-                        250,
-                        1
-                    ],
-                    lightslategray: [
-                        119,
-                        136,
-                        153,
-                        1
-                    ],
-                    lightslategrey: [
-                        119,
-                        136,
-                        153,
-                        1
-                    ],
-                    lightsteelblue: [
-                        176,
-                        196,
-                        222,
-                        1
-                    ],
-                    lightyellow: [
-                        255,
-                        255,
-                        224,
-                        1
-                    ],
-                    lime: [
-                        0,
-                        255,
-                        0,
-                        1
-                    ],
-                    limegreen: [
-                        50,
-                        205,
-                        50,
-                        1
-                    ],
-                    linen: [
-                        250,
-                        240,
-                        230,
-                        1
-                    ],
-                    magenta: [
-                        255,
-                        0,
-                        255,
-                        1
-                    ],
-                    maroon: [
-                        128,
-                        0,
-                        0,
-                        1
-                    ],
-                    mediumaquamarine: [
-                        102,
-                        205,
-                        170,
-                        1
-                    ],
-                    mediumblue: [
-                        0,
-                        0,
-                        205,
-                        1
-                    ],
-                    mediumorchid: [
-                        186,
-                        85,
-                        211,
-                        1
-                    ],
-                    mediumpurple: [
-                        147,
-                        112,
-                        219,
-                        1
-                    ],
-                    mediumseagreen: [
-                        60,
-                        179,
-                        113,
-                        1
-                    ],
-                    mediumslateblue: [
-                        123,
-                        104,
-                        238,
-                        1
-                    ],
-                    mediumspringgreen: [
-                        0,
-                        250,
-                        154,
-                        1
-                    ],
-                    mediumturquoise: [
-                        72,
-                        209,
-                        204,
-                        1
-                    ],
-                    mediumvioletred: [
-                        199,
-                        21,
-                        133,
-                        1
-                    ],
-                    midnightblue: [
-                        25,
-                        25,
-                        112,
-                        1
-                    ],
-                    mintcream: [
-                        245,
-                        255,
-                        250,
-                        1
-                    ],
-                    mistyrose: [
-                        255,
-                        228,
-                        225,
-                        1
-                    ],
-                    moccasin: [
-                        255,
-                        228,
-                        181,
-                        1
-                    ],
-                    navajowhite: [
-                        255,
-                        222,
-                        173,
-                        1
-                    ],
-                    navy: [
-                        0,
-                        0,
-                        128,
-                        1
-                    ],
-                    oldlace: [
-                        253,
-                        245,
-                        230,
-                        1
-                    ],
-                    olive: [
-                        128,
-                        128,
-                        0,
-                        1
-                    ],
-                    olivedrab: [
-                        107,
-                        142,
-                        35,
-                        1
-                    ],
-                    orange: [
-                        255,
-                        165,
-                        0,
-                        1
-                    ],
-                    orangered: [
-                        255,
-                        69,
-                        0,
-                        1
-                    ],
-                    orchid: [
-                        218,
-                        112,
-                        214,
-                        1
-                    ],
-                    palegoldenrod: [
-                        238,
-                        232,
-                        170,
-                        1
-                    ],
-                    palegreen: [
-                        152,
-                        251,
-                        152,
-                        1
-                    ],
-                    paleturquoise: [
-                        175,
-                        238,
-                        238,
-                        1
-                    ],
-                    palevioletred: [
-                        219,
-                        112,
-                        147,
-                        1
-                    ],
-                    papayawhip: [
-                        255,
-                        239,
-                        213,
-                        1
-                    ],
-                    peachpuff: [
-                        255,
-                        218,
-                        185,
-                        1
-                    ],
-                    peru: [
-                        205,
-                        133,
-                        63,
-                        1
-                    ],
-                    pink: [
-                        255,
-                        192,
-                        203,
-                        1
-                    ],
-                    plum: [
-                        221,
-                        160,
-                        221,
-                        1
-                    ],
-                    powderblue: [
-                        176,
-                        224,
-                        230,
-                        1
-                    ],
-                    purple: [
-                        128,
-                        0,
-                        128,
-                        1
-                    ],
-                    rebeccapurple: [
-                        102,
-                        51,
-                        153,
-                        1
-                    ],
-                    red: [
-                        255,
-                        0,
-                        0,
-                        1
-                    ],
-                    rosybrown: [
-                        188,
-                        143,
-                        143,
-                        1
-                    ],
-                    royalblue: [
-                        65,
-                        105,
-                        225,
-                        1
-                    ],
-                    saddlebrown: [
-                        139,
-                        69,
-                        19,
-                        1
-                    ],
-                    salmon: [
-                        250,
-                        128,
-                        114,
-                        1
-                    ],
-                    sandybrown: [
-                        244,
-                        164,
-                        96,
-                        1
-                    ],
-                    seagreen: [
-                        46,
-                        139,
-                        87,
-                        1
-                    ],
-                    seashell: [
-                        255,
-                        245,
-                        238,
-                        1
-                    ],
-                    sienna: [
-                        160,
-                        82,
-                        45,
-                        1
-                    ],
-                    silver: [
-                        192,
-                        192,
-                        192,
-                        1
-                    ],
-                    skyblue: [
-                        135,
-                        206,
-                        235,
-                        1
-                    ],
-                    slateblue: [
-                        106,
-                        90,
-                        205,
-                        1
-                    ],
-                    slategray: [
-                        112,
-                        128,
-                        144,
-                        1
-                    ],
-                    slategrey: [
-                        112,
-                        128,
-                        144,
-                        1
-                    ],
-                    snow: [
-                        255,
-                        250,
-                        250,
-                        1
-                    ],
-                    springgreen: [
-                        0,
-                        255,
-                        127,
-                        1
-                    ],
-                    steelblue: [
-                        70,
-                        130,
-                        180,
-                        1
-                    ],
-                    tan: [
-                        210,
-                        180,
-                        140,
-                        1
-                    ],
-                    teal: [
-                        0,
-                        128,
-                        128,
-                        1
-                    ],
-                    thistle: [
-                        216,
-                        191,
-                        216,
-                        1
-                    ],
-                    tomato: [
-                        255,
-                        99,
-                        71,
-                        1
-                    ],
-                    turquoise: [
-                        64,
-                        224,
-                        208,
-                        1
-                    ],
-                    violet: [
-                        238,
-                        130,
-                        238,
-                        1
-                    ],
-                    wheat: [
-                        245,
-                        222,
-                        179,
-                        1
-                    ],
-                    white: [
-                        255,
-                        255,
-                        255,
-                        1
-                    ],
-                    whitesmoke: [
-                        245,
-                        245,
-                        245,
-                        1
-                    ],
-                    yellow: [
-                        255,
-                        255,
-                        0,
-                        1
-                    ],
-                    yellowgreen: [
-                        154,
-                        205,
-                        50,
-                        1
-                    ]
-                };
-                try {
-                    exports.parseCSSColor = parseCSSColor;
-                } catch (e) {
-                }
-            },
-            {}
-        ],
-        152: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = _dereq_('./v8.json');
             },
-            { './v8.json': 153 }
+            { './v8.json': 152 }
         ],
-        153: [
+        152: [
             function (_dereq_, module, exports) {
                 module.exports = {
                     '$version': 8,
@@ -78750,7 +78748,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        154: [
+        153: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('csscolorparser'), parseCSSColor = ref.parseCSSColor, Color = function (r, o, t, e) {
@@ -78779,9 +78777,9 @@ var _$mapboxGl_14 = { exports: {} };
                     ].map(o).concat(this.a).join(',') + ')';
                 }, Color.black = new Color(0, 0, 0, 1), Color.white = new Color(1, 1, 1, 1), Color.transparent = new Color(0, 0, 0, 0), module.exports = Color;
             },
-            { 'csscolorparser': 151 }
+            { 'csscolorparser': 13 }
         ],
-        155: [
+        154: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function xyz2lab(a) {
@@ -78862,11 +78860,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                './color': 154,
-                './interpolate': 159
+                './color': 153,
+                './interpolate': 158
             }
         ],
-        156: [
+        155: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function deepEqual(e, r) {
@@ -78901,7 +78899,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        157: [
+        156: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = function (r) {
@@ -78920,7 +78918,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        158: [
+        157: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = function (n) {
@@ -78929,7 +78927,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        159: [
+        158: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function number(r, n, u) {
@@ -78950,9 +78948,9 @@ var _$mapboxGl_14 = { exports: {} };
                     array: array
                 };
             },
-            { './color': 154 }
+            { './color': 153 }
         ],
-        160: [
+        159: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = [
@@ -78967,7 +78965,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        161: [
+        160: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function success(r) {
@@ -78989,7 +78987,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        162: [
+        161: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function unbundle(e) {
@@ -79002,7 +79000,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        163: [
+        162: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var extend = _dereq_('../util/extend'), unbundle = _dereq_('../util/unbundle_jsonlint'), ref = _dereq_('../expression'), isExpression = ref.isExpression, ref$1 = _dereq_('../function'), isFunction = ref$1.isFunction;
@@ -79029,27 +79027,27 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../expression': 138,
-                '../function': 148,
-                '../util/extend': 157,
-                '../util/unbundle_jsonlint': 162,
-                './validate_array': 164,
-                './validate_boolean': 165,
-                './validate_color': 166,
-                './validate_constants': 167,
-                './validate_enum': 168,
-                './validate_expression': 169,
-                './validate_filter': 170,
-                './validate_function': 171,
-                './validate_layer': 173,
-                './validate_light': 175,
-                './validate_number': 176,
-                './validate_object': 177,
-                './validate_source': 180,
-                './validate_string': 181
+                '../expression': 139,
+                '../function': 149,
+                '../util/extend': 156,
+                '../util/unbundle_jsonlint': 161,
+                './validate_array': 163,
+                './validate_boolean': 164,
+                './validate_color': 165,
+                './validate_constants': 166,
+                './validate_enum': 167,
+                './validate_expression': 168,
+                './validate_filter': 169,
+                './validate_function': 170,
+                './validate_layer': 172,
+                './validate_light': 174,
+                './validate_number': 175,
+                './validate_object': 176,
+                './validate_source': 179,
+                './validate_string': 180
             }
         ],
-        164: [
+        163: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var getType = _dereq_('../util/get_type'), validate = _dereq_('./validate'), ValidationError = _dereq_('../error/validation_error');
@@ -79081,12 +79079,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/get_type': 158,
-                './validate': 163
+                '../error/validation_error': 122,
+                '../util/get_type': 157,
+                './validate': 162
             }
         ],
-        165: [
+        164: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var getType = _dereq_('../util/get_type'), ValidationError = _dereq_('../error/validation_error');
@@ -79096,11 +79094,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/get_type': 158
+                '../error/validation_error': 122,
+                '../util/get_type': 157
             }
         ],
-        166: [
+        165: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ValidationError = _dereq_('../error/validation_error'), getType = _dereq_('../util/get_type'), parseCSSColor = _dereq_('csscolorparser').parseCSSColor;
@@ -79110,12 +79108,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/get_type': 158,
-                'csscolorparser': 151
+                '../error/validation_error': 122,
+                '../util/get_type': 157,
+                'csscolorparser': 13
             }
         ],
-        167: [
+        166: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ValidationError = _dereq_('../error/validation_error');
@@ -79124,9 +79122,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return a ? [new ValidationError(e, a, 'constants have been deprecated as of v8')] : [];
                 };
             },
-            { '../error/validation_error': 121 }
+            { '../error/validation_error': 122 }
         ],
-        168: [
+        167: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ValidationError = _dereq_('../error/validation_error'), unbundle = _dereq_('../util/unbundle_jsonlint');
@@ -79136,11 +79134,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/unbundle_jsonlint': 162
+                '../error/validation_error': 122,
+                '../util/unbundle_jsonlint': 161
             }
         ],
-        169: [
+        168: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ValidationError = _dereq_('../error/validation_error'), ref = _dereq_('../expression'), createExpression = ref.createExpression, createPropertyExpression = ref.createPropertyExpression, unbundle = _dereq_('../util/unbundle_jsonlint');
@@ -79152,12 +79150,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../expression': 138,
-                '../util/unbundle_jsonlint': 162
+                '../error/validation_error': 122,
+                '../expression': 139,
+                '../util/unbundle_jsonlint': 161
             }
         ],
-        170: [
+        169: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function validateNonExpressionFilter(e) {
@@ -79224,16 +79222,16 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../feature_filter': 147,
-                '../util/extend': 157,
-                '../util/get_type': 158,
-                '../util/unbundle_jsonlint': 162,
-                './validate_enum': 168,
-                './validate_expression': 169
+                '../error/validation_error': 122,
+                '../feature_filter': 148,
+                '../util/extend': 156,
+                '../util/get_type': 157,
+                '../util/unbundle_jsonlint': 161,
+                './validate_enum': 167,
+                './validate_expression': 168
             }
         ],
-        171: [
+        170: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ValidationError = _dereq_('../error/validation_error'), getType = _dereq_('../util/get_type'), validate = _dereq_('./validate'), validateObject = _dereq_('./validate_object'), validateArray = _dereq_('./validate_array'), validateNumber = _dereq_('./validate_number'), unbundle = _dereq_('../util/unbundle_jsonlint');
@@ -79343,16 +79341,16 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/get_type': 158,
-                '../util/unbundle_jsonlint': 162,
-                './validate': 163,
-                './validate_array': 164,
-                './validate_number': 176,
-                './validate_object': 177
+                '../error/validation_error': 122,
+                '../util/get_type': 157,
+                '../util/unbundle_jsonlint': 161,
+                './validate': 162,
+                './validate_array': 163,
+                './validate_number': 175,
+                './validate_object': 176
             }
         ],
-        172: [
+        171: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ValidationError = _dereq_('../error/validation_error'), validateString = _dereq_('./validate_string');
@@ -79362,11 +79360,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                './validate_string': 181
+                '../error/validation_error': 122,
+                './validate_string': 180
             }
         ],
-        173: [
+        172: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ValidationError = _dereq_('../error/validation_error'), unbundle = _dereq_('../util/unbundle_jsonlint'), validateObject = _dereq_('./validate_object'), validateFilter = _dereq_('./validate_filter'), validatePaintProperty = _dereq_('./validate_paint_property'), validateLayoutProperty = _dereq_('./validate_layout_property'), validateSpec = _dereq_('./validate'), extend = _dereq_('../util/extend');
@@ -79457,17 +79455,17 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/extend': 157,
-                '../util/unbundle_jsonlint': 162,
-                './validate': 163,
-                './validate_filter': 170,
-                './validate_layout_property': 174,
-                './validate_object': 177,
-                './validate_paint_property': 178
+                '../error/validation_error': 122,
+                '../util/extend': 156,
+                '../util/unbundle_jsonlint': 161,
+                './validate': 162,
+                './validate_filter': 169,
+                './validate_layout_property': 173,
+                './validate_object': 176,
+                './validate_paint_property': 177
             }
         ],
-        174: [
+        173: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var validateProperty = _dereq_('./validate_property');
@@ -79475,9 +79473,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return validateProperty(r, 'layout');
                 };
             },
-            { './validate_property': 179 }
+            { './validate_property': 178 }
         ],
-        175: [
+        174: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ValidationError = _dereq_('../error/validation_error'), getType = _dereq_('../util/get_type'), validate = _dereq_('./validate');
@@ -79509,12 +79507,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/get_type': 158,
-                './validate': 163
+                '../error/validation_error': 122,
+                '../util/get_type': 157,
+                './validate': 162
             }
         ],
-        176: [
+        175: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var getType = _dereq_('../util/get_type'), ValidationError = _dereq_('../error/validation_error');
@@ -79524,11 +79522,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/get_type': 158
+                '../error/validation_error': 122,
+                '../util/get_type': 157
             }
         ],
-        177: [
+        176: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ValidationError = _dereq_('../error/validation_error'), getType = _dereq_('../util/get_type'), validateSpec = _dereq_('./validate');
@@ -79569,12 +79567,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/get_type': 158,
-                './validate': 163
+                '../error/validation_error': 122,
+                '../util/get_type': 157,
+                './validate': 162
             }
         ],
-        178: [
+        177: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var validateProperty = _dereq_('./validate_property');
@@ -79582,9 +79580,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return validateProperty(r, 'paint');
                 };
             },
-            { './validate_property': 179 }
+            { './validate_property': 178 }
         ],
-        179: [
+        178: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var validate = _dereq_('./validate'), ValidationError = _dereq_('../error/validation_error'), getType = _dereq_('../util/get_type'), ref = _dereq_('../function'), isFunction = ref.isFunction, unbundle = _dereq_('../util/unbundle_jsonlint');
@@ -79624,14 +79622,14 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../function': 148,
-                '../util/get_type': 158,
-                '../util/unbundle_jsonlint': 162,
-                './validate': 163
+                '../error/validation_error': 122,
+                '../function': 149,
+                '../util/get_type': 157,
+                '../util/unbundle_jsonlint': 161,
+                './validate': 162
             }
         ],
-        180: [
+        179: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ValidationError = _dereq_('../error/validation_error'), unbundle = _dereq_('../util/unbundle_jsonlint'), validateObject = _dereq_('./validate_object'), validateEnum = _dereq_('./validate_enum');
@@ -79715,13 +79713,13 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/unbundle_jsonlint': 162,
-                './validate_enum': 168,
-                './validate_object': 177
+                '../error/validation_error': 122,
+                '../util/unbundle_jsonlint': 161,
+                './validate_enum': 167,
+                './validate_object': 176
             }
         ],
-        181: [
+        180: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var getType = _dereq_('../util/get_type'), ValidationError = _dereq_('../error/validation_error');
@@ -79731,11 +79729,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../error/validation_error': 121,
-                '../util/get_type': 158
+                '../error/validation_error': 122,
+                '../util/get_type': 157
             }
         ],
-        182: [
+        181: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function validateStyleMin(e, a) {
@@ -79774,19 +79772,19 @@ var _$mapboxGl_14 = { exports: {} };
                 validateStyleMin.source = wrapCleanErrors(_dereq_('./validate/validate_source')), validateStyleMin.light = wrapCleanErrors(_dereq_('./validate/validate_light')), validateStyleMin.layer = wrapCleanErrors(_dereq_('./validate/validate_layer')), validateStyleMin.filter = wrapCleanErrors(_dereq_('./validate/validate_filter')), validateStyleMin.paintProperty = wrapCleanErrors(_dereq_('./validate/validate_paint_property')), validateStyleMin.layoutProperty = wrapCleanErrors(_dereq_('./validate/validate_layout_property')), module.exports = validateStyleMin;
             },
             {
-                './reference/latest': 152,
-                './validate/validate': 163,
-                './validate/validate_constants': 167,
-                './validate/validate_filter': 170,
-                './validate/validate_glyphs_url': 172,
-                './validate/validate_layer': 173,
-                './validate/validate_layout_property': 174,
-                './validate/validate_light': 175,
-                './validate/validate_paint_property': 178,
-                './validate/validate_source': 180
+                './reference/latest': 151,
+                './validate/validate': 162,
+                './validate/validate_constants': 166,
+                './validate/validate_filter': 169,
+                './validate/validate_glyphs_url': 171,
+                './validate/validate_layer': 172,
+                './validate/validate_layout_property': 173,
+                './validate/validate_light': 174,
+                './validate/validate_paint_property': 177,
+                './validate/validate_source': 179
             }
         ],
-        183: [
+        182: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ZoomHistory = _dereq_('./zoom_history'), EvaluationParameters = function (t, o) {
@@ -79796,9 +79794,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return 0 === this.fadeDuration ? 1 : Math.min((this.now - this.zoomHistory.lastIntegerZoomTime) / this.fadeDuration, 1);
                 }, module.exports = EvaluationParameters;
             },
-            { './zoom_history': 213 }
+            { './zoom_history': 212 }
         ],
-        184: [
+        183: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var styleSpec = _dereq_('../style-spec/reference/latest'), util = _dereq_('../util/util'), Evented = _dereq_('../util/evented'), validateStyle = _dereq_('./validate_style'), ref = _dereq_('../util/util'), sphericalToCartesian = ref.sphericalToCartesian, Color = _dereq_('../style-spec/util/color'), interpolate = _dereq_('../style-spec/util/interpolate'), ref$1 = _dereq_('./properties'), Properties = ref$1.Properties, Transitionable = ref$1.Transitionable, Transitioning = ref$1.Transitioning, PossiblyEvaluated = ref$1.PossiblyEvaluated, DataConstantProperty = ref$1.DataConstantProperty, LightPositionProperty = function () {
@@ -79852,16 +79850,16 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = Light;
             },
             {
-                '../style-spec/reference/latest': 152,
-                '../style-spec/util/color': 154,
-                '../style-spec/util/interpolate': 159,
-                '../util/evented': 261,
-                '../util/util': 276,
-                './properties': 189,
-                './validate_style': 212
+                '../style-spec/reference/latest': 151,
+                '../style-spec/util/color': 153,
+                '../style-spec/util/interpolate': 158,
+                '../util/evented': 260,
+                '../util/util': 275,
+                './properties': 188,
+                './validate_style': 211
             }
         ],
-        185: [
+        184: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../util/mapbox'), normalizeGlyphsURL = ref.normalizeGlyphsURL, ajax = _dereq_('../util/ajax'), parseGlyphPBF = _dereq_('./parse_glyph_pbf');
@@ -79881,12 +79879,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../util/ajax': 252,
-                '../util/mapbox': 268,
-                './parse_glyph_pbf': 187
+                '../util/ajax': 251,
+                '../util/mapbox': 267,
+                './parse_glyph_pbf': 186
             }
         ],
-        186: [
+        185: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ajax = _dereq_('../util/ajax'), browser = _dereq_('../util/browser'), ref = _dereq_('../util/mapbox'), normalizeSpriteURL = ref.normalizeSpriteURL, ref$1 = _dereq_('../util/image'), RGBAImage = ref$1.RGBAImage;
@@ -79928,13 +79926,13 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../util/ajax': 252,
-                '../util/browser': 253,
-                '../util/image': 264,
-                '../util/mapbox': 268
+                '../util/ajax': 251,
+                '../util/browser': 252,
+                '../util/image': 263,
+                '../util/mapbox': 267
             }
         ],
-        187: [
+        186: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function readFontstacks(e, a, r) {
@@ -79968,53 +79966,55 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports.GLYPH_PBF_BORDER = border;
             },
             {
-                '../util/image': 264,
-                'pbf': 29
+                '../util/image': 263,
+                'pbf': 30
             }
         ],
-        188: [
+        187: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var browser = _dereq_('../util/browser'), Placement = _dereq_('../symbol/placement'), LayerPlacement = function () {
                         this._currentTileIndex = 0, this._seenCrossTileIDs = {};
                     };
-                LayerPlacement.prototype.continuePlacement = function (e, n, r, t, o) {
-                    for (var s = this; this._currentTileIndex < e.length;) {
-                        var l = e[s._currentTileIndex];
-                        if (n.placeLayerTile(t, l, r, s._seenCrossTileIDs), s._currentTileIndex++, o()) {
+                LayerPlacement.prototype.continuePlacement = function (e, n, t, r, o) {
+                    for (var l = this; this._currentTileIndex < e.length;) {
+                        var s = e[l._currentTileIndex];
+                        if (n.placeLayerTile(r, s, t, l._seenCrossTileIDs), l._currentTileIndex++, o()) {
                             return !0;
                         }
                     }
                 };
-                var PauseablePlacement = function (e, n, r, t, o) {
-                    this.placement = new Placement(e, o), this._currentPlacementIndex = n.length - 1, this._forceFullPlacement = r, this._showCollisionBoxes = t, this._done = !1;
+                var PauseablePlacement = function (e, n, t, r, o) {
+                    this.placement = new Placement(e, o), this._currentPlacementIndex = n.length - 1, this._forceFullPlacement = t, this._showCollisionBoxes = r, this._done = !1;
                 };
                 PauseablePlacement.prototype.isDone = function () {
                     return this._done;
-                }, PauseablePlacement.prototype.continuePlacement = function (e, n, r) {
-                    for (var t = this, o = browser.now(), s = function () {
+                }, PauseablePlacement.prototype.continuePlacement = function (e, n, t) {
+                    for (var r = this, o = browser.now(), l = function () {
                                 var e = browser.now() - o;
-                                return !t._forceFullPlacement && e > 2;
+                                return !r._forceFullPlacement && e > 2;
                             }; this._currentPlacementIndex >= 0;) {
-                        var l = e[t._currentPlacementIndex], a = n[l], i = t.placement.collisionIndex.transform.zoom;
+                        var s = e[r._currentPlacementIndex], a = n[s], i = r.placement.collisionIndex.transform.zoom;
                         if ('symbol' === a.type && (!a.minzoom || a.minzoom <= i) && (!a.maxzoom || a.maxzoom > i)) {
-                            t._inProgressLayer || (t._inProgressLayer = new LayerPlacement());
-                            if (t._inProgressLayer.continuePlacement(r[a.source], t.placement, t._showCollisionBoxes, a, s)) {
+                            r._inProgressLayer || (r._inProgressLayer = new LayerPlacement());
+                            if (r._inProgressLayer.continuePlacement(t[a.source], r.placement, r._showCollisionBoxes, a, l)) {
                                 return;
                             }
-                            delete t._inProgressLayer;
+                            delete r._inProgressLayer;
                         }
-                        t._currentPlacementIndex--;
+                        r._currentPlacementIndex--;
                     }
                     this._done = !0;
+                }, PauseablePlacement.prototype.commit = function (e, n) {
+                    return this.placement.commit(e, n), this.placement;
                 }, module.exports = PauseablePlacement;
             },
             {
-                '../symbol/placement': 224,
-                '../util/browser': 253
+                '../symbol/placement': 223,
+                '../util/browser': 252
             }
         ],
-        189: [
+        188: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../util/util'), clone = ref.clone, extend = ref.extend, easeCubicInOut = ref.easeCubicInOut, interpolate = _dereq_('../style-spec/util/interpolate'), ref$1 = _dereq_('../style-spec/expression'), normalizePropertyExpression = ref$1.normalizePropertyExpression, Color = _dereq_('../style-spec/util/color'), ref$2 = _dereq_('../util/web_worker_transfer'), register = ref$2.register, PropertyValue = function (t, e) {
@@ -80228,14 +80228,14 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../style-spec/expression': 138,
-                '../style-spec/util/color': 154,
-                '../style-spec/util/interpolate': 159,
-                '../util/util': 276,
-                '../util/web_worker_transfer': 279
+                '../style-spec/expression': 139,
+                '../style-spec/util/color': 153,
+                '../style-spec/util/interpolate': 158,
+                '../util/util': 275,
+                '../util/web_worker_transfer': 278
             }
         ],
-        190: [
+        189: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function getMaximumPaintValue(t, a, e) {
@@ -80268,7 +80268,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             { '@mapbox/point-geometry': 4 }
         ],
-        191: [
+        190: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Evented = _dereq_('../util/evented'), StyleLayer = _dereq_('./style_layer'), loadSprite = _dereq_('./load_sprite'), ImageManager = _dereq_('../render/image_manager'), GlyphManager = _dereq_('../render/glyph_manager'), Light = _dereq_('./light'), LineAtlas = _dereq_('../render/line_atlas'), util = _dereq_('../util/util'), ajax = _dereq_('../util/ajax'), mapbox = _dereq_('../util/mapbox'), browser = _dereq_('../util/browser'), Dispatcher = _dereq_('../util/dispatcher'), validateStyle = _dereq_('./validate_style'), getSourceType = _dereq_('../source/source').getType, setSourceType = _dereq_('../source/source').setType, QueryFeatures = _dereq_('../source/query_features'), SourceCache = _dereq_('../source/source_cache'), GeoJSONSource = _dereq_('../source/geojson_source'), styleSpec = _dereq_('../style-spec/reference/latest'), getWorkerPool = _dereq_('../util/global_worker_pool'), deref = _dereq_('../style-spec/deref'), diff = _dereq_('../style-spec/diff'), rtlTextPlugin = _dereq_('../source/rtl_text_plugin'), PauseablePlacement = _dereq_('./pauseable_placement'), ZoomHistory = _dereq_('./zoom_history'), CrossTileSymbolIndex = _dereq_('../symbol/cross_tile_symbol_index'), supportedDiffOperations = util.pick(diff.operations, [
@@ -80289,81 +80289,81 @@ var _$mapboxGl_14 = { exports: {} };
                         'setBearing',
                         'setPitch'
                     ]), Style = function (e) {
-                        function t(t, r) {
-                            var i = this;
-                            void 0 === r && (r = {}), e.call(this), this.map = t, this.dispatcher = new Dispatcher(getWorkerPool(), this), this.imageManager = new ImageManager(), this.glyphManager = new GlyphManager(t._transformRequest, r.localIdeographFontFamily), this.lineAtlas = new LineAtlas(256, 512), this.crossTileSymbolIndex = new CrossTileSymbolIndex(), this._layers = {}, this._order = [], this.sourceCaches = {}, this.zoomHistory = new ZoomHistory(), this._loaded = !1, this._resetUpdates();
+                        function r(r, t) {
                             var a = this;
+                            void 0 === t && (t = {}), e.call(this), this.map = r, this.dispatcher = new Dispatcher(getWorkerPool(), this), this.imageManager = new ImageManager(), this.glyphManager = new GlyphManager(r._transformRequest, t.localIdeographFontFamily), this.lineAtlas = new LineAtlas(256, 512), this.crossTileSymbolIndex = new CrossTileSymbolIndex(), this._layers = {}, this._order = [], this.sourceCaches = {}, this.zoomHistory = new ZoomHistory(), this._loaded = !1, this._resetUpdates();
+                            var i = this;
                             this._rtlTextPluginCallback = rtlTextPlugin.registerForPluginAvailability(function (e) {
-                                a.dispatcher.broadcast('loadRTLTextPlugin', e.pluginBlobURL, e.errorCallback);
-                                for (var t in a.sourceCaches) {
-                                    a.sourceCaches[t].reload();
+                                i.dispatcher.broadcast('loadRTLTextPlugin', e.pluginBlobURL, e.errorCallback);
+                                for (var r in i.sourceCaches) {
+                                    i.sourceCaches[r].reload();
                                 }
                             }), this.on('data', function (e) {
                                 if ('source' === e.dataType && 'metadata' === e.sourceDataType) {
-                                    var t = i.sourceCaches[e.sourceId];
-                                    if (t) {
-                                        var r = t.getSource();
-                                        if (r && r.vectorLayerIds) {
-                                            for (var a in i._layers) {
-                                                var s = i._layers[a];
-                                                s.source === r.id && i._validateLayer(s);
+                                    var r = a.sourceCaches[e.sourceId];
+                                    if (r) {
+                                        var t = r.getSource();
+                                        if (t && t.vectorLayerIds) {
+                                            for (var i in a._layers) {
+                                                var s = a._layers[i];
+                                                s.source === t.id && a._validateLayer(s);
                                             }
                                         }
                                     }
                                 }
                             });
                         }
-                        return e && (t.__proto__ = e), t.prototype = Object.create(e && e.prototype), t.prototype.constructor = t, t.prototype.loadURL = function (e, t) {
-                            var r = this;
-                            void 0 === t && (t = {}), this.fire('dataloading', { dataType: 'style' });
-                            var i = 'boolean' == typeof t.validate ? t.validate : !mapbox.isMapboxURL(e);
-                            e = mapbox.normalizeStyleURL(e, t.accessToken);
-                            var a = this.map._transformRequest(e, ajax.ResourceType.Style);
-                            ajax.getJSON(a, function (e, t) {
-                                e ? r.fire('error', { error: e }) : t && r._load(t, i);
+                        return e && (r.__proto__ = e), r.prototype = Object.create(e && e.prototype), r.prototype.constructor = r, r.prototype.loadURL = function (e, r) {
+                            var t = this;
+                            void 0 === r && (r = {}), this.fire('dataloading', { dataType: 'style' });
+                            var a = 'boolean' == typeof r.validate ? r.validate : !mapbox.isMapboxURL(e);
+                            e = mapbox.normalizeStyleURL(e, r.accessToken);
+                            var i = this.map._transformRequest(e, ajax.ResourceType.Style);
+                            ajax.getJSON(i, function (e, r) {
+                                e ? t.fire('error', { error: e }) : r && t._load(r, a);
                             });
-                        }, t.prototype.loadJSON = function (e, t) {
-                            var r = this;
-                            void 0 === t && (t = {}), this.fire('dataloading', { dataType: 'style' }), browser.frame(function () {
-                                r._load(e, !1 !== t.validate);
+                        }, r.prototype.loadJSON = function (e, r) {
+                            var t = this;
+                            void 0 === r && (r = {}), this.fire('dataloading', { dataType: 'style' }), browser.frame(function () {
+                                t._load(e, !1 !== r.validate);
                             });
-                        }, t.prototype._load = function (e, t) {
-                            var r = this;
-                            if (!t || !validateStyle.emitErrors(this, validateStyle(e))) {
+                        }, r.prototype._load = function (e, r) {
+                            var t = this;
+                            if (!r || !validateStyle.emitErrors(this, validateStyle(e))) {
                                 this._loaded = !0, this.stylesheet = e;
-                                for (var i in e.sources) {
-                                    r.addSource(i, e.sources[i], { validate: !1 });
+                                for (var a in e.sources) {
+                                    t.addSource(a, e.sources[a], { validate: !1 });
                                 }
-                                e.sprite ? loadSprite(e.sprite, this.map._transformRequest, function (e, t) {
+                                e.sprite ? loadSprite(e.sprite, this.map._transformRequest, function (e, r) {
                                     if (e) {
-                                        r.fire('error', e);
-                                    } else if (t) {
-                                        for (var i in t) {
-                                            r.imageManager.addImage(i, t[i]);
+                                        t.fire('error', e);
+                                    } else if (r) {
+                                        for (var a in r) {
+                                            t.imageManager.addImage(a, r[a]);
                                         }
                                     }
-                                    r.imageManager.setLoaded(!0), r.fire('data', { dataType: 'style' });
+                                    t.imageManager.setLoaded(!0), t.fire('data', { dataType: 'style' });
                                 }) : this.imageManager.setLoaded(!0), this.glyphManager.setURL(e.glyphs);
-                                var a = deref(this.stylesheet.layers);
-                                this._order = a.map(function (e) {
+                                var i = deref(this.stylesheet.layers);
+                                this._order = i.map(function (e) {
                                     return e.id;
                                 }), this._layers = {};
-                                for (var s = 0, o = a; s < o.length; s += 1) {
+                                for (var s = 0, o = i; s < o.length; s += 1) {
                                     var n = o[s];
-                                    n = StyleLayer.create(n), n.setEventedParent(r, { layer: { id: n.id } }), r._layers[n.id] = n;
+                                    n = StyleLayer.create(n), n.setEventedParent(t, { layer: { id: n.id } }), t._layers[n.id] = n;
                                 }
                                 this.dispatcher.broadcast('setLayers', this._serializeLayers(this._order)), this.light = new Light(this.stylesheet.light), this.fire('data', { dataType: 'style' }), this.fire('style.load');
                             }
-                        }, t.prototype._validateLayer = function (e) {
-                            var t = this.sourceCaches[e.source];
-                            if (t) {
-                                var r = e.sourceLayer;
-                                if (r) {
-                                    var i = t.getSource();
-                                    ('geojson' === i.type || i.vectorLayerIds && -1 === i.vectorLayerIds.indexOf(r)) && this.fire('error', { error: new Error('Source layer "' + r + '" does not exist on source "' + i.id + '" as specified by style layer "' + e.id + '"') });
+                        }, r.prototype._validateLayer = function (e) {
+                            var r = this.sourceCaches[e.source];
+                            if (r) {
+                                var t = e.sourceLayer;
+                                if (t) {
+                                    var a = r.getSource();
+                                    ('geojson' === a.type || a.vectorLayerIds && -1 === a.vectorLayerIds.indexOf(t)) && this.fire('error', { error: new Error('Source layer "' + t + '" does not exist on source "' + a.id + '" as specified by style layer "' + e.id + '"') });
                                 }
                             }
-                        }, t.prototype.loaded = function () {
+                        }, r.prototype.loaded = function () {
                             var e = this;
                             if (!this._loaded) {
                                 return !1;
@@ -80371,110 +80371,110 @@ var _$mapboxGl_14 = { exports: {} };
                             if (Object.keys(this._updatedSources).length) {
                                 return !1;
                             }
-                            for (var t in e.sourceCaches) {
-                                if (!e.sourceCaches[t].loaded()) {
+                            for (var r in e.sourceCaches) {
+                                if (!e.sourceCaches[r].loaded()) {
                                     return !1;
                                 }
                             }
                             return !!this.imageManager.isLoaded();
-                        }, t.prototype._serializeLayers = function (e) {
-                            var t = this;
+                        }, r.prototype._serializeLayers = function (e) {
+                            var r = this;
                             return e.map(function (e) {
-                                return t._layers[e].serialize();
+                                return r._layers[e].serialize();
                             });
-                        }, t.prototype.hasTransitions = function () {
+                        }, r.prototype.hasTransitions = function () {
                             var e = this;
                             if (this.light && this.light.hasTransition()) {
                                 return !0;
                             }
-                            for (var t in e.sourceCaches) {
-                                if (e.sourceCaches[t].hasTransition()) {
+                            for (var r in e.sourceCaches) {
+                                if (e.sourceCaches[r].hasTransition()) {
                                     return !0;
                                 }
                             }
-                            for (var r in e._layers) {
-                                if (e._layers[r].hasTransition()) {
+                            for (var t in e._layers) {
+                                if (e._layers[t].hasTransition()) {
                                     return !0;
                                 }
                             }
                             return !1;
-                        }, t.prototype._checkLoaded = function () {
+                        }, r.prototype._checkLoaded = function () {
                             if (!this._loaded) {
                                 throw new Error('Style is not done loading');
                             }
-                        }, t.prototype.update = function (e) {
-                            var t = this;
+                        }, r.prototype.update = function (e) {
+                            var r = this;
                             if (this._loaded) {
                                 if (this._changed) {
-                                    var r = Object.keys(this._updatedLayers), i = Object.keys(this._removedLayers);
-                                    (r.length || i.length) && this._updateWorkerLayers(r, i);
-                                    for (var a in t._updatedSources) {
-                                        var s = t._updatedSources[a];
-                                        'reload' === s ? t._reloadSource(a) : 'clear' === s && t._clearSource(a);
+                                    var t = Object.keys(this._updatedLayers), a = Object.keys(this._removedLayers);
+                                    (t.length || a.length) && this._updateWorkerLayers(t, a);
+                                    for (var i in r._updatedSources) {
+                                        var s = r._updatedSources[i];
+                                        'reload' === s ? r._reloadSource(i) : 'clear' === s && r._clearSource(i);
                                     }
-                                    for (var o in t._updatedPaintProps) {
-                                        t._layers[o].updateTransitions(e);
+                                    for (var o in r._updatedPaintProps) {
+                                        r._layers[o].updateTransitions(e);
                                     }
                                     this.light.updateTransitions(e), this._resetUpdates(), this.fire('data', { dataType: 'style' });
                                 }
-                                for (var n in t.sourceCaches) {
-                                    t.sourceCaches[n].used = !1;
+                                for (var n in r.sourceCaches) {
+                                    r.sourceCaches[n].used = !1;
                                 }
-                                for (var l = 0, h = t._order; l < h.length; l += 1) {
-                                    var u = h[l], d = t._layers[u];
-                                    d.recalculate(e), !d.isHidden(e.zoom) && d.source && (t.sourceCaches[d.source].used = !0);
+                                for (var l = 0, h = r._order; l < h.length; l += 1) {
+                                    var u = h[l], d = r._layers[u];
+                                    d.recalculate(e), !d.isHidden(e.zoom) && d.source && (r.sourceCaches[d.source].used = !0);
                                 }
                                 this.light.recalculate(e), this.z = e.zoom;
                             }
-                        }, t.prototype._updateWorkerLayers = function (e, t) {
+                        }, r.prototype._updateWorkerLayers = function (e, r) {
                             this.dispatcher.broadcast('updateLayers', {
                                 layers: this._serializeLayers(e),
-                                removedIds: t
+                                removedIds: r
                             });
-                        }, t.prototype._resetUpdates = function () {
+                        }, r.prototype._resetUpdates = function () {
                             this._changed = !1, this._updatedLayers = {}, this._removedLayers = {}, this._updatedSources = {}, this._updatedPaintProps = {};
-                        }, t.prototype.setState = function (e) {
-                            var t = this;
+                        }, r.prototype.setState = function (e) {
+                            var r = this;
                             if (this._checkLoaded(), validateStyle.emitErrors(this, validateStyle(e))) {
                                 return !1;
                             }
                             e = util.clone(e), e.layers = deref(e.layers);
-                            var r = diff(this.serialize(), e).filter(function (e) {
+                            var t = diff(this.serialize(), e).filter(function (e) {
                                 return !(e.command in ignoredDiffOperations);
                             });
-                            if (0 === r.length) {
+                            if (0 === t.length) {
                                 return !1;
                             }
-                            var i = r.filter(function (e) {
+                            var a = t.filter(function (e) {
                                 return !(e.command in supportedDiffOperations);
                             });
-                            if (i.length > 0) {
-                                throw new Error('Unimplemented: ' + i.map(function (e) {
+                            if (a.length > 0) {
+                                throw new Error('Unimplemented: ' + a.map(function (e) {
                                     return e.command;
                                 }).join(', ') + '.');
                             }
-                            return r.forEach(function (e) {
-                                'setTransition' !== e.command && t[e.command].apply(t, e.args);
+                            return t.forEach(function (e) {
+                                'setTransition' !== e.command && r[e.command].apply(r, e.args);
                             }), this.stylesheet = e, !0;
-                        }, t.prototype.addImage = function (e, t) {
+                        }, r.prototype.addImage = function (e, r) {
                             if (this.getImage(e)) {
                                 return this.fire('error', { error: new Error('An image with this name already exists.') });
                             }
-                            this.imageManager.addImage(e, t), this.fire('data', { dataType: 'style' });
-                        }, t.prototype.getImage = function (e) {
+                            this.imageManager.addImage(e, r), this.fire('data', { dataType: 'style' });
+                        }, r.prototype.getImage = function (e) {
                             return this.imageManager.getImage(e);
-                        }, t.prototype.removeImage = function (e) {
+                        }, r.prototype.removeImage = function (e) {
                             if (!this.getImage(e)) {
                                 return this.fire('error', { error: new Error('No image with this name exists.') });
                             }
                             this.imageManager.removeImage(e), this.fire('data', { dataType: 'style' });
-                        }, t.prototype.addSource = function (e, t, r) {
-                            var i = this;
+                        }, r.prototype.addSource = function (e, r, t) {
+                            var a = this;
                             if (this._checkLoaded(), void 0 !== this.sourceCaches[e]) {
                                 throw new Error('There is already a source with this ID');
                             }
-                            if (!t.type) {
-                                throw new Error('The type property must be defined, but the only the following properties were given: ' + Object.keys(t).join(', ') + '.');
+                            if (!r.type) {
+                                throw new Error('The type property must be defined, but the only the following properties were given: ' + Object.keys(r).join(', ') + '.');
                             }
                             if (!([
                                     'vector',
@@ -80483,121 +80483,121 @@ var _$mapboxGl_14 = { exports: {} };
                                     'video',
                                     'image',
                                     'canvas'
-                                ].indexOf(t.type) >= 0 && this._validate(validateStyle.source, 'sources.' + e, t, null, r))) {
-                                this.map && this.map._collectResourceTiming && (t.collectResourceTiming = !0);
-                                var a = this.sourceCaches[e] = new SourceCache(e, t, this.dispatcher);
-                                a.style = this, a.setEventedParent(this, function () {
+                                ].indexOf(r.type) >= 0 && this._validate(validateStyle.source, 'sources.' + e, r, null, t))) {
+                                this.map && this.map._collectResourceTiming && (r.collectResourceTiming = !0);
+                                var i = this.sourceCaches[e] = new SourceCache(e, r, this.dispatcher);
+                                i.style = this, i.setEventedParent(this, function () {
                                     return {
-                                        isSourceLoaded: i.loaded(),
-                                        source: a.serialize(),
+                                        isSourceLoaded: a.loaded(),
+                                        source: i.serialize(),
                                         sourceId: e
                                     };
-                                }), a.onAdd(this.map), this._changed = !0;
+                                }), i.onAdd(this.map), this._changed = !0;
                             }
-                        }, t.prototype.removeSource = function (e) {
-                            var t = this;
+                        }, r.prototype.removeSource = function (e) {
+                            var r = this;
                             if (this._checkLoaded(), void 0 === this.sourceCaches[e]) {
                                 throw new Error('There is no source with this ID');
                             }
-                            for (var r in t._layers) {
-                                if (t._layers[r].source === e) {
-                                    return t.fire('error', { error: new Error('Source "' + e + '" cannot be removed while layer "' + r + '" is using it.') });
+                            for (var t in r._layers) {
+                                if (r._layers[t].source === e) {
+                                    return r.fire('error', { error: new Error('Source "' + e + '" cannot be removed while layer "' + t + '" is using it.') });
                                 }
                             }
-                            var i = this.sourceCaches[e];
-                            delete this.sourceCaches[e], delete this._updatedSources[e], i.fire('data', {
+                            var a = this.sourceCaches[e];
+                            delete this.sourceCaches[e], delete this._updatedSources[e], a.fire('data', {
                                 sourceDataType: 'metadata',
                                 dataType: 'source',
                                 sourceId: e
-                            }), i.setEventedParent(null), i.clearTiles(), i.onRemove && i.onRemove(this.map), this._changed = !0;
-                        }, t.prototype.setGeoJSONSourceData = function (e, t) {
-                            this._checkLoaded(), this.sourceCaches[e].getSource().setData(t), this._changed = !0;
-                        }, t.prototype.getSource = function (e) {
+                            }), a.setEventedParent(null), a.clearTiles(), a.onRemove && a.onRemove(this.map), this._changed = !0;
+                        }, r.prototype.setGeoJSONSourceData = function (e, r) {
+                            this._checkLoaded(), this.sourceCaches[e].getSource().setData(r), this._changed = !0;
+                        }, r.prototype.getSource = function (e) {
                             return this.sourceCaches[e] && this.sourceCaches[e].getSource();
-                        }, t.prototype.addLayer = function (e, t, r) {
+                        }, r.prototype.addLayer = function (e, r, t) {
                             this._checkLoaded();
-                            var i = e.id;
-                            if ('object' == typeof e.source && (this.addSource(i, e.source), e = util.clone(e), e = util.extend(e, { source: i })), !this._validate(validateStyle.layer, 'layers.' + i, e, { arrayIndex: -1 }, r)) {
-                                var a = StyleLayer.create(e);
-                                this._validateLayer(a), a.setEventedParent(this, { layer: { id: i } });
-                                var s = t ? this._order.indexOf(t) : this._order.length;
-                                if (t && -1 === s) {
-                                    return void this.fire('error', { error: new Error('Layer with id "' + t + '" does not exist on this map.') });
+                            var a = e.id;
+                            if ('object' == typeof e.source && (this.addSource(a, e.source), e = util.clone(e), e = util.extend(e, { source: a })), !this._validate(validateStyle.layer, 'layers.' + a, e, { arrayIndex: -1 }, t)) {
+                                var i = StyleLayer.create(e);
+                                this._validateLayer(i), i.setEventedParent(this, { layer: { id: a } });
+                                var s = r ? this._order.indexOf(r) : this._order.length;
+                                if (r && -1 === s) {
+                                    return void this.fire('error', { error: new Error('Layer with id "' + r + '" does not exist on this map.') });
                                 }
-                                if (this._order.splice(s, 0, i), this._layerOrderChanged = !0, this._layers[i] = a, this._removedLayers[i] && a.source) {
-                                    var o = this._removedLayers[i];
-                                    delete this._removedLayers[i], o.type !== a.type ? this._updatedSources[a.source] = 'clear' : (this._updatedSources[a.source] = 'reload', this.sourceCaches[a.source].pause());
+                                if (this._order.splice(s, 0, a), this._layerOrderChanged = !0, this._layers[a] = i, this._removedLayers[a] && i.source) {
+                                    var o = this._removedLayers[a];
+                                    delete this._removedLayers[a], o.type !== i.type ? this._updatedSources[i.source] = 'clear' : (this._updatedSources[i.source] = 'reload', this.sourceCaches[i.source].pause());
                                 }
-                                this._updateLayer(a);
+                                this._updateLayer(i);
                             }
-                        }, t.prototype.moveLayer = function (e, t) {
+                        }, r.prototype.moveLayer = function (e, r) {
                             if (this._checkLoaded(), this._changed = !0, !this._layers[e]) {
                                 return void this.fire('error', { error: new Error('The layer \'' + e + '\' does not exist in the map\'s style and cannot be moved.') });
                             }
-                            var r = this._order.indexOf(e);
-                            this._order.splice(r, 1);
-                            var i = t ? this._order.indexOf(t) : this._order.length;
-                            if (t && -1 === i) {
-                                return void this.fire('error', { error: new Error('Layer with id "' + t + '" does not exist on this map.') });
+                            var t = this._order.indexOf(e);
+                            this._order.splice(t, 1);
+                            var a = r ? this._order.indexOf(r) : this._order.length;
+                            if (r && -1 === a) {
+                                return void this.fire('error', { error: new Error('Layer with id "' + r + '" does not exist on this map.') });
                             }
-                            this._order.splice(i, 0, e), this._layerOrderChanged = !0;
-                        }, t.prototype.removeLayer = function (e) {
+                            this._order.splice(a, 0, e), this._layerOrderChanged = !0;
+                        }, r.prototype.removeLayer = function (e) {
                             this._checkLoaded();
-                            var t = this._layers[e];
-                            if (!t) {
+                            var r = this._layers[e];
+                            if (!r) {
                                 return void this.fire('error', { error: new Error('The layer \'' + e + '\' does not exist in the map\'s style and cannot be removed.') });
                             }
-                            t.setEventedParent(null);
-                            var r = this._order.indexOf(e);
-                            this._order.splice(r, 1), this._layerOrderChanged = !0, this._changed = !0, this._removedLayers[e] = t, delete this._layers[e], delete this._updatedLayers[e], delete this._updatedPaintProps[e];
-                        }, t.prototype.getLayer = function (e) {
+                            r.setEventedParent(null);
+                            var t = this._order.indexOf(e);
+                            this._order.splice(t, 1), this._layerOrderChanged = !0, this._changed = !0, this._removedLayers[e] = r, delete this._layers[e], delete this._updatedLayers[e], delete this._updatedPaintProps[e];
+                        }, r.prototype.getLayer = function (e) {
                             return this._layers[e];
-                        }, t.prototype.setLayerZoomRange = function (e, t, r) {
+                        }, r.prototype.setLayerZoomRange = function (e, r, t) {
                             this._checkLoaded();
-                            var i = this.getLayer(e);
-                            if (!i) {
+                            var a = this.getLayer(e);
+                            if (!a) {
                                 return void this.fire('error', { error: new Error('The layer \'' + e + '\' does not exist in the map\'s style and cannot have zoom extent.') });
                             }
-                            i.minzoom === t && i.maxzoom === r || (null != t && (i.minzoom = t), null != r && (i.maxzoom = r), this._updateLayer(i));
-                        }, t.prototype.setFilter = function (e, t) {
+                            a.minzoom === r && a.maxzoom === t || (null != r && (a.minzoom = r), null != t && (a.maxzoom = t), this._updateLayer(a));
+                        }, r.prototype.setFilter = function (e, r) {
                             this._checkLoaded();
-                            var r = this.getLayer(e);
-                            if (!r) {
+                            var t = this.getLayer(e);
+                            if (!t) {
                                 return void this.fire('error', { error: new Error('The layer \'' + e + '\' does not exist in the map\'s style and cannot be filtered.') });
                             }
-                            if (!util.deepEqual(r.filter, t)) {
-                                return null === t || void 0 === t ? (r.filter = void 0, void this._updateLayer(r)) : void (this._validate(validateStyle.filter, 'layers.' + r.id + '.filter', t) || (r.filter = util.clone(t), this._updateLayer(r)));
+                            if (!util.deepEqual(t.filter, r)) {
+                                return null === r || void 0 === r ? (t.filter = void 0, void this._updateLayer(t)) : void (this._validate(validateStyle.filter, 'layers.' + t.id + '.filter', r) || (t.filter = util.clone(r), this._updateLayer(t)));
                             }
-                        }, t.prototype.getFilter = function (e) {
+                        }, r.prototype.getFilter = function (e) {
                             return util.clone(this.getLayer(e).filter);
-                        }, t.prototype.setLayoutProperty = function (e, t, r) {
+                        }, r.prototype.setLayoutProperty = function (e, r, t) {
                             this._checkLoaded();
-                            var i = this.getLayer(e);
-                            if (!i) {
+                            var a = this.getLayer(e);
+                            if (!a) {
                                 return void this.fire('error', { error: new Error('The layer \'' + e + '\' does not exist in the map\'s style and cannot be styled.') });
                             }
-                            util.deepEqual(i.getLayoutProperty(t), r) || (i.setLayoutProperty(t, r), this._updateLayer(i));
-                        }, t.prototype.getLayoutProperty = function (e, t) {
-                            return this.getLayer(e).getLayoutProperty(t);
-                        }, t.prototype.setPaintProperty = function (e, t, r) {
+                            util.deepEqual(a.getLayoutProperty(r), t) || (a.setLayoutProperty(r, t), this._updateLayer(a));
+                        }, r.prototype.getLayoutProperty = function (e, r) {
+                            return this.getLayer(e).getLayoutProperty(r);
+                        }, r.prototype.setPaintProperty = function (e, r, t) {
                             this._checkLoaded();
-                            var i = this.getLayer(e);
-                            if (!i) {
+                            var a = this.getLayer(e);
+                            if (!a) {
                                 return void this.fire('error', { error: new Error('The layer \'' + e + '\' does not exist in the map\'s style and cannot be styled.') });
                             }
-                            if (!util.deepEqual(i.getPaintProperty(t), r)) {
-                                var a = i._transitionablePaint._values[t].value.isDataDriven();
-                                i.setPaintProperty(t, r);
-                                (i._transitionablePaint._values[t].value.isDataDriven() || a) && this._updateLayer(i), this._changed = !0, this._updatedPaintProps[e] = !0;
+                            if (!util.deepEqual(a.getPaintProperty(r), t)) {
+                                var i = a._transitionablePaint._values[r].value.isDataDriven();
+                                a.setPaintProperty(r, t);
+                                (a._transitionablePaint._values[r].value.isDataDriven() || i) && this._updateLayer(a), this._changed = !0, this._updatedPaintProps[e] = !0;
                             }
-                        }, t.prototype.getPaintProperty = function (e, t) {
-                            return this.getLayer(e).getPaintProperty(t);
-                        }, t.prototype.getTransition = function () {
+                        }, r.prototype.getPaintProperty = function (e, r) {
+                            return this.getLayer(e).getPaintProperty(r);
+                        }, r.prototype.getTransition = function () {
                             return util.extend({
                                 duration: 300,
                                 delay: 0
                             }, this.stylesheet && this.stylesheet.transition);
-                        }, t.prototype.serialize = function () {
+                        }, r.prototype.serialize = function () {
                             var e = this;
                             return util.filterObject({
                                 version: this.stylesheet.version,
@@ -80614,180 +80614,171 @@ var _$mapboxGl_14 = { exports: {} };
                                 sources: util.mapObject(this.sourceCaches, function (e) {
                                     return e.serialize();
                                 }),
-                                layers: this._order.map(function (t) {
-                                    return e._layers[t].serialize();
+                                layers: this._order.map(function (r) {
+                                    return e._layers[r].serialize();
                                 })
                             }, function (e) {
                                 return void 0 !== e;
                             });
-                        }, t.prototype._updateLayer = function (e) {
+                        }, r.prototype._updateLayer = function (e) {
                             this._updatedLayers[e.id] = !0, e.source && !this._updatedSources[e.source] && (this._updatedSources[e.source] = 'reload', this.sourceCaches[e.source].pause()), this._changed = !0;
-                        }, t.prototype._flattenRenderedFeatures = function (e) {
-                            for (var t = this, r = [], i = this._order.length - 1; i >= 0; i--) {
-                                for (var a = t._order[i], s = 0, o = e; s < o.length; s += 1) {
-                                    var n = o[s], l = n[a];
+                        }, r.prototype._flattenRenderedFeatures = function (e) {
+                            for (var r = this, t = [], a = this._order.length - 1; a >= 0; a--) {
+                                for (var i = r._order[a], s = 0, o = e; s < o.length; s += 1) {
+                                    var n = o[s], l = n[i];
                                     if (l) {
                                         for (var h = 0, u = l; h < u.length; h += 1) {
                                             var d = u[h];
-                                            r.push(d);
+                                            t.push(d);
                                         }
                                     }
                                 }
                             }
-                            return r;
-                        }, t.prototype.queryRenderedFeatures = function (e, t, r, i) {
-                            var a = this;
-                            t && t.filter && this._validate(validateStyle.filter, 'queryRenderedFeatures.filter', t.filter);
+                            return t;
+                        }, r.prototype.queryRenderedFeatures = function (e, r, t, a) {
+                            var i = this;
+                            r && r.filter && this._validate(validateStyle.filter, 'queryRenderedFeatures.filter', r.filter);
                             var s = {};
-                            if (t && t.layers) {
-                                if (!Array.isArray(t.layers)) {
+                            if (r && r.layers) {
+                                if (!Array.isArray(r.layers)) {
                                     return this.fire('error', { error: 'parameters.layers must be an Array.' }), [];
                                 }
-                                for (var o = 0, n = t.layers; o < n.length; o += 1) {
-                                    var l = n[o], h = a._layers[l];
+                                for (var o = 0, n = r.layers; o < n.length; o += 1) {
+                                    var l = n[o], h = i._layers[l];
                                     if (!h) {
-                                        return a.fire('error', { error: 'The layer \'' + l + '\' does not exist in the map\'s style and cannot be queried for features.' }), [];
+                                        return i.fire('error', { error: 'The layer \'' + l + '\' does not exist in the map\'s style and cannot be queried for features.' }), [];
                                     }
                                     s[h.source] = !0;
                                 }
                             }
                             var u = [];
-                            for (var d in a.sourceCaches) {
-                                if (!t.layers || s[d]) {
-                                    var c = QueryFeatures.rendered(a.sourceCaches[d], a._layers, e, t, r, i, a.collisionIndex);
+                            for (var d in i.sourceCaches) {
+                                if (!r.layers || s[d]) {
+                                    var c = QueryFeatures.rendered(i.sourceCaches[d], i._layers, e, r, t, a, i.placement ? i.placement.collisionIndex : null);
                                     u.push(c);
                                 }
                             }
                             return this._flattenRenderedFeatures(u);
-                        }, t.prototype.querySourceFeatures = function (e, t) {
-                            t && t.filter && this._validate(validateStyle.filter, 'querySourceFeatures.filter', t.filter);
-                            var r = this.sourceCaches[e];
-                            return r ? QueryFeatures.source(r, t) : [];
-                        }, t.prototype.addSourceType = function (e, t, r) {
-                            return getSourceType(e) ? r(new Error('A source type called "' + e + '" already exists.')) : (setSourceType(e, t), t.workerSourceURL ? void this.dispatcher.broadcast('loadWorkerSource', {
+                        }, r.prototype.querySourceFeatures = function (e, r) {
+                            r && r.filter && this._validate(validateStyle.filter, 'querySourceFeatures.filter', r.filter);
+                            var t = this.sourceCaches[e];
+                            return t ? QueryFeatures.source(t, r) : [];
+                        }, r.prototype.addSourceType = function (e, r, t) {
+                            return getSourceType(e) ? t(new Error('A source type called "' + e + '" already exists.')) : (setSourceType(e, r), r.workerSourceURL ? void this.dispatcher.broadcast('loadWorkerSource', {
                                 name: e,
-                                url: t.workerSourceURL
-                            }, r) : r(null, null));
-                        }, t.prototype.getLight = function () {
+                                url: r.workerSourceURL
+                            }, t) : t(null, null));
+                        }, r.prototype.getLight = function () {
                             return this.light.getLight();
-                        }, t.prototype.setLight = function (e) {
+                        }, r.prototype.setLight = function (e) {
                             this._checkLoaded();
-                            var t = this.light.getLight(), r = !1;
-                            for (var i in e) {
-                                if (!util.deepEqual(e[i], t[i])) {
-                                    r = !0;
+                            var r = this.light.getLight(), t = !1;
+                            for (var a in e) {
+                                if (!util.deepEqual(e[a], r[a])) {
+                                    t = !0;
                                     break;
                                 }
                             }
-                            if (r) {
-                                var a = {
+                            if (t) {
+                                var i = {
                                     now: browser.now(),
                                     transition: util.extend({
                                         duration: 300,
                                         delay: 0
                                     }, this.stylesheet.transition)
                                 };
-                                this.light.setLight(e), this.light.updateTransitions(a);
+                                this.light.setLight(e), this.light.updateTransitions(i);
                             }
-                        }, t.prototype._validate = function (e, t, r, i, a) {
-                            return (!a || !1 !== a.validate) && validateStyle.emitErrors(this, e.call(validateStyle, util.extend({
-                                key: t,
+                        }, r.prototype._validate = function (e, r, t, a, i) {
+                            return (!i || !1 !== i.validate) && validateStyle.emitErrors(this, e.call(validateStyle, util.extend({
+                                key: r,
                                 style: this.serialize(),
-                                value: r,
+                                value: t,
                                 styleSpec: styleSpec
-                            }, i)));
-                        }, t.prototype._remove = function () {
+                            }, a)));
+                        }, r.prototype._remove = function () {
                             var e = this;
                             rtlTextPlugin.evented.off('pluginAvailable', this._rtlTextPluginCallback);
-                            for (var t in e.sourceCaches) {
-                                e.sourceCaches[t].clearTiles();
+                            for (var r in e.sourceCaches) {
+                                e.sourceCaches[r].clearTiles();
                             }
                             this.dispatcher.remove();
-                        }, t.prototype._clearSource = function (e) {
+                        }, r.prototype._clearSource = function (e) {
                             this.sourceCaches[e].clearTiles();
-                        }, t.prototype._reloadSource = function (e) {
+                        }, r.prototype._reloadSource = function (e) {
                             this.sourceCaches[e].resume(), this.sourceCaches[e].reload();
-                        }, t.prototype._updateSources = function (e) {
-                            var t = this;
-                            for (var r in t.sourceCaches) {
-                                t.sourceCaches[r].update(e);
+                        }, r.prototype._updateSources = function (e) {
+                            var r = this;
+                            for (var t in r.sourceCaches) {
+                                r.sourceCaches[t].update(e);
                             }
-                        }, t.prototype._generateCollisionBoxes = function () {
+                        }, r.prototype._generateCollisionBoxes = function () {
                             var e = this;
-                            for (var t in e.sourceCaches) {
-                                e._reloadSource(t);
+                            for (var r in e.sourceCaches) {
+                                e._reloadSource(r);
                             }
-                        }, t.prototype._updatePlacement = function (e, t, r) {
-                            for (var i = this, a = !1, s = !1, o = {}, n = 0, l = i._order; n < l.length; n += 1) {
-                                var h = l[n], u = i._layers[h];
+                        }, r.prototype._updatePlacement = function (e, r, t) {
+                            for (var a = this, i = !1, s = !1, o = {}, n = 0, l = a._order; n < l.length; n += 1) {
+                                var h = l[n], u = a._layers[h];
                                 if ('symbol' === u.type) {
                                     if (!o[u.source]) {
-                                        var d = i.sourceCaches[u.source];
+                                        var d = a.sourceCaches[u.source];
                                         o[u.source] = d.getRenderableIds().map(function (e) {
                                             return d.getTileByID(e);
-                                        }).sort(function (e, t) {
-                                            return t.tileID.overscaledZ - e.tileID.overscaledZ || (e.tileID.isLessThan(t.tileID) ? -1 : 1);
+                                        }).sort(function (e, r) {
+                                            return r.tileID.overscaledZ - e.tileID.overscaledZ || (e.tileID.isLessThan(r.tileID) ? -1 : 1);
                                         });
                                     }
-                                    var c = i.crossTileSymbolIndex.addLayer(u, o[u.source]);
-                                    a = a || c;
+                                    var c = a.crossTileSymbolIndex.addLayer(u, o[u.source]);
+                                    i = i || c;
                                 }
                             }
                             this.crossTileSymbolIndex.pruneUnusedLayers(this._order);
                             var y = this._layerOrderChanged;
-                            if ((y || !this.pauseablePlacement || this.pauseablePlacement.isDone() && !this.placement.stillRecent(browser.now())) && (this.pauseablePlacement = new PauseablePlacement(e, this._order, y, t, r), this._layerOrderChanged = !1), this.pauseablePlacement.isDone()) {
-                                this.placement.setStale();
-                            } else {
-                                if (this.pauseablePlacement.continuePlacement(this._order, this._layers, o), this.pauseablePlacement.isDone()) {
-                                    var p = this.pauseablePlacement.placement;
-                                    s = p.commit(this.placement, browser.now()), (!this.placement || s || a) && (this.placement = p, this.collisionIndex = this.placement.collisionIndex), this.placement.setRecent(browser.now(), p.stale);
-                                }
-                                a && this.pauseablePlacement.placement.setStale();
-                            }
-                            if (s || a) {
-                                for (var f = 0, v = i._order; f < v.length; f += 1) {
-                                    var g = v[f], _ = i._layers[g];
-                                    'symbol' === _.type && i.placement.updateLayerOpacities(_, o[_.source]);
+                            if ((y || !this.pauseablePlacement || this.pauseablePlacement.isDone() && !this.placement.stillRecent(browser.now())) && (this.pauseablePlacement = new PauseablePlacement(e, this._order, y, r, t), this._layerOrderChanged = !1), this.pauseablePlacement.isDone() ? this.placement.setStale() : (this.pauseablePlacement.continuePlacement(this._order, this._layers, o), this.pauseablePlacement.isDone() && (this.placement = this.pauseablePlacement.commit(this.placement, browser.now()), s = !0), i && this.pauseablePlacement.placement.setStale()), s || i) {
+                                for (var p = 0, f = a._order; p < f.length; p += 1) {
+                                    var v = f[p], g = a._layers[v];
+                                    'symbol' === g.type && a.placement.updateLayerOpacities(g, o[g.source]);
                                 }
                             }
                             return !this.pauseablePlacement.isDone() || this.placement.hasTransitions(browser.now());
-                        }, t.prototype.getImages = function (e, t, r) {
-                            this.imageManager.getImages(t.icons, r);
-                        }, t.prototype.getGlyphs = function (e, t, r) {
-                            this.glyphManager.getGlyphs(t.stacks, r);
-                        }, t;
+                        }, r.prototype.getImages = function (e, r, t) {
+                            this.imageManager.getImages(r.icons, t);
+                        }, r.prototype.getGlyphs = function (e, r, t) {
+                            this.glyphManager.getGlyphs(r.stacks, t);
+                        }, r;
                     }(Evented);
                 module.exports = Style;
             },
             {
-                '../render/glyph_manager': 85,
-                '../render/image_manager': 87,
-                '../render/line_atlas': 88,
-                '../source/geojson_source': 98,
-                '../source/query_features': 104,
-                '../source/rtl_text_plugin': 108,
-                '../source/source': 109,
-                '../source/source_cache': 110,
-                '../style-spec/deref': 119,
-                '../style-spec/diff': 120,
-                '../style-spec/reference/latest': 152,
-                '../symbol/cross_tile_symbol_index': 219,
-                '../util/ajax': 252,
-                '../util/browser': 253,
-                '../util/dispatcher': 259,
-                '../util/evented': 261,
-                '../util/global_worker_pool': 263,
-                '../util/mapbox': 268,
-                '../util/util': 276,
-                './light': 184,
-                './load_sprite': 186,
-                './pauseable_placement': 188,
-                './style_layer': 192,
-                './validate_style': 212,
-                './zoom_history': 213
+                '../render/glyph_manager': 86,
+                '../render/image_manager': 88,
+                '../render/line_atlas': 89,
+                '../source/geojson_source': 99,
+                '../source/query_features': 105,
+                '../source/rtl_text_plugin': 109,
+                '../source/source': 110,
+                '../source/source_cache': 111,
+                '../style-spec/deref': 120,
+                '../style-spec/diff': 121,
+                '../style-spec/reference/latest': 151,
+                '../symbol/cross_tile_symbol_index': 218,
+                '../util/ajax': 251,
+                '../util/browser': 252,
+                '../util/dispatcher': 258,
+                '../util/evented': 260,
+                '../util/global_worker_pool': 262,
+                '../util/mapbox': 267,
+                '../util/util': 275,
+                './light': 183,
+                './load_sprite': 185,
+                './pauseable_placement': 187,
+                './style_layer': 191,
+                './validate_style': 211,
+                './zoom_history': 212
             }
         ],
-        192: [
+        191: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../util/util'), styleSpec = _dereq_('../style-spec/reference/latest'), validateStyle = _dereq_('./validate_style'), Evented = _dereq_('../util/evented'), ref = _dereq_('./properties'), Layout = ref.Layout, Transitionable = ref.Transitionable, Transitioning = ref.Transitioning, Properties = ref.Properties, TRANSITION_SUFFIX = '-transition', StyleLayer = function (t) {
@@ -80885,23 +80876,23 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../style-spec/reference/latest': 152,
-                '../util/evented': 261,
-                '../util/util': 276,
-                './properties': 189,
-                './style_layer/background_style_layer': 193,
-                './style_layer/circle_style_layer': 195,
-                './style_layer/fill_extrusion_style_layer': 197,
-                './style_layer/fill_style_layer': 199,
-                './style_layer/heatmap_style_layer': 201,
-                './style_layer/hillshade_style_layer': 203,
-                './style_layer/line_style_layer': 205,
-                './style_layer/raster_style_layer': 207,
-                './style_layer/symbol_style_layer': 209,
-                './validate_style': 212
+                '../style-spec/reference/latest': 151,
+                '../util/evented': 260,
+                '../util/util': 275,
+                './properties': 188,
+                './style_layer/background_style_layer': 192,
+                './style_layer/circle_style_layer': 194,
+                './style_layer/fill_extrusion_style_layer': 196,
+                './style_layer/fill_style_layer': 198,
+                './style_layer/heatmap_style_layer': 200,
+                './style_layer/hillshade_style_layer': 202,
+                './style_layer/line_style_layer': 204,
+                './style_layer/raster_style_layer': 206,
+                './style_layer/symbol_style_layer': 208,
+                './validate_style': 211
             }
         ],
-        193: [
+        192: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var StyleLayer = _dereq_('../style_layer'), properties = _dereq_('./background_style_layer_properties'), ref = _dereq_('../properties'), Transitionable = ref.Transitionable, Transitioning = ref.Transitioning, PossiblyEvaluated = ref.PossiblyEvaluated, BackgroundStyleLayer = function (e) {
@@ -80913,12 +80904,12 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = BackgroundStyleLayer;
             },
             {
-                '../properties': 189,
-                '../style_layer': 192,
-                './background_style_layer_properties': 194
+                '../properties': 188,
+                '../style_layer': 191,
+                './background_style_layer_properties': 193
             }
         ],
-        194: [
+        193: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var styleSpec = _dereq_('../../style-spec/reference/latest'), ref = _dereq_('../properties'), Properties = ref.Properties, DataConstantProperty = ref.DataConstantProperty, DataDrivenProperty = ref.DataDrivenProperty, CrossFadedProperty = ref.CrossFadedProperty, HeatmapColorProperty = ref.HeatmapColorProperty, paint = new Properties({
@@ -80929,11 +80920,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = { paint: paint };
             },
             {
-                '../../style-spec/reference/latest': 152,
-                '../properties': 189
+                '../../style-spec/reference/latest': 151,
+                '../properties': 188
             }
         ],
-        195: [
+        194: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var StyleLayer = _dereq_('../style_layer'), CircleBucket = _dereq_('../../data/bucket/circle_bucket'), ref = _dereq_('../../util/intersection_tests'), multiPolygonIntersectsBufferedMultiPoint = ref.multiPolygonIntersectsBufferedMultiPoint, ref$1 = _dereq_('../query_utils'), getMaximumPaintValue = ref$1.getMaximumPaintValue, translateDistance = ref$1.translateDistance, translate = ref$1.translate, properties = _dereq_('./circle_style_layer_properties'), ref$2 = _dereq_('../properties'), Transitionable = ref$2.Transitionable, Transitioning = ref$2.Transitioning, PossiblyEvaluated = ref$2.PossiblyEvaluated, CircleStyleLayer = function (e) {
@@ -80953,15 +80944,15 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = CircleStyleLayer;
             },
             {
-                '../../data/bucket/circle_bucket': 41,
-                '../../util/intersection_tests': 265,
-                '../properties': 189,
-                '../query_utils': 190,
-                '../style_layer': 192,
-                './circle_style_layer_properties': 196
+                '../../data/bucket/circle_bucket': 42,
+                '../../util/intersection_tests': 264,
+                '../properties': 188,
+                '../query_utils': 189,
+                '../style_layer': 191,
+                './circle_style_layer_properties': 195
             }
         ],
-        196: [
+        195: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var styleSpec = _dereq_('../../style-spec/reference/latest'), ref = _dereq_('../properties'), Properties = ref.Properties, DataConstantProperty = ref.DataConstantProperty, DataDrivenProperty = ref.DataDrivenProperty, CrossFadedProperty = ref.CrossFadedProperty, HeatmapColorProperty = ref.HeatmapColorProperty, paint = new Properties({
@@ -80980,11 +80971,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = { paint: paint };
             },
             {
-                '../../style-spec/reference/latest': 152,
-                '../properties': 189
+                '../../style-spec/reference/latest': 151,
+                '../properties': 188
             }
         ],
-        197: [
+        196: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var StyleLayer = _dereq_('../style_layer'), FillExtrusionBucket = _dereq_('../../data/bucket/fill_extrusion_bucket'), ref = _dereq_('../../util/intersection_tests'), multiPolygonIntersectsMultiPolygon = ref.multiPolygonIntersectsMultiPolygon, ref$1 = _dereq_('../query_utils'), translateDistance = ref$1.translateDistance, translate = ref$1.translate, properties = _dereq_('./fill_extrusion_style_layer_properties'), ref$2 = _dereq_('../properties'), Transitionable = ref$2.Transitionable, Transitioning = ref$2.Transitioning, PossiblyEvaluated = ref$2.PossiblyEvaluated, FillExtrusionStyleLayer = function (t) {
@@ -81007,15 +80998,15 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = FillExtrusionStyleLayer;
             },
             {
-                '../../data/bucket/fill_extrusion_bucket': 45,
-                '../../util/intersection_tests': 265,
-                '../properties': 189,
-                '../query_utils': 190,
-                '../style_layer': 192,
-                './fill_extrusion_style_layer_properties': 198
+                '../../data/bucket/fill_extrusion_bucket': 46,
+                '../../util/intersection_tests': 264,
+                '../properties': 188,
+                '../query_utils': 189,
+                '../style_layer': 191,
+                './fill_extrusion_style_layer_properties': 197
             }
         ],
-        198: [
+        197: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var styleSpec = _dereq_('../../style-spec/reference/latest'), ref = _dereq_('../properties'), Properties = ref.Properties, DataConstantProperty = ref.DataConstantProperty, DataDrivenProperty = ref.DataDrivenProperty, CrossFadedProperty = ref.CrossFadedProperty, HeatmapColorProperty = ref.HeatmapColorProperty, paint = new Properties({
@@ -81030,11 +81021,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = { paint: paint };
             },
             {
-                '../../style-spec/reference/latest': 152,
-                '../properties': 189
+                '../../style-spec/reference/latest': 151,
+                '../properties': 188
             }
         ],
-        199: [
+        198: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var StyleLayer = _dereq_('../style_layer'), FillBucket = _dereq_('../../data/bucket/fill_bucket'), ref = _dereq_('../../util/intersection_tests'), multiPolygonIntersectsMultiPolygon = ref.multiPolygonIntersectsMultiPolygon, ref$1 = _dereq_('../query_utils'), translateDistance = ref$1.translateDistance, translate = ref$1.translate, properties = _dereq_('./fill_style_layer_properties'), ref$2 = _dereq_('../properties'), Transitionable = ref$2.Transitionable, Transitioning = ref$2.Transitioning, PossiblyEvaluated = ref$2.PossiblyEvaluated, FillStyleLayer = function (t) {
@@ -81055,15 +81046,15 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = FillStyleLayer;
             },
             {
-                '../../data/bucket/fill_bucket': 43,
-                '../../util/intersection_tests': 265,
-                '../properties': 189,
-                '../query_utils': 190,
-                '../style_layer': 192,
-                './fill_style_layer_properties': 200
+                '../../data/bucket/fill_bucket': 44,
+                '../../util/intersection_tests': 264,
+                '../properties': 188,
+                '../query_utils': 189,
+                '../style_layer': 191,
+                './fill_style_layer_properties': 199
             }
         ],
-        200: [
+        199: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var styleSpec = _dereq_('../../style-spec/reference/latest'), ref = _dereq_('../properties'), Properties = ref.Properties, DataConstantProperty = ref.DataConstantProperty, DataDrivenProperty = ref.DataDrivenProperty, CrossFadedProperty = ref.CrossFadedProperty, HeatmapColorProperty = ref.HeatmapColorProperty, paint = new Properties({
@@ -81078,11 +81069,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = { paint: paint };
             },
             {
-                '../../style-spec/reference/latest': 152,
-                '../properties': 189
+                '../../style-spec/reference/latest': 151,
+                '../properties': 188
             }
         ],
-        201: [
+        200: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var StyleLayer = _dereq_('../style_layer'), HeatmapBucket = _dereq_('../../data/bucket/heatmap_bucket'), RGBAImage = _dereq_('../../util/image').RGBAImage, properties = _dereq_('./heatmap_style_layer_properties'), ref = _dereq_('../properties'), Transitionable = ref.Transitionable, Transitioning = ref.Transitioning, PossiblyEvaluated = ref.PossiblyEvaluated, HeatmapStyleLayer = function (t) {
@@ -81115,14 +81106,14 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = HeatmapStyleLayer;
             },
             {
-                '../../data/bucket/heatmap_bucket': 46,
-                '../../util/image': 264,
-                '../properties': 189,
-                '../style_layer': 192,
-                './heatmap_style_layer_properties': 202
+                '../../data/bucket/heatmap_bucket': 47,
+                '../../util/image': 263,
+                '../properties': 188,
+                '../style_layer': 191,
+                './heatmap_style_layer_properties': 201
             }
         ],
-        202: [
+        201: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var styleSpec = _dereq_('../../style-spec/reference/latest'), ref = _dereq_('../properties'), Properties = ref.Properties, DataConstantProperty = ref.DataConstantProperty, DataDrivenProperty = ref.DataDrivenProperty, CrossFadedProperty = ref.CrossFadedProperty, HeatmapColorProperty = ref.HeatmapColorProperty, paint = new Properties({
@@ -81135,11 +81126,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = { paint: paint };
             },
             {
-                '../../style-spec/reference/latest': 152,
-                '../properties': 189
+                '../../style-spec/reference/latest': 151,
+                '../properties': 188
             }
         ],
-        203: [
+        202: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var StyleLayer = _dereq_('../style_layer'), properties = _dereq_('./hillshade_style_layer_properties'), ref = _dereq_('../properties'), Transitionable = ref.Transitionable, Transitioning = ref.Transitioning, PossiblyEvaluated = ref.PossiblyEvaluated, HillshadeStyleLayer = function (e) {
@@ -81153,12 +81144,12 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = HillshadeStyleLayer;
             },
             {
-                '../properties': 189,
-                '../style_layer': 192,
-                './hillshade_style_layer_properties': 204
+                '../properties': 188,
+                '../style_layer': 191,
+                './hillshade_style_layer_properties': 203
             }
         ],
-        204: [
+        203: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var styleSpec = _dereq_('../../style-spec/reference/latest'), ref = _dereq_('../properties'), Properties = ref.Properties, DataConstantProperty = ref.DataConstantProperty, DataDrivenProperty = ref.DataDrivenProperty, CrossFadedProperty = ref.CrossFadedProperty, HeatmapColorProperty = ref.HeatmapColorProperty, paint = new Properties({
@@ -81172,11 +81163,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = { paint: paint };
             },
             {
-                '../../style-spec/reference/latest': 152,
-                '../properties': 189
+                '../../style-spec/reference/latest': 151,
+                '../properties': 188
             }
         ],
-        205: [
+        204: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function getLineWidth(t, e) {
@@ -81227,18 +81218,18 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = LineStyleLayer;
             },
             {
-                '../../data/bucket/line_bucket': 48,
-                '../../util/intersection_tests': 265,
-                '../../util/util': 276,
-                '../evaluation_parameters': 183,
-                '../properties': 189,
-                '../query_utils': 190,
-                '../style_layer': 192,
-                './line_style_layer_properties': 206,
+                '../../data/bucket/line_bucket': 49,
+                '../../util/intersection_tests': 264,
+                '../../util/util': 275,
+                '../evaluation_parameters': 182,
+                '../properties': 188,
+                '../query_utils': 189,
+                '../style_layer': 191,
+                './line_style_layer_properties': 205,
                 '@mapbox/point-geometry': 4
             }
         ],
-        206: [
+        205: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var styleSpec = _dereq_('../../style-spec/reference/latest'), ref = _dereq_('../properties'), Properties = ref.Properties, DataConstantProperty = ref.DataConstantProperty, DataDrivenProperty = ref.DataDrivenProperty, CrossFadedProperty = ref.CrossFadedProperty, HeatmapColorProperty = ref.HeatmapColorProperty, layout = new Properties({
@@ -81264,11 +81255,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../../style-spec/reference/latest': 152,
-                '../properties': 189
+                '../../style-spec/reference/latest': 151,
+                '../properties': 188
             }
         ],
-        207: [
+        206: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var StyleLayer = _dereq_('../style_layer'), properties = _dereq_('./raster_style_layer_properties'), ref = _dereq_('../properties'), Transitionable = ref.Transitionable, Transitioning = ref.Transitioning, PossiblyEvaluated = ref.PossiblyEvaluated, RasterStyleLayer = function (e) {
@@ -81280,12 +81271,12 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = RasterStyleLayer;
             },
             {
-                '../properties': 189,
-                '../style_layer': 192,
-                './raster_style_layer_properties': 208
+                '../properties': 188,
+                '../style_layer': 191,
+                './raster_style_layer_properties': 207
             }
         ],
-        208: [
+        207: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var styleSpec = _dereq_('../../style-spec/reference/latest'), ref = _dereq_('../properties'), Properties = ref.Properties, DataConstantProperty = ref.DataConstantProperty, DataDrivenProperty = ref.DataDrivenProperty, CrossFadedProperty = ref.CrossFadedProperty, HeatmapColorProperty = ref.HeatmapColorProperty, paint = new Properties({
@@ -81300,11 +81291,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = { paint: paint };
             },
             {
-                '../../style-spec/reference/latest': 152,
-                '../properties': 189
+                '../../style-spec/reference/latest': 151,
+                '../properties': 188
             }
         ],
-        209: [
+        208: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var StyleLayer = _dereq_('../style_layer'), SymbolBucket = _dereq_('../../data/bucket/symbol_bucket'), resolveTokens = _dereq_('../../util/token'), ref = _dereq_('../../style-spec/expression'), isExpression = ref.isExpression, properties = _dereq_('./symbol_style_layer_properties'), ref$1 = _dereq_('../properties'), Transitionable = ref$1.Transitionable, Transitioning = ref$1.Transitioning, Layout = ref$1.Layout, PossiblyEvaluated = ref$1.PossiblyEvaluated, SymbolStyleLayer = function (t) {
@@ -81327,15 +81318,15 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = SymbolStyleLayer;
             },
             {
-                '../../data/bucket/symbol_bucket': 50,
-                '../../style-spec/expression': 138,
-                '../../util/token': 275,
-                '../properties': 189,
-                '../style_layer': 192,
-                './symbol_style_layer_properties': 210
+                '../../data/bucket/symbol_bucket': 51,
+                '../../style-spec/expression': 139,
+                '../../util/token': 274,
+                '../properties': 188,
+                '../style_layer': 191,
+                './symbol_style_layer_properties': 209
             }
         ],
-        210: [
+        209: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var styleSpec = _dereq_('../../style-spec/reference/latest'), ref = _dereq_('../properties'), Properties = ref.Properties, DataConstantProperty = ref.DataConstantProperty, DataDrivenProperty = ref.DataDrivenProperty, CrossFadedProperty = ref.CrossFadedProperty, HeatmapColorProperty = ref.HeatmapColorProperty, layout = new Properties({
@@ -81397,11 +81388,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../../style-spec/reference/latest': 152,
-                '../properties': 189
+                '../../style-spec/reference/latest': 151,
+                '../properties': 188
             }
         ],
-        211: [
+        210: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var StyleLayer = _dereq_('./style_layer'), util = _dereq_('../util/util'), featureFilter = _dereq_('../style-spec/feature_filter'), groupByLayout = _dereq_('../style-spec/group_by_layout'), StyleLayerIndex = function (e) {
@@ -81435,13 +81426,13 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = StyleLayerIndex;
             },
             {
-                '../style-spec/feature_filter': 147,
-                '../style-spec/group_by_layout': 149,
-                '../util/util': 276,
-                './style_layer': 192
+                '../style-spec/feature_filter': 148,
+                '../style-spec/group_by_layout': 150,
+                '../util/util': 275,
+                './style_layer': 191
             }
         ],
-        212: [
+        211: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = _dereq_('../style-spec/validate_style.min'), module.exports.emitErrors = function (r, e) {
@@ -81455,9 +81446,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return !1;
                 };
             },
-            { '../style-spec/validate_style.min': 182 }
+            { '../style-spec/validate_style.min': 181 }
         ],
-        213: [
+        212: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ZoomHistory = function () {
@@ -81470,7 +81461,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        214: [
+        213: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Point = _dereq_('@mapbox/point-geometry'), ref = _dereq_('../util/web_worker_transfer'), register = ref.register, Anchor = function (t) {
@@ -81484,11 +81475,11 @@ var _$mapboxGl_14 = { exports: {} };
                 register('Anchor', Anchor), module.exports = Anchor;
             },
             {
-                '../util/web_worker_transfer': 279,
+                '../util/web_worker_transfer': 278,
                 '@mapbox/point-geometry': 4
             }
         ],
-        215: [
+        214: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function checkMaxAngle(e, t, a, r, n) {
@@ -81525,7 +81516,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        216: [
+        215: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function clipLine(n, x, y, o, e) {
@@ -81542,7 +81533,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             { '@mapbox/point-geometry': 4 }
         ],
-        217: [
+        216: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var CollisionFeature = function (t, e, i, o, a, r, l, n, s, d, h) {
@@ -81584,7 +81575,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        218: [
+        217: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function markCollisionCircleUsed(t, i, e) {
@@ -81730,14 +81721,14 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = CollisionIndex;
             },
             {
-                '../symbol/projection': 225,
-                '../util/intersection_tests': 265,
-                './grid_index': 221,
+                '../symbol/projection': 224,
+                '../util/intersection_tests': 264,
+                './grid_index': 220,
                 '@mapbox/gl-matrix': 2,
                 '@mapbox/point-geometry': 4
             }
         ],
-        219: [
+        218: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var EXTENT = _dereq_('../data/extent'), roundingFactor = 512 / EXTENT / 2, TileLayerIndex = function (e, s, r) {
@@ -81852,9 +81843,9 @@ var _$mapboxGl_14 = { exports: {} };
                     }
                 }, module.exports = CrossTileSymbolIndex;
             },
-            { '../data/extent': 52 }
+            { '../data/extent': 53 }
         ],
-        220: [
+        219: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function getAnchors(e, r, t, n, a, l, o, i, c) {
@@ -81884,12 +81875,12 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = getAnchors;
             },
             {
-                '../style-spec/util/interpolate': 159,
-                '../symbol/anchor': 214,
-                './check_max_angle': 215
+                '../style-spec/util/interpolate': 158,
+                '../symbol/anchor': 213,
+                './check_max_angle': 214
             }
         ],
-        221: [
+        220: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var GridIndex = function (e, t, i) {
@@ -82046,7 +82037,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        222: [
+        221: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = function (e) {
@@ -82086,7 +82077,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        223: [
+        222: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var ref = _dereq_('../util/web_worker_transfer'), register = ref.register, OpacityState = function () {
@@ -82097,66 +82088,66 @@ var _$mapboxGl_14 = { exports: {} };
                     return t.opacity = this.opacity, t.targetOpacity = this.targetOpacity, t.time = this.time, t;
                 }, register('OpacityState', OpacityState), module.exports = OpacityState;
             },
-            { '../util/web_worker_transfer': 279 }
+            { '../util/web_worker_transfer': 278 }
         ],
-        224: [
+        223: [
             function (_dereq_, module, exports) {
                 'use strict';
-                function updateCollisionVertices(t, e, i) {
-                    t.emplaceBack(e ? 1 : 0, i ? 1 : 0), t.emplaceBack(e ? 1 : 0, i ? 1 : 0), t.emplaceBack(e ? 1 : 0, i ? 1 : 0), t.emplaceBack(e ? 1 : 0, i ? 1 : 0);
+                function updateCollisionVertices(e, t, i) {
+                    e.emplaceBack(t ? 1 : 0, i ? 1 : 0), e.emplaceBack(t ? 1 : 0, i ? 1 : 0), e.emplaceBack(t ? 1 : 0, i ? 1 : 0), e.emplaceBack(t ? 1 : 0, i ? 1 : 0);
                 }
-                function packOpacity(t) {
-                    if (0 === t.opacity && !t.placed) {
+                function packOpacity(e) {
+                    if (0 === e.opacity && !e.placed) {
                         return 0;
                     }
-                    if (1 === t.opacity && t.placed) {
+                    if (1 === e.opacity && e.placed) {
                         return 4294967295;
                     }
-                    var e = t.placed ? 1 : 0, i = Math.floor(127 * t.opacity);
-                    return i * shift25 + e * shift24 + i * shift17 + e * shift16 + i * shift9 + e * shift8 + i * shift1 + e;
+                    var t = e.placed ? 1 : 0, i = Math.floor(127 * e.opacity);
+                    return i * shift25 + t * shift24 + i * shift17 + t * shift16 + i * shift9 + t * shift8 + i * shift1 + t;
                 }
-                var CollisionIndex = _dereq_('./collision_index'), EXTENT = _dereq_('../data/extent'), symbolSize = _dereq_('./symbol_size'), projection = _dereq_('./projection'), symbolLayoutProperties = _dereq_('../style/style_layer/symbol_style_layer_properties').layout, pixelsToTileUnits = _dereq_('../source/pixels_to_tile_units'), OpacityState = function (t, e, i, o) {
-                        this.opacity = t ? Math.max(0, Math.min(1, t.opacity + (t.placed ? e : -e))) : o && i ? 1 : 0, this.placed = i;
+                var CollisionIndex = _dereq_('./collision_index'), EXTENT = _dereq_('../data/extent'), symbolSize = _dereq_('./symbol_size'), projection = _dereq_('./projection'), symbolLayoutProperties = _dereq_('../style/style_layer/symbol_style_layer_properties').layout, pixelsToTileUnits = _dereq_('../source/pixels_to_tile_units'), OpacityState = function (e, t, i, o) {
+                        this.opacity = e ? Math.max(0, Math.min(1, e.opacity + (e.placed ? t : -t))) : o && i ? 1 : 0, this.placed = i;
                     };
                 OpacityState.prototype.isHidden = function () {
                     return 0 === this.opacity && !this.placed;
                 };
-                var JointOpacityState = function (t, e, i, o, a) {
-                    this.text = new OpacityState(t ? t.text : null, e, i, a), this.icon = new OpacityState(t ? t.icon : null, e, o, a);
+                var JointOpacityState = function (e, t, i, o, a) {
+                    this.text = new OpacityState(e ? e.text : null, t, i, a), this.icon = new OpacityState(e ? e.icon : null, t, o, a);
                 };
                 JointOpacityState.prototype.isHidden = function () {
                     return this.text.isHidden() && this.icon.isHidden();
                 };
-                var JointPlacement = function (t, e, i) {
-                        this.text = t, this.icon = e, this.skipFade = i;
-                    }, Placement = function (t, e) {
-                        this.transform = t.clone(), this.collisionIndex = new CollisionIndex(this.transform), this.recentUntil = -1 / 0, this.placements = {}, this.opacities = {}, this.stale = !1, this.fadeDuration = e;
+                var JointPlacement = function (e, t, i) {
+                        this.text = e, this.icon = t, this.skipFade = i;
+                    }, Placement = function (e, t) {
+                        this.transform = e.clone(), this.collisionIndex = new CollisionIndex(this.transform), this.placements = {}, this.opacities = {}, this.stale = !1, this.fadeDuration = t;
                     };
-                Placement.prototype.placeLayerTile = function (t, e, i, o) {
-                    var a = e.getBucket(t);
+                Placement.prototype.placeLayerTile = function (e, t, i, o) {
+                    var a = t.getBucket(e);
                     if (a) {
-                        var l = a.layers[0].layout, n = Math.pow(2, this.transform.zoom - e.tileID.overscaledZ), r = e.tileSize / EXTENT, s = this.transform.calculatePosMatrix(e.tileID.toUnwrapped()), c = projection.getLabelPlaneMatrix(s, 'map' === l.get('text-pitch-alignment'), 'map' === l.get('text-rotation-alignment'), this.transform, pixelsToTileUnits(e, 1, this.transform.zoom)), p = projection.getLabelPlaneMatrix(s, 'map' === l.get('icon-pitch-alignment'), 'map' === l.get('icon-rotation-alignment'), this.transform, pixelsToTileUnits(e, 1, this.transform.zoom));
-                        this.placeLayerBucket(a, s, c, p, n, r, i, o, e.collisionBoxArray, e.tileID.key, t.source);
+                        var l = a.layers[0].layout, n = Math.pow(2, this.transform.zoom - t.tileID.overscaledZ), r = t.tileSize / EXTENT, s = this.transform.calculatePosMatrix(t.tileID.toUnwrapped()), c = projection.getLabelPlaneMatrix(s, 'map' === l.get('text-pitch-alignment'), 'map' === l.get('text-rotation-alignment'), this.transform, pixelsToTileUnits(t, 1, this.transform.zoom)), p = projection.getLabelPlaneMatrix(s, 'map' === l.get('icon-pitch-alignment'), 'map' === l.get('icon-rotation-alignment'), this.transform, pixelsToTileUnits(t, 1, this.transform.zoom));
+                        this.placeLayerBucket(a, s, c, p, n, r, i, o, t.collisionBoxArray, t.tileID.key, e.source);
                     }
-                }, Placement.prototype.placeLayerBucket = function (t, e, i, o, a, l, n, r, s, c, p) {
-                    for (var x = this, y = t.layers[0].layout, h = symbolSize.evaluateSizeForZoom(t.textSizeData, this.transform.zoom, symbolLayoutProperties.properties['text-size']), u = !t.hasTextData() || y.get('text-optional'), d = !t.hasIconData() || y.get('icon-optional'), f = 0, m = t.symbolInstances; f < m.length; f += 1) {
-                        var B = m[f];
+                }, Placement.prototype.placeLayerBucket = function (e, t, i, o, a, l, n, r, s, c, p) {
+                    for (var x = this, y = e.layers[0].layout, h = symbolSize.evaluateSizeForZoom(e.textSizeData, this.transform.zoom, symbolLayoutProperties.properties['text-size']), m = !e.hasTextData() || y.get('text-optional'), d = !e.hasIconData() || y.get('icon-optional'), u = 0, f = e.symbolInstances; u < f.length; u += 1) {
+                        var B = f[u];
                         if (!r[B.crossTileID]) {
-                            var I = !1, g = !1, v = !0, C = null, D = null, V = null;
-                            B.collisionArrays || (B.collisionArrays = t.deserializeCollisionBoxes(s, B.textBoxStartIndex, B.textBoxEndIndex, B.iconBoxStartIndex, B.iconBoxEndIndex)), B.collisionArrays.textBox && (C = x.collisionIndex.placeCollisionBox(B.collisionArrays.textBox, y.get('text-allow-overlap'), l, e), I = C.box.length > 0, v = v && C.offscreen);
-                            var S = B.collisionArrays.textCircles;
-                            if (S) {
-                                var A = t.text.placedSymbolArray.get(B.placedTextSymbolIndices[0]), T = symbolSize.evaluateSizeForFeature(t.textSizeData, h, A);
-                                D = x.collisionIndex.placeCollisionCircles(S, y.get('text-allow-overlap'), a, l, B.key, A, t.lineVertexArray, t.glyphOffsetArray, T, e, i, n, 'map' === y.get('text-pitch-alignment')), I = y.get('text-allow-overlap') || D.circles.length > 0, v = v && D.offscreen;
+                            var g = !1, I = !1, v = !0, C = null, D = null, T = null;
+                            B.collisionArrays || (B.collisionArrays = e.deserializeCollisionBoxes(s, B.textBoxStartIndex, B.textBoxEndIndex, B.iconBoxStartIndex, B.iconBoxEndIndex)), B.collisionArrays.textBox && (C = x.collisionIndex.placeCollisionBox(B.collisionArrays.textBox, y.get('text-allow-overlap'), l, t), g = C.box.length > 0, v = v && C.offscreen);
+                            var V = B.collisionArrays.textCircles;
+                            if (V) {
+                                var S = e.text.placedSymbolArray.get(B.placedTextSymbolIndices[0]), A = symbolSize.evaluateSizeForFeature(e.textSizeData, h, S);
+                                D = x.collisionIndex.placeCollisionCircles(V, y.get('text-allow-overlap'), a, l, B.key, S, e.lineVertexArray, e.glyphOffsetArray, A, t, i, n, 'map' === y.get('text-pitch-alignment')), g = y.get('text-allow-overlap') || D.circles.length > 0, v = v && D.offscreen;
                             }
-                            B.collisionArrays.iconBox && (V = x.collisionIndex.placeCollisionBox(B.collisionArrays.iconBox, y.get('icon-allow-overlap'), l, e), g = V.box.length > 0, v = v && V.offscreen), u || d ? d ? u || (g = g && I) : I = g && I : g = I = g && I, I && C && x.collisionIndex.insertCollisionBox(C.box, y.get('text-ignore-placement'), c, p, t.bucketInstanceId, B.textBoxStartIndex), g && V && x.collisionIndex.insertCollisionBox(V.box, y.get('icon-ignore-placement'), c, p, t.bucketInstanceId, B.iconBoxStartIndex), I && D && x.collisionIndex.insertCollisionCircles(D.circles, y.get('text-ignore-placement'), c, p, t.bucketInstanceId, B.textBoxStartIndex), x.placements[B.crossTileID] = new JointPlacement(I, g, v || t.justReloaded), r[B.crossTileID] = !0;
+                            B.collisionArrays.iconBox && (T = x.collisionIndex.placeCollisionBox(B.collisionArrays.iconBox, y.get('icon-allow-overlap'), l, t), I = T.box.length > 0, v = v && T.offscreen), m || d ? d ? m || (I = I && g) : g = I && g : I = g = I && g, g && C && x.collisionIndex.insertCollisionBox(C.box, y.get('text-ignore-placement'), c, p, e.bucketInstanceId, B.textBoxStartIndex), I && T && x.collisionIndex.insertCollisionBox(T.box, y.get('icon-ignore-placement'), c, p, e.bucketInstanceId, B.iconBoxStartIndex), g && D && x.collisionIndex.insertCollisionCircles(D.circles, y.get('text-ignore-placement'), c, p, e.bucketInstanceId, B.textBoxStartIndex), x.placements[B.crossTileID] = new JointPlacement(g, I, v || e.justReloaded), r[B.crossTileID] = !0;
                         }
                     }
-                    t.justReloaded = !1;
-                }, Placement.prototype.commit = function (t, e) {
+                    e.justReloaded = !1;
+                }, Placement.prototype.commit = function (e, t) {
                     var i = this;
-                    this.commitTime = e;
-                    var o = !1, a = t && 0 !== this.fadeDuration ? (this.commitTime - t.commitTime) / this.fadeDuration : 1, l = t ? t.opacities : {};
+                    this.commitTime = t;
+                    var o = !1, a = e && 0 !== this.fadeDuration ? (this.commitTime - e.commitTime) / this.fadeDuration : 1, l = e ? e.opacities : {};
                     for (var n in i.placements) {
                         var r = i.placements[n], s = l[n];
                         s ? (i.opacities[n] = new JointOpacityState(s, a, r.text, r.icon), o = o || r.text !== s.text.placed || r.icon !== s.icon.placed) : (i.opacities[n] = new JointOpacityState(null, a, r.text, r.icon, r.skipFade), o = o || r.text || r.icon);
@@ -82168,56 +82159,54 @@ var _$mapboxGl_14 = { exports: {} };
                             x.isHidden() || (i.opacities[c] = x, o = o || p.text.placed || p.icon.placed);
                         }
                     }
-                    return o;
-                }, Placement.prototype.updateLayerOpacities = function (t, e) {
-                    for (var i = this, o = {}, a = 0, l = e; a < l.length; a += 1) {
-                        var n = l[a], r = n.getBucket(t);
+                    o ? this.lastPlacementChangeTime = t : 'number' != typeof this.lastPlacementChangeTime && (this.lastPlacementChangeTime = e ? e.lastPlacementChangeTime : t);
+                }, Placement.prototype.updateLayerOpacities = function (e, t) {
+                    for (var i = this, o = {}, a = 0, l = t; a < l.length; a += 1) {
+                        var n = l[a], r = n.getBucket(e);
                         r && i.updateBucketOpacities(r, o, n.collisionBoxArray);
                     }
-                }, Placement.prototype.updateBucketOpacities = function (t, e, i) {
+                }, Placement.prototype.updateBucketOpacities = function (e, t, i) {
                     var o = this;
-                    t.hasTextData() && t.text.opacityVertexArray.clear(), t.hasIconData() && t.icon.opacityVertexArray.clear(), t.hasCollisionBoxData() && t.collisionBox.collisionVertexArray.clear(), t.hasCollisionCircleData() && t.collisionCircle.collisionVertexArray.clear();
-                    for (var a = t.layers[0].layout, l = new JointOpacityState(null, 0, a.get('text-allow-overlap'), a.get('icon-allow-overlap'), !0), n = 0; n < t.symbolInstances.length; n++) {
-                        var r = t.symbolInstances[n], s = e[r.crossTileID], c = o.opacities[r.crossTileID];
-                        c ? s && (c = l) : (c = l, o.opacities[r.crossTileID] = c), e[r.crossTileID] = !0;
+                    e.hasTextData() && e.text.opacityVertexArray.clear(), e.hasIconData() && e.icon.opacityVertexArray.clear(), e.hasCollisionBoxData() && e.collisionBox.collisionVertexArray.clear(), e.hasCollisionCircleData() && e.collisionCircle.collisionVertexArray.clear();
+                    for (var a = e.layers[0].layout, l = new JointOpacityState(null, 0, a.get('text-allow-overlap'), a.get('icon-allow-overlap'), !0), n = 0; n < e.symbolInstances.length; n++) {
+                        var r = e.symbolInstances[n], s = t[r.crossTileID], c = o.opacities[r.crossTileID];
+                        c ? s && (c = l) : (c = l, o.opacities[r.crossTileID] = c), t[r.crossTileID] = !0;
                         var p = r.numGlyphVertices > 0 || r.numVerticalGlyphVertices > 0, x = r.numIconVertices > 0;
                         if (p) {
-                            for (var y = packOpacity(c.text), h = (r.numGlyphVertices + r.numVerticalGlyphVertices) / 4, u = 0; u < h; u++) {
-                                t.text.opacityVertexArray.emplaceBack(y);
+                            for (var y = packOpacity(c.text), h = (r.numGlyphVertices + r.numVerticalGlyphVertices) / 4, m = 0; m < h; m++) {
+                                e.text.opacityVertexArray.emplaceBack(y);
                             }
-                            for (var d = 0, f = r.placedTextSymbolIndices; d < f.length; d += 1) {
-                                var m = f[d];
-                                t.text.placedSymbolArray.get(m).hidden = c.text.isHidden();
+                            for (var d = 0, u = r.placedTextSymbolIndices; d < u.length; d += 1) {
+                                var f = u[d];
+                                e.text.placedSymbolArray.get(f).hidden = c.text.isHidden();
                             }
                         }
                         if (x) {
-                            for (var B = packOpacity(c.icon), I = 0; I < r.numIconVertices / 4; I++) {
-                                t.icon.opacityVertexArray.emplaceBack(B);
+                            for (var B = packOpacity(c.icon), g = 0; g < r.numIconVertices / 4; g++) {
+                                e.icon.opacityVertexArray.emplaceBack(B);
                             }
-                            t.icon.placedSymbolArray.get(n).hidden = c.icon.isHidden();
+                            e.icon.placedSymbolArray.get(n).hidden = c.icon.isHidden();
                         }
-                        r.collisionArrays || (r.collisionArrays = t.deserializeCollisionBoxes(i, r.textBoxStartIndex, r.textBoxEndIndex, r.iconBoxStartIndex, r.iconBoxEndIndex));
-                        var g = r.collisionArrays;
-                        if (g) {
-                            g.textBox && t.hasCollisionBoxData() && updateCollisionVertices(t.collisionBox.collisionVertexArray, c.text.placed, !1), g.iconBox && t.hasCollisionBoxData() && updateCollisionVertices(t.collisionBox.collisionVertexArray, c.icon.placed, !1);
-                            var v = g.textCircles;
-                            if (v && t.hasCollisionCircleData()) {
+                        r.collisionArrays || (r.collisionArrays = e.deserializeCollisionBoxes(i, r.textBoxStartIndex, r.textBoxEndIndex, r.iconBoxStartIndex, r.iconBoxEndIndex));
+                        var I = r.collisionArrays;
+                        if (I) {
+                            I.textBox && e.hasCollisionBoxData() && updateCollisionVertices(e.collisionBox.collisionVertexArray, c.text.placed, !1), I.iconBox && e.hasCollisionBoxData() && updateCollisionVertices(e.collisionBox.collisionVertexArray, c.icon.placed, !1);
+                            var v = I.textCircles;
+                            if (v && e.hasCollisionCircleData()) {
                                 for (var C = 0; C < v.length; C += 5) {
                                     var D = s || 0 === v[C + 4];
-                                    updateCollisionVertices(t.collisionCircle.collisionVertexArray, c.text.placed, D);
+                                    updateCollisionVertices(e.collisionCircle.collisionVertexArray, c.text.placed, D);
                                 }
                             }
                         }
                     }
-                    t.sortFeatures(this.transform.angle), t.hasTextData() && t.text.opacityVertexBuffer && t.text.opacityVertexBuffer.updateData(t.text.opacityVertexArray), t.hasIconData() && t.icon.opacityVertexBuffer && t.icon.opacityVertexBuffer.updateData(t.icon.opacityVertexArray), t.hasCollisionBoxData() && t.collisionBox.collisionVertexBuffer && t.collisionBox.collisionVertexBuffer.updateData(t.collisionBox.collisionVertexArray), t.hasCollisionCircleData() && t.collisionCircle.collisionVertexBuffer && t.collisionCircle.collisionVertexBuffer.updateData(t.collisionCircle.collisionVertexArray);
-                }, Placement.prototype.symbolFadeChange = function (t) {
-                    return 0 === this.fadeDuration ? 1 : (t - this.commitTime) / this.fadeDuration;
-                }, Placement.prototype.hasTransitions = function (t) {
-                    return this.symbolFadeChange(t) < 1 || this.stale;
-                }, Placement.prototype.stillRecent = function (t) {
-                    return this.recentUntil > t;
-                }, Placement.prototype.setRecent = function (t, e) {
-                    this.stale = e, this.recentUntil = t + this.fadeDuration;
+                    e.sortFeatures(this.transform.angle), e.hasTextData() && e.text.opacityVertexBuffer && e.text.opacityVertexBuffer.updateData(e.text.opacityVertexArray), e.hasIconData() && e.icon.opacityVertexBuffer && e.icon.opacityVertexBuffer.updateData(e.icon.opacityVertexArray), e.hasCollisionBoxData() && e.collisionBox.collisionVertexBuffer && e.collisionBox.collisionVertexBuffer.updateData(e.collisionBox.collisionVertexArray), e.hasCollisionCircleData() && e.collisionCircle.collisionVertexBuffer && e.collisionCircle.collisionVertexBuffer.updateData(e.collisionCircle.collisionVertexArray);
+                }, Placement.prototype.symbolFadeChange = function (e) {
+                    return 0 === this.fadeDuration ? 1 : (e - this.commitTime) / this.fadeDuration;
+                }, Placement.prototype.hasTransitions = function (e) {
+                    return this.stale || e - this.lastPlacementChangeTime < this.fadeDuration;
+                }, Placement.prototype.stillRecent = function (e) {
+                    return 'undefined' !== this.commitTime && this.commitTime + this.fadeDuration > e;
                 }, Placement.prototype.setStale = function () {
                     this.stale = !0;
                 };
@@ -82225,15 +82214,15 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = Placement;
             },
             {
-                '../data/extent': 52,
-                '../source/pixels_to_tile_units': 103,
-                '../style/style_layer/symbol_style_layer_properties': 210,
-                './collision_index': 218,
-                './projection': 225,
-                './symbol_size': 229
+                '../data/extent': 53,
+                '../source/pixels_to_tile_units': 104,
+                '../style/style_layer/symbol_style_layer_properties': 209,
+                './collision_index': 217,
+                './projection': 224,
+                './symbol_size': 228
             }
         ],
-        225: [
+        224: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function getLabelPlaneMatrix(e, t, r, n, a) {
@@ -82442,15 +82431,15 @@ var _$mapboxGl_14 = { exports: {} };
                 ]);
             },
             {
-                '../data/bucket/symbol_bucket': 50,
-                '../style/style_layer/symbol_style_layer_properties': 210,
-                '../symbol/shaping': 227,
-                './symbol_size': 229,
+                '../data/bucket/symbol_bucket': 51,
+                '../style/style_layer/symbol_style_layer_properties': 209,
+                '../symbol/shaping': 226,
+                './symbol_size': 228,
                 '@mapbox/gl-matrix': 2,
                 '@mapbox/point-geometry': 4
             }
         ],
-        226: [
+        225: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function getIconQuads(t, e, i, o, n, a, r) {
@@ -82544,11 +82533,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../style/parse_glyph_pbf': 187,
+                '../style/parse_glyph_pbf': 186,
                 '@mapbox/point-geometry': 4
             }
         ],
-        227: [
+        226: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function breakLines(e, t) {
@@ -82717,12 +82706,12 @@ var _$mapboxGl_14 = { exports: {} };
                 breakable[10] = !0, breakable[32] = !0, breakable[38] = !0, breakable[40] = !0, breakable[41] = !0, breakable[43] = !0, breakable[45] = !0, breakable[47] = !0, breakable[173] = !0, breakable[183] = !0, breakable[8203] = !0, breakable[8208] = !0, breakable[8211] = !0, breakable[8231] = !0;
             },
             {
-                '../source/rtl_text_plugin': 108,
-                '../util/script_detection': 270,
-                '../util/verticalize_punctuation': 278
+                '../source/rtl_text_plugin': 109,
+                '../util/script_detection': 269,
+                '../util/verticalize_punctuation': 277
             }
         ],
-        228: [
+        227: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function performSymbolLayout(e, t, a, i, o, n) {
@@ -82854,24 +82843,24 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = { performSymbolLayout: performSymbolLayout };
             },
             {
-                '../data/bucket/symbol_bucket': 50,
-                '../data/extent': 52,
-                '../style/evaluation_parameters': 183,
-                '../util/classify_rings': 256,
-                '../util/find_pole_of_inaccessibility': 262,
-                '../util/script_detection': 270,
-                '../util/util': 276,
-                './anchor': 214,
-                './clip_line': 216,
-                './collision_feature': 217,
-                './get_anchors': 220,
-                './opacity_state': 223,
-                './quads': 226,
-                './shaping': 227,
+                '../data/bucket/symbol_bucket': 51,
+                '../data/extent': 53,
+                '../style/evaluation_parameters': 182,
+                '../util/classify_rings': 255,
+                '../util/find_pole_of_inaccessibility': 261,
+                '../util/script_detection': 269,
+                '../util/util': 275,
+                './anchor': 213,
+                './clip_line': 215,
+                './collision_feature': 216,
+                './get_anchors': 219,
+                './opacity_state': 222,
+                './quads': 225,
+                './shaping': 226,
                 '@mapbox/point-geometry': 4
             }
         ],
-        229: [
+        228: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function getSizeData(e, o) {
@@ -82950,12 +82939,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../style-spec/expression': 138,
-                '../style-spec/util/interpolate': 159,
-                '../util/util': 276
+                '../style-spec/expression': 139,
+                '../style-spec/util/interpolate': 158,
+                '../util/util': 275
             }
         ],
-        230: [
+        229: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var rtlTextPlugin = _dereq_('../source/rtl_text_plugin');
@@ -82964,9 +82953,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return 'uppercase' === a ? e = e.toLocaleUpperCase() : 'lowercase' === a && (e = e.toLocaleLowerCase()), rtlTextPlugin.applyArabicShaping && (e = rtlTextPlugin.applyArabicShaping(e)), e;
                 };
             },
-            { '../source/rtl_text_plugin': 108 }
+            { '../source/rtl_text_plugin': 109 }
         ],
-        231: [
+        230: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../util/dom'), Point = _dereq_('@mapbox/point-geometry'), handlers = {
@@ -83058,18 +83047,18 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../util/dom': 260,
-                './handler/box_zoom': 240,
-                './handler/dblclick_zoom': 241,
-                './handler/drag_pan': 242,
-                './handler/drag_rotate': 243,
-                './handler/keyboard': 244,
-                './handler/scroll_zoom': 245,
-                './handler/touch_zoom_rotate': 246,
+                '../util/dom': 259,
+                './handler/box_zoom': 239,
+                './handler/dblclick_zoom': 240,
+                './handler/drag_pan': 241,
+                './handler/drag_rotate': 242,
+                './handler/keyboard': 243,
+                './handler/scroll_zoom': 244,
+                './handler/touch_zoom_rotate': 245,
                 '@mapbox/point-geometry': 4
             }
         ],
-        232: [
+        231: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../util/util'), interpolate = _dereq_('../style-spec/util/interpolate').number, browser = _dereq_('../util/browser'), LngLat = _dereq_('../geo/lng_lat'), LngLatBounds = _dereq_('../geo/lng_lat_bounds'), Point = _dereq_('@mapbox/point-geometry'), Evented = _dereq_('../util/evented'), Camera = function (t) {
@@ -83287,16 +83276,16 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = Camera;
             },
             {
-                '../geo/lng_lat': 61,
-                '../geo/lng_lat_bounds': 62,
-                '../style-spec/util/interpolate': 159,
-                '../util/browser': 253,
-                '../util/evented': 261,
-                '../util/util': 276,
+                '../geo/lng_lat': 62,
+                '../geo/lng_lat_bounds': 63,
+                '../style-spec/util/interpolate': 158,
+                '../util/browser': 252,
+                '../util/evented': 260,
+                '../util/util': 275,
                 '@mapbox/point-geometry': 4
             }
         ],
-        233: [
+        232: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../../util/dom'), util = _dereq_('../../util/util'), config = _dereq_('../../util/config'), AttributionControl = function (t) {
@@ -83366,12 +83355,12 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = AttributionControl;
             },
             {
-                '../../util/config': 257,
-                '../../util/dom': 260,
-                '../../util/util': 276
+                '../../util/config': 256,
+                '../../util/dom': 259,
+                '../../util/util': 275
             }
         ],
-        234: [
+        233: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../../util/dom'), util = _dereq_('../../util/util'), window = _dereq_('../../util/window'), FullscreenControl = function () {
@@ -83398,12 +83387,12 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = FullscreenControl;
             },
             {
-                '../../util/dom': 260,
-                '../../util/util': 276,
-                '../../util/window': 255
+                '../../util/dom': 259,
+                '../../util/util': 275,
+                '../../util/window': 254
             }
         ],
-        235: [
+        234: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function checkGeolocationSupport(t) {
@@ -83526,15 +83515,15 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = GeolocateControl;
             },
             {
-                '../../geo/lng_lat': 61,
-                '../../util/dom': 260,
-                '../../util/evented': 261,
-                '../../util/util': 276,
-                '../../util/window': 255,
-                '../marker': 249
+                '../../geo/lng_lat': 62,
+                '../../util/dom': 259,
+                '../../util/evented': 260,
+                '../../util/util': 275,
+                '../../util/window': 254,
+                '../marker': 248
             }
         ],
-        236: [
+        235: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../../util/dom'), util = _dereq_('../../util/util'), LogoControl = function () {
@@ -83563,11 +83552,11 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = LogoControl;
             },
             {
-                '../../util/dom': 260,
-                '../../util/util': 276
+                '../../util/dom': 259,
+                '../../util/util': 275
             }
         ],
-        237: [
+        236: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../../util/dom'), util = _dereq_('../../util/util'), DragRotateHandler = _dereq_('../handler/drag_rotate'), defaultOptions = {
@@ -83601,12 +83590,12 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = NavigationControl;
             },
             {
-                '../../util/dom': 260,
-                '../../util/util': 276,
-                '../handler/drag_rotate': 243
+                '../../util/dom': 259,
+                '../../util/util': 275,
+                '../handler/drag_rotate': 242
             }
         ],
-        238: [
+        237: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function updateScale(t, e, o) {
@@ -83657,17 +83646,17 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = ScaleControl;
             },
             {
-                '../../util/dom': 260,
-                '../../util/util': 276
+                '../../util/dom': 259,
+                '../../util/util': 275
             }
         ],
-        239: [
+        238: [
             function (_dereq_, module, exports) {
                 'use strict';
             },
             {}
         ],
-        240: [
+        239: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../../util/dom'), LngLatBounds = _dereq_('../../geo/lng_lat_bounds'), util = _dereq_('../../util/util'), window = _dereq_('../../util/window'), BoxZoomHandler = function (o) {
@@ -83710,13 +83699,13 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = BoxZoomHandler;
             },
             {
-                '../../geo/lng_lat_bounds': 62,
-                '../../util/dom': 260,
-                '../../util/util': 276,
-                '../../util/window': 255
+                '../../geo/lng_lat_bounds': 63,
+                '../../util/dom': 259,
+                '../../util/util': 275,
+                '../../util/window': 254
             }
         ],
-        241: [
+        240: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../../util/util'), DoubleClickZoomHandler = function (o) {
@@ -83739,9 +83728,9 @@ var _$mapboxGl_14 = { exports: {} };
                     this._active = !1, this._map.off('zoomend', this._onZoomEnd);
                 }, module.exports = DoubleClickZoomHandler;
             },
-            { '../../util/util': 276 }
+            { '../../util/util': 275 }
         ],
-        242: [
+        241: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../../util/dom'), util = _dereq_('../../util/util'), window = _dereq_('../../util/window'), browser = _dereq_('../../util/browser'), inertiaLinearity = 0.3, inertiaEasing = util.bezier(0, 0, inertiaLinearity, 1), inertiaMaxSpeed = 1400, inertiaDeceleration = 2500, DragPanHandler = function (e) {
@@ -83764,22 +83753,29 @@ var _$mapboxGl_14 = { exports: {} };
                 }, DragPanHandler.prototype.disable = function () {
                     this.isEnabled() && (this._el.classList.remove('mapboxgl-touch-drag-pan'), this._el.removeEventListener('mousedown', this._onDown), this._el.removeEventListener('touchstart', this._onDown), this._enabled = !1);
                 }, DragPanHandler.prototype._onDown = function (e) {
-                    this._ignoreEvent(e) || this.isActive() || (e.touches ? (window.document.addEventListener('touchmove', this._onMove), window.document.addEventListener('touchend', this._onTouchEnd)) : (window.document.addEventListener('mousemove', this._onMove), window.document.addEventListener('mouseup', this._onMouseUp)), window.addEventListener('blur', this._onMouseUp), this._active = !1, this._startPos = this._previousPos = DOM.mousePos(this._el, e), this._inertia = [[
+                    this._ignoreEvent(e) || this.isActive() || (e.touches ? (window.document.addEventListener('touchmove', this._onMove), window.document.addEventListener('touchend', this._onTouchEnd)) : (window.document.addEventListener('mousemove', this._onMove), window.document.addEventListener('mouseup', this._onMouseUp)), window.addEventListener('blur', this._onMouseUp), this._active = !1, this._previousPos = DOM.mousePos(this._el, e), this._inertia = [[
                             browser.now(),
-                            this._startPos
+                            this._previousPos
                         ]]);
                 }, DragPanHandler.prototype._onMove = function (e) {
-                    this._ignoreEvent(e) || (this._lastMoveEvent = e, e.preventDefault(), this._pos = DOM.mousePos(this._el, e), this._drainInertiaBuffer(), this._inertia.push([
-                        browser.now(),
-                        this._pos
-                    ]), this.isActive() || (this._active = !0, this._map.moving = !0, this._fireEvent('dragstart', e), this._fireEvent('movestart', e), this._map._startAnimation(this._onDragFrame, this._onDragFinished)));
+                    if (!this._ignoreEvent(e)) {
+                        this._lastMoveEvent = e, e.preventDefault();
+                        var t = DOM.mousePos(this._el, e);
+                        if (this._drainInertiaBuffer(), this._inertia.push([
+                                browser.now(),
+                                t
+                            ]), !this._previousPos) {
+                            return void (this._previousPos = t);
+                        }
+                        this._pos = t, this.isActive() || (this._active = !0, this._map.moving = !0, this._fireEvent('dragstart', e), this._fireEvent('movestart', e), this._map._startAnimation(this._onDragFrame, this._onDragFinished)), this._map._update();
+                    }
                 }, DragPanHandler.prototype._onDragFrame = function (e) {
                     var t = this._lastMoveEvent;
                     t && (e.setLocationAtPoint(e.pointLocation(this._previousPos), this._pos), this._fireEvent('drag', t), this._fireEvent('move', t), this._previousPos = this._pos, delete this._lastMoveEvent);
                 }, DragPanHandler.prototype._onDragFinished = function (e) {
                     var t = this;
                     if (this.isActive()) {
-                        this._active = !1, delete this._lastMoveEvent, delete this._startPos, delete this._previousPos, delete this._pos, this._fireEvent('dragend', e), this._drainInertiaBuffer();
+                        this._active = !1, delete this._lastMoveEvent, delete this._previousPos, delete this._pos, this._fireEvent('dragend', e), this._drainInertiaBuffer();
                         var n = function () {
                                 t._map.moving = !1, t._fireEvent('moveend', e);
                             }, i = this._inertia;
@@ -83790,11 +83786,11 @@ var _$mapboxGl_14 = { exports: {} };
                         if (0 === a || o[1].equals(r[1])) {
                             return void n();
                         }
-                        var h = s.mult(inertiaLinearity / a), d = h.mag();
-                        d > inertiaMaxSpeed && (d = inertiaMaxSpeed, h._unit()._mult(d));
-                        var u = d / (inertiaDeceleration * inertiaLinearity), _ = h.mult(-u / 2);
+                        var h = s.mult(inertiaLinearity / a), u = h.mag();
+                        u > inertiaMaxSpeed && (u = inertiaMaxSpeed, h._unit()._mult(u));
+                        var d = u / (inertiaDeceleration * inertiaLinearity), _ = h.mult(-d / 2);
                         this._map.panBy(_, {
-                            duration: 1000 * u,
+                            duration: 1000 * d,
                             easing: inertiaEasing,
                             noMoveStart: !0
                         }, { originalEvent: e });
@@ -83817,13 +83813,13 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = DragPanHandler;
             },
             {
-                '../../util/browser': 253,
-                '../../util/dom': 260,
-                '../../util/util': 276,
-                '../../util/window': 255
+                '../../util/browser': 252,
+                '../../util/dom': 259,
+                '../../util/util': 275,
+                '../../util/window': 254
             }
         ],
-        243: [
+        242: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../../util/dom'), util = _dereq_('../../util/util'), window = _dereq_('../../util/window'), browser = _dereq_('../../util/browser'), inertiaLinearity = 0.25, inertiaEasing = util.bezier(0, 0, inertiaLinearity, 1), inertiaMaxSpeed = 180, inertiaDeceleration = 720, DragRotateHandler = function (t, e) {
@@ -83856,10 +83852,15 @@ var _$mapboxGl_14 = { exports: {} };
                         DOM.disableDrag(), window.document.addEventListener('mousemove', this._onMove, { capture: !0 }), window.document.addEventListener('mouseup', this._onUp), window.addEventListener('blur', this._onUp), this._active = !1, this._inertia = [[
                                 browser.now(),
                                 this._map.getBearing()
-                            ]], this._startPos = this._previousPos = DOM.mousePos(this._el, t), this._center = this._map.transform.centerPoint, t.preventDefault();
+                            ]], this._previousPos = DOM.mousePos(this._el, t), this._center = this._map.transform.centerPoint, t.preventDefault();
                     }
                 }, DragRotateHandler.prototype._onMove = function (t) {
-                    this._lastMoveEvent = t, this._pos = DOM.mousePos(this._el, t), this.isActive() || (this._active = !0, this._map.moving = !0, this._fireEvent('rotatestart', t), this._fireEvent('movestart', t), this._pitchWithRotate && this._fireEvent('pitchstart', t), this._map._startAnimation(this._onDragFrame, this._onDragFinished));
+                    this._lastMoveEvent = t;
+                    var e = DOM.mousePos(this._el, t);
+                    if (!this._previousPos) {
+                        return void (this._previousPos = e);
+                    }
+                    this._pos = e, this.isActive() || (this._active = !0, this._map.moving = !0, this._fireEvent('rotatestart', t), this._fireEvent('movestart', t), this._pitchWithRotate && this._fireEvent('pitchstart', t), this._map._startAnimation(this._onDragFrame, this._onDragFinished)), this._map._update();
                 }, DragRotateHandler.prototype._onUp = function (t) {
                     window.document.removeEventListener('mousemove', this._onMove, { capture: !0 }), window.document.removeEventListener('mouseup', this._onUp), window.removeEventListener('blur', this._onUp), DOM.enableDrag(), this._onDragFinished(t);
                 }, DragRotateHandler.prototype._onDragFrame = function (t) {
@@ -83885,11 +83886,11 @@ var _$mapboxGl_14 = { exports: {} };
                         if (0 === v || 0 === d) {
                             return void a();
                         }
-                        var l = Math.abs(v * (inertiaLinearity / d));
-                        l > inertiaMaxSpeed && (l = inertiaMaxSpeed);
-                        var u = l / (inertiaDeceleration * inertiaLinearity);
-                        _ += p * l * (u / 2), Math.abs(i._normalizeBearing(_, 0)) < this._bearingSnap && (_ = i._normalizeBearing(0, _)), i.rotateTo(_, {
-                            duration: 1000 * u,
+                        var u = Math.abs(v * (inertiaLinearity / d));
+                        u > inertiaMaxSpeed && (u = inertiaMaxSpeed);
+                        var l = u / (inertiaDeceleration * inertiaLinearity);
+                        _ += p * u * (l / 2), Math.abs(i._normalizeBearing(_, 0)) < this._bearingSnap && (_ = i._normalizeBearing(0, _)), i.rotateTo(_, {
+                            duration: 1000 * l,
                             easing: inertiaEasing,
                             noMoveStart: !0
                         }, { originalEvent: t });
@@ -83903,13 +83904,13 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = DragRotateHandler;
             },
             {
-                '../../util/browser': 253,
-                '../../util/dom': 260,
-                '../../util/util': 276,
-                '../../util/window': 255
+                '../../util/browser': 252,
+                '../../util/dom': 259,
+                '../../util/util': 275,
+                '../../util/window': 254
             }
         ],
-        244: [
+        243: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function easeOut(e) {
@@ -83971,9 +83972,9 @@ var _$mapboxGl_14 = { exports: {} };
                     }
                 }, module.exports = KeyboardHandler;
             },
-            { '../../util/util': 276 }
+            { '../../util/util': 275 }
         ],
-        245: [
+        244: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../../util/dom'), util = _dereq_('../../util/util'), browser = _dereq_('../../util/browser'), window = _dereq_('../../util/window'), interpolate = _dereq_('../../style-spec/util/interpolate').number, LngLat = _dereq_('../../geo/lng_lat'), wheelZoomDelta = 4.000244140625, defaultZoomRate = 0.01, wheelZoomRate = 1 / 450, maxScalePerFrame = 2, ua = window.navigator.userAgent.toLowerCase(), firefox = -1 !== ua.indexOf('firefox'), safari = -1 !== ua.indexOf('safari') && -1 === ua.indexOf('chrom'), ScrollZoomHandler = function (t) {
@@ -84040,15 +84041,15 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = ScrollZoomHandler;
             },
             {
-                '../../geo/lng_lat': 61,
-                '../../style-spec/util/interpolate': 159,
-                '../../util/browser': 253,
-                '../../util/dom': 260,
-                '../../util/util': 276,
-                '../../util/window': 255
+                '../../geo/lng_lat': 62,
+                '../../style-spec/util/interpolate': 158,
+                '../../util/browser': 252,
+                '../../util/dom': 259,
+                '../../util/util': 275,
+                '../../util/window': 254
             }
         ],
-        246: [
+        245: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../../util/dom'), util = _dereq_('../../util/util'), window = _dereq_('../../util/window'), browser = _dereq_('../../util/browser'), inertiaLinearity = 0.15, inertiaEasing = util.bezier(0, 0, inertiaLinearity, 1), inertiaDeceleration = 12, inertiaMaxSpeed = 2.5, significantScaleThreshold = 0.15, significantRotateThreshold = 10, TouchZoomRotateHandler = function (t) {
@@ -84118,13 +84119,13 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = TouchZoomRotateHandler;
             },
             {
-                '../../util/browser': 253,
-                '../../util/dom': 260,
-                '../../util/util': 276,
-                '../../util/window': 255
+                '../../util/browser': 252,
+                '../../util/dom': 259,
+                '../../util/util': 275,
+                '../../util/window': 254
             }
         ],
-        247: [
+        246: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('../util/util'), window = _dereq_('../util/window'), throttle = _dereq_('../util/throttle'), Hash = function () {
@@ -84157,12 +84158,12 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Hash;
             },
             {
-                '../util/throttle': 273,
-                '../util/util': 276,
-                '../util/window': 255
+                '../util/throttle': 272,
+                '../util/util': 275,
+                '../util/window': 254
             }
         ],
-        248: [
+        247: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function removeNode(t) {
@@ -84619,29 +84620,29 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = Map;
             },
             {
-                '../geo/lng_lat': 61,
-                '../geo/lng_lat_bounds': 62,
-                '../geo/transform': 63,
-                '../render/painter': 89,
-                '../style/evaluation_parameters': 183,
-                '../style/style': 191,
-                '../util/ajax': 252,
-                '../util/browser': 253,
-                '../util/dom': 260,
-                '../util/image': 264,
-                '../util/util': 276,
-                '../util/window': 255,
-                './bind_handlers': 231,
-                './camera': 232,
-                './control/attribution_control': 233,
-                './control/logo_control': 236,
-                './events': 239,
-                './hash': 247,
+                '../geo/lng_lat': 62,
+                '../geo/lng_lat_bounds': 63,
+                '../geo/transform': 64,
+                '../render/painter': 90,
+                '../style/evaluation_parameters': 182,
+                '../style/style': 190,
+                '../util/ajax': 251,
+                '../util/browser': 252,
+                '../util/dom': 259,
+                '../util/image': 263,
+                '../util/util': 275,
+                '../util/window': 254,
+                './bind_handlers': 230,
+                './camera': 231,
+                './control/attribution_control': 232,
+                './control/logo_control': 235,
+                './events': 238,
+                './hash': 246,
                 '@mapbox/mapbox-gl-supported': 3,
                 '@mapbox/point-geometry': 4
             }
         ],
-        249: [
+        248: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DOM = _dereq_('../util/dom'), LngLat = _dereq_('../geo/lng_lat'), Point = _dereq_('@mapbox/point-geometry'), smartWrap = _dereq_('../util/smart_wrap'), ref = _dereq_('../util/util'), bindAll = ref.bindAll, Marker = function (t, e) {
@@ -84751,14 +84752,14 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Marker;
             },
             {
-                '../geo/lng_lat': 61,
-                '../util/dom': 260,
-                '../util/smart_wrap': 271,
-                '../util/util': 276,
+                '../geo/lng_lat': 62,
+                '../util/dom': 259,
+                '../util/smart_wrap': 270,
+                '../util/util': 275,
                 '@mapbox/point-geometry': 4
             }
         ],
-        250: [
+        249: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function normalizeOffset(t) {
@@ -84891,16 +84892,16 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = Popup;
             },
             {
-                '../geo/lng_lat': 61,
-                '../util/dom': 260,
-                '../util/evented': 261,
-                '../util/smart_wrap': 271,
-                '../util/util': 276,
-                '../util/window': 255,
+                '../geo/lng_lat': 62,
+                '../util/dom': 259,
+                '../util/evented': 260,
+                '../util/smart_wrap': 270,
+                '../util/util': 275,
+                '../util/window': 254,
                 '@mapbox/point-geometry': 4
             }
         ],
-        251: [
+        250: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('./util'), ref = _dereq_('./web_worker_transfer'), serialize = ref.serialize, deserialize = ref.deserialize, Actor = function (e, t, r) {
@@ -84946,11 +84947,11 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Actor;
             },
             {
-                './util': 276,
-                './web_worker_transfer': 279
+                './util': 275,
+                './web_worker_transfer': 278
             }
         ],
-        252: [
+        251: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function makeRequest(e) {
@@ -85041,9 +85042,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return r;
                 };
             },
-            { './window': 255 }
+            { './window': 254 }
         ],
-        253: [
+        252: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var window = _dereq_('./window'), now = window.performance && window.performance.now ? window.performance.now.bind(window.performance) : Date.now.bind(Date), frame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame, cancel = window.cancelAnimationFrame || window.mozCancelAnimationFrame || window.webkitCancelAnimationFrame || window.msCancelAnimationFrame;
@@ -85073,9 +85074,9 @@ var _$mapboxGl_14 = { exports: {} };
                     module.exports.supportsWebp = !0;
                 }, webpImgTest.src = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=';
             },
-            { './window': 255 }
+            { './window': 254 }
         ],
-        254: [
+        253: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var WebWorkify = _dereq_('webworkify'), window = _dereq_('../window'), workerURL = window.URL.createObjectURL(new WebWorkify(_dereq_('../../source/worker'), { bare: !0 }));
@@ -85084,19 +85085,19 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../../source/worker': 117,
-                '../window': 255,
-                'webworkify': 35
+                '../../source/worker': 118,
+                '../window': 254,
+                'webworkify': 36
             }
         ],
-        255: [
+        254: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = self;
             },
             {}
         ],
-        256: [
+        255: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function compareAreas(e, r) {
@@ -85121,11 +85122,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                './util': 276,
-                'quickselect': 30
+                './util': 275,
+                'quickselect': 31
             }
         ],
-        257: [
+        256: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var config = {
@@ -85137,7 +85138,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        258: [
+        257: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var DictionaryCoder = function (r) {
@@ -85156,7 +85157,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        259: [
+        258: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var util = _dereq_('./util'), Actor = _dereq_('./actor'), Dispatcher = function (t, r) {
@@ -85181,11 +85182,11 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = Dispatcher;
             },
             {
-                './actor': 251,
-                './util': 276
+                './actor': 250,
+                './util': 275
             }
         ],
-        260: [
+        259: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function testProp(e) {
@@ -85241,11 +85242,11 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                './window': 255,
+                './window': 254,
                 '@mapbox/point-geometry': 4
             }
         ],
-        261: [
+        260: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function _addEventListener(e, t, n) {
@@ -85290,9 +85291,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return this._eventedParent = e, this._eventedParentData = t, this;
                 }, module.exports = Evented;
             },
-            { './util': 276 }
+            { './util': 275 }
         ],
-        262: [
+        261: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function compareMax(e, t) {
@@ -85341,12 +85342,12 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                './intersection_tests': 265,
+                './intersection_tests': 264,
                 '@mapbox/point-geometry': 4,
-                'tinyqueue': 32
+                'tinyqueue': 33
             }
         ],
-        263: [
+        262: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var WorkerPool = _dereq_('./worker_pool'), globalWorkerPool;
@@ -85354,9 +85355,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return globalWorkerPool || (globalWorkerPool = new WorkerPool()), globalWorkerPool;
                 };
             },
-            { './worker_pool': 280 }
+            { './worker_pool': 279 }
         ],
-        264: [
+        263: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function createImage(e, t, i, h) {
@@ -85436,9 +85437,9 @@ var _$mapboxGl_14 = { exports: {} };
                     RGBAImage: RGBAImage
                 };
             },
-            { './web_worker_transfer': 279 }
+            { './web_worker_transfer': 278 }
         ],
-        265: [
+        264: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function polygonIntersectsPolygon(n, t) {
@@ -85593,9 +85594,9 @@ var _$mapboxGl_14 = { exports: {} };
                     distToSegmentSquared: distToSegmentSquared
                 };
             },
-            { './util': 276 }
+            { './util': 275 }
         ],
-        266: [
+        265: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var unicodeBlockLookup = {
@@ -85745,7 +85746,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        267: [
+        266: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var LRUCache = function (t, e) {
@@ -85794,7 +85795,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        268: [
+        267: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function makeAPIURL(r, e) {
@@ -85868,11 +85869,11 @@ var _$mapboxGl_14 = { exports: {} };
                 var urlRe = /^(\w+):\/\/([^\/?]*)(\/[^?]+)?\??(.+)?/;
             },
             {
-                './browser': 253,
-                './config': 257
+                './browser': 252,
+                './config': 256
             }
         ],
-        269: [
+        268: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = {
@@ -85883,7 +85884,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        270: [
+        269: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var isChar = _dereq_('./is_char_in_unicode_block');
@@ -85923,9 +85924,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return !(exports.charHasUprightVerticalOrientation(a) || exports.charHasNeutralVerticalOrientation(a));
                 };
             },
-            { './is_char_in_unicode_block': 266 }
+            { './is_char_in_unicode_block': 265 }
         ],
-        271: [
+        270: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var LngLat = _dereq_('../geo/lng_lat');
@@ -85944,9 +85945,9 @@ var _$mapboxGl_14 = { exports: {} };
                     return n;
                 };
             },
-            { '../geo/lng_lat': 61 }
+            { '../geo/lng_lat': 62 }
         ],
-        272: [
+        271: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function createLayout(t, r) {
@@ -86011,7 +86012,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        273: [
+        272: [
             function (_dereq_, module, exports) {
                 'use strict';
                 module.exports = function (t, n) {
@@ -86025,7 +86026,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        274: [
+        273: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function tileCover(e, r, a, n) {
@@ -86076,11 +86077,11 @@ var _$mapboxGl_14 = { exports: {} };
                 module.exports = tileCover;
             },
             {
-                '../geo/coordinate': 60,
-                '../source/tile_id': 113
+                '../geo/coordinate': 61,
+                '../source/tile_id': 114
             }
         ],
-        275: [
+        274: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function resolveTokens(e, n) {
@@ -86092,7 +86093,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        276: [
+        275: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var UnitBezier = _dereq_('@mapbox/unitbezier'), Coordinate = _dereq_('../geo/coordinate'), Point = _dereq_('@mapbox/point-geometry');
@@ -86229,13 +86230,13 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../geo/coordinate': 60,
-                '../style-spec/util/deep_equal': 156,
+                '../geo/coordinate': 61,
+                '../style-spec/util/deep_equal': 155,
                 '@mapbox/point-geometry': 4,
                 '@mapbox/unitbezier': 7
             }
         ],
-        277: [
+        276: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var Feature = function (e, t, r, o) {
@@ -86255,7 +86256,7 @@ var _$mapboxGl_14 = { exports: {} };
             },
             {}
         ],
-        278: [
+        277: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var scriptDetection = _dereq_('./script_detection');
@@ -86351,9 +86352,9 @@ var _$mapboxGl_14 = { exports: {} };
                     '\uFF63': '\uFE42'
                 };
             },
-            { './script_detection': 270 }
+            { './script_detection': 269 }
         ],
-        279: [
+        278: [
             function (_dereq_, module, exports) {
                 'use strict';
                 function register(e, r, i) {
@@ -86456,15 +86457,15 @@ var _$mapboxGl_14 = { exports: {} };
                 };
             },
             {
-                '../style-spec/expression': 138,
-                '../style-spec/expression/compound_expression': 122,
-                '../style-spec/expression/definitions': 130,
-                '../style-spec/util/color': 154,
-                './window': 255,
-                'grid-index': 23
+                '../style-spec/expression': 139,
+                '../style-spec/expression/compound_expression': 123,
+                '../style-spec/expression/definitions': 131,
+                '../style-spec/util/color': 153,
+                './window': 254,
+                'grid-index': 24
             }
         ],
-        280: [
+        279: [
             function (_dereq_, module, exports) {
                 'use strict';
                 var WebWorker = _dereq_('./web_worker'), WorkerPool = function () {
@@ -86486,11 +86487,11 @@ var _$mapboxGl_14 = { exports: {} };
                 }, module.exports = WorkerPool;
             },
             {
-                '../': 72,
-                './web_worker': 254
+                '../': 73,
+                './web_worker': 253
             }
         ]
-    }, {}, [72])(72);
+    }, {}, [73])(73);
 }));
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 _$mapboxGl_14 = _$mapboxGl_14.exports
@@ -86502,10 +86503,9 @@ _$mapboxGl_14 = _$mapboxGl_14.exports
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var requiredVersion = '0.44.0';
+var requiredVersion = '0.44.1';
 
 var _$constants_237 = {
     requiredVersion: requiredVersion,

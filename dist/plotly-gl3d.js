@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.35.1
+* plotly.js (gl3d) v1.35.2
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -41224,6 +41224,7 @@ _$cartesian_477.clean = function(newFullData, newFullLayout, oldFullData, oldFul
     if(hadCartesian && !hasCartesian) {
         purgeSubplotLayers(oldFullLayout._cartesianlayer.selectAll('.subplot'), oldFullLayout);
         oldFullLayout._defs.selectAll('.axesclip').remove();
+        delete oldFullLayout._axisConstraintGroups;
     }
     // otherwise look for subplots we need to remove
     else if(oldSubplotList.cartesian) {
@@ -54013,6 +54014,8 @@ _$plot_api_455.plot = function(gd, data, layout, config) {
 
     var fullLayout = gd._fullLayout;
 
+    var hasCartesian = fullLayout._has('cartesian');
+
     // Legacy polar plots
     if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
         _$lib_422.log('Legacy polar charts are deprecated!');
@@ -54286,16 +54289,18 @@ _$plot_api_455.plot = function(gd, data, layout, config) {
         addFrames,
         drawFramework,
         marginPushers,
-        marginPushersAgain,
-        positionAndAutorange,
-        _$subroutines_458.layoutStyles,
-        drawAxes,
+        marginPushersAgain
+    ];
+    if(hasCartesian) seq.push(positionAndAutorange);
+    seq.push(_$subroutines_458.layoutStyles);
+    if(hasCartesian) seq.push(drawAxes);
+    seq.push(
         drawData,
         finalDraw,
         _$initInteractions_475,
         _$plots_510.rehover,
         _$plots_510.previousPromises
-    ];
+    );
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
@@ -56471,7 +56476,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
     }
 
     for(key in newContainer) {
-        if(!(key in oldContainer)) {
+        if(!(key in oldContainer || key.charAt(0) === '_' || typeof newContainer[key] === 'function')) {
             valObject = getValObject(outerparts.concat(key));
 
             if(valObjectCanBeDataArray(valObject) && Array.isArray(newContainer[key])) {
@@ -61430,7 +61435,7 @@ var _$core_406 = {};
 'use strict';
 
 // package version injected by `npm run preprocess`
-_$core_406.version = '1.35.1';
+_$core_406.version = '1.35.2';
 
 // inject promise polyfill
 _$es6Promise_86.polyfill();
