@@ -9,13 +9,22 @@
 'use strict';
 
 var glslify = require('glslify');
-var c = require('./constants');
 var vertexShaderSource = glslify('./shaders/vertex.glsl');
 var contextShaderSource = glslify('./shaders/context_vertex.glsl');
 var pickVertexShaderSource = glslify('./shaders/pick_vertex.glsl');
 var fragmentShaderSource = glslify('./shaders/fragment.glsl');
 
-var depthLimitEpsilon = 1e-6; // don't change; otherwise near/far plane lines are lost
+var Lib = require('../../lib');
+
+// don't change; otherwise near/far plane lines are lost
+var depthLimitEpsilon = 1e-6;
+// just enough buffer for an extra bit at single-precision floating point
+// which on [0, 1] is 6e-8 (1/2^24)
+var filterEpsilon = 1e-7;
+
+// precision of multiselect is the full range divided into this many parts
+var maskHeight = 2048;
+
 
 var gpuDimensionCount = 64;
 var sectionVertexCount = 2;
@@ -206,6 +215,8 @@ module.exports = function(canvasGL, d) {
 
     var regl = d.regl;
 
+    var mask, maskTexture;
+
     var paletteTexture = regl.texture({
         shape: [256, 1],
         format: 'rgba',
@@ -295,6 +306,7 @@ module.exports = function(canvasGL, d) {
             hiD: regl.prop('hiD'),
             palette: paletteTexture,
             mask: regl.prop('maskTexture'),
+            maskHeight: regl.prop('maskHeight'),
             colorClamp: regl.prop('colorClamp')
         },
         offset: regl.prop('offset'),
@@ -310,30 +322,22 @@ module.exports = function(canvasGL, d) {
 
     var previousAxisOrder = [];
 
-    function makeItem(i, ii, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, I, leftmost, rightmost) {
+    function makeItem(i, ii, x, y, panelSizeX, canvasPanelSizeY, crossfilterDimensionIndex, I, leftmost, rightmost, constraints) {
         var loHi, abcd, d, index;
         var leftRight = [i, ii];
-        var filterEpsilon = c.verticalPadding / canvasPanelSizeY;
 
         var dims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
-        var lims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
 
         for(loHi = 0; loHi < 2; loHi++) {
             index = leftRight[loHi];
             for(abcd = 0; abcd < 4; abcd++) {
                 for(d = 0; d < 16; d++) {
-                    var dimP = d + 16 * abcd;
                     dims[loHi][abcd][d] = d + 16 * abcd === index ? 1 : 0;
-                    if(!context) {
-                        lims[loHi][abcd][d] = (valid(d, 16 * abcd, panelCount) ? initialDims[dimP === 0 ? 0 : 1 + ((dimP - 1) % (initialDims.length - 1))].brush.filter.getBounds()[loHi] : loHi) + (2 * loHi - 1) * filterEpsilon;
-                    }
                 }
             }
         }
 
-        var mask, maskTexture;
-
-        var vm = {
+        var vm = Lib.extendFlat({
             key: crossfilterDimensionIndex,
             resolution: [canvasWidth, canvasHeight],
             viewBoxPosition: [x + overdrag, y],
@@ -361,55 +365,86 @@ module.exports = function(canvasGL, d) {
             viewportY: model.pad.b + model.layoutHeight * domain.y[0],
             viewportWidth: canvasWidth,
             viewportHeight: canvasHeight
-        };
-
-        if(!context) {
-            mask = Array.apply(null, new Array(canvasHeight * channelCount)).map(function() {
-                return 255;
-            });
-            for(var dimIndex = 0; dimIndex < dimensionCount; dimIndex++) {
-                var bitIndex = dimIndex % bitsPerByte;
-                var byteIndex = (dimIndex - bitIndex) / bitsPerByte;
-                var bitMask = Math.pow(2, bitIndex);
-                var dim = initialDims[dimIndex];
-                var ranges = dim.brush.filter.get();
-                if(ranges.length < 2) continue; // bail if the bounding box based filter is sufficient
-                var pi, pixelRange;
-                var boundingBox = dim.brush.filter.getBounds();
-                pixelRange = boundingBox.map(dim.unitScaleInOrder);
-                for(pi = Math.max(0, Math.floor(pixelRange[0])); pi <= Math.min(canvasHeight - 1, Math.ceil(pixelRange[1])); pi++) {
-                    mask[pi * channelCount + byteIndex] &= ~bitMask; // clear bits
-                }
-                for(var r = 0; r < ranges.length; r++) {
-                    pixelRange = ranges[r].map(dim.unitScaleInOrder);
-                    for(pi = Math.max(0, Math.floor(pixelRange[0])); pi <= Math.min(canvasHeight - 1, Math.ceil(pixelRange[1])); pi++) {
-                        mask[pi * channelCount + byteIndex] |= bitMask;
-                    }
-                }
-            }
-
-            maskTexture = regl.texture({
-                shape: [channelCount, canvasHeight], // 8 units x 8 bits = 64 bits, just sufficient for the almost 64 dimensions we support
-                format: 'alpha',
-                type: 'uint8',
-                mag: 'nearest',
-                min: 'nearest',
-                data: mask
-            });
-
-            vm.maskTexture = maskTexture;
-
-            vm.loA = lims[0][0];
-            vm.loB = lims[0][1];
-            vm.loC = lims[0][2];
-            vm.loD = lims[0][3];
-            vm.hiA = lims[1][0];
-            vm.hiB = lims[1][1];
-            vm.hiC = lims[1][2];
-            vm.hiD = lims[1][3];
-        }
+        }, constraints);
 
         return vm;
+    }
+
+    function makeConstraints() {
+        var loHi, abcd, d;
+
+        var lims = [0, 1].map(function() {return [0, 1, 2, 3].map(function() {return new Float32Array(16);});});
+
+        for(loHi = 0; loHi < 2; loHi++) {
+            for(abcd = 0; abcd < 4; abcd++) {
+                for(d = 0; d < 16; d++) {
+                    var dimP = d + 16 * abcd;
+                    var lim;
+                    if(valid(d, 16 * abcd, panelCount)) {
+                        var dimi = initialDims[dimP === 0 ? 0 : 1 + ((dimP - 1) % (initialDims.length - 1))];
+                        lim = dimi.brush.filter.getBounds()[loHi];
+                    }
+                    else lim = loHi;
+                    lims[loHi][abcd][d] = lim + (2 * loHi - 1) * filterEpsilon;
+                }
+            }
+        }
+
+        var maskExpansion = maskHeight / canvasHeight;
+
+        function expandedPixelRange(dim, bounds) {
+            var originalPixelRange = bounds.map(dim.unitScaleInOrder);
+            return [
+                Math.max(0, Math.floor(originalPixelRange[0] * maskExpansion)),
+                Math.min(maskHeight - 1, Math.ceil(originalPixelRange[1] * maskExpansion))
+            ];
+        }
+
+        mask = Array.apply(null, new Array(maskHeight * channelCount)).map(function() {
+            return 255;
+        });
+        for(var dimIndex = 0; dimIndex < dimensionCount; dimIndex++) {
+            var bitIndex = dimIndex % bitsPerByte;
+            var byteIndex = (dimIndex - bitIndex) / bitsPerByte;
+            var bitMask = Math.pow(2, bitIndex);
+            var dim = initialDims[dimIndex];
+            var ranges = dim.brush.filter.get().sort(function(a, b) {return a[0] - b[0]; });
+            if(ranges.length < 2) continue; // bail if the bounding box based filter is sufficient
+
+            var prevEnd = expandedPixelRange(dim, ranges[0])[1];
+            for(var ri = 1; ri < ranges.length; ri++) {
+                var nextRange = expandedPixelRange(dim, ranges[ri]);
+                for(var pi = prevEnd + 1; pi < nextRange[0]; pi++) {
+                    mask[pi * channelCount + byteIndex] &= ~bitMask;
+                }
+                prevEnd = Math.max(prevEnd, nextRange[1]);
+            }
+        }
+
+        var textureData = {
+            // 8 units x 8 bits = 64 bits, just sufficient for the almost 64 dimensions we support
+            shape: [channelCount, maskHeight],
+            format: 'alpha',
+            type: 'uint8',
+            mag: 'nearest',
+            min: 'nearest',
+            data: mask
+        };
+        if(maskTexture) maskTexture(textureData);
+        else maskTexture = regl.texture(textureData);
+
+        return {
+            maskTexture: maskTexture,
+            maskHeight: maskHeight,
+            loA: lims[0][0],
+            loB: lims[0][1],
+            loC: lims[0][2],
+            loD: lims[0][3],
+            hiA: lims[1][0],
+            hiB: lims[1][1],
+            hiC: lims[1][2],
+            hiD: lims[1][3]
+        };
     }
 
     function renderGLParcoords(panels, setChanged, clearOnly) {
@@ -433,6 +468,7 @@ module.exports = function(canvasGL, d) {
             // clear canvas here, as the panel iteration below will not enter the loop body
             clear(regl, 0, 0, canvasWidth, canvasHeight);
         }
+        var constraints = context ? {} : makeConstraints();
 
         for(I = 0; I < panelCount; I++) {
             var panel = panels[I];
@@ -447,7 +483,7 @@ module.exports = function(canvasGL, d) {
             var xTo = x + panelSizeX;
             if(setChanged || !previousAxisOrder[i] || previousAxisOrder[i][0] !== x || previousAxisOrder[i][1] !== xTo) {
                 previousAxisOrder[i] = [x, xTo];
-                var item = makeItem(i, ii, x, y, panelSizeX, panelSizeY, dim1.crossfilterDimensionIndex, I, leftmost, rightmost);
+                var item = makeItem(i, ii, x, y, panelSizeX, panelSizeY, dim1.crossfilterDimensionIndex, I, leftmost, rightmost, constraints);
                 renderState.clearOnly = clearOnly;
                 renderBlock(regl, glAes, renderState, setChanged ? lines.blockLineCount : sampleCount, sampleCount, item);
             }

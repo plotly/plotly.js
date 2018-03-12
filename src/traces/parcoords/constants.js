@@ -26,7 +26,7 @@ module.exports = {
         fillOpacity: 1, // Filter bar fill opacity
         snapDuration: 150, // tween duration in ms for brush snap for ordinal axes
         snapRatio: 0.25, // ratio of bar extension relative to the distance between two adjacent ordinal values
-        snapDefaultRatio: 0.05, // bar extension relative to the entire axis length, for when there's no adjacent value
+        snapClose: 0.01, // fraction of inter-value distance to snap to the closer one, even if you're not over it
         strokeColor: 'white', // Color of the filter bar side lines
         strokeOpacity: 1, // Filter bar side stroke opacity
         strokeWidth: 1, // Filter bar side stroke width in pixels

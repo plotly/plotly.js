@@ -182,7 +182,8 @@ function viewModel(state, callbacks, model) {
 
     var unitPad = c.verticalPadding / (height * canvasPixelRatio);
     var unitPadScale = (1 - 2 * unitPad);
-    var paddedUnitScale = function(d) {return unitPad + unitPadScale * d;};
+    function paddedUnitScale(d) { return unitPad + unitPadScale * d; }
+    function invertPaddedUnitScale(d) { return (d - unitPad) / unitPadScale; }
     var uScaleInOrder = unitScaleInOrder(height, c.verticalPadding);
 
     var viewModel = {
@@ -202,7 +203,7 @@ function viewModel(state, callbacks, model) {
         var uScale = unitScale(height, c.verticalPadding);
         var specifiedConstraint = dimension.constraintrange;
         var filterRangeSpecified = specifiedConstraint && specifiedConstraint.length > 0;
-        var filterRange = filterRangeSpecified ? specifiedConstraint.map(function(d) {return d.map(domainToUnit);}) : [[0, 1]];
+        var filterRange = filterRangeSpecified ? specifiedConstraint.map(function(d) {return d.map(domainToUnit).map(paddedUnitScale);}) : [[0, 1]];
         var brushMove = function() {
             var p = viewModel;
             p.focusLayer && p.focusLayer.render(p.panels, true);
@@ -257,7 +258,7 @@ function viewModel(state, callbacks, model) {
                         var invScale = domainToUnit.invert;
 
                         // update gd.data as if a Plotly.restyle were fired
-                        var newRanges = f.map(function(r) {return r.map(invScale);});
+                        var newRanges = f.map(function(r) {return r.map(invertPaddedUnitScale).map(invScale);});
                         callbacks.filterChanged(p.key, dimension._index, newRanges);
                     }
                 }

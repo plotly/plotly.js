@@ -66,7 +66,7 @@ vec4 position(
         float signum,
         mat4 dim1A, mat4 dim2A, mat4 dim1B, mat4 dim2B, mat4 dim1C, mat4 dim2C, mat4 dim1D, mat4 dim2D,
         mat4 loA, mat4 hiA, mat4 loB, mat4 hiB, mat4 loC, mat4 hiC, mat4 loD, mat4 hiD,
-        sampler2D mask
+        sampler2D mask, float maskHeight
     ) {
 
     float x = 0.5 * signum + 0.5;
@@ -74,7 +74,7 @@ vec4 position(
 
     float show = float(
                             withinBoundingBox(dims, loA, hiA, loB, hiB, loC, hiC, loD, hiD)
-                         && withinRasterMask(dims, mask, resolution.y)
+                         && withinRasterMask(dims, mask, maskHeight)
                       );
 
     vec2 viewBoxXY = viewBoxPosition + viewBoxSize * vec2(x, y);

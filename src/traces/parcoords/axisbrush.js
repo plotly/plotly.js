@@ -45,43 +45,56 @@ function addFilterBarDefs(defs) {
         .attr('stroke-width', c.bar.strokeWidth);
 }
 
-// these two could be unified at a slight loss of readability
-function ordinalScaleSnapLo(a, v) {
-    var i, prevDiff, prevValue, diff, j;
-    for(i = 0, prevDiff = Infinity, prevValue = a[0]; i < a.length; i++) {
-        if(a[i] < v) j = i;
-        diff = Math.abs(a[i] - v);
-        if(diff > prevDiff) {
-            return {value: prevValue, adjacent: j};
-        }
-        prevDiff = diff;
-        prevValue = a[i];
+var snapRatio = c.bar.snapRatio;
+function snapOvershoot(v, vAdjacent) { return v * (1 - snapRatio) + vAdjacent * snapRatio; }
+
+var snapClose = c.bar.snapClose;
+function closeToCovering(v, vAdjacent) { return v * (1 - snapClose) + vAdjacent * snapClose; }
+
+// snap for the low end of a range on an ordinal scale
+// on an ordinal scale, always show some overshoot from the exact value,
+// so it's clear we're covering it
+// find the interval we're in, and snap to 1/4 the distance to the next
+// these two could be unified at a slight loss of readability / perf
+function ordinalScaleSnapLo(a, v, existingRanges) {
+    if(overlappingExisting(v, existingRanges)) return v;
+
+    var aPrev = a[0];
+    var aPrevPrev = aPrev;
+    for(var i = 1; i < a.length; i++) {
+        var aNext = a[i];
+
+        // very close to the previous - snap down to it
+        if(v < closeToCovering(aPrev, aNext)) return snapOvershoot(aPrev, aPrevPrev);
+        if(v < aNext || i === a.length - 1) return snapOvershoot(aNext, aPrev);
+
+        aPrevPrev = aPrev;
+        aPrev = aNext;
     }
-    return {value: a[a.length - 1], adjacent: j};
 }
 
-function ordinalScaleSnapHi(a, v) {
-    var i, prevDiff, prevValue, diff, j;
-    for(i = a.length - 1, prevDiff = Infinity, prevValue = a[a.length - 1]; i >= 0; i--) {
-        if(a[i] > v) j = i;
-        diff = Math.abs(a[i] - v);
-        if(diff > prevDiff) {
-            return {value: prevValue, adjacent: j};
-        }
-        prevDiff = diff;
-        prevValue = a[i];
+function ordinalScaleSnapHi(a, v, existingRanges) {
+    if(overlappingExisting(v, existingRanges)) return v;
+
+    var aPrev = a[a.length - 1];
+    var aPrevPrev = aPrev;
+    for(var i = a.length - 2; i >= 0; i--) {
+        var aNext = a[i];
+
+        // very close to the previous - snap down to it
+        if(v > closeToCovering(aPrev, aNext)) return snapOvershoot(aPrev, aPrevPrev);
+        if(v > aNext || i === a.length - 1) return snapOvershoot(aNext, aPrev);
+
+        aPrevPrev = aPrev;
+        aPrev = aNext;
     }
-    return {value: a[0], adjacent: j};
 }
 
-function snapOvershoot(a, i, value) {
-    // Take the distance to the adjacent ordinal value (if any) and extend the magenta bar to some ratio of it,
-    // so that singular value selections still show up with non-zero length (therefore visible and interactive) bars,
-    // yet the extension is short enough that a gap remains between adjacent selections, irrespective of how many
-    // ordinal values there are, and whether their cadence is regular or not. A dense clustering (screen distance of a
-    // few pixels or less) is still bound to result in undecipherable highlighting due to the limits of the screen
-    // resolution. Further doc is at the respective constants.
-    return (i === undefined ? c.bar.snapDefaultRatio : Math.abs(value - a[i]) * c.bar.snapRatio);
+function overlappingExisting(v, existingRanges) {
+    for(var i = 0; i < existingRanges.length; i++) {
+        if(v >= existingRanges[i][0] && v <= existingRanges[i][1]) return true;
+    }
+    return false;
 }
 
 function barHorizontalSetup(selection) {
@@ -282,9 +295,10 @@ function attachDragBehavior(selection) {
                 if(s.grabbingBar) { // moving the bar
                     s.newExtent = [y - s.grabPoint, y + s.barLength - s.grabPoint].map(d.unitScaleInOrder.invert);
                 } else { // south/north drag or new bar creation
-                    s.newExtent = d.unitScaleInOrder(s.startExtent) < y
-                        ? [s.startExtent, d.unitScaleInOrder.invert(y)]
-                        : [d.unitScaleInOrder.invert(y), s.startExtent];
+                    var endExtent = d.unitScaleInOrder.invert(y);
+                    s.newExtent = s.startExtent < endExtent ?
+                        [s.startExtent, endExtent] :
+                        [endExtent, s.startExtent];
                 }
 
                 // take care of the parcoords axis height constraint: bar can't breach it
@@ -338,18 +352,14 @@ function attachDragBehavior(selection) {
                 };
                 if(d.ordinal) {
                     var a = d.ordinalScale.range();
-                    var snapLo = ordinalScaleSnapLo(a, s.newExtent[0]);
-                    var snapHi = ordinalScaleSnapHi(a, s.newExtent[1]);
-                    var i0 = snapLo.adjacent;
-                    var i1 = snapHi.adjacent;
-                    s.newExtent[0] = snapLo.value;
-                    s.newExtent[1] = snapHi.value;
-                    if(s.newExtent[0] === s.newExtent[1]) {
-                        // if one single ordinal is selected, give it a finite bar length
-                        s.newExtent[0] = Math.max(0, s.newExtent[0] - snapOvershoot(a, i0, snapLo.value));
-                        s.newExtent[1] = Math.min(1, s.newExtent[1] + snapOvershoot(a, i1, snapHi.value));
+                    s.newExtent = [
+                        ordinalScaleSnapLo(a, s.newExtent[0], s.stayingIntervals),
+                        ordinalScaleSnapHi(a, s.newExtent[1], s.stayingIntervals)
+                    ];
+                    s.extent = s.stayingIntervals.concat(s.newExtent[1] > s.newExtent[0] ? [s.newExtent] : []);
+                    if(!s.extent.length) {
+                        brushClear(brush);
                     }
-                    s.extent = s.stayingIntervals.concat([s.newExtent]);
                     s.brushCallback(d);
                     renderHighlight(this.parentElement, mergeIntervals); // merging intervals post the snap tween
                 } else {
