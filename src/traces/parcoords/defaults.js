@@ -60,6 +60,8 @@ function dimensionsDefaults(traceIn, traceOut) {
             coerce('ticktext');
             coerce('tickformat');
             coerce('range');
+
+            coerce('multiselect');
             coerce('constraintrange');
 
             commonLength = Math.min(commonLength, dimensionOut.values.length);

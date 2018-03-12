@@ -271,7 +271,8 @@ function attachDragBehavior(selection) {
                 s.grabPoint = d.unitScaleInOrder(unitLocation) - pixelRange[0] - c.verticalPadding;
                 s.barLength = pixelRange[1] - pixelRange[0];
                 s.grabbingBar = active && intData.m && unitRange;
-                s.stayingIntervals = barInteraction
+                s.stayingIntervals = !d.multiselect ? [] :
+                    barInteraction
                     ? b.filter.get().filter(differentInterval(unitRange))
                     : b.filter.get(); // keep all preexisting bars if interaction wasn't a barInteraction
                 var grabbingBarNorth = intData.n;

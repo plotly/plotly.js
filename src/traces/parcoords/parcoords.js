@@ -224,6 +224,7 @@ function viewModel(state, callbacks, model) {
             tickvals: dimension.tickvals,
             ticktext: dimension.ticktext,
             ordinal: !!dimension.tickvals,
+            multiselect: dimension.multiselect,
             xIndex: i,
             crossfilterDimensionIndex: i,
             visibleIndex: dimension._index,
