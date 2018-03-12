@@ -65,8 +65,8 @@ module.exports = function setConvert(trace) {
     bax.c2p = function(v) { return v; };
 
     trace.setScale = function() {
-        var x = trace.x;
-        var y = trace.y;
+        var x = trace._x;
+        var y = trace._y;
 
         // This is potentially a very expensive step! It does the bulk of the work of constructing
         // an expanded basis of control points. Note in particular that it overwrites the existing

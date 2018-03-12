@@ -182,6 +182,15 @@ describe('Test histogram', function() {
 
             var out = calc(gd, fullTrace);
             delete out[0].trace;
+
+            // this is dumb - but some of the `p0` values are `-0` which doesn't match `0`
+            // even though -0 === 0
+            out.forEach(function(cdi) {
+                for(var key in cdi) {
+                    if(cdi[key] === 0) cdi[key] = 0;
+                }
+            });
+
             return out;
         }
 
@@ -236,14 +245,6 @@ describe('Test histogram', function() {
             out = _calc({
                 x: ['1970-01-02', '1970-01-31', '1970-02-13', '1970-04-19'],
                 nbinsx: 4
-            });
-
-            // this is dumb - but some of the `p0` values are `-0` which doesn't match `0`
-            // even though -0 === 0
-            out.forEach(function(cdi) {
-                Object.keys(cdi).forEach(function(key) {
-                    if(cdi[key] === 0) cdi[key] = 0;
-                });
             });
 
             expect(out).toEqual([
@@ -362,6 +363,25 @@ describe('Test histogram', function() {
 
             expect(out).toEqual([
                 {i: 0, b: 0, p: 97, s: 2, width1: 1, pts: [1, 3], p0: 97, p1: 97}
+            ]);
+        });
+
+        it('can tell the difference between single-bin and single-value histograms', function() {
+            var out = _calc({x: [1, 4]}, [], {barmode: 'overlay'});
+
+            expect(out).toEqual([
+                {i: 0, b: 0, p: 2, s: 2, width1: 5, pts: [0, 1], p0: 0, p1: 4}
+            ]);
+
+            // real single-valued trace inherits bar width from the simply single-bin trace
+            out = _calc({x: [5]}, [
+                {x: [1, 4]}
+            ], {
+                barmode: 'overlay'
+            });
+
+            expect(out).toEqual([
+                {i: 0, b: 0, p: 5, s: 1, width1: 5, pts: [0], p0: 5, p1: 5}
             ]);
         });
 
@@ -652,7 +672,7 @@ describe('Test histogram', function() {
             .then(done);
         });
 
-        it('give the right bar width for single-bin histograms', function(done) {
+        it('gives the right bar width for single-value histograms', function(done) {
             Plotly.newPlot(gd, [{
                 type: 'histogram',
                 x: [3, 3, 3],

@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -39,7 +38,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true, noSelect: true});
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true});
 
         // array marker.size and marker.color are only supported with circles
 
@@ -48,8 +47,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         marker.line = {width: 0};
 
         if(marker.symbol !== 'circle') {
-            if(Array.isArray(marker.size)) marker.size = marker.size[0];
-            if(Array.isArray(marker.color)) marker.color = marker.color[0];
+            if(Lib.isArrayOrTypedArray(marker.size)) marker.size = marker.size[0];
+            if(Lib.isArrayOrTypedArray(marker.color)) marker.color = marker.color[0];
         }
     }
 
@@ -69,9 +68,7 @@ function handleLonLatDefaults(traceIn, traceOut, coerce) {
     var lon = coerce('lon') || [];
     var lat = coerce('lat') || [];
     var len = Math.min(lon.length, lat.length);
-
-    if(len < lon.length) traceOut.lon = lon.slice(0, len);
-    if(len < lat.length) traceOut.lat = lat.slice(0, len);
+    traceOut._length = len;
 
     return len;
 }

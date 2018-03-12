@@ -318,7 +318,7 @@ describe('table', function() {
             function restyleValues(what, key, setterValue) {
 
                 // array values need to be wrapped in an array; unwrapping here for value comparison
-                var value = Lib.isArray(setterValue) ? setterValue[0] : setterValue;
+                var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
 
                 return function() {
                     return Plotly.restyle(gd, what + '.values[' + key + ']', setterValue).then(function() {
@@ -367,7 +367,7 @@ describe('table', function() {
 
             function restyleValues(what, fun, setterValue) {
 
-                var value = Lib.isArray(setterValue) ? setterValue[0] : setterValue;
+                var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
 
                 return function() {
                     return Plotly.restyle(gd, what, setterValue).then(function() {

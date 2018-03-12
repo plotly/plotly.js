@@ -12,7 +12,7 @@
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var _ = Lib._;
 var Color = require('../../components/color');
@@ -26,7 +26,6 @@ var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select');
 var constants = require('../cartesian/constants');
-
 
 function Ternary(options, fullLayout) {
     this.id = options.id;
@@ -261,7 +260,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _pos: 0, // _this.xaxis.domain[0] * graphSize.w,
         _id: 'y',
         _length: w,
-        _gridpath: 'M0,0l' + h + ',-' + (w / 2)
+        _gridpath: 'M0,0l' + h + ',-' + (w / 2),
+        automargin: false // don't use automargins routine for labels
     });
     setConvert(aaxis, _this.graphDiv._fullLayout);
     aaxis.setScale();
@@ -280,7 +280,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _pos: 0, // (1 - yDomain0) * graphSize.h,
         _id: 'x',
         _length: w,
-        _gridpath: 'M0,0l-' + (w / 2) + ',-' + h
+        _gridpath: 'M0,0l-' + (w / 2) + ',-' + h,
+        automargin: false // don't use automargins routine for labels
     });
     setConvert(baxis, _this.graphDiv._fullLayout);
     baxis.setScale();
@@ -301,7 +302,8 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _pos: 0, // _this.xaxis.domain[1] * graphSize.w,
         _id: 'y',
         _length: w,
-        _gridpath: 'M0,0l-' + h + ',' + (w / 2)
+        _gridpath: 'M0,0l-' + h + ',' + (w / 2),
+        automargin: false // don't use automargins routine for labels
     });
     setConvert(caxis, _this.graphDiv._fullLayout);
     caxis.setScale();
@@ -328,12 +330,12 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     _this.layers.bgrid.attr('transform', bTransform);
 
     var aTransform = 'translate(' + (x0 + w / 2) + ',' + y0 +
-        ')rotate(30)translate(0,-' + aaxis._offset + ')';
+        ')rotate(30)translate(0,' + -aaxis._offset + ')';
     _this.layers.aaxis.attr('transform', aTransform);
     _this.layers.agrid.attr('transform', aTransform);
 
     var cTransform = 'translate(' + (x0 + w / 2) + ',' + y0 +
-        ')rotate(-30)translate(0,-' + caxis._offset + ')';
+        ')rotate(-30)translate(0,' + -caxis._offset + ')';
     _this.layers.caxis.attr('transform', cTransform);
     _this.layers.cgrid.attr('transform', cTransform);
 
@@ -496,7 +498,7 @@ proto.initInteractions = function() {
                 attrs[_this.id + '.baxis.min'] = 0;
                 attrs[_this.id + '.caxis.min'] = 0;
                 gd.emit('plotly_doubleclick', null);
-                Plotly.relayout(gd, attrs);
+                Registry.call('relayout', gd, attrs);
             }
             Fx.click(gd, evt, _this.id);
         }
@@ -601,7 +603,7 @@ proto.initInteractions = function() {
         attrs[_this.id + '.baxis.min'] = mins.b;
         attrs[_this.id + '.caxis.min'] = mins.c;
 
-        Plotly.relayout(gd, attrs);
+        Registry.call('relayout', gd, attrs);
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
             Lib.notifier(_(gd, 'Double-click to zoom back out'), 'long');
@@ -680,7 +682,7 @@ proto.initInteractions = function() {
         attrs[_this.id + '.baxis.min'] = mins.b;
         attrs[_this.id + '.caxis.min'] = mins.c;
 
-        Plotly.relayout(gd, attrs);
+        Registry.call('relayout', gd, attrs);
     }
 
     function clearSelect() {

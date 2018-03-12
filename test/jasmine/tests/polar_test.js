@@ -543,6 +543,65 @@ describe('Test relayout on polar subplots:', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should update axis ranges when extending traces', function(done) {
+        var gd = createGraphDiv();
+
+        function _assert(msg, exp) {
+            expect(gd._fullLayout.polar.radialaxis.autorange).toBe(true);
+
+            expect(gd.layout.polar.radialaxis.range)
+                .toBeCloseToArray(exp.rRange, 2, 'radial range in user layout - ' + msg);
+            expect(gd._fullLayout.polar.radialaxis.range)
+                .toBeCloseToArray(exp.rRange, 2, 'radial range in full layout - ' + msg);
+
+            expect(gd._fullLayout.polar._subplot.angularAxis.range)
+                .toBeCloseToArray([0, exp.period], 2, 'range in mocked angular axis - ' + msg);
+
+            expect(d3.selectAll('path.angulartick').size())
+                .toBe(exp.nTicks, '# of visible angular ticks - ' + msg);
+
+            expect([gd.calcdata[0][5].x, gd.calcdata[0][5].y])
+                .toBeCloseToArray(exp.sampleXY, -1, 'sample (x,y) px coords in calcdata - ' + msg);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatterpolar',
+            r: [39, 28, 8, 7, 28, 39, 40, 30, 30, 30, 30],
+            theta: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'A']
+        }])
+        .then(function() {
+            _assert('base', {
+                rRange: [0, 41.14],
+                period: 10,
+                nTicks: 10,
+                sampleXY: [-39, 0]
+            });
+            return Plotly.extendTraces(gd, {
+                r: [[-10, -5]],
+                theta: [['y', 'z']]
+            }, [0]);
+        })
+        .then(function() {
+            _assert('after extending trace', {
+                rRange: [-11.47, 41.47],
+                period: 12,
+                nTicks: 12,
+                sampleXY: [-43, 25]
+            });
+            return Plotly.relayout(gd, 'polar.angularaxis.period', 15);
+        })
+        .then(function() {
+            _assert('after angularaxis.period relayout', {
+                rRange: [-11.47, 41.47],
+                period: 15,
+                nTicks: 12,
+                sampleXY: [-25, 43]
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('Test polar interactions:', function() {

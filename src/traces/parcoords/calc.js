@@ -14,12 +14,12 @@ var Lib = require('../../lib');
 var wrap = require('../../lib/gup').wrap;
 
 module.exports = function calc(gd, trace) {
-    var cs = !!trace.line.colorscale && Lib.isArray(trace.line.color);
-    var color = cs ? trace.line.color : Array.apply(0, Array(trace.dimensions.reduce(function(p, n) {return Math.max(p, n.values.length);}, 0))).map(function() {return 0.5;});
+    var cs = !!trace.line.colorscale && Lib.isArrayOrTypedArray(trace.line.color);
+    var color = cs ? trace.line.color : constHalf(trace._commonLength);
     var cscale = cs ? trace.line.colorscale : [[0, trace.line.color], [1, trace.line.color]];
 
     if(hasColorscale(trace, 'line')) {
-        calcColorscale(trace, trace.line.color, 'line', 'c');
+        calcColorscale(trace, color, 'line', 'c');
     }
 
     return wrap({
@@ -27,3 +27,11 @@ module.exports = function calc(gd, trace) {
         cscale: cscale
     });
 };
+
+function constHalf(len) {
+    var out = new Array(len);
+    for(var i = 0; i < len; i++) {
+        out[i] = 0.5;
+    }
+    return out;
+}

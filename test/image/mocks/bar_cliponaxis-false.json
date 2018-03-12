@@ -1,0 +1,82 @@
+{
+  "data": [
+    {
+      "type": "bar",
+	  "name": "not clipped",
+      "x": ["apple", "banana", "clementine"],
+      "y": [1.9, 2, 2.1],
+      "text": ["apple", "banana", "x"],
+      "textposition": "outside",
+      "cliponaxis": false,
+      "textfont": {
+        "size": [60, 40, 20]
+      }
+    },
+    {
+      "type": "bar",
+	  "name": "same but clipped",
+      "x": ["apple", "banana", "clementine"],
+      "y": [1.9, 2, 2.1],
+      "text": ["apple", "banana", "clementine"],
+      "textposition": "outside",
+      "cliponaxis": true,
+      "textfont": {
+        "size": [60, 40, 20]
+      },
+	  "xaxis": "x2",
+	  "yaxis": "y2"
+    },
+    {
+      "type": "bar",
+	  "name": "should <b>not</b> see text",
+      "x": ["banana"],
+      "y": [2],
+      "text": ["X"],
+      "textposition": "outside",
+      "cliponaxis": true,
+      "textfont": {"size": [20]},
+	  "marker": {"opacity": 0.3}
+    }
+  ],
+  "layout": {
+	"barmode": "overlay",
+	"legend": {
+      "x": 0.5,
+      "xanchor": "center",
+      "y": -0.05,
+      "yanchor": "top"
+	},
+    "xaxis": {
+      "showline": true,
+      "showticklabels": false,
+      "mirror": true,
+      "layer": "below traces",
+	  "domain": [0, 0.48]
+    },
+    "xaxis2": {
+      "anchor": "y2",
+      "showline": true,
+      "showticklabels": false,
+      "mirror": true,
+      "layer": "below traces",
+	  "domain": [0.52, 1]
+    },
+    "yaxis": {
+      "showline": true,
+      "mirror": true,
+      "layer": "below traces",
+      "range": [0, 2]
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "showline": true,
+      "mirror": true,
+      "layer": "below traces",
+      "range": [0, 2]
+    },
+    "width": 700,
+    "height": 400,
+	"margin": {"t": 40},
+	"dragmode": "pan"
+  }
+}

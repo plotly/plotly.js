@@ -10,6 +10,109 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.35.2] -- 2018-03-09
+
+### Fixed
+- Ping `mapbox-gl` to `0.44.1` so that users on fresh
+  `npm install` do not get the wrong mapbox-gl version message [#2467]
+- Fix swapping between `scatter` and `scatter3d` traces and other
+  potential problems caused by incorrect axis constraints resetting [#2465]
+
+
+## [1.35.1] -- 2018-03-08
+
+### Fixed
+- Fix `scatterpolar` in dist and CDN bundles
+  (due to `browser-pack-flat` discrepancy introduced in 1.35.0) [#2458]
+- Fix removing and adding scatter(gl) as not the first module [#2455]
+- Ensure we don't draw ticks if there are none to draw [#2454]
+
+
+## [1.35.0] -- 2018-03-07
+
+### Added
+- Add `automargin` attribute to cartesian axes which auto-expands margins
+  when ticks, tick labels and/or axis titles do not fit on the graph [#2243]
+- Add support for typed arrays as data array inputs [#2388]
+- Add layout `grids` attribute for easy subplot generation [#2399]
+- Implement `cliponaxis: false` for bar text [#2378]
+- Add opposite axis attributes for range slider to control y axis range behavior [#2364]
+- Generalize `hoverdistance` and `spikedistance` for area-like objects [#2379]
+- Bring `scattergl` auto-range logic to par with SVG `scatter` [#2404]
+- Add selected/unselected marker color size support to `scattermapbox` traces [#2361]
+
+### Changed
+- Remove all circular dependencies in our `src/` directory [#2429]
+- Build our CDN bundles with `browser-pack-flat` browserify plugin [#2447]
+- Bump `mapbox-gl` to `v0.44.0` [#2361]
+- Bump `glslify` to `v6.1.1` [#2377]
+- Stop relinking `customdata`, `ids` and any matching objects
+  in `gd._fullLayout` during `Plots.supplyDefaults` [#2375]
+
+### Fixed
+- Fix buggy auto-range / auto-margin interaction
+  leading to axis range inconsistencies on redraws
+  (this bug was mostly noticeable on graphs with legends) [#2437]
+- Bring back `scattergl` lines under select/lasso `dragmode`
+  (bug introduced in `1.33.0`) [#2377]
+- Fix `scattergl` visible toggling for graphs with multiple traces
+  with different modes (bug introduced in `1.33.0`) [#2442]
+- Bring back `spikelines` for traces other than `scatter`
+  (bug introduced in `1.33.0`) [#2379]
+- Fix `Plotly.Fx.hover` acting on multiple subplots
+  (bug introduced in `1.32.0`) [#2379]
+- Fix range slider with stacked y axes positioning
+  (bug introduced in `1.32.0`) [#2451]
+- Fix `scattergl` color clustering [#2377]
+- Fix `Plotly.restyle` for `scattergl` `fill` [#2377]
+- Fix multi-line y-axis label positioning [#2424]
+- Fix centered hover labels edge cases [#2440, #2445]
+- Fix hover labels in bar groups in compare mode [#2414]
+- Fix axes and axis lines removal [#2416]
+- Fix auto-sizing in `Plotly.react` [#2437]
+- Fix error bars for `Plotly.react` and uneven data arrays [#2360]
+- Fix edits for date-string referenced annotations [#2368]
+- Fix `z` hover labels with exponents [#2422]
+- Fix yet another histogram edge case [#2413]
+- Fix fall back for contour labels when there's only one contour [#2411]
+- Fix `scatterpolar` category angular period calculations [#2449]
+- Clear select outlines on mapbox zoomstart [#2361]
+- Fix legend click to causes legend scroll bug [#2426]
+
+
+## [1.34.0] -- 2018-02-12
+
+### Added
+- Add `Plotly.react`, a new do-it-all API method that creates and update graphs
+  using the same API signature [#2341]
+- Add constraint-type contours to `contour` traces [#2270]
+- Add `notched` and `notchwidth` attributes to `box` traces [#2305]
+- Add localization machinery to auto-formatted date axis ticks [#2261]
+- Add support for `text` in `mesh3d` traces [#2327]
+- Add support for scalar `text` in `surface` traces [#2327]
+- Make mode bar for graphs with multiple subplot types more usable [#2339]
+- Add `npm@5` package-lock file [#2323]
+
+### Changed
+- All of gl-vis dependencies now use `gl-shader@4.2.1` [#2293, #2306]
+- All our dependencies and source now use `glslify@6.1.0` [#2326]
+
+### Fixed
+- Prevent page scroll on mobile device on `gl2d` and `gl3d` subplots [#2296]
+- Fix multi-marker `scattergl` selection errors (bug introduced in `1.33.0`) [#2295]
+- Fix `Plotly.addTraces` in `scattergl` selection call backs (bug introduced in `1.33.0`) [#2298]
+- Fix trace `opacity` restyle for `scattergl` traces (bug introduced in `1.33.0`) [#2299]
+- Fix `scattergl` handling of `selectedpoints` across multiple traces [#2311]
+- Fix `scattergl` horizontal and vertical line rendering [#2340]
+- Fix restyle for scalar `hoverinfo` for `scatter3d`, `surface` and `mesh3d` traces [#2327]
+- Fix `table` when content-less cells and headers are supplied [#2314]
+- Fix `Plotly.animate` for attribute nested in `dimensions` containers [#2324]
+- Fix `hoverformat` on `visible: false` cartesian axes (bug introduced in `1.33.0`) [#2329]
+- Fix handling of double negative translate transform values [#2339]
+- Fix compare `hovermode` fallback for non-cartesian subplot types [#2339]
+- Fix animation error messages when overriding and ignoring frames updates [#2313]
+
+
 ## [1.33.1] -- 2018-01-24
 
 ### Fixed

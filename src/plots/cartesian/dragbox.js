@@ -11,8 +11,8 @@
 
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
+var supportsPassive = require('has-passive-events');
 
-var Plotly = require('../../plotly');
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -34,7 +34,6 @@ var constants = require('./constants');
 var MINDRAG = constants.MINDRAG;
 var MINZOOM = constants.MINZOOM;
 
-var supportsPassive = Lib.eventListenerOptionsSupported();
 
 // flag for showing "doubleclick to zoom out" only at the beginning
 var SHOWZOOMOUTTIP = true;
@@ -213,7 +212,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                         .on('edit', function(text) {
                             var v = ax.d2r(text);
                             if(v !== undefined) {
-                                Plotly.relayout(gd, attrStr, v);
+                                Registry.call('relayout', gd, attrStr, v);
                             }
                         });
                 }
@@ -358,9 +357,15 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
+        if(redrawTimer === null) {
+            clearSelect(zoomlayer);
+        }
+
         // If a transition is in progress, then disable any behavior:
         if(gd._transitioningWithDuration) {
-            return Lib.pauseEvent(e);
+            e.preventDefault();
+            e.stopPropagation();
+            return;
         }
 
         var pc = gd.querySelector('.plotly');
@@ -434,7 +439,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             dragTail(zoomMode);
         }, REDRAWDELAY);
 
-        return Lib.pauseEvent(e);
+        e.preventDefault();
+        return;
     }
 
     // everything but the corners gets wheel zoom
@@ -648,7 +654,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         gd.emit('plotly_doubleclick', null);
-        Plotly.relayout(gd, attrs);
+        Registry.call('relayout', gd, attrs);
     }
 
     // dragTail - finish a drag event with a redraw
@@ -662,7 +668,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // accumulated MathJax promises - wait for them before we relayout.
         Lib.syncOrAsync([
             Plots.previousPromises,
-            function() { Plotly.relayout(gd, updates); }
+            function() { Registry.call('relayout', gd, updates); }
         ], gd);
     }
 
@@ -786,6 +792,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 .call(Drawing.setTextPointsScale, xScaleFactor2, yScaleFactor2);
             traceGroups
                 .call(Drawing.hideOutsideRangePoints, subplot);
+
+            subplot.plot.selectAll('.barlayer .trace')
+                .call(Drawing.hideOutsideRangePoints, subplot, '.bartext');
         }
     }
 

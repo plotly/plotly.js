@@ -13,12 +13,7 @@ var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 
-var MAXDIST = Fx.constants.MAXDIST;
-
 module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer, contour) {
-    // never let a heatmap override another type as closest point
-    if(pointData.distance < MAXDIST) return;
-
     var cd0 = pointData.cd[0];
     var trace = cd0.trace;
     var xa = pointData.xa;
@@ -50,8 +45,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
             return;
         }
     }
-    else if(Fx.inbox(xval - x[0], xval - x[x.length - 1]) > MAXDIST ||
-            Fx.inbox(yval - y[0], yval - y[y.length - 1]) > MAXDIST) {
+    else if(Fx.inbox(xval - x[0], xval - x[x.length - 1], 0) > 0 ||
+            Fx.inbox(yval - y[0], yval - y[y.length - 1], 0) > 0) {
         return;
     }
     else {
@@ -117,7 +112,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     return [Lib.extendFlat(pointData, {
         index: [ny, nx],
         // never let a 2D override 1D type as closest point
-        distance: MAXDIST + 10,
+        distance: pointData.maxHoverDistance,
+        spikeDistance: pointData.maxSpikeDistance,
         x0: x0,
         x1: x1,
         y0: y0,

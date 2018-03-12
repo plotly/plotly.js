@@ -165,11 +165,11 @@ describe('@gl pointcloud traces', function() {
         var mock = plotData;
         var scene2d;
 
-        var xBaselineMins = [{'val': 0, 'pad': 50}, {'val': 0, 'pad': 50}, {'val': 3, 'pad': 50}, {'val': 1, 'pad': 50}, {'val': 1, 'pad': 50}, {'val': 1, 'pad': 50}, {'val': 1, 'pad': 50}];
-        var xBaselineMaxes = [{'val': 9, 'pad': 50}, {'val': 9, 'pad': 50}, {'val': 6, 'pad': 50}, {'val': 9, 'pad': 50}, {'val': 9, 'pad': 50}, {'val': 9, 'pad': 50}, {'val': 9, 'pad': 50}];
+        var xBaselineMins = [{val: 0, pad: 50, extrapad: false}];
+        var xBaselineMaxes = [{val: 9, pad: 50, extrapad: false}];
 
-        var yBaselineMins = [{'val': 0, 'pad': 50}, {'val': 0, 'pad': 50}, {'val': 9, 'pad': 50}, {'val': 3, 'pad': 50}, {'val': 4, 'pad': 50}, {'val': 5, 'pad': 50}, {'val': 6, 'pad': 50}];
-        var yBaselineMaxes = [{'val': 9, 'pad': 50}, {'val': 9, 'pad': 50}, {'val': 9, 'pad': 50}, {'val': 3, 'pad': 50}, {'val': 4, 'pad': 50}, {'val': 5, 'pad': 50}, {'val': 6, 'pad': 50}];
+        var yBaselineMins = [{val: 0, pad: 50, extrapad: false}];
+        var yBaselineMaxes = [{val: 9, pad: 50, extrapad: false}];
 
         Plotly.plot(gd, mock.data, mock.layout).then(function() {
             scene2d = gd._fullLayout._plots.xy._scene2d;
@@ -185,8 +185,8 @@ describe('@gl pointcloud traces', function() {
             return Plotly.relayout(gd, 'xaxis.range', [3, 6]);
         }).then(function() {
 
-            expect(scene2d.xaxis._min).toEqual(xBaselineMins);
-            expect(scene2d.xaxis._max).toEqual(xBaselineMaxes);
+            expect(scene2d.xaxis._min).toEqual([]);
+            expect(scene2d.xaxis._max).toEqual([]);
 
             return Plotly.relayout(gd, 'xaxis.autorange', true);
         }).then(function() {
@@ -197,8 +197,8 @@ describe('@gl pointcloud traces', function() {
             return Plotly.relayout(gd, 'yaxis.range', [8, 20]);
         }).then(function() {
 
-            expect(scene2d.yaxis._min).toEqual(yBaselineMins);
-            expect(scene2d.yaxis._max).toEqual(yBaselineMaxes);
+            expect(scene2d.yaxis._min).toEqual([]);
+            expect(scene2d.yaxis._max).toEqual([]);
 
             return Plotly.relayout(gd, 'yaxis.autorange', true);
         }).then(function() {

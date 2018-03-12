@@ -100,8 +100,10 @@ drawing.hideOutsideRangePoint = function(d, sel, xa, ya, xcalendar, ycalendar) {
     );
 };
 
-drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
+drawing.hideOutsideRangePoints = function(traceGroups, subplot, selector) {
     if(!subplot._hasClipOnAxisFalse) return;
+
+    selector = selector || '.point,.textpoint';
 
     var xa = subplot.xaxis;
     var ya = subplot.yaxis;
@@ -111,7 +113,7 @@ drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
         var xcalendar = trace.xcalendar;
         var ycalendar = trace.ycalendar;
 
-        traceGroups.selectAll('.point,.textpoint').each(function(d) {
+        traceGroups.selectAll(selector).each(function(d) {
             drawing.hideOutsideRangePoint(d, d3.select(this), xa, ya, xcalendar, ycalendar);
         });
     });
@@ -314,10 +316,10 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
 
         if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
         // weird case: array wasn't long enough to apply to every point
-        else if(Array.isArray(markerLine.color)) lineColor = Color.defaultLine;
+        else if(Lib.isArrayOrTypedArray(markerLine.color)) lineColor = Color.defaultLine;
         else lineColor = markerLine.color;
 
-        if(Array.isArray(marker.color)) {
+        if(Lib.isArrayOrTypedArray(marker.color)) {
             fillColor = Color.defaultLine;
             perPointGradient = true;
         }
@@ -439,8 +441,8 @@ drawing.pointStyle = function(s, trace, gd) {
     });
 };
 
-drawing.selectedPointStyle = function(s, trace) {
-    if(!s.size() || !trace.selectedpoints) return;
+drawing.makeSelectedPointStyleFns = function(trace) {
+    var out = {};
 
     var selectedAttrs = trace.selected || {};
     var unselectedAttrs = trace.unselected || {};
@@ -455,40 +457,31 @@ drawing.selectedPointStyle = function(s, trace) {
     var smoIsDefined = smo !== undefined;
     var usmoIsDefined = usmo !== undefined;
 
-    s.each(function(d) {
-        var pt = d3.select(this);
+    out.opacityFn = function(d) {
         var dmo = d.mo;
         var dmoIsDefined = dmo !== undefined;
-        var mo2;
 
         if(dmoIsDefined || smoIsDefined || usmoIsDefined) {
             if(d.selected) {
-                if(smoIsDefined) mo2 = smo;
+                if(smoIsDefined) return smo;
             } else {
-                if(usmoIsDefined) mo2 = usmo;
-                else mo2 = DESELECTDIM * (dmoIsDefined ? dmo : mo);
+                if(usmoIsDefined) return usmo;
+                return DESELECTDIM * (dmoIsDefined ? dmo : mo);
             }
         }
-
-        if(mo2 !== undefined) pt.style('opacity', mo2);
-    });
+    };
 
     var smc = selectedMarker.color;
     var usmc = unselectedMarker.color;
 
     if(smc || usmc) {
-        s.each(function(d) {
-            var pt = d3.select(this);
-            var mc2;
-
+        out.colorFn = function(d) {
             if(d.selected) {
-                if(smc) mc2 = smc;
+                if(smc) return smc;
             } else {
-                if(usmc) mc2 = usmc;
+                if(usmc) return usmc;
             }
-
-            if(mc2) Color.fill(pt, mc2);
-        });
+        };
     }
 
     var sms = selectedMarker.size;
@@ -496,18 +489,45 @@ drawing.selectedPointStyle = function(s, trace) {
     var smsIsDefined = sms !== undefined;
     var usmsIsDefined = usms !== undefined;
 
-    if(Registry.traceIs(trace, 'symbols') && (smsIsDefined || usmsIsDefined)) {
+    if(smsIsDefined || usmsIsDefined) {
+        out.sizeFn = function(d) {
+            var mrc = d.mrc;
+            if(d.selected) {
+                return smsIsDefined ? sms / 2 : mrc;
+            } else {
+                return usmsIsDefined ? usms / 2 : mrc;
+            }
+        };
+    }
+
+    return out;
+};
+
+drawing.selectedPointStyle = function(s, trace) {
+    if(!s.size() || !trace.selectedpoints) return;
+
+    var fns = drawing.makeSelectedPointStyleFns(trace);
+    var marker = trace.marker || {};
+
+    s.each(function(d) {
+        var pt = d3.select(this);
+        var mo2 = fns.opacityFn(d);
+        if(mo2 !== undefined) pt.style('opacity', mo2);
+    });
+
+    if(fns.colorFn) {
         s.each(function(d) {
             var pt = d3.select(this);
-            var mrc = d.mrc;
-            var mx = d.mx || marker.symbol || 0;
-            var mrc2;
+            var mc2 = fns.colorFn(d);
+            if(mc2) Color.fill(pt, mc2);
+        });
+    }
 
-            if(d.selected) {
-                mrc2 = (smsIsDefined) ? sms / 2 : mrc;
-            } else {
-                mrc2 = (usmsIsDefined) ? usms / 2 : mrc;
-            }
+    if(Registry.traceIs(trace, 'symbols') && fns.sizeFn) {
+        s.each(function(d) {
+            var pt = d3.select(this);
+            var mx = d.mx || marker.symbol || 0;
+            var mrc2 = fns.sizeFn(d);
 
             pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2));
 
@@ -522,7 +542,7 @@ drawing.tryColorscale = function(marker, prefix) {
         scl = cont.colorscale,
         colorArray = cont.color;
 
-    if(scl && Array.isArray(colorArray)) {
+    if(scl && Lib.isArrayOrTypedArray(colorArray)) {
         return Colorscale.makeColorScaleFunc(
             Colorscale.extractScale(scl, cont.cmin, cont.cmax)
         );

@@ -11,9 +11,8 @@
 var createPointCloudRenderer = require('gl-pointcloud2d');
 
 var str2RGBArray = require('../../lib/str2rgbarray');
+var expandAxis = require('../../plots/cartesian/autorange').expand;
 var getTraceColor = require('../scatter/get_trace_color');
-
-var AXES = ['xaxis', 'yaxis'];
 
 function Pointcloud(scene, uid) {
     this.scene = scene;
@@ -201,19 +200,9 @@ proto.updateFast = function(options) {
 
 proto.expandAxesFast = function(bounds, markerSize) {
     var pad = markerSize || 0.5;
-    var ax, min, max;
 
-    for(var i = 0; i < 2; i++) {
-        ax = this.scene[AXES[i]];
-
-        min = ax._min;
-        if(!min) min = [];
-        min.push({ val: bounds[i], pad: pad });
-
-        max = ax._max;
-        if(!max) max = [];
-        max.push({ val: bounds[i + 2], pad: pad });
-    }
+    expandAxis(this.scene.xaxis, [bounds[0], bounds[2]], {ppad: pad});
+    expandAxis(this.scene.yaxis, [bounds[1], bounds[3]], {ppad: pad});
 };
 
 proto.dispose = function() {

@@ -265,7 +265,7 @@ describe('mapbox credentials', function() {
         var cnt = 0;
         var msg = [
             'An API access token is required to use Mapbox GL.',
-            'See https://www.mapbox.com/developers/api/#access-tokens'
+            'See https://www.mapbox.com/api-documentation/#access-tokens'
         ].join(' ');
 
         Plotly.plot(gd, [{
@@ -405,10 +405,12 @@ describe('@noCI, mapbox plots', function() {
         function assertMarkerColor(expectations) {
             return new Promise(function(resolve) {
                 setTimeout(function() {
-                    var colors = getStyle(gd, 'circle', 'circle-color');
+                    var objs = getStyle(gd, 'circle', 'circle-color');
 
                     expectations.forEach(function(expected, i) {
-                        expect(colors[i]).toBeCloseToArray(expected);
+                        var obj = objs[i];
+                        var rgba = [obj.r, obj.g, obj.b, obj.a];
+                        expect(rgba).toBeCloseToArray(expected);
                     });
 
                     resolve();
@@ -459,10 +461,9 @@ describe('@noCI, mapbox plots', function() {
             relayoutCnt++;
         });
 
-        function assertLayout(style, center, zoom, dims) {
+        function assertLayout(center, zoom, dims) {
             var mapInfo = getMapInfo(gd);
 
-            expect(mapInfo.style.name).toEqual(style);
             expect([mapInfo.center.lng, mapInfo.center.lat])
                 .toBeCloseToArray(center);
             expect(mapInfo.zoom).toBeCloseTo(zoom);
@@ -473,13 +474,13 @@ describe('@noCI, mapbox plots', function() {
             });
         }
 
-        assertLayout('Mapbox Dark', [-4.710, 19.475], 1.234, [80, 100, 908, 270]);
+        assertLayout([-4.710, 19.475], 1.234, [80, 100, 908, 270]);
 
         Plotly.relayout(gd, 'mapbox.center', { lon: 0, lat: 0 }).then(function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(1);
 
-            assertLayout('Mapbox Dark', [0, 0], 1.234, [80, 100, 908, 270]);
+            assertLayout([0, 0], 1.234, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.zoom', '6');
         })
@@ -487,31 +488,43 @@ describe('@noCI, mapbox plots', function() {
             expect(restyleCnt).toEqual(0);
             expect(relayoutCnt).toEqual(2);
 
-            assertLayout('Mapbox Dark', [0, 0], 6, [80, 100, 908, 270]);
-
-            return Plotly.relayout(gd, 'mapbox.style', 'light');
-        })
-        .then(function() {
-            expect(restyleCnt).toEqual(0);
-            expect(relayoutCnt).toEqual(3);
-
-            assertLayout('Mapbox Light', [0, 0], 6, [80, 100, 908, 270]);
+            assertLayout([0, 0], 6, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.domain.x', [0, 0.5]);
         })
         .then(function() {
             expect(restyleCnt).toEqual(0);
-            expect(relayoutCnt).toEqual(4);
+            expect(relayoutCnt).toEqual(3);
 
-            assertLayout('Mapbox Light', [0, 0], 6, [80, 100, 454, 270]);
+            assertLayout([0, 0], 6, [80, 100, 454, 270]);
 
             return Plotly.relayout(gd, 'mapbox.domain.y[0]', 0.5);
         })
         .then(function() {
             expect(restyleCnt).toEqual(0);
-            expect(relayoutCnt).toEqual(5);
+            expect(relayoutCnt).toEqual(4);
 
-            assertLayout('Mapbox Light', [0, 0], 6, [80, 100, 454, 135]);
+            assertLayout([0, 0], 6, [80, 100, 454, 135]);
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
+    it('should be able to relayout the map style', function(done) {
+        function assertLayout(style) {
+            var mapInfo = getMapInfo(gd);
+            expect(mapInfo.style.name).toEqual(style);
+        }
+
+        assertLayout('Mapbox Dark');
+
+        Plotly.relayout(gd, 'mapbox.style', 'light').then(function() {
+            assertLayout('Mapbox Light');
+
+            return Plotly.relayout(gd, 'mapbox.style', 'dark');
+        })
+        .then(function() {
+            assertLayout('Mapbox Dark');
         })
         .catch(failTest)
         .then(done);
@@ -567,7 +580,12 @@ describe('@noCI, mapbox plots', function() {
             return new Promise(function(resolve) {
                 setTimeout(function() {
                     Object.keys(expectations).forEach(function(k) {
-                        expect(((layer || {}).paint || {})[k]).toEqual(expectations[k]);
+                        try {
+                            var obj = layer.paint._values[k].value.value;
+                            expect(String(obj)).toBe(String(expectations[k]), k);
+                        } catch(e) {
+                            fail('could not find paint values in layer');
+                        }
                     });
                     resolve();
                 }, TRANSITION_DELAY);
@@ -600,8 +618,8 @@ describe('@noCI, mapbox plots', function() {
             expect(countVisibleLayers(gd)).toEqual(2);
 
             return assertLayerStyle(gd, {
-                'fill-color': [1, 0, 0, 1],
-                'fill-outline-color': [0, 0, 1, 1],
+                'fill-color': 'rgba(255,0,0,1)',
+                'fill-outline-color': 'rgba(0,0,255,1)',
                 'fill-opacity': 0.3
             }, 0);
         })
@@ -617,7 +635,7 @@ describe('@noCI, mapbox plots', function() {
 
             return assertLayerStyle(gd, {
                 'line-width': 3,
-                'line-color': [0, 0, 1, 1],
+                'line-color': 'rgba(0,0,255,1)',
                 'line-opacity': 0.6
             }, 1);
         })
@@ -876,7 +894,7 @@ describe('@noCI, mapbox plots', function() {
         var subplot = gd._fullLayout.mapbox._subplot,
             map = subplot.map;
 
-        var sources = map.style.sources,
+        var sources = map.style.sourceCaches,
             layers = map.style._layers,
             uid = subplot.uid;
 
@@ -925,7 +943,7 @@ describe('@noCI, mapbox plots', function() {
                 var info = mapInfo.layers[l];
 
                 if(l.indexOf(mode) === -1) return;
-                if(info.layout.visibility === 'visible') cntPerMode++;
+                if(info.visibility === 'visible') cntPerMode++;
             });
 
             cnts.push(cntPerMode);
@@ -950,7 +968,7 @@ describe('@noCI, mapbox plots', function() {
 
             if(l.indexOf(mode) === -1) return;
 
-            values.push(info.paint[prop]);
+            values.push(info.paint._values[prop].value.value);
         });
 
         return values;
@@ -1012,13 +1030,12 @@ describe('@noCI, mapbox plots', function() {
 
         return promise;
     }
-
 });
 
 describe('@noCI, mapbox toImage', function() {
     // decreased from 1e5 - perhaps chrome got better at encoding these
     // because I get 99330 and the image still looks correct
-    var MINIMUM_LENGTH = 8e4;
+    var MINIMUM_LENGTH = 7e4;
 
     var gd;
 

@@ -16,6 +16,7 @@ var fill = require('ndarray-fill');
 var ops = require('ndarray-ops');
 var tinycolor = require('tinycolor2');
 
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 
 var MIN_RESOLUTION = 128;
@@ -45,12 +46,17 @@ proto.handlePick = function(selection) {
         ];
         var traceCoordinate = [0, 0, 0];
 
-        if(Array.isArray(this.data.x[0])) {
+        if(!isArrayOrTypedArray(this.data.x)) {
+            traceCoordinate[0] = selectIndex[0];
+        } else if(isArrayOrTypedArray(this.data.x[0])) {
             traceCoordinate[0] = this.data.x[selectIndex[1]][selectIndex[0]];
         } else {
             traceCoordinate[0] = this.data.x[selectIndex[0]];
         }
-        if(Array.isArray(this.data.y[0])) {
+
+        if(!isArrayOrTypedArray(this.data.y)) {
+            traceCoordinate[1] = selectIndex[1];
+        } else if(isArrayOrTypedArray(this.data.y[0])) {
             traceCoordinate[1] = this.data.y[selectIndex[1]][selectIndex[0]];
         } else {
             traceCoordinate[1] = this.data.y[selectIndex[1]];
@@ -67,10 +73,13 @@ proto.handlePick = function(selection) {
         ];
 
         var text = this.data.text;
-        if(text && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]] !== undefined) {
+        if(Array.isArray(text) && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]] !== undefined) {
             selection.textLabel = text[selectIndex[1]][selectIndex[0]];
+        } else if(text) {
+            selection.textLabel = text;
+        } else {
+            selection.textLabel = '';
         }
-        else selection.textLabel = '';
 
         selection.data.dataCoordinate = selection.dataCoordinate.slice();
 
@@ -193,7 +202,7 @@ proto.update = function(data) {
         zaxis = sceneLayout.zaxis,
         scaleFactor = scene.dataScale,
         xlen = z[0].length,
-        ylen = z.length,
+        ylen = data._ylength,
         coords = [
             ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
             ndarray(new Float32Array(xlen * ylen), [xlen, ylen]),
@@ -223,7 +232,11 @@ proto.update = function(data) {
     });
 
     // coords x
-    if(Array.isArray(x[0])) {
+    if(!isArrayOrTypedArray(x)) {
+        fill(xc, function(row) {
+            return xaxis.d2l(row, 0, xcalendar) * scaleFactor[0];
+        });
+    } else if(isArrayOrTypedArray(x[0])) {
         fill(xc, function(row, col) {
             return xaxis.d2l(x[col][row], 0, xcalendar) * scaleFactor[0];
         });
@@ -235,7 +248,11 @@ proto.update = function(data) {
     }
 
     // coords y
-    if(Array.isArray(y[0])) {
+    if(!isArrayOrTypedArray(x)) {
+        fill(yc, function(row, col) {
+            return yaxis.d2l(col, 0, xcalendar) * scaleFactor[1];
+        });
+    } else if(isArrayOrTypedArray(y[0])) {
         fill(yc, function(row, col) {
             return yaxis.d2l(y[col][row], 0, ycalendar) * scaleFactor[1];
         });

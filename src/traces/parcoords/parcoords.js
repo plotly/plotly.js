@@ -22,8 +22,8 @@ function visible(dimension) {return !('visible' in dimension) || dimension.visib
 
 function dimensionExtent(dimension) {
 
-    var lo = dimension.range ? dimension.range[0] : d3.min(dimension.values);
-    var hi = dimension.range ? dimension.range[1] : d3.max(dimension.values);
+    var lo = dimension.range ? dimension.range[0] : Lib.aggNums(Math.min, null, dimension.values, dimension._length);
+    var hi = dimension.range ? dimension.range[1] : Lib.aggNums(Math.max, null, dimension.values, dimension._length);
 
     if(isNaN(lo) || !isFinite(lo)) {
         lo = 0;
@@ -135,7 +135,11 @@ function model(layout, d, i) {
         rangeFont = trace.rangefont;
 
     var lines = Lib.extendDeep({}, line, {
-        color: lineColor.map(domainToUnitScale({values: lineColor, range: [line.cmin, line.cmax]})),
+        color: lineColor.map(domainToUnitScale({
+            values: lineColor,
+            range: [line.cmin, line.cmax],
+            _length: trace._commonLength
+        })),
         blockLineCount: c.blockLineCount,
         canvasOverdrag: c.overdrag * c.canvasPixelRatio
     });
@@ -217,6 +221,11 @@ function viewModel(state, callbacks, model) {
             }
         };
 
+        var truncatedValues = dimension.values;
+        if(truncatedValues.length > dimension._length) {
+            truncatedValues = truncatedValues.slice(0, dimension._length);
+        }
+
         return {
             key: key,
             label: dimension.label,
@@ -229,8 +238,8 @@ function viewModel(state, callbacks, model) {
             crossfilterDimensionIndex: i,
             visibleIndex: dimension._index,
             height: height,
-            values: dimension.values,
-            paddedUnitValues: dimension.values.map(domainToUnit).map(paddedUnitScale),
+            values: truncatedValues,
+            paddedUnitValues: truncatedValues.map(domainToUnit).map(paddedUnitScale),
             xScale: xScale,
             x: xScale(i),
             canvasX: xScale(i) * canvasPixelRatio,

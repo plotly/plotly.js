@@ -13,6 +13,15 @@ var fail = require('../assets/fail_test');
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
 
+var getOpacity = function(node) { return Number(node.style.opacity); };
+var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
+var getColor = function(node) { return node.style.fill; };
+var getMarkerSize = function(node) {
+    // find path arc multiply by 2 to get the corresponding marker.size value
+    // (works for circles only)
+    return d3.select(node).attr('d').split('A')[1].split(',')[0] * 2;
+};
+
 describe('Test scatter', function() {
     'use strict';
 
@@ -757,6 +766,53 @@ describe('end-to-end scatter tests', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should work with typed arrays', function(done) {
+        function _assert(colors, sizes) {
+            var pts = d3.selectAll('.point');
+            expect(pts.size()).toBe(3, '# of pts');
+
+            pts.each(function(_, i) {
+                expect(getColor(this)).toBe(colors[i], 'color ' + i);
+                expect(getMarkerSize(this)).toBe(sizes[i], 'size ' + i);
+            });
+        }
+
+        Plotly.newPlot(gd, [{
+            x: new Float32Array([1, 2, 3]),
+            y: new Float32Array([1, 2, 1]),
+            marker: {
+                size: new Float32Array([20, 30, 10]),
+                color: new Float32Array([10, 30, 20]),
+                cmin: 10,
+                cmax: 30,
+                colorscale: [
+                    [0, 'rgb(255, 0, 0)'],
+                    [0.5, 'rgb(0, 255, 0)'],
+                    [1, 'rgb(0, 0, 255)']
+                ]
+            }
+        }])
+        .then(function() {
+            _assert(
+                ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 'rgb(0, 255, 0)'],
+                [20, 30, 10]
+            );
+
+            return Plotly.restyle(gd, {
+                'marker.size': [new Float32Array([40, 30, 20])],
+                'marker.color': [new Float32Array([20, 30, 10])]
+            });
+        })
+        .then(function() {
+            _assert(
+                ['rgb(0, 255, 0)', 'rgb(0, 0, 255)', 'rgb(255, 0, 0)'],
+                [40, 30, 20]
+            );
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('scatter hoverPoints', function() {
@@ -859,15 +915,6 @@ describe('Test Scatter.style', function() {
             });
         };
     }
-
-    var getOpacity = function(node) { return Number(node.style.opacity); };
-    var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
-    var getColor = function(node) { return node.style.fill; };
-    var getMarkerSize = function(node) {
-        // find path arc multiply by 2 to get the corresponding marker.size value
-        // (works for circles only)
-        return d3.select(node).attr('d').split('A')[1].split(',')[0] * 2;
-    };
 
     var r = 'rgb(255, 0, 0)';
     var g = 'rgb(0, 255, 0)';
@@ -1189,7 +1236,7 @@ describe('Test scatter *clipnaxis*:', function() {
             var scatterLayer = subplotLayer.select('.scatterlayer');
 
             assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
-            assertClip(subplotLayer.select('.barlayer'), layerClips[1], 1, 'bar layer');
+            assertClip(subplotLayer.select('.maplayer'), layerClips[1], 1, 'some other trace layer');
             assertClip(scatterLayer, layerClips[2], 1, 'scatter layer');
 
             assertNodeDisplay(

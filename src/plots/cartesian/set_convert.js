@@ -398,30 +398,42 @@ module.exports = function setConvert(ax, fullLayout) {
     // in case the expected data isn't there, make a list of
     // integers based on the opposite data
     ax.makeCalcdata = function(trace, axLetter) {
-        var arrayIn, arrayOut, i;
+        var arrayIn, arrayOut, i, len;
 
-        var cal = ax.type === 'date' && trace[axLetter + 'calendar'];
+        var axType = ax.type;
+        var cal = axType === 'date' && trace[axLetter + 'calendar'];
 
         if(axLetter in trace) {
             arrayIn = trace[axLetter];
-            arrayOut = new Array(arrayIn.length);
+            len = trace._length || arrayIn.length;
 
-            for(i = 0; i < arrayIn.length; i++) {
+            if(Lib.isTypedArray(arrayIn) && (axType === 'linear' || axType === 'log')) {
+                if(len === arrayIn.length) {
+                    return arrayIn;
+                } else if(arrayIn.subarray) {
+                    return arrayIn.subarray(0, len);
+                }
+            }
+
+            arrayOut = new Array(len);
+            for(i = 0; i < len; i++) {
                 arrayOut[i] = ax.d2c(arrayIn[i], 0, cal);
             }
         }
         else {
-            var v0 = ((axLetter + '0') in trace) ?
-                    ax.d2c(trace[axLetter + '0'], 0, cal) : 0,
-                dv = (trace['d' + axLetter]) ?
-                    Number(trace['d' + axLetter]) : 1;
+            var v0 = ((axLetter + '0') in trace) ? ax.d2c(trace[axLetter + '0'], 0, cal) : 0;
+            var dv = (trace['d' + axLetter]) ? Number(trace['d' + axLetter]) : 1;
 
             // the opposing data, for size if we have x and dx etc
             arrayIn = trace[{x: 'y', y: 'x'}[axLetter]];
-            arrayOut = new Array(arrayIn.length);
+            len = trace._length || arrayIn.length;
+            arrayOut = new Array(len);
 
-            for(i = 0; i < arrayIn.length; i++) arrayOut[i] = v0 + i * dv;
+            for(i = 0; i < len; i++) {
+                arrayOut[i] = v0 + i * dv;
+            }
         }
+
         return arrayOut;
     };
 
@@ -443,11 +455,26 @@ module.exports = function setConvert(ax, fullLayout) {
         );
     };
 
-    // for autoranging: arrays of objects:
-    //      {val: axis value, pad: pixel padding}
-    // on the low and high sides
-    ax._min = [];
-    ax._max = [];
+    ax.clearCalc = function() {
+        // for autoranging: arrays of objects:
+        // {
+        //     val: axis value,
+        //     pad: pixel padding,
+        //     extrapad: boolean, should this val get 5% additional padding
+        // }
+        ax._min = [];
+        ax._max = [];
+
+        // initialize the category list, if there is one, so we start over
+        // to be filled in later by ax.d2c
+        ax._categories = (ax._initialCategories || []).slice();
+
+        // Build the lookup map for initialized categories
+        ax._categoriesMap = {};
+        for(var j = 0; j < ax._categories.length; j++) {
+            ax._categoriesMap[ax._categories[j]] = j;
+        }
+    };
 
     // Propagate localization into the axis so that
     // methods in Axes can use it w/o having to pass fullLayout

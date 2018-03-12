@@ -27,10 +27,7 @@ module.exports = function calcGridlines(trace, cd, axisLetter, crossAxisLetter) 
     var crossAxis = trace[crossAxisLetter + 'axis'];
 
     if(axis.tickmode === 'array') {
-        axis.tickvals = [];
-        for(i = 0; i < data.length; i++) {
-            axis.tickvals.push(data[i]);
-        }
+        axis.tickvals = data.slice();
     }
 
     var xcp = trace.xctrl;
@@ -40,7 +37,10 @@ module.exports = function calcGridlines(trace, cd, axisLetter, crossAxisLetter) 
     var na = trace.a.length;
     var nb = trace.b.length;
 
-    Axes.calcTicks(axis);
+    Axes.prepTicks(axis);
+
+    // don't leave tickvals in axis looking like an attribute
+    if(axis.tickmode === 'array') delete axis.tickvals;
 
     // The default is an empty array that will cause the join to remove the gridline if
     // it's just disappeared:

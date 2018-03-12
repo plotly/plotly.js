@@ -5,10 +5,9 @@ var config = require('@src/plot_api/plot_config');
 
 var d3 = require('d3');
 var Plotly = require('@lib');
-var PlotlyInternal = require('@src/plotly');
+var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var Plots = PlotlyInternal.Plots;
 var failTest = require('../assets/fail_test');
 
 describe('Test lib.js:', function() {
@@ -652,6 +651,24 @@ describe('Test lib.js:', function() {
             expect(cOut).toBe(outObj.b.c);
         });
 
+        describe('data_array valType', function() {
+            var attrs = {
+                d: {valType: 'data_array'}
+            };
+
+            it('should pass ref to out object (plain array case)', function() {
+                var arr = [1, 2, 3];
+                out = coerce({d: arr}, {}, attrs, 'd');
+                expect(out).toBe(arr);
+            });
+
+            it('should pass ref to out object (typed array case)', function() {
+                var arr = new Float32Array([1, 2, 3]);
+                out = coerce({d: arr}, {}, attrs, 'd');
+                expect(out).toBe(arr);
+            });
+        });
+
         describe('string valType', function() {
             var dflt = 'Jabberwock',
                 stringAttrs = {
@@ -796,6 +813,77 @@ describe('Test lib.js:', function() {
 
                 expect(coerce({domain: [0, 0.5, 1]}, {}, infoArrayAttrs, 'domain'))
                     .toEqual([0, 0.5]);
+            });
+
+            it('supports bounded freeLength attributes', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        items: [
+                            {valType: 'integer', min: 0},
+                            {valType: 'integer', max: -1}
+                        ],
+                        dflt: [1, -2]
+                    },
+                };
+                expect(coerce({}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: [5]}, {}, attrs, 'x')).toEqual([5, -2]);
+                expect(coerce({x: [-5]}, {}, attrs, 'x')).toEqual([1, -2]);
+                expect(coerce({x: [5, -5]}, {}, attrs, 'x')).toEqual([5, -5]);
+                expect(coerce({x: [3, -3, 3]}, {}, attrs, 'x')).toEqual([3, -3]);
+            });
+
+            it('supports unbounded freeLength attributes', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        items: {valType: 'integer', min: 0, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [3]}, {}, attrs, 'x')).toEqual([3]);
+                expect(coerce({x: [-3]}, {}, attrs, 'x')).toEqual([1]);
+                expect(coerce({x: [-1, 4, 'hi', 5]}, {}, attrs, 'x'))
+                    .toEqual([1, 4, 1, 5]);
+            });
+
+            it('supports 2D fixed-size arrays', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        dimensions: 2,
+                        items: [
+                            [{valType: 'integer', min: 0, max: 2}, {valType: 'integer', min: 3, max: 5}],
+                            [{valType: 'integer', min: 6, max: 8}, {valType: 'integer', min: 9, max: 11}]
+                        ],
+                        dflt: [[1, 4], [7, 10]]
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toEqual([[1, 4], [7, 10]]);
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([[1, 4], [7, 10]]);
+                expect(coerce({x: [[0, 3], [8, 11]]}, {}, attrs, 'x'))
+                    .toEqual([[0, 3], [8, 11]]);
+                expect(coerce({x: [[10, 5, 10], [6], [1, 2, 3]]}, {}, attrs, 'x'))
+                    .toEqual([[1, 5], [6, 10]]);
+            });
+
+            it('supports unbounded 2D freeLength arrays', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        dimensions: 2,
+                        items: {valType: 'integer', min: 0, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [[], [0], [-1, 2], [5, 'a', 4, 6.6]]}, {}, attrs, 'x'))
+                    .toEqual([[], [0], [1, 2], [5, 1, 4, 1]]);
             });
         });
 
@@ -1292,14 +1380,11 @@ describe('Test lib.js:', function() {
             expect(this.array).toBe(out);
         });
 
-        it('should ignore falsy items', function() {
+        it('should ignore falsy items except 0', function() {
             Lib.pushUnique(this.array, false);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
             Lib.pushUnique(this.array, undefined);
-            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
-
-            Lib.pushUnique(this.array, 0);
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
 
             Lib.pushUnique(this.array, null);
@@ -1307,6 +1392,9 @@ describe('Test lib.js:', function() {
 
             Lib.pushUnique(this.array, '');
             expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.pushUnique(this.array, 0);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, 0]);
         });
 
         it('should ignore item already in array', function() {
@@ -1982,6 +2070,109 @@ describe('Test lib.js:', function() {
                 a.sort(Lib.subplotSort);
                 expect(a).toEqual([v, v + '2', v + '10', v + '43', v + '100']);
             });
+        });
+    });
+
+    describe('relinkPrivateKeys', function() {
+        it('ignores customdata and ids', function() {
+            var fromContainer = {
+                customdata: [{_x: 1, _y: 2, a: 3}],
+                ids: [{_i: 4, j: 5}]
+            };
+            var toContainer = {
+                customdata: [{a: 6}],
+                ids: [{j: 7}]
+            };
+
+            Lib.relinkPrivateKeys(toContainer, fromContainer);
+
+            expect(toContainer.customdata[0]._x).toBeUndefined();
+            expect(toContainer.customdata[0]._y).toBeUndefined();
+            expect(toContainer.ids[0]._i).toBeUndefined();
+        });
+
+        it('ignores any values that are ===', function() {
+            var accesses = 0;
+
+            var obj = {
+                get _x() { accesses++; return 1; },
+                set _x(v) { accesses++; }
+            };
+            var array = [obj];
+            var array2 = [obj];
+
+            var fromContainer = {
+                x: array,
+                y: array,
+                o: obj
+            };
+            var toContainer = {
+                x: array,
+                y: array2,
+                o: obj
+            };
+
+            Lib.relinkPrivateKeys(toContainer, fromContainer);
+
+            expect(accesses).toBe(0);
+
+            obj._x = 2;
+            expect(obj._x).toBe(1);
+            expect(accesses).toBe(2);
+        });
+
+        it('reinserts other private keys if they\'re not already there', function() {
+            var obj1 = {a: 10, _a: 11};
+            var obj2 = {a: 12, _a: 13};
+            function f1() { return 1; }
+            function f2() { return 2; }
+
+            var fromContainer = {
+                a: 1,
+                _a: 2,
+                _b: 3,
+                _c: obj1,
+                _d: obj1,
+                f: f1, // functions are private even without _
+                g: f1,
+                array: [{a: 3, _a: 4, _b: 5, f: f1, g: f1}],
+                o: {a: 6, _a: 7, _b: 8},
+                array2: [{a: 9, _a: 10}],
+                o2: {a: 11, _a: 12}
+            };
+            fromContainer._circular = fromContainer;
+            fromContainer._circular2 = fromContainer;
+            var toContainer = {
+                a: 21,
+                _a: 22,
+                _c: obj2,
+                f: f2,
+                array: [{a: 23, _a: 24, f: f2}],
+                o: {a: 26, _a: 27},
+                x: [28],
+                _x: 29
+            };
+            toContainer._circular = toContainer;
+
+            Lib.relinkPrivateKeys(toContainer, fromContainer);
+
+            var expected = {
+                a: 21,
+                _a: 22,
+                _b: 3,
+                _c: obj2,
+                _circular: toContainer,
+                _circular2: fromContainer,
+                _d: obj1,
+                f: f2,
+                g: f1,
+                array: [{a: 23, _a: 24, _b: 5, f: f2, g: f1}],
+                o: {a: 26, _a: 27, _b: 8},
+                x: [28],
+                _x: 29
+            };
+
+            expect(toContainer).toEqual(expected);
         });
     });
 });

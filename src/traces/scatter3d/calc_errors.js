@@ -11,7 +11,6 @@
 
 var makeComputeError = require('../../components/errorbars/compute_error');
 
-
 function calculateAxisErrors(data, params, scaleFactor) {
     if(!params || !params.visible) return null;
 

@@ -10,6 +10,7 @@
 
 var Lib = require('../../lib');
 var attributes = require('./attributes');
+var handleDomainDefaults = require('../../plots/domain').defaults;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -21,7 +22,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var vals = coerce('values');
     var labels = coerce('labels');
     if(!Array.isArray(labels)) {
-        if(!Array.isArray(vals) || !vals.length) {
+        if(!Lib.isArrayOrTypedArray(vals) || !vals.length) {
             // must have at least one of vals or labels
             traceOut.visible = false;
             return;
@@ -34,8 +35,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var lineWidth = coerce('marker.line.width');
     if(lineWidth) coerce('marker.line.color');
 
-    var colors = coerce('marker.colors');
-    if(!Array.isArray(colors)) traceOut.marker.colors = [];
+    coerce('marker.colors');
 
     coerce('scalegroup');
     // TODO: hole needs to be coerced to the same value within a scaleegroup
@@ -57,8 +57,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    coerce('domain.x');
-    coerce('domain.y');
+    handleDomainDefaults(traceOut, layout, coerce);
 
     coerce('hole');
 

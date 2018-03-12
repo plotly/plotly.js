@@ -24,7 +24,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         var ret = array.map(function(attr) {
             var result = coerce(attr);
 
-            if(result && Array.isArray(result)) return result;
+            if(result && Lib.isArrayOrTypedArray(result)) return result;
             return null;
         });
 
@@ -84,4 +84,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         else if('vertexcolor' in traceIn) coerce('vertexcolor');
         else coerce('color', defaultColor);
     }
+
+    coerce('text');
 };

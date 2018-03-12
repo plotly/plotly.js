@@ -6,9 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
-
 
 var Lib = require('../lib');
 var Plots = require('../plots/plots');
@@ -17,7 +15,7 @@ var dfltConfig = require('./plot_config');
 
 var isPlainObject = Lib.isPlainObject;
 var isArray = Array.isArray;
-
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 
 /**
  * Validate a data array and layout object.
@@ -164,9 +162,10 @@ function crawl(objIn, objOut, schema, list, base, path) {
         var valIn = objIn[k],
             valOut = objOut[k];
 
-        var nestedSchema = getNestedSchema(schema, k),
-            isInfoArray = (nestedSchema || {}).valType === 'info_array',
-            isColorscale = (nestedSchema || {}).valType === 'colorscale';
+        var nestedSchema = getNestedSchema(schema, k);
+        var isInfoArray = (nestedSchema || {}).valType === 'info_array';
+        var isColorscale = (nestedSchema || {}).valType === 'colorscale';
+        var items = (nestedSchema || {}).items;
 
         if(!isInSchema(schema, k)) {
             list.push(format('schema', base, p));
@@ -174,9 +173,54 @@ function crawl(objIn, objOut, schema, list, base, path) {
         else if(isPlainObject(valIn) && isPlainObject(valOut)) {
             crawl(valIn, valOut, nestedSchema, list, base, p);
         }
+        else if(isInfoArray && isArray(valIn)) {
+            if(valIn.length > valOut.length) {
+                list.push(format('unused', base, p.concat(valOut.length)));
+            }
+            var len = valOut.length;
+            var arrayItems = Array.isArray(items);
+            if(arrayItems) len = Math.min(len, items.length);
+            var m, n, item, valInPart, valOutPart;
+            if(nestedSchema.dimensions === 2) {
+                for(n = 0; n < len; n++) {
+                    if(isArray(valIn[n])) {
+                        if(valIn[n].length > valOut[n].length) {
+                            list.push(format('unused', base, p.concat(n, valOut[n].length)));
+                        }
+                        var len2 = valOut[n].length;
+                        for(m = 0; m < (arrayItems ? Math.min(len2, items[n].length) : len2); m++) {
+                            item = arrayItems ? items[n][m] : items;
+                            valInPart = valIn[n][m];
+                            valOutPart = valOut[n][m];
+                            if(!Lib.validate(valInPart, item)) {
+                                list.push(format('value', base, p.concat(n, m), valInPart));
+                            }
+                            else if(valOutPart !== valInPart && valOutPart !== +valInPart) {
+                                list.push(format('dynamic', base, p.concat(n, m), valInPart, valOutPart));
+                            }
+                        }
+                    }
+                    else {
+                        list.push(format('array', base, p.concat(n), valIn[n]));
+                    }
+                }
+            }
+            else {
+                for(n = 0; n < len; n++) {
+                    item = arrayItems ? items[n] : items;
+                    valInPart = valIn[n];
+                    valOutPart = valOut[n];
+                    if(!Lib.validate(valInPart, item)) {
+                        list.push(format('value', base, p.concat(n), valInPart));
+                    }
+                    else if(valOutPart !== valInPart && valOutPart !== +valInPart) {
+                        list.push(format('dynamic', base, p.concat(n), valInPart, valOutPart));
+                    }
+                }
+            }
+        }
         else if(nestedSchema.items && !isInfoArray && isArray(valIn)) {
-            var items = nestedSchema.items,
-                _nestedSchema = items[Object.keys(items)[0]],
+            var _nestedSchema = items[Object.keys(items)[0]],
                 indexList = [];
 
             var j, _p;
@@ -211,7 +255,7 @@ function crawl(objIn, objOut, schema, list, base, path) {
         else if(!isPlainObject(valIn) && isPlainObject(valOut)) {
             list.push(format('object', base, p, valIn));
         }
-        else if(!isArray(valIn) && isArray(valOut) && !isInfoArray && !isColorscale) {
+        else if(!isArrayOrTypedArray(valIn) && isArrayOrTypedArray(valOut) && !isInfoArray && !isColorscale) {
             list.push(format('array', base, p, valIn));
         }
         else if(!(k in objOut)) {

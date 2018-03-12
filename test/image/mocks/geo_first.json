@@ -9,7 +9,8 @@
         {
             "type": "choropleth",
             "locations": ["USA", "CAN", "RUS"],
-            "z": [0, 5, 10]
+            "z": [0, 5, 10],
+            "autocolorscale": true
         }
     ],
     "layout": {

@@ -8,31 +8,32 @@
 
 'use strict';
 
-var Lib = require('../../lib');
-var getTraceColor = require('../scatter/get_trace_color');
-var ErrorBars = require('../../components/errorbars');
-var extend = require('object-assign');
-var Axes = require('../../plots/cartesian/axes');
-var kdtree = require('kdgrass');
-var Fx = require('../../components/fx');
-var subTypes = require('../scatter/subtypes');
-var calcColorscales = require('../scatter/colorscale_calc');
-var Drawing = require('../../components/drawing');
-var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
-var DASHES = require('../../constants/gl2d_dashes');
-var formatColor = require('../../lib/gl_format_color');
-var linkTraces = require('../scatter/link_traces');
+var createRegl = require('regl');
 var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
+var kdtree = require('kdgrass');
 var rgba = require('color-normalize');
 var svgSdf = require('svg-path-sdf');
-var createRegl = require('regl');
 var arrayRange = require('array-range');
-var fillHoverText = require('../scatter/fill_hover_text');
-var isNumeric = require('fast-isnumeric');
 
-var MAXDIST = Fx.constants.MAXDIST;
+var Registry = require('../../registry');
+var Lib = require('../../lib');
+var AxisIDs = require('../../plots/cartesian/axis_ids');
+var Drawing = require('../../components/drawing');
+var formatColor = require('../../lib/gl_format_color');
+
+var subTypes = require('../scatter/subtypes');
+var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
+var calcAxisExpansion = require('../scatter/calc').calcAxisExpansion;
+var calcColorscales = require('../scatter/colorscale_calc');
+var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
+var linkTraces = require('../scatter/link_traces');
+var getTraceColor = require('../scatter/get_trace_color');
+var fillHoverText = require('../scatter/fill_hover_text');
+
+var DASHES = require('../../constants/gl2d_dashes');
+var BADNUM = require('../../constants/numerical').BADNUM;
 var SYMBOL_SDF_SIZE = 200;
 var SYMBOL_SIZE = 20;
 var SYMBOL_STROKE = SYMBOL_SIZE / 20;
@@ -40,141 +41,72 @@ var SYMBOL_SDF = {};
 var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 var TOO_MANY_POINTS = 1e5;
 var DOT_RE = /-dot/;
+var OPEN_RE = /-open/;
 
-function calc(container, trace) {
-    var layout = container._fullLayout;
-    var positions;
+function calc(gd, trace) {
+    var fullLayout = gd._fullLayout;
+    var xa = AxisIDs.getFromId(gd, trace.xaxis);
+    var ya = AxisIDs.getFromId(gd, trace.yaxis);
+    var subplot = fullLayout._plots[trace.xaxis + trace.yaxis];
+    var count = trace._length;
+    var count2 = count * 2;
     var stash = {};
-    var xaxis = Axes.getFromId(container, trace.xaxis);
-    var yaxis = Axes.getFromId(container, trace.yaxis);
+    var i, xx, yy;
 
-    var subplot = layout._plots[trace.xaxis + trace.yaxis];
+    var x = xa.makeCalcdata(trace, 'x');
+    var y = ya.makeCalcdata(trace, 'y');
 
-    var x = xaxis.type === 'linear' ? trace.x : xaxis.makeCalcdata(trace, 'x');
-    var y = yaxis.type === 'linear' ? trace.y : yaxis.makeCalcdata(trace, 'y');
-
-    var count = (x || y).length, i, l, xx, yy;
-
-    if(!x) {
-        x = Array(count);
-        for(i = 0; i < count; i++) {
-            x[i] = i;
-        }
-    }
-    if(!y) {
-        y = Array(count);
-        for(i = 0; i < count; i++) {
-            y[i] = i;
-        }
-    }
-
-    // get log converted positions
-    var rawx, rawy;
-    if(xaxis.type === 'log') {
-        rawx = Array(x.length);
-        for(i = 0, l = x.length; i < l; i++) {
-            rawx[i] = x[i];
-            x[i] = xaxis.d2l(x[i]);
-        }
-    }
-    else {
-        rawx = x;
-        for(i = 0, l = x.length; i < l; i++) {
-            x[i] = parseFloat(x[i]);
-        }
-    }
-    if(yaxis.type === 'log') {
-        rawy = Array(y.length);
-        for(i = 0, l = y.length; i < l; i++) {
-            rawy[i] = y[i];
-            y[i] = yaxis.d2l(y[i]);
-        }
-    }
-    else {
-        rawy = y;
-        for(i = 0, l = y.length; i < l; i++) {
-            y[i] = parseFloat(y[i]);
-        }
-    }
-
-    // we need hi-precision for scatter2d
-    positions = new Array(count * 2);
-
+    // we need hi-precision for scatter2d,
+    // regl-scatter2d uses NaNs for bad/missing values
+    var positions = new Array(count2);
     for(i = 0; i < count; i++) {
-        // if no x defined, we are creating simple int sequence (API)
-        // we use parseFloat because it gives NaN (we need that for empty values to avoid drawing lines) and it is incredibly fast
-        xx = isNumeric(x[i]) ? +x[i] : NaN;
-        yy = isNumeric(y[i]) ? +y[i] : NaN;
+        xx = x[i];
+        yy = y[i];
+        positions[i * 2] = xx === BADNUM ? NaN : xx;
+        positions[i * 2 + 1] = yy === BADNUM ? NaN : yy;
+    }
 
-        positions[i * 2] = xx;
-        positions[i * 2 + 1] = yy;
+    if(xa.type === 'log') {
+        for(i = 0; i < count2; i += 2) {
+            positions[i] = xa.c2l(positions[i]);
+        }
+    }
+    if(ya.type === 'log') {
+        for(i = 1; i < count2; i += 2) {
+            positions[i] = ya.c2l(positions[i]);
+        }
     }
 
     // we don't build a tree for log axes since it takes long to convert log2px
     // and it is also
-    if(xaxis.type !== 'log' && yaxis.type !== 'log') {
+    if(xa.type !== 'log' && ya.type !== 'log') {
         // FIXME: delegate this to webworker
         stash.tree = kdtree(positions, 512);
-    }
-    else {
-        var ids = stash.ids = Array(count);
+    } else {
+        var ids = stash.ids = new Array(count);
         for(i = 0; i < count; i++) {
             ids[i] = i;
         }
     }
 
+    // create scene options and scene
     calcColorscales(trace);
+    var options = sceneOptions(gd, subplot, trace, positions);
+    var markerOptions = options.marker;
+    var scene = sceneUpdate(gd, subplot);
+    var ppad;
 
-    var options = sceneOptions(container, subplot, trace, positions);
-
-    // expanding axes is separate from options
-    if(!options.markers) {
-        Axes.expand(xaxis, rawx, { padded: true });
-        Axes.expand(yaxis, rawy, { padded: true });
+    // Re-use SVG scatter axis expansion routine except
+    // for graph with very large number of points where it
+    // performs poorly.
+    // In big data case, fake Axes.expand outputs with data bounds,
+    // and an average size for array marker.size inputs.
+    if(count < TOO_MANY_POINTS) {
+        ppad = calcMarkerSize(trace, count);
+    } else if(markerOptions) {
+        ppad = 2 * (markerOptions.sizeAvg || Math.max(markerOptions.size, 3));
     }
-    else if(Array.isArray(options.markers.sizes)) {
-        var sizes = options.markers.sizes;
-        Axes.expand(xaxis, rawx, { padded: true, ppad: sizes });
-        Axes.expand(yaxis, rawy, { padded: true, ppad: sizes });
-    }
-    else {
-        var xbounds = [Infinity, -Infinity], ybounds = [Infinity, -Infinity];
-        var size = options.markers.size;
-
-        // axes bounds
-        for(i = 0; i < count; i++) {
-            xx = x[i], yy = y[i];
-            if(xbounds[0] > xx) xbounds[0] = xx;
-            if(xbounds[1] < xx) xbounds[1] = xx;
-            if(ybounds[0] > yy) ybounds[0] = yy;
-            if(ybounds[1] < yy) ybounds[1] = yy;
-        }
-
-        // FIXME: is there a better way to separate expansion?
-        if(count < TOO_MANY_POINTS) {
-            Axes.expand(xaxis, rawx, { padded: true, ppad: size });
-            Axes.expand(yaxis, rawy, { padded: true, ppad: size });
-        }
-        // update axes fast for big number of points
-        else {
-            if(xaxis._min) {
-                xaxis._min.push({ val: xbounds[0], pad: size });
-            }
-            if(xaxis._max) {
-                xaxis._max.push({ val: xbounds[1], pad: size });
-            }
-
-            if(yaxis._min) {
-                yaxis._min.push({ val: ybounds[0], pad: size });
-            }
-            if(yaxis._max) {
-                yaxis._max.push({ val: ybounds[1], pad: size });
-            }
-        }
-    }
-
-    // create scene
-    var scene = sceneUpdate(container, subplot);
+    calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
 
     // set flags to create scene renderers
     if(options.fill && !scene.fill2d) scene.fill2d = true;
@@ -197,24 +129,21 @@ function calc(container, trace) {
     stash.index = scene.count - 1;
     stash.x = x;
     stash.y = y;
-    stash.rawx = rawx;
-    stash.rawy = rawy;
     stash.positions = positions;
     stash.count = count;
 
+    gd.firstscatter = false;
     return [{x: false, y: false, t: stash, trace: trace}];
 }
 
 // create scene options
-function sceneOptions(container, subplot, trace, positions) {
-    var layout = container._fullLayout;
+function sceneOptions(gd, subplot, trace, positions) {
+    var fullLayout = gd._fullLayout;
     var count = positions.length / 2;
     var markerOpts = trace.marker;
-    var i, ptrX = 0, ptrY = 0;
-    var xaxis = Axes.getFromId(container, trace.xaxis);
-    var yaxis = Axes.getFromId(container, trace.yaxis);
+    var i;
 
-    var hasLines, hasErrorX, hasErrorY, hasError, hasMarkers, hasFill;
+    var hasLines, hasErrorX, hasErrorY, hasMarkers, hasFill;
 
     if(trace.visible !== true) {
         hasLines = false;
@@ -222,78 +151,29 @@ function sceneOptions(container, subplot, trace, positions) {
         hasErrorY = false;
         hasMarkers = false;
         hasFill = false;
-    }
-    else {
+    } else {
         hasLines = subTypes.hasLines(trace) && positions.length > 1;
         hasErrorX = trace.error_x && trace.error_x.visible === true;
         hasErrorY = trace.error_y && trace.error_y.visible === true;
-        hasError = hasErrorX || hasErrorY;
         hasMarkers = subTypes.hasMarkers(trace);
         hasFill = !!trace.fill && trace.fill !== 'none';
     }
 
-    var lineOptions, markerOptions, errorXOptions, errorYOptions, fillOptions, selectedOptions, unselectedOptions;
+    var lineOptions, markerOptions, fillOptions;
+    var errorXOptions, errorYOptions;
+    var selectedOptions, unselectedOptions;
     var linePositions;
 
-    // get error values
-    var errorVals = hasError ? ErrorBars.calcFromTrace(trace, layout) : null;
+    if(hasErrorX || hasErrorY) {
+        var calcFromTrace = Registry.getComponentMethod('errorbars', 'calcFromTrace');
+        var errorVals = calcFromTrace(trace, fullLayout);
 
-    if(hasErrorX) {
-        errorXOptions = {};
-        errorXOptions.positions = positions;
-        var errorsX = new Float64Array(4 * count);
-
-        if(xaxis.type === 'log') {
-            for(i = 0; i < count; ++i) {
-                errorsX[ptrX++] = positions[i * 2] - xaxis.d2l(errorVals[i].xs) || 0;
-                errorsX[ptrX++] = xaxis.d2l(errorVals[i].xh) - positions[i * 2] || 0;
-                errorsX[ptrX++] = 0;
-                errorsX[ptrX++] = 0;
-            }
-        } else {
-            for(i = 0; i < count; ++i) {
-                errorsX[ptrX++] = positions[i * 2] - errorVals[i].xs || 0;
-                errorsX[ptrX++] = errorVals[i].xh - positions[i * 2] || 0;
-                errorsX[ptrX++] = 0;
-                errorsX[ptrX++] = 0;
-            }
+        if(hasErrorX) {
+            errorXOptions = makeErrorOptions('x', trace.error_x, errorVals);
         }
-
-        if(trace.error_x.copy_ystyle) {
-            trace.error_x = trace.error_y;
+        if(hasErrorY) {
+            errorYOptions = makeErrorOptions('y', trace.error_y, errorVals);
         }
-
-        errorXOptions.errors = errorsX;
-        errorXOptions.capSize = trace.error_x.width * 2;
-        errorXOptions.lineWidth = trace.error_x.thickness;
-        errorXOptions.color = trace.error_x.color;
-    }
-
-    if(hasErrorY) {
-        errorYOptions = {};
-        errorYOptions.positions = positions;
-        var errorsY = new Float64Array(4 * count);
-
-        if(yaxis.type === 'log') {
-            for(i = 0; i < count; ++i) {
-                errorsY[ptrY++] = 0;
-                errorsY[ptrY++] = 0;
-                errorsY[ptrY++] = positions[i * 2 + 1] - yaxis.d2l(errorVals[i].ys) || 0;
-                errorsY[ptrY++] = yaxis.d2l(errorVals[i].yh) - positions[i * 2 + 1] || 0;
-            }
-        } else {
-            for(i = 0; i < count; ++i) {
-                errorsY[ptrY++] = 0;
-                errorsY[ptrY++] = 0;
-                errorsY[ptrY++] = positions[i * 2 + 1] - errorVals[i].ys || 0;
-                errorsY[ptrY++] = errorVals[i].yh - positions[i * 2 + 1] || 0;
-            }
-        }
-
-        errorYOptions.errors = errorsY;
-        errorYOptions.capSize = trace.error_y.width * 2;
-        errorYOptions.lineWidth = trace.error_y.thickness;
-        errorYOptions.color = trace.error_y.color;
     }
 
     if(hasLines) {
@@ -358,7 +238,9 @@ function sceneOptions(container, subplot, trace, positions) {
                 break;
             }
         }
-        lineOptions.join = (hasNaN || linePositions.length > TOO_MANY_POINTS) ? 'rect' : hasMarkers ? 'rect' : 'round';
+
+        lineOptions.join = (hasNaN || linePositions.length > TOO_MANY_POINTS) ? 'rect' :
+            hasMarkers ? 'rect' : 'round';
 
         // fill gaps
         if(hasNaN && trace.connectgaps) {
@@ -389,8 +271,34 @@ function sceneOptions(container, subplot, trace, positions) {
         markerOptions = makeMarkerOptions(markerOpts);
         selectedOptions = makeSelectedOptions(trace.selected, markerOpts);
         unselectedOptions = makeSelectedOptions(trace.unselected, markerOpts);
-
         markerOptions.positions = positions;
+    }
+
+    function makeErrorOptions(axLetter, errorOpts, vals) {
+        var options = {};
+        options.positions = positions;
+
+        var ax = AxisIDs.getFromId(gd, trace[axLetter + 'axis']);
+        var errors = options.errors = new Float64Array(4 * count);
+        var pOffset = {x: 0, y: 1}[axLetter];
+        var eOffset = {x: [0, 1, 2, 3], y: [2, 3, 0, 1]}[axLetter];
+
+        for(var i = 0, p = 0; i < count; i++, p += 4) {
+            errors[p + eOffset[0]] = positions[i * 2 + pOffset] - ax.d2l(vals[i][axLetter + 's']) || 0;
+            errors[p + eOffset[1]] = ax.d2l(vals[i][axLetter + 'h']) - positions[i * 2 + pOffset] || 0;
+            errors[p + eOffset[2]] = 0;
+            errors[p + eOffset[3]] = 0;
+        }
+
+        if(errorOpts.copy_ystyle) {
+            errorOpts = trace.error_y;
+        }
+
+        options.capSize = errorOpts.width * 2;
+        options.lineWidth = errorOpts.thickness;
+        options.color = errorOpts.color;
+
+        return options;
     }
 
     function makeSelectedOptions(selected, markerOpts) {
@@ -399,7 +307,7 @@ function sceneOptions(container, subplot, trace, positions) {
         if(!selected) return options;
 
         if(selected.marker && selected.marker.symbol) {
-            options = makeMarkerOptions(extend({}, markerOpts, selected.marker));
+            options = makeMarkerOptions(Lib.extendFlat({}, markerOpts, selected.marker));
         }
 
         // shortcut simple selection logic
@@ -414,17 +322,21 @@ function sceneOptions(container, subplot, trace, positions) {
     }
 
     function makeMarkerOptions(markerOpts) {
-        var markerOptions = {}, i;
+        var markerOptions = {};
+        var i;
 
-        // get basic symbol info
-        var multiMarker = Array.isArray(markerOpts.symbol);
-        var isOpen, symbol;
-        if(!multiMarker) {
-            isOpen = /-open/.test(markerOpts.symbol);
-        }
+        var multiSymbol = Array.isArray(markerOpts.symbol);
+        var multiColor = Lib.isArrayOrTypedArray(markerOpts.color);
+        var multiLineColor = Lib.isArrayOrTypedArray(markerOpts.line.color);
+        var multiOpacity = Lib.isArrayOrTypedArray(markerOpts.opacity);
+        var multiSize = Lib.isArrayOrTypedArray(markerOpts.size);
+        var multiLineWidth = Lib.isArrayOrTypedArray(markerOpts.line.width);
+
+        var isOpen;
+        if(!multiSymbol) isOpen = OPEN_RE.test(markerOpts.symbol);
 
         // prepare colors
-        if(multiMarker || Array.isArray(markerOpts.color) || Array.isArray(markerOpts.line.color) || Array.isArray(markerOpts.line) || Array.isArray(markerOpts.opacity)) {
+        if(multiSymbol || multiColor || multiLineColor || multiOpacity) {
             markerOptions.colors = new Array(count);
             markerOptions.borderColors = new Array(count);
             var colors = formatColor(markerOpts, markerOpts.opacity, count);
@@ -449,9 +361,9 @@ function sceneOptions(container, subplot, trace, positions) {
             markerOptions.borderColors = borderColors;
 
             for(i = 0; i < count; i++) {
-                if(multiMarker) {
-                    symbol = markerOpts.symbol[i];
-                    isOpen = /-open/.test(symbol);
+                if(multiSymbol) {
+                    var symbol = markerOpts.symbol[i];
+                    isOpen = OPEN_RE.test(symbol);
                 }
                 if(isOpen) {
                     borderColors[i] = colors[i].slice();
@@ -467,8 +379,7 @@ function sceneOptions(container, subplot, trace, positions) {
                 markerOptions.color = rgba(markerOpts.color, 'uint8');
                 markerOptions.color[3] = 0;
                 markerOptions.borderColor = rgba(markerOpts.color, 'uint8');
-            }
-            else {
+            } else {
                 markerOptions.color = rgba(markerOpts.color, 'uint8');
                 markerOptions.borderColor = rgba(markerOpts.line.color, 'uint8');
             }
@@ -476,53 +387,54 @@ function sceneOptions(container, subplot, trace, positions) {
             markerOptions.opacity = trace.opacity * markerOpts.opacity;
         }
 
-        // prepare markers
-        if(Array.isArray(markerOpts.symbol)) {
+        // prepare symbols
+        if(multiSymbol) {
             markerOptions.markers = new Array(count);
-            for(i = 0; i < count; ++i) {
+            for(i = 0; i < count; i++) {
                 markerOptions.markers[i] = getSymbolSdf(markerOpts.symbol[i]);
             }
-        }
-        else {
+        } else {
             markerOptions.marker = getSymbolSdf(markerOpts.symbol);
         }
 
-        // prepare sizes and expand axes
-        var multiSize = markerOpts && (Array.isArray(markerOpts.size) || Array.isArray(markerOpts.line.width));
+        // prepare sizes
         var markerSizeFunc = makeBubbleSizeFn(trace);
-        var size, sizes;
+        var s;
 
-        if(multiSize) {
-            sizes = markerOptions.sizes = new Array(count);
+        if(multiSize || multiLineWidth) {
+            var sizes = markerOptions.sizes = new Array(count);
             var borderSizes = markerOptions.borderSizes = new Array(count);
+            var sizeTotal = 0;
+            var sizeAvg;
 
-            if(Array.isArray(markerOpts.size)) {
-                for(i = 0; i < count; ++i) {
+            if(multiSize) {
+                for(i = 0; i < count; i++) {
                     sizes[i] = markerSizeFunc(markerOpts.size[i]);
+                    sizeTotal += sizes[i];
                 }
-            }
-            else {
-                size = markerSizeFunc(markerOpts.size);
-                for(i = 0; i < count; ++i) {
-                    sizes[i] = size;
+                sizeAvg = sizeTotal / count;
+            } else {
+                s = markerSizeFunc(markerOpts.size);
+                for(i = 0; i < count; i++) {
+                    sizes[i] = s;
                 }
             }
 
             // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
-            if(Array.isArray(markerOpts.line.width)) {
-                for(i = 0; i < count; ++i) {
+            if(multiLineWidth) {
+                for(i = 0; i < count; i++) {
                     borderSizes[i] = markerSizeFunc(markerOpts.line.width[i]);
                 }
-            }
-            else {
-                size = markerSizeFunc(markerOpts.line.width);
-                for(i = 0; i < count; ++i) {
-                    borderSizes[i] = size;
+            } else {
+                s = markerSizeFunc(markerOpts.line.width);
+                for(i = 0; i < count; i++) {
+                    borderSizes[i] = s;
                 }
             }
-        }
-        else {
-            size = markerOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
+
+            markerOptions.sizeAvg = sizeAvg;
+        } else {
+            markerOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
             markerOptions.borderSizes = markerSizeFunc(markerOpts.line.width);
         }
 
@@ -541,43 +453,46 @@ function sceneOptions(container, subplot, trace, positions) {
 }
 
 // make sure scene exists on subplot, return it
-function sceneUpdate(container, subplot) {
+function sceneUpdate(gd, subplot) {
     var scene = subplot._scene;
-    var layout = container._fullLayout;
+    var fullLayout = gd._fullLayout;
+
+    var reset = {
+        // number of traces in subplot, since scene:subplot → 1:1
+        count: 0,
+        // whether scene requires init hook in plot call (dirty plot call)
+        dirty: true,
+        // last used options
+        lineOptions: [],
+        fillOptions: [],
+        markerOptions: [],
+        selectedOptions: [],
+        unselectedOptions: [],
+        errorXOptions: [],
+        errorYOptions: []
+    };
+
+    var first = {
+        selectBatch: null,
+        unselectBatch: null,
+        // regl- component stubs, initialized in dirty plot call
+        fill2d: false,
+        scatter2d: false,
+        error2d: false,
+        line2d: false,
+        select2d: null
+    };
 
     if(!subplot._scene) {
-        scene = subplot._scene = {
-            // number of traces in subplot, since scene:subplot → 1:1
-            count: 0,
+        scene = subplot._scene = Lib.extendFlat({}, reset, first);
 
-            // whether scene requires init hook in plot call (dirty plot call)
-            dirty: true,
-
-            // last used options
-            lineOptions: [],
-            fillOptions: [],
-            markerOptions: [],
-            selectedOptions: [],
-            unselectedOptions: [],
-            errorXOptions: [],
-            errorYOptions: [],
-            selectBatch: null,
-            unselectBatch: null,
-
-            // regl- component stubs, initialized in dirty plot call
-            fill2d: false,
-            scatter2d: false,
-            error2d: false,
-            line2d: false,
-            select2d: null
-        };
-
-        // apply new option to all regl components
+        // apply new option to all regl components (used on drag)
         scene.update = function update(opt) {
-            var opts = Array(scene.count);
+            var opts = new Array(scene.count);
             for(var i = 0; i < scene.count; i++) {
                 opts[i] = opt;
             }
+
             if(scene.fill2d) scene.fill2d.update(opts);
             if(scene.scatter2d) scene.scatter2d.update(opts);
             if(scene.line2d) scene.line2d.update(opts);
@@ -591,26 +506,29 @@ function sceneUpdate(container, subplot) {
         scene.draw = function draw() {
             var i;
             for(i = 0; i < scene.count; i++) {
-                if(scene.fill2d) scene.fill2d.draw(i);
+                if(scene.fill2d && scene.fillOptions[i]) {
+                    // must do all fills first
+                    scene.fill2d.draw(i);
+                }
             }
             for(i = 0; i < scene.count; i++) {
-                if(scene.line2d) {
+                if(scene.line2d && scene.lineOptions[i]) {
                     scene.line2d.draw(i);
                 }
-                if(scene.error2d) {
+                if(scene.error2d && scene.errorXOptions[i]) {
                     scene.error2d.draw(i);
+                }
+                if(scene.error2d && scene.errorYOptions[i]) {
                     scene.error2d.draw(i + scene.count);
                 }
-                if(scene.scatter2d) {
+                if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
                     // traces in no-selection mode
-                    if(!scene.selectBatch || !scene.selectBatch[i]) {
-                        scene.scatter2d.draw(i);
-                    }
+                    scene.scatter2d.draw(i);
                 }
             }
 
             // draw traces in selection mode
-            if(scene.select2d && scene.selectBatch) {
+            if(scene.scatter2d && scene.select2d && scene.selectBatch) {
                 scene.select2d.draw(scene.selectBatch);
                 scene.scatter2d.draw(scene.unselectBatch);
             }
@@ -620,9 +538,12 @@ function sceneUpdate(container, subplot) {
 
         // make sure canvas is clear
         scene.clear = function clear() {
-            var vpSize = layout._size, width = layout.width, height = layout.height, vp, gl, regl;
+            var vpSize = fullLayout._size;
+            var width = fullLayout.width;
+            var height = fullLayout.height;
             var xaxis = subplot.xaxis;
             var yaxis = subplot.yaxis;
+            var vp, gl, regl;
 
             // multisubplot case
             if(xaxis && xaxis.domain && yaxis && yaxis.domain) {
@@ -689,21 +610,15 @@ function sceneUpdate(container, subplot) {
             scene.selectBatch = null;
             scene.unselectBatch = null;
 
-            delete subplot._scene;
+            // we can't just delete _scene, because `destroy` is called in the
+            // middle of supplyDefaults, before relinkPrivateKeys which will put it back.
+            subplot._scene = null;
         };
     }
 
     // In case if we have scene from the last calc - reset data
     if(!scene.dirty) {
-        scene.dirty = true;
-        scene.count = 0;
-        scene.lineOptions = [];
-        scene.fillOptions = [];
-        scene.markerOptions = [];
-        scene.selectedOptions = [];
-        scene.unselectedOptions = [];
-        scene.errorXOptions = [];
-        scene.errorYOptions = [];
+        Lib.extendFlat(scene, reset);
     }
 
     return scene;
@@ -741,20 +656,22 @@ function getSymbolSdf(symbol) {
     return symbolSdf || null;
 }
 
-function plot(container, subplot, cdata) {
+function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
-    var layout = container._fullLayout;
+    var fullLayout = gd._fullLayout;
     var scene = cdata[0][0].t.scene;
-    var dragmode = layout.dragmode;
+    var dragmode = fullLayout.dragmode;
 
     // we may have more subplots than initialized data due to Axes.getSubplots method
     if(!scene) return;
 
-    var vpSize = layout._size, width = layout.width, height = layout.height;
+    var vpSize = fullLayout._size;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
 
     // make sure proper regl instances are created
-    layout._glcanvas.each(function(d) {
+    fullLayout._glcanvas.each(function(d) {
         if(d.regl || d.pick) return;
         d.regl = createRegl({
             canvas: this,
@@ -763,14 +680,14 @@ function plot(container, subplot, cdata) {
                 preserveDrawingBuffer: true
             },
             extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
-            pixelRatio: container._context.plotGlPixelRatio || global.devicePixelRatio
+            pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio
         });
     });
 
-    var regl = layout._glcanvas.data()[0].regl;
+    var regl = fullLayout._glcanvas.data()[0].regl;
 
     // that is needed for fills
-    linkTraces(container, subplot, cdata);
+    linkTraces(gd, subplot, cdata);
 
     if(scene.dirty) {
         // make sure scenes are created
@@ -800,9 +717,9 @@ function plot(container, subplot, cdata) {
         }
         // fill requires linked traces, so we generate it's positions here
         if(scene.fill2d) {
-            scene.fillOptions.forEach(function(fillOptions, i) {
+            scene.fillOptions = scene.fillOptions.map(function(fillOptions, i) {
                 var cdscatter = cdata[i];
-                if(!fillOptions || !cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
+                if(!fillOptions || !cdscatter || !cdscatter[0] || !cdscatter[0].trace) return null;
                 var cd = cdscatter[0];
                 var trace = cd.trace;
                 var stash = cd.t;
@@ -882,6 +799,8 @@ function plot(container, subplot, cdata) {
 
                 fillOptions.opacity = trace.opacity;
                 fillOptions.positions = pos;
+
+                return fillOptions;
             });
 
             scene.fill2d.update(scene.fillOptions);
@@ -897,11 +816,11 @@ function plot(container, subplot, cdata) {
         var trace = cd.trace;
         var stash = cd.t;
         var id = stash.index;
-        var x = stash.rawx,
-            y = stash.rawy;
+        var x = stash.x;
+        var y = stash.y;
 
-        var xaxis = subplot.xaxis || Axes.getFromId(container, trace.xaxis || 'x');
-        var yaxis = subplot.yaxis || Axes.getFromId(container, trace.yaxis || 'y');
+        var xaxis = subplot.xaxis || AxisIDs.getFromId(gd, trace.xaxis || 'x');
+        var yaxis = subplot.yaxis || AxisIDs.getFromId(gd, trace.yaxis || 'y');
         var i;
 
         var range = [
@@ -941,7 +860,8 @@ function plot(container, subplot, cdata) {
             }
 
             // precalculate px coords since we are not going to pan during select
-            var xpx = Array(stash.count), ypx = Array(stash.count);
+            var xpx = new Array(stash.count);
+            var ypx = new Array(stash.count);
             for(i = 0; i < stash.count; i++) {
                 xpx[i] = xaxis.c2p(x[i]);
                 ypx[i] = yaxis.c2p(y[i]);
@@ -963,15 +883,20 @@ function plot(container, subplot, cdata) {
         // create select2d
         if(!scene.select2d) {
             // create scatter instance by cloning scatter2d
-            scene.select2d = createScatter(layout._glcanvas.data()[1].regl, {clone: scene.scatter2d});
+            scene.select2d = createScatter(fullLayout._glcanvas.data()[1].regl, {clone: scene.scatter2d});
         }
 
-        // update only traces with selection
-        scene.scatter2d.update(scene.unselectedOptions.map(function(opts, i) {
-            return scene.selectBatch[i] ? opts : null;
-        }));
-        scene.select2d.update(scene.markerOptions);
-        scene.select2d.update(scene.selectedOptions);
+        if(scene.scatter2d && scene.selectBatch && scene.selectBatch.length) {
+            // update only traces with selection
+            scene.scatter2d.update(scene.unselectedOptions.map(function(opts, i) {
+                return scene.selectBatch[i] ? opts : null;
+            }));
+        }
+
+        if(scene.select2d) {
+            scene.select2d.update(scene.markerOptions);
+            scene.select2d.update(scene.selectedOptions);
+        }
     }
 
     // uploat viewport/range data to GPU
@@ -997,23 +922,24 @@ function plot(container, subplot, cdata) {
 }
 
 function hoverPoints(pointData, xval, yval, hovermode) {
-    var cd = pointData.cd,
-        stash = cd[0].t,
-        trace = cd[0].trace,
-        xa = pointData.xa,
-        ya = pointData.ya,
-        x = stash.rawx,
-        y = stash.rawy,
-        xpx = xa.c2p(xval),
-        ypx = ya.c2p(yval),
-        ids;
+    var cd = pointData.cd;
+    var stash = cd[0].t;
+    var trace = cd[0].trace;
+    var xa = pointData.xa;
+    var ya = pointData.ya;
+    var x = stash.x;
+    var y = stash.y;
+    var xpx = xa.c2p(xval);
+    var ypx = ya.c2p(yval);
+    var maxDistance = pointData.distance;
+    var ids;
 
     // FIXME: make sure this is a proper way to calc search radius
     if(stash.tree) {
-        var xl = xa.p2c(xpx - MAXDIST),
-            xr = xa.p2c(xpx + MAXDIST),
-            yl = ya.p2c(ypx - MAXDIST),
-            yr = ya.p2c(ypx + MAXDIST);
+        var xl = xa.p2c(xpx - maxDistance);
+        var xr = xa.p2c(xpx + maxDistance);
+        var yl = ya.p2c(ypx - maxDistance);
+        var yr = ya.p2c(ypx + maxDistance);
 
         if(hovermode === 'x') {
             ids = stash.tree.range(
@@ -1035,14 +961,17 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     // pick the id closest to the point
     // note that point possibly may not be found
-    var min = MAXDIST, id, ptx, pty, i, dx, dy, dist;
+    var minDist = maxDistance;
+    var id, ptx, pty, i, dx, dy, dist, dxy;
 
     if(hovermode === 'x') {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
             dx = Math.abs(xa.c2p(ptx) - xpx);
-            if(dx < min) {
-                min = dx;
+            if(dx < minDist) {
+                minDist = dx;
+                dy = ya.c2p(y[ids[i]]) - ypx;
+                dxy = Math.sqrt(dx * dx + dy * dy);
                 id = ids[i];
             }
         }
@@ -1051,11 +980,12 @@ function hoverPoints(pointData, xval, yval, hovermode) {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
             pty = y[ids[i]];
-            dx = xa.c2p(ptx) - xpx, dy = ya.c2p(pty) - ypx;
+            dx = xa.c2p(ptx) - xpx;
+            dy = ya.c2p(pty) - ypx;
 
             dist = Math.sqrt(dx * dx + dy * dy);
-            if(dist < min) {
-                min = dist;
+            if(dist < minDist) {
+                minDist = dxy = dist;
                 id = ids[i];
             }
         }
@@ -1087,16 +1017,16 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     var marker = trace.marker;
     if(marker) {
-        di.ms = Array.isArray(marker.size) ? marker.size[id] : marker.size;
-        di.mo = Array.isArray(marker.opacity) ? marker.opacity[id] : marker.opacity;
+        di.ms = Lib.isArrayOrTypedArray(marker.size) ? marker.size[id] : marker.size;
+        di.mo = Lib.isArrayOrTypedArray(marker.opacity) ? marker.opacity[id] : marker.opacity;
         di.mx = Array.isArray(marker.symbol) ? marker.symbol[id] : marker.symbol;
-        di.mc = Array.isArray(marker.color) ? marker.color[id] : marker.color;
+        di.mc = Lib.isArrayOrTypedArray(marker.color) ? marker.color[id] : marker.color;
     }
 
     var line = marker && marker.line;
     if(line) {
         di.mlc = Array.isArray(line.color) ? line.color[id] : line.color;
-        di.mlw = Array.isArray(line.width) ? line.width[id] : line.width;
+        di.mlw = Lib.isArrayOrTypedArray(line.width) ? line.width[id] : line.width;
     }
 
     var grad = marker && marker.gradient;
@@ -1105,9 +1035,9 @@ function hoverPoints(pointData, xval, yval, hovermode) {
         di.mgc = Array.isArray(grad.color) ? grad.color[id] : grad.color;
     }
 
-    var xc = xa.c2p(di.x, true),
-        yc = ya.c2p(di.y, true),
-        rad = di.mrc || 1;
+    var xp = xa.c2p(di.x, true);
+    var yp = ya.c2p(di.y, true);
+    var rad = di.mrc || 1;
 
     var hoverlabel = trace.hoverlabel;
 
@@ -1130,15 +1060,17 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     Lib.extendFlat(pointData, {
         color: getTraceColor(trace, di),
 
-        x0: xc - rad,
-        x1: xc + rad,
+        x0: xp - rad,
+        x1: xp + rad,
         xLabelVal: di.x,
 
-        y0: yc - rad,
-        y1: yc + rad,
+        y0: yp - rad,
+        y1: yp + rad,
         yLabelVal: di.y,
 
-        cd: fakeCd
+        cd: fakeCd,
+        distance: minDist,
+        spikeDistance: dxy
     });
 
     if(di.htx) pointData.text = di.htx;
@@ -1146,21 +1078,18 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     else if(trace.text) pointData.text = trace.text;
 
     fillHoverText(di, trace, pointData);
-    ErrorBars.hoverInfo(di, trace, pointData);
+    Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
     return [pointData];
 }
 
 function selectPoints(searchInfo, polygon) {
-    var cd = searchInfo.cd,
-        selection = [],
-        trace = cd[0].trace,
-        stash = cd[0].t,
-        x = stash.x,
-        y = stash.y,
-        rawx = stash.rawx,
-        rawy = stash.rawy;
-
+    var cd = searchInfo.cd;
+    var selection = [];
+    var trace = cd[0].trace;
+    var stash = cd[0].t;
+    var x = stash.x;
+    var y = stash.y;
     var scene = stash.scene;
 
     if(!scene) return selection;
@@ -1170,7 +1099,9 @@ function selectPoints(searchInfo, polygon) {
 
     // degenerate polygon does not enable selection
     // filter out points by visible scatter ones
-    var els = null, unels = null, i;
+    var els = null;
+    var unels = null;
+    var i;
     if(polygon !== false && !polygon.degenerate) {
         els = [], unels = [];
         for(i = 0; i < stash.count; i++) {
@@ -1178,16 +1109,15 @@ function selectPoints(searchInfo, polygon) {
                 els.push(i);
                 selection.push({
                     pointNumber: i,
-                    x: rawx ? rawx[i] : x[i],
-                    y: rawy ? rawy[i] : y[i]
+                    x: x[i],
+                    y: y[i]
                 });
             }
             else {
                 unels.push(i);
             }
         }
-    }
-    else {
+    } else {
         unels = arrayRange(stash.count);
     }
 

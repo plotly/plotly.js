@@ -11,6 +11,7 @@
 var Color = require('../../components/color');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
+var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
@@ -112,9 +113,17 @@ var attrs = module.exports = overrideAll({
     },
 
     text: {
-        valType: 'data_array',
-        description: 'Sets the text elements associated with each z value.'
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        description: [
+            'Sets the text elements associated with each z value.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
+        ].join(' ')
     },
+
     surfacecolor: {
         valType: 'data_array',
         description: [
@@ -242,7 +251,9 @@ var attrs = module.exports = overrideAll({
         zmax: extendFlat({}, colorscaleAttrs.zmax, {
             description: 'Obsolete. Use `cmax` instead.'
         })
-    }
+    },
+
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
 }, 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';

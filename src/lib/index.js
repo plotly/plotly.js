@@ -22,11 +22,14 @@ lib.nestedProperty = require('./nested_property');
 lib.keyedContainer = require('./keyed_container');
 lib.relativeAttr = require('./relative_attr');
 lib.isPlainObject = require('./is_plain_object');
-lib.isArray = require('./is_array');
 lib.mod = require('./mod');
 lib.toLogRange = require('./to_log_range');
 lib.relinkPrivateKeys = require('./relink_private');
 lib.ensureArray = require('./ensure_array');
+
+var isArrayModule = require('./is_array');
+lib.isTypedArray = isArrayModule.isTypedArray;
+lib.isArrayOrTypedArray = isArrayModule.isArrayOrTypedArray;
 
 var coerceModule = require('./coerce');
 lib.valObjectMeta = coerceModule.valObjectMeta;
@@ -148,20 +151,6 @@ lib.swapAttrs = function(cont, attrList, part1, part2) {
         xp.set(yp.get());
         yp.set(temp);
     }
-};
-
-/**
- * to prevent event bubbling, in particular text selection during drag.
- * see http://stackoverflow.com/questions/5429827/
- *      how-can-i-prevent-text-element-selection-with-cursor-drag
- * for maximum effect use:
- *      return pauseEvent(e);
- */
-lib.pauseEvent = function(e) {
-    if(e.stopPropagation) e.stopPropagation();
-    if(e.preventDefault) e.preventDefault();
-    e.cancelBubble = true;
-    return false;
 };
 
 /**
@@ -403,7 +392,7 @@ lib.noneOrAll = function(containerIn, containerOut, attrList) {
  * @param {string} cdAttr : calcdata key
  */
 lib.mergeArray = function(traceAttr, cd, cdAttr) {
-    if(Array.isArray(traceAttr)) {
+    if(lib.isArrayOrTypedArray(traceAttr)) {
         var imax = Math.min(traceAttr.length, cd.length);
         for(var i = 0; i < imax; i++) cd[i][cdAttr] = traceAttr[i];
     }
@@ -422,7 +411,7 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
 lib.fillArray = function(traceAttr, cd, cdAttr, fn) {
     fn = fn || lib.identity;
 
-    if(Array.isArray(traceAttr)) {
+    if(lib.isArrayOrTypedArray(traceAttr)) {
         for(var i = 0; i < cd.length; i++) {
             cd[i][cdAttr] = fn(traceAttr[i]);
         }
@@ -443,8 +432,8 @@ lib.castOption = function(trace, ptNumber, astr, fn) {
 
     var val = lib.nestedProperty(trace, astr).get();
 
-    if(Array.isArray(val)) {
-        if(Array.isArray(ptNumber) && Array.isArray(val[ptNumber[0]])) {
+    if(lib.isArrayOrTypedArray(val)) {
+        if(Array.isArray(ptNumber) && lib.isArrayOrTypedArray(val[ptNumber[0]])) {
             return fn(val[ptNumber[0]][ptNumber[1]]);
         } else {
             return fn(val[ptNumber]);
@@ -891,24 +880,18 @@ lib.subplotSort = function(a, b) {
     return numB - numA;
 };
 
-/*
- * test if event listener options supported
- */
-lib.eventListenerOptionsSupported = function() {
-    var supported = false;
+// repeatable pseudorandom generator
+var randSeed = 2000000000;
 
-    try {
-        var opts = Object.defineProperty({}, 'passive', {
-            get: function() {
-                supported = true;
-            }
-        });
+lib.seedPseudoRandom = function() {
+    randSeed = 2000000000;
+};
 
-        window.addEventListener('test', null, opts);
-        window.removeEventListener('test', null, opts);
-    } catch(e) {
-        supported = false;
-    }
-
-    return supported;
+lib.pseudoRandom = function() {
+    var lastVal = randSeed;
+    randSeed = (69069 * randSeed + 1) % 4294967296;
+    // don't let consecutive vals be too close together
+    // gets away from really trying to be random, in favor of better local uniformity
+    if(Math.abs(randSeed - lastVal) < 429496729) return lib.pseudoRandom();
+    return randSeed / 4294967296;
 };

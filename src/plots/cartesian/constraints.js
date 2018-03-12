@@ -11,6 +11,7 @@
 
 var id2name = require('./axis_ids').id2name;
 var scaleZoom = require('./scale_zoom');
+var makePadFn = require('./autorange').makePadFn;
 
 var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 
@@ -134,6 +135,7 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         // *are* expanding to the full domain
                         var outerMin = rangeCenter - halfRange * factor * 1.0001;
                         var outerMax = rangeCenter + halfRange * factor * 1.0001;
+                        var getPad = makePadFn(ax);
 
                         updateDomain(ax, factor);
                         ax.setScale();
@@ -142,14 +144,14 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         var k;
 
                         for(k = 0; k < ax._min.length; k++) {
-                            newVal = ax._min[k].val - ax._min[k].pad / m;
+                            newVal = ax._min[k].val - getPad(ax._min[k]) / m;
                             if(newVal > outerMin && newVal < rangeMin) {
                                 rangeMin = newVal;
                             }
                         }
 
                         for(k = 0; k < ax._max.length; k++) {
-                            newVal = ax._max[k].val + ax._max[k].pad / m;
+                            newVal = ax._max[k].val + getPad(ax._max[k]) / m;
                             if(newVal < outerMax && newVal > rangeMax) {
                                 rangeMax = newVal;
                             }

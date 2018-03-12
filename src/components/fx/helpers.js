@@ -9,7 +9,6 @@
 'use strict';
 
 var Lib = require('../../lib');
-var constants = require('./constants');
 
 // look for either subplot or xaxis and yaxis attributes
 exports.getSubplot = function getSubplot(trace) {
@@ -62,19 +61,16 @@ exports.getClosest = function getClosest(cd, distfn, pointData) {
     return pointData;
 };
 
-// for bar charts and others with finite-size objects: you must be inside
-// it to see its hover info, so distance is infinite outside.
-// But make distance inside be at least 1/4 MAXDIST, and a little bigger
-// for bigger bars, to prioritize scatter and smaller bars over big bars
-//
-// note that for closest mode, two inbox's will get added in quadrature
-// args are (signed) difference from the two opposite edges
-// count one edge as in, so that over continuous ranges you never get a gap
-exports.inbox = function inbox(v0, v1) {
-    if(v0 * v1 < 0 || v0 === 0) {
-        return constants.MAXDIST * (0.6 - 0.3 / Math.max(3, Math.abs(v0 - v1)));
-    }
-    return Infinity;
+/*
+ * pseudo-distance function for hover effects on areas: inside the region
+ * distance is finite (`passVal`), outside it's Infinity.
+ *
+ * @param {number} v0: signed difference between the current position and the left edge
+ * @param {number} v1: signed difference between the current position and the right edge
+ * @param {number} passVal: the value to return on success
+ */
+exports.inbox = function inbox(v0, v1, passVal) {
+    return (v0 * v1 < 0 || v0 === 0) ? passVal : Infinity;
 };
 
 exports.quadrature = function quadrature(dx, dy) {

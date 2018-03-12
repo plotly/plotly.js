@@ -18,7 +18,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
-var ErrorBars = require('../../components/errorbars');
+var Registry = require('../../registry');
 
 var attributes = require('./attributes'),
     attributeText = attributes.text,
@@ -138,15 +138,26 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                     bar.append('path')
                         .style('vector-effect', 'non-scaling-stroke')
                         .attr('d',
-                            'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z');
+                            'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
+                        .call(Drawing.setClipUrl, plotinfo.layerClipId);
 
                     appendBarText(gd, bar, d, i, x0, x1, y0, y1);
+
+                    if(plotinfo.layerClipId) {
+                        Drawing.hideOutsideRangePoint(d[i], bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
+                    }
                 });
         });
 
     // error bars are on the top
-    bartraces.call(ErrorBars.plot, plotinfo);
+    Registry.getComponentMethod('errorbars', 'plot')(bartraces, plotinfo);
 
+    // lastly, clip points groups of `cliponaxis !== false` traces
+    // on `plotinfo._hasClipOnAxisFalse === true` subplots
+    bartraces.each(function(d) {
+        var hasClipOnAxisFalse = d[0].trace.cliponaxis === false;
+        Drawing.setClipUrl(d3.select(this), hasClipOnAxisFalse ? null : plotinfo.layerClipId);
+    });
 };
 
 function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {

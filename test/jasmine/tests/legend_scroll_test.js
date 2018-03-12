@@ -6,7 +6,9 @@ var DBLCLICKDELAY = require('@src/constants/interactions').DBLCLICKDELAY;
 var d3 = require('d3');
 var createGraph = require('../assets/create_graph_div');
 var destroyGraph = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 var getBBox = require('../assets/get_bbox');
+var mouseEvent = require('../assets/mouse_event');
 var mock = require('../../image/mocks/legend_scroll.json');
 
 describe('The legend', function() {
@@ -47,6 +49,17 @@ describe('The legend', function() {
         return d3.select('g.legend').select('.legendtoggle').node();
     }
 
+    function getScroll(gd) {
+        return gd._fullLayout.legend._scrollY;
+    }
+
+    function hasScrollBar() {
+        var scrollBar = getScrollBar();
+        return scrollBar &&
+            +scrollBar.getAttribute('width') > 0 &&
+            +scrollBar.getAttribute('height') > 0;
+    }
+
     describe('when plotted with many traces', function() {
         var gd;
 
@@ -76,24 +89,151 @@ describe('The legend', function() {
         });
 
         it('should scroll when there\'s a wheel event', function() {
-            var legend = getLegend(),
-                scrollBox = getScrollBox(),
-                legendHeight = getLegendHeight(gd),
-                scrollBoxYMax = gd._fullLayout.legend.height - legendHeight,
-                scrollBarYMax = legendHeight -
-                    constants.scrollBarHeight -
-                    2 * constants.scrollBarMargin,
-                initialDataScroll = scrollBox.getAttribute('data-scroll'),
-                wheelDeltaY = 100,
-                finalDataScroll = '' + Lib.constrain(initialDataScroll -
-                    wheelDeltaY / scrollBarYMax * scrollBoxYMax,
-                    -scrollBoxYMax, 0);
+            var legend = getLegend();
+            var scrollBox = getScrollBox();
+            var scrollBar = getScrollBar();
+            var legendHeight = getLegendHeight(gd);
+            var scrollBoxYMax = gd._fullLayout.legend._height - legendHeight;
+            var scrollBarYMax = legendHeight -
+                scrollBar.getBoundingClientRect().height -
+                2 * constants.scrollBarMargin;
+            var initialDataScroll = getScroll(gd);
+            var wheelDeltaY = 100;
+            var finalDataScroll = Lib.constrain(initialDataScroll +
+                wheelDeltaY / scrollBarYMax * scrollBoxYMax,
+                0, scrollBoxYMax);
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
 
-            expect(scrollBox.getAttribute('data-scroll')).toBe(finalDataScroll);
+            expect(getScroll(gd)).toBe(finalDataScroll);
             expect(scrollBox.getAttribute('transform')).toBe(
-                'translate(0, ' + finalDataScroll + ')');
+                'translate(0, ' + -finalDataScroll + ')');
+        });
+
+        function dragScroll(element, rightClick) {
+            var scrollBar = getScrollBar();
+            var scrollBarBB = scrollBar.getBoundingClientRect();
+            var legendHeight = getLegendHeight(gd);
+            var scrollBoxYMax = gd._fullLayout.legend._height - legendHeight;
+            var scrollBarYMax = legendHeight -
+                scrollBarBB.height -
+                2 * constants.scrollBarMargin;
+            var initialDataScroll = getScroll(gd);
+            var dy = 50;
+            var finalDataScroll = Lib.constrain(initialDataScroll +
+                dy / scrollBarYMax * scrollBoxYMax,
+                0, scrollBoxYMax);
+
+            var y0 = scrollBarBB.top + scrollBarBB.height / 5;
+            var y1 = y0 + dy;
+
+            var elBB = element.getBoundingClientRect();
+            var x = elBB.left + elBB.width / 2;
+
+            var opts = {element: element};
+            if(rightClick) {
+                opts.button = 2;
+                opts.buttons = 2;
+            }
+
+            mouseEvent('mousedown', x, y0, opts);
+            mouseEvent('mousemove', x, y1, opts);
+            mouseEvent('mouseup', x, y1, opts);
+
+            expect(finalDataScroll).not.toBe(initialDataScroll);
+
+            return finalDataScroll;
+        }
+
+        it('should scroll on dragging the scrollbar', function() {
+            var finalDataScroll = dragScroll(getScrollBar());
+            var scrollBox = getScrollBox();
+
+            var dataScroll = getScroll(gd);
+            expect(dataScroll).toBeCloseTo(finalDataScroll, 3);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + -dataScroll + ')');
+        });
+
+        it('should not scroll on dragging the scrollbox', function() {
+            var scrollBox = getScrollBox();
+            var finalDataScroll = dragScroll(scrollBox);
+
+            var dataScroll = getScroll(gd);
+            expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + -dataScroll + ')');
+        });
+
+        it('should not scroll on dragging the scrollbar with a right click', function() {
+            var finalDataScroll = dragScroll(getScrollBar(), true);
+            var scrollBox = getScrollBox();
+
+            var dataScroll = getScroll(gd);
+            expect(dataScroll).not.toBeCloseTo(finalDataScroll, 3);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + -dataScroll + ')');
+        });
+
+        it('removes scroll bar and handlers when switching to horizontal', function(done) {
+            expect(hasScrollBar()).toBe(true);
+
+            Plotly.relayout(gd, {'legend.orientation': 'h'})
+            .then(function() {
+                expect(hasScrollBar()).toBe(false);
+                expect(getScroll(gd)).toBeUndefined();
+
+                getLegend().dispatchEvent(scrollTo(100));
+                expect(hasScrollBar()).toBe(false);
+                expect(getScroll(gd)).toBeUndefined();
+
+                return Plotly.relayout(gd, {'legend.orientation': 'v'});
+            })
+            .then(function() {
+                expect(hasScrollBar()).toBe(true);
+                expect(getScroll(gd)).toBe(0);
+
+                getLegend().dispatchEvent(scrollTo(100));
+                expect(hasScrollBar()).toBe(true);
+                expect(getScroll(gd)).not.toBe(0);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('updates scrollBar size/existence on deleteTraces', function(done) {
+            expect(hasScrollBar()).toBe(true);
+            var dataScroll = dragScroll(getScrollBar());
+            var scrollBarHeight = getScrollBar().getBoundingClientRect().height;
+            var scrollBarHeight1;
+
+            Plotly.deleteTraces(gd, [0])
+            .then(function() {
+                expect(getScroll(gd)).toBeCloseTo(dataScroll, 3);
+                scrollBarHeight1 = getScrollBar().getBoundingClientRect().height;
+                expect(scrollBarHeight1).toBeGreaterThan(scrollBarHeight);
+
+                // we haven't quite removed the scrollbar, but we should have clipped the scroll value
+                return Plotly.deleteTraces(gd, [0, 1, 2, 3, 4, 5, 6]);
+            })
+            .then(function() {
+                expect(getScroll(gd)).toBeLessThan(dataScroll - 1);
+                var scrollBarHeight2 = getScrollBar().getBoundingClientRect().height;
+                expect(scrollBarHeight2).toBeGreaterThan(scrollBarHeight1);
+
+                // now no more scrollBar
+                return Plotly.deleteTraces(gd, [0, 1, 2]);
+            })
+            .then(function() {
+                expect(hasScrollBar()).toBe(false);
+                expect(getScroll(gd)).toBeUndefined();
+
+                getLegend().dispatchEvent(scrollTo(100));
+                expect(hasScrollBar()).toBe(false);
+                expect(getScroll(gd)).toBeUndefined();
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('should keep the scrollbar position after a toggle event', function(done) {
@@ -104,14 +244,14 @@ describe('The legend', function() {
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
 
-            var dataScroll = scrollBox.getAttribute('data-scroll');
+            var dataScroll = getScroll(gd);
             toggle.dispatchEvent(new MouseEvent('mousedown'));
             toggle.dispatchEvent(new MouseEvent('mouseup'));
             setTimeout(function() {
                 expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
-                expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
+                expect(getScroll(gd)).toBe(dataScroll);
                 expect(scrollBox.getAttribute('transform')).toBe(
-                    'translate(0, ' + dataScroll + ')');
+                    'translate(0, ' + -dataScroll + ')');
                 done();
             }, DBLCLICKDELAY * 2);
         });
@@ -142,14 +282,14 @@ describe('The legend', function() {
             expect(scrollBar.getAttribute('x')).toBe(scrollBarX);
             expect(scrollBar.getAttribute('y')).toBe(scrollBarY);
 
-            var dataScroll = scrollBox.getAttribute('data-scroll');
+            var dataScroll = getScroll(gd);
             toggle.dispatchEvent(new MouseEvent('mousedown'));
             toggle.dispatchEvent(new MouseEvent('mouseup'));
             setTimeout(function() {
                 expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
-                expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
+                expect(getScroll(gd)).toBe(dataScroll);
                 expect(scrollBox.getAttribute('transform')).toBe(
-                    'translate(0, ' + dataScroll + ')');
+                    'translate(0, ' + -dataScroll + ')');
                 expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
                 expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
                 done();
@@ -172,13 +312,18 @@ describe('The legend', function() {
                 scrollBar = getScrollBar(),
                 legendHeight = getLegendHeight(gd);
 
-            // The scrollbar is 20px tall and has 4px margins
+            // The scrollbar is >20px tall and has 4px margins
+            var scrollBarHeight = scrollBar.getBoundingClientRect().height;
+            // in this mock there are 22 traces, and 13 are visible in the legend
+            // at any given time
+            expect(scrollBarHeight).toBeCloseTo(legendHeight * 13 / 22, -1);
 
             legend.dispatchEvent(scrollTo(-1000));
-            expect(+scrollBar.getAttribute('y')).toBe(4);
+            expect(+scrollBar.getAttribute('y')).toBeCloseTo(4, 3);
 
             legend.dispatchEvent(scrollTo(10000));
-            expect(+scrollBar.getAttribute('y')).toBe(legendHeight - 4 - 20);
+            expect(+scrollBar.getAttribute('y'))
+                .toBeCloseTo(legendHeight - 4 - scrollBarHeight, 3);
         });
 
         it('should be removed from DOM when \'showlegend\' is relayout\'ed to false', function(done) {

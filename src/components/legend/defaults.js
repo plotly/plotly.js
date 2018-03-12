@@ -18,15 +18,13 @@ var helpers = require('./helpers');
 
 
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
-    var containerIn = layoutIn.legend || {},
-        containerOut = layoutOut.legend = {};
+    var containerIn = layoutIn.legend || {};
+    var containerOut = {};
 
-    var visibleTraces = 0,
-        defaultOrder = 'normal',
-        defaultX,
-        defaultY,
-        defaultXAnchor,
-        defaultYAnchor;
+    var visibleTraces = 0;
+    var defaultOrder = 'normal';
+
+    var defaultX, defaultY, defaultXAnchor, defaultYAnchor;
 
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
@@ -57,6 +55,8 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         basePlotLayoutAttributes, 'showlegend', visibleTraces > 1);
 
     if(showLegend === false) return;
+
+    layoutOut.legend = containerOut;
 
     coerce('bgcolor', layoutOut.paper_bgcolor);
     coerce('bordercolor');

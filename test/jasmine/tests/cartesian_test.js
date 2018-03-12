@@ -159,6 +159,58 @@ describe('restyle', function() {
             .then(done);
 
         });
+
+        it('can legend-hide the second and only scatter trace', function(done) {
+            Plotly.plot(gd, [
+                {y: [1, 2, 3], type: 'bar'},
+                {y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2', type: 'scatter'}
+            ], {
+                xaxis: {domain: [0, 0.4]},
+                xaxis2: {domain: [0.6, 1]},
+                yaxis2: {anchor: 'x2'},
+                width: 600,
+                height: 400
+            })
+            .then(function() {
+                expect(d3.select('.scatter').size()).toBe(1);
+                return Plotly.restyle(gd, {visible: 'legendonly'}, 1);
+            })
+            .then(function() {
+                expect(d3.select('.scatter').size()).toBe(0);
+                return Plotly.restyle(gd, {visible: true}, 1);
+            })
+            .then(function() {
+                expect(d3.select('.scatter').size()).toBe(1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('@gl can legend-hide the second and only scattergl trace', function(done) {
+            Plotly.plot(gd, [
+                {y: [1, 2, 3], type: 'bar'},
+                {y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2', type: 'scattergl'}
+            ], {
+                xaxis: {domain: [0, 0.4]},
+                xaxis2: {domain: [0.6, 1]},
+                yaxis2: {anchor: 'x2'},
+                width: 600,
+                height: 400
+            })
+            .then(function() {
+                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
+                return Plotly.restyle(gd, {visible: 'legendonly'}, 1);
+            })
+            .then(function() {
+                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(false);
+                return Plotly.restyle(gd, {visible: true}, 1);
+            })
+            .then(function() {
+                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
 
@@ -266,8 +318,74 @@ describe('relayout', function() {
             .then(done);
         });
 
+        it('should autorange correctly with margin pushers', function(done) {
+            // lock down https://github.com/plotly/plotly.js/issues/2428
+            var expectedXRange = [-0.3068, 1.3068];
+            var expectedYRange = [0.5184, 2.4816];
+            var foundXRange, foundYRange;
+            Plotly.newPlot(gd, [{
+                // really long name, so legend pushes margins and decreases xaxis._length
+                name: 'loooooooooooongloooooooooooong',
+                y: [1, 2],
+                // really big markers, so autorange depends on length
+                // and with markers x range is padded (and 5% padding depends on length)
+                marker: {size: 100}
+            }], {
+                showlegend: true,
+                width: 800,
+                height: 500
+            })
+            .then(function() {
+                foundXRange = gd.layout.xaxis.range;
+                foundYRange = gd.layout.yaxis.range;
+                // less stringent test at first - for some reason I get a slightly different
+                // legend size even in my regular browser from when I run the tests locally
+                expect(foundXRange).toBeCloseToArray(expectedXRange, 1.5);
+                expect(foundYRange).toBeCloseToArray(expectedYRange, 1.5);
+
+                return Plotly.relayout(gd, {'xaxis.autorange': true, 'yaxis.autorange': true});
+            })
+            .then(function() {
+                // the most important thing is that the ranges don't change when you re-autorange
+                expect(gd.layout.xaxis.range).toBeCloseToArray(foundXRange, 5);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(foundYRange, 5);
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
+    describe('axis line visibility', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('can show and hide axis lines', function(done) {
+            Plotly.newPlot(gd, [{y: [1, 2]}], {width: 400, height: 400})
+            .then(function() {
+                expect(gd.querySelector('.xlines-above').attributes.d.value).toBe('M0,0');
+                expect(gd.querySelector('.ylines-above').attributes.d.value).toBe('M0,0');
+
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'yaxis.showline': true});
+            })
+            .then(function() {
+                expect(gd.querySelector('.xlines-above').attributes.d.value).not.toBe('M0,0');
+                expect(gd.querySelector('.ylines-above').attributes.d.value).not.toBe('M0,0');
+
+                return Plotly.relayout(gd, {'xaxis.showline': false, 'yaxis.showline': false});
+            })
+            .then(function() {
+                expect(gd.querySelector('.xlines-above').attributes.d.value).toBe('M0,0');
+                expect(gd.querySelector('.ylines-above').attributes.d.value).toBe('M0,0');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 describe('subplot creation / deletion:', function() {
@@ -309,6 +427,29 @@ describe('subplot creation / deletion:', function() {
         })
         .then(function() {
             assertOrphanSubplot(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should remove unused axes when deleting traces', function(done) {
+        Plotly.newPlot(gd,
+            [{y: [1, 2, 3]}, {y: [10, 30, 20], yaxis: 'y2'}],
+            {yaxis2: {side: 'right', overlaying: 'y', title: 'Hi!'}}
+        )
+        .then(function() {
+            expect(gd.querySelectorAll('.xy2,.xy2-x,.xy2-y').length).not.toBe(0);
+            expect(gd.querySelectorAll('.y2title').length).toBe(1);
+            expect(gd._fullLayout._subplots.cartesian).toEqual(['xy', 'xy2']);
+            expect(gd._fullLayout._subplots.yaxis).toEqual(['y', 'y2']);
+
+            return Plotly.deleteTraces(gd, [1]);
+        })
+        .then(function() {
+            expect(gd.querySelectorAll('.xy2,.xy2-x,.xy2-y').length).toBe(0);
+            expect(gd.querySelectorAll('.y2title').length).toBe(0);
+            expect(gd._fullLayout._subplots.cartesian).toEqual(['xy']);
+            expect(gd._fullLayout._subplots.yaxis).toEqual(['y']);
         })
         .catch(failTest)
         .then(done);

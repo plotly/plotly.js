@@ -12,9 +12,9 @@ var colorAttrs = require('../../components/colorscale/color_attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var surfaceAtts = require('../surface/attributes');
+var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
-
 
 module.exports = extendFlat(colorAttrs('', 'calc', false), {
     x: {
@@ -76,6 +76,19 @@ module.exports = extendFlat(colorAttrs('', 'calc', false), {
             'point in space, which is the third vertex of a triangle.'
         ].join(' ')
 
+    },
+
+    text: {
+        valType: 'string',
+        role: 'info',
+        dflt: '',
+        arrayOk: true,
+        editType: 'calc',
+        description: [
+            'Sets the text elements associated with the vertices.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
+        ].join(' ')
     },
 
     delaunayaxis: {
@@ -209,5 +222,7 @@ module.exports = extendFlat(colorAttrs('', 'calc', false), {
             description: 'Epsilon for face normals calculation avoids math issues arising from degenerate geometry.'
         },
         editType: 'calc'
-    }, surfaceAtts.lighting)
+    }, surfaceAtts.lighting),
+
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'})
 });

@@ -138,6 +138,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             data: fullData,
             bgColor: bgColor,
             calendar: layoutOut.calendar,
+            automargin: true,
             cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName]
         };
 
@@ -161,7 +162,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var positioningOptions = {
             letter: axLetter,
             counterAxes: counterAxes[axLetter],
-            overlayableAxes: overlayableAxes
+            overlayableAxes: overlayableAxes,
+            grid: layoutOut.grid
         };
 
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);

@@ -59,7 +59,7 @@ module.exports = {
         role: 'info',
         min: 10,
         dflt: 700,
-        editType: 'none',
+        editType: 'plot',
         description: [
             'Sets the plot\'s width (in px).'
         ].join(' ')
@@ -69,7 +69,7 @@ module.exports = {
         role: 'info',
         min: 10,
         dflt: 450,
-        editType: 'none',
+        editType: 'plot',
         description: [
             'Sets the plot\'s height (in px).'
         ].join(' ')
@@ -80,7 +80,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 80,
-            editType: 'calc',
+            editType: 'plot',
             description: 'Sets the left margin (in px).'
         },
         r: {
@@ -88,7 +88,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 80,
-            editType: 'calc',
+            editType: 'plot',
             description: 'Sets the right margin (in px).'
         },
         t: {
@@ -96,7 +96,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 100,
-            editType: 'calc',
+            editType: 'plot',
             description: 'Sets the top margin (in px).'
         },
         b: {
@@ -104,7 +104,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 80,
-            editType: 'calc',
+            editType: 'plot',
             description: 'Sets the bottom margin (in px).'
         },
         pad: {
@@ -112,7 +112,7 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 0,
-            editType: 'calc',
+            editType: 'plot',
             description: [
                 'Sets the amount of padding (in px)',
                 'between the plotting area and the axis lines'
@@ -122,9 +122,9 @@ module.exports = {
             valType: 'boolean',
             role: 'info',
             dflt: true,
-            editType: 'calc'
+            editType: 'plot'
         },
-        editType: 'calc'
+        editType: 'plot'
     },
     paper_bgcolor: {
         valType: 'color',
@@ -182,4 +182,18 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the default trace colors.'
     },
+    datarevision: {
+        valType: 'any',
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'If provided, a changed value tells `Plotly.react` that',
+            'one or more data arrays has changed. This way you can modify',
+            'arrays in-place rather than making a complete new copy for an',
+            'incremental change.',
+            'If NOT provided, `Plotly.react` assumes that data arrays are',
+            'being treated as immutable, thus any data array with a',
+            'different identity from its predecessor contains new data.'
+        ].join(' ')
+    }
 };

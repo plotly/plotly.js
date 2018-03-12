@@ -10,7 +10,7 @@
 'use strict';
 
 var Fx = require('../../components/fx');
-var ErrorBars = require('../../components/errorbars');
+var Registry = require('../../registry');
 var Color = require('../../components/color');
 var fillHoverText = require('../scatter/fill_hover_text');
 
@@ -19,8 +19,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var t = cd[0].t;
     var isClosest = (hovermode === 'closest');
+    var maxHoverDistance = pointData.maxHoverDistance;
+    var maxSpikeDistance = pointData.maxSpikeDistance;
 
-    var posVal, sizeVal, posLetter, sizeLetter, dx, dy;
+    var posVal, sizeVal, posLetter, sizeLetter, dx, dy, pRangeCalc;
 
     function thisBarMinPos(di) { return di[posLetter] - di.w / 2; }
     function thisBarMaxPos(di) { return di[posLetter] + di.w / 2; }
@@ -49,15 +51,26 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
         };
 
+    function _positionFn(_minPos, _maxPos) {
+        // add a little to the pseudo-distance for wider bars, so that like scatter,
+        // if you are over two overlapping bars, the narrower one wins.
+        return Fx.inbox(_minPos - posVal, _maxPos - posVal,
+            maxHoverDistance + Math.min(1, Math.abs(_maxPos - _minPos) / pRangeCalc) - 1);
+    }
+
     function positionFn(di) {
-        return Fx.inbox(minPos(di) - posVal, maxPos(di) - posVal);
+        return _positionFn(minPos(di), maxPos(di));
+    }
+
+    function thisBarPositionFn(di) {
+        return _positionFn(thisBarMinPos(di), thisBarMaxPos(di));
     }
 
     function sizeFn(di) {
         // add a gradient so hovering near the end of a
         // bar makes it a little closer match
-        return Fx.inbox(di.b - sizeVal, di[sizeLetter] - sizeVal) +
-            (di[sizeLetter] - sizeVal) / (di[sizeLetter] - di.b);
+        return Fx.inbox(di.b - sizeVal, di[sizeLetter] - sizeVal,
+            maxHoverDistance + (di[sizeLetter] - sizeVal) / (di[sizeLetter] - di.b) - 1);
     }
 
     if(trace.orientation === 'h') {
@@ -80,7 +93,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var pa = pointData[posLetter + 'a'];
     var sa = pointData[sizeLetter + 'a'];
 
-    var distfn = Fx.getDistanceFunction(hovermode, dx, dy);
+    pRangeCalc = Math.abs(pa.r2c(pa.range[1]) - pa.r2c(pa.range[0]));
+
+    function dxy(di) { return (dx(di) + dy(di)) / 2; }
+    var distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
     Fx.getClosest(cd, distfn, pointData);
 
     // skip the rest (for this trace) if we didn't find a close point
@@ -112,12 +128,19 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     pointData[sizeLetter + '0'] = pointData[sizeLetter + '1'] = sa.c2p(di[sizeLetter], true);
     pointData[sizeLetter + 'LabelVal'] = size;
 
-    pointData[posLetter + '0'] = pa.c2p(minPos(di), true);
-    pointData[posLetter + '1'] = pa.c2p(maxPos(di), true);
+    var extent = t.extents[t.extents.round(di.p)];
+    pointData[posLetter + '0'] = pa.c2p(isClosest ? minPos(di) : extent[0], true);
+    pointData[posLetter + '1'] = pa.c2p(isClosest ? maxPos(di) : extent[1], true);
     pointData[posLetter + 'LabelVal'] = di.p;
 
+    // spikelines always want "closest" distance regardless of hovermode
+    pointData.spikeDistance = (sizeFn(di) + thisBarPositionFn(di)) / 2 + maxSpikeDistance - maxHoverDistance;
+    // they also want to point to the data value, regardless of where the label goes
+    // in case of bars shifted within groups
+    pointData[posLetter + 'Spike'] = pa.c2p(di.p, true);
+
     fillHoverText(di, trace, pointData);
-    ErrorBars.hoverInfo(di, trace, pointData);
+    Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
     return [pointData];
 };

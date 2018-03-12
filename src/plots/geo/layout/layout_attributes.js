@@ -9,7 +9,7 @@
 'use strict';
 
 var colorAttrs = require('../../../components/color/attributes');
-var domainAttrs = require('../../domain_attributes');
+var domainAttrs = require('../../domain').attributes;
 var constants = require('../constants');
 var overrideAll = require('../../../plot_api/edit_types').overrideAll;
 

@@ -34,8 +34,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    if(len < r.length) traceOut.r = r.slice(0, len);
-    if(len < theta.length) traceOut.theta = theta.slice(0, len);
+    traceOut._length = len;
 
     coerce('thetaunit');
     coerce('mode', len < PTS_LINESONLY ? 'lines+markers' : 'lines');

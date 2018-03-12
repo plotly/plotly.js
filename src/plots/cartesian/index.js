@@ -88,11 +88,9 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
     // so if there are NO subplots at all, make one from the first
     // x & y axes in the input layout
     if(!spAll.length) {
-        var keys = Object.keys(layoutIn);
         xi = '';
         yi = '';
-        for(i = 0; i < keys.length; i++) {
-            var ki = keys[i];
+        for(var ki in layoutIn) {
             if(constants.attrRegex.test(ki)) {
                 var axLetter = ki.charAt(0);
                 if(axLetter === 'x') {
@@ -218,35 +216,19 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldModules = oldFullLayout._modules || [],
         newModules = newFullLayout._modules || [];
 
-    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo;
+    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo, moduleName;
 
 
     for(i = 0; i < oldModules.length; i++) {
-        if(oldModules[i].name === 'scatter') {
-            hadScatter = true;
-        }
-        break;
+        moduleName = oldModules[i].name;
+        if(moduleName === 'scatter') hadScatter = true;
+        else if(moduleName === 'scattergl') hadGl = true;
     }
 
     for(i = 0; i < newModules.length; i++) {
-        if(newModules[i].name === 'scatter') {
-            hasScatter = true;
-            break;
-        }
-    }
-
-    for(i = 0; i < oldModules.length; i++) {
-        if(oldModules[i].name === 'scattergl') {
-            hadGl = true;
-        }
-        break;
-    }
-
-    for(i = 0; i < newModules.length; i++) {
-        if(newModules[i].name === 'scattergl') {
-            hasGl = true;
-            break;
-        }
+        moduleName = newModules[i].name;
+        if(moduleName === 'scatter') hasScatter = true;
+        else if(moduleName === 'scattergl') hasGl = true;
     }
 
     if(hadScatter && !hasScatter) {
@@ -305,6 +287,18 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     if(hadCartesian && !hasCartesian) {
         purgeSubplotLayers(oldFullLayout._cartesianlayer.selectAll('.subplot'), oldFullLayout);
         oldFullLayout._defs.selectAll('.axesclip').remove();
+        delete oldFullLayout._axisConstraintGroups;
+    }
+    // otherwise look for subplots we need to remove
+    else if(oldSubplotList.cartesian) {
+        for(i = 0; i < oldSubplotList.cartesian.length; i++) {
+            var oldSubplotId = oldSubplotList.cartesian[i];
+            if(newSubplotList.cartesian.indexOf(oldSubplotId) === -1) {
+                var selector = '.' + oldSubplotId + ',.' + oldSubplotId + '-x,.' + oldSubplotId + '-y';
+                oldFullLayout._cartesianlayer.selectAll(selector).remove();
+                removeSubplotExtras(oldSubplotId, oldFullLayout);
+            }
+        }
     }
 };
 
@@ -484,11 +478,9 @@ function purgeSubplotLayers(layers, fullLayout) {
 
     layers.each(function(subplotId) {
         var plotgroup = d3.select(this);
-        var clipId = 'clip' + fullLayout._uid + subplotId + 'plot';
 
         plotgroup.remove();
-        fullLayout._draggers.selectAll('g.' + subplotId).remove();
-        fullLayout._defs.select('#' + clipId).remove();
+        removeSubplotExtras(subplotId, fullLayout);
 
         overlayIdsToRemove[subplotId] = true;
 
@@ -513,6 +505,11 @@ function purgeSubplotLayers(layers, fullLayout) {
             }
         }
     }
+}
+
+function removeSubplotExtras(subplotId, fullLayout) {
+    fullLayout._draggers.selectAll('g.' + subplotId).remove();
+    fullLayout._defs.select('#clip' + fullLayout._uid + subplotId + 'plot').remove();
 }
 
 function joinLayer(parent, nodeType, className, dataVal) {

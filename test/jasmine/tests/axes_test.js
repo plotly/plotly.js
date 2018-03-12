@@ -12,13 +12,13 @@ var Cartesian = require('@src/plots/cartesian');
 var Axes = require('@src/plots/cartesian/axes');
 var Fx = require('@src/components/fx');
 var supplyLayoutDefaults = require('@src/plots/cartesian/layout_defaults');
+var BADNUM = require('@src/constants/numerical').BADNUM;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var selectButton = require('../assets/modebar_button');
 var supplyDefaults = require('../assets/supply_defaults');
-
 
 describe('Test axes', function() {
     'use strict';
@@ -1419,7 +1419,9 @@ describe('Test axes', function() {
         it('returns reasonable range without explicit rangemode or autorange', function() {
             ax = {
                 _min: [
-                    {val: 1, pad: 20},
+                    // add in an extrapad to verify that it gets used on _min
+                    // with a _length of 100, extrapad increases pad by 5
+                    {val: 1, pad: 15, extrapad: true},
                     {val: 3, pad: 0},
                     {val: 2, pad: 10}
                 ],
@@ -1540,7 +1542,8 @@ describe('Test axes', function() {
                     {val: 2, pad: 10}
                 ],
                 _max: [
-                    {val: 6, pad: 20},
+                    // add in an extrapad to verify that it gets used on _max
+                    {val: 6, pad: 15, extrapad: true},
                     {val: 7, pad: 0},
                     {val: 5, pad: 10},
                 ],
@@ -1653,7 +1656,6 @@ describe('Test axes', function() {
                 autorange: true,
                 c2l: Number,
                 type: 'linear',
-                _length: 100,
                 _m: 1
             };
         }
@@ -1664,8 +1666,8 @@ describe('Test axes', function() {
 
             expand(ax, data);
 
-            expect(ax._min).toEqual([{val: 1, pad: 0}]);
-            expect(ax._max).toEqual([{val: 7, pad: 0}]);
+            expect(ax._min).toEqual([{val: 1, pad: 0, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 7, pad: 0, extrapad: false}]);
         });
 
         it('calls ax.setScale if necessary', function() {
@@ -1692,8 +1694,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -1, pad: 10}]);
-            expect(ax._max).toEqual([{val: 9, pad: 10}]);
+            expect(ax._min).toEqual([{val: -1, pad: 10, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 9, pad: 10, extrapad: false}]);
         });
 
         it('handles symmetric pads as number arrays', function() {
@@ -1706,8 +1708,14 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -6, pad: 15}, {val: -4, pad: 20}]);
-            expect(ax._max).toEqual([{val: 14, pad: 15}, {val: 8, pad: 20}]);
+            expect(ax._min).toEqual([
+                {val: -6, pad: 15, extrapad: false},
+                {val: -4, pad: 20, extrapad: false}
+            ]);
+            expect(ax._max).toEqual([
+                {val: 14, pad: 15, extrapad: false},
+                {val: 8, pad: 20, extrapad: false}
+            ]);
         });
 
         it('handles separate pads as numbers', function() {
@@ -1722,8 +1730,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -4, pad: 10}]);
-            expect(ax._max).toEqual([{val: 11, pad: 20}]);
+            expect(ax._min).toEqual([{val: -4, pad: 10, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 11, pad: 20, extrapad: false}]);
         });
 
         it('handles separate pads as number arrays', function() {
@@ -1738,8 +1746,15 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: 1, pad: 30}, {val: -3, pad: 10}]);
-            expect(ax._max).toEqual([{val: 9, pad: 0}, {val: 3, pad: 40}, {val: 8, pad: 20}]);
+            expect(ax._min).toEqual([
+                {val: 1, pad: 30, extrapad: false},
+                {val: -3, pad: 10, extrapad: false}
+            ]);
+            expect(ax._max).toEqual([
+                {val: 9, pad: 0, extrapad: false},
+                {val: 3, pad: 40, extrapad: false},
+                {val: 8, pad: 20, extrapad: false}
+            ]);
         });
 
         it('overrides symmetric pads with separate pads', function() {
@@ -1756,8 +1771,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -1, pad: 20}]);
-            expect(ax._max).toEqual([{val: 9, pad: 40}]);
+            expect(ax._min).toEqual([{val: -1, pad: 20, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 9, pad: 40, extrapad: false}]);
         });
 
         it('adds 5% padding if specified by flag', function() {
@@ -1771,8 +1786,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: 0, pad: 15}]);
-            expect(ax._max).toEqual([{val: 6, pad: 15}]);
+            expect(ax._min).toEqual([{val: 0, pad: 10, extrapad: true}]);
+            expect(ax._max).toEqual([{val: 6, pad: 10, extrapad: true}]);
         });
 
         it('has lower bound zero with all positive data if tozero is sset', function() {
@@ -1786,8 +1801,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: 0, pad: 0}]);
-            expect(ax._max).toEqual([{val: 6, pad: 10}]);
+            expect(ax._min).toEqual([{val: 0, pad: 0, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 6, pad: 10, extrapad: false}]);
         });
 
         it('has upper bound zero with all negative data if tozero is set', function() {
@@ -1801,8 +1816,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -8, pad: 10}]);
-            expect(ax._max).toEqual([{val: 0, pad: 0}]);
+            expect(ax._min).toEqual([{val: -8, pad: 10, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 0, pad: 0, extrapad: false}]);
         });
 
         it('sets neither bound to zero with positive and negative data if tozero is set', function() {
@@ -1816,8 +1831,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: -8, pad: 10}]);
-            expect(ax._max).toEqual([{val: 5, pad: 10}]);
+            expect(ax._min).toEqual([{val: -8, pad: 10, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 5, pad: 10, extrapad: false}]);
         });
 
         it('overrides padded with tozero', function() {
@@ -1832,8 +1847,8 @@ describe('Test axes', function() {
 
             expand(ax, data, options);
 
-            expect(ax._min).toEqual([{val: 0, pad: 0}]);
-            expect(ax._max).toEqual([{val: 6, pad: 15}]);
+            expect(ax._min).toEqual([{val: 0, pad: 0, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 6, pad: 10, extrapad: true}]);
         });
 
         it('should return early if no data is given', function() {
@@ -1861,11 +1876,11 @@ describe('Test axes', function() {
             data = [2, 5];
 
             ax.autorange = false;
-            ax.rangeslider = { autorange: true };
+            ax._rangesliderAutorange = true;
 
             expand(ax, data, {});
-            expect(ax._min).toEqual([{val: 2, pad: 0}]);
-            expect(ax._max).toEqual([{val: 5, pad: 0}]);
+            expect(ax._min).toEqual([{val: 2, pad: 0, extrapad: false}]);
+            expect(ax._max).toEqual([{val: 5, pad: 0, extrapad: false}]);
         });
     });
 
@@ -2211,6 +2226,29 @@ describe('Test axes', function() {
             expect(ax._categories).toEqual(['a', 'b', 'c', 'd']);
         });
 
+        it('notices when all categories are off the edge', function() {
+            var ax = {
+                type: 'category',
+                _categories: ['a', 'b', 'c', 'd'],
+                _categoriesMap: {'a': 0, 'b': 1, 'c': 2, 'd': 3},
+                tickmode: 'linear',
+                tick0: 0,
+                dtick: 1,
+                range: [-0.5, 3.5]
+            };
+
+            // baseline
+            expect(mockCalc(ax)).toEqual(['a', 'b', 'c', 'd']);
+            // reversed baseline
+            ax.range = [3.5, -0.5];
+            expect(mockCalc(ax)).toEqual(['d', 'c', 'b', 'a']);
+
+            [[-5, -1], [-1, -5], [5, 10], [10, 5]].forEach(function(rng) {
+                ax.range = rng;
+                expect(mockCalc(ax).length).toBe(0, rng);
+            });
+        });
+
         it('should always start at year for date axis hover', function() {
             var ax = {
                 type: 'date',
@@ -2306,10 +2344,8 @@ describe('Test axes', function() {
                 range: [1e200, 2e200]
             });
 
-            // This actually gives text '-Infinity' because it can't
-            // calculate the first tick properly, but since it's not going to
-            // be able to do any better with the rest, we don't much care.
-            expect(textOut.length).toBe(1);
+            // with the fix for #1645 we're not even getting the '-Infinity' we used to :tada:
+            expect(textOut.length).toBe(0);
         });
 
         it('truncates at the greater of 1001 ticks or one per pixel', function() {
@@ -2369,7 +2405,7 @@ describe('Test axes', function() {
                 start: -0.5,
                 end: 2.5,
                 size: 1,
-                _count: 3
+                _dataSpan: 2
             });
         });
 
@@ -2383,7 +2419,7 @@ describe('Test axes', function() {
                 start: undefined,
                 end: undefined,
                 size: 2,
-                _count: NaN
+                _dataSpan: NaN
             });
         });
 
@@ -2397,7 +2433,7 @@ describe('Test axes', function() {
                 start: undefined,
                 end: undefined,
                 size: 2,
-                _count: NaN
+                _dataSpan: NaN
             });
         });
 
@@ -2411,7 +2447,7 @@ describe('Test axes', function() {
                 start: undefined,
                 end: undefined,
                 size: 2,
-                _count: NaN
+                _dataSpan: NaN
             });
         });
 
@@ -2425,7 +2461,7 @@ describe('Test axes', function() {
                 start: 0.5,
                 end: 4.5,
                 size: 1,
-                _count: 4
+                _dataSpan: 3
             });
         });
 
@@ -2443,8 +2479,297 @@ describe('Test axes', function() {
                 start: -0.5,
                 end: 5.5,
                 size: 2,
-                _count: 3
+                _dataSpan: 3
             });
+        });
+    });
+
+    describe('makeCalcdata', function() {
+        var ax;
+
+        function _makeCalcdata(trace, axLetter, axType) {
+            ax = {type: axType};
+            Axes.setConvert(ax);
+            ax._categories = [];
+            return ax.makeCalcdata(trace, axLetter);
+        }
+
+        describe('should convert items', function() {
+            it('- linear case', function() {
+                var out = _makeCalcdata({
+                    x: ['1', NaN, null, 2],
+                }, 'x', 'linear');
+                expect(out).toEqual([1, BADNUM, BADNUM, 2]);
+            });
+
+            it('- date case', function() {
+                var out = _makeCalcdata({
+                    x: ['2000-01-01', NaN, null, new Date(2000, 0, 1).getTime()],
+                }, 'x', 'date');
+                expect(out).toEqual([946684800000, BADNUM, BADNUM, 946684800000]);
+            });
+
+            it('- category case', function() {
+                var out = _makeCalcdata({
+                    x: ['a', 'b', null, 4],
+                }, 'x', 'category');
+
+                expect(out).toEqual([0, 1, BADNUM, 2]);
+            });
+        });
+
+        describe('should fill item to other coordinate length if not present', function() {
+            it('- base case', function() {
+                var out = _makeCalcdata({
+                    y: [1, 2, 1],
+                }, 'x', 'linear');
+                expect(out).toEqual([0, 1, 2]);
+            });
+
+            it('- x0/dx case', function() {
+                var out = _makeCalcdata({
+                    y: [1, 2, 1],
+                    x0: 2,
+                    dx: 10,
+                    _length: 3
+                }, 'x', 'linear');
+                expect(out).toEqual([2, 12, 22]);
+            });
+
+            it('- other length case', function() {
+                var out = _makeCalcdata({
+                    _length: 5,
+                    y: [1, 2, 1],
+                }, 'x', 'linear');
+                expect(out).toEqual([0, 1, 2, 3, 4]);
+            });
+        });
+
+        describe('should subarray typed arrays', function() {
+            it('- same length linear case', function() {
+                var x = new Float32Array([1, 2, 3]);
+                var out = _makeCalcdata({
+                    _length: 3,
+                    x: x
+                }, 'x', 'linear');
+                expect(out).toBe(x);
+            });
+
+            it('- same length log case', function() {
+                var x = new Float32Array([1, 2, 3]);
+                var out = _makeCalcdata({
+                    _length: 3,
+                    x: x
+                }, 'x', 'log');
+                expect(out).toBe(x);
+            });
+
+            it('- subarray case', function() {
+                var x = new Float32Array([1, 2, 3]);
+                var out = _makeCalcdata({
+                    _length: 2,
+                    x: x
+                }, 'x', 'linear');
+                expect(out).toEqual(new Float32Array([1, 2]));
+                // check that in and out are linked to same buffer
+                expect(out.buffer).toBeDefined();
+                expect(out.buffer).toEqual(x.buffer);
+            });
+        });
+
+        describe('should convert typed arrays to plain array', function() {
+            it('- on a category axis', function() {
+                var out = _makeCalcdata({
+                    x: new Float32Array([3, 1, 2]),
+                }, 'x', 'category');
+                expect(out).toEqual([0, 1, 2]);
+                expect(ax._categories).toEqual([3, 1, 2]);
+            });
+
+            it('- on a date axis', function() {
+                var dates = [[2000, 0, 1], [2001, 0, 1], [2002, 0, 1]]
+                    .map(function(d) { return new Date(d[0], d[1], d[2]).getTime(); });
+
+                // We could make this work down the road (in v2),
+                // when address our timezone problems.
+                var out = _makeCalcdata({
+                    x: new Float64Array(dates)
+                }, 'x', 'date');
+
+                expect(out).toEqual([946684800000, 978307200000, 1009843200000]);
+            });
+        });
+    });
+
+    describe('automargin', function() {
+        var data = [{
+                x: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooongloooooongloooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ],
+                y: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ]
+            }],
+            gd, initialSize, previousSize, savedBottom;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should grow and shrink margins', function(done) {
+
+            Plotly.plot(gd, data)
+            .then(function() {
+                initialSize = Lib.extendDeep({}, gd._fullLayout._size);
+                expect(gd._fullLayout.xaxis._lastangle).toBe(30);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'yaxis.automargin': true});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeGreaterThan(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'xaxis.automargin': true});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBeGreaterThan(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                savedBottom = previousSize.b;
+                return Plotly.relayout(gd, {'xaxis.tickangle': 45});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBeGreaterThan(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'xaxis.tickangle': 30});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(savedBottom);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'yaxis.ticklen': 30});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeGreaterThan(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'yaxis.titlefont.size': 30});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size).toEqual(previousSize);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {'yaxis.title': 'hello'});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeGreaterThan(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, { 'yaxis.anchor': 'free' });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, { 'yaxis.position': 0.1});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeLessThan(previousSize.l, 'axis moved right');
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, { 'yaxis.anchor': 'x' });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBeGreaterThan(previousSize.l, 'axis snapped back');
+                expect(size.r).toBe(previousSize.r);
+                expect(size.b).toBe(previousSize.b);
+                expect(size.t).toBe(previousSize.t);
+            })
+            .then(function() {
+                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+                return Plotly.relayout(gd, {
+                    'yaxis.side': 'right',
+                    'xaxis.side': 'top'
+                });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                // left to right and bottom to top
+                expect(size.l).toBe(initialSize.r);
+                expect(size.r).toBe(previousSize.l);
+                expect(size.b).toBe(initialSize.b);
+                expect(size.t).toBe(previousSize.b);
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {
+                    'xaxis.automargin': false,
+                    'yaxis.automargin': false
+                });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                // back to the defaults
+                expect(size).toEqual(initialSize);
+            })
+            .catch(failTest)
+            .then(done);
+
         });
     });
 });

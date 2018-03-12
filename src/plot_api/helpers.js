@@ -196,8 +196,14 @@ function cleanAxRef(container, attr) {
     }
 }
 
-// Make a few changes to the data right away
-// before it gets used for anything
+/*
+ * cleanData: Make a few changes to the data right away
+ * before it gets used for anything
+ * Mostly for backward compatibility, modifies the data traces users provide.
+ *
+ * Important: if you're going to add something here that modifies a data array,
+ * update it in place so the new array === the old one.
+ */
 exports.cleanData = function(data, existingData) {
     // Enforce unique IDs
     var suids = [], // seen uids --- so we can weed out incoming repeats
@@ -283,7 +289,9 @@ exports.cleanData = function(data, existingData) {
 
         if(!Registry.traceIs(trace, 'pie') && !Registry.traceIs(trace, 'bar')) {
             if(Array.isArray(trace.textposition)) {
-                trace.textposition = trace.textposition.map(cleanTextPosition);
+                for(i = 0; i < trace.textposition.length; i++) {
+                    trace.textposition[i] = cleanTextPosition(trace.textposition[i]);
+                }
             }
             else if(trace.textposition) {
                 trace.textposition = cleanTextPosition(trace.textposition);
@@ -550,6 +558,15 @@ exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
                     Lib.nestedProperty(gd.layout, typeAttr).set(null);
                 }
             }
+        }
+    }
+};
+
+exports.clearAxisAutomargins = function(gd) {
+    var keys = Object.keys(gd._fullLayout._pushmargin);
+    for(var i = 0; i < keys.length; i++) {
+        if(keys[i].indexOf('automargin') !== -1) {
+            delete gd._fullLayout._pushmargin[keys[i]];
         }
     }
 };

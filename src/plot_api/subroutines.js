@@ -6,11 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
-var Plotly = require('../plotly');
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
 var Lib = require('../lib');
@@ -19,6 +17,7 @@ var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
+var Axes = require('../plots/cartesian/axes');
 var initInteractions = require('../plots/cartesian/graph_interact');
 var cartesianConstants = require('../plots/cartesian/constants');
 var alignmentConstants = require('../constants/alignment');
@@ -46,7 +45,7 @@ exports.lsInner = function(gd) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
     var pad = gs.p;
-    var axList = Plotly.Axes.list(gd);
+    var axList = Axes.list(gd);
 
     // _has('cartesian') means SVG specifically, not GL2D - but GL2D
     // can still get here because it makes some of the SVG structure
@@ -216,7 +215,7 @@ exports.lsInner = function(gd) {
 
         for(i = 0; i < cartesianConstants.traceLayerClasses.length; i++) {
             var layer = cartesianConstants.traceLayerClasses[i];
-            if(layer !== 'scatterlayer') {
+            if(layer !== 'scatterlayer' && layer !== 'barlayer') {
                 plotinfo.plot.selectAll('g.' + layer).call(Drawing.setClipUrl, layerClipId);
             }
         }
@@ -272,6 +271,7 @@ exports.lsInner = function(gd) {
          *    -----
          *     x2
          */
+        var xPath = 'M0,0';
         if(shouldShowLinesOrTicks(xa, subplot)) {
             leftYLineWidth = findCounterAxisLineWidth(xa, 'left', ya, axList);
             xLinesXLeft = xa._offset - (leftYLineWidth ? (pad + leftYLineWidth) : 0);
@@ -288,17 +288,17 @@ exports.lsInner = function(gd) {
                 xa._linepositions[subplot] = [xLinesYBottom, xLinesYTop];
             }
 
-            var xPath = mainPath(xa, xLinePath, xLinePathFree);
+            xPath = mainPath(xa, xLinePath, xLinePathFree);
             if(extraSubplot && xa.showline && (xa.mirror === 'all' || xa.mirror === 'allticks')) {
                 xPath += xLinePath(xLinesYBottom) + xLinePath(xLinesYTop);
             }
 
             plotinfo.xlines
-                .attr('d', xPath || 'M0,0')
                 .style('stroke-width', xa._lw + 'px')
                 .call(Color.stroke, xa.showline ?
                     xa.linecolor : 'rgba(0,0,0,0)');
         }
+        plotinfo.xlines.attr('d', xPath);
 
         /*
          * y lines that meet x axes get longer only by margin.pad, because
@@ -311,6 +311,7 @@ exports.lsInner = function(gd) {
          *       |
          *       +-----
          */
+        var yPath = 'M0,0';
         if(shouldShowLinesOrTicks(ya, subplot)) {
             connectYBottom = findCounterAxisLineWidth(ya, 'bottom', xa, axList);
             yLinesYBottom = ya._offset + ya._length + (connectYBottom ? pad : 0);
@@ -324,20 +325,20 @@ exports.lsInner = function(gd) {
                 ya._linepositions[subplot] = [yLinesXLeft, yLinesXRight];
             }
 
-            var yPath = mainPath(ya, yLinePath, yLinePathFree);
+            yPath = mainPath(ya, yLinePath, yLinePathFree);
             if(extraSubplot && ya.showline && (ya.mirror === 'all' || ya.mirror === 'allticks')) {
                 yPath += yLinePath(yLinesXLeft) + yLinePath(yLinesXRight);
             }
 
             plotinfo.ylines
-                .attr('d', yPath || 'M0,0')
                 .style('stroke-width', ya._lw + 'px')
                 .call(Color.stroke, ya.showline ?
                     ya.linecolor : 'rgba(0,0,0,0)');
         }
+        plotinfo.ylines.attr('d', yPath);
     });
 
-    Plotly.Axes.makeClipPaths(gd);
+    Axes.makeClipPaths(gd);
     exports.drawMainTitle(gd);
     ModeBar.manage(gd);
 
@@ -460,7 +461,7 @@ exports.doColorBars = function(gd) {
 exports.layoutReplot = function(gd) {
     var layout = gd.layout;
     gd.layout = undefined;
-    return Plotly.plot(gd, '', layout);
+    return Registry.call('plot', gd, '', layout);
 };
 
 exports.doLegend = function(gd) {
@@ -469,7 +470,7 @@ exports.doLegend = function(gd) {
 };
 
 exports.doTicksRelayout = function(gd) {
-    Plotly.Axes.doTicks(gd, 'redraw');
+    Axes.doTicks(gd, 'redraw');
     exports.drawMainTitle(gd);
     return Plots.previousPromises(gd);
 };

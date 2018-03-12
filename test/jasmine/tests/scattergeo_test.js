@@ -26,18 +26,21 @@ describe('Test scattergeo defaults', function() {
         traceOut = {};
     });
 
-    it('should slice lat if it it longer than lon', function() {
+    it('should not slice lat if it it longer than lon', function() {
+        // this is handled at the calc step now via _length.
         traceIn = {
             lon: [-75],
             lat: [45, 45, 45]
         };
 
         ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-        expect(traceOut.lat).toEqual([45]);
+        expect(traceOut.lat).toEqual([45, 45, 45]);
         expect(traceOut.lon).toEqual([-75]);
+        expect(traceOut._length).toBe(1);
     });
 
     it('should slice lon if it it longer than lat', function() {
+        // this is handled at the calc step now via _length.
         traceIn = {
             lon: [-75, -75, -75],
             lat: [45]
@@ -45,7 +48,8 @@ describe('Test scattergeo defaults', function() {
 
         ScatterGeo.supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut.lat).toEqual([45]);
-        expect(traceOut.lon).toEqual([-75]);
+        expect(traceOut.lon).toEqual([-75, -75, -75]);
+        expect(traceOut._length).toBe(1);
     });
 
     it('should not coerce lat and lon if locations is valid', function() {
