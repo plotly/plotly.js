@@ -347,29 +347,22 @@ exports.rangePlot = function(gd, plotinfo, cdSubplot) {
 };
 
 function makeSubplotData(gd) {
-    var fullLayout = gd._fullLayout,
-        subplots = Object.keys(fullLayout._plots);
+    var fullLayout = gd._fullLayout;
+    var subplotData = [];
+    var overlays = [];
 
-    var subplotData = [],
-        overlays = [];
-
-    for(var i = 0; i < subplots.length; i++) {
-        var subplot = subplots[i],
-            plotinfo = fullLayout._plots[subplot];
-
-        var xa = plotinfo.xaxis;
-        var ya = plotinfo.yaxis;
-        var xa2 = xa._mainAxis;
-        var ya2 = ya._mainAxis;
-
+    for(var k in fullLayout._plots) {
+        var plotinfo = fullLayout._plots[k];
+        var xa2 = plotinfo.xaxis._mainAxis;
+        var ya2 = plotinfo.yaxis._mainAxis;
         var mainplot = xa2._id + ya2._id;
-        if(mainplot !== subplot && subplots.indexOf(mainplot) !== -1) {
+
+        if(mainplot !== k && fullLayout._plots[mainplot]) {
             plotinfo.mainplot = mainplot;
             plotinfo.mainplotinfo = fullLayout._plots[mainplot];
-            overlays.push(subplot);
-        }
-        else {
-            subplotData.push(subplot);
+            overlays.push(k);
+        } else {
+            subplotData.push(k);
         }
     }
 
