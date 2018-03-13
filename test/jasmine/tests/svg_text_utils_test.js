@@ -173,6 +173,16 @@ describe('svg+text utils', function() {
             });
         });
 
+        it('allows encoded URIs in href', function() {
+            var node = mockTextSVGElement(
+              '<a href="https://example.com/?q=date%20%3E=%202018-01-01">click</a>'
+            );
+
+            expect(node.text()).toEqual('click');
+            assertAnchorAttrs(node);
+            assertAnchorLink(node, 'https://example.com/?q=date%20%3E=%202018-01-01');
+        });
+
         it('accepts `target` with links and tries to translate it to `xlink:show`', function() {
             var specs = [
                 {target: '_blank', show: 'new'},
