@@ -303,8 +303,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 };
 
 exports.drawFramework = function(gd) {
-    var fullLayout = gd._fullLayout,
-        subplotData = makeSubplotData(gd);
+    var fullLayout = gd._fullLayout;
+    var subplotData = makeSubplotData(gd);
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
         .data(subplotData, Lib.identity);
@@ -327,6 +327,7 @@ exports.drawFramework = function(gd) {
         plotinfo.overlays = [];
 
         makeSubplotLayer(plotinfo);
+
         // fill in list of overlay subplots
         if(plotinfo.mainplot) {
             var mainplot = fullLayout._plots[plotinfo.mainplot];
@@ -506,12 +507,11 @@ function removeSubplotExtras(subplotId, fullLayout) {
 }
 
 function joinLayer(parent, nodeType, className, dataVal) {
-    var layer = parent.selectAll('.' + className)
-        .data([dataVal || 0]);
-
-    layer.enter().append(nodeType)
-        .classed(className, true);
-
+    var sel = parent.select('.' + className);
+    var layer = sel.size() ?
+        sel :
+        parent.append(nodeType).classed(className, true);
+    if(dataVal) layer.datum(dataVal);
     return layer;
 }
 
