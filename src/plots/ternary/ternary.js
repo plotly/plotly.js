@@ -81,7 +81,7 @@ proto.makeFramework = function(fullLayout) {
 
     // 'relative' clippath (i.e. no translation) for this ternary subplot
     _this.clipDefRelative = Lib.ensureSingleById(fullLayout._clips, 'clipPath', clipIdRelative, function(s) {
-        s.clipDefRelative.append('path').attr('d', 'M0,0Z');
+        s.append('path').attr('d', 'M0,0Z');
     });
 
     // container for everything in this ternary subplot
