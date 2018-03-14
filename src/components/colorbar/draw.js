@@ -245,10 +245,9 @@ module.exports = function draw(gd, id) {
         cbAxisOut.setScale();
 
         // now draw the elements
-        var container = fullLayout._infolayer.selectAll('g.' + id).data([0]);
-        container.enter().append('g').classed(id, true)
-            .classed(cn.colorbar, true)
-            .each(function() {
+        var container = Lib.ensureSingle(fullLayout._infolayer, 'g', id, function(s) {
+            s.classed(cn.colorbar, true);
+            s.each(function() {
                 var s = d3.select(this);
                 s.append('rect').classed(cn.cbbg, true);
                 s.append('g').classed(cn.cbfills, true);
@@ -259,6 +258,8 @@ module.exports = function draw(gd, id) {
                 s.append('rect').classed(cn.cboutline, true);
                 s.select('.cbtitle').datum(0);
             });
+        });
+
         container.attr('transform', 'translate(' + Math.round(gs.l) +
             ',' + Math.round(gs.t) + ')');
         // TODO: this opposite transform is a hack until we make it

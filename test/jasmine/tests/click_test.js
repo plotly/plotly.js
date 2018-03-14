@@ -418,8 +418,8 @@ describe('Test click interactions:', function() {
             var node = document.querySelector('rect.nwdrag');
             var pos = getRectCenter(node);
 
-            expect(node.classList[0]).toBe('drag');
-            expect(node.classList[1]).toBe('nwdrag');
+            expect(node.classList[1]).toBe('drag');
+            expect(node.classList[0]).toBe('nwdrag');
             expect(node.classList[2]).toBe('cursor-nw-resize');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -442,8 +442,8 @@ describe('Test click interactions:', function() {
             var node = document.querySelector('rect.nedrag');
             var pos = getRectCenter(node);
 
-            expect(node.classList[0]).toBe('drag');
-            expect(node.classList[1]).toBe('nedrag');
+            expect(node.classList[1]).toBe('drag');
+            expect(node.classList[0]).toBe('nedrag');
             expect(node.classList[2]).toBe('cursor-ne-resize');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -466,8 +466,8 @@ describe('Test click interactions:', function() {
             var node = document.querySelector('rect.swdrag');
             var pos = getRectCenter(node);
 
-            expect(node.classList[0]).toBe('drag');
-            expect(node.classList[1]).toBe('swdrag');
+            expect(node.classList[1]).toBe('drag');
+            expect(node.classList[0]).toBe('swdrag');
             expect(node.classList[2]).toBe('cursor-sw-resize');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -490,8 +490,8 @@ describe('Test click interactions:', function() {
             var node = document.querySelector('rect.sedrag');
             var pos = getRectCenter(node);
 
-            expect(node.classList[0]).toBe('drag');
-            expect(node.classList[1]).toBe('sedrag');
+            expect(node.classList[1]).toBe('drag');
+            expect(node.classList[0]).toBe('sedrag');
             expect(node.classList[2]).toBe('cursor-se-resize');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -514,8 +514,8 @@ describe('Test click interactions:', function() {
             var node = document.querySelector('rect.ewdrag');
             var pos = getRectCenter(node);
 
-            expect(node.classList[0]).toBe('drag');
-            expect(node.classList[1]).toBe('ewdrag');
+            expect(node.classList[1]).toBe('drag');
+            expect(node.classList[0]).toBe('ewdrag');
             expect(node.classList[2]).toBe('cursor-ew-resize');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -538,8 +538,8 @@ describe('Test click interactions:', function() {
             var node = document.querySelector('rect.wdrag');
             var pos = getRectCenter(node);
 
-            expect(node.classList[0]).toBe('drag');
-            expect(node.classList[1]).toBe('wdrag');
+            expect(node.classList[1]).toBe('drag');
+            expect(node.classList[0]).toBe('wdrag');
             expect(node.classList[2]).toBe('cursor-w-resize');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -562,8 +562,8 @@ describe('Test click interactions:', function() {
             var node = document.querySelector('rect.edrag');
             var pos = getRectCenter(node);
 
-            expect(node.classList[0]).toBe('drag');
-            expect(node.classList[1]).toBe('edrag');
+            expect(node.classList[1]).toBe('drag');
+            expect(node.classList[0]).toBe('edrag');
             expect(node.classList[2]).toBe('cursor-e-resize');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -586,8 +586,8 @@ describe('Test click interactions:', function() {
             var node = document.querySelector('rect.nsdrag');
             var pos = getRectCenter(node);
 
-            expect(node.classList[0]).toBe('drag');
-            expect(node.classList[1]).toBe('nsdrag');
+            expect(node.classList[1]).toBe('drag');
+            expect(node.classList[0]).toBe('nsdrag');
             expect(node.classList[2]).toBe('cursor-ns-resize');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -610,8 +610,8 @@ describe('Test click interactions:', function() {
             var node = document.querySelector('rect.sdrag');
             var pos = getRectCenter(node);
 
-            expect(node.classList[0]).toBe('drag');
-            expect(node.classList[1]).toBe('sdrag');
+            expect(node.classList[1]).toBe('drag');
+            expect(node.classList[0]).toBe('sdrag');
             expect(node.classList[2]).toBe('cursor-s-resize');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -634,8 +634,8 @@ describe('Test click interactions:', function() {
             var node = document.querySelector('rect.ndrag');
             var pos = getRectCenter(node);
 
-            expect(node.classList[0]).toBe('drag');
-            expect(node.classList[1]).toBe('ndrag');
+            expect(node.classList[1]).toBe('drag');
+            expect(node.classList[0]).toBe('ndrag');
             expect(node.classList[2]).toBe('cursor-n-resize');
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);

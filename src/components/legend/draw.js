@@ -53,52 +53,35 @@ module.exports = function draw(gd) {
         return;
     }
 
-    var legend = fullLayout._infolayer.selectAll('g.legend')
-        .data([0]);
+    var firstRender = false;
+    var legend = Lib.ensureSingle(fullLayout._infolayer, 'g', 'legend', function(s) {
+        s.attr('pointer-events', 'all');
+        firstRender = true;
+    });
 
-    legend.enter().append('g')
-        .attr({
-            'class': 'legend',
-            'pointer-events': 'all'
-        });
+    var clipPath = Lib.ensureSingleById(fullLayout._topdefs, 'clipPath', clipId, function(s) {
+        s.append('rect');
+    });
 
-    var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
-        .data([0]);
-
-    clipPath.enter().append('clipPath')
-        .attr('id', clipId)
-        .append('rect');
-
-    var bg = legend.selectAll('rect.bg')
-        .data([0]);
-
-    bg.enter().append('rect').attr({
-        'class': 'bg',
-        'shape-rendering': 'crispEdges'
+    var bg = Lib.ensureSingle(legend, 'rect', 'bg', function(s) {
+        s.attr('shape-rendering', 'crispEdges');
     });
 
     bg.call(Color.stroke, opts.bordercolor)
         .call(Color.fill, opts.bgcolor)
         .style('stroke-width', opts.borderwidth + 'px');
 
-    var scrollBox = legend.selectAll('g.scrollbox')
-        .data([0]);
+    var scrollBox = Lib.ensureSingle(legend, 'g', 'scrollbox');
 
-    scrollBox.enter().append('g')
-        .attr('class', 'scrollbox');
-
-    var scrollBar = legend.selectAll('rect.scrollbar')
-        .data([0]);
-
-    scrollBar.enter().append('rect')
-        .attr({
-            'class': 'scrollbar',
+    var scrollBar = Lib.ensureSingle(legend, 'rect', 'scrollbar', function(s) {
+        s.attr({
             rx: 20,
             ry: 3,
             width: 0,
             height: 0
-        })
-        .call(Color.fill, '#808BA4');
+        });
+        s.call(Color.fill, '#808BA4');
+    });
 
     var groups = scrollBox.selectAll('g.groups')
         .data(legendData);
@@ -129,7 +112,6 @@ module.exports = function draw(gd) {
                 .call(setupTraceToggle, gd);
         });
 
-    var firstRender = legend.enter().size() !== 0;
     if(firstRender) {
         computeLegendDimensions(gd, groups, traces);
         expandMargin(gd);
@@ -378,10 +360,7 @@ function drawTexts(g, gd) {
         traceIndex = trace.index,
         name = isPie ? legendItem.label : trace.name;
 
-    var text = g.selectAll('text.legendtext')
-        .data([0]);
-
-    text.enter().append('text').classed('legendtext', true);
+    var text = Lib.ensureSingle(g, 'text', 'legendtext');
 
     text.attr('text-anchor', 'start')
         .classed('user-select-none', true)
@@ -446,15 +425,11 @@ function setupTraceToggle(g, gd) {
     var newMouseDownTime,
         numClicks = 1;
 
-    var traceToggle = g.selectAll('rect')
-        .data([0]);
-
-    traceToggle.enter().append('rect')
-        .classed('legendtoggle', true)
-        .style('cursor', 'pointer')
-        .attr('pointer-events', 'all')
-        .call(Color.fill, 'rgba(0,0,0,0)');
-
+    var traceToggle = Lib.ensureSingle(g, 'rect', 'legendtoggle', function(s) {
+        s.style('cursor', 'pointer');
+        s.attr('pointer-events', 'all');
+        s.call(Color.fill, 'rgba(0,0,0,0)');
+    });
 
     traceToggle.on('mousedown', function() {
         newMouseDownTime = (new Date()).getTime();

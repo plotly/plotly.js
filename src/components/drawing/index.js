@@ -415,9 +415,7 @@ drawing.gradient = function(sel, gd, gradientID, type, color1, color2) {
  * The upside of this is arbitrary points can share gradient defs
  */
 drawing.initGradients = function(gd) {
-    var gradientsGroup = gd._fullLayout._defs.selectAll('.gradients').data([0]);
-    gradientsGroup.enter().append('g').classed('gradients', true);
-
+    var gradientsGroup = Lib.ensureSingle(gd._fullLayout._defs, 'g', 'gradients');
     gradientsGroup.selectAll('linearGradient,radialGradient').remove();
 };
 
@@ -729,14 +727,9 @@ drawing.steps = function(shape) {
 // off-screen svg render testing element, shared by the whole page
 // uses the id 'js-plotly-tester' and stores it in drawing.tester
 drawing.makeTester = function() {
-    var tester = d3.select('body')
-        .selectAll('#js-plotly-tester')
-        .data([0]);
-
-    tester.enter().append('svg')
-        .attr('id', 'js-plotly-tester')
-        .attr(xmlnsNamespaces.svgAttrs)
-        .style({
+    var tester = Lib.ensureSingleById(d3.select('body'), 'svg', 'js-plotly-tester', function(s) {
+        s.attr(xmlnsNamespaces.svgAttrs);
+        s.style({
             position: 'absolute',
             left: '-10000px',
             top: '-10000px',
@@ -744,18 +737,18 @@ drawing.makeTester = function() {
             height: '9000px',
             'z-index': '1'
         });
+    });
 
     // browsers differ on how they describe the bounding rect of
     // the svg if its contents spill over... so make a 1x1px
     // reference point we can measure off of.
-    var testref = tester.selectAll('.js-reference-point').data([0]);
-    testref.enter().append('path')
-        .classed('js-reference-point', true)
-        .attr('d', 'M0,0H1V1H0Z')
-        .style({
+    var testref = Lib.ensureSingle(tester, 'path', 'js-reference-point', function(s) {
+        s.attr('d', 'M0,0H1V1H0Z');
+        s.style({
             'stroke-width': 0,
             fill: 'black'
         });
+    });
 
     drawing.tester = tester;
     drawing.testref = testref;

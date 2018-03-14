@@ -360,16 +360,13 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts, oppAxisRang
 }
 
 function drawBg(rangeSlider, gd, axisOpts, opts) {
-    var bg = rangeSlider.selectAll('rect.' + constants.bgClassName)
-        .data([0]);
-
-    bg.enter().append('rect')
-        .classed(constants.bgClassName, true)
-        .attr({
+    var bg = Lib.ensureSingle(rangeSlider, 'rect', constants.bgClassName, function(s) {
+        s.attr({
             x: 0,
             y: 0,
             'shape-rendering': 'crispEdges'
         });
+    });
 
     var borderCorrect = (opts.borderwidth % 2) === 0 ?
             opts.borderwidth :
@@ -391,13 +388,9 @@ function drawBg(rangeSlider, gd, axisOpts, opts) {
 function addClipPath(rangeSlider, gd, axisOpts, opts) {
     var fullLayout = gd._fullLayout;
 
-    var clipPath = fullLayout._topdefs.selectAll('#' + opts._clipId)
-        .data([0]);
-
-    clipPath.enter().append('clipPath')
-        .attr('id', opts._clipId)
-        .append('rect')
-        .attr({ x: 0, y: 0 });
+    var clipPath = Lib.ensureSingleById(fullLayout._topdefs, 'clipPath', opts._clipId, function(s) {
+        s.append('rect').attr({ x: 0, y: 0 });
+    });
 
     clipPath.select('rect').attr({
         width: opts._width,
@@ -491,25 +484,19 @@ function filterRangePlotCalcData(calcData, subplotId) {
 }
 
 function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
-    var maskMin = rangeSlider.selectAll('rect.' + constants.maskMinClassName)
-        .data([0]);
-
-    maskMin.enter().append('rect')
-        .classed(constants.maskMinClassName, true)
-        .attr({ x: 0, y: 0 })
-        .attr('shape-rendering', 'crispEdges');
+    var maskMin = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMinClassName, function(s) {
+        s.attr({ x: 0, y: 0 });
+        s.attr('shape-rendering', 'crispEdges');
+    });
 
     maskMin
         .attr('height', opts._height)
         .call(Color.fill, constants.maskColor);
 
-    var maskMax = rangeSlider.selectAll('rect.' + constants.maskMaxClassName)
-        .data([0]);
-
-    maskMax.enter().append('rect')
-        .classed(constants.maskMaxClassName, true)
-        .attr('y', 0)
-        .attr('shape-rendering', 'crispEdges');
+    var maskMax = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMaxClassName, function(s) {
+        s.attr('y', 0);
+        s.attr('shape-rendering', 'crispEdges');
+    });
 
     maskMax
         .attr('height', opts._height)
@@ -517,25 +504,19 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
 
     // masks used for oppAxis zoom
     if(oppAxisRangeOpts.rangemode !== 'match') {
-        var maskMinOppAxis = rangeSlider.selectAll('rect.' + constants.maskMinOppAxisClassName)
-            .data([0]);
-
-        maskMinOppAxis.enter().append('rect')
-            .classed(constants.maskMinOppAxisClassName, true)
-            .attr('y', 0)
-            .attr('shape-rendering', 'crispEdges');
+        var maskMinOppAxis = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMinOppAxisClassName, function(s) {
+            s.attr('y', 0);
+            s.attr('shape-rendering', 'crispEdges');
+        });
 
         maskMinOppAxis
             .attr('width', opts._width)
             .call(Color.fill, constants.maskOppAxisColor);
 
-        var maskMaxOppAxis = rangeSlider.selectAll('rect.' + constants.maskMaxOppAxisClassName)
-            .data([0]);
-
-        maskMaxOppAxis.enter().append('rect')
-            .classed(constants.maskMaxOppAxisClassName, true)
-            .attr('y', 0)
-            .attr('shape-rendering', 'crispEdges');
+        var maskMaxOppAxis = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMaxOppAxisClassName, function(s) {
+            s.attr('y', 0);
+            s.attr('shape-rendering', 'crispEdges');
+        });
 
         maskMaxOppAxis
             .attr('width', opts._width)
@@ -547,14 +528,11 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
 function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
     if(gd._context.staticPlot) return;
 
-    var slideBox = rangeSlider.selectAll('rect.' + constants.slideBoxClassName)
-        .data([0]);
-
-    slideBox.enter().append('rect')
-        .classed(constants.slideBoxClassName, true)
-        .attr('y', 0)
-        .attr('cursor', constants.slideBoxCursor)
-        .attr('shape-rendering', 'crispEdges');
+    var slideBox = Lib.ensureSingle(rangeSlider, 'rect', constants.slideBoxClassName, function(s) {
+        s.attr('y', 0);
+        s.attr('cursor', constants.slideBoxCursor);
+        s.attr('shape-rendering', 'crispEdges');
+    });
 
     slideBox.attr({
         height: opts._height,
@@ -563,21 +541,11 @@ function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
 }
 
 function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
-
     // <g grabber />
-
-    var grabberMin = rangeSlider.selectAll('g.' + constants.grabberMinClassName)
-        .data([0]);
-    grabberMin.enter().append('g')
-        .classed(constants.grabberMinClassName, true);
-
-    var grabberMax = rangeSlider.selectAll('g.' + constants.grabberMaxClassName)
-        .data([0]);
-    grabberMax.enter().append('g')
-        .classed(constants.grabberMaxClassName, true);
+    var grabberMin = Lib.ensureSingle(rangeSlider, 'g', constants.grabberMinClassName);
+    var grabberMax = Lib.ensureSingle(rangeSlider, 'g', constants.grabberMaxClassName);
 
     // <g handle />
-
     var handleFixAttrs = {
         x: 0,
         width: constants.handleWidth,
@@ -587,28 +555,21 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
         'stroke-width': constants.handleStrokeWidth,
         'shape-rendering': 'crispEdges'
     };
-
     var handleDynamicAttrs = {
         y: Math.round(opts._height / 4),
         height: Math.round(opts._height / 2),
     };
-
-    var handleMin = grabberMin.selectAll('rect.' + constants.handleMinClassName)
-        .data([0]);
-    handleMin.enter().append('rect')
-        .classed(constants.handleMinClassName, true)
-        .attr(handleFixAttrs);
+    var handleMin = Lib.ensureSingle(grabberMin, 'rect', constants.handleMinClassName, function(s) {
+        s.attr(handleFixAttrs);
+    });
     handleMin.attr(handleDynamicAttrs);
 
-    var handleMax = grabberMax.selectAll('rect.' + constants.handleMaxClassName)
-        .data([0]);
-    handleMax.enter().append('rect')
-        .classed(constants.handleMaxClassName, true)
-        .attr(handleFixAttrs);
+    var handleMax = Lib.ensureSingle(grabberMax, 'rect', constants.handleMaxClassName, function(s) {
+        s.attr(handleFixAttrs);
+    });
     handleMax.attr(handleDynamicAttrs);
 
     // <g grabarea />
-
     if(gd._context.staticPlot) return;
 
     var grabAreaFixAttrs = {
@@ -619,18 +580,14 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
         cursor: constants.grabAreaCursor
     };
 
-    var grabAreaMin = grabberMin.selectAll('rect.' + constants.grabAreaMinClassName)
-        .data([0]);
-    grabAreaMin.enter().append('rect')
-        .classed(constants.grabAreaMinClassName, true)
-        .attr(grabAreaFixAttrs);
+    var grabAreaMin = Lib.ensureSingle(grabberMin, 'rect', constants.grabAreaMinClassName, function(s) {
+        s.attr(grabAreaFixAttrs);
+    });
     grabAreaMin.attr('height', opts._height);
 
-    var grabAreaMax = grabberMax.selectAll('rect.' + constants.grabAreaMaxClassName)
-        .data([0]);
-    grabAreaMax.enter().append('rect')
-        .classed(constants.grabAreaMaxClassName, true)
-        .attr(grabAreaFixAttrs);
+    var grabAreaMax = Lib.ensureSingle(grabberMax, 'rect', constants.grabAreaMaxClassName, function(s) {
+        s.attr(grabAreaFixAttrs);
+    });
     grabAreaMax.attr('height', opts._height);
 }
 

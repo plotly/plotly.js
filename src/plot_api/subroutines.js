@@ -180,23 +180,17 @@ exports.lsInner = function(gd) {
         }
 
         // Clip so that data only shows up on the plot area.
-        plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
+        var clipId = plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        var plotClip = fullLayout._clips.selectAll('#' + plotinfo.clipId)
-            .data([0]);
+        var plotClip = Lib.ensureSingleById(fullLayout._clips, 'clipPath', clipId, function(s) {
+            s.classed('plotclip', true);
+            s.append('rect');
+        });
 
-        plotClip.enter().append('clipPath')
-            .attr({
-                'class': 'plotclip',
-                'id': plotinfo.clipId
-            })
-            .append('rect');
-
-        plotClip.selectAll('rect')
-            .attr({
-                'width': xa._length,
-                'height': ya._length
-            });
+        plotClip.select('rect').attr({
+            width: xa._length,
+            height: ya._length
+        });
 
         Drawing.setTranslate(plotinfo.plot, xa._offset, ya._offset);
 
@@ -205,9 +199,9 @@ exports.lsInner = function(gd) {
 
         if(plotinfo._hasClipOnAxisFalse) {
             plotClipId = null;
-            layerClipId = plotinfo.clipId;
+            layerClipId = clipId;
         } else {
-            plotClipId = plotinfo.clipId;
+            plotClipId = clipId;
             layerClipId = null;
         }
 

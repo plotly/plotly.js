@@ -696,22 +696,20 @@ function createHoverText(hoverData, opts, gd) {
     commonLabel.exit().remove();
 
     commonLabel.each(function() {
-        var label = d3.select(this),
-            lpath = label.selectAll('path').data([0]),
-            ltext = label.selectAll('text').data([0]);
-
-        lpath.enter().append('path')
-            .style({'stroke-width': '1px'});
+        var label = d3.select(this);
+        var lpath = Lib.ensureSingle(label, 'path', '', function(s) {
+            s.style({'stroke-width': '1px'});
+        });
+        var ltext = Lib.ensureSingle(label, 'text', '', function(s) {
+            // prohibit tex interpretation until we can handle
+            // tex and regular text together
+            s.attr('data-notex', 1);
+        });
 
         lpath.style({
             fill: commonLabelOpts.bgcolor || Color.defaultLine,
             stroke: commonLabelOpts.bordercolor || Color.background,
         });
-
-        ltext.enter().append('text')
-            // prohibit tex interpretation until we can handle
-            // tex and regular text together
-            .attr('data-notex', 1);
 
         ltext.text(t0)
             .call(Drawing.font,
