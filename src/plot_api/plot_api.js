@@ -245,9 +245,7 @@ exports.plot = function(gd, data, layout, config) {
                 .attr('height', fullLayout.height);
         }
 
-        return Lib.syncOrAsync([
-            subroutines.layoutStyles
-        ], gd);
+        return Plots.previousPromises(gd);
     }
 
     // draw anything that can affect margins.
