@@ -246,18 +246,18 @@ module.exports = function draw(gd, id) {
 
         // now draw the elements
         var container = Lib.ensureSingle(fullLayout._infolayer, 'g', id, function(s) {
-            s.classed(cn.colorbar, true);
-            s.each(function() {
-                var s = d3.select(this);
-                s.append('rect').classed(cn.cbbg, true);
-                s.append('g').classed(cn.cbfills, true);
-                s.append('g').classed(cn.cblines, true);
-                s.append('g').classed(cn.cbaxis, true).classed(cn.crisp, true);
-                s.append('g').classed(cn.cbtitleunshift, true)
-                    .append('g').classed(cn.cbtitle, true);
-                s.append('rect').classed(cn.cboutline, true);
-                s.select('.cbtitle').datum(0);
-            });
+            s.classed(cn.colorbar, true)
+                .each(function() {
+                    var s = d3.select(this);
+                    s.append('rect').classed(cn.cbbg, true);
+                    s.append('g').classed(cn.cbfills, true);
+                    s.append('g').classed(cn.cblines, true);
+                    s.append('g').classed(cn.cbaxis, true).classed(cn.crisp, true);
+                    s.append('g').classed(cn.cbtitleunshift, true)
+                        .append('g').classed(cn.cbtitle, true);
+                    s.append('rect').classed(cn.cboutline, true);
+                    s.select('.cbtitle').datum(0);
+                });
         });
 
         container.attr('transform', 'translate(' + Math.round(gs.l) +

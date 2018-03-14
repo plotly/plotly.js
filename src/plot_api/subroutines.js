@@ -183,8 +183,8 @@ exports.lsInner = function(gd) {
         var clipId = plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
         var plotClip = Lib.ensureSingleById(fullLayout._clips, 'clipPath', clipId, function(s) {
-            s.classed('plotclip', true);
-            s.append('rect');
+            s.classed('plotclip', true)
+                .append('rect');
         });
 
         plotClip.select('rect').attr({

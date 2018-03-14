@@ -284,11 +284,11 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
     }
 
     var text = Lib.ensureSingle(sliderGroup, 'text', constants.labelClass, function(s) {
-        s.classed('user-select-none', true);
-        s.attr({
-            'text-anchor': textAnchor,
-            'data-notex': 1
-        });
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': textAnchor,
+                'data-notex': 1
+            });
     });
 
     var str = sliderOpts.currentvalue.prefix ? sliderOpts.currentvalue.prefix : '';
@@ -320,8 +320,8 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
 
 function drawGrip(sliderGroup, gd, sliderOpts) {
     var grip = Lib.ensureSingle(sliderGroup, 'rect', constants.gripRectClass, function(s) {
-        s.call(attachGripEvents, gd, sliderGroup, sliderOpts);
-        s.style('pointer-events', 'all');
+        s.call(attachGripEvents, gd, sliderGroup, sliderOpts)
+            .style('pointer-events', 'all');
     });
 
     grip.attr({
@@ -337,11 +337,11 @@ function drawGrip(sliderGroup, gd, sliderOpts) {
 
 function drawLabel(item, data, sliderOpts) {
     var text = Lib.ensureSingle(item, 'text', constants.labelClass, function(s) {
-        s.classed('user-select-none', true);
-        s.attr({
-            'text-anchor': 'middle',
-            'data-notex': 1
-        });
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': 'middle',
+                'data-notex': 1
+            });
     });
 
     text.call(Drawing.font, sliderOpts.font)
@@ -559,8 +559,8 @@ function positionToNormalizedValue(sliderOpts, position) {
 function drawTouchRect(sliderGroup, gd, sliderOpts) {
     var dims = sliderOpts._dims;
     var rect = Lib.ensureSingle(sliderGroup, 'rect', constants.railTouchRectClass, function(s) {
-        s.call(attachGripEvents, gd, sliderGroup, sliderOpts);
-        s.style('pointer-events', 'all');
+        s.call(attachGripEvents, gd, sliderGroup, sliderOpts)
+            .style('pointer-events', 'all');
     });
 
     rect.attr({

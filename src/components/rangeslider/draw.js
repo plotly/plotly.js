@@ -485,8 +485,11 @@ function filterRangePlotCalcData(calcData, subplotId) {
 
 function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
     var maskMin = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMinClassName, function(s) {
-        s.attr({ x: 0, y: 0 });
-        s.attr('shape-rendering', 'crispEdges');
+        s.attr({
+            x: 0,
+            y: 0,
+            'shape-rendering': 'crispEdges'
+        });
     });
 
     maskMin
@@ -494,8 +497,10 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
         .call(Color.fill, constants.maskColor);
 
     var maskMax = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMaxClassName, function(s) {
-        s.attr('y', 0);
-        s.attr('shape-rendering', 'crispEdges');
+        s.attr({
+            y: 0,
+            'shape-rendering': 'crispEdges'
+        });
     });
 
     maskMax
@@ -505,8 +510,10 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
     // masks used for oppAxis zoom
     if(oppAxisRangeOpts.rangemode !== 'match') {
         var maskMinOppAxis = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMinOppAxisClassName, function(s) {
-            s.attr('y', 0);
-            s.attr('shape-rendering', 'crispEdges');
+            s.attr({
+                y: 0,
+                'shape-rendering': 'crispEdges'
+            });
         });
 
         maskMinOppAxis
@@ -514,8 +521,10 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
             .call(Color.fill, constants.maskOppAxisColor);
 
         var maskMaxOppAxis = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMaxOppAxisClassName, function(s) {
-            s.attr('y', 0);
-            s.attr('shape-rendering', 'crispEdges');
+            s.attr({
+                y: 0,
+                'shape-rendering': 'crispEdges'
+            });
         });
 
         maskMaxOppAxis
@@ -529,9 +538,11 @@ function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
     if(gd._context.staticPlot) return;
 
     var slideBox = Lib.ensureSingle(rangeSlider, 'rect', constants.slideBoxClassName, function(s) {
-        s.attr('y', 0);
-        s.attr('cursor', constants.slideBoxCursor);
-        s.attr('shape-rendering', 'crispEdges');
+        s.attr({
+            y: 0,
+            cursor: constants.slideBoxCursor,
+            'shape-rendering': 'crispEdges'
+        });
     });
 
     slideBox.attr({

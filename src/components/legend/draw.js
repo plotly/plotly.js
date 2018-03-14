@@ -79,8 +79,8 @@ module.exports = function draw(gd) {
             ry: 3,
             width: 0,
             height: 0
-        });
-        s.call(Color.fill, '#808BA4');
+        })
+        .call(Color.fill, '#808BA4');
     });
 
     var groups = scrollBox.selectAll('g.groups')
@@ -426,9 +426,9 @@ function setupTraceToggle(g, gd) {
         numClicks = 1;
 
     var traceToggle = Lib.ensureSingle(g, 'rect', 'legendtoggle', function(s) {
-        s.style('cursor', 'pointer');
-        s.attr('pointer-events', 'all');
-        s.call(Color.fill, 'rgba(0,0,0,0)');
+        s.style('cursor', 'pointer')
+            .attr('pointer-events', 'all')
+            .call(Color.fill, 'rgba(0,0,0,0)');
     });
 
     traceToggle.on('mousedown', function() {

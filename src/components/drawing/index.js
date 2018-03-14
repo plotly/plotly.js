@@ -728,26 +728,26 @@ drawing.steps = function(shape) {
 // uses the id 'js-plotly-tester' and stores it in drawing.tester
 drawing.makeTester = function() {
     var tester = Lib.ensureSingleById(d3.select('body'), 'svg', 'js-plotly-tester', function(s) {
-        s.attr(xmlnsNamespaces.svgAttrs);
-        s.style({
-            position: 'absolute',
-            left: '-10000px',
-            top: '-10000px',
-            width: '9000px',
-            height: '9000px',
-            'z-index': '1'
-        });
+        s.attr(xmlnsNamespaces.svgAttrs)
+            .style({
+                position: 'absolute',
+                left: '-10000px',
+                top: '-10000px',
+                width: '9000px',
+                height: '9000px',
+                'z-index': '1'
+            });
     });
 
     // browsers differ on how they describe the bounding rect of
     // the svg if its contents spill over... so make a 1x1px
     // reference point we can measure off of.
     var testref = Lib.ensureSingle(tester, 'path', 'js-reference-point', function(s) {
-        s.attr('d', 'M0,0H1V1H0Z');
-        s.style({
-            'stroke-width': 0,
-            fill: 'black'
-        });
+        s.attr('d', 'M0,0H1V1H0Z')
+            .style({
+                'stroke-width': 0,
+                fill: 'black'
+            });
     });
 
     drawing.tester = tester;

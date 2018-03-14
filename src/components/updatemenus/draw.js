@@ -454,11 +454,11 @@ function drawItemRect(item, menuOpts) {
 
 function drawItemText(item, menuOpts, itemOpts, gd) {
     var text = Lib.ensureSingle(item, 'text', constants.itemTextClassName, function(s) {
-        s.classed('user-select-none', true);
-        s.attr({
-            'text-anchor': 'start',
-            'data-notex': 1
-        });
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': 'start',
+                'data-notex': 1
+            });
     });
 
     text.call(Drawing.font, menuOpts.font)
