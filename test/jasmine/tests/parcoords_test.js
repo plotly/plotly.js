@@ -8,7 +8,7 @@ var attributes = require('@src/traces/parcoords/attributes');
 var createGraphDiv = require('../assets/create_graph_div');
 var delay = require('../assets/delay');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -318,7 +318,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions[1].range).toEqual([0, 700000]);
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -337,7 +337,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
                 expect(gd.data[0].dimensions[0].constraintrange).toEqual([200, 700]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -352,7 +352,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions.length).toEqual(0);
                 expect(document.querySelectorAll('.axis').length).toEqual(0);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -370,7 +370,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions.length).toEqual(2);
                 expect(document.querySelectorAll('.axis').length).toEqual(2);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -398,7 +398,7 @@ describe('@gl parcoords', function() {
                 expect(document.querySelectorAll('.axis').length).toEqual(2);
                 expect(gd.data[0].dimensions[0].values.length).toEqual(1);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -423,7 +423,7 @@ describe('@gl parcoords', function() {
                 expect(document.querySelectorAll('.axis').length).toEqual(0);
                 expect(gd.data[0].dimensions[0].values.length).toEqual(0);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -452,7 +452,7 @@ describe('@gl parcoords', function() {
                 expect(document.querySelectorAll('.axis').length).toEqual(2);
                 expect(gd.data[0].dimensions[0].values.length).toEqual(values[0].length);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -483,7 +483,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions.length).toEqual(60);
                 expect(document.querySelectorAll('.axis').length).toEqual(60);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -512,7 +512,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions.length).toEqual(60);
                 expect(document.querySelectorAll('.axis').length).toEqual(60);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -542,7 +542,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions.length).toEqual(60);
                 expect(document.querySelectorAll('.axis').length).toEqual(60);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -576,7 +576,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions.length).toEqual(5); // it's still five, but ...
                 expect(document.querySelectorAll('.axis').length).toEqual(3); // only 3 axes shown
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -595,7 +595,7 @@ describe('@gl parcoords', function() {
             };
             gd = createGraphDiv();
             Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -642,7 +642,7 @@ describe('@gl parcoords', function() {
 
                 expect(document.querySelectorAll('.axis').length).toEqual(20); // one dimension is `visible: false`
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
 
         });
@@ -662,7 +662,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
 
         });
@@ -689,7 +689,7 @@ describe('@gl parcoords', function() {
                 .then(restyleDimension('constraintrange', [[0, 1]]))
                 .then(restyleDimension('values', [[0, 0.1, 0.4, 1, 2, 0, 0.1, 0.4, 1, 2]]))
                 .then(restyleDimension('visible', false))
-                .catch(fail)
+                .catch(failTest)
                 .then(done);
         });
 
@@ -711,7 +711,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -736,7 +736,7 @@ describe('@gl parcoords', function() {
             .then(function() {
                 expect(tester.get()).toBe(true);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
 
         });
@@ -785,7 +785,7 @@ describe('@gl parcoords', function() {
 
                 }, 20);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
 
         });
@@ -806,7 +806,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -826,7 +826,7 @@ describe('@gl parcoords', function() {
                 expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
                 expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -865,7 +865,7 @@ describe('@gl parcoords', function() {
                     values: [1, 4]
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -888,7 +888,7 @@ describe('@gl parcoords', function() {
                     expect(gd.data.length).toEqual(0);
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -922,7 +922,7 @@ describe('@gl parcoords', function() {
                     expect(document.querySelectorAll('.y-axis').length).toEqual(0);
                     expect(gd.data.length).toEqual(0);
                 })
-                .catch(fail)
+                .catch(failTest)
                 .then(done);
         });
 
@@ -953,7 +953,7 @@ describe('@gl parcoords', function() {
                         expect(foundPixel).toEqual(false);
                     });
                 })
-                .catch(fail)
+                .catch(failTest)
                 .then(done);
         });
 
@@ -985,7 +985,7 @@ describe('@gl parcoords', function() {
                         expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(2);
                     })
-                    .catch(fail)
+                    .catch(failTest)
                     .then(done);
             });
 
@@ -1012,7 +1012,7 @@ describe('@gl parcoords', function() {
                         expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(2);
                     })
-                    .catch(fail)
+                    .catch(failTest)
                     .then(done);
             });
 
@@ -1060,7 +1060,7 @@ describe('@gl parcoords', function() {
                         expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                         expect(gd.data.length).toEqual(1);
                     })
-                    .catch(fail)
+                    .catch(failTest)
                     .then(done);
             });
         });
@@ -1087,7 +1087,7 @@ describe('@gl parcoords', function() {
                 height: 400,
                 margin: {t: 100, b: 100, l: 100, r: 100}
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1162,7 +1162,7 @@ describe('@gl parcoords', function() {
                 expect(newDashArray.split(',').length).toBe(6, newDashArray);
                 expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 2.25], [2.75, 4]]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1205,7 +1205,7 @@ describe('@gl parcoords', function() {
                 // TODO: ideally this would get clipped to [0, 9]...
                 expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([-0.1020, 9]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1242,7 +1242,7 @@ describe('@gl parcoords', function() {
                 expect(newDashArray.split(',').length).toBe(6, newDashArray);
                 expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 1.25], [2.75, 4]]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
