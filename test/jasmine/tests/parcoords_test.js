@@ -1060,7 +1060,7 @@ describe('@gl parcoords basic use', function() {
     });
 });
 
-describe('@gl parcoords constraint interactions', function() {
+describe('@gl @noCI parcoords constraint interactions', function() {
     var gd, initialDashArray0, initialDashArray1;
 
     function initialFigure() {
@@ -1144,7 +1144,7 @@ describe('@gl parcoords constraint interactions', function() {
         expect(dashArray.split(',').length).toBe(segmentCount, dashArray);
     }
 
-    it('@flaky snaps ordinal constraints', function(done) {
+    it('snaps ordinal constraints', function(done) {
         // first: drag almost to 2 but not quite - constraint will snap back to [2.75, 4]
         mostOfDrag(105, 165, 105, 190);
         var newDashArray = getDashArray(0);
