@@ -214,24 +214,23 @@ function getInterval(b, height, y) {
             }
         }
     }
-    // fixme consider refactoring this otherwise quite simple nested ternary
-    var closestInterval = isNaN(hoveredInterval)
-        ? ( // if we're South of the 1st interval, there's no previous interval
-            isNaN(previousInterval)
-                ? nextInterval
-                : ( // if we're North of the last interval, there's no next interval
-                    isNaN(nextInterval)
-                        ? previousInterval
-                        : ( // if we have both previous and subsequent intervals, which one is closer?
-                            y - pixIntervals[previousInterval][1] < pixIntervals[nextInterval][0] - y
-                                ? previousInterval
-                                : nextInterval)))
-        : hoveredInterval; // if we're hovering over an interval, that's trivially the closest interval
+
+    var closestInterval = hoveredInterval;
+    if(isNaN(closestInterval)) {
+        if(isNaN(previousInterval) || isNaN(nextInterval)) {
+            closestInterval = isNaN(previousInterval) ? nextInterval : previousInterval;
+        }
+        else {
+            closestInterval = (y - pixIntervals[previousInterval][1] < pixIntervals[nextInterval][0] - y) ?
+                previousInterval : nextInterval;
+        }
+    }
+
     var fPix = pixIntervals[closestInterval];
 
     return {
         interval: isNaN(closestInterval) ? null : intervals[closestInterval], // activated interval in domain terms
-        intervalPix: isNaN(closestInterval) ? null : pixIntervals[closestInterval], // activated interval in pixel terms
+        intervalPix: isNaN(closestInterval) ? null : fPix, // activated interval in pixel terms
         n: north(fPix, y), // do we hover over the northern resize hotspot
         s: south(fPix, y), // do we hover over the northern resize hotspot
         m: middle(fPix, y) // or over the bar section itself?
@@ -278,17 +277,13 @@ function attachDragBehavior(selection) {
                 s.barLength = pixelRange[1] - pixelRange[0];
                 s.grabbingBar = active && intData.m && unitRange;
                 s.stayingIntervals = !d.multiselect ? [] :
-                    barInteraction
-                    ? b.filter.get().filter(differentInterval(unitRange))
-                    : b.filter.get(); // keep all preexisting bars if interaction wasn't a barInteraction
+                    barInteraction ?
+                        b.filter.get().filter(differentInterval(unitRange)) :
+                        b.filter.get(); // keep all preexisting bars if interaction wasn't a barInteraction
                 var grabbingBarNorth = intData.n;
                 var grabbingBarSouth = intData.s;
                 var newBrushing = !s.grabbingBar && !grabbingBarNorth && !grabbingBarSouth;
-                s.startExtent = newBrushing
-                    ? d.unitScaleInOrder.invert(y)
-                    : grabbingBarSouth
-                        ? unitRange[1]
-                        : unitRange[0];
+                s.startExtent = newBrushing ? unitLocation : unitRange[grabbingBarSouth ? 1 : 0];
                 d.parent.inBrushDrag = true;
                 s.brushStartCallback();
             })
