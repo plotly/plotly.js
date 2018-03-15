@@ -295,772 +295,768 @@ describe('parcoords initialization tests', function() {
     });
 });
 
-describe('@gl parcoords', function() {
-    afterEach(purgeGraphDiv);
-
-    describe('edge cases', function() {
-
-        it('Works fine with one panel only', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock2);
-            var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(2);
-                expect(document.querySelectorAll('.axis').length).toEqual(2);
-                expect(gd.data[0].dimensions[0].visible).not.toBeDefined();
-                expect(gd.data[0].dimensions[0].range).not.toBeDefined();
-                expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
-                expect(gd.data[0].dimensions[0].constraintrange).toEqual([200, 700]);
-                expect(gd.data[0].dimensions[1].range).toBeDefined();
-                expect(gd.data[0].dimensions[1].range).toEqual([0, 700000]);
-                expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('Do something sensible if there is no panel i.e. dimension count is less than 2', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock1);
-            var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(1);
-                expect(document.querySelectorAll('.axis').length).toEqual(1); // sole axis still shows up
-                expect(gd.data[0].line.cmin).toEqual(-4000);
-                expect(gd.data[0].dimensions[0].visible).not.toBeDefined();
-                expect(gd.data[0].dimensions[0].range).not.toBeDefined();
-                expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
-                expect(gd.data[0].dimensions[0].constraintrange).toEqual([200, 700]);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('Does not error with zero dimensions', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock0);
-            var gd = createGraphDiv();
-
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(0);
-                expect(document.querySelectorAll('.axis').length).toEqual(0);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('Works with duplicate dimension labels', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock2);
-
-            mockCopy.layout.width = 320;
-            mockCopy.data[0].dimensions[1].label = mockCopy.data[0].dimensions[0].label;
-
-            var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(2);
-                expect(document.querySelectorAll('.axis').length).toEqual(2);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('Works with a single line; also, use a longer color array than the number of lines', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock2);
-            var dim, i, j;
-
-            mockCopy.layout.width = 320;
-            for(i = 0; i < mockCopy.data[0].dimensions.length; i++) {
-                dim = mockCopy.data[0].dimensions[i];
-                delete dim.constraintrange;
-                dim.range = [1, 2];
-                dim.values = [];
-                for(j = 0; j < 1; j++) {
-                    dim.values[j] = 1 + Math.random();
-                }
-            }
-
-            var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(2);
-                expect(document.querySelectorAll('.axis').length).toEqual(2);
-                expect(gd.data[0].dimensions[0].values.length).toEqual(1);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('Does not raise an error with zero lines and no specified range', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock2);
-            var dim, i;
-
-            mockCopy.layout.width = 320;
-            for(i = 0; i < mockCopy.data[0].dimensions.length; i++) {
-                dim = mockCopy.data[0].dimensions[i];
-                delete dim.range;
-                delete dim.constraintrange;
-                dim.values = [];
-            }
-
-            var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(2);
-                expect(document.querySelectorAll('.axis').length).toEqual(0);
-                expect(gd.data[0].dimensions[0].values.length).toEqual(0);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('Works with non-finite `values` elements', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock2);
-            var dim, i, j;
-            var values = [[0, 1, 2, 3, 4], [Infinity, NaN, void(0), null, 1]];
-
-            mockCopy.layout.width = 320;
-            for(i = 0; i < values.length; i++) {
-                dim = mockCopy.data[0].dimensions[i];
-                delete dim.range;
-                delete dim.constraintrange;
-                dim.values = [];
-                for(j = 0; j < values[0].length; j++) {
-                    dim.values[j] = values[i][j];
-                }
-            }
-
-            var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(2);
-                expect(document.querySelectorAll('.axis').length).toEqual(2);
-                expect(gd.data[0].dimensions[0].values.length).toEqual(values[0].length);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('@noCI Works with 60 dimensions', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock1);
-            var newDimension, i, j;
-
-            mockCopy.layout.width = 1680;
-            mockCopy.data[0].dimensions = [];
-            for(i = 0; i < 60; i++) {
-                newDimension = Lib.extendDeep({}, mock1.data[0].dimensions[0]);
-                newDimension.id = 'S' + i;
-                newDimension.label = 'S' + i;
-                delete newDimension.constraintrange;
-                newDimension.range = [1, 2];
-                newDimension.values = [];
-                for(j = 0; j < 100; j++) {
-                    newDimension.values[j] = 1 + Math.random();
-                }
-                mockCopy.data[0].dimensions[i] = newDimension;
-            }
-
-            var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(60);
-                expect(document.querySelectorAll('.axis').length).toEqual(60);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('@noCI Truncates 60+ dimensions to 60', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock1);
-            var newDimension, i, j;
-
-            mockCopy.layout.width = 1680;
-            for(i = 0; i < 70; i++) {
-                newDimension = Lib.extendDeep({}, mock1.data[0].dimensions[0]);
-                newDimension.id = 'S' + i;
-                newDimension.label = 'S' + i;
-                delete newDimension.constraintrange;
-                newDimension.range = [0, 999];
-                for(j = 0; j < 10; j++) {
-                    newDimension.values[j] = Math.floor(1000 * Math.random());
-                }
-                mockCopy.data[0].dimensions[i] = newDimension;
-            }
-
-            var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(60);
-                expect(document.querySelectorAll('.axis').length).toEqual(60);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('@noCI Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock1);
-            var newDimension, i, j;
-
-            mockCopy.layout.width = 1680;
-            for(i = 0; i < 60; i++) {
-                newDimension = Lib.extendDeep({}, mock1.data[0].dimensions[0]);
-                newDimension.id = 'S' + i;
-                newDimension.label = 'S' + i;
-                delete newDimension.constraintrange;
-                newDimension.range = [0, 999];
-                newDimension.values = [];
-                for(j = 0; j < 65 - i; j++) {
-                    newDimension.values[j] = Math.floor(1000 * Math.random());
-                }
-                mockCopy.data[0].dimensions[i] = newDimension;
-            }
-
-            var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(60);
-                expect(document.querySelectorAll('.axis').length).toEqual(60);
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('Skip dimensions which are not plain objects or whose `values` is not an array', function(done) {
-
-            var mockCopy = Lib.extendDeep({}, mock1);
-            var newDimension, i, j;
-
-            mockCopy.layout.width = 680;
-            mockCopy.data[0].dimensions = [];
-            for(i = 0; i < 5; i++) {
-                newDimension = Lib.extendDeep({}, mock1.data[0].dimensions[0]);
-                newDimension.id = 'S' + i;
-                newDimension.label = 'S' + i;
-                delete newDimension.constraintrange;
-                newDimension.range = [1, 2];
-                newDimension.values = [];
-                for(j = 0; j < 100; j++) {
-                    newDimension.values[j] = 1 + Math.random();
-                }
-                mockCopy.data[0].dimensions[i] = newDimension;
-            }
-
-            mockCopy.data[0].dimensions[0] = 'This is not a plain object';
-            mockCopy.data[0].dimensions[1].values = 'This is not an array';
-
-            var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].dimensions.length).toEqual(5); // it's still five, but ...
-                expect(document.querySelectorAll('.axis').length).toEqual(3); // only 3 axes shown
-            })
-            .catch(failTest)
-            .then(done);
-        });
+describe('@gl parcoords edge cases', function() {
+    var gd;
+    beforeEach(function() {
+        gd = createGraphDiv();
     });
 
-    describe('basic use', function() {
-        var mockCopy,
-            gd;
+    afterEach(purgeGraphDiv);
 
-        beforeEach(function(done) {
-            mockCopy = Lib.extendDeep({}, mock);
-            mockCopy.data[0].domain = {
-                x: [0.1, 0.9],
-                y: [0.05, 0.85]
-            };
-            gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-            .catch(failTest)
-            .then(done);
-        });
+    it('Works fine with one panel only', function(done) {
 
-        it('`Plotly.plot` should have proper fields on `gd.data` on initial rendering', function() {
+        var mockCopy = Lib.extendDeep({}, mock2);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
 
             expect(gd.data.length).toEqual(1);
-            expect(gd.data[0].dimensions.length).toEqual(11);
-            expect(document.querySelectorAll('.axis').length).toEqual(10); // one dimension is `visible: false`
-            expect(gd.data[0].line.cmin).toEqual(-4000);
+            expect(gd.data[0].dimensions.length).toEqual(2);
+            expect(document.querySelectorAll('.axis').length).toEqual(2);
             expect(gd.data[0].dimensions[0].visible).not.toBeDefined();
-            expect(gd.data[0].dimensions[4].visible).toEqual(true);
-            expect(gd.data[0].dimensions[5].visible).toEqual(false);
             expect(gd.data[0].dimensions[0].range).not.toBeDefined();
             expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
-            expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
+            expect(gd.data[0].dimensions[0].constraintrange).toEqual([200, 700]);
             expect(gd.data[0].dimensions[1].range).toBeDefined();
             expect(gd.data[0].dimensions[1].range).toEqual([0, 700000]);
             expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-        });
+    it('Do something sensible if there is no panel i.e. dimension count is less than 2', function(done) {
 
-        it('Calling `Plotly.plot` again should add the new parcoords', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock1);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
 
-            var reversedMockCopy = Lib.extendDeep({}, mockCopy);
-            reversedMockCopy.data[0].dimensions = reversedMockCopy.data[0].dimensions.slice().reverse();
-            reversedMockCopy.data[0].dimensions.forEach(function(d) {d.id = 'R_' + d.id;});
-            reversedMockCopy.data[0].dimensions.forEach(function(d) {d.label = 'R_' + d.label;});
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(1);
+            expect(document.querySelectorAll('.axis').length).toEqual(1); // sole axis still shows up
+            expect(gd.data[0].line.cmin).toEqual(-4000);
+            expect(gd.data[0].dimensions[0].visible).not.toBeDefined();
+            expect(gd.data[0].dimensions[0].range).not.toBeDefined();
+            expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
+            expect(gd.data[0].dimensions[0].constraintrange).toEqual([200, 700]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-            Plotly.plot(gd, reversedMockCopy.data, reversedMockCopy.layout).then(function() {
+    it('Does not error with zero dimensions', function(done) {
 
-                expect(gd.data.length).toEqual(2);
+        var mockCopy = Lib.extendDeep({}, mock0);
 
-                expect(gd.data[0].dimensions.length).toEqual(11);
-                expect(gd.data[0].line.cmin).toEqual(-4000);
-                expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
-                expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
-                expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
 
-                expect(gd.data[1].dimensions.length).toEqual(11);
-                expect(gd.data[1].line.cmin).toEqual(-4000);
-                expect(gd.data[1].dimensions[10].constraintrange).toBeDefined();
-                expect(gd.data[1].dimensions[10].constraintrange).toEqual([100000, 150000]);
-                expect(gd.data[1].dimensions[1].constraintrange).not.toBeDefined();
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(0);
+            expect(document.querySelectorAll('.axis').length).toEqual(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-                expect(document.querySelectorAll('.axis').length).toEqual(20); // one dimension is `visible: false`
-            })
-            .catch(failTest)
-            .then(done);
+    it('Works with duplicate dimension labels', function(done) {
 
-        });
+        var mockCopy = Lib.extendDeep({}, mock2);
 
-        it('Calling `Plotly.restyle` with a string path should amend the preexisting parcoords', function(done) {
+        mockCopy.layout.width = 320;
+        mockCopy.data[0].dimensions[1].label = mockCopy.data[0].dimensions[0].label;
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(2);
+            expect(document.querySelectorAll('.axis').length).toEqual(2);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('Works with a single line; also, use a longer color array than the number of lines', function(done) {
+
+        var mockCopy = Lib.extendDeep({}, mock2);
+        var dim, i, j;
+
+        mockCopy.layout.width = 320;
+        for(i = 0; i < mockCopy.data[0].dimensions.length; i++) {
+            dim = mockCopy.data[0].dimensions[i];
+            delete dim.constraintrange;
+            dim.range = [1, 2];
+            dim.values = [];
+            for(j = 0; j < 1; j++) {
+                dim.values[j] = 1 + Math.random();
+            }
+        }
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(2);
+            expect(document.querySelectorAll('.axis').length).toEqual(2);
+            expect(gd.data[0].dimensions[0].values.length).toEqual(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('Does not raise an error with zero lines and no specified range', function(done) {
+
+        var mockCopy = Lib.extendDeep({}, mock2);
+        var dim, i;
+
+        mockCopy.layout.width = 320;
+        for(i = 0; i < mockCopy.data[0].dimensions.length; i++) {
+            dim = mockCopy.data[0].dimensions[i];
+            delete dim.range;
+            delete dim.constraintrange;
+            dim.values = [];
+        }
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(2);
+            expect(document.querySelectorAll('.axis').length).toEqual(0);
+            expect(gd.data[0].dimensions[0].values.length).toEqual(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('Works with non-finite `values` elements', function(done) {
+
+        var mockCopy = Lib.extendDeep({}, mock2);
+        var dim, i, j;
+        var values = [[0, 1, 2, 3, 4], [Infinity, NaN, void(0), null, 1]];
+
+        mockCopy.layout.width = 320;
+        for(i = 0; i < values.length; i++) {
+            dim = mockCopy.data[0].dimensions[i];
+            delete dim.range;
+            delete dim.constraintrange;
+            dim.values = [];
+            for(j = 0; j < values[0].length; j++) {
+                dim.values[j] = values[i][j];
+            }
+        }
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(2);
+            expect(document.querySelectorAll('.axis').length).toEqual(2);
+            expect(gd.data[0].dimensions[0].values.length).toEqual(values[0].length);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@noCI Works with 60 dimensions', function(done) {
+
+        var mockCopy = Lib.extendDeep({}, mock1);
+        var newDimension, i, j;
+
+        mockCopy.layout.width = 1680;
+        mockCopy.data[0].dimensions = [];
+        for(i = 0; i < 60; i++) {
+            newDimension = Lib.extendDeep({}, mock1.data[0].dimensions[0]);
+            newDimension.id = 'S' + i;
+            newDimension.label = 'S' + i;
+            delete newDimension.constraintrange;
+            newDimension.range = [1, 2];
+            newDimension.values = [];
+            for(j = 0; j < 100; j++) {
+                newDimension.values[j] = 1 + Math.random();
+            }
+            mockCopy.data[0].dimensions[i] = newDimension;
+        }
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(60);
+            expect(document.querySelectorAll('.axis').length).toEqual(60);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@noCI Truncates 60+ dimensions to 60', function(done) {
+
+        var mockCopy = Lib.extendDeep({}, mock1);
+        var newDimension, i, j;
+
+        mockCopy.layout.width = 1680;
+        for(i = 0; i < 70; i++) {
+            newDimension = Lib.extendDeep({}, mock1.data[0].dimensions[0]);
+            newDimension.id = 'S' + i;
+            newDimension.label = 'S' + i;
+            delete newDimension.constraintrange;
+            newDimension.range = [0, 999];
+            for(j = 0; j < 10; j++) {
+                newDimension.values[j] = Math.floor(1000 * Math.random());
+            }
+            mockCopy.data[0].dimensions[i] = newDimension;
+        }
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(60);
+            expect(document.querySelectorAll('.axis').length).toEqual(60);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@noCI Truncates dimension values to the shortest array, retaining only 3 lines', function(done) {
+
+        var mockCopy = Lib.extendDeep({}, mock1);
+        var newDimension, i, j;
+
+        mockCopy.layout.width = 1680;
+        for(i = 0; i < 60; i++) {
+            newDimension = Lib.extendDeep({}, mock1.data[0].dimensions[0]);
+            newDimension.id = 'S' + i;
+            newDimension.label = 'S' + i;
+            delete newDimension.constraintrange;
+            newDimension.range = [0, 999];
+            newDimension.values = [];
+            for(j = 0; j < 65 - i; j++) {
+                newDimension.values[j] = Math.floor(1000 * Math.random());
+            }
+            mockCopy.data[0].dimensions[i] = newDimension;
+        }
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(60);
+            expect(document.querySelectorAll('.axis').length).toEqual(60);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('Skip dimensions which are not plain objects or whose `values` is not an array', function(done) {
+
+        var mockCopy = Lib.extendDeep({}, mock1);
+        var newDimension, i, j;
+
+        mockCopy.layout.width = 680;
+        mockCopy.data[0].dimensions = [];
+        for(i = 0; i < 5; i++) {
+            newDimension = Lib.extendDeep({}, mock1.data[0].dimensions[0]);
+            newDimension.id = 'S' + i;
+            newDimension.label = 'S' + i;
+            delete newDimension.constraintrange;
+            newDimension.range = [1, 2];
+            newDimension.values = [];
+            for(j = 0; j < 100; j++) {
+                newDimension.values[j] = 1 + Math.random();
+            }
+            mockCopy.data[0].dimensions[i] = newDimension;
+        }
+
+        mockCopy.data[0].dimensions[0] = 'This is not a plain object';
+        mockCopy.data[0].dimensions[1].values = 'This is not an array';
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+            expect(gd.data[0].dimensions.length).toEqual(5); // it's still five, but ...
+            expect(document.querySelectorAll('.axis').length).toEqual(3); // only 3 axes shown
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('@gl parcoords Lifecycle methods', function() {
+    afterEach(purgeGraphDiv);
+
+    it('Plotly.deleteTraces with one trace removes the plot', function(done) {
+
+        var gd = createGraphDiv();
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].line.showscale = false;
+
+        Plotly.plot(gd, mockCopy).then(function() {
 
             expect(gd.data.length).toEqual(1);
 
-            Plotly.restyle(gd, 'line.colorscale', 'Viridis').then(function() {
-
-                expect(gd.data.length).toEqual(1);
-
-                expect(gd.data[0].line.colorscale).toEqual('Viridis');
-                expect(gd.data[0].dimensions.length).toEqual(11);
-                expect(gd.data[0].line.cmin).toEqual(-4000);
-                expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
-                expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
-                expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
-            })
-            .catch(failTest)
-            .then(done);
-
-        });
-
-        it('Calling `Plotly.restyle` for a dimension should amend the preexisting dimension', function(done) {
-
-            function restyleDimension(key, setterValue) {
-
-                // array values need to be wrapped in an array; unwrapping here for value comparison
-                var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
-
-                return function() {
-                    return Plotly.restyle(gd, 'dimensions[2].' + key, setterValue).then(function() {
-                        expect(gd.data[0].dimensions[2][key]).toEqual(value, 'for dimension attribute \'' + key + '\'');
-                    });
-                };
-            }
-
-            restyleDimension('label', 'new label')()
-                .then(restyleDimension('tickvals', [[0, 0.1, 0.4, 1, 2]]))
-                .then(restyleDimension('ticktext', [['alpha', 'gamma', 'beta', 'omega', 'epsilon']]))
-                .then(restyleDimension('tickformat', '4s'))
-                .then(restyleDimension('range', [[0, 2]]))
-                .then(restyleDimension('constraintrange', [[0, 1]]))
-                .then(restyleDimension('values', [[0, 0.1, 0.4, 1, 2, 0, 0.1, 0.4, 1, 2]]))
-                .then(restyleDimension('visible', false))
-                .catch(failTest)
-                .then(done);
-        });
-
-        it('Calling `Plotly.restyle` with an object should amend the preexisting parcoords', function(done) {
-
-            var newStyle = Lib.extendDeep({}, mockCopy.data[0].line);
-            newStyle.colorscale = 'Viridis';
-            newStyle.reversescale = false;
-
-            Plotly.restyle(gd, {line: newStyle}).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-
-                expect(gd.data[0].line.colorscale).toEqual('Viridis');
-                expect(gd.data[0].line.reversescale).toEqual(false);
-                expect(gd.data[0].dimensions.length).toEqual(11);
-                expect(gd.data[0].line.cmin).toEqual(-4000);
-                expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
-                expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
-                expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('Should emit a \'plotly_restyle\' event', function(done) {
-
-            var tester = (function() {
-
-                var eventCalled = false;
-
-                return {
-                    set: function(d) {eventCalled = d;},
-                    get: function() {return eventCalled;}
-                };
-            })();
-
-            gd.on('plotly_restyle', function() {
-                tester.set(true);
+            return Plotly.deleteTraces(gd, 0).then(function() {
+                expect(d3.selectAll('.gl-canvas').node(0)).toEqual(null);
+                expect(gd.data.length).toEqual(0);
             });
-
-            expect(tester.get()).toBe(false);
-            Plotly.restyle(gd, 'line.colorscale', 'Viridis')
-            .then(function() {
-                expect(tester.get()).toBe(true);
-            })
-            .catch(failTest)
-            .then(done);
-
-        });
-
-        it('Should emit a \'plotly_hover\' event', function(done) {
-
-            function testMaker() {
-
-                var eventCalled = false;
-
-                return {
-                    set: function() {eventCalled = eventCalled || true;},
-                    get: function() {return eventCalled;}
-                };
-            }
-
-            var hoverTester = testMaker();
-            var unhoverTester = testMaker();
-
-            gd.on('plotly_hover', function(d) {
-                hoverTester.set({hover: d});
-            });
-
-            gd.on('plotly_unhover', function(d) {
-                unhoverTester.set({unhover: d});
-            });
-
-            expect(hoverTester.get()).toBe(false);
-            expect(unhoverTester.get()).toBe(false);
-
-            mouseTo(324, 216);
-            mouseTo(315, 218);
-
-            new Promise(function(resolve) {
-                window.setTimeout(function() {
-
-                    expect(hoverTester.get()).toBe(true);
-
-                    mouseTo(329, 153);
-
-                    window.setTimeout(function() {
-
-                        expect(unhoverTester.get()).toBe(true);
-                        resolve();
-                    }, 20);
-
-                }, 20);
-            })
-            .catch(failTest)
-            .then(done);
-
-        });
-
-        it('Calling `Plotly.relayout` with string should amend the preexisting parcoords', function(done) {
-
-            expect(gd.layout.width).toEqual(1184);
-
-            Plotly.relayout(gd, 'width', 500).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-
-                expect(gd.layout.width).toEqual(500);
-                expect(gd.data[0].line.colorscale).toEqual('Jet');
-                expect(gd.data[0].dimensions.length).toEqual(11);
-                expect(gd.data[0].line.cmin).toEqual(-4000);
-                expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
-                expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
-                expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('Calling `Plotly.relayout`with object should amend the preexisting parcoords', function(done) {
-
-            expect(gd.layout.width).toEqual(1184);
-
-            Plotly.relayout(gd, {width: 500}).then(function() {
-
-                expect(gd.data.length).toEqual(1);
-
-                expect(gd.layout.width).toEqual(500);
-                expect(gd.data[0].line.colorscale).toEqual('Jet');
-                expect(gd.data[0].dimensions.length).toEqual(11);
-                expect(gd.data[0].line.cmin).toEqual(-4000);
-                expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
-                expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
-                expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
-            })
-            .catch(failTest)
-            .then(done);
-        });
-
-        it('@flaky Calling `Plotly.animate` with patches targeting `dimensions` attributes should do the right thing', function(done) {
-            Plotly.newPlot(gd, [{
-                type: 'parcoords',
-                line: {color: 'blue'},
-                dimensions: [{
-                    range: [1, 5],
-                    constraintrange: [1, 2],
-                    label: 'A',
-                    values: [1, 4]
-                }, {
-                    range: [1, 5],
-                    label: 'B',
-                    values: [3, 1.5],
-                    tickvals: [1.5, 3, 4.5]
-                }]
-            }])
-            .then(function() {
-                return Plotly.animate(gd, {
-                    data: [{
-                        'line.color': 'red',
-                        'dimensions[0].constraintrange': [1, 4]
-                    }],
-                    traces: [0],
-                    layout: {}
-                });
-            })
-            .then(function() {
-                expect(gd.data[0].line.color).toBe('red');
-                expect(gd.data[0].dimensions[0]).toEqual({
-                    range: [1, 5],
-                    constraintrange: [1, 4],
-                    label: 'A',
-                    values: [1, 4]
-                });
-            })
-            .catch(failTest)
-            .then(done);
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
-    describe('Lifecycle methods', function() {
+    it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
 
-        it('Plotly.deleteTraces with one trace removes the plot', function(done) {
+        var gd = createGraphDiv();
+        var mockCopy = Lib.extendDeep({}, mock);
+        var mockCopy2 = Lib.extendDeep({}, mock);
+        mockCopy2.data[0].dimensions.splice(3, 4);
+        mockCopy.data[0].line.showscale = false;
 
-            var gd = createGraphDiv();
-            var mockCopy = Lib.extendDeep({}, mock);
-
-            mockCopy.data[0].line.showscale = false;
-
-            Plotly.plot(gd, mockCopy).then(function() {
-
+        Plotly.plot(gd, mockCopy)
+            .then(function() {
                 expect(gd.data.length).toEqual(1);
+                expect(document.querySelectorAll('.y-axis').length).toEqual(10);
+                return Plotly.plot(gd, mockCopy2);
+            })
+            .then(function() {
+                expect(gd.data.length).toEqual(2);
+                expect(document.querySelectorAll('.y-axis').length).toEqual(10 + 7);
+                return Plotly.deleteTraces(gd, [0]);
+            })
+            .then(function() {
+                expect(document.querySelectorAll('.gl-canvas').length).toEqual(3);
+                expect(document.querySelectorAll('.y-axis').length).toEqual(7);
+                expect(gd.data.length).toEqual(1);
+                return Plotly.deleteTraces(gd, 0);
+            })
+            .then(function() {
+                expect(document.querySelectorAll('.gl-canvas').length).toEqual(0);
+                expect(document.querySelectorAll('.y-axis').length).toEqual(0);
+                expect(gd.data.length).toEqual(0);
+            })
+            .catch(failTest)
+            .then(done);
+    });
 
-                return Plotly.deleteTraces(gd, 0).then(function() {
-                    expect(d3.selectAll('.gl-canvas').node(0)).toEqual(null);
-                    expect(gd.data.length).toEqual(0);
+    it('Calling `Plotly.restyle` with zero panels left should erase lines', function(done) {
+
+        var mockCopy = Lib.extendDeep({}, mock2);
+        var gd = createGraphDiv();
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+
+        function restyleDimension(key, dimIndex, setterValue) {
+            var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
+            return function() {
+                return Plotly.restyle(gd, 'dimensions[' + dimIndex + '].' + key, setterValue).then(function() {
+                    expect(gd.data[0].dimensions[dimIndex][key]).toEqual(value, 'for dimension attribute \'' + key + '\'');
+                });
+            };
+        }
+
+        restyleDimension('values', 1, [[]])()
+            .then(function() {
+                d3.selectAll('.parcoords-lines').each(function(d) {
+                    var imageArray = d.lineLayer.readPixels(0, 0, d.model.canvasWidth, d.model.canvasHeight);
+                    var foundPixel = false;
+                    var i = 0;
+                    do {
+                        foundPixel = foundPixel || imageArray[i++] !== 0;
+                    } while(!foundPixel && i < imageArray.length);
+                    expect(foundPixel).toEqual(false);
                 });
             })
             .catch(failTest)
             .then(done);
-        });
+    });
 
-        it('Plotly.deleteTraces with two traces removes the deleted plot', function(done) {
+    describe('Having two datasets', function() {
+
+        it('Two subsequent calls to Plotly.plot should create two parcoords rows', function(done) {
 
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mock);
+            mockCopy.data[0].domain = {x: [0, 0.45]};
+            mockCopy2.data[0].domain = {x: [0.55, 1]};
             mockCopy2.data[0].dimensions.splice(3, 4);
-            mockCopy.data[0].line.showscale = false;
+
+            expect(document.querySelectorAll('.gl-container').length).toEqual(0);
 
             Plotly.plot(gd, mockCopy)
                 .then(function() {
+
+                    expect(1).toEqual(1);
+                    expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                     expect(gd.data.length).toEqual(1);
-                    expect(document.querySelectorAll('.y-axis').length).toEqual(10);
+
                     return Plotly.plot(gd, mockCopy2);
                 })
                 .then(function() {
+
+                    expect(1).toEqual(1);
+                    expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                     expect(gd.data.length).toEqual(2);
-                    expect(document.querySelectorAll('.y-axis').length).toEqual(10 + 7);
-                    return Plotly.deleteTraces(gd, [0]);
-                })
-                .then(function() {
-                    expect(document.querySelectorAll('.gl-canvas').length).toEqual(3);
-                    expect(document.querySelectorAll('.y-axis').length).toEqual(7);
-                    expect(gd.data.length).toEqual(1);
-                    return Plotly.deleteTraces(gd, 0);
-                })
-                .then(function() {
-                    expect(document.querySelectorAll('.gl-canvas').length).toEqual(0);
-                    expect(document.querySelectorAll('.y-axis').length).toEqual(0);
-                    expect(gd.data.length).toEqual(0);
                 })
                 .catch(failTest)
                 .then(done);
         });
 
-        it('Calling `Plotly.restyle` with zero panels left should erase lines', function(done) {
+        it('Plotly.addTraces should add a new parcoords row', function(done) {
 
-            var mockCopy = Lib.extendDeep({}, mock2);
             var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+            var mockCopy = Lib.extendDeep({}, mock);
+            var mockCopy2 = Lib.extendDeep({}, mock);
+            mockCopy.data[0].domain = {y: [0, 0.35]};
+            mockCopy2.data[0].domain = {y: [0.65, 1]};
+            mockCopy2.data[0].dimensions.splice(3, 4);
 
-            function restyleDimension(key, dimIndex, setterValue) {
-                var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
-                return function() {
-                    return Plotly.restyle(gd, 'dimensions[' + dimIndex + '].' + key, setterValue).then(function() {
-                        expect(gd.data[0].dimensions[dimIndex][key]).toEqual(value, 'for dimension attribute \'' + key + '\'');
-                    });
-                };
+            expect(document.querySelectorAll('.gl-container').length).toEqual(0);
+
+            Plotly.plot(gd, mockCopy)
+                .then(function() {
+
+                    expect(document.querySelectorAll('.gl-container').length).toEqual(1);
+                    expect(gd.data.length).toEqual(1);
+
+                    return Plotly.addTraces(gd, [mockCopy2.data[0]]);
+                })
+                .then(function() {
+                    expect(document.querySelectorAll('.gl-container').length).toEqual(1);
+                    expect(gd.data.length).toEqual(2);
+                })
+                .catch(failTest)
+                .then(done);
+        });
+
+        it('Plotly.restyle should update the existing parcoords row', function(done) {
+
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+            var mockCopy2 = Lib.extendDeep({}, mock);
+
+            delete mockCopy.data[0].dimensions[0].constraintrange;
+            delete mockCopy2.data[0].dimensions[0].constraintrange;
+
+            // in this example, the brush range doesn't change...
+            mockCopy.data[0].dimensions[2].constraintrange = [0, 2];
+            mockCopy2.data[0].dimensions[2].constraintrange = [0, 2];
+
+            // .. but what's inside the brush does:
+            function numberUpdater(v) {
+                switch(v) {
+                    case 0.5: return 2.5;
+                    default: return v;
+                }
             }
 
-            restyleDimension('values', 1, [[]])()
+            // shuffle around categorical values
+            mockCopy2.data[0].dimensions[2].ticktext = ['A', 'B', 'Y', 'AB', 'Z'];
+            mockCopy2.data[0].dimensions[2].tickvals = [0, 1, 2, 2.5, 3];
+            mockCopy2.data[0].dimensions[2].values = mockCopy2.data[0].dimensions[2].values.map(numberUpdater);
+
+            expect(document.querySelectorAll('.gl-container').length).toEqual(0);
+
+            Plotly.plot(gd, mockCopy)
                 .then(function() {
-                    d3.selectAll('.parcoords-lines').each(function(d) {
-                        var imageArray = d.lineLayer.readPixels(0, 0, d.model.canvasWidth, d.model.canvasHeight);
-                        var foundPixel = false;
-                        var i = 0;
-                        do {
-                            foundPixel = foundPixel || imageArray[i++] !== 0;
-                        } while(!foundPixel && i < imageArray.length);
-                        expect(foundPixel).toEqual(false);
+
+                    expect(document.querySelectorAll('.gl-container').length).toEqual(1);
+                    expect(gd.data.length).toEqual(1);
+
+                    return Plotly.restyle(gd, {
+                        // wrap the `dimensions` array
+                        dimensions: [mockCopy2.data[0].dimensions]
                     });
+                })
+                .then(function() {
+
+                    expect(document.querySelectorAll('.gl-container').length).toEqual(1);
+                    expect(gd.data.length).toEqual(1);
                 })
                 .catch(failTest)
                 .then(done);
         });
+    });
+});
 
-        describe('Having two datasets', function() {
+describe('@gl parcoords basic use', function() {
+    var mockCopy,
+        gd;
 
-            it('Two subsequent calls to Plotly.plot should create two parcoords rows', function(done) {
+    beforeEach(function(done) {
+        mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.data[0].domain = {
+            x: [0.1, 0.9],
+            y: [0.05, 0.85]
+        };
+        var hasGD = !!gd;
+        if(!hasGD) gd = createGraphDiv();
 
-                var gd = createGraphDiv();
-                var mockCopy = Lib.extendDeep({}, mock);
-                var mockCopy2 = Lib.extendDeep({}, mock);
-                mockCopy.data[0].domain = {x: [0, 0.45]};
-                mockCopy2.data[0].domain = {x: [0.55, 1]};
-                mockCopy2.data[0].dimensions.splice(3, 4);
+        Plotly.react(gd, mockCopy)
+        .catch(failTest)
+        .then(done);
+    });
 
-                expect(document.querySelectorAll('.gl-container').length).toEqual(0);
+    afterAll(purgeGraphDiv);
 
-                Plotly.plot(gd, mockCopy)
-                    .then(function() {
+    it('`Plotly.plot` should have proper fields on `gd.data` on initial rendering', function() {
 
-                        expect(1).toEqual(1);
-                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
-                        expect(gd.data.length).toEqual(1);
+        expect(gd.data.length).toEqual(1);
+        expect(gd.data[0].dimensions.length).toEqual(11);
+        expect(document.querySelectorAll('.axis').length).toEqual(10); // one dimension is `visible: false`
+        expect(gd.data[0].line.cmin).toEqual(-4000);
+        expect(gd.data[0].dimensions[0].visible).not.toBeDefined();
+        expect(gd.data[0].dimensions[4].visible).toEqual(true);
+        expect(gd.data[0].dimensions[5].visible).toEqual(false);
+        expect(gd.data[0].dimensions[0].range).not.toBeDefined();
+        expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
+        expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
+        expect(gd.data[0].dimensions[1].range).toBeDefined();
+        expect(gd.data[0].dimensions[1].range).toEqual([0, 700000]);
+        expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
 
-                        return Plotly.plot(gd, mockCopy2);
-                    })
-                    .then(function() {
+    });
 
-                        expect(1).toEqual(1);
-                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
-                        expect(gd.data.length).toEqual(2);
-                    })
-                    .catch(failTest)
-                    .then(done);
-            });
+    it('Calling `Plotly.plot` again should add the new parcoords', function(done) {
 
-            it('Plotly.addTraces should add a new parcoords row', function(done) {
+        var reversedMockCopy = Lib.extendDeep({}, mockCopy);
+        reversedMockCopy.data[0].dimensions = reversedMockCopy.data[0].dimensions.slice().reverse();
+        reversedMockCopy.data[0].dimensions.forEach(function(d) {d.id = 'R_' + d.id;});
+        reversedMockCopy.data[0].dimensions.forEach(function(d) {d.label = 'R_' + d.label;});
 
-                var gd = createGraphDiv();
-                var mockCopy = Lib.extendDeep({}, mock);
-                var mockCopy2 = Lib.extendDeep({}, mock);
-                mockCopy.data[0].domain = {y: [0, 0.35]};
-                mockCopy2.data[0].domain = {y: [0.65, 1]};
-                mockCopy2.data[0].dimensions.splice(3, 4);
+        Plotly.plot(gd, reversedMockCopy.data, reversedMockCopy.layout).then(function() {
 
-                expect(document.querySelectorAll('.gl-container').length).toEqual(0);
+            expect(gd.data.length).toEqual(2);
 
-                Plotly.plot(gd, mockCopy)
-                    .then(function() {
+            expect(gd.data[0].dimensions.length).toEqual(11);
+            expect(gd.data[0].line.cmin).toEqual(-4000);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
+            expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
+            expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
 
-                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
-                        expect(gd.data.length).toEqual(1);
+            expect(gd.data[1].dimensions.length).toEqual(11);
+            expect(gd.data[1].line.cmin).toEqual(-4000);
+            expect(gd.data[1].dimensions[10].constraintrange).toBeDefined();
+            expect(gd.data[1].dimensions[10].constraintrange).toEqual([100000, 150000]);
+            expect(gd.data[1].dimensions[1].constraintrange).not.toBeDefined();
 
-                        return Plotly.addTraces(gd, [mockCopy2.data[0]]);
-                    })
-                    .then(function() {
-                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
-                        expect(gd.data.length).toEqual(2);
-                    })
-                    .catch(failTest)
-                    .then(done);
-            });
+            expect(document.querySelectorAll('.axis').length).toEqual(20); // one dimension is `visible: false`
+        })
+        .catch(failTest)
+        .then(done);
 
-            it('Plotly.restyle should update the existing parcoords row', function(done) {
+    });
 
-                var gd = createGraphDiv();
-                var mockCopy = Lib.extendDeep({}, mock);
-                var mockCopy2 = Lib.extendDeep({}, mock);
+    it('Calling `Plotly.restyle` with a string path should amend the preexisting parcoords', function(done) {
 
-                delete mockCopy.data[0].dimensions[0].constraintrange;
-                delete mockCopy2.data[0].dimensions[0].constraintrange;
+        expect(gd.data.length).toEqual(1);
 
-                // in this example, the brush range doesn't change...
-                mockCopy.data[0].dimensions[2].constraintrange = [0, 2];
-                mockCopy2.data[0].dimensions[2].constraintrange = [0, 2];
+        Plotly.restyle(gd, 'line.colorscale', 'Viridis').then(function() {
 
-                // .. but what's inside the brush does:
-                function numberUpdater(v) {
-                    switch(v) {
-                        case 0.5: return 2.5;
-                        default: return v;
-                    }
-                }
+            expect(gd.data.length).toEqual(1);
 
-                // shuffle around categorical values
-                mockCopy2.data[0].dimensions[2].ticktext = ['A', 'B', 'Y', 'AB', 'Z'];
-                mockCopy2.data[0].dimensions[2].tickvals = [0, 1, 2, 2.5, 3];
-                mockCopy2.data[0].dimensions[2].values = mockCopy2.data[0].dimensions[2].values.map(numberUpdater);
+            expect(gd.data[0].line.colorscale).toEqual('Viridis');
+            expect(gd.data[0].dimensions.length).toEqual(11);
+            expect(gd.data[0].line.cmin).toEqual(-4000);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
+            expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
+            expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
 
-                expect(document.querySelectorAll('.gl-container').length).toEqual(0);
+    });
 
-                Plotly.plot(gd, mockCopy)
-                    .then(function() {
+    it('Calling `Plotly.restyle` for a dimension should amend the preexisting dimension', function(done) {
 
-                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
-                        expect(gd.data.length).toEqual(1);
+        function restyleDimension(key, setterValue) {
 
-                        return Plotly.restyle(gd, {
-                            // wrap the `dimensions` array
-                            dimensions: [mockCopy2.data[0].dimensions]
-                        });
-                    })
-                    .then(function() {
+            // array values need to be wrapped in an array; unwrapping here for value comparison
+            var value = Array.isArray(setterValue) ? setterValue[0] : setterValue;
 
-                        expect(document.querySelectorAll('.gl-container').length).toEqual(1);
-                        expect(gd.data.length).toEqual(1);
-                    })
-                    .catch(failTest)
-                    .then(done);
-            });
+            return function() {
+                return Plotly.restyle(gd, 'dimensions[2].' + key, setterValue).then(function() {
+                    expect(gd.data[0].dimensions[2][key]).toEqual(value, 'for dimension attribute \'' + key + '\'');
+                });
+            };
+        }
+
+        restyleDimension('label', 'new label')()
+            .then(restyleDimension('tickvals', [[0, 0.1, 0.4, 1, 2]]))
+            .then(restyleDimension('ticktext', [['alpha', 'gamma', 'beta', 'omega', 'epsilon']]))
+            .then(restyleDimension('tickformat', '4s'))
+            .then(restyleDimension('range', [[0, 2]]))
+            .then(restyleDimension('constraintrange', [[0, 1]]))
+            .then(restyleDimension('values', [[0, 0.1, 0.4, 1, 2, 0, 0.1, 0.4, 1, 2]]))
+            .then(restyleDimension('visible', false))
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('Calling `Plotly.restyle` with an object should amend the preexisting parcoords', function(done) {
+
+        var newStyle = Lib.extendDeep({}, mockCopy.data[0].line);
+        newStyle.colorscale = 'Viridis';
+        newStyle.reversescale = false;
+
+        Plotly.restyle(gd, {line: newStyle}).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+
+            expect(gd.data[0].line.colorscale).toEqual('Viridis');
+            expect(gd.data[0].line.reversescale).toEqual(false);
+            expect(gd.data[0].dimensions.length).toEqual(11);
+            expect(gd.data[0].line.cmin).toEqual(-4000);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
+            expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
+            expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('Should emit a \'plotly_restyle\' event', function(done) {
+
+        var tester = (function() {
+
+            var eventCalled = false;
+
+            return {
+                set: function(d) {eventCalled = d;},
+                get: function() {return eventCalled;}
+            };
+        })();
+
+        gd.on('plotly_restyle', function() {
+            tester.set(true);
         });
+
+        expect(tester.get()).toBe(false);
+        Plotly.restyle(gd, 'line.colorscale', 'Viridis')
+        .then(function() {
+            expect(tester.get()).toBe(true);
+        })
+        .catch(failTest)
+        .then(done);
+
+    });
+
+    it('Should emit a \'plotly_hover\' event', function(done) {
+
+        function testMaker() {
+
+            var eventCalled = false;
+
+            return {
+                set: function() {eventCalled = eventCalled || true;},
+                get: function() {return eventCalled;}
+            };
+        }
+
+        var hoverTester = testMaker();
+        var unhoverTester = testMaker();
+
+        gd.on('plotly_hover', function(d) {
+            hoverTester.set({hover: d});
+        });
+
+        gd.on('plotly_unhover', function(d) {
+            unhoverTester.set({unhover: d});
+        });
+
+        expect(hoverTester.get()).toBe(false);
+        expect(unhoverTester.get()).toBe(false);
+
+        mouseTo(324, 216);
+        mouseTo(315, 218);
+
+        new Promise(function(resolve) {
+            window.setTimeout(function() {
+
+                expect(hoverTester.get()).toBe(true);
+
+                mouseTo(329, 153);
+
+                window.setTimeout(function() {
+
+                    expect(unhoverTester.get()).toBe(true);
+                    resolve();
+                }, 20);
+
+            }, 20);
+        })
+        .catch(failTest)
+        .then(done);
+
+    });
+
+    it('Calling `Plotly.relayout` with string should amend the preexisting parcoords', function(done) {
+
+        expect(gd.layout.width).toEqual(1184);
+
+        Plotly.relayout(gd, 'width', 500).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+
+            expect(gd.layout.width).toEqual(500);
+            expect(gd.data[0].line.colorscale).toEqual('Jet');
+            expect(gd.data[0].dimensions.length).toEqual(11);
+            expect(gd.data[0].line.cmin).toEqual(-4000);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
+            expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
+            expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('Calling `Plotly.relayout`with object should amend the preexisting parcoords', function(done) {
+
+        expect(gd.layout.width).toEqual(1184);
+
+        Plotly.relayout(gd, {width: 500}).then(function() {
+
+            expect(gd.data.length).toEqual(1);
+
+            expect(gd.layout.width).toEqual(500);
+            expect(gd.data[0].line.colorscale).toEqual('Jet');
+            expect(gd.data[0].dimensions.length).toEqual(11);
+            expect(gd.data[0].line.cmin).toEqual(-4000);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeDefined();
+            expect(gd.data[0].dimensions[0].constraintrange).toEqual([100000, 150000]);
+            expect(gd.data[0].dimensions[1].constraintrange).not.toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@flaky Calling `Plotly.animate` with patches targeting `dimensions` attributes should do the right thing', function(done) {
+        Plotly.react(gd, [{
+            type: 'parcoords',
+            line: {color: 'blue'},
+            dimensions: [{
+                range: [1, 5],
+                constraintrange: [1, 2],
+                label: 'A',
+                values: [1, 4]
+            }, {
+                range: [1, 5],
+                label: 'B',
+                values: [3, 1.5],
+                tickvals: [1.5, 3, 4.5]
+            }]
+        }])
+        .then(function() {
+            return Plotly.animate(gd, {
+                data: [{
+                    'line.color': 'red',
+                    'dimensions[0].constraintrange': [1, 4]
+                }],
+                traces: [0],
+                layout: {}
+            });
+        })
+        .then(function() {
+            expect(gd.data[0].line.color).toBe('red');
+            expect(gd.data[0].dimensions[0]).toEqual({
+                range: [1, 5],
+                constraintrange: [1, 4],
+                label: 'A',
+                values: [1, 4]
+            });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 
