@@ -1066,7 +1066,7 @@ describe('@gl parcoords', function() {
         });
     });
 
-    fdescribe('constraint interactions', function() {
+    describe('constraint interactions', function() {
         var gd;
         beforeEach(function(done) {
             gd = createGraphDiv();
