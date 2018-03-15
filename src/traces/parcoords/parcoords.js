@@ -281,6 +281,7 @@ function viewModel(state, callbacks, model) {
             domainScale: domainScale(height, c.verticalPadding, dimension, tickvals, ticktext),
             ordinalScale: ordinalScale(dimension),
             domainToUnitScale: domainToUnit,
+            paddedUnitScale: paddedUnitScale,
             parent: viewModel,
             model: model,
             brush: brush.makeBrush(

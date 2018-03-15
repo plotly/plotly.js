@@ -114,7 +114,7 @@ function backgroundBarHorizontalSetup(selection) {
 
 function setHighlight(d) {
     if(!filterActive(d.brush)) {
-        return '0 ' + d.height;
+        return '0,' + d.height;
     }
     var pixelRanges = unitToPx(d.brush.filter.getConsolidated(), d.height);
     var dashArray = [0]; // we start with a 0 length selection as filter ranges are inclusive, not exclusive
@@ -344,7 +344,7 @@ function attachDragBehavior(selection) {
                     }
                     s.brushCallback(d);
                     renderHighlight(this.parentElement);
-                    s.brushEndCallback(filter.get());
+                    s.brushEndCallback(brush.filterSpecified ? filter.getConsolidated() : []);
                     return; // no need to fuse intervals or snap to ordinals, so we can bail early
                 }
 
@@ -355,8 +355,8 @@ function attachDragBehavior(selection) {
                 };
 
                 if(d.ordinal) {
-                    var a = d.paddedUnitValues;
-                    if(a[a.length - 1] < a[0]) a = a.slice().sort(sortAsc);
+                    var a = d.ordinalScale.range().map(d.paddedUnitScale);
+                    if(a[a.length - 1] < a[0]) a.reverse();
                     s.newExtent = [
                         ordinalScaleSnapLo(a, s.newExtent[0], s.stayingIntervals),
                         ordinalScaleSnapHi(a, s.newExtent[1], s.stayingIntervals)
@@ -370,7 +370,7 @@ function attachDragBehavior(selection) {
                 } else {
                     mergeIntervals(); // merging intervals immediately
                 }
-                s.brushEndCallback(filter.getConsolidated());
+                s.brushEndCallback(brush.filterSpecified ? filter.getConsolidated() : []);
             })
         );
 }

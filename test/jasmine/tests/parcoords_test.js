@@ -10,6 +10,7 @@ var delay = require('../assets/delay');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
+var click = require('../assets/click');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 // mock with two dimensions (one panel); special case, e.g. left and right panel is obv. the same
@@ -22,14 +23,25 @@ var mock1 = require('@mocks/gl2d_parcoords_1.json');
 var mock0 = Lib.extendDeep({}, mock1);
 mock0.data[0].dimensions = [];
 
-var mock = require('@mocks/gl2d_parcoords_large.json');
-
+var mock = Lib.extendDeep({}, require('@mocks/gl2d_parcoords_large.json'));
 var lineStart = 30;
 var lineCount = 10;
+mock.data[0].dimensions.forEach(function(d) {
+    d.values = d.values.slice(lineStart, lineStart + lineCount);
+});
+mock.data[0].line.color = mock.data[0].line.color.slice(lineStart, lineStart + lineCount);
 
 function mouseTo(x, y) {
     mouseEvent('mousemove', x, y);
     mouseEvent('mouseover', x, y);
+}
+
+function purgeGraphDiv(done) {
+    var gd = d3.select('.js-plotly-plot').node();
+    if(gd) Plotly.purge(gd);
+    destroyGraphDiv();
+
+    return delay(50)().then(done);
 }
 
 describe('parcoords initialization tests', function() {
@@ -284,20 +296,7 @@ describe('parcoords initialization tests', function() {
 });
 
 describe('@gl parcoords', function() {
-    beforeAll(function() {
-        mock.data[0].dimensions.forEach(function(d) {
-            d.values = d.values.slice(lineStart, lineStart + lineCount);
-        });
-        mock.data[0].line.color = mock.data[0].line.color.slice(lineStart, lineStart + lineCount);
-    });
-
-    afterEach(function(done) {
-        var gd = d3.select('.js-plotly-plot').node();
-        if(gd) Plotly.purge(gd);
-        destroyGraphDiv();
-
-        return delay(50)().then(done);
-    });
+    afterEach(purgeGraphDiv);
 
     describe('edge cases', function() {
 
@@ -579,8 +578,6 @@ describe('@gl parcoords', function() {
             .catch(failTest)
             .then(done);
         });
-
-
     });
 
     describe('basic use', function() {
@@ -1065,185 +1062,217 @@ describe('@gl parcoords', function() {
             });
         });
     });
+});
 
-    describe('constraint interactions', function() {
-        var gd;
-        beforeEach(function(done) {
-            gd = createGraphDiv();
+describe('@gl parcoords constraint interactions', function() {
+    var gd, initialDashArray0, initialDashArray1;
 
-            Plotly.newPlot(gd, [{
+    function initialFigure() {
+        return {
+            data: [{
                 type: 'parcoords',
                 dimensions: [{
-                    values: [0, 1, 2, 3, 4],
+                    values: [4, 4, 0, 0, 4, 4, 1, 1, 2, 3, 4, 0, 1, 2, 3, 4],
                     tickvals: [0, 1, 2, 3, 4],
                     ticktext: ['a', 'b', 'c', 'd', 'e'],
                     constraintrange: [2.75, 4]
                 }, {
-                    values: [0, 1, 5, 9, 10],
+                    values: [5, 0, 1, 5, 9, 10, 10, 9, 1],
                     constraintrange: [7, 9]
                 }]
-            }], {
+            }],
+            layout: {
                 width: 400,
                 height: 400,
                 margin: {t: 100, b: 100, l: 100, r: 100}
-            })
-            .catch(failTest)
-            .then(done);
-        });
+            }
+        };
+    }
 
-        function getDashArray(index) {
-            var highlight = document.querySelectorAll('.highlight')[index];
-            return highlight.attributes['stroke-dasharray'].value;
-        }
+    afterAll(purgeGraphDiv);
 
-        function mostOfDrag(x1, y1, x2, y2) {
-            mouseTo(x1, y1);
-            mouseEvent('mousedown', x1, y1);
-            mouseEvent('mousemove', x2, y2);
-        }
+    beforeEach(function(done) {
+        var hasGD = !!gd;
+        if(!hasGD) gd = createGraphDiv();
 
-        it('snaps ordinal constraints', function(done) {
-            var initialDashArray = getDashArray(0);
+        Plotly.react(gd, initialFigure())
+        .then(function() {
+            if(hasGD) {
+                expect(getDashArray(0)).toBe(initialDashArray0);
+                expect(getDashArray(1)).toBe(initialDashArray1);
+            }
+            else {
+                initialDashArray0 = getDashArray(0);
+                initialDashArray1 = getDashArray(1);
+                checkDashCount(initialDashArray0, 1);
+                checkDashCount(initialDashArray1, 1);
+            }
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-            // first: drag almost to 2 but not quite - constraint will snap back to [2.75, 4]
-            mostOfDrag(105, 165, 105, 190);
-            var newDashArray = getDashArray(0);
-            expect(newDashArray).not.toBe(initialDashArray);
-            // single-bar dasharrays have 4 entries:
-            // 0 (no initial line), gap to first bar, first bar, final gap
-            expect(newDashArray.split(',').length).toBe(4);
+    function getDashArray(index) {
+        var highlight = document.querySelectorAll('.highlight')[index];
+        return highlight.attributes['stroke-dasharray'].value;
+    }
 
-            mouseEvent('mouseup', 105, 190);
-            delay(300)().then(function() {
-                expect(getDashArray(0)).toBe(initialDashArray);
-                expect(gd.data[0].dimensions[0].constraintrange).toBeCloseToArray([2.75, 4]);
+    function mostOfDrag(x1, y1, x2, y2) {
+        mouseTo(x1, y1);
+        mouseEvent('mousedown', x1, y1);
+        mouseEvent('mousemove', x2, y2);
+    }
 
-                // now select a range between 1 and 2 but missing both - it will disappear on mouseup
-                mostOfDrag(105, 210, 105, 240);
-                newDashArray = getDashArray(0);
-                expect(newDashArray).not.toBe(initialDashArray);
-                // two-bar dasharrays have 6 entries: all the same 1-bar, plus
-                // middle gap and second bar inserted before the final gap.
-                expect(newDashArray.split(',').length).toBe(6);
+    function checkDashCount(dashArray, intervals) {
+        // no-selection dasharrays have 2 entries:
+        //   0 (no initial line) and a final gap as long as the whole bar
+        // single-bar dasharrays have 4 entries:
+        //   0 (no initial line), gap to first bar, first bar, final gap
+        // each additional interval adds 2 entries before the final gap:
+        //   middle gap and new bar
 
-                mouseEvent('mouseup', 105, 240);
-            })
-            .then(delay(300))
-            .then(function() {
-                expect(getDashArray(0)).toBe(initialDashArray);
-                expect(gd.data[0].dimensions[0].constraintrange).toBeCloseToArray([2.75, 4]);
+        var segmentCount = 2 + 2 * intervals;
+        expect(dashArray.split(',').length).toBe(segmentCount, dashArray);
+    }
 
-                // select across 1, making a new region
-                mostOfDrag(105, 240, 105, 260);
-                newDashArray = getDashArray(0);
-                expect(newDashArray).not.toBe(initialDashArray);
-                expect(newDashArray.split(',').length).toBe(6);
+    it('snaps ordinal constraints', function(done) {
+        // first: drag almost to 2 but not quite - constraint will snap back to [2.75, 4]
+        mostOfDrag(105, 165, 105, 190);
+        var newDashArray = getDashArray(0);
+        expect(newDashArray).not.toBe(initialDashArray0);
+        checkDashCount(newDashArray, 1);
 
-                mouseEvent('mouseup', 105, 260);
-            })
-            .then(delay(300))
-            .then(function() {
-                newDashArray = getDashArray(0);
-                expect(newDashArray).not.toBe(initialDashArray);
-                expect(newDashArray.split(',').length).toBe(6, newDashArray);
-                expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 1.25], [2.75, 4]]);
+        mouseEvent('mouseup', 105, 190);
+        delay(300)().then(function() {
+            expect(getDashArray(0)).toBe(initialDashArray0);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeCloseToArray([2.75, 4]);
 
-                // select from 2 down to just above 1, extending the new region
-                mostOfDrag(105, 190, 105, 240);
-                newDashArray = getDashArray(0);
-                expect(newDashArray).not.toBe(initialDashArray);
-                expect(newDashArray.split(',').length).toBe(6);
+            // now select a range between 1 and 2 but missing both - it will disappear on mouseup
+            mostOfDrag(105, 210, 105, 240);
+            newDashArray = getDashArray(0);
+            checkDashCount(newDashArray, 2);
 
-                mouseEvent('mouseup', 105, 240);
-            })
-            .then(delay(300))
-            .then(function() {
-                newDashArray = getDashArray(0);
-                expect(newDashArray.split(',').length).toBe(6, newDashArray);
-                expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 2.25], [2.75, 4]]);
-            })
-            .catch(failTest)
-            .then(done);
-        });
+            mouseEvent('mouseup', 105, 240);
+        })
+        .then(delay(300))
+        .then(function() {
+            expect(getDashArray(0)).toBe(initialDashArray0);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeCloseToArray([2.75, 4]);
 
-        it('updates continuous constraints with no snap', function(done) {
-            var initialDashArray = getDashArray(1);
+            // select across 1, making a new region
+            mostOfDrag(105, 240, 105, 260);
+            newDashArray = getDashArray(0);
+            checkDashCount(newDashArray, 2);
 
-            // first: extend 7 to 5
-            mostOfDrag(295, 160, 295, 200);
-            var newDashArray = getDashArray(1);
-            expect(newDashArray).not.toBe(initialDashArray);
-            expect(newDashArray.split(',').length).toBe(4);
+            mouseEvent('mouseup', 105, 260);
+        })
+        .then(delay(300))
+        .then(function() {
+            newDashArray = getDashArray(0);
+            checkDashCount(newDashArray, 2);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 1.25], [2.75, 4]]);
 
-            mouseEvent('mouseup', 295, 190);
-            delay(100)().then(function() {
-                expect(getDashArray(1)).toBe(newDashArray);
-                expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([4.8959, 9]);
+            // select from 2 down to just above 1, extending the new region
+            mostOfDrag(105, 190, 105, 240);
+            newDashArray = getDashArray(0);
+            checkDashCount(newDashArray, 2);
 
-                // now select ~1-3
-                mostOfDrag(295, 280, 295, 240);
-                newDashArray = getDashArray(1);
-                expect(newDashArray.split(',').length).toBe(6, newDashArray);
+            mouseEvent('mouseup', 105, 240);
+        })
+        .then(delay(300))
+        .then(function() {
+            newDashArray = getDashArray(0);
+            checkDashCount(newDashArray, 2);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 2.25], [2.75, 4]]);
 
-                mouseEvent('mouseup', 295, 240);
-            })
-            .then(delay(100))
-            .then(function() {
-                expect(getDashArray(1)).toBe(newDashArray);
-                expect(gd.data[0].dimensions[1].constraintrange).toBeCloseTo2DArray([[0.7309, 2.8134], [4.8959, 9]]);
+            // clear the whole thing
+            click(105, 290);
+        })
+        .then(delay(300))
+        .then(function() {
+            checkDashCount(getDashArray(0), 0);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeUndefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-                // now pull 5 all the way to 0
-                mostOfDrag(295, 200, 295, 350);
-                newDashArray = getDashArray(1);
-                expect(newDashArray.split(',').length).toBe(4, newDashArray);
+    it('updates continuous constraints with no snap', function(done) {
+        // first: extend 7 to 5
+        mostOfDrag(295, 160, 295, 200);
+        var newDashArray = getDashArray(1);
+        expect(newDashArray).not.toBe(initialDashArray1);
+        checkDashCount(newDashArray, 1);
 
-                mouseEvent('mouseup', 295, 260);
-            })
-            .then(delay(100))
-            .then(function() {
-                expect(getDashArray(1)).not.toBe(initialDashArray);
-                // TODO: ideally this would get clipped to [0, 9]...
-                expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([-0.1020, 9]);
-            })
-            .catch(failTest)
-            .then(done);
-        });
+        mouseEvent('mouseup', 295, 190);
+        delay(100)().then(function() {
+            expect(getDashArray(1)).toBe(newDashArray);
+            expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([4.8959, 9]);
 
-        it('will only select one region when multiselect is disabled', function(done) {
-            var initialDashArray = getDashArray(1);
-            var newDashArray;
+            // now select ~1-3
+            mostOfDrag(295, 280, 295, 240);
+            newDashArray = getDashArray(1);
+            checkDashCount(newDashArray, 2);
 
-            Plotly.restyle(gd, {'dimensions[1].multiselect': false})
-            .then(function() {
-                expect(getDashArray(1)).toBe(initialDashArray);
+            mouseEvent('mouseup', 295, 240);
+        })
+        .then(delay(100))
+        .then(function() {
+            expect(getDashArray(1)).toBe(newDashArray);
+            expect(gd.data[0].dimensions[1].constraintrange).toBeCloseTo2DArray([[0.7309, 2.8134], [4.8959, 9]]);
 
-                // select ~1-3
-                mostOfDrag(295, 280, 295, 240);
-                newDashArray = getDashArray(1);
-                expect(newDashArray.split(',').length).toBe(4, newDashArray);
+            // now pull 5 all the way to 0
+            mostOfDrag(295, 200, 295, 350);
+            newDashArray = getDashArray(1);
+            expect(newDashArray).not.toBe(initialDashArray1);
+            checkDashCount(newDashArray, 1);
 
-                mouseEvent('mouseup', 295, 240);
-            })
-            .then(delay(100))
-            .then(function() {
-                expect(getDashArray(1)).toBe(newDashArray);
-                expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([0.7309, 2.8134]);
+            mouseEvent('mouseup', 295, 260);
+        })
+        .then(delay(100))
+        .then(function() {
+            expect(getDashArray(1)).toBe(newDashArray);
+            // TODO: ideally this would get clipped to [0, 9]...
+            expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([-0.1020, 9]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
-                // but dimension 0 can still multiselect
-                mostOfDrag(105, 240, 105, 260);
-                newDashArray = getDashArray(0);
-                expect(newDashArray.split(',').length).toBe(6);
+    it('will only select one region when multiselect is disabled', function(done) {
+        var newDashArray;
 
-                mouseEvent('mouseup', 105, 260);
-            })
-            .then(delay(300))
-            .then(function() {
-                newDashArray = getDashArray(0);
-                expect(newDashArray.split(',').length).toBe(6, newDashArray);
-                expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 1.25], [2.75, 4]]);
-            })
-            .catch(failTest)
-            .then(done);
-        });
+        Plotly.restyle(gd, {'dimensions[1].multiselect': false})
+        .then(function() {
+            expect(getDashArray(1)).toBe(initialDashArray1);
+
+            // select ~1-3
+            mostOfDrag(295, 280, 295, 240);
+            newDashArray = getDashArray(1);
+            checkDashCount(newDashArray, 1);
+
+            mouseEvent('mouseup', 295, 240);
+        })
+        .then(delay(100))
+        .then(function() {
+            expect(getDashArray(1)).toBe(newDashArray);
+            expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([0.7309, 2.8134]);
+
+            // but dimension 0 can still multiselect
+            mostOfDrag(105, 240, 105, 260);
+            newDashArray = getDashArray(0);
+            checkDashCount(newDashArray, 2);
+
+            mouseEvent('mouseup', 105, 260);
+        })
+        .then(delay(300))
+        .then(function() {
+            var finalDashArray = getDashArray(0);
+            expect(finalDashArray).not.toBe(newDashArray);
+            checkDashCount(finalDashArray, 2);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 1.25], [2.75, 4]]);
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
