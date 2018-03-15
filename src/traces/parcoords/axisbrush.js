@@ -319,7 +319,7 @@ function attachDragBehavior(selection) {
                 d.brush.filterSpecified = true;
                 s.extent = s.stayingIntervals.concat([s.newExtent]);
                 s.brushCallback(d);
-                renderHighlight(this.parentElement);
+                renderHighlight(this.parentNode);
             })
             .on('dragend', function(d) {
                 var e = d3.event;
@@ -343,7 +343,7 @@ function attachDragBehavior(selection) {
                         brushClear(brush);
                     }
                     s.brushCallback(d);
-                    renderHighlight(this.parentElement);
+                    renderHighlight(this.parentNode);
                     s.brushEndCallback(brush.filterSpecified ? filter.getConsolidated() : []);
                     return; // no need to fuse intervals or snap to ordinals, so we can bail early
                 }
@@ -366,7 +366,7 @@ function attachDragBehavior(selection) {
                         brushClear(brush);
                     }
                     s.brushCallback(d);
-                    renderHighlight(this.parentElement, mergeIntervals); // merging intervals post the snap tween
+                    renderHighlight(this.parentNode, mergeIntervals); // merging intervals post the snap tween
                 } else {
                     mergeIntervals(); // merging intervals immediately
                 }
