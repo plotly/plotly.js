@@ -910,15 +910,21 @@ drawing.setClipUrl = function(s, localId) {
         return;
     }
 
-    var url = '#' + localId,
-        base = d3.select('base');
+    if(drawing.baseUrl === undefined) {
+        var base = d3.select('base');
 
-    // add id to location href w/o hashes if any)
-    if(base.size() && base.attr('href')) {
-        url = window.location.href.split('#')[0] + url;
+        // Stash base url once and for all!
+        // We may have to stash this elsewhere when
+        // we'll try to support for child windows
+        // more info -> https://github.com/plotly/plotly.js/issues/702
+        if(base.size() && base.attr('href')) {
+            drawing.baseUrl = window.location.href.split('#')[0];
+        } else {
+            drawing.baseUrl = '';
+        }
     }
 
-    s.attr('clip-path', 'url(' + url + ')');
+    s.attr('clip-path', 'url(' + drawing.baseUrl + '#' + localId + ')');
 };
 
 drawing.getTranslate = function(element) {
