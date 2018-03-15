@@ -1085,7 +1085,20 @@ describe('@gl parcoords constraint interactions', function() {
         };
     }
 
-    afterAll(purgeGraphDiv);
+    var parcoordsConstants = require('@src/traces/parcoords/constants');
+    var initialSnapDuration;
+    var shortenedSnapDuration = 20;
+    var snapDelay = 100;
+    var noSnapDelay = 20;
+    beforeAll(function() {
+        initialSnapDuration = parcoordsConstants.bar.snapDuration;
+        parcoordsConstants.bar.snapDuration = shortenedSnapDuration;
+    });
+
+    afterAll(function() {
+        purgeGraphDiv();
+        parcoordsConstants.bar.snapDuration = initialSnapDuration;
+    });
 
     beforeEach(function(done) {
         var hasGD = !!gd;
@@ -1139,7 +1152,7 @@ describe('@gl parcoords constraint interactions', function() {
         checkDashCount(newDashArray, 1);
 
         mouseEvent('mouseup', 105, 190);
-        delay(300)().then(function() {
+        delay(snapDelay)().then(function() {
             expect(getDashArray(0)).toBe(initialDashArray0);
             expect(gd.data[0].dimensions[0].constraintrange).toBeCloseToArray([2.75, 4]);
 
@@ -1150,7 +1163,7 @@ describe('@gl parcoords constraint interactions', function() {
 
             mouseEvent('mouseup', 105, 240);
         })
-        .then(delay(300))
+        .then(delay(snapDelay))
         .then(function() {
             expect(getDashArray(0)).toBe(initialDashArray0);
             expect(gd.data[0].dimensions[0].constraintrange).toBeCloseToArray([2.75, 4]);
@@ -1162,7 +1175,7 @@ describe('@gl parcoords constraint interactions', function() {
 
             mouseEvent('mouseup', 105, 260);
         })
-        .then(delay(300))
+        .then(delay(snapDelay))
         .then(function() {
             newDashArray = getDashArray(0);
             checkDashCount(newDashArray, 2);
@@ -1175,7 +1188,7 @@ describe('@gl parcoords constraint interactions', function() {
 
             mouseEvent('mouseup', 105, 240);
         })
-        .then(delay(300))
+        .then(delay(snapDelay))
         .then(function() {
             newDashArray = getDashArray(0);
             checkDashCount(newDashArray, 2);
@@ -1184,7 +1197,7 @@ describe('@gl parcoords constraint interactions', function() {
             // clear the whole thing
             click(105, 290);
         })
-        .then(delay(300))
+        .then(delay(snapDelay))
         .then(function() {
             checkDashCount(getDashArray(0), 0);
             expect(gd.data[0].dimensions[0].constraintrange).toBeUndefined();
@@ -1201,7 +1214,7 @@ describe('@gl parcoords constraint interactions', function() {
         checkDashCount(newDashArray, 1);
 
         mouseEvent('mouseup', 295, 190);
-        delay(100)().then(function() {
+        delay(noSnapDelay)().then(function() {
             expect(getDashArray(1)).toBe(newDashArray);
             expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([4.8959, 9]);
 
@@ -1212,7 +1225,7 @@ describe('@gl parcoords constraint interactions', function() {
 
             mouseEvent('mouseup', 295, 240);
         })
-        .then(delay(100))
+        .then(delay(noSnapDelay))
         .then(function() {
             expect(getDashArray(1)).toBe(newDashArray);
             expect(gd.data[0].dimensions[1].constraintrange).toBeCloseTo2DArray([[0.7309, 2.8134], [4.8959, 9]]);
@@ -1225,7 +1238,7 @@ describe('@gl parcoords constraint interactions', function() {
 
             mouseEvent('mouseup', 295, 260);
         })
-        .then(delay(100))
+        .then(delay(noSnapDelay))
         .then(function() {
             expect(getDashArray(1)).toBe(newDashArray);
             // TODO: ideally this would get clipped to [0, 9]...
@@ -1249,7 +1262,7 @@ describe('@gl parcoords constraint interactions', function() {
 
             mouseEvent('mouseup', 295, 240);
         })
-        .then(delay(100))
+        .then(delay(noSnapDelay))
         .then(function() {
             expect(getDashArray(1)).toBe(newDashArray);
             expect(gd.data[0].dimensions[1].constraintrange).toBeCloseToArray([0.7309, 2.8134]);
@@ -1261,7 +1274,7 @@ describe('@gl parcoords constraint interactions', function() {
 
             mouseEvent('mouseup', 105, 260);
         })
-        .then(delay(300))
+        .then(delay(snapDelay))
         .then(function() {
             var finalDashArray = getDashArray(0);
             expect(finalDashArray).not.toBe(newDashArray);
