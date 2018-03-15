@@ -14,6 +14,7 @@ var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var maxDimensionCount = require('./constants').maxDimensionCount;
 var handleDomainDefaults = require('../../plots/domain').defaults;
+var axisBrush = require('./axisbrush');
 
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var lineColor = coerce('line.color', defaultColor);
@@ -71,7 +72,10 @@ function dimensionsDefaults(traceIn, traceOut) {
             coerce('range');
 
             coerce('multiselect');
-            coerce('constraintrange');
+            var constraintRange = coerce('constraintrange');
+            if(constraintRange) {
+                dimensionOut.constraintrange = axisBrush.cleanRanges(constraintRange, dimensionOut);
+            }
 
             commonLength = Math.min(commonLength, values.length);
         }

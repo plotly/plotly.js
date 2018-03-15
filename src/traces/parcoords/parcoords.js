@@ -67,13 +67,12 @@ function toText(formatter, texts) {
     };
 }
 
-function domainScale(height, padding, dimension) {
+function domainScale(height, padding, dimension, tickvals, ticktext) {
     var extent = dimensionExtent(dimension);
-    var texts = dimension.ticktext;
-    return dimension.tickvals ?
+    return tickvals ?
         d3.scale.ordinal()
-            .domain(dimension.tickvals.map(toText(d3.format(dimension.tickformat), texts)))
-            .range(dimension.tickvals
+            .domain(tickvals.map(toText(d3.format(dimension.tickformat), ticktext)))
+            .range(tickvals
                 .map(function(d) {return (d - extent[0]) / (extent[1] - extent[0]);})
                 .map(function(d) {return (height - padding + d * (padding - (height - padding)));})) :
         d3.scale.linear()
@@ -207,6 +206,7 @@ function viewModel(state, callbacks, model) {
         var uScale = unitScale(height, c.verticalPadding);
         var specifiedConstraint = dimension.constraintrange;
         var filterRangeSpecified = specifiedConstraint && specifiedConstraint.length > 0;
+        if(filterRangeSpecified && !Array.isArray(specifiedConstraint[0])) specifiedConstraint = [specifiedConstraint];
         var filterRange = filterRangeSpecified ? specifiedConstraint.map(function(d) {return d.map(domainToUnit).map(paddedUnitScale);}) : [[0, 1]];
         var brushMove = function() {
             var p = viewModel;
@@ -226,13 +226,45 @@ function viewModel(state, callbacks, model) {
             truncatedValues = truncatedValues.slice(0, dimension._length);
         }
 
+        var tickvals = dimension.tickvals;
+        var ticktext;
+        function makeTickItem(v, i) { return {val: v, text: ticktext[i]}; }
+        function sortTickItem(a, b) { return a.val - b.val; }
+        if(Array.isArray(tickvals) && tickvals.length) {
+            ticktext = dimension.ticktext;
+
+            // ensure ticktext and tickvals have same length
+            if(!Array.isArray(ticktext) || !ticktext.length) {
+                ticktext = tickvals.map(d3.format(dimension.tickformat));
+            }
+            else if(ticktext.length > tickvals.length) {
+                ticktext = ticktext.slice(0, tickvals.length);
+            }
+            else if(tickvals.length > ticktext.length) {
+                tickvals = tickvals.slice(0, ticktext.length);
+            }
+
+            // check if we need to sort tickvals/ticktext
+            for(var j = 1; j < tickvals.length; j++) {
+                if(tickvals[j] < tickvals[j - 1]) {
+                    var tickItems = tickvals.map(makeTickItem).sort(sortTickItem);
+                    for(var k = 0; k < tickvals.length; k++) {
+                        tickvals[k] = tickItems[k].val;
+                        ticktext[k] = tickItems[k].text;
+                    }
+                    break;
+                }
+            }
+        }
+        else tickvals = undefined;
+
         return {
             key: key,
             label: dimension.label,
             tickFormat: dimension.tickformat,
-            tickvals: dimension.tickvals,
-            ticktext: dimension.ticktext,
-            ordinal: !!dimension.tickvals,
+            tickvals: tickvals,
+            ticktext: ticktext,
+            ordinal: !!tickvals,
             multiselect: dimension.multiselect,
             xIndex: i,
             crossfilterDimensionIndex: i,
@@ -246,7 +278,7 @@ function viewModel(state, callbacks, model) {
             // fixme remove the old unitScale
             unitScale: uScale,
             unitScaleInOrder: uScaleInOrder,
-            domainScale: domainScale(height, c.verticalPadding, dimension),
+            domainScale: domainScale(height, c.verticalPadding, dimension, tickvals, ticktext),
             ordinalScale: ordinalScale(dimension),
             domainToUnitScale: domainToUnit,
             parent: viewModel,
@@ -268,7 +300,9 @@ function viewModel(state, callbacks, model) {
                         var invScale = domainToUnit.invert;
 
                         // update gd.data as if a Plotly.restyle were fired
-                        var newRanges = f.map(function(r) {return r.map(invertPaddedUnitScale).map(invScale);});
+                        var newRanges = f.map(function(r) {
+                            return r.map(invertPaddedUnitScale).map(invScale).sort(Lib.sorterAsc);
+                        }).sort(function(a, b) { return a[0] - b[0]; });
                         callbacks.filterChanged(p.key, dimension._index, newRanges);
                     }
                 }

@@ -19,6 +19,7 @@
 
     "dimensions": [
       {
+        "constraintrange": [200, 700],
         "label": "Block height",
         "values": [321, 534, 542, 674, 31, 674, 124, 246, 456, 743]
       }

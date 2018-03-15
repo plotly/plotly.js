@@ -173,10 +173,6 @@ function makeAttributes(sampleCount, points) {
     return attributes;
 }
 
-function valid(i, offset, panelCount) {
-    return i + offset <= panelCount;
-}
-
 module.exports = function(canvasGL, d) {
     var model = d.model,
         vm = d.viewModel,
@@ -380,9 +376,8 @@ module.exports = function(canvasGL, d) {
                 for(d = 0; d < 16; d++) {
                     var dimP = d + 16 * abcd;
                     var lim;
-                    if(valid(d, 16 * abcd, panelCount)) {
-                        var dimi = initialDims[dimP === 0 ? 0 : 1 + ((dimP - 1) % (initialDims.length - 1))];
-                        lim = dimi.brush.filter.getBounds()[loHi];
+                    if(dimP < initialDims.length) {
+                        lim = initialDims[dimP].brush.filter.getBounds()[loHi];
                     }
                     else lim = loHi;
                     lims[loHi][abcd][d] = lim + (2 * loHi - 1) * filterEpsilon;
@@ -390,13 +385,11 @@ module.exports = function(canvasGL, d) {
             }
         }
 
-        var maskExpansion = maskHeight / canvasHeight;
-
         function expandedPixelRange(dim, bounds) {
-            var originalPixelRange = bounds.map(dim.unitScaleInOrder);
+            var maskHMinus = maskHeight - 1;
             return [
-                Math.max(0, Math.floor(originalPixelRange[0] * maskExpansion)),
-                Math.min(maskHeight - 1, Math.ceil(originalPixelRange[1] * maskExpansion))
+                Math.max(0, Math.floor(bounds[0] * maskHMinus)),
+                Math.min(maskHMinus, Math.ceil(bounds[1] * maskHMinus))
             ];
         }
 
@@ -408,7 +401,7 @@ module.exports = function(canvasGL, d) {
             var byteIndex = (dimIndex - bitIndex) / bitsPerByte;
             var bitMask = Math.pow(2, bitIndex);
             var dim = initialDims[dimIndex];
-            var ranges = dim.brush.filter.get().sort(function(a, b) {return a[0] - b[0]; });
+            var ranges = dim.brush.filter.get();
             if(ranges.length < 2) continue; // bail if the bounding box based filter is sufficient
 
             var prevEnd = expandedPixelRange(dim, ranges[0])[1];

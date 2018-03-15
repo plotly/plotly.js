@@ -46,9 +46,22 @@ module.exports = function plot(gd, cdparcoords) {
         // without having to incur heavy UI blocking due to an actual `Plotly.restyle` call
 
         var gdDimension = gdDimensionsOriginalOrder[i][originalDimensionIndex];
-        gdDimension.constraintrange = newRanges.map(function(r) {return r.slice();});
+        var newConstraints = newRanges.map(function(r) { return r.slice(); });
+        if(!newConstraints.length) {
+            delete gdDimension.constraintrange;
+            newConstraints = null;
+        }
+        else {
+            if(newConstraints.length === 1) newConstraints = newConstraints[0];
+            gdDimension.constraintrange = newConstraints;
+            // wrap in another array for restyle event data
+            newConstraints = [newConstraints];
+        }
 
-        gd.emit('plotly_restyle');
+        var restyleData = {};
+        var aStr = 'dimensions[' + originalDimensionIndex + '].constraintrange';
+        restyleData[aStr] = newConstraints;
+        gd.emit('plotly_restyle', [restyleData, [i]]);
     };
 
     var hover = function(eventData) {

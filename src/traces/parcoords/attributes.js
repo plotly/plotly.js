@@ -81,28 +81,17 @@ module.exports = {
         constraintrange: {
             valType: 'info_array',
             role: 'info',
+            freeLength: true,
+            dimensions: '1-2',
             items: [
-                {
-                    valType: 'info_array',
-                    editType: 'calc',
-                    items: [
-                        {valType: 'number', editType: 'calc'},
-                        {valType: 'number', editType: 'calc'}
-                    ]
-                },
-                {
-                    valType: 'info_array',
-                    editType: 'calc',
-                    items: [
-                        {valType: 'number', editType: 'calc'},
-                        {valType: 'number', editType: 'calc'}
-                    ]
-                }
+                {valType: 'number', editType: 'calc'},
+                {valType: 'number', editType: 'calc'}
             ],
             editType: 'calc',
             description: [
                 'The domain range to which the filter on the dimension is constrained. Must be an array',
-                'of `[fromValue, toValue]` with finite numbers as elements.'
+                'of `[fromValue, toValue]` with `fromValue <= toValue`, or if `multiselect` is not',
+                'disabled, you may give an array of arrays, where each inner array is `[fromValue, toValue]`.'
             ].join(' ')
         },
         multiselect: {
