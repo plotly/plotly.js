@@ -932,48 +932,28 @@ describe('@gl parcoords basic use', function() {
     });
 
     it('Should emit a \'plotly_hover\' event', function(done) {
+        var hoverCalls = 0;
+        var unhoverCalls = 0;
 
-        function testMaker() {
+        gd.on('plotly_hover', function() { hoverCalls++; });
+        gd.on('plotly_unhover', function() { unhoverCalls++; });
 
-            var eventCalled = false;
-
-            return {
-                set: function() {eventCalled = eventCalled || true;},
-                get: function() {return eventCalled;}
-            };
-        }
-
-        var hoverTester = testMaker();
-        var unhoverTester = testMaker();
-
-        gd.on('plotly_hover', function(d) {
-            hoverTester.set({hover: d});
-        });
-
-        gd.on('plotly_unhover', function(d) {
-            unhoverTester.set({unhover: d});
-        });
-
-        expect(hoverTester.get()).toBe(false);
-        expect(unhoverTester.get()).toBe(false);
+        expect(hoverCalls).toBe(0);
+        expect(unhoverCalls).toBe(0);
 
         mouseTo(324, 216);
         mouseTo(315, 218);
 
-        new Promise(function(resolve) {
-            window.setTimeout(function() {
-
-                expect(hoverTester.get()).toBe(true);
-
-                mouseTo(329, 153);
-
-                window.setTimeout(function() {
-
-                    expect(unhoverTester.get()).toBe(true);
-                    resolve();
-                }, 20);
-
-            }, 20);
+        delay(20)()
+        .then(function() {
+            expect(hoverCalls).toBe(1);
+            expect(unhoverCalls).toBe(0);
+            mouseTo(329, 153);
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(hoverCalls).toBe(1);
+            expect(unhoverCalls).toBe(1);
         })
         .catch(failTest)
         .then(done);
@@ -1060,7 +1040,7 @@ describe('@gl parcoords basic use', function() {
     });
 });
 
-describe('@gl @noCI parcoords constraint interactions', function() {
+describe('@gl parcoords constraint interactions', function() {
     var gd, initialDashArray0, initialDashArray1;
 
     function initialFigure() {
