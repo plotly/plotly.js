@@ -141,7 +141,7 @@ function makePoints(sampleCount, dimensionCount, dimensions, color) {
     return points;
 }
 
-function makeVecAttr(sampleCount, points, vecIndex) {
+function makeVecAttr(regl, sampleCount, points, vecIndex) {
 
     var i, j, k;
     var pointPairs = [];
@@ -157,18 +157,16 @@ function makeVecAttr(sampleCount, points, vecIndex) {
         }
     }
 
-    return pointPairs;
+    return regl.buffer(pointPairs);
 }
 
-function makeAttributes(sampleCount, points) {
-
-    var vecIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-    var vectors = vecIndices.map(function(vecIndex) {return makeVecAttr(sampleCount, points, vecIndex);});
+function makeAttributes(regl, sampleCount, points) {
 
     var attributes = {};
-    vectors.forEach(function(v, vecIndex) {
-        attributes['p' + vecIndex.toString(16)] = v;
-    });
+
+    for(var i = 0; i < 16; i++) {
+        attributes['p' + i.toString(16)] = makeVecAttr(regl, sampleCount, points, i);
+    }
 
     return attributes;
 }
@@ -206,10 +204,10 @@ module.exports = function(canvasGL, d) {
 
     var panelCount = initialPanels.length;
 
-    var points = makePoints(sampleCount, dimensionCount, initialDims, color);
-    var attributes = makeAttributes(sampleCount, points);
-
     var regl = d.regl;
+
+    var points = makePoints(sampleCount, dimensionCount, initialDims, color);
+    var attributes = makeAttributes(regl, sampleCount, points);
 
     var mask, maskTexture;
 
@@ -509,7 +507,8 @@ module.exports = function(canvasGL, d) {
     function destroy() {
         canvasGL.style['pointer-events'] = 'none';
         paletteTexture.destroy();
-        maskTexture.destroy();
+        if(maskTexture) maskTexture.destroy();
+        for(var k in attributes) attributes[k].destroy();
     }
 
     return {

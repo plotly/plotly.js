@@ -133,7 +133,7 @@ function model(layout, d, i) {
         tickFont = trace.tickfont,
         rangeFont = trace.rangefont;
 
-    var lines = Lib.extendDeep({}, line, {
+    var lines = Lib.extendDeepNoArrays({}, line, {
         color: lineColor.map(domainToUnitScale({
             values: lineColor,
             range: [line.cmin, line.cmax],
@@ -477,6 +477,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     parcoordsLineLayer
         .filter(function(d) {return !!d.viewModel;})
         .each(function(d) {
+            if(d.lineLayer) d.lineLayer.destroy();
             d.lineLayer = lineLayerMaker(this, d);
             d.viewModel[d.key] = d.lineLayer;
             d.lineLayer.render(d.viewModel.panels, !d.context);
