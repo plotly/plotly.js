@@ -562,9 +562,6 @@ describe('plot svg clip paths', function() {
     });
 
     it('should set clip path url to ids appended to window url', function(done) {
-        // unstash base url from Drawing module object
-        delete Drawing.baseUrl;
-
         // this case occurs in some past versions of AngularJS
         // https://github.com/angular/angular.js/issues/8934
 
@@ -587,7 +584,6 @@ describe('plot svg clip paths', function() {
             });
 
             base.remove();
-            delete Drawing.baseUrl;
         })
         .catch(failTest)
         .then(done);
