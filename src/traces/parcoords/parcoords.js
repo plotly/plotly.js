@@ -477,8 +477,9 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     parcoordsLineLayer
         .filter(function(d) {return !!d.viewModel;})
         .each(function(d) {
-            if(d.lineLayer) d.lineLayer.destroy();
-            d.lineLayer = lineLayerMaker(this, d);
+            if(d.lineLayer) d.lineLayer.update(d);
+            else d.lineLayer = lineLayerMaker(this, d);
+
             d.viewModel[d.key] = d.lineLayer;
             d.lineLayer.render(d.viewModel.panels, !d.context);
         });

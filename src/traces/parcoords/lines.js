@@ -25,7 +25,6 @@ var filterEpsilon = 1e-7;
 // precision of multiselect is the full range divided into this many parts
 var maskHeight = 2048;
 
-
 var gpuDimensionCount = 64;
 var sectionVertexCount = 2;
 var vec4NumberCount = 4;
@@ -36,6 +35,14 @@ var contextColor = [119, 119, 119]; // middle gray to not drawn the focus; looks
 
 var dummyPixel = new Uint8Array(4);
 var pickPixel = new Uint8Array(4);
+
+var paletteTextureConfig = {
+    shape: [256, 1],
+    format: 'rgba',
+    type: 'uint8',
+    mag: 'nearest',
+    min: 'nearest'
+};
 
 function ensureDraw(regl) {
     regl.read({
@@ -123,7 +130,8 @@ function calcPickColor(j, rgbIndex) {
     return (j >>> 8 * rgbIndex) % 256 / 255;
 }
 
-function makePoints(sampleCount, dimensionCount, dimensions, color) {
+function makePoints(sampleCount, dimensions, color) {
+    var dimensionCount = dimensions.length;
 
     var points = [];
     for(var j = 0; j < sampleCount; j++) {
@@ -141,8 +149,7 @@ function makePoints(sampleCount, dimensionCount, dimensions, color) {
     return points;
 }
 
-function makeVecAttr(regl, sampleCount, points, vecIndex) {
-
+function makeVecAttr(sampleCount, points, vecIndex) {
     var i, j, k;
     var pointPairs = [];
 
@@ -157,33 +164,29 @@ function makeVecAttr(regl, sampleCount, points, vecIndex) {
         }
     }
 
-    return regl.buffer(pointPairs);
+    return pointPairs;
 }
 
-function makeAttributes(regl, sampleCount, points) {
-
-    var attributes = {};
-
+function setAttributes(attributes, sampleCount, points) {
     for(var i = 0; i < 16; i++) {
-        attributes['p' + i.toString(16)] = makeVecAttr(regl, sampleCount, points, i);
+        attributes['p' + i.toString(16)](makeVecAttr(sampleCount, points, i));
     }
+}
 
+function emptyAttributes(regl) {
+    var attributes = {};
+    for(var i = 0; i < 16; i++) {
+        attributes['p' + i.toString(16)] = regl.buffer({usage: 'dynamic', type: 'float', data: null});
+    }
     return attributes;
 }
 
 module.exports = function(canvasGL, d) {
-    var model = d.model,
-        vm = d.viewModel,
-        domain = model.domain;
+    // context & pick describe which canvas we're talking about - won't change with new data
+    var context = d.context;
+    var pick = d.pick;
 
-    var lines = model.lines,
-        canvasWidth = model.canvasWidth,
-        canvasHeight = model.canvasHeight,
-        initialDimensions = vm.dimensions,
-        initialPanels = vm.panels,
-        unitToColor = model.unitToColor,
-        context = d.context,
-        pick = d.pick;
+    var regl = d.regl;
 
     var renderState = {
         currentRafs: {},
@@ -191,41 +194,23 @@ module.exports = function(canvasGL, d) {
         clearOnly: false
     };
 
-    var initialDims = initialDimensions.slice();
+    // state to be set by update and used later
+    var model;
+    var vm;
+    var initialDims;
+    var sampleCount;
+    var attributes = emptyAttributes(regl);
+    var maskTexture;
+    var paletteTexture = regl.texture(paletteTextureConfig);
 
-    var dimensionCount = initialDims.length;
-    var sampleCount = initialDims[0] ? initialDims[0].values.length : 0;
-
-    var focusAlphaBlending = context;
-
-    var color = pick ? lines.color.map(function(_, i) {return i / lines.color.length;}) : lines.color;
-    var contextOpacity = Math.max(1 / 255, Math.pow(1 / color.length, 1 / 3));
-    var overdrag = lines.canvasOverdrag;
-
-    var panelCount = initialPanels.length;
-
-    var regl = d.regl;
-
-    var points = makePoints(sampleCount, dimensionCount, initialDims, color);
-    var attributes = makeAttributes(regl, sampleCount, points);
-
-    var mask, maskTexture;
-
-    var paletteTexture = regl.texture({
-        shape: [256, 1],
-        format: 'rgba',
-        type: 'uint8',
-        mag: 'nearest',
-        min: 'nearest',
-        data: palette(unitToColor, context, Math.round((context ? contextOpacity : 1) * 255))
-    });
+    update(d);
 
     var glAes = regl({
 
         profile: false,
 
         blend: {
-            enable: focusAlphaBlending,
+            enable: context,
             func: {
                 srcRGB: 'src alpha',
                 dstRGB: 'one minus src alpha',
@@ -240,7 +225,7 @@ module.exports = function(canvasGL, d) {
         },
 
         depth: {
-            enable: !focusAlphaBlending,
+            enable: !context,
             mask: true,
             func: 'less',
             range: [0, 1]
@@ -307,6 +292,24 @@ module.exports = function(canvasGL, d) {
         count: regl.prop('count')
     });
 
+    function update(dNew) {
+        model = dNew.model;
+        vm = dNew.viewModel;
+        initialDims = vm.dimensions.slice();
+        sampleCount = initialDims[0] ? initialDims[0].values.length : 0;
+
+        var lines = model.lines;
+        var color = pick ? lines.color.map(function(_, i) {return i / lines.color.length;}) : lines.color;
+        var contextOpacity = Math.max(1 / 255, Math.pow(1 / color.length, 1 / 3));
+
+        var points = makePoints(sampleCount, initialDims, color);
+        setAttributes(attributes, sampleCount, points);
+
+        paletteTexture = regl.texture(Lib.extendFlat({
+            data: palette(model.unitToColor, context, Math.round((context ? contextOpacity : 1) * 255))
+        }, paletteTextureConfig));
+    }
+
     var colorClamp = [0, 1];
 
     function setColorDomain(unitDomain) {
@@ -331,7 +334,12 @@ module.exports = function(canvasGL, d) {
             }
         }
 
-        var vm = Lib.extendFlat({
+        var overdrag = model.lines.canvasOverdrag;
+        var domain = model.domain;
+        var canvasWidth = model.canvasWidth;
+        var canvasHeight = model.canvasHeight;
+
+        var itemModel = Lib.extendFlat({
             key: crossfilterDimensionIndex,
             resolution: [canvasWidth, canvasHeight],
             viewBoxPosition: [x + overdrag, y],
@@ -361,7 +369,7 @@ module.exports = function(canvasGL, d) {
             viewportHeight: canvasHeight
         }, constraints);
 
-        return vm;
+        return itemModel;
     }
 
     function makeConstraints() {
@@ -391,10 +399,10 @@ module.exports = function(canvasGL, d) {
             ];
         }
 
-        mask = Array.apply(null, new Array(maskHeight * channelCount)).map(function() {
+        var mask = Array.apply(null, new Array(maskHeight * channelCount)).map(function() {
             return 255;
         });
-        for(var dimIndex = 0; dimIndex < dimensionCount; dimIndex++) {
+        for(var dimIndex = 0; dimIndex < initialDims.length; dimIndex++) {
             var bitIndex = dimIndex % bitsPerByte;
             var byteIndex = (dimIndex - bitIndex) / bitsPerByte;
             var bitMask = Math.pow(2, bitIndex);
@@ -439,7 +447,7 @@ module.exports = function(canvasGL, d) {
     }
 
     function renderGLParcoords(panels, setChanged, clearOnly) {
-
+        var panelCount = panels.length;
         var I;
 
         var leftmost, rightmost, lowestX = Infinity, highestX = -Infinity;
@@ -457,7 +465,7 @@ module.exports = function(canvasGL, d) {
 
         if(panelCount === 0) {
             // clear canvas here, as the panel iteration below will not enter the loop body
-            clear(regl, 0, 0, canvasWidth, canvasHeight);
+            clear(regl, 0, 0, model.canvasWidth, model.canvasHeight);
         }
         var constraints = context ? {} : makeConstraints();
 
@@ -476,7 +484,7 @@ module.exports = function(canvasGL, d) {
                 previousAxisOrder[i] = [x, xTo];
                 var item = makeItem(i, ii, x, y, panelSizeX, panelSizeY, dim1.crossfilterDimensionIndex, I, leftmost, rightmost, constraints);
                 renderState.clearOnly = clearOnly;
-                renderBlock(regl, glAes, renderState, setChanged ? lines.blockLineCount : sampleCount, sampleCount, item);
+                renderBlock(regl, glAes, renderState, setChanged ? model.lines.blockLineCount : sampleCount, sampleCount, item);
             }
         }
     }
@@ -516,6 +524,7 @@ module.exports = function(canvasGL, d) {
         render: renderGLParcoords,
         readPixel: readPixel,
         readPixels: readPixels,
-        destroy: destroy
+        destroy: destroy,
+        update: update
     };
 };
