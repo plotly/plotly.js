@@ -1175,12 +1175,28 @@ describe('@gl parcoords constraint interactions', function() {
             expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 2.25], [2.75, 4]]);
 
             // clear the whole thing
-            click(105, 290);
+            click(105, 275);
         })
         .then(delay(snapDelay))
         .then(function() {
             checkDashCount(getDashArray(0), 0);
             expect(gd.data[0].dimensions[0].constraintrange).toBeUndefined();
+
+            // click to select 1
+            click(105, 250);
+        })
+        .then(delay(noSnapDelay))
+        .then(function() {
+            checkDashCount(getDashArray(0), 1);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeCloseToArray([0.75, 1.25]);
+
+            // click to select 4
+            click(105, 105);
+        })
+        .then(delay(noSnapDelay))
+        .then(function() {
+            checkDashCount(getDashArray(0), 2);
+            expect(gd.data[0].dimensions[0].constraintrange).toBeCloseTo2DArray([[0.75, 1.25], [3.75, 4]]);
         })
         .catch(failTest)
         .then(done);

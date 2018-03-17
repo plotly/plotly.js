@@ -193,13 +193,15 @@ function renderHighlight(root, tweenCallback) {
     styleHighlight(barToStyle);
 }
 
-function getInterval(b, height, y) {
+function getInterval(b, d, y) {
+    var height = d.height;
     var intervals = b.filter.getConsolidated();
     var pixIntervals = unitToPx(intervals, height);
     var hoveredInterval = NaN;
     var previousInterval = NaN;
     var nextInterval = NaN;
-    for(var i = 0; i <= pixIntervals.length; i++) {
+    var i;
+    for(i = 0; i <= pixIntervals.length; i++) {
         var p = pixIntervals[i];
         if(p && p[0] <= y && y <= p[1]) {
             // over a bar
@@ -226,15 +228,34 @@ function getInterval(b, height, y) {
         }
     }
 
+    var foundInterval = !isNaN(closestInterval);
+
     var fPix = pixIntervals[closestInterval];
 
-    return {
-        interval: isNaN(closestInterval) ? null : intervals[closestInterval], // activated interval in domain terms
-        intervalPix: isNaN(closestInterval) ? null : fPix, // activated interval in pixel terms
+    var out = {
+        interval: foundInterval ? intervals[closestInterval] : null, // activated interval in domain terms
+        intervalPix: foundInterval ? fPix : null, // activated interval in pixel terms
         n: north(fPix, y), // do we hover over the northern resize hotspot
         s: south(fPix, y), // do we hover over the northern resize hotspot
         m: middle(fPix, y) // or over the bar section itself?
     };
+
+    if(d.ordinal && (!(out.n || out.s || out.m) || !filterActive(b))) {
+        var a = d.ordinalScale.range().map(d.paddedUnitScale);
+        var unitLocation = d.unitScaleInOrder.invert(y);
+        for(i = 0; i < a.length; i++) {
+            var rangei = [
+                a[Math.max(i - 1, 0)] * 0.25 + a[i] * 0.75,
+                a[Math.min(i + 1, a.length - 1)] * 0.25 + a[i] * 0.75
+            ];
+            if(unitLocation >= rangei[0] && unitLocation <= rangei[1]) {
+                out.clickableOrdinalRange = rangei;
+                break;
+            }
+        }
+    }
+
+    return out;
 }
 
 function attachDragBehavior(selection) {
@@ -249,9 +270,16 @@ function attachDragBehavior(selection) {
                 return;
             }
             var y = d.height - d3.mouse(this)[1] - 2 * c.verticalPadding;
-            var interval = getInterval(b, d.height, y);
+            var interval = getInterval(b, d, y);
+            var cursor = 'crosshair';
+            if(interval.clickableOrdinalRange) cursor = 'pointer';
+            else if(filterActive(b)) {
+                if(interval.n) cursor = 'n-resize';
+                else if(interval.s) cursor = 's-resize';
+                else if(interval.m) cursor = 'ns-resize';
+            }
             d3.select(document.body)
-                .style('cursor', interval.n ? 'n-resize' : interval.s ? 's-resize' : !interval.m ? 'crosshair' : filterActive(b) ? 'ns-resize' : 'crosshair');
+                .style('cursor', cursor);
         })
         .on('mouseleave', function(d) {
             if(d.parent.inBrushDrag) {
@@ -266,7 +294,7 @@ function attachDragBehavior(selection) {
                 var y = d.height - d3.mouse(this)[1] - 2 * c.verticalPadding;
                 var unitLocation = d.unitScaleInOrder.invert(y);
                 var b = d.brush;
-                var intData = getInterval(b, d.height, y);
+                var intData = getInterval(b, d, y);
                 var unitRange = intData.interval;
                 var pixelRange = unitRange.map(d.unitScaleInOrder);
                 var s = b.svgBrush;
@@ -276,12 +304,13 @@ function attachDragBehavior(selection) {
                 s.grabPoint = d.unitScaleInOrder(unitLocation) - pixelRange[0] - c.verticalPadding;
                 s.barLength = pixelRange[1] - pixelRange[0];
                 s.grabbingBar = active && intData.m && unitRange;
+                s.clickableOrdinalRange = intData.clickableOrdinalRange;
                 s.stayingIntervals = !d.multiselect ? [] :
                     barInteraction ?
                         b.filter.get().filter(differentInterval(unitRange)) :
                         b.filter.get(); // keep all preexisting bars if interaction wasn't a barInteraction
-                var grabbingBarNorth = intData.n;
-                var grabbingBarSouth = intData.s;
+                var grabbingBarNorth = active && intData.n;
+                var grabbingBarSouth = active && intData.s;
                 var newBrushing = !s.grabbingBar && !grabbingBarNorth && !grabbingBarSouth;
                 s.startExtent = newBrushing ? unitLocation : unitRange[grabbingBarSouth ? 1 : 0];
                 d.parent.inBrushDrag = true;
@@ -333,8 +362,17 @@ function attachDragBehavior(selection) {
                 d.parent.inBrushDrag = false;
                 clearCursor(); // instead of clearing, a nicer thing would be to set it according to current location
                 if(!s.wasDragged) { // a click+release on the same spot (ie. w/o dragging) means a bar or full reset
-                    s.wasDragged = undefined; // logic-wise unneded, just shows `wasDragged` has no longer a meaning
-                    if(grabbingBar) {
+                    s.wasDragged = undefined; // logic-wise unneeded, just shows `wasDragged` has no longer a meaning
+                    if(s.clickableOrdinalRange) {
+                        if(brush.filterSpecified && d.multiselect) {
+                            s.extent.push(s.clickableOrdinalRange);
+                        }
+                        else {
+                            s.extent = [s.clickableOrdinalRange];
+                            brush.filterSpecified = true;
+                        }
+                    }
+                    else if(grabbingBar) {
                         s.extent = s.stayingIntervals;
                         if(s.extent.length === 0) {
                             brushClear(brush);
@@ -361,12 +399,21 @@ function attachDragBehavior(selection) {
                         ordinalScaleSnapLo(a, s.newExtent[0], s.stayingIntervals),
                         ordinalScaleSnapHi(a, s.newExtent[1], s.stayingIntervals)
                     ];
-                    s.extent = s.stayingIntervals.concat(s.newExtent[1] > s.newExtent[0] ? [s.newExtent] : []);
+                    var hasNewExtent = s.newExtent[1] > s.newExtent[0];
+                    s.extent = s.stayingIntervals.concat(hasNewExtent ? [s.newExtent] : []);
                     if(!s.extent.length) {
                         brushClear(brush);
                     }
                     s.brushCallback(d);
-                    renderHighlight(this.parentNode, mergeIntervals); // merging intervals post the snap tween
+                    if(hasNewExtent) {
+                        // merging intervals post the snap tween
+                        renderHighlight(this.parentNode, mergeIntervals);
+                    }
+                    else {
+                        // if no new interval, don't animate, just redraw the highlight immediately
+                        mergeIntervals();
+                        renderHighlight(this.parentNode);
+                    }
                 } else {
                     mergeIntervals(); // merging intervals immediately
                 }
