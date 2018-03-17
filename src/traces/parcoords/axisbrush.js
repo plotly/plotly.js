@@ -14,38 +14,6 @@ var keyFun = require('../../lib/gup').keyFun;
 var repeat = require('../../lib/gup').repeat;
 var sortAsc = require('../../lib').sorterAsc;
 
-function addFilterBarDefs(defs) {
-    var filterBarPattern = defs.selectAll('#' + c.id.filterBarPattern)
-        .data(repeat, keyFun);
-
-    filterBarPattern.enter()
-        .append('pattern')
-        .attr('id', c.id.filterBarPattern)
-        .attr('patternUnits', 'userSpaceOnUse');
-
-    filterBarPattern
-        .attr('x', -c.bar.width)
-        .attr('width', c.bar.captureWidth)
-        .attr('height', function(d) {return d.model.height;});
-
-    var filterBarPatternGlyph = filterBarPattern.selectAll('rect')
-        .data(repeat, keyFun);
-
-    filterBarPatternGlyph.enter()
-        .append('rect')
-        .attr('shape-rendering', 'crispEdges');
-
-    filterBarPatternGlyph
-        .attr('height', function(d) {return d.model.height;})
-        .attr('width', c.bar.width)
-        .attr('x', c.bar.width / 2)
-        .attr('fill', c.bar.fillColor)
-        .attr('fill-opacity', c.bar.fillOpacity)
-        .attr('stroke', c.bar.strokeColor)
-        .attr('stroke-opacity', c.bar.strokeOpacity)
-        .attr('stroke-width', c.bar.strokeWidth);
-}
-
 var snapRatio = c.bar.snapRatio;
 function snapOvershoot(v, vAdjacent) { return v * (1 - snapRatio) + vAdjacent * snapRatio; }
 
@@ -113,7 +81,7 @@ function backgroundBarHorizontalSetup(selection) {
 }
 
 function setHighlight(d) {
-    if(!filterActive(d.brush)) {
+    if(!d.brush.filterSpecified) {
         return '0,' + d.height;
     }
     var pixelRanges = unitToPx(d.brush.filter.getConsolidated(), d.height);
@@ -144,34 +112,14 @@ function unitToPx(unitRanges, height) {
     });
 }
 
-function differentInterval(int1) {
-    // An interval is different if the extents don't match, which is a safe test only because the intervals
-    // get consolidated anyway (ie. the identity of overlapping intervals won't be preserved; they get fused)
-    return function(int2) {
-        return int1[0] !== int2[0] || int1[1] !== int2[1];
-    };
-}
-
 // is the cursor over the north, middle, or south of a bar?
 // the end handles extend over the last 10% of the bar
-function north(fPix, y) {
-    return north90(fPix) <= y && y <= fPix[1] + c.bar.handleHeight;
-}
-
-function south(fPix, y) {
-    return fPix[0] - c.bar.handleHeight <= y && y <= south90(fPix);
-}
-
-function middle(fPix, y) {
-    return south90(fPix) < y && y < north90(fPix);
-}
-
-function north90(fPix) {
-    return 0.9 * fPix[1] + 0.1 * fPix[0];
-}
-
-function south90(fPix) {
-    return 0.9 * fPix[0] + 0.1 * fPix[1];
+function getRegion(fPix, y) {
+    var pad = c.bar.handleHeight;
+    if(y > fPix[1] + pad || y < fPix[0] - pad) return;
+    if(y >= 0.9 * fPix[1] + 0.1 * fPix[0]) return 'n';
+    if(y <= 0.9 * fPix[0] + 0.1 * fPix[1]) return 's';
+    return 'ns';
 }
 
 function clearCursor() {
@@ -188,61 +136,67 @@ function styleHighlight(selection) {
 }
 
 function renderHighlight(root, tweenCallback) {
-    var bar = d3.select(root).selectAll('.highlight, .highlightShadow');
+    var bar = d3.select(root).selectAll('.highlight, .highlight-shadow');
     var barToStyle = tweenCallback ? bar.transition().duration(c.bar.snapDuration).each('end', tweenCallback) : bar;
     styleHighlight(barToStyle);
 }
 
-function getInterval(b, d, y) {
-    var height = d.height;
-    var intervals = b.filter.getConsolidated();
-    var pixIntervals = unitToPx(intervals, height);
-    var hoveredInterval = NaN;
-    var previousInterval = NaN;
-    var nextInterval = NaN;
+function getInterval(d, y) {
+    var b = d.brush;
+    var active = b.filterSpecified;
+    var closestInterval = NaN;
+    var out = {};
     var i;
-    for(i = 0; i <= pixIntervals.length; i++) {
-        var p = pixIntervals[i];
-        if(p && p[0] <= y && y <= p[1]) {
-            // over a bar
-            hoveredInterval = i;
-            break;
-        } else {
-            // between bars, or before/after the first/last bar
-            previousInterval = i ? i - 1 : NaN;
-            if(p && p[0] > y) {
-                nextInterval = i;
-                break; // no point continuing as intervals are non-overlapping and sorted; could use log search
+
+    if(active) {
+        var height = d.height;
+        var intervals = b.filter.getConsolidated();
+        var pixIntervals = unitToPx(intervals, height);
+        var hoveredInterval = NaN;
+        var previousInterval = NaN;
+        var nextInterval = NaN;
+        for(i = 0; i <= pixIntervals.length; i++) {
+            var p = pixIntervals[i];
+            if(p && p[0] <= y && y <= p[1]) {
+                // over a bar
+                hoveredInterval = i;
+                break;
+            } else {
+                // between bars, or before/after the first/last bar
+                previousInterval = i ? i - 1 : NaN;
+                if(p && p[0] > y) {
+                    nextInterval = i;
+                    break; // no point continuing as intervals are non-overlapping and sorted; could use log search
+                }
+            }
+        }
+
+        closestInterval = hoveredInterval;
+        if(isNaN(closestInterval)) {
+            if(isNaN(previousInterval) || isNaN(nextInterval)) {
+                closestInterval = isNaN(previousInterval) ? nextInterval : previousInterval;
+            }
+            else {
+                closestInterval = (y - pixIntervals[previousInterval][1] < pixIntervals[nextInterval][0] - y) ?
+                    previousInterval : nextInterval;
+            }
+        }
+
+        if(!isNaN(closestInterval)) {
+            var fPix = pixIntervals[closestInterval];
+            var region = getRegion(fPix, y);
+
+            if(region) {
+                out.interval = intervals[closestInterval];
+                out.intervalPix = fPix;
+                out.region = region;
             }
         }
     }
 
-    var closestInterval = hoveredInterval;
-    if(isNaN(closestInterval)) {
-        if(isNaN(previousInterval) || isNaN(nextInterval)) {
-            closestInterval = isNaN(previousInterval) ? nextInterval : previousInterval;
-        }
-        else {
-            closestInterval = (y - pixIntervals[previousInterval][1] < pixIntervals[nextInterval][0] - y) ?
-                previousInterval : nextInterval;
-        }
-    }
-
-    var foundInterval = !isNaN(closestInterval);
-
-    var fPix = pixIntervals[closestInterval];
-
-    var out = {
-        interval: foundInterval ? intervals[closestInterval] : null, // activated interval in domain terms
-        intervalPix: foundInterval ? fPix : null, // activated interval in pixel terms
-        n: north(fPix, y), // do we hover over the northern resize hotspot
-        s: south(fPix, y), // do we hover over the northern resize hotspot
-        m: middle(fPix, y) // or over the bar section itself?
-    };
-
-    if(d.ordinal && (!(out.n || out.s || out.m) || !filterActive(b))) {
-        var a = d.ordinalScale.range().map(d.paddedUnitScale);
-        var unitLocation = d.unitScaleInOrder.invert(y);
+    if(d.ordinal && !out.region) {
+        var a = d.unitTickvals;
+        var unitLocation = d.unitToPaddedPx.invert(y);
         for(i = 0; i < a.length; i++) {
             var rangei = [
                 a[Math.max(i - 1, 0)] * 0.25 + a[i] * 0.75,
@@ -265,71 +219,57 @@ function attachDragBehavior(selection) {
     selection
         .on('mousemove', function(d) {
             d3.event.preventDefault();
-            var b = d.brush;
-            if(d.parent.inBrushDrag) {
-                return;
+            if(!d.parent.inBrushDrag) {
+                var y = d.height - d3.mouse(this)[1] - 2 * c.verticalPadding;
+                var interval = getInterval(d, y);
+
+                var cursor = 'crosshair';
+                if(interval.clickableOrdinalRange) cursor = 'pointer';
+                else if(interval.region) cursor = interval.region + '-resize';
+                d3.select(document.body)
+                    .style('cursor', cursor);
             }
-            var y = d.height - d3.mouse(this)[1] - 2 * c.verticalPadding;
-            var interval = getInterval(b, d, y);
-            var cursor = 'crosshair';
-            if(interval.clickableOrdinalRange) cursor = 'pointer';
-            else if(filterActive(b)) {
-                if(interval.n) cursor = 'n-resize';
-                else if(interval.s) cursor = 's-resize';
-                else if(interval.m) cursor = 'ns-resize';
-            }
-            d3.select(document.body)
-                .style('cursor', cursor);
         })
         .on('mouseleave', function(d) {
-            if(d.parent.inBrushDrag) {
-                return;
-            }
-            clearCursor();
+            if(!d.parent.inBrushDrag) clearCursor();
         })
         .call(d3.behavior.drag()
             .on('dragstart', function(d) {
-                var e = d3.event;
-                e.sourceEvent.stopPropagation();
+                d3.event.sourceEvent.stopPropagation();
                 var y = d.height - d3.mouse(this)[1] - 2 * c.verticalPadding;
-                var unitLocation = d.unitScaleInOrder.invert(y);
+                var unitLocation = d.unitToPaddedPx.invert(y);
                 var b = d.brush;
-                var intData = getInterval(b, d, y);
-                var unitRange = intData.interval;
-                var pixelRange = unitRange.map(d.unitScaleInOrder);
+                var interval = getInterval(d, y);
+                var unitRange = interval.interval;
                 var s = b.svgBrush;
-                var active = filterActive(b);
-                var barInteraction = unitRange && (intData.m || intData.s || intData.n);
                 s.wasDragged = false; // we start assuming there won't be a drag - useful for reset
-                s.grabPoint = d.unitScaleInOrder(unitLocation) - pixelRange[0] - c.verticalPadding;
-                s.barLength = pixelRange[1] - pixelRange[0];
-                s.grabbingBar = active && intData.m && unitRange;
-                s.clickableOrdinalRange = intData.clickableOrdinalRange;
-                s.stayingIntervals = !d.multiselect ? [] :
-                    barInteraction ?
-                        b.filter.get().filter(differentInterval(unitRange)) :
-                        b.filter.get(); // keep all preexisting bars if interaction wasn't a barInteraction
-                var grabbingBarNorth = active && intData.n;
-                var grabbingBarSouth = active && intData.s;
-                var newBrushing = !s.grabbingBar && !grabbingBarNorth && !grabbingBarSouth;
-                s.startExtent = newBrushing ? unitLocation : unitRange[grabbingBarSouth ? 1 : 0];
+                s.grabbingBar = interval.region === 'ns';
+                if(s.grabbingBar) {
+                    var pixelRange = unitRange.map(d.unitToPaddedPx);
+                    s.grabPoint = y - pixelRange[0] - c.verticalPadding;
+                    s.barLength = pixelRange[1] - pixelRange[0];
+                }
+                s.clickableOrdinalRange = interval.clickableOrdinalRange;
+                s.stayingIntervals = (d.multiselect && b.filterSpecified) ? b.filter.getConsolidated() : [];
+                if(unitRange) {
+                    s.stayingIntervals = s.stayingIntervals.filter(function(int2) {
+                        return int2[0] !== unitRange[0] && int2[1] !== unitRange[1];
+                    });
+                }
+                s.startExtent = interval.region ? unitRange[interval.region === 's' ? 1 : 0] : unitLocation;
                 d.parent.inBrushDrag = true;
                 s.brushStartCallback();
             })
             .on('drag', function(d) {
-                var e = d3.event;
-                var y = d.unitScaleInOrder(d.unitScale.invert(e.y + c.verticalPadding));
+                d3.event.sourceEvent.stopPropagation();
+                var y = d.height - d3.mouse(this)[1] - 2 * c.verticalPadding;
                 var s = d.brush.svgBrush;
                 s.wasDragged = true;
-                e.sourceEvent.stopPropagation();
 
                 if(s.grabbingBar) { // moving the bar
-                    s.newExtent = [y - s.grabPoint, y + s.barLength - s.grabPoint].map(d.unitScaleInOrder.invert);
+                    s.newExtent = [y - s.grabPoint, y + s.barLength - s.grabPoint].map(d.unitToPaddedPx.invert);
                 } else { // south/north drag or new bar creation
-                    var endExtent = d.unitScaleInOrder.invert(y);
-                    s.newExtent = s.startExtent < endExtent ?
-                        [s.startExtent, endExtent] :
-                        [endExtent, s.startExtent];
+                    s.newExtent = [s.startExtent, d.unitToPaddedPx.invert(y)].sort(sortAsc);
                 }
 
                 // take care of the parcoords axis height constraint: bar can't breach it
@@ -393,7 +333,7 @@ function attachDragBehavior(selection) {
                 };
 
                 if(d.ordinal) {
-                    var a = d.ordinalScale.range().map(d.paddedUnitScale);
+                    var a = d.unitTickvals;
                     if(a[a.length - 1] < a[0]) a.reverse();
                     s.newExtent = [
                         ordinalScaleSnapLo(a, s.newExtent[0], s.stayingIntervals),
@@ -442,11 +382,11 @@ function renderAxisBrush(axisBrush) {
             return d.height - c.verticalPadding;
         });
 
-    var highlightShadow = axisBrush.selectAll('.highlightShadow').data(repeat); // we have a set here, can't call it `extent`
+    var highlightShadow = axisBrush.selectAll('.highlight-shadow').data(repeat); // we have a set here, can't call it `extent`
 
     highlightShadow.enter()
         .append('line')
-        .classed('highlightShadow', true)
+        .classed('highlight-shadow', true)
         .attr('x', -c.bar.width / 2)
         .attr('stroke-width', c.bar.width + c.bar.strokeWidth)
         .attr('stroke', c.bar.strokeColor)
@@ -454,7 +394,7 @@ function renderAxisBrush(axisBrush) {
         .attr('stroke-linecap', 'butt');
 
     highlightShadow
-        .attr('y1', function(d) {return d.height;})
+        .attr('y1', function(d) { return d.height; })
         .call(styleHighlight);
 
     var highlight = axisBrush.selectAll('.highlight').data(repeat); // we have a set here, can't call it `extent`
@@ -469,7 +409,7 @@ function renderAxisBrush(axisBrush) {
         .attr('stroke-linecap', 'butt');
 
     highlight
-        .attr('y1', function(d) {return d.height;})
+        .attr('y1', function(d) { return d.height; })
         .call(styleHighlight);
 }
 
@@ -491,11 +431,6 @@ function getBrushExtent(brush) {
 function brushClear(brush) {
     brush.filterSpecified = false;
     brush.svgBrush.extent = [[0, 1]];
-}
-
-
-function filterActive(brush) {
-    return brush.filterSpecified;
 }
 
 function axisBrushMoved(callback) {
@@ -589,9 +524,7 @@ function cleanRanges(ranges, dimension) {
 }
 
 module.exports = {
-    addFilterBarDefs: addFilterBarDefs,
     makeBrush: makeBrush,
     ensureAxisBrush: ensureAxisBrush,
-    filterActive: filterActive,
     cleanRanges: cleanRanges
 };
