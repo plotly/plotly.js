@@ -1539,10 +1539,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 return function() {
                     if(!ax._id) return;
                     var axDone = axes.doTicks(gd, ax._id);
-                    if(axid === 'redraw') {
-                        ax._r = ax.range.slice();
-                        ax._rl = Lib.simpleMap(ax._r, ax.r2l);
-                    }
+                    ax._r = ax.range.slice();
+                    ax._rl = Lib.simpleMap(ax._r, ax.r2l);
                     return axDone;
                 };
             }));

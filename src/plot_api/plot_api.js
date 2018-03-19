@@ -347,7 +347,7 @@ exports.plot = function(gd, data, layout, config) {
 
     // draw ticks, titles, and calculate axis scaling (._b, ._m)
     function drawAxes() {
-        return Axes.doTicks(gd, 'redraw');
+        return Axes.doTicks(gd, graphWasEmpty ? '' : 'redraw');
     }
 
     // Now plot the data
