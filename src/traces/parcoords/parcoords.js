@@ -607,7 +607,7 @@ module.exports = function(root, svg, parcoordsLineLayers, styledData, layout, ca
     function extremeText(d, isTop) {
         if(d.ordinal) return '';
         var domain = d.domainScale.domain();
-        d3.format(d.tickFormat)(domain[isTop ? domain.length - 1 : 0]);
+        return d3.format(d.tickFormat)(domain[isTop ? domain.length - 1 : 0]);
     }
 
     axisExtentTopText.enter()
