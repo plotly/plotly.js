@@ -150,6 +150,27 @@ describe('calculated data and points', function() {
 
                 expect(gd._fullLayout.xaxis._categories).toEqual(['1']);
             });
+
+            it('should skip over visible-false traces', function() {
+                Plotly.plot(gd, [{
+                    x: [1, 2, 3],
+                    y: [7, 6, 5],
+                    visible: false
+                }, {
+                    x: [10, 9, 8],
+                    y: ['A', 'B', 'C'],
+                    yaxis: 'y2'
+                }], {
+                    yaxis2: {
+                        categoryorder: 'category descending'
+                    }
+                });
+
+                expect(gd.calcdata[1][0]).toEqual(jasmine.objectContaining({x: 10, y: 2}));
+                expect(gd.calcdata[1][1]).toEqual(jasmine.objectContaining({x: 9, y: 1}));
+                expect(gd.calcdata[1][2]).toEqual(jasmine.objectContaining({x: 8, y: 0}));
+                expect(gd._fullLayout.yaxis2._categories).toEqual(['C', 'B', 'A']);
+            });
         });
 
         describe('explicit category ordering', function() {
