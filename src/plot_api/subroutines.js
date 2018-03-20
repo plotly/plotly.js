@@ -124,31 +124,20 @@ exports.lsInner = function(gd) {
 
         var xDomain = plotinfo.xaxis.domain;
         var yDomain = plotinfo.yaxis.domain;
-        var plotgroupBgData = [];
+        var plotgroup = plotinfo.plotgroup;
+        var plotgroupBg;
 
         if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
-            plotgroupBgData = [0];
-        }
-        else {
+            var pgNode = plotgroup.node();
+            plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
+            pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
+        } else {
+            plotgroupBg = plotgroup.select('rect,bg');
+            if(plotgroupBg.size()) plotgroupBg.remove();
+
             lowerBackgroundIDs.push(subplot);
             lowerDomains.push([xDomain, yDomain]);
         }
-
-        // create the plot group backgrounds now, since
-        // they're all independent selections
-        var plotgroupBg = plotinfo.plotgroup.selectAll('.bg')
-            .data(plotgroupBgData);
-
-        plotgroupBg.enter().append('rect')
-            .classed('bg', true);
-
-        plotgroupBg.exit().remove();
-
-        plotgroupBg.each(function() {
-            plotinfo.bg = plotgroupBg;
-            var pgNode = plotinfo.plotgroup.node();
-            pgNode.insertBefore(this, pgNode.childNodes[0]);
-        });
     });
 
     // now create all the lower-layer backgrounds at once now that
