@@ -1564,6 +1564,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     var zeroLineWidth = Drawing.crispRound(gd, ax.zerolinewidth, gridWidth);
     var tickWidth = Drawing.crispRound(gd, ax.tickwidth, 1);
     var sides, transfn, tickpathfn, subplots;
+    var tickLabels;
     var i;
 
     if(ax._counterangle && ax.ticks === 'outside') {
@@ -1646,6 +1647,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     function drawTicks(container, tickpath) {
         var ticks = container.selectAll('path.' + tcls)
             .data(ax.ticks === 'inside' ? valsClipped : vals, datafn);
+
         if(tickpath && ax.ticks) {
             ticks.enter().append('path').classed(tcls, 1).classed('ticks', 1)
                 .classed('crisp', 1)
@@ -1661,7 +1663,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     function drawLabels(container, position) {
         // tick labels - for now just the main labels.
         // TODO: mirror labels, esp for subplots
-        var tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
+        tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
 
         if(!isNumeric(position)) {
             tickLabels.remove();
@@ -2012,14 +2014,12 @@ axes.doTicks = function(gd, axid, skipTitle) {
         // now this only applies to regular cartesian axes; colorbars and
         // others ALWAYS call doTicks with skipTitle=true so they can
         // configure their own titles.
-        var ax = axisIds.getFromId(gd, axid);
 
         // rangeslider takes over a bottom title so drop it here
         if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox && ax.side === 'bottom') return;
 
-        var avoidSelection = d3.select(gd).selectAll('g.' + axid + 'tick');
         var avoid = {
-            selection: avoidSelection,
+            selection: tickLabels,
             side: ax.side
         };
         var axLetter = axid.charAt(0);
@@ -2029,8 +2029,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
         var transform, counterAxis, x, y;
 
-        if(avoidSelection.size()) {
-            var translation = Drawing.getTranslate(avoidSelection.node().parentNode);
+        if(tickLabels.size()) {
+            var translation = Drawing.getTranslate(tickLabels.node().parentNode);
             avoid.offsetLeft = translation.x;
             avoid.offsetTop = translation.y;
         }
