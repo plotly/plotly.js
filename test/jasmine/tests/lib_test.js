@@ -885,6 +885,43 @@ describe('Test lib.js:', function() {
                 expect(coerce({x: [[], [0], [-1, 2], [5, 'a', 4, 6.6]]}, {}, attrs, 'x'))
                     .toEqual([[], [0], [1, 2], [5, 1, 4, 1]]);
             });
+
+            it('supports dimensions=\'1-2\' with 1D items array', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true, // in this case only the outer length of 2D is free
+                        dimensions: '1-2',
+                        items: [
+                            {valType: 'integer', min: 0, max: 5, dflt: 1},
+                            {valType: 'integer', min: 10, max: 15, dflt: 11}
+                        ]
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([1, 11]);
+                expect(coerce({x: [4, 4, 4]}, {}, attrs, 'x')).toEqual([4, 11]);
+                expect(coerce({x: [[]]}, {}, attrs, 'x')).toEqual([[1, 11]]);
+                expect(coerce({x: [[12, 12, 12]]}, {}, attrs, 'x')).toEqual([[1, 12]]);
+                expect(coerce({x: [[], 4, true]}, {}, attrs, 'x')).toEqual([[1, 11], [1, 11], [1, 11]]);
+            });
+
+            it('supports dimensions=\'1-2\' with single item', function() {
+                var attrs = {
+                    x: {
+                        valType: 'info_array',
+                        freeLength: true,
+                        dimensions: '1-2',
+                        items: {valType: 'integer', min: 0, max: 5, dflt: 1}
+                    }
+                };
+                expect(coerce({}, {}, attrs, 'x')).toBeUndefined();
+                expect(coerce({x: []}, {}, attrs, 'x')).toEqual([]);
+                expect(coerce({x: [-3, 3, 6, 'a']}, {}, attrs, 'x')).toEqual([1, 3, 1, 1]);
+                expect(coerce({x: [[]]}, {}, attrs, 'x')).toEqual([[]]);
+                expect(coerce({x: [[-1, 0, 10]]}, {}, attrs, 'x')).toEqual([[1, 0, 1]]);
+                expect(coerce({x: [[], 4, [3], [-1, 10]]}, {}, attrs, 'x')).toEqual([[], [], [3], [1, 1]]);
+            });
         });
 
         describe('subplotid valtype', function() {

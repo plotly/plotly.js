@@ -40,21 +40,28 @@ module.exports = function plot(gd, cdparcoords) {
         gdDimensionsOriginalOrder[i] = gd.data[i].dimensions.slice();
     });
 
-    var filterChanged = function(i, originalDimensionIndex, newRange) {
+    var filterChanged = function(i, originalDimensionIndex, newRanges) {
 
         // Have updated `constraintrange` data on `gd.data` and raise `Plotly.restyle` event
         // without having to incur heavy UI blocking due to an actual `Plotly.restyle` call
 
         var gdDimension = gdDimensionsOriginalOrder[i][originalDimensionIndex];
-        var gdConstraintRange = gdDimension.constraintrange;
-
-        if(!gdConstraintRange || gdConstraintRange.length !== 2) {
-            gdConstraintRange = gdDimension.constraintrange = [];
+        var newConstraints = newRanges.map(function(r) { return r.slice(); });
+        if(!newConstraints.length) {
+            delete gdDimension.constraintrange;
+            newConstraints = null;
         }
-        gdConstraintRange[0] = newRange[0];
-        gdConstraintRange[1] = newRange[1];
+        else {
+            if(newConstraints.length === 1) newConstraints = newConstraints[0];
+            gdDimension.constraintrange = newConstraints;
+            // wrap in another array for restyle event data
+            newConstraints = [newConstraints];
+        }
 
-        gd.emit('plotly_restyle');
+        var restyleData = {};
+        var aStr = 'dimensions[' + originalDimensionIndex + '].constraintrange';
+        restyleData[aStr] = newConstraints;
+        gd.emit('plotly_restyle', [restyleData, [i]]);
     };
 
     var hover = function(eventData) {
