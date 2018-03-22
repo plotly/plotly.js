@@ -246,25 +246,14 @@ function sceneUpdate(gd, subplot) {
             var height = fullLayout.height;
             var xaxis = subplot.xaxis;
             var yaxis = subplot.yaxis;
-            var vp, gl, regl;
+            var vp = [
+                vpSize.l + xaxis.domain[0] * vpSize.w,
+                vpSize.b + yaxis.domain[0] * vpSize.h,
+                (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
+                (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
+            ];
 
-            // multisubplot case
-            if(xaxis && xaxis.domain && yaxis && yaxis.domain) {
-                vp = [
-                    vpSize.l + xaxis.domain[0] * vpSize.w,
-                    vpSize.b + yaxis.domain[0] * vpSize.h,
-                    (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
-                    (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
-                ];
-            }
-            else {
-                vp = [
-                    vpSize.l,
-                    vpSize.b,
-                    (width - vpSize.r),
-                    (height - vpSize.t)
-                ];
-            }
+            var gl, regl;
 
             if(scene.select2d) {
                 regl = scene.select2d.regl;
@@ -554,7 +543,10 @@ function plot(gd, subplot, cdata) {
         // create select2d
         if(!scene.select2d) {
             // create scatter instance by cloning scatter2d
-            scene.select2d = createScatter(fullLayout._glcanvas.data()[1].regl, {clone: scene.scatter2d});
+            scene.select2d = createScatter(
+                fullLayout._glcanvas.data()[1].regl,
+                {clone: scene.scatter2d}
+            );
         }
 
         if(scene.scatter2d && scene.selectBatch && scene.selectBatch.length) {
