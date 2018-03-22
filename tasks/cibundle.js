@@ -16,9 +16,7 @@ var _bundle = require('./util/browserify_wrapper');
 _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
     standalone: 'Plotly',
     debug: true,
-    compressAttrs: true,
-    packFlat: true,
-    pathToMinBundle: constants.pathToPlotlyDistMin
+    compressAttrs: true
 });
 
 // Browserify the geo assets
