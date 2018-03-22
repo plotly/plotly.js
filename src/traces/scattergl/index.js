@@ -468,6 +468,8 @@ function plot(gd, subplot, cdata) {
     }
 
     var selectMode = dragmode === 'lasso' || dragmode === 'select';
+    scene.selectBatch = null;
+    scene.unselectBatch = null;
 
     // provide viewport and range
     var vpRange = cdata.map(function(cdscatter) {
@@ -500,8 +502,10 @@ function plot(gd, subplot, cdata) {
         if(trace.selectedpoints || selectMode) {
             if(!selectMode) selectMode = true;
 
-            if(!scene.selectBatch) scene.selectBatch = [];
-            if(!scene.unselectBatch) scene.unselectBatch = [];
+            if(!scene.selectBatch) {
+                scene.selectBatch = [];
+                scene.unselectBatch = [];
+            }
 
             // regenerate scene batch, if traces number changed during selection
             if(trace.selectedpoints) {
