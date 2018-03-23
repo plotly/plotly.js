@@ -12,7 +12,7 @@ var createRegl = require('regl');
 var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
-var kdtree = require('kdgrass');
+var cluster = require('point-cluster');
 var arrayRange = require('array-range');
 
 var Registry = require('../../registry');
@@ -72,7 +72,7 @@ function calc(gd, trace) {
     // and it is also
     if(xa.type !== 'log' && ya.type !== 'log') {
         // FIXME: delegate this to webworker
-        stash.tree = kdtree(positions, 512);
+        stash.tree = cluster(positions);
     } else {
         var ids = stash.ids = new Array(count);
         for(i = 0; i < count; i++) {
@@ -103,6 +103,12 @@ function calc(gd, trace) {
     if(opts.marker && !scene.scatter2d) scene.scatter2d = true;
     if(opts.line && !scene.line2d) scene.line2d = true;
     if((opts.errorX || opts.errorY) && !scene.error2d) scene.error2d = true;
+
+    // FIXME: organize it in a more appropriate manner, probably in sceneOptions
+    // put point-cluster instance for optimized regl calc
+    if(opts.marker) {
+        opts.marker.cluster = stash.tree;
+    }
 
     // save scene opts batch
     scene.lineOptions.push(opts.line);
@@ -547,10 +553,7 @@ function plot(gd, subplot, cdata) {
         // create select2d
         if(!scene.select2d) {
             // create scatter instance by cloning scatter2d
-            scene.select2d = createScatter(
-                fullLayout._glcanvas.data()[1].regl,
-                {clone: scene.scatter2d}
-            );
+            scene.select2d = createScatter(fullLayout._glcanvas.data()[1].regl);
         }
 
         if(scene.scatter2d && scene.selectBatch && scene.selectBatch.length) {
