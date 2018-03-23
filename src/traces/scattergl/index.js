@@ -12,7 +12,7 @@ var createRegl = require('regl');
 var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
-var kdtree = require('kdgrass');
+var cluster = require('point-cluster');
 var rgba = require('color-normalize');
 var svgSdf = require('svg-path-sdf');
 var arrayRange = require('array-range');
@@ -42,6 +42,7 @@ var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
 var TOO_MANY_POINTS = 1e5;
 var DOT_RE = /-dot/;
 var OPEN_RE = /-open/;
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
@@ -81,13 +82,14 @@ function calc(gd, trace) {
     // and it is also
     if(xa.type !== 'log' && ya.type !== 'log') {
         // FIXME: delegate this to webworker
-        stash.tree = kdtree(positions, 512);
+        stash.tree = cluster(positions);
     } else {
         var ids = stash.ids = new Array(count);
         for(i = 0; i < count; i++) {
             ids[i] = i;
         }
     }
+
 
     // create scene options and scene
     calcColorscales(trace);
@@ -113,6 +115,13 @@ function calc(gd, trace) {
     if(options.marker && !scene.scatter2d) scene.scatter2d = true;
     if(options.line && !scene.line2d) scene.line2d = true;
     if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
+
+    // FIXME: organize it in a more appropriate manner, probably in sceneOptions
+    // put point-cluster instance for optimized regl calc
+    if(options.marker) {
+        options.marker.cluster = stash.tree;
+    }
+
 
     // save scene options batch
     scene.lineOptions.push(options.line);
@@ -174,6 +183,33 @@ function sceneOptions(gd, subplot, trace, positions) {
         if(hasErrorY) {
             errorYOptions = makeErrorOptions('y', trace.error_y, errorVals);
         }
+    }
+
+    function makeErrorOptions(axLetter, errorOpts, vals) {
+        var options = {};
+        options.positions = positions;
+
+        var ax = AxisIDs.getFromId(gd, trace[axLetter + 'axis']);
+        var errors = options.errors = new Float64Array(4 * count);
+        var pOffset = {x: 0, y: 1}[axLetter];
+        var eOffset = {x: [0, 1, 2, 3], y: [2, 3, 0, 1]}[axLetter];
+
+        for(var i = 0, p = 0; i < count; i++, p += 4) {
+            errors[p + eOffset[0]] = positions[i * 2 + pOffset] - ax.d2l(vals[i][axLetter + 's']) || 0;
+            errors[p + eOffset[1]] = ax.d2l(vals[i][axLetter + 'h']) - positions[i * 2 + pOffset] || 0;
+            errors[p + eOffset[2]] = 0;
+            errors[p + eOffset[3]] = 0;
+        }
+
+        if(errorOpts.copy_ystyle) {
+            errorOpts = trace.error_y;
+        }
+
+        options.capSize = errorOpts.width * 2;
+        options.lineWidth = errorOpts.thickness;
+        options.color = errorOpts.color;
+
+        return options;
     }
 
     if(hasLines) {
@@ -271,34 +307,9 @@ function sceneOptions(gd, subplot, trace, positions) {
         markerOptions = makeMarkerOptions(markerOpts);
         selectedOptions = makeSelectedOptions(trace.selected, markerOpts);
         unselectedOptions = makeSelectedOptions(trace.unselected, markerOpts);
+        if(!trace.unselected) unselectedOptions.opacity = DESELECTDIM;
+
         markerOptions.positions = positions;
-    }
-
-    function makeErrorOptions(axLetter, errorOpts, vals) {
-        var options = {};
-        options.positions = positions;
-
-        var ax = AxisIDs.getFromId(gd, trace[axLetter + 'axis']);
-        var errors = options.errors = new Float64Array(4 * count);
-        var pOffset = {x: 0, y: 1}[axLetter];
-        var eOffset = {x: [0, 1, 2, 3], y: [2, 3, 0, 1]}[axLetter];
-
-        for(var i = 0, p = 0; i < count; i++, p += 4) {
-            errors[p + eOffset[0]] = positions[i * 2 + pOffset] - ax.d2l(vals[i][axLetter + 's']) || 0;
-            errors[p + eOffset[1]] = ax.d2l(vals[i][axLetter + 'h']) - positions[i * 2 + pOffset] || 0;
-            errors[p + eOffset[2]] = 0;
-            errors[p + eOffset[3]] = 0;
-        }
-
-        if(errorOpts.copy_ystyle) {
-            errorOpts = trace.error_y;
-        }
-
-        options.capSize = errorOpts.width * 2;
-        options.lineWidth = errorOpts.thickness;
-        options.color = errorOpts.color;
-
-        return options;
     }
 
     function makeSelectedOptions(selected, markerOpts) {
@@ -882,8 +893,8 @@ function plot(gd, subplot, cdata) {
     if(selectMode) {
         // create select2d
         if(!scene.select2d) {
-            // create scatter instance by cloning scatter2d
-            scene.select2d = createScatter(fullLayout._glcanvas.data()[1].regl, {clone: scene.scatter2d});
+            // create select scatter instance by cloning scatter2d
+            scene.select2d = createScatter(fullLayout._glcanvas.data()[1].regl);
         }
 
         if(scene.scatter2d && scene.selectBatch && scene.selectBatch.length) {
@@ -1126,7 +1137,6 @@ function selectPoints(searchInfo, polygon) {
         scene.selectBatch = [];
         scene.unselectBatch = [];
     }
-
     if(!scene.selectBatch[stash.index]) {
         // enter every trace select mode
         for(i = 0; i < scene.count; i++) {
