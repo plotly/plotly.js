@@ -103,7 +103,7 @@ function plot(container, subplot, cdata) {
 
         stash.tree = cluster(positions);
 
-        if (options.marker) {
+        if(options.marker) {
             options.marker.cluster = stash.tree;
         }
 

@@ -118,7 +118,7 @@ function calc(gd, trace) {
 
     // FIXME: organize it in a more appropriate manner, probably in sceneOptions
     // put point-cluster instance for optimized regl calc
-    if (options.marker) {
+    if(options.marker) {
         options.marker.cluster = stash.tree;
     }
 
@@ -307,7 +307,7 @@ function sceneOptions(gd, subplot, trace, positions) {
         markerOptions = makeMarkerOptions(markerOpts);
         selectedOptions = makeSelectedOptions(trace.selected, markerOpts);
         unselectedOptions = makeSelectedOptions(trace.unselected, markerOpts);
-        if (!trace.unselected) unselectedOptions.opacity = DESELECTDIM;
+        if(!trace.unselected) unselectedOptions.opacity = DESELECTDIM;
 
         markerOptions.positions = positions;
     }
