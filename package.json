@@ -96,6 +96,7 @@
     "ndarray-fill": "^1.0.2",
     "ndarray-homography": "^1.0.0",
     "ndarray-ops": "^1.2.2",
+    "point-cluster": "^2.0.0",
     "polybooljs": "^1.2.0",
     "regl": "^1.3.1",
     "regl-error2d": "^2.0.3",
