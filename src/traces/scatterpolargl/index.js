@@ -98,6 +98,7 @@ function plot(container, subplot, cdata) {
             }
         }
 
+
         var options = ScatterGl.sceneOptions(container, subplot, trace, positions);
 
         // set flags to create scene renderers
