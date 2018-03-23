@@ -8,7 +8,7 @@
 
 'use strict';
 
-var kdtree = require('kdgrass');
+var cluster = require('point-cluster');
 var isNumeric = require('fast-isnumeric');
 
 var ScatterGl = require('../scattergl');
@@ -101,6 +101,12 @@ function plot(container, subplot, cdata) {
 
         var options = ScatterGl.sceneOptions(container, subplot, trace, positions);
 
+        stash.tree = cluster(positions);
+
+        if (options.marker) {
+            options.marker.cluster = stash.tree;
+        }
+
         // set flags to create scene renderers
         if(options.fill && !scene.fill2d) scene.fill2d = true;
         if(options.marker && !scene.scatter2d) scene.scatter2d = true;
@@ -133,7 +139,6 @@ function plot(container, subplot, cdata) {
         stash.theta = thetaArray;
         stash.positions = positions;
         stash.count = count;
-        stash.tree = kdtree(positions, 512);
     });
 
     return ScatterGl.plot(container, subplot, cdata);
