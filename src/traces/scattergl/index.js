@@ -13,35 +13,26 @@ var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var kdtree = require('kdgrass');
-var rgba = require('color-normalize');
-var svgSdf = require('svg-path-sdf');
 var arrayRange = require('array-range');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
-var Drawing = require('../../components/drawing');
-var formatColor = require('../../lib/gl_format_color');
 
 var subTypes = require('../scatter/subtypes');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var calcAxisExpansion = require('../scatter/calc').calcAxisExpansion;
 var calcColorscales = require('../scatter/colorscale_calc');
-var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var linkTraces = require('../scatter/link_traces');
 var getTraceColor = require('../scatter/get_trace_color');
 var fillHoverText = require('../scatter/fill_hover_text');
 
-var DASHES = require('../../constants/gl2d_dashes');
+var convertStyle = require('./convert').convertStyle;
+var convertLinePositions = require('./convert').convertLinePositions;
+var convertErrorBarPositions = require('./convert').convertErrorBarPositions;
+
 var BADNUM = require('../../constants/numerical').BADNUM;
-var SYMBOL_SDF_SIZE = 200;
-var SYMBOL_SIZE = 20;
-var SYMBOL_STROKE = SYMBOL_SIZE / 20;
-var SYMBOL_SDF = {};
-var SYMBOL_SVG_CIRCLE = Drawing.symbolFuncs[0](SYMBOL_SIZE * 0.05);
-var TOO_MANY_POINTS = 1e5;
-var DOT_RE = /-dot/;
-var OPEN_RE = /-open/;
+var TOO_MANY_POINTS = require('./constants').TOO_MANY_POINTS;
 
 function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
@@ -91,37 +82,36 @@ function calc(gd, trace) {
 
     // create scene options and scene
     calcColorscales(trace);
-    var options = sceneOptions(gd, subplot, trace, positions);
-    var markerOptions = options.marker;
+    var opts = sceneOptions(gd, subplot, trace, positions);
     var scene = sceneUpdate(gd, subplot);
-    var ppad;
 
     // Re-use SVG scatter axis expansion routine except
     // for graph with very large number of points where it
     // performs poorly.
     // In big data case, fake Axes.expand outputs with data bounds,
     // and an average size for array marker.size inputs.
+    var ppad;
     if(count < TOO_MANY_POINTS) {
         ppad = calcMarkerSize(trace, count);
-    } else if(markerOptions) {
-        ppad = 2 * (markerOptions.sizeAvg || Math.max(markerOptions.size, 3));
+    } else if(opts.marker) {
+        ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
     }
     calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
 
     // set flags to create scene renderers
-    if(options.fill && !scene.fill2d) scene.fill2d = true;
-    if(options.marker && !scene.scatter2d) scene.scatter2d = true;
-    if(options.line && !scene.line2d) scene.line2d = true;
-    if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
+    if(opts.fill && !scene.fill2d) scene.fill2d = true;
+    if(opts.marker && !scene.scatter2d) scene.scatter2d = true;
+    if(opts.line && !scene.line2d) scene.line2d = true;
+    if((opts.errorX || opts.errorY) && !scene.error2d) scene.error2d = true;
 
-    // save scene options batch
-    scene.lineOptions.push(options.line);
-    scene.errorXOptions.push(options.errorX);
-    scene.errorYOptions.push(options.errorY);
-    scene.fillOptions.push(options.fill);
-    scene.markerOptions.push(options.marker);
-    scene.selectedOptions.push(options.selected);
-    scene.unselectedOptions.push(options.unselected);
+    // save scene opts batch
+    scene.lineOptions.push(opts.line);
+    scene.errorXOptions.push(opts.errorX);
+    scene.errorYOptions.push(opts.errorY);
+    scene.fillOptions.push(opts.fill);
+    scene.markerOptions.push(opts.marker);
+    scene.selectedOptions.push(opts.selected);
+    scene.unselectedOptions.push(opts.unselected);
     scene.count++;
 
     // stash scene ref
@@ -138,318 +128,31 @@ function calc(gd, trace) {
 
 // create scene options
 function sceneOptions(gd, subplot, trace, positions) {
-    var fullLayout = gd._fullLayout;
-    var count = positions.length / 2;
-    var markerOpts = trace.marker;
-    var i;
+    var opts = convertStyle(gd, trace);
 
-    var hasLines, hasErrorX, hasErrorY, hasMarkers, hasFill;
-
-    if(trace.visible !== true) {
-        hasLines = false;
-        hasErrorX = false;
-        hasErrorY = false;
-        hasMarkers = false;
-        hasFill = false;
-    } else {
-        hasLines = subTypes.hasLines(trace) && positions.length > 1;
-        hasErrorX = trace.error_x && trace.error_x.visible === true;
-        hasErrorY = trace.error_y && trace.error_y.visible === true;
-        hasMarkers = subTypes.hasMarkers(trace);
-        hasFill = !!trace.fill && trace.fill !== 'none';
+    if(opts.marker) {
+        opts.marker.positions = positions;
     }
 
-    var lineOptions, markerOptions, fillOptions;
-    var errorXOptions, errorYOptions;
-    var selectedOptions, unselectedOptions;
-    var linePositions;
+    if(opts.line && positions.length > 1) {
+        Lib.extendFlat(
+            opts.line,
+            convertLinePositions(gd, trace, positions)
+        );
+    }
 
-    if(hasErrorX || hasErrorY) {
-        var calcFromTrace = Registry.getComponentMethod('errorbars', 'calcFromTrace');
-        var errorVals = calcFromTrace(trace, fullLayout);
+    if(opts.errorX || opts.errorY) {
+        var errors = convertErrorBarPositions(gd, trace, positions);
 
-        if(hasErrorX) {
-            errorXOptions = makeErrorOptions('x', trace.error_x, errorVals);
+        if(opts.errorX) {
+            Lib.extendFlat(opts.errorX, errors.x);
         }
-        if(hasErrorY) {
-            errorYOptions = makeErrorOptions('y', trace.error_y, errorVals);
+        if(opts.errorY) {
+            Lib.extendFlat(opts.errorY, errors.y);
         }
     }
 
-    if(hasLines) {
-        lineOptions = {};
-        lineOptions.thickness = trace.line.width;
-        lineOptions.color = trace.line.color;
-        lineOptions.opacity = trace.opacity;
-        lineOptions.overlay = true;
-
-        var dashes = (DASHES[trace.line.dash] || [1]).slice();
-        for(i = 0; i < dashes.length; ++i) dashes[i] *= lineOptions.thickness;
-        lineOptions.dashes = dashes;
-
-        if(trace.line.shape === 'hv') {
-            linePositions = [];
-            for(i = 0; i < Math.floor(positions.length / 2) - 1; i++) {
-                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1])) {
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                }
-                else {
-                    linePositions.push(positions[i * 2]);
-                    linePositions.push(positions[i * 2 + 1]);
-                    linePositions.push(positions[i * 2 + 2]);
-                    linePositions.push(positions[i * 2 + 1]);
-                }
-            }
-            linePositions.push(positions[positions.length - 2]);
-            linePositions.push(positions[positions.length - 1]);
-        }
-        else if(trace.line.shape === 'vh') {
-            linePositions = [];
-            for(i = 0; i < Math.floor(positions.length / 2) - 1; i++) {
-                if(isNaN(positions[i * 2]) || isNaN(positions[i * 2 + 1])) {
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                    linePositions.push(NaN);
-                }
-                else {
-                    linePositions.push(positions[i * 2]);
-                    linePositions.push(positions[i * 2 + 1]);
-                    linePositions.push(positions[i * 2]);
-                    linePositions.push(positions[i * 2 + 3]);
-                }
-            }
-            linePositions.push(positions[positions.length - 2]);
-            linePositions.push(positions[positions.length - 1]);
-        }
-        else {
-            linePositions = positions;
-        }
-
-        // If we have data with gaps, we ought to use rect joins
-        // FIXME: get rid of this
-        var hasNaN = false;
-        for(i = 0; i < linePositions.length; i++) {
-            if(isNaN(linePositions[i])) {
-                hasNaN = true;
-                break;
-            }
-        }
-
-        lineOptions.join = (hasNaN || linePositions.length > TOO_MANY_POINTS) ? 'rect' :
-            hasMarkers ? 'rect' : 'round';
-
-        // fill gaps
-        if(hasNaN && trace.connectgaps) {
-            var lastX = linePositions[0], lastY = linePositions[1];
-            for(i = 0; i < linePositions.length; i += 2) {
-                if(isNaN(linePositions[i]) || isNaN(linePositions[i + 1])) {
-                    linePositions[i] = lastX;
-                    linePositions[i + 1] = lastY;
-                }
-                else {
-                    lastX = linePositions[i];
-                    lastY = linePositions[i + 1];
-                }
-            }
-        }
-
-        lineOptions.positions = linePositions;
-    }
-
-    if(hasFill) {
-        fillOptions = {};
-        fillOptions.fill = trace.fillcolor;
-        fillOptions.thickness = 0;
-        fillOptions.closed = true;
-    }
-
-    if(hasMarkers) {
-        markerOptions = makeMarkerOptions(markerOpts);
-        selectedOptions = makeSelectedOptions(trace.selected, markerOpts);
-        unselectedOptions = makeSelectedOptions(trace.unselected, markerOpts);
-        markerOptions.positions = positions;
-    }
-
-    function makeErrorOptions(axLetter, errorOpts, vals) {
-        var options = {};
-        options.positions = positions;
-
-        var ax = AxisIDs.getFromId(gd, trace[axLetter + 'axis']);
-        var errors = options.errors = new Float64Array(4 * count);
-        var pOffset = {x: 0, y: 1}[axLetter];
-        var eOffset = {x: [0, 1, 2, 3], y: [2, 3, 0, 1]}[axLetter];
-
-        for(var i = 0, p = 0; i < count; i++, p += 4) {
-            errors[p + eOffset[0]] = positions[i * 2 + pOffset] - ax.d2l(vals[i][axLetter + 's']) || 0;
-            errors[p + eOffset[1]] = ax.d2l(vals[i][axLetter + 'h']) - positions[i * 2 + pOffset] || 0;
-            errors[p + eOffset[2]] = 0;
-            errors[p + eOffset[3]] = 0;
-        }
-
-        if(errorOpts.copy_ystyle) {
-            errorOpts = trace.error_y;
-        }
-
-        options.capSize = errorOpts.width * 2;
-        options.lineWidth = errorOpts.thickness;
-        options.color = errorOpts.color;
-
-        return options;
-    }
-
-    function makeSelectedOptions(selected, markerOpts) {
-        var options = {};
-
-        if(!selected) return options;
-
-        if(selected.marker && selected.marker.symbol) {
-            options = makeMarkerOptions(Lib.extendFlat({}, markerOpts, selected.marker));
-        }
-
-        // shortcut simple selection logic
-        else {
-            options = {};
-            if(selected.marker.size) options.sizes = selected.marker.size;
-            if(selected.marker.color) options.colors = selected.marker.color;
-            if(selected.marker.opacity !== undefined) options.opacity = selected.marker.opacity;
-        }
-
-        return options;
-    }
-
-    function makeMarkerOptions(markerOpts) {
-        var markerOptions = {};
-        var i;
-
-        var multiSymbol = Array.isArray(markerOpts.symbol);
-        var multiColor = Lib.isArrayOrTypedArray(markerOpts.color);
-        var multiLineColor = Lib.isArrayOrTypedArray(markerOpts.line.color);
-        var multiOpacity = Lib.isArrayOrTypedArray(markerOpts.opacity);
-        var multiSize = Lib.isArrayOrTypedArray(markerOpts.size);
-        var multiLineWidth = Lib.isArrayOrTypedArray(markerOpts.line.width);
-
-        var isOpen;
-        if(!multiSymbol) isOpen = OPEN_RE.test(markerOpts.symbol);
-
-        // prepare colors
-        if(multiSymbol || multiColor || multiLineColor || multiOpacity) {
-            markerOptions.colors = new Array(count);
-            markerOptions.borderColors = new Array(count);
-            var colors = formatColor(markerOpts, markerOpts.opacity, count);
-            var borderColors = formatColor(markerOpts.line, markerOpts.opacity, count);
-
-            if(!Array.isArray(borderColors[0])) {
-                var borderColor = borderColors;
-                borderColors = Array(count);
-                for(i = 0; i < count; i++) {
-                    borderColors[i] = borderColor;
-                }
-            }
-            if(!Array.isArray(colors[0])) {
-                var color = colors;
-                colors = Array(count);
-                for(i = 0; i < count; i++) {
-                    colors[i] = color;
-                }
-            }
-
-            markerOptions.colors = colors;
-            markerOptions.borderColors = borderColors;
-
-            for(i = 0; i < count; i++) {
-                if(multiSymbol) {
-                    var symbol = markerOpts.symbol[i];
-                    isOpen = OPEN_RE.test(symbol);
-                }
-                if(isOpen) {
-                    borderColors[i] = colors[i].slice();
-                    colors[i] = colors[i].slice();
-                    colors[i][3] = 0;
-                }
-            }
-
-            markerOptions.opacity = trace.opacity;
-        }
-        else {
-            if(isOpen) {
-                markerOptions.color = rgba(markerOpts.color, 'uint8');
-                markerOptions.color[3] = 0;
-                markerOptions.borderColor = rgba(markerOpts.color, 'uint8');
-            } else {
-                markerOptions.color = rgba(markerOpts.color, 'uint8');
-                markerOptions.borderColor = rgba(markerOpts.line.color, 'uint8');
-            }
-
-            markerOptions.opacity = trace.opacity * markerOpts.opacity;
-        }
-
-        // prepare symbols
-        if(multiSymbol) {
-            markerOptions.markers = new Array(count);
-            for(i = 0; i < count; i++) {
-                markerOptions.markers[i] = getSymbolSdf(markerOpts.symbol[i]);
-            }
-        } else {
-            markerOptions.marker = getSymbolSdf(markerOpts.symbol);
-        }
-
-        // prepare sizes
-        var markerSizeFunc = makeBubbleSizeFn(trace);
-        var s;
-
-        if(multiSize || multiLineWidth) {
-            var sizes = markerOptions.sizes = new Array(count);
-            var borderSizes = markerOptions.borderSizes = new Array(count);
-            var sizeTotal = 0;
-            var sizeAvg;
-
-            if(multiSize) {
-                for(i = 0; i < count; i++) {
-                    sizes[i] = markerSizeFunc(markerOpts.size[i]);
-                    sizeTotal += sizes[i];
-                }
-                sizeAvg = sizeTotal / count;
-            } else {
-                s = markerSizeFunc(markerOpts.size);
-                for(i = 0; i < count; i++) {
-                    sizes[i] = s;
-                }
-            }
-
-            // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
-            if(multiLineWidth) {
-                for(i = 0; i < count; i++) {
-                    borderSizes[i] = markerSizeFunc(markerOpts.line.width[i]);
-                }
-            } else {
-                s = markerSizeFunc(markerOpts.line.width);
-                for(i = 0; i < count; i++) {
-                    borderSizes[i] = s;
-                }
-            }
-
-            markerOptions.sizeAvg = sizeAvg;
-        } else {
-            markerOptions.size = markerSizeFunc(markerOpts && markerOpts.size || 10);
-            markerOptions.borderSizes = markerSizeFunc(markerOpts.line.width);
-        }
-
-        return markerOptions;
-    }
-
-    return {
-        line: lineOptions,
-        marker: markerOptions,
-        errorX: errorXOptions,
-        errorY: errorYOptions,
-        fill: fillOptions,
-        selected: selectedOptions,
-        unselected: unselectedOptions
-    };
+    return opts;
 }
 
 // make sure scene exists on subplot, return it
@@ -543,25 +246,14 @@ function sceneUpdate(gd, subplot) {
             var height = fullLayout.height;
             var xaxis = subplot.xaxis;
             var yaxis = subplot.yaxis;
-            var vp, gl, regl;
+            var vp = [
+                vpSize.l + xaxis.domain[0] * vpSize.w,
+                vpSize.b + yaxis.domain[0] * vpSize.h,
+                (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
+                (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
+            ];
 
-            // multisubplot case
-            if(xaxis && xaxis.domain && yaxis && yaxis.domain) {
-                vp = [
-                    vpSize.l + xaxis.domain[0] * vpSize.w,
-                    vpSize.b + yaxis.domain[0] * vpSize.h,
-                    (width - vpSize.r) - (1 - xaxis.domain[1]) * vpSize.w,
-                    (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
-                ];
-            }
-            else {
-                vp = [
-                    vpSize.l,
-                    vpSize.b,
-                    (width - vpSize.r),
-                    (height - vpSize.t)
-                ];
-            }
+            var gl, regl;
 
             if(scene.select2d) {
                 regl = scene.select2d.regl;
@@ -622,38 +314,6 @@ function sceneUpdate(gd, subplot) {
     }
 
     return scene;
-}
-
-function getSymbolSdf(symbol) {
-    if(symbol === 'circle') return null;
-
-    var symbolPath, symbolSdf;
-    var symbolNumber = Drawing.symbolNumber(symbol);
-    var symbolFunc = Drawing.symbolFuncs[symbolNumber % 100];
-    var symbolNoDot = !!Drawing.symbolNoDot[symbolNumber % 100];
-    var symbolNoFill = !!Drawing.symbolNoFill[symbolNumber % 100];
-
-    var isDot = DOT_RE.test(symbol);
-
-    // get symbol sdf from cache or generate it
-    if(SYMBOL_SDF[symbol]) return SYMBOL_SDF[symbol];
-
-    if(isDot && !symbolNoDot) {
-        symbolPath = symbolFunc(SYMBOL_SIZE * 1.1) + SYMBOL_SVG_CIRCLE;
-    }
-    else {
-        symbolPath = symbolFunc(SYMBOL_SIZE);
-    }
-
-    symbolSdf = svgSdf(symbolPath, {
-        w: SYMBOL_SDF_SIZE,
-        h: SYMBOL_SDF_SIZE,
-        viewBox: [-SYMBOL_SIZE, -SYMBOL_SIZE, SYMBOL_SIZE, SYMBOL_SIZE],
-        stroke: symbolNoFill ? SYMBOL_STROKE : -SYMBOL_STROKE
-    });
-    SYMBOL_SDF[symbol] = symbolSdf;
-
-    return symbolSdf || null;
 }
 
 function plot(gd, subplot, cdata) {
@@ -808,6 +468,8 @@ function plot(gd, subplot, cdata) {
     }
 
     var selectMode = dragmode === 'lasso' || dragmode === 'select';
+    scene.selectBatch = null;
+    scene.unselectBatch = null;
 
     // provide viewport and range
     var vpRange = cdata.map(function(cdscatter) {
@@ -840,8 +502,10 @@ function plot(gd, subplot, cdata) {
         if(trace.selectedpoints || selectMode) {
             if(!selectMode) selectMode = true;
 
-            if(!scene.selectBatch) scene.selectBatch = [];
-            if(!scene.unselectBatch) scene.unselectBatch = [];
+            if(!scene.selectBatch) {
+                scene.selectBatch = [];
+                scene.unselectBatch = [];
+            }
 
             // regenerate scene batch, if traces number changed during selection
             if(trace.selectedpoints) {
@@ -883,7 +547,10 @@ function plot(gd, subplot, cdata) {
         // create select2d
         if(!scene.select2d) {
             // create scatter instance by cloning scatter2d
-            scene.select2d = createScatter(fullLayout._glcanvas.data()[1].regl, {clone: scene.scatter2d});
+            scene.select2d = createScatter(
+                fullLayout._glcanvas.data()[1].regl,
+                {clone: scene.scatter2d}
+            );
         }
 
         if(scene.scatter2d && scene.selectBatch && scene.selectBatch.length) {

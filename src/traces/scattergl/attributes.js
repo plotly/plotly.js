@@ -12,13 +12,13 @@ var plotAttrs = require('../../plots/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var colorAttrs = require('../../components/colorscale/color_attributes');
 
-var DASHES = require('../../constants/gl2d_dashes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var DASHES = require('./constants').DASHES;
 
-var scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+var scatterLineAttrs = scatterAttrs.line;
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 var attrs = module.exports = overrideAll({
     x: scatterAttrs.x,
