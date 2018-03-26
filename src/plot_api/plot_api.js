@@ -113,6 +113,9 @@ exports.plot = function(gd, data, layout, config) {
     // so we can share cached text across tabs
     Drawing.makeTester();
 
+    // clear stashed base url
+    delete Drawing.baseUrl;
+
     // collect promises for any async actions during plotting
     // any part of the plotting code can push to gd._promises, then
     // before we move to the next step, we check that they're all
@@ -245,9 +248,7 @@ exports.plot = function(gd, data, layout, config) {
                 .attr('height', fullLayout.height);
         }
 
-        return Lib.syncOrAsync([
-            subroutines.layoutStyles
-        ], gd);
+        return Plots.previousPromises(gd);
     }
 
     // draw anything that can affect margins.
@@ -346,7 +347,7 @@ exports.plot = function(gd, data, layout, config) {
 
     // draw ticks, titles, and calculate axis scaling (._b, ._m)
     function drawAxes() {
-        return Axes.doTicks(gd, 'redraw');
+        return Axes.doTicks(gd, graphWasEmpty ? '' : 'redraw');
     }
 
     // Now plot the data

@@ -129,11 +129,7 @@ function plotOne(gd, plotinfo, cd) {
 }
 
 function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, plotinfo, carpet) {
-    var lineContainer = plotgroup.selectAll('g.contourlines').data([0]);
-
-    lineContainer.enter().append('g')
-        .classed('contourlines', true);
-
+    var lineContainer = Lib.ensureSingle(plotgroup, 'g', 'contourlines');
     var showLines = contours.showlines !== false;
     var showLabels = contours.showlabels;
     var clipLinesForLabels = showLines && showLabels;
@@ -298,8 +294,7 @@ function vectorTan(v0, v1) {
 
 function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, coloring) {
     var seg, xp, yp, i;
-    var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
-    bggroup.enter().append('g').classed('contourbg', true);
+    var bggroup = Lib.ensureSingle(plotgroup, 'g', 'contourbg');
 
     var bgfill = bggroup.selectAll('path')
         .data((coloring === 'fill' && !isConstraint) ? [0] : []);
@@ -320,10 +315,7 @@ function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, col
 }
 
 function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath) {
-    var fillgroup = plotgroup.selectAll('g.contourfill')
-        .data([0]);
-    fillgroup.enter().append('g')
-        .classed('contourfill', true);
+    var fillgroup = Lib.ensureSingle(plotgroup, 'g', 'contourfill');
 
     var fillitems = fillgroup.selectAll('path')
         .data(coloring === 'fill' ? pathinfo : []);

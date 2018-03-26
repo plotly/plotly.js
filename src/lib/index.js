@@ -632,6 +632,63 @@ lib.isD3Selection = function(obj) {
     return obj && (typeof obj.classed === 'function');
 };
 
+/**
+ * Append element to DOM only if not present.
+ *
+ * @param {d3 selection} parent : parent selection of the element in question
+ * @param {string} nodeType : node type of element to append
+ * @param {string} className : class name of element in question
+ * @param {fn} enterFn (optional) : optional fn applied to entering elements only
+ * @return {d3 selection} selection of new layer
+ *
+ * Previously, we were using the following pattern:
+ *
+ * ```
+ * var sel = parent.selectAll('.' + className)
+ *     .data([0]);
+ *
+ * sel.enter().append(nodeType)
+ *     .classed(className, true);
+ *
+ * return sel;
+ * ```
+ *
+ * in numerous places in our codebase to achieve the same behavior.
+ *
+ * The logic below performs much better, mostly as we are using
+ * `.select` instead `.selectAll` that is `querySelector` instead of
+ * `querySelectorAll`.
+ *
+ */
+lib.ensureSingle = function(parent, nodeType, className, enterFn) {
+    var sel = parent.select(nodeType + (className ? '.' + className : ''));
+    if(sel.size()) return sel;
+
+    var layer = parent.append(nodeType).classed(className, true);
+    if(enterFn) layer.call(enterFn);
+
+    return layer;
+};
+
+/**
+ * Same as Lib.ensureSingle, but using id as selector.
+ * This version is mostly used for clipPath nodes.
+ *
+ * @param {d3 selection} parent : parent selection of the element in question
+ * @param {string} nodeType : node type of element to append
+ * @param {string} id : id of element in question
+ * @param {fn} enterFn (optional) : optional fn applied to entering elements only
+ * @return {d3 selection} selection of new layer
+ */
+lib.ensureSingleById = function(parent, nodeType, id, enterFn) {
+    var sel = parent.select(nodeType + '#' + id);
+    if(sel.size()) return sel;
+
+    var layer = parent.append(nodeType).attr('id', id);
+    if(enterFn) layer.call(enterFn);
+
+    return layer;
+};
 
 /**
  * Converts a string path to an object.

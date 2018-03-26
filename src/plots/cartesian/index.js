@@ -18,6 +18,14 @@ var axisIds = require('./axis_ids');
 var constants = require('./constants');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
+var ensureSingle = Lib.ensureSingle;
+
+function ensureSingleAndAddDatum(parent, nodeType, className) {
+    return Lib.ensureSingle(parent, nodeType, className, function(s) {
+        s.datum(className);
+    });
+}
+
 exports.name = 'cartesian';
 
 exports.attr = ['xaxis', 'yaxis'];
@@ -303,8 +311,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 };
 
 exports.drawFramework = function(gd) {
-    var fullLayout = gd._fullLayout,
-        subplotData = makeSubplotData(gd);
+    var fullLayout = gd._fullLayout;
+    var subplotData = makeSubplotData(gd);
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
         .data(subplotData, Lib.identity);
@@ -327,6 +335,7 @@ exports.drawFramework = function(gd) {
         plotinfo.overlays = [];
 
         makeSubplotLayer(plotinfo);
+
         // fill in list of overlay subplots
         if(plotinfo.mainplot) {
             var mainplot = fullLayout._plots[plotinfo.mainplot];
@@ -336,7 +345,7 @@ exports.drawFramework = function(gd) {
         // make separate drag layers for each subplot,
         // but append them to paper rather than the plot groups,
         // so they end up on top of the rest
-        plotinfo.draglayer = joinLayer(fullLayout._draggers, 'g', name);
+        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', name);
     });
 };
 
@@ -347,29 +356,22 @@ exports.rangePlot = function(gd, plotinfo, cdSubplot) {
 };
 
 function makeSubplotData(gd) {
-    var fullLayout = gd._fullLayout,
-        subplots = Object.keys(fullLayout._plots);
+    var fullLayout = gd._fullLayout;
+    var subplotData = [];
+    var overlays = [];
 
-    var subplotData = [],
-        overlays = [];
-
-    for(var i = 0; i < subplots.length; i++) {
-        var subplot = subplots[i],
-            plotinfo = fullLayout._plots[subplot];
-
-        var xa = plotinfo.xaxis;
-        var ya = plotinfo.yaxis;
-        var xa2 = xa._mainAxis;
-        var ya2 = ya._mainAxis;
-
+    for(var k in fullLayout._plots) {
+        var plotinfo = fullLayout._plots[k];
+        var xa2 = plotinfo.xaxis._mainAxis;
+        var ya2 = plotinfo.yaxis._mainAxis;
         var mainplot = xa2._id + ya2._id;
-        if(mainplot !== subplot && subplots.indexOf(mainplot) !== -1) {
+
+        if(mainplot !== k && fullLayout._plots[mainplot]) {
             plotinfo.mainplot = mainplot;
             plotinfo.mainplotinfo = fullLayout._plots[mainplot];
-            overlays.push(subplot);
-        }
-        else {
-            subplotData.push(subplot);
+            overlays.push(k);
+        } else {
+            subplotData.push(k);
         }
     }
 
@@ -386,32 +388,32 @@ function makeSubplotLayer(plotinfo) {
     var yLayer = constants.layerValue2layerClass[plotinfo.yaxis.layer];
 
     if(!plotinfo.mainplot) {
-        var backLayer = joinLayer(plotgroup, 'g', 'layer-subplot');
-        plotinfo.shapelayer = joinLayer(backLayer, 'g', 'shapelayer');
-        plotinfo.imagelayer = joinLayer(backLayer, 'g', 'imagelayer');
+        var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
+        plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
+        plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
 
-        plotinfo.gridlayer = joinLayer(plotgroup, 'g', 'gridlayer');
+        plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
 
-        plotinfo.zerolinelayer = joinLayer(plotgroup, 'g', 'zerolinelayer');
+        plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
 
-        joinLayer(plotgroup, 'path', 'xlines-below');
-        joinLayer(plotgroup, 'path', 'ylines-below');
-        plotinfo.overlinesBelow = joinLayer(plotgroup, 'g', 'overlines-below');
+        ensureSingle(plotgroup, 'path', 'xlines-below');
+        ensureSingle(plotgroup, 'path', 'ylines-below');
+        plotinfo.overlinesBelow = ensureSingle(plotgroup, 'g', 'overlines-below');
 
-        joinLayer(plotgroup, 'g', 'xaxislayer-below');
-        joinLayer(plotgroup, 'g', 'yaxislayer-below');
-        plotinfo.overaxesBelow = joinLayer(plotgroup, 'g', 'overaxes-below');
+        ensureSingle(plotgroup, 'g', 'xaxislayer-below');
+        ensureSingle(plotgroup, 'g', 'yaxislayer-below');
+        plotinfo.overaxesBelow = ensureSingle(plotgroup, 'g', 'overaxes-below');
 
-        plotinfo.plot = joinLayer(plotgroup, 'g', 'plot');
-        plotinfo.overplot = joinLayer(plotgroup, 'g', 'overplot');
+        plotinfo.plot = ensureSingle(plotgroup, 'g', 'plot');
+        plotinfo.overplot = ensureSingle(plotgroup, 'g', 'overplot');
 
-        joinLayer(plotgroup, 'path', 'xlines-above');
-        joinLayer(plotgroup, 'path', 'ylines-above');
-        plotinfo.overlinesAbove = joinLayer(plotgroup, 'g', 'overlines-above');
+        ensureSingle(plotgroup, 'path', 'xlines-above');
+        ensureSingle(plotgroup, 'path', 'ylines-above');
+        plotinfo.overlinesAbove = ensureSingle(plotgroup, 'g', 'overlines-above');
 
-        joinLayer(plotgroup, 'g', 'xaxislayer-above');
-        joinLayer(plotgroup, 'g', 'yaxislayer-above');
-        plotinfo.overaxesAbove = joinLayer(plotgroup, 'g', 'overaxes-above');
+        ensureSingle(plotgroup, 'g', 'xaxislayer-above');
+        ensureSingle(plotgroup, 'g', 'yaxislayer-above');
+        plotinfo.overaxesAbove = ensureSingle(plotgroup, 'g', 'overaxes-above');
 
         // set refs to correct layers as determined by 'axis.layer'
         plotinfo.xlines = plotgroup.select('.xlines-' + xLayer);
@@ -433,17 +435,17 @@ function makeSubplotLayer(plotinfo) {
         plotinfo.gridlayer = mainplotinfo.gridlayer;
         plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
 
-        joinLayer(mainplotinfo.overlinesBelow, 'path', xId);
-        joinLayer(mainplotinfo.overlinesBelow, 'path', yId);
-        joinLayer(mainplotinfo.overaxesBelow, 'g', xId);
-        joinLayer(mainplotinfo.overaxesBelow, 'g', yId);
+        ensureSingle(mainplotinfo.overlinesBelow, 'path', xId);
+        ensureSingle(mainplotinfo.overlinesBelow, 'path', yId);
+        ensureSingle(mainplotinfo.overaxesBelow, 'g', xId);
+        ensureSingle(mainplotinfo.overaxesBelow, 'g', yId);
 
-        plotinfo.plot = joinLayer(mainplotinfo.overplot, 'g', id);
+        plotinfo.plot = ensureSingle(mainplotinfo.overplot, 'g', id);
 
-        joinLayer(mainplotinfo.overlinesAbove, 'path', xId);
-        joinLayer(mainplotinfo.overlinesAbove, 'path', yId);
-        joinLayer(mainplotinfo.overaxesAbove, 'g', xId);
-        joinLayer(mainplotinfo.overaxesAbove, 'g', yId);
+        ensureSingle(mainplotinfo.overlinesAbove, 'path', xId);
+        ensureSingle(mainplotinfo.overlinesAbove, 'path', yId);
+        ensureSingle(mainplotinfo.overaxesAbove, 'g', xId);
+        ensureSingle(mainplotinfo.overaxesAbove, 'g', yId);
 
         // set refs to correct layers as determined by 'abovetraces'
         plotinfo.xlines = mainplotgroup.select('.overlines-' + xLayer).select('.' + xId);
@@ -452,14 +454,14 @@ function makeSubplotLayer(plotinfo) {
         plotinfo.yaxislayer = mainplotgroup.select('.overaxes-' + yLayer).select('.' + yId);
     }
 
-    joinLayer(plotinfo.gridlayer, 'g', plotinfo.xaxis._id, plotinfo.xaxis._id);
-    joinLayer(plotinfo.gridlayer, 'g', plotinfo.yaxis._id, plotinfo.yaxis._id);
+    ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
+    ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
     plotinfo.gridlayer.selectAll('g').sort(axisIds.idSort);
 
     // common attributes for all subplots, overlays or not
 
     for(var i = 0; i < constants.traceLayerClasses.length; i++) {
-        joinLayer(plotinfo.plot, 'g', constants.traceLayerClasses[i]);
+        ensureSingle(plotinfo.plot, 'g', constants.traceLayerClasses[i]);
     }
 
     plotinfo.xlines
@@ -510,16 +512,6 @@ function purgeSubplotLayers(layers, fullLayout) {
 function removeSubplotExtras(subplotId, fullLayout) {
     fullLayout._draggers.selectAll('g.' + subplotId).remove();
     fullLayout._defs.select('#clip' + fullLayout._uid + subplotId + 'plot').remove();
-}
-
-function joinLayer(parent, nodeType, className, dataVal) {
-    var layer = parent.selectAll('.' + className)
-        .data([dataVal || 0]);
-
-    layer.enter().append(nodeType)
-        .classed(className, true);
-
-    return layer;
 }
 
 exports.toSVG = function(gd) {

@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
@@ -19,15 +18,11 @@ var Color = require('../color');
 var subTypes = require('../../traces/scatter/subtypes');
 var stylePie = require('../../traces/pie/style_one');
 
-
 module.exports = function style(s, gd) {
     s.each(function(d) {
         var traceGroup = d3.select(this);
 
-        var layers = traceGroup.selectAll('g.layers')
-            .data([0]);
-        layers.enter().append('g')
-            .classed('layers', true);
+        var layers = Lib.ensureSingle(traceGroup, 'g', 'layers');
         layers.style('opacity', d[0].trace.opacity);
 
         var fill = layers

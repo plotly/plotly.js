@@ -132,12 +132,8 @@ plots.addLinks = function(gd) {
 
     var fullLayout = gd._fullLayout;
 
-    var linkContainer = fullLayout._paper
-        .selectAll('text.js-plot-link-container').data([0]);
-
-    linkContainer.enter().append('text')
-        .classed('js-plot-link-container', true)
-        .style({
+    var linkContainer = Lib.ensureSingle(fullLayout._paper, 'text', 'js-plot-link-container', function(s) {
+        s.style({
             'font-family': '"Open Sans", Arial, sans-serif',
             'font-size': '12px',
             'fill': Color.defaultLine,
@@ -149,12 +145,11 @@ plots.addLinks = function(gd) {
             links.append('tspan').classed('js-link-spacer', true);
             links.append('tspan').classed('js-sourcelinks', true);
         });
+    });
 
     // The text node inside svg
-    var text = linkContainer.node(),
-        attrs = {
-            y: fullLayout._paper.attr('height') - 9
-        };
+    var text = linkContainer.node();
+    var attrs = {y: fullLayout._paper.attr('height') - 9};
 
     // If text's width is bigger than the layout
     // Check that text is a child node or document.body

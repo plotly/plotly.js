@@ -2440,9 +2440,7 @@ describe('Test plot api', function() {
 
         function countCalls(counts) {
             var callsFinal = Lib.extendFlat({}, counts);
-            // TODO: do we really need to do layoutStyles twice in Plotly.plot?
-            // We get one from drawFramework and another directly from Plotly.plot.
-            callsFinal.layoutStyles = (counts.layoutStyles || 0) + 2 * (counts.plot || 0);
+            callsFinal.layoutStyles = (counts.layoutStyles || 0) + (counts.plot || 0);
 
             mockedMethods.forEach(function(m) {
                 expect(subroutines[m]).toHaveBeenCalledTimes(callsFinal[m] || 0);

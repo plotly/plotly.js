@@ -28,10 +28,8 @@ describe('restyle', function() {
 
                 // First is tozero, second is tonext:
                 expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(2);
-                expect(fills[0].classList.contains('js-tozero')).toBe(true);
-                expect(fills[0].classList.contains('js-tonext')).toBe(false);
-                expect(fills[1].classList.contains('js-tozero')).toBe(false);
-                expect(fills[1].classList.contains('js-tonext')).toBe(true);
+                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
+                expect(fills[1]).toBeClassed(['js-fill', 'js-tonext']);
 
                 firstToZero = fills[0];
                 firstToNext = fills[1];
@@ -40,8 +38,7 @@ describe('restyle', function() {
             }).then(function() {
                 // Trace 1 hidden leaves only trace zero's tozero fill:
                 expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(1);
-                expect(fills[0].classList.contains('js-tozero')).toBe(true);
-                expect(fills[0].classList.contains('js-tonext')).toBe(false);
+                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
             }).then(function() {
                 return Plotly.restyle(gd, {visible: [true]}, [1]);
             }).then(function() {
@@ -50,10 +47,8 @@ describe('restyle', function() {
 
                 // First is tozero, second is tonext:
                 expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(2);
-                expect(fills[0].classList.contains('js-tozero')).toBe(true);
-                expect(fills[0].classList.contains('js-tonext')).toBe(false);
-                expect(fills[1].classList.contains('js-tozero')).toBe(false);
-                expect(fills[1].classList.contains('js-tonext')).toBe(true);
+                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
+                expect(fills[1]).toBeClassed(['js-fill', 'js-tonext']);
 
                 secondToZero = fills[0];
                 secondToNext = fills[1];

@@ -14,6 +14,7 @@ var d3 = require('d3');
 var Plots = require('../../plots/plots');
 var Color = require('../color');
 var Drawing = require('../drawing');
+var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var anchorUtils = require('../legend/anchor_utils');
 
@@ -78,12 +79,9 @@ module.exports = function draw(gd) {
         .classed(constants.headerGroupClassName, true);
 
     // draw dropdown button container
-    var gButton = menus.selectAll('g.' + constants.dropdownButtonGroupClassName)
-        .data([0]);
-
-    gButton.enter().append('g')
-        .classed(constants.dropdownButtonGroupClassName, true)
-        .style('pointer-events', 'all');
+    var gButton = Lib.ensureSingle(menus, 'g', constants.dropdownButtonGroupClassName, function(s) {
+        s.style('pointer-events', 'all');
+    });
 
     // find dimensions before plotting anything (this mutates menuOpts)
     for(var i = 0; i < menuData.length; i++) {
@@ -190,36 +188,30 @@ function setActive(gd, menuOpts, buttonOpts, gHeader, gButton, scrollBox, button
 }
 
 function drawHeader(gd, gHeader, gButton, scrollBox, menuOpts) {
-    var header = gHeader.selectAll('g.' + constants.headerClassName)
-        .data([0]);
+    var header = Lib.ensureSingle(gHeader, 'g', constants.headerClassName, function(s) {
+        s.style('pointer-events', 'all');
+    });
+
     var dims = menuOpts._dims;
-
-    header.enter().append('g')
-        .classed(constants.headerClassName, true)
-        .style('pointer-events', 'all');
-
-    var active = menuOpts.active,
-        headerOpts = menuOpts.buttons[active] || constants.blankHeaderOpts,
-        posOpts = { y: menuOpts.pad.t, yPad: 0, x: menuOpts.pad.l, xPad: 0, index: 0 },
-        positionOverrides = {
-            width: dims.headerWidth,
-            height: dims.headerHeight
-        };
+    var active = menuOpts.active;
+    var headerOpts = menuOpts.buttons[active] || constants.blankHeaderOpts;
+    var posOpts = { y: menuOpts.pad.t, yPad: 0, x: menuOpts.pad.l, xPad: 0, index: 0 };
+    var positionOverrides = {
+        width: dims.headerWidth,
+        height: dims.headerHeight
+    };
 
     header
         .call(drawItem, menuOpts, headerOpts, gd)
         .call(setItemPosition, menuOpts, posOpts, positionOverrides);
 
     // draw drop arrow at the right edge
-    var arrow = gHeader.selectAll('text.' + constants.headerArrowClassName)
-        .data([0]);
-
-    arrow.enter().append('text')
-        .classed(constants.headerArrowClassName, true)
-        .classed('user-select-none', true)
-        .attr('text-anchor', 'end')
-        .call(Drawing.font, menuOpts.font)
-        .text(constants.arrowSymbol[menuOpts.direction]);
+    var arrow = Lib.ensureSingle(gHeader, 'text', constants.headerArrowClassName, function(s) {
+        s.classed('user-select-none', true)
+            .attr('text-anchor', 'end')
+            .call(Drawing.font, menuOpts.font)
+            .text(constants.arrowSymbol[menuOpts.direction]);
+    });
 
     arrow.attr({
         x: dims.headerWidth - constants.arrowOffsetX + menuOpts.pad.l,
@@ -447,16 +439,13 @@ function drawItem(item, menuOpts, itemOpts, gd) {
 }
 
 function drawItemRect(item, menuOpts) {
-    var rect = item.selectAll('rect')
-        .data([0]);
-
-    rect.enter().append('rect')
-        .classed(constants.itemRectClassName, true)
-        .attr({
+    var rect = Lib.ensureSingle(item, 'rect', constants.itemRectClassName, function(s) {
+        s.attr({
             rx: constants.rx,
             ry: constants.ry,
             'shape-rendering': 'crispEdges'
         });
+    });
 
     rect.call(Color.stroke, menuOpts.bordercolor)
         .call(Color.fill, menuOpts.bgcolor)
@@ -464,16 +453,13 @@ function drawItemRect(item, menuOpts) {
 }
 
 function drawItemText(item, menuOpts, itemOpts, gd) {
-    var text = item.selectAll('text')
-        .data([0]);
-
-    text.enter().append('text')
-        .classed(constants.itemTextClassName, true)
-        .classed('user-select-none', true)
-        .attr({
-            'text-anchor': 'start',
-            'data-notex': 1
-        });
+    var text = Lib.ensureSingle(item, 'text', constants.itemTextClassName, function(s) {
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': 'start',
+                'data-notex': 1
+            });
+    });
 
     text.call(Drawing.font, menuOpts.font)
         .text(itemOpts.label)

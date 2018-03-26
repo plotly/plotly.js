@@ -70,27 +70,22 @@ proto.plot = function(ternaryCalcData, fullLayout) {
 proto.makeFramework = function(fullLayout) {
     var _this = this;
     var ternaryLayout = fullLayout[_this.id];
+
     var clipId = _this.clipId = 'clip' + _this.layoutId + _this.id;
+    var clipIdRelative = _this.clipIdRelative = 'clip-relative' + _this.layoutId + _this.id;
 
     // clippath for this ternary subplot
-    _this.clipDef = fullLayout._clips.selectAll('#' + clipId)
-        .data([0]);
-    _this.clipDef.enter().append('clipPath').attr('id', clipId)
-        .append('path').attr('d', 'M0,0Z');
+    _this.clipDef = Lib.ensureSingleById(fullLayout._clips, 'clipPath', clipId, function(s) {
+        s.append('path').attr('d', 'M0,0Z');
+    });
 
     // 'relative' clippath (i.e. no translation) for this ternary subplot
-    var clipIdRelative = _this.clipIdRelative = 'clip-relative' + _this.layoutId + _this.id;
-    _this.clipDefRelative = fullLayout._clips.selectAll('#' + clipIdRelative)
-        .data([0]);
-    _this.clipDefRelative.enter().append('clipPath').attr('id', clipIdRelative)
-        .append('path').attr('d', 'M0,0Z');
+    _this.clipDefRelative = Lib.ensureSingleById(fullLayout._clips, 'clipPath', clipIdRelative, function(s) {
+        s.append('path').attr('d', 'M0,0Z');
+    });
 
     // container for everything in this ternary subplot
-    _this.plotContainer = _this.container.selectAll('g.' + _this.id)
-        .data([0]);
-    _this.plotContainer.enter().append('g')
-        .classed(_this.id, true);
-
+    _this.plotContainer = Lib.ensureSingle(_this.container, 'g', _this.id);
     _this.updateLayers(ternaryLayout);
 
     Drawing.setClipUrl(_this.layers.backplot, clipId);

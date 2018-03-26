@@ -98,10 +98,7 @@ function draw(gd, titleClass, options) {
     var elShouldExist = txt || editable;
 
     if(!group) {
-        group = fullLayout._infolayer.selectAll('.g-' + titleClass)
-            .data([0]);
-        group.enter().append('g')
-            .classed('g-' + titleClass, true);
+        group = Lib.ensureSingle(fullLayout._infolayer, 'g', 'g-' + titleClass);
     }
 
     var el = group.selectAll('text')
