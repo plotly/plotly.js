@@ -125,11 +125,10 @@ exports.lsInner = function(gd) {
         var xDomain = plotinfo.xaxis.domain;
         var yDomain = plotinfo.yaxis.domain;
         var plotgroup = plotinfo.plotgroup;
-        var plotgroupBg;
 
         if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
             var pgNode = plotgroup.node();
-            plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
+            var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
             pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
         } else {
             plotgroup.select('rect.bg').remove();
