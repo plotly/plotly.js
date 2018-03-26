@@ -132,9 +132,7 @@ exports.lsInner = function(gd) {
             plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
             pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
         } else {
-            plotgroupBg = plotgroup.select('rect,bg');
-            if(plotgroupBg.size()) plotgroupBg.remove();
-
+            plotgroup.select('rect.bg').remove();
             lowerBackgroundIDs.push(subplot);
             lowerDomains.push([xDomain, yDomain]);
         }
