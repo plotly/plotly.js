@@ -17,6 +17,8 @@ var Axes = require('../../plots/cartesian/axes');
 var makeHoverPointText = require('../scatterpolar/hover').makeHoverPointText;
 var subTypes = require('../scatter/subtypes');
 
+var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
+
 function calc(container, trace) {
     var layout = container._fullLayout;
     var subplotId = trace.subplot;
