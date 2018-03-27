@@ -43,7 +43,7 @@ function convertStyle(gd, trace) {
         opts.selected = convertMarkerSelection(trace, trace.selected);
         opts.unselected = convertMarkerSelection(trace, trace.unselected);
 
-        if(Array.isArray(trace.marker.opacity)) {
+        if(!trace.unselected && Array.isArray(trace.marker.opacity)) {
             var mo = trace.marker.opacity;
             opts.unselected.opacity = new Array(mo.length);
             for(i = 0; i < mo.length; i++) {
