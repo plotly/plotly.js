@@ -108,7 +108,8 @@ function plot(container, subplot, cdata) {
 
         stash.tree = cluster(positions);
 
-        if(options.marker) {
+        // FIXME: see scattergl.js#109
+        if(options.marker && count >= TOO_MANY_POINTS) {
             options.marker.cluster = stash.tree;
         }
 
