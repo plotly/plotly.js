@@ -106,7 +106,7 @@ function calc(gd, trace) {
 
     // FIXME: organize it in a more appropriate manner, probably in sceneOptions
     // put point-cluster instance for optimized regl calc
-    if(opts.marker) {
+    if(opts.marker && count >= TOO_MANY_POINTS) {
         opts.marker.cluster = stash.tree;
     }
 
