@@ -21,6 +21,7 @@ var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 
 var constants = require('./constants');
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 function convertStyle(gd, trace) {
     var i;
@@ -41,6 +42,14 @@ function convertStyle(gd, trace) {
         opts.marker = convertMarkerStyle(trace);
         opts.selected = convertMarkerSelection(trace, trace.selected);
         opts.unselected = convertMarkerSelection(trace, trace.unselected);
+
+        if(!trace.unselected && Array.isArray(trace.marker.opacity)) {
+            var mo = trace.marker.opacity;
+            opts.unselected.opacity = new Array(mo.length);
+            for(i = 0; i < mo.length; i++) {
+                opts.unselected.opacity[i] = DESELECTDIM * mo[i];
+            }
+        }
     }
 
     if(subTypes.hasLines(trace)) {
