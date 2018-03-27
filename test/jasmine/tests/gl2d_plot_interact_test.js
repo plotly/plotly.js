@@ -518,7 +518,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('supports 1D and 2D Zoom', function(done) {
+    it('@flaky supports 1D and 2D Zoom', function(done) {
         var centerX;
         var centerY;
 
@@ -651,7 +651,7 @@ describe('@gl Test gl2d plots', function() {
         done();
     });
 
-    it('data-referenced annotations should update on drag', function(done) {
+    it('@flaky data-referenced annotations should update on drag', function(done) {
         function assertAnnotation(xy) {
             var ann = d3.select('g.annotation-text-g').select('g');
             var translate = Drawing.getTranslate(ann);
