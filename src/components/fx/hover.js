@@ -265,7 +265,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         for(curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
             trace = cd[0].trace;
-            if(trace.hoverinfo !== 'skip' && subplots.indexOf(helpers.getSubplot(trace)) !== -1) {
+            // FIXME: find more efficient way to check splom trace
+            if((trace.hoverinfo !== 'skip' && subplots.indexOf(helpers.getSubplot(trace)) !== -1) || trace.type === 'splom') {
                 searchData.push(cd);
             }
         }

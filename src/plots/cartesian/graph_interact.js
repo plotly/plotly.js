@@ -26,7 +26,7 @@ module.exports = function initInteractions(gd) {
         return;
     }
 
-    if(!fullLayout._has('cartesian') && !fullLayout._has('gl2d')) return;
+    if(!fullLayout._has('cartesian') && !fullLayout._has('gl2d') && !fullLayout._has('splom')) return;
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a, b) {
         // sort overlays last, then by x axis number, then y axis number

@@ -196,6 +196,15 @@ function plotOne(gd, cd0) {
 
 // TODO splom 'needs' the grid component, register it here?
 
+function hoverPoints() {
+
+}
+
+function selectPoints() {
+
+}
+
+
 module.exports = {
     moduleType: 'trace',
     name: 'splom',
@@ -208,8 +217,8 @@ module.exports = {
 
     calc: calc,
     plot: plot,
-    hoverPoints: function() {},
-    selectPoints: function() {},
+    hoverPoints: hoverPoints,
+    selectPoints: selectPoints,
     style: function() {},
 
     meta: {
