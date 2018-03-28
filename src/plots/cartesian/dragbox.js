@@ -717,11 +717,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // FIXME: code duplication with cartesian.plot
         if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
             fullLayout._glcanvas.each(function(d) {
-                if(d.regl) {
-                    d.regl.clear({
-                        color: true
-                    });
-                }
+                if(d.regl) d.regl.clear({color: true});
             });
         }
 
@@ -735,8 +731,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             // scattergl translate
             if(subplot._scene && subplot._scene.update) {
                 // FIXME: possibly we could update axis internal _r and _rl here
-                var xaRange = Lib.simpleMap(xa2.range, xa2.r2l),
-                    yaRange = Lib.simpleMap(ya2.range, ya2.r2l);
+                var xaRange = Lib.simpleMap(xa2.range, xa2.r2l);
+                var yaRange = Lib.simpleMap(ya2.range, ya2.r2l);
                 subplot._scene.update(
                     {range: [xaRange[0], yaRange[0], xaRange[1], yaRange[1]]}
                 );

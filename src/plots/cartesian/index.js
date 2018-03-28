@@ -221,10 +221,13 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
 }
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldModules = oldFullLayout._modules || [],
-        newModules = newFullLayout._modules || [];
+    var oldModules = oldFullLayout._modules || [];
+    var newModules = newFullLayout._modules || [];
+    var oldPlots = oldFullLayout._plots || {};
 
-    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo, moduleName;
+    var hadScatter, hasScatter;
+    var hadGl, hasGl;
+    var i, k, subplotInfo, moduleName;
 
 
     for(i = 0; i < oldModules.length; i++) {
@@ -240,12 +243,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 
     if(hadScatter && !hasScatter) {
-        oldPlots = oldFullLayout._plots;
-        ids = Object.keys(oldPlots || {});
-
-        for(i = 0; i < ids.length; i++) {
-            subplotInfo = oldPlots[ids[i]];
-
+        for(k in oldPlots) {
+            subplotInfo = oldPlots[k];
             if(subplotInfo.plot) {
                 subplotInfo.plot.select('g.scatterlayer')
                     .selectAll('g.trace')
@@ -260,11 +259,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 
     if(hadGl && !hasGl) {
-        oldPlots = oldFullLayout._plots;
-        ids = Object.keys(oldPlots || {});
-
-        for(i = 0; i < ids.length; i++) {
-            subplotInfo = oldPlots[ids[i]];
+        for(k in oldPlots) {
+            subplotInfo = oldPlots[k];
 
             if(subplotInfo._scene) {
                 subplotInfo._scene.destroy();
