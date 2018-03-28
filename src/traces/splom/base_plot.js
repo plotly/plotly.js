@@ -168,8 +168,6 @@ function showZeroLine(ax) {
 }
 
 function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
-    oldCalcdata = oldCalcdata || [];
-
     var oldModules = oldFullLayout._modules || [];
     var newModules = newFullLayout._modules || [];
 
