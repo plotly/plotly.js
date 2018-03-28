@@ -24,13 +24,6 @@ function plot(gd) {
     var _module = Registry.getModule(SPLOM);
     var splomCalcData = getModuleCalcData(gd.calcdata, _module);
 
-    // clear gl frame, if any, since we preserve drawing buffer
-    if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
-        fullLayout._glcanvas.each(function(d) {
-            if(d.regl) d.regl.clear({color: true});
-        });
-    }
-
     reglUtils.prepare(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
 
     if(fullLayout._hasOnlyLargeSploms) {

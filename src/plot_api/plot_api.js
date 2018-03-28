@@ -29,6 +29,7 @@ var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
+var reglUtils = require('../lib/regl_utils');
 
 var defaultConfig = require('./plot_config');
 var manageArrays = require('./manage_arrays');
@@ -382,6 +383,11 @@ exports.plot = function(gd, data, layout, config) {
             if(!isVisible || !trace._module.colorbar) {
                 fullLayout._infolayer.selectAll('.cb' + uid).remove();
             }
+        }
+
+        // TODO does this break or slow down parcoords??
+        if(fullLayout._glcanvas) {
+            reglUtils.clear(gd);
         }
 
         // loop over the base plot modules present on graph
