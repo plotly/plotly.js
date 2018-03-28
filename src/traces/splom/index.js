@@ -183,12 +183,13 @@ function plotOne(gd, cd0) {
         viewOpts.domains[i] = [xa.domain[0], ya.domain[0], xa.domain[1], ya.domain[1]];
     }
 
-    viewOpts.viewport = [gs.l, gs.b, fullLayout.width - gs.r, fullLayout.height - gs.t];
+    viewOpts.viewport = [gs.l, gs.b, gs.w + gs.l, gs.h + gs.b];
 
     if(scene.matrix === true) {
         scene.matrix = createMatrix(regl);
     }
 
+    // FIXME: generate multiple options for single update
     scene.matrix.update(scene.matrixOptions);
     scene.matrix.update(viewOpts);
     scene.matrix.draw();
@@ -196,11 +197,28 @@ function plotOne(gd, cd0) {
 
 // TODO splom 'needs' the grid component, register it here?
 
-function hoverPoints() {
+function hoverPoints(pointData, xval, yval, hovermode) {
+    var cd = pointData.cd;
+    var stash = cd[0].t;
+    var trace = cd[0].trace;
+    var xa = pointData.xa;
+    var ya = pointData.ya;
+    var xpx = xa.c2p(xval);
+    var ypx = ya.c2p(yval);
+    var maxDistance = pointData.distance;
+    var dimLength = trace.dimensions.length;
 
+    // TODO: get data for xa, ya
+    var xi, yi;
+    for(var i = 0; i < dimLength; i++) {
+        if(trace.xaxes[i] === xa._id) xi = i;
+        if(trace.yaxes[i] === ya._id) yi = i;
+    }
+
+    console.log(xi, yi);
 }
 
-function selectPoints() {
+function selectPoints(searchInfo, polygon) {
 
 }
 

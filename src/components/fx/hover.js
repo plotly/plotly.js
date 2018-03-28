@@ -340,7 +340,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         if(['carpet', 'contourcarpet'].indexOf(trace._module.name) !== -1) continue;
 
         subplotId = helpers.getSubplot(trace);
-        subploti = subplots.indexOf(subplotId);
+
+        // FIXME: detect proper subplot index for splom
+        subploti = trace.type === 'splom' ? 0 : subplots.indexOf(subplotId);
 
         // within one trace mode can sometimes be overridden
         mode = hovermode;
