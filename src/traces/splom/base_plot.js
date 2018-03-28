@@ -13,6 +13,7 @@ var createRegl = require('regl');
 var Registry = require('../../registry');
 var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var Cartesian = require('../../plots/cartesian');
+var AxisIDs = require('../../plots/cartesian/axis_ids');
 
 var SPLOM = 'splom';
 
@@ -45,6 +46,30 @@ function plot(gd) {
     _module.plot(gd, {}, splomCalcData);
 }
 
+function drag(gd) {
+    var cd = gd.calcdata;
+
+    for(var i = 0; i < cd.length; i++) {
+        var cd0 = cd[i][0];
+        var trace = cd0.trace;
+        var scene = cd0.t._scene;
+
+        if(trace.type === 'splom' && scene && scene.matrix) {
+            var dimLength = trace.dimensions.length;
+            var ranges = new Array(dimLength);
+
+            for(var j = 0; j < dimLength; j++) {
+                var xrng = AxisIDs.getFromId(gd, trace.xaxes[j]).range;
+                var yrng = AxisIDs.getFromId(gd, trace.yaxes[j]).range;
+                ranges[j] = [xrng[0], yrng[0], xrng[1], yrng[1]];
+            }
+
+            scene.matrix.update({ranges: ranges});
+            scene.matrix.draw();
+        }
+    }
+}
+
 function clean(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     // TODO clear regl-splom instances
     // TODO clear regl-line2d grid instance!
@@ -59,6 +84,7 @@ module.exports = {
     supplyLayoutDefaults: Cartesian.supplyLayoutDefaults,
     drawFramework: Cartesian.drawFramework,
     plot: plot,
+    drag: drag,
     clean: clean,
     toSVG: Cartesian.toSVG
 };

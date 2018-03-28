@@ -792,6 +792,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             subplot.plot.selectAll('.barlayer .trace')
                 .call(Drawing.hideOutsideRangePoints, subplot, '.bartext');
         }
+
+        if(Registry.subplotsRegistry.splom) {
+            Registry.subplotsRegistry.splom.drag(gd);
+        }
     }
 
     return dragger;
