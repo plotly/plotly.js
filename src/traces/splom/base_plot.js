@@ -93,6 +93,7 @@ function drawGrid(gd) {
     splomGrid.draw();
 }
 
+// this clocks in at ~30ms at 50x50 - we could perf this up!
 function makeGridData(gd) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
@@ -170,6 +171,8 @@ function makeGridData(gd) {
     return gridBatches;
 }
 
+// just like in Axes.doTicks but without the loop over traces
+// TODO dry this up
 function showZeroLine(ax) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     var p0 = ax.l2p(0);

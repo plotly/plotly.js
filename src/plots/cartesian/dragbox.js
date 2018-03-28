@@ -715,6 +715,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // clear gl frame, if any, since we preserve drawing buffer
         // FIXME: code duplication with cartesian.plot
+        // TODO DRY this up!!
         if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
             fullLayout._glcanvas.each(function(d) {
                 if(d.regl) d.regl.clear({color: true});
