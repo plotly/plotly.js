@@ -486,7 +486,7 @@ function getLayoutAttributes() {
 
         if(!_module.layoutAttributes) continue;
 
-        if(_module.name === 'cartesian') {
+        if(_module.name === 'cartesian' || _module.name === 'splom') {
             handleBasePlotModule(layoutAttributes, _module, 'xaxis');
             handleBasePlotModule(layoutAttributes, _module, 'yaxis');
         }
