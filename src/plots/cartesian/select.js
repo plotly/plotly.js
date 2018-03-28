@@ -167,8 +167,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             dy = Math.abs(y1 - y0);
 
         if(mode === 'select') {
-            if(dy < Math.min(dx * 0.6, MINSELECT)) {
-                // horizontal motion: make a vertical box
+            if(gd.layout.dragclamp === 'h') {
                 currentPolygon = [[x0, 0], [x0, ph], [x1, ph], [x1, 0]];
                 currentPolygon.xmin = Math.min(x0, x1);
                 currentPolygon.xmax = Math.max(x0, x1);
@@ -179,10 +178,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     'h-4v' + (2 * MINSELECT) + 'h4Z' +
                     'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
-
             }
-            else if(dx < Math.min(dy * 0.6, MINSELECT)) {
-                // vertical motion: make a horizontal box
+            else if(gd.layout.dragclamp === 'v') {
                 currentPolygon = [[0, y0], [0, y1], [pw, y1], [pw, y0]];
                 currentPolygon.xmin = Math.min(0, pw);
                 currentPolygon.xmax = Math.max(0, pw);
@@ -194,13 +191,41 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     'v4h' + (2 * MINSELECT) + 'v-4Z');
             }
             else {
-                // diagonal motion
-                currentPolygon = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
-                currentPolygon.xmin = Math.min(x0, x1);
-                currentPolygon.xmax = Math.max(x0, x1);
-                currentPolygon.ymin = Math.min(y0, y1);
-                currentPolygon.ymax = Math.max(y0, y1);
-                corners.attr('d', 'M0,0Z');
+                if(dy < Math.min(dx * 0.6, MINSELECT)) {
+                    // horizontal motion: make a vertical box
+                    currentPolygon = [[x0, 0], [x0, ph], [x1, ph], [x1, 0]];
+                    currentPolygon.xmin = Math.min(x0, x1);
+                    currentPolygon.xmax = Math.max(x0, x1);
+                    currentPolygon.ymin = Math.min(0, ph);
+                    currentPolygon.ymax = Math.max(0, ph);
+                    // extras to guide users in keeping a straight selection
+                    corners.attr('d', 'M' + currentPolygon.xmin + ',' + (y0 - MINSELECT) +
+                        'h-4v' + (2 * MINSELECT) + 'h4Z' +
+                        'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
+                        'h4v' + (2 * MINSELECT) + 'h-4Z');
+
+                }
+                else if(dx < Math.min(dy * 0.6, MINSELECT)) {
+                    // vertical motion: make a horizontal box
+                    currentPolygon = [[0, y0], [0, y1], [pw, y1], [pw, y0]];
+                    currentPolygon.xmin = Math.min(0, pw);
+                    currentPolygon.xmax = Math.max(0, pw);
+                    currentPolygon.ymin = Math.min(y0, y1);
+                    currentPolygon.ymax = Math.max(y0, y1);
+                    corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + currentPolygon.ymin +
+                        'v-4h' + (2 * MINSELECT) + 'v4Z' +
+                        'M' + (x0 - MINSELECT) + ',' + (currentPolygon.ymax - 1) +
+                        'v4h' + (2 * MINSELECT) + 'v-4Z');
+                }
+                else {
+                    // diagonal motion
+                    currentPolygon = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
+                    currentPolygon.xmin = Math.min(x0, x1);
+                    currentPolygon.xmax = Math.max(x0, x1);
+                    currentPolygon.ymin = Math.min(y0, y1);
+                    currentPolygon.ymax = Math.max(y0, y1);
+                    corners.attr('d', 'M0,0Z');
+                }
             }
         }
         else if(mode === 'lasso') {
