@@ -427,6 +427,7 @@ function makeSubplotLayer(gd, plotinfo) {
 
             plotinfo.xlines = ensureSingle(plotgroup, 'path', 'xlines-above');
             plotinfo.ylines = ensureSingle(plotgroup, 'path', 'ylines-above');
+            plotinfo.overlinesAbove = ensureSingle(plotgroup, 'g', 'overlines-above');
 
             ensureSingle(plotgroup, 'g', 'xaxislayer-above');
             ensureSingle(plotgroup, 'g', 'yaxislayer-above');
