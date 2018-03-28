@@ -58,7 +58,7 @@ function calc(gd, trace) {
     }
 
 
-    var scene = stash.scene = sceneUpdate(gd, stash);
+    var scene = stash._scene = sceneUpdate(gd, stash);
     if(!scene.matrix) scene.matrix = true;
     scene.matrixOptions = opts;
 
@@ -166,7 +166,7 @@ function plot(gd, _, cdata) {
 function plotOne(gd, cd0) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
-    var scene = cd0.t.scene;
+    var scene = cd0.t._scene;
     var trace = cd0.trace;
     var regl = fullLayout._glcanvas.data()[0].regl;
 
