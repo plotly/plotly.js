@@ -364,7 +364,8 @@ plots.supplyDefaults = function(gd) {
     // clear the lists of trace and baseplot modules, and subplots
     newFullLayout._modules = [];
     newFullLayout._basePlotModules = [];
-    newFullLayout._subplots = emptySubplotLists();
+    var subplots = newFullLayout._subplots = emptySubplotLists();
+    var splomAxes = newFullLayout._splomAxes = {x: {}, y: {}};
 
     // then do the data
     newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
