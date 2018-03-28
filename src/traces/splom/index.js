@@ -206,16 +206,19 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     var xpx = xa.c2p(xval);
     var ypx = ya.c2p(yval);
     var maxDistance = pointData.distance;
-    var dimLength = trace.dimensions.length;
+    var dimensions = trace.dimensions;
 
-    // TODO: get data for xa, ya
     var xi, yi;
-    for(var i = 0; i < dimLength; i++) {
+    for(var i = 0; i < dimensions.length; i++) {
         if(trace.xaxes[i] === xa._id) xi = i;
         if(trace.yaxes[i] === ya._id) yi = i;
     }
 
-    console.log(xi, yi);
+    var x = dimensions[xi].values;
+    var y = dimensions[yi].values;
+
+
+    console.log(x, y);
 }
 
 function selectPoints(searchInfo, polygon) {
