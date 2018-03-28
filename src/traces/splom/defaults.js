@@ -31,6 +31,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('mode', traceOut._commonLength < PTS_LINESONLY ? 'lines+markers' : 'lines');
     coerce('text');
 
+    // TODO just markers for now
+    traceOut.mode = 'markers';
+
     if(subTypes.hasLines(traceOut)) {
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
         coerce('connectgaps');
@@ -44,11 +47,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
     }
 
+    // TODO not implemented yet
     coerce('xdirection');
     coerce('ydirection');
 
     handleAxisDefaults(traceIn, traceOut, layout, coerce);
 
+    // TODO not implemented yet
     coerce('showdiagonal');
     coerce('showupperhalf');
     coerce('showlowerhalf');
@@ -114,6 +119,8 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
 
     var xaxes = coerce('xaxes', xaxesDflt);
     var yaxes = coerce('yaxes', yaxesDflt);
+
+    // TODO what to do when xaxes.length or yaxes.length !== dimLength ???
 
     for(i = 0; i < dimLength; i++) {
         var dim = dimensions[i];

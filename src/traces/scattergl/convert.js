@@ -401,6 +401,7 @@ function convertErrorBarPositions(gd, trace, positions) {
 
 module.exports = {
     convertStyle: convertStyle,
+    convertMarkerStyle: convertMarkerStyle,
     convertLinePositions: convertLinePositions,
     convertErrorBarPositions: convertErrorBarPositions
 };
