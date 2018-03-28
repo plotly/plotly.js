@@ -449,7 +449,7 @@ plots.supplyDefaults = function(gd) {
     }
 
     // update object references in calcdata
-    if(oldCalcdata === newFullData.length) {
+    if(oldCalcdata.length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
             var newTrace = newFullData[i];
             var cd0 = oldCalcdata[i][0];

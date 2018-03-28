@@ -666,7 +666,7 @@ exports.newPlot = function(gd, data, layout, config) {
     gd = Lib.getGraphDiv(gd);
 
     // remove gl contexts
-    Plots.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {}, gd.calcdata || []);
+    Plots.cleanPlot([], {}, gd._fullData || [], gd._fullLayout || {}, gd.calcdata || []);
 
     Plots.purge(gd);
     return exports.plot(gd, data, layout, config);
