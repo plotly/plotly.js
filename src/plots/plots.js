@@ -287,6 +287,8 @@ plots.supplyDefaults = function(gd) {
     var newFullData = gd._fullData = [];
     var newData = gd.data || [];
 
+    var oldCalcdata = gd.calcdata || [];
+
     var context = gd._context || {};
 
     var i, j;
@@ -428,7 +430,7 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._hasPie = newFullLayout._has('pie');
 
     // clean subplots and other artifacts from previous plot calls
-    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
+    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
 
     // relink / initialize subplot axis objects
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
@@ -447,10 +449,10 @@ plots.supplyDefaults = function(gd) {
     }
 
     // update object references in calcdata
-    if((gd.calcdata || []).length === newFullData.length) {
+    if(oldCalcdata === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
             var newTrace = newFullData[i];
-            var cd0 = gd.calcdata[i][0];
+            var cd0 = oldCalcdata[i][0];
             if(cd0 && cd0.trace) {
                 if(cd0.trace._hasCalcTransform) {
                     remapTransformedArrays(cd0, newTrace);
@@ -648,7 +650,7 @@ plots._hasPlotType = function(category) {
     return false;
 };
 
-plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
     var i, j;
 
     var basePlotModules = oldFullLayout._basePlotModules || [];
@@ -656,7 +658,7 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
         var _module = basePlotModules[i];
 
         if(_module.clean) {
-            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
+            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
         }
     }
 

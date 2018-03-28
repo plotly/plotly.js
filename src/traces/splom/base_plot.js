@@ -186,9 +186,43 @@ function showZeroLine(ax) {
     );
 }
 
-function clean(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    // TODO clear regl-splom instances
-    // TODO clear regl-line2d grid instance!
+function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
+    var oldModules = oldFullLayout._modules || [];
+    var newModules = newFullLayout._modules || [];
+
+    var hadSplom, hasSplom;
+    var i;
+
+    for(i = 0; i < oldModules.length; i++) {
+        if(oldModules[i].name === 'splom') {
+            hadSplom = true;
+            break;
+        }
+    }
+    for(i = 0; i < newModules.length; i++) {
+        if(newModules[i].name === 'splom') {
+            hasSplom = true;
+            break;
+        }
+    }
+
+    if(hadSplom && !hasSplom) {
+        for(i = 0; i < oldCalcdata.length; i++) {
+            var cd0 = oldCalcdata[i][0];
+            var trace = cd0.trace;
+            var scene = cd0.t._scene;
+
+            if(trace.type === 'splom' && scene && scene.matrix) {
+                // this below throws as error
+                // scene.matrix.destroy();
+            }
+        }
+    }
+
+    if(oldFullLayout._splomGrid &&
+        (!newFullLayout._hasOnlyLargeSploms && oldFullLayout._hasOnlyLargeSploms)) {
+        oldFullLayout._splomGrid.destroy();
+    }
 
     Cartesian.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
 }

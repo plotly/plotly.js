@@ -666,7 +666,7 @@ exports.newPlot = function(gd, data, layout, config) {
     gd = Lib.getGraphDiv(gd);
 
     // remove gl contexts
-    Plots.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {});
+    Plots.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {}, gd.calcdata || []);
 
     Plots.purge(gd);
     return exports.plot(gd, data, layout, config);
@@ -3234,11 +3234,12 @@ exports.deleteFrames = function(gd, frameList) {
 exports.purge = function purge(gd) {
     gd = Lib.getGraphDiv(gd);
 
-    var fullLayout = gd._fullLayout || {},
-        fullData = gd._fullData || [];
+    var fullLayout = gd._fullLayout || {};
+    var fullData = gd._fullData || [];
+    var calcdata = gd.calcdata || [];
 
     // remove gl contexts
-    Plots.cleanPlot([], {}, fullData, fullLayout);
+    Plots.cleanPlot([], {}, fullData, fullLayout, calcdata);
 
     // purge properties
     Plots.purge(gd);
