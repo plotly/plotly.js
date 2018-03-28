@@ -46,8 +46,8 @@ function setAutoType(ax, data) {
     // only autotype if type is '-'
     if(ax.type !== '-') return;
 
-    var id = ax._id,
-        axLetter = id.charAt(0);
+    var id = ax._id;
+    var axLetter = id.charAt(0);
 
     // support 3d
     if(id.indexOf('scene') !== -1) id = axLetter;
@@ -63,18 +63,17 @@ function setAutoType(ax, data) {
         return;
     }
 
-    var calAttr = axLetter + 'calendar',
-        calendar = d0[calAttr];
+    var calAttr = axLetter + 'calendar';
+    var calendar = d0[calAttr];
 
     // check all boxes on this x axis to see
     // if they're dates, numbers, or categories
     if(isBoxWithoutPositionCoords(d0, axLetter)) {
-        var posLetter = getBoxPosLetter(d0),
-            boxPositions = [],
-            trace;
+        var posLetter = getBoxPosLetter(d0);
+        var boxPositions = [];
 
         for(var i = 0; i < data.length; i++) {
-            trace = data[i];
+            var trace = data[i];
             if(!Registry.traceIs(trace, 'box-violin') ||
                (trace[axLetter + 'axis'] || axLetter) !== id) continue;
 
@@ -86,6 +85,9 @@ function setAutoType(ax, data) {
         }
 
         ax.type = autoType(boxPositions, calendar);
+    }
+    else if(d0.type === 'splom') {
+        ax.type = autoType(d0.dimensions[0].values, calendar);
     }
     else {
         ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']], calendar);
@@ -101,6 +103,12 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
                 return trace;
             }
             else if((trace[axLetter] || []).length || trace[axLetter + '0']) {
+                return trace;
+            }
+            else if(trace.type === 'splom' &&
+                    trace._commonLength > 0 &&
+                    trace[axLetter + 'axes'].indexOf(id) === 0
+            ) {
                 return trace;
             }
         }
