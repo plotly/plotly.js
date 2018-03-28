@@ -165,15 +165,26 @@ var gridAttrs = {
     editType: 'plot'
 };
 
+function getAxes(layout, grid, axLetter) {
+    var gridVal = grid[axLetter + 'axes'];
+    var splomVal = Object.keys((layout._splomAxes || {})[axLetter] || {});
+
+    if(Array.isArray(gridVal)) return gridVal;
+    if(splomVal.length) return splomVal;
+}
+
 // the shape of the grid - this needs to be done BEFORE supplyDataDefaults
 // so that non-subplot traces can place themselves in the grid
 function sizeDefaults(layoutIn, layoutOut) {
-    var gridIn = layoutIn.grid;
-    if(!gridIn) return;
+    var gridIn = layoutIn.grid || {};
+    var xAxes = getAxes(layoutOut, gridIn, 'x');
+    var yAxes = getAxes(layoutOut, gridIn, 'y');
+
+    if(!layoutIn.grid && !xAxes && !yAxes) return;
 
     var hasSubplotGrid = Array.isArray(gridIn.subplots) && Array.isArray(gridIn.subplots[0]);
-    var hasXaxes = Array.isArray(gridIn.xaxes);
-    var hasYaxes = Array.isArray(gridIn.yaxes);
+    var hasXaxes = Array.isArray(xAxes);
+    var hasYaxes = Array.isArray(yAxes);
 
     var dfltRows, dfltColumns;
 
@@ -182,8 +193,8 @@ function sizeDefaults(layoutIn, layoutOut) {
         dfltColumns = gridIn.subplots[0].length;
     }
     else {
-        if(hasYaxes) dfltRows = gridIn.yaxes.length;
-        if(hasXaxes) dfltColumns = gridIn.xaxes.length;
+        if(hasYaxes) dfltRows = yAxes.length;
+        if(hasXaxes) dfltColumns = xAxes.length;
     }
 
     var gridOut = layoutOut.grid = {};
@@ -236,7 +247,7 @@ function contentDefaults(layoutIn, layoutOut) {
     // make sure we got to the end of handleGridSizing
     if(!gridOut || !gridOut._domains) return;
 
-    var gridIn = layoutIn.grid;
+    var gridIn = layoutIn.grid || {};
     var subplots = layoutOut._subplots;
     var hasSubplotGrid = gridOut._hasSubplotGrid;
     var rows = gridOut.rows;
@@ -282,8 +293,10 @@ function contentDefaults(layoutIn, layoutOut) {
         }
     }
     else {
-        gridOut.xaxes = fillGridAxes(gridIn.xaxes, subplots.xaxis, columns, axisMap, 'x');
-        gridOut.yaxes = fillGridAxes(gridIn.yaxes, subplots.yaxis, rows, axisMap, 'y');
+        var xAxes = getAxes(layoutOut, gridIn, 'x');
+        var yAxes = getAxes(layoutOut, gridIn, 'y');
+        gridOut.xaxes = fillGridAxes(xAxes, subplots.xaxis, columns, axisMap, 'x');
+        gridOut.yaxes = fillGridAxes(yAxes, subplots.yaxis, rows, axisMap, 'y');
     }
 
     var anchors = gridOut._anchors = {};
