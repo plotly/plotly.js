@@ -8,6 +8,10 @@
 
 'use strict';
 
+// Note that this module should be ONLY required into
+// files corresponding to regl trace modules
+// so that bundles with non-regl only don't include
+// regl and all its bytes.
 var createRegl = require('regl');
 
 /**
@@ -18,7 +22,7 @@ var createRegl = require('regl');
  * @param {DOM node or object} gd : graph div object
  * @param {array} extensions : list of extension to pass to createRegl
  */
-exports.prepare = function prepare(gd, extensions) {
+module.exports = function prepareRegl(gd, extensions) {
     gd._fullLayout._glcanvas.each(function(d) {
         if(d.regl) return;
 
@@ -32,21 +36,4 @@ exports.prepare = function prepare(gd, extensions) {
             extensions: extensions || []
         });
     });
-};
-
-/**
- * Clear gl frame (if any). This is a common pattern as
- * we usually set `preserveDrawingBuffer: true` during
- * gl context creation (e.g. via `reglUtils.prepare`).
- *
- * @param {DOM node or object} gd : graph div object
- */
-exports.clear = function clear(gd) {
-    var fullLayout = gd._fullLayout;
-
-    if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
-        fullLayout._glcanvas.each(function(d) {
-            if(d.regl) d.regl.clear({color: true});
-        });
-    }
 };

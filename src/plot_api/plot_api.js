@@ -29,7 +29,7 @@ var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
-var reglUtils = require('../lib/regl_utils');
+var clearGlCanvases = require('../lib/clear_gl_canvases');
 
 var defaultConfig = require('./plot_config');
 var manageArrays = require('./manage_arrays');
@@ -386,9 +386,7 @@ exports.plot = function(gd, data, layout, config) {
         }
 
         // TODO does this break or slow down parcoords??
-        if(fullLayout._glcanvas) {
-            reglUtils.clear(gd);
-        }
+        clearGlCanvases(gd);
 
         // loop over the base plot modules present on graph
         var basePlotModules = fullLayout._basePlotModules;

@@ -12,7 +12,7 @@ var createLine = require('regl-line2d');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var reglUtils = require('../../lib/regl_utils');
+var prepareRegl = require('../../lib/prepare_regl');
 var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var Cartesian = require('../../plots/cartesian');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
@@ -24,7 +24,7 @@ function plot(gd) {
     var _module = Registry.getModule(SPLOM);
     var splomCalcData = getModuleCalcData(gd.calcdata, _module);
 
-    reglUtils.prepare(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
 
     if(fullLayout._hasOnlyLargeSploms) {
         drawGrid(gd);

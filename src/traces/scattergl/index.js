@@ -16,7 +16,7 @@ var arrayRange = require('array-range');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var reglUtils = require('../../lib/regl_utils');
+var prepareRegl = require('../../lib/prepare_regl');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 
 var subTypes = require('../scatter/subtypes');
@@ -336,7 +336,7 @@ function plot(gd, subplot, cdata) {
     var width = fullLayout.width;
     var height = fullLayout.height;
 
-    reglUtils.prepare(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
     var regl = fullLayout._glcanvas.data()[0].regl;
 
     // that is needed for fills

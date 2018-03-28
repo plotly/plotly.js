@@ -9,7 +9,7 @@
 'use strict';
 
 var parcoords = require('./parcoords');
-var reglUtils = require('../../lib/regl_utils');
+var prepareRegl = require('../../lib/prepare_regl');
 
 module.exports = function plot(gd, cdparcoords) {
     var fullLayout = gd._fullLayout;
@@ -17,7 +17,7 @@ module.exports = function plot(gd, cdparcoords) {
     var root = fullLayout._paperdiv;
     var container = fullLayout._glcontainer;
 
-    reglUtils.prepare(gd);
+    prepareRegl(gd);
 
     var gdDimensions = {};
     var gdDimensionsOriginalOrder = {};

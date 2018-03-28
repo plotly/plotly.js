@@ -16,7 +16,7 @@ var supportsPassive = require('has-passive-events');
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
-var reglUtils = require('../../lib/regl_utils');
+var clearGlCanvases = require('../../lib/clear_gl_canvases');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Fx = require('../../components/fx');
@@ -714,7 +714,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return ax._length * (1 - scaleFactor) * FROM_TL[ax.constraintoward || 'middle'];
         }
 
-        reglUtils.clear(gd);
+        clearGlCanvases(gd);
 
         for(i = 0; i < subplots.length; i++) {
             var subplot = plotinfos[subplots[i]],
