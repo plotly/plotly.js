@@ -9,7 +9,7 @@
 'use strict';
 
 var parcoords = require('./parcoords');
-var createRegl = require('regl');
+var reglUtils = require('../../lib/regl_utils');
 
 module.exports = function plot(gd, cdparcoords) {
     var fullLayout = gd._fullLayout;
@@ -17,18 +17,7 @@ module.exports = function plot(gd, cdparcoords) {
     var root = fullLayout._paperdiv;
     var container = fullLayout._glcontainer;
 
-    // make sure proper regl instances are created
-    fullLayout._glcanvas.each(function(d) {
-        if(d.regl) return;
-        d.regl = createRegl({
-            canvas: this,
-            attributes: {
-                antialias: !d.pick,
-                preserveDrawingBuffer: true
-            },
-            pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio
-        });
-    });
+    reglUtils.prepare(gd);
 
     var gdDimensions = {};
     var gdDimensionsOriginalOrder = {};

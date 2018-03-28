@@ -16,6 +16,7 @@ var supportsPassive = require('has-passive-events');
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
+var reglUtils = require('../../lib/regl_utils');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Fx = require('../../components/fx');
@@ -713,14 +714,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return ax._length * (1 - scaleFactor) * FROM_TL[ax.constraintoward || 'middle'];
         }
 
-        // clear gl frame, if any, since we preserve drawing buffer
-        // FIXME: code duplication with cartesian.plot
-        // TODO DRY this up!!
-        if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
-            fullLayout._glcanvas.each(function(d) {
-                if(d.regl) d.regl.clear({color: true});
-            });
-        }
+        reglUtils.clear(gd);
 
         for(i = 0; i < subplots.length; i++) {
             var subplot = plotinfos[subplots[i]],

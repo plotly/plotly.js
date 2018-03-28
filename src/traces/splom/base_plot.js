@@ -8,11 +8,11 @@
 
 'use strict';
 
-var createRegl = require('regl');
 var createLine = require('regl-line2d');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var reglUtils = require('../../lib/regl_utils');
 var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var Cartesian = require('../../plots/cartesian');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
@@ -31,19 +31,7 @@ function plot(gd) {
         });
     }
 
-    // make sure proper regl instances are created
-    fullLayout._glcanvas.each(function(d) {
-        if(d.regl || d.pick) return;
-        d.regl = createRegl({
-            canvas: this,
-            attributes: {
-                antialias: !d.pick,
-                preserveDrawingBuffer: true
-            },
-            extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
-            pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio
-        });
-    });
+    reglUtils.prepare(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
 
     if(fullLayout._hasOnlyLargeSploms) {
         drawGrid(gd);
