@@ -518,7 +518,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('supports 1D and 2D Zoom', function(done) {
+    it('@flaky supports 1D and 2D Zoom', function(done) {
         var centerX;
         var centerY;
 
@@ -571,7 +571,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('supports axis constraints with zoom', function(done) {
+    it('@flaky supports axis constraints with zoom', function(done) {
         var centerX;
         var centerY;
 
@@ -638,7 +638,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should change plot type with incomplete data', function(done) {
+    it('@flaky should change plot type with incomplete data', function(done) {
         Plotly.plot(gd, [{}]);
         expect(function() {
             Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
@@ -651,7 +651,7 @@ describe('@gl Test gl2d plots', function() {
         done();
     });
 
-    it('data-referenced annotations should update on drag', function(done) {
+    it('@flaky data-referenced annotations should update on drag', function(done) {
         function assertAnnotation(xy) {
             var ann = d3.select('g.annotation-text-g').select('g');
             var translate = Drawing.getTranslate(ann);
@@ -694,7 +694,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should not scroll document while panning', function(done) {
+    it('@flaky should not scroll document while panning', function(done) {
         var mock = {
             data: [
                 { type: 'scattergl', y: [1, 2, 3], x: [1, 2, 3] }
@@ -856,7 +856,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should remove fill2d', function(done) {
+    it('@flaky should remove fill2d', function(done) {
         var mock = require('@mocks/gl2d_axes_labels2.json');
 
         Plotly.plot(gd, mock.data, mock.layout)

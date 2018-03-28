@@ -282,7 +282,7 @@ function assertES5() {
     });
 
     var files = constants.partialBundlePaths.map(function(f) { return f.dist; });
-    files.unshift(constants.pathToPlotlyDist);
+    files.unshift(constants.pathToPlotlyBuild, constants.pathToPlotlyDist);
 
     var report = cli.executeOnFiles(files);
     var formatter = cli.getFormatter();
