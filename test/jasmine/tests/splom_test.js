@@ -127,6 +127,124 @@ describe('Test splom trace defaults:', function() {
         expect(fullLayout.yaxis2.title).toBe('B');
     });
 
+    it('should set axis title default using dimensions *label* (even visible false dimensions)', function() {
+        _supply({
+            dimensions: [{
+                label: 'A',
+                values: [2, 3, 1]
+            }, {
+                label: 'B',
+                visible: false
+            }, {
+                label: 'C',
+                values: [1, 2, 1]
+            }]
+        });
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.title).toBe('A');
+        expect(fullLayout.yaxis.title).toBe('A');
+        expect(fullLayout.xaxis2.title).toBe('B');
+        expect(fullLayout.yaxis2.title).toBe('B');
+        expect(fullLayout.xaxis3.title).toBe('C');
+        expect(fullLayout.yaxis3.title).toBe('C');
+    });
+
+    it('should ignore (x|y)axes values beyond dimensions length', function() {
+        _supply({
+            dimensions: [{
+                label: 'A',
+                values: [2, 3, 1]
+            }, {
+                label: 'B',
+                values: [0, 1, 0.5]
+            }, {
+                label: 'C',
+                values: [1, 2, 1]
+            }],
+            xaxes: ['x', 'x2', 'x3', 'x4'],
+            yaxes: ['y', 'y2', 'y3', 'y4']
+        });
+
+        var fullTrace = gd._fullData[0];
+        // keeps 1-to-1 relationship with input data
+        expect(fullTrace.xaxes).toEqual(['x', 'x2', 'x3', 'x4']);
+        expect(fullTrace.yaxes).toEqual(['y', 'y2', 'y3', 'y4']);
+        // this here does the 'ignoring' part
+        expect(fullTrace._activeLength).toBe(3);
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.title).toBe('A');
+        expect(fullLayout.yaxis.title).toBe('A');
+        expect(fullLayout.xaxis2.title).toBe('B');
+        expect(fullLayout.yaxis2.title).toBe('B');
+        expect(fullLayout.xaxis3.title).toBe('C');
+        expect(fullLayout.yaxis3.title).toBe('C');
+        expect(fullLayout.xaxis4).toBe(undefined);
+        expect(fullLayout.yaxis4).toBe(undefined);
+    });
+
+    it('should ignore (x|y)axes values beyond dimensions length (case 2)', function() {
+        _supply({
+            dimensions: [{
+                label: 'A',
+                values: [2, 3, 1]
+            }, {
+                label: 'B',
+                values: [0, 1, 0.5]
+            }, {
+                label: 'C',
+                values: [1, 2, 1]
+            }],
+            xaxes: ['x2', 'x3', 'x4', 'x5'],
+            yaxes: ['y2', 'y3', 'y4', 'y5']
+        });
+
+        var fullTrace = gd._fullData[0];
+        // keeps 1-to-1 relationship with input data
+        expect(fullTrace.xaxes).toEqual(['x2', 'x3', 'x4', 'x5']);
+        expect(fullTrace.yaxes).toEqual(['y2', 'y3', 'y4', 'y5']);
+        // this here does the 'ignoring' part
+        expect(fullTrace._activeLength).toBe(3);
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis).toBe(undefined);
+        expect(fullLayout.yaxis).toBe(undefined);
+        expect(fullLayout.xaxis2.title).toBe('A');
+        expect(fullLayout.yaxis2.title).toBe('A');
+        expect(fullLayout.xaxis3.title).toBe('B');
+        expect(fullLayout.yaxis3.title).toBe('B');
+        expect(fullLayout.xaxis4.title).toBe('C');
+        expect(fullLayout.yaxis4.title).toBe('C');
+        expect(fullLayout.xaxis5).toBe(undefined);
+        expect(fullLayout.yaxis5).toBe(undefined);
+    });
+
+    it('should ignore dimensions beyond (x|y)axes length', function() {
+        _supply({
+            dimensions: [{
+                label: 'A',
+                values: [2, 3, 1]
+            }, {
+                label: 'B',
+                values: [0, 1, 0.5]
+            }, {
+                label: 'C',
+                values: [1, 2, 1]
+            }],
+            xaxes: ['x2', 'x3'],
+            yaxes: ['y2', 'y3']
+        });
+
+        var fullTrace = gd._fullData[0];
+        expect(fullTrace.xaxes).toEqual(['x2', 'x3']);
+        expect(fullTrace.yaxes).toEqual(['y2', 'y3']);
+        // keep 1-to-1 relationship with input data
+        expect(fullTrace.dimensions.length).toBe(3);
+        // this here does the 'ignoring' part
+        expect(fullTrace._activeLength).toBe(2);
+    });
+
     it('should lead to correct axis auto type value', function() {
         _supply({
             dimensions: [

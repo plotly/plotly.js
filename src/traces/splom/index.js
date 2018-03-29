@@ -25,39 +25,51 @@ var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
 function calc(gd, trace) {
     var stash = {};
     var opts = {};
-    var i, xa, ya;
+    var i, xa, ya, dim;
 
-    var dimLength = trace.dimensions.length;
-    var hasTooManyPoints = (dimLength * trace._commonLength) > TOO_MANY_POINTS;
-    var matrix = opts.data = new Array(dimLength);
+    var commonLength = trace._commonLength;
+    var activeLength = trace._activeLength;
+    var matrix = opts.data = [];
 
-    for(i = 0; i < dimLength; i++) {
-        // using xa or ya should make no difference here
-        xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
-        matrix[i] = makeCalcdata(xa, trace, trace.dimensions[i]);
+    for(i = 0; i < activeLength; i++) {
+        dim = trace.dimensions[i];
+
+        if(dim.visible) {
+            // using xa or ya should make no difference here
+            xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
+            matrix.push(makeCalcdata(xa, trace, dim));
+        }
     }
 
     calcColorscales(trace);
     Lib.extendFlat(opts, convertMarkerStyle(trace));
 
-    for(i = 0; i < dimLength; i++) {
-        xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
-        ya = AxisIDs.getFromId(gd, trace.yaxes[i]);
+    var visibleLength = matrix.length;
+    var hasTooManyPoints = (visibleLength * commonLength) > TOO_MANY_POINTS;
+    var k = 0;
 
-        // Re-use SVG scatter axis expansion routine except
-        // for graph with very large number of points where it
-        // performs poorly.
-        // In big data case, fake Axes.expand outputs with data bounds,
-        // and an average size for array marker.size inputs.
-        var ppad;
-        if(hasTooManyPoints) {
-            ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
-        } else {
-            ppad = calcMarkerSize(trace, trace._commonLength);
+    for(i = 0; i < activeLength; i++) {
+        dim = trace.dimensions[i];
+
+        if(dim.visible) {
+            xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
+            ya = AxisIDs.getFromId(gd, trace.yaxes[i]);
+
+            // Re-use SVG scatter axis expansion routine except
+            // for graph with very large number of points where it
+            // performs poorly.
+            // In big data case, fake Axes.expand outputs with data bounds,
+            // and an average size for array marker.size inputs.
+            var ppad;
+            if(hasTooManyPoints) {
+                ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
+            } else {
+                ppad = calcMarkerSize(trace, commonLength);
+            }
+            calcAxisExpansion(gd, trace, xa, ya, matrix[k], matrix[k], ppad);
+            k++;
         }
-        calcAxisExpansion(gd, trace, xa, ya, matrix[i], matrix[i], ppad);
     }
-
 
     var scene = stash._scene = sceneUpdate(gd, stash);
     if(!scene.matrix) scene.matrix = true;
@@ -167,21 +179,30 @@ function plot(gd, _, cdata) {
 function plotOne(gd, cd0) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
-    var scene = cd0.t._scene;
     var trace = cd0.trace;
+    var scene = cd0.t._scene;
+    var opts = scene.matrixOptions;
+    var matrix = opts.data;
     var regl = fullLayout._glcanvas.data()[0].regl;
 
-    var dimLength = trace.dimensions.length;
+    if(matrix.length === 0) return;
+
+    var k = 0;
+    var activeLength = trace._activeLength;
+    var visibleLength = matrix.length;
     var viewOpts = {
-        ranges: new Array(dimLength),
-        domains: new Array(dimLength)
+        ranges: new Array(visibleLength),
+        domains: new Array(visibleLength)
     };
 
-    for(var i = 0; i < dimLength; i++) {
-        var xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
-        var ya = AxisIDs.getFromId(gd, trace.yaxes[i]);
-        viewOpts.ranges[i] = [xa.range[0], ya.range[0], xa.range[1], ya.range[1]];
-        viewOpts.domains[i] = [xa.domain[0], ya.domain[0], xa.domain[1], ya.domain[1]];
+    for(var i = 0; i < activeLength; i++) {
+        if(trace.dimensions[i].visible) {
+            var xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
+            var ya = AxisIDs.getFromId(gd, trace.yaxes[i]);
+            viewOpts.ranges[k] = [xa.range[0], ya.range[0], xa.range[1], ya.range[1]];
+            viewOpts.domains[k] = [xa.domain[0], ya.domain[0], xa.domain[1], ya.domain[1]];
+            k++;
+        }
     }
 
     viewOpts.viewport = [gs.l, gs.b, gs.w + gs.l, gs.h + gs.b];
@@ -191,7 +212,7 @@ function plotOne(gd, cd0) {
     }
 
     // FIXME: generate multiple options for single update
-    scene.matrix.update(scene.matrixOptions);
+    scene.matrix.update(opts);
     scene.matrix.update(viewOpts);
     scene.matrix.draw();
 }
@@ -214,8 +235,8 @@ function hoverPoints(pointData, xval, yval) {
         if(trace.yaxes[i] === ya._id) yi = i;
     }
 
-    var x = dimensions[xi].values;
-    var y = dimensions[yi].values;
+    var x = dimensions[xi].values || [];
+    var y = dimensions[yi].values || [];
 
     var id, ptx, pty, dx, dy, dist, dxy;
     var minDist = maxDistance;

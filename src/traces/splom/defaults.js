@@ -76,6 +76,10 @@ function handleDimensionsDefaults(traceIn, traceOut) {
         dimIn = dimensionsIn[i];
         dimOut = dimensionsOut[i] = {};
 
+        // coerce label even if dimensions may be `visible: false`,
+        // to fill in axis title defaults
+        coerce('label');
+
         var visible = coerce('visible');
         if(!visible) continue;
 
@@ -84,8 +88,6 @@ function handleDimensionsDefaults(traceIn, traceOut) {
             dimOut.visible = false;
             continue;
         }
-
-        coerce('label');
 
         commonLength = Math.max(commonLength, values.length);
         dimOut._index = i;
@@ -116,9 +118,20 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     var xaxes = coerce('xaxes', xaxesDflt);
     var yaxes = coerce('yaxes', yaxesDflt);
 
-    // TODO what to do when xaxes.length or yaxes.length !== dimLength ???
+    // splom defaults set three types of 'length' values on the
+    // full data items:
+    //
+    // - _commonLength: is the common length of each dimensions[i].values
+    // - dimensions[i]._length: is a copy of _commonLength to each dimensions item
+    //                          (this one is used during ax.makeCalcdata)
+    // - _activeLength: is the number of dimensions that can generate axes for a given trace
+    //
+    // when looping from 0..activeLength dimensions and (x|y)axes indices should match.
+    // note that `visible: false` dimensions contribute to activeLength and must
+    // be skipped before drawing calls.
+    var activeLength = traceOut._activeLength = Math.min(dimLength, xaxes.length, yaxes.length);
 
-    for(i = 0; i < dimLength; i++) {
+    for(i = 0; i < activeLength; i++) {
         var dim = dimensions[i];
         var xa = xaxes[i];
         var ya = yaxes[i];

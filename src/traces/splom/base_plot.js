@@ -41,15 +41,20 @@ function drag(gd) {
         var cd0 = cd[i][0];
         var trace = cd0.trace;
         var scene = cd0.t._scene;
+        var opts = scene.matrixOptions;
 
         if(trace.type === 'splom' && scene && scene.matrix) {
-            var dimLength = trace.dimensions.length;
-            var ranges = new Array(dimLength);
+            var activeLength = trace._activeLength;
+            var visibleLength = opts.data.length;
+            var ranges = new Array(visibleLength);
+            var k = 0;
 
-            for(var j = 0; j < dimLength; j++) {
-                var xrng = AxisIDs.getFromId(gd, trace.xaxes[j]).range;
-                var yrng = AxisIDs.getFromId(gd, trace.yaxes[j]).range;
-                ranges[j] = [xrng[0], yrng[0], xrng[1], yrng[1]];
+            for(var j = 0; j < activeLength; j++) {
+                if(trace.dimensions[j].visible) {
+                    var xrng = AxisIDs.getFromId(gd, trace.xaxes[j]).range;
+                    var yrng = AxisIDs.getFromId(gd, trace.yaxes[j]).range;
+                    ranges[k++] = [xrng[0], yrng[0], xrng[1], yrng[1]];
+                }
             }
 
             scene.matrix.update({ranges: ranges});
