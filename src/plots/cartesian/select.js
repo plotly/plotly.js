@@ -91,6 +91,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
+
         if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
 
         if(dragOptions.subplot) {
@@ -106,6 +107,18 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                     yaxis: dragOptions.yaxes[0]
                 });
             }
+        } else if(trace.type === 'splom') {
+            // FIXME: make sure we don't have more than single axis for splom
+            if(trace.xaxes.indexOf(xAxisIds[0]) === -1) continue;
+            if(trace.yaxes.indexOf(yAxisIds[0]) === -1) continue;
+
+            searchTraces.push({
+                selectPoints: trace._module.selectPoints,
+                style: trace._module.style,
+                cd: cd,
+                xaxis: dragOptions.xaxes[0],
+                yaxis: dragOptions.yaxes[0]
+            });
         } else {
             if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
             if(yAxisIds.indexOf(trace.yaxis) === -1) continue;

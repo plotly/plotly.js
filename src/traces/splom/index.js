@@ -252,6 +252,8 @@ function selectPoints(searchInfo, polygon) {
     // var x = stash.x;
     // var y = stash.y;
     // var scene = stash.scene;
+
+    return [];
 }
 
 
