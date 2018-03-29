@@ -18,8 +18,8 @@ function makeAxesValObject(axLetter) {
         role: 'info',
         editType: 'calc',
         items: {
-            valType: 'enumerated',
-            values: [cartesianIdRegex[axLetter].toString(), ''],
+            valType: 'subplotid',
+            regex: cartesianIdRegex[axLetter],
             editType: 'plot'
         },
         description: [
