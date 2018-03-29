@@ -65,6 +65,7 @@ function setAutoType(ax, data) {
 
     var calAttr = axLetter + 'calendar';
     var calendar = d0[calAttr];
+    var i;
 
     // check all boxes on this x axis to see
     // if they're dates, numbers, or categories
@@ -72,7 +73,7 @@ function setAutoType(ax, data) {
         var posLetter = getBoxPosLetter(d0);
         var boxPositions = [];
 
-        for(var i = 0; i < data.length; i++) {
+        for(i = 0; i < data.length; i++) {
             var trace = data[i];
             if(!Registry.traceIs(trace, 'box-violin') ||
                (trace[axLetter + 'axis'] || axLetter) !== id) continue;
@@ -87,7 +88,14 @@ function setAutoType(ax, data) {
         ax.type = autoType(boxPositions, calendar);
     }
     else if(d0.type === 'splom') {
-        ax.type = autoType(d0.dimensions[0].values, calendar);
+        var dimensions = d0.dimensions;
+        for(i = 0; i < dimensions.length; i++) {
+            var dim = dimensions[i];
+            if(dim.visible) {
+                ax.type = autoType(dim.values, calendar);
+                break;
+            }
+        }
     }
     else {
         ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']], calendar);

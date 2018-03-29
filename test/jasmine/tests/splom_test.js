@@ -139,4 +139,17 @@ describe('Test splom trace defaults:', function() {
         expect(fullLayout.xaxis.type).toBe('category');
         expect(fullLayout.yaxis.type).toBe('category');
     });
+
+    it('should lead to correct axis auto type value (case 2)', function() {
+        _supply({
+            dimensions: [
+                {visible: false, values: ['2018-01-01', '2018-02-01', '2018-03-03']},
+                {values: ['2018-01-01', '2018-02-01', '2018-03-03']}
+            ]
+        });
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.type).toBe('date');
+        expect(fullLayout.yaxis.type).toBe('date');
+    });
 });
