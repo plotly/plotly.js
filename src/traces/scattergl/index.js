@@ -618,15 +618,14 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     // pick the id closest to the point
     // note that point possibly may not be found
-    var minDist = maxDistance;
     var id, ptx, pty, i, dx, dy, dist, dxy;
 
     if(hovermode === 'x') {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
             dx = Math.abs(xa.c2p(ptx) - xpx);
-            if(dx < minDist) {
-                minDist = dx;
+            if(dx < maxDistance) {
+                maxDistance = dx;
                 dy = ya.c2p(y[ids[i]]) - ypx;
                 dxy = Math.sqrt(dx * dx + dy * dy);
                 id = ids[i];
@@ -641,8 +640,8 @@ function hoverPoints(pointData, xval, yval, hovermode) {
             dy = ya.c2p(pty) - ypx;
 
             dist = Math.sqrt(dx * dx + dy * dy);
-            if(dist < minDist) {
-                minDist = dxy = dist;
+            if(dist < maxDistance) {
+                maxDistance = dxy = dist;
                 id = ids[i];
             }
         }
@@ -726,7 +725,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
         yLabelVal: di.y,
 
         cd: fakeCd,
-        distance: minDist,
+        distance: maxDistance,
         spikeDistance: dxy
     });
 

@@ -17,6 +17,7 @@ var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var calcAxisExpansion = require('../scatter/calc').calcAxisExpansion;
 var calcColorscales = require('../scatter/colorscale_calc');
 var convertMarkerStyle = require('../scattergl/convert').convertMarkerStyle;
+var getTraceColor = require('../scatter/get_trace_color');
 
 var BADNUM = require('../../constants/numerical').BADNUM;
 var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
@@ -199,7 +200,6 @@ function plotOne(gd, cd0) {
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
-    var stash = cd[0].t;
     var trace = cd[0].trace;
     var xa = pointData.xa;
     var ya = pointData.ya;
@@ -208,17 +208,131 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     var maxDistance = pointData.distance;
     var dimensions = trace.dimensions;
 
-    var xi, yi;
-    for(var i = 0; i < dimensions.length; i++) {
+    var xi, yi, i;
+    for(i = 0; i < dimensions.length; i++) {
         if(trace.xaxes[i] === xa._id) xi = i;
         if(trace.yaxes[i] === ya._id) yi = i;
     }
 
-    var x = dimensions[xi].values;
-    var y = dimensions[yi].values;
+    var xData = dimensions[xi].values;
+    var yData = dimensions[yi].values;
+
+    var id, ptx, pty, dx, dy, dist, dxy;
+
+    if(hovermode === 'x') {
+        for(i = 0; i < xData.length; i++) {
+            ptx = xData[i];
+            dx = Math.abs(xa.c2p(ptx) - xpx);
+            if(dx < maxDistance) {
+                maxDistance = dx;
+                dy = ya.c2p(yData[i]) - ypx;
+                dxy = Math.sqrt(dx * dx + dy * dy);
+                id = i;
+            }
+        }
+    }
+    else {
+        for(i = 0; i < xData.length; i++) {
+            ptx = xData[i];
+            pty = yData[i];
+            dx = xa.c2p(ptx) - xpx;
+            dy = ya.c2p(pty) - ypx;
+
+            dist = Math.sqrt(dx * dx + dy * dy);
+            if(dist < maxDistance) {
+                maxDistance = dxy = dist;
+                id = i;
+            }
+        }
+    }
+
+    pointData.index = id;
 
 
-    console.log(x, y);
+    if(id === undefined) return [pointData];
+
+    // the closest data point
+    var di = {
+        pointNumber: id,
+        x: xData[id],
+        y: yData[id]
+    };
+
+
+    // that is single-item arrays_to_calcdata excerpt, since we are doing it for a single point and we don't have to do it beforehead for 1e6 points
+    // FIXME: combine with scattergl hover di calc
+    di.tx = Array.isArray(trace.text) ? trace.text[id] : trace.text;
+    di.htx = Array.isArray(trace.hovertext) ? trace.hovertext[id] : trace.hovertext;
+    di.data = Array.isArray(trace.customdata) ? trace.customdata[id] : trace.customdata;
+    di.tp = Array.isArray(trace.textposition) ? trace.textposition[id] : trace.textposition;
+
+    var font = trace.textfont;
+    if(font) {
+        di.ts = Array.isArray(font.size) ? font.size[id] : font.size;
+        di.tc = Array.isArray(font.color) ? font.color[id] : font.color;
+        di.tf = Array.isArray(font.family) ? font.family[id] : font.family;
+    }
+
+    var marker = trace.marker;
+    if(marker) {
+        di.ms = Lib.isArrayOrTypedArray(marker.size) ? marker.size[id] : marker.size;
+        di.mo = Lib.isArrayOrTypedArray(marker.opacity) ? marker.opacity[id] : marker.opacity;
+        di.mx = Array.isArray(marker.symbol) ? marker.symbol[id] : marker.symbol;
+        di.mc = Lib.isArrayOrTypedArray(marker.color) ? marker.color[id] : marker.color;
+    }
+
+    var line = marker && marker.line;
+    if(line) {
+        di.mlc = Array.isArray(line.color) ? line.color[id] : line.color;
+        di.mlw = Lib.isArrayOrTypedArray(line.width) ? line.width[id] : line.width;
+    }
+
+    var grad = marker && marker.gradient;
+    if(grad && grad.type !== 'none') {
+        di.mgt = Array.isArray(grad.type) ? grad.type[id] : grad.type;
+        di.mgc = Array.isArray(grad.color) ? grad.color[id] : grad.color;
+    }
+
+    var xp = xa.c2p(di.x, true);
+    var yp = ya.c2p(di.y, true);
+    var rad = di.mrc || 1;
+
+    var hoverlabel = trace.hoverlabel;
+
+    if(hoverlabel) {
+        di.hbg = Array.isArray(hoverlabel.bgcolor) ? hoverlabel.bgcolor[id] : hoverlabel.bgcolor;
+        di.hbc = Array.isArray(hoverlabel.bordercolor) ? hoverlabel.bordercolor[id] : hoverlabel.bordercolor;
+        di.hts = Array.isArray(hoverlabel.font.size) ? hoverlabel.font.size[id] : hoverlabel.font.size;
+        di.htc = Array.isArray(hoverlabel.font.color) ? hoverlabel.font.color[id] : hoverlabel.font.color;
+        di.htf = Array.isArray(hoverlabel.font.family) ? hoverlabel.font.family[id] : hoverlabel.font.family;
+        di.hnl = Array.isArray(hoverlabel.namelength) ? hoverlabel.namelength[id] : hoverlabel.namelength;
+    }
+    var hoverinfo = trace.hoverinfo;
+    if(hoverinfo) {
+        di.hi = Array.isArray(hoverinfo) ? hoverinfo[id] : hoverinfo;
+    }
+
+
+    var fakeCd = {};
+    fakeCd[pointData.index] = di;
+
+    Lib.extendFlat(pointData, {
+        color: getTraceColor(trace, di),
+
+        x0: xp - rad,
+        x1: xp + rad,
+        xLabelVal: di.x,
+
+        y0: yp - rad,
+        y1: yp + rad,
+        yLabelVal: di.y,
+
+        cd: fakeCd,
+        distance: maxDistance,
+        spikeDistance: dxy
+    });
+
+    return [pointData];
 }
 
 function selectPoints(searchInfo, polygon) {
