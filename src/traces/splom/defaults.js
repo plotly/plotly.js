@@ -47,10 +47,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
     }
 
-    // TODO not implemented yet
-    coerce('xdirection');
-    coerce('ydirection');
-
     handleAxisDefaults(traceIn, traceOut, layout, coerce);
 
     // TODO not implemented yet

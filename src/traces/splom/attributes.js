@@ -72,23 +72,6 @@ module.exports = {
     line: scatterGlAttrs.line,
     connectgaps: scatterGlAttrs.connectgaps,
 
-    xdirection: {
-        valType: 'enumerated',
-        values: ['right', 'left'],
-        dflt: 'right',
-        role: 'info',
-        editType: 'plot',
-        description: ''
-    },
-    ydirection: {
-        valType: 'enumerated',
-        values: ['top', 'bottom'],
-        dflt: 'bottom',
-        role: 'info',
-        editType: 'plot',
-        description: ''
-    },
-
     xaxes: makeAxesValObject('x'),
     yaxes: makeAxesValObject('y'),
 
