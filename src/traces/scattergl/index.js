@@ -620,12 +620,13 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     // note that point possibly may not be found
     var id, ptx, pty, i, dx, dy, dist, dxy;
 
+    var minDist = maxDistance;
     if(hovermode === 'x') {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
             dx = Math.abs(xa.c2p(ptx) - xpx);
-            if(dx < maxDistance) {
-                maxDistance = dx;
+            if(dx < minDist) {
+                minDist = dx;
                 dy = ya.c2p(y[ids[i]]) - ypx;
                 dxy = Math.sqrt(dx * dx + dy * dy);
                 id = ids[i];
@@ -640,16 +641,31 @@ function hoverPoints(pointData, xval, yval, hovermode) {
             dy = ya.c2p(pty) - ypx;
 
             dist = Math.sqrt(dx * dx + dy * dy);
-            if(dist < maxDistance) {
-                maxDistance = dxy = dist;
+            if(dist < minDist) {
+                minDist = dxy = dist;
                 id = ids[i];
             }
         }
     }
 
     pointData.index = id;
+    pointData.distance = minDist;
+    pointData.dxy = dxy;
 
     if(id === undefined) return [pointData];
+
+    calcHover(pointData, x, y, trace);
+
+    return [pointData];
+}
+
+
+function calcHover(pointData, x, y, trace) {
+    var xa = pointData.xa;
+    var ya = pointData.ya;
+    var minDist = pointData.distance;
+    var dxy = pointData.dxy;
+    var id = pointData.index;
 
     // the closest data point
     var di = {
@@ -725,7 +741,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
         yLabelVal: di.y,
 
         cd: fakeCd,
-        distance: maxDistance,
+        distance: minDist,
         spikeDistance: dxy
     });
 
@@ -736,8 +752,9 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     fillHoverText(di, trace, pointData);
     Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
-    return [pointData];
+    return pointData;
 }
+
 
 function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd;
@@ -826,6 +843,8 @@ module.exports = {
 
     sceneOptions: sceneOptions,
     sceneUpdate: sceneUpdate,
+
+    calcHover: calcHover,
 
     meta: {
         hrName: 'scatter_gl',
