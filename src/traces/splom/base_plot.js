@@ -41,6 +41,10 @@ function drag(gd) {
         var cd0 = cd[i][0];
         var trace = cd0.trace;
         var scene = cd0.t._scene;
+
+        // FIXME: this probably should not be called for non-splom traces
+        if(!scene || !scene.matrixOptions) continue;
+
         var opts = scene.matrixOptions;
 
         if(trace.type === 'splom' && scene && scene.matrix) {
