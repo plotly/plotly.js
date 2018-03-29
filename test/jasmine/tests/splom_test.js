@@ -1,5 +1,11 @@
 var Lib = require('@src/lib');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var Plots = require('@src/plots/plots');
+
+var Plotly = require('@lib');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 
 describe('Test splom trace defaults:', function() {
     var gd;
@@ -270,4 +276,33 @@ describe('Test splom trace defaults:', function() {
         expect(fullLayout.xaxis.type).toBe('date');
         expect(fullLayout.yaxis.type).toBe('date');
     });
+});
+
+describe('@gl Test splom interactions:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('should destroy gl objects on Plots.cleanPlot', function(done) {
+        Plotly.plot(gd, Lib.extendDeep({}, require('@mocks/splom_large.json'))).then(function() {
+            expect(gd._fullLayout._splomGrid).toBeDefined();
+            expect(gd.calcdata[0][0].t._scene).toBeDefined();
+
+            return Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout, gd.calcdata);
+        })
+        .then(function() {
+            expect(gd._fullLayout._splomGrid).toBe(null);
+            expect(gd.calcdata[0][0].t._scene).toBe(null);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
 });

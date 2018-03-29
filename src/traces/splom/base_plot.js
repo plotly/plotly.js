@@ -203,8 +203,8 @@ function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcda
             var scene = cd0.t._scene;
 
             if(trace.type === 'splom' && scene && scene.matrix) {
-                // this below throws as error
-                // scene.matrix.destroy();
+                scene.matrix.destroy();
+                cd0.t._scene = null;
             }
         }
     }
@@ -212,6 +212,7 @@ function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcda
     if(oldFullLayout._splomGrid &&
         (!newFullLayout._hasOnlyLargeSploms && oldFullLayout._hasOnlyLargeSploms)) {
         oldFullLayout._splomGrid.destroy();
+        oldFullLayout._splomGrid = null;
     }
 
     Cartesian.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
