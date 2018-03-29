@@ -198,7 +198,7 @@ function plotOne(gd, cd0) {
 
 // TODO splom 'needs' the grid component, register it here?
 
-function hoverPoints(pointData, xval, yval, hovermode) {
+function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var xa = pointData.xa;
