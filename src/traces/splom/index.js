@@ -220,30 +220,16 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     var id, ptx, pty, dx, dy, dist, dxy;
     var minDist = maxDistance;
 
-    if(hovermode === 'x') {
-        for(i = 0; i < x.length; i++) {
-            ptx = x[i];
-            dx = Math.abs(xa.c2p(ptx) - xpx);
-            if(dx < minDist) {
-                minDist = dx;
-                dy = ya.c2p(y[i]) - ypx;
-                dxy = Math.sqrt(dx * dx + dy * dy);
-                id = i;
-            }
-        }
-    }
-    else {
-        for(i = 0; i < x.length; i++) {
-            ptx = x[i];
-            pty = y[i];
-            dx = xa.c2p(ptx) - xpx;
-            dy = ya.c2p(pty) - ypx;
+    for(i = 0; i < x.length; i++) {
+        ptx = x[i];
+        pty = y[i];
+        dx = xa.c2p(ptx) - xpx;
+        dy = ya.c2p(pty) - ypx;
 
-            dist = Math.sqrt(dx * dx + dy * dy);
-            if(dist < minDist) {
-                minDist = dxy = dist;
-                id = i;
-            }
+        dist = Math.sqrt(dx * dx + dy * dy);
+        if(dist < minDist) {
+            minDist = dxy = dist;
+            id = i;
         }
     }
 
@@ -259,7 +245,13 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 }
 
 function selectPoints(searchInfo, polygon) {
-
+    // var cd = searchInfo.cd;
+    // var selection = [];
+    // var trace = cd[0].trace;
+    // var stash = cd[0].t;
+    // var x = stash.x;
+    // var y = stash.y;
+    // var scene = stash.scene;
 }
 
 
