@@ -1095,9 +1095,9 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
     if(_module) {
         var basePlotModule = _module.basePlotModule;
         var subplotAttr = basePlotModule.attr;
-        if(subplotAttr) {
+        var subplotAttrs = basePlotModule.attributes;
+        if(subplotAttr && subplotAttrs) {
             var subplots = layout._subplots;
-            var subplotAttrs = basePlotModule.attributes;
             var subplotId = '';
 
             // TODO - currently if we draw an empty gl2d subplot, it draws
