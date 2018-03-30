@@ -17,7 +17,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     coerce('dragmode');
-    coerce('selectdirection', 'any');
+    coerce('selectdirection');
 
     var hovermodeDflt;
     if(layoutOut._has('cartesian')) {
