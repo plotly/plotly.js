@@ -883,6 +883,35 @@ describe('calculated data and points', function() {
                 expect(gd.calcdata[2][2]).toEqual(jasmine.objectContaining({x: 0, y: 11 + 20 + 32}));
             });
         });
+
+        it('should order categories per axis', function() {
+            Plotly.plot(gd, [
+                {x: ['a', 'c', 'g', 'e']},
+                {x: ['b', 'h', 'f', 'd'], xaxis: 'x2'}
+            ], {
+                xaxis: {categoryorder: 'category ascending', domain: [0, 0.4]},
+                xaxis2: {categoryorder: 'category descending', domain: [0.6, 1]}
+            });
+
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'c', 'e', 'g']);
+            expect(gd._fullLayout.xaxis2._categories).toEqual(['h', 'f', 'd', 'b']);
+        });
+
+        it('should consider number categories and their string representation to be the same', function() {
+            Plotly.plot(gd, [{
+                x: ['a', 'b', 1, '1'],
+                y: [1, 2, 3, 4]
+            }], {
+                xaxis: {type: 'category'}
+            });
+
+            expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'b', 1]);
+            expect(gd._fullLayout.xaxis._categoriesMap).toEqual({
+                '1': 2,
+                'a': 0,
+                'b': 1
+            });
+        });
     });
 
     describe('customdata', function() {
