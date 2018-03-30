@@ -50,7 +50,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleAxisDefaults(traceIn, traceOut, layout, coerce);
 
     // TODO not implemented yet
-    coerce('showdiagonal');
+    coerce('diagonal.visible');
+    // more to come
+
+    // TODO not implemented yet
     coerce('showupperhalf');
     coerce('showlowerhalf');
 

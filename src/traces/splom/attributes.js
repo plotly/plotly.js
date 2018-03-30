@@ -23,7 +23,10 @@ function makeAxesValObject(axLetter) {
             editType: 'plot'
         },
         description: [
-            '..'
+            'Sets the list of ' + axLetter + ' axes',
+            'corresponding to this splom trace.',
+            'By default, a splom will match the first N ' + axLetter + 'axes',
+            'where N is the number of input dimensions.'
         ].join(' ')
     };
 }
@@ -37,31 +40,32 @@ module.exports = {
             role: 'info',
             dflt: true,
             editType: 'calc',
-            description: ''
+            description: [
+                'Determines whether or not this dimension is show on the graph.',
+                'Note that even visible false dimension contribute to the',
+                'default grid generate by this splom trace.'
+            ].join(' ')
         },
         label: {
             valType: 'string',
             role: 'info',
             editType: 'calc',
-            description: ''
+            description: 'Sets the label corresponding to this splom dimension.'
         },
         values: {
             valType: 'data_array',
             role: 'info',
             editType: 'calc+clearAxisTypes',
-            description: [
-                ''
-            ].join(' ')
+            description: 'Sets the dimension values to be plotted.'
         },
 
         // TODO should add an attribute to pin down x only vars and y only vars
         // like https://seaborn.pydata.org/generated/seaborn.pairplot.html
         // x_vars and y_vars
 
-        editType: 'calc+clearAxisTypes',
-        description: [
-            '..'
-        ].join(' ')
+        // maybe more axis defaulting option e.g. `showgrid: false`
+
+        editType: 'calc+clearAxisTypes'
     },
 
     mode: scatterGlAttrs.mode,
@@ -75,26 +79,43 @@ module.exports = {
     xaxes: makeAxesValObject('x'),
     yaxes: makeAxesValObject('y'),
 
-    showdiagonal: {
-        valType: 'boolean',
-        role: 'info',
-        dflt: true,
-        editType: 'plot',
-        description: ''
+    diagonal: {
+        visible: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: true,
+            editType: 'plot',
+            description: [
+                'Determines whether or not subplots on the diagonal are displayed.'
+            ].join(' ')
+        },
+
+        // type: 'scattergl' | 'histogram' | 'box' | 'violin'
+        // ...
+        // more options
+
+        editType: 'plot'
     },
+
     showupperhalf: {
         valType: 'boolean',
         role: 'info',
         dflt: true,
         editType: 'plot',
-        description: ''
+        description: [
+            'Determines whether or not subplots on the upper half',
+            'from the diagonal are displayed.'
+        ].join(' ')
     },
     showlowerhalf: {
         valType: 'boolean',
         role: 'info',
         dflt: true,
         editType: 'plot',
-        description: ''
+        description: [
+            'Determines whether or not subplots on the lower half',
+            'from the diagonal are displayed.'
+        ].join(' ')
     },
 
     selected: scatterGlAttrs.selected,
