@@ -107,7 +107,8 @@ function makeGridData(gd) {
                 thickness: lwidth,
                 color: lcolor,
                 viewport: fullView,
-                range: fullView
+                range: fullView,
+                overlay: false
             };
         }
     }
