@@ -221,6 +221,7 @@ function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcda
 
 module.exports = {
     name: SPLOM,
+    attr: Cartesian.attr,
     attrRegex: Cartesian.attrRegex,
     layoutAttributes: Cartesian.layoutAttributes,
     supplyLayoutDefaults: Cartesian.supplyLayoutDefaults,

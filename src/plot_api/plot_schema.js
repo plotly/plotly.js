@@ -487,13 +487,12 @@ function getLayoutAttributes() {
 
         if(!_module.layoutAttributes) continue;
 
-        if(_module.name === 'cartesian' || _module.name === 'splom') {
-            handleBasePlotModule(layoutAttributes, _module, 'xaxis');
-            handleBasePlotModule(layoutAttributes, _module, 'yaxis');
-        }
-        else {
+        if(Array.isArray(_module.attr)) {
+            for(var i = 0; i < _module.attr.length; i++) {
+                handleBasePlotModule(layoutAttributes, _module, _module.attr[i]);
+            }
+        } else {
             var astr = _module.attr === 'subplot' ? _module.name : _module.attr;
-
             handleBasePlotModule(layoutAttributes, _module, astr);
         }
     }
