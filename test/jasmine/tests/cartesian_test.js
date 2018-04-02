@@ -475,33 +475,33 @@ describe('subplot creation / deletion:', function() {
         ], {
             xaxis2: {overlaying: 'x'},
             yaxis2: {overlaying: 'y'},
-            plot_bgcolor:'red',
+            plot_bgcolor: 'red',
             showlegend: false
         })
         .then(function() {
             checkBGLayers(1, 0, ['xy', 'x2y2']);
 
             return Plotly.relayout(gd, {
-              'xaxis.domain':[0, 0.4],
-              'xaxis2.domain':[0.6, 1],
-              'xaxis2.overlaying': null
-            })
+                'xaxis.domain': [0, 0.4],
+                'xaxis2.domain': [0.6, 1],
+                'xaxis2.overlaying': null
+            });
         })
         .then(function() {
             checkBGLayers(2, 0, ['xy', 'x2y2']);
 
             return Plotly.relayout(gd, {
                 'xaxis2.overlaying': 'x'
-            })
+            });
         })
         .then(function() {
             checkBGLayers(1, 0, ['xy', 'x2y2']);
 
             return Plotly.relayout(gd, {
-              'xaxis.domain':[0, 0.6],
-              'xaxis2.domain':[0.4, 1],
-              'xaxis2.overlaying': null
-            })
+                'xaxis.domain': [0, 0.6],
+                'xaxis2.domain': [0.4, 1],
+                'xaxis2.overlaying': null
+            });
         })
         .then(function() {
             checkBGLayers(1, 1, ['xy', 'x2y2']);
