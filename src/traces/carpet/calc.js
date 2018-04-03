@@ -52,8 +52,8 @@ module.exports = function calc(gd, trace) {
     trace.setScale();
 
     // Convert cartesian-space x/y coordinates to screen space pixel coordinates:
-    t.xp = trace.xp = map2dArray(trace.xp, x, xa.c2p);
-    t.yp = trace.yp = map2dArray(trace.yp, y, ya.c2p);
+    t.xp = trace._xp = map2dArray(trace._xp, x, xa.c2p);
+    t.yp = trace._yp = map2dArray(trace._yp, y, ya.c2p);
 
     // This is a rather expensive scan. Nothing guarantees monotonicity,
     // so we need to scan through all data to get proper ranges:
@@ -88,7 +88,7 @@ module.exports = function calc(gd, trace) {
 
     // Tabulate points for the four segments that bound the axes so that we can
     // map to pixel coordinates in the plot function and create a clip rect:
-    t.clipsegments = calcClipPath(trace.xctrl, trace.yctrl, aax, bax);
+    t.clipsegments = calcClipPath(trace._xctrl, trace._yctrl, aax, bax);
 
     t.x = x;
     t.y = y;

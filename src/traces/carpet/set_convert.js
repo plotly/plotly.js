@@ -72,18 +72,18 @@ module.exports = function setConvert(trace) {
         // an expanded basis of control points. Note in particular that it overwrites the existing
         // basis without creating a new array since that would potentially thrash the garbage
         // collector.
-        var result = computeControlPoints(trace.xctrl, trace.yctrl, x, y, aax.smoothing, bax.smoothing);
-        trace.xctrl = result[0];
-        trace.yctrl = result[1];
+        var result = computeControlPoints(trace._xctrl, trace._yctrl, x, y, aax.smoothing, bax.smoothing);
+        trace._xctrl = result[0];
+        trace._yctrl = result[1];
 
         // This step is the second step in the process, but it's somewhat simpler. It just unrolls
         // some logic since it would be unnecessarily expensive to compute both interpolations
         // nearly identically but separately and to include a bunch of linear vs. bicubic logic in
         // every single call.
-        trace.evalxy = createSplineEvaluator([trace.xctrl, trace.yctrl], na, nb, aax.smoothing, bax.smoothing);
+        trace.evalxy = createSplineEvaluator([trace._xctrl, trace._yctrl], na, nb, aax.smoothing, bax.smoothing);
 
-        trace.dxydi = createIDerivativeEvaluator([trace.xctrl, trace.yctrl], aax.smoothing, bax.smoothing);
-        trace.dxydj = createJDerivativeEvaluator([trace.xctrl, trace.yctrl], aax.smoothing, bax.smoothing);
+        trace.dxydi = createIDerivativeEvaluator([trace._xctrl, trace._yctrl], aax.smoothing, bax.smoothing);
+        trace.dxydj = createJDerivativeEvaluator([trace._xctrl, trace._yctrl], aax.smoothing, bax.smoothing);
     };
 
     /*

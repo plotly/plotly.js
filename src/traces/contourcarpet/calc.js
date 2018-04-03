@@ -24,7 +24,7 @@ var setContours = require('../contour/set_contours');
 // though a few things inside heatmap calc still look for
 // contour maps, because the makeBoundArray calls are too entangled
 module.exports = function calc(gd, trace) {
-    var carpet = trace.carpetTrace = lookupCarpet(gd, trace);
+    var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
     if(!carpet || !carpet.visible || carpet.visible === 'legendonly') return;
 
     if(!trace.a || !trace.b) {
@@ -54,7 +54,7 @@ module.exports = function calc(gd, trace) {
 function heatmappishCalc(gd, trace) {
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
-    var carpet = trace.carpetTrace;
+    var carpet = trace._carpetTrace;
     var aax = carpet.aaxis;
     var bax = carpet.baxis;
     var a,

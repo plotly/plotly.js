@@ -30,8 +30,8 @@ module.exports = function calcGridlines(trace, cd, axisLetter, crossAxisLetter) 
         axis.tickvals = data.slice();
     }
 
-    var xcp = trace.xctrl;
-    var ycp = trace.yctrl;
+    var xcp = trace._xctrl;
+    var ycp = trace._yctrl;
     var nea = xcp[0].length;
     var neb = xcp.length;
     var na = trace.a.length;
