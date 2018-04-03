@@ -2429,8 +2429,14 @@ function diffData(gd, oldFullData, newFullData, immutable) {
         gd: gd
     };
 
+
+    var seenUIDs = {};
+
     for(i = 0; i < oldFullData.length; i++) {
-        trace = newFullData[i];
+        trace = newFullData[i]._fullInput;
+        if(seenUIDs[trace.uid]) continue;
+        seenUIDs[trace.uid] = 1;
+
         diffOpts.autoranged = trace.xaxis ? (
             Axes.getFromId(gd, trace.xaxis).autorange ||
             Axes.getFromId(gd, trace.yaxis).autorange
