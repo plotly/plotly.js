@@ -380,7 +380,7 @@ plots.supplyDefaults = function(gd) {
         if(_module.cleanData) _module.cleanData(newFullData);
     }
 
-    if(oldFullData.length === newData.length) {
+    if(oldFullData.length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
             relinkPrivateKeys(newFullData[i], oldFullData[i]);
         }
