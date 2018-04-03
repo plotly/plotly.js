@@ -181,7 +181,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [1, 2, 3, 4, 5, 6]
         };
 
-        convertColumnXYZ(trace, xa, ya);
+        convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
         expect(trace.x).toEqual([1, 2]);
         expect(trace.y).toEqual([1, 2, 3]);
         expect(trace.z).toEqual([[1, 4], [2, 5], [3, 6]]);
@@ -194,7 +194,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [1, 2, 4, 5, 6]
         };
 
-        convertColumnXYZ(trace, xa, ya);
+        convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
         expect(trace.x).toEqual([1, 2]);
         expect(trace.y).toEqual([1, 2, 3]);
         expect(trace.z).toEqual([[1, 4], [2, 5], [, 6]]);
@@ -207,7 +207,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [1, null, 4, 5, 6]
         };
 
-        convertColumnXYZ(trace, xa, ya);
+        convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
         expect(trace.x).toEqual([1, 2]);
         expect(trace.y).toEqual([1, 2, 3]);
         expect(trace.z).toEqual([[1, 4], [null, 5], [, 6]]);
@@ -221,7 +221,7 @@ describe('heatmap convertColumnXYZ', function() {
             text: ['a', 'b', 'c', 'd', 'e', 'f', 'g']
         };
 
-        convertColumnXYZ(trace, xa, ya);
+        convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
         expect(trace.text).toEqual([['a', 'd'], ['b', 'e'], ['c', 'f']]);
     });
 
@@ -253,7 +253,7 @@ describe('heatmap convertColumnXYZ', function() {
             ]
         };
 
-        convertColumnXYZ(trace, xa, ya);
+        convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
         expect(trace.x).toEqual(
             [-88596, -65484, -42372, -19260, 3852, 26964, 50076, 73188]);
         expect(trace.y).toEqual(
@@ -282,7 +282,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [0, 50, 100, 50, null, 255, 100, 510, 1010]
         };
 
-        convertColumnXYZ(trace, xa, ya);
+        convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
 
         expect(trace.x).toEqual([0, 5, 10]);
         expect(trace.y).toEqual([0, 5, 10]);

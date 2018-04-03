@@ -13,10 +13,6 @@ var Lib = require('../../lib');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name, arrayVarNames) {
-    var1Name = var1Name || 'x';
-    var2Name = var2Name || 'y';
-    arrayVarNames = arrayVarNames || ['z'];
-
     var col1 = trace[var1Name].slice(),
         col2 = trace[var2Name].slice(),
         textCol = trace.text,
