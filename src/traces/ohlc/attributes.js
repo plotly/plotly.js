@@ -64,28 +64,24 @@ module.exports = {
 
     open: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the open values.'
     },
 
     high: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the high values.'
     },
 
     low: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the low values.'
     },
 
     close: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the close values.'
     },

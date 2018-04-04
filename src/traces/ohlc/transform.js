@@ -53,6 +53,7 @@ exports.transform = function transform(dataIn, state) {
 };
 
 function makeTrace(traceIn, state, direction) {
+    var len = traceIn._inputLength;
     var traceOut = {
         type: 'scatter',
         mode: 'lines',
@@ -64,7 +65,8 @@ function makeTrace(traceIn, state, direction) {
         yaxis: traceIn.yaxis,
 
         hoverinfo: makeHoverInfo(traceIn),
-        transforms: helpers.makeTransform(traceIn, state, direction)
+        transforms: helpers.makeTransform(traceIn, state, direction),
+        _inputLength: len
     };
 
     // the rest of below may not have been coerced
@@ -79,7 +81,7 @@ function makeTrace(traceIn, state, direction) {
             xcalendar: traceIn.xcalendar,
 
             // concat low and high to get correct autorange
-            y: [].concat(traceIn.low).concat(traceIn.high),
+            y: traceIn.low.slice(0, len).concat(traceIn.high.slice(0, len)),
 
             text: traceIn.text,
 
@@ -138,7 +140,7 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
     var lowName = _(gd, 'low:') + ' ';
     var closeName = _(gd, 'close:') + ' ';
 
-    var len = open.length,
+    var len = trace._inputLength,
         x = [],
         y = [],
         textOut = [];

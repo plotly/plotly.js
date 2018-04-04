@@ -60,7 +60,8 @@ function makeTrace(traceIn, state, direction) {
         xaxis: traceIn.xaxis,
         yaxis: traceIn.yaxis,
 
-        transforms: helpers.makeTransform(traceIn, state, direction)
+        transforms: helpers.makeTransform(traceIn, state, direction),
+        _inputLength: traceIn._inputLength
     };
 
     // the rest of below may not have been coerced
@@ -99,7 +100,7 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
         low = trace.low,
         close = trace.close;
 
-    var len = open.length,
+    var len = trace._inputLength,
         x = [],
         y = [];
 

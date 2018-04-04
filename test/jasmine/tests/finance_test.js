@@ -128,10 +128,7 @@ describe('finance charts defaults:', function() {
         function assertDataLength(fullTrace, len) {
             expect(fullTrace.visible).toBe(true);
 
-            expect(fullTrace.open.length).toEqual(len);
-            expect(fullTrace.high.length).toEqual(len);
-            expect(fullTrace.low.length).toEqual(len);
-            expect(fullTrace.close.length).toEqual(len);
+            expect(fullTrace._inputLength).toBe(len);
         }
 
         var trace0 = Lib.extendDeep({}, mock0, { type: 'ohlc' });
@@ -149,8 +146,8 @@ describe('finance charts defaults:', function() {
 
         expect(out._fullData[0]._fullInput.x).toBeUndefined();
         expect(out._fullData[1]._fullInput.x).toBeUndefined();
-        expect(out._fullData[2]._fullInput.x.length).toEqual(4);
-        expect(out._fullData[3]._fullInput.x.length).toEqual(4);
+        expect(out._fullData[2]._fullInput.x).toBeDefined();
+        expect(out._fullData[3]._fullInput.x).toBeDefined();
     });
 
     it('should set visible to *false* when minimum supplied length is 0', function() {
