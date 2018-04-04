@@ -9,13 +9,16 @@
 'use strict';
 
 var createMatrix = require('regl-scattermatrix');
+var arrayRange = require('array-range');
 
 var Lib = require('../../lib');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 
+var subTypes = require('../scatter/subtypes');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var calcAxisExpansion = require('../scatter/calc').calcAxisExpansion;
 var calcColorscales = require('../scatter/colorscale_calc');
+var convertMarkerSelection = require('../scattergl/convert').convertMarkerSelection;
 var convertMarkerStyle = require('../scattergl/convert').convertMarkerStyle;
 var calcHover = require('../scattergl').calcHover;
 
@@ -75,6 +78,9 @@ function calc(gd, trace) {
     if(!scene.matrix) scene.matrix = true;
     scene.matrixOptions = opts;
 
+    scene.selectedOptions = convertMarkerSelection(trace, trace.selected);
+    scene.unselectedOptions = convertMarkerSelection(trace, trace.unselected);
+
     return [{x: false, y: false, t: stash, trace: trace}];
 }
 
@@ -118,18 +124,16 @@ function sceneUpdate(gd, stash) {
     if(!scene) {
         scene = stash._scene = Lib.extendFlat({}, reset, first);
 
-        // TODO should we use something like this on drag?
-        scene.update = function update(opt) {
-            if(scene.matrix) scene.matrix.update(opt);
-            scene.draw();
-        };
-
         scene.draw = function draw() {
-            if(scene.matrix) scene.matrix.draw();
+            // draw traces in selection mode
+            if(scene.matrix && scene.selectBatch) {
+                scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
+            }
 
-            // TODO selection stuff
+            else if(scene.matrix) {
+                scene.matrix.draw();
+            }
 
-            // do we need to use this flag anywhere??
             scene.dirty = false;
         };
 
@@ -143,7 +147,7 @@ function sceneUpdate(gd, stash) {
             if(!scene.selectBatch) return;
             scene.selectBatch = null;
             scene.unselectBatch = null;
-            scene.matrix.update(scene.opts);
+            scene.matrix.update(scene.matrixOptions);
             scene.clear();
             scene.draw();
         };
@@ -152,7 +156,7 @@ function sceneUpdate(gd, stash) {
         scene.destroy = function destroy() {
             if(scene.matrix) scene.matrix.destroy();
 
-            scene.opts = null;
+            scene.matrixOptions = null;
             scene.selectBatch = null;
             scene.unselectBatch = null;
 
@@ -180,29 +184,30 @@ function plotOne(gd, cd0) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
     var trace = cd0.trace;
-    var scene = cd0.t._scene;
-    var opts = scene.matrixOptions;
-    var matrix = opts.data;
+    var stash = cd0.t;
+    var scene = stash._scene;
+    var matrixData = scene.matrixOptions.data;
     var regl = fullLayout._glcanvas.data()[0].regl;
+    var dragmode = fullLayout.dragmode;
 
-    if(matrix.length === 0) return;
+    if(matrixData.length === 0) return;
 
-    var k = 0;
+    var k = 0, i;
     var activeLength = trace._activeLength;
-    var visibleLength = matrix.length;
+    var visibleLength = matrixData.length;
     var viewOpts = {
         ranges: new Array(visibleLength),
         domains: new Array(visibleLength)
     };
 
     for(var i = 0; i < activeLength; i++) {
-        if(trace.dimensions[i].visible) {
-            var xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
-            var ya = AxisIDs.getFromId(gd, trace.yaxes[i]);
-            viewOpts.ranges[k] = [xa.range[0], ya.range[0], xa.range[1], ya.range[1]];
-            viewOpts.domains[k] = [xa.domain[0], ya.domain[0], xa.domain[1], ya.domain[1]];
-            k++;
-        }
+        if(!trace.dimensions[i].visible) continue;
+
+        var xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
+        var ya = AxisIDs.getFromId(gd, trace.yaxes[i]);
+        viewOpts.ranges[k] = [xa.range[0], ya.range[0], xa.range[1], ya.range[1]];
+        viewOpts.domains[k] = [xa.domain[0], ya.domain[0], xa.domain[1], ya.domain[1]];
+        k++;
     }
 
     viewOpts.viewport = [gs.l, gs.b, gs.w + gs.l, gs.h + gs.b];
@@ -211,10 +216,60 @@ function plotOne(gd, cd0) {
         scene.matrix = createMatrix(regl);
     }
 
-    // FIXME: generate multiple options for single update
-    scene.matrix.update(opts);
-    scene.matrix.update(viewOpts);
-    scene.matrix.draw();
+    var selectMode = dragmode === 'lasso' || dragmode === 'select' || !!trace.selectedpoints;
+    scene.selectBatch = null;
+    scene.unselectBatch = null;
+
+    if(selectMode) {
+        if(!scene.selectBatch) {
+            scene.selectBatch = [];
+            scene.unselectBatch = [];
+        }
+
+        // regenerate scene batch, if traces number changed during selection
+        if(trace.selectedpoints) {
+            scene.selectBatch = trace.selectedpoints;
+
+            var selPts = trace.selectedpoints;
+            var selDict = {};
+            for(i = 0; i < selPts.length; i++) {
+                selDict[selPts[i]] = true;
+            }
+            var unselPts = [];
+            for(i = 0; i < matrixData[0].length; i++) {
+                if(!selDict[i]) unselPts.push(i);
+            }
+            scene.unselectBatch = unselPts;
+        }
+
+        // precalculate px coords since we are not going to pan during select
+        // var xpx = new Array(stash.count);
+        // var ypx = new Array(stash.count);
+        // for(i = 0; i < stash.count; i++) {
+        //     xpx[i] = xaxis.c2p(x[i]);
+        //     ypx[i] = yaxis.c2p(y[i]);
+        // }
+        // stash.xpx = xpx;
+        // stash.ypx = ypx;
+
+
+        if(scene.selectBatch) {
+            scene.matrix.update(scene.matrixOptions, scene.matrixOptions);
+            scene.matrix.update(scene.unselectedOptions, scene.selectedOptions);
+            scene.matrix.update(viewOpts, viewOpts);
+        }
+        else {
+            // delete selection pass
+            scene.matrix.update(viewOpts, null);
+        }
+    }
+    else {
+        scene.matrix.update(scene.matrixOptions);
+        scene.matrix.update(viewOpts);
+        stash.xpx = stash.ypx = null;
+    }
+
+    scene.draw();
 }
 
 // TODO splom 'needs' the grid component, register it here?
@@ -266,17 +321,73 @@ function hoverPoints(pointData, xval, yval) {
 }
 
 function selectPoints(searchInfo, polygon) {
-    // var cd = searchInfo.cd;
-    // var selection = [];
-    // var trace = cd[0].trace;
-    // var stash = cd[0].t;
-    // var x = stash.x;
-    // var y = stash.y;
-    // var scene = stash.scene;
+    var cd = searchInfo.cd;
+    var selection = [];
+    var trace = cd[0].trace;
+    var stash = cd[0].t;
+    var x = stash.x;
+    var y = stash.y;
+    var scene = stash._scene;
 
-    return [];
+    if(!scene) return selection;
+
+    var hasOnlyLines = (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace));
+    if(trace.visible !== true || hasOnlyLines) return selection;
+
+    // degenerate polygon does not enable selection
+    // filter out points by visible scatter ones
+    var els = null;
+    var unels = null;
+    var i;
+    if(polygon !== false && !polygon.degenerate) {
+        els = [], unels = [];
+        for(i = 0; i < stash.count; i++) {
+            if(polygon.contains([stash.xpx[i], stash.ypx[i]])) {
+                els.push(i);
+                selection.push({
+                    pointNumber: i,
+                    x: x[i],
+                    y: y[i]
+                });
+            }
+            else {
+                unels.push(i);
+            }
+        }
+    } else {
+        unels = arrayRange(stash.count);
+    }
+
+    // make sure selectBatch is created
+    if(!scene.selectBatch) {
+        scene.selectBatch = [];
+        scene.unselectBatch = [];
+    }
+
+    if(!scene.selectBatch) {
+        // enter every trace select mode
+        for(i = 0; i < scene.count; i++) {
+            scene.selectBatch = [];
+            scene.unselectBatch = [];
+        }
+        // we should turn scatter2d into unselected once we have any points selected
+        scene.matrix.update(scene.unselectedOptions);
+    }
+
+    scene.selectBatch = els;
+    scene.unselectBatch = unels;
+
+    return selection;
 }
 
+function style(gd, cd) {
+    if(cd) {
+        var stash = cd[0].t;
+        var scene = stash._scene;
+        scene.clear();
+        scene.draw();
+    }
+}
 
 module.exports = {
     moduleType: 'trace',
@@ -292,7 +403,7 @@ module.exports = {
     plot: plot,
     hoverPoints: hoverPoints,
     selectPoints: selectPoints,
-    style: function() {},
+    style: style,
 
     meta: {
         description: [

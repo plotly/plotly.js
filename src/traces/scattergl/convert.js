@@ -50,6 +50,9 @@ function convertStyle(gd, trace) {
                 opts.unselected.opacity[i] = DESELECTDIM * mo[i];
             }
         }
+
+        // FIXME: if only trace.selected provided, trace.unselected remains empty
+        // cc @etienne
     }
 
     if(subTypes.hasLines(trace)) {
@@ -402,6 +405,7 @@ function convertErrorBarPositions(gd, trace, positions) {
 module.exports = {
     convertStyle: convertStyle,
     convertMarkerStyle: convertMarkerStyle,
+    convertMarkerSelection: convertMarkerSelection,
     convertLinePositions: convertLinePositions,
     convertErrorBarPositions: convertErrorBarPositions
 };

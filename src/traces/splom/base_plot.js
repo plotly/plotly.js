@@ -61,8 +61,13 @@ function drag(gd) {
                 }
             }
 
-            scene.matrix.update({ranges: ranges});
-            scene.matrix.draw();
+            if(scene.selectBatch) {
+                scene.matrix.update({ranges: ranges}, {ranges: ranges});
+                scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
+            } else {
+                scene.matrix.update({ranges: ranges});
+                scene.matrix.draw();
+            }
         }
     }
 
