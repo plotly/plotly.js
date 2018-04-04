@@ -66,14 +66,10 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
         }
     }
 
-    // hack for Plotly.react - save the input arrays for diffing purposes
-    trace['_input_' + var1Name] = trace[var1Name];
-    trace['_input_' + var2Name] = trace[var2Name];
-    trace[var1Name] = col1vals;
-    trace[var2Name] = col2vals;
+    trace['_' + var1Name] = col1vals;
+    trace['_' + var2Name] = col2vals;
     for(j = 0; j < arrayVarNames.length; j++) {
-        trace['_input_' + arrayVarNames[j]] = trace[arrayVarNames[j]];
-        trace[arrayVarNames[j]] = newArrays[j];
+        trace['_' + arrayVarNames[j]] = newArrays[j];
     }
-    if(hasColumnText) trace.text = text;
+    if(hasColumnText) trace._text = text;
 };

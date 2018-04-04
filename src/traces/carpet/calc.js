@@ -17,25 +17,37 @@ var calcLabels = require('./calc_labels');
 var calcClipPath = require('./calc_clippath');
 var clean2dArray = require('../heatmap/clean_2d_array');
 var smoothFill2dArray = require('./smooth_fill_2d_array');
+var hasColumns = require('./has_columns');
+var convertColumnData = require('../heatmap/convert_column_xyz');
+var setConvert = require('./set_convert');
 
 module.exports = function calc(gd, trace) {
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
-    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
+    var xa = Axes.getFromId(gd, trace.xaxis);
+    var ya = Axes.getFromId(gd, trace.yaxis);
     var aax = trace.aaxis;
     var bax = trace.baxis;
-    var a = trace._a = trace.a;
-    var b = trace._b = trace.b;
+
+    var x = trace.x;
+    var y = trace.y;
+    var cols = [];
+    if(x && !hasColumns(x)) cols.push('x');
+    if(y && !hasColumns(y)) cols.push('y');
+
+    if(cols.length) {
+        convertColumnData(trace, aax, bax, 'a', 'b', cols);
+    }
+
+    var a = trace._a = trace._a || trace.a;
+    var b = trace._b = trace._b || trace.b;
+    x = trace._x || trace.x;
+    y = trace._y || trace.y;
 
     var t = {};
-    var x;
-    var y = trace.y;
 
     if(trace._cheater) {
         var avals = aax.cheatertype === 'index' ? a.length : a;
         var bvals = bax.cheatertype === 'index' ? b.length : b;
         x = cheaterBasis(avals, bvals, trace.cheaterslope);
-    } else {
-        x = trace.x;
     }
 
     trace._x = x = clean2dArray(x);
@@ -47,6 +59,8 @@ module.exports = function calc(gd, trace) {
     // moderate overkill for just filling in missing values.
     smoothFill2dArray(x, a, b);
     smoothFill2dArray(y, a, b);
+
+    setConvert(trace);
 
     // create conversion functions that depend on the data
     trace.setScale();

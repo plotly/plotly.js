@@ -70,15 +70,17 @@ function heatmappishCalc(gd, trace) {
     bax._minDtick = 0;
 
     if(hasColumns(trace)) convertColumnData(trace, aax, bax, 'a', 'b', ['z']);
+    a = trace._a = trace._a || trace.a;
+    b = trace._b = trace._b || trace.b;
 
-    a = trace.a ? aax.makeCalcdata(trace, 'a') : [];
-    b = trace.b ? bax.makeCalcdata(trace, 'b') : [];
+    a = a ? aax.makeCalcdata(trace, '_a') : [];
+    b = b ? bax.makeCalcdata(trace, '_b') : [];
     a0 = trace.a0 || 0;
     da = trace.da || 1;
     b0 = trace.b0 || 0;
     db = trace.db || 1;
 
-    z = clean2dArray(trace.z, trace.transpose);
+    z = trace._z = clean2dArray(trace._z || trace.z, trace.transpose);
 
     trace._emptypoints = findEmpties(z);
     trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);

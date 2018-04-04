@@ -2855,11 +2855,64 @@ describe('Test plot api', function() {
         mockList.forEach(function(mockSpec) {
             it('can redraw "' + mockSpec[0] + '" with no changes as a noop', function(done) {
                 var mock = mockSpec[1];
+                var initialJson;
+
+                function fullJson() {
+                    var out = JSON.parse(Plotly.Plots.graphJson({
+                        data: gd._fullData,
+                        layout: gd._fullLayout
+                    }));
+
+                    // TODO: does it matter that ax.tick0/dtick/range and zmin/zmax
+                    // are often not regenerated without a calc step?
+                    // in as far as editor and others rely on _full, I think the
+                    // answer must be yes, but I'm not sure about within plotly.js
+                    [
+                        'xaxis', 'xaxis2', 'xaxis3', 'xaxis4', 'xaxis5',
+                        'yaxis', 'yaxis2', 'yaxis3', 'yaxis4',
+                        'zaxis'
+                    ].forEach(function(axName) {
+                        var ax = out.layout[axName];
+                        if(ax) {
+                            delete ax.dtick;
+                            delete ax.tick0;
+
+                            // TODO this one I don't understand and can't reproduce
+                            // in the dashboard but it's needed here?
+                            delete ax.range;
+                        }
+                        if(out.layout.scene) {
+                            ax = out.layout.scene[axName];
+                            if(ax) {
+                                delete ax.dtick;
+                                delete ax.tick0;
+                                // TODO: this is the only one now that uses '_input_' + key
+                                // as a hack to tell Plotly.react to ignore changes.
+                                // Can we kill this?
+                                delete ax.range;
+                            }
+                        }
+                    });
+                    out.data.forEach(function(trace) {
+                        if(trace.type === 'contourcarpet') {
+                            delete trace.zmin;
+                            delete trace.zmax;
+                        }
+                    });
+
+                    return out;
+                }
 
                 Plotly.newPlot(gd, mock)
                 .then(countPlots)
-                .then(function() { return Plotly.react(gd, mock); })
-                .then(function() { countCalls({}); })
+                .then(function() {
+                    initialJson = fullJson();
+                    return Plotly.react(gd, mock);
+                })
+                .then(function() {
+                    expect(fullJson()).toEqual(initialJson);
+                    countCalls({});
+                })
                 .catch(failTest)
                 .then(done);
             });

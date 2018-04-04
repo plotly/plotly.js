@@ -25,10 +25,10 @@ var createJDerivativeEvaluator = require('./create_j_derivative_evaluator');
  *   p: screen-space pixel coordinates
  */
 module.exports = function setConvert(trace) {
-    var a = trace.a;
-    var b = trace.b;
-    var na = trace.a.length;
-    var nb = trace.b.length;
+    var a = trace._a;
+    var b = trace._b;
+    var na = a.length;
+    var nb = b.length;
     var aax = trace.aaxis;
     var bax = trace.baxis;
 
@@ -59,10 +59,6 @@ module.exports = function setConvert(trace) {
     trace.isOccluded = function(a, b) {
         return a < amin || a > amax || b < bmin || b > bmax;
     };
-
-    // XXX: ONLY PASSTHRU. ONLY. No, ONLY.
-    aax.c2p = function(v) { return v; };
-    bax.c2p = function(v) { return v; };
 
     trace.setScale = function() {
         var x = trace._x;

@@ -103,7 +103,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
     }
 
+    // we need some of the other functions setConvert attaches, but for
+    // path finding, override pixel scaling to simple passthrough (identity)
     setConvert(containerOut, options.fullLayout);
+    containerOut.c2p = Lib.identity;
 
     var dfltColor = coerce('color', options.dfltColor);
     // if axis.color was provided, use it for fonts too; otherwise,

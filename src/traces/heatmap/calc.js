@@ -58,10 +58,12 @@ module.exports = function calc(gd, trace) {
         z = binned.z;
     }
     else {
+        var zIn = trace.z;
         if(hasColumns(trace)) {
             convertColumnData(trace, xa, ya, 'x', 'y', ['z']);
-            x = trace.x;
-            y = trace.y;
+            x = trace._x;
+            y = trace._y;
+            zIn = trace._z;
         } else {
             x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
             y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
@@ -72,7 +74,7 @@ module.exports = function calc(gd, trace) {
         y0 = trace.y0 || 0;
         dy = trace.dy || 1;
 
-        z = clean2dArray(trace.z, trace.transpose);
+        z = clean2dArray(zIn, trace.transpose);
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
@@ -131,7 +133,7 @@ module.exports = function calc(gd, trace) {
         x: xArray,
         y: yArray,
         z: z,
-        text: trace.text
+        text: trace._text || trace.text
     };
 
     if(xIn && xIn.length === xArray.length - 1) cd0.xCenter = xIn;
