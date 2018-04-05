@@ -390,9 +390,9 @@ function drawTexts(g, gd) {
 
                 // N.B. this block isn't super clean,
                 // is unfortunately untested at the moment,
-                // and only works for for 'ohlc' and 'candlestick',
+                // and only works for for 'ohlc',
                 // but should be generalized for other one-to-many transforms
-                if(['ohlc', 'candlestick'].indexOf(fullInput.type) !== -1) {
+                if(fullInput.type === 'ohlc') {
                     transforms = legendItem.trace.transforms;
                     direction = transforms[transforms.length - 1].direction;
 

@@ -330,6 +330,26 @@ exports.cleanData = function(data, existingData) {
             }
         }
 
+        // fixes from converting finance from transforms to real trace types
+        if(trace.type === 'candlestick') {
+            var increasingName = cleanFinanceDir(trace.increasing);
+            var decreasingName = cleanFinanceDir(trace.decreasing);
+
+            // now figure out something smart to do with the separate direction
+            // names we removed
+            if(increasingName && decreasingName) {
+                // both sub-names existed: base name previously had no effect
+                // so ignore it and try to find a shared part of the sub-names
+                var newName = commonPrefix(increasingName, decreasingName);
+                // if no common part, leave whatever name was (or wasn't) there
+                if(newName) trace.name = newName;
+            }
+            else if((increasingName || decreasingName) && !trace.name) {
+                // one sub-name existed but not the base name - just use the sub-name
+                trace.name = increasingName || decreasingName;
+            }
+        }
+
         // transforms backward compatibility fixes
         if(Array.isArray(trace.transforms)) {
             var transforms = trace.transforms;
@@ -387,6 +407,31 @@ exports.cleanData = function(data, existingData) {
         Color.clean(trace);
     }
 };
+
+function cleanFinanceDir(dirContainer) {
+    if(!Lib.isPlainObject(dirContainer)) return '';
+
+    var dirName = (dirContainer.showlegend === false) ? '' : dirContainer.name;
+
+    delete dirContainer.name;
+    delete dirContainer.showlegend;
+
+    return dirName;
+}
+
+function commonPrefix(name1, name2) {
+    if(!name1.trim()) return name2;
+    if(!name2.trim()) return name1;
+
+    var minLen = Math.min(name1.length, name2.length);
+    var i;
+    for(i = 0; i < minLen; i++) {
+        if(name1.charAt(i) !== name2.charAt(i)) break;
+    }
+
+    var out = name1.substr(0, i);
+    return out.trim();
+}
 
 // textposition - support partial attributes (ie just 'top')
 // and incorrect use of middle / center etc.

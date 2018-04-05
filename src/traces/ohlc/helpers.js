@@ -140,6 +140,7 @@ exports.addRangeSlider = function(data, layout) {
         }
     }
 
+    // TODO: shouldn't we add rangesliders to any x axes that these traces are on?
     if(hasOneVisibleTrace) {
         if(!layout.xaxis) layout.xaxis = {};
         if(!layout.xaxis.rangeslider) layout.xaxis.rangeslider = {};

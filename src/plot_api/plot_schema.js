@@ -252,15 +252,17 @@ exports.findArrayAttributes = function(trace) {
 exports.getTraceValObject = function(trace, parts) {
     var head = parts[0];
     var i = 1; // index to start recursing from
+    var transforms = trace.transforms;
+    if(!Array.isArray(transforms) || !transforms.length) transforms = false;
     var moduleAttrs, valObject;
 
     if(head === 'transforms') {
-        if(!Array.isArray(trace.transforms)) return false;
+        if(!transforms) return false;
         var tNum = parts[1];
-        if(!isIndex(tNum) || tNum >= trace.transforms.length) {
+        if(!isIndex(tNum) || tNum >= transforms.length) {
             return false;
         }
-        moduleAttrs = (Registry.transformsRegistry[trace.transforms[tNum].type] || {}).attributes;
+        moduleAttrs = (Registry.transformsRegistry[transforms[tNum].type] || {}).attributes;
         valObject = moduleAttrs && moduleAttrs[parts[2]];
         i = 3; // start recursing only inside the transform
     }
@@ -285,8 +287,22 @@ exports.getTraceValObject = function(trace, parts) {
             }
         }
 
-        // finally look in the global attributes
+        // next look in the global attributes
         if(!valObject) valObject = baseAttributes[head];
+
+        // finally check if we have a transform matching the original trace type
+        if(!valObject && transforms) {
+            var inputType = trace._input.type;
+            if(inputType && inputType !== trace.type) {
+                for(var j = 0; j < transforms.length; j++) {
+                    if(transforms[j].type === inputType) {
+                        moduleAttrs = ((Registry.modules[inputType] || {})._module || {}).attributes;
+                        valObject = moduleAttrs && moduleAttrs[head];
+                        if(valObject) break;
+                    }
+                }
+            }
+        }
     }
 
     return recurseIntoValObject(valObject, parts, i);

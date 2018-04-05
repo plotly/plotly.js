@@ -366,6 +366,10 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._basePlotModules = [];
     newFullLayout._subplots = emptySubplotLists();
 
+    // for traces to request a default rangeslider on their x axes
+    // eg set `_requestRangeslider.x2 = true` for xaxis2
+    newFullLayout._requestRangeslider = {};
+
     // then do the data
     newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
     plots.supplyDataDefaults(newData, newFullData, newLayout, newFullLayout);

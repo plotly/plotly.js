@@ -35,11 +35,13 @@ function plot(gd, plotinfo, cdbox) {
         var sel = cd0.node3 = d3.select(this);
         var numBoxes = fullLayout._numBoxes;
 
+        var groupFraction = (1 - fullLayout.boxgap);
+
         var group = (fullLayout.boxmode === 'group' && numBoxes > 1);
         // box half width
-        var bdPos = t.dPos * (1 - fullLayout.boxgap) * (1 - fullLayout.boxgroupgap) / (group ? numBoxes : 1);
+        var bdPos = t.dPos * groupFraction * (1 - fullLayout.boxgroupgap) / (group ? numBoxes : 1);
         // box center offset
-        var bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numBoxes) * (1 - fullLayout.boxgap) : 0;
+        var bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numBoxes) * groupFraction : 0;
         // whisker width
         var wdPos = bdPos * trace.whiskerwidth;
 
@@ -62,6 +64,9 @@ function plot(gd, plotinfo, cdbox) {
         t.bPos = bPos;
         t.bdPos = bdPos;
         t.wdPos = wdPos;
+        // half-width within which to accept hover for this box
+        // always split the distance to the closest box
+        t.wHover = t.dPos * (group ? groupFraction / numBoxes : 1);
 
         // boxes and whiskers
         plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, t);
@@ -121,8 +126,8 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
                 valAxis.c2p(d.med, true),
                 Math.min(q1, q3) + 1, Math.max(q1, q3) - 1
             );
-            var lf = valAxis.c2p(trace.boxpoints === false ? d.min : d.lf, true);
-            var uf = valAxis.c2p(trace.boxpoints === false ? d.max : d.uf, true);
+            var lf = valAxis.c2p(trace.boxpoints ? d.lf : d.min, true);
+            var uf = valAxis.c2p(trace.boxpoints ? d.uf : d.max, true);
             var ln = valAxis.c2p(d.ln, true);
             var un = valAxis.c2p(d.un, true);
 

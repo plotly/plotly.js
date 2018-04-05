@@ -58,25 +58,26 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         hoverPseudoDistance, spikePseudoDistance;
 
     var boxDelta = t.bdPos;
+    var posAcceptance = t.wHover;
     var shiftPos = function(di) { return di.pos + t.bPos - pVal; };
 
     if(isViolin && trace.side !== 'both') {
         if(trace.side === 'positive') {
             dPos = function(di) {
                 var pos = shiftPos(di);
-                return Fx.inbox(pos, pos + boxDelta, hoverPseudoDistance);
+                return Fx.inbox(pos, pos + posAcceptance, hoverPseudoDistance);
             };
         }
         if(trace.side === 'negative') {
             dPos = function(di) {
                 var pos = shiftPos(di);
-                return Fx.inbox(pos - boxDelta, pos, hoverPseudoDistance);
+                return Fx.inbox(pos - posAcceptance, pos, hoverPseudoDistance);
             };
         }
     } else {
         dPos = function(di) {
             var pos = shiftPos(di);
-            return Fx.inbox(pos - boxDelta, pos + boxDelta, hoverPseudoDistance);
+            return Fx.inbox(pos - posAcceptance, pos + posAcceptance, hoverPseudoDistance);
         };
     }
 
@@ -133,10 +134,9 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     else if(Color.opacity(mc) && trace.boxpoints) pointData.color = mc;
     else pointData.color = trace.fillcolor;
 
-    pointData[pLetter + '0'] = pAxis.c2p(di.pos + t.bPos - t.bdPos, true);
-    pointData[pLetter + '1'] = pAxis.c2p(di.pos + t.bPos + t.bdPos, true);
+    pointData[pLetter + '0'] = pAxis.c2p(di.pos + t.bPos - boxDelta, true);
+    pointData[pLetter + '1'] = pAxis.c2p(di.pos + t.bPos + boxDelta, true);
 
-    Axes.tickText(pAxis, pAxis.c2l(di.pos), 'hover').text;
     pointData[pLetter + 'LabelVal'] = di.pos;
 
     var spikePosAttr = pLetter + 'Spike';
