@@ -42,14 +42,9 @@ function drag(gd) {
         var trace = cd0.trace;
         var scene = cd0.t._scene;
 
-        // FIXME: this probably should not be called for non-splom traces
-        if(!scene || !scene.matrixOptions) continue;
-
-        var opts = scene.matrixOptions;
-
         if(trace.type === 'splom' && scene && scene.matrix) {
             var activeLength = trace._activeLength;
-            var visibleLength = opts.data.length;
+            var visibleLength = scene.matrixOptions.data.length;
             var ranges = new Array(visibleLength);
             var k = 0;
 
@@ -72,7 +67,7 @@ function drag(gd) {
     }
 
     if(fullLayout._hasOnlyLargeSploms) {
-        fullLayout._modules[0].basePlotModule.drawGrid(gd);
+        drawGrid(gd);
     }
 }
 
@@ -233,7 +228,7 @@ module.exports = {
     drawFramework: Cartesian.drawFramework,
     plot: plot,
     drag: drag,
-    drawGrid: drawGrid,
     clean: clean,
+    updateFx: Cartesian.updateFx,
     toSVG: Cartesian.toSVG
 };
