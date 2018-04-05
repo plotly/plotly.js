@@ -65,10 +65,6 @@ module.exports = function calc(gd, trace) {
     // create conversion functions that depend on the data
     trace.setScale();
 
-    // Convert cartesian-space x/y coordinates to screen space pixel coordinates:
-    t.xp = trace._xp = map2dArray(trace._xp, x, xa.c2p);
-    t.yp = trace._yp = map2dArray(trace._yp, y, ya.c2p);
-
     // This is a rather expensive scan. Nothing guarantees monotonicity,
     // so we need to scan through all data to get proper ranges:
     var xrange = arrayMinmax(x);
@@ -92,8 +88,8 @@ module.exports = function calc(gd, trace) {
 
     // Enumerate the gridlines, both major and minor, and store them on the trace
     // object:
-    calcGridlines(trace, t, 'a', 'b');
-    calcGridlines(trace, t, 'b', 'a');
+    calcGridlines(trace, 'a', 'b');
+    calcGridlines(trace, 'b', 'a');
 
     // Calculate the text labels for each major gridline and store them on the
     // trace object:

@@ -11,7 +11,7 @@
 var Axes = require('../../plots/cartesian/axes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = function calcGridlines(trace, cd, axisLetter, crossAxisLetter) {
+module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
     var i, j, j0;
     var eps, bounds, n1, n2, n, value, v;
     var j1, v0, v1, d;
