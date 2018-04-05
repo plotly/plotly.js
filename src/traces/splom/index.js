@@ -74,6 +74,11 @@ function calc(gd, trace) {
         }
     }
 
+    // augment options with proper upper/lower halves
+    if(!trace.showupperhalf) opts.upper = false;
+    if(!trace.showlowerhalf) opts.lower = false;
+    if(!trace.diagonal.visible) opts.diagonal = false;
+
     var scene = stash._scene = sceneUpdate(gd, stash);
     if(!scene.matrix) scene.matrix = true;
     scene.matrixOptions = opts;
