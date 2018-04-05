@@ -45,7 +45,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         yAxisIds = dragOptions.yaxes.map(getAxId),
         allAxes = dragOptions.xaxes.concat(dragOptions.yaxes),
         filterPoly, testPoly, mergedPolygons, currentPolygon,
-        subtract = e.altKey;
+        subtract = e.altKey,
+        i, cd, trace, searchInfo, eventData;
 
 
     // take over selection polygons from prev mode, if any
@@ -63,6 +64,20 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     if(mode === 'lasso') {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
+
+    // FIXME: find a better way to clear selection outlines for splom
+    if(!e.shiftKey && !e.altKey) {
+        for(i = 0; i < gd.calcdata.length; i++) {
+            cd = gd.calcdata[i];
+            trace = cd[0].trace;
+
+            if(trace.type === 'splom') {
+                zoomLayer.selectAll('.select-outline').remove();
+                break;
+            }
+        }
+    }
+
     var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1, 2]);
 
     outlines.enter()
@@ -86,7 +101,6 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     var searchTraces = [];
     var throttleID = fullLayout._uid + constants.SELECTID;
     var selection = [];
-    var i, cd, trace, searchInfo, eventData;
 
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
@@ -355,6 +369,9 @@ function updateSelectedState(gd, searchTraces, eventData) {
                 searchTraces[i].cd[0].t.scene.clearSelect();
             }
         }
+
+        // FIXME: make sure there is no better way to clear selection for sploms
+        gd._fullLayout._zoomlayer.selectAll('.select-outline').remove();
     }
 
     for(i = 0; i < searchTraces.length; i++) {

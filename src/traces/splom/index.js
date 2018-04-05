@@ -110,8 +110,7 @@ function sceneUpdate(gd, stash) {
     var scene = stash._scene;
 
     var reset = {
-        dirty: true,
-        opts: null
+        dirty: true
     };
 
     var first = {
@@ -135,21 +134,6 @@ function sceneUpdate(gd, stash) {
             }
 
             scene.dirty = false;
-        };
-
-        // make sure canvas is clear
-        scene.clear = function clear() {
-            // TODO
-        };
-
-        // remove selection
-        scene.clearSelect = function clearSelect() {
-            if(!scene.selectBatch) return;
-            scene.selectBatch = null;
-            scene.unselectBatch = null;
-            scene.matrix.update(scene.matrixOptions);
-            scene.clear();
-            scene.draw();
         };
 
         // remove scene resources
@@ -189,22 +173,25 @@ function plotOne(gd, cd0) {
     var matrixData = scene.matrixOptions.data;
     var regl = fullLayout._glcanvas.data()[0].regl;
     var dragmode = fullLayout.dragmode;
+    var xa, ya;
 
     if(matrixData.length === 0) return;
+
 
     var k = 0, i;
     var activeLength = trace._activeLength;
     var visibleLength = matrixData.length;
+    var dataLength = matrixData[0].length;
     var viewOpts = {
         ranges: new Array(visibleLength),
         domains: new Array(visibleLength)
     };
 
-    for(var i = 0; i < activeLength; i++) {
+    for(i = 0; i < activeLength; i++) {
         if(!trace.dimensions[i].visible) continue;
 
-        var xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
-        var ya = AxisIDs.getFromId(gd, trace.yaxes[i]);
+        xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
+        ya = AxisIDs.getFromId(gd, trace.yaxes[i]);
         viewOpts.ranges[k] = [xa.range[0], ya.range[0], xa.range[1], ya.range[1]];
         viewOpts.domains[k] = [xa.domain[0], ya.domain[0], xa.domain[1], ya.domain[1]];
         k++;
@@ -236,21 +223,32 @@ function plotOne(gd, cd0) {
                 selDict[selPts[i]] = true;
             }
             var unselPts = [];
-            for(i = 0; i < matrixData[0].length; i++) {
+            for(i = 0; i < dataLength; i++) {
                 if(!selDict[i]) unselPts.push(i);
             }
             scene.unselectBatch = unselPts;
         }
 
         // precalculate px coords since we are not going to pan during select
-        // var xpx = new Array(stash.count);
-        // var ypx = new Array(stash.count);
-        // for(i = 0; i < stash.count; i++) {
-        //     xpx[i] = xaxis.c2p(x[i]);
-        //     ypx[i] = yaxis.c2p(y[i]);
-        // }
-        // stash.xpx = xpx;
-        // stash.ypx = ypx;
+        var xpx = new Array(visibleLength);
+        var ypx = new Array(visibleLength);
+        var data;
+        for(k = 0; k < visibleLength; k++) {
+            xa = AxisIDs.getFromId(gd, trace.xaxes[k]);
+            ya = AxisIDs.getFromId(gd, trace.yaxes[k]);
+
+            xpx[k] = new Array(dataLength);
+            ypx[k] = new Array(dataLength);
+
+            data = matrixData[k];
+
+            for(i = 0; i < dataLength; i++) {
+                xpx[k][i] = xa.c2p(data[i]);
+                ypx[k][i] = ya.c2p(data[i]);
+            }
+        }
+        stash.xpx = xpx;
+        stash.ypx = ypx;
 
 
         if(scene.selectBatch) {
@@ -325,24 +323,35 @@ function selectPoints(searchInfo, polygon) {
     var selection = [];
     var trace = cd[0].trace;
     var stash = cd[0].t;
-    var x = stash.x;
-    var y = stash.y;
     var scene = stash._scene;
+    var xa = searchInfo.xaxis;
+    var ya = searchInfo.yaxis;
+    var matrixData = scene.matrixOptions.data;
 
     if(!scene) return selection;
 
     var hasOnlyLines = (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return selection;
 
+    var xi, yi, i;
+    for(i = 0; i < trace.dimensions.length; i++) {
+        if(trace.xaxes[i] === xa._id) xi = i;
+        if(trace.yaxes[i] === ya._id) yi = i;
+    }
+
+    var xpx = stash.xpx[xi];
+    var ypx = stash.ypx[yi];
+    var x = matrixData[xi];
+    var y = matrixData[yi];
+
     // degenerate polygon does not enable selection
     // filter out points by visible scatter ones
     var els = null;
     var unels = null;
-    var i;
     if(polygon !== false && !polygon.degenerate) {
         els = [], unels = [];
-        for(i = 0; i < stash.count; i++) {
-            if(polygon.contains([stash.xpx[i], stash.ypx[i]])) {
+        for(i = 0; i < x.length; i++) {
+            if(polygon.contains([xpx[i], ypx[i]])) {
                 els.push(i);
                 selection.push({
                     pointNumber: i,
@@ -371,11 +380,13 @@ function selectPoints(searchInfo, polygon) {
             scene.unselectBatch = [];
         }
         // we should turn scatter2d into unselected once we have any points selected
-        scene.matrix.update(scene.unselectedOptions);
+        scene.matrix.update(scene.unselectedOptions, scene.selectedOptions);
     }
 
     scene.selectBatch = els;
     scene.unselectBatch = unels;
+
+    scene.matrix.regl.clear({ color: true });
 
     return selection;
 }
@@ -384,7 +395,6 @@ function style(gd, cd) {
     if(cd) {
         var stash = cd[0].t;
         var scene = stash._scene;
-        scene.clear();
         scene.draw();
     }
 }
