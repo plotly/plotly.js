@@ -36,7 +36,7 @@ var helpers = require('./helpers');
 var subroutines = require('./subroutines');
 var editTypes = require('./edit_types');
 
-var cartesianConstants = require('../plots/cartesian/constants');
+var AX_NAME_PATTERN = require('../plots/cartesian/constants').AX_NAME_PATTERN;
 
 var numericNameWarningCount = 0;
 var numericNameWarningCountLimit = 5;
@@ -1296,8 +1296,8 @@ exports.restyle = function restyle(gd, astr, val, _traces) {
 
     var traces = helpers.coerceTraceIndices(gd, _traces);
 
-    var specs = _restyle(gd, aobj, traces),
-        flags = specs.flags;
+    var specs = _restyle(gd, aobj, traces);
+    var flags = specs.flags;
 
     // clear calcdata and/or axis types if required so they get regenerated
     if(flags.clearCalc) gd.calcdata = undefined;
@@ -1661,8 +1661,8 @@ exports.relayout = function relayout(gd, astr, val) {
 
     if(Object.keys(aobj).length) gd.changed = true;
 
-    var specs = _relayout(gd, aobj),
-        flags = specs.flags;
+    var specs = _relayout(gd, aobj);
+    var flags = specs.flags;
 
     // clear calcdata if required
     if(flags.calc) gd.calcdata = undefined;
@@ -1923,7 +1923,7 @@ function _relayout(gd, aobj) {
             }
             Lib.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
         }
-        else if(pleaf.match(cartesianConstants.AX_NAME_PATTERN)) {
+        else if(pleaf.match(AX_NAME_PATTERN)) {
             var fullProp = Lib.nestedProperty(fullLayout, ai).get(),
                 newType = (vi || {}).type;
 
@@ -1976,8 +1976,9 @@ function _relayout(gd, aobj) {
             if(checkForAutorange && (refAutorange(gd, objToAutorange, 'x') || refAutorange(gd, objToAutorange, 'y'))) {
                 flags.calc = true;
             }
-            else editTypes.update(flags, updateValObject);
-
+            else {
+                editTypes.update(flags, updateValObject);
+            }
 
             // prepare the edits object we'll send to applyContainerArrayChanges
             if(!arrayEdits[arrayStr]) arrayEdits[arrayStr] = {};
@@ -2128,11 +2129,11 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
 
     var traces = helpers.coerceTraceIndices(gd, _traces);
 
-    var restyleSpecs = _restyle(gd, Lib.extendFlat({}, traceUpdate), traces),
-        restyleFlags = restyleSpecs.flags;
+    var restyleSpecs = _restyle(gd, Lib.extendFlat({}, traceUpdate), traces);
+    var restyleFlags = restyleSpecs.flags;
 
-    var relayoutSpecs = _relayout(gd, Lib.extendFlat({}, layoutUpdate)),
-        relayoutFlags = relayoutSpecs.flags;
+    var relayoutSpecs = _relayout(gd, Lib.extendFlat({}, layoutUpdate));
+    var relayoutFlags = relayoutSpecs.flags;
 
     // clear calcdata and/or axis types if required
     if(restyleFlags.clearCalc || relayoutFlags.calc) gd.calcdata = undefined;
