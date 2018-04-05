@@ -35,7 +35,7 @@ module.exports = function plot(gd, plotinfo, cdcontours) {
 function plotOne(gd, plotinfo, cd) {
     var trace = cd[0].trace;
 
-    var carpet = trace.carpetTrace = lookupCarpet(gd, trace);
+    var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
     var carpetcd = gd.calcdata[carpet.index][0];
 
     if(!carpet.visible || carpet.visible === 'legendonly') return;

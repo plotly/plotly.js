@@ -21,7 +21,7 @@ module.exports = function emptyPathinfo(contours, plotinfo, cd0) {
     var pathinfo = [];
     var end = endPlus(contoursFinal);
 
-    var carpet = cd0.trace.carpetTrace;
+    var carpet = cd0.trace._carpetTrace;
 
     var basePathinfo = carpet ? {
         // store axes so we can convert to px
