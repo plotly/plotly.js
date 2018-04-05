@@ -100,10 +100,10 @@ module.exports = {
         valType: 'info_array',
         role: 'info',
         items: [
-            {valType: 'any', editType: 'plot+margins', impliedEdits: {'^autorange': false}},
-            {valType: 'any', editType: 'plot+margins', impliedEdits: {'^autorange': false}}
+            {valType: 'any', editType: 'axrange+margins', impliedEdits: {'^autorange': false}},
+            {valType: 'any', editType: 'axrange+margins', impliedEdits: {'^autorange': false}}
         ],
-        editType: 'plot+margins',
+        editType: 'axrange+margins',
         impliedEdits: {'autorange': false},
         description: [
             'Sets the range of this axis.',

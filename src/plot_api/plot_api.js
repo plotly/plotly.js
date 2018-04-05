@@ -1683,6 +1683,26 @@ exports.relayout = function relayout(gd, astr, val) {
 
         if(flags.legend) seq.push(subroutines.doLegend);
         if(flags.layoutstyle) seq.push(subroutines.layoutStyles);
+
+        if(flags.axrange) {
+            // N.B. leave as sequence of subroutines (for now) instead of
+            // subroutine of its own so that finalDraw always gets
+            // executed after drawData
+            seq.push(
+                // TODO
+                // no test fail when commenting out doAutoRangeAndConstraints,
+                // but I think we do need this (maybe just the enforce part?)
+                // Am I right?
+                subroutines.doAutoRangeAndConstraints,
+                // TODO
+                // can target specific axes,
+                // do not have to redraw all axes here
+                subroutines.doTicksRelayout,
+                subroutines.drawData,
+                subroutines.finalDraw
+            );
+        }
+
         if(flags.ticks) seq.push(subroutines.doTicksRelayout);
         if(flags.modebar) seq.push(subroutines.doModeBar);
         if(flags.camera) seq.push(subroutines.doCamera);
@@ -2147,6 +2167,14 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
         if(restyleFlags.colorbars) seq.push(subroutines.doColorBars);
         if(relayoutFlags.legend) seq.push(subroutines.doLegend);
         if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
+        if(relayoutFlags.axrange) {
+            seq.push(
+                subroutines.doAutoRangeAndConstraints,
+                subroutines.doTicksRelayout,
+                subroutines.drawData,
+                subroutines.finalDraw
+            );
+        }
         if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
         if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
         if(relayoutFlags.camera) seq.push(subroutines.doCamera);
@@ -2299,6 +2327,14 @@ exports.react = function(gd, data, layout, config) {
             if(restyleFlags.colorbars) seq.push(subroutines.doColorBars);
             if(relayoutFlags.legend) seq.push(subroutines.doLegend);
             if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
+            if(relayoutFlags.axrange) {
+                seq.push(
+                    subroutines.doAutoRangeAndConstraints,
+                    subroutines.doTicksRelayout,
+                    subroutines.drawData,
+                    subroutines.finalDraw
+                );
+            }
             if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
             if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
             if(relayoutFlags.camera) seq.push(subroutines.doCamera);
