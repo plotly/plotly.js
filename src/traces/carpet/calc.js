@@ -11,7 +11,6 @@
 var Axes = require('../../plots/cartesian/axes');
 var cheaterBasis = require('./cheater_basis');
 var arrayMinmax = require('./array_minmax');
-var map2dArray = require('./map_2d_array');
 var calcGridlines = require('./calc_gridlines');
 var calcLabels = require('./calc_labels');
 var calcClipPath = require('./calc_clippath');
