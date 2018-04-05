@@ -22,7 +22,7 @@ Heatmap.hoverPoints = require('./hover');
 Heatmap.moduleType = 'trace';
 Heatmap.name = 'heatmap';
 Heatmap.basePlotModule = require('../../plots/cartesian');
-Heatmap.categories = ['cartesian', '2dMap'];
+Heatmap.categories = ['cartesian', 'svg', '2dMap'];
 Heatmap.meta = {
     description: [
         'The data that describes the heatmap value-to-color mapping',

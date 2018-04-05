@@ -14,7 +14,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'ohlc',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'showLegend'],
+    categories: ['cartesian', 'svg', 'showLegend'],
     meta: {
         description: [
             'The ohlc (short for Open-High-Low-Close) is a style of financial chart describing',

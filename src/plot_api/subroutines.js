@@ -179,7 +179,7 @@ exports.lsInner = function(gd) {
                 .append('rect');
         });
 
-        plotClip.select('rect').attr({
+        plotinfo.clipRect = plotClip.select('rect').attr({
             width: xa._length,
             height: ya._length
         });
