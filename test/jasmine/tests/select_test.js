@@ -552,6 +552,54 @@ describe('@flaky Test select box and lasso in general:', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should select the right data with the corresponding select direction', function(done) {
+
+        var gd = createGraphDiv();
+
+        var selectPath = [[170 - 68, 100 - 96], [255 - 68, 160 - 96]];
+
+        Plotly.newPlot(gd, [
+            {x: [1, 1, 1, 1, 1, 2, 2, 2, 3, 3], type: 'histogram'},
+            {x: [1, 2, 3], y: [-1, -2, -3], type: 'bar'}
+        ], {
+            width: 400,
+            height: 300,
+            showlegend: false,
+            dragmode: 'select'
+        })
+            .then(function() {
+
+                // expect(gd.fullLayout.selectdirection).toBe('any');
+
+                resetEvents(gd);
+
+                drag(selectPath);
+
+                selectedPromise.then(function() {
+                    expect(selectedData.points.length).toBe(1);
+                    expect(selectedData.points[0].x).toBe(1.8);
+                    expect(selectedData.points[0].y).toBe(3);
+                });
+
+                // do a drag and check that the selection is correct for the default `selectdirection`
+
+                return Plotly.relayout(gd, {selectdirection: 'h'});
+            })
+            .then(function() {
+                // do probably the SAME drag and check that the selection is correct for the `selectdirection='h'`
+
+                return Plotly.relayout(gd, {selectdirection: 'v'});
+            })
+            .then(function() {
+                // ...
+            })
+            .catch(fail) // hmm, we should change the name of this import to failTest, since fail is already a jasmine global, for sync failure, we're overriding it here with our async version (we've already done this in other places)
+            .then(done);
+
+
+    });
+
 });
 
 describe('@flaky Test select box and lasso per trace:', function() {
