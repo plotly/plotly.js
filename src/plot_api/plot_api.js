@@ -29,7 +29,6 @@ var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
-var clearGlCanvases = require('../lib/clear_gl_canvases');
 
 var defaultConfig = require('./plot_config');
 var manageArrays = require('./manage_arrays');
@@ -38,10 +37,6 @@ var subroutines = require('./subroutines');
 var editTypes = require('./edit_types');
 
 var cartesianConstants = require('../plots/cartesian/constants');
-var axisConstraints = require('../plots/cartesian/constraints');
-var enforceAxisConstraints = axisConstraints.enforce;
-var cleanAxisConstraints = axisConstraints.clean;
-var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
 
 var numericNameWarningCount = 0;
 var numericNameWarningCountLimit = 5;
@@ -331,15 +326,7 @@ exports.plot = function(gd, data, layout, config) {
     function doAutoRangeAndConstraints() {
         if(gd._transitioning) return;
 
-        var axList = Axes.list(gd, '', true);
-        for(var i = 0; i < axList.length; i++) {
-            var ax = axList[i];
-            cleanAxisConstraints(gd, ax);
-
-            doAutoRange(ax);
-        }
-
-        enforceAxisConstraints(gd);
+        subroutines.doAutoRangeAndConstraints(gd);
 
         // store initial ranges *after* enforcing constraints, otherwise
         // we will never look like we're at the initial ranges
@@ -349,83 +336,6 @@ exports.plot = function(gd, data, layout, config) {
     // draw ticks, titles, and calculate axis scaling (._b, ._m)
     function drawAxes() {
         return Axes.doTicks(gd, graphWasEmpty ? '' : 'redraw');
-    }
-
-    // Now plot the data
-    function drawData() {
-        var calcdata = gd.calcdata,
-            i,
-            rangesliderContainers = fullLayout._infolayer.selectAll('g.rangeslider-container');
-
-        // in case of traces that were heatmaps or contour maps
-        // previously, remove them and their colorbars explicitly
-        for(i = 0; i < calcdata.length; i++) {
-            var trace = calcdata[i][0].trace,
-                isVisible = (trace.visible === true),
-                uid = trace.uid;
-
-            if(!isVisible || !Registry.traceIs(trace, '2dMap')) {
-                var query = (
-                    '.hm' + uid +
-                    ',.contour' + uid +
-                    ',#clip' + uid
-                );
-
-                fullLayout._paper
-                    .selectAll(query)
-                    .remove();
-
-                rangesliderContainers
-                    .selectAll(query)
-                    .remove();
-            }
-
-            if(!isVisible || !trace._module.colorbar) {
-                fullLayout._infolayer.selectAll('.cb' + uid).remove();
-            }
-        }
-
-        // TODO does this break or slow down parcoords??
-        clearGlCanvases(gd);
-
-        // loop over the base plot modules present on graph
-        var basePlotModules = fullLayout._basePlotModules;
-        for(i = 0; i < basePlotModules.length; i++) {
-            basePlotModules[i].plot(gd);
-        }
-
-        // keep reference to shape layers in subplots
-        var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
-        fullLayout._shapeSubplotLayers = layerSubplot.selectAll('.shapelayer');
-
-        // styling separate from drawing
-        Plots.style(gd);
-
-        // show annotations and shapes
-        Registry.getComponentMethod('shapes', 'draw')(gd);
-        Registry.getComponentMethod('annotations', 'draw')(gd);
-
-        // source links
-        Plots.addLinks(gd);
-
-        // Mark the first render as complete
-        fullLayout._replotting = false;
-
-        return Plots.previousPromises(gd);
-    }
-
-    // An initial paint must be completed before these components can be
-    // correctly sized and the whole plot re-margined. fullLayout._replotting must
-    // be set to false before these will work properly.
-    function finalDraw() {
-        Registry.getComponentMethod('shapes', 'draw')(gd);
-        Registry.getComponentMethod('images', 'draw')(gd);
-        Registry.getComponentMethod('annotations', 'draw')(gd);
-        Registry.getComponentMethod('legend', 'draw')(gd);
-        Registry.getComponentMethod('rangeslider', 'draw')(gd);
-        Registry.getComponentMethod('rangeselector', 'draw')(gd);
-        Registry.getComponentMethod('sliders', 'draw')(gd);
-        Registry.getComponentMethod('updatemenus', 'draw')(gd);
     }
 
     var seq = [
@@ -439,9 +349,10 @@ exports.plot = function(gd, data, layout, config) {
     seq.push(subroutines.layoutStyles);
     if(hasCartesian) seq.push(drawAxes);
     seq.push(
-        drawData,
-        finalDraw,
+        subroutines.drawData,
+        subroutines.finalDraw,
         initInteractions,
+        Plots.addLinks,
         Plots.rehover,
         Plots.previousPromises
     );

@@ -11,7 +11,9 @@
 var d3 = require('d3');
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
+
 var Lib = require('../lib');
+var clearGlCanvases = require('../lib/clear_gl_canvases');
 
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
@@ -21,6 +23,10 @@ var Axes = require('../plots/cartesian/axes');
 var initInteractions = require('../plots/cartesian/graph_interact');
 var cartesianConstants = require('../plots/cartesian/constants');
 var alignmentConstants = require('../constants/alignment');
+var axisConstraints = require('../plots/cartesian/constraints');
+var enforceAxisConstraints = axisConstraints.enforce;
+var cleanAxisConstraints = axisConstraints.clean;
+var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
 
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, exports.lsInner], gd);
@@ -479,4 +485,90 @@ exports.doCamera = function(gd) {
 
         scene.setCamera(sceneLayout.camera);
     }
+};
+
+exports.drawData = function(gd) {
+    var fullLayout = gd._fullLayout;
+    var calcdata = gd.calcdata;
+    var rangesliderContainers = fullLayout._infolayer.selectAll('g.rangeslider-container');
+    var i;
+
+    // in case of traces that were heatmaps or contour maps
+    // previously, remove them and their colorbars explicitly
+    for(i = 0; i < calcdata.length; i++) {
+        var trace = calcdata[i][0].trace;
+        var isVisible = (trace.visible === true);
+        var uid = trace.uid;
+
+        if(!isVisible || !Registry.traceIs(trace, '2dMap')) {
+            var query = (
+                '.hm' + uid +
+                ',.contour' + uid +
+                ',#clip' + uid
+            );
+
+            fullLayout._paper
+                .selectAll(query)
+                .remove();
+
+            rangesliderContainers
+                .selectAll(query)
+                .remove();
+        }
+
+        if(!isVisible || !trace._module.colorbar) {
+            fullLayout._infolayer.selectAll('.cb' + uid).remove();
+        }
+    }
+
+    // TODO does this break or slow down parcoords??
+    clearGlCanvases(gd);
+
+    // loop over the base plot modules present on graph
+    var basePlotModules = fullLayout._basePlotModules;
+    for(i = 0; i < basePlotModules.length; i++) {
+        basePlotModules[i].plot(gd);
+    }
+
+    // keep reference to shape layers in subplots
+    var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
+    fullLayout._shapeSubplotLayers = layerSubplot.selectAll('.shapelayer');
+
+    // styling separate from drawing
+    Plots.style(gd);
+
+    // show annotations and shapes
+    Registry.getComponentMethod('shapes', 'draw')(gd);
+    Registry.getComponentMethod('annotations', 'draw')(gd);
+
+    // Mark the first render as complete
+    fullLayout._replotting = false;
+
+    return Plots.previousPromises(gd);
+};
+
+exports.doAutoRangeAndConstraints = function(gd) {
+    var axList = Axes.list(gd, '', true);
+
+    for(var i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+        cleanAxisConstraints(gd, ax);
+        doAutoRange(ax);
+    }
+
+    enforceAxisConstraints(gd);
+};
+
+// An initial paint must be completed before these components can be
+// correctly sized and the whole plot re-margined. fullLayout._replotting must
+// be set to false before these will work properly.
+exports.finalDraw = function(gd) {
+    Registry.getComponentMethod('shapes', 'draw')(gd);
+    Registry.getComponentMethod('images', 'draw')(gd);
+    Registry.getComponentMethod('annotations', 'draw')(gd);
+    Registry.getComponentMethod('legend', 'draw')(gd);
+    Registry.getComponentMethod('rangeslider', 'draw')(gd);
+    Registry.getComponentMethod('rangeselector', 'draw')(gd);
+    Registry.getComponentMethod('sliders', 'draw')(gd);
+    Registry.getComponentMethod('updatemenus', 'draw')(gd);
 };
