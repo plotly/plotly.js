@@ -55,7 +55,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // within DBLCLICKDELAY so we can check for click or doubleclick events
     // dragged stores whether a drag has occurred, so we don't have to
     // redraw unnecessarily, ie if no move bigger than MINDRAG or MINZOOM px
-    var fullLayout = gd._fullLayout;
     var zoomlayer = gd._fullLayout._zoomlayer;
     var isMainDrag = (ns + ew === 'nsew');
     var singleEnd = (ns + ew).length === 1;
@@ -111,6 +110,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     recomputeAxisLists();
 
+    var cursor = getDragCursor(yActive + xActive, gd._fullLayout.dragmode, isMainDrag);
     var dragger = makeRectDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
 
     var allFixedRanges = !yActive && !xActive;
@@ -130,6 +130,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         plotinfo: plotinfo,
         prepFn: function(e, startX, startY) {
             var dragModeNow = gd._fullLayout.dragmode;
+
+            recomputeAxisLists();
 
             if(!allFixedRanges) {
                 if(isMainDrag) {
@@ -204,7 +206,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                         .call(svgTextUtils.makeEditable, {
                             gd: gd,
                             immediate: true,
-                            background: fullLayout.paper_bgcolor,
+                            background: gd._fullLayout.paper_bgcolor,
                             text: String(initialText),
                             fill: ax.tickfont ? ax.tickfont.color : '#444',
                             horizontalAlign: hAlign,
@@ -354,7 +356,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // deactivate mousewheel scrolling on embedded graphs
         // devs can override this with layout._enablescrollzoom,
         // but _ ensures this setting won't leave their page
-        if(!gd._context.scrollZoom && !fullLayout._enablescrollzoom) {
+        if(!gd._context.scrollZoom && !gd._fullLayout._enablescrollzoom) {
             return;
         }
 
@@ -455,8 +457,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(gd._transitioningWithDuration) {
             return;
         }
-
-        recomputeAxisLists();
 
         if(xActive === 'ew' || yActive === 'ns') {
             if(xActive) dragAxList(xa, dx);
@@ -584,9 +584,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // annotations and shapes 'draw' method is slow,
         // use the finer-grained 'drawOne' method instead
 
-        redrawObjs(fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+        redrawObjs(gd._fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
+        redrawObjs(gd._fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
+        redrawObjs(gd._fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
     }
 
     function doubleClick() {
@@ -892,9 +892,12 @@ function dZoom(d) {
         1 / (1 / Math.max(d, -0.3) + 3.222));
 }
 
-function getDragCursor(nsew, dragmode) {
+function getDragCursor(nsew, dragmode, isMainDrag) {
     if(!nsew) return 'pointer';
     if(nsew === 'nsew') {
+        // in this case here, clear cursor and
+        // use the cursor style set on <g .draglayer>
+        if(isMainDrag) return '';
         if(dragmode === 'pan') return 'move';
         return 'crosshair';
     }

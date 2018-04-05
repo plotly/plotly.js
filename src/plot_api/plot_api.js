@@ -22,11 +22,11 @@ var Registry = require('../registry');
 var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
 var Polar = require('../plots/polar/legacy');
-var initInteractions = require('../plots/cartesian/graph_interact');
 
 var Axes = require('../plots/cartesian/axes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
+var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
 

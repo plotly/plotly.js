@@ -19,8 +19,8 @@ var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
+
 var Axes = require('../plots/cartesian/axes');
-var initInteractions = require('../plots/cartesian/graph_interact');
 var cartesianConstants = require('../plots/cartesian/constants');
 var alignmentConstants = require('../constants/alignment');
 var axisConstraints = require('../plots/cartesian/constraints');
@@ -465,7 +465,6 @@ exports.doModeBar = function(gd) {
     var fullLayout = gd._fullLayout;
 
     ModeBar.manage(gd);
-    initInteractions(gd);
 
     for(var i = 0; i < fullLayout._basePlotModules.length; i++) {
         var updateFx = fullLayout._basePlotModules[i].updateFx;

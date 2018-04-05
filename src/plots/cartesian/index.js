@@ -548,3 +548,5 @@ exports.toSVG = function(gd) {
 
     canvases.each(canvasToImage);
 };
+
+exports.updateFx = require('./graph_interact').updateFx;

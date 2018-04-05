@@ -13,11 +13,12 @@ var d3 = require('d3');
 
 var Fx = require('../../components/fx');
 var dragElement = require('../../components/dragelement');
+var setCursor = require('../../lib/setcursor');
 
-var constants = require('./constants');
 var makeDragBox = require('./dragbox').makeDragBox;
+var DRAGGERSIZE = require('./constants').DRAGGERSIZE;
 
-module.exports = function initInteractions(gd) {
+exports.initInteractions = function initInteractions(gd) {
     var fullLayout = gd._fullLayout;
 
     if(gd._context.staticPlot) {
@@ -43,11 +44,8 @@ module.exports = function initInteractions(gd) {
 
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
-
         var xa = plotinfo.xaxis;
         var ya = plotinfo.yaxis;
-
-        var DRAGGERSIZE = constants.DRAGGERSIZE;
 
         // main and corner draggers need not be repeated for
         // overlaid subplots - these draggers drag them all
@@ -139,17 +137,29 @@ module.exports = function initInteractions(gd) {
     var hoverLayer = fullLayout._hoverlayer.node();
 
     hoverLayer.onmousemove = function(evt) {
-        evt.target = fullLayout._lasthover;
+        evt.target = gd._fullLayout._lasthover;
         Fx.hover(gd, evt, fullLayout._hoversubplot);
     };
 
     hoverLayer.onclick = function(evt) {
-        evt.target = fullLayout._lasthover;
+        evt.target = gd._fullLayout._lasthover;
         Fx.click(gd, evt);
     };
 
     // also delegate mousedowns... TODO: does this actually work?
     hoverLayer.onmousedown = function(evt) {
-        fullLayout._lasthover.onmousedown(evt);
+        gd._fullLayout._lasthover.onmousedown(evt);
     };
+
+    exports.updateFx(fullLayout);
+};
+
+// Minimal set of update needed on 'modebar' edits.
+// We only need to update the <g .draglayer> cursor style.
+//
+// Note that changing the axis configuration and/or the fixedrange attribute
+// should trigger a full initInteractions.
+exports.updateFx = function(fullLayout) {
+    var cursor = fullLayout.dragmode === 'pan' ? 'move' : 'crosshair';
+    setCursor(fullLayout._draggers, cursor);
 };
