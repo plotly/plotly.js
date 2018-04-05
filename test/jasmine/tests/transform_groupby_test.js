@@ -5,6 +5,7 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
+var failTest = require('../assets/fail_test');
 
 var assertDims = customAssertions.assertDims;
 var assertStyle = customAssertions.assertStyle;
@@ -72,9 +73,9 @@ describe('groupby', function() {
                 expect(gd._fullData[1].transforms[0]._indexToPoints).toEqual({0: [2], 1: [4], 2: [5]});
 
                 assertDims([4, 3]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Accepts deprecated object notation for styles', function(done) {
@@ -122,7 +123,9 @@ describe('groupby', function() {
 
                 expect(gd._fullData[0].marker.opacity).toEqual(1);
                 expect(gd._fullData[1].marker.opacity).toEqual(1);
-            }).then(done);
+            })
+            .catch(failTest)
+            .then(done);
 
             // The final test for restyle updates using deprecated syntax
             // is ommitted since old style syntax is *only* sanitized on
@@ -174,9 +177,9 @@ describe('groupby', function() {
                     ['rgb(0, 128, 0)', 'rgb(255, 0, 0)'],
                     [0.4, 0.4]
                 );
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.extendTraces should work', function(done) {
@@ -202,9 +205,9 @@ describe('groupby', function() {
                 expect(gd._fullData[1].x.length).toEqual(5);
 
                 assertDims([5, 5]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.deleteTraces should work', function(done) {
@@ -222,9 +225,9 @@ describe('groupby', function() {
                 return Plotly.deleteTraces(gd, [0]);
             }).then(function() {
                 assertDims([]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('toggling trace visibility should work', function(done) {
@@ -246,9 +249,9 @@ describe('groupby', function() {
                 return Plotly.restyle(gd, 'visible', [true, true], [0, 1]);
             }).then(function() {
                 assertDims([4, 3, 4, 3]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -359,9 +362,9 @@ describe('groupby', function() {
                 expect(gd._fullData[1].y).toEqual([3, 2, 3]);
 
                 assertDims([4, 3]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.plot should plot the transform traces', function(done) {
@@ -376,9 +379,9 @@ describe('groupby', function() {
 
                 expect(gd._fullData.length).toEqual(1);
                 assertDims([7]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.plot should plot the transform traces', function(done) {
@@ -396,9 +399,9 @@ describe('groupby', function() {
                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
                 assertDims([7]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.plot should plot the transform traces', function(done) {
@@ -417,9 +420,9 @@ describe('groupby', function() {
                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
                 assertDims([7]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('Plotly.plot should plot the transform traces', function(done) {
@@ -438,9 +441,9 @@ describe('groupby', function() {
                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
                 assertDims([7]);
-
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -478,9 +481,9 @@ describe('groupby', function() {
                     expect(gd._fullData[1].marker.line.width).toEqual([4, 2, 3]);
 
                     assertDims([4, 3]);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             };
         }
 
@@ -611,8 +614,9 @@ describe('groupby', function() {
             Plotly.plot(gd, data).then(function() {
                 expect(gd._fullData[0].marker.line.color).toEqual(['orange', 'red', 'cyan', 'pink']);
                 expect(gd._fullData[1].marker.line.color).toEqual('yellow');
-                done();
-            });
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('passes with no explicit styling for the individual group', test(mockData4));
@@ -649,9 +653,9 @@ describe('groupby', function() {
                     expect(gd._fullData[0].marker.line.width).toEqual([4, 2, 4, 2, 2, 3, 3]);
 
                     assertDims([7]);
-
-                    done();
-                });
+                })
+                .catch(failTest)
+                .then(done);
             };
         }
 
