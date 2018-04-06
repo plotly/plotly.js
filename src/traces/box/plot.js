@@ -222,7 +222,7 @@ function plotPoints(sel, axes, trace, t) {
                         maxJitterFactor = Math.max(jitterFactor, maxJitterFactor);
                     }
                 }
-                newJitter = trace.jitter * 2 / maxJitterFactor;
+                newJitter = trace.jitter * 2 / (maxJitterFactor || 1);
             }
 
             // fills in 'x' and 'y' in calcdata 'pts' item

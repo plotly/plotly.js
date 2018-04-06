@@ -5,7 +5,7 @@ var Box = require('@src/traces/box');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 
 var customAssertions = require('../assets/custom_assertions');
@@ -313,7 +313,38 @@ describe('Test box hover:', function() {
         name: ''
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(fail).then(done);
+            run(specs).catch(failTest).then(done);
         });
+    });
+});
+
+describe('Box edge cases', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('does not barf on a single outlier with jitter', function(done) {
+        var trace = {
+            boxpoints: 'outliers',
+            jitter: 0.7,
+            type: 'box',
+            y: [46.505, 0.143, 0.649, 0.059, 513, 90, 234]
+        };
+
+        Plotly.newPlot(gd, [trace])
+        .then(function() {
+            var outliers = [];
+            gd.calcdata[0][0].pts.forEach(function(pt) {
+                if(pt.x !== undefined) outliers.push(pt);
+            });
+            expect(outliers.length).toBe(1);
+            expect(outliers[0].x).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
