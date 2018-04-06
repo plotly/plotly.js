@@ -74,11 +74,6 @@ function calc(gd, trace) {
         }
     }
 
-    // augment options with proper upper/lower halves
-    if(!trace.showupperhalf) opts.upper = false;
-    if(!trace.showlowerhalf) opts.lower = false;
-    if(!trace.diagonal.visible) opts.diagonal = false;
-
     var scene = stash._scene = sceneUpdate(gd, stash);
     if(!scene.matrix) scene.matrix = true;
     scene.matrixOptions = opts;
@@ -175,13 +170,20 @@ function plotOne(gd, cd0) {
     var trace = cd0.trace;
     var stash = cd0.t;
     var scene = stash._scene;
-    var matrixData = scene.matrixOptions.data;
+    var matrixOpts = scene.matrixOptions;
+    var matrixData = matrixOpts.data;
     var regl = fullLayout._glcanvas.data()[0].regl;
     var dragmode = fullLayout.dragmode;
     var xa, ya;
 
     if(matrixData.length === 0) return;
 
+    // augment options with proper upper/lower halves
+    matrixOpts.upper = trace.showupperhalf;
+    matrixOpts.lower = trace.showlowerhalf;
+    matrixOpts.diagonal = trace.diagonal.visible;
+
+    console.log(matrixOpts.upper, matrixOpts.lower)
 
     var k = 0, i;
     var activeLength = trace._activeLength;
@@ -257,7 +259,7 @@ function plotOne(gd, cd0) {
 
 
         if(scene.selectBatch) {
-            scene.matrix.update(scene.matrixOptions, scene.matrixOptions);
+            scene.matrix.update(matrixOpts, matrixOpts);
             scene.matrix.update(scene.unselectedOptions, scene.selectedOptions);
             scene.matrix.update(viewOpts, viewOpts);
         }
@@ -267,7 +269,7 @@ function plotOne(gd, cd0) {
         }
     }
     else {
-        scene.matrix.update(scene.matrixOptions);
+        scene.matrix.update(matrixOpts);
         scene.matrix.update(viewOpts);
         stash.xpx = stash.ypx = null;
     }

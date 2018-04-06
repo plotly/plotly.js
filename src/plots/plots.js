@@ -367,6 +367,7 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._basePlotModules = [];
     var subplots = newFullLayout._subplots = emptySubplotLists();
     var splomAxes = newFullLayout._splomAxes = {x: {}, y: {}};
+    var splomSubplots = newFullLayout._splomSubplots = {}
 
     // then do the data
     newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
@@ -381,10 +382,12 @@ plots.supplyDefaults = function(gd) {
 
         for(i = 0; i < splomXa.length; i++) {
             Lib.pushUnique(subplots.xaxis, splomXa[i]);
-            for(j = 0; j < splomYa.length; j++) {
-                if(i === 0) Lib.pushUnique(subplots.yaxis, splomYa[j]);
-                Lib.pushUnique(subplots.cartesian, splomXa[i] + splomYa[j]);
-            }
+        }
+        for(i = 0; i < splomYa.length; i++) {
+            Lib.pushUnique(subplots.yaxis, splomYa[i]);
+        }
+        for(var k in splomSubplots) {
+            Lib.pushUnique(subplots.cartesian, k);
         }
     }
 

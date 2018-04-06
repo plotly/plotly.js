@@ -47,15 +47,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
     }
 
-    handleAxisDefaults(traceIn, traceOut, layout, coerce);
+    // TODO if all 3 below are false,
+    // should we set `visible: false` and exit early?
 
-    // TODO not implemented yet
     coerce('diagonal.visible');
-    // more to come
-
-    // TODO not implemented yet
     coerce('showupperhalf');
     coerce('showlowerhalf');
+
+    handleAxisDefaults(traceIn, traceOut, layout, coerce);
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
@@ -111,7 +110,15 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     var dimLength = dimensions.length;
     var xaxesDflt = new Array(dimLength);
     var yaxesDflt = new Array(dimLength);
-    var i;
+    var i, j;
+
+    var showUpper = traceOut.showupperhalf;
+    var showLower = traceOut.showlowerhalf;
+    var showDiagonal = traceOut.diagonal.visible;
+
+//     var axLen = !showDiagonal && (!showUpper || !showLower) ? 
+//         dimLength - 1 : 
+//         dimLength;
 
     for(i = 0; i < dimLength; i++) {
         xaxesDflt[i] = 'x' + (i ? i + 1 : '');
@@ -146,4 +153,20 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
             layout._splomAxes.y[ya] = dim.label || '';
         }
     }
+
+    for(i = 0; i < activeLength; i++) {
+        for(j = 0; j < activeLength; j++) {
+            var id = [xaxes[i] + yaxes[j]];
+
+            if(i > j && showUpper) {
+                layout._splomSubplots[id] = 1;
+            } else if(i < j && showLower) {
+                layout._splomSubplots[id] = 1;
+            } else if(i === j && showDiagonal) {
+                layout._splomSubplots[id] = 1;
+            }
+        }
+    }
+
+//     console.log(Object.keys(layout._splomSubplots))
 }
