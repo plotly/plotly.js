@@ -451,7 +451,12 @@ module.exports = function setConvert(ax, fullLayout) {
         var r0 = ax.r2l(ax.range[0]);
         var r1 = ax.r2l(ax.range[1]);
 
-        return Math.min(r0, r1) <= coord && coord <= Math.max(r0, r1);
+        if(r0 < r1) {
+          return r0 <= coord && coord <= r1;
+        } else {
+          // Reversed axis case.
+          return r1 <= coord && coord <= r0;
+        }
     };
 
     ax.clearCalc = function() {
