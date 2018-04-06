@@ -37,6 +37,10 @@ function drag(gd) {
     var cd = gd.calcdata;
     var fullLayout = gd._fullLayout;
 
+    if(fullLayout._hasOnlyLargeSploms) {
+        drawGrid(gd);
+    }
+
     for(var i = 0; i < cd.length; i++) {
         var cd0 = cd[i][0];
         var trace = cd0.trace;
@@ -64,10 +68,6 @@ function drag(gd) {
                 scene.matrix.draw();
             }
         }
-    }
-
-    if(fullLayout._hasOnlyLargeSploms) {
-        drawGrid(gd);
     }
 }
 
