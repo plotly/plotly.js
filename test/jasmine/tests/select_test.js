@@ -569,11 +569,8 @@ describe('@flaky Test select box and lasso in general:', function() {
             dragmode: 'select'
         })
             .then(function() {
-
                 // expect(gd.fullLayout.selectdirection).toBe('any');
-
                 resetEvents(gd);
-
                 drag(selectPath);
 
                 selectedPromise.then(function() {
@@ -582,21 +579,47 @@ describe('@flaky Test select box and lasso in general:', function() {
                     expect(selectedData.points[0].y).toBe(3);
                 });
 
-                // do a drag and check that the selection is correct for the default `selectdirection`
-
                 return Plotly.relayout(gd, {selectdirection: 'h'});
             })
             .then(function() {
-                // do probably the SAME drag and check that the selection is correct for the `selectdirection='h'`
+                resetEvents(gd);
+                drag(selectPath);
+
+                selectedPromise.then(function()
+                {
+                    expect(selectedData.points.length).toBe(2);
+                    expect(selectedData.points[0].x).toBe(1.8);
+                    expect(selectedData.points[1].x).toBe(2.2);
+                });
 
                 return Plotly.relayout(gd, {selectdirection: 'v'});
             })
             .then(function() {
-                // ...
+                resetEvents(gd);
+                drag(selectPath);
+
+                selectedPromise.then(function()
+                {
+                    expect(selectedData.points.length).toBe(2);
+                    expect(selectedData.points[0].x).toBe(1.8);
+                    expect(selectedData.points[1].x).toBe(2.8000000000000003);
+                });
+
+                return Plotly.relayout(gd, {selectdirection: 'd'});
+            })
+            .then(function() {
+                resetEvents(gd);
+                drag(selectPath);
+
+                selectedPromise.then(function()
+                {
+                    expect(selectedData.points.length).toBe(2);
+                    expect(selectedData.points[0].x).toBe(1.8);
+                    expect(selectedData.points[1].x).toBe(2.2);
+                });
             })
             .catch(fail) // hmm, we should change the name of this import to failTest, since fail is already a jasmine global, for sync failure, we're overriding it here with our async version (we've already done this in other places)
             .then(done);
-
 
     });
 
