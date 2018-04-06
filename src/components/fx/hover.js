@@ -1100,6 +1100,7 @@ function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
         for(j = grp.length - 1; j >= 0; j--) {
             var pt = grp[j],
                 hoverPt = hoverData[pt.i];
+            if (!hoverPt) continue;
             hoverPt.offset = pt.dp;
             hoverPt.del = pt.del;
         }
