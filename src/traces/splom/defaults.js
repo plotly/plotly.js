@@ -108,19 +108,20 @@ function handleDimensionsDefaults(traceIn, traceOut) {
 function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     var dimensions = traceOut.dimensions;
     var dimLength = dimensions.length;
-    var xaxesDflt = new Array(dimLength);
-    var yaxesDflt = new Array(dimLength);
     var i, j;
 
     var showUpper = traceOut.showupperhalf;
     var showLower = traceOut.showlowerhalf;
     var showDiagonal = traceOut.diagonal.visible;
 
-//     var axLen = !showDiagonal && (!showUpper || !showLower) ? 
-//         dimLength - 1 : 
-//         dimLength;
+    var axLength = !showDiagonal && (!showUpper || !showLower) ?
+        dimLength - 1 :
+        dimLength;
 
-    for(i = 0; i < dimLength; i++) {
+    var xaxesDflt = new Array(axLength);
+    var yaxesDflt = new Array(axLength);
+
+    for(i = 0; i < axLength; i++) {
         xaxesDflt[i] = 'x' + (i ? i + 1 : '');
         yaxesDflt[i] = 'y' + (i ? i + 1 : '');
     }
@@ -168,5 +169,6 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
         }
     }
 
-//     console.log(Object.keys(layout._splomSubplots))
+    console.log(xaxes, yaxes);
+    console.log(Object.keys(layout._splomSubplots))
 }

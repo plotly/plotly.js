@@ -291,7 +291,7 @@ plots.supplyDefaults = function(gd) {
 
     var context = gd._context || {};
 
-    var i, j;
+    var i;
 
     // Create all the storage space for frames, but only if doesn't already exist
     if(!gd._transitionData) plots.createTransitionData(gd);
@@ -366,8 +366,10 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._modules = [];
     newFullLayout._basePlotModules = [];
     var subplots = newFullLayout._subplots = emptySubplotLists();
+
+    // initialize axis and subplot hash objects for splom-generated grids
     var splomAxes = newFullLayout._splomAxes = {x: {}, y: {}};
-    var splomSubplots = newFullLayout._splomSubplots = {}
+    var splomSubplots = newFullLayout._splomSubplots = {};
 
     // then do the data
     newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
