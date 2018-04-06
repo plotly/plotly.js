@@ -185,6 +185,10 @@ function sizeDefaults(layoutIn, layoutOut) {
     var hasSubplotGrid = Array.isArray(gridIn.subplots) && Array.isArray(gridIn.subplots[0]);
     var hasXaxes = Array.isArray(xAxes);
     var hasYaxes = Array.isArray(yAxes);
+    var isSplomGenerated = (
+        hasXaxes && xAxes !== gridIn.xaxes &&
+        hasYaxes && yAxes !== gridIn.yaxes
+    );
 
     var dfltRows, dfltColumns;
 
@@ -217,17 +221,26 @@ function sizeDefaults(layoutIn, layoutOut) {
     var rowOrder = coerce('roworder');
     var reversed = rowOrder === 'top to bottom';
 
+    var dfltGapX = hasSubplotGrid ? 0.2 : 0.1;
+    var dfltGapY = hasSubplotGrid ? 0.3 : 0.1;
+
+    var dfltSideX, dfltSideY;
+    if(isSplomGenerated) {
+        dfltSideX = 'bottom';
+        dfltSideY = 'left';
+    }
+
     gridOut._domains = {
-        x: fillGridPositions('x', coerce, hasSubplotGrid ? 0.2 : 0.1, columns),
-        y: fillGridPositions('y', coerce, hasSubplotGrid ? 0.3 : 0.1, rows, reversed)
+        x: fillGridPositions('x', coerce, dfltGapX, dfltSideX, columns),
+        y: fillGridPositions('y', coerce, dfltGapY, dfltSideY, rows, reversed)
     };
 }
 
 // coerce x or y sizing attributes and return an array of domains for this direction
-function fillGridPositions(axLetter, coerce, dfltGap, len, reversed) {
+function fillGridPositions(axLetter, coerce, dfltGap, dfltSide, len, reversed) {
     var dirGap = coerce(axLetter + 'gap', dfltGap);
     var domain = coerce('domain.' + axLetter);
-    coerce(axLetter + 'side');
+    coerce(axLetter + 'side', dfltSide);
 
     var out = new Array(len);
     var start = domain[0];

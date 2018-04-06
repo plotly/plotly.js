@@ -694,10 +694,6 @@
   "layout": {
 	"title": "Iris dataset splom",
   	"width": 600,
-	"height": 500,
-    "grid": {
-      "xside": "bottom",
-      "yside": "left"
-    }
+	"height": 500
   }
 }

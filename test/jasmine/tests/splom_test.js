@@ -80,6 +80,37 @@ describe('Test splom trace defaults:', function() {
         expect(subplots.cartesian).toEqual(['xy', 'xy2', 'x2y', 'x2y2']);
     });
 
+    it('should use special `grid.xside` and `grid.yside` defaults on splom generated grids', function() {
+        var gridOut;
+
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]}
+            ]
+        });
+
+        gridOut = gd._fullLayout.grid;
+        expect(gridOut.xside).toBe('bottom');
+        expect(gridOut.yside).toBe('left');
+
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]}
+            ]
+        }, {
+            grid: {
+                xaxes: ['x', 'x2'],
+                yaxes: ['y', 'y2']
+            }
+        });
+
+        gridOut = gd._fullLayout.grid;
+        expect(gridOut.xside).toBe('bottom plot');
+        expect(gridOut.yside).toBe('left plot');
+    });
+
     it('should honor `grid.xaxes` and `grid.yaxes` settings', function() {
         _supply({
             dimensions: [
