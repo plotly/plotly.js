@@ -32,7 +32,8 @@ function plot(gd, plotinfo, cdbox) {
         var cd0 = d[0];
         var t = cd0.t;
         var trace = cd0.trace;
-        var sel = cd0.node3 = d3.select(this);
+        var sel = d3.select(this);
+        if(!plotinfo.isRangePlot) cd0.node3 = sel;
         var numBoxes = fullLayout._numBoxes;
 
         var groupFraction = (1 - fullLayout.boxgap);
@@ -46,7 +47,7 @@ function plot(gd, plotinfo, cdbox) {
         var wdPos = bdPos * trace.whiskerwidth;
 
         if(trace.visible !== true || t.empty) {
-            d3.select(this).remove();
+            sel.remove();
             return;
         }
 

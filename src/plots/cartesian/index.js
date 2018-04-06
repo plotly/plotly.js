@@ -203,7 +203,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     // remaining plot traces should also be able to do this. Once implemented,
     // we won't need this - which should sometimes be a big speedup.
     if(plotinfo.plot) {
-        plotinfo.plot.selectAll('g:not(.scatterlayer)').selectAll('g.trace').remove();
+        plotinfo.plot.selectAll('g:not(.scatterlayer):not(.ohlclayer)').selectAll('g.trace').remove();
     }
 
     // plot all traces for each module at once
@@ -224,43 +224,50 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldModules = oldFullLayout._modules || [],
         newModules = newFullLayout._modules || [];
 
-    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo, moduleName;
+    var hadScatter, hasScatter, hadOHLC, hasOHLC, hadGl, hasGl, i, oldPlots, ids, subplotInfo, moduleName;
 
 
     for(i = 0; i < oldModules.length; i++) {
         moduleName = oldModules[i].name;
         if(moduleName === 'scatter') hadScatter = true;
         else if(moduleName === 'scattergl') hadGl = true;
+        else if(moduleName === 'ohlc') hadOHLC = true;
     }
 
     for(i = 0; i < newModules.length; i++) {
         moduleName = newModules[i].name;
         if(moduleName === 'scatter') hasScatter = true;
         else if(moduleName === 'scattergl') hasGl = true;
+        else if(moduleName === 'ohlc') hasOHLC = true;
     }
 
-    if(hadScatter && !hasScatter) {
-        oldPlots = oldFullLayout._plots;
+    oldPlots = oldFullLayout._plots;
+    var layersToEmpty = [];
+    if(hadScatter && !hasScatter) layersToEmpty.push('g.scatterlayer');
+    if(hadOHLC && !hasOHLC) layersToEmpty.push('g.ohlclayer');
+
+    if(layersToEmpty.length) {
         ids = Object.keys(oldPlots || {});
 
-        for(i = 0; i < ids.length; i++) {
-            subplotInfo = oldPlots[ids[i]];
+        for(var layeri = 0; layeri < layersToEmpty.length; layeri++) {
+            for(i = 0; i < ids.length; i++) {
+                subplotInfo = oldPlots[ids[i]];
 
-            if(subplotInfo.plot) {
-                subplotInfo.plot.select('g.scatterlayer')
-                    .selectAll('g.trace')
-                    .remove();
+                if(subplotInfo.plot) {
+                    subplotInfo.plot.select(layersToEmpty[layeri])
+                        .selectAll('g.trace')
+                        .remove();
+                }
             }
-        }
 
-        oldFullLayout._infolayer.selectAll('g.rangeslider-container')
-            .select('g.scatterlayer')
-            .selectAll('g.trace')
-            .remove();
+            oldFullLayout._infolayer.selectAll('g.rangeslider-container')
+                .select(layersToEmpty[layeri])
+                .selectAll('g.trace')
+                .remove();
+        }
     }
 
     if(hadGl && !hasGl) {
-        oldPlots = oldFullLayout._plots;
         ids = Object.keys(oldPlots || {});
 
         for(i = 0; i < ids.length; i++) {

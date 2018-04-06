@@ -68,6 +68,7 @@ module.exports = {
         'carpetlayer',
         'violinlayer',
         'boxlayer',
+        'ohlclayer',
         'scatterlayer'
     ],
 

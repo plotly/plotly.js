@@ -25,15 +25,22 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var t = cd[0].t;
 
-    var boxDelta = t.bdPos;
-    // if two candles are overlaying, let the narrowest one win
-    var pseudoDistance = Math.min(1, boxDelta / Math.abs(xa.r2c(xa.range[1]) - xa.r2c(xa.range[0])));
+    // potentially shift xval for grouped candlesticks
+    var centerShift = t.bPos || 0;
+    var x0 = xval - centerShift;
+
+    // ohlc and candlestick call displayHalfWidth different things...
+    var displayHalfWidth = t.bdPos || t.tickLen;
+    var hoverHalfWidth = t.wHover;
+
+    // if two items are overlaying, let the narrowest one win
+    var pseudoDistance = Math.min(1, displayHalfWidth / Math.abs(xa.r2c(xa.range[1]) - xa.r2c(xa.range[0])));
     var hoverPseudoDistance = pointData.maxHoverDistance - pseudoDistance;
     var spikePseudoDistance = pointData.maxSpikeDistance - pseudoDistance;
 
     function dx(di) {
-        var pos = di.pos + t.bPos - xval;
-        return Fx.inbox(pos - t.wHover, pos + t.wHover, hoverPseudoDistance);
+        var pos = di.pos - x0;
+        return Fx.inbox(pos - hoverHalfWidth, pos + hoverHalfWidth, hoverPseudoDistance);
     }
 
     function dy(di) {
@@ -53,17 +60,15 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var di = cd[cdIndex];
     var i = pointData.index = di.i;
 
-    var dir = di.candle;
-    var highEnd = (dir === 'increasing') ? 'close' : 'open';
-    var lowEnd = (dir === 'increasing') ? 'open' : 'close';
+    var dir = di.dir;
     var container = trace[dir];
     var lc = container.line.color;
 
     if(Color.opacity(lc) && container.line.width) pointData.color = lc;
     else pointData.color = container.fillcolor;
 
-    pointData.x0 = xa.c2p(di.pos + t.bPos - boxDelta, true);
-    pointData.x1 = xa.c2p(di.pos + t.bPos + boxDelta, true);
+    pointData.x0 = xa.c2p(di.pos + centerShift - displayHalfWidth, true);
+    pointData.x1 = xa.c2p(di.pos + centerShift + displayHalfWidth, true);
 
     pointData.xLabelVal = di.pos;
 
@@ -87,10 +92,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     // halfway between open and close, not between high and low.
     // TODO: the spike also links to this point, whereas previously
     // it linked to close. Is one better?
-    pointData.y0 = ya.c2p(trace[lowEnd][i], true);
-    pointData.y1 = ya.c2p(trace[highEnd][i], true);
+    pointData.y0 = pointData.y1 = ya.c2p(di.yc, true);
 
     // indicate increasing/decreasing in the "name" field
+    // TODO: only shows up if name is displayed, ie multiple traces.
     pointData.name += '<br>' + DIRSYMBOL[dir];
 
     return [pointData];

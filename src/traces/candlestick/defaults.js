@@ -25,9 +25,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    // TODO: get rid of _inputLength and do this in ohlc_defaults once that's not a transform either
-    traceOut._length = len;
-
     coerce('line.width');
 
     handleDirection(traceIn, traceOut, coerce, 'increasing');

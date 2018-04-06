@@ -14,7 +14,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
     var ya = searchInfo.yaxis;
     var selection = [];
     var i;
-    var posOffset = cd[0].t.bPos;
+    // for (potentially grouped) candlesticks
+    var posOffset = cd[0].t.bPos || 0;
 
     if(polygon === false) {
         // clear selection
@@ -24,13 +25,12 @@ module.exports = function selectPoints(searchInfo, polygon) {
     } else {
         for(i = 0; i < cd.length; i++) {
             var di = cd[i];
-            var y = (di.q1 + di.q3) / 2;
 
-            if(polygon.contains([xa.c2p(di.pos + posOffset), ya.c2p(y)])) {
+            if(polygon.contains([xa.c2p(di.pos + posOffset), ya.c2p(di.yc)])) {
                 selection.push({
                     pointNumber: di.i,
                     x: xa.c2d(di.pos),
-                    y: ya.c2d(y)
+                    y: ya.c2d(di.yc)
                 });
                 di.selected = 1;
             } else {

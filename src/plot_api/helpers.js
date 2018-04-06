@@ -331,7 +331,7 @@ exports.cleanData = function(data, existingData) {
         }
 
         // fixes from converting finance from transforms to real trace types
-        if(trace.type === 'candlestick') {
+        if(trace.type === 'candlestick' || trace.type === 'ohlc') {
             var increasingName = cleanFinanceDir(trace.increasing);
             var decreasingName = cleanFinanceDir(trace.decreasing);
 

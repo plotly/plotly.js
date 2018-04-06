@@ -42,7 +42,8 @@ module.exports = function plot(gd, plotinfo, cd) {
         var cd0 = d[0];
         var t = cd0.t;
         var trace = cd0.trace;
-        var sel = cd0.node3 = d3.select(this);
+        var sel = d3.select(this);
+        if(!plotinfo.isRangePlot) cd0.node3 = sel;
         var numViolins = fullLayout._numViolins;
         var group = (fullLayout.violinmode === 'group' && numViolins > 1);
         var groupFraction = 1 - fullLayout.violingap;
