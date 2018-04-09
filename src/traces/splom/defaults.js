@@ -13,8 +13,6 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var subTypes = require('../scatter/subtypes');
 var handleMarkerDefaults = require('../scatter/marker_defaults');
-var handleLineDefaults = require('../scatter/line_defaults');
-var PTS_LINESONLY = require('../scatter/constants').PTS_LINESONLY;
 var OPEN_RE = /-open/;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -28,34 +26,22 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    coerce('mode', traceOut._commonLength < PTS_LINESONLY ? 'lines+markers' : 'lines');
     coerce('text');
 
-    // TODO just markers for now
-    traceOut.mode = 'markers';
+    handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
-    if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-        coerce('connectgaps');
-    }
+    var isOpen = OPEN_RE.test(traceOut.marker.symbol);
+    var isBubble = subTypes.isBubble(traceOut);
+    coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
 
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    // TODO if all 3 below are false,
+    // should we set `visible: false` and exit early?
 
-        var isOpen = OPEN_RE.test(traceOut.marker.symbol);
-        var isBubble = subTypes.isBubble(traceOut);
-        coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
-    }
-
-    handleAxisDefaults(traceIn, traceOut, layout, coerce);
-
-    // TODO not implemented yet
     coerce('diagonal.visible');
-    // more to come
-
-    // TODO not implemented yet
     coerce('showupperhalf');
     coerce('showlowerhalf');
+
+    handleAxisDefaults(traceIn, traceOut, layout, coerce);
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
@@ -83,6 +69,7 @@ function handleDimensionsDefaults(traceIn, traceOut) {
         // to fill in axis title defaults
         coerce('label');
 
+        // wait until plot step to filter out visible false dimensions
         var visible = coerce('visible');
         if(!visible) continue;
 
@@ -109,41 +96,77 @@ function handleDimensionsDefaults(traceIn, traceOut) {
 function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     var dimensions = traceOut.dimensions;
     var dimLength = dimensions.length;
-    var xaxesDflt = new Array(dimLength);
-    var yaxesDflt = new Array(dimLength);
-    var i;
+    var showUpper = traceOut.showupperhalf;
+    var showLower = traceOut.showlowerhalf;
+    var showDiag = traceOut.diagonal.visible;
+    var i, j;
 
-    for(i = 0; i < dimLength; i++) {
-        xaxesDflt[i] = 'x' + (i ? i + 1 : '');
-        yaxesDflt[i] = 'y' + (i ? i + 1 : '');
+    // N.B. one less x axis AND one less y axis when hiding one half and the diagonal
+    var axDfltLength = !showDiag && (!showUpper || !showLower) ? dimLength - 1 : dimLength;
+
+    var xaxes = coerce('xaxes', fillAxisIdArray('x', axDfltLength));
+    var yaxes = coerce('yaxes', fillAxisIdArray('y', axDfltLength));
+
+    // allow users to under-specify number of axes
+    var axLength = Math.min(axDfltLength, xaxes.length, yaxes.length);
+
+    // fill in splom subplot keys
+    for(i = 0; i < axLength; i++) {
+        for(j = 0; j < axLength; j++) {
+            var id = [xaxes[i] + yaxes[j]];
+
+            if(i > j && showUpper) {
+                layout._splomSubplots[id] = 1;
+            } else if(i < j && showLower) {
+                layout._splomSubplots[id] = 1;
+            } else if(i === j && (showDiag || !showLower || !showUpper)) {
+                // need to include diagonal subplots when
+                // hiding one half and the diagonal
+                layout._splomSubplots[id] = 1;
+            }
+        }
     }
 
-    var xaxes = coerce('xaxes', xaxesDflt);
-    var yaxes = coerce('yaxes', yaxesDflt);
+    // build list of [x,y] axis corresponding to each dimensions[i],
+    // very useful for passing options to regl-scattermatrix
+    var diag = traceOut._diag = new Array(dimLength);
 
-    // splom defaults set three types of 'length' values on the
-    // full data items:
-    //
-    // - _commonLength: is the common length of each dimensions[i].values
-    // - dimensions[i]._length: is a copy of _commonLength to each dimensions item
-    //                          (this one is used during ax.makeCalcdata)
-    // - _activeLength: is the number of dimensions that can generate axes for a given trace
-    //
-    // when looping from 0..activeLength dimensions and (x|y)axes indices should match.
-    // note that `visible: false` dimensions contribute to activeLength and must
-    // be skipped before drawing calls.
-    var activeLength = traceOut._activeLength = Math.min(dimLength, xaxes.length, yaxes.length);
+    // cases where showDiag and showLower or showUpper are false
+    // no special treatment as the xaxes and yaxes items no longer match
+    // the dimensions items 1-to-1
+    var xShift = !showDiag && !showLower ? -1 : 0;
+    var yShift = !showDiag && !showUpper ? -1 : 0;
 
-    for(i = 0; i < activeLength; i++) {
+    for(i = 0; i < dimLength; i++) {
         var dim = dimensions[i];
-        var xa = xaxes[i];
-        var ya = yaxes[i];
+        var xa = xaxes[i + xShift];
+        var ya = yaxes[i + yShift];
 
-        if(!(xa in layout._splomAxes.x)) {
-            layout._splomAxes.x[xa] = dim.label || '';
-        }
-        if(!(ya in layout._splomAxes.y)) {
-            layout._splomAxes.y[ya] = dim.label || '';
-        }
+        fillAxisStash(layout, xa, dim);
+        fillAxisStash(layout, ya, dim);
+
+        // note that some the entries here may be undefined
+        diag[i] = [xa, ya];
+    }
+}
+
+function fillAxisIdArray(axLetter, len) {
+    var out = new Array(len);
+
+    for(var i = 0; i < len; i++) {
+        out[i] = axLetter + (i ? i + 1 : '');
+    }
+
+    return out;
+}
+
+function fillAxisStash(layout, axId, dim) {
+    if(!axId) return;
+
+    var axLetter = axId.charAt(0);
+    var stash = layout._splomAxes[axLetter];
+
+    if(!(axId in stash)) {
+        stash[axId] = (dim || {}).label || '';
     }
 }

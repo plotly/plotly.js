@@ -37,32 +37,52 @@ function drag(gd) {
     var cd = gd.calcdata;
     var fullLayout = gd._fullLayout;
 
+    if(fullLayout._hasOnlyLargeSploms) {
+        drawGrid(gd);
+    }
+
     for(var i = 0; i < cd.length; i++) {
         var cd0 = cd[i][0];
         var trace = cd0.trace;
         var scene = cd0.t._scene;
 
         if(trace.type === 'splom' && scene && scene.matrix) {
-            var activeLength = trace._activeLength;
-            var visibleLength = scene.matrixOptions.data.length;
-            var ranges = new Array(visibleLength);
-            var k = 0;
+            dragOne(gd, trace, scene);
+        }
+    }
+}
 
-            for(var j = 0; j < activeLength; j++) {
-                if(trace.dimensions[j].visible) {
-                    var xrng = AxisIDs.getFromId(gd, trace.xaxes[j]).range;
-                    var yrng = AxisIDs.getFromId(gd, trace.yaxes[j]).range;
-                    ranges[k++] = [xrng[0], yrng[0], xrng[1], yrng[1]];
-                }
+function dragOne(gd, trace, scene) {
+    var dimensions = trace.dimensions;
+    var visibleLength = scene.matrixOptions.data.length;
+    var ranges = new Array(visibleLength);
+
+    for(var i = 0, k = 0; i < dimensions.length; i++) {
+        if(dimensions[i].visible) {
+            var rng = ranges[k] = new Array(4);
+
+            var xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+            if(xa) {
+                rng[0] = xa.range[0];
+                rng[2] = xa.range[1];
             }
 
-            scene.matrix.update({ranges: ranges});
-            scene.matrix.draw();
+            var ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+            if(ya) {
+                rng[1] = ya.range[0];
+                rng[3] = ya.range[1];
+            }
+
+            k++;
         }
     }
 
-    if(fullLayout._hasOnlyLargeSploms) {
-        drawGrid(gd);
+    if(scene.selectBatch) {
+        scene.matrix.update({ranges: ranges}, {ranges: ranges});
+        scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
+    } else {
+        scene.matrix.update({ranges: ranges});
+        scene.matrix.draw();
     }
 }
 

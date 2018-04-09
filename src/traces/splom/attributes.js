@@ -68,13 +68,10 @@ module.exports = {
         editType: 'calc+clearAxisTypes'
     },
 
-    mode: scatterGlAttrs.mode,
+    // mode: {}, (only 'markers' for now)
+
     text: scatterGlAttrs.text,
-
     marker: scatterGlAttrs.marker,
-
-    line: scatterGlAttrs.line,
-    connectgaps: scatterGlAttrs.connectgaps,
 
     xaxes: makeAxesValObject('x'),
     yaxes: makeAxesValObject('y'),
@@ -84,7 +81,7 @@ module.exports = {
             valType: 'boolean',
             role: 'info',
             dflt: true,
-            editType: 'plot',
+            editType: 'calc',
             description: [
                 'Determines whether or not subplots on the diagonal are displayed.'
             ].join(' ')
@@ -101,7 +98,7 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Determines whether or not subplots on the upper half',
             'from the diagonal are displayed.'
@@ -111,15 +108,19 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Determines whether or not subplots on the lower half',
             'from the diagonal are displayed.'
         ].join(' ')
     },
 
-    selected: scatterGlAttrs.selected,
-    unselected: scatterGlAttrs.unselected,
+    selected: {
+        marker: scatterGlAttrs.selected.marker
+    },
+    unselected: {
+        marker: scatterGlAttrs.unselected.marker
+    },
 
     opacity: scatterGlAttrs.opacity
 };
