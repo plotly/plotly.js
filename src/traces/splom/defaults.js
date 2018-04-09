@@ -13,8 +13,6 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var subTypes = require('../scatter/subtypes');
 var handleMarkerDefaults = require('../scatter/marker_defaults');
-var handleLineDefaults = require('../scatter/line_defaults');
-var PTS_LINESONLY = require('../scatter/constants').PTS_LINESONLY;
 var OPEN_RE = /-open/;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -28,24 +26,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    coerce('mode', traceOut._commonLength < PTS_LINESONLY ? 'lines+markers' : 'lines');
     coerce('text');
 
-    // TODO just markers for now
-    traceOut.mode = 'markers';
+    handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
-    if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-        coerce('connectgaps');
-    }
-
-    if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-
-        var isOpen = OPEN_RE.test(traceOut.marker.symbol);
-        var isBubble = subTypes.isBubble(traceOut);
-        coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
-    }
+    var isOpen = OPEN_RE.test(traceOut.marker.symbol);
+    var isBubble = subTypes.isBubble(traceOut);
+    coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
 
     // TODO if all 3 below are false,
     // should we set `visible: false` and exit early?

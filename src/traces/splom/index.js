@@ -43,8 +43,12 @@ function calc(gd, trace) {
         }
     }
 
-    calcColorscales(trace);
-    Lib.extendFlat(opts, convertMarkerStyle(trace));
+    // add 'mode' to splom trace object to reuse scatter markers logic,
+    // but do not mutate fullData items!
+    var scatterTrace = Lib.extendFlat({}, trace, {mode: 'markers'});
+
+    calcColorscales(scatterTrace);
+    Lib.extendFlat(opts, convertMarkerStyle(scatterTrace));
 
     var visibleLength = matrixData.length;
     var hasTooManyPoints = (visibleLength * commonLength) > TOO_MANY_POINTS;
@@ -65,9 +69,10 @@ function calc(gd, trace) {
             if(hasTooManyPoints) {
                 ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
             } else {
-                ppad = calcMarkerSize(trace, commonLength);
+                ppad = calcMarkerSize(scatterTrace, commonLength);
             }
-            calcAxisExpansion(gd, trace, xa, ya, matrixData[k], matrixData[k], ppad);
+
+            calcAxisExpansion(gd, scatterTrace, xa, ya, matrixData[k], matrixData[k], ppad);
             k++;
         }
     }

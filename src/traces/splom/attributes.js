@@ -68,13 +68,10 @@ module.exports = {
         editType: 'calc+clearAxisTypes'
     },
 
-    mode: scatterGlAttrs.mode,
+    // mode: {}, (only 'markers' for now)
+
     text: scatterGlAttrs.text,
-
     marker: scatterGlAttrs.marker,
-
-    line: scatterGlAttrs.line,
-    connectgaps: scatterGlAttrs.connectgaps,
 
     xaxes: makeAxesValObject('x'),
     yaxes: makeAxesValObject('y'),
@@ -118,8 +115,12 @@ module.exports = {
         ].join(' ')
     },
 
-    selected: scatterGlAttrs.selected,
-    unselected: scatterGlAttrs.unselected,
+    selected: {
+        marker: scatterGlAttrs.selected.marker
+    },
+    unselected: {
+        marker: scatterGlAttrs.unselected.marker
+    },
 
     opacity: scatterGlAttrs.opacity
 };
