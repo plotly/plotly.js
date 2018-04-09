@@ -2819,6 +2819,7 @@ describe('Test plot api', function() {
             ['range_selector_style', require('@mocks/range_selector_style.json')],
             ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
             ['sankey_energy', require('@mocks/sankey_energy.json')],
+            ['splom_iris', require('@mocks/splom_iris.json')],
             ['table_wrapped_birds', require('@mocks/table_wrapped_birds.json')],
             ['ternary_fill', require('@mocks/ternary_fill.json')],
             ['text_chart_arrays', require('@mocks/text_chart_arrays.json')],
