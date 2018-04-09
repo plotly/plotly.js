@@ -207,10 +207,14 @@ describe('Test splom trace defaults:', function() {
         // keeps 1-to-1 relationship with input data
         expect(fullTrace.xaxes).toEqual(['x', 'x2', 'x3', 'x4']);
         expect(fullTrace.yaxes).toEqual(['y', 'y2', 'y3', 'y4']);
-        // this here does the 'ignoring' part
-        expect(fullTrace._activeLength).toBe(3);
 
         var fullLayout = gd._fullLayout;
+        // this here does the 'ignoring' part
+        expect(Object.keys(fullLayout._splomSubplots)).toEqual([
+            'xy', 'xy2', 'xy3',
+            'x2y', 'x2y2', 'x2y3',
+            'x3y', 'x3y2', 'x3y3'
+        ]);
         expect(fullLayout.xaxis.title).toBe('A');
         expect(fullLayout.yaxis.title).toBe('A');
         expect(fullLayout.xaxis2.title).toBe('B');
@@ -241,10 +245,14 @@ describe('Test splom trace defaults:', function() {
         // keeps 1-to-1 relationship with input data
         expect(fullTrace.xaxes).toEqual(['x2', 'x3', 'x4', 'x5']);
         expect(fullTrace.yaxes).toEqual(['y2', 'y3', 'y4', 'y5']);
-        // this here does the 'ignoring' part
-        expect(fullTrace._activeLength).toBe(3);
 
         var fullLayout = gd._fullLayout;
+        // this here does the 'ignoring' part
+        expect(Object.keys(fullLayout._splomSubplots)).toEqual([
+            'x2y2', 'x2y3', 'x2y4',
+            'x3y2', 'x3y3', 'x3y4',
+            'x4y2', 'x4y3', 'x4y4'
+        ]);
         expect(fullLayout.xaxis).toBe(undefined);
         expect(fullLayout.yaxis).toBe(undefined);
         expect(fullLayout.xaxis2.title).toBe('A');
@@ -278,8 +286,13 @@ describe('Test splom trace defaults:', function() {
         expect(fullTrace.yaxes).toEqual(['y2', 'y3']);
         // keep 1-to-1 relationship with input data
         expect(fullTrace.dimensions.length).toBe(3);
+
+        var fullLayout = gd._fullLayout;
         // this here does the 'ignoring' part
-        expect(fullTrace._activeLength).toBe(2);
+        expect(Object.keys(fullLayout._splomSubplots)).toEqual([
+            'x2y2', 'x2y3',
+            'x3y2', 'x3y3'
+        ]);
     });
 
     it('should lead to correct axis auto type value', function() {

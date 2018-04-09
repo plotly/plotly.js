@@ -26,37 +26,35 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
 
 function calc(gd, trace) {
+    var dimensions = trace.dimensions;
+    var commonLength = trace._commonLength;
     var stash = {};
     var opts = {};
-    var i, xa, ya, dim;
+    var matrixData = opts.data = [];
+    var i, k, dim;
 
-    var commonLength = trace._commonLength;
-    var activeLength = trace._activeLength;
-    var matrix = opts.data = [];
-
-    for(i = 0; i < activeLength; i++) {
-        dim = trace.dimensions[i];
+    for(i = 0; i < dimensions.length; i++) {
+        dim = dimensions[i];
 
         if(dim.visible) {
-            // using xa or ya should make no difference here
-            xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
-            matrix.push(makeCalcdata(xa, trace, dim));
+            var axId = trace._diag[i][0] || trace._diag[i][1];
+            var ax = AxisIDs.getFromId(gd, axId);
+            if(ax) matrixData.push(makeCalcdata(ax, trace, dim));
         }
     }
 
     calcColorscales(trace);
     Lib.extendFlat(opts, convertMarkerStyle(trace));
 
-    var visibleLength = matrix.length;
+    var visibleLength = matrixData.length;
     var hasTooManyPoints = (visibleLength * commonLength) > TOO_MANY_POINTS;
-    var k = 0;
 
-    for(i = 0; i < activeLength; i++) {
-        dim = trace.dimensions[i];
+    for(i = 0, k = 0; i < dimensions.length; i++) {
+        dim = dimensions[i];
 
         if(dim.visible) {
-            xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
-            ya = AxisIDs.getFromId(gd, trace.yaxes[i]);
+            var xa = AxisIDs.getFromId(gd, trace._diag[i][0]) || {};
+            var ya = AxisIDs.getFromId(gd, trace._diag[i][1]) || {};
 
             // Re-use SVG scatter axis expansion routine except
             // for graph with very large number of points where it
@@ -69,7 +67,7 @@ function calc(gd, trace) {
             } else {
                 ppad = calcMarkerSize(trace, commonLength);
             }
-            calcAxisExpansion(gd, trace, xa, ya, matrix[k], matrix[k], ppad);
+            calcAxisExpansion(gd, trace, xa, ya, matrixData[k], matrixData[k], ppad);
             k++;
         }
     }
@@ -105,7 +103,6 @@ function makeCalcdata(ax, trace, dim) {
     return cdata;
 }
 
-// TODO do we need this?
 function sceneUpdate(gd, stash) {
     var scene = stash._scene;
 
@@ -175,33 +172,45 @@ function plotOne(gd, cd0) {
     var regl = fullLayout._glcanvas.data()[0].regl;
     var dragmode = fullLayout.dragmode;
     var xa, ya;
+    var i, j, k;
 
     if(matrixData.length === 0) return;
 
     // augment options with proper upper/lower halves
-    matrixOpts.upper = trace.showupperhalf;
-    matrixOpts.lower = trace.showlowerhalf;
+    // regl-scattermatrix's default grid start from bottom-left
+    matrixOpts.lower = trace.showupperhalf;
+    matrixOpts.upper = trace.showlowerhalf;
     matrixOpts.diagonal = trace.diagonal.visible;
 
-    console.log(matrixOpts.upper, matrixOpts.lower)
-
-    var k = 0, i;
-    var activeLength = trace._activeLength;
+    var dimensions = trace.dimensions;
     var visibleLength = matrixData.length;
-    var dataLength = matrixData[0].length;
-    var viewOpts = {
-        ranges: new Array(visibleLength),
-        domains: new Array(visibleLength)
-    };
+    var viewOpts = {};
+    viewOpts.ranges = new Array(visibleLength);
+    viewOpts.domains = new Array(visibleLength);
 
-    for(i = 0; i < activeLength; i++) {
-        if(!trace.dimensions[i].visible) continue;
+    for(i = 0, k = 0; i < dimensions.length; i++) {
+        if(trace.dimensions[i].visible) {
+            var rng = viewOpts.ranges[k] = new Array(4);
+            var dmn = viewOpts.domains[k] = new Array(4);
 
-        xa = AxisIDs.getFromId(gd, trace.xaxes[i]);
-        ya = AxisIDs.getFromId(gd, trace.yaxes[i]);
-        viewOpts.ranges[k] = [xa.range[0], ya.range[0], xa.range[1], ya.range[1]];
-        viewOpts.domains[k] = [xa.domain[0], ya.domain[0], xa.domain[1], ya.domain[1]];
-        k++;
+            xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+            if(xa) {
+                rng[0] = xa.range[0];
+                rng[2] = xa.range[1];
+                dmn[0] = xa.domain[0];
+                dmn[2] = xa.domain[1];
+            }
+
+            ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+            if(ya) {
+                rng[1] = ya.range[0];
+                rng[3] = ya.range[1];
+                dmn[1] = ya.domain[0];
+                dmn[3] = ya.domain[1];
+            }
+
+            k++;
+        }
     }
 
     viewOpts.viewport = [gs.l, gs.b, gs.w + gs.l, gs.h + gs.b];
@@ -215,6 +224,8 @@ function plotOne(gd, cd0) {
     scene.unselectBatch = null;
 
     if(selectMode) {
+        var commonLength = trace._commonLength;
+
         if(!scene.selectBatch) {
             scene.selectBatch = [];
             scene.unselectBatch = [];
@@ -230,33 +241,37 @@ function plotOne(gd, cd0) {
                 selDict[selPts[i]] = true;
             }
             var unselPts = [];
-            for(i = 0; i < dataLength; i++) {
+            for(i = 0; i < commonLength; i++) {
                 if(!selDict[i]) unselPts.push(i);
             }
             scene.unselectBatch = unselPts;
         }
 
         // precalculate px coords since we are not going to pan during select
-        var xpx = new Array(visibleLength);
-        var ypx = new Array(visibleLength);
-        var data;
-        for(k = 0; k < visibleLength; k++) {
-            xa = AxisIDs.getFromId(gd, trace.xaxes[k]);
-            ya = AxisIDs.getFromId(gd, trace.yaxes[k]);
+        var xpx = stash.xpx = new Array(visibleLength);
+        var ypx = stash.ypx = new Array(visibleLength);
 
-            xpx[k] = new Array(dataLength);
-            ypx[k] = new Array(dataLength);
+        for(i = 0, k = 0; i < dimensions.length; i++) {
+            if(trace.dimensions[i].visible) {
+                xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+                if(xa) {
+                    xpx[k] = new Array(commonLength);
+                    for(j = 0; j < commonLength; j++) {
+                        xpx[k][j] = xa.c2p(matrixData[k][j]);
+                    }
+                }
 
-            data = matrixData[k];
+                ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+                if(ya) {
+                    ypx[k] = new Array(commonLength);
+                    for(j = 0; j < commonLength; j++) {
+                        ypx[k][j] = ya.c2p(matrixData[k][j]);
+                    }
+                }
 
-            for(i = 0; i < dataLength; i++) {
-                xpx[k][i] = xa.c2p(data[i]);
-                ypx[k][i] = ya.c2p(data[i]);
+                k++;
             }
         }
-        stash.xpx = xpx;
-        stash.ypx = ypx;
-
 
         if(scene.selectBatch) {
             scene.matrix.update(matrixOpts, matrixOpts);
@@ -289,25 +304,23 @@ function hoverPoints(pointData, xval, yval) {
     var maxDistance = pointData.distance;
     var dimensions = trace.dimensions;
 
-    var xi, yi, i;
-    for(i = 0; i < dimensions.length; i++) {
-        if(trace.xaxes[i] === xa._id) xi = i;
-        if(trace.yaxes[i] === ya._id) yi = i;
-    }
+    var xi = getDimIndex(trace, xa);
+    var yi = getDimIndex(trace, ya);
+    if(xi === undefined || yi === undefined) return [pointData];
 
     var x = dimensions[xi].values || [];
     var y = dimensions[yi].values || [];
 
-    var id, ptx, pty, dx, dy, dist, dxy;
+    var id, dxy;
     var minDist = maxDistance;
 
-    for(i = 0; i < x.length; i++) {
-        ptx = x[i];
-        pty = y[i];
-        dx = xa.c2p(ptx) - xpx;
-        dy = ya.c2p(pty) - ypx;
+    for(var i = 0; i < x.length; i++) {
+        var ptx = x[i];
+        var pty = y[i];
+        var dx = xa.c2p(ptx) - xpx;
+        var dy = ya.c2p(pty) - ypx;
+        var dist = Math.sqrt(dx * dx + dy * dy);
 
-        dist = Math.sqrt(dx * dx + dy * dy);
         if(dist < minDist) {
             minDist = dxy = dist;
             id = i;
@@ -334,17 +347,16 @@ function selectPoints(searchInfo, polygon) {
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
     var matrixData = scene.matrixOptions.data;
+    var i;
 
     if(!scene) return selection;
 
     var hasOnlyLines = (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return selection;
 
-    var xi, yi, i;
-    for(i = 0; i < trace.dimensions.length; i++) {
-        if(trace.xaxes[i] === xa._id) xi = i;
-        if(trace.yaxes[i] === ya._id) yi = i;
-    }
+    var xi = getDimIndex(trace, xa);
+    var yi = getDimIndex(trace, ya);
+    if(xi === undefined || yi === undefined) return selection;
 
     var xpx = stash.xpx[xi];
     var ypx = stash.ypx[yi];
@@ -403,6 +415,16 @@ function style(gd, cd) {
         var stash = cd[0].t;
         var scene = stash._scene;
         scene.draw();
+    }
+}
+
+function getDimIndex(trace, ax) {
+    var axId = ax._id;
+    var axLetter = axId.charAt(0);
+    var ind = {x: 0, y: 1}[axLetter];
+
+    for(var i = 0; i < trace.dimensions.length; i++) {
+        if(trace._diag[i][ind] === axId) return i;
     }
 }
 

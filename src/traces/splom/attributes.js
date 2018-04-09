@@ -84,7 +84,7 @@ module.exports = {
             valType: 'boolean',
             role: 'info',
             dflt: true,
-            editType: 'plot',
+            editType: 'calc',
             description: [
                 'Determines whether or not subplots on the diagonal are displayed.'
             ].join(' ')
@@ -101,7 +101,7 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Determines whether or not subplots on the upper half',
             'from the diagonal are displayed.'
@@ -111,7 +111,7 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'plot',
+        editType: 'calc',
         description: [
             'Determines whether or not subplots on the lower half',
             'from the diagonal are displayed.'
