@@ -132,12 +132,10 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
                 layout._splomSubplots[id] = 1;
             } else if(i < j && showLower) {
                 layout._splomSubplots[id] = 1;
-            } else {
+            } else if(i === j && (showDiag || !showLower || !showUpper)) {
                 // need to include diagonal subplots when
                 // hiding one half and the diagonal
-                if(showDiag || !showLower || !showUpper) {
-                    layout._splomSubplots[id] = 1;
-                }
+                layout._splomSubplots[id] = 1;
             }
         }
     }
