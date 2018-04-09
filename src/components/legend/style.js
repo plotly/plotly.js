@@ -83,7 +83,7 @@ module.exports = function style(s, gd) {
     function stylePoints(d) {
         var d0 = d[0],
             trace = d0.trace,
-            showMarkers = subTypes.hasMarkers(trace) || trace.type === 'splom',
+            showMarkers = subTypes.hasMarkers(trace),
             showText = subTypes.hasText(trace),
             showLines = subTypes.hasLines(trace);
 

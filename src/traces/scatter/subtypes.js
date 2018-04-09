@@ -18,8 +18,11 @@ module.exports = {
     },
 
     hasMarkers: function(trace) {
-        return trace.visible && trace.mode &&
-            trace.mode.indexOf('markers') !== -1;
+        return trace.visible && (
+            (trace.mode && trace.mode.indexOf('markers') !== -1) ||
+            // until splom implement 'mode'
+            trace.type === 'splom'
+        );
     },
 
     hasText: function(trace) {
