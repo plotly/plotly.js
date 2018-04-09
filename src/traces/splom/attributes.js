@@ -116,10 +116,12 @@ module.exports = {
     },
 
     selected: {
-        marker: scatterGlAttrs.selected.marker
+        marker: scatterGlAttrs.selected.marker,
+        editType: 'calc'
     },
     unselected: {
-        marker: scatterGlAttrs.unselected.marker
+        marker: scatterGlAttrs.unselected.marker,
+        editType: 'calc'
     },
 
     opacity: scatterGlAttrs.opacity
