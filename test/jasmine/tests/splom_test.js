@@ -335,7 +335,9 @@ describe('@gl Test splom interactions:', function() {
     });
 
     it('should destroy gl objects on Plots.cleanPlot', function(done) {
-        Plotly.plot(gd, Lib.extendDeep({}, require('@mocks/splom_large.json'))).then(function() {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+
+        Plotly.plot(gd, fig).then(function() {
             expect(gd._fullLayout._splomGrid).toBeDefined();
             expect(gd.calcdata[0][0].t._scene).toBeDefined();
 
@@ -349,4 +351,57 @@ describe('@gl Test splom interactions:', function() {
         .then(done);
     });
 
+    it('when hasOnlyLargeSploms, should create correct regl-line2d data for grid', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var cnt = 1;
+
+        function _assert(dims) {
+            var gridData = gd._fullLayout._splomGrid._data;
+            var gridLengths = gridData.map(function(d) { return d.data.length; });
+            var msg = ' - call #' + cnt;
+
+            expect(Object.keys(gridData).length)
+                .toBe(dims.length, '# of batches' + msg);
+            gridLengths.forEach(function(l, i) {
+                expect(l).toBe(dims[i], '# of coords in batch ' + i + msg);
+            });
+            cnt++;
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert([1198, 3478, 16318, 118]);
+            return Plotly.restyle(gd, 'showupperhalf', false);
+        })
+        .then(function() {
+            _assert([1198, 1882, 8452, 4]);
+            return Plotly.restyle(gd, 'diagonal.visible', false);
+        })
+        .then(function() {
+            _assert([1138, 1702, 7636, 4]);
+            return Plotly.restyle(gd, {
+                showupperhalf: true,
+                showlowerhalf: false
+            });
+        })
+        .then(function() {
+            _assert([64, 1594, 7852, 112]);
+            return Plotly.restyle(gd, 'diagonal.visible', true);
+        })
+        .then(function() {
+            _assert([58, 1768, 8680, 118]);
+            return Plotly.relayout(gd, {
+                'xaxis.gridcolor': null,
+                'xaxis.gridwidth': null,
+                'yaxis.zerolinecolor': null,
+                'yaxis.zerolinewidth': null
+            });
+        })
+        .then(function() {
+            // one batch for all 'grid' lines
+            // and another for all 'zeroline' lines
+            _assert([8740, 1888]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
