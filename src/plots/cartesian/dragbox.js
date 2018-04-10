@@ -1105,7 +1105,7 @@ function calcLinks(gd, xaHash, yaHash) {
     var yaHashLinked = {};
     var yaxesLinked = [];
     for(yLinkID in yLinks) {
-        var ya = getFromId(gd, xLinkID);
+        var ya = getFromId(gd, yLinkID);
         yaxesLinked.push(ya);
         yaHashLinked[ya._id] = ya;
     }
