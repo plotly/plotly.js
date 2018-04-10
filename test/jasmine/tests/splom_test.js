@@ -24,14 +24,27 @@ describe('Test splom trace defaults:', function() {
         supplyAllDefaults(gd);
     }
 
-    it('should set to `visible: false` dimensions-less traces', function() {
+    it('should set `visible: false` dimensions-less traces', function() {
         _supply([{}, {dimensions: []}]);
 
         expect(gd._fullData[0].visible).toBe(false);
         expect(gd._fullData[1].visible).toBe(false);
     });
 
-    it('should set to `visible: false` to values-less dimensions', function() {
+    it('should set `visible: false` to traces with showupperhalf, showlowerhalf, and diagonal.visible false', function() {
+        _supply({
+            dimensions: [{
+                values: [1, 2, 3]
+            }],
+            showupperhalf: false,
+            showlowerhalf: false,
+            diagonal: {visible: false}
+        });
+
+        expect(gd._fullData[0].visible).toBe(false);
+    });
+
+    it('should set `visible: false` to values-less dimensions', function() {
         _supply({
             dimensions: [
                 'not-an-object',

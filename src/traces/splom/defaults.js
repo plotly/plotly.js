@@ -21,7 +21,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var dimLength = handleDimensionsDefaults(traceIn, traceOut);
-    if(!dimLength) {
+
+    var showDiag = coerce('diagonal.visible');
+    var showUpper = coerce('showupperhalf');
+    var showLower = coerce('showlowerhalf');
+
+    if(!dimLength || (!showDiag && !showUpper && !showLower)) {
         traceOut.visible = false;
         return;
     }
@@ -33,13 +38,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var isOpen = OPEN_RE.test(traceOut.marker.symbol);
     var isBubble = subTypes.isBubble(traceOut);
     coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
-
-    // TODO if all 3 below are false,
-    // should we set `visible: false` and exit early?
-
-    coerce('diagonal.visible');
-    coerce('showupperhalf');
-    coerce('showlowerhalf');
 
     handleAxisDefaults(traceIn, traceOut, layout, coerce);
 
