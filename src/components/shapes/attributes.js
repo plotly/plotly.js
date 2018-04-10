@@ -77,18 +77,20 @@ module.exports = {
     }),
     xsizemode: {
         valType: 'enumerated',
-        values: ['data', 'pixel'],
-        dflt: 'data',
+        values: ['scaled', 'pixel'],
+        dflt: 'scaled',
         role: 'info',
         editType: 'calcIfAutorange+arraydraw',
         description: [
             'Sets the shapes\'s sizing mode along the x axis.',
-            'If set to *data*, `x0`, `x1` and x coordinates within `path` refer to',
-            'data values on the x axis.',
+            'If set to *scaled*, `x0`, `x1` and x coordinates within `path` refer to',
+            'data values on the x axis or a fraction of the plot area\'s width',
+            '(`xref` set to *paper*).',
             'If set to *pixel*, `xanchor` specifies the x position in terms',
-            'of data but `x0`, `x1` and x coordinates within `path`',
+            'of data or plot fraction but `x0`, `x1` and x coordinates within `path`',
             'are pixels relative to `xanchor`. This way, the shape can have',
-            'a fixed width while maintaining a position relative to data.'
+            'a fixed width while maintaining a position relative to data or',
+            'plot fraction.'
         ].join(' ')
     },
     xanchor: {
@@ -134,18 +136,20 @@ module.exports = {
     }),
     ysizemode: {
         valType: 'enumerated',
-        values: ['data', 'pixel'],
-        dflt: 'data',
+        values: ['scaled', 'pixel'],
+        dflt: 'scaled',
         role: 'info',
         editType: 'calcIfAutorange+arraydraw',
         description: [
             'Sets the shapes\'s sizing mode along the y axis.',
-            'If set to *data*, `y0`, `y1` and y coordinates within `path` refer to',
-            'data values on the y axis.',
+            'If set to *scaled*, `y0`, `y1` and y coordinates within `path` refer to',
+            'data values on the y axis or a fraction of the plot area\'s height',
+            '(`yref` set to *paper*).',
             'If set to *pixel*, `yanchor` specifies the y position in terms',
-            'of data but `y0`, `y1` and y coordinates within `path`',
+            'of data or plot fraction but `y0`, `y1` and y coordinates within `path`',
             'are pixels relative to `yanchor`. This way, the shape can have',
-            'a fixed height while maintaining a position relative to data.'
+            'a fixed height while maintaining a position relative to data or',
+            'plot fraction.'
         ].join(' ')
     },
     yanchor: {
@@ -185,7 +189,7 @@ module.exports = {
         editType: 'calcIfAutorange+arraydraw',
         description: [
             'For `type` *path* - a valid SVG path with the pixel values',
-            'replaced by data values in `xsizemode`/`ysizemode` being *data*',
+            'replaced by data values in `xsizemode`/`ysizemode` being *scaled*',
             'and taken unmodified as pixels relative to `xanchor` and `yanchor`',
             'in case of *pixel* size mode.',
             'There are a few restrictions / quirks',
