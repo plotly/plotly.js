@@ -183,7 +183,8 @@ describe('Test axes', function() {
                 _has: Plots._hasPlotType,
                 _basePlotModules: [],
                 _dfltTitle: {x: 'x', y: 'y'},
-                _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']}
+                _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
+                _requestRangeslider: {}
             };
             fullData = [];
         });
