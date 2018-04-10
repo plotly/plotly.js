@@ -1,8 +1,10 @@
-var Lib = require('@src/lib');
-var supplyAllDefaults = require('../assets/supply_defaults');
-var Plots = require('@src/plots/plots');
-
 var Plotly = require('@lib');
+var Lib = require('@src/lib');
+var Plots = require('@src/plots/plots');
+var SUBPLOT_PATTERN = require('@src/plots/cartesian/constants').SUBPLOT_PATTERN;
+
+var d3 = require('d3');
+var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -400,6 +402,89 @@ describe('@gl Test splom interactions:', function() {
             // one batch for all 'grid' lines
             // and another for all 'zeroline' lines
             _assert([8740, 1888]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update properly in-and-out of hasOnlyLargeSploms regime', function(done) {
+        var figLarge = Lib.extendDeep({}, require('@mocks/splom_large.json'));
+        var dimsLarge = figLarge.data[0].dimensions;
+        var dimsSmall = dimsLarge.slice(0, 5);
+        var cnt = 1;
+
+        function _assert(exp) {
+            var msg = ' - call #' + cnt;
+            var subplots = d3.selectAll('g.cartesianlayer > g.subplot');
+
+            expect(subplots.size())
+                .toBe(exp.subplotCnt, '# of <g.subplot>' + msg);
+
+            var failedSubplots = [];
+            subplots.each(function(d, i) {
+                var actual = this.children.length;
+                var expected = typeof exp.innerSubplotNodeCnt === 'function' ?
+                    exp.innerSubplotNodeCnt(d, i) :
+                    exp.innerSubplotNodeCnt;
+                if(actual !== expected) {
+                    failedSubplots.push([d, actual, 'vs', expected].join(' '));
+                }
+            });
+            expect(failedSubplots)
+                .toEqual([], '# of nodes inside <g.subplot>' + msg);
+
+            expect(!!gd._fullLayout._splomGrid)
+                .toBe(exp.hasSplomGrid, 'has regl-line2d splom grid' + msg);
+
+            cnt++;
+        }
+
+        Plotly.plot(gd, figLarge).then(function() {
+            _assert({
+                subplotCnt: 400,
+                innerSubplotNodeCnt: 5,
+                hasSplomGrid: true
+            });
+            return Plotly.restyle(gd, 'dimensions', [dimsSmall]);
+        })
+        .then(function() {
+            _assert({
+                subplotCnt: 25,
+                innerSubplotNodeCnt: 17,
+                hasSplomGrid: false
+            });
+
+            // make sure 'new' subplot layers are in order
+            var gridIndex = -1;
+            var xaxisIndex = -1;
+            var subplot0 = d3.select('g.cartesianlayer > g.subplot').node();
+            for(var i in subplot0.children) {
+                var cl = subplot0.children[i].classList;
+                if(cl) {
+                    if(cl.contains('gridlayer')) gridIndex = +i;
+                    else if(cl.contains('xaxislayer-above')) xaxisIndex = +i;
+                }
+            }
+            // from large -> small splom:
+            // grid layer would be above xaxis layer,
+            // if we didn't clear subplot children.
+            expect(gridIndex).toBe(1, '<g.gridlayer> index');
+            expect(xaxisIndex).toBe(14, '<g.xaxislayer-above> index');
+
+            return Plotly.restyle(gd, 'dimensions', [dimsLarge]);
+        })
+        .then(function() {
+            _assert({
+                subplotCnt: 400,
+                // from small -> large splom:
+                // no need to clear subplots children in existing subplots,
+                // new subplots though have reduced number of children.
+                innerSubplotNodeCnt: function(d) {
+                    var p = d.match(SUBPLOT_PATTERN);
+                    return (p[1] > 5 || p[2] > 5) ? 5 : 17;
+                },
+                hasSplomGrid: true
+            });
         })
         .catch(failTest)
         .then(done);
