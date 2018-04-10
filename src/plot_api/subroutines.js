@@ -529,10 +529,6 @@ exports.drawData = function(gd) {
         basePlotModules[i].plot(gd);
     }
 
-    // keep reference to shape layers in subplots
-    var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
-    fullLayout._shapeSubplotLayers = layerSubplot.selectAll('.shapelayer');
-
     // styling separate from drawing
     Plots.style(gd);
 
