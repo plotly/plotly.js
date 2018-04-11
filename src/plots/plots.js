@@ -414,16 +414,14 @@ plots.supplyDefaults = function(gd) {
 
     // turn on flag to optimize large splom-only graphs
     // mostly by omitting SVG layers during Cartesian.drawFramework
-    if(
+    newFullLayout._hasOnlyLargeSploms = (
         newFullLayout._basePlotModules.length === 1 &&
         newFullLayout._basePlotModules[0].name === 'splom' &&
         splomXa.length > 15 &&
         splomYa.length > 15 &&
         newFullLayout.shapes.length === 0 &&
         newFullLayout.images.length === 0
-    ) {
-        newFullLayout._hasOnlyLargeSploms = 1;
-    }
+    );
 
     // TODO remove in v2.0.0
     // add has-plot-type refs to fullLayout for backward compatibility

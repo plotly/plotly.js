@@ -63,14 +63,14 @@ function dragOne(gd, trace, scene) {
 
             var xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
             if(xa) {
-                rng[0] = xa.range[0];
-                rng[2] = xa.range[1];
+                rng[0] = xa.r2l(xa.range[0]);
+                rng[2] = xa.r2l(xa.range[1]);
             }
 
             var ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
             if(ya) {
-                rng[1] = ya.range[0];
-                rng[3] = ya.range[1];
+                rng[1] = ya.r2l(ya.range[0]);
+                rng[3] = ya.r2l(ya.range[1]);
             }
 
             k++;
@@ -94,17 +94,16 @@ function drawGrid(gd) {
     if(!splomGrid) {
         splomGrid = fullLayout._splomGrid = createLine(regl);
     }
-    splomGrid.update(makeGridData(gd));
+
+    splomGrid._data = makeGridData(gd);
+    splomGrid.update(splomGrid._data);
     splomGrid.draw();
 }
 
-// this clocks in at ~30ms at 50x50 - we could perf this up!
 function makeGridData(gd) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
     var fullView = [0, 0, fullLayout.width, fullLayout.height];
-    var splomXa = Object.keys(fullLayout._splomAxes.x);
-    var splomYa = Object.keys(fullLayout._splomAxes.y);
     var lookup = {};
     var k;
 
@@ -128,44 +127,38 @@ function makeGridData(gd) {
         }
     }
 
-    for(var i = 0; i < splomXa.length; i++) {
-        var xa = AxisIDs.getFromId(gd, splomXa[i]);
+    for(k in fullLayout._splomSubplots) {
+        var sp = fullLayout._plots[k];
+        var xa = sp.xaxis;
+        var ya = sp.yaxis;
         var xVals = xa._vals;
-        var xShowZl = showZeroLine(xa);
+        var yVals = ya._vals;
+        // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
+        // we need to compute bottom-to-top offsets and slopes:
+        var yOffset = gs.b + ya.domain[0] * gs.h;
+        var ym = -ya._m;
+        var yb = -ym * ya.r2l(ya.range[0], ya.calendar);
+        var x, y;
 
-        for(var j = 0; j < splomYa.length; j++) {
-            var ya = AxisIDs.getFromId(gd, splomYa[j]);
-            var yVals = ya._vals;
-            var yShowZl = showZeroLine(ya);
-
-            // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
-            // we need to compute bottom-to-top offsets and slopes:
-            var yOffset = gs.b + ya.domain[0] * gs.h;
-            var ym = -ya._m;
-            var yb = -ym * ya.r2l(ya.range[0], ya.calendar);
-
-            var x, y;
-
-            if(xa.showgrid) {
-                for(k = 0; k < xVals.length; k++) {
-                    x = xa._offset + xa.l2p(xVals[k].x);
-                    push('grid', xa, x, yOffset, x, yOffset + ya._length);
-                }
+        if(xa.showgrid) {
+            for(k = 0; k < xVals.length; k++) {
+                x = xa._offset + xa.l2p(xVals[k].x);
+                push('grid', xa, x, yOffset, x, yOffset + ya._length);
             }
-            if(xShowZl) {
-                x = xa._offset + xa.l2p(0);
-                push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
+        }
+        if(showZeroLine(xa)) {
+            x = xa._offset + xa.l2p(0);
+            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
+        }
+        if(ya.showgrid) {
+            for(k = 0; k < yVals.length; k++) {
+                y = yOffset + yb + ym * yVals[k].x;
+                push('grid', ya, xa._offset, y, xa._offset + xa._length, y);
             }
-            if(ya.showgrid) {
-                for(k = 0; k < yVals.length; k++) {
-                    y = yOffset + yb + ym * yVals[k].x;
-                    push('grid', ya, xa._offset, y, xa._offset + xa._length, y);
-                }
-            }
-            if(yShowZl) {
-                y = yOffset + yb + 0;
-                push('zeroline', ya, xa._offset, y, xa._offset + xa._length, y);
-            }
+        }
+        if(showZeroLine(ya)) {
+            y = yOffset + yb + 0;
+            push('zeroline', ya, xa._offset, y, xa._offset + xa._length, y);
         }
     }
 
@@ -178,7 +171,6 @@ function makeGridData(gd) {
 }
 
 // just like in Axes.doTicks but without the loop over traces
-// TODO dry this up
 function showZeroLine(ax) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     var p0 = ax.l2p(0);

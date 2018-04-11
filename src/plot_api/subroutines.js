@@ -457,6 +457,11 @@ exports.doLegend = function(gd) {
 
 exports.doTicksRelayout = function(gd) {
     Axes.doTicks(gd, 'redraw');
+
+    if(gd._fullLayout._hasOnlyLargeSploms) {
+        Registry.subplotsRegistry.splom.plot(gd);
+    }
+
     exports.drawMainTitle(gd);
     return Plots.previousPromises(gd);
 };

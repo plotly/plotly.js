@@ -106,17 +106,18 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
     for(var i = 0; i < data.length; i++) {
         var trace = data[i];
 
+        if(trace.type === 'splom' &&
+                trace._commonLength > 0 &&
+                trace['_' + axLetter + 'axes'][id]
+        ) {
+            return trace;
+        }
+
         if((trace[axLetter + 'axis'] || axLetter) === id) {
             if(isBoxWithoutPositionCoords(trace, axLetter)) {
                 return trace;
             }
             else if((trace[axLetter] || []).length || trace[axLetter + '0']) {
-                return trace;
-            }
-            else if(trace.type === 'splom' &&
-                    trace._commonLength > 0 &&
-                    trace[axLetter + 'axes'].indexOf(id) === 0
-            ) {
                 return trace;
             }
         }
