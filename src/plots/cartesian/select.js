@@ -10,19 +10,23 @@
 'use strict';
 
 var polybool = require('polybooljs');
-var polygon = require('../../lib/polygon');
-var throttle = require('../../lib/throttle');
-var color = require('../../components/color');
-var makeEventData = require('../../components/fx/helpers').makeEventData;
+
+var Registry = require('../../registry');
+var Color = require('../../components/color');
 var Fx = require('../../components/fx');
 
-var axes = require('./axes');
+var polygon = require('../../lib/polygon');
+var throttle = require('../../lib/throttle');
+var makeEventData = require('../../components/fx/helpers').makeEventData;
+var getFromId = require('./axis_ids').getFromId;
+var sortModules = require('../sort_modules').sortModules;
+
 var constants = require('./constants');
+var MINSELECT = constants.MINSELECT;
 
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
 var multipolygonTester = polygon.multitester;
-var MINSELECT = constants.MINSELECT;
 
 function getAxId(ax) { return ax._id; }
 
@@ -89,8 +93,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     var corners = zoomLayer.append('path')
         .attr('class', 'zoombox-corners')
         .style({
-            fill: color.background,
-            stroke: color.defaultLine,
+            fill: Color.background,
+            stroke: Color.defaultLine,
             'stroke-width': 1
         })
         .attr('transform', 'translate(' + xs + ', ' + ys + ')')
@@ -114,21 +118,19 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 trace.geo === dragOptions.subplot
             ) {
                 searchTraces.push({
-                    selectPoints: trace._module.selectPoints,
-                    style: trace._module.style,
+                    _module: trace._module,
                     cd: cd,
                     xaxis: dragOptions.xaxes[0],
                     yaxis: dragOptions.yaxes[0]
                 });
             }
-        } else if(trace.type === 'splom') {
+        } else if(
+            trace.type === 'splom' &&
             // FIXME: make sure we don't have more than single axis for splom
-            if(trace.xaxes.indexOf(xAxisIds[0]) === -1) continue;
-            if(trace.yaxes.indexOf(yAxisIds[0]) === -1) continue;
-
+            trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
+        ) {
             searchTraces.push({
-                selectPoints: trace._module.selectPoints,
-                style: trace._module.style,
+                _module: trace._module,
                 cd: cd,
                 xaxis: dragOptions.xaxes[0],
                 yaxis: dragOptions.yaxes[0]
@@ -138,11 +140,10 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
 
             searchTraces.push({
-                selectPoints: trace._module.selectPoints,
-                style: trace._module.style,
+                _module: trace._module,
                 cd: cd,
-                xaxis: axes.getFromId(gd, trace.xaxis),
-                yaxis: axes.getFromId(gd, trace.yaxis)
+                xaxis: getFromId(gd, trace.xaxis),
+                yaxis: getFromId(gd, trace.yaxis)
             });
         }
     }
@@ -265,7 +266,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 
-                    traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
+                    traceSelection = searchInfo._module.selectPoints(searchInfo, testPoly);
                     traceSelections.push(traceSelection);
 
                     thisSelection = fillSelectionItem(traceSelection, searchInfo);
@@ -296,7 +297,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 outlines.remove();
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
-                    searchInfo.selectPoints(searchInfo, false);
+                    searchInfo._module.selectPoints(searchInfo, false);
                 }
 
                 updateSelectedState(gd, searchTraces);
@@ -333,7 +334,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 };
 
 function updateSelectedState(gd, searchTraces, eventData) {
-    var i, searchInfo, trace;
+    var i, j, searchInfo, trace;
 
     if(eventData) {
         var pts = eventData.points || [];
@@ -365,6 +366,7 @@ function updateSelectedState(gd, searchTraces, eventData) {
             delete trace._input.selectedpoints;
 
             // delete scattergl selection
+            // TODO commenting out, doesn't do anything
             if(searchTraces[i].cd[0].t && searchTraces[i].cd[0].t.scene) {
                 searchTraces[i].cd[0].t.scene.clearSelect();
             }
@@ -374,9 +376,40 @@ function updateSelectedState(gd, searchTraces, eventData) {
         gd._fullLayout._zoomlayer.selectAll('.select-outline').remove();
     }
 
+    var lookup = {};
+
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
-        if(searchInfo.style) searchInfo.style(gd, searchInfo.cd);
+
+        var name = searchInfo._module.name;
+        if(lookup[name]) {
+            lookup[name].push(searchInfo);
+        } else {
+            lookup[name] = [searchInfo];
+        }
+    }
+
+    var keys = Object.keys(lookup).sort(sortModules);
+
+    for(i = 0; i < keys.length; i++) {
+        var items = lookup[keys[i]];
+        var len = items.length;
+        var item0 = items[0];
+        var trace0 = item0.cd[0].trace;
+
+        if(Registry.traceIs(trace0, 'regl')) {
+            // plot regl traces per module
+            var cds = new Array(len);
+            for(j = 0; j < len; j++) {
+                cds[j] = items[j].cd;
+            }
+            item0._module.style(gd, cds);
+        } else {
+            // plot svg trace per trace
+            for(j = 0; j < len; j++) {
+                item0._module.style(gd, items[j].cd);
+            }
+        }
     }
 }
 

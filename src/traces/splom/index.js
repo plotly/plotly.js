@@ -409,15 +409,24 @@ function selectPoints(searchInfo, polygon) {
     scene.selectBatch = els;
     scene.unselectBatch = unels;
 
-    scene.matrix.regl.clear({ color: true });
 
     return selection;
 }
 
-function style(gd, cd) {
-    if(cd) {
-        var stash = cd[0].t;
-        var scene = stash._scene;
+function style(gd, cds) {
+    if(!cds) return;
+
+    var fullLayout = gd._fullLayout;
+    var cd0 = cds[0];
+    var scene0 = cd0[0].t._scene;
+    scene0.matrix.regl.clear({color: true});
+
+    if(fullLayout._splomGrid) {
+        fullLayout._splomGrid.draw();
+    }
+
+    for(var i = 0; i < cds.length; i++) {
+        var scene = cds[i][0].t._scene;
         scene.draw();
     }
 }

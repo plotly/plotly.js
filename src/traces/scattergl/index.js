@@ -816,9 +816,20 @@ function selectPoints(searchInfo, polygon) {
     return selection;
 }
 
-function style(gd, cd) {
-    if(cd) {
-        var stash = cd[0].t;
+function style(gd, cds) {
+    if(!cds) return;
+
+    var fullLayout = gd._fullLayout;
+
+    if(fullLayout._has('splom')) {
+        // splom clear the whole canvas,
+        // must redraw every subplot
+        for(var k in fullLayout._plots) {
+            var sp = fullLayout._plots[k];
+            if(sp._scene) sp._scene.draw();
+        }
+    } else {
+        var stash = cds[0][0].t;
         var scene = stash.scene;
         scene.clear();
         scene.draw();
@@ -843,7 +854,6 @@ module.exports = {
 
     sceneOptions: sceneOptions,
     sceneUpdate: sceneUpdate,
-
     calcHover: calcHover,
 
     meta: {
