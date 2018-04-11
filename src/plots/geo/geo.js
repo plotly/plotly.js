@@ -20,7 +20,7 @@ var Fx = require('../../components/fx');
 var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
-var prepSelect = require('../cartesian/select');
+var prepSelect = require('../cartesian/select').prepSelect;
 
 var createGeoZoom = require('./zoom');
 var constants = require('./constants');

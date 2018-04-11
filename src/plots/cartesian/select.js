@@ -30,28 +30,28 @@ var multipolygonTester = polygon.multitester;
 
 function getAxId(ax) { return ax._id; }
 
-module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
-    var gd = dragOptions.gd,
-        fullLayout = gd._fullLayout,
-        zoomLayer = fullLayout._zoomlayer,
-        dragBBox = dragOptions.element.getBoundingClientRect(),
-        plotinfo = dragOptions.plotinfo,
-        xs = plotinfo.xaxis._offset,
-        ys = plotinfo.yaxis._offset,
-        x0 = startX - dragBBox.left,
-        y0 = startY - dragBBox.top,
-        x1 = x0,
-        y1 = y0,
-        path0 = 'M' + x0 + ',' + y0,
-        pw = dragOptions.xaxes[0]._length,
-        ph = dragOptions.yaxes[0]._length,
-        xAxisIds = dragOptions.xaxes.map(getAxId),
-        yAxisIds = dragOptions.yaxes.map(getAxId),
-        allAxes = dragOptions.xaxes.concat(dragOptions.yaxes),
-        filterPoly, testPoly, mergedPolygons, currentPolygon,
-        subtract = e.altKey,
-        i, cd, trace, searchInfo, eventData;
+function prepSelect(e, startX, startY, dragOptions, mode) {
+    var gd = dragOptions.gd;
+    var fullLayout = gd._fullLayout;
+    var zoomLayer = fullLayout._zoomlayer;
+    var dragBBox = dragOptions.element.getBoundingClientRect();
+    var plotinfo = dragOptions.plotinfo;
+    var xs = plotinfo.xaxis._offset;
+    var ys = plotinfo.yaxis._offset;
+    var x0 = startX - dragBBox.left;
+    var y0 = startY - dragBBox.top;
+    var x1 = x0;
+    var y1 = y0;
+    var path0 = 'M' + x0 + ',' + y0;
+    var pw = dragOptions.xaxes[0]._length;
+    var ph = dragOptions.yaxes[0]._length;
+    var xAxisIds = dragOptions.xaxes.map(getAxId);
+    var yAxisIds = dragOptions.yaxes.map(getAxId);
+    var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
+    var subtract = e.altKey;
 
+    var filterPoly, testPoly, mergedPolygons, currentPolygon;
+    var i, cd, trace, searchInfo, eventData;
 
     // take over selection polygons from prev mode, if any
     if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
@@ -331,7 +331,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             }
         });
     };
-};
+}
 
 function updateSelectedState(gd, searchTraces, eventData) {
     var i, j, searchInfo, trace;
@@ -451,3 +451,15 @@ function fillSelectionItem(selection, searchInfo) {
 
     return selection;
 }
+
+function clearSelect(zoomlayer) {
+    // until we get around to persistent selections, remove the outline
+    // here. The selection itself will be removed when the plot redraws
+    // at the end.
+    zoomlayer.selectAll('.select-outline').remove();
+}
+
+module.exports = {
+    prepSelect: prepSelect,
+    clearSelect: clearSelect
+};

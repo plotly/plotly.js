@@ -28,7 +28,8 @@ var Plots = require('../plots');
 
 var doTicks = require('./axes').doTicks;
 var getFromId = require('./axis_ids').getFromId;
-var prepSelect = require('./select');
+var prepSelect = require('./select').prepSelect;
+var clearSelect = require('./select').clearSelect;
 var scaleZoom = require('./scale_zoom');
 
 var constants = require('./constants');
@@ -974,13 +975,6 @@ function makeCorners(zoomlayer, xs, ys) {
         .attr('d', 'M0,0Z');
 }
 
-function clearSelect(zoomlayer) {
-    // until we get around to persistent selections, remove the outline
-    // here. The selection itself will be removed when the plot redraws
-    // at the end.
-    zoomlayer.selectAll('.select-outline').remove();
-}
-
 function updateZoombox(zb, corners, box, path0, dimmed, lum) {
     zb.attr('d',
         path0 + 'M' + (box.l) + ',' + (box.t) + 'v' + (box.h) +
@@ -1156,7 +1150,6 @@ module.exports = {
     xyCorners: xyCorners,
     transitionZoombox: transitionZoombox,
     removeZoombox: removeZoombox,
-    clearSelect: clearSelect,
     showDoubleClickNotifier: showDoubleClickNotifier,
 
     attachWheelEventHandler: attachWheelEventHandler
