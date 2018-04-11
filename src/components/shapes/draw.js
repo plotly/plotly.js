@@ -138,7 +138,6 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
             prepFn: startDrag,
             doneFn: endDrag
         },
-        dragBBox = dragOptions.element.getBoundingClientRect(),
         dragMode;
 
     dragElement.init(dragOptions);
@@ -146,6 +145,10 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
     shapePath.node().onmousemove = updateDragMode;
 
     function updateDragMode(evt) {
+        // element might not be on screen at time of setup,
+        // so obtain bounding box here
+        var dragBBox = dragOptions.element.getBoundingClientRect();
+
         // choose 'move' or 'resize'
         // based on initial position of cursor within the drag element
         var w = dragBBox.right - dragBBox.left,
