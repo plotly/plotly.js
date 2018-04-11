@@ -809,21 +809,16 @@ function selectPoints(searchInfo, polygon) {
 function style(gd, cds) {
     if(!cds) return;
 
-    var fullLayout = gd._fullLayout;
+    var stash = cds[0][0].t;
+    var scene = stash.scene;
 
-    if(fullLayout._has('splom')) {
-        // splom clear the whole canvas,
-        // must redraw every subplot
-        for(var k in fullLayout._plots) {
-            var sp = fullLayout._plots[k];
-            if(sp._scene) sp._scene.draw();
-        }
-    } else {
-        var stash = cds[0][0].t;
-        var scene = stash.scene;
+    // don't clear the subplot if there are splom traces
+    // on the graph
+    if(!gd._fullLayout._has('splom')) {
         scene.clear();
-        scene.draw();
     }
+
+    scene.draw();
 }
 
 module.exports = {

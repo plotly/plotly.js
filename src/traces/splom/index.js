@@ -429,6 +429,15 @@ function style(gd, cds) {
         var scene = cds[i][0].t._scene;
         scene.draw();
     }
+
+    // redraw all subplot with scattergl traces,
+    // all we cleared the whole canvas above
+    if(fullLayout._has('cartesian')) {
+        for(var k in fullLayout._plots) {
+            var sp = fullLayout._plots[k];
+            if(sp._scene) sp._scene.draw();
+        }
+    }
 }
 
 function getDimIndex(trace, ax) {
