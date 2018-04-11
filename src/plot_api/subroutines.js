@@ -525,7 +525,6 @@ exports.drawData = function(gd) {
         }
     }
 
-    // TODO does this break or slow down parcoords??
     clearGlCanvases(gd);
 
     // loop over the base plot modules present on graph

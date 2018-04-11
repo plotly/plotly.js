@@ -1693,10 +1693,14 @@ exports.relayout = function relayout(gd, astr, val) {
                 // no test fail when commenting out doAutoRangeAndConstraints,
                 // but I think we do need this (maybe just the enforce part?)
                 // Am I right?
+                // More info in:
+                // https://github.com/plotly/plotly.js/issues/2540
                 subroutines.doAutoRangeAndConstraints,
                 // TODO
                 // can target specific axes,
                 // do not have to redraw all axes here
+                // See:
+                // https://github.com/plotly/plotly.js/issues/2547
                 subroutines.doTicksRelayout,
                 subroutines.drawData,
                 subroutines.finalDraw

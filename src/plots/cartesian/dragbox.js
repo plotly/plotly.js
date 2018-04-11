@@ -788,7 +788,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     .call(Drawing.setScale, 1 / xScaleFactor2, 1 / yScaleFactor2);
 
                 // TODO move these selectAll calls out of here
-                // and stash them somewhere nice.
+                // and stash them somewhere nice, see:
+                // https://github.com/plotly/plotly.js/issues/2548
                 if(hasDraggedPts) {
                     var traceGroups = sp.plot
                         .selectAll('.scatterlayer .trace, .boxlayer .trace, .violinlayer .trace');
