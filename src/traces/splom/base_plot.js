@@ -95,8 +95,7 @@ function drawGrid(gd) {
         splomGrid = fullLayout._splomGrid = createLine(regl);
     }
 
-    splomGrid._data = makeGridData(gd);
-    splomGrid.update(splomGrid._data);
+    splomGrid.update(makeGridData(gd));
     splomGrid.draw();
 }
 
