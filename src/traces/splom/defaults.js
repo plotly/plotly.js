@@ -105,6 +105,10 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     var xaxes = coerce('xaxes', fillAxisIdArray('x', axDfltLength));
     var yaxes = coerce('yaxes', fillAxisIdArray('y', axDfltLength));
 
+    // to avoid costly indexOf
+    traceOut._xaxes = arrayToHashObject(xaxes);
+    traceOut._yaxes = arrayToHashObject(yaxes);
+
     // allow users to under-specify number of axes
     var axLength = Math.min(axDfltLength, xaxes.length, yaxes.length);
 
@@ -167,4 +171,12 @@ function fillAxisStash(layout, axId, dim) {
     if(!(axId in stash)) {
         stash[axId] = (dim || {}).label || '';
     }
+}
+
+function arrayToHashObject(arr) {
+    var obj = {};
+    for(var i = 0; i < arr.length; i++) {
+        obj[arr[i]] = 1;
+    }
+    return obj;
 }

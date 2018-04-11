@@ -63,14 +63,14 @@ function dragOne(gd, trace, scene) {
 
             var xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
             if(xa) {
-                rng[0] = xa.range[0];
-                rng[2] = xa.range[1];
+                rng[0] = xa.r2l(xa.range[0]);
+                rng[2] = xa.r2l(xa.range[1]);
             }
 
             var ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
             if(ya) {
-                rng[1] = ya.range[0];
-                rng[3] = ya.range[1];
+                rng[1] = ya.r2l(ya.range[0]);
+                rng[3] = ya.r2l(ya.range[1]);
             }
 
             k++;

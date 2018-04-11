@@ -91,7 +91,7 @@ module.exports = {
         // ...
         // more options
 
-        editType: 'plot'
+        editType: 'calc'
     },
 
     showupperhalf: {
