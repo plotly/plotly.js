@@ -635,24 +635,22 @@ plots.createTransitionData = function(gd) {
 // whether a certain plot type is present on plot
 // or trace has a category
 plots._hasPlotType = function(category) {
-    // check plot
-    var basePlotModules = this._basePlotModules || [];
     var i;
 
+    // check base plot modules
+    var basePlotModules = this._basePlotModules || [];
     for(i = 0; i < basePlotModules.length; i++) {
-        var _module = basePlotModules[i];
-
-        if(_module.name === category) return true;
+        if(basePlotModules[i].name === category) return true;
     }
 
-    // check trace
+    // check trace modules
     var modules = this._modules || [];
-
     for(i = 0; i < modules.length; i++) {
-        var modulei = modules[i];
-        if(modulei.categories && modulei.categories.indexOf(category) >= 0) {
-            return true;
-        }
+        var name = modules[i].name;
+        if(name === category) return true;
+        // N.B. this is modules[i] along with 'categories' as a hash object
+        var _module = Registry.modules[name];
+        if(_module && _module.categories[category]) return true;
     }
 
     return false;

@@ -2188,7 +2188,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
             }
             drawTicks(mainPlotinfo[axLetter + 'axislayer'], tickpath);
 
-            tickSubplots = Object.keys(ax._linepositions);
+            tickSubplots = Object.keys(ax._linepositions || {});
         }
 
         tickSubplots.map(function(subplot) {

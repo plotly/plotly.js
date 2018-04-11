@@ -22,7 +22,7 @@ Contour.hoverPoints = require('./hover');
 Contour.moduleType = 'trace';
 Contour.name = 'contour';
 Contour.basePlotModule = require('../../plots/cartesian');
-Contour.categories = ['cartesian', '2dMap', 'contour', 'showLegend'];
+Contour.categories = ['cartesian', 'svg', '2dMap', 'contour', 'showLegend'];
 Contour.meta = {
     description: [
         'The data from which contour lines are computed is set in `z`.',
