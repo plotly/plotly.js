@@ -1,6 +1,5 @@
 {
   "data": [{
-  }, {
     "type": "scattergl",
     "name": "scattergl",
     "mode": "markers",
