@@ -280,16 +280,6 @@ function sceneUpdate(gd, subplot) {
             }
         };
 
-        // remove selection
-        scene.clearSelect = function clearSelect() {
-            if(!scene.selectBatch) return;
-            scene.selectBatch = null;
-            scene.unselectBatch = null;
-            scene.scatter2d.update(scene.markerOptions);
-            scene.clear();
-            scene.draw();
-        };
-
         // remove scene resources
         scene.destroy = function destroy() {
             if(scene.fill2d) scene.fill2d.destroy();

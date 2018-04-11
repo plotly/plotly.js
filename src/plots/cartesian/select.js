@@ -364,12 +364,6 @@ function updateSelectedState(gd, searchTraces, eventData) {
             trace = searchTraces[i].cd[0].trace;
             delete trace.selectedpoints;
             delete trace._input.selectedpoints;
-
-            // delete scattergl selection
-            // TODO commenting out, doesn't do anything
-            if(searchTraces[i].cd[0].t && searchTraces[i].cd[0].t.scene) {
-                searchTraces[i].cd[0].t.scene.clearSelect();
-            }
         }
 
         // FIXME: make sure there is no better way to clear selection for sploms
