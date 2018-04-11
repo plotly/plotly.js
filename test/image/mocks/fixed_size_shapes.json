@@ -4,13 +4,17 @@
       "x": [1,4],
       "y": [1,4]
     }, {
-      "x": [1,4],
-      "y": [1,5],
+      "x": [1,3,4],
+      "y": ["Giraffes","Apes","Zebras"],
       "xaxis": "x2",
       "yaxis": "y2"
     }, {
-      "x": [1,4],
-      "y": [1,5],
+      "x": [
+        "2018-01-01 00:00:00",
+        "2018-02-01 00:00:00",
+        "2018-03-01 00:00:00"
+      ],
+      "y": [1,5,7],
       "xaxis": "x3",
       "yaxis": "y3"
     }, {
@@ -32,7 +36,7 @@
     },
     "yaxis": {
       "domain": [0.55,1],
-      "type": "linear",
+      "type": "log",
       "anchor": "x"
     },
     "xaxis2": {
@@ -42,7 +46,7 @@
     },
     "yaxis2": {
       "domain": [0.55,1],
-      "type": "linear",
+      "type": "categorical",
       "anchor": "x2"
     },
     "xaxis3": {
@@ -128,7 +132,7 @@
         "ysizemode": "pixel",
         "fillcolor": "rgba(96, 171, 50,0.7)",
         "xanchor": 6,
-        "yanchor": -3,
+        "yanchor": 2,
         "x0": -20,
         "x1": 60,
         "y0": 0,
@@ -145,7 +149,7 @@
         "ysizemode": "pixel",
         "fillcolor": "rgba(96, 171, 50,0.7)",
         "xanchor": -1,
-        "yanchor": 10,
+        "yanchor": 1,
         "path": "M0,0 L30,0 L15,15 Z",
         "line": {
           "color": "rgba(96, 171, 50, 1)"
@@ -158,7 +162,7 @@
         "yref": "y3",
         "ysizemode": "pixel",
         "fillcolor": "rgba(96, 171, 50,0.7)",
-        "xanchor": 2,
+        "xanchor": "2018-02-15 00:00:00",
         "yanchor": 2,
         "x0": 3,
         "x1": 53,
