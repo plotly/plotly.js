@@ -53,33 +53,26 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var filterPoly, testPoly, mergedPolygons, currentPolygon;
     var i, cd, trace, searchInfo, eventData;
 
-    // take over selection polygons from prev mode, if any
-    if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
-        dragOptions.polygons = plotinfo.selection.polygons;
-        dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
-    }
-    // create new polygons, if shift mode
-    else if((!e.shiftKey && !e.altKey) || ((e.shiftKey || e.altKey) && !plotinfo.selection)) {
-        plotinfo.selection = {};
-        plotinfo.selection.polygons = dragOptions.polygons = [];
-        plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
+    if(fullLayout._lastSelectedSubplot && fullLayout._lastSelectedSubplot === plotinfo.id) {
+        // take over selection polygons from prev mode, if any
+        if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
+            dragOptions.polygons = plotinfo.selection.polygons;
+            dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
+        }
+        // create new polygons, if shift mode
+        else if((!e.shiftKey && !e.altKey) || ((e.shiftKey || e.altKey) && !plotinfo.selection)) {
+            plotinfo.selection = {};
+            plotinfo.selection.polygons = dragOptions.polygons = [];
+            plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
+        }
+    } else {
+        // do not allow multi-selection across different subplots
+        clearSelect(zoomLayer);
+        fullLayout._lastSelectedSubplot = plotinfo.id;
     }
 
     if(mode === 'lasso') {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
-    }
-
-    // FIXME: find a better way to clear selection outlines for splom
-    if(!e.shiftKey && !e.altKey) {
-        for(i = 0; i < gd.calcdata.length; i++) {
-            cd = gd.calcdata[i];
-            trace = cd[0].trace;
-
-            if(trace.type === 'splom') {
-                zoomLayer.selectAll('.select-outline').remove();
-                break;
-            }
-        }
     }
 
     var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1, 2]);
@@ -365,11 +358,9 @@ function updateSelectedState(gd, searchTraces, eventData) {
             delete trace.selectedpoints;
             delete trace._input.selectedpoints;
         }
-
-        // FIXME: make sure there is no better way to clear selection for sploms
-        gd._fullLayout._zoomlayer.selectAll('.select-outline').remove();
     }
 
+    // group searchInfo traces by trace modules
     var lookup = {};
 
     for(i = 0; i < searchTraces.length; i++) {
