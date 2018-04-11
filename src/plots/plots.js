@@ -14,18 +14,20 @@ var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
-var axisIDs = require('../plots/cartesian/axis_ids');
 var Lib = require('../lib');
-var _ = Lib._;
 var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 
-var plots = module.exports = {};
+var axisIDs = require('../plots/cartesian/axis_ids');
+var sortBasePlotModules = require('./sort_modules').sortBasePlotModules;
 
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
 
 var relinkPrivateKeys = Lib.relinkPrivateKeys;
+var _ = Lib._;
+
+var plots = module.exports = {};
 
 // Expose registry methods on Plots for backward-compatibility
 Lib.extendFlat(plots, Registry);
@@ -465,6 +467,9 @@ plots.supplyDefaults = function(gd) {
             }
         }
     }
+
+    // sort base plot modules for consistent ordering
+    newFullLayout._basePlotModules.sort(sortBasePlotModules);
 };
 
 /**

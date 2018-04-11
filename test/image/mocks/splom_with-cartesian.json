@@ -1,5 +1,13 @@
 {
   "data": [{
+  }, {
+    "type": "scattergl",
+    "name": "scattergl",
+    "mode": "markers",
+    "text": "should be above splom",
+    "x": [2],
+    "y": [2]
+  }, {
     "type": "splom",
     "name": "splom",
     "dimensions": [{
