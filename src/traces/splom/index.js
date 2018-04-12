@@ -11,6 +11,8 @@
 var createMatrix = require('regl-scattermatrix');
 var arrayRange = require('array-range');
 
+var Registry = require('../../registry');
+var Grid = require('../../components/grid');
 var Lib = require('../../lib');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 
@@ -179,7 +181,7 @@ function plotOne(gd, cd0) {
     if(cdata.length === 0) return;
 
     // augment options with proper upper/lower halves
-    // regl-scattermatrix's default grid start from bottom-left
+    // regl-scattermatrix's default grid starts from bottom-left
     matrixOpts.lower = trace.showupperhalf;
     matrixOpts.upper = trace.showlowerhalf;
     matrixOpts.diagonal = trace.diagonal.visible;
@@ -293,8 +295,6 @@ function plotOne(gd, cd0) {
 
     scene.draw();
 }
-
-// TODO splom 'needs' the grid component, register it here?
 
 function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
@@ -473,7 +473,16 @@ module.exports = {
 
     meta: {
         description: [
-            'SPLOM !!!'
+            'Splom traces generate scatter plot matrix visualizations.',
+            'Each splom `dimensions` items correspond to an generated axes.',
+            'Values for each of those dimensions are set in `dimensions[i].values`.',
+            'Splom traces support all `scattergl` marker style attributes.',
+            'Specify `layout.grid` attributes and/or layout x-axis and y-axis attributes',
+            'for control '
         ].join(' ')
     }
 };
+
+// splom traces use the 'grid' component to generate their axes,
+// register it here
+Registry.register(Grid);
