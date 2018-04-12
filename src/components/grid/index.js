@@ -143,7 +143,7 @@ var gridAttrs = {
         values: ['bottom', 'bottom plot', 'top plot', 'top'],
         dflt: 'bottom plot',
         role: 'info',
-        editType: 'ticks',
+        editType: 'plot',
         description: [
             'Sets where the x axis labels and titles go. *bottom* means',
             'the very bottom of the grid. *bottom plot* is the lowest plot',
@@ -155,7 +155,7 @@ var gridAttrs = {
         values: ['left', 'left plot', 'right plot', 'right'],
         dflt: 'left plot',
         role: 'info',
-        editType: 'ticks',
+        editType: 'plot',
         description: [
             'Sets where the y axis labels and titles go. *left* means',
             'the very left edge of the grid. *left plot* is the leftmost plot',

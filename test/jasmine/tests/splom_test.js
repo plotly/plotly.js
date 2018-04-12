@@ -502,4 +502,46 @@ describe('@gl Test splom interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should correctly move axis layers when relayouting *grid.(x|y)side*', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_upper-nodiag.json'));
+
+        function _assert(exp) {
+            var g = d3.select(gd).select('g.cartesianlayer');
+            for(var k in exp) {
+                // all ticks are set to same position,
+                // only check first one
+                var tick0 = g.select('g.' + k + 'tick > text');
+                var pos = {x: 'y', y: 'x'}[k.charAt(0)];
+                expect(+tick0.attr(pos))
+                    .toBeWithin(exp[k], 1, pos + ' position for axis ' + k);
+            }
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            expect(gd._fullLayout.grid.xside).toBe('bottom', 'sanity check dflt grid.xside');
+            expect(gd._fullLayout.grid.yside).toBe('left', 'sanity check dflt grid.yside');
+
+            _assert({
+                x: 433, x2: 433, x3: 433,
+                y: 80, y2: 80, y3: 80
+            });
+            return Plotly.relayout(gd, 'grid.yside', 'left plot');
+        })
+        .then(function() {
+            _assert({
+                x: 433, x2: 433, x3: 433,
+                y: 79, y2: 230, y3: 382
+            });
+            return Plotly.relayout(gd, 'grid.xside', 'bottom plot');
+        })
+        .then(function() {
+            _assert({
+                x: 212, x2: 323, x3: 433,
+                y: 79, y2: 230, y3: 382
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
