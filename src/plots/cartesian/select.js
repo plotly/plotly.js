@@ -53,20 +53,33 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var filterPoly, testPoly, mergedPolygons, currentPolygon;
     var i, cd, trace, searchInfo, eventData;
 
-    if(fullLayout._lastSelectedSubplot && fullLayout._lastSelectedSubplot === plotinfo.id) {
+    var selectingOnSameSubplot = (
+        fullLayout._lastSelectedSubplot &&
+        fullLayout._lastSelectedSubplot === plotinfo.id
+    );
+
+    if(
+        selectingOnSameSubplot &&
+        (e.shiftKey || e.altKey) &&
+        (plotinfo.selection && plotinfo.selection.polygons) &&
+        !dragOptions.polygons
+    ) {
         // take over selection polygons from prev mode, if any
-        if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
-            dragOptions.polygons = plotinfo.selection.polygons;
-            dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
-        }
-        // create new polygons, if shift mode
-        else if((!e.shiftKey && !e.altKey) || ((e.shiftKey || e.altKey) && !plotinfo.selection)) {
-            plotinfo.selection = {};
-            plotinfo.selection.polygons = dragOptions.polygons = [];
-            plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
-        }
-    } else {
-        // do not allow multi-selection across different subplots
+        dragOptions.polygons = plotinfo.selection.polygons;
+        dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
+    } else if(
+        (!e.shiftKey && !e.altKey) ||
+        ((e.shiftKey || e.altKey) &&
+        !plotinfo.selection)
+    ) {
+        // create new polygons, if shift mode or selecting across different subplots
+        plotinfo.selection = {};
+        plotinfo.selection.polygons = dragOptions.polygons = [];
+        plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
+    }
+
+    // clear selection outline when selecting a different subplot
+    if(!selectingOnSameSubplot) {
         clearSelect(zoomLayer);
         fullLayout._lastSelectedSubplot = plotinfo.id;
     }
