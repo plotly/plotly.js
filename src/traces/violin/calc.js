@@ -42,13 +42,12 @@ module.exports = function calc(gd, trace) {
 
         // sample standard deviation
         var ssd = Lib.stdev(vals, len - 1, cdi.mean);
-        var bandwidthDflt = ruleOfThumbBandwidth(vals, ssd, cdi.q3 - cdi.q1);
-        var bandwidth = cdi.bandwidth = trace.bandwidth || bandwidthDflt;
+        var bandwidth = cdi.bandwidth = trace.bandwidth || ruleOfThumbBandwidth(vals, ssd, cdi.q3 - cdi.q1);
         var span = cdi.span = calcSpan(trace, cdi, valAxis, bandwidth);
 
         // step that well covers the bandwidth and is multiple of span distance
         var dist = span[1] - span[0];
-        var n = Math.ceil(dist / (Math.min(bandwidthDflt, bandwidth) / 3));
+        var n = Math.ceil(dist / (bandwidth / 3));
         var step = dist / n;
 
         if(!isFinite(step) || !isFinite(n)) {
