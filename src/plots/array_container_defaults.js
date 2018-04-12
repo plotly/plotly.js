@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../lib');
+var Template = require('../plot_api/plot_template');
 
 /** Convenience wrapper for making array container logic DRY and consistent
  *
@@ -46,25 +47,38 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
 
     var previousContOut = parentObjOut[name];
 
-    var contIn = Lib.isArrayOrTypedArray(parentObjIn[name]) ? parentObjIn[name] : [],
-        contOut = parentObjOut[name] = [],
-        i;
+    var contIn = Lib.isArrayOrTypedArray(parentObjIn[name]) ? parentObjIn[name] : [];
+    var contOut = parentObjOut[name] = [];
+    var templater = Template.arrayTemplater(parentObjOut, name);
+    var i, itemOut;
 
     for(i = 0; i < contIn.length; i++) {
         var itemIn = contIn[i];
-        var itemOut = {};
-        var itemOpts = {index: i};
+        var itemOpts = {};
 
         if(!Lib.isPlainObject(itemIn)) {
             itemOpts.itemIsNotPlainObject = true;
             itemIn = {};
         }
+        itemOut = templater.newItem(itemIn);
 
-        opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
+        if(itemOut.visible !== false) {
+            opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
+        }
 
         itemOut._input = itemIn;
         itemOut._index = i;
 
+        contOut.push(itemOut);
+    }
+
+    var defaultItems = templater.defaultItems();
+    for(i = 0; i < defaultItems.length; i++) {
+        itemOut = defaultItems[i];
+        opts.handleItemDefaults({}, itemOut, parentObjOut, opts, {});
+        // TODO: we don't have an _input here - need special handling for edits,
+        // is that all _input is used for?
+        itemOut._index = contOut.length;
         contOut.push(itemOut);
     }
 
@@ -76,4 +90,6 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
             Lib.relinkPrivateKeys(contOut[i], previousContOut[i]);
         }
     }
+
+    return contOut;
 };

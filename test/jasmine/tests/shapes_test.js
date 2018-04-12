@@ -77,11 +77,11 @@ describe('Test shapes defaults:', function() {
         expect(layoutIn.shapes).toEqual(shapes);
 
         out.forEach(function(item, i) {
-            expect(item).toEqual({
+            expect(item).toEqual(jasmine.objectContaining({
                 visible: false,
                 _input: {},
                 _index: i
-            });
+            }));
         });
     });
 

@@ -562,7 +562,7 @@ describe('Rangeslider handleDefaults function', function() {
             };
 
         _supply(layoutIn, layoutOut, 'xaxis');
-        expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+        expect(layoutOut.xaxis.rangeslider).toEqual(jasmine.objectContaining(expected));
     });
 
     it('should set defaults if rangeslider is requested', function() {
@@ -583,7 +583,7 @@ describe('Rangeslider handleDefaults function', function() {
         // but that's a problem for another time.
         // see https://github.com/plotly/plotly.js/issues/1473
         expect(layoutIn).toEqual({xaxis: {rangeslider: {}}});
-        expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+        expect(layoutOut.xaxis.rangeslider).toEqual(jasmine.objectContaining(expected));
     });
 
     it('should set defaults if rangeslider.visible is true', function() {
@@ -600,7 +600,7 @@ describe('Rangeslider handleDefaults function', function() {
             };
 
         _supply(layoutIn, layoutOut, 'xaxis');
-        expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+        expect(layoutOut.xaxis.rangeslider).toEqual(jasmine.objectContaining(expected));
     });
 
     it('should return early if *visible: false*', function() {
@@ -608,7 +608,7 @@ describe('Rangeslider handleDefaults function', function() {
             layoutOut = { xaxis: { rangeslider: {}} };
 
         _supply(layoutIn, layoutOut, 'xaxis');
-        expect(layoutOut.xaxis.rangeslider).toEqual({ visible: false });
+        expect(layoutOut.xaxis.rangeslider).toEqual(jasmine.objectContaining({ visible: false }));
     });
 
     it('should set defaults if properties are invalid', function() {
@@ -631,7 +631,7 @@ describe('Rangeslider handleDefaults function', function() {
             };
 
         _supply(layoutIn, layoutOut, 'xaxis');
-        expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+        expect(layoutOut.xaxis.rangeslider).toEqual(jasmine.objectContaining(expected));
     });
 
     it('should set autorange to true when range input is invalid', function() {
@@ -648,7 +648,7 @@ describe('Rangeslider handleDefaults function', function() {
             };
 
         _supply(layoutIn, layoutOut, 'xaxis');
-        expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+        expect(layoutOut.xaxis.rangeslider).toEqual(jasmine.objectContaining(expected));
     });
 
     it('should default \'bgcolor\' to layout \'plot_bgcolor\'', function() {
@@ -678,7 +678,7 @@ describe('Rangeslider yaxis options', function() {
 
         supplyAllDefaults(mock);
 
-        expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual(jasmine.objectContaining({ rangemode: 'match' }));
     });
 
     it('should set multiple yaxis with data are present', function() {
@@ -697,8 +697,8 @@ describe('Rangeslider yaxis options', function() {
 
         supplyAllDefaults(mock);
 
-        expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
-        expect(mock._fullLayout.xaxis.rangeslider.yaxis2).toEqual({ rangemode: 'match' });
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual(jasmine.objectContaining({ rangemode: 'match' }));
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis2).toEqual(jasmine.objectContaining({ rangemode: 'match' }));
         expect(mock._fullLayout.xaxis.rangeslider.yaxis3).toEqual(undefined);
     });
 
@@ -723,9 +723,9 @@ describe('Rangeslider yaxis options', function() {
 
         supplyAllDefaults(mock);
 
-        expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'auto', range: [-1, 4] });
-        expect(mock._fullLayout.xaxis.rangeslider.yaxis2).toEqual({ rangemode: 'fixed', range: [-1, 4] });
-        expect(mock._fullLayout.xaxis.rangeslider.yaxis3).toEqual({ rangemode: 'fixed', range: [0, 1] });
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis).toEqual(jasmine.objectContaining({ rangemode: 'auto', range: [-1, 4] }));
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis2).toEqual(jasmine.objectContaining({ rangemode: 'fixed', range: [-1, 4] }));
+        expect(mock._fullLayout.xaxis.rangeslider.yaxis3).toEqual(jasmine.objectContaining({ rangemode: 'fixed', range: [0, 1] }));
     });
 });
 
@@ -911,7 +911,7 @@ describe('rangesliders in general', function() {
             xaxis: { rangeslider: { yaxis: { range: [-10, 20] } } }
         })
         .then(function() {
-            expect(gd.layout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'fixed', range: [-10, 20] });
+            expect(gd.layout.xaxis.rangeslider.yaxis).toEqual(jasmine.objectContaining({ rangemode: 'fixed', range: [-10, 20] }));
 
             return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'auto');
         })
@@ -925,7 +925,7 @@ describe('rangesliders in general', function() {
             return Plotly.relayout(gd, 'xaxis.rangeslider.yaxis.rangemode', 'match');
         })
         .then(function() {
-            expect(gd.layout.xaxis.rangeslider.yaxis).toEqual({ rangemode: 'match' });
+            expect(gd.layout.xaxis.rangeslider.yaxis).toEqual(jasmine.objectContaining({ rangemode: 'match' }));
         })
         .catch(failTest)
         .then(done);

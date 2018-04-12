@@ -253,23 +253,23 @@ describe('Test Plots', function() {
                 layout._dataLength = 1;
 
                 traceIn = {};
-                traceOut = supplyTraceDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('x+y+z+text');
 
                 traceIn = { hoverinfo: 'name' };
-                traceOut = supplyTraceDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
 
-            it('without *name* for single-trace graphs by default', function() {
+            it('with *name* for multi-trace graphs by default', function() {
                 layout._dataLength = 2;
 
                 traceIn = {};
-                traceOut = supplyTraceDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('all');
 
                 traceIn = { hoverinfo: 'name' };
-                traceOut = supplyTraceDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
         });

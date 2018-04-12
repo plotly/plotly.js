@@ -55,12 +55,12 @@ describe('Test annotations', function() {
             expect(layoutIn.annotations).toEqual(annotations);
 
             out.forEach(function(item, i) {
-                expect(item).toEqual({
+                expect(item).toEqual(jasmine.objectContaining({
                     visible: false,
                     _input: {},
                     _index: i,
                     clicktoshow: false
-                });
+                }));
             });
         });
 

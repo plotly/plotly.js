@@ -55,13 +55,13 @@ describe('heatmap supplyDefaults', function() {
             type: 'heatmap',
             z: [[1, 2], []]
         };
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'heatmap'}, 0, layout);
 
         traceIn = {
             type: 'heatmap',
             z: [[], [1, 2], [1, 2, 3]]
         };
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'heatmap'}, 0, layout);
         expect(traceOut.visible).toBe(true);
         expect(traceOut.visible).toBe(true);
     });

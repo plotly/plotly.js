@@ -235,7 +235,12 @@ function crawl(objIn, objOut, schema, list, base, path) {
 
                 if(isPlainObject(valIn[_index]) && isPlainObject(valOut[j])) {
                     indexList.push(_index);
-                    crawl(valIn[_index], valOut[j], _nestedSchema, list, base, _p);
+                    var valInj = valIn[_index];
+                    var valOutj = valOut[j];
+                    if(isPlainObject(valInj) && valInj.visible !== false && valOutj.visible === false) {
+                        list.push(format('invisible', base, _p));
+                    }
+                    else crawl(valInj, valOutj, _nestedSchema, list, base, _p);
                 }
             }
 
@@ -327,8 +332,10 @@ var code2msgFunc = {
             'during defaults.'
         ].join(' ');
     },
-    invisible: function(base) {
-        return 'Trace ' + base[1] + ' got defaulted to be not visible';
+    invisible: function(base, astr) {
+        return (
+            astr ? (inBase(base) + 'item ' + astr) : ('Trace ' + base[1])
+        ) + ' got defaulted to be not visible';
     },
     value: function(base, astr, valIn) {
         return [

@@ -12,14 +12,15 @@ var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var Template = require('../../plot_api/plot_template');
 
 var attributes = require('./attributes');
 
 
 module.exports = function(traceIn, traceOut, defaultColor, opts) {
-    var objName = 'error_' + opts.axis,
-        containerOut = traceOut[objName] = {},
-        containerIn = traceIn[objName] || {};
+    var objName = 'error_' + opts.axis;
+    var containerOut = Template.newContainer(traceOut, objName);
+    var containerIn = traceIn[objName] || {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);

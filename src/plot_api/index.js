@@ -31,3 +31,4 @@ exports.setPlotConfig = main.setPlotConfig;
 exports.toImage = require('./to_image');
 exports.validate = require('./validate');
 exports.downloadImage = require('../snapshot/download');
+exports.makeTemplate = require('./make_template');
