@@ -69,8 +69,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
     } else if(
         (!e.shiftKey && !e.altKey) ||
-        ((e.shiftKey || e.altKey) &&
-        !plotinfo.selection)
+        ((e.shiftKey || e.altKey) && !plotinfo.selection)
     ) {
         // create new polygons, if shift mode or selecting across different subplots
         plotinfo.selection = {};

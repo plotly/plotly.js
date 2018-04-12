@@ -431,7 +431,7 @@ function style(gd, cds) {
     }
 
     // redraw all subplot with scattergl traces,
-    // all we cleared the whole canvas above
+    // as we cleared the whole canvas above
     if(fullLayout._has('cartesian')) {
         for(var k in fullLayout._plots) {
             var sp = fullLayout._plots[k];
