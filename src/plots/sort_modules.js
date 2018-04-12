@@ -8,23 +8,15 @@
 
 'use strict';
 
-function sortBasePlotModules(a, b) {
-    var nameA = a.name;
-    var nameB = b.name;
-
-    // always plot splom before cartesian (i.e. scattergl traces)
-    if(nameB === 'splom' && nameA === 'cartesian') {
-        return 1;
-    }
+// always plot splom before cartesian (i.e. scattergl traces)
+function sortModules(a, b) {
+    if(a === 'splom') return -1;
+    if(b === 'splom') return 1;
     return 0;
 }
 
-function sortModules(a, b) {
-    // always plot splom before scattergl traces
-    if(b === 'splom' && a === 'scattergl') {
-        return 1;
-    }
-    return 0;
+function sortBasePlotModules(a, b) {
+    return sortModules(a.name, b.name);
 }
 
 module.exports = {
