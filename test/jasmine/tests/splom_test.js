@@ -8,6 +8,11 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var mouseEvent = require('../assets/mouse_event');
+var drag = require('../assets/drag');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 describe('Test splom trace defaults:', function() {
     var gd;
@@ -540,6 +545,368 @@ describe('@gl Test splom interactions:', function() {
                 x: 212, x2: 323, x3: 433,
                 y: 79, y2: 230, y3: 382
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('@gl Test splom hover:', function() {
+    var gd;
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function run(s, done) {
+        gd = createGraphDiv();
+
+        var fig = Lib.extendDeep({},
+            s.mock || require('@mocks/splom_iris.json')
+        );
+
+        if(s.patch) {
+            fig = s.patch(fig);
+        }
+
+        var pos = s.pos || [200, 100];
+
+        return Plotly.plot(gd, fig).then(function() {
+            var to = setTimeout(function() {
+                failTest('no event data received');
+                done();
+            }, 100);
+
+            gd.on('plotly_hover', function(d) {
+                clearTimeout(to);
+                assertHoverLabelContent(s);
+
+                var msg = ' - event data ' + s.desc;
+                var actual = d.points || [];
+                var exp = s.evtPts;
+                expect(actual.length).toBe(exp.length, 'pt length' + msg);
+                for(var i = 0; i < exp.length; i++) {
+                    for(var k in exp[i]) {
+                        var m = 'key ' + k + ' in pt ' + i + msg;
+                        expect(actual[i][k]).toBe(exp[i][k], m);
+                    }
+                }
+
+                // w/o this purge gets called before
+                // hover throttle is complete
+                setTimeout(done, 0);
+            });
+
+            mouseEvent('mousemove', pos[0], pos[1]);
+        })
+        .catch(failTest);
+    }
+
+    var specs = [{
+        desc: 'basic',
+        nums: '7.7',
+        name: 'Virginica',
+        axis: '2.6',
+        evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
+    }, {
+        desc: 'hovermode closest',
+        patch: function(fig) {
+            fig.layout.hovermode = 'closest';
+            return fig;
+        },
+        nums: '(2.6, 7.7)',
+        name: 'Virginica',
+        evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
+    }, {
+        desc: 'skipping over visible false dims',
+        patch: function(fig) {
+            fig.data[0].dimensions[0].visible = false;
+            return fig;
+        },
+        nums: '7.7',
+        name: 'Virginica',
+        axis: '2.6',
+        evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
+    }, {
+        desc: 'on log axes',
+        mock: require('@mocks/splom_log.json'),
+        patch: function(fig) {
+            fig.layout.margin = {t: 0, l: 0, b: 0, r: 0};
+            fig.layout.width = 400;
+            fig.layout.height = 400;
+            return fig;
+        },
+        pos: [20, 380],
+        nums: '100',
+        axis: '10',
+        evtPts: [{x: 10, y: 100, pointNumber: 0}]
+    }, {
+        desc: 'on date axes',
+        mock: require('@mocks/splom_dates.json'),
+        patch: function(fig) {
+            fig.layout = {
+                margin: {t: 0, l: 0, b: 0, r: 0},
+                width: 400,
+                height: 400
+            };
+            return fig;
+        },
+        pos: [20, 380],
+        nums: 'Apr 2003',
+        axis: 'Jan 2000',
+        evtPts: [{x: '2000-01-01', y: '2003-04-21', pointNumber: 0}]
+    }];
+
+    specs.forEach(function(s) {
+        it('should generate correct hover labels ' + s.desc, function(done) {
+            run(s, done);
+        });
+    });
+});
+
+describe('@gl Test splom drag:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function _drag(p0, p1) {
+        var node = d3.select('.nsewdrag[data-subplot="xy"]').node();
+        var dx = p1[0] - p0[0];
+        var dy = p1[1] - p0[1];
+        return drag(node, dx, dy, null, p0[0], p0[1]);
+    }
+
+    it('should update scattermatrix ranges on pan', function(done) {
+        var fig = require('@mocks/splom_iris.json');
+        fig.layout.dragmode = 'pan';
+
+        var xaxes = ['xaxis', 'xaxis2', 'xaxis3'];
+        var yaxes = ['yaxis', 'yaxis2', 'yaxis3'];
+
+        function _assertRanges(msg, xRanges, yRanges) {
+            xaxes.forEach(function(n, i) {
+                expect(gd._fullLayout[n].range)
+                    .toBeCloseToArray(xRanges[i], 1, n + ' range - ' + msg);
+            });
+            yaxes.forEach(function(n, i) {
+                expect(gd._fullLayout[n].range)
+                    .toBeCloseToArray(yRanges[i], 1, n + ' range - ' + msg);
+            });
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            var scene = gd.calcdata[0][0].t._scene;
+            spyOn(scene.matrix, 'update');
+            spyOn(scene.matrix, 'draw');
+
+            _assertRanges('before drag', [
+                [3.9, 8.3],
+                [1.7, 4.7],
+                [0.3, 7.6]
+            ], [
+                [3.8, 8.4],
+                [1.7, 4.7],
+                [0.3, 7.6]
+            ]);
+        })
+        .then(function() { return _drag([130, 130], [150, 150]); })
+        .then(function() {
+            var scene = gd.calcdata[0][0].t._scene;
+            // N.B. _drag triggers two updateSubplots call
+            // - 1 update and 1 draw call per updateSubplot
+            // - 2 update calls (1 for data, 1 for view opts)
+            //   during splom plot on mouseup
+            // - 1 draw call during splom plot on mouseup
+            expect(scene.matrix.update).toHaveBeenCalledTimes(4);
+            expect(scene.matrix.draw).toHaveBeenCalledTimes(3);
+
+            _assertRanges('after drag', [
+                [2.9, 7.3],
+                [1.7, 4.7],
+                [0.3, 7.6]
+            ], [
+                [5.1, 9.6],
+                [1.7, 4.7],
+                [0.3, 7.6]
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('@gl Test splom select:', function() {
+    var gd;
+    var ptData;
+    var subplot;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function _select(path, opts) {
+        return new Promise(function(resolve, reject) {
+            opts = opts || {};
+            ptData = null;
+            subplot = null;
+
+            var to = setTimeout(function() {
+                reject('fail: plotly_selected not emitter');
+            }, 200);
+
+            gd.once('plotly_selected', function(d) {
+                clearTimeout(to);
+                ptData = (d || {}).points;
+                subplot = Object.keys(d.range || {}).join('');
+                resolve();
+            });
+
+            Lib.clearThrottle();
+            mouseEvent('mousemove', path[0][0], path[0][1], opts);
+            mouseEvent('mousedown', path[0][0], path[0][1], opts);
+
+            var len = path.length;
+            path.slice(1, len).forEach(function(pt) {
+                Lib.clearThrottle();
+                mouseEvent('mousemove', pt[0], pt[1], opts);
+            });
+
+            mouseEvent('mouseup', path[len - 1][0], path[len - 1][1], opts);
+        });
+    }
+
+    it('should emit correct event data and draw selection outlines', function(done) {
+        var fig = require('@mocks/splom_0.json');
+        fig.layout = {
+            dragmode: 'select',
+            width: 400,
+            height: 400,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            grid: {xgap: 0, ygap: 0}
+        };
+
+        function _assert(_msg, ptExp, otherExp) {
+            var msg = ' - ' + _msg;
+
+            expect(ptData.length).toBe(ptExp.length, 'pt length' + msg);
+            for(var i = 0; i < ptExp.length; i++) {
+                for(var k in ptExp[i]) {
+                    var m = 'key ' + k + ' in pt ' + i + msg;
+                    expect(ptData[i][k]).toBe(ptExp[i][k], m);
+                }
+            }
+
+            expect(subplot).toBe(otherExp.subplot, 'subplot of selection' + msg);
+
+            expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                .toBe(otherExp.selectionOutlineCnt, 'selection outline cnt' + msg);
+        }
+
+        Plotly.newPlot(gd, fig)
+        .then(function() { return _select([[5, 5], [195, 195]]); })
+        .then(function() {
+            _assert('first', [
+                {pointNumber: 0, x: 1, y: 1},
+                {pointNumber: 1, x: 2, y: 2},
+                {pointNumber: 2, x: 3, y: 3}
+            ], {
+                subplot: 'xy',
+                selectionOutlineCnt: 2
+            });
+        })
+        .then(function() { return _select([[50, 50], [100, 100]]); })
+        .then(function() {
+            _assert('second', [
+                {pointNumber: 1, x: 2, y: 2}
+            ], {
+                subplot: 'xy',
+                selectionOutlineCnt: 2
+            });
+        })
+        .then(function() { return _select([[5, 195], [100, 100]], {shiftKey: true}); })
+        .then(function() {
+            _assert('multi-select', [
+                {pointNumber: 0, x: 1, y: 1},
+                {pointNumber: 1, x: 2, y: 2}
+            ], {
+                subplot: 'xy',
+                // still '2' as the selection get merged
+                selectionOutlineCnt: 2
+            });
+        })
+        .then(function() { return _select([[205, 205], [395, 395]]); })
+        .then(function() {
+            _assert('across other subplot', [
+                {pointNumber: 0, x: 2, y: 2},
+                {pointNumber: 1, x: 5, y: 5},
+                {pointNumber: 2, x: 6, y: 6}
+            ], {
+                subplot: 'x2y2',
+                // outlines from previous subplot are cleared!
+                selectionOutlineCnt: 2
+            });
+        })
+        .then(function() { return _select([[50, 50], [100, 100]]); })
+        .then(function() {
+            _assert('multi-select across other subplot (prohibited for now)', [
+                {pointNumber: 1, x: 2, y: 2}
+            ], {
+                subplot: 'xy',
+                // outlines from previous subplot are cleared!
+                selectionOutlineCnt: 2
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should redraw splom traces before scattergl trace (if any)', function(done) {
+        var fig = require('@mocks/splom_with-cartesian.json');
+        fig.layout.dragmode = 'select';
+        fig.layout.width = 400;
+        fig.layout.height = 400;
+        fig.layout.margin = {l: 0, t: 0, r: 0, b: 0};
+        fig.layout.grid.xgap = 0;
+        fig.layout.grid.ygap = 0;
+
+        var cnt = 0;
+        var scatterGlCnt = 0;
+        var splomCnt = 0;
+
+        Plotly.newPlot(gd, fig).then(function() {
+            // 'scattergl' trace module
+            spyOn(gd._fullLayout._modules[0], 'style').and.callFake(function() {
+                cnt++;
+                scatterGlCnt = cnt;
+            });
+            // 'splom' trace module
+            spyOn(gd._fullLayout._modules[1], 'style').and.callFake(function() {
+                cnt++;
+                splomCnt = cnt;
+            });
+        })
+        .then(function() { return _select([[20, 395], [195, 205]]); })
+        .then(function() {
+            expect(gd._fullLayout._modules[0].style).toHaveBeenCalledTimes(1);
+            expect(gd._fullLayout._modules[1].style).toHaveBeenCalledTimes(1);
+
+            expect(cnt).toBe(2);
+            expect(splomCnt).toBe(1, 'splom redraw before scattergl');
+            expect(scatterGlCnt).toBe(2, 'scattergl redraw after splom');
         })
         .catch(failTest)
         .then(done);
