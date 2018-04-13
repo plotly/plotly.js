@@ -419,7 +419,7 @@ function style(gd, cds) {
     var fullLayout = gd._fullLayout;
     var cd0 = cds[0];
     var scene0 = cd0[0].t._scene;
-    scene0.matrix.regl.clear({color: true});
+    scene0.matrix.regl.clear({color: true, depth: true});
 
     if(fullLayout._splomGrid) {
         fullLayout._splomGrid.draw();
