@@ -760,7 +760,7 @@ function selectPoints(searchInfo, polygon) {
     var stash = cd[0].t;
     var x = stash.x;
     var y = stash.y;
-    var scene = stash.scene;
+    var scene = stash._scene;
 
     if(!scene) return selection;
 
@@ -816,7 +816,7 @@ function selectPoints(searchInfo, polygon) {
 function style(gd, cd) {
     if(cd) {
         var stash = cd[0].t;
-        var scene = stash.scene;
+        var scene = stash._scene;
         scene.clear();
         scene.draw();
     }
