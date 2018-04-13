@@ -121,7 +121,7 @@ function calc(gd, trace) {
     scene.count++;
 
     // stash scene ref
-    stash.scene = scene;
+    stash._scene = scene;
     stash.index = scene.count - 1;
     stash.x = x;
     stash.y = y;
@@ -326,7 +326,7 @@ function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
     var fullLayout = gd._fullLayout;
-    var scene = cdata[0][0].t.scene;
+    var scene = cdata[0][0].t._scene;
     var dragmode = fullLayout.dragmode;
 
     // we may have more subplots than initialized data due to Axes.getSubplots method
