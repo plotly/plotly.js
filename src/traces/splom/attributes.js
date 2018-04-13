@@ -41,7 +41,7 @@ module.exports = {
             dflt: true,
             editType: 'calc',
             description: [
-                'Determines whether or not this dimension is show on the graph.',
+                'Determines whether or not this dimension is shown on the graph.',
                 'Note that even visible false dimension contribute to the',
                 'default grid generate by this splom trace.'
             ].join(' ')
