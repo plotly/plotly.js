@@ -27,13 +27,13 @@ function convertStyle(gd, trace) {
     var i;
 
     var opts = {
-        marker: null,
-        line: null,
-        fill: null,
-        errorX: null,
-        errorY: null,
-        selected: null,
-        unselected: null
+        marker: undefined,
+        line: undefined,
+        fill: undefined,
+        errorX: undefined,
+        errorY: undefined,
+        selected: undefined,
+        unselected: undefined
     };
 
     if(trace.visible !== true) return opts;
