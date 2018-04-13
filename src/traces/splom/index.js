@@ -181,7 +181,7 @@ function plotOne(gd, cd0) {
     if(cdata.length === 0) return;
 
     // augment options with proper upper/lower halves
-    // regl-scattermatrix's default grid starts from bottom-left
+    // regl-splom's default grid starts from bottom-left
     matrixOpts.lower = trace.showupperhalf;
     matrixOpts.upper = trace.showlowerhalf;
     matrixOpts.diagonal = trace.diagonal.visible;

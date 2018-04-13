@@ -130,7 +130,7 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     }
 
     // build list of [x,y] axis corresponding to each dimensions[i],
-    // very useful for passing options to regl-scattermatrix
+    // very useful for passing options to regl-splom
     var diag = traceOut._diag = new Array(dimLength);
 
     // cases where showDiag and showLower or showUpper are false
