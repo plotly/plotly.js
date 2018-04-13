@@ -83,24 +83,29 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         return t.labels[attr] + Axes.hoverLabelText(ya, trace[attr][i]);
     }
 
-    var textParts = [
+    var hoverinfo = trace.hoverinfo;
+    var hoverParts = hoverinfo.split('+');
+    var isAll = hoverinfo === 'all';
+    var hasY = isAll || hoverParts.indexOf('y') !== -1;
+    var hasText = isAll || hoverParts.indexOf('text') !== -1;
+
+    var textParts = hasY ? [
         getLabelLine('open'),
         getLabelLine('high'),
         getLabelLine('low'),
-        getLabelLine('close')
-    ];
-    fillHoverText(di, trace, textParts);
-    pointData.text = textParts.join('<br>');
+        getLabelLine('close') + '  ' + DIRSYMBOL[dir]
+    ] : [];
+    if(hasText) fillHoverText(di, trace, textParts);
+
+    // don't make .yLabelVal or .text, since we're managing hoverinfo
+    // put it all in .extraText
+    pointData.extraText = textParts.join('<br>');
 
     // this puts the label at the midpoint of the box, ie
     // halfway between open and close, not between high and low.
     // TODO: the spike also links to this point, whereas previously
     // it linked to close. Is one better?
     pointData.y0 = pointData.y1 = ya.c2p(di.yc, true);
-
-    // indicate increasing/decreasing in the "name" field
-    // TODO: only shows up if name is displayed, ie multiple traces.
-    pointData.name += '<br>' + DIRSYMBOL[dir];
 
     return [pointData];
 };
