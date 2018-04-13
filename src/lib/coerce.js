@@ -433,9 +433,7 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
  */
 exports.coerceHoverinfo = function(traceIn, traceOut, layoutOut) {
     var moduleAttrs = traceOut._module.attributes;
-    var attrs = moduleAttrs.hoverinfo ?
-        {hoverinfo: moduleAttrs.hoverinfo} :
-        baseTraceAttrs;
+    var attrs = moduleAttrs.hoverinfo ? moduleAttrs : baseTraceAttrs;
 
     var valObj = attrs.hoverinfo;
     var dflt;

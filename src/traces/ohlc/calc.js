@@ -59,6 +59,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
 
     // we're optimists - before we have any changing data, assume increasing
     var increasing = true;
+    var cPrev = null;
 
     var cd = [];
     for(var i = 0; i < x.length; i++) {
@@ -69,8 +70,14 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
         var ci = c[i];
 
         if(xi !== undefined && oi !== undefined && hi !== undefined && li !== undefined && ci !== undefined) {
-            // increasing carries over from previous if ci===oi
-            increasing = (ci === oi) ? increasing : ci > oi;
+            if(ci === oi) {
+                // if open == close, look for a change from the previous close
+                if(cPrev !== null && ci !== cPrev) increasing = ci > cPrev;
+                // else (c === cPrev or cPrev is null) no change
+            }
+            else increasing = ci > oi;
+
+            cPrev = ci;
 
             var pt = ptFunc(oi, hi, li, ci);
 

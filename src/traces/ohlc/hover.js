@@ -25,6 +25,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var t = cd[0].t;
 
+    var type = trace.type;
+    var minAttr = type === 'ohlc' ? 'l' : 'min';
+    var maxAttr = type === 'ohlc' ? 'h' : 'max';
+
     // potentially shift xval for grouped candlesticks
     var centerShift = t.bPos || 0;
     var x0 = xval - centerShift;
@@ -44,7 +48,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 
     function dy(di) {
-        return Fx.inbox(di.min - yval, di.max - yval, hoverPseudoDistance);
+        return Fx.inbox(di[minAttr] - yval, di[maxAttr] - yval, hoverPseudoDistance);
     }
 
     function dxy(di) { return (dx(di) + dy(di)) / 2; }

@@ -6,6 +6,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var failTest = require('../assets/fail_test');
 
 var mock0 = {
     open: [33.01, 33.31, 33.50, 32.06, 34.12, 33.05, 33.31, 33.50],
@@ -47,13 +48,8 @@ describe('finance charts defaults:', function() {
         var out = _supply([trace0, trace1]);
 
         expect(out.data.length).toEqual(2);
-        expect(out._fullData.length).toEqual(4);
-
-        var directions = out._fullData.map(function(fullTrace) {
-            return fullTrace.transforms[0].direction;
-        });
-
-        expect(directions).toEqual(['increasing', 'decreasing', 'increasing', 'decreasing']);
+        // not sure this test is really necessary anymore, since these are real traces...
+        expect(out._fullData.length).toEqual(2);
     });
 
     it('should not mutate user data', function() {
@@ -98,7 +94,7 @@ describe('finance charts defaults:', function() {
         var out = _supply([trace0, trace1]);
 
         expect(out.data.length).toEqual(2);
-        expect(out._fullData.length).toEqual(4);
+        expect(out._fullData.length).toEqual(2);
 
         var transformTypesIn = out.data.map(function(trace) {
             return trace.transforms.map(function(opts) {
@@ -114,21 +110,20 @@ describe('finance charts defaults:', function() {
             });
         });
 
-        // dummy 'ohlc' and 'candlestick' transforms are pushed at the end
-        // of the 'transforms' array container
-
-        expect(transformTypesOut).toEqual([
-            ['filter', 'ohlc'], ['filter', 'ohlc'],
-            ['filter', 'candlestick'], ['filter', 'candlestick']
-        ]);
+        expect(transformTypesOut).toEqual([ ['filter'], ['filter'] ]);
     });
 
-    it('should slice data array according to minimum supplied length', function() {
+    it('should not slice data arrays but record minimum supplied length', function() {
 
-        function assertDataLength(fullTrace, len) {
+        function assertDataLength(trace, fullTrace, len) {
             expect(fullTrace.visible).toBe(true);
 
-            expect(fullTrace._inputLength).toBe(len);
+            expect(fullTrace._length).toBe(len);
+
+            expect(fullTrace.open).toBe(trace.open);
+            expect(fullTrace.close).toBe(trace.close);
+            expect(fullTrace.high).toBe(trace.high);
+            expect(fullTrace.low).toBe(trace.low);
         }
 
         var trace0 = Lib.extendDeep({}, mock0, { type: 'ohlc' });
@@ -139,15 +134,11 @@ describe('finance charts defaults:', function() {
 
         var out = _supply([trace0, trace1]);
 
-        assertDataLength(out._fullData[0], 5);
-        assertDataLength(out._fullData[1], 5);
-        assertDataLength(out._fullData[2], 4);
-        assertDataLength(out._fullData[3], 4);
+        assertDataLength(trace0, out._fullData[0], 5);
+        assertDataLength(trace1, out._fullData[1], 4);
 
         expect(out._fullData[0]._fullInput.x).toBeUndefined();
-        expect(out._fullData[1]._fullInput.x).toBeUndefined();
-        expect(out._fullData[2]._fullInput.x).toBeDefined();
-        expect(out._fullData[3]._fullInput.x).toBeDefined();
+        expect(out._fullData[1]._fullInput.x).toBeDefined();
     });
 
     it('should set visible to *false* when minimum supplied length is 0', function() {
@@ -160,13 +151,13 @@ describe('finance charts defaults:', function() {
         var out = _supply([trace0, trace1]);
 
         expect(out.data.length).toEqual(2);
-        expect(out._fullData.length).toEqual(4);
+        expect(out._fullData.length).toEqual(2);
 
         var visibilities = out._fullData.map(function(fullTrace) {
             return fullTrace.visible;
         });
 
-        expect(visibilities).toEqual([false, false, false, false]);
+        expect(visibilities).toEqual([false, false]);
     });
 
     it('direction *showlegend* should be inherited from trace-wide *showlegend*', function() {
@@ -188,10 +179,10 @@ describe('finance charts defaults:', function() {
             return fullTrace.showlegend;
         });
 
-        expect(visibilities).toEqual([false, false, false, false]);
+        expect(visibilities).toEqual([false, false]);
     });
 
-    it('direction *name* should be inherited from trace-wide *name*', function() {
+    it('direction *name* should be ignored if there\'s a trace-wide *name*', function() {
         var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
             name: 'Company A'
@@ -211,10 +202,8 @@ describe('finance charts defaults:', function() {
         });
 
         expect(names).toEqual([
-            'Company A - increasing',
-            'Company A - decreasing',
-            'B - UP',
-            'B - DOWN'
+            'Company A',
+            'Company B'
         ]);
     });
 
@@ -238,11 +227,9 @@ describe('finance charts defaults:', function() {
         });
 
         expect(names).toEqual([
-            'trace 0 - increasing',
-            'trace 0 - decreasing',
+            'trace 0',
             'trace 1',
-            'trace 2 - increasing',
-            'trace 2 - decreasing',
+            'trace 2',
             'trace 3'
         ]);
     });
@@ -267,22 +254,14 @@ describe('finance charts defaults:', function() {
 
         var out = _supply([trace0, trace1]);
 
-
         var fullData = out._fullData;
-        var fullInput = fullData.map(function(fullTrace) { return fullTrace._fullInput; });
-
-        assertLine(fullInput[0].increasing, 1, 'dash');
-        assertLine(fullInput[0].decreasing, 1, 'dot');
-        assertLine(fullInput[2].increasing, 0);
-        assertLine(fullInput[2].decreasing, 3);
-
-        assertLine(fullData[0], 1, 'dash');
-        assertLine(fullData[1], 1, 'dot');
-        assertLine(fullData[2], 0);
-        assertLine(fullData[3], 3);
+        assertLine(fullData[0].increasing, 1, 'dash');
+        assertLine(fullData[0].decreasing, 1, 'dot');
+        assertLine(fullData[1].increasing, 0);
+        assertLine(fullData[1].decreasing, 3);
     });
 
-    it('trace-wide *visible* should be passed to generated traces', function() {
+    it('trace-wide *visible* should work', function() {
         var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
             visible: 'legendonly'
@@ -301,7 +280,7 @@ describe('finance charts defaults:', function() {
 
         // only three items here as visible: false traces are not transformed
 
-        expect(visibilities).toEqual(['legendonly', 'legendonly', false]);
+        expect(visibilities).toEqual(['legendonly', false]);
     });
 
     it('should add a few layout settings by default', function() {
@@ -362,7 +341,7 @@ describe('finance charts defaults:', function() {
 
 
         out._fullData.forEach(function(fullTrace, i) {
-            expect(fullTrace.xcalendar).toBe(i < 2 ? 'hebrew' : 'julian');
+            expect(fullTrace.xcalendar).toBe(i < 1 ? 'hebrew' : 'julian');
         });
     });
 
@@ -374,14 +353,14 @@ describe('finance charts defaults:', function() {
     });
 });
 
-describe('finance charts calc transforms:', function() {
+describe('finance charts calc', function() {
     'use strict';
 
     function calcDatatoTrace(calcTrace) {
         return calcTrace[0].trace;
     }
 
-    function _calcRaw(data, layout) {
+    function _calcGd(data, layout) {
         var gd = {
             data: data,
             layout: layout || {}
@@ -389,7 +368,19 @@ describe('finance charts calc transforms:', function() {
 
         supplyAllDefaults(gd);
         Plots.doCalcdata(gd);
-        return gd.calcdata;
+        gd.calcdata.forEach(function(cd) {
+            // fill in some stuff that happens during setPositions or plot
+            if(cd[0].trace.type === 'candlestick') {
+                var diff = cd[1].pos - cd[0].pos;
+                cd[0].t.wHover = diff / 2;
+                cd[0].t.bdPos = diff / 4;
+            }
+        });
+        return gd;
+    }
+
+    function _calcRaw(data, layout) {
+        return _calcGd(data, layout).calcdata;
     }
 
     function _calc(data, layout) {
@@ -408,6 +399,10 @@ describe('finance charts calc transforms:', function() {
         trace.close.push(1, 1, 1, 'close');
     }
 
+    function mapGet(array, attr) {
+        return array.map(function(di) { return di[attr]; });
+    }
+
     it('should fill when *x* is not present', function() {
         var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
@@ -419,84 +414,79 @@ describe('finance charts calc transforms:', function() {
         });
         addJunk(trace1);
 
-        var out = _calc([trace0, trace1]);
+        var out = _calcRaw([trace0, trace1]);
+        var indices = [0, 1, 2, 3, 4, 5, 6, 7];
+        var i = 'increasing';
+        var d = 'decreasing';
+        var directions = [i, d, d, i, d, i, d, i];
 
-        expect(out[0].x).toEqual([
-            -0.3, 0, 0, 0, 0, 0.3, null,
-            2.7, 3, 3, 3, 3, 3.3, null,
-            4.7, 5, 5, 5, 5, 5.3, null,
-            6.7, 7, 7, 7, 7, 7.3, null
-        ]);
-        expect(out[1].x).toEqual([
-            0.7, 1, 1, 1, 1, 1.3, null,
-            1.7, 2, 2, 2, 2, 2.3, null,
-            3.7, 4, 4, 4, 4, 4.3, null,
-            5.7, 6, 6, 6, 6, 6.3, null
-        ]);
-        expect(out[2].x).toEqual([
-            0, 0, 0, 0, 0, 0,
-            3, 3, 3, 3, 3, 3,
-            5, 5, 5, 5, 5, 5,
-            7, 7, 7, 7, 7, 7
-        ]);
-        expect(out[3].x).toEqual([
-            1, 1, 1, 1, 1, 1,
-            2, 2, 2, 2, 2, 2,
-            4, 4, 4, 4, 4, 4,
-            6, 6, 6, 6, 6, 6
-        ]);
+        expect(mapGet(out[0], 'pos')).toEqual(indices);
+        expect(mapGet(out[0], 'dir')).toEqual(directions);
+        expect(mapGet(out[1], 'pos')).toEqual(indices);
+        expect(mapGet(out[1], 'dir')).toEqual(directions);
     });
 
-    it('should fill *text* for OHLC hover labels', function() {
-        var trace0 = Lib.extendDeep({}, mock0, {
-            type: 'ohlc',
-            text: ['A', 'B', 'C', 'D']
+    ['ohlc', 'candlestick'].forEach(function(type) {
+        it('generates correct hover text for ' + type, function() {
+            var trace0 = Lib.extendDeep({}, mock0, {
+                type: type,
+                text: ['A', 'B', 'C', 'D']
+            });
+
+            var trace1 = Lib.extendDeep({}, mock1, {
+                type: type,
+                text: 'IMPORTANT',
+                hoverinfo: 'x+text',
+                xaxis: 'x2'
+            });
+
+            var gd = _calcGd([trace0, trace1]);
+            var calcdata = gd.calcdata;
+            var tracesOut = calcdata.map(calcDatatoTrace);
+
+            var _hover = tracesOut[0]._module.hoverPoints;
+            function hoverOn(curveNum, x, y) {
+                var pointData = {
+                    cd: calcdata[curveNum],
+                    xa: gd._fullLayout[tracesOut[curveNum].xaxis === 'x2' ? 'xaxis2' : 'xaxis'],
+                    ya: gd._fullLayout.yaxis,
+                    maxHoverDistance: 20,
+                    maxSpikeDistance: 20,
+                    distance: Infinity,
+                    spikeDistance: Infinity,
+                    index: false
+                };
+
+                var pts = _hover(pointData, x, y, 'closest');
+                return pts[0];
+            }
+
+            expect(tracesOut[0].hoverinfo).toBe('all');
+            expect(mapGet(calcdata[0], 'tx')).toEqual([
+                'A', 'B', 'C', 'D', undefined, undefined, undefined, undefined
+            ]);
+            expect(hoverOn(0, 0, 33)).toEqual(jasmine.objectContaining({
+                text: 'open: 33.01<br>high: 34.2<br>low: 31.7<br>close: 34.1<br>A',
+                color: tracesOut[0].increasing.line.color
+            }));
+            expect(hoverOn(0, 1, 33)).toEqual(jasmine.objectContaining({
+                text: 'open: 33.31<br>high: 34.37<br>low: 30.75<br>close: 31.93<br>B',
+                color: tracesOut[0].decreasing.line.color
+            }));
+
+            expect(tracesOut[1].hoverinfo).toBe('x+text');
+            expect(mapGet(calcdata[1], 'tx')).toEqual([
+                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
+            ]);
+            expect(hoverOn(1, calcdata[1][0].pos, 33)).toEqual(jasmine.objectContaining({
+                text: 'open: 33.01<br>high: 34.2<br>low: 31.7<br>close: 34.1<br>IMPORTANT',
+                color: tracesOut[1].increasing.line.color
+            }));
+            expect(hoverOn(1, calcdata[1][1].pos, 33)).toEqual(jasmine.objectContaining({
+                text: 'open: 33.31<br>high: 34.37<br>low: 30.75<br>close: 31.93<br>IMPORTANT',
+                color: tracesOut[1].decreasing.line.color
+            }));
         });
-
-        var trace1 = Lib.extendDeep({}, mock1, {
-            type: 'ohlc',
-            text: 'IMPORTANT',
-            hoverinfo: 'x+text',
-            xaxis: 'x2'
-        });
-
-        var trace2 = Lib.extendDeep({}, mock1, {
-            type: 'ohlc',
-            hoverinfo: 'y',
-            xaxis: 'x2'
-        });
-
-        var trace3 = Lib.extendDeep({}, mock0, {
-            type: 'ohlc',
-            hoverinfo: 'x',
-        });
-
-        var out = _calc([trace0, trace1, trace2, trace3]);
-
-        expect(out[0].hoverinfo).toEqual('x+text+name');
-        expect(out[0].text[0])
-            .toEqual('open: 33.01<br>high: 34.2<br>low: 31.7<br>close: 34.1<br>A');
-        expect(out[0].hoverinfo).toEqual('x+text+name');
-        expect(out[1].text[0])
-            .toEqual('open: 33.31<br>high: 34.37<br>low: 30.75<br>close: 31.93<br>B');
-
-        expect(out[2].hoverinfo).toEqual('x+text');
-        expect(out[2].text[0]).toEqual('IMPORTANT');
-
-        expect(out[3].hoverinfo).toEqual('x+text');
-        expect(out[3].text[0]).toEqual('IMPORTANT');
-
-        expect(out[4].hoverinfo).toEqual('text');
-        expect(out[4].text[0])
-            .toEqual('open: 33.01<br>high: 34.2<br>low: 31.7<br>close: 34.1');
-        expect(out[5].hoverinfo).toEqual('text');
-        expect(out[5].text[0])
-            .toEqual('open: 33.31<br>high: 34.37<br>low: 30.75<br>close: 31.93');
-
-        expect(out[6].hoverinfo).toEqual('x');
-        expect(out[6].text[0]).toEqual('');
-        expect(out[7].hoverinfo).toEqual('x');
-        expect(out[7].text[0]).toEqual('');
     });
 
     it('should work with *filter* transforms', function() {
@@ -523,42 +513,21 @@ describe('finance charts calc transforms:', function() {
 
         var out = _calc([trace0, trace1]);
 
-        expect(out.length).toEqual(4);
+        expect(out.length).toEqual(2);
 
         expect(out[0].x).toEqual([
-            '2016-08-31 22:48', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01 01:12', null,
-            '2016-09-05 22:48', '2016-09-06', '2016-09-06', '2016-09-06', '2016-09-06', '2016-09-06 01:12', null,
-            '2016-09-09 22:48', '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10 01:12', null
+            '2016-09-01', '2016-09-02', '2016-09-03', '2016-09-05', '2016-09-06', '2016-09-07', '2016-09-10'
         ]);
-        expect(out[0].y).toEqual([
-            33.01, 33.01, 34.2, 31.7, 34.1, 34.1, null,
-            33.05, 33.05, 33.25, 32.75, 33.1, 33.1, null,
-            33.5, 33.5, 34.62, 32.87, 33.7, 33.7, null
+        expect(out[0].open).toEqual([
+            33.01, 33.31, 33.50, 34.12, 33.05, 33.31, 33.50
         ]);
+
         expect(out[1].x).toEqual([
-            '2016-09-01 22:48', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02 01:12', null,
-            '2016-09-02 22:48', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03 01:12', null,
-            '2016-09-04 22:48', '2016-09-05', '2016-09-05', '2016-09-05', '2016-09-05', '2016-09-05 01:12', null,
-            '2016-09-06 22:48', '2016-09-07', '2016-09-07', '2016-09-07', '2016-09-07', '2016-09-07 01:12', null
+            '2016-09-01', '2016-09-10'
         ]);
-        expect(out[1].y).toEqual([
-            33.31, 33.31, 34.37, 30.75, 31.93, 31.93, null,
-            33.5, 33.5, 33.62, 32.87, 33.37, 33.37, null,
-            34.12, 34.12, 35.18, 30.81, 31.18, 31.18, null,
-            33.31, 33.31, 35.37, 32.75, 32.93, 32.93, null
+        expect(out[1].close).toEqual([
+            34.10, 33.70
         ]);
-
-        expect(out[2].x).toEqual([
-            '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01',
-            '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10'
-        ]);
-        expect(out[2].y).toEqual([
-            31.7, 33.01, 34.1, 34.1, 34.1, 34.2,
-            32.87, 33.5, 33.7, 33.7, 33.7, 34.62
-        ]);
-
-        expect(out[3].x).toEqual([]);
-        expect(out[3].y).toEqual([]);
     });
 
     it('should work with *groupby* transforms (ohlc)', function() {
@@ -575,35 +544,23 @@ describe('finance charts calc transforms:', function() {
 
         var out = _calc([trace0]);
 
-        expect(out[0].name).toEqual('trace 0 - increasing');
+        expect(out.length).toBe(2);
+
+        expect(out[0].name).toBe('b');
         expect(out[0].x).toEqual([
-            '2016-08-31 22:48', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01 01:12', null
+            '2016-09-01', '2016-09-02', '2016-09-03'
         ]);
-        expect(out[0].y).toEqual([
-            33.01, 33.01, 34.2, 31.7, 34.1, 34.1, null,
+        expect(out[0].open).toEqual([
+            33.01, 33.31, 33.5
         ]);
 
-        expect(out[1].name).toEqual('trace 0 - decreasing');
+        expect(out[1].name).toBe('a');
         expect(out[1].x).toEqual([
-            '2016-09-01 22:48', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02 01:12', null,
-            '2016-09-02 22:48', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03 01:12', null
+            '2016-09-04'
         ]);
-        expect(out[1].y).toEqual([
-            33.31, 33.31, 34.37, 30.75, 31.93, 31.93, null,
-            33.5, 33.5, 33.62, 32.87, 33.37, 33.37, null
+        expect(out[1].open).toEqual([
+            32.06
         ]);
-
-        expect(out[2].name).toEqual('trace 0 - increasing');
-        expect(out[2].x).toEqual([
-            '2016-09-03 22:48', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04 01:12', null
-        ]);
-        expect(out[2].y).toEqual([
-            32.06, 32.06, 34.25, 31.62, 33.18, 33.18, null
-        ]);
-
-        expect(out[3].name).toEqual('trace 0 - decreasing');
-        expect(out[3].x).toEqual([]);
-        expect(out[3].y).toEqual([]);
     });
 
     it('should work with *groupby* transforms (candlestick)', function() {
@@ -619,109 +576,64 @@ describe('finance charts calc transforms:', function() {
 
         var out = _calc([trace0]);
 
-        expect(out[0].name).toEqual('trace 0 - increasing');
+        expect(out[0].name).toEqual('a');
         expect(out[0].x).toEqual([
-            '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01',
-            '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04'
+            '2016-09-01', '2016-09-04'
         ]);
-        expect(out[0].y).toEqual([
-            31.7, 33.01, 34.1, 34.1, 34.1, 34.2,
-            31.62, 32.06, 33.18, 33.18, 33.18, 34.25
+        expect(out[0].open).toEqual([
+            33.01, 32.06
         ]);
 
-        expect(out[1].name).toEqual('trace 0 - decreasing');
-        expect(out[1].x).toEqual([]);
-        expect(out[1].y).toEqual([]);
-
-        expect(out[2].name).toEqual('trace 0 - increasing');
-        expect(out[2].x).toEqual([]);
-        expect(out[2].y).toEqual([]);
-
-        expect(out[3].name).toEqual('trace 0 - decreasing');
-        expect(out[3].x).toEqual([
-            '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02',
-            '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03'
+        expect(out[1].name).toEqual('b');
+        expect(out[1].x).toEqual([
+            '2016-09-02', '2016-09-03'
         ]);
-        expect(out[3].y).toEqual([
-            30.75, 33.31, 31.93, 31.93, 31.93, 34.37,
-            32.87, 33.5, 33.37, 33.37, 33.37, 33.62
+        expect(out[1].open).toEqual([
+            33.31, 33.5
         ]);
     });
 
     it('should use the smallest trace minimum x difference to convert *tickwidth* to data coords for all traces attached to a given x-axis', function() {
         var trace0 = Lib.extendDeep({}, mock1, {
-            type: 'ohlc',
-            tickwidth: 0.5
+            type: 'ohlc'
         });
 
         var trace1 = Lib.extendDeep({}, mock1, {
             type: 'ohlc',
-            tickwidth: 0.5
+            // shift time coordinates by 10 hours
+            x: mock1.x.map(function(d) { return d + ' 10:00'; })
         });
 
-        // shift time coordinates by 10 hours
-        trace1.x = trace1.x.map(function(d) {
-            return d + ' 10:00';
-        });
+        var out = _calcRaw([trace0, trace1]);
 
-        var out = _calc([trace0, trace1]);
-
-        expect(out[0].x).toEqual([
-            '2016-08-31 12:00', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01 12:00', null,
-            '2016-09-03 12:00', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04 12:00', null,
-            '2016-09-05 12:00', '2016-09-06', '2016-09-06', '2016-09-06', '2016-09-06', '2016-09-06 12:00', null,
-            '2016-09-09 12:00', '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10', '2016-09-10 12:00', null
-        ]);
-
-        expect(out[1].x).toEqual([
-            '2016-09-01 12:00', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02 12:00', null,
-            '2016-09-02 12:00', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03 12:00', null,
-            '2016-09-04 12:00', '2016-09-05', '2016-09-05', '2016-09-05', '2016-09-05', '2016-09-05 12:00', null,
-            '2016-09-06 12:00', '2016-09-07', '2016-09-07', '2016-09-07', '2016-09-07', '2016-09-07 12:00', null
-        ]);
-
-        expect(out[2].x).toEqual([
-            '2016-08-31 22:00', '2016-09-01 10:00', '2016-09-01 10:00', '2016-09-01 10:00', '2016-09-01 10:00', '2016-09-01 22:00', null,
-            '2016-09-03 22:00', '2016-09-04 10:00', '2016-09-04 10:00', '2016-09-04 10:00', '2016-09-04 10:00', '2016-09-04 22:00', null,
-            '2016-09-05 22:00', '2016-09-06 10:00', '2016-09-06 10:00', '2016-09-06 10:00', '2016-09-06 10:00', '2016-09-06 22:00', null,
-            '2016-09-09 22:00', '2016-09-10 10:00', '2016-09-10 10:00', '2016-09-10 10:00', '2016-09-10 10:00', '2016-09-10 22:00', null
-        ]);
-
-        expect(out[3].x).toEqual([
-            '2016-09-01 22:00', '2016-09-02 10:00', '2016-09-02 10:00', '2016-09-02 10:00', '2016-09-02 10:00', '2016-09-02 22:00', null,
-            '2016-09-02 22:00', '2016-09-03 10:00', '2016-09-03 10:00', '2016-09-03 10:00', '2016-09-03 10:00', '2016-09-03 22:00', null,
-            '2016-09-04 22:00', '2016-09-05 10:00', '2016-09-05 10:00', '2016-09-05 10:00', '2016-09-05 10:00', '2016-09-05 22:00', null,
-            '2016-09-06 22:00', '2016-09-07 10:00', '2016-09-07 10:00', '2016-09-07 10:00', '2016-09-07 10:00', '2016-09-07 22:00', null
-        ]);
+        var oneDay = 1000 * 3600 * 24;
+        expect(out[0][0].t.tickLen).toBeCloseTo(oneDay * 0.3, 0);
+        expect(out[0][0].t.wHover).toBeCloseTo(oneDay * 0.5, 0);
+        expect(out[1][0].t.tickLen).toBe(out[0][0].t.tickLen);
+        expect(out[1][0].t.wHover).toBe(out[0][0].t.wHover);
     });
 
-    it('should fallback to a minimum x difference of 0.5 in one-item traces', function() {
-        var trace0 = Lib.extendDeep({}, mock1, {
+    it('should fallback to a spacing of 1 in one-item traces', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
-            tickwidth: 0.5
+            x: ['2016-01-01']
         });
-        trace0.x = [ '2016-01-01' ];
 
         var trace1 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
-            tickwidth: 0.5
+            x: [10],
+            xaxis: 'x2'
         });
-        trace1.x = [ 10 ];
 
-        var out = _calc([trace0, trace1]);
-
-        var x0 = Lib.simpleMap(out[0].x, Lib.dateTime2ms);
-        expect(x0[x0.length - 2] - x0[0]).toEqual(1);
-
-        var x2 = Lib.simpleMap(out[2].x, Lib.dateTime2ms);
-        expect(x2[x2.length - 2] - x2[0]).toEqual(1);
-
-        expect(out[1].x).toEqual([]);
-        expect(out[3].x).toEqual([]);
+        var out = _calcRaw([trace0, trace1]);
+        expect(out[0][0].t.tickLen).toBeCloseTo(0.3, 5);
+        expect(out[0][0].t.wHover).toBeCloseTo(0.5, 5);
+        expect(out[1][0].t.tickLen).toBeCloseTo(0.3, 5);
+        expect(out[1][0].t.wHover).toBeCloseTo(0.5, 5);
     });
 
     it('should handle cases where \'open\' and \'close\' entries are equal', function() {
-        var out = _calc([{
+        var out = _calcRaw([{
             type: 'ohlc',
             open: [0, 1, 0, 2, 1, 1, 2, 2],
             high: [3, 3, 3, 3, 3, 3, 3, 3],
@@ -736,36 +648,30 @@ describe('finance charts calc transforms:', function() {
             close: [0, 1, 0, 2]
         }]);
 
-        expect(out[0].x).toEqual([
-            0, 0, 0, 0, 0, 0, null,
-            1, 1, 1, 1, 1, 1, null,
-            6, 6, 6, 6, 6, 6, null,
-            7, 7, 7, 7, 7, 7, null
-        ]);
-        expect(out[1].x).toEqual([
-            2, 2, 2, 2, 2, 2, null,
-            3, 3, 3, 3, 3, 3, null,
-            4, 4, 4, 4, 4, 4, null,
-            5, 5, 5, 5, 5, 5, null
+        expect(mapGet(out[0], 'dir')).toEqual([
+            'increasing', 'increasing', 'decreasing', 'decreasing',
+            'decreasing', 'decreasing', 'increasing', 'increasing'
         ]);
 
-        expect(out[2].x).toEqual([
-            0, 0, 0, 0, 0, 0,
-            3, 3, 3, 3, 3, 3
-        ]);
-        expect(out[3].x).toEqual([
-            1, 1, 1, 1, 1, 1,
-            2, 2, 2, 2, 2, 2
+        expect(mapGet(out[1], 'dir')).toEqual([
+            'increasing', 'decreasing', 'decreasing', 'increasing'
         ]);
     });
 
-    it('should not include box hover labels prefix in candlestick calcdata', function() {
-        var trace0 = Lib.extendDeep({}, mock0, {
-            type: 'candlestick',
-        });
-        var out = _calcRaw([trace0]);
+    it('should include finance hover labels prefix in calcdata', function() {
+        ['candlestick', 'ohlc'].forEach(function(type) {
+            var trace0 = Lib.extendDeep({}, mock0, {
+                type: type,
+            });
+            var out = _calcRaw([trace0]);
 
-        expect(out[0][0].t.labels).toBeUndefined();
+            expect(out[0][0].t.labels).toEqual({
+                open: 'open: ',
+                high: 'high: ',
+                low: 'low: ',
+                close: 'close: '
+            });
+        });
     });
 });
 
@@ -783,8 +689,8 @@ describe('finance charts updates:', function() {
         destroyGraphDiv();
     });
 
-    function countScatterTraces() {
-        return d3.select('g.cartesianlayer').selectAll('g.trace.scatter').size();
+    function countOHLCTraces() {
+        return d3.select('g.cartesianlayer').selectAll('g.trace.ohlc').size();
     }
 
     function countBoxTraces() {
@@ -801,18 +707,18 @@ describe('finance charts updates:', function() {
         var path0;
 
         Plotly.plot(gd, [trace0]).then(function() {
-            expect(gd.calcdata[0][0].x).toEqual(-0.3);
-            expect(gd.calcdata[0][0].y).toEqual(33.01);
+            expect(gd.calcdata[0][0].t.tickLen).toBeCloseTo(0.3, 5);
+            expect(gd.calcdata[0][0].o).toEqual(33.01);
 
             return Plotly.restyle(gd, 'tickwidth', 0.5);
         })
         .then(function() {
-            expect(gd.calcdata[0][0].x).toEqual(-0.5);
+            expect(gd.calcdata[0][0].t.tickLen).toBeCloseTo(0.5, 5);
 
             return Plotly.restyle(gd, 'open', [[0, 30.75, 32.87, 31.62, 30.81, 32.75, 32.75, 32.87]]);
         })
         .then(function() {
-            expect(gd.calcdata[0][0].y).toEqual(0);
+            expect(gd.calcdata[0][0].o).toEqual(0);
 
             return Plotly.restyle(gd, {
                 type: 'candlestick',
@@ -821,15 +727,15 @@ describe('finance charts updates:', function() {
         })
         .then(function() {
             path0 = d3.select('path.box').attr('d');
+            expect(path0).toBeDefined();
 
             return Plotly.restyle(gd, 'whiskerwidth', 0.2);
         })
         .then(function() {
             expect(d3.select('path.box').attr('d')).not.toEqual(path0);
-
-            done();
-        });
-
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should be able to toggle visibility', function(done) {
@@ -839,47 +745,47 @@ describe('finance charts updates:', function() {
         ];
 
         Plotly.plot(gd, data).then(function() {
-            expect(countScatterTraces()).toEqual(2);
-            expect(countBoxTraces()).toEqual(2);
+            expect(countOHLCTraces()).toEqual(1);
+            expect(countBoxTraces()).toEqual(1);
 
             return Plotly.restyle(gd, 'visible', false);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(0);
+            expect(countOHLCTraces()).toEqual(0);
             expect(countBoxTraces()).toEqual(0);
 
             return Plotly.restyle(gd, 'visible', 'legendonly', [1]);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(0);
+            expect(countOHLCTraces()).toEqual(0);
             expect(countBoxTraces()).toEqual(0);
 
             return Plotly.restyle(gd, 'visible', true, [1]);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(0);
-            expect(countBoxTraces()).toEqual(2);
+            expect(countOHLCTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(1);
 
             return Plotly.restyle(gd, 'visible', true, [0]);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(2);
-            expect(countBoxTraces()).toEqual(2);
+            expect(countOHLCTraces()).toEqual(1);
+            expect(countBoxTraces()).toEqual(1);
 
             return Plotly.restyle(gd, 'visible', 'legendonly', [0]);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(0);
-            expect(countBoxTraces()).toEqual(2);
+            expect(countOHLCTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(1);
 
             return Plotly.restyle(gd, 'visible', true);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(2);
-            expect(countBoxTraces()).toEqual(2);
-
-            done();
-        });
+            expect(countOHLCTraces()).toEqual(1);
+            expect(countBoxTraces()).toEqual(1);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.relayout should work', function(done) {
@@ -892,9 +798,9 @@ describe('finance charts updates:', function() {
         })
         .then(function() {
             expect(countRangeSliders()).toEqual(0);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
 
     });
 
@@ -904,13 +810,9 @@ describe('finance charts updates:', function() {
             Lib.extendDeep({}, mock0, { type: 'candlestick' }),
         ];
 
-        // ohlc have 7 calc pts per 'x' coords
-
         Plotly.plot(gd, data).then(function() {
-            expect(gd.calcdata[0].length).toEqual(28);
-            expect(gd.calcdata[1].length).toEqual(28);
-            expect(gd.calcdata[2].length).toEqual(4);
-            expect(gd.calcdata[3].length).toEqual(4);
+            expect(gd.calcdata[0].length).toEqual(8);
+            expect(gd.calcdata[1].length).toEqual(8);
 
             return Plotly.extendTraces(gd, {
                 open: [[ 34, 35 ]],
@@ -920,10 +822,8 @@ describe('finance charts updates:', function() {
             }, [1]);
         })
         .then(function() {
-            expect(gd.calcdata[0].length).toEqual(28);
-            expect(gd.calcdata[1].length).toEqual(28);
-            expect(gd.calcdata[2].length).toEqual(6);
-            expect(gd.calcdata[3].length).toEqual(4);
+            expect(gd.calcdata[0].length).toEqual(8);
+            expect(gd.calcdata[1].length).toEqual(10);
 
             return Plotly.extendTraces(gd, {
                 open: [[ 34, 35 ]],
@@ -933,13 +833,11 @@ describe('finance charts updates:', function() {
             }, [0]);
         })
         .then(function() {
-            expect(gd.calcdata[0].length).toEqual(42);
-            expect(gd.calcdata[1].length).toEqual(28);
-            expect(gd.calcdata[2].length).toEqual(6);
-            expect(gd.calcdata[3].length).toEqual(4);
-
-            done();
-        });
+            expect(gd.calcdata[0].length).toEqual(10);
+            expect(gd.calcdata[1].length).toEqual(10);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.deleteTraces / addTraces should work', function(done) {
@@ -949,19 +847,19 @@ describe('finance charts updates:', function() {
         ];
 
         Plotly.plot(gd, data).then(function() {
-            expect(countScatterTraces()).toEqual(2);
-            expect(countBoxTraces()).toEqual(2);
+            expect(countOHLCTraces()).toEqual(1);
+            expect(countBoxTraces()).toEqual(1);
 
             return Plotly.deleteTraces(gd, [1]);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(2);
+            expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(0);
 
             return Plotly.deleteTraces(gd, [0]);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(0);
+            expect(countOHLCTraces()).toEqual(0);
             expect(countBoxTraces()).toEqual(0);
 
             var trace = Lib.extendDeep({}, mock0, { type: 'candlestick' });
@@ -969,68 +867,66 @@ describe('finance charts updates:', function() {
             return Plotly.addTraces(gd, [trace]);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(0);
-            expect(countBoxTraces()).toEqual(2);
+            expect(countOHLCTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(1);
 
             var trace = Lib.extendDeep({}, mock0, { type: 'ohlc' });
 
             return Plotly.addTraces(gd, [trace]);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(2);
-            expect(countBoxTraces()).toEqual(2);
-
-            done();
-        });
+            expect(countOHLCTraces()).toEqual(1);
+            expect(countBoxTraces()).toEqual(1);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.addTraces + Plotly.relayout should update candlestick box position values', function(done) {
 
-        function assertBoxPosFields(dPos) {
-            expect(gd.calcdata.length).toEqual(dPos.length);
+        function assertBoxPosFields(bPos) {
+            expect(gd.calcdata.length).toEqual(bPos.length);
 
             gd.calcdata.forEach(function(calcTrace, i) {
-                if(dPos[i] === undefined) {
-                    expect(calcTrace[0].t.dPos).toBeUndefined();
-                }
-                else {
-                    expect(calcTrace[0].t.dPos).toEqual(dPos[i]);
-                }
+                expect(calcTrace[0].t.bPos).toBeCloseTo(bPos[i], 0);
             });
         }
 
         var trace0 = {
             type: 'candlestick',
-            x: ['2011-01-01'],
-            open: [0],
-            high: [3],
-            low: [1],
-            close: [3]
+            x: ['2011-01-01', '2011-01-02'],
+            open: [1, 2],
+            high: [3, 4],
+            low: [0, 1],
+            close: [2, 3]
         };
 
-        Plotly.plot(gd, [trace0]).then(function() {
-            assertBoxPosFields([0.5, undefined]);
+        Plotly.plot(gd, [trace0], {boxmode: 'group'})
+        .then(function() {
+            assertBoxPosFields([0]);
 
-            return Plotly.addTraces(gd, {});
+            return Plotly.addTraces(gd, [Lib.extendDeep({}, trace0)]);
 
         })
         .then(function() {
+            assertBoxPosFields([-15120000, 15120000]);
+
             var update = {
                 type: 'candlestick',
-                x: [['2011-02-02']],
-                open: [[0]],
-                high: [[3]],
-                low: [[1]],
-                close: [[3]]
+                x: [['2011-01-01', '2011-01-05'], ['2011-01-01', '2011-01-03']],
+                open: [[1, 0]],
+                high: [[3, 2]],
+                low: [[0, -1]],
+                close: [[2, 1]]
             };
 
             return Plotly.restyle(gd, update);
         })
         .then(function() {
-            assertBoxPosFields([0.5, undefined, 0.5, undefined]);
-
-            done();
-        });
+            assertBoxPosFields([-30240000, 30240000]);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.plot with data-less trace and adding with Plotly.restyle', function(done) {
@@ -1041,7 +937,7 @@ describe('finance charts updates:', function() {
         ];
 
         Plotly.plot(gd, data).then(function() {
-            expect(countScatterTraces()).toEqual(0);
+            expect(countOHLCTraces()).toEqual(0);
             expect(countBoxTraces()).toEqual(0);
             expect(countRangeSliders()).toEqual(0);
 
@@ -1053,8 +949,8 @@ describe('finance charts updates:', function() {
             }, [0]);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(0);
-            expect(countBoxTraces()).toEqual(2);
+            expect(countOHLCTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(1);
             expect(countRangeSliders()).toEqual(1);
 
             return Plotly.restyle(gd, {
@@ -1065,16 +961,18 @@ describe('finance charts updates:', function() {
             }, [1]);
         })
         .then(function() {
-            expect(countScatterTraces()).toEqual(2);
-            expect(countBoxTraces()).toEqual(2);
+            expect(countOHLCTraces()).toEqual(1);
+            expect(countBoxTraces()).toEqual(1);
             expect(countRangeSliders()).toEqual(1);
         })
+        .catch(failTest)
         .then(done);
     });
 
 });
 
 describe('finance charts *special* handlers:', function() {
+    // not special anymore - just test that they work as normal
 
     afterEach(destroyGraphDiv);
 
@@ -1112,7 +1010,7 @@ describe('finance charts *special* handlers:', function() {
         .then(function(gd) {
             return new Promise(function(resolve) {
                 gd.once('plotly_restyle', function(eventData) {
-                    expect(eventData[0]['increasing.name']).toEqual('0');
+                    expect(eventData[0].name).toEqual('0');
                     expect(eventData[1]).toEqual([0]);
                     delayedResolve(resolve);
                 });
@@ -1123,36 +1021,15 @@ describe('finance charts *special* handlers:', function() {
         .then(function(gd) {
             return new Promise(function(resolve) {
                 gd.once('plotly_restyle', function(eventData) {
-                    expect(eventData[0]['decreasing.name']).toEqual('1');
-                    expect(eventData[1]).toEqual([0]);
+                    expect(eventData[0].name).toEqual('1');
+                    expect(eventData[1]).toEqual([1]);
                     delayedResolve(resolve);
                 });
 
                 editText(1, '1');
             });
         })
-        .then(function(gd) {
-            return new Promise(function(resolve) {
-                gd.once('plotly_restyle', function(eventData) {
-                    expect(eventData[0]['decreasing.name']).toEqual('2');
-                    expect(eventData[1]).toEqual([1]);
-                    delayedResolve(resolve);
-                });
-
-                editText(3, '2');
-            });
-        })
-        .then(function(gd) {
-            return new Promise(function(resolve) {
-                gd.once('plotly_restyle', function(eventData) {
-                    expect(eventData[0]['increasing.name']).toEqual('3');
-                    expect(eventData[1]).toEqual([1]);
-                    delayedResolve(resolve);
-                });
-
-                editText(2, '3');
-            });
-        })
+        .catch(failTest)
         .then(done);
     });
 
