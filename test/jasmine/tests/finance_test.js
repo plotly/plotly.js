@@ -613,6 +613,20 @@ describe('finance charts calc', function() {
         expect(out[1][0].t.wHover).toBe(out[0][0].t.wHover);
     });
 
+    it('works with category x data', function() {
+        // see https://github.com/plotly/plotly.js/issues/2004
+        // fixed automatically as part of the refactor to a non-transform trace
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc',
+            x: ['a', 'b', 'c', 'd', 'e']
+        });
+
+        var out = _calcRaw([trace0]);
+
+        expect(out[0][0].t.tickLen).toBeCloseTo(0.3, 5);
+        expect(out[0][0].t.wHover).toBeCloseTo(0.5, 5);
+    });
+
     it('should fallback to a spacing of 1 in one-item traces', function() {
         var trace0 = Lib.extendDeep({}, mock0, {
             type: 'ohlc',
