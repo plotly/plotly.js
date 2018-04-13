@@ -20,7 +20,7 @@ module.exports = function clearGlCanvases(gd) {
 
     if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
         fullLayout._glcanvas.each(function(d) {
-            if(d.regl) d.regl.clear({color: true});
+            if(d.regl) d.regl.clear({color: true, depth: true});
         });
     }
 };

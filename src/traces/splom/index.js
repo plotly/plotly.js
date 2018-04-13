@@ -8,7 +8,7 @@
 
 'use strict';
 
-var createMatrix = require('regl-scattermatrix');
+var createMatrix = require('regl-splom');
 var arrayRange = require('array-range');
 
 var Registry = require('../../registry');
