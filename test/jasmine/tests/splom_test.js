@@ -376,8 +376,8 @@ describe('@gl Test splom interactions:', function() {
         var cnt = 1;
 
         function _assert(dims) {
-            var gridData = gd._fullLayout._splomGrid.lines;
-            var gridLengths = gridData.map(function(d) { return d.positions.length; });
+            var gridData = gd._fullLayout._splomGrid.passes;
+            var gridLengths = gridData.map(function(d) { return d.count * 2; });
             var msg = ' - call #' + cnt;
 
             expect(Object.keys(gridData).length)
