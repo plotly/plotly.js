@@ -16,6 +16,7 @@ Carpet.supplyDefaults = require('./defaults');
 Carpet.plot = require('./plot');
 Carpet.calc = require('./calc');
 Carpet.animatable = true;
+Carpet.isContainer = true; // so carpet traces get `calc` before other traces
 
 Carpet.moduleType = 'trace';
 Carpet.name = 'carpet';

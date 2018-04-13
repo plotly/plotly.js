@@ -174,6 +174,13 @@ describe('heatmap convertColumnXYZ', function() {
     var xa = makeMockAxis();
     var ya = makeMockAxis();
 
+    function checkConverted(trace, x, y, z) {
+        convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
+        expect(trace._x).toEqual(x);
+        expect(trace._y).toEqual(y);
+        expect(trace._z).toEqual(z);
+    }
+
     it('should convert x/y/z columns to z(x,y)', function() {
         trace = {
             x: [1, 1, 1, 2, 2, 2],
@@ -181,10 +188,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [1, 2, 3, 4, 5, 6]
         };
 
-        convertColumnXYZ(trace, xa, ya);
-        expect(trace.x).toEqual([1, 2]);
-        expect(trace.y).toEqual([1, 2, 3]);
-        expect(trace.z).toEqual([[1, 4], [2, 5], [3, 6]]);
+        checkConverted(trace, [1, 2], [1, 2, 3], [[1, 4], [2, 5], [3, 6]]);
     });
 
     it('should convert x/y/z columns to z(x,y) with uneven dimensions', function() {
@@ -194,10 +198,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [1, 2, 4, 5, 6]
         };
 
-        convertColumnXYZ(trace, xa, ya);
-        expect(trace.x).toEqual([1, 2]);
-        expect(trace.y).toEqual([1, 2, 3]);
-        expect(trace.z).toEqual([[1, 4], [2, 5], [, 6]]);
+        checkConverted(trace, [1, 2], [1, 2, 3], [[1, 4], [2, 5], [, 6]]);
     });
 
     it('should convert x/y/z columns to z(x,y) with missing values', function() {
@@ -207,10 +208,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [1, null, 4, 5, 6]
         };
 
-        convertColumnXYZ(trace, xa, ya);
-        expect(trace.x).toEqual([1, 2]);
-        expect(trace.y).toEqual([1, 2, 3]);
-        expect(trace.z).toEqual([[1, 4], [null, 5], [, 6]]);
+        checkConverted(trace, [1, 2], [1, 2, 3], [[1, 4], [null, 5], [, 6]]);
     });
 
     it('should convert x/y/z/text columns to z(x,y) and text(x,y)', function() {
@@ -221,8 +219,8 @@ describe('heatmap convertColumnXYZ', function() {
             text: ['a', 'b', 'c', 'd', 'e', 'f', 'g']
         };
 
-        convertColumnXYZ(trace, xa, ya);
-        expect(trace.text).toEqual([['a', 'd'], ['b', 'e'], ['c', 'f']]);
+        convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
+        expect(trace._text).toEqual([['a', 'd'], ['b', 'e'], ['c', 'f']]);
     });
 
     it('should convert x/y/z columns to z(x,y) with out-of-order data', function() {
@@ -253,20 +251,19 @@ describe('heatmap convertColumnXYZ', function() {
             ]
         };
 
-        convertColumnXYZ(trace, xa, ya);
-        expect(trace.x).toEqual(
-            [-88596, -65484, -42372, -19260, 3852, 26964, 50076, 73188]);
-        expect(trace.y).toEqual(
-            [-78096.2, -52106.6, -26117, -127.4, 25862.2, 51851.8, 77841.4]);
-        expect(trace.z).toEqual([
-            [,, 4.154291, 4.404264, 4.33847, 4.270931,,, ],
-            [, 4.339848, 4.39907, 4.345006, 4.315032, 4.295618, 4.262052,, ],
-            [3.908434, 4.433257, 4.364234, 4.308714, 4.275516, 4.126979, 4.296483, 4.320471],
-            [4.032226, 4.381492, 4.328922, 4.24046, 4.349151, 4.202861, 4.256402, 4.28972],
-            [3.956225, 4.337909, 4.31226, 4.259435, 4.146854, 4.235799, 4.238752, 4.299876],
-            [, 4.210373, 4.32009, 4.246728, 4.293992, 4.316364, 4.361856,, ],
-            [,, 4.234497, 4.321701, 4.450315, 4.416136,,, ]
-        ]);
+        checkConverted(trace,
+            [-88596, -65484, -42372, -19260, 3852, 26964, 50076, 73188],
+            [-78096.2, -52106.6, -26117, -127.4, 25862.2, 51851.8, 77841.4],
+            [
+                [,, 4.154291, 4.404264, 4.33847, 4.270931,,, ],
+                [, 4.339848, 4.39907, 4.345006, 4.315032, 4.295618, 4.262052,, ],
+                [3.908434, 4.433257, 4.364234, 4.308714, 4.275516, 4.126979, 4.296483, 4.320471],
+                [4.032226, 4.381492, 4.328922, 4.24046, 4.349151, 4.202861, 4.256402, 4.28972],
+                [3.956225, 4.337909, 4.31226, 4.259435, 4.146854, 4.235799, 4.238752, 4.299876],
+                [, 4.210373, 4.32009, 4.246728, 4.293992, 4.316364, 4.361856,, ],
+                [,, 4.234497, 4.321701, 4.450315, 4.416136,,, ]
+            ]
+        );
     });
 
     it('should convert x/y/z columns with nulls to z(x,y)', function() {
@@ -282,11 +279,7 @@ describe('heatmap convertColumnXYZ', function() {
             z: [0, 50, 100, 50, null, 255, 100, 510, 1010]
         };
 
-        convertColumnXYZ(trace, xa, ya);
-
-        expect(trace.x).toEqual([0, 5, 10]);
-        expect(trace.y).toEqual([0, 5, 10]);
-        expect(trace.z).toEqual([
+        checkConverted(trace, [0, 5, 10], [0, 5, 10], [
             [0, 50, 100],
             [50, undefined, 510],
             [100, 255, 1010]

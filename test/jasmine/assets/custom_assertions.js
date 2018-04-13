@@ -190,3 +190,29 @@ exports.checkTicks = function(axLetter, vals, msg) {
         expect(d3.select(this).text()).toBe(vals[i], msg + ': ' + i);
     });
 };
+
+exports.assertElemRightTo = function(elem, refElem, msg) {
+    var elemBB = elem.getBoundingClientRect();
+    var refElemBB = refElem.getBoundingClientRect();
+    expect(elemBB.left >= refElemBB.right).toBe(true, msg);
+};
+
+
+exports.assertElemTopsAligned = function(elem1, elem2, msg) {
+    var elem1BB = elem1.getBoundingClientRect();
+    var elem2BB = elem2.getBoundingClientRect();
+
+    // Hint: toBeWithin tolerance is exclusive, hence a
+    // diff of exactly 1 would fail the test
+    var tolerance = 1.1;
+    expect(elem1BB.top - elem2BB.top).toBeWithin(0, tolerance, msg);
+};
+
+exports.assertElemInside = function(elem, container, msg) {
+    var elemBB = elem.getBoundingClientRect();
+    var contBB = container.getBoundingClientRect();
+    expect(contBB.left < elemBB.left &&
+      contBB.right > elemBB.right &&
+      contBB.top < elemBB.top &&
+      contBB.bottom > elemBB.bottom).toBe(true, msg);
+};

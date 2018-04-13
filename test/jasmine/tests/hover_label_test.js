@@ -17,6 +17,9 @@ var fail = require('../assets/fail_test');
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var assertElemRightTo = customAssertions.assertElemRightTo;
+var assertElemTopsAligned = customAssertions.assertElemTopsAligned;
+var assertElemInside = customAssertions.assertElemInside;
 
 describe('hover info', function() {
     'use strict';
@@ -1136,15 +1139,6 @@ describe('hover info', function() {
           msgPrefixFmt + 'Primary text inside box');
         assertElemInside(nodes.secondaryText, nodes.secondaryBox,
           msgPrefixFmt + 'Secondary text inside box');
-
-        function assertElemInside(elem, container, msg) {
-            var elemBB = elem.getBoundingClientRect();
-            var contBB = container.getBoundingClientRect();
-            expect(contBB.left < elemBB.left &&
-              contBB.right > elemBB.right &&
-              contBB.top < elemBB.top &&
-              contBB.bottom > elemBB.bottom).toBe(true, msg);
-        }
     }
 
     function assertSecondaryRightToPrimaryBox(nodes, msgPrefix) {
@@ -1154,22 +1148,6 @@ describe('hover info', function() {
           msgPrefixFmt + 'Secondary box right to primary box');
         assertElemTopsAligned(nodes.secondaryBox, nodes.primaryBox,
           msgPrefixFmt + 'Top edges of primary and secondary boxes aligned');
-
-        function assertElemRightTo(elem, refElem, msg) {
-            var elemBB = elem.getBoundingClientRect();
-            var refElemBB = refElem.getBoundingClientRect();
-            expect(elemBB.left >= refElemBB.right).toBe(true, msg);
-        }
-
-        function assertElemTopsAligned(elem1, elem2, msg) {
-            var elem1BB = elem1.getBoundingClientRect();
-            var elem2BB = elem2.getBoundingClientRect();
-
-            // Hint: toBeWithin tolerance is exclusive, hence a
-            // diff of exactly 1 would fail the test
-            var tolerance = 1.1;
-            expect(elem1BB.top - elem2BB.top).toBeWithin(0, tolerance, msg);
-        }
     }
 
     describe('centered', function() {
