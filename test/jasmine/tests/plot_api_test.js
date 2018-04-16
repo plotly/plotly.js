@@ -2781,58 +2781,52 @@ describe('Test plot api', function() {
             .then(done);
         });
 
-        // it('has the right internal state after altering candlesticks', function(done) {
-        //     var trace = {
-        //         type: 'candlestick',
-        //         low: [1],
-        //         open: [2],
-        //         close: [3],
-        //         high: [4]
-        //     };
-        //     Plotly.newPlot(gd, [trace])
-        //     .then(function() {
-        //         expect(gd._fullData[0].y).toEqual([1, 2, 3, 3, 3, 4]);
-        //         return Plotly.react(gd, [trace]);
-        //     })
-        //     .then(function() {
-        //         // the plot actually *looks* correct here, but this is the simplest
-        //         // manifestation of https://github.com/plotly/plotly.js/issues/2510
-        //         expect(gd._fullData[0].y).toEqual([1, 2, 3, 3, 3, 4]);
-        //     })
-        //     .catch(failTest)
-        //     .then(done);
-        // });
+        it('can change data in candlesticks multiple times', function(done) {
+            // test that we've fixed the original issue in
+            // https://github.com/plotly/plotly.js/issues/2510
 
-        // it('can change data in candlesticks multiple times', function(done) {
-        //     var trace = {
-        //         type: 'candlestick',
-        //         low: [1],
-        //         open: [2],
-        //         close: [3],
-        //         high: [4]
-        //     };
-        //     Plotly.newPlot(gd, [trace])
-        //     .then(function() {
-        //         expect(gd._fullData[0].y).toEqual([1, 2, 3, 3, 3, 4]);
+            function assertCalc(open, high, low, close) {
+                expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({
+                    min: low,
+                    max: high,
+                    med: close,
+                    q1: Math.min(open, close),
+                    q3: Math.max(open, close),
+                    dir: close >= open ? 'increasing' : 'decreasing'
+                }));
+            }
+            var trace = {
+                type: 'candlestick',
+                low: [1],
+                open: [2],
+                close: [3],
+                high: [4]
+            };
+            Plotly.newPlot(gd, [trace])
+            .then(function() {
+                assertCalc(2, 4, 1, 3);
 
-        //         trace.low = [0];
-        //         return Plotly.react(gd, [trace]);
-        //     })
-        //     .then(function() {
-        //         expect(gd._fullData[0].y).toEqual([0, 2, 3, 3, 3, 4]);
+                trace.low = [0];
+                return Plotly.react(gd, [trace]);
+            })
+            .then(function() {
+                assertCalc(2, 4, 0, 3);
 
-        //         trace.low = [-1];
-        //         return Plotly.react(gd, [trace]);
-        //     })
-        //     .then(function() {
-        //         expect(gd._fullData[0].y).toEqual([-1, 2, 3, 3, 3, 4]);
+                trace.low = [-1];
+                return Plotly.react(gd, [trace]);
+            })
+            .then(function() {
+                assertCalc(2, 4, -1, 3);
 
-        //         trace.low = [0];
-        //         return Plotly.react(gd, [trace]);
-        //     })
-        //     .catch(failTest)
-        //     .then(done);
-        // });
+                trace.close = [1];
+                return Plotly.react(gd, [trace]);
+            })
+            .then(function() {
+                assertCalc(2, 4, -1, 1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
 
         it('can change frames without redrawing', function(done) {
             var data = [{y: [1, 2, 3]}];
