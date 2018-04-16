@@ -19,7 +19,6 @@ var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
 var handleCategoryOrderDefaults = require('../cartesian/category_order_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
 var autoType = require('../cartesian/axis_autotype');
-var orderedCategories = require('../cartesian/ordered_categories');
 var setConvert = require('../cartesian/set_convert');
 
 var setConvertAngular = require('./helpers').setConvertAngular;
@@ -56,10 +55,10 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         var dataAttr = constants.axisName2dataArray[axName];
         var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr);
 
-        handleCategoryOrderDefaults(axIn, axOut, coerceAxis);
-        axOut._initialCategories = axType === 'category' ?
-            orderedCategories(dataAttr, axOut.categoryorder, axOut.categoryarray, subplotData) :
-            [];
+        handleCategoryOrderDefaults(axIn, axOut, coerceAxis, {
+            axData: subplotData,
+            dataAttr: dataAttr
+        });
 
         var visible = coerceAxis('visible');
         setConvert(axOut, layoutOut);

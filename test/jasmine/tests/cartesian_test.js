@@ -28,10 +28,8 @@ describe('restyle', function() {
 
                 // First is tozero, second is tonext:
                 expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(2);
-                expect(fills[0].classList.contains('js-tozero')).toBe(true);
-                expect(fills[0].classList.contains('js-tonext')).toBe(false);
-                expect(fills[1].classList.contains('js-tozero')).toBe(false);
-                expect(fills[1].classList.contains('js-tonext')).toBe(true);
+                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
+                expect(fills[1]).toBeClassed(['js-fill', 'js-tonext']);
 
                 firstToZero = fills[0];
                 firstToNext = fills[1];
@@ -40,8 +38,7 @@ describe('restyle', function() {
             }).then(function() {
                 // Trace 1 hidden leaves only trace zero's tozero fill:
                 expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(1);
-                expect(fills[0].classList.contains('js-tozero')).toBe(true);
-                expect(fills[0].classList.contains('js-tonext')).toBe(false);
+                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
             }).then(function() {
                 return Plotly.restyle(gd, {visible: [true]}, [1]);
             }).then(function() {
@@ -50,10 +47,8 @@ describe('restyle', function() {
 
                 // First is tozero, second is tonext:
                 expect(d3.selectAll('g.trace.scatter .js-fill').size()).toEqual(2);
-                expect(fills[0].classList.contains('js-tozero')).toBe(true);
-                expect(fills[0].classList.contains('js-tonext')).toBe(false);
-                expect(fills[1].classList.contains('js-tozero')).toBe(false);
-                expect(fills[1].classList.contains('js-tonext')).toBe(true);
+                expect(fills[0]).toBeClassed(['js-fill', 'js-tozero']);
+                expect(fills[1]).toBeClassed(['js-fill', 'js-tonext']);
 
                 secondToZero = fills[0];
                 secondToNext = fills[1];
@@ -455,25 +450,67 @@ describe('subplot creation / deletion:', function() {
         .then(done);
     });
 
-    it('puts plot backgrounds behind everything except if they overlap', function(done) {
-        function checkBGLayers(behindCount, x2y2Count) {
-            expect(gd.querySelectorAll('.bglayer rect.bg').length).toBe(behindCount);
-            expect(gd.querySelectorAll('.subplot.x2y2 rect.bg').length).toBe(x2y2Count);
+    function checkBGLayers(behindCount, x2y2Count, subplots) {
+        expect(gd.querySelectorAll('.bglayer rect.bg').length).toBe(behindCount);
+        expect(gd.querySelectorAll('.subplot.x2y2 rect.bg').length).toBe(x2y2Count);
 
-            // xy is the first subplot, so it never gets put in front of others
-            expect(gd.querySelectorAll('.subplot.xy rect.bg').length).toBe(0);
+        // xy is the first subplot, so it never gets put in front of others
+        expect(gd.querySelectorAll('.subplot.xy rect.bg').length).toBe(0);
 
-            // xy3 is an overlay, so never gets its own bg
-            expect(gd.querySelectorAll('.subplot.xy3 rect.bg').length).toBe(0);
+        // xy3 is an overlay, so never gets its own bg
+        expect(gd.querySelectorAll('.subplot.xy3 rect.bg').length).toBe(0);
 
-            // verify that these are *all* the subplots and backgrounds we have
-            expect(gd.querySelectorAll('.subplot').length).toBe(3);
-            ['xy', 'x2y2', 'xy3'].forEach(function(subplot) {
-                expect(gd.querySelectorAll('.subplot.' + subplot).length).toBe(1);
+        // verify that these are *all* the subplots and backgrounds we have
+        expect(gd.querySelectorAll('.subplot').length).toBe(subplots.length);
+        subplots.forEach(function(subplot) {
+            expect(gd.querySelectorAll('.subplot.' + subplot).length).toBe(1);
+        });
+        expect(gd.querySelectorAll('.bg').length).toBe(behindCount + x2y2Count);
+    }
+
+    it('makes new backgrounds when switching between overlaying and separate subplots', function(done) {
+        Plotly.newPlot(gd, [
+            {x: [1], y: [2]},
+            {x: [3], y: [4], xaxis: 'x2', yaxis: 'y2'}
+        ], {
+            xaxis2: {overlaying: 'x'},
+            yaxis2: {overlaying: 'y'},
+            plot_bgcolor: 'red',
+            showlegend: false
+        })
+        .then(function() {
+            checkBGLayers(1, 0, ['xy', 'x2y2']);
+
+            return Plotly.relayout(gd, {
+                'xaxis.domain': [0, 0.4],
+                'xaxis2.domain': [0.6, 1],
+                'xaxis2.overlaying': null
             });
-            expect(gd.querySelectorAll('.bg').length).toBe(behindCount + x2y2Count);
-        }
+        })
+        .then(function() {
+            checkBGLayers(2, 0, ['xy', 'x2y2']);
 
+            return Plotly.relayout(gd, {
+                'xaxis2.overlaying': 'x'
+            });
+        })
+        .then(function() {
+            checkBGLayers(1, 0, ['xy', 'x2y2']);
+
+            return Plotly.relayout(gd, {
+                'xaxis.domain': [0, 0.6],
+                'xaxis2.domain': [0.4, 1],
+                'xaxis2.overlaying': null
+            });
+        })
+        .then(function() {
+            checkBGLayers(1, 1, ['xy', 'x2y2']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('puts plot backgrounds behind everything except if they overlap', function(done) {
         Plotly.plot(gd, [
             {y: [1, 2, 3]},
             {y: [2, 3, 1], xaxis: 'x2', yaxis: 'y2'},
@@ -489,19 +526,19 @@ describe('subplot creation / deletion:', function() {
         })
         .then(function() {
             // touching but not overlapping: all backgrounds are in back
-            checkBGLayers(2, 0);
+            checkBGLayers(2, 0, ['xy', 'x2y2', 'xy3']);
 
             // now add a slight overlap: that's enough to put x2y2 in front
             return Plotly.relayout(gd, {'xaxis2.domain': [0.49, 1]});
         })
         .then(function() {
-            checkBGLayers(1, 1);
+            checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
 
             // x ranges overlap, but now y ranges are disjoint
             return Plotly.relayout(gd, {'xaxis2.domain': [0, 1], 'yaxis.domain': [0, 0.5]});
         })
         .then(function() {
-            checkBGLayers(2, 0);
+            checkBGLayers(2, 0, ['xy', 'x2y2', 'xy3']);
 
             // regular inset
             return Plotly.relayout(gd, {
@@ -512,7 +549,7 @@ describe('subplot creation / deletion:', function() {
             });
         })
         .then(function() {
-            checkBGLayers(1, 1);
+            checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
         })
         .catch(failTest)
         .then(done);

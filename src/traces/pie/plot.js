@@ -13,6 +13,7 @@ var d3 = require('d3');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
+var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var helpers = require('./helpers');
@@ -256,13 +257,11 @@ module.exports = function plot(gd, cdpie) {
                 sliceTextGroup.exit().remove();
 
                 sliceTextGroup.each(function() {
-                    var sliceText = d3.select(this).selectAll('text').data([0]);
-
-                    sliceText.enter().append('text')
+                    var sliceText = Lib.ensureSingle(d3.select(this), 'text', '', function(s) {
                         // prohibit tex interpretation until we can handle
                         // tex and regular text together
-                        .attr('data-notex', 1);
-                    sliceText.exit().remove();
+                        s.attr('data-notex', 1);
+                    });
 
                     sliceText.text(pt.text)
                         .attr({

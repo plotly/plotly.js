@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var d3 = require('d3');
@@ -14,6 +13,7 @@ var d3 = require('d3');
 var Plots = require('../../plots/plots');
 var Color = require('../color');
 var Drawing = require('../drawing');
+var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var anchorUtils = require('../legend/anchor_utils');
 
@@ -22,7 +22,6 @@ var alignmentConstants = require('../../constants/alignment');
 var LINE_SPACING = alignmentConstants.LINE_SPACING;
 var FROM_TL = alignmentConstants.FROM_TL;
 var FROM_BR = alignmentConstants.FROM_BR;
-
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
@@ -264,10 +263,8 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
 function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
     if(!sliderOpts.currentvalue.visible) return;
 
-    var x0, textAnchor;
-    var text = sliderGroup.selectAll('text')
-        .data([0]);
     var dims = sliderOpts._dims;
+    var x0, textAnchor;
 
     switch(sliderOpts.currentvalue.xanchor) {
         case 'right':
@@ -286,13 +283,13 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
             textAnchor = 'left';
     }
 
-    text.enter().append('text')
-        .classed(constants.labelClass, true)
-        .classed('user-select-none', true)
-        .attr({
-            'text-anchor': textAnchor,
-            'data-notex': 1
-        });
+    var text = Lib.ensureSingle(sliderGroup, 'text', constants.labelClass, function(s) {
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': textAnchor,
+                'data-notex': 1
+            });
+    });
 
     var str = sliderOpts.currentvalue.prefix ? sliderOpts.currentvalue.prefix : '';
 
@@ -322,13 +319,10 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
 }
 
 function drawGrip(sliderGroup, gd, sliderOpts) {
-    var grip = sliderGroup.selectAll('rect.' + constants.gripRectClass)
-        .data([0]);
-
-    grip.enter().append('rect')
-        .classed(constants.gripRectClass, true)
-        .call(attachGripEvents, gd, sliderGroup, sliderOpts)
-        .style('pointer-events', 'all');
+    var grip = Lib.ensureSingle(sliderGroup, 'rect', constants.gripRectClass, function(s) {
+        s.call(attachGripEvents, gd, sliderGroup, sliderOpts)
+            .style('pointer-events', 'all');
+    });
 
     grip.attr({
         width: constants.gripWidth,
@@ -336,22 +330,19 @@ function drawGrip(sliderGroup, gd, sliderOpts) {
         rx: constants.gripRadius,
         ry: constants.gripRadius,
     })
-        .call(Color.stroke, sliderOpts.bordercolor)
-        .call(Color.fill, sliderOpts.bgcolor)
-        .style('stroke-width', sliderOpts.borderwidth + 'px');
+    .call(Color.stroke, sliderOpts.bordercolor)
+    .call(Color.fill, sliderOpts.bgcolor)
+    .style('stroke-width', sliderOpts.borderwidth + 'px');
 }
 
 function drawLabel(item, data, sliderOpts) {
-    var text = item.selectAll('text')
-        .data([0]);
-
-    text.enter().append('text')
-        .classed(constants.labelClass, true)
-        .classed('user-select-none', true)
-        .attr({
-            'text-anchor': 'middle',
-            'data-notex': 1
-        });
+    var text = Lib.ensureSingle(item, 'text', constants.labelClass, function(s) {
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': 'middle',
+                'data-notex': 1
+            });
+    });
 
     text.call(Drawing.font, sliderOpts.font)
         .text(data.step.label)
@@ -361,12 +352,8 @@ function drawLabel(item, data, sliderOpts) {
 }
 
 function drawLabelGroup(sliderGroup, sliderOpts) {
-    var labels = sliderGroup.selectAll('g.' + constants.labelsClass)
-        .data([0]);
+    var labels = Lib.ensureSingle(sliderGroup, 'g', constants.labelsClass);
     var dims = sliderOpts._dims;
-
-    labels.enter().append('g')
-        .classed(constants.labelsClass, true);
 
     var labelItems = labels.selectAll('g.' + constants.labelGroupClass)
         .data(dims.labelSteps);
@@ -570,14 +557,11 @@ function positionToNormalizedValue(sliderOpts, position) {
 }
 
 function drawTouchRect(sliderGroup, gd, sliderOpts) {
-    var rect = sliderGroup.selectAll('rect.' + constants.railTouchRectClass)
-        .data([0]);
     var dims = sliderOpts._dims;
-
-    rect.enter().append('rect')
-        .classed(constants.railTouchRectClass, true)
-        .call(attachGripEvents, gd, sliderGroup, sliderOpts)
-        .style('pointer-events', 'all');
+    var rect = Lib.ensureSingle(sliderGroup, 'rect', constants.railTouchRectClass, function(s) {
+        s.call(attachGripEvents, gd, sliderGroup, sliderOpts)
+            .style('pointer-events', 'all');
+    });
 
     rect.attr({
         width: dims.inputAreaLength,
@@ -590,14 +574,9 @@ function drawTouchRect(sliderGroup, gd, sliderOpts) {
 }
 
 function drawRail(sliderGroup, sliderOpts) {
-    var rect = sliderGroup.selectAll('rect.' + constants.railRectClass)
-        .data([0]);
     var dims = sliderOpts._dims;
-
-    rect.enter().append('rect')
-        .classed(constants.railRectClass, true);
-
     var computedLength = dims.inputAreaLength - constants.railInset * 2;
+    var rect = Lib.ensureSingle(sliderGroup, 'rect', constants.railRectClass);
 
     rect.attr({
         width: computedLength,
@@ -606,9 +585,9 @@ function drawRail(sliderGroup, sliderOpts) {
         ry: constants.railRadius,
         'shape-rendering': 'crispEdges'
     })
-        .call(Color.stroke, sliderOpts.bordercolor)
-        .call(Color.fill, sliderOpts.bgcolor)
-        .style('stroke-width', sliderOpts.borderwidth + 'px');
+    .call(Color.stroke, sliderOpts.bordercolor)
+    .call(Color.fill, sliderOpts.bgcolor)
+    .style('stroke-width', sliderOpts.borderwidth + 'px');
 
     Drawing.setTranslate(rect,
         constants.railInset,

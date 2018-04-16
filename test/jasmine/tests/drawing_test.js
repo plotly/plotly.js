@@ -19,6 +19,9 @@ describe('Drawing', function() {
         afterEach(function() {
             this.svg.remove();
             this.g.remove();
+
+            // unstash base url from Drawing module object
+            delete Drawing.baseUrl;
         });
 
         it('should set the clip-path attribute', function() {
@@ -38,7 +41,6 @@ describe('Drawing', function() {
         });
 
         it('should append window URL to clip-path if <base> is present', function() {
-
             // append <base> with href
             var base = d3.select('body')
                 .append('base')

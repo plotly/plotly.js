@@ -777,6 +777,10 @@ describe('@flaky Test select box and lasso per trace:', function() {
         var assertSelectedPoints = makeAssertSelectedPoints();
 
         var fig = Lib.extendDeep({}, require('@mocks/mapbox_bubbles-text'));
+
+        fig.data[0].lon.push(null);
+        fig.data[0].lat.push(null);
+
         fig.layout.dragmode = 'select';
         fig.config = {
             mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN

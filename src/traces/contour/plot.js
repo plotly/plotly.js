@@ -112,8 +112,7 @@ exports.makeContourGroup = function(plotinfo, cd, id) {
 };
 
 function makeBackground(plotgroup, perimeter, contours) {
-    var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
-    bggroup.enter().append('g').classed('contourbg', true);
+    var bggroup = Lib.ensureSingle(plotgroup, 'g', 'contourbg');
 
     var bgfill = bggroup.selectAll('path')
         .data(contours.coloring === 'fill' ? [0] : []);
@@ -125,10 +124,7 @@ function makeBackground(plotgroup, perimeter, contours) {
 }
 
 function makeFills(plotgroup, pathinfo, perimeter, contours) {
-    var fillgroup = plotgroup.selectAll('g.contourfill')
-        .data([0]);
-    fillgroup.enter().append('g')
-        .classed('contourfill', true);
+    var fillgroup = Lib.ensureSingle(plotgroup, 'g', 'contourfill');
 
     var fillitems = fillgroup.selectAll('path')
         .data(contours.coloring === 'fill' || (contours.type === 'constraint' && contours._operation !== '=') ? pathinfo : []);
@@ -252,11 +248,7 @@ function joinAllPaths(pi, perimeter) {
 }
 
 function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, perimeter) {
-    var lineContainer = plotgroup.selectAll('g.contourlines').data([0]);
-
-    lineContainer.enter().append('g')
-        .classed('contourlines', true);
-
+    var lineContainer = Lib.ensureSingle(plotgroup, 'g', 'contourlines');
     var showLines = contours.showlines !== false;
     var showLabels = contours.showlabels;
     var clipLinesForLabels = showLines && showLabels;
@@ -626,8 +618,7 @@ exports.drawLabels = function(labelGroup, labelData, gd, lineClip, labelClipPath
             clipPath += 'M' + labelClipPathData[i].join('L') + 'Z';
         }
 
-        var lineClipPath = lineClip.selectAll('path').data([0]);
-        lineClipPath.enter().append('path');
+        var lineClipPath = Lib.ensureSingle(lineClip, 'path', '');
         lineClipPath.attr('d', clipPath);
     }
 };
@@ -666,9 +657,7 @@ function clipGaps(plotGroup, plotinfo, clips, cd0, perimeter) {
         findAllPaths([clipPathInfo]);
         var fullpath = joinAllPaths(clipPathInfo, perimeter);
 
-        var path = clipPath.selectAll('path')
-            .data([0]);
-        path.enter().append('path');
+        var path = Lib.ensureSingle(clipPath, 'path', '');
         path.attr('d', fullpath);
     }
     else clipId = null;

@@ -14,6 +14,7 @@ var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 var Color = require('../color');
 var Drawing = require('../drawing');
+var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var anchorUtils = require('../legend/anchor_utils');
@@ -121,13 +122,9 @@ function isActive(axisLayout, opts, update) {
 }
 
 function drawButtonRect(button, selectorLayout, d) {
-    var rect = button.selectAll('rect')
-        .data([0]);
-
-    rect.enter().append('rect')
-        .classed('selector-rect', true);
-
-    rect.attr('shape-rendering', 'crispEdges');
+    var rect = Lib.ensureSingle(button, 'rect', 'selector-rect', function(s) {
+        s.attr('shape-rendering', 'crispEdges');
+    });
 
     rect.attr({
         'rx': constants.rx,
@@ -150,14 +147,10 @@ function drawButtonText(button, selectorLayout, d, gd) {
         svgTextUtils.convertToTspans(s, gd);
     }
 
-    var text = button.selectAll('text')
-        .data([0]);
-
-    text.enter().append('text')
-        .classed('selector-text', true)
-        .classed('user-select-none', true);
-
-    text.attr('text-anchor', 'middle');
+    var text = Lib.ensureSingle(button, 'text', 'selector-text', function(s) {
+        s.classed('user-select-none', true)
+            .attr('text-anchor', 'middle');
+    });
 
     text.call(Drawing.font, selectorLayout.font)
         .text(getLabel(d))

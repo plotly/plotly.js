@@ -25,10 +25,10 @@ var createJDerivativeEvaluator = require('./create_j_derivative_evaluator');
  *   p: screen-space pixel coordinates
  */
 module.exports = function setConvert(trace) {
-    var a = trace.a;
-    var b = trace.b;
-    var na = trace.a.length;
-    var nb = trace.b.length;
+    var a = trace._a;
+    var b = trace._b;
+    var na = a.length;
+    var nb = b.length;
     var aax = trace.aaxis;
     var bax = trace.baxis;
 
@@ -60,10 +60,6 @@ module.exports = function setConvert(trace) {
         return a < amin || a > amax || b < bmin || b > bmax;
     };
 
-    // XXX: ONLY PASSTHRU. ONLY. No, ONLY.
-    aax.c2p = function(v) { return v; };
-    bax.c2p = function(v) { return v; };
-
     trace.setScale = function() {
         var x = trace._x;
         var y = trace._y;
@@ -72,18 +68,18 @@ module.exports = function setConvert(trace) {
         // an expanded basis of control points. Note in particular that it overwrites the existing
         // basis without creating a new array since that would potentially thrash the garbage
         // collector.
-        var result = computeControlPoints(trace.xctrl, trace.yctrl, x, y, aax.smoothing, bax.smoothing);
-        trace.xctrl = result[0];
-        trace.yctrl = result[1];
+        var result = computeControlPoints(trace._xctrl, trace._yctrl, x, y, aax.smoothing, bax.smoothing);
+        trace._xctrl = result[0];
+        trace._yctrl = result[1];
 
         // This step is the second step in the process, but it's somewhat simpler. It just unrolls
         // some logic since it would be unnecessarily expensive to compute both interpolations
         // nearly identically but separately and to include a bunch of linear vs. bicubic logic in
         // every single call.
-        trace.evalxy = createSplineEvaluator([trace.xctrl, trace.yctrl], na, nb, aax.smoothing, bax.smoothing);
+        trace.evalxy = createSplineEvaluator([trace._xctrl, trace._yctrl], na, nb, aax.smoothing, bax.smoothing);
 
-        trace.dxydi = createIDerivativeEvaluator([trace.xctrl, trace.yctrl], aax.smoothing, bax.smoothing);
-        trace.dxydj = createJDerivativeEvaluator([trace.xctrl, trace.yctrl], aax.smoothing, bax.smoothing);
+        trace.dxydi = createIDerivativeEvaluator([trace._xctrl, trace._yctrl], aax.smoothing, bax.smoothing);
+        trace.dxydj = createJDerivativeEvaluator([trace._xctrl, trace._yctrl], aax.smoothing, bax.smoothing);
     };
 
     /*

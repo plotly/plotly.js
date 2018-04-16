@@ -124,31 +124,17 @@ exports.lsInner = function(gd) {
 
         var xDomain = plotinfo.xaxis.domain;
         var yDomain = plotinfo.yaxis.domain;
-        var plotgroupBgData = [];
+        var plotgroup = plotinfo.plotgroup;
 
         if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
-            plotgroupBgData = [0];
-        }
-        else {
+            var pgNode = plotgroup.node();
+            var plotgroupBg = plotinfo.bg = Lib.ensureSingle(plotgroup, 'rect', 'bg');
+            pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
+        } else {
+            plotgroup.select('rect.bg').remove();
             lowerBackgroundIDs.push(subplot);
             lowerDomains.push([xDomain, yDomain]);
         }
-
-        // create the plot group backgrounds now, since
-        // they're all independent selections
-        var plotgroupBg = plotinfo.plotgroup.selectAll('.bg')
-            .data(plotgroupBgData);
-
-        plotgroupBg.enter().append('rect')
-            .classed('bg', true);
-
-        plotgroupBg.exit().remove();
-
-        plotgroupBg.each(function() {
-            plotinfo.bg = plotgroupBg;
-            var pgNode = plotinfo.plotgroup.node();
-            pgNode.insertBefore(this, pgNode.childNodes[0]);
-        });
     });
 
     // now create all the lower-layer backgrounds at once now that
@@ -180,23 +166,17 @@ exports.lsInner = function(gd) {
         }
 
         // Clip so that data only shows up on the plot area.
-        plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
+        var clipId = plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        var plotClip = fullLayout._clips.selectAll('#' + plotinfo.clipId)
-            .data([0]);
+        var plotClip = Lib.ensureSingleById(fullLayout._clips, 'clipPath', clipId, function(s) {
+            s.classed('plotclip', true)
+                .append('rect');
+        });
 
-        plotClip.enter().append('clipPath')
-            .attr({
-                'class': 'plotclip',
-                'id': plotinfo.clipId
-            })
-            .append('rect');
-
-        plotClip.selectAll('rect')
-            .attr({
-                'width': xa._length < 0 ? 0 : xa._length,
-                'height': ya._length < 0 ? 0 : ya._length
-            });
+        plotClip.select('rect').attr({
+            width: xa._length < 0 ? 0 : xa._length,
+            height: ya._length < 0 ? 0 : ya._length
+        });
 
         Drawing.setTranslate(plotinfo.plot, xa._offset, ya._offset);
 
@@ -205,9 +185,9 @@ exports.lsInner = function(gd) {
 
         if(plotinfo._hasClipOnAxisFalse) {
             plotClipId = null;
-            layerClipId = plotinfo.clipId;
+            layerClipId = clipId;
         } else {
-            plotClipId = plotinfo.clipId;
+            plotClipId = clipId;
             layerClipId = null;
         }
 

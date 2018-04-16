@@ -23,7 +23,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var len = handleOHLC(traceIn, traceOut, coerce, layout);
-    if(len === 0) {
+    if(!len) {
         traceOut.visible = false;
         return;
     }

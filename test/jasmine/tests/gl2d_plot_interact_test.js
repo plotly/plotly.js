@@ -518,7 +518,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('supports 1D and 2D Zoom', function(done) {
+    it('@flaky supports 1D and 2D Zoom', function(done) {
         var centerX;
         var centerY;
 
@@ -571,7 +571,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('supports axis constraints with zoom', function(done) {
+    it('@flaky supports axis constraints with zoom', function(done) {
         var centerX;
         var centerY;
 
@@ -638,7 +638,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should change plot type with incomplete data', function(done) {
+    it('@flaky should change plot type with incomplete data', function(done) {
         Plotly.plot(gd, [{}]);
         expect(function() {
             Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
@@ -651,7 +651,7 @@ describe('@gl Test gl2d plots', function() {
         done();
     });
 
-    it('data-referenced annotations should update on drag', function(done) {
+    it('@flaky data-referenced annotations should update on drag', function(done) {
         function assertAnnotation(xy) {
             var ann = d3.select('g.annotation-text-g').select('g');
             var translate = Drawing.getTranslate(ann);
@@ -694,7 +694,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should not scroll document while panning', function(done) {
+    it('@flaky should not scroll document while panning', function(done) {
         var mock = {
             data: [
                 { type: 'scattergl', y: [1, 2, 3], x: [1, 2, 3] }
@@ -809,17 +809,54 @@ describe('@gl Test gl2d plots', function() {
             var scene = gd._fullLayout._plots.xy._scene;
 
             expect(scene.count).toBe(2);
-            expect(scene.selectBatch).toBeDefined();
-            expect(scene.unselectBatch).toBeDefined();
+            expect(scene.selectBatch).toEqual([[0]]);
+            expect(scene.unselectBatch).toEqual([[]]);
             expect(scene.markerOptions.length).toBe(2);
             expect(scene.markerOptions[1].color).toEqual(new Uint8Array([255, 0, 0, 255]));
             expect(scene.scatter2d.draw).toHaveBeenCalled();
+
+            return Plotly.restyle(gd, 'selectedpoints', null);
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            var msg = 'clearing under dragmode select';
+
+            expect(scene.selectBatch).toEqual([], msg);
+            expect(scene.unselectBatch).toEqual([], msg);
+
+            // scattergl uses different pathways for select/lasso & zoom/pan
+            return Plotly.relayout(gd, 'dragmode', 'pan');
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            var msg = 'cleared under dragmode pan';
+
+            expect(scene.selectBatch).toEqual([], msg);
+            expect(scene.unselectBatch).toEqual([], msg);
+
+            return Plotly.restyle(gd, 'selectedpoints', [[1, 2], [0]]);
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            var msg = 'selecting via API under dragmode pan';
+
+            expect(scene.selectBatch).toEqual([[1, 2], [0]], msg);
+            expect(scene.unselectBatch).toEqual([[0], []], msg);
+
+            return Plotly.restyle(gd, 'selectedpoints', null);
+        })
+        .then(function() {
+            var scene = gd._fullLayout._plots.xy._scene;
+            var msg = 'clearing under dragmode pan';
+
+            expect(scene.selectBatch).toBe(null, msg);
+            expect(scene.unselectBatch).toBe(null, msg);
         })
         .catch(fail)
         .then(done);
     });
 
-    it('should remove fill2d', function(done) {
+    it('@flaky should remove fill2d', function(done) {
         var mock = require('@mocks/gl2d_axes_labels2.json');
 
         Plotly.plot(gd, mock.data, mock.layout)

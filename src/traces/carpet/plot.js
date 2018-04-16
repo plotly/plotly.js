@@ -24,12 +24,6 @@ module.exports = function plot(gd, plotinfo, cdcarpet) {
     }
 };
 
-function makeg(el, type, klass) {
-    var join = el.selectAll(type + '.' + klass).data([0]);
-    join.enter().append(type).classed(klass, true);
-    return join;
-}
-
 function plotOne(gd, plotinfo, cd) {
     var t = cd[0];
     var trace = cd[0].trace,
@@ -42,11 +36,11 @@ function plotOne(gd, plotinfo, cd) {
     var gridLayer = plotinfo.plot.selectAll('.carpetlayer');
     var clipLayer = fullLayout._clips;
 
-    var axisLayer = makeg(gridLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
-    var minorLayer = makeg(axisLayer, 'g', 'minorlayer');
-    var majorLayer = makeg(axisLayer, 'g', 'majorlayer');
-    var boundaryLayer = makeg(axisLayer, 'g', 'boundarylayer');
-    var labelLayer = makeg(axisLayer, 'g', 'labellayer');
+    var axisLayer = Lib.ensureSingle(gridLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
+    var minorLayer = Lib.ensureSingle(axisLayer, 'g', 'minorlayer');
+    var majorLayer = Lib.ensureSingle(axisLayer, 'g', 'majorlayer');
+    var boundaryLayer = Lib.ensureSingle(axisLayer, 'g', 'boundarylayer');
+    var labelLayer = Lib.ensureSingle(axisLayer, 'g', 'labellayer');
 
     axisLayer.style('opacity', trace.opacity);
 
@@ -78,7 +72,7 @@ function drawClipPath(trace, t, layer, xaxis, yaxis) {
             .classed('carpetclip', true);
     }
 
-    var path = makeg(clip, 'path', 'carpetboundary');
+    var path = Lib.ensureSingle(clip, 'path', 'carpetboundary');
     var segments = t.clipsegments;
     var segs = [];
 

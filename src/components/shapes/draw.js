@@ -122,8 +122,11 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
     var MINWIDTH = 10,
         MINHEIGHT = 10;
 
+    var xPixelSized = shapeOptions.xsizemode === 'pixel',
+        yPixelSized = shapeOptions.ysizemode === 'pixel';
+
     var update;
-    var x0, y0, x1, y1, astrX0, astrY0, astrX1, astrY1;
+    var x0, y0, x1, y1, xAnchor, yAnchor, astrX0, astrY0, astrX1, astrY1, astrXAnchor, astrYAnchor;
     var n0, s0, w0, e0, astrN, astrS, astrW, astrE, optN, optS, optW, optE;
     var pathIn, astrPath;
 
@@ -135,7 +138,6 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
             prepFn: startDrag,
             doneFn: endDrag
         },
-        dragBBox = dragOptions.element.getBoundingClientRect(),
         dragMode;
 
     dragElement.init(dragOptions);
@@ -143,6 +145,10 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
     shapePath.node().onmousemove = updateDragMode;
 
     function updateDragMode(evt) {
+        // element might not be on screen at time of setup,
+        // so obtain bounding box here
+        var dragBBox = dragOptions.element.getBoundingClientRect();
+
         // choose 'move' or 'resize'
         // based on initial position of cursor within the drag element
         var w = dragBBox.right - dragBBox.left,
@@ -171,15 +177,25 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
 
         // setup update strings and initial values
         var astr = 'shapes[' + index + ']';
+
+        if(xPixelSized) {
+            xAnchor = x2p(shapeOptions.xanchor);
+            astrXAnchor = astr + '.xanchor';
+        }
+        if(yPixelSized) {
+            yAnchor = y2p(shapeOptions.yanchor);
+            astrYAnchor = astr + '.yanchor';
+        }
+
         if(shapeOptions.type === 'path') {
             pathIn = shapeOptions.path;
             astrPath = astr + '.path';
         }
         else {
-            x0 = x2p(shapeOptions.x0);
-            y0 = y2p(shapeOptions.y0);
-            x1 = x2p(shapeOptions.x1);
-            y1 = y2p(shapeOptions.y1);
+            x0 = xPixelSized ? shapeOptions.x0 : x2p(shapeOptions.x0);
+            y0 = yPixelSized ? shapeOptions.y0 : y2p(shapeOptions.y0);
+            x1 = xPixelSized ? shapeOptions.x1 : x2p(shapeOptions.x1);
+            y1 = yPixelSized ? shapeOptions.y1 : y2p(shapeOptions.y1);
 
             astrX0 = astr + '.x0';
             astrY0 = astr + '.y0';
@@ -195,7 +211,10 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
             w0 = x1; astrW = astr + '.x1'; optW = 'x1';
             e0 = x0; astrE = astr + '.x0'; optE = 'x0';
         }
-        if(y0 < y1) {
+
+        // For fixed size shapes take opposing direction of y-axis into account.
+        // Hint: For data sized shapes this is done by the y2p function.
+        if((!yPixelSized && y0 < y1) || (yPixelSized && y0 > y1)) {
             n0 = y0; astrN = astr + '.y0'; optN = 'y0';
             s0 = y1; astrS = astr + '.y1'; optS = 'y1';
         }
@@ -218,20 +237,41 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
 
     function moveShape(dx, dy) {
         if(shapeOptions.type === 'path') {
-            var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
-            if(xa && xa.type === 'date') moveX = helpers.encodeDate(moveX);
+            var noOp = function(coord) { return coord; },
+                moveX = noOp,
+                moveY = noOp;
 
-            var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
-            if(ya && ya.type === 'date') moveY = helpers.encodeDate(moveY);
+            if(xPixelSized) {
+                update[astrXAnchor] = shapeOptions.xanchor = p2x(xAnchor + dx);
+            } else {
+                moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+                if(xa && xa.type === 'date') moveX = helpers.encodeDate(moveX);
+            }
+
+            if(yPixelSized) {
+                update[astrYAnchor] = shapeOptions.yanchor = p2y(yAnchor + dy);
+            } else {
+                moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+                if(ya && ya.type === 'date') moveY = helpers.encodeDate(moveY);
+            }
 
             shapeOptions.path = movePath(pathIn, moveX, moveY);
             update[astrPath] = shapeOptions.path;
         }
         else {
-            update[astrX0] = shapeOptions.x0 = p2x(x0 + dx);
-            update[astrY0] = shapeOptions.y0 = p2y(y0 + dy);
-            update[astrX1] = shapeOptions.x1 = p2x(x1 + dx);
-            update[astrY1] = shapeOptions.y1 = p2y(y1 + dy);
+            if(xPixelSized) {
+                update[astrXAnchor] = shapeOptions.xanchor = p2x(xAnchor + dx);
+            } else {
+                update[astrX0] = shapeOptions.x0 = p2x(x0 + dx);
+                update[astrX1] = shapeOptions.x1 = p2x(x1 + dx);
+            }
+
+            if(yPixelSized) {
+                update[astrYAnchor] = shapeOptions.yanchor = p2y(yAnchor + dy);
+            } else {
+                update[astrY0] = shapeOptions.y0 = p2y(y0 + dy);
+                update[astrY1] = shapeOptions.y1 = p2y(y1 + dy);
+            }
         }
 
         shapePath.attr('d', getPathString(gd, shapeOptions));
@@ -240,11 +280,23 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
     function resizeShape(dx, dy) {
         if(shapeOptions.type === 'path') {
             // TODO: implement path resize
-            var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
-            if(xa && xa.type === 'date') moveX = helpers.encodeDate(moveX);
+            var noOp = function(coord) { return coord; },
+                moveX = noOp,
+                moveY = noOp;
 
-            var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
-            if(ya && ya.type === 'date') moveY = helpers.encodeDate(moveY);
+            if(xPixelSized) {
+                update[astrXAnchor] = shapeOptions.xanchor = p2x(xAnchor + dx);
+            } else {
+                moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+                if(xa && xa.type === 'date') moveX = helpers.encodeDate(moveX);
+            }
+
+            if(yPixelSized) {
+                update[astrYAnchor] = shapeOptions.yanchor = p2y(yAnchor + dy);
+            } else {
+                moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+                if(ya && ya.type === 'date') moveY = helpers.encodeDate(moveY);
+            }
 
             shapeOptions.path = movePath(pathIn, moveX, moveY);
             update[astrPath] = shapeOptions.path;
@@ -255,14 +307,21 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
                 newW = (~dragMode.indexOf('w')) ? w0 + dx : w0,
                 newE = (~dragMode.indexOf('e')) ? e0 + dx : e0;
 
-            if(newS - newN > MINHEIGHT) {
-                update[astrN] = shapeOptions[optN] = p2y(newN);
-                update[astrS] = shapeOptions[optS] = p2y(newS);
-            }
+            // Do things in opposing direction for y-axis.
+            // Hint: for data-sized shapes the reversal of axis direction is done in p2y.
+            if(~dragMode.indexOf('n') && yPixelSized) newN = n0 - dy;
+            if(~dragMode.indexOf('s') && yPixelSized) newS = s0 - dy;
 
+            // Update shape eventually. Again, be aware of the
+            // opposing direction of the y-axis of fixed size shapes.
+            if((!yPixelSized && newS - newN > MINHEIGHT) ||
+              (yPixelSized && newN - newS > MINHEIGHT)) {
+                update[astrN] = shapeOptions[optN] = yPixelSized ? newN : p2y(newN);
+                update[astrS] = shapeOptions[optS] = yPixelSized ? newS : p2y(newS);
+            }
             if(newE - newW > MINWIDTH) {
-                update[astrW] = shapeOptions[optW] = p2x(newW);
-                update[astrE] = shapeOptions[optE] = p2x(newE);
+                update[astrW] = shapeOptions[optW] = xPixelSized ? newW : p2x(newW);
+                update[astrE] = shapeOptions[optE] = xPixelSized ? newE : p2x(newE);
             }
         }
 
@@ -275,10 +334,8 @@ function getPathString(gd, options) {
         xa = Axes.getFromId(gd, options.xref),
         ya = Axes.getFromId(gd, options.yref),
         gs = gd._fullLayout._size,
-        x2r,
-        x2p,
-        y2r,
-        y2p;
+        x2r, x2p, y2r, y2p,
+        x0, x1, y0, y1;
 
     if(xa) {
         x2r = helpers.shapePositionToRange(xa);
@@ -299,13 +356,28 @@ function getPathString(gd, options) {
     if(type === 'path') {
         if(xa && xa.type === 'date') x2p = helpers.decodeDate(x2p);
         if(ya && ya.type === 'date') y2p = helpers.decodeDate(y2p);
-        return convertPath(options.path, x2p, y2p);
+        return convertPath(options, x2p, y2p);
     }
 
-    var x0 = x2p(options.x0),
-        x1 = x2p(options.x1),
-        y0 = y2p(options.y0),
+    if(options.xsizemode === 'pixel') {
+        var xAnchorPos = x2p(options.xanchor);
+        x0 = xAnchorPos + options.x0;
+        x1 = xAnchorPos + options.x1;
+    }
+    else {
+        x0 = x2p(options.x0);
+        x1 = x2p(options.x1);
+    }
+
+    if(options.ysizemode === 'pixel') {
+        var yAnchorPos = y2p(options.yanchor);
+        y0 = yAnchorPos - options.y0;
+        y1 = yAnchorPos - options.y1;
+    }
+    else {
+        y0 = y2p(options.y0);
         y1 = y2p(options.y1);
+    }
 
     if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
     if(type === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
@@ -322,8 +394,14 @@ function getPathString(gd, options) {
 }
 
 
-function convertPath(pathIn, x2p, y2p) {
-    // convert an SVG path string from data units to pixels
+function convertPath(options, x2p, y2p) {
+    var pathIn = options.path,
+        xSizemode = options.xsizemode,
+        ySizemode = options.ysizemode,
+        xAnchor = options.xanchor,
+        yAnchor = options.yanchor;
+
+
     return pathIn.replace(constants.segmentRE, function(segment) {
         var paramNumber = 0,
             segmentType = segment.charAt(0),
@@ -332,8 +410,14 @@ function convertPath(pathIn, x2p, y2p) {
             nParams = constants.numParams[segmentType];
 
         var paramString = segment.substr(1).replace(constants.paramRE, function(param) {
-            if(xParams[paramNumber]) param = x2p(param);
-            else if(yParams[paramNumber]) param = y2p(param);
+            if(xParams[paramNumber]) {
+                if(xSizemode === 'pixel') param = x2p(xAnchor) + Number(param);
+                else param = x2p(param);
+            }
+            else if(yParams[paramNumber]) {
+                if(ySizemode === 'pixel') param = y2p(yAnchor) - Number(param);
+                else param = y2p(param);
+            }
             paramNumber++;
 
             if(paramNumber > nParams) param = 'X';

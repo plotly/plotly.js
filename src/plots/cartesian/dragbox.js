@@ -802,13 +802,11 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 }
 
 function makeDragger(plotinfo, nodeName, dragClass, cursor) {
-    var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
-
-    dragger3.enter().append(nodeName)
-        .classed('drag', true)
-        .classed(dragClass, true)
-        .style({fill: 'transparent', 'stroke-width': 0})
-        .attr('data-subplot', plotinfo.id);
+    var dragger3 = Lib.ensureSingle(plotinfo.draglayer, nodeName, dragClass, function(s) {
+        s.classed('drag', true)
+            .style({fill: 'transparent', 'stroke-width': 0})
+            .attr('data-subplot', plotinfo.id);
+    });
 
     dragger3.call(setCursor, cursor);
 

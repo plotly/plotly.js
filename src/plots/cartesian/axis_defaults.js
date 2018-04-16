@@ -18,7 +18,6 @@ var handleTickLabelDefaults = require('./tick_label_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
 var handleLineGridDefaults = require('./line_grid_defaults');
 var setConvert = require('./set_convert');
-var orderedCategories = require('./ordered_categories');
 
 /**
  * options: object containing:
@@ -60,11 +59,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('range');
     containerOut.cleanRange();
 
-    handleCategoryOrderDefaults(containerIn, containerOut, coerce);
-    containerOut._initialCategories = axType === 'category' ?
-        orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
-        [];
-
+    handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
 

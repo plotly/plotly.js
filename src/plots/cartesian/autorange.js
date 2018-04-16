@@ -219,6 +219,8 @@ function needsAutorange(ax) {
  * Note that `expand` is called during `calc`, when we don't yet know the axis
  * length; all the inputs should be based solely on the trace data, nothing
  * about the axis layout.
+ * Note that `ppad` and `vpad` as well as their asymmetric variants refer to
+ * the before and after padding of the passed `data` array, not to the whole axis.
  *
  * @param {object} ax: the axis being expanded. The result will be more entries
  *      in ax._min and ax._max if necessary to include the new data

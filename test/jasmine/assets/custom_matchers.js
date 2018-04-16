@@ -155,6 +155,31 @@ var matchers = {
                 };
             }
         };
+    },
+
+    toBeClassed: function() {
+        return {
+            compare: function(node, _expected, msgExtra) {
+                var actual = node.classList;
+                var expected = Array.isArray(_expected) ? _expected : [_expected];
+
+                var passed = (
+                    actual.length === expected.length &&
+                    expected.every(function(e) { return actual.contains(e); })
+                );
+
+                var message = [
+                    'Expected classList', '[' + actual + ']',
+                    'to have classes', expected,
+                    msgExtra
+                ].join(' ');
+
+                return {
+                    pass: passed,
+                    message: message
+                };
+            }
+        };
     }
 };
 

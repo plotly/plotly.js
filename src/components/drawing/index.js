@@ -415,9 +415,7 @@ drawing.gradient = function(sel, gd, gradientID, type, color1, color2) {
  * The upside of this is arbitrary points can share gradient defs
  */
 drawing.initGradients = function(gd) {
-    var gradientsGroup = gd._fullLayout._defs.selectAll('.gradients').data([0]);
-    gradientsGroup.enter().append('g').classed('gradients', true);
-
+    var gradientsGroup = Lib.ensureSingle(gd._fullLayout._defs, 'g', 'gradients');
     gradientsGroup.selectAll('linearGradient,radialGradient').remove();
 };
 
@@ -729,33 +727,28 @@ drawing.steps = function(shape) {
 // off-screen svg render testing element, shared by the whole page
 // uses the id 'js-plotly-tester' and stores it in drawing.tester
 drawing.makeTester = function() {
-    var tester = d3.select('body')
-        .selectAll('#js-plotly-tester')
-        .data([0]);
-
-    tester.enter().append('svg')
-        .attr('id', 'js-plotly-tester')
-        .attr(xmlnsNamespaces.svgAttrs)
-        .style({
-            position: 'absolute',
-            left: '-10000px',
-            top: '-10000px',
-            width: '9000px',
-            height: '9000px',
-            'z-index': '1'
-        });
+    var tester = Lib.ensureSingleById(d3.select('body'), 'svg', 'js-plotly-tester', function(s) {
+        s.attr(xmlnsNamespaces.svgAttrs)
+            .style({
+                position: 'absolute',
+                left: '-10000px',
+                top: '-10000px',
+                width: '9000px',
+                height: '9000px',
+                'z-index': '1'
+            });
+    });
 
     // browsers differ on how they describe the bounding rect of
     // the svg if its contents spill over... so make a 1x1px
     // reference point we can measure off of.
-    var testref = tester.selectAll('.js-reference-point').data([0]);
-    testref.enter().append('path')
-        .classed('js-reference-point', true)
-        .attr('d', 'M0,0H1V1H0Z')
-        .style({
-            'stroke-width': 0,
-            fill: 'black'
-        });
+    var testref = Lib.ensureSingle(tester, 'path', 'js-reference-point', function(s) {
+        s.attr('d', 'M0,0H1V1H0Z')
+            .style({
+                'stroke-width': 0,
+                fill: 'black'
+            });
+    });
 
     drawing.tester = tester;
     drawing.testref = testref;
@@ -917,15 +910,21 @@ drawing.setClipUrl = function(s, localId) {
         return;
     }
 
-    var url = '#' + localId,
-        base = d3.select('base');
+    if(drawing.baseUrl === undefined) {
+        var base = d3.select('base');
 
-    // add id to location href w/o hashes if any)
-    if(base.size() && base.attr('href')) {
-        url = window.location.href.split('#')[0] + url;
+        // Stash base url once and for all!
+        // We may have to stash this elsewhere when
+        // we'll try to support for child windows
+        // more info -> https://github.com/plotly/plotly.js/issues/702
+        if(base.size() && base.attr('href')) {
+            drawing.baseUrl = window.location.href.split('#')[0];
+        } else {
+            drawing.baseUrl = '';
+        }
     }
 
-    s.attr('clip-path', 'url(' + url + ')');
+    s.attr('clip-path', 'url(' + drawing.baseUrl + '#' + localId + ')');
 };
 
 drawing.getTranslate = function(element) {

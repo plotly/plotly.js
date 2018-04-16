@@ -1539,10 +1539,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 return function() {
                     if(!ax._id) return;
                     var axDone = axes.doTicks(gd, ax._id);
-                    if(axid === 'redraw') {
-                        ax._r = ax.range.slice();
-                        ax._rl = Lib.simpleMap(ax._r, ax.r2l);
-                    }
+                    ax._r = ax.range.slice();
+                    ax._rl = Lib.simpleMap(ax._r, ax.r2l);
                     return axDone;
                 };
             }));
@@ -1552,21 +1550,22 @@ axes.doTicks = function(gd, axid, skipTitle) {
     // set scaling to pixels
     ax.setScale();
 
-    var axLetter = axid.charAt(0),
-        counterLetter = axes.counterLetter(axid),
-        vals = axes.calcTicks(ax),
-        datafn = function(d) { return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_'); },
-        tcls = axid + 'tick',
-        gcls = axid + 'grid',
-        zcls = axid + 'zl',
-        pad = (ax.linewidth || 1) / 2,
-        labelStandoff = (ax.ticks === 'outside' ? ax.ticklen : 0),
-        labelShift = 0,
-        gridWidth = Drawing.crispRound(gd, ax.gridwidth, 1),
-        zeroLineWidth = Drawing.crispRound(gd, ax.zerolinewidth, gridWidth),
-        tickWidth = Drawing.crispRound(gd, ax.tickwidth, 1),
-        sides, transfn, tickpathfn, subplots,
-        i;
+    var axLetter = axid.charAt(0);
+    var counterLetter = axes.counterLetter(axid);
+    var vals = axes.calcTicks(ax);
+    var datafn = function(d) { return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_'); };
+    var tcls = axid + 'tick';
+    var gcls = axid + 'grid';
+    var zcls = axid + 'zl';
+    var pad = (ax.linewidth || 1) / 2;
+    var labelStandoff = (ax.ticks === 'outside' ? ax.ticklen : 0);
+    var labelShift = 0;
+    var gridWidth = Drawing.crispRound(gd, ax.gridwidth, 1);
+    var zeroLineWidth = Drawing.crispRound(gd, ax.zerolinewidth, gridWidth);
+    var tickWidth = Drawing.crispRound(gd, ax.tickwidth, 1);
+    var sides, transfn, tickpathfn, subplots;
+    var tickLabels;
+    var i;
 
     if(ax._counterangle && ax.ticks === 'outside') {
         var caRad = ax._counterangle * Math.PI / 180;
@@ -1616,10 +1615,11 @@ axes.doTicks = function(gd, axid, skipTitle) {
         Lib.warn('Unrecognized doTicks axis:', axid);
         return;
     }
-    var axside = ax.side || sides[0],
+
+    var axside = ax.side || sides[0];
     // which direction do the side[0], side[1], and free ticks go?
     // then we flip if outside XOR y axis
-        ticksign = [-1, 1, axside === sides[1] ? 1 : -1];
+    var ticksign = [-1, 1, axside === sides[1] ? 1 : -1];
     if((ax.ticks !== 'inside') === (axLetter === 'x')) {
         ticksign = ticksign.map(function(v) { return -v; });
     }
@@ -1647,6 +1647,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     function drawTicks(container, tickpath) {
         var ticks = container.selectAll('path.' + tcls)
             .data(ax.ticks === 'inside' ? valsClipped : vals, datafn);
+
         if(tickpath && ax.ticks) {
             ticks.enter().append('path').classed(tcls, 1).classed('ticks', 1)
                 .classed('crisp', 1)
@@ -1662,7 +1663,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     function drawLabels(container, position) {
         // tick labels - for now just the main labels.
         // TODO: mirror labels, esp for subplots
-        var tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
+        tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
 
         if(!isNumeric(position)) {
             tickLabels.remove();
@@ -2013,14 +2014,12 @@ axes.doTicks = function(gd, axid, skipTitle) {
         // now this only applies to regular cartesian axes; colorbars and
         // others ALWAYS call doTicks with skipTitle=true so they can
         // configure their own titles.
-        var ax = axisIds.getFromId(gd, axid);
 
         // rangeslider takes over a bottom title so drop it here
         if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox && ax.side === 'bottom') return;
 
-        var avoidSelection = d3.select(gd).selectAll('g.' + axid + 'tick');
         var avoid = {
-            selection: avoidSelection,
+            selection: tickLabels,
             side: ax.side
         };
         var axLetter = axid.charAt(0);
@@ -2030,8 +2029,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
         var transform, counterAxis, x, y;
 
-        if(avoidSelection.size()) {
-            var translation = Drawing.getTranslate(avoidSelection.node().parentNode);
+        if(tickLabels.size()) {
+            var translation = Drawing.getTranslate(tickLabels.node().parentNode);
             avoid.offsetLeft = translation.x;
             avoid.offsetTop = translation.y;
         }
