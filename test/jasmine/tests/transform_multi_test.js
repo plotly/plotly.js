@@ -17,7 +17,8 @@ var mockFullLayout = {
     _modules: [],
     _basePlotModules: [],
     _has: function() {},
-    _dfltTitle: {x: 'xxx', y: 'yyy'}
+    _dfltTitle: {x: 'xxx', y: 'yyy'},
+    _requestRangeslider: {}
 };
 
 
