@@ -459,6 +459,7 @@ exports.doTicksRelayout = function(gd) {
     Axes.doTicks(gd, 'redraw');
 
     if(gd._fullLayout._hasOnlyLargeSploms) {
+        clearGlCanvases(gd);
         Registry.subplotsRegistry.splom.plot(gd);
     }
 
