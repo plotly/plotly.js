@@ -211,12 +211,16 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         var _module = modules[j];
 
         // skip over non-cartesian trace modules
-        if(_module.basePlotModule.name !== 'cartesian') continue;
+        if(!_module.plot || _module.basePlotModule.name !== 'cartesian') continue;
 
         // plot all traces of this type on this subplot at once
-        var cdModule = getModuleCalcData(cdSubplot, _module);
+        var cdModuleAndOthers = getModuleCalcData(cdSubplot, _module);
+        var cdModule = cdModuleAndOthers[0];
+        // don't need to search the found traces again - in fact we need to NOT
+        // so that if two modules share the same plotter we don't double-plot
+        cdSubplot = cdModuleAndOthers[1];
 
-        if(_module.plot) _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+        _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }
 }
 

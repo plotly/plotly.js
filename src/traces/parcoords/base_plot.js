@@ -18,7 +18,7 @@ var PARCOORDS = 'parcoords';
 exports.name = PARCOORDS;
 
 exports.plot = function(gd) {
-    var calcData = getModuleCalcData(gd.calcdata, PARCOORDS);
+    var calcData = getModuleCalcData(gd.calcdata, PARCOORDS)[0];
     if(calcData.length) parcoordsPlot(gd, calcData);
 };
 
