@@ -101,10 +101,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     // put it all in .extraText
     pointData.extraText = textParts.join('<br>');
 
-    // this puts the label at the midpoint of the box, ie
+    // this puts the label *and the spike* at the midpoint of the box, ie
     // halfway between open and close, not between high and low.
-    // TODO: the spike also links to this point, whereas previously
-    // it linked to close. Is one better?
     pointData.y0 = pointData.y1 = ya.c2p(di.yc, true);
 
     return [pointData];
