@@ -62,6 +62,92 @@ describe('localization', function() {
         .then(done);
     });
 
+    function getLabels(axLetter) {
+        var out = [];
+        var s = d3.select(gd).selectAll('.' + axLetter + 'tick');
+        s.each(function() { out.push(d3.select(this).text()); });
+        return out;
+    }
+
+    it('contains all short and long day and month names in the default locale', function(done) {
+        Plotly.newPlot(gd, [{
+            x: ['2000-01-01', '2000-12-01'],
+            y: ['2000-01-02', '2000-01-08'],
+            mode: 'markers'
+        }], {
+            xaxis: {dtick: 'M1', tickformat: '%b'},
+            yaxis: {dtick: 1000 * 3600 * 24, tickformat: '%a'}
+        })
+        .then(function() {
+            expect(getLabels('x')).toEqual([
+                'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+            ]);
+            expect(getLabels('y')).toEqual([
+                'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'
+            ]);
+
+            return Plotly.relayout(gd, {
+                'xaxis.tickformat': '%B',
+                'yaxis.tickformat': '%A'
+            });
+        })
+        .then(function() {
+            expect(getLabels('x')).toEqual([
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ]);
+            expect(getLabels('y')).toEqual([
+                'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('contains correct periods, dateTime, date, and time fields in the default locale', function(done) {
+        Plotly.newPlot(gd, [{
+            x: ['2000-01-01 11:00', '2000-01-01 13:00'],
+            y: ['2000-01-01 23:00', '2000-01-02 01:00'],
+            mode: 'markers'
+        }], {
+            xaxis: {dtick: 1000 * 3600, tickformat: '%-I %p'},
+            yaxis: {dtick: 1000 * 3600, tickformat: '%-I %p'}
+        })
+        .then(function() {
+            expect(getLabels('x')).toEqual(['11 AM', '12 PM', '1 PM']);
+            expect(getLabels('y')).toEqual(['11 PM', '12 AM', '1 AM']);
+
+            return Plotly.relayout(gd, {
+                'xaxis.tickformat': '%c',
+                'yaxis.tickformat': '%x~%X'
+            });
+        })
+        .then(function() {
+            expect(getLabels('x')).toEqual([
+                'Sat Jan  1 11:00:00 2000', 'Sat Jan  1 12:00:00 2000', 'Sat Jan  1 13:00:00 2000'
+            ]);
+            expect(getLabels('y')).toEqual([
+                // here we're using British English, so day/month/year
+                '01/01/2000~23:00:00', '02/01/2000~00:00:00', '02/01/2000~01:00:00'
+            ]);
+
+            Plotly.register(require('@src/locale-en-us'));
+            return Plotly.redraw(gd);
+        })
+        .then(function() {
+            expect(getLabels('x')).toEqual([
+                'Sat Jan  1 11:00:00 2000', 'Sat Jan  1 12:00:00 2000', 'Sat Jan  1 13:00:00 2000'
+            ]);
+            expect(getLabels('y')).toEqual([
+                // now with the US version
+                '01/01/2000~23:00:00', '01/02/2000~00:00:00', '01/02/2000~01:00:00'
+            ]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('uses the region first, then language (registered case)', function(done) {
         plot('eg-AU')
         .then(function() {
