@@ -1488,8 +1488,8 @@ axes.makeClipPaths = function(gd) {
         d3.select(this).select('rect').attr({
             x: d.x._offset || 0,
             y: d.y._offset || 0,
-            width: d.x._length || 1,
-            height: d.y._length || 1
+            width: (d.x._length < 0 ? 0 : d.x._length) || 1,
+            height: (d.y._length < 0 ? 0 : d.y._length) || 1
         });
     });
 };

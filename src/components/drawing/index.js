@@ -52,7 +52,9 @@ drawing.font = function(s, family, size, color) {
  * instead, so that <tspan.line> elements get updated to match.
  */
 drawing.setPosition = function(s, x, y) { s.attr('x', x).attr('y', y); };
-drawing.setSize = function(s, w, h) { s.attr('width', w).attr('height', h); };
+drawing.setSize = function(s, w, h) {
+    s.attr('width', w < 0 ? 0 : w).attr('height', h < 0 ? 0 : h);
+};
 drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };

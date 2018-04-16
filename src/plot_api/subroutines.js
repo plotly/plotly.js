@@ -174,8 +174,8 @@ exports.lsInner = function(gd) {
         });
 
         plotClip.select('rect').attr({
-            width: xa._length,
-            height: ya._length
+            width: xa._length < 0 ? 0 : xa._length,
+            height: ya._length < 0 ? 0 : ya._length
         });
 
         Drawing.setTranslate(plotinfo.plot, xa._offset, ya._offset);
