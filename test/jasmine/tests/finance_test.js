@@ -426,69 +426,6 @@ describe('finance charts calc', function() {
         expect(mapGet(out[1], 'dir')).toEqual(directions);
     });
 
-    ['ohlc', 'candlestick'].forEach(function(type) {
-        it('generates correct hover text for ' + type, function() {
-            var trace0 = Lib.extendDeep({}, mock0, {
-                type: type,
-                text: ['A', 'B', 'C', 'D']
-            });
-
-            var trace1 = Lib.extendDeep({}, mock1, {
-                type: type,
-                text: 'IMPORTANT',
-                hoverinfo: 'x+text',
-                xaxis: 'x2'
-            });
-
-            var gd = _calcGd([trace0, trace1]);
-            var calcdata = gd.calcdata;
-            var tracesOut = calcdata.map(calcDatatoTrace);
-
-            var _hover = tracesOut[0]._module.hoverPoints;
-            function hoverOn(curveNum, x, y) {
-                var pointData = {
-                    cd: calcdata[curveNum],
-                    xa: gd._fullLayout[tracesOut[curveNum].xaxis === 'x2' ? 'xaxis2' : 'xaxis'],
-                    ya: gd._fullLayout.yaxis,
-                    maxHoverDistance: 20,
-                    maxSpikeDistance: 20,
-                    distance: Infinity,
-                    spikeDistance: Infinity,
-                    index: false
-                };
-
-                var pts = _hover(pointData, x, y, 'closest');
-                return pts[0];
-            }
-
-            expect(tracesOut[0].hoverinfo).toBe('all');
-            expect(mapGet(calcdata[0], 'tx')).toEqual([
-                'A', 'B', 'C', 'D', undefined, undefined, undefined, undefined
-            ]);
-            expect(hoverOn(0, 0, 33)).toEqual(jasmine.objectContaining({
-                text: 'open: 33.01<br>high: 34.2<br>low: 31.7<br>close: 34.1<br>A',
-                color: tracesOut[0].increasing.line.color
-            }));
-            expect(hoverOn(0, 1, 33)).toEqual(jasmine.objectContaining({
-                text: 'open: 33.31<br>high: 34.37<br>low: 30.75<br>close: 31.93<br>B',
-                color: tracesOut[0].decreasing.line.color
-            }));
-
-            expect(tracesOut[1].hoverinfo).toBe('x+text');
-            expect(mapGet(calcdata[1], 'tx')).toEqual([
-                undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined
-            ]);
-            expect(hoverOn(1, calcdata[1][0].pos, 33)).toEqual(jasmine.objectContaining({
-                text: 'open: 33.01<br>high: 34.2<br>low: 31.7<br>close: 34.1<br>IMPORTANT',
-                color: tracesOut[1].increasing.line.color
-            }));
-            expect(hoverOn(1, calcdata[1][1].pos, 33)).toEqual(jasmine.objectContaining({
-                text: 'open: 33.31<br>high: 34.37<br>low: 30.75<br>close: 31.93<br>IMPORTANT',
-                color: tracesOut[1].decreasing.line.color
-            }));
-        });
-    });
-
     it('should work with *filter* transforms', function() {
         var trace0 = Lib.extendDeep({}, mock1, {
             type: 'ohlc',
