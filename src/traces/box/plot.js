@@ -127,8 +127,16 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
                 valAxis.c2p(d.med, true),
                 Math.min(q1, q3) + 1, Math.max(q1, q3) - 1
             );
-            var lf = valAxis.c2p(trace.boxpoints ? d.lf : d.min, true);
-            var uf = valAxis.c2p(trace.boxpoints ? d.uf : d.max, true);
+
+            // for compatibility with box, violin, and candlestick
+            // perhaps we should put this into cd0.t instead so it's more explicit,
+            // but what we have now is:
+            // - box always has d.lf, but boxpoints can be anything
+            // - violin has d.lf and should always use it (boxpoints is undefined)
+            // - candlestick has only min/max
+            var useExtremes = (d.lf === undefined) || (trace.boxpoints === false);
+            var lf = valAxis.c2p(useExtremes ? d.min : d.lf, true);
+            var uf = valAxis.c2p(useExtremes ? d.max : d.uf, true);
             var ln = valAxis.c2p(d.ln, true);
             var un = valAxis.c2p(d.un, true);
 
