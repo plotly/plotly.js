@@ -252,12 +252,11 @@ exports.findArrayAttributes = function(trace) {
 exports.getTraceValObject = function(trace, parts) {
     var head = parts[0];
     var i = 1; // index to start recursing from
-    var transforms = trace.transforms;
-    if(!Array.isArray(transforms) || !transforms.length) transforms = false;
     var moduleAttrs, valObject;
 
     if(head === 'transforms') {
-        if(!transforms) return false;
+        var transforms = trace.transforms;
+        if(!Array.isArray(transforms) || !transforms.length) return false;
         var tNum = parts[1];
         if(!isIndex(tNum) || tNum >= transforms.length) {
             return false;
@@ -287,22 +286,8 @@ exports.getTraceValObject = function(trace, parts) {
             }
         }
 
-        // next look in the global attributes
+        // finally look in the global attributes
         if(!valObject) valObject = baseAttributes[head];
-
-        // finally check if we have a transform matching the original trace type
-        if(!valObject && transforms) {
-            var inputType = trace._input.type;
-            if(inputType && inputType !== trace.type) {
-                for(var j = 0; j < transforms.length; j++) {
-                    if(transforms[j].type === inputType) {
-                        moduleAttrs = ((Registry.modules[inputType] || {})._module || {}).attributes;
-                        valObject = moduleAttrs && moduleAttrs[head];
-                        if(valObject) break;
-                    }
-                }
-            }
-        }
     }
 
     return recurseIntoValObject(valObject, parts, i);
