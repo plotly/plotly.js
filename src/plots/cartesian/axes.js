@@ -1502,9 +1502,9 @@ axes.makeClipPaths = function(gd) {
 //          ax._rl (stored linearized range for use by zoom/pan)
 //     or can pass in an axis object directly
 axes.doTicks = function(gd, axid, skipTitle) {
-    var fullLayout = gd._fullLayout,
-        ax,
-        independent = false;
+    var fullLayout = gd._fullLayout;
+    var ax;
+    var independent = false;
 
     // allow passing an independent axis object instead of id
     if(typeof axid === 'object') {
@@ -1517,18 +1517,14 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
         if(axid === 'redraw') {
             fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
-                var plotinfo = fullLayout._plots[subplot],
-                    xa = plotinfo.xaxis,
-                    ya = plotinfo.yaxis;
+                var plotinfo = fullLayout._plots[subplot];
+                var xa = plotinfo.xaxis;
+                var ya = plotinfo.yaxis;
 
-                plotinfo.xaxislayer
-                    .selectAll('.' + xa._id + 'tick').remove();
-                plotinfo.yaxislayer
-                    .selectAll('.' + ya._id + 'tick').remove();
-                plotinfo.gridlayer
-                    .selectAll('path').remove();
-                plotinfo.zerolinelayer
-                    .selectAll('path').remove();
+                plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
+                plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
+                if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
+                if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
                 fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
                 fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
             });
@@ -1552,7 +1548,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
     var axLetter = axid.charAt(0);
     var counterLetter = axes.counterLetter(axid);
-    var vals = axes.calcTicks(ax);
+    var vals = ax._vals = axes.calcTicks(ax);
     var datafn = function(d) { return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_'); };
     var tcls = axid + 'tick';
     var gcls = axid + 'grid';
@@ -2092,6 +2088,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
     }
 
     function drawGrid(plotinfo, counteraxis, subplot) {
+        if(fullLayout._hasOnlyLargeSploms) return;
+
         var gridcontainer = plotinfo.gridlayer.selectAll('.' + axid);
         var zlcontainer = plotinfo.zerolinelayer;
         var gridvals = plotinfo['hidegrid' + axLetter] ? [] : valsClipped;
@@ -2190,7 +2188,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
             }
             drawTicks(mainPlotinfo[axLetter + 'axislayer'], tickpath);
 
-            tickSubplots = Object.keys(ax._linepositions);
+            tickSubplots = Object.keys(ax._linepositions || {});
         }
 
         tickSubplots.map(function(subplot) {

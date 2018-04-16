@@ -97,6 +97,25 @@ jobs:
       - store_artifacts:
           path: build
 
+  test-image2:
+    docker:
+      - image: plotly/testbed:latest
+    working_directory: /var/www/streambed/image_server/plotly.js/
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /var/www/streambed/image_server/plotly.js/
+      - run:
+          name: Run and setup container
+          command: |
+            supervisord &
+            npm run docker -- setup
+      - run:
+          name: Run image tests
+          command: ./.circleci/test.sh image2
+      - store_artifacts:
+          path: build
+
   test-syntax:
     docker:
       - image: circleci/node:8.9.4
@@ -121,6 +140,9 @@ workflows:
           requires:
             - build
       - test-image:
+          requires:
+            - build
+      - test-image2:
           requires:
             - build
       - test-syntax:

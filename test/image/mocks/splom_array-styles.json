@@ -1,0 +1,22 @@
+{
+  "data": [{
+    "type": "splom",
+    "dimensions": [{
+      "values": [1, 2, 3],
+      "label": "A"
+    }, {
+      "values": [2, 5, 6],
+      "label": "B"
+    }],
+    "marker": {
+      "symbol": ["diamond", "cross", "square"],
+      "color": ["green", "blue", "red"],
+      "size": [20, 40, 10],
+      "line": {
+        "width": [2, 0, 3],
+        "color": ["red", "", "blue"]
+      },
+      "opacity": [1, 0.8, 0.6]
+    }
+  }]
+}

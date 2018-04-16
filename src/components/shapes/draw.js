@@ -42,7 +42,11 @@ function draw(gd) {
     // Remove previous shapes before drawing new in shapes in fullLayout.shapes
     fullLayout._shapeUpperLayer.selectAll('path').remove();
     fullLayout._shapeLowerLayer.selectAll('path').remove();
-    fullLayout._shapeSubplotLayers.selectAll('path').remove();
+
+    for(var k in fullLayout._plots) {
+        var shapelayer = fullLayout._plots[k].shapelayer;
+        if(shapelayer) shapelayer.selectAll('path').remove();
+    }
 
     for(var i = 0; i < fullLayout.shapes.length; i++) {
         if(fullLayout.shapes[i].visible) {

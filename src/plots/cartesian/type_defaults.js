@@ -46,8 +46,8 @@ function setAutoType(ax, data) {
     // only autotype if type is '-'
     if(ax.type !== '-') return;
 
-    var id = ax._id,
-        axLetter = id.charAt(0);
+    var id = ax._id;
+    var axLetter = id.charAt(0);
 
     // support 3d
     if(id.indexOf('scene') !== -1) id = axLetter;
@@ -63,18 +63,18 @@ function setAutoType(ax, data) {
         return;
     }
 
-    var calAttr = axLetter + 'calendar',
-        calendar = d0[calAttr];
+    var calAttr = axLetter + 'calendar';
+    var calendar = d0[calAttr];
+    var i;
 
     // check all boxes on this x axis to see
     // if they're dates, numbers, or categories
     if(isBoxWithoutPositionCoords(d0, axLetter)) {
-        var posLetter = getBoxPosLetter(d0),
-            boxPositions = [],
-            trace;
+        var posLetter = getBoxPosLetter(d0);
+        var boxPositions = [];
 
-        for(var i = 0; i < data.length; i++) {
-            trace = data[i];
+        for(i = 0; i < data.length; i++) {
+            var trace = data[i];
             if(!Registry.traceIs(trace, 'box-violin') ||
                (trace[axLetter + 'axis'] || axLetter) !== id) continue;
 
@@ -87,6 +87,16 @@ function setAutoType(ax, data) {
 
         ax.type = autoType(boxPositions, calendar);
     }
+    else if(d0.type === 'splom') {
+        var dimensions = d0.dimensions;
+        for(i = 0; i < dimensions.length; i++) {
+            var dim = dimensions[i];
+            if(dim.visible) {
+                ax.type = autoType(dim.values, calendar);
+                break;
+            }
+        }
+    }
     else {
         ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']], calendar);
     }
@@ -95,6 +105,13 @@ function setAutoType(ax, data) {
 function getFirstNonEmptyTrace(data, id, axLetter) {
     for(var i = 0; i < data.length; i++) {
         var trace = data[i];
+
+        if(trace.type === 'splom' &&
+                trace._commonLength > 0 &&
+                trace['_' + axLetter + 'axes'][id]
+        ) {
+            return trace;
+        }
 
         if((trace[axLetter + 'axis'] || axLetter) === id) {
             if(isBoxWithoutPositionCoords(trace, axLetter)) {

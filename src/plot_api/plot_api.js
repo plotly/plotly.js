@@ -22,11 +22,11 @@ var Registry = require('../registry');
 var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
 var Polar = require('../plots/polar/legacy');
-var initInteractions = require('../plots/cartesian/graph_interact');
 
 var Axes = require('../plots/cartesian/axes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
+var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
 
@@ -36,11 +36,7 @@ var helpers = require('./helpers');
 var subroutines = require('./subroutines');
 var editTypes = require('./edit_types');
 
-var cartesianConstants = require('../plots/cartesian/constants');
-var axisConstraints = require('../plots/cartesian/constraints');
-var enforceAxisConstraints = axisConstraints.enforce;
-var cleanAxisConstraints = axisConstraints.clean;
-var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
+var AX_NAME_PATTERN = require('../plots/cartesian/constants').AX_NAME_PATTERN;
 
 var numericNameWarningCount = 0;
 var numericNameWarningCountLimit = 5;
@@ -330,15 +326,7 @@ exports.plot = function(gd, data, layout, config) {
     function doAutoRangeAndConstraints() {
         if(gd._transitioning) return;
 
-        var axList = Axes.list(gd, '', true);
-        for(var i = 0; i < axList.length; i++) {
-            var ax = axList[i];
-            cleanAxisConstraints(gd, ax);
-
-            doAutoRange(ax);
-        }
-
-        enforceAxisConstraints(gd);
+        subroutines.doAutoRangeAndConstraints(gd);
 
         // store initial ranges *after* enforcing constraints, otherwise
         // we will never look like we're at the initial ranges
@@ -348,80 +336,6 @@ exports.plot = function(gd, data, layout, config) {
     // draw ticks, titles, and calculate axis scaling (._b, ._m)
     function drawAxes() {
         return Axes.doTicks(gd, graphWasEmpty ? '' : 'redraw');
-    }
-
-    // Now plot the data
-    function drawData() {
-        var calcdata = gd.calcdata,
-            i,
-            rangesliderContainers = fullLayout._infolayer.selectAll('g.rangeslider-container');
-
-        // in case of traces that were heatmaps or contour maps
-        // previously, remove them and their colorbars explicitly
-        for(i = 0; i < calcdata.length; i++) {
-            var trace = calcdata[i][0].trace,
-                isVisible = (trace.visible === true),
-                uid = trace.uid;
-
-            if(!isVisible || !Registry.traceIs(trace, '2dMap')) {
-                var query = (
-                    '.hm' + uid +
-                    ',.contour' + uid +
-                    ',#clip' + uid
-                );
-
-                fullLayout._paper
-                    .selectAll(query)
-                    .remove();
-
-                rangesliderContainers
-                    .selectAll(query)
-                    .remove();
-            }
-
-            if(!isVisible || !trace._module.colorbar) {
-                fullLayout._infolayer.selectAll('.cb' + uid).remove();
-            }
-        }
-
-        // loop over the base plot modules present on graph
-        var basePlotModules = fullLayout._basePlotModules;
-        for(i = 0; i < basePlotModules.length; i++) {
-            basePlotModules[i].plot(gd);
-        }
-
-        // keep reference to shape layers in subplots
-        var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
-        fullLayout._shapeSubplotLayers = layerSubplot.selectAll('.shapelayer');
-
-        // styling separate from drawing
-        Plots.style(gd);
-
-        // show annotations and shapes
-        Registry.getComponentMethod('shapes', 'draw')(gd);
-        Registry.getComponentMethod('annotations', 'draw')(gd);
-
-        // source links
-        Plots.addLinks(gd);
-
-        // Mark the first render as complete
-        fullLayout._replotting = false;
-
-        return Plots.previousPromises(gd);
-    }
-
-    // An initial paint must be completed before these components can be
-    // correctly sized and the whole plot re-margined. fullLayout._replotting must
-    // be set to false before these will work properly.
-    function finalDraw() {
-        Registry.getComponentMethod('shapes', 'draw')(gd);
-        Registry.getComponentMethod('images', 'draw')(gd);
-        Registry.getComponentMethod('annotations', 'draw')(gd);
-        Registry.getComponentMethod('legend', 'draw')(gd);
-        Registry.getComponentMethod('rangeslider', 'draw')(gd);
-        Registry.getComponentMethod('rangeselector', 'draw')(gd);
-        Registry.getComponentMethod('sliders', 'draw')(gd);
-        Registry.getComponentMethod('updatemenus', 'draw')(gd);
     }
 
     var seq = [
@@ -435,9 +349,10 @@ exports.plot = function(gd, data, layout, config) {
     seq.push(subroutines.layoutStyles);
     if(hasCartesian) seq.push(drawAxes);
     seq.push(
-        drawData,
-        finalDraw,
+        subroutines.drawData,
+        subroutines.finalDraw,
         initInteractions,
+        Plots.addLinks,
         Plots.rehover,
         Plots.previousPromises
     );
@@ -666,7 +581,7 @@ exports.newPlot = function(gd, data, layout, config) {
     gd = Lib.getGraphDiv(gd);
 
     // remove gl contexts
-    Plots.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {});
+    Plots.cleanPlot([], {}, gd._fullData || [], gd._fullLayout || {}, gd.calcdata || []);
 
     Plots.purge(gd);
     return exports.plot(gd, data, layout, config);
@@ -1381,8 +1296,8 @@ exports.restyle = function restyle(gd, astr, val, _traces) {
 
     var traces = helpers.coerceTraceIndices(gd, _traces);
 
-    var specs = _restyle(gd, aobj, traces),
-        flags = specs.flags;
+    var specs = _restyle(gd, aobj, traces);
+    var flags = specs.flags;
 
     // clear calcdata and/or axis types if required so they get regenerated
     if(flags.clearCalc) gd.calcdata = undefined;
@@ -1746,8 +1661,8 @@ exports.relayout = function relayout(gd, astr, val) {
 
     if(Object.keys(aobj).length) gd.changed = true;
 
-    var specs = _relayout(gd, aobj),
-        flags = specs.flags;
+    var specs = _relayout(gd, aobj);
+    var flags = specs.flags;
 
     // clear calcdata if required
     if(flags.calc) gd.calcdata = undefined;
@@ -1768,6 +1683,30 @@ exports.relayout = function relayout(gd, astr, val) {
 
         if(flags.legend) seq.push(subroutines.doLegend);
         if(flags.layoutstyle) seq.push(subroutines.layoutStyles);
+
+        if(flags.axrange) {
+            // N.B. leave as sequence of subroutines (for now) instead of
+            // subroutine of its own so that finalDraw always gets
+            // executed after drawData
+            seq.push(
+                // TODO
+                // no test fail when commenting out doAutoRangeAndConstraints,
+                // but I think we do need this (maybe just the enforce part?)
+                // Am I right?
+                // More info in:
+                // https://github.com/plotly/plotly.js/issues/2540
+                subroutines.doAutoRangeAndConstraints,
+                // TODO
+                // can target specific axes,
+                // do not have to redraw all axes here
+                // See:
+                // https://github.com/plotly/plotly.js/issues/2547
+                subroutines.doTicksRelayout,
+                subroutines.drawData,
+                subroutines.finalDraw
+            );
+        }
+
         if(flags.ticks) seq.push(subroutines.doTicksRelayout);
         if(flags.modebar) seq.push(subroutines.doModeBar);
         if(flags.camera) seq.push(subroutines.doCamera);
@@ -1988,7 +1927,7 @@ function _relayout(gd, aobj) {
             }
             Lib.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
         }
-        else if(pleaf.match(cartesianConstants.AX_NAME_PATTERN)) {
+        else if(pleaf.match(AX_NAME_PATTERN)) {
             var fullProp = Lib.nestedProperty(fullLayout, ai).get(),
                 newType = (vi || {}).type;
 
@@ -2041,8 +1980,9 @@ function _relayout(gd, aobj) {
             if(checkForAutorange && (refAutorange(gd, objToAutorange, 'x') || refAutorange(gd, objToAutorange, 'y'))) {
                 flags.calc = true;
             }
-            else editTypes.update(flags, updateValObject);
-
+            else {
+                editTypes.update(flags, updateValObject);
+            }
 
             // prepare the edits object we'll send to applyContainerArrayChanges
             if(!arrayEdits[arrayStr]) arrayEdits[arrayStr] = {};
@@ -2193,11 +2133,11 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
 
     var traces = helpers.coerceTraceIndices(gd, _traces);
 
-    var restyleSpecs = _restyle(gd, Lib.extendFlat({}, traceUpdate), traces),
-        restyleFlags = restyleSpecs.flags;
+    var restyleSpecs = _restyle(gd, Lib.extendFlat({}, traceUpdate), traces);
+    var restyleFlags = restyleSpecs.flags;
 
-    var relayoutSpecs = _relayout(gd, Lib.extendFlat({}, layoutUpdate)),
-        relayoutFlags = relayoutSpecs.flags;
+    var relayoutSpecs = _relayout(gd, Lib.extendFlat({}, layoutUpdate));
+    var relayoutFlags = relayoutSpecs.flags;
 
     // clear calcdata and/or axis types if required
     if(restyleFlags.clearCalc || relayoutFlags.calc) gd.calcdata = undefined;
@@ -2232,6 +2172,14 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
         if(restyleFlags.colorbars) seq.push(subroutines.doColorBars);
         if(relayoutFlags.legend) seq.push(subroutines.doLegend);
         if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
+        if(relayoutFlags.axrange) {
+            seq.push(
+                subroutines.doAutoRangeAndConstraints,
+                subroutines.doTicksRelayout,
+                subroutines.drawData,
+                subroutines.finalDraw
+            );
+        }
         if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
         if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
         if(relayoutFlags.camera) seq.push(subroutines.doCamera);
@@ -2384,6 +2332,14 @@ exports.react = function(gd, data, layout, config) {
             if(restyleFlags.colorbars) seq.push(subroutines.doColorBars);
             if(relayoutFlags.legend) seq.push(subroutines.doLegend);
             if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
+            if(relayoutFlags.axrange) {
+                seq.push(
+                    subroutines.doAutoRangeAndConstraints,
+                    subroutines.doTicksRelayout,
+                    subroutines.drawData,
+                    subroutines.finalDraw
+                );
+            }
             if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
             if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
             if(relayoutFlags.camera) seq.push(subroutines.doCamera);
@@ -3240,11 +3196,12 @@ exports.deleteFrames = function(gd, frameList) {
 exports.purge = function purge(gd) {
     gd = Lib.getGraphDiv(gd);
 
-    var fullLayout = gd._fullLayout || {},
-        fullData = gd._fullData || [];
+    var fullLayout = gd._fullLayout || {};
+    var fullData = gd._fullData || [];
+    var calcdata = gd.calcdata || [];
 
     // remove gl contexts
-    Plots.cleanPlot([], {}, fullData, fullLayout);
+    Plots.cleanPlot([], {}, fullData, fullLayout, calcdata);
 
     // purge properties
     Plots.purge(gd);

@@ -9,13 +9,13 @@
 'use strict';
 
 var Registry = require('../../registry');
-
+var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 
 exports.name = 'pie';
 
 exports.plot = function(gd) {
     var Pie = Registry.getModule('pie');
-    var cdPie = getCdModule(gd.calcdata, Pie);
+    var cdPie = getModuleCalcData(gd.calcdata, Pie);
 
     if(cdPie.length) Pie.plot(gd, cdPie);
 };
@@ -28,18 +28,3 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         oldFullLayout._pielayer.selectAll('g.trace').remove();
     }
 };
-
-function getCdModule(calcdata, _module) {
-    var cdModule = [];
-
-    for(var i = 0; i < calcdata.length; i++) {
-        var cd = calcdata[i];
-        var trace = cd[0].trace;
-
-        if((trace._module === _module) && (trace.visible === true)) {
-            cdModule.push(cd);
-        }
-    }
-
-    return cdModule;
-}

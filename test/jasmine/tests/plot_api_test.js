@@ -516,7 +516,10 @@ describe('Test plot api', function() {
             'layoutStyles',
             'doTicksRelayout',
             'doModeBar',
-            'doCamera'
+            'doCamera',
+            'doAutoRangeAndConstraints',
+            'drawData',
+            'finalDraw'
         ];
 
         var gd;
@@ -624,6 +627,46 @@ describe('Test plot api', function() {
                 Plotly.relayout(gd, attr, axLayoutEdits[attr]);
                 expectReplot(attr);
             }
+        });
+
+        it('should trigger minimal sequence for cartesian axis range updates', function() {
+            var seq = ['doAutoRangeAndConstraints', 'doTicksRelayout', 'drawData', 'finalDraw'];
+
+            function _assert(msg) {
+                expect(gd.calcdata).toBeDefined();
+                mockedMethods.forEach(function(m) {
+                    expect(subroutines[m].calls.count()).toBe(
+                        seq.indexOf(m) === -1 ? 0 : 1,
+                        '# of ' + m + ' calls - ' + msg
+                    );
+                });
+            }
+
+            var trace = {y: [1, 2, 1]};
+
+            var specs = [
+                ['relayout', ['xaxis.range[0]', 0]],
+                ['relayout', ['xaxis.range[1]', 3]],
+                ['relayout', ['xaxis.range', [-1, 5]]],
+                ['update', [{}, {'xaxis.range': [-1, 10]}]],
+                ['react', [[trace], {xaxis: {range: [0, 1]}}]]
+            ];
+
+            specs.forEach(function(s) {
+                // create 'real' div for Plotly.react to work
+                gd = createGraphDiv();
+                Plotly.plot(gd, [trace], {xaxis: {range: [1, 2]}});
+                mock(gd);
+
+                Plotly[s[0]](gd, s[1][0], s[1][1]);
+
+                _assert([
+                    'Plotly.', s[0],
+                    '(gd, ', JSON.stringify(s[1][0]), ', ', JSON.stringify(s[1][1]), ')'
+                ].join(''));
+
+                destroyGraphDiv();
+            });
         });
     });
 
@@ -2838,6 +2881,7 @@ describe('Test plot api', function() {
             ['range_selector_style', require('@mocks/range_selector_style.json')],
             ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
             ['sankey_energy', require('@mocks/sankey_energy.json')],
+            ['splom_iris', require('@mocks/splom_iris.json')],
             ['table_wrapped_birds', require('@mocks/table_wrapped_birds.json')],
             ['ternary_fill', require('@mocks/ternary_fill.json')],
             ['text_chart_arrays', require('@mocks/text_chart_arrays.json')],
