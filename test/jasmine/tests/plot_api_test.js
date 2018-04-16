@@ -2276,6 +2276,90 @@ describe('Test plot api', function() {
             expect(gd.layout.shapes[2].yref).toEqual('y');
 
         });
+
+        it('removes direction names and showlegend from finance traces', function() {
+            var data = [{
+                type: 'ohlc', open: [1], high: [3], low: [0], close: [2],
+                increasing: {
+                    showlegend: true,
+                    name: 'Yeti goes up'
+                },
+                decreasing: {
+                    showlegend: 'legendonly',
+                    name: 'Yeti goes down'
+                },
+                name: 'Snowman'
+            }, {
+                type: 'candlestick', open: [1], high: [3], low: [0], close: [2],
+                increasing: {
+                    name: 'Bigfoot'
+                },
+                decreasing: {
+                    showlegend: false,
+                    name: 'Biggerfoot'
+                },
+                name: 'Nobody'
+            }, {
+                type: 'ohlc', open: [1], high: [3], low: [0], close: [2],
+                increasing: {
+                    name: 'Batman'
+                },
+                decreasing: {
+                    showlegend: true
+                },
+                name: 'Robin'
+            }, {
+                type: 'candlestick', open: [1], high: [3], low: [0], close: [2],
+                increasing: {
+                    showlegend: false,
+                },
+                decreasing: {
+                    name: 'Fred'
+                }
+            }, {
+                type: 'ohlc', open: [1], high: [3], low: [0], close: [2],
+                increasing: {
+                    showlegend: false,
+                    name: 'Gruyere heating up'
+                },
+                decreasing: {
+                    showlegend: false,
+                    name: 'Gruyere cooling off'
+                },
+                name: 'Emmenthaler'
+            }];
+
+            Plotly.plot(gd, data);
+
+            // Even if both showlegends are false, leave trace.showlegend out
+            // My rationale for this is that legends are sufficiently different
+            // now that it's worthwhile resetting their existence to default
+            gd.data.forEach(function(trace) {
+                expect(trace.increasing.name).toBeUndefined();
+                expect(trace.increasing.showlegend).toBeUndefined();
+                expect(trace.decreasing.name).toBeUndefined();
+                expect(trace.decreasing.showlegend).toBeUndefined();
+            });
+
+            // Both directions have names: ignore trace.name, as it
+            // had no effect on the output previously
+            // Ideally 'Yeti goes' would be smart enough to truncate
+            // at 'Yeti' but I don't see how to do that...
+            expect(gd.data[0].name).toBe('Yeti goes');
+            // One direction has empty or hidden name so use the other
+            // Note that even '' in both names would render trace.name impact-less
+            expect(gd.data[1].name).toBe('Bigfoot');
+
+            // One direction has a name but trace.name is there too:
+            // just use trace.name
+            expect(gd.data[2].name).toBe('Robin');
+
+            // No trace.name, only one direction name: use the direction name
+            expect(gd.data[3].name).toBe('Fred');
+
+            // both names exist but hidden from the legend: still look for common prefix
+            expect(gd.data[4].name).toBe('Gruyere');
+        });
     });
 
     describe('Plotly.newPlot', function() {

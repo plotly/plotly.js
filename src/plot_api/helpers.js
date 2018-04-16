@@ -332,15 +332,21 @@ exports.cleanData = function(data, existingData) {
 
         // fixes from converting finance from transforms to real trace types
         if(trace.type === 'candlestick' || trace.type === 'ohlc') {
+            var increasingShowlegend = (trace.increasing || {}).showlegend !== false;
+            var decreasingShowlegend = (trace.decreasing || {}).showlegend !== false;
             var increasingName = cleanFinanceDir(trace.increasing);
             var decreasingName = cleanFinanceDir(trace.decreasing);
 
             // now figure out something smart to do with the separate direction
             // names we removed
-            if(increasingName && decreasingName) {
+            if((increasingName !== false) && (decreasingName !== false)) {
                 // both sub-names existed: base name previously had no effect
                 // so ignore it and try to find a shared part of the sub-names
-                var newName = commonPrefix(increasingName, decreasingName);
+
+                var newName = commonPrefix(
+                    increasingName, decreasingName,
+                    increasingShowlegend, decreasingShowlegend
+                );
                 // if no common part, leave whatever name was (or wasn't) there
                 if(newName) trace.name = newName;
             }
@@ -409,17 +415,24 @@ exports.cleanData = function(data, existingData) {
 };
 
 function cleanFinanceDir(dirContainer) {
-    if(!Lib.isPlainObject(dirContainer)) return '';
+    if(!Lib.isPlainObject(dirContainer)) return false;
 
-    var dirName = (dirContainer.showlegend === false) ? '' : dirContainer.name;
+    var dirName = dirContainer.name;
 
     delete dirContainer.name;
     delete dirContainer.showlegend;
 
-    return dirName;
+    return (typeof dirName === 'string' || typeof dirName === 'number') && String(dirName);
 }
 
-function commonPrefix(name1, name2) {
+function commonPrefix(name1, name2, show1, show2) {
+    // if only one is shown in the legend, use that
+    if(show1 && !show2) return name1;
+    if(show2 && !show1) return name2;
+
+    // if both or neither are in the legend, check if one is blank (or whitespace)
+    // and use the other one
+    // note that hover labels can still use the name even if the legend doesn't
     if(!name1.trim()) return name2;
     if(!name2.trim()) return name1;
 
