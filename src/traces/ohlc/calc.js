@@ -11,6 +11,7 @@
 var Lib = require('../../lib');
 var _ = Lib._;
 var Axes = require('../../plots/cartesian/axes');
+var BADNUM = require('../../constants/numerical').BADNUM;
 
 function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis);
@@ -69,7 +70,7 @@ function calcCommon(gd, trace, x, ya, ptFunc) {
         var li = l[i];
         var ci = c[i];
 
-        if(xi !== undefined && oi !== undefined && hi !== undefined && li !== undefined && ci !== undefined) {
+        if(xi !== BADNUM && oi !== BADNUM && hi !== BADNUM && li !== BADNUM && ci !== BADNUM) {
             if(ci === oi) {
                 // if open == close, look for a change from the previous close
                 if(cPrev !== null && ci !== cPrev) increasing = ci > cPrev;
