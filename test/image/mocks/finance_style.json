@@ -121,7 +121,7 @@
       "decreasing": {
         "line": {
           "color": "rgb(128, 128, 128)",
-          "dash": "dash"
+          "dash": "dot"
         }
       },
       "line": {
