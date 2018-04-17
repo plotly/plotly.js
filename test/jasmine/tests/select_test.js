@@ -1304,7 +1304,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
     });
 
     ['ohlc', 'candlestick'].forEach(function(type) {
-        fit('should work for ' + type + ' traces', function(done) {
+        it('should work for ' + type + ' traces', function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'open', 'high', 'low', 'close']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
