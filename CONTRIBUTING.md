@@ -179,7 +179,7 @@ To view the results of a run on CircleCI, download the `build/test_images/` and 
 
 ### Writing interaction tests
 Keep in mind that the interaction coordinates are relative to the top-left corner of the plot, including the margins. To produce a reliable interaction test, 
-it may be necessary to to fix the width, height, margins, X axis range and Y axis range of the plot. For example:
+it may be necessary to fix the width, height, margins, X axis range and Y axis range of the plot. For example:
 
 ```
 Plotly.newPlot(gd, [{
