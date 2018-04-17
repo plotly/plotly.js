@@ -192,7 +192,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     // remaining plot traces should also be able to do this. Once implemented,
     // we won't need this - which should sometimes be a big speedup.
     if(plotinfo.plot) {
-        plotinfo.plot.selectAll('g:not(.scatterlayer)').selectAll('g.trace').remove();
+        plotinfo.plot.selectAll('g:not(.scatterlayer):not(.ohlclayer)').selectAll('g.trace').remove();
     }
 
     // plot all traces for each module at once
@@ -200,12 +200,16 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         var _module = modules[j];
 
         // skip over non-cartesian trace modules
-        if(_module.basePlotModule.name !== 'cartesian') continue;
+        if(!_module.plot || _module.basePlotModule.name !== 'cartesian') continue;
 
         // plot all traces of this type on this subplot at once
-        var cdModule = getModuleCalcData(cdSubplot, _module);
+        var cdModuleAndOthers = getModuleCalcData(cdSubplot, _module);
+        var cdModule = cdModuleAndOthers[0];
+        // don't need to search the found traces again - in fact we need to NOT
+        // so that if two modules share the same plotter we don't double-plot
+        cdSubplot = cdModuleAndOthers[1];
 
-        if(_module.plot) _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+        _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }
 }
 
@@ -215,6 +219,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldPlots = oldFullLayout._plots || {};
 
     var hadScatter, hasScatter;
+    var hadOHLC, hasOHLC;
     var hadGl, hasGl;
     var i, k, subplotInfo, moduleName;
 
@@ -232,28 +237,36 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         moduleName = oldModules[i].name;
         if(moduleName === 'scatter') hadScatter = true;
         else if(moduleName === 'scattergl') hadGl = true;
+        else if(moduleName === 'ohlc') hadOHLC = true;
     }
 
     for(i = 0; i < newModules.length; i++) {
         moduleName = newModules[i].name;
         if(moduleName === 'scatter') hasScatter = true;
         else if(moduleName === 'scattergl') hasGl = true;
+        else if(moduleName === 'ohlc') hasOHLC = true;
     }
 
-    if(hadScatter && !hasScatter) {
-        for(k in oldPlots) {
-            subplotInfo = oldPlots[k];
-            if(subplotInfo.plot) {
-                subplotInfo.plot.select('g.scatterlayer')
-                    .selectAll('g.trace')
-                    .remove();
-            }
-        }
+    var layersToEmpty = [];
+    if(hadScatter && !hasScatter) layersToEmpty.push('g.scatterlayer');
+    if(hadOHLC && !hasOHLC) layersToEmpty.push('g.ohlclayer');
 
-        oldFullLayout._infolayer.selectAll('g.rangeslider-container')
-            .select('g.scatterlayer')
-            .selectAll('g.trace')
-            .remove();
+    if(layersToEmpty.length) {
+        for(var layeri = 0; layeri < layersToEmpty.length; layeri++) {
+            for(k in oldPlots) {
+                subplotInfo = oldPlots[k];
+                if(subplotInfo.plot) {
+                    subplotInfo.plot.select(layersToEmpty[layeri])
+                        .selectAll('g.trace')
+                        .remove();
+                }
+            }
+
+            oldFullLayout._infolayer.selectAll('g.rangeslider-container')
+                .select(layersToEmpty[layeri])
+                .selectAll('g.trace')
+                .remove();
+        }
     }
 
     if(hadGl && !hasGl) {

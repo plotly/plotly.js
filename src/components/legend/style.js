@@ -52,7 +52,9 @@ module.exports = function style(s, gd) {
     .each(styleBoxes)
     .each(stylePies)
     .each(styleLines)
-    .each(stylePoints);
+    .each(stylePoints)
+    .each(styleCandles)
+    .each(styleOHLC);
 
     function styleLines(d) {
         var trace = d[0].trace;
@@ -207,7 +209,61 @@ module.exports = function style(s, gd) {
                 .call(Color.fill, trace.fillcolor);
 
             if(w) {
-                p.call(Color.stroke, trace.line.color);
+                Color.stroke(p, trace.line.color);
+            }
+        });
+    }
+
+    function styleCandles(d) {
+        var trace = d[0].trace,
+            pts = d3.select(this).select('g.legendpoints')
+                .selectAll('path.legendcandle')
+                .data(trace.type === 'candlestick' && trace.visible ? [d, d] : []);
+        pts.enter().append('path').classed('legendcandle', true)
+            .attr('d', function(_, i) {
+                if(i) return 'M-15,0H-8M-8,6V-6H8Z'; // increasing
+                return 'M15,0H8M8,-6V6H-8Z'; // decreasing
+            })
+            .attr('transform', 'translate(20,0)')
+            .style('stroke-miterlimit', 1);
+        pts.exit().remove();
+        pts.each(function(_, i) {
+            var container = trace[i ? 'increasing' : 'decreasing'];
+            var w = container.line.width,
+                p = d3.select(this);
+
+            p.style('stroke-width', w + 'px')
+                .call(Color.fill, container.fillcolor);
+
+            if(w) {
+                Color.stroke(p, container.line.color);
+            }
+        });
+    }
+
+    function styleOHLC(d) {
+        var trace = d[0].trace,
+            pts = d3.select(this).select('g.legendpoints')
+                .selectAll('path.legendohlc')
+                .data(trace.type === 'ohlc' && trace.visible ? [d, d] : []);
+        pts.enter().append('path').classed('legendohlc', true)
+            .attr('d', function(_, i) {
+                if(i) return 'M-15,0H0M-8,-6V0'; // increasing
+                return 'M15,0H0M8,6V0'; // decreasing
+            })
+            .attr('transform', 'translate(20,0)')
+            .style('stroke-miterlimit', 1);
+        pts.exit().remove();
+        pts.each(function(_, i) {
+            var container = trace[i ? 'increasing' : 'decreasing'];
+            var w = container.line.width,
+                p = d3.select(this);
+
+            p.style('fill', 'none')
+                .call(Drawing.dashLine, container.line.dash, w);
+
+            if(w) {
+                Color.stroke(p, container.line.color);
             }
         });
     }

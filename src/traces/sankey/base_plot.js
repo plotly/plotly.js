@@ -22,7 +22,7 @@ exports.baseLayoutAttrOverrides = overrideAll({
 }, 'plot', 'nested');
 
 exports.plot = function(gd) {
-    var calcData = getModuleCalcData(gd.calcdata, SANKEY);
+    var calcData = getModuleCalcData(gd.calcdata, SANKEY)[0];
     plot(gd, calcData);
 };
 

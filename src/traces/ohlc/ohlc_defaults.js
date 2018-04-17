@@ -13,11 +13,11 @@ var Registry = require('../../registry');
 
 
 module.exports = function handleOHLC(traceIn, traceOut, coerce, layout) {
-    var x = coerce('x'),
-        open = coerce('open'),
-        high = coerce('high'),
-        low = coerce('low'),
-        close = coerce('close');
+    var x = coerce('x');
+    var open = coerce('open');
+    var high = coerce('high');
+    var low = coerce('low');
+    var close = coerce('close');
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x'], layout);
@@ -28,7 +28,7 @@ module.exports = function handleOHLC(traceIn, traceOut, coerce, layout) {
 
     if(x) len = Math.min(len, x.length);
 
-    traceOut._inputLength = len;
+    traceOut._length = len;
 
     return len;
 };

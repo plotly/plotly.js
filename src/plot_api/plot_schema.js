@@ -256,12 +256,13 @@ exports.getTraceValObject = function(trace, parts) {
     var moduleAttrs, valObject;
 
     if(head === 'transforms') {
-        if(!Array.isArray(trace.transforms)) return false;
+        var transforms = trace.transforms;
+        if(!Array.isArray(transforms) || !transforms.length) return false;
         var tNum = parts[1];
-        if(!isIndex(tNum) || tNum >= trace.transforms.length) {
+        if(!isIndex(tNum) || tNum >= transforms.length) {
             return false;
         }
-        moduleAttrs = (Registry.transformsRegistry[trace.transforms[tNum].type] || {}).attributes;
+        moduleAttrs = (Registry.transformsRegistry[transforms[tNum].type] || {}).attributes;
         valObject = moduleAttrs && moduleAttrs[parts[2]];
         i = 3; // start recursing only inside the transform
     }

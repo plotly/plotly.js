@@ -24,7 +24,7 @@ Box.selectPoints = require('./select');
 Box.moduleType = 'trace';
 Box.name = 'box';
 Box.basePlotModule = require('../../plots/cartesian');
-Box.categories = ['cartesian', 'svg', 'symbols', 'oriented', 'box-violin', 'showLegend', 'draggedPts'];
+Box.categories = ['cartesian', 'svg', 'symbols', 'oriented', 'box-violin', 'showLegend', 'draggedPts', 'boxLayout'];
 Box.meta = {
     description: [
         'In vertical (horizontal) box plots,',

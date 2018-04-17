@@ -12,11 +12,11 @@ var Registry = require('../registry');
 var SUBPLOT_PATTERN = require('./cartesian/constants').SUBPLOT_PATTERN;
 
 /**
- * Get calcdata traces(s) associated with a given subplot
+ * Get calcdata trace(s) associated with a given subplot
  *
- * @param {array} calcData (as in gd.calcdata)
- * @param {string} type subplot type
- * @param {string} subplotId subplot id to look for
+ * @param {array} calcData: as in gd.calcdata
+ * @param {string} type: subplot type
+ * @param {string} subplotId: subplot id to look for
  *
  * @return {array} array of calcdata traces
  */
@@ -36,20 +36,40 @@ exports.getSubplotCalcData = function(calcData, type, subplotId) {
 
     return subplotCalcData;
 };
-
+/**
+ * Get calcdata trace(s) that can be plotted with a given module
+ * NOTE: this isn't necessarily just exactly matching trace type,
+ * if multiple trace types use the same plotting routine, they will be
+ * collected here.
+ * In order to not plot the same thing multiple times, we return two arrays,
+ * the calcdata we *will* plot with this module, and the ones we *won't*
+ *
+ * @param {array} calcdata: as in gd.calcdata
+ * @param {object|string} typeOrModule: the plotting module, or its name
+ *
+ * @return {array[array]} [foundCalcdata, remainingCalcdata]
+ */
 exports.getModuleCalcData = function(calcdata, typeOrModule) {
     var moduleCalcData = [];
+    var remainingCalcData = [];
     var _module = typeof typeOrModule === 'string' ? Registry.getModule(typeOrModule) : typeOrModule;
-    if(!_module) return moduleCalcData;
+    if(!_module) return [moduleCalcData, calcdata];
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
+        if(trace.visible !== true) continue;
 
-        if((trace._module === _module) && (trace.visible === true)) moduleCalcData.push(cd);
+        // we use this to find data to plot - so if there's a .plot
+        if(trace._module.plot === _module.plot) {
+            moduleCalcData.push(cd);
+        }
+        else {
+            remainingCalcData.push(cd);
+        }
     }
 
-    return moduleCalcData;
+    return [moduleCalcData, remainingCalcData];
 };
 
 /**

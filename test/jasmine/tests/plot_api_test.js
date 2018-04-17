@@ -2319,6 +2319,90 @@ describe('Test plot api', function() {
             expect(gd.layout.shapes[2].yref).toEqual('y');
 
         });
+
+        it('removes direction names and showlegend from finance traces', function() {
+            var data = [{
+                type: 'ohlc', open: [1], high: [3], low: [0], close: [2],
+                increasing: {
+                    showlegend: true,
+                    name: 'Yeti goes up'
+                },
+                decreasing: {
+                    showlegend: 'legendonly',
+                    name: 'Yeti goes down'
+                },
+                name: 'Snowman'
+            }, {
+                type: 'candlestick', open: [1], high: [3], low: [0], close: [2],
+                increasing: {
+                    name: 'Bigfoot'
+                },
+                decreasing: {
+                    showlegend: false,
+                    name: 'Biggerfoot'
+                },
+                name: 'Nobody'
+            }, {
+                type: 'ohlc', open: [1], high: [3], low: [0], close: [2],
+                increasing: {
+                    name: 'Batman'
+                },
+                decreasing: {
+                    showlegend: true
+                },
+                name: 'Robin'
+            }, {
+                type: 'candlestick', open: [1], high: [3], low: [0], close: [2],
+                increasing: {
+                    showlegend: false,
+                },
+                decreasing: {
+                    name: 'Fred'
+                }
+            }, {
+                type: 'ohlc', open: [1], high: [3], low: [0], close: [2],
+                increasing: {
+                    showlegend: false,
+                    name: 'Gruyere heating up'
+                },
+                decreasing: {
+                    showlegend: false,
+                    name: 'Gruyere cooling off'
+                },
+                name: 'Emmenthaler'
+            }];
+
+            Plotly.plot(gd, data);
+
+            // Even if both showlegends are false, leave trace.showlegend out
+            // My rationale for this is that legends are sufficiently different
+            // now that it's worthwhile resetting their existence to default
+            gd.data.forEach(function(trace) {
+                expect(trace.increasing.name).toBeUndefined();
+                expect(trace.increasing.showlegend).toBeUndefined();
+                expect(trace.decreasing.name).toBeUndefined();
+                expect(trace.decreasing.showlegend).toBeUndefined();
+            });
+
+            // Both directions have names: ignore trace.name, as it
+            // had no effect on the output previously
+            // Ideally 'Yeti goes' would be smart enough to truncate
+            // at 'Yeti' but I don't see how to do that...
+            expect(gd.data[0].name).toBe('Yeti goes');
+            // One direction has empty or hidden name so use the other
+            // Note that even '' in both names would render trace.name impact-less
+            expect(gd.data[1].name).toBe('Bigfoot');
+
+            // One direction has a name but trace.name is there too:
+            // just use trace.name
+            expect(gd.data[2].name).toBe('Robin');
+
+            // No trace.name, only one direction name: use the direction name
+            expect(gd.data[3].name).toBe('Fred');
+
+            // both names exist but hidden from the legend: still look for common prefix
+            expect(gd.data[4].name).toBe('Gruyere');
+        });
     });
 
     describe('Plotly.newPlot', function() {
@@ -2824,6 +2908,53 @@ describe('Test plot api', function() {
             .then(done);
         });
 
+        it('can change data in candlesticks multiple times', function(done) {
+            // test that we've fixed the original issue in
+            // https://github.com/plotly/plotly.js/issues/2510
+
+            function assertCalc(open, high, low, close) {
+                expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({
+                    min: low,
+                    max: high,
+                    med: close,
+                    q1: Math.min(open, close),
+                    q3: Math.max(open, close),
+                    dir: close >= open ? 'increasing' : 'decreasing'
+                }));
+            }
+            var trace = {
+                type: 'candlestick',
+                low: [1],
+                open: [2],
+                close: [3],
+                high: [4]
+            };
+            Plotly.newPlot(gd, [trace])
+            .then(function() {
+                assertCalc(2, 4, 1, 3);
+
+                trace.low = [0];
+                return Plotly.react(gd, [trace]);
+            })
+            .then(function() {
+                assertCalc(2, 4, 0, 3);
+
+                trace.low = [-1];
+                return Plotly.react(gd, [trace]);
+            })
+            .then(function() {
+                assertCalc(2, 4, -1, 3);
+
+                trace.close = [1];
+                return Plotly.react(gd, [trace]);
+            })
+            .then(function() {
+                assertCalc(2, 4, -1, 1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('can change frames without redrawing', function(done) {
             var data = [{y: [1, 2, 3]}];
             var layout = {};
@@ -2954,10 +3085,7 @@ describe('Test plot api', function() {
                     return Plotly.react(gd, mock);
                 })
                 .then(function() {
-                    // TODO: remove this exemption once we fix finance
-                    if(mockSpec[0] !== 'finance_style') {
-                        expect(fullJson()).toEqual(initialJson);
-                    }
+                    expect(fullJson()).toEqual(initialJson);
                     countCalls({});
                 })
                 .catch(failTest)

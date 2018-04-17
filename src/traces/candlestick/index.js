@@ -8,13 +8,11 @@
 
 'use strict';
 
-var Registry = require('../../registry');
-
 module.exports = {
     moduleType: 'trace',
     name: 'candlestick',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'svg', 'showLegend', 'candlestick'],
+    categories: ['cartesian', 'svg', 'showLegend', 'candlestick', 'boxLayout'],
     meta: {
         description: [
             'The candlestick is a style of financial chart describing',
@@ -32,8 +30,13 @@ module.exports = {
     },
 
     attributes: require('./attributes'),
+    layoutAttributes: require('../box/layout_attributes'),
+    supplyLayoutDefaults: require('../box/layout_defaults').supplyLayoutDefaults,
+    setPositions: require('../box/set_positions').setPositions,
     supplyDefaults: require('./defaults'),
+    calc: require('./calc'),
+    plot: require('../box/plot').plot,
+    style: require('../box/style'),
+    hoverPoints: require('../ohlc/hover'),
+    selectPoints: require('../ohlc/select')
 };
-
-Registry.register(require('../box'));
-Registry.register(require('./transform'));

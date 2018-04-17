@@ -172,7 +172,7 @@ describe('Test box hover:', function() {
 
         return Plotly.plot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
-            assertHoverLabelContent(specs);
+            assertHoverLabelContent(specs, specs.desc);
         });
     }
 

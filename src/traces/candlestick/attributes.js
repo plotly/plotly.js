@@ -15,9 +15,6 @@ var boxAttrs = require('../box/attributes');
 
 function directionAttrs(lineColorDefault) {
     return {
-        name: OHLCattrs.increasing.name,
-        showlegend: OHLCattrs.increasing.showlegend,
-
         line: {
             color: extendFlat({}, boxAttrs.line.color, {dflt: lineColorDefault}),
             width: boxAttrs.line.width,

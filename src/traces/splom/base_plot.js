@@ -22,7 +22,7 @@ var SPLOM = 'splom';
 function plot(gd) {
     var fullLayout = gd._fullLayout;
     var _module = Registry.getModule(SPLOM);
-    var splomCalcData = getModuleCalcData(gd.calcdata, _module);
+    var splomCalcData = getModuleCalcData(gd.calcdata, _module)[0];
 
     prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
 

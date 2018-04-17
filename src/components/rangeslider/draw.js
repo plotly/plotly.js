@@ -455,7 +455,8 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
             id: id,
             plotgroup: plotgroup,
             xaxis: xa,
-            yaxis: ya
+            yaxis: ya,
+            isRangePlot: true
         };
 
         if(isMainPlot) mainplotinfo = plotinfo;
