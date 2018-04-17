@@ -19,9 +19,9 @@ function calc(gd, trace) {
 
     var tickLen = convertTickWidth(gd, xa, trace);
     var minDiff = trace._minDiff;
-    delete trace._minDiff;
+    trace._minDiff = null;
     var x = trace._xcalc;
-    delete trace._xcalc;
+    trace._xcalc = null;
 
     var cd = calcCommon(gd, trace, x, ya, ptFunc);
 
