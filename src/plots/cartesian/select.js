@@ -200,7 +200,18 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             dy = Math.abs(y1 - y0);
 
         if(mode === 'select') {
-            if(dy < Math.min(dx * 0.6, MINSELECT)) {
+            var direction = fullLayout.selectdirection;
+
+            if(fullLayout.selectdirection === 'any') {
+                if(dy < Math.min(dx * 0.6, MINSELECT)) direction = 'h';
+                else if(dx < Math.min(dy * 0.6, MINSELECT)) direction = 'v';
+                else direction = 'd';
+            }
+            else {
+                direction = fullLayout.selectdirection;
+            }
+
+            if(direction === 'h') {
                 // horizontal motion: make a vertical box
                 currentPolygon = [[x0, 0], [x0, ph], [x1, ph], [x1, 0]];
                 currentPolygon.xmin = Math.min(x0, x1);
@@ -214,7 +225,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
 
             }
-            else if(dx < Math.min(dy * 0.6, MINSELECT)) {
+            else if(direction === 'v') {
                 // vertical motion: make a horizontal box
                 currentPolygon = [[0, y0], [0, y1], [pw, y1], [pw, y0]];
                 currentPolygon.xmin = Math.min(0, pw);
@@ -226,7 +237,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     'M' + (x0 - MINSELECT) + ',' + (currentPolygon.ymax - 1) +
                     'v4h' + (2 * MINSELECT) + 'v-4Z');
             }
-            else {
+            else if(direction === 'd') {
                 // diagonal motion
                 currentPolygon = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
                 currentPolygon.xmin = Math.min(x0, x1);

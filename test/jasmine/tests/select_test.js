@@ -552,6 +552,69 @@ describe('@flaky Test select box and lasso in general:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should select the right data with the corresponding select direction', function(done) {
+
+        var gd = createGraphDiv();
+
+        // drag around just the center point, but if we have a selectdirection we may
+        // get either the ones to the left and right or above and below
+        var selectPath = [[175, 175], [225, 225]];
+
+        function selectDrag() {
+            resetEvents(gd);
+            drag(selectPath);
+            return selectedPromise;
+        }
+
+        function assertSelectedPointNumbers(pointNumbers) {
+            var pts = selectedData.points;
+            expect(pts.length).toBe(pointNumbers.length);
+            pointNumbers.forEach(function(pointNumber, i) {
+                expect(pts[i].pointNumber).toBe(pointNumber);
+            });
+        }
+
+        Plotly.newPlot(gd, [{
+            x: [1, 1, 1, 2, 2, 2, 3, 3, 3],
+            y: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+            mode: 'markers'
+        }], {
+            width: 400,
+            height: 400,
+            dragmode: 'select',
+            margin: {l: 100, r: 100, t: 100, b: 100},
+            xaxis: {range: [0, 4]},
+            yaxis: {range: [0, 4]}
+        })
+        .then(selectDrag)
+        .then(function() {
+            expect(gd._fullLayout.selectdirection).toBe('any');
+            assertSelectedPointNumbers([4]);
+
+            return Plotly.relayout(gd, {selectdirection: 'h'});
+        })
+        .then(selectDrag)
+        .then(function() {
+            assertSelectedPointNumbers([3, 4, 5]);
+
+            return Plotly.relayout(gd, {selectdirection: 'v'});
+        })
+        .then(selectDrag)
+        .then(function() {
+            assertSelectedPointNumbers([1, 4, 7]);
+
+            return Plotly.relayout(gd, {selectdirection: 'd'});
+        })
+        .then(selectDrag)
+        .then(function() {
+            assertSelectedPointNumbers([4]);
+        })
+        .catch(failTest)
+        .then(done);
+
+    });
+
 });
 
 describe('@flaky Test select box and lasso per trace:', function() {

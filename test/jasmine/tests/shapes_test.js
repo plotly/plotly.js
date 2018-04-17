@@ -1026,7 +1026,7 @@ describe('A fixed size shape', function() {
 
     var shapeAndResizeTypes = combinations(shapeTypes, resizeTypes);
     shapeAndResizeTypes.forEach(function(testCase) {
-        describe('of type ' + testCase.type + ' can be ' + testCase.resizeDisplayName, function() {
+        describe('@flaky of type ' + testCase.type + ' can be ' + testCase.resizeDisplayName, function() {
             resizeDirections.forEach(function(direction) {
                 it('over direction ' + direction, function(done) {
                     layout.shapes[0].type = testCase.type;
