@@ -215,7 +215,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var hoverdistance = fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance;
     var spikedistance = fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance;
 
-        // hoverData: the set of candidate points we've found to highlight
+    // hoverData: the set of candidate points we've found to highlight
     var hoverData = [],
 
         // searchData: the data to search in. Mostly this is just a copy of
@@ -265,7 +265,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         for(curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
             trace = cd[0].trace;
-            if(trace.hoverinfo !== 'skip' && subplots.indexOf(helpers.getSubplot(trace)) !== -1) {
+            if(trace.hoverinfo !== 'skip' && helpers.isTraceInSubplots(trace, subplots)) {
                 searchData.push(cd);
             }
         }
@@ -338,8 +338,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // the rest of this function from running and failing
         if(['carpet', 'contourcarpet'].indexOf(trace._module.name) !== -1) continue;
 
-        subplotId = helpers.getSubplot(trace);
-        subploti = subplots.indexOf(subplotId);
+        if(trace.type === 'splom') {
+            // splom traces do not generate overlay subplots,
+            // it is safe to assume here splom traces correspond to the 0th subplot
+            subploti = 0;
+            subplotId = subplots[subploti];
+        } else {
+            subplotId = helpers.getSubplot(trace);
+            subploti = subplots.indexOf(subplotId);
+        }
 
         // within one trace mode can sometimes be overridden
         mode = hovermode;

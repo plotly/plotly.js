@@ -87,7 +87,7 @@ function convertStyle(gd, trace) {
 }
 
 function convertMarkerStyle(trace) {
-    var count = trace._length || (trace.dimensions || [])._length;
+    var count = trace._length || trace._commonLength;
     var optsIn = trace.marker;
     var optsOut = {};
     var i;
@@ -401,6 +401,8 @@ function convertErrorBarPositions(gd, trace, positions) {
 
 module.exports = {
     convertStyle: convertStyle,
+    convertMarkerStyle: convertMarkerStyle,
+    convertMarkerSelection: convertMarkerSelection,
     convertLinePositions: convertLinePositions,
     convertErrorBarPositions: convertErrorBarPositions
 };

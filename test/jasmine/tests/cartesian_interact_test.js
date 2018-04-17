@@ -530,6 +530,30 @@ describe('axis zoom/pan and main plot zoom', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('updates linked axes when there are constraints (axes_scaleanchor mock)', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/axes_scaleanchor.json'));
+
+        function _assert(y3rng, y4rng) {
+            expect(gd._fullLayout.yaxis3.range).toBeCloseToArray(y3rng, 2, 'y3 rng');
+            expect(gd._fullLayout.yaxis4.range).toBeCloseToArray(y4rng, 2, 'y3 rng');
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            _assert([-0.36, 4.36], [-0.36, 4.36]);
+        })
+        .then(doDrag('x2y3', 'nsew', 0, 100))
+        .then(function() {
+            _assert([-0.36, 2], [0.82, 3.18]);
+        })
+        .then(doDrag('x2y4', 'nsew', 0, 50))
+        .then(function() {
+            _assert([0.41, 1.23], [1.18, 2]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Event data:', function() {

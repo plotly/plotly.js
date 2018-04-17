@@ -14,18 +14,20 @@ var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
-var axisIDs = require('../plots/cartesian/axis_ids');
 var Lib = require('../lib');
-var _ = Lib._;
 var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 
-var plots = module.exports = {};
+var axisIDs = require('../plots/cartesian/axis_ids');
+var sortBasePlotModules = require('./sort_modules').sortBasePlotModules;
 
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
 
 var relinkPrivateKeys = Lib.relinkPrivateKeys;
+var _ = Lib._;
+
+var plots = module.exports = {};
 
 // Expose registry methods on Plots for backward-compatibility
 Lib.extendFlat(plots, Registry);
@@ -287,6 +289,8 @@ plots.supplyDefaults = function(gd) {
     var newFullData = gd._fullData = [];
     var newData = gd.data || [];
 
+    var oldCalcdata = gd.calcdata || [];
+
     var context = gd._context || {};
 
     var i;
@@ -321,7 +325,6 @@ plots.supplyDefaults = function(gd) {
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
-
     if(oldFullLayout._initialAutoSizeIsDone) {
 
         // coerce the updated layout while preserving width and height
@@ -364,7 +367,11 @@ plots.supplyDefaults = function(gd) {
     // clear the lists of trace and baseplot modules, and subplots
     newFullLayout._modules = [];
     newFullLayout._basePlotModules = [];
-    newFullLayout._subplots = emptySubplotLists();
+    var subplots = newFullLayout._subplots = emptySubplotLists();
+
+    // initialize axis and subplot hash objects for splom-generated grids
+    var splomAxes = newFullLayout._splomAxes = {x: {}, y: {}};
+    var splomSubplots = newFullLayout._splomSubplots = {};
 
     // for traces to request a default rangeslider on their x axes
     // eg set `_requestRangeslider.x2 = true` for xaxis2
@@ -373,6 +380,24 @@ plots.supplyDefaults = function(gd) {
     // then do the data
     newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
     plots.supplyDataDefaults(newData, newFullData, newLayout, newFullLayout);
+
+    // redo grid size defaults with info about splom x/y axes,
+    // and fill in generated cartesian axes and subplots
+    var splomXa = Object.keys(splomAxes.x);
+    var splomYa = Object.keys(splomAxes.y);
+    if(splomXa.length > 1 && splomYa.length > 1) {
+        Registry.getComponentMethod('grid', 'sizeDefaults')(newLayout, newFullLayout);
+
+        for(i = 0; i < splomXa.length; i++) {
+            Lib.pushUnique(subplots.xaxis, splomXa[i]);
+        }
+        for(i = 0; i < splomYa.length; i++) {
+            Lib.pushUnique(subplots.yaxis, splomYa[i]);
+        }
+        for(var k in splomSubplots) {
+            Lib.pushUnique(subplots.cartesian, k);
+        }
+    }
 
     // attach helper method to check whether a plot type is present on graph
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
@@ -393,6 +418,17 @@ plots.supplyDefaults = function(gd) {
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData, gd._transitionData);
 
+    // turn on flag to optimize large splom-only graphs
+    // mostly by omitting SVG layers during Cartesian.drawFramework
+    newFullLayout._hasOnlyLargeSploms = (
+        newFullLayout._basePlotModules.length === 1 &&
+        newFullLayout._basePlotModules[0].name === 'splom' &&
+        splomXa.length > 15 &&
+        splomYa.length > 15 &&
+        newFullLayout.shapes.length === 0 &&
+        newFullLayout.images.length === 0
+    );
+
     // TODO remove in v2.0.0
     // add has-plot-type refs to fullLayout for backward compatibility
     newFullLayout._hasCartesian = newFullLayout._has('cartesian');
@@ -403,7 +439,7 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._hasPie = newFullLayout._has('pie');
 
     // clean subplots and other artifacts from previous plot calls
-    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
+    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
 
     // relink / initialize subplot axis objects
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
@@ -422,10 +458,10 @@ plots.supplyDefaults = function(gd) {
     }
 
     // update object references in calcdata
-    if((gd.calcdata || []).length === newFullData.length) {
+    if(oldCalcdata.length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
             var newTrace = newFullData[i];
-            var cd0 = gd.calcdata[i][0];
+            var cd0 = oldCalcdata[i][0];
             if(cd0 && cd0.trace) {
                 if(cd0.trace._hasCalcTransform) {
                     remapTransformedArrays(cd0, newTrace);
@@ -435,6 +471,9 @@ plots.supplyDefaults = function(gd) {
             }
         }
     }
+
+    // sort base plot modules for consistent ordering
+    newFullLayout._basePlotModules.sort(sortBasePlotModules);
 };
 
 /**
@@ -600,30 +639,28 @@ plots.createTransitionData = function(gd) {
 // whether a certain plot type is present on plot
 // or trace has a category
 plots._hasPlotType = function(category) {
-    // check plot
-    var basePlotModules = this._basePlotModules || [];
     var i;
 
+    // check base plot modules
+    var basePlotModules = this._basePlotModules || [];
     for(i = 0; i < basePlotModules.length; i++) {
-        var _module = basePlotModules[i];
-
-        if(_module.name === category) return true;
+        if(basePlotModules[i].name === category) return true;
     }
 
-    // check trace
+    // check trace modules
     var modules = this._modules || [];
-
     for(i = 0; i < modules.length; i++) {
-        var modulei = modules[i];
-        if(modulei.categories && modulei.categories.indexOf(category) >= 0) {
-            return true;
-        }
+        var name = modules[i].name;
+        if(name === category) return true;
+        // N.B. this is modules[i] along with 'categories' as a hash object
+        var _module = Registry.modules[name];
+        if(_module && _module.categories[category]) return true;
     }
 
     return false;
 };
 
-plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
     var i, j;
 
     var basePlotModules = oldFullLayout._basePlotModules || [];
@@ -631,7 +668,7 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
         var _module = basePlotModules[i];
 
         if(_module.clean) {
-            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
+            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
         }
     }
 
@@ -1068,9 +1105,9 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
     if(_module) {
         var basePlotModule = _module.basePlotModule;
         var subplotAttr = basePlotModule.attr;
-        if(subplotAttr) {
+        var subplotAttrs = basePlotModule.attributes;
+        if(subplotAttr && subplotAttrs) {
             var subplots = layout._subplots;
-            var subplotAttrs = basePlotModule.attributes;
             var subplotId = '';
 
             // TODO - currently if we draw an empty gl2d subplot, it draws

@@ -201,13 +201,12 @@ describe('relayout', function() {
     afterEach(destroyGraphDiv);
 
     it('should update main drag with correct', function(done) {
-
         function assertMainDrag(cursor, isActive) {
             expect(d3.selectAll('rect.nsewdrag').size()).toEqual(1, 'number of nodes');
-            var mainDrag = d3.select('rect.nsewdrag'),
-                node = mainDrag.node();
+            var mainDrag = d3.select('rect.nsewdrag');
+            var node = mainDrag.node();
 
-            expect(mainDrag.classed('cursor-' + cursor)).toBe(true, 'cursor ' + cursor);
+            expect(window.getComputedStyle(node).cursor).toBe(cursor, 'cursor ' + cursor);
             expect(node.style.pointerEvents).toEqual('all', 'pointer event');
             expect(!!node.onmousedown).toBe(isActive, 'mousedown handler');
         }

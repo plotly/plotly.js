@@ -75,7 +75,7 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
     }
 
     // if no error bars, markers or text, or fill to y=0 remove x padding
-    else if(!trace.error_y.visible && (
+    else if(!(trace.error_y || {}).visible && (
             ['tonexty', 'tozeroy'].indexOf(trace.fill) !== -1 ||
             (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace))
         )) {

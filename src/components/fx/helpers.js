@@ -11,8 +11,28 @@
 var Lib = require('../../lib');
 
 // look for either subplot or xaxis and yaxis attributes
+// does not handle splom case
 exports.getSubplot = function getSubplot(trace) {
     return trace.subplot || (trace.xaxis + trace.yaxis) || trace.geo;
+};
+
+// is trace in given list of subplots?
+// does handle splom case
+exports.isTraceInSubplots = function isTraceInSubplot(trace, subplots) {
+    if(trace.type === 'splom') {
+        var xaxes = trace.xaxes || [];
+        var yaxes = trace.yaxes || [];
+        for(var i = 0; i < xaxes.length; i++) {
+            for(var j = 0; j < yaxes.length; j++) {
+                if(subplots.indexOf(xaxes[i] + yaxes[j]) !== -1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    return subplots.indexOf(exports.getSubplot(trace)) !== -1;
 };
 
 // convenience functions for mapping all relevant axes
