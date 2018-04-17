@@ -1304,7 +1304,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
     });
 
     ['ohlc', 'candlestick'].forEach(function(type) {
-        it('should work for ' + type + ' traces', function(done) {
+        fit('should work for ' + type + ' traces', function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'open', 'high', 'low', 'close']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
@@ -1318,9 +1318,18 @@ describe('@flaky Test select box and lasso per trace:', function() {
             var r1 = 125;
             var rv1 = '2011-01-02 06:00';
             var t = 75;
-            var tv = 8;
-            var b = 325;
-            var bv = -2;
+            var tv = 7.565;
+            var b = 225;
+            var bv = -1.048;
+
+            function countUnSelectedPaths(selector) {
+                var unselected = 0;
+                d3.select(gd).selectAll(selector).each(function() {
+                    var opacity = this.style.opacity;
+                    if(opacity < 1) unselected++;
+                });
+                return unselected;
+            }
 
             Plotly.newPlot(gd, [{
                 type: type,
@@ -1334,7 +1343,6 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 height: 400,
                 margin: {l: 50, r: 50, t: 50, b: 50},
                 yaxis: {range: [-3, 9]},
-                xaxis: {rangeslider: {visible: false}},
                 dragmode: 'lasso'
             })
             .then(function() {
@@ -1347,6 +1355,8 @@ describe('@flaky Test select box and lasso per trace:', function() {
                             [lv0, lv0, rv0, rv0, lv0],
                             [tv, bv, bv, tv, tv]
                         ]);
+                        expect(countUnSelectedPaths('.cartesianlayer .trace path')).toBe(2);
+                        expect(countUnSelectedPaths('.rangeslider-rangeplot .trace path')).toBe(0);
                     },
                     null, LASSOEVENTS, type + ' lasso'
                 );
