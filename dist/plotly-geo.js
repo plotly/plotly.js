@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v1.35.2
+* plotly.js (geo) v1.36.0
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -11194,7 +11194,7 @@ var _$interactions_146 = {
     DESELECTDIM: 0.2
 };
 
-var _$is_array_167 = {};
+var _$is_array_168 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -11215,12 +11215,12 @@ var dv = (typeof DataView === 'undefined') ?
     function() {} :
     DataView;
 
-_$is_array_167.isTypedArray = function(a) {
+_$is_array_168.isTypedArray = function(a) {
     return ab.isView(a) && !(a instanceof dv);
 };
 
-_$is_array_167.isArrayOrTypedArray = function(a) {
-    return Array.isArray(a) || _$is_array_167.isTypedArray(a);
+_$is_array_168.isArrayOrTypedArray = function(a) {
+    return Array.isArray(a) || _$is_array_168.isTypedArray(a);
 };
 
 /**
@@ -11235,7 +11235,7 @@ _$is_array_167.isArrayOrTypedArray = function(a) {
 'use strict';
 
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
-var _$isPlainObject_168 = function isPlainObject(obj) {
+var _$isPlainObject_169 = function isPlainObject(obj) {
 
     // We need to be a little less strict in the `imagetest` container because
     // of how async image requests are handled.
@@ -11251,7 +11251,7 @@ var _$isPlainObject_168 = function isPlainObject(obj) {
     );
 };
 
-var _$extend_158 = {};
+var _$extend_159 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -11263,7 +11263,7 @@ var _$extend_158 = {};
 
 'use strict';
 
-/* removed: var _$isPlainObject_168 = require('./is_plain_object.js'); */;
+/* removed: var _$isPlainObject_169 = require('./is_plain_object.js'); */;
 var isArray = Array.isArray;
 
 function primitivesLoopSplice(source, target) {
@@ -11280,19 +11280,19 @@ function primitivesLoopSplice(source, target) {
     return true;
 }
 
-_$extend_158.extendFlat = function() {
+_$extend_159.extendFlat = function() {
     return _extend(arguments, false, false, false);
 };
 
-_$extend_158.extendDeep = function() {
+_$extend_159.extendDeep = function() {
     return _extend(arguments, true, false, false);
 };
 
-_$extend_158.extendDeepAll = function() {
+_$extend_159.extendDeepAll = function() {
     return _extend(arguments, true, true, false);
 };
 
-_$extend_158.extendDeepNoArrays = function() {
+_$extend_159.extendDeepNoArrays = function() {
     return _extend(arguments, true, false, true);
 };
 
@@ -11345,12 +11345,12 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
             }
 
             // recurse if we're merging plain objects or arrays
-            else if(isDeep && copy && (_$isPlainObject_168(copy) || (copyIsArray = isArray(copy)))) {
+            else if(isDeep && copy && (_$isPlainObject_169(copy) || (copyIsArray = isArray(copy)))) {
                 if(copyIsArray) {
                     copyIsArray = false;
                     clone = src && isArray(src) ? src : [];
                 } else {
-                    clone = src && _$isPlainObject_168(src) ? src : {};
+                    clone = src && _$isPlainObject_169(src) ? src : {};
                 }
 
                 // never move original objects, clone them
@@ -11385,7 +11385,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
  * so we get the right experience without any config argument.
  */
 
-var _$plot_config_199 = {
+var _$plot_config_200 = {
 
     // no interactivity, for export or image generation
     staticPlot: false,
@@ -11553,7 +11553,7 @@ var _$plot_config_199 = {
     locales: {}
 };
 
-var _$loggers_171 = {};
+var _$loggers_172 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -11566,9 +11566,9 @@ var _$loggers_171 = {};
 
 /* eslint-disable no-console */
 
-/* removed: var _$plot_config_199 = require('../plot_api/plot_config'); */;
+/* removed: var _$plot_config_200 = require('../plot_api/plot_config'); */;
 
-var loggers = _$loggers_171 = {};
+var loggers = _$loggers_172 = {};
 
 /**
  * ------------------------------------------
@@ -11577,7 +11577,7 @@ var loggers = _$loggers_171 = {};
  */
 
 loggers.log = function() {
-    if(_$plot_config_199.logging > 1) {
+    if(_$plot_config_200.logging > 1) {
         var messages = ['LOG:'];
 
         for(var i = 0; i < arguments.length; i++) {
@@ -11589,7 +11589,7 @@ loggers.log = function() {
 };
 
 loggers.warn = function() {
-    if(_$plot_config_199.logging > 0) {
+    if(_$plot_config_200.logging > 0) {
         var messages = ['WARN:'];
 
         for(var i = 0; i < arguments.length; i++) {
@@ -11601,7 +11601,7 @@ loggers.warn = function() {
 };
 
 loggers.error = function() {
-    if(_$plot_config_199.logging > 0) {
+    if(_$plot_config_200.logging > 0) {
         var messages = ['ERROR:'];
 
         for(var i = 0; i < arguments.length; i++) {
@@ -11640,7 +11640,7 @@ function apply(f, args) {
 // Simple helper functions
 // none of these need any external deps
 
-var _$noop_175 = function noop() {};
+var _$noop_176 = function noop() {};
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -11665,7 +11665,7 @@ var _$noop_175 = function noop() {};
  *  ref to array (now possibly containing one more item)
  *
  */
-var _$pushUnique_179 = function pushUnique(array, item) {
+var _$pushUnique_180 = function pushUnique(array, item) {
     if(item instanceof RegExp) {
         var itemStr = item.toString(),
             i;
@@ -11802,7 +11802,7 @@ var _$attributes_79 = {
 
 /* removed: var _$attributes_79 = require('../components/fx/attributes'); */;
 
-var _$attributes_206 = {
+var _$attributes_207 = {
     type: {
         valType: 'enumerated',
         
@@ -12108,7 +12108,7 @@ var _$layout_attributes_248 = {
     }
 };
 
-var _$registry_258 = {};
+var _$registry_259 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -12119,29 +12119,29 @@ var _$registry_258 = {};
 
 'use strict';
 
-/* removed: var _$loggers_171 = require('./lib/loggers'); */;
-/* removed: var _$noop_175 = require('./lib/noop'); */;
-/* removed: var _$pushUnique_179 = require('./lib/push_unique'); */;
-/* removed: var _$isPlainObject_168 = require('./lib/is_plain_object'); */;
-/* removed: var _$extend_158 = require('./lib/extend'); */;
+/* removed: var _$loggers_172 = require('./lib/loggers'); */;
+/* removed: var _$noop_176 = require('./lib/noop'); */;
+/* removed: var _$pushUnique_180 = require('./lib/push_unique'); */;
+/* removed: var _$isPlainObject_169 = require('./lib/is_plain_object'); */;
+/* removed: var _$extend_159 = require('./lib/extend'); */;
 
-/* removed: var _$attributes_206 = require('./plots/attributes'); */;
+/* removed: var _$attributes_207 = require('./plots/attributes'); */;
 /* removed: var _$layout_attributes_248 = require('./plots/layout_attributes'); */;
 
-var extendFlat = _$extend_158.extendFlat;
-var extendDeepAll = _$extend_158.extendDeepAll;
+var extendFlat = _$extend_159.extendFlat;
+var extendDeepAll = _$extend_159.extendDeepAll;
 
-_$registry_258.modules = {};
-_$registry_258.allCategories = {};
-_$registry_258.allTypes = [];
-_$registry_258.subplotsRegistry = {};
-_$registry_258.transformsRegistry = {};
-_$registry_258.componentsRegistry = {};
-_$registry_258.layoutArrayContainers = [];
-_$registry_258.layoutArrayRegexes = [];
-_$registry_258.traceLayoutAttributes = {};
-_$registry_258.localeRegistry = {};
-_$registry_258.apiMethodRegistry = {};
+_$registry_259.modules = {};
+_$registry_259.allCategories = {};
+_$registry_259.allTypes = [];
+_$registry_259.subplotsRegistry = {};
+_$registry_259.transformsRegistry = {};
+_$registry_259.componentsRegistry = {};
+_$registry_259.layoutArrayContainers = [];
+_$registry_259.layoutArrayRegexes = [];
+_$registry_259.traceLayoutAttributes = {};
+_$registry_259.localeRegistry = {};
+_$registry_259.apiMethodRegistry = {};
 
 /**
  * Top-level register routine, exported as Plotly.register
@@ -12182,7 +12182,7 @@ _$registry_258.apiMethodRegistry = {};
  *  - fn {function} : the api method called with Register.call();
  *
  */
-_$registry_258.register = function register(_modules) {
+_$registry_259.register = function register(_modules) {
     if(!_modules) {
         throw new Error('No argument passed to Plotly.register.');
     } else if(_modules && !Array.isArray(_modules)) {
@@ -12211,7 +12211,7 @@ _$registry_258.register = function register(_modules) {
                 break;
             case 'apiMethod':
                 var name = newModule.name;
-                _$registry_258.apiMethodRegistry[name] = newModule.fn;
+                _$registry_259.apiMethodRegistry[name] = newModule.fn;
                 break;
             default:
                 throw new Error('Invalid module was attempted to be registered!');
@@ -12227,8 +12227,8 @@ _$registry_258.register = function register(_modules) {
  * @return {object}
  *  module object corresponding to trace type
  */
-_$registry_258.getModule = function(trace) {
-    var _module = _$registry_258.modules[getTraceType(trace)];
+_$registry_259.getModule = function(trace) {
+    var _module = _$registry_259.modules[getTraceType(trace)];
     if(!_module) return false;
     return _module._module;
 };
@@ -12242,20 +12242,20 @@ _$registry_258.getModule = function(trace) {
  *  category in question
  * @return {boolean}
  */
-_$registry_258.traceIs = function(traceType, category) {
+_$registry_259.traceIs = function(traceType, category) {
     traceType = getTraceType(traceType);
 
     // old plot.ly workspace hack, nothing to see here
     if(traceType === 'various') return false;
 
-    var _module = _$registry_258.modules[traceType];
+    var _module = _$registry_259.modules[traceType];
 
     if(!_module) {
         if(traceType && traceType !== 'area') {
-            _$loggers_171.log('Unrecognized trace type ' + traceType + '.');
+            _$loggers_172.log('Unrecognized trace type ' + traceType + '.');
         }
 
-        _module = _$registry_258.modules[_$attributes_206.type.dflt];
+        _module = _$registry_259.modules[_$attributes_207.type.dflt];
     }
 
     return !!_module.categories[category];
@@ -12272,7 +12272,7 @@ _$registry_258.traceIs = function(traceType, category) {
  * @return {array}
  *  array of matching indices. If none found, returns []
  */
-_$registry_258.getTransformIndices = function(data, type) {
+_$registry_259.getTransformIndices = function(data, type) {
     var indices = [];
     var transforms = data.transforms || [];
     for(var i = 0; i < transforms.length; i++) {
@@ -12292,7 +12292,7 @@ _$registry_258.getTransformIndices = function(data, type) {
  *  type of trace to test
  * @return {boolean}
  */
-_$registry_258.hasTransform = function(data, type) {
+_$registry_259.hasTransform = function(data, type) {
     var transforms = data.transforms || [];
     for(var i = 0; i < transforms.length; i++) {
         if(transforms[i].type === type) {
@@ -12312,11 +12312,11 @@ _$registry_258.hasTransform = function(data, type) {
  *  name of component module method
  * @return {function}
  */
-_$registry_258.getComponentMethod = function(name, method) {
-    var _module = _$registry_258.componentsRegistry[name];
+_$registry_259.getComponentMethod = function(name, method) {
+    var _module = _$registry_259.componentsRegistry[name];
 
-    if(!_module) return _$noop_175;
-    return _module[method] || _$noop_175;
+    if(!_module) return _$noop_176;
+    return _module[method] || _$noop_176;
 };
 
 /**
@@ -12326,10 +12326,10 @@ _$registry_258.getComponentMethod = function(name, method) {
  * @param {...array} args : arguments passed to api method
  * @return {any} : returns api method output
  */
-_$registry_258.call = function() {
+_$registry_259.call = function() {
     var name = arguments[0];
     var args = [].slice.call(arguments, 1);
-    return _$registry_258.apiMethodRegistry[name].apply(null, args);
+    return _$registry_259.apiMethodRegistry[name].apply(null, args);
 };
 
 function registerTraceModule(_module) {
@@ -12337,33 +12337,33 @@ function registerTraceModule(_module) {
     var categoriesIn = _module.categories;
     var meta = _module.meta;
 
-    if(_$registry_258.modules[thisType]) {
-        _$loggers_171.log('Type ' + thisType + ' already registered');
+    if(_$registry_259.modules[thisType]) {
+        _$loggers_172.log('Type ' + thisType + ' already registered');
         return;
     }
 
-    if(!_$registry_258.subplotsRegistry[_module.basePlotModule.name]) {
+    if(!_$registry_259.subplotsRegistry[_module.basePlotModule.name]) {
         registerSubplot(_module.basePlotModule);
     }
 
     var categoryObj = {};
     for(var i = 0; i < categoriesIn.length; i++) {
         categoryObj[categoriesIn[i]] = true;
-        _$registry_258.allCategories[categoriesIn[i]] = true;
+        _$registry_259.allCategories[categoriesIn[i]] = true;
     }
 
-    _$registry_258.modules[thisType] = {
+    _$registry_259.modules[thisType] = {
         _module: _module,
         categories: categoryObj
     };
 
     if(meta && Object.keys(meta).length) {
-        _$registry_258.modules[thisType].meta = meta;
+        _$registry_259.modules[thisType].meta = meta;
     }
 
-    _$registry_258.allTypes.push(thisType);
+    _$registry_259.allTypes.push(thisType);
 
-    for(var componentName in _$registry_258.componentsRegistry) {
+    for(var componentName in _$registry_259.componentsRegistry) {
         mergeComponentAttrsToTrace(componentName, thisType);
     }
 
@@ -12373,15 +12373,15 @@ function registerTraceModule(_module) {
      * (at least after https://github.com/plotly/documentation/issues/202 gets done!)
      */
     if(_module.layoutAttributes) {
-        extendFlat(_$registry_258.traceLayoutAttributes, _module.layoutAttributes);
+        extendFlat(_$registry_259.traceLayoutAttributes, _module.layoutAttributes);
     }
 }
 
 function registerSubplot(_module) {
     var plotType = _module.name;
 
-    if(_$registry_258.subplotsRegistry[plotType]) {
-        _$loggers_171.log('Plot type ' + plotType + ' already registered.');
+    if(_$registry_259.subplotsRegistry[plotType]) {
+        _$loggers_172.log('Plot type ' + plotType + ' already registered.');
         return;
     }
 
@@ -12391,9 +12391,9 @@ function registerSubplot(_module) {
     findArrayRegexps(_module);
 
     // not sure what's best for the 'cartesian' type at this point
-    _$registry_258.subplotsRegistry[plotType] = _module;
+    _$registry_259.subplotsRegistry[plotType] = _module;
 
-    for(var componentName in _$registry_258.componentsRegistry) {
+    for(var componentName in _$registry_259.componentsRegistry) {
         mergeComponentAttrsToSubplot(componentName, _module.name);
     }
 }
@@ -12404,24 +12404,24 @@ function registerComponentModule(_module) {
     }
 
     var name = _module.name;
-    _$registry_258.componentsRegistry[name] = _module;
+    _$registry_259.componentsRegistry[name] = _module;
 
     if(_module.layoutAttributes) {
         if(_module.layoutAttributes._isLinkedToArray) {
-            _$pushUnique_179(_$registry_258.layoutArrayContainers, name);
+            _$pushUnique_180(_$registry_259.layoutArrayContainers, name);
         }
         findArrayRegexps(_module);
     }
 
-    for(var traceType in _$registry_258.modules) {
+    for(var traceType in _$registry_259.modules) {
         mergeComponentAttrsToTrace(name, traceType);
     }
 
-    for(var subplotName in _$registry_258.subplotsRegistry) {
+    for(var subplotName in _$registry_259.subplotsRegistry) {
         mergeComponentAttrsToSubplot(name, subplotName);
     }
 
-    for(var transformType in _$registry_258.transformsRegistry) {
+    for(var transformType in _$registry_259.transformsRegistry) {
         mergeComponentAttrsToTransform(name, transformType);
     }
 
@@ -12443,22 +12443,22 @@ function registerTransformModule(_module) {
         throw new Error(prefix + ' is missing a *transform* or *calcTransform* method.');
     }
     if(hasTransform && hasCalcTransform) {
-        _$loggers_171.log([
+        _$loggers_172.log([
             prefix + ' has both a *transform* and *calcTransform* methods.',
             'Please note that all *transform* methods are executed',
             'before all *calcTransform* methods.'
         ].join(' '));
     }
-    if(!_$isPlainObject_168(_module.attributes)) {
-        _$loggers_171.log(prefix + ' registered without an *attributes* object.');
+    if(!_$isPlainObject_169(_module.attributes)) {
+        _$loggers_172.log(prefix + ' registered without an *attributes* object.');
     }
     if(typeof _module.supplyDefaults !== 'function') {
-        _$loggers_171.log(prefix + ' registered without a *supplyDefaults* method.');
+        _$loggers_172.log(prefix + ' registered without a *supplyDefaults* method.');
     }
 
-    _$registry_258.transformsRegistry[_module.name] = _module;
+    _$registry_259.transformsRegistry[_module.name] = _module;
 
-    for(var componentName in _$registry_258.componentsRegistry) {
+    for(var componentName in _$registry_259.componentsRegistry) {
         mergeComponentAttrsToTransform(componentName, _module.name);
     }
 }
@@ -12472,7 +12472,7 @@ function registerLocale(_module) {
     var hasDict = newDict && Object.keys(newDict).length;
     var hasFormat = newFormat && Object.keys(newFormat).length;
 
-    var locales = _$registry_258.localeRegistry;
+    var locales = _$registry_259.localeRegistry;
 
     var localeObj = locales[locale];
     if(!localeObj) locales[locale] = localeObj = {};
@@ -12504,37 +12504,37 @@ function findArrayRegexps(_module) {
         var arrayAttrRegexps = _module.layoutAttributes._arrayAttrRegexps;
         if(arrayAttrRegexps) {
             for(var i = 0; i < arrayAttrRegexps.length; i++) {
-                _$pushUnique_179(_$registry_258.layoutArrayRegexes, arrayAttrRegexps[i]);
+                _$pushUnique_180(_$registry_259.layoutArrayRegexes, arrayAttrRegexps[i]);
             }
         }
     }
 }
 
 function mergeComponentAttrsToTrace(componentName, traceType) {
-    var componentSchema = _$registry_258.componentsRegistry[componentName].schema;
+    var componentSchema = _$registry_259.componentsRegistry[componentName].schema;
     if(!componentSchema || !componentSchema.traces) return;
 
     var traceAttrs = componentSchema.traces[traceType];
     if(traceAttrs) {
-        extendDeepAll(_$registry_258.modules[traceType]._module.attributes, traceAttrs);
+        extendDeepAll(_$registry_259.modules[traceType]._module.attributes, traceAttrs);
     }
 }
 
 function mergeComponentAttrsToTransform(componentName, transformType) {
-    var componentSchema = _$registry_258.componentsRegistry[componentName].schema;
+    var componentSchema = _$registry_259.componentsRegistry[componentName].schema;
     if(!componentSchema || !componentSchema.transforms) return;
 
     var transformAttrs = componentSchema.transforms[transformType];
     if(transformAttrs) {
-        extendDeepAll(_$registry_258.transformsRegistry[transformType].attributes, transformAttrs);
+        extendDeepAll(_$registry_259.transformsRegistry[transformType].attributes, transformAttrs);
     }
 }
 
 function mergeComponentAttrsToSubplot(componentName, subplotName) {
-    var componentSchema = _$registry_258.componentsRegistry[componentName].schema;
+    var componentSchema = _$registry_259.componentsRegistry[componentName].schema;
     if(!componentSchema || !componentSchema.subplots) return;
 
-    var subplotModule = _$registry_258.subplotsRegistry[subplotName];
+    var subplotModule = _$registry_259.subplotsRegistry[subplotName];
     var subplotAttrs = subplotModule.layoutAttributes;
     var subplotAttr = subplotModule.attr === 'subplot' ? subplotModule.name : subplotModule.attr;
     if(Array.isArray(subplotAttr)) subplotAttr = subplotAttr[0];
@@ -12561,7 +12561,7 @@ function getTraceType(traceType) {
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../registry'); */;
+/* removed: var _$registry_259 = require('../registry'); */;
 
 /*
  * containerArrayMatch: does this attribute string point into a
@@ -12576,9 +12576,9 @@ function getTraceType(traceType) {
  *  if the whole array) and the property within that (or '' if the whole array
  *  or the whole object)
  */
-var _$containerArrayMatch_193 = function containerArrayMatch(astr) {
-    var rootContainers = _$registry_258.layoutArrayContainers,
-        regexpContainers = _$registry_258.layoutArrayRegexes,
+var _$containerArrayMatch_194 = function containerArrayMatch(astr) {
+    var rootContainers = _$registry_259.layoutArrayContainers,
+        regexpContainers = _$registry_259.layoutArrayRegexes,
         rootPart = astr.split('[')[0],
         arrayStr,
         match;
@@ -12619,9 +12619,9 @@ var _$containerArrayMatch_193 = function containerArrayMatch(astr) {
 'use strict';
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
-var isArrayOrTypedArray = _$is_array_167.isArrayOrTypedArray;
-/* removed: var _$isPlainObject_168 = require('./is_plain_object'); */;
-/* removed: var _$containerArrayMatch_193 = require('../plot_api/container_array_match'); */;
+var isArrayOrTypedArray = _$is_array_168.isArrayOrTypedArray;
+/* removed: var _$isPlainObject_169 = require('./is_plain_object'); */;
+/* removed: var _$containerArrayMatch_194 = require('../plot_api/container_array_match'); */;
 
 /**
  * convert a string s (such as 'xaxis.range[0]')
@@ -12637,7 +12637,7 @@ var isArrayOrTypedArray = _$is_array_167.isArrayOrTypedArray;
  * you can't do nestedProperty(obj, 'arr[-1]').set(5)
  * but you can do nestedProperty(obj, 'arr').set([5, 5, 5])
  */
-var _$nestedProperty_174 = function nestedProperty(container, propStr) {
+var _$nestedProperty_175 = function nestedProperty(container, propStr) {
     if(_$fastIsnumeric_11(propStr)) propStr = String(propStr);
     else if(typeof propStr !== 'string' ||
             propStr.substr(propStr.length - 4) === '[-1]') {
@@ -12748,7 +12748,7 @@ var INFO_PATTERNS = /(^|\.)((domain|range)(\.[xy])?|args|parallels)$/;
 var ARGS_PATTERN = /(^|\.)args\[/;
 function isDeletable(val, propStr) {
     if(!emptyObj(val) ||
-        (_$isPlainObject_168(val) && propStr.charAt(propStr.length - 1) === ']') ||
+        (_$isPlainObject_169(val) && propStr.charAt(propStr.length - 1) === ']') ||
         (propStr.match(ARGS_PATTERN) && val !== undefined)
     ) {
         return false;
@@ -12757,7 +12757,7 @@ function isDeletable(val, propStr) {
 
     if(propStr.match(INFO_PATTERNS)) return true;
 
-    var match = _$containerArrayMatch_193(propStr);
+    var match = _$containerArrayMatch_194(propStr);
     // if propStr matches the container array itself, index is an empty string
     // otherwise we've matched something inside the container array, which may
     // still be a data array.
@@ -12910,7 +12910,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-var _$regex_181 = {};
+var _$regex_182 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -12930,7 +12930,7 @@ var _$regex_181 = {};
  *      eg counterRegex('scene', '.annotations') for scene2.annotations etc.
  * @param {boolean} openEnded: if true, the string may continue past the match.
  */
-_$regex_181.counter = function(head, tail, openEnded) {
+_$regex_182.counter = function(head, tail, openEnded) {
     var fullTail = (tail || '') + (openEnded ? '' : '$');
     if(head === 'xy') {
         return new RegExp('^x([2-9]|[1-9][0-9]+)?y([2-9]|[1-9][0-9]+)?' + fullTail);
@@ -12938,7 +12938,7 @@ _$regex_181.counter = function(head, tail, openEnded) {
     return new RegExp('^' + head + '([2-9]|[1-9][0-9]+)?' + fullTail);
 };
 
-var _$coerce_154 = {};
+var _$coerce_155 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -12953,16 +12953,16 @@ var _$coerce_154 = {};
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 /* removed: var _$tinycolor_26 = require('tinycolor2'); */;
 
-/* removed: var _$attributes_206 = require('../plots/attributes'); */;
+/* removed: var _$attributes_207 = require('../plots/attributes'); */;
 /* removed: var _$getScale_58 = require('../components/colorscale/get_scale'); */;
 var colorscaleNames = Object.keys(_$scales_64);
-/* removed: var _$nestedProperty_174 = require('./nested_property'); */;
-var counterRegex = _$regex_181.counter;
+/* removed: var _$nestedProperty_175 = require('./nested_property'); */;
+var counterRegex = _$regex_182.counter;
 var DESELECTDIM = _$interactions_146.DESELECTDIM;
 var wrap180 = _$angles_152.wrap180;
-var __isArrayOrTypedArray_154 = _$is_array_167.isArrayOrTypedArray;
+var __isArrayOrTypedArray_155 = _$is_array_168.isArrayOrTypedArray;
 
-_$coerce_154.valObjectMeta = {
+_$coerce_155.valObjectMeta = {
     data_array: {
         // You can use *dflt=[] to force said array to exist though.
         
@@ -12970,7 +12970,7 @@ _$coerce_154.valObjectMeta = {
         
         coerceFunction: function(v, propOut, dflt) {
             // TODO maybe `v: {type: 'float32', vals: [/* ... */]}` also
-            if(__isArrayOrTypedArray_154(v)) propOut.set(v);
+            if(__isArrayOrTypedArray_155(v)) propOut.set(v);
             else if(dflt !== undefined) propOut.set(dflt);
         }
     },
@@ -13093,8 +13093,9 @@ _$coerce_154.valObjectMeta = {
         
         
         
-        coerceFunction: function(v, propOut, dflt) {
-            if(typeof v === 'string' && counterRegex(dflt).test(v)) {
+        coerceFunction: function(v, propOut, dflt, opts) {
+            var regex = opts.regex || counterRegex(dflt);
+            if(typeof v === 'string' && regex.test(v)) {
                 propOut.set(v);
                 return;
             }
@@ -13148,9 +13149,11 @@ _$coerce_154.valObjectMeta = {
     info_array: {
         
         
-        // set dimensions=2 for a 2D array
+        // set `dimensions=2` for a 2D array or '1-2' for either
         // `items` may be a single object instead of an array, in which case
         // `freeLength` must be true.
+        // if `dimensions='1-2'` and items is a 1D array, then the value can
+        // either be a matching 1D array or an array of such matching 1D arrays
         
         coerceFunction: function(v, propOut, dflt, opts) {
 
@@ -13161,12 +13164,12 @@ _$coerce_154.valObjectMeta = {
 
                 if(dflt === undefined) dflt = opts.dflt;
 
-                _$coerce_154.valObjectMeta[opts.valType].coerceFunction(v, propPart, dflt, opts);
+                _$coerce_155.valObjectMeta[opts.valType].coerceFunction(v, propPart, dflt, opts);
 
                 return out;
             }
 
-            var twoD = opts.dimensions === 2;
+            var twoD = opts.dimensions === 2 || (opts.dimensions === '1-2' && Array.isArray(v) && Array.isArray(v[0]));
 
             if(!Array.isArray(v)) {
                 propOut.set(dflt);
@@ -13176,19 +13179,28 @@ _$coerce_154.valObjectMeta = {
             var items = opts.items;
             var vOut = [];
             var arrayItems = Array.isArray(items);
-            var len = arrayItems ? items.length : v.length;
+            var arrayItems2D = arrayItems && twoD && Array.isArray(items[0]);
+            var innerItemsOnly = twoD && arrayItems && !arrayItems2D;
+            var len = (arrayItems && !innerItemsOnly) ? items.length : v.length;
 
-            var i, j, len2, vNew;
+            var i, j, row, item, len2, vNew;
 
             dflt = Array.isArray(dflt) ? dflt : [];
 
             if(twoD) {
                 for(i = 0; i < len; i++) {
                     vOut[i] = [];
-                    var row = Array.isArray(v[i]) ? v[i] : [];
-                    len2 = arrayItems ? items[i].length : row.length;
+                    row = Array.isArray(v[i]) ? v[i] : [];
+                    if(innerItemsOnly) len2 = items.length;
+                    else if(arrayItems) len2 = items[i].length;
+                    else len2 = row.length;
+
                     for(j = 0; j < len2; j++) {
-                        vNew = coercePart(row[j], arrayItems ? items[i][j] : items, (dflt[i] || [])[j]);
+                        if(innerItemsOnly) item = items[j];
+                        else if(arrayItems) item = items[i][j];
+                        else item = items;
+
+                        vNew = coercePart(row[j], item, (dflt[i] || [])[j]);
                         if(vNew !== undefined) vOut[i][j] = vNew;
                     }
                 }
@@ -13219,12 +13231,12 @@ _$coerce_154.valObjectMeta = {
                         return false;
                     }
                     for(var j = 0; j < v[i].length; j++) {
-                        if(!_$coerce_154.validate(v[i][j], arrayItems ? items[i][j] : items)) {
+                        if(!_$coerce_155.validate(v[i][j], arrayItems ? items[i][j] : items)) {
                             return false;
                         }
                     }
                 }
-                else if(!_$coerce_154.validate(v[i], arrayItems ? items[i] : items)) return false;
+                else if(!_$coerce_155.validate(v[i], arrayItems ? items[i] : items)) return false;
             }
 
             return true;
@@ -13244,10 +13256,10 @@ _$coerce_154.valObjectMeta = {
  *      if dflt is provided as an argument to lib.coerce it takes precedence
  *      as a convenience, returns the value it finally set
  */
-_$coerce_154.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var opts = _$nestedProperty_174(attributes, attribute).get(),
-        propIn = _$nestedProperty_174(containerIn, attribute),
-        propOut = _$nestedProperty_174(containerOut, attribute),
+_$coerce_155.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
+    var opts = _$nestedProperty_175(attributes, attribute).get(),
+        propIn = _$nestedProperty_175(containerIn, attribute),
+        propOut = _$nestedProperty_175(containerOut, attribute),
         v = propIn.get();
 
     if(dflt === undefined) dflt = opts.dflt;
@@ -13258,12 +13270,12 @@ _$coerce_154.coerce = function(containerIn, containerOut, attributes, attribute,
      * individual form (eg. some array vals can be numbers, even if the
      * single values must be color strings)
      */
-    if(opts.arrayOk && __isArrayOrTypedArray_154(v)) {
+    if(opts.arrayOk && __isArrayOrTypedArray_155(v)) {
         propOut.set(v);
         return v;
     }
 
-    _$coerce_154.valObjectMeta[opts.valType].coerceFunction(v, propOut, dflt, opts);
+    _$coerce_155.valObjectMeta[opts.valType].coerceFunction(v, propOut, dflt, opts);
 
     return propOut.get();
 };
@@ -13275,9 +13287,9 @@ _$coerce_154.coerce = function(containerIn, containerOut, attributes, attribute,
  * returns attribute default if user input it not valid or
  * returns false if there is no user input.
  */
-_$coerce_154.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var propIn = _$nestedProperty_174(containerIn, attribute),
-        propOut = _$coerce_154.coerce(containerIn, containerOut, attributes, attribute, dflt),
+_$coerce_155.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
+    var propIn = _$nestedProperty_175(containerIn, attribute),
+        propOut = _$coerce_155.coerce(containerIn, containerOut, attributes, attribute, dflt),
         valIn = propIn.get();
 
     return (valIn !== undefined && valIn !== null) ? propOut : false;
@@ -13288,7 +13300,7 @@ _$coerce_154.coerce2 = function(containerIn, containerOut, attributes, attribute
  *
  * 'coerce' is a lib.coerce wrapper with implied first three arguments
  */
-_$coerce_154.coerceFont = function(coerce, attr, dfltObj) {
+_$coerce_155.coerceFont = function(coerce, attr, dfltObj) {
     var out = {};
 
     dfltObj = dfltObj || {};
@@ -13308,11 +13320,9 @@ _$coerce_154.coerceFont = function(coerce, attr, dfltObj) {
  * @param {object} layoutOut : full layout object (require _dataLength ref)
  * @return {any} : the coerced value
  */
-_$coerce_154.coerceHoverinfo = function(traceIn, traceOut, layoutOut) {
+_$coerce_155.coerceHoverinfo = function(traceIn, traceOut, layoutOut) {
     var moduleAttrs = traceOut._module.attributes;
-    var attrs = moduleAttrs.hoverinfo ?
-        {hoverinfo: moduleAttrs.hoverinfo} :
-        _$attributes_206;
+    var attrs = moduleAttrs.hoverinfo ? moduleAttrs : _$attributes_207;
 
     var valObj = attrs.hoverinfo;
     var dflt;
@@ -13326,7 +13336,7 @@ _$coerce_154.coerceHoverinfo = function(traceIn, traceOut, layoutOut) {
         dflt = flags.join('+');
     }
 
-    return _$coerce_154.coerce(traceIn, traceOut, attrs, 'hoverinfo', dflt);
+    return _$coerce_155.coerce(traceIn, traceOut, attrs, 'hoverinfo', dflt);
 };
 
 /** Coerce shortcut for [un]selected.marker.opacity,
@@ -13340,7 +13350,7 @@ _$coerce_154.coerceHoverinfo = function(traceIn, traceOut, layoutOut) {
  * @param {object} traceOut : fullData item
  * @param {function} coerce : lib.coerce wrapper with implied first three arguments
  */
-_$coerce_154.coerceSelectionMarkerOpacity = function(traceOut, coerce) {
+_$coerce_155.coerceSelectionMarkerOpacity = function(traceOut, coerce) {
     if(!traceOut.marker) return;
 
     var mo = traceOut.marker.opacity;
@@ -13355,7 +13365,7 @@ _$coerce_154.coerceSelectionMarkerOpacity = function(traceOut, coerce) {
     //
     // Only give [un]selected.marker.opacity a default value if you don't
     // set any other [un]selected attributes.
-    if(!__isArrayOrTypedArray_154(mo) && !traceOut.selected && !traceOut.unselected) {
+    if(!__isArrayOrTypedArray_155(mo) && !traceOut.selected && !traceOut.unselected) {
         smoDflt = mo;
         usmoDflt = DESELECTDIM * mo;
     }
@@ -13364,10 +13374,10 @@ _$coerce_154.coerceSelectionMarkerOpacity = function(traceOut, coerce) {
     coerce('unselected.marker.opacity', usmoDflt);
 };
 
-_$coerce_154.validate = function(value, opts) {
-    var valObjectDef = _$coerce_154.valObjectMeta[opts.valType];
+_$coerce_155.validate = function(value, opts) {
+    var valObjectDef = _$coerce_155.valObjectMeta[opts.valType];
 
-    if(opts.arrayOk && __isArrayOrTypedArray_154(value)) return true;
+    if(opts.arrayOk && __isArrayOrTypedArray_155(value)) return true;
 
     if(valObjectDef.validateFunction) {
         return valObjectDef.validateFunction(value, opts);
@@ -13397,12 +13407,12 @@ _$coerce_154.validate = function(value, opts) {
  * sanitized modulus function that always returns in the range [0, d)
  * rather than (-d, 0] if v is negative
  */
-var _$mod_173 = function mod(v, d) {
+var _$mod_174 = function mod(v, d) {
     var out = v % d;
     return out < 0 ? out + d : out;
 };
 
-var _$dates_155 = {};
+var _$dates_156 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -13417,18 +13427,18 @@ var _$dates_155 = {};
 /* removed: var _$d3_8 = require('d3'); */;
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$loggers_171 = require('./loggers'); */;
-/* removed: var _$mod_173 = require('./mod'); */;
+/* removed: var _$loggers_172 = require('./loggers'); */;
+/* removed: var _$mod_174 = require('./mod'); */;
 
 /* removed: var _$numerical_147 = require('../constants/numerical'); */;
-var __BADNUM_155 = _$numerical_147.BADNUM;
+var __BADNUM_156 = _$numerical_147.BADNUM;
 var ONEDAY = _$numerical_147.ONEDAY;
 var ONEHOUR = _$numerical_147.ONEHOUR;
 var ONEMIN = _$numerical_147.ONEMIN;
 var ONESEC = _$numerical_147.ONESEC;
 var EPOCHJD = _$numerical_147.EPOCHJD;
 
-/* removed: var _$registry_258 = require('../registry'); */;
+/* removed: var _$registry_259 = require('../registry'); */;
 
 var utcFormat = _$d3_8.time.format.utc;
 
@@ -13442,7 +13452,7 @@ var YFIRST = new Date().getFullYear() - 70;
 function isWorldCalendar(calendar) {
     return (
         calendar &&
-        _$registry_258.componentsRegistry.calendars &&
+        _$registry_259.componentsRegistry.calendars &&
         typeof calendar === 'string' && calendar !== 'gregorian'
     );
 }
@@ -13452,11 +13462,11 @@ function isWorldCalendar(calendar) {
  *
  * bool sunday is for week ticks, shift it to a Sunday.
  */
-_$dates_155.dateTick0 = function(calendar, sunday) {
+_$dates_156.dateTick0 = function(calendar, sunday) {
     if(isWorldCalendar(calendar)) {
         return sunday ?
-            _$registry_258.getComponentMethod('calendars', 'CANONICAL_SUNDAY')[calendar] :
-            _$registry_258.getComponentMethod('calendars', 'CANONICAL_TICK')[calendar];
+            _$registry_259.getComponentMethod('calendars', 'CANONICAL_SUNDAY')[calendar] :
+            _$registry_259.getComponentMethod('calendars', 'CANONICAL_TICK')[calendar];
     }
     else {
         return sunday ? '2000-01-02' : '2000-01-01';
@@ -13466,9 +13476,9 @@ _$dates_155.dateTick0 = function(calendar, sunday) {
 /*
  * dfltRange: for each calendar, give a valid default range
  */
-_$dates_155.dfltRange = function(calendar) {
+_$dates_156.dfltRange = function(calendar) {
     if(isWorldCalendar(calendar)) {
-        return _$registry_258.getComponentMethod('calendars', 'DFLTRANGE')[calendar];
+        return _$registry_259.getComponentMethod('calendars', 'DFLTRANGE')[calendar];
     }
     else {
         return ['2000-01-01', '2001-01-01'];
@@ -13476,7 +13486,7 @@ _$dates_155.dfltRange = function(calendar) {
 };
 
 // is an object a javascript date?
-_$dates_155.isJSDate = function(v) {
+_$dates_156.isJSDate = function(v) {
     return typeof v === 'object' && v !== null && typeof v.getTime === 'function';
 };
 
@@ -13538,17 +13548,17 @@ var MIN_MS, MAX_MS;
  * currently (2016) this range is:
  *   1946-2045
  */
-_$dates_155.dateTime2ms = function(s, calendar) {
+_$dates_156.dateTime2ms = function(s, calendar) {
     // first check if s is a date object
-    if(_$dates_155.isJSDate(s)) {
+    if(_$dates_156.isJSDate(s)) {
         // Convert to the UTC milliseconds that give the same
         // hours as this date has in the local timezone
         s = Number(s) - s.getTimezoneOffset() * ONEMIN;
         if(s >= MIN_MS && s <= MAX_MS) return s;
-        return __BADNUM_155;
+        return __BADNUM_156;
     }
     // otherwise only accept strings and numbers
-    if(typeof s !== 'string' && typeof s !== 'number') return __BADNUM_155;
+    if(typeof s !== 'string' && typeof s !== 'number') return __BADNUM_156;
 
     s = String(s);
 
@@ -13565,7 +13575,7 @@ _$dates_155.dateTime2ms = function(s, calendar) {
     var isChinese = isWorld && calendar.substr(0, 7) === 'chinese';
 
     var match = s.match(isChinese ? DATETIME_REGEXP_CN : DATETIME_REGEXP);
-    if(!match) return __BADNUM_155;
+    if(!match) return __BADNUM_156;
     var y = match[1],
         m = match[3] || '1',
         d = Number(match[5] || 1),
@@ -13575,12 +13585,12 @@ _$dates_155.dateTime2ms = function(s, calendar) {
 
     if(isWorld) {
         // disallow 2-digit years for world calendars
-        if(y.length === 2) return __BADNUM_155;
+        if(y.length === 2) return __BADNUM_156;
         y = Number(y);
 
         var cDate;
         try {
-            var calInstance = _$registry_258.getComponentMethod('calendars', 'getCal')(calendar);
+            var calInstance = _$registry_259.getComponentMethod('calendars', 'getCal')(calendar);
             if(isChinese) {
                 var isIntercalary = m.charAt(m.length - 1) === 'i';
                 m = parseInt(m, 10);
@@ -13590,9 +13600,9 @@ _$dates_155.dateTime2ms = function(s, calendar) {
                 cDate = calInstance.newDate(y, Number(m), d);
             }
         }
-        catch(e) { return __BADNUM_155; } // Invalid ... date
+        catch(e) { return __BADNUM_156; } // Invalid ... date
 
-        if(!cDate) return __BADNUM_155;
+        if(!cDate) return __BADNUM_156;
 
         return ((cDate.toJD() - EPOCHJD) * ONEDAY) +
             (H * ONEHOUR) + (M * ONEMIN) + (S * ONESEC);
@@ -13613,18 +13623,18 @@ _$dates_155.dateTime2ms = function(s, calendar) {
     var date = new Date(Date.UTC(2000, m, d, H, M));
     date.setUTCFullYear(y);
 
-    if(date.getUTCMonth() !== m) return __BADNUM_155;
-    if(date.getUTCDate() !== d) return __BADNUM_155;
+    if(date.getUTCMonth() !== m) return __BADNUM_156;
+    if(date.getUTCDate() !== d) return __BADNUM_156;
 
     return date.getTime() + S * ONESEC;
 };
 
-MIN_MS = _$dates_155.MIN_MS = _$dates_155.dateTime2ms('-9999');
-MAX_MS = _$dates_155.MAX_MS = _$dates_155.dateTime2ms('9999-12-31 23:59:59.9999');
+MIN_MS = _$dates_156.MIN_MS = _$dates_156.dateTime2ms('-9999');
+MAX_MS = _$dates_156.MAX_MS = _$dates_156.dateTime2ms('9999-12-31 23:59:59.9999');
 
 // is string s a date? (see above)
-_$dates_155.isDateTime = function(s, calendar) {
-    return (_$dates_155.dateTime2ms(s, calendar) !== __BADNUM_155);
+_$dates_156.isDateTime = function(s, calendar) {
+    return (_$dates_156.dateTime2ms(s, calendar) !== __BADNUM_156);
 };
 
 // pad a number with zeroes, to given # of digits before the decimal point
@@ -13643,20 +13653,20 @@ function lpad(val, digits) {
 var NINETYDAYS = 90 * ONEDAY;
 var THREEHOURS = 3 * ONEHOUR;
 var FIVEMIN = 5 * ONEMIN;
-_$dates_155.ms2DateTime = function(ms, r, calendar) {
-    if(typeof ms !== 'number' || !(ms >= MIN_MS && ms <= MAX_MS)) return __BADNUM_155;
+_$dates_156.ms2DateTime = function(ms, r, calendar) {
+    if(typeof ms !== 'number' || !(ms >= MIN_MS && ms <= MAX_MS)) return __BADNUM_156;
 
     if(!r) r = 0;
 
-    var msecTenths = Math.floor(_$mod_173(ms + 0.05, 1) * 10),
+    var msecTenths = Math.floor(_$mod_174(ms + 0.05, 1) * 10),
         msRounded = Math.round(ms - msecTenths / 10),
         dateStr, h, m, s, msec10, d;
 
     if(isWorldCalendar(calendar)) {
         var dateJD = Math.floor(msRounded / ONEDAY) + EPOCHJD,
-            timeMs = Math.floor(_$mod_173(ms, ONEDAY));
+            timeMs = Math.floor(_$mod_174(ms, ONEDAY));
         try {
-            dateStr = _$registry_258.getComponentMethod('calendars', 'getCal')(calendar)
+            dateStr = _$registry_259.getComponentMethod('calendars', 'getCal')(calendar)
                 .fromJD(dateJD).formatDate('yyyy-mm-dd');
         }
         catch(e) {
@@ -13704,10 +13714,10 @@ _$dates_155.ms2DateTime = function(ms, r, calendar) {
 // because that's how people mostly use javasript date objects.
 // Clip one extra day off our date range though so we can't get
 // thrown beyond the range by the timezone shift.
-_$dates_155.ms2DateTimeLocal = function(ms) {
-    if(!(ms >= MIN_MS + ONEDAY && ms <= MAX_MS - ONEDAY)) return __BADNUM_155;
+_$dates_156.ms2DateTimeLocal = function(ms) {
+    if(!(ms >= MIN_MS + ONEDAY && ms <= MAX_MS - ONEDAY)) return __BADNUM_156;
 
-    var msecTenths = Math.floor(_$mod_173(ms + 0.05, 1) * 10),
+    var msecTenths = Math.floor(_$mod_174(ms + 0.05, 1) * 10),
         d = new Date(Math.round(ms - msecTenths / 10)),
         dateStr = _$d3_8.time.format('%Y-%m-%d')(d),
         h = d.getHours(),
@@ -13740,23 +13750,23 @@ function includeTime(dateStr, h, m, s, msec10) {
 // normalize date format to date string, in case it starts as
 // a Date object or milliseconds
 // optional dflt is the return value if cleaning fails
-_$dates_155.cleanDate = function(v, dflt, calendar) {
-    if(_$dates_155.isJSDate(v) || typeof v === 'number') {
+_$dates_156.cleanDate = function(v, dflt, calendar) {
+    if(_$dates_156.isJSDate(v) || typeof v === 'number') {
         // do not allow milliseconds (old) or jsdate objects (inherently
         // described as gregorian dates) with world calendars
         if(isWorldCalendar(calendar)) {
-            _$loggers_171.error('JS Dates and milliseconds are incompatible with world calendars', v);
+            _$loggers_172.error('JS Dates and milliseconds are incompatible with world calendars', v);
             return dflt;
         }
 
         // NOTE: if someone puts in a year as a number rather than a string,
         // this will mistakenly convert it thinking it's milliseconds from 1970
         // that is: '2012' -> Jan. 1, 2012, but 2012 -> 2012 epoch milliseconds
-        v = _$dates_155.ms2DateTimeLocal(+v);
+        v = _$dates_156.ms2DateTimeLocal(+v);
         if(!v && dflt !== undefined) return dflt;
     }
-    else if(!_$dates_155.isDateTime(v, calendar)) {
-        _$loggers_171.error('unrecognized date', v);
+    else if(!_$dates_156.isDateTime(v, calendar)) {
+        _$loggers_172.error('unrecognized date', v);
         return dflt;
     }
     return v;
@@ -13786,7 +13796,7 @@ function modDateFormat(fmt, x, formatter, calendar) {
 
     if(isWorldCalendar(calendar)) {
         try {
-            fmt = _$registry_258.getComponentMethod('calendars', 'worldCalFmt')(fmt, x, calendar);
+            fmt = _$registry_259.getComponentMethod('calendars', 'worldCalFmt')(fmt, x, calendar);
         }
         catch(e) {
             return 'Invalid';
@@ -13803,10 +13813,10 @@ function modDateFormat(fmt, x, formatter, calendar) {
  */
 var MAXSECONDS = [59, 59.9, 59.99, 59.999, 59.9999];
 function formatTime(x, tr) {
-    var timePart = _$mod_173(x + 0.05, ONEDAY);
+    var timePart = _$mod_174(x + 0.05, ONEDAY);
 
     var timeStr = lpad(Math.floor(timePart / ONEHOUR), 2) + ':' +
-        lpad(_$mod_173(Math.floor(timePart / ONEMIN), 60), 2);
+        lpad(_$mod_174(Math.floor(timePart / ONEMIN), 60), 2);
 
     if(tr !== 'M') {
         if(!_$fastIsnumeric_11(tr)) tr = 0; // should only be 'S'
@@ -13826,7 +13836,7 @@ function formatTime(x, tr) {
          * say we round seconds but floor everything else. BUT that means
          * we need to never round up to 60 seconds, ie 23:59:60
          */
-        var sec = Math.min(_$mod_173(x / ONESEC, 60), MAXSECONDS[tr]);
+        var sec = Math.min(_$mod_174(x / ONESEC, 60), MAXSECONDS[tr]);
 
         var secStr = (100 + sec).toFixed(tr).substr(1);
         if(tr > 0) {
@@ -13855,7 +13865,7 @@ function formatTime(x, tr) {
  * the axis may choose to strip things after it when they don't change from
  * one tick to the next (as it does with automatic formatting)
  */
-_$dates_155.formatDate = function(x, fmt, tr, formatter, calendar, extraFormat) {
+_$dates_156.formatDate = function(x, fmt, tr, formatter, calendar, extraFormat) {
     calendar = isWorldCalendar(calendar) && calendar;
 
     if(!fmt) {
@@ -13899,19 +13909,19 @@ _$dates_155.formatDate = function(x, fmt, tr, formatter, calendar, extraFormat) 
  * and ticks on these days incrementing by month would be very unusual
  */
 var THREEDAYS = 3 * ONEDAY;
-_$dates_155.incrementMonth = function(ms, dMonth, calendar) {
+_$dates_156.incrementMonth = function(ms, dMonth, calendar) {
     calendar = isWorldCalendar(calendar) && calendar;
 
     // pull time out and operate on pure dates, then add time back at the end
     // this gives maximum precision - not that we *normally* care if we're
     // incrementing by month, but better to be safe!
-    var timeMs = _$mod_173(ms, ONEDAY);
+    var timeMs = _$mod_174(ms, ONEDAY);
     ms = Math.round(ms - timeMs);
 
     if(calendar) {
         try {
             var dateJD = Math.round(ms / ONEDAY) + EPOCHJD,
-                calInstance = _$registry_258.getComponentMethod('calendars', 'getCal')(calendar),
+                calInstance = _$registry_259.getComponentMethod('calendars', 'getCal')(calendar),
                 cDate = calInstance.fromJD(dateJD);
 
             if(dMonth % 12) calInstance.add(cDate, dMonth, 'm');
@@ -13920,7 +13930,7 @@ _$dates_155.incrementMonth = function(ms, dMonth, calendar) {
             return (cDate.toJD() - EPOCHJD) * ONEDAY + timeMs;
         }
         catch(e) {
-            _$loggers_171.error('invalid ms ' + ms + ' in calendar ' + calendar);
+            _$loggers_172.error('invalid ms ' + ms + ' in calendar ' + calendar);
             // then keep going in gregorian even though the result will be 'Invalid'
         }
     }
@@ -13935,7 +13945,7 @@ _$dates_155.incrementMonth = function(ms, dMonth, calendar) {
  * data: array of millisecond values
  * calendar (string) the calendar to test against
  */
-_$dates_155.findExactDates = function(data, calendar) {
+_$dates_156.findExactDates = function(data, calendar) {
     var exactYears = 0,
         exactMonths = 0,
         exactDays = 0,
@@ -13945,7 +13955,7 @@ _$dates_155.findExactDates = function(data, calendar) {
 
     var calInstance = (
         isWorldCalendar(calendar) &&
-        _$registry_258.getComponentMethod('calendars', 'getCal')(calendar)
+        _$registry_259.getComponentMethod('calendars', 'getCal')(calendar)
     );
 
     for(var i = 0; i < data.length; i++) {
@@ -14012,7 +14022,7 @@ _$dates_155.findExactDates = function(data, calendar) {
  * The goal is to just reuse memory to avoid a bit of excessive garbage
  * collection.
  */
-var _$ensureArray_156 = function ensureArray(out, n) {
+var _$ensureArray_157 = function ensureArray(out, n) {
     if(!Array.isArray(out)) out = [];
 
     // If too long, truncate. (If too short, it will grow
@@ -14055,7 +14065,7 @@ var _$ensureArray_156 = function ensureArray(out, n) {
  * @param {array} array base array
  * @return {array} new filtered array
  */
-var _$filterUnique_159 = function filterUnique(array) {
+var _$filterUnique_160 = function filterUnique(array) {
     var seen = {},
         out = [],
         j = 0;
@@ -14089,7 +14099,7 @@ var _$filterUnique_159 = function filterUnique(array) {
  *  @return {array of objects} of length <= container
  *
  */
-var _$filterVisible_160 = function filterVisible(container) {
+var _$filterVisible_161 = function filterVisible(container) {
     var filterFn = isCalcData(container) ? calcDataFilter : baseFilter;
     var out = [];
 
@@ -14118,7 +14128,7 @@ function isCalcData(cont) {
     );
 }
 
-var _$geometry2d_163 = {};
+var _$geometry2d_164 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -14129,13 +14139,13 @@ var _$geometry2d_163 = {};
 
 'use strict';
 
-/* removed: var _$mod_173 = require('./mod'); */;
+/* removed: var _$mod_174 = require('./mod'); */;
 
 /*
  * look for intersection of two line segments
  *   (1->2 and 3->4) - returns array [x,y] if they do, null if not
  */
-_$geometry2d_163.segmentsIntersect = segmentsIntersect;
+_$geometry2d_164.segmentsIntersect = segmentsIntersect;
 function segmentsIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     var a = x2 - x1,
         b = x3 - x1,
@@ -14158,7 +14168,7 @@ function segmentsIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
 /*
  * find the minimum distance between two line segments (1->2 and 3->4)
  */
-_$geometry2d_163.segmentDistance = function segmentDistance(x1, y1, x2, y2, x3, y3, x4, y4) {
+_$geometry2d_164.segmentDistance = function segmentDistance(x1, y1, x2, y2, x3, y3, x4, y4) {
     if(segmentsIntersect(x1, y1, x2, y2, x3, y3, x4, y4)) return 0;
 
     // the two segments and their lengths squared
@@ -14211,7 +14221,7 @@ function perpDistance2(xab, yab, l2_ab, xac, yac) {
 var locationCache, workingPath, workingTextWidth;
 
 // turn a path and position along it into x, y, and angle for the given text
-_$geometry2d_163.getTextLocation = function getTextLocation(path, totalPathLen, positionOnPath, textWidth) {
+_$geometry2d_164.getTextLocation = function getTextLocation(path, totalPathLen, positionOnPath, textWidth) {
     if(path !== workingPath || textWidth !== workingTextWidth) {
         locationCache = {};
         workingPath = path;
@@ -14223,13 +14233,13 @@ _$geometry2d_163.getTextLocation = function getTextLocation(path, totalPathLen, 
 
     // for the angle, use points on the path separated by the text width
     // even though due to curvature, the text will cover a bit more than that
-    var p0 = path.getPointAtLength(_$mod_173(positionOnPath - textWidth / 2, totalPathLen));
-    var p1 = path.getPointAtLength(_$mod_173(positionOnPath + textWidth / 2, totalPathLen));
+    var p0 = path.getPointAtLength(_$mod_174(positionOnPath - textWidth / 2, totalPathLen));
+    var p1 = path.getPointAtLength(_$mod_174(positionOnPath + textWidth / 2, totalPathLen));
     // note: atan handles 1/0 nicely
     var theta = Math.atan((p1.y - p0.y) / (p1.x - p0.x));
     // center the text at 2/3 of the center position plus 1/3 the p0/p1 midpoint
     // that's the average position of this segment, assuming it's roughly quadratic
-    var pCenter = path.getPointAtLength(_$mod_173(positionOnPath, totalPathLen));
+    var pCenter = path.getPointAtLength(_$mod_174(positionOnPath, totalPathLen));
     var x = (pCenter.x * 4 + p0.x + p1.x) / 6;
     var y = (pCenter.y * 4 + p0.y + p1.y) / 6;
 
@@ -14238,7 +14248,7 @@ _$geometry2d_163.getTextLocation = function getTextLocation(path, totalPathLen, 
     return out;
 };
 
-_$geometry2d_163.clearLocationCache = function() {
+_$geometry2d_164.clearLocationCache = function() {
     workingPath = null;
 };
 
@@ -14266,7 +14276,7 @@ _$geometry2d_163.clearLocationCache = function() {
  * the path). Note that if a path enters, exits, and re-enters the plot, we
  * will not capture this behavior.
  */
-_$geometry2d_163.getVisibleSegment = function getVisibleSegment(path, bounds, buffer) {
+_$geometry2d_164.getVisibleSegment = function getVisibleSegment(path, bounds, buffer) {
     var left = bounds.left;
     var right = bounds.right;
     var top = bounds.top;
@@ -14327,7 +14337,7 @@ _$geometry2d_163.getVisibleSegment = function getVisibleSegment(path, bounds, bu
  *  - {Number} iterationLimit
  * @return {SVGPoint}
  */
-_$geometry2d_163.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
+_$geometry2d_164.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
     opts = opts || {};
 
     var pathLength = opts.pathLength || path.getTotalLength();
@@ -14382,7 +14392,7 @@ _$geometry2d_163.findPointOnPath = function findPointOnPath(path, val, coord, op
  *
  * @returns {HTMLDivElement} the DOM element of the graph
  */
-var _$get_graph_div_164 = function(gd) {
+var _$get_graph_div_165 = function(gd) {
     var gdElement;
 
     if(typeof gd === 'string') {
@@ -14414,7 +14424,7 @@ var _$get_graph_div_164 = function(gd) {
 // Simple helper functions
 // none of these need any external deps
 
-var _$identity_165 = function identity(d) { return d; };
+var _$identity_166 = function identity(d) { return d; };
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -14426,7 +14436,7 @@ var _$identity_165 = function identity(d) { return d; };
 
 'use strict';
 
-/* removed: var _$nestedProperty_174 = require('./nested_property'); */;
+/* removed: var _$nestedProperty_175 = require('./nested_property'); */;
 
 var SIMPLE_PROPERTY_REGEX = /^\w*$/;
 
@@ -14448,13 +14458,13 @@ var VALUE = 2;
 var BOTH = 3;
 var UNSET = 4;
 
-var _$keyedContainer_169 = function keyedContainer(baseObj, path, keyName, valueName) {
+var _$keyedContainer_170 = function keyedContainer(baseObj, path, keyName, valueName) {
     keyName = keyName || 'name';
     valueName = valueName || 'value';
     var i, arr;
     var changeTypes = {};
 
-    if(path && path.length) { arr = _$nestedProperty_174(baseObj, path).get();
+    if(path && path.length) { arr = _$nestedProperty_175(baseObj, path).get();
     } else {
         arr = baseObj;
     }
@@ -14480,7 +14490,7 @@ var _$keyedContainer_169 = function keyedContainer(baseObj, path, keyName, value
                 changeType = changeType | BOTH;
                 idx = arr.length;
                 indexLookup[name] = idx;
-            } else if(value !== (isSimpleValueProp ? arr[idx][valueName] : _$nestedProperty_174(arr[idx], valueName).get())) {
+            } else if(value !== (isSimpleValueProp ? arr[idx][valueName] : _$nestedProperty_175(arr[idx], valueName).get())) {
                 changeType = changeType | VALUE;
             }
 
@@ -14490,7 +14500,7 @@ var _$keyedContainer_169 = function keyedContainer(baseObj, path, keyName, value
             if(isSimpleValueProp) {
                 newValue[valueName] = value;
             } else {
-                _$nestedProperty_174(newValue, valueName).set(value);
+                _$nestedProperty_175(newValue, valueName).set(value);
             }
 
             // If it's not an unset, force that bit to be unset. This is all related to the fact
@@ -14511,7 +14521,7 @@ var _$keyedContainer_169 = function keyedContainer(baseObj, path, keyName, value
             } else if(isSimpleValueProp) {
                 return arr[idx][valueName];
             } else {
-                return _$nestedProperty_174(arr[idx], valueName).get();
+                return _$nestedProperty_175(arr[idx], valueName).get();
             }
         },
         rename: function(name, newName) {
@@ -14552,7 +14562,7 @@ var _$keyedContainer_169 = function keyedContainer(baseObj, path, keyName, value
             } else {
                 // Perform this update *strictly* so we can check whether the result's
                 // been pruned. If so, it's a removal. If not, it's a value unset only.
-                _$nestedProperty_174(object, valueName).set(null);
+                _$nestedProperty_175(object, valueName).set(null);
 
                 // Now check if the top level nested property has any keys left. If so,
                 // the object still has values so we only want to unset the key. If not,
@@ -14579,7 +14589,7 @@ var _$keyedContainer_169 = function keyedContainer(baseObj, path, keyName, value
                         if(isSimpleValueProp) {
                             update[astr + '.' + valueName] = (changeTypes[idx] & UNSET) ? null : arr[idx][valueName];
                         } else {
-                            update[astr + '.' + valueName] = (changeTypes[idx] & UNSET) ? null : _$nestedProperty_174(arr[idx], valueName).get();
+                            update[astr + '.' + valueName] = (changeTypes[idx] & UNSET) ? null : _$nestedProperty_175(arr[idx], valueName).get();
                         }
                     }
                 } else {
@@ -14605,7 +14615,7 @@ var _$keyedContainer_169 = function keyedContainer(baseObj, path, keyName, value
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../registry'); */;
+/* removed: var _$registry_259 = require('../registry'); */;
 
 /**
  * localize: translate a string for the current locale
@@ -14616,7 +14626,7 @@ var _$keyedContainer_169 = function keyedContainer(baseObj, path, keyName, value
  *  gd._context.locales or globally via Plotly.register
  * @param {string} s: the string to translate
  */
-var _$localize_170 = function localize(gd, s) {
+var _$localize_171 = function localize(gd, s) {
     var locale = gd._context.locale;
 
     /*
@@ -14638,7 +14648,7 @@ var _$localize_170 = function localize(gd, s) {
                 var out = dict[s];
                 if(out) return out;
             }
-            locales = _$registry_258.localeRegistry;
+            locales = _$registry_259.localeRegistry;
         }
 
         var baseLocale = locale.split('-')[0];
@@ -14649,7 +14659,7 @@ var _$localize_170 = function localize(gd, s) {
     return s;
 };
 
-var _$matrix_172 = {};
+var _$matrix_173 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -14662,7 +14672,7 @@ var _$matrix_172 = {};
 'use strict';
 
 
-_$matrix_172.init2dArray = function(rowLength, colLength) {
+_$matrix_173.init2dArray = function(rowLength, colLength) {
     var array = new Array(rowLength);
     for(var i = 0; i < rowLength; i++) array[i] = new Array(colLength);
     return array;
@@ -14673,7 +14683,7 @@ _$matrix_172.init2dArray = function(rowLength, colLength) {
  * http://stackoverflow.com/questions/17428587/
  * transposing-a-2d-array-in-javascript
  */
-_$matrix_172.transposeRagged = function(z) {
+_$matrix_173.transposeRagged = function(z) {
     var maxlen = 0,
         zlen = z.length,
         i,
@@ -14691,7 +14701,7 @@ _$matrix_172.transposeRagged = function(z) {
 };
 
 // our own dot function so that we don't need to include numeric
-_$matrix_172.dot = function(x, y) {
+_$matrix_173.dot = function(x, y) {
     if(!(x.length && y.length) || x.length !== y.length) return null;
 
     var len = x.length,
@@ -14701,13 +14711,13 @@ _$matrix_172.dot = function(x, y) {
     if(x[0].length) {
         // mat-vec or mat-mat
         out = new Array(len);
-        for(i = 0; i < len; i++) out[i] = _$matrix_172.dot(x[i], y);
+        for(i = 0; i < len; i++) out[i] = _$matrix_173.dot(x[i], y);
     }
     else if(y[0].length) {
         // vec-mat
-        var yTranspose = _$matrix_172.transposeRagged(y);
+        var yTranspose = _$matrix_173.transposeRagged(y);
         out = new Array(yTranspose.length);
-        for(i = 0; i < yTranspose.length; i++) out[i] = _$matrix_172.dot(x, yTranspose[i]);
+        for(i = 0; i < yTranspose.length; i++) out[i] = _$matrix_173.dot(x, yTranspose[i]);
     }
     else {
         // vec-vec
@@ -14719,12 +14729,12 @@ _$matrix_172.dot = function(x, y) {
 };
 
 // translate by (x,y)
-_$matrix_172.translationMatrix = function(x, y) {
+_$matrix_173.translationMatrix = function(x, y) {
     return [[1, 0, x], [0, 1, y], [0, 0, 1]];
 };
 
 // rotate by alpha around (0,0)
-_$matrix_172.rotationMatrix = function(alpha) {
+_$matrix_173.rotationMatrix = function(alpha) {
     var a = alpha * Math.PI / 180;
     return [[Math.cos(a), -Math.sin(a), 0],
             [Math.sin(a), Math.cos(a), 0],
@@ -14732,28 +14742,28 @@ _$matrix_172.rotationMatrix = function(alpha) {
 };
 
 // rotate by alpha around (x,y)
-_$matrix_172.rotationXYMatrix = function(a, x, y) {
-    return _$matrix_172.dot(
-        _$matrix_172.dot(_$matrix_172.translationMatrix(x, y),
-                    _$matrix_172.rotationMatrix(a)),
-        _$matrix_172.translationMatrix(-x, -y));
+_$matrix_173.rotationXYMatrix = function(a, x, y) {
+    return _$matrix_173.dot(
+        _$matrix_173.dot(_$matrix_173.translationMatrix(x, y),
+                    _$matrix_173.rotationMatrix(a)),
+        _$matrix_173.translationMatrix(-x, -y));
 };
 
 // applies a 2D transformation matrix to either x and y params or an [x,y] array
-_$matrix_172.apply2DTransform = function(transform) {
+_$matrix_173.apply2DTransform = function(transform) {
     return function() {
         var args = arguments;
         if(args.length === 3) {
             args = args[0];
         }// from map
         var xy = arguments.length === 1 ? args[0] : [args[0], args[1]];
-        return _$matrix_172.dot(transform, [xy[0], xy[1], 1]).slice(0, 2);
+        return _$matrix_173.dot(transform, [xy[0], xy[1], 1]).slice(0, 2);
     };
 };
 
 // applies a 2D transformation matrix to an [x1,y1,x2,y2] array (to transform a segment)
-_$matrix_172.apply2DTransform2 = function(transform) {
-    var at = _$matrix_172.apply2DTransform(transform);
+_$matrix_173.apply2DTransform2 = function(transform) {
+    var at = _$matrix_173.apply2DTransform(transform);
     return function(xys) {
         return at(xys.slice(0, 2)).concat(at(xys.slice(2, 4)));
     };
@@ -14782,7 +14792,7 @@ var NOTEDATA = [];
  *          or 'long' which provides 2000 ms delay time.
  * @return {undefined} this function does not return a value
  */
-var _$notifier_176 = function(text, displayLength) {
+var _$notifier_177 = function(text, displayLength) {
     if(NOTEDATA.indexOf(text) !== -1) return;
 
     NOTEDATA.push(text);
@@ -14874,7 +14884,7 @@ var SIMPLEATTR = /^[^\.\[\]]+$/;
  *     relativeAttr('annotations[3].x', '^^margin') = 'margin'
  *     relativeAttr('annotations[3].x', '^^margin.r') = 'margin.r'
  */
-var _$relative_attr_182 = function(baseAttr, relativeAttr) {
+var _$relative_attr_183 = function(baseAttr, relativeAttr) {
     while(relativeAttr) {
         var match = baseAttr.match(ASCEND);
 
@@ -14903,8 +14913,8 @@ var _$relative_attr_182 = function(baseAttr, relativeAttr) {
 
 'use strict';
 
-var __isArrayOrTypedArray_183 = _$is_array_167.isArrayOrTypedArray;
-/* removed: var _$isPlainObject_168 = require('./is_plain_object'); */;
+var __isArrayOrTypedArray_184 = _$is_array_168.isArrayOrTypedArray;
+/* removed: var _$isPlainObject_169 = require('./is_plain_object'); */;
 
 /**
  * Relink private _keys and keys with a function value from one container
@@ -14913,7 +14923,7 @@ var __isArrayOrTypedArray_183 = _$is_array_167.isArrayOrTypedArray;
  * if object is pass-by-ref.
  * This prevents deepCopying massive structures like a webgl context.
  */
-var _$relinkPrivateKeys_183 = function relinkPrivateKeys(toContainer, fromContainer) {
+var _$relinkPrivateKeys_184 = function relinkPrivateKeys(toContainer, fromContainer) {
     for(var k in fromContainer) {
         var fromVal = fromContainer[k];
         var toVal = toContainer[k];
@@ -14929,7 +14939,7 @@ var _$relinkPrivateKeys_183 = function relinkPrivateKeys(toContainer, fromContai
 
             toContainer[k] = fromVal;
         }
-        else if(__isArrayOrTypedArray_183(fromVal) && __isArrayOrTypedArray_183(toVal) && _$isPlainObject_168(fromVal[0])) {
+        else if(__isArrayOrTypedArray_184(fromVal) && __isArrayOrTypedArray_184(toVal) && _$isPlainObject_169(fromVal[0])) {
 
             // filter out data_array items that can contain user objects
             // most of the time the toVal === fromVal check will catch these early
@@ -14939,12 +14949,12 @@ var _$relinkPrivateKeys_183 = function relinkPrivateKeys(toContainer, fromContai
             // recurse into arrays containers
             var minLen = Math.min(fromVal.length, toVal.length);
             for(var j = 0; j < minLen; j++) {
-                if((toVal[j] !== fromVal[j]) && _$isPlainObject_168(fromVal[j]) && _$isPlainObject_168(toVal[j])) {
+                if((toVal[j] !== fromVal[j]) && _$isPlainObject_169(fromVal[j]) && _$isPlainObject_169(toVal[j])) {
                     relinkPrivateKeys(toVal[j], fromVal[j]);
                 }
             }
         }
-        else if(_$isPlainObject_168(fromVal) && _$isPlainObject_168(toVal)) {
+        else if(_$isPlainObject_169(fromVal) && _$isPlainObject_169(toVal)) {
 
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toVal, fromVal);
@@ -14954,7 +14964,7 @@ var _$relinkPrivateKeys_183 = function relinkPrivateKeys(toContainer, fromContai
     }
 };
 
-var _$search_184 = {};
+var _$search_185 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -14967,7 +14977,7 @@ var _$search_184 = {};
 'use strict';
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
-/* removed: var _$loggers_171 = require('./loggers'); */;
+/* removed: var _$loggers_172 = require('./loggers'); */;
 
 // don't trust floating point equality - fraction of bin size to call
 // "on the line" and ensure that they go the right way specified by
@@ -14985,7 +14995,7 @@ var roundingError = 1e-9;
  * search linelow (truthy) says the bin boundary should be attributed to
  * the lower bin rather than the default upper bin
  */
-_$search_184.findBin = function(val, bins, linelow) {
+_$search_185.findBin = function(val, bins, linelow) {
     if(_$fastIsnumeric_11(bins.start)) {
         return linelow ?
             Math.ceil((val - bins.start) / bins.size - roundingError) - 1 :
@@ -15009,7 +15019,7 @@ _$search_184.findBin = function(val, bins, linelow) {
             if(test(bins[n], val)) n1 = n + 1;
             else n2 = n;
         }
-        if(c > 90) _$loggers_171.log('Long binary search...');
+        if(c > 90) _$loggers_172.log('Long binary search...');
         return n1 - 1;
     }
 };
@@ -15019,17 +15029,17 @@ function lessOrEqual(a, b) { return a <= b; }
 function greaterThan(a, b) { return a > b; }
 function greaterOrEqual(a, b) { return a >= b; }
 
-_$search_184.sorterAsc = function(a, b) { return a - b; };
-_$search_184.sorterDes = function(a, b) { return b - a; };
+_$search_185.sorterAsc = function(a, b) { return a - b; };
+_$search_185.sorterDes = function(a, b) { return b - a; };
 
 /**
  * find distinct values in an array, lumping together ones that appear to
  * just be off by a rounding error
  * return the distinct values and the minimum difference between any two
  */
-_$search_184.distinctVals = function(valsIn) {
+_$search_185.distinctVals = function(valsIn) {
     var vals = valsIn.slice();  // otherwise we sort the original array...
-    vals.sort(_$search_184.sorterAsc);
+    vals.sort(_$search_185.sorterAsc);
 
     var l = vals.length - 1,
         minDiff = (vals[l] - vals[0]) || 1,
@@ -15054,7 +15064,7 @@ _$search_184.distinctVals = function(valsIn) {
  * particularly useful for date/time where things are not powers of 10
  * binary search is probably overkill here...
  */
-_$search_184.roundUp = function(val, arrayIn, reverse) {
+_$search_185.roundUp = function(val, arrayIn, reverse) {
     var low = 0,
         high = arrayIn.length - 1,
         mid,
@@ -15071,7 +15081,7 @@ _$search_184.roundUp = function(val, arrayIn, reverse) {
     return arrayIn[low];
 };
 
-var _$stats_186 = {};
+var _$stats_187 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -15084,7 +15094,7 @@ var _$stats_186 = {};
 'use strict';
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
-var __isArrayOrTypedArray_186 = _$is_array_167.isArrayOrTypedArray;
+var __isArrayOrTypedArray_187 = _$is_array_168.isArrayOrTypedArray;
 
 /**
  * aggNums() returns the result of an aggregate function applied to an array of
@@ -15099,14 +15109,14 @@ var __isArrayOrTypedArray_186 = _$is_array_167.isArrayOrTypedArray;
  * @param {Number} len - maximum length of a to aggregate
  * @return {Number} - result of f applied to a starting from v
  */
-_$stats_186.aggNums = function(f, v, a, len) {
+_$stats_187.aggNums = function(f, v, a, len) {
     var i,
         b;
     if(!len || len > a.length) len = a.length;
     if(!_$fastIsnumeric_11(v)) v = false;
-    if(__isArrayOrTypedArray_186(a[0])) {
+    if(__isArrayOrTypedArray_187(a[0])) {
         b = new Array(len);
-        for(i = 0; i < len; i++) b[i] = _$stats_186.aggNums(f, v, a[i]);
+        for(i = 0; i < len; i++) b[i] = _$stats_187.aggNums(f, v, a[i]);
         a = b;
     }
 
@@ -15121,26 +15131,26 @@ _$stats_186.aggNums = function(f, v, a, len) {
  * mean & std dev functions using aggNums, so it handles non-numerics nicely
  * even need to use aggNums instead of .length, to toss out non-numerics
  */
-_$stats_186.len = function(data) {
-    return _$stats_186.aggNums(function(a) { return a + 1; }, 0, data);
+_$stats_187.len = function(data) {
+    return _$stats_187.aggNums(function(a) { return a + 1; }, 0, data);
 };
 
-_$stats_186.mean = function(data, len) {
-    if(!len) len = _$stats_186.len(data);
-    return _$stats_186.aggNums(function(a, b) { return a + b; }, 0, data) / len;
+_$stats_187.mean = function(data, len) {
+    if(!len) len = _$stats_187.len(data);
+    return _$stats_187.aggNums(function(a, b) { return a + b; }, 0, data) / len;
 };
 
-_$stats_186.variance = function(data, len, mean) {
-    if(!len) len = _$stats_186.len(data);
-    if(!_$fastIsnumeric_11(mean)) mean = _$stats_186.mean(data, len);
+_$stats_187.variance = function(data, len, mean) {
+    if(!len) len = _$stats_187.len(data);
+    if(!_$fastIsnumeric_11(mean)) mean = _$stats_187.mean(data, len);
 
-    return _$stats_186.aggNums(function(a, b) {
+    return _$stats_187.aggNums(function(a, b) {
         return a + Math.pow(b - mean, 2);
     }, 0, data) / len;
 };
 
-_$stats_186.stdev = function(data, len, mean) {
-    return Math.sqrt(_$stats_186.variance(data, len, mean));
+_$stats_187.stdev = function(data, len, mean) {
+    return Math.sqrt(_$stats_187.variance(data, len, mean));
 };
 
 /**
@@ -15158,7 +15168,7 @@ _$stats_186.stdev = function(data, len, mean) {
  * For example, the 50th percentile (or median) corresponds to n = 0.5
  * @return {Number} - percentile
  */
-_$stats_186.interp = function(arr, n) {
+_$stats_187.interp = function(arr, n) {
     if(!_$fastIsnumeric_11(n)) throw 'n should be a finite number';
     n = n * arr.length - 0.5;
     if(n < 0) return arr[0];
@@ -15167,7 +15177,7 @@ _$stats_186.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-var _$throttle_188 = {};
+var _$throttle_189 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -15194,7 +15204,7 @@ var timerCache = {};
  * @param {function} callback: the function to throttle. `callback` itself
  *   should be a purely synchronous function.
  */
-_$throttle_188.throttle = function throttle(id, minInterval, callback) {
+_$throttle_189.throttle = function throttle(id, minInterval, callback) {
     var cache = timerCache[id];
     var now = Date.now();
 
@@ -15234,7 +15244,7 @@ _$throttle_188.throttle = function throttle(id, minInterval, callback) {
     }, minInterval);
 };
 
-_$throttle_188.done = function(id) {
+_$throttle_189.done = function(id) {
     var cache = timerCache[id];
     if(!cache || !cache.timer) return Promise.resolve();
 
@@ -15254,13 +15264,13 @@ _$throttle_188.done = function(id) {
  *   if provided, clear just this timer
  *   if omitted, clear all timers (mainly useful for testing)
  */
-_$throttle_188.clear = function(id) {
+_$throttle_189.clear = function(id) {
     if(id) {
         _clearTimeout(timerCache[id]);
         delete timerCache[id];
     }
     else {
-        for(var idi in timerCache) _$throttle_188.clear(idi);
+        for(var idi in timerCache) _$throttle_189.clear(idi);
     }
 };
 
@@ -15287,7 +15297,7 @@ function _clearTimeout(cache) {
  * convert a linear value into a logged value, folding negative numbers into
  * the given range
  */
-var _$toLogRange_189 = function toLogRange(val, range) {
+var _$toLogRange_190 = function toLogRange(val, range) {
     if(val > 0) return Math.log(val) / Math.LN10;
 
     // move a negative value reference to a log axis - just put the
@@ -15298,7 +15308,7 @@ var _$toLogRange_189 = function toLogRange(val, range) {
     return newVal;
 };
 
-var _$lib_166 = {};
+var _$lib_167 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -15315,71 +15325,71 @@ var _$lib_166 = {};
 
 /* removed: var _$numerical_147 = require('../constants/numerical'); */;
 var FP_SAFE = _$numerical_147.FP_SAFE;
-var __BADNUM_166 = _$numerical_147.BADNUM;
+var __BADNUM_167 = _$numerical_147.BADNUM;
 
-var lib = _$lib_166 = {};
+var lib = _$lib_167 = {};
 
-lib.nestedProperty = _$nestedProperty_174;
-lib.keyedContainer = _$keyedContainer_169;
-lib.relativeAttr = _$relative_attr_182;
-lib.isPlainObject = _$isPlainObject_168;
-lib.mod = _$mod_173;
-lib.toLogRange = _$toLogRange_189;
-lib.relinkPrivateKeys = _$relinkPrivateKeys_183;
-lib.ensureArray = _$ensureArray_156;
+lib.nestedProperty = _$nestedProperty_175;
+lib.keyedContainer = _$keyedContainer_170;
+lib.relativeAttr = _$relative_attr_183;
+lib.isPlainObject = _$isPlainObject_169;
+lib.mod = _$mod_174;
+lib.toLogRange = _$toLogRange_190;
+lib.relinkPrivateKeys = _$relinkPrivateKeys_184;
+lib.ensureArray = _$ensureArray_157;
 
-/* removed: var _$is_array_167 = require('./is_array'); */;
-lib.isTypedArray = _$is_array_167.isTypedArray;
-lib.isArrayOrTypedArray = _$is_array_167.isArrayOrTypedArray;
+/* removed: var _$is_array_168 = require('./is_array'); */;
+lib.isTypedArray = _$is_array_168.isTypedArray;
+lib.isArrayOrTypedArray = _$is_array_168.isArrayOrTypedArray;
 
-/* removed: var _$coerce_154 = require('./coerce'); */;
-lib.valObjectMeta = _$coerce_154.valObjectMeta;
-lib.coerce = _$coerce_154.coerce;
-lib.coerce2 = _$coerce_154.coerce2;
-lib.coerceFont = _$coerce_154.coerceFont;
-lib.coerceHoverinfo = _$coerce_154.coerceHoverinfo;
-lib.coerceSelectionMarkerOpacity = _$coerce_154.coerceSelectionMarkerOpacity;
-lib.validate = _$coerce_154.validate;
+/* removed: var _$coerce_155 = require('./coerce'); */;
+lib.valObjectMeta = _$coerce_155.valObjectMeta;
+lib.coerce = _$coerce_155.coerce;
+lib.coerce2 = _$coerce_155.coerce2;
+lib.coerceFont = _$coerce_155.coerceFont;
+lib.coerceHoverinfo = _$coerce_155.coerceHoverinfo;
+lib.coerceSelectionMarkerOpacity = _$coerce_155.coerceSelectionMarkerOpacity;
+lib.validate = _$coerce_155.validate;
 
-/* removed: var _$dates_155 = require('./dates'); */;
-lib.dateTime2ms = _$dates_155.dateTime2ms;
-lib.isDateTime = _$dates_155.isDateTime;
-lib.ms2DateTime = _$dates_155.ms2DateTime;
-lib.ms2DateTimeLocal = _$dates_155.ms2DateTimeLocal;
-lib.cleanDate = _$dates_155.cleanDate;
-lib.isJSDate = _$dates_155.isJSDate;
-lib.formatDate = _$dates_155.formatDate;
-lib.incrementMonth = _$dates_155.incrementMonth;
-lib.dateTick0 = _$dates_155.dateTick0;
-lib.dfltRange = _$dates_155.dfltRange;
-lib.findExactDates = _$dates_155.findExactDates;
-lib.MIN_MS = _$dates_155.MIN_MS;
-lib.MAX_MS = _$dates_155.MAX_MS;
+/* removed: var _$dates_156 = require('./dates'); */;
+lib.dateTime2ms = _$dates_156.dateTime2ms;
+lib.isDateTime = _$dates_156.isDateTime;
+lib.ms2DateTime = _$dates_156.ms2DateTime;
+lib.ms2DateTimeLocal = _$dates_156.ms2DateTimeLocal;
+lib.cleanDate = _$dates_156.cleanDate;
+lib.isJSDate = _$dates_156.isJSDate;
+lib.formatDate = _$dates_156.formatDate;
+lib.incrementMonth = _$dates_156.incrementMonth;
+lib.dateTick0 = _$dates_156.dateTick0;
+lib.dfltRange = _$dates_156.dfltRange;
+lib.findExactDates = _$dates_156.findExactDates;
+lib.MIN_MS = _$dates_156.MIN_MS;
+lib.MAX_MS = _$dates_156.MAX_MS;
 
-/* removed: var _$search_184 = require('./search'); */;
-lib.findBin = _$search_184.findBin;
-lib.sorterAsc = _$search_184.sorterAsc;
-lib.sorterDes = _$search_184.sorterDes;
-lib.distinctVals = _$search_184.distinctVals;
-lib.roundUp = _$search_184.roundUp;
+/* removed: var _$search_185 = require('./search'); */;
+lib.findBin = _$search_185.findBin;
+lib.sorterAsc = _$search_185.sorterAsc;
+lib.sorterDes = _$search_185.sorterDes;
+lib.distinctVals = _$search_185.distinctVals;
+lib.roundUp = _$search_185.roundUp;
 
-/* removed: var _$stats_186 = require('./stats'); */;
-lib.aggNums = _$stats_186.aggNums;
-lib.len = _$stats_186.len;
-lib.mean = _$stats_186.mean;
-lib.variance = _$stats_186.variance;
-lib.stdev = _$stats_186.stdev;
-lib.interp = _$stats_186.interp;
+/* removed: var _$stats_187 = require('./stats'); */;
+lib.aggNums = _$stats_187.aggNums;
+lib.len = _$stats_187.len;
+lib.mean = _$stats_187.mean;
+lib.variance = _$stats_187.variance;
+lib.stdev = _$stats_187.stdev;
+lib.interp = _$stats_187.interp;
 
-/* removed: var _$matrix_172 = require('./matrix'); */;
-lib.init2dArray = _$matrix_172.init2dArray;
-lib.transposeRagged = _$matrix_172.transposeRagged;
-lib.dot = _$matrix_172.dot;
-lib.translationMatrix = _$matrix_172.translationMatrix;
-lib.rotationMatrix = _$matrix_172.rotationMatrix;
-lib.rotationXYMatrix = _$matrix_172.rotationXYMatrix;
-lib.apply2DTransform = _$matrix_172.apply2DTransform;
-lib.apply2DTransform2 = _$matrix_172.apply2DTransform2;
+/* removed: var _$matrix_173 = require('./matrix'); */;
+lib.init2dArray = _$matrix_173.init2dArray;
+lib.transposeRagged = _$matrix_173.transposeRagged;
+lib.dot = _$matrix_173.dot;
+lib.translationMatrix = _$matrix_173.translationMatrix;
+lib.rotationMatrix = _$matrix_173.rotationMatrix;
+lib.rotationXYMatrix = _$matrix_173.rotationXYMatrix;
+lib.apply2DTransform = _$matrix_173.apply2DTransform;
+lib.apply2DTransform2 = _$matrix_173.apply2DTransform2;
 
 /* removed: var _$angles_152 = require('./angles'); */;
 lib.deg2rad = _$angles_152.deg2rad;
@@ -15387,54 +15397,54 @@ lib.rad2deg = _$angles_152.rad2deg;
 lib.wrap360 = _$angles_152.wrap360;
 lib.wrap180 = _$angles_152.wrap180;
 
-/* removed: var _$geometry2d_163 = require('./geometry2d'); */;
-lib.segmentsIntersect = _$geometry2d_163.segmentsIntersect;
-lib.segmentDistance = _$geometry2d_163.segmentDistance;
-lib.getTextLocation = _$geometry2d_163.getTextLocation;
-lib.clearLocationCache = _$geometry2d_163.clearLocationCache;
-lib.getVisibleSegment = _$geometry2d_163.getVisibleSegment;
-lib.findPointOnPath = _$geometry2d_163.findPointOnPath;
+/* removed: var _$geometry2d_164 = require('./geometry2d'); */;
+lib.segmentsIntersect = _$geometry2d_164.segmentsIntersect;
+lib.segmentDistance = _$geometry2d_164.segmentDistance;
+lib.getTextLocation = _$geometry2d_164.getTextLocation;
+lib.clearLocationCache = _$geometry2d_164.clearLocationCache;
+lib.getVisibleSegment = _$geometry2d_164.getVisibleSegment;
+lib.findPointOnPath = _$geometry2d_164.findPointOnPath;
 
-/* removed: var _$extend_158 = require('./extend'); */;
-lib.extendFlat = _$extend_158.extendFlat;
-lib.extendDeep = _$extend_158.extendDeep;
-lib.extendDeepAll = _$extend_158.extendDeepAll;
-lib.extendDeepNoArrays = _$extend_158.extendDeepNoArrays;
+/* removed: var _$extend_159 = require('./extend'); */;
+lib.extendFlat = _$extend_159.extendFlat;
+lib.extendDeep = _$extend_159.extendDeep;
+lib.extendDeepAll = _$extend_159.extendDeepAll;
+lib.extendDeepNoArrays = _$extend_159.extendDeepNoArrays;
 
-/* removed: var _$loggers_171 = require('./loggers'); */;
-lib.log = _$loggers_171.log;
-lib.warn = _$loggers_171.warn;
-lib.error = _$loggers_171.error;
+/* removed: var _$loggers_172 = require('./loggers'); */;
+lib.log = _$loggers_172.log;
+lib.warn = _$loggers_172.warn;
+lib.error = _$loggers_172.error;
 
-/* removed: var _$regex_181 = require('./regex'); */;
-lib.counterRegex = _$regex_181.counter;
+/* removed: var _$regex_182 = require('./regex'); */;
+lib.counterRegex = _$regex_182.counter;
 
-/* removed: var _$throttle_188 = require('./throttle'); */;
-lib.throttle = _$throttle_188.throttle;
-lib.throttleDone = _$throttle_188.done;
-lib.clearThrottle = _$throttle_188.clear;
+/* removed: var _$throttle_189 = require('./throttle'); */;
+lib.throttle = _$throttle_189.throttle;
+lib.throttleDone = _$throttle_189.done;
+lib.clearThrottle = _$throttle_189.clear;
 
-lib.getGraphDiv = _$get_graph_div_164;
+lib.getGraphDiv = _$get_graph_div_165;
 
-lib._ = _$localize_170;
+lib._ = _$localize_171;
 
-lib.notifier = _$notifier_176;
+lib.notifier = _$notifier_177;
 
-lib.filterUnique = _$filterUnique_159;
-lib.filterVisible = _$filterVisible_160;
-lib.pushUnique = _$pushUnique_179;
+lib.filterUnique = _$filterUnique_160;
+lib.filterVisible = _$filterVisible_161;
+lib.pushUnique = _$pushUnique_180;
 
 lib.cleanNumber = _$cleanNumber_153;
 
 lib.ensureNumber = function num(v) {
-    if(!_$fastIsnumeric_11(v)) return __BADNUM_166;
+    if(!_$fastIsnumeric_11(v)) return __BADNUM_167;
     v = Number(v);
-    if(v < -FP_SAFE || v > FP_SAFE) return __BADNUM_166;
-    return _$fastIsnumeric_11(v) ? Number(v) : __BADNUM_166;
+    if(v < -FP_SAFE || v > FP_SAFE) return __BADNUM_167;
+    return _$fastIsnumeric_11(v) ? Number(v) : __BADNUM_167;
 };
 
-lib.noop = _$noop_175;
-lib.identity = _$identity_165;
+lib.noop = _$noop_176;
+lib.identity = _$identity_166;
 
 /**
  * swap x and y of the same attribute in container cont
@@ -15933,6 +15943,63 @@ lib.isD3Selection = function(obj) {
     return obj && (typeof obj.classed === 'function');
 };
 
+/**
+ * Append element to DOM only if not present.
+ *
+ * @param {d3 selection} parent : parent selection of the element in question
+ * @param {string} nodeType : node type of element to append
+ * @param {string} className : class name of element in question
+ * @param {fn} enterFn (optional) : optional fn applied to entering elements only
+ * @return {d3 selection} selection of new layer
+ *
+ * Previously, we were using the following pattern:
+ *
+ * ```
+ * var sel = parent.selectAll('.' + className)
+ *     .data([0]);
+ *
+ * sel.enter().append(nodeType)
+ *     .classed(className, true);
+ *
+ * return sel;
+ * ```
+ *
+ * in numerous places in our codebase to achieve the same behavior.
+ *
+ * The logic below performs much better, mostly as we are using
+ * `.select` instead `.selectAll` that is `querySelector` instead of
+ * `querySelectorAll`.
+ *
+ */
+lib.ensureSingle = function(parent, nodeType, className, enterFn) {
+    var sel = parent.select(nodeType + (className ? '.' + className : ''));
+    if(sel.size()) return sel;
+
+    var layer = parent.append(nodeType).classed(className, true);
+    if(enterFn) layer.call(enterFn);
+
+    return layer;
+};
+
+/**
+ * Same as Lib.ensureSingle, but using id as selector.
+ * This version is mostly used for clipPath nodes.
+ *
+ * @param {d3 selection} parent : parent selection of the element in question
+ * @param {string} nodeType : node type of element to append
+ * @param {string} id : id of element in question
+ * @param {fn} enterFn (optional) : optional fn applied to entering elements only
+ * @return {d3 selection} selection of new layer
+ */
+lib.ensureSingleById = function(parent, nodeType, id, enterFn) {
+    var sel = parent.select(nodeType + '#' + id);
+    if(sel.size()) return sel;
+
+    var layer = parent.append(nodeType).attr('id', id);
+    if(enterFn) layer.call(enterFn);
+
+    return layer;
+};
 
 /**
  * Converts a string path to an object.
@@ -16126,7 +16193,7 @@ lib.numSeparate = function(value, separators, separatethousands) {
 };
 
 var TEMPLATE_STRING_REGEX = /%{([^\s%{}]*)}/g;
-var __SIMPLE_PROPERTY_REGEX_166 = /^\w*$/;
+var __SIMPLE_PROPERTY_REGEX_167 = /^\w*$/;
 
 /*
  * Substitute values from an object into a string
@@ -16147,7 +16214,7 @@ lib.templateString = function(string, obj) {
     var getterCache = {};
 
     return string.replace(TEMPLATE_STRING_REGEX, function(dummy, key) {
-        if(__SIMPLE_PROPERTY_REGEX_166.test(key)) {
+        if(__SIMPLE_PROPERTY_REGEX_167.test(key)) {
             return obj[key] || '';
         }
         getterCache[key] = getterCache[key] || lib.nestedProperty(obj, key).get;
@@ -17001,7 +17068,7 @@ var _$align_65 = function align(v, dv, v0, v1, anchor) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 
 // set cursors pointing toward the closest corner/side,
@@ -17017,12 +17084,12 @@ var _$getCursor_66 = function getCursor(x, y, xanchor, yanchor) {
     if(xanchor === 'left') x = 0;
     else if(xanchor === 'center') x = 1;
     else if(xanchor === 'right') x = 2;
-    else x = _$lib_166.constrain(Math.floor(x * 3), 0, 2);
+    else x = _$lib_167.constrain(Math.floor(x * 3), 0, 2);
 
     if(yanchor === 'bottom') y = 0;
     else if(yanchor === 'middle') y = 1;
     else if(yanchor === 'top') y = 2;
-    else y = _$lib_166.constrain(Math.floor(y * 3), 0, 2);
+    else y = _$lib_167.constrain(Math.floor(y * 3), 0, 2);
 
     return cursorset[y][x];
 };
@@ -17374,7 +17441,7 @@ function isUndefined(arg) {
 
 /* global jQuery:false */
 
-var __EventEmitter_157 = _$EventEmitter_10.EventEmitter;
+var __EventEmitter_158 = _$EventEmitter_10.EventEmitter;
 
 var Events = {
 
@@ -17384,10 +17451,10 @@ var Events = {
          * If we have already instantiated an emitter for this plot
          * return early.
          */
-        if(plotObj._ev instanceof __EventEmitter_157) return plotObj;
+        if(plotObj._ev instanceof __EventEmitter_158) return plotObj;
 
-        var ev = new __EventEmitter_157();
-        var internalEv = new __EventEmitter_157();
+        var ev = new __EventEmitter_158();
+        var internalEv = new __EventEmitter_158();
 
         /*
          * Assign to plot._ev while we still live in a land
@@ -17524,7 +17591,7 @@ var Events = {
 
 };
 
-var _$Events_157 = Events;
+var _$Events_158 = Events;
 
 var _$unhover_68 = {};
 /**
@@ -17539,9 +17606,9 @@ var _$unhover_68 = {};
 'use strict';
 
 
-/* removed: var _$Events_157 = require('../../lib/events'); */;
-/* removed: var _$throttle_188 = require('../../lib/throttle'); */;
-/* removed: var _$get_graph_div_164 = require('../../lib/get_graph_div'); */;
+/* removed: var _$Events_158 = require('../../lib/events'); */;
+/* removed: var _$throttle_189 = require('../../lib/throttle'); */;
+/* removed: var _$get_graph_div_165 = require('../../lib/get_graph_div'); */;
 
 /* removed: var _$constants_82 = require('../fx/constants'); */;
 
@@ -17549,11 +17616,11 @@ var unhover = _$unhover_68 = {};
 
 
 unhover.wrapped = function(gd, evt, subplot) {
-    gd = _$get_graph_div_164(gd);
+    gd = _$get_graph_div_165(gd);
 
     // Important, clear any queued hovers
     if(gd._fullLayout) {
-        _$throttle_188.clear(gd._fullLayout._uid + _$constants_82.HOVERID);
+        _$throttle_189.clear(gd._fullLayout._uid + _$constants_82.HOVERID);
     }
 
     unhover.raw(gd, evt, subplot);
@@ -17567,7 +17634,7 @@ unhover.raw = function unhoverRaw(gd, evt) {
 
     if(!evt) evt = {};
     if(evt.target &&
-       _$Events_157.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
+       _$Events_158.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
         return;
     }
 
@@ -17593,21 +17660,21 @@ unhover.raw = function unhoverRaw(gd, evt) {
 */
 
 'use strict';
-var __counterRegex_214 = _$regex_181.counter;
+var __counterRegex_215 = _$regex_182.counter;
 
 
-var _$constants_214 = {
+var _$constants_215 = {
 
     idRegex: {
-        x: __counterRegex_214('x'),
-        y: __counterRegex_214('y')
+        x: __counterRegex_215('x'),
+        y: __counterRegex_215('y')
     },
 
-    attrRegex: __counterRegex_214('[xy]axis'),
+    attrRegex: __counterRegex_215('[xy]axis'),
 
     // axis match regular expression
-    xAxisMatch: __counterRegex_214('xaxis'),
-    yAxisMatch: __counterRegex_214('yaxis'),
+    xAxisMatch: __counterRegex_215('xaxis'),
+    yAxisMatch: __counterRegex_215('yaxis'),
 
     // pattern matching axis ids and names
     // note that this is more permissive than counterRegex, as
@@ -17654,6 +17721,7 @@ var _$constants_214 = {
         'carpetlayer',
         'violinlayer',
         'boxlayer',
+        'ohlclayer',
         'scatterlayer'
     ],
 
@@ -17679,10 +17747,10 @@ var _$dragelement_67 = {};
 /* removed: var _$hasHover_13 = require('has-hover'); */;
 /* removed: var _$hasPassiveEvents_14 = require('has-passive-events'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
-/* removed: var _$constants_214 = require('../../plots/cartesian/constants'); */;
+/* removed: var _$constants_215 = require('../../plots/cartesian/constants'); */;
 /* removed: var _$interactions_146 = require('../../constants/interactions'); */;
 
 var dragElement = _$dragelement_67 = {};
@@ -17839,7 +17907,7 @@ dragElement.init = function init(options) {
         e.preventDefault();
 
         var offset = pointerOffset(e);
-        var minDrag = options.minDrag || _$constants_214.MINDRAG;
+        var minDrag = options.minDrag || _$constants_215.MINDRAG;
         var dxdy = clampFn(offset[0] - startX, offset[1] - startY, minDrag);
         var dx = dxdy[0];
         var dy = dxdy[1];
@@ -17863,7 +17931,7 @@ dragElement.init = function init(options) {
         e.preventDefault();
 
         if(_$hasHover_13) {
-            _$lib_166.removeElement(dragCover);
+            _$lib_167.removeElement(dragCover);
         }
         else if(cursor) {
             dragCover.documentElement.style.cursor = cursor;
@@ -17944,7 +18012,7 @@ dragElement.coverSlip = coverSlip;
 
 function finishDrag(gd) {
     gd._dragging = false;
-    if(gd._replotPending) _$registry_258.call('plot', gd);
+    if(gd._replotPending) _$registry_259.call('plot', gd);
 }
 
 function pointerOffset(e) {
@@ -18055,7 +18123,7 @@ var _$flipScale_57 = function flipScale(scl) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 /* removed: var _$scales_64 = require('./scales'); */;
 /* removed: var _$flipScale_57 = require('./flip_scale'); */;
@@ -18065,8 +18133,8 @@ var _$calc_52 = function calc(trace, vals, containerStr, cLetter) {
     var container, inputContainer;
 
     if(containerStr) {
-        container = _$lib_166.nestedProperty(trace, containerStr).get();
-        inputContainer = _$lib_166.nestedProperty(trace._input, containerStr).get();
+        container = _$lib_167.nestedProperty(trace, containerStr).get();
+        inputContainer = _$lib_167.nestedProperty(trace._input, containerStr).get();
     }
     else {
         container = trace;
@@ -18082,11 +18150,11 @@ var _$calc_52 = function calc(trace, vals, containerStr, cLetter) {
         scl = container.colorscale;
 
     if(auto !== false || min === undefined) {
-        min = _$lib_166.aggNums(Math.min, null, vals);
+        min = _$lib_167.aggNums(Math.min, null, vals);
     }
 
     if(auto !== false || max === undefined) {
-        max = _$lib_166.aggNums(Math.max, null, vals);
+        max = _$lib_167.aggNums(Math.max, null, vals);
     }
 
     if(min === max) {
@@ -18132,9 +18200,9 @@ var _$calc_52 = function calc(trace, vals, containerStr, cLetter) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../lib'); */;
-var __extendFlat_194 = _$lib_166.extendFlat;
-var __isPlainObject_194 = _$lib_166.isPlainObject;
+/* removed: var _$lib_167 = require('../lib'); */;
+var __extendFlat_195 = _$lib_167.extendFlat;
+var __isPlainObject_195 = _$lib_167.isPlainObject;
 
 var traceOpts = {
     valType: 'flaglist',
@@ -18147,7 +18215,7 @@ var layoutOpts = {
     valType: 'flaglist',
     extras: ['none'],
     flags: [
-        'calc', 'calcIfAutorange', 'plot', 'legend', 'ticks', 'margins',
+        'calc', 'calcIfAutorange', 'plot', 'legend', 'ticks', 'axrange', 'margins',
         'layoutstyle', 'modebar', 'camera', 'arraydraw'
     ],
     
@@ -18162,7 +18230,7 @@ var traceEditTypeFlags = traceOpts.flags.slice()
 var layoutEditTypeFlags = layoutOpts.flags.slice()
     .concat('layoutReplot');
 
-var _$edit_types_194 = {
+var _$edit_types_195 = {
     traces: traceOpts,
     layout: layoutOpts,
     /*
@@ -18215,10 +18283,10 @@ function falseObj(keys) {
  * @return {object} a new attributes object with `editType` modified as directed
  */
 function overrideAll(attrs, editTypeOverride, overrideContainers) {
-    var out = __extendFlat_194({}, attrs);
+    var out = __extendFlat_195({}, attrs);
     for(var key in out) {
         var attr = out[key];
-        if(__isPlainObject_194(attr)) {
+        if(__isPlainObject_195(attr)) {
             out[key] = overrideOne(attr, editTypeOverride, overrideContainers, key);
         }
     }
@@ -18229,7 +18297,7 @@ function overrideAll(attrs, editTypeOverride, overrideContainers) {
 
 function overrideOne(attr, editTypeOverride, overrideContainers, key) {
     if(attr.valType) {
-        var out = __extendFlat_194({}, attr);
+        var out = __extendFlat_195({}, attr);
         out.editType = editTypeOverride;
 
         if(Array.isArray(attr.items)) {
@@ -18285,12 +18353,12 @@ _$attributes_69.dash = {
 /* removed: var _$font_attributes_236 = require('../font_attributes'); */;
 /* removed: var _$attributes_44 = require('../../components/color/attributes'); */;
 var dash = _$attributes_69.dash;
-var __extendFlat_221 = _$extend_158.extendFlat;
+var __extendFlat_222 = _$extend_159.extendFlat;
 
-/* removed: var _$constants_214 = require('./constants'); */;
+/* removed: var _$constants_215 = require('./constants'); */;
 
 
-var _$layout_attributes_221 = {
+var _$layout_attributes_222 = {
     visible: {
         valType: 'boolean',
         
@@ -18346,10 +18414,10 @@ var _$layout_attributes_221 = {
         valType: 'info_array',
         
         items: [
-            {valType: 'any', editType: 'plot+margins', impliedEdits: {'^autorange': false}},
-            {valType: 'any', editType: 'plot+margins', impliedEdits: {'^autorange': false}}
+            {valType: 'any', editType: 'axrange+margins', impliedEdits: {'^autorange': false}},
+            {valType: 'any', editType: 'axrange+margins', impliedEdits: {'^autorange': false}}
         ],
-        editType: 'plot+margins',
+        editType: 'axrange+margins',
         impliedEdits: {'autorange': false},
         
     },
@@ -18365,8 +18433,8 @@ var _$layout_attributes_221 = {
     scaleanchor: {
         valType: 'enumerated',
         values: [
-            _$constants_214.idRegex.x.toString(),
-            _$constants_214.idRegex.y.toString()
+            _$constants_215.idRegex.x.toString(),
+            _$constants_215.idRegex.y.toString()
         ],
         
         editType: 'plot',
@@ -18510,7 +18578,7 @@ var _$layout_attributes_221 = {
         editType: 'none',
         
     },
-    spikedash: __extendFlat_221({}, dash, {dflt: 'dash', editType: 'none'}),
+    spikedash: __extendFlat_222({}, dash, {dflt: 'dash', editType: 'none'}),
     spikemode: {
         valType: 'flaglist',
         flags: ['toaxis', 'across', 'marker'],
@@ -18698,8 +18766,8 @@ var _$layout_attributes_221 = {
         valType: 'enumerated',
         values: [
             'free',
-            _$constants_214.idRegex.x.toString(),
-            _$constants_214.idRegex.y.toString()
+            _$constants_215.idRegex.x.toString(),
+            _$constants_215.idRegex.y.toString()
         ],
         
         editType: 'plot+margins',
@@ -18721,8 +18789,8 @@ var _$layout_attributes_221 = {
         valType: 'enumerated',
         values: [
             'free',
-            _$constants_214.idRegex.x.toString(),
-            _$constants_214.idRegex.y.toString()
+            _$constants_215.idRegex.x.toString(),
+            _$constants_215.idRegex.y.toString()
         ],
         
         editType: 'plot',
@@ -18795,10 +18863,10 @@ var _$layout_attributes_221 = {
 
 'use strict';
 
-/* removed: var _$layout_attributes_221 = require('../../plots/cartesian/layout_attributes'); */;
+/* removed: var _$layout_attributes_222 = require('../../plots/cartesian/layout_attributes'); */;
 /* removed: var _$font_attributes_236 = require('../../plots/font_attributes'); */;
-var __extendFlat_46 = _$extend_158.extendFlat;
-var __overrideAll_46 = _$edit_types_194.overrideAll;
+var __extendFlat_46 = _$extend_159.extendFlat;
+var __overrideAll_46 = _$edit_types_195.overrideAll;
 
 
 var _$attributes_46 = __overrideAll_46({
@@ -18883,11 +18951,11 @@ var _$attributes_46 = __overrideAll_46({
         
     },
     // a possible line around the bar itself
-    outlinecolor: _$layout_attributes_221.linecolor,
-    outlinewidth: _$layout_attributes_221.linewidth,
+    outlinecolor: _$layout_attributes_222.linecolor,
+    outlinewidth: _$layout_attributes_222.linewidth,
     // Should outlinewidth have {dflt: 0} ?
     // another possible line outside the padding and tick labels
-    bordercolor: _$layout_attributes_221.linecolor,
+    bordercolor: _$layout_attributes_222.linecolor,
     borderwidth: {
         valType: 'number',
         
@@ -18902,30 +18970,30 @@ var _$attributes_46 = __overrideAll_46({
         
     },
     // tick and title properties named and function exactly as in axes
-    tickmode: _$layout_attributes_221.tickmode,
-    nticks: _$layout_attributes_221.nticks,
-    tick0: _$layout_attributes_221.tick0,
-    dtick: _$layout_attributes_221.dtick,
-    tickvals: _$layout_attributes_221.tickvals,
-    ticktext: _$layout_attributes_221.ticktext,
-    ticks: __extendFlat_46({}, _$layout_attributes_221.ticks, {dflt: ''}),
-    ticklen: _$layout_attributes_221.ticklen,
-    tickwidth: _$layout_attributes_221.tickwidth,
-    tickcolor: _$layout_attributes_221.tickcolor,
-    showticklabels: _$layout_attributes_221.showticklabels,
+    tickmode: _$layout_attributes_222.tickmode,
+    nticks: _$layout_attributes_222.nticks,
+    tick0: _$layout_attributes_222.tick0,
+    dtick: _$layout_attributes_222.dtick,
+    tickvals: _$layout_attributes_222.tickvals,
+    ticktext: _$layout_attributes_222.ticktext,
+    ticks: __extendFlat_46({}, _$layout_attributes_222.ticks, {dflt: ''}),
+    ticklen: _$layout_attributes_222.ticklen,
+    tickwidth: _$layout_attributes_222.tickwidth,
+    tickcolor: _$layout_attributes_222.tickcolor,
+    showticklabels: _$layout_attributes_222.showticklabels,
     tickfont: _$font_attributes_236({
         
     }),
-    tickangle: _$layout_attributes_221.tickangle,
-    tickformat: _$layout_attributes_221.tickformat,
-    tickformatstops: _$layout_attributes_221.tickformatstops,
-    tickprefix: _$layout_attributes_221.tickprefix,
-    showtickprefix: _$layout_attributes_221.showtickprefix,
-    ticksuffix: _$layout_attributes_221.ticksuffix,
-    showticksuffix: _$layout_attributes_221.showticksuffix,
-    separatethousands: _$layout_attributes_221.separatethousands,
-    exponentformat: _$layout_attributes_221.exponentformat,
-    showexponent: _$layout_attributes_221.showexponent,
+    tickangle: _$layout_attributes_222.tickangle,
+    tickformat: _$layout_attributes_222.tickformat,
+    tickformatstops: _$layout_attributes_222.tickformatstops,
+    tickprefix: _$layout_attributes_222.tickprefix,
+    showtickprefix: _$layout_attributes_222.showtickprefix,
+    ticksuffix: _$layout_attributes_222.ticksuffix,
+    showticksuffix: _$layout_attributes_222.showticksuffix,
+    separatethousands: _$layout_attributes_222.separatethousands,
+    exponentformat: _$layout_attributes_222.exponentformat,
+    showexponent: _$layout_attributes_222.showexponent,
     title: {
         valType: 'string',
         
@@ -18954,8 +19022,8 @@ var _$attributes_46 = __overrideAll_46({
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$layout_attributes_221 = require('./layout_attributes'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$layout_attributes_222 = require('./layout_attributes'); */;
 
 var _$handleTickLabelDefaults_229 = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options) {
     var showAttrDflt = getShowAttrDflt(containerIn);
@@ -18973,7 +19041,7 @@ var _$handleTickLabelDefaults_229 = function handleTickLabelDefaults(containerIn
         // explicitly provided
         var dfltFontColor = (containerOut.color === containerIn.color) ?
             containerOut.color : font.color;
-        _$lib_166.coerceFont(coerce, 'tickfont', {
+        _$lib_167.coerceFont(coerce, 'tickfont', {
             family: font.family,
             size: font.size,
             color: dfltFontColor
@@ -19031,7 +19099,7 @@ function tickformatstopsDefaults(tickformatIn, tickformatOut) {
     var valueIn, valueOut;
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(valueIn, valueOut, _$layout_attributes_221.tickformatstops, attr, dflt);
+        return _$lib_167.coerce(valueIn, valueOut, _$layout_attributes_222.tickformatstops, attr, dflt);
     }
 
     for(var i = 0; i < valuesIn.length; i++) {
@@ -19056,18 +19124,18 @@ function tickformatstopsDefaults(tickformatIn, tickformatOut) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
-/* removed: var _$layout_attributes_221 = require('./layout_attributes'); */;
+/* removed: var _$layout_attributes_222 = require('./layout_attributes'); */;
 
 
 /**
  * options: inherits outerTicks from axes.handleAxisDefaults
  */
 var _$handleTickDefaults_230 = function handleTickDefaults(containerIn, containerOut, coerce, options) {
-    var tickLen = _$lib_166.coerce2(containerIn, containerOut, _$layout_attributes_221, 'ticklen'),
-        tickWidth = _$lib_166.coerce2(containerIn, containerOut, _$layout_attributes_221, 'tickwidth'),
-        tickColor = _$lib_166.coerce2(containerIn, containerOut, _$layout_attributes_221, 'tickcolor', containerOut.color),
+    var tickLen = _$lib_167.coerce2(containerIn, containerOut, _$layout_attributes_222, 'ticklen'),
+        tickWidth = _$lib_167.coerce2(containerIn, containerOut, _$layout_attributes_222, 'tickwidth'),
+        tickColor = _$lib_167.coerce2(containerIn, containerOut, _$layout_attributes_222, 'tickcolor', containerOut.color),
         showTicks = coerce('ticks', (options.outerTicks || tickLen || tickWidth || tickColor) ? 'outside' : '');
 
     if(!showTicks) {
@@ -19089,7 +19157,7 @@ var _$handleTickDefaults_230 = function handleTickDefaults(containerIn, containe
 'use strict';
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 var __ONEDAY_231 = _$numerical_147.ONEDAY;
 
 
@@ -19140,10 +19208,10 @@ var _$handleTickValueDefaults_231 = function handleTickValueDefaults(containerIn
 
         // tick0 can have different valType for different axis types, so
         // validate that now. Also for dates, change milliseconds to date strings
-        var tick0Dflt = (axType === 'date') ? _$lib_166.dateTick0(containerOut.calendar) : 0;
+        var tick0Dflt = (axType === 'date') ? _$lib_167.dateTick0(containerOut.calendar) : 0;
         var tick0 = coerce('tick0', tick0Dflt);
         if(axType === 'date') {
-            containerOut.tick0 = _$lib_166.cleanDate(tick0, tick0Dflt);
+            containerOut.tick0 = _$lib_167.cleanDate(tick0, tick0Dflt);
         }
         // Aside from date axes, dtick must be numeric; D1 and D2 modes ignore tick0 entirely
         else if(_$fastIsnumeric_11(tick0) && dtick !== 'D1' && dtick !== 'D2') {
@@ -19171,7 +19239,7 @@ var _$handleTickValueDefaults_231 = function handleTickValueDefaults(containerIn
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$handleTickValueDefaults_231 = require('../../plots/cartesian/tick_value_defaults'); */;
 /* removed: var _$handleTickDefaults_230 = require('../../plots/cartesian/tick_mark_defaults'); */;
 /* removed: var _$handleTickLabelDefaults_229 = require('../../plots/cartesian/tick_label_defaults'); */;
@@ -19184,7 +19252,7 @@ var _$colorbarDefaults_48 = function colorbarDefaults(containerIn, containerOut,
         colorbarIn = containerIn.colorbar || {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(colorbarIn, colorbarOut, _$attributes_46, attr, dflt);
+        return _$lib_167.coerce(colorbarIn, colorbarOut, _$attributes_46, attr, dflt);
     }
 
     var thicknessmode = coerce('thicknessmode');
@@ -19205,7 +19273,7 @@ var _$colorbarDefaults_48 = function colorbarDefaults(containerIn, containerOut,
     coerce('y');
     coerce('yanchor');
     coerce('ypad');
-    _$lib_166.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
+    _$lib_167.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
 
     coerce('outlinecolor');
     coerce('outlinewidth');
@@ -19220,7 +19288,7 @@ var _$colorbarDefaults_48 = function colorbarDefaults(containerIn, containerOut,
     _$handleTickDefaults_230(colorbarIn, colorbarOut, coerce, 'linear', opts);
 
     coerce('title', layout._dfltTitle.colorbar);
-    _$lib_166.coerceFont(coerce, 'titlefont', layout.font);
+    _$lib_167.coerceFont(coerce, 'titlefont', layout.font);
     coerce('titleside');
 };
 
@@ -19235,11 +19303,11 @@ var _$colorbarDefaults_48 = function colorbarDefaults(containerIn, containerOut,
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 
 var _$hasColorbar_50 = function hasColorbar(container) {
-    return _$lib_166.isPlainObject(container.colorbar);
+    return _$lib_167.isPlainObject(container.colorbar);
 };
 
 /**
@@ -19275,7 +19343,7 @@ var _$isValidScale_61 = function isValidScale(scl) {
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 /* removed: var _$hasColorbar_50 = require('../colorbar/has_colorbar'); */;
 /* removed: var _$colorbarDefaults_48 = require('../colorbar/defaults'); */;
@@ -19288,10 +19356,10 @@ var _$colorScaleDefaults_55 = function colorScaleDefaults(traceIn, traceOut, lay
         cLetter = opts.cLetter,
         containerStr = prefix.slice(0, prefix.length - 1),
         containerIn = prefix ?
-            _$lib_166.nestedProperty(traceIn, containerStr).get() || {} :
+            _$lib_167.nestedProperty(traceIn, containerStr).get() || {} :
             traceIn,
         containerOut = prefix ?
-            _$lib_166.nestedProperty(traceOut, containerStr).get() || {} :
+            _$lib_167.nestedProperty(traceOut, containerStr).get() || {} :
             traceOut,
         minIn = containerIn[cLetter + 'min'],
         maxIn = containerIn[cLetter + 'max'],
@@ -19372,17 +19440,17 @@ var _$extractScale_56 = function extractScale(scl, cmin, cmax) {
 'use strict';
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$isValidScale_61 = require('./is_valid_scale'); */;
 
 var _$hasColorscale_59 = function hasColorscale(trace, containerStr) {
     var container = containerStr ?
-        _$lib_166.nestedProperty(trace, containerStr).get() || {} :
+        _$lib_167.nestedProperty(trace, containerStr).get() || {} :
         trace;
     var color = container.color;
 
     var isArrayWithOneNumber = false;
-    if(_$lib_166.isArrayOrTypedArray(color)) {
+    if(_$lib_167.isArrayOrTypedArray(color)) {
         for(var i = 0; i < color.length; i++) {
             if(_$fastIsnumeric_11(color[i])) {
                 isArrayWithOneNumber = true;
@@ -19392,12 +19460,12 @@ var _$hasColorscale_59 = function hasColorscale(trace, containerStr) {
     }
 
     return (
-        _$lib_166.isPlainObject(container) && (
+        _$lib_167.isPlainObject(container) && (
             isArrayWithOneNumber ||
             container.showscale === true ||
             (_$fastIsnumeric_11(container.cmin) && _$fastIsnumeric_11(container.cmax)) ||
             _$isValidScale_61(container.colorscale) ||
-            _$lib_166.isPlainObject(container.colorbar)
+            _$lib_167.isPlainObject(container.colorbar)
         )
     );
 };
@@ -20143,7 +20211,7 @@ var _$string_mappings_148 = {
     }
 };
 
-var _$svg_text_utils_187 = {};
+var _$svg_text_utils_188 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -20159,7 +20227,7 @@ var _$svg_text_utils_187 = {};
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 /* removed: var _$xmlns_namespaces_149 = require('../constants/xmlns_namespaces'); */;
 /* removed: var _$string_mappings_148 = require('../constants/string_mappings'); */;
 var LINE_SPACING = _$alignment_145.LINE_SPACING;
@@ -20172,7 +20240,7 @@ function getSize(_selection, _dimension) {
 
 var FIND_TEX = /([^$]*)([$]+[^$]*[$]+)([^$]*)/;
 
-_$svg_text_utils_187.convertToTspans = function(_context, gd, _callback) {
+_$svg_text_utils_188.convertToTspans = function(_context, gd, _callback) {
     var str = _context.text();
 
     // Until we get tex integrated more fully (so it can be used along with non-tex)
@@ -20215,7 +20283,7 @@ _$svg_text_utils_187.convertToTspans = function(_context, gd, _callback) {
             _context.style('pointer-events', 'all');
         }
 
-        _$svg_text_utils_187.positionText(_context);
+        _$svg_text_utils_188.positionText(_context);
 
         if(_callback) _callback.call(_context);
     }
@@ -20310,7 +20378,7 @@ function cleanEscapesForTex(s) {
 }
 
 function texToSVG(_texString, _config, _callback) {
-    var randomID = 'math-output-' + _$lib_166.randstr([], 64);
+    var randomID = 'math-output-' + _$lib_167.randstr([], 64);
     var tmpDiv = _$d3_8.select('body').append('div')
         .attr({id: randomID})
         .style({visibility: 'hidden', position: 'absolute'})
@@ -20321,7 +20389,7 @@ function texToSVG(_texString, _config, _callback) {
         var glyphDefs = _$d3_8.select('body').select('#MathJax_SVG_glyphs');
 
         if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {
-            _$lib_166.log('There was an error in the tex syntax.', _texString);
+            _$lib_167.log('There was an error in the tex syntax.', _texString);
             _callback();
         }
         else {
@@ -20416,7 +20484,7 @@ function getQuotedMatch(_str, re) {
 
 var COLORMATCH = /(^|;)\s*color:/;
 
-_$svg_text_utils_187.plainText = function(_str) {
+_$svg_text_utils_188.plainText = function(_str) {
     // strip out our pseudo-html so we have a readable
     // version to put into text fields
     return (_str || '').replace(STRIP_TAGS, ' ');
@@ -20549,14 +20617,14 @@ function buildSVGText(containerNode, str) {
         // A bare closing tag can't close the root node. If we encounter this it
         // means there's an extra closing tag that can just be ignored:
         if(nodeStack.length === 1) {
-            _$lib_166.log('Ignoring unexpected end tag </' + type + '>.', str);
+            _$lib_167.log('Ignoring unexpected end tag </' + type + '>.', str);
             return;
         }
 
         var innerNode = nodeStack.pop();
 
         if(type !== innerNode.type) {
-            _$lib_166.log('Start tag <' + innerNode.type + '> doesnt match end tag <' +
+            _$lib_167.log('Start tag <' + innerNode.type + '> doesnt match end tag <' +
                 type + '>. Pretending it did match.', str);
         }
         currentNode = nodeStack[nodeStack.length - 1].node;
@@ -20615,7 +20683,10 @@ function buildSVGText(containerNode, str) {
                         var dummyAnchor = document.createElement('a');
                         dummyAnchor.href = href;
                         if(PROTOCOLS.indexOf(dummyAnchor.protocol) !== -1) {
-                            nodeSpec.href = encodeURI(href);
+                            // Decode href to allow both already encoded and not encoded
+                            // URIs. Without decoding prior encoding, an already encoded
+                            // URI would be encoded twice producing a semantically different URI.
+                            nodeSpec.href = encodeURI(decodeURI(href));
                             nodeSpec.target = getQuotedMatch(extra, TARGETMATCH) || '_blank';
                             nodeSpec.popup = getQuotedMatch(extra, POPUPMATCH);
                         }
@@ -20630,11 +20701,11 @@ function buildSVGText(containerNode, str) {
     return hasLink;
 }
 
-_$svg_text_utils_187.lineCount = function lineCount(s) {
+_$svg_text_utils_188.lineCount = function lineCount(s) {
     return s.selectAll('tspan.line').size() || 1;
 };
 
-_$svg_text_utils_187.positionText = function positionText(s, x, y) {
+_$svg_text_utils_188.positionText = function positionText(s, x, y) {
     return s.each(function() {
         var text = _$d3_8.select(this);
 
@@ -20710,7 +20781,7 @@ function alignHTMLWith(_base, container, options) {
  *   @param {string} options.verticalAlign: alignment of the edit box wrt. the bound element
  */
 
-_$svg_text_utils_187.makeEditable = function(context, options) {
+_$svg_text_utils_188.makeEditable = function(context, options) {
     var gd = options.gd;
     var _delegate = options.delegate;
     var dispatch = _$d3_8.dispatch('edit', 'input', 'cancel');
@@ -20833,7 +20904,7 @@ _$svg_text_utils_187.makeEditable = function(context, options) {
 
 // used in the drawing step for 'scatter' and 'scattegeo' and
 // in the convert step for 'scatter3d'
-var _$makeBubbleSizeFn_297 = function makeBubbleSizeFn(trace) {
+var _$makeBubbleSizeFn_298 = function makeBubbleSizeFn(trace) {
     var marker = trace.marker,
         sizeRef = marker.sizeref || 1,
         sizeMin = marker.sizemin || 0;
@@ -20869,17 +20940,20 @@ var _$makeBubbleSizeFn_297 = function makeBubbleSizeFn(trace) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
-var _$subtypes_302 = {
+var _$subtypes_303 = {
     hasLines: function(trace) {
         return trace.visible && trace.mode &&
             trace.mode.indexOf('lines') !== -1;
     },
 
     hasMarkers: function(trace) {
-        return trace.visible && trace.mode &&
-            trace.mode.indexOf('markers') !== -1;
+        return trace.visible && (
+            (trace.mode && trace.mode.indexOf('markers') !== -1) ||
+            // until splom implements 'mode'
+            trace.type === 'splom'
+        );
     },
 
     hasText: function(trace) {
@@ -20888,8 +20962,8 @@ var _$subtypes_302 = {
     },
 
     isBubble: function(trace) {
-        return _$lib_166.isPlainObject(trace.marker) &&
-            _$lib_166.isArrayOrTypedArray(trace.marker.size);
+        return _$lib_167.isPlainObject(trace.marker) &&
+            _$lib_167.isArrayOrTypedArray(trace.marker.size);
     }
 };
 
@@ -20909,19 +20983,19 @@ var _$drawing_70 = {};
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 /* removed: var _$tinycolor_26 = require('tinycolor2'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 /* removed: var _$color_45 = require('../color'); */;
 /* removed: var _$colorscale_60 = require('../colorscale'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
 
 /* removed: var _$xmlns_namespaces_149 = require('../../constants/xmlns_namespaces'); */;
 /* removed: var _$alignment_145 = require('../../constants/alignment'); */;
 var __LINE_SPACING_70 = _$alignment_145.LINE_SPACING;
 var __DESELECTDIM_70 = _$interactions_146.DESELECTDIM;
 
-/* removed: var _$subtypes_302 = require('../../traces/scatter/subtypes'); */;
-/* removed: var _$makeBubbleSizeFn_297 = require('../../traces/scatter/make_bubble_size_func'); */;
+/* removed: var _$subtypes_303 = require('../../traces/scatter/subtypes'); */;
+/* removed: var _$makeBubbleSizeFn_298 = require('../../traces/scatter/make_bubble_size_func'); */;
 
 var drawing = _$drawing_70 = {};
 
@@ -20931,7 +21005,7 @@ var drawing = _$drawing_70 = {};
 
 drawing.font = function(s, family, size, color) {
     // also allow the form font(s, {family, size, color})
-    if(_$lib_166.isPlainObject(family)) {
+    if(_$lib_167.isPlainObject(family)) {
         color = family.color;
         size = family.size;
         family = family.family;
@@ -21099,7 +21173,7 @@ drawing.fillGroupStyle = function(s) {
             shape.call(_$color_45.fill, d[0].trace.fillcolor);
         }
         catch(e) {
-            _$lib_166.error(e, s);
+            _$lib_167.error(e, s);
             shape.remove();
         }
     });
@@ -21162,8 +21236,8 @@ function makePointPath(symbolNumber, r) {
 }
 
 function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine, gd) {
-    if(_$registry_258.traceIs(trace, 'symbols')) {
-        var sizeFn = _$makeBubbleSizeFn_297(trace);
+    if(_$registry_259.traceIs(trace, 'symbols')) {
+        var sizeFn = _$makeBubbleSizeFn_298(trace);
 
         sel.attr('d', function(d) {
             var r;
@@ -21172,7 +21246,7 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
             if(d.ms === 'various' || marker.size === 'various') {
                 r = 3;
             } else {
-                r = _$subtypes_302.isBubble(trace) ?
+                r = _$subtypes_303.isBubble(trace) ?
                         sizeFn(d.ms) : (marker.size || 6) / 2;
             }
 
@@ -21212,10 +21286,10 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
 
         if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
         // weird case: array wasn't long enough to apply to every point
-        else if(_$lib_166.isArrayOrTypedArray(markerLine.color)) lineColor = _$color_45.defaultLine;
+        else if(_$lib_167.isArrayOrTypedArray(markerLine.color)) lineColor = _$color_45.defaultLine;
         else lineColor = markerLine.color;
 
-        if(_$lib_166.isArrayOrTypedArray(marker.color)) {
+        if(_$lib_167.isArrayOrTypedArray(marker.color)) {
             fillColor = _$color_45.defaultLine;
             perPointGradient = true;
         }
@@ -21268,7 +21342,7 @@ var VERTGRADIENT = {x1: 0, x2: 0, y1: 1, y2: 0};
 drawing.gradient = function(sel, gd, gradientID, type, color1, color2) {
     var gradient = gd._fullLayout._defs.select('.gradients')
         .selectAll('#' + gradientID)
-        .data([type + color1 + color2], _$lib_166.identity);
+        .data([type + color1 + color2], _$lib_167.identity);
 
     gradient.exit().remove();
 
@@ -21311,9 +21385,7 @@ drawing.gradient = function(sel, gd, gradientID, type, color1, color2) {
  * The upside of this is arbitrary points can share gradient defs
  */
 drawing.initGradients = function(gd) {
-    var gradientsGroup = gd._fullLayout._defs.selectAll('.gradients').data([0]);
-    gradientsGroup.enter().append('g').classed('gradients', true);
-
+    var gradientsGroup = _$lib_167.ensureSingle(gd._fullLayout._defs, 'g', 'gradients');
     gradientsGroup.selectAll('linearGradient,radialGradient').remove();
 };
 
@@ -21419,7 +21491,7 @@ drawing.selectedPointStyle = function(s, trace) {
         });
     }
 
-    if(_$registry_258.traceIs(trace, 'symbols') && fns.sizeFn) {
+    if(_$registry_259.traceIs(trace, 'symbols') && fns.sizeFn) {
         s.each(function(d) {
             var pt = _$d3_8.select(this);
             var mx = d.mx || marker.symbol || 0;
@@ -21434,16 +21506,16 @@ drawing.selectedPointStyle = function(s, trace) {
 };
 
 drawing.tryColorscale = function(marker, prefix) {
-    var cont = prefix ? _$lib_166.nestedProperty(marker, prefix).get() : marker,
+    var cont = prefix ? _$lib_167.nestedProperty(marker, prefix).get() : marker,
         scl = cont.colorscale,
         colorArray = cont.color;
 
-    if(scl && _$lib_166.isArrayOrTypedArray(colorArray)) {
+    if(scl && _$lib_167.isArrayOrTypedArray(colorArray)) {
         return _$colorscale_60.makeColorScaleFunc(
             _$colorscale_60.extractScale(scl, cont.cmin, cont.cmax)
         );
     }
-    else return _$lib_166.identity;
+    else return _$lib_167.identity;
 };
 
 var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1};
@@ -21463,7 +21535,7 @@ function textPointPosition(s, textPosition, fontSize, markerRadius) {
     // ie 2/1.6 * nominal, bcs some markers are a bit bigger
     var r = markerRadius ? markerRadius / 0.8 + 1 : 0;
 
-    var numLines = (_$svg_text_utils_187.lineCount(s) - 1) * __LINE_SPACING_70 + 1;
+    var numLines = (_$svg_text_utils_188.lineCount(s) - 1) * __LINE_SPACING_70 + 1;
     var dx = TEXTOFFSETSIGN[h] * r;
     var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
             (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
@@ -21482,7 +21554,7 @@ function extracTextFontSize(d, trace) {
 drawing.textPointStyle = function(s, trace, gd) {
     s.each(function(d) {
         var p = _$d3_8.select(this);
-        var text = _$lib_166.extractOption(d, trace, 'tx', 'text');
+        var text = _$lib_167.extractOption(d, trace, 'tx', 'text');
 
         if(!text) {
             p.remove();
@@ -21497,7 +21569,7 @@ drawing.textPointStyle = function(s, trace, gd) {
                 fontSize,
                 d.tc || trace.textfont.color)
             .text(text)
-            .call(_$svg_text_utils_187.convertToTspans, gd)
+            .call(_$svg_text_utils_188.convertToTspans, gd)
             .call(textPointPosition, pos, fontSize, d.mrc);
     });
 };
@@ -21625,33 +21697,28 @@ drawing.steps = function(shape) {
 // off-screen svg render testing element, shared by the whole page
 // uses the id 'js-plotly-tester' and stores it in drawing.tester
 drawing.makeTester = function() {
-    var tester = _$d3_8.select('body')
-        .selectAll('#js-plotly-tester')
-        .data([0]);
-
-    tester.enter().append('svg')
-        .attr('id', 'js-plotly-tester')
-        .attr(_$xmlns_namespaces_149.svgAttrs)
-        .style({
-            position: 'absolute',
-            left: '-10000px',
-            top: '-10000px',
-            width: '9000px',
-            height: '9000px',
-            'z-index': '1'
-        });
+    var tester = _$lib_167.ensureSingleById(_$d3_8.select('body'), 'svg', 'js-plotly-tester', function(s) {
+        s.attr(_$xmlns_namespaces_149.svgAttrs)
+            .style({
+                position: 'absolute',
+                left: '-10000px',
+                top: '-10000px',
+                width: '9000px',
+                height: '9000px',
+                'z-index': '1'
+            });
+    });
 
     // browsers differ on how they describe the bounding rect of
     // the svg if its contents spill over... so make a 1x1px
     // reference point we can measure off of.
-    var testref = tester.selectAll('.js-reference-point').data([0]);
-    testref.enter().append('path')
-        .classed('js-reference-point', true)
-        .attr('d', 'M0,0H1V1H0Z')
-        .style({
-            'stroke-width': 0,
-            fill: 'black'
-        });
+    var testref = _$lib_167.ensureSingle(tester, 'path', 'js-reference-point', function(s) {
+        s.attr('d', 'M0,0H1V1H0Z')
+            .style({
+                'stroke-width': 0,
+                fill: 'black'
+            });
+    });
 
     drawing.tester = tester;
     drawing.testref = testref;
@@ -21696,7 +21763,7 @@ drawing.bBox = function(node, inTester, hash) {
     var out;
     if(hash) {
         out = drawing.savedBBoxes[hash];
-        if(out) return _$lib_166.extendFlat({}, out);
+        if(out) return _$lib_167.extendFlat({}, out);
     }
     else if(node.childNodes.length === 1) {
         /*
@@ -21740,7 +21807,7 @@ drawing.bBox = function(node, inTester, hash) {
             hash += '~' + x + '~' + y + '~' + transform;
 
             out = drawing.savedBBoxes[hash];
-            if(out) return _$lib_166.extendFlat({}, out);
+            if(out) return _$lib_167.extendFlat({}, out);
         }
     }
     var testNode, tester;
@@ -21758,7 +21825,7 @@ drawing.bBox = function(node, inTester, hash) {
     // standardize its position (and newline tspans if any)
     _$d3_8.select(testNode)
         .attr('transform', null)
-        .call(_$svg_text_utils_187.positionText, 0, 0);
+        .call(_$svg_text_utils_188.positionText, 0, 0);
 
     var testRect = testNode.getBoundingClientRect();
     var refRect = drawing.testref
@@ -21788,7 +21855,7 @@ drawing.bBox = function(node, inTester, hash) {
     if(hash) drawing.savedBBoxes[hash] = bb;
     savedBBoxesCount++;
 
-    return _$lib_166.extendFlat({}, bb);
+    return _$lib_167.extendFlat({}, bb);
 };
 
 // capture everything about a node (at least in our usage) that
@@ -21813,15 +21880,21 @@ drawing.setClipUrl = function(s, localId) {
         return;
     }
 
-    var url = '#' + localId,
-        base = _$d3_8.select('base');
+    if(drawing.baseUrl === undefined) {
+        var base = _$d3_8.select('base');
 
-    // add id to location href w/o hashes if any)
-    if(base.size() && base.attr('href')) {
-        url = window.location.href.split('#')[0] + url;
+        // Stash base url once and for all!
+        // We may have to stash this elsewhere when
+        // we'll try to support for child windows
+        // more info -> https://github.com/plotly/plotly.js/issues/702
+        if(base.size() && base.attr('href')) {
+            drawing.baseUrl = window.location.href.split('#')[0];
+        } else {
+            drawing.baseUrl = '';
+        }
     }
 
-    s.attr('clip-path', 'url(' + url + ')');
+    s.attr('clip-path', 'url(' + drawing.baseUrl + '#' + localId + ')');
 };
 
 drawing.getTranslate = function(element) {
@@ -21969,8 +22042,8 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 
 var _$calc_80 = function calc(gd) {
     var calcdata = gd.calcdata;
@@ -21978,7 +22051,7 @@ var _$calc_80 = function calc(gd) {
 
     function makeCoerceHoverInfo(trace) {
         return function(val) {
-            return _$lib_166.coerceHoverinfo({hoverinfo: val}, {_module: trace._module}, fullLayout);
+            return _$lib_167.coerceHoverinfo({hoverinfo: val}, {_module: trace._module}, fullLayout);
         };
     }
 
@@ -21989,9 +22062,9 @@ var _$calc_80 = function calc(gd) {
         // don't include hover calc fields for pie traces
         // as calcdata items might be sorted by value and
         // won't match the data array order.
-        if(_$registry_258.traceIs(trace, 'pie')) continue;
+        if(_$registry_259.traceIs(trace, 'pie')) continue;
 
-        var fillFn = _$registry_258.traceIs(trace, '2dMap') ? paste : _$lib_166.fillArray;
+        var fillFn = _$registry_259.traceIs(trace, '2dMap') ? paste : _$lib_167.fillArray;
 
         fillFn(trace.hoverinfo, cd, 'hi', makeCoerceHoverInfo(trace));
 
@@ -22007,7 +22080,7 @@ var _$calc_80 = function calc(gd) {
 };
 
 function paste(traceAttr, cd, cdAttr, fn) {
-    fn = fn || _$lib_166.identity;
+    fn = fn || _$lib_167.identity;
 
     if(Array.isArray(traceAttr)) {
         cd[0][cdAttr] = fn(traceAttr);
@@ -22025,11 +22098,31 @@ var _$helpers_84 = {};
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 // look for either subplot or xaxis and yaxis attributes
+// does not handle splom case
 _$helpers_84.getSubplot = function getSubplot(trace) {
     return trace.subplot || (trace.xaxis + trace.yaxis) || trace.geo;
+};
+
+// is trace in given list of subplots?
+// does handle splom case
+_$helpers_84.isTraceInSubplots = function isTraceInSubplot(trace, subplots) {
+    if(trace.type === 'splom') {
+        var xaxes = trace.xaxes || [];
+        var yaxes = trace.yaxes || [];
+        for(var i = 0; i < xaxes.length; i++) {
+            for(var j = 0; j < yaxes.length; j++) {
+                if(subplots.indexOf(xaxes[i] + yaxes[j]) !== -1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    return subplots.indexOf(_$helpers_84.getSubplot(trace)) !== -1;
 };
 
 // convenience functions for mapping all relevant axes
@@ -22174,7 +22267,7 @@ _$helpers_84.appendArrayPointValue = function(pointData, trace, pointNumber) {
         var key = getPointKey(astr);
 
         if(pointData[key] === undefined) {
-            var val = _$lib_166.nestedProperty(trace, astr).get();
+            var val = _$lib_167.nestedProperty(trace, astr).get();
             var pointVal = getPointData(val, pointNumber);
 
             if(pointVal !== undefined) pointData[key] = pointVal;
@@ -22204,7 +22297,7 @@ _$helpers_84.appendArrayMultiPointValues = function(pointData, trace, pointNumbe
         var key = getPointKey(astr);
 
         if(pointData[key] === undefined) {
-            var val = _$lib_166.nestedProperty(trace, astr).get();
+            var val = _$lib_167.nestedProperty(trace, astr).get();
             var keyVal = new Array(pointNumbers.length);
 
             for(var j = 0; j < pointNumbers.length; j++) {
@@ -22251,7 +22344,7 @@ function getPointData(val, pointNumber) {
 // works with our CSS cursor classes (see css/_cursor.scss)
 // to apply cursors to d3 single-element selections.
 // omit cursor to revert to the default.
-var _$setCursor_185 = function setCursor(el3, csr) {
+var _$setCursor_186 = function setCursor(el3, csr) {
     (el3.attr('class') || '').split(' ').forEach(function(cls) {
         if(cls.indexOf('cursor-') === 0) el3.classed(cls, false);
     });
@@ -22270,7 +22363,7 @@ var _$setCursor_185 = function setCursor(el3, csr) {
 
 'use strict';
 
-/* removed: var _$setCursor_185 = require('./setcursor'); */;
+/* removed: var _$setCursor_186 = require('./setcursor'); */;
 
 var STASHATTR = 'data-savedcursor';
 var NO_CURSOR = '!!';
@@ -22281,7 +22374,7 @@ var NO_CURSOR = '!!';
  * by moving the name of the original cursor to the data-savedcursor attr.
  * omit cursor to revert to the previously set value.
  */
-var _$overrideCursor_177 = function overrideCursor(el3, csr) {
+var _$overrideCursor_178 = function overrideCursor(el3, csr) {
     var savedCursor = el3.attr(STASHATTR);
     if(csr) {
         if(!savedCursor) {
@@ -22297,13 +22390,13 @@ var _$overrideCursor_177 = function overrideCursor(el3, csr) {
                 el3.attr(STASHATTR, NO_CURSOR);
             }
         }
-        _$setCursor_185(el3, csr);
+        _$setCursor_186(el3, csr);
     }
     else if(savedCursor) {
         el3.attr(STASHATTR, null);
 
-        if(savedCursor === NO_CURSOR) _$setCursor_185(el3);
-        else _$setCursor_185(el3, savedCursor);
+        if(savedCursor === NO_CURSOR) _$setCursor_186(el3);
+        else _$setCursor_186(el3, savedCursor);
     }
 };
 
@@ -22317,7 +22410,7 @@ var _$overrideCursor_177 = function overrideCursor(el3, csr) {
 
 'use strict';
 
-var _$animation_attributes_204 = {
+var _$animation_attributes_205 = {
     mode: {
         valType: 'enumerated',
         dflt: 'afterall',
@@ -22464,7 +22557,7 @@ var _$frame_attributes_237 = {
 'use strict';
 
 /* removed: var _$attributes_51 = require('./attributes'); */;
-var __extendFlat_53 = _$extend_158.extendFlat;
+var __extendFlat_53 = _$extend_159.extendFlat;
 /* removed: var _$scales_64 = require('./scales.js'); */;
 
 /*
@@ -22530,7 +22623,7 @@ var _$makeColorScaleAttributes_53 = function makeColorScaleAttributes(context, e
 
 'use strict';
 
-var _$constants_286 = {
+var _$constants_287 = {
     PTS_LINESONLY: 20,
 
     // fixed parameters of clustering and clipping algorithms
@@ -22558,13 +22651,13 @@ var _$constants_286 = {
 /* removed: var _$makeColorScaleAttributes_53 = require('../../components/colorscale/color_attributes'); */;
 /* removed: var _$attributes_46 = require('../../components/colorbar/attributes'); */;
 /* removed: var _$font_attributes_236 = require('../../plots/font_attributes'); */;
-var __dash_280 = _$attributes_69.dash;
+var __dash_281 = _$attributes_69.dash;
 
 /* removed: var _$drawing_70 = require('../../components/drawing'); */;
-/* removed: var _$constants_286 = require('./constants'); */;
-var __extendFlat_280 = _$extend_158.extendFlat;
+/* removed: var _$constants_287 = require('./constants'); */;
+var __extendFlat_281 = _$extend_159.extendFlat;
 
-var _$attributes_280 = {
+var _$attributes_281 = {
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
@@ -22666,7 +22759,7 @@ var _$attributes_280 = {
             editType: 'plot',
             
         },
-        dash: __extendFlat_280({}, __dash_280, {editType: 'style'}),
+        dash: __extendFlat_281({}, __dash_281, {editType: 'style'}),
         simplify: {
             valType: 'boolean',
             dflt: true,
@@ -22706,7 +22799,7 @@ var _$attributes_280 = {
         editType: 'style',
         
     },
-    marker: __extendFlat_280({
+    marker: __extendFlat_281({
         symbol: {
             valType: 'enumerated',
             values: _$drawing_70.symbolList,
@@ -22775,7 +22868,7 @@ var _$attributes_280 = {
         },
         colorbar: _$attributes_46,
 
-        line: __extendFlat_280({
+        line: __extendFlat_281({
             width: {
                 valType: 'number',
                 min: 0,
@@ -22926,12 +23019,12 @@ var _$attributes_280 = {
 
 'use strict';
 
-/* removed: var _$attributes_280 = require('../../../traces/scatter/attributes'); */;
-var scatterMarkerAttrs = _$attributes_280.marker;
+/* removed: var _$attributes_281 = require('../../../traces/scatter/attributes'); */;
+var scatterMarkerAttrs = _$attributes_281.marker;
 
 var _$area_attributes_251 = {
-    r: _$attributes_280.r,
-    t: _$attributes_280.t,
+    r: _$attributes_281.r,
+    t: _$attributes_281.t,
     marker: {
         color: scatterMarkerAttrs.color,
         size: scatterMarkerAttrs.size,
@@ -22952,11 +23045,11 @@ var _$area_attributes_251 = {
 
 'use strict';
 
-/* removed: var _$layout_attributes_221 = require('../../cartesian/layout_attributes'); */;
-var __extendFlat_252 = _$extend_158.extendFlat;
-var __overrideAll_252 = _$edit_types_194.overrideAll;
+/* removed: var _$layout_attributes_222 = require('../../cartesian/layout_attributes'); */;
+var __extendFlat_252 = _$extend_159.extendFlat;
+var __overrideAll_252 = _$edit_types_195.overrideAll;
 
-var domainAttr = __extendFlat_252({}, _$layout_attributes_221.domain, {
+var domainAttr = __extendFlat_252({}, _$layout_attributes_222.domain, {
     
 });
 
@@ -23056,7 +23149,7 @@ var _$axis_attributes_252 = __overrideAll_252({
     }
 }, 'plot', 'nested');
 
-var _$plot_schema_200 = {};
+var _$plot_schema_201 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -23068,22 +23161,23 @@ var _$plot_schema_200 = {};
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../registry'); */;
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$registry_259 = require('../registry'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 
-/* removed: var _$attributes_206 = require('../plots/attributes'); */;
+/* removed: var _$attributes_207 = require('../plots/attributes'); */;
 /* removed: var _$layout_attributes_248 = require('../plots/layout_attributes'); */;
 /* removed: var _$frame_attributes_237 = require('../plots/frame_attributes'); */;
-/* removed: var _$animation_attributes_204 = require('../plots/animation_attributes'); */;
+/* removed: var _$animation_attributes_205 = require('../plots/animation_attributes'); */;
 
 // polar attributes are not part of the Registry yet
 /* removed: var _$area_attributes_251 = require('../plots/polar/legacy/area_attributes'); */;
 /* removed: var _$axis_attributes_252 = require('../plots/polar/legacy/axis_attributes'); */;
 
-/* removed: var _$edit_types_194 = require('./edit_types'); */;
+/* removed: var _$edit_types_195 = require('./edit_types'); */;
 
-var __extendFlat_200 = _$lib_166.extendFlat;
-var __extendDeepAll_200 = _$lib_166.extendDeepAll;
+var __extendFlat_201 = _$lib_167.extendFlat;
+var __extendDeepAll_201 = _$lib_167.extendDeepAll;
+var __isPlainObject_201 = _$lib_167.isPlainObject;
 
 var IS_SUBPLOT_OBJ = '_isSubplotObj';
 var IS_LINKED_TO_ARRAY = '_isLinkedToArray';
@@ -23091,10 +23185,10 @@ var ARRAY_ATTR_REGEXPS = '_arrayAttrRegexps';
 var DEPRECATED = '_deprecated';
 var UNDERSCORE_ATTRS = [IS_SUBPLOT_OBJ, IS_LINKED_TO_ARRAY, ARRAY_ATTR_REGEXPS, DEPRECATED];
 
-_$plot_schema_200.IS_SUBPLOT_OBJ = IS_SUBPLOT_OBJ;
-_$plot_schema_200.IS_LINKED_TO_ARRAY = IS_LINKED_TO_ARRAY;
-_$plot_schema_200.DEPRECATED = DEPRECATED;
-_$plot_schema_200.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
+_$plot_schema_201.IS_SUBPLOT_OBJ = IS_SUBPLOT_OBJ;
+_$plot_schema_201.IS_LINKED_TO_ARRAY = IS_LINKED_TO_ARRAY;
+_$plot_schema_201.DEPRECATED = DEPRECATED;
+_$plot_schema_201.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
 
 /** Outputs the full plotly.js plot schema
  *
@@ -23107,26 +23201,26 @@ _$plot_schema_200.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
  *  - animations
  *  - config (coming soon ...)
  */
-_$plot_schema_200.get = function() {
+_$plot_schema_201.get = function() {
     var traces = {};
 
-    _$registry_258.allTypes.concat('area').forEach(function(type) {
+    _$registry_259.allTypes.concat('area').forEach(function(type) {
         traces[type] = getTraceAttributes(type);
     });
 
     var transforms = {};
 
-    Object.keys(_$registry_258.transformsRegistry).forEach(function(type) {
+    Object.keys(_$registry_259.transformsRegistry).forEach(function(type) {
         transforms[type] = getTransformAttributes(type);
     });
 
     return {
         defs: {
-            valObjects: _$lib_166.valObjectMeta,
+            valObjects: _$lib_167.valObjectMeta,
             metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role', 'editType', 'impliedEdits']),
             editType: {
-                traces: _$edit_types_194.traces,
-                layout: _$edit_types_194.layout
+                traces: _$edit_types_195.traces,
+                layout: _$edit_types_195.layout
             },
             impliedEdits: {
                 
@@ -23139,7 +23233,7 @@ _$plot_schema_200.get = function() {
         transforms: transforms,
 
         frames: getFramesAttributes(),
-        animation: formatAttributes(_$animation_attributes_204)
+        animation: formatAttributes(_$animation_attributes_205)
     };
 };
 
@@ -23170,7 +23264,7 @@ _$plot_schema_200.get = function() {
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-_$plot_schema_200.crawl = function(attrs, callback, specifiedLevel, attrString) {
+_$plot_schema_201.crawl = function(attrs, callback, specifiedLevel, attrString) {
     var level = specifiedLevel || 0;
     attrString = attrString || '';
 
@@ -23182,10 +23276,10 @@ _$plot_schema_200.crawl = function(attrs, callback, specifiedLevel, attrString) 
         var fullAttrString = (attrString ? attrString + '.' : '') + attrName;
         callback(attr, attrName, attrs, level, fullAttrString);
 
-        if(_$plot_schema_200.isValObject(attr)) return;
+        if(_$plot_schema_201.isValObject(attr)) return;
 
-        if(_$lib_166.isPlainObject(attr) && attrName !== 'impliedEdits') {
-            _$plot_schema_200.crawl(attr, callback, level + 1, fullAttrString);
+        if(__isPlainObject_201(attr) && attrName !== 'impliedEdits') {
+            _$plot_schema_201.crawl(attr, callback, level + 1, fullAttrString);
         }
     });
 };
@@ -23197,7 +23291,7 @@ _$plot_schema_200.crawl = function(attrs, callback, specifiedLevel, attrString) 
  *  returns true for a valid value object and
  *  false for tree nodes in the attribute hierarchy
  */
-_$plot_schema_200.isValObject = function(obj) {
+_$plot_schema_201.isValObject = function(obj) {
     return obj && obj.valType !== undefined;
 };
 
@@ -23211,7 +23305,7 @@ _$plot_schema_200.isValObject = function(obj) {
  * @return {array} arrayAttributes
  *  list of array attributes for the given trace
  */
-_$plot_schema_200.findArrayAttributes = function(trace) {
+_$plot_schema_201.findArrayAttributes = function(trace) {
     var arrayAttributes = [];
     var stack = [];
 
@@ -23234,8 +23328,8 @@ _$plot_schema_200.findArrayAttributes = function(trace) {
         if(!splittableAttr) return;
 
         var astr = toAttrString(stack);
-        var val = _$lib_166.nestedProperty(trace, astr).get();
-        if(!_$lib_166.isArrayOrTypedArray(val)) return;
+        var val = _$lib_167.nestedProperty(trace, astr).get();
+        if(!_$lib_167.isArrayOrTypedArray(val)) return;
 
         arrayAttributes.push(astr);
     }
@@ -23244,9 +23338,9 @@ _$plot_schema_200.findArrayAttributes = function(trace) {
         return stack.join('.');
     }
 
-    _$plot_schema_200.crawl(_$attributes_206, callback);
+    _$plot_schema_201.crawl(_$attributes_207, callback);
     if(trace._module && trace._module.attributes) {
-        _$plot_schema_200.crawl(trace._module.attributes, callback);
+        _$plot_schema_201.crawl(trace._module.attributes, callback);
     }
 
     if(trace.transforms) {
@@ -23259,7 +23353,7 @@ _$plot_schema_200.findArrayAttributes = function(trace) {
             if(module) {
                 stack = ['transforms[' + i + ']'];
 
-                _$plot_schema_200.crawl(module.attributes, callback, 1);
+                _$plot_schema_201.crawl(module.attributes, callback, 1);
             }
         }
     }
@@ -23271,8 +23365,8 @@ _$plot_schema_200.findArrayAttributes = function(trace) {
     // ohlc and candlestick 'open', 'high', 'low', 'close' can be
     // used with filter and groupby transforms.
     if(trace._fullInput && trace._fullInput._module && trace._fullInput._module.attributes) {
-        _$plot_schema_200.crawl(trace._fullInput._module.attributes, callback);
-        arrayAttributes = _$lib_166.filterUnique(arrayAttributes);
+        _$plot_schema_201.crawl(trace._fullInput._module.attributes, callback);
+        arrayAttributes = _$lib_167.filterUnique(arrayAttributes);
     }
 
     return arrayAttributes;
@@ -23293,18 +23387,19 @@ _$plot_schema_200.findArrayAttributes = function(trace) {
  *  `valType: 'any'` attributes where we might set a part of the attribute.
  *  In that case, stop at the deepest valObject we *do* find.
  */
-_$plot_schema_200.getTraceValObject = function(trace, parts) {
+_$plot_schema_201.getTraceValObject = function(trace, parts) {
     var head = parts[0];
     var i = 1; // index to start recursing from
     var moduleAttrs, valObject;
 
     if(head === 'transforms') {
-        if(!Array.isArray(trace.transforms)) return false;
+        var transforms = trace.transforms;
+        if(!Array.isArray(transforms) || !transforms.length) return false;
         var tNum = parts[1];
-        if(!isIndex(tNum) || tNum >= trace.transforms.length) {
+        if(!isIndex(tNum) || tNum >= transforms.length) {
             return false;
         }
-        moduleAttrs = (_$registry_258.transformsRegistry[trace.transforms[tNum].type] || {}).attributes;
+        moduleAttrs = (_$registry_259.transformsRegistry[transforms[tNum].type] || {}).attributes;
         valObject = moduleAttrs && moduleAttrs[parts[2]];
         i = 3; // start recursing only inside the transform
     }
@@ -23315,7 +23410,7 @@ _$plot_schema_200.getTraceValObject = function(trace, parts) {
         // first look in the module for this trace
         // components have already merged their trace attributes in here
         var _module = trace._module;
-        if(!_module) _module = (_$registry_258.modules[trace.type || _$attributes_206.type.dflt] || {})._module;
+        if(!_module) _module = (_$registry_259.modules[trace.type || _$attributes_207.type.dflt] || {})._module;
         if(!_module) return false;
 
         moduleAttrs = _module.attributes;
@@ -23330,7 +23425,7 @@ _$plot_schema_200.getTraceValObject = function(trace, parts) {
         }
 
         // finally look in the global attributes
-        if(!valObject) valObject = _$attributes_206[head];
+        if(!valObject) valObject = _$attributes_207[head];
     }
 
     return recurseIntoValObject(valObject, parts, i);
@@ -23349,7 +23444,7 @@ _$plot_schema_200.getTraceValObject = function(trace, parts) {
  *  `valType: 'any'` attributes where we might set a part of the attribute.
  *  In that case, stop at the deepest valObject we *do* find.
  */
-_$plot_schema_200.getLayoutValObject = function(fullLayout, parts) {
+_$plot_schema_201.getLayoutValObject = function(fullLayout, parts) {
     var valObject = layoutHeadAttr(fullLayout, parts[0]);
 
     return recurseIntoValObject(valObject, parts, 1);
@@ -23400,8 +23495,8 @@ function layoutHeadAttr(fullLayout, head) {
      * inside a container matching the module `name`
      * eg `attributes` (array) or `legend` (object)
      */
-    for(key in _$registry_258.componentsRegistry) {
-        _module = _$registry_258.componentsRegistry[key];
+    for(key in _$registry_259.componentsRegistry) {
+        _module = _$registry_259.componentsRegistry[key];
         if(!_module.schema && (head === _module.name)) {
             return _module.layoutAttributes;
         }
@@ -23431,7 +23526,7 @@ function recurseIntoValObject(valObject, parts, i) {
     // the innermost schema item we find.
     for(; i < parts.length; i++) {
         var newValObject = valObject[parts[i]];
-        if(_$lib_166.isPlainObject(newValObject)) valObject = newValObject;
+        if(__isPlainObject_201(newValObject)) valObject = newValObject;
         else break;
 
         if(i === parts.length - 1) break;
@@ -23478,7 +23573,7 @@ function getTraceAttributes(type) {
         basePlotModule = {};
     }
     else {
-        _module = _$registry_258.modules[type]._module,
+        _module = _$registry_259.modules[type]._module,
         basePlotModule = _module.basePlotModule;
     }
 
@@ -23488,14 +23583,14 @@ function getTraceAttributes(type) {
     attributes.type = null;
 
     // base attributes (same for all trace types)
-    __extendDeepAll_200(attributes, _$attributes_206);
+    __extendDeepAll_201(attributes, _$attributes_207);
 
     // module attributes
-    __extendDeepAll_200(attributes, _module.attributes);
+    __extendDeepAll_201(attributes, _module.attributes);
 
     // subplot attributes
     if(basePlotModule.attributes) {
-        __extendDeepAll_200(attributes, basePlotModule.attributes);
+        __extendDeepAll_201(attributes, basePlotModule.attributes);
     }
 
     // 'type' gets overwritten by baseAttributes; reset it here
@@ -23510,7 +23605,7 @@ function getTraceAttributes(type) {
     if(_module.layoutAttributes) {
         var layoutAttributes = {};
 
-        __extendDeepAll_200(layoutAttributes, _module.layoutAttributes);
+        __extendDeepAll_201(layoutAttributes, _module.layoutAttributes);
         out.layoutAttributes = formatAttributes(layoutAttributes);
     }
 
@@ -23522,21 +23617,20 @@ function getLayoutAttributes() {
     var key, _module;
 
     // global layout attributes
-    __extendDeepAll_200(layoutAttributes, _$layout_attributes_248);
+    __extendDeepAll_201(layoutAttributes, _$layout_attributes_248);
 
     // add base plot module layout attributes
-    for(key in _$registry_258.subplotsRegistry) {
-        _module = _$registry_258.subplotsRegistry[key];
+    for(key in _$registry_259.subplotsRegistry) {
+        _module = _$registry_259.subplotsRegistry[key];
 
         if(!_module.layoutAttributes) continue;
 
-        if(_module.name === 'cartesian') {
-            handleBasePlotModule(layoutAttributes, _module, 'xaxis');
-            handleBasePlotModule(layoutAttributes, _module, 'yaxis');
-        }
-        else {
+        if(Array.isArray(_module.attr)) {
+            for(var i = 0; i < _module.attr.length; i++) {
+                handleBasePlotModule(layoutAttributes, _module, _module.attr[i]);
+            }
+        } else {
             var astr = _module.attr === 'subplot' ? _module.name : _module.attr;
-
             handleBasePlotModule(layoutAttributes, _module, astr);
         }
     }
@@ -23545,8 +23639,8 @@ function getLayoutAttributes() {
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
 
     // add registered components layout attributes
-    for(key in _$registry_258.componentsRegistry) {
-        _module = _$registry_258.componentsRegistry[key];
+    for(key in _$registry_259.componentsRegistry) {
+        _module = _$registry_259.componentsRegistry[key];
         var schema = _module.schema;
 
         /*
@@ -23577,12 +23671,12 @@ function getLayoutAttributes() {
 }
 
 function getTransformAttributes(type) {
-    var _module = _$registry_258.transformsRegistry[type];
-    var attributes = __extendDeepAll_200({}, _module.attributes);
+    var _module = _$registry_259.transformsRegistry[type];
+    var attributes = __extendDeepAll_201({}, _module.attributes);
 
     // add registered components transform attributes
-    Object.keys(_$registry_258.componentsRegistry).forEach(function(k) {
-        var _module = _$registry_258.componentsRegistry[k];
+    Object.keys(_$registry_259.componentsRegistry).forEach(function(k) {
+        var _module = _$registry_259.componentsRegistry[k];
 
         if(_module.schema && _module.schema.transforms && _module.schema.transforms[type]) {
             Object.keys(_module.schema.transforms[type]).forEach(function(v) {
@@ -23598,7 +23692,7 @@ function getTransformAttributes(type) {
 
 function getFramesAttributes() {
     var attrs = {
-        frames: _$lib_166.extendDeepAll({}, _$frame_attributes_237)
+        frames: _$lib_167.extendDeepAll({}, _$frame_attributes_237)
     };
 
     formatAttributes(attrs);
@@ -23609,6 +23703,7 @@ function getFramesAttributes() {
 function formatAttributes(attrs) {
     mergeValTypeAndRole(attrs);
     formatArrayContainers(attrs);
+    stringify(attrs);
 
     return attrs;
 }
@@ -23625,7 +23720,7 @@ function mergeValTypeAndRole(attrs) {
     }
 
     function callback(attr, attrName, attrs) {
-        if(_$plot_schema_200.isValObject(attr)) {
+        if(_$plot_schema_201.isValObject(attr)) {
             if(attr.valType === 'data_array') {
                 // all 'data_array' attrs have role 'data'
                 attr.role = 'data';
@@ -23637,13 +23732,13 @@ function mergeValTypeAndRole(attrs) {
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
             }
         }
-        else if(_$lib_166.isPlainObject(attr)) {
+        else if(__isPlainObject_201(attr)) {
             // all attrs container objects get role 'object'
             attr.role = 'object';
         }
     }
 
-    _$plot_schema_200.crawl(attrs, callback);
+    _$plot_schema_201.crawl(attrs, callback);
 }
 
 function formatArrayContainers(attrs) {
@@ -23662,35 +23757,58 @@ function formatArrayContainers(attrs) {
         attrs[attrName].role = 'object';
     }
 
-    _$plot_schema_200.crawl(attrs, callback);
+    _$plot_schema_201.crawl(attrs, callback);
+}
+
+// this can take around 10ms and should only be run from PlotSchema.get(),
+// to ensure JSON.stringify(PlotSchema.get()) gives the intended result.
+function stringify(attrs) {
+    function walk(attr) {
+        for(var k in attr) {
+            if(__isPlainObject_201(attr[k])) {
+                walk(attr[k]);
+            } else if(Array.isArray(attr[k])) {
+                for(var i = 0; i < attr[k].length; i++) {
+                    walk(attr[k][i]);
+                }
+            } else {
+                // as JSON.stringify(/test/) // => {}
+                if(attr[k] instanceof RegExp) {
+                    attr[k] = attr[k].toString();
+                }
+            }
+        }
+    }
+
+    walk(attrs);
 }
 
 function assignPolarLayoutAttrs(layoutAttributes) {
-    __extendFlat_200(layoutAttributes, {
+    __extendFlat_201(layoutAttributes, {
         radialaxis: _$axis_attributes_252.radialaxis,
         angularaxis: _$axis_attributes_252.angularaxis
     });
 
-    __extendFlat_200(layoutAttributes, _$axis_attributes_252.layout);
+    __extendFlat_201(layoutAttributes, _$axis_attributes_252.layout);
 
     return layoutAttributes;
 }
 
 function handleBasePlotModule(layoutAttributes, _module, astr) {
-    var np = _$lib_166.nestedProperty(layoutAttributes, astr),
-        attrs = __extendDeepAll_200({}, _module.layoutAttributes);
+    var np = _$lib_167.nestedProperty(layoutAttributes, astr),
+        attrs = __extendDeepAll_201({}, _module.layoutAttributes);
 
     attrs[IS_SUBPLOT_OBJ] = true;
     np.set(attrs);
 }
 
 function insertAttrs(baseAttrs, newAttrs, astr) {
-    var np = _$lib_166.nestedProperty(baseAttrs, astr);
+    var np = _$lib_167.nestedProperty(baseAttrs, astr);
 
-    np.set(__extendDeepAll_200(np.get() || {}, newAttrs));
+    np.set(__extendDeepAll_201(np.get() || {}, newAttrs));
 }
 
-var _$axis_ids_212 = {};
+var _$axis_ids_213 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -23701,30 +23819,30 @@ var _$axis_ids_212 = {};
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 
-/* removed: var _$constants_214 = require('./constants'); */;
+/* removed: var _$constants_215 = require('./constants'); */;
 
 
 // convert between axis names (xaxis, xaxis2, etc, elements of gd.layout)
 // and axis id's (x, x2, etc). Would probably have ditched 'xaxis'
 // completely in favor of just 'x' if it weren't ingrained in the API etc.
-_$axis_ids_212.id2name = function id2name(id) {
-    if(typeof id !== 'string' || !id.match(_$constants_214.AX_ID_PATTERN)) return;
+_$axis_ids_213.id2name = function id2name(id) {
+    if(typeof id !== 'string' || !id.match(_$constants_215.AX_ID_PATTERN)) return;
     var axNum = id.substr(1);
     if(axNum === '1') axNum = '';
     return id.charAt(0) + 'axis' + axNum;
 };
 
-_$axis_ids_212.name2id = function name2id(name) {
-    if(!name.match(_$constants_214.AX_NAME_PATTERN)) return;
+_$axis_ids_213.name2id = function name2id(name) {
+    if(!name.match(_$constants_215.AX_NAME_PATTERN)) return;
     var axNum = name.substr(5);
     if(axNum === '1') axNum = '';
     return name.charAt(0) + axNum;
 };
 
-_$axis_ids_212.cleanId = function cleanId(id, axLetter) {
-    if(!id.match(_$constants_214.AX_ID_PATTERN)) return;
+_$axis_ids_213.cleanId = function cleanId(id, axLetter) {
+    if(!id.match(_$constants_215.AX_ID_PATTERN)) return;
     if(axLetter && id.charAt(0) !== axLetter) return;
 
     var axNum = id.substr(1).replace(/^0+/, '');
@@ -23733,11 +23851,11 @@ _$axis_ids_212.cleanId = function cleanId(id, axLetter) {
 };
 
 // get all axis objects, as restricted in listNames
-_$axis_ids_212.list = function(gd, axLetter, only2d) {
+_$axis_ids_213.list = function(gd, axLetter, only2d) {
     var fullLayout = gd._fullLayout;
     if(!fullLayout) return [];
 
-    var idList = _$axis_ids_212.listIds(gd, axLetter);
+    var idList = _$axis_ids_213.listIds(gd, axLetter);
     var out = new Array(idList.length);
     var i;
 
@@ -23762,7 +23880,7 @@ _$axis_ids_212.list = function(gd, axLetter, only2d) {
 
 // get all axis ids, optionally restricted by letter
 // this only makes sense for 2d axes
-_$axis_ids_212.listIds = function(gd, axLetter) {
+_$axis_ids_213.listIds = function(gd, axLetter) {
     var fullLayout = gd._fullLayout;
     if(!fullLayout) return [];
 
@@ -23773,35 +23891,35 @@ _$axis_ids_212.listIds = function(gd, axLetter) {
 
 // get an axis object from its id 'x','x2' etc
 // optionally, id can be a subplot (ie 'x2y3') and type gets x or y from it
-_$axis_ids_212.getFromId = function(gd, id, type) {
+_$axis_ids_213.getFromId = function(gd, id, type) {
     var fullLayout = gd._fullLayout;
 
     if(type === 'x') id = id.replace(/y[0-9]*/, '');
     else if(type === 'y') id = id.replace(/x[0-9]*/, '');
 
-    return fullLayout[_$axis_ids_212.id2name(id)];
+    return fullLayout[_$axis_ids_213.id2name(id)];
 };
 
 // get an axis object of specified type from the containing trace
-_$axis_ids_212.getFromTrace = function(gd, fullTrace, type) {
+_$axis_ids_213.getFromTrace = function(gd, fullTrace, type) {
     var fullLayout = gd._fullLayout;
     var ax = null;
 
-    if(_$registry_258.traceIs(fullTrace, 'gl3d')) {
+    if(_$registry_259.traceIs(fullTrace, 'gl3d')) {
         var scene = fullTrace.scene;
         if(scene.substr(0, 5) === 'scene') {
             ax = fullLayout[scene][type + 'axis'];
         }
     }
     else {
-        ax = _$axis_ids_212.getFromId(gd, fullTrace[type + 'axis'] || type);
+        ax = _$axis_ids_213.getFromId(gd, fullTrace[type + 'axis'] || type);
     }
 
     return ax;
 };
 
 // sort x, x2, x10, y, y2, y10...
-_$axis_ids_212.idSort = function(id1, id2) {
+_$axis_ids_213.idSort = function(id1, id2) {
     var letter1 = id1.charAt(0);
     var letter2 = id2.charAt(0);
     if(letter1 !== letter2) return letter1 > letter2 ? 1 : -1;
@@ -23819,8 +23937,8 @@ var _$command_234 = {};
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../registry'); */;
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$registry_259 = require('../registry'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 
 /*
  * Create or update an observer. This function is designed to be
@@ -23924,7 +24042,7 @@ _$command_234.manageCommandObserver = function(gd, container, commandList, oncha
     } else {
         // TODO: It'd be really neat to actually give a *reason* for this, but at least a warning
         // is a start
-        _$lib_166.log('Unable to automatically bind plot updates to API command');
+        _$lib_167.log('Unable to automatically bind plot updates to API command');
 
         ret.lookupTable = {};
         ret.remove = function() {};
@@ -24042,7 +24160,7 @@ function bindingValueHasChanged(gd, binding, cache) {
         return false;
     }
 
-    value = _$lib_166.nestedProperty(container, binding.prop).get();
+    value = _$lib_167.nestedProperty(container, binding.prop).get();
 
     obj = cache[binding.type] = cache[binding.type] || {};
 
@@ -24074,7 +24192,7 @@ function bindingValueHasChanged(gd, binding, cache) {
 _$command_234.executeAPICommand = function(gd, method, args) {
     if(method === 'skip') return Promise.resolve();
 
-    var _method = _$registry_258.apiMethodRegistry[method];
+    var _method = _$registry_259.apiMethodRegistry[method];
     var allArgs = [gd];
     if(!Array.isArray(args)) args = [];
 
@@ -24083,7 +24201,7 @@ _$command_234.executeAPICommand = function(gd, method, args) {
     }
 
     return _method.apply(null, allArgs).catch(function(err) {
-        _$lib_166.warn('API call to Plotly.' + method + ' rejected.', err);
+        _$lib_167.warn('API call to Plotly.' + method + ' rejected.', err);
         return Promise.reject(err);
     });
 };
@@ -24133,7 +24251,7 @@ function computeLayoutBindings(gd, args) {
     var aobj = {};
     if(typeof astr === 'string') {
         aobj[astr] = args[1];
-    } else if(_$lib_166.isPlainObject(astr)) {
+    } else if(_$lib_167.isPlainObject(astr)) {
         aobj = astr;
     } else {
         return bindings;
@@ -24157,7 +24275,7 @@ function computeDataBindings(gd, args) {
     aobj = {};
     if(typeof astr === 'string') {
         aobj[astr] = val;
-    } else if(_$lib_166.isPlainObject(astr)) {
+    } else if(_$lib_167.isPlainObject(astr)) {
         // the 3-arg form
         aobj = astr;
 
@@ -24223,7 +24341,7 @@ function crawl(attrs, callback, path, depth) {
 
         var thisPath = path + (depth > 0 ? '.' : '') + attrName;
 
-        if(_$lib_166.isPlainObject(attr)) {
+        if(_$lib_167.isPlainObject(attr)) {
             crawl(attr, callback, thisPath, depth + 1);
         } else {
             // Only execute the callback on leaf nodes:
@@ -24231,6 +24349,32 @@ function crawl(attrs, callback, path, depth) {
         }
     });
 }
+
+/**
+* Copyright 2012-2018, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+'use strict';
+
+// always plot splom before cartesian (i.e. scattergl traces)
+function sortModules(a, b) {
+    if(a === 'splom') return -1;
+    if(b === 'splom') return 1;
+    return 0;
+}
+
+function sortBasePlotModules(a, b) {
+    return sortModules(a.name, b.name);
+}
+
+var _$sort_modules_257 = {
+    sortBasePlotModules: sortBasePlotModules,
+    sortModules: sortModules
+};
 
 var _$plots_250 = {};
 /**
@@ -24247,25 +24391,27 @@ var _$plots_250 = {};
 /* removed: var _$d3_8 = require('d3'); */;
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$registry_258 = require('../registry'); */;
-/* removed: var _$plot_schema_200 = require('../plot_api/plot_schema'); */;
-/* removed: var _$axis_ids_212 = require('../plots/cartesian/axis_ids'); */;
-/* removed: var _$lib_166 = require('../lib'); */;
-var _ = _$lib_166._;
+/* removed: var _$registry_259 = require('../registry'); */;
+/* removed: var _$plot_schema_201 = require('../plot_api/plot_schema'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 /* removed: var _$color_45 = require('../components/color'); */;
 var __BADNUM_250 = _$numerical_147.BADNUM;
 
-var plots = _$plots_250 = {};
+/* removed: var _$axis_ids_213 = require('../plots/cartesian/axis_ids'); */;
+var __sortBasePlotModules_250 = _$sort_modules_257.sortBasePlotModules;
 
-/* removed: var _$animation_attributes_204 = require('./animation_attributes'); */;
+/* removed: var _$animation_attributes_205 = require('./animation_attributes'); */;
 /* removed: var _$frame_attributes_237 = require('./frame_attributes'); */;
 
-var relinkPrivateKeys = _$lib_166.relinkPrivateKeys;
+var relinkPrivateKeys = _$lib_167.relinkPrivateKeys;
+var _ = _$lib_167._;
+
+var plots = _$plots_250 = {};
 
 // Expose registry methods on Plots for backward-compatibility
-_$lib_166.extendFlat(plots, _$registry_258);
+_$lib_167.extendFlat(plots, _$registry_259);
 
-plots.attributes = _$attributes_206;
+plots.attributes = _$attributes_207;
 plots.attributes.type.values = plots.allTypes;
 plots.fontAttrs = _$font_attributes_236;
 plots.layoutAttributes = _$layout_attributes_248;
@@ -24285,15 +24431,15 @@ plots.hasSimpleAPICommandBindings = _$command_234.hasSimpleAPICommandBindings;
 // the text is at first, so it needs to draw it,
 // then wait a little, then draw it again
 plots.redrawText = function(gd) {
-    gd = _$lib_166.getGraphDiv(gd);
+    gd = _$lib_167.getGraphDiv(gd);
 
     // do not work if polar is present
     if((gd.data && gd.data[0] && gd.data[0].r)) return;
 
     return new Promise(function(resolve) {
         setTimeout(function() {
-            _$registry_258.getComponentMethod('annotations', 'draw')(gd);
-            _$registry_258.getComponentMethod('legend', 'draw')(gd);
+            _$registry_259.getComponentMethod('annotations', 'draw')(gd);
+            _$registry_259.getComponentMethod('legend', 'draw')(gd);
 
             (gd.calcdata || []).forEach(function(d) {
                 if(d[0] && d[0].t && d[0].t.cb) d[0].t.cb();
@@ -24306,7 +24452,7 @@ plots.redrawText = function(gd) {
 
 // resize plot about the container size
 plots.resize = function(gd) {
-    gd = _$lib_166.getGraphDiv(gd);
+    gd = _$lib_167.getGraphDiv(gd);
 
     return new Promise(function(resolve, reject) {
 
@@ -24337,7 +24483,7 @@ plots.resize = function(gd) {
             // nor should it be included in the undo queue
             gd.autoplay = true;
 
-            _$registry_258.call('relayout', gd, {autosize: true}).then(function() {
+            _$registry_259.call('relayout', gd, {autosize: true}).then(function() {
                 gd.changed = oldchanged;
                 resolve(gd);
             });
@@ -24367,12 +24513,8 @@ plots.addLinks = function(gd) {
 
     var fullLayout = gd._fullLayout;
 
-    var linkContainer = fullLayout._paper
-        .selectAll('text.js-plot-link-container').data([0]);
-
-    linkContainer.enter().append('text')
-        .classed('js-plot-link-container', true)
-        .style({
+    var linkContainer = _$lib_167.ensureSingle(fullLayout._paper, 'text', 'js-plot-link-container', function(s) {
+        s.style({
             'font-family': '"Open Sans", Arial, sans-serif',
             'font-size': '12px',
             'fill': _$color_45.defaultLine,
@@ -24384,12 +24526,11 @@ plots.addLinks = function(gd) {
             links.append('tspan').classed('js-link-spacer', true);
             links.append('tspan').classed('js-sourcelinks', true);
         });
+    });
 
     // The text node inside svg
-    var text = linkContainer.node(),
-        attrs = {
-            y: fullLayout._paper.attr('height') - 9
-        };
+    var text = linkContainer.node();
+    var attrs = {y: fullLayout._paper.attr('height') - 9};
 
     // If text's width is bigger than the layout
     // Check that text is a child node or document.body
@@ -24527,6 +24668,8 @@ plots.supplyDefaults = function(gd) {
     var newFullData = gd._fullData = [];
     var newData = gd.data || [];
 
+    var oldCalcdata = gd.calcdata || [];
+
     var context = gd._context || {};
 
     var i;
@@ -24561,7 +24704,6 @@ plots.supplyDefaults = function(gd) {
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
-
     if(oldFullLayout._initialAutoSizeIsDone) {
 
         // coerce the updated layout while preserving width and height
@@ -24604,11 +24746,37 @@ plots.supplyDefaults = function(gd) {
     // clear the lists of trace and baseplot modules, and subplots
     newFullLayout._modules = [];
     newFullLayout._basePlotModules = [];
-    newFullLayout._subplots = emptySubplotLists();
+    var subplots = newFullLayout._subplots = emptySubplotLists();
+
+    // initialize axis and subplot hash objects for splom-generated grids
+    var splomAxes = newFullLayout._splomAxes = {x: {}, y: {}};
+    var splomSubplots = newFullLayout._splomSubplots = {};
+
+    // for traces to request a default rangeslider on their x axes
+    // eg set `_requestRangeslider.x2 = true` for xaxis2
+    newFullLayout._requestRangeslider = {};
 
     // then do the data
     newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
     plots.supplyDataDefaults(newData, newFullData, newLayout, newFullLayout);
+
+    // redo grid size defaults with info about splom x/y axes,
+    // and fill in generated cartesian axes and subplots
+    var splomXa = Object.keys(splomAxes.x);
+    var splomYa = Object.keys(splomAxes.y);
+    if(splomXa.length > 1 && splomYa.length > 1) {
+        _$registry_259.getComponentMethod('grid', 'sizeDefaults')(newLayout, newFullLayout);
+
+        for(i = 0; i < splomXa.length; i++) {
+            _$lib_167.pushUnique(subplots.xaxis, splomXa[i]);
+        }
+        for(i = 0; i < splomYa.length; i++) {
+            _$lib_167.pushUnique(subplots.yaxis, splomYa[i]);
+        }
+        for(var k in splomSubplots) {
+            _$lib_167.pushUnique(subplots.cartesian, k);
+        }
+    }
 
     // attach helper method to check whether a plot type is present on graph
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
@@ -24620,7 +24788,7 @@ plots.supplyDefaults = function(gd) {
         if(_module.cleanData) _module.cleanData(newFullData);
     }
 
-    if(oldFullData.length === newData.length) {
+    if(oldFullData.length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
             relinkPrivateKeys(newFullData[i], oldFullData[i]);
         }
@@ -24628,6 +24796,17 @@ plots.supplyDefaults = function(gd) {
 
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData, gd._transitionData);
+
+    // turn on flag to optimize large splom-only graphs
+    // mostly by omitting SVG layers during Cartesian.drawFramework
+    newFullLayout._hasOnlyLargeSploms = (
+        newFullLayout._basePlotModules.length === 1 &&
+        newFullLayout._basePlotModules[0].name === 'splom' &&
+        splomXa.length > 15 &&
+        splomYa.length > 15 &&
+        newFullLayout.shapes.length === 0 &&
+        newFullLayout.images.length === 0
+    );
 
     // TODO remove in v2.0.0
     // add has-plot-type refs to fullLayout for backward compatibility
@@ -24639,7 +24818,7 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._hasPie = newFullLayout._has('pie');
 
     // clean subplots and other artifacts from previous plot calls
-    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
+    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
 
     // relink / initialize subplot axis objects
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
@@ -24651,17 +24830,17 @@ plots.supplyDefaults = function(gd) {
     plots.doAutoMargin(gd);
 
     // set scale after auto margin routine
-    var axList = _$axis_ids_212.list(gd);
+    var axList = _$axis_ids_213.list(gd);
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         ax.setScale();
     }
 
     // update object references in calcdata
-    if((gd.calcdata || []).length === newFullData.length) {
+    if(oldCalcdata.length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
             var newTrace = newFullData[i];
-            var cd0 = gd.calcdata[i][0];
+            var cd0 = oldCalcdata[i][0];
             if(cd0 && cd0.trace) {
                 if(cd0.trace._hasCalcTransform) {
                     remapTransformedArrays(cd0, newTrace);
@@ -24671,6 +24850,9 @@ plots.supplyDefaults = function(gd) {
             }
         }
     }
+
+    // sort base plot modules for consistent ordering
+    newFullLayout._basePlotModules.sort(__sortBasePlotModules_250);
 };
 
 /**
@@ -24689,7 +24871,7 @@ function emptySubplotLists() {
     if(!collectableSubplotTypes) {
         collectableSubplotTypes = [];
 
-        var subplotsRegistry = _$registry_258.subplotsRegistry;
+        var subplotsRegistry = _$registry_259.subplotsRegistry;
 
         for(var subplotType in subplotsRegistry) {
             var subplotModule = subplotsRegistry[subplotType];
@@ -24702,7 +24884,7 @@ function emptySubplotLists() {
                 // we need to enumerate axes, not just subplots
                 if(Array.isArray(subplotAttr)) {
                     for(j = 0; j < subplotAttr.length; j++) {
-                        _$lib_166.pushUnique(collectableSubplotTypes, subplotAttr[j]);
+                        _$lib_167.pushUnique(collectableSubplotTypes, subplotAttr[j]);
                     }
                 }
             }
@@ -24723,14 +24905,14 @@ function remapTransformedArrays(cd0, newTrace) {
 
     for(i = 0; i < arrayAttrs.length; i++) {
         astr = arrayAttrs[i];
-        transformedArrayHash[astr] = _$lib_166.nestedProperty(oldTrace, astr).get().slice();
+        transformedArrayHash[astr] = _$lib_167.nestedProperty(oldTrace, astr).get().slice();
     }
 
     cd0.trace = newTrace;
 
     for(i = 0; i < arrayAttrs.length; i++) {
         astr = arrayAttrs[i];
-        _$lib_166.nestedProperty(cd0.trace, astr).set(transformedArrayHash[astr]);
+        _$lib_167.nestedProperty(cd0.trace, astr).set(transformedArrayHash[astr]);
     }
 }
 
@@ -24775,7 +24957,7 @@ function getFormatObj(gd, formatKeys) {
                 includeFormat(formatj);
                 if(formatDone) break;
             }
-            locales = _$registry_258.localeRegistry;
+            locales = _$registry_259.localeRegistry;
         }
 
         var baseLocale = locale.split('-')[0];
@@ -24784,7 +24966,7 @@ function getFormatObj(gd, formatKeys) {
     }
 
     // lastly pick out defaults from english (non-US, as DMY is so much more common)
-    if(!formatDone) includeFormat(_$registry_258.localeRegistry.en.format);
+    if(!formatDone) includeFormat(_$registry_259.localeRegistry.en.format);
 
     return formatObj;
 }
@@ -24836,30 +25018,28 @@ plots.createTransitionData = function(gd) {
 // whether a certain plot type is present on plot
 // or trace has a category
 plots._hasPlotType = function(category) {
-    // check plot
-    var basePlotModules = this._basePlotModules || [];
     var i;
 
+    // check base plot modules
+    var basePlotModules = this._basePlotModules || [];
     for(i = 0; i < basePlotModules.length; i++) {
-        var _module = basePlotModules[i];
-
-        if(_module.name === category) return true;
+        if(basePlotModules[i].name === category) return true;
     }
 
-    // check trace
+    // check trace modules
     var modules = this._modules || [];
-
     for(i = 0; i < modules.length; i++) {
-        var modulei = modules[i];
-        if(modulei.categories && modulei.categories.indexOf(category) >= 0) {
-            return true;
-        }
+        var name = modules[i].name;
+        if(name === category) return true;
+        // N.B. this is modules[i] along with 'categories' as a hash object
+        var _module = _$registry_259.modules[name];
+        if(_module && _module.categories[category]) return true;
     }
 
     return false;
 };
 
-plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata) {
     var i, j;
 
     var basePlotModules = oldFullLayout._basePlotModules || [];
@@ -24867,7 +25047,7 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
         var _module = basePlotModules[i];
 
         if(_module.clean) {
-            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
+            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
         }
     }
 
@@ -24939,8 +25119,8 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     for(i = 0; i < ids.length; i++) {
         id = ids[i];
         var oldSubplot = oldSubplots[id];
-        var xaxis = _$axis_ids_212.getFromId(mockGd, id, 'x');
-        var yaxis = _$axis_ids_212.getFromId(mockGd, id, 'y');
+        var xaxis = _$axis_ids_213.getFromId(mockGd, id, 'x');
+        var yaxis = _$axis_ids_213.getFromId(mockGd, id, 'y');
         var plotinfo;
 
         if(oldSubplot) {
@@ -24985,13 +25165,13 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
     // while we're at it, link overlaying axes to their main axes and
     // anchored axes to the axes they're anchored to
-    var axList = _$axis_ids_212.list(mockGd, null, true);
+    var axList = _$axis_ids_213.list(mockGd, null, true);
     for(i = 0; i < axList.length; i++) {
         ax = axList[i];
         var mainAx = null;
 
         if(ax.overlaying) {
-            mainAx = _$axis_ids_212.getFromId(mockGd, ax.overlaying);
+            mainAx = _$axis_ids_213.getFromId(mockGd, ax.overlaying);
 
             // you cannot overlay an axis that's already overlaying another
             if(mainAx && mainAx.overlaying) {
@@ -25013,7 +25193,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
         ax._anchorAxis = ax.anchor === 'free' ?
             null :
-            _$axis_ids_212.getFromId(mockGd, ax.anchor);
+            _$axis_ids_213.getFromId(mockGd, ax.anchor);
     }
 
     for(i = 0; i < axList.length; i++) {
@@ -25042,7 +25222,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
                 var counterPart = isX ? id.substr(yIndex) : id.substr(0, yIndex);
                 if(idPart === ax._id) {
                     if(!nextBestMainSubplotID) nextBestMainSubplotID = id;
-                    var counterAx = _$axis_ids_212.getFromId(mockGd, counterPart);
+                    var counterAx = _$axis_ids_213.getFromId(mockGd, counterPart);
                     if(anchorID && counterAx.overlaying === anchorID) {
                         mainSubplotID = id;
                         break;
@@ -25083,17 +25263,17 @@ plots.clearExpandedTraceDefaultColors = function(trace) {
     // Or else compute and cache the colorAttrs on the module:
     if(!colorAttrs) {
         trace._module._colorAttrs = colorAttrs = [];
-        _$plot_schema_200.crawl(
+        _$plot_schema_201.crawl(
             trace._module.attributes,
             locateColorAttrs
         );
     }
 
     for(i = 0; i < colorAttrs.length; i++) {
-        var origprop = _$lib_166.nestedProperty(trace, '_input.' + colorAttrs[i]);
+        var origprop = _$lib_167.nestedProperty(trace, '_input.' + colorAttrs[i]);
 
         if(!origprop.get()) {
-            _$lib_166.nestedProperty(trace, colorAttrs[i]).set(null);
+            _$lib_167.nestedProperty(trace, colorAttrs[i]).set(null);
         }
     }
 };
@@ -25115,8 +25295,8 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         var _module = fullTrace._module;
         if(!_module) return;
 
-        if(fullTrace.visible === true) _$lib_166.pushUnique(modules, _module);
-        _$lib_166.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
+        if(fullTrace.visible === true) _$lib_167.pushUnique(modules, _module);
+        _$lib_167.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
 
         cnt++;
 
@@ -25176,11 +25356,11 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
             pushModule(fullTrace);
         }
 
-        if(_$registry_258.traceIs(fullTrace, 'carpetAxis')) {
+        if(_$registry_259.traceIs(fullTrace, 'carpetAxis')) {
             carpetIndex[fullTrace.carpet] = fullTrace;
         }
 
-        if(_$registry_258.traceIs(fullTrace, 'carpetDependent')) {
+        if(_$registry_259.traceIs(fullTrace, 'carpetDependent')) {
             carpetDependents.push(i);
         }
     }
@@ -25209,7 +25389,7 @@ plots.supplyAnimationDefaults = function(opts) {
     var optsOut = {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(opts || {}, optsOut, _$animation_attributes_204, attr, dflt);
+        return _$lib_167.coerce(opts || {}, optsOut, _$animation_attributes_205, attr, dflt);
     }
 
     coerce('mode');
@@ -25241,7 +25421,7 @@ plots.supplyAnimationFrameDefaults = function(opts) {
     var optsOut = {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(opts || {}, optsOut, _$animation_attributes_204.frame, attr, dflt);
+        return _$lib_167.coerce(opts || {}, optsOut, _$animation_attributes_205.frame, attr, dflt);
     }
 
     coerce('duration');
@@ -25254,7 +25434,7 @@ plots.supplyAnimationTransitionDefaults = function(opts) {
     var optsOut = {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(opts || {}, optsOut, _$animation_attributes_204.transition, attr, dflt);
+        return _$lib_167.coerce(opts || {}, optsOut, _$animation_attributes_205.transition, attr, dflt);
     }
 
     coerce('duration');
@@ -25267,7 +25447,7 @@ plots.supplyFrameDefaults = function(frameIn) {
     var frameOut = {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(frameIn, frameOut, _$frame_attributes_237, attr, dflt);
+        return _$lib_167.coerce(frameIn, frameOut, _$frame_attributes_237, attr, dflt);
     }
 
     coerce('group');
@@ -25288,7 +25468,7 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
     var i;
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
+        return _$lib_167.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
     }
 
     var visible = coerce('visible');
@@ -25304,9 +25484,9 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
     if(_module) {
         var basePlotModule = _module.basePlotModule;
         var subplotAttr = basePlotModule.attr;
-        if(subplotAttr) {
+        var subplotAttrs = basePlotModule.attributes;
+        if(subplotAttr && subplotAttrs) {
             var subplots = layout._subplots;
-            var subplotAttrs = basePlotModule.attributes;
             var subplotId = '';
 
             // TODO - currently if we draw an empty gl2d subplot, it draws
@@ -25316,18 +25496,18 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
                 if(Array.isArray(subplotAttr)) {
                     for(i = 0; i < subplotAttr.length; i++) {
                         var attri = subplotAttr[i];
-                        var vali = _$lib_166.coerce(traceIn, traceOut, subplotAttrs, attri);
+                        var vali = _$lib_167.coerce(traceIn, traceOut, subplotAttrs, attri);
 
-                        if(subplots[attri]) _$lib_166.pushUnique(subplots[attri], vali);
+                        if(subplots[attri]) _$lib_167.pushUnique(subplots[attri], vali);
                         subplotId += vali;
                     }
                 }
                 else {
-                    subplotId = _$lib_166.coerce(traceIn, traceOut, subplotAttrs, subplotAttr);
+                    subplotId = _$lib_167.coerce(traceIn, traceOut, subplotAttrs, subplotAttr);
                 }
 
                 if(subplots[basePlotModule.name]) {
-                    _$lib_166.pushUnique(subplots[basePlotModule.name], subplotId);
+                    _$lib_167.pushUnique(subplots[basePlotModule.name], subplotId);
                 }
             }
         }
@@ -25337,12 +25517,12 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
         coerce('customdata');
         coerce('ids');
 
-        if(_$registry_258.traceIs(traceOut, 'showLegend')) {
+        if(_$registry_259.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
             coerce('legendgroup');
         }
 
-        _$registry_258.getComponentMethod(
+        _$registry_259.getComponentMethod(
             'fx',
             'supplyDefaults'
         )(traceIn, traceOut, defaultColor, layout);
@@ -25351,12 +25531,12 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
 
         if(_module) {
             _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            _$lib_166.coerceHoverinfo(traceIn, traceOut, layout);
+            _$lib_167.coerceHoverinfo(traceIn, traceOut, layout);
         }
 
-        if(!_$registry_258.traceIs(traceOut, 'noOpacity')) coerce('opacity');
+        if(!_$registry_259.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
-        if(_$registry_258.traceIs(traceOut, 'notLegendIsolatable')) {
+        if(_$registry_259.traceIs(traceOut, 'notLegendIsolatable')) {
             // This clears out the legendonly state for traces like carpet that
             // cannot be isolated in the legend
             traceOut.visible = !!traceOut.visible;
@@ -25400,17 +25580,17 @@ plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
         var isFirstStage = !(transformIn._module && transformIn._module === _module),
             doLaterStages = _module && typeof _module.transform === 'function';
 
-        if(!_module) _$lib_166.warn('Unrecognized transform type ' + type + '.');
+        if(!_module) _$lib_167.warn('Unrecognized transform type ' + type + '.');
 
         if(_module && _module.supplyDefaults && (isFirstStage || doLaterStages)) {
             transformOut = _module.supplyDefaults(transformIn, traceOut, layout, traceIn);
             transformOut.type = type;
             transformOut._module = _module;
 
-            _$lib_166.pushUnique(transformModules, _module);
+            _$lib_167.pushUnique(transformModules, _module);
         }
         else {
-            transformOut = _$lib_166.extendFlat({}, transformIn);
+            transformOut = _$lib_167.extendFlat({}, transformIn);
         }
 
         containerOut.push(transformOut);
@@ -25442,14 +25622,14 @@ function applyTransforms(fullTrace, fullData, layout, fullLayout) {
 
 plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
+        return _$lib_167.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
     }
 
-    var globalFont = _$lib_166.coerceFont(coerce, 'font');
+    var globalFont = _$lib_167.coerceFont(coerce, 'font');
 
     coerce('title', layoutOut._dfltTitle.plot);
 
-    _$lib_166.coerceFont(coerce, 'titlefont', {
+    _$lib_167.coerceFont(coerce, 'titlefont', {
         family: globalFont.family,
         size: Math.round(globalFont.size * 1.4),
         color: globalFont.color
@@ -25477,7 +25657,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     if(layoutIn.width && layoutIn.height) plots.sanitizeMargins(layoutOut);
 
-    _$registry_258.getComponentMethod('grid', 'sizeDefaults')(layoutIn, layoutOut);
+    _$registry_259.getComponentMethod('grid', 'sizeDefaults')(layoutIn, layoutOut);
 
     coerce('paper_bgcolor');
 
@@ -25488,12 +25668,12 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('datarevision');
 
-    _$registry_258.getComponentMethod(
+    _$registry_259.getComponentMethod(
         'calendars',
         'handleDefaults'
     )(layoutIn, layoutOut, 'calendar');
 
-    _$registry_258.getComponentMethod(
+    _$registry_259.getComponentMethod(
         'fx',
         'supplyLayoutGlobalDefaults'
     )(layoutIn, layoutOut, coerce);
@@ -25505,7 +25685,7 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
         newWidth,
         newHeight;
 
-    var isPlotDiv = _$lib_166.isPlotDiv(gd);
+    var isPlotDiv = _$lib_167.isPlotDiv(gd);
 
     if(isPlotDiv) gd.emit('plotly_autosize');
 
@@ -25593,11 +25773,11 @@ function calculateReservedMargins(margins) {
 }
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, transitionData) {
-    var componentsRegistry = _$registry_258.componentsRegistry;
+    var componentsRegistry = _$registry_259.componentsRegistry;
     var basePlotModules = layoutOut._basePlotModules;
     var component, i, _module;
 
-    var Cartesian = _$registry_258.subplotsRegistry.cartesian;
+    var Cartesian = _$registry_259.subplotsRegistry.cartesian;
 
     // check if any components need to add more base plot modules
     // that weren't captured by traces
@@ -25616,13 +25796,13 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
 
     // ensure all cartesian axes have at least one subplot
     if(layoutOut._has('cartesian')) {
-        _$registry_258.getComponentMethod('grid', 'contentDefaults')(layoutIn, layoutOut);
+        _$registry_259.getComponentMethod('grid', 'contentDefaults')(layoutIn, layoutOut);
         Cartesian.finalizeSubplots(layoutIn, layoutOut);
     }
 
     // sort subplot lists
     for(var subplotType in layoutOut._subplots) {
-        layoutOut._subplots[subplotType].sort(_$lib_166.subplotSort);
+        layoutOut._subplots[subplotType].sort(_$lib_167.subplotSort);
     }
 
     // base plot module layout defaults
@@ -25694,7 +25874,7 @@ plots.purge = function(gd) {
     }
 
     // remove any planned throttles
-    _$lib_166.clearThrottle();
+    _$lib_167.clearThrottle();
 
     // data and layout
     delete gd.data;
@@ -25750,7 +25930,7 @@ plots.style = function(gd) {
     for(i = 0; i < _modules.length; i++) {
         var _module = _modules[i];
         if(_module.style) {
-            _$lib_166.pushUnique(styleModules, _module.style);
+            _$lib_167.pushUnique(styleModules, _module.style);
         }
     }
 
@@ -25905,7 +26085,7 @@ plots.doAutoMargin = function(gd) {
     // if things changed and we're not already redrawing, trigger a redraw
     if(!fullLayout._replotting && oldmargins !== '{}' &&
             oldmargins !== JSON.stringify(fullLayout._size)) {
-        return _$registry_258.call('plot', gd);
+        return _$registry_259.call('plot', gd);
     }
 };
 
@@ -25946,7 +26126,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
         if(typeof d === 'function') {
             return null;
         }
-        if(_$lib_166.isPlainObject(d)) {
+        if(_$lib_167.isPlainObject(d)) {
             var o = {}, v, src;
             for(v in d) {
                 // remove private elements and functions
@@ -25969,7 +26149,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
                     // in a trace, we will keep the data array.
                     src = d[v + 'src'];
                     if(typeof src === 'string' && src.indexOf(':') > 0) {
-                        if(!_$lib_166.isPlainObject(d.stream)) {
+                        if(!_$lib_167.isPlainObject(d.stream)) {
                             continue;
                         }
                     }
@@ -25995,7 +26175,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
 
         // convert native dates to date strings...
         // mostly for external users exporting to plotly
-        if(_$lib_166.isJSDate(d)) return _$lib_166.ms2DateTimeLocal(+d);
+        if(_$lib_167.isJSDate(d)) return _$lib_167.ms2DateTimeLocal(+d);
 
         return d;
     }
@@ -26192,8 +26372,8 @@ plots.recomputeFrameHash = function(gd) {
  */
 plots.extendObjectWithContainers = function(dest, src, containerPaths) {
     var containerProp, containerVal, i, j, srcProp, destProp, srcContainer, destContainer;
-    var copy = _$lib_166.extendDeepNoArrays({}, src || {});
-    var expandedObj = _$lib_166.expandObjectPaths(copy);
+    var copy = _$lib_167.extendDeepNoArrays({}, src || {});
+    var expandedObj = _$lib_167.expandObjectPaths(copy);
     var containerObj = {};
 
     // Step through and extract any container properties. Otherwise extendDeepNoArrays
@@ -26201,29 +26381,29 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
     // will reset everything to defaults.
     if(containerPaths && containerPaths.length) {
         for(i = 0; i < containerPaths.length; i++) {
-            containerProp = _$lib_166.nestedProperty(expandedObj, containerPaths[i]);
+            containerProp = _$lib_167.nestedProperty(expandedObj, containerPaths[i]);
             containerVal = containerProp.get();
 
             if(containerVal === undefined) {
-                _$lib_166.nestedProperty(containerObj, containerPaths[i]).set(null);
+                _$lib_167.nestedProperty(containerObj, containerPaths[i]).set(null);
             }
             else {
                 containerProp.set(null);
-                _$lib_166.nestedProperty(containerObj, containerPaths[i]).set(containerVal);
+                _$lib_167.nestedProperty(containerObj, containerPaths[i]).set(containerVal);
             }
         }
     }
 
-    dest = _$lib_166.extendDeepNoArrays(dest || {}, expandedObj);
+    dest = _$lib_167.extendDeepNoArrays(dest || {}, expandedObj);
 
     if(containerPaths && containerPaths.length) {
         for(i = 0; i < containerPaths.length; i++) {
-            srcProp = _$lib_166.nestedProperty(containerObj, containerPaths[i]);
+            srcProp = _$lib_167.nestedProperty(containerObj, containerPaths[i]);
             srcContainer = srcProp.get();
 
             if(!srcContainer) continue;
 
-            destProp = _$lib_166.nestedProperty(dest, containerPaths[i]);
+            destProp = _$lib_167.nestedProperty(dest, containerPaths[i]);
             destContainer = destProp.get();
 
             if(!Array.isArray(destContainer)) {
@@ -26248,7 +26428,7 @@ plots.extendObjectWithContainers = function(dest, src, containerPaths) {
 };
 
 plots.dataArrayContainers = ['transforms', 'dimensions'];
-plots.layoutArrayContainers = _$registry_258.layoutArrayContainers;
+plots.layoutArrayContainers = _$registry_259.layoutArrayContainers;
 
 /*
  * Extend a trace definition. This method:
@@ -26322,7 +26502,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         // Follow the same procedure. Clone it so we don't mangle the input, then
         // expand any object paths so we can merge deep into gd.layout:
-        var layoutUpdate = _$lib_166.expandObjectPaths(_$lib_166.extendDeepNoArrays({}, layout));
+        var layoutUpdate = _$lib_167.expandObjectPaths(_$lib_167.extendDeepNoArrays({}, layout));
 
         // Before merging though, we need to modify the incoming layout. We only
         // know how to *transition* layout ranges, so it's imperative that a new
@@ -26349,7 +26529,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         plots.doCalcdata(gd);
 
-        _$registry_258.getComponentMethod('errorbars', 'calc')(gd);
+        _$registry_259.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
     }
@@ -26397,7 +26577,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
             if(frameOpts.redraw) {
                 gd._transitionData._interruptCallbacks.push(function() {
-                    return _$registry_258.call('redraw', gd);
+                    return _$registry_259.call('redraw', gd);
                 });
             }
 
@@ -26429,7 +26609,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
             if(layout) {
                 for(j = 0; j < basePlotModules.length; j++) {
                     if(basePlotModules[j].transitionAxes) {
-                        var newLayout = _$lib_166.expandObjectPaths(layout);
+                        var newLayout = _$lib_167.expandObjectPaths(layout);
                         hasAxisTransition = basePlotModules[j].transitionAxes(gd, newLayout, transitionOpts, makeCallback) || hasAxisTransition;
                     }
                 }
@@ -26439,7 +26619,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
             // time. In other words, if there's an axis transition, then set the data transition
             // to instantaneous.
             if(hasAxisTransition) {
-                traceTransitionOpts = _$lib_166.extendFlat({}, transitionOpts);
+                traceTransitionOpts = _$lib_167.extendFlat({}, transitionOpts);
                 traceTransitionOpts.duration = 0;
             } else {
                 traceTransitionOpts = transitionOpts;
@@ -26469,7 +26649,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         return Promise.resolve().then(function() {
             if(frameOpts.redraw) {
-                return _$registry_258.call('redraw', gd);
+                return _$registry_259.call('redraw', gd);
             }
         }).then(function() {
             // Set transitioning false again once the redraw has occurred. This is used, for example,
@@ -26504,7 +26684,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
     var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, plots.rehover, executeTransitions];
 
-    var transitionStarting = _$lib_166.syncOrAsync(seq, gd);
+    var transitionStarting = _$lib_167.syncOrAsync(seq, gd);
 
     if(!transitionStarting || !transitionStarting.then) {
         transitionStarting = Promise.resolve();
@@ -26516,7 +26696,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 };
 
 plots.doCalcdata = function(gd, traces) {
-    var axList = _$axis_ids_212.list(gd),
+    var axList = _$axis_ids_213.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout;
 
@@ -26560,7 +26740,7 @@ plots.doCalcdata = function(gd, traces) {
     // find array attributes in trace
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
-        trace._arrayAttrs = _$plot_schema_200.findArrayAttributes(trace);
+        trace._arrayAttrs = _$plot_schema_201.findArrayAttributes(trace);
     }
 
     // add polar axes to axis list
@@ -26604,14 +26784,15 @@ plots.doCalcdata = function(gd, traces) {
     // clear stuff that should recomputed in 'regular' loop
     if(hasCalcTransform) clearAxesCalc(axList);
 
-    // 'regular' loop
-    for(i = 0; i < fullData.length; i++) {
+    function calci(i, isContainer) {
+        trace = fullData[i];
+        _module = trace._module;
+
+        if(!!_module.isContainer !== isContainer) return;
+
         var cd = [];
 
-        trace = fullData[i];
-
         if(trace.visible === true) {
-            _module = trace._module;
 
             // keep ref of index-to-points map object of the *last* enabled transform,
             // this index-to-points map object is required to determine the calcdata indices
@@ -26646,7 +26827,12 @@ plots.doCalcdata = function(gd, traces) {
         calcdata[i] = cd;
     }
 
-    _$registry_258.getComponentMethod('fx', 'calc')(gd);
+    // 'regular' loop - make sure container traces (eg carpet) calc before
+    // contained traces (eg contourcarpet)
+    for(i = 0; i < fullData.length; i++) calci(i, true);
+    for(i = 0; i < fullData.length; i++) calci(i, false);
+
+    _$registry_259.getComponentMethod('fx', 'calc')(gd);
 };
 
 function clearAxesCalc(axList) {
@@ -26697,7 +26883,7 @@ plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subpl
         var moduleCalcData = traceHash[moduleName];
         var _module = moduleCalcData[0][0].trace._module;
 
-        _module.plot(gd, subplot, _$lib_166.filterVisible(moduleCalcData), subplotLayout);
+        _module.plot(gd, subplot, _$lib_167.filterVisible(moduleCalcData), subplotLayout);
     }
 
     // update moduleName -> calcData hash
@@ -26719,11 +26905,11 @@ plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subpl
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
 /* removed: var _$color_45 = require('../color'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
 /* removed: var _$interactions_146 = require('../../constants/interactions'); */;
 
 var _$titles_138 = {
@@ -26804,10 +26990,7 @@ function draw(gd, titleClass, options) {
     var elShouldExist = txt || editable;
 
     if(!group) {
-        group = fullLayout._infolayer.selectAll('.g-' + titleClass)
-            .data([0]);
-        group.enter().append('g')
-            .classed('g-' + titleClass, true);
+        group = _$lib_167.ensureSingle(fullLayout._infolayer, 'g', 'g-' + titleClass);
     }
 
     var el = group.selectAll('text')
@@ -26825,7 +27008,7 @@ function draw(gd, titleClass, options) {
     if(!elShouldExist) return group;
 
     function titleLayout(titleEl) {
-        _$lib_166.syncOrAsync([drawTitle, scootTitle], titleEl);
+        _$lib_167.syncOrAsync([drawTitle, scootTitle], titleEl);
     }
 
     function drawTitle(titleEl) {
@@ -26853,7 +27036,7 @@ function draw(gd, titleClass, options) {
             'font-weight': _$plots_250.fontWeight
         })
         .attr(attributes)
-        .call(_$svg_text_utils_187.convertToTspans, gd);
+        .call(_$svg_text_utils_188.convertToTspans, gd);
 
         return _$plots_250.previousPromises(gd);
     }
@@ -26903,7 +27086,7 @@ function draw(gd, titleClass, options) {
                 avoid.selection.each(function() {
                     var avoidbb = _$drawing_70.bBox(this);
 
-                    if(_$lib_166.bBoxIntersect(titlebb, avoidbb, pad)) {
+                    if(_$lib_167.bBoxIntersect(titlebb, avoidbb, pad)) {
                         shift = Math.max(shift, shiftSign * (
                             avoidbb[avoid.side] - titlebb[backside]) + pad);
                     }
@@ -26943,12 +27126,12 @@ function draw(gd, titleClass, options) {
         if(!txt) setPlaceholder();
         else el.on('.opacity', null);
 
-        el.call(_$svg_text_utils_187.makeEditable, {gd: gd})
+        el.call(_$svg_text_utils_188.makeEditable, {gd: gd})
             .on('edit', function(text) {
                 if(traceIndex !== undefined) {
-                    _$registry_258.call('restyle', gd, prop, text, traceIndex);
+                    _$registry_259.call('restyle', gd, prop, text, traceIndex);
                 } else {
-                    _$registry_258.call('relayout', gd, prop, text);
+                    _$registry_259.call('relayout', gd, prop, text);
                 }
             })
             .on('cancel', function() {
@@ -26957,7 +27140,7 @@ function draw(gd, titleClass, options) {
             })
             .on('input', function(d) {
                 this.text(d || ' ')
-                    .call(_$svg_text_utils_187.positionText, attributes.x, attributes.y);
+                    .call(_$svg_text_utils_188.positionText, attributes.x, attributes.y);
             });
     }
     el.classed('js-placeholder', isplaceholder);
@@ -26978,10 +27161,10 @@ function draw(gd, titleClass, options) {
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-var __FP_SAFE_208 = _$numerical_147.FP_SAFE;
+/* removed: var _$lib_167 = require('../../lib'); */;
+var __FP_SAFE_209 = _$numerical_147.FP_SAFE;
 
-var _$autorange_208 = {
+var _$autorange_209 = {
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
@@ -27026,7 +27209,7 @@ function getAutoRange(ax) {
     }
 
     if(ax.range) {
-        var rng = _$lib_166.simpleMap(ax.range, ax.r2l);
+        var rng = _$lib_167.simpleMap(ax.range, ax.r2l);
         axReverse = rng[1] < rng[0];
     }
 
@@ -27119,7 +27302,7 @@ function getAutoRange(ax) {
     // maintain reversal
     if(axReverse) newRange.reverse();
 
-    return _$lib_166.simpleMap(newRange, ax.l2r || Number);
+    return _$lib_167.simpleMap(newRange, ax.l2r || Number);
 }
 
 /*
@@ -27151,7 +27334,7 @@ function doAutoRange(ax) {
         ax.range = getAutoRange(ax);
 
         ax._r = ax.range.slice();
-        ax._rl = _$lib_166.simpleMap(ax._r, ax.r2l);
+        ax._rl = _$lib_167.simpleMap(ax._r, ax.r2l);
 
         // doAutoRange will get called on fullLayout,
         // but we want to report its results back to layout
@@ -27173,7 +27356,7 @@ function doAutoRange(ax) {
             }
         }
         axIn = ax._anchorAxis._input;
-        axIn.rangeslider[ax._name] = _$lib_166.extendFlat({}, axeRangeOpts);
+        axIn.rangeslider[ax._name] = _$lib_167.extendFlat({}, axeRangeOpts);
     }
 }
 
@@ -27186,6 +27369,8 @@ function needsAutorange(ax) {
  * Note that `expand` is called during `calc`, when we don't yet know the axis
  * length; all the inputs should be based solely on the trace data, nothing
  * about the axis layout.
+ * Note that `ppad` and `vpad` as well as their asymmetric variants refer to
+ * the before and after padding of the passed `data` array, not to the whole axis.
  *
  * @param {object} ax: the axis being expanded. The result will be more entries
  *      in ax._min and ax._max if necessary to include the new data
@@ -27246,14 +27431,14 @@ function expand(ax, data, options) {
                 v = data[i];
                 // data is not linearized yet so we still have to filter out negative logs
                 if(v < vmin && v > 0) vmin = v;
-                if(v > vmax && v < __FP_SAFE_208) vmax = v;
+                if(v > vmax && v < __FP_SAFE_209) vmax = v;
             }
         }
         else {
             for(i = 0; i < len; i++) {
                 v = data[i];
-                if(v < vmin && v > -__FP_SAFE_208) vmin = v;
-                if(v > vmax && v < __FP_SAFE_208) vmax = v;
+                if(v < vmin && v > -__FP_SAFE_209) vmin = v;
+                if(v > vmax && v < __FP_SAFE_209) vmax = v;
             }
         }
 
@@ -27287,7 +27472,7 @@ function expand(ax, data, options) {
             if(goodNumber(newVal)) {
                 var extremes = k ? ax._max : ax._min;
                 var newPad = k ? ppadiplus : ppadiminus;
-                var atLeastAsExtreme = k ? __greaterOrEqual_208 : __lessOrEqual_208;
+                var atLeastAsExtreme = k ? __greaterOrEqual_209 : __lessOrEqual_209;
 
                 includeThis = true;
                 /*
@@ -27338,11 +27523,11 @@ function expand(ax, data, options) {
 // In order to stop overflow errors, don't consider points
 // too close to the limits of js floating point
 function goodNumber(v) {
-    return _$fastIsnumeric_11(v) && Math.abs(v) < __FP_SAFE_208;
+    return _$fastIsnumeric_11(v) && Math.abs(v) < __FP_SAFE_209;
 }
 
-function __lessOrEqual_208(v0, v1) { return v0 <= v1; }
-function __greaterOrEqual_208(v0, v1) { return v0 >= v1; }
+function __lessOrEqual_209(v0, v1) { return v0 <= v1; }
+function __greaterOrEqual_209(v0, v1) { return v0 >= v1; }
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -27357,10 +27542,10 @@ function __greaterOrEqual_208(v0, v1) { return v0 >= v1; }
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-var __BADNUM_210 = _$numerical_147.BADNUM;
+/* removed: var _$lib_167 = require('../../lib'); */;
+var __BADNUM_211 = _$numerical_147.BADNUM;
 
-var _$autoType_210 = function autoType(array, calendar) {
+var _$autoType_211 = function autoType(array, calendar) {
     if(moreDates(array, calendar)) return 'date';
     if(category(array)) return 'category';
     if(linearOK(array)) return 'linear';
@@ -27393,7 +27578,7 @@ function moreDates(a, calendar) {
 
     for(var i = 0; i < a.length; i += inc) {
         ai = a[Math.round(i)];
-        if(_$lib_166.isDateTime(ai, calendar)) dcnt += 1;
+        if(_$lib_167.isDateTime(ai, calendar)) dcnt += 1;
         if(_$fastIsnumeric_11(ai)) ncnt += 1;
     }
 
@@ -27411,7 +27596,7 @@ function category(a) {
 
     for(var i = 0; i < a.length; i += inc) {
         ai = a[Math.round(i)];
-        if(_$lib_166.cleanNumber(ai) !== __BADNUM_210) curvenums++;
+        if(_$lib_167.cleanNumber(ai) !== __BADNUM_211) curvenums++;
         else if(typeof ai === 'string' && ai !== '' && ai !== 'None') curvecats++;
     }
 
@@ -27432,18 +27617,18 @@ function category(a) {
 /* removed: var _$d3_8 = require('d3'); */;
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-var cleanNumber = _$lib_166.cleanNumber;
-var ms2DateTime = _$lib_166.ms2DateTime;
-var dateTime2ms = _$lib_166.dateTime2ms;
-var ensureNumber = _$lib_166.ensureNumber;
+/* removed: var _$lib_167 = require('../../lib'); */;
+var cleanNumber = _$lib_167.cleanNumber;
+var ms2DateTime = _$lib_167.ms2DateTime;
+var dateTime2ms = _$lib_167.dateTime2ms;
+var ensureNumber = _$lib_167.ensureNumber;
 
 /* removed: var _$numerical_147 = require('../../constants/numerical'); */;
 var __FP_SAFE_228 = _$numerical_147.FP_SAFE;
 var __BADNUM_228 = _$numerical_147.BADNUM;
 
-/* removed: var _$constants_214 = require('./constants'); */;
-/* removed: var _$axis_ids_212 = require('./axis_ids'); */;
+/* removed: var _$constants_215 = require('./constants'); */;
+/* removed: var _$axis_ids_213 = require('./axis_ids'); */;
 
 function fromLog(v) {
     return Math.pow(10, v);
@@ -27635,7 +27820,7 @@ var _$setConvert_228 = function setConvert(ax, fullLayout) {
          * uses this to limit precision, toLog uses true to clip negatives
          * to offscreen low rather than undefined), it's safe to pass 0.
          */
-        ax.d2r = ax.r2d = _$lib_166.identity;
+        ax.d2r = ax.r2d = _$lib_167.identity;
 
         ax.d2c = ax.r2c = ax.d2l = ax.r2l = dt2ms;
         ax.c2d = ax.c2r = ax.l2d = ax.l2r = ms2dt;
@@ -27643,7 +27828,7 @@ var _$setConvert_228 = function setConvert(ax, fullLayout) {
         ax.d2p = ax.r2p = function(v, _, calendar) { return ax.l2p(dt2ms(v, 0, calendar)); };
         ax.p2d = ax.p2r = function(px, r, calendar) { return ms2dt(p2l(px), r, calendar); };
 
-        ax.cleanPos = function(v) { return _$lib_166.cleanDate(v, __BADNUM_228, ax.calendar); };
+        ax.cleanPos = function(v) { return _$lib_167.cleanDate(v, __BADNUM_228, ax.calendar); };
     }
     else if(ax.type === 'category') {
         // d is categories (string)
@@ -27700,39 +27885,39 @@ var _$setConvert_228 = function setConvert(ax, fullLayout) {
         if(!opts) opts = {};
         if(!rangeAttr) rangeAttr = 'range';
 
-        var range = _$lib_166.nestedProperty(ax, rangeAttr).get();
+        var range = _$lib_167.nestedProperty(ax, rangeAttr).get();
         var i, dflt;
 
-        if(ax.type === 'date') dflt = _$lib_166.dfltRange(ax.calendar);
-        else if(axLetter === 'y') dflt = _$constants_214.DFLTRANGEY;
-        else dflt = opts.dfltRange || _$constants_214.DFLTRANGEX;
+        if(ax.type === 'date') dflt = _$lib_167.dfltRange(ax.calendar);
+        else if(axLetter === 'y') dflt = _$constants_215.DFLTRANGEY;
+        else dflt = opts.dfltRange || _$constants_215.DFLTRANGEX;
 
         // make sure we don't later mutate the defaults
         dflt = dflt.slice();
 
         if(!range || range.length !== 2) {
-            _$lib_166.nestedProperty(ax, rangeAttr).set(dflt);
+            _$lib_167.nestedProperty(ax, rangeAttr).set(dflt);
             return;
         }
 
         if(ax.type === 'date') {
             // check if milliseconds or js date objects are provided for range
             // and convert to date strings
-            range[0] = _$lib_166.cleanDate(range[0], __BADNUM_228, ax.calendar);
-            range[1] = _$lib_166.cleanDate(range[1], __BADNUM_228, ax.calendar);
+            range[0] = _$lib_167.cleanDate(range[0], __BADNUM_228, ax.calendar);
+            range[1] = _$lib_167.cleanDate(range[1], __BADNUM_228, ax.calendar);
         }
 
         for(i = 0; i < 2; i++) {
             if(ax.type === 'date') {
-                if(!_$lib_166.isDateTime(range[i], ax.calendar)) {
+                if(!_$lib_167.isDateTime(range[i], ax.calendar)) {
                     ax[rangeAttr] = dflt;
                     break;
                 }
 
                 if(ax.r2l(range[0]) === ax.r2l(range[1])) {
                     // split by +/- 1 second
-                    var linCenter = _$lib_166.constrain(ax.r2l(range[0]),
-                        _$lib_166.MIN_MS + 1000, _$lib_166.MAX_MS - 1000);
+                    var linCenter = _$lib_167.constrain(ax.r2l(range[0]),
+                        _$lib_167.MIN_MS + 1000, _$lib_167.MAX_MS - 1000);
                     range[0] = ax.l2r(linCenter - 1000);
                     range[1] = ax.l2r(linCenter + 1000);
                     break;
@@ -27774,7 +27959,7 @@ var _$setConvert_228 = function setConvert(ax, fullLayout) {
         // make sure we have a domain (pull it in from the axis
         // this one is overlaying if necessary)
         if(ax.overlaying) {
-            var ax2 = _$axis_ids_212.getFromId({ _fullLayout: fullLayout }, ax.overlaying);
+            var ax2 = _$axis_ids_213.getFromId({ _fullLayout: fullLayout }, ax.overlaying);
             ax.domain = ax2.domain;
         }
 
@@ -27827,7 +28012,7 @@ var _$setConvert_228 = function setConvert(ax, fullLayout) {
             arrayIn = trace[axLetter];
             len = trace._length || arrayIn.length;
 
-            if(_$lib_166.isTypedArray(arrayIn) && (axType === 'linear' || axType === 'log')) {
+            if(_$lib_167.isTypedArray(arrayIn) && (axType === 'linear' || axType === 'log')) {
                 if(len === arrayIn.length) {
                     return arrayIn;
                 } else if(arrayIn.subarray) {
@@ -27868,11 +28053,15 @@ var _$setConvert_228 = function setConvert(ax, fullLayout) {
 
     ax.isPtWithinRange = function(d, calendar) {
         var coord = ax.c2l(d[axLetter], null, calendar);
+        var r0 = ax.r2l(ax.range[0]);
+        var r1 = ax.r2l(ax.range[1]);
 
-        return (
-            coord >= ax.r2l(ax.range[0]) &&
-            coord <= ax.r2l(ax.range[1])
-        );
+        if(r0 < r1) {
+            return r0 <= coord && coord <= r1;
+        } else {
+            // Reversed axis case.
+            return r1 <= coord && coord <= r0;
+        }
     };
 
     ax.clearCalc = function() {
@@ -27916,7 +28105,7 @@ var _$setConvert_228 = function setConvert(ax, fullLayout) {
     delete ax._forceTick0;
 };
 
-var _$axes_209 = {};
+var _$axes_210 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -27932,9 +28121,9 @@ var _$axes_209 = {};
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
 /* removed: var _$titles_138 = require('../../components/titles'); */;
 /* removed: var _$color_45 = require('../../components/color'); */;
 /* removed: var _$drawing_70 = require('../../components/drawing'); */;
@@ -27942,33 +28131,33 @@ var _$axes_209 = {};
 /* removed: var _$numerical_147 = require('../../constants/numerical'); */;
 var ONEAVGYEAR = _$numerical_147.ONEAVGYEAR;
 var ONEAVGMONTH = _$numerical_147.ONEAVGMONTH;
-var __ONEDAY_209 = _$numerical_147.ONEDAY;
-var __ONEHOUR_209 = _$numerical_147.ONEHOUR;
-var __ONEMIN_209 = _$numerical_147.ONEMIN;
-var __ONESEC_209 = _$numerical_147.ONESEC;
+var __ONEDAY_210 = _$numerical_147.ONEDAY;
+var __ONEHOUR_210 = _$numerical_147.ONEHOUR;
+var __ONEMIN_210 = _$numerical_147.ONEMIN;
+var __ONESEC_210 = _$numerical_147.ONESEC;
 var MINUS_SIGN = _$numerical_147.MINUS_SIGN;
-var __BADNUM_209 = _$numerical_147.BADNUM;
+var __BADNUM_210 = _$numerical_147.BADNUM;
 
 var MID_SHIFT = _$alignment_145.MID_SHIFT;
-var __LINE_SPACING_209 = _$alignment_145.LINE_SPACING;
+var __LINE_SPACING_210 = _$alignment_145.LINE_SPACING;
 
-var axes = _$axes_209 = {};
+var axes = _$axes_210 = {};
 
 axes.setConvert = _$setConvert_228;
-/* removed: var _$autoType_210 = require('./axis_autotype'); */;
+/* removed: var _$autoType_211 = require('./axis_autotype'); */;
 
-/* removed: var _$axis_ids_212 = require('./axis_ids'); */;
-axes.id2name = _$axis_ids_212.id2name;
-axes.name2id = _$axis_ids_212.name2id;
-axes.cleanId = _$axis_ids_212.cleanId;
-axes.list = _$axis_ids_212.list;
-axes.listIds = _$axis_ids_212.listIds;
-axes.getFromId = _$axis_ids_212.getFromId;
-axes.getFromTrace = _$axis_ids_212.getFromTrace;
+/* removed: var _$axis_ids_213 = require('./axis_ids'); */;
+axes.id2name = _$axis_ids_213.id2name;
+axes.name2id = _$axis_ids_213.name2id;
+axes.cleanId = _$axis_ids_213.cleanId;
+axes.list = _$axis_ids_213.list;
+axes.listIds = _$axis_ids_213.listIds;
+axes.getFromId = _$axis_ids_213.getFromId;
+axes.getFromTrace = _$axis_ids_213.getFromTrace;
 
-/* removed: var _$autorange_208 = require('./autorange'); */;
-axes.expand = _$autorange_208.expand;
-axes.getAutoRange = _$autorange_208.getAutoRange;
+/* removed: var _$autorange_209 = require('./autorange'); */;
+axes.expand = _$autorange_209.expand;
+axes.getAutoRange = _$autorange_209.getAutoRange;
 
 /*
  * find the list of possible axes to reference with an xref or yref attribute
@@ -27999,7 +28188,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
     };
 
     // xref, yref
-    return _$lib_166.coerce(containerIn, containerOut, attrDef, refAttr);
+    return _$lib_167.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
 /*
@@ -28028,7 +28217,7 @@ axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
     var cleanPos, pos;
 
     if(axRef === 'paper' || axRef === 'pixel') {
-        cleanPos = _$lib_166.ensureNumber;
+        cleanPos = _$lib_167.ensureNumber;
         pos = coerce(attr, dflt);
     } else {
         var ax = axes.getFromId(gd, axRef);
@@ -28042,7 +28231,7 @@ axes.coercePosition = function(containerOut, gd, coerce, axRef, attr, dflt) {
 
 axes.cleanPosition = function(pos, gd, axRef) {
     var cleanPos = (axRef === 'paper' || axRef === 'pixel') ?
-        _$lib_166.ensureNumber :
+        _$lib_167.ensureNumber :
         axes.getFromId(gd, axRef).cleanPos;
 
     return cleanPos(pos);
@@ -28062,7 +28251,7 @@ var getDataConversions = axes.getDataConversions = function(gd, trace, target, t
     // setup the data-to-calc method.
     if(Array.isArray(d2cTarget)) {
         ax = {
-            type: _$autoType_210(targetArray),
+            type: _$autoType_211(targetArray),
             _categories: []
         };
         axes.setConvert(ax);
@@ -28198,8 +28387,8 @@ axes.saveShowSpikeInitial = function(gd, overwrite) {
 };
 
 axes.autoBin = function(data, ax, nbins, is2d, calendar) {
-    var dataMin = _$lib_166.aggNums(Math.min, null, data),
-        dataMax = _$lib_166.aggNums(Math.max, null, data);
+    var dataMin = _$lib_167.aggNums(Math.min, null, data),
+        dataMax = _$lib_167.aggNums(Math.max, null, data);
 
     if(!calendar) calendar = ax.calendar;
 
@@ -28219,12 +28408,12 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
         // somewhat taller than the total number of bins, but don't let
         // the size get smaller than the 'nice' rounded down minimum
         // difference between values
-        var distinctData = _$lib_166.distinctVals(data),
+        var distinctData = _$lib_167.distinctVals(data),
             msexp = Math.pow(10, Math.floor(
                 Math.log(distinctData.minDiff) / Math.LN10)),
-            minSize = msexp * _$lib_166.roundUp(
+            minSize = msexp * _$lib_167.roundUp(
                 distinctData.minDiff / msexp, [0.9, 1.9, 4.9, 9.9], true);
-        size0 = Math.max(minSize, 2 * _$lib_166.stdev(data) /
+        size0 = Math.max(minSize, 2 * _$lib_167.stdev(data) /
             Math.pow(data.length, is2d ? 0.25 : 0.4));
 
         // fallback if ax.d2c output BADNUMs
@@ -28244,7 +28433,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar) {
     else {
         dummyAx = {
             type: ax.type,
-            range: _$lib_166.simpleMap([dataMin, dataMax], ax.c2r, 0, calendar),
+            range: _$lib_167.simpleMap([dataMin, dataMax], ax.c2r, 0, calendar),
             calendar: calendar
         };
     }
@@ -28343,7 +28532,7 @@ function autoShiftNumericBins(binStart, data, ax, dataMin, dataMax) {
 
 
 function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
-    var stats = _$lib_166.findExactDates(data, calendar);
+    var stats = _$lib_167.findExactDates(data, calendar);
     // number of data points that needs to be an exact value
     // to shift that increment to (near) the bin center
     var threshold = 0.8;
@@ -28355,21 +28544,21 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
             // The exact middle of a non-leap-year is 1.5 days into July
             // so if we start the bins here, all but leap years will
             // get hover-labeled as exact years.
-            binStart = axes.tickIncrement(binStart, 'M6', 'reverse') + __ONEDAY_209 * 1.5;
+            binStart = axes.tickIncrement(binStart, 'M6', 'reverse') + __ONEDAY_210 * 1.5;
         }
         else if(stats.exactMonths > threshold) {
             // Months are not as clean, but if we shift half the *longest*
             // month (31/2 days) then 31-day months will get labeled exactly
             // and shorter months will get labeled with the correct month
             // but shifted 12-36 hours into it.
-            binStart = axes.tickIncrement(binStart, 'M1', 'reverse') + __ONEDAY_209 * 15.5;
+            binStart = axes.tickIncrement(binStart, 'M1', 'reverse') + __ONEDAY_210 * 15.5;
         }
         else {
             // Shifting half a day is exact, but since these are month bins it
             // will always give a somewhat odd-looking label, until we do something
             // smarter like showing the bin boundaries (or the bounds of the actual
             // data in each bin)
-            binStart -= __ONEDAY_209 / 2;
+            binStart -= __ONEDAY_210 / 2;
         }
         var nextBinStart = axes.tickIncrement(binStart, dtick);
 
@@ -28384,7 +28573,7 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 
 // ensure we have tick0, dtick, and tick rounding calculated
 axes.prepTicks = function(ax) {
-    var rng = _$lib_166.simpleMap(ax.range, ax.r2l);
+    var rng = _$lib_167.simpleMap(ax.range, ax.r2l);
 
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick) {
@@ -28397,7 +28586,7 @@ axes.prepTicks = function(ax) {
             }
             else {
                 minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
-                nt = _$lib_166.constrain(ax._length / minPx, 4, 9) + 1;
+                nt = _$lib_167.constrain(ax._length / minPx, 4, 9) + 1;
             }
 
             // radial axes span half their domain,
@@ -28432,7 +28621,7 @@ axes.prepTicks = function(ax) {
 // or codes to this effect for log and date scales
 axes.calcTicks = function calcTicks(ax) {
     axes.prepTicks(ax);
-    var rng = _$lib_166.simpleMap(ax.range, ax.r2l);
+    var rng = _$lib_167.simpleMap(ax.range, ax.r2l);
 
     // now that we've figured out the auto values for formatting
     // in case we're missing some ticktext, we can break out for array ticks
@@ -28500,7 +28689,7 @@ function arrayTicks(ax) {
     var vals = ax.tickvals,
         text = ax.ticktext,
         ticksOut = new Array(vals.length),
-        rng = _$lib_166.simpleMap(ax.range, ax.r2l),
+        rng = _$lib_167.simpleMap(ax.range, ax.r2l),
         r0expanded = rng[0] * 1.0001 - rng[1] * 0.0001,
         r1expanded = rng[1] * 1.0001 - rng[0] * 0.0001,
         tickMin = Math.min(r0expanded, r1expanded),
@@ -28549,7 +28738,7 @@ var roundBase10 = [2, 5, 10],
     roundAngles = [15, 30, 45, 90, 180];
 
 function roundDTick(roughDTick, base, roundingSet) {
-    return base * _$lib_166.roundUp(roughDTick / base, roundingSet);
+    return base * _$lib_167.roundUp(roughDTick / base, roundingSet);
 }
 
 // autoTicks: calculate best guess at pleasant ticks for this axis
@@ -28576,7 +28765,7 @@ axes.autoTicks = function(ax, roughDTick) {
     }
 
     if(ax.type === 'date') {
-        ax.tick0 = _$lib_166.dateTick0(ax.calendar);
+        ax.tick0 = _$lib_167.dateTick0(ax.calendar);
         // the criteria below are all based on the rough spacing we calculate
         // being > half of the final unit - so precalculate twice the rough val
         var roughX2 = 2 * roughDTick;
@@ -28590,21 +28779,21 @@ axes.autoTicks = function(ax, roughDTick) {
             roughDTick /= ONEAVGMONTH;
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         }
-        else if(roughX2 > __ONEDAY_209) {
-            ax.dtick = roundDTick(roughDTick, __ONEDAY_209, roundDays);
+        else if(roughX2 > __ONEDAY_210) {
+            ax.dtick = roundDTick(roughDTick, __ONEDAY_210, roundDays);
             // get week ticks on sunday
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
-            ax.tick0 = _$lib_166.dateTick0(ax.calendar, true);
+            ax.tick0 = _$lib_167.dateTick0(ax.calendar, true);
         }
-        else if(roughX2 > __ONEHOUR_209) {
-            ax.dtick = roundDTick(roughDTick, __ONEHOUR_209, roundBase24);
+        else if(roughX2 > __ONEHOUR_210) {
+            ax.dtick = roundDTick(roughDTick, __ONEHOUR_210, roundBase24);
         }
-        else if(roughX2 > __ONEMIN_209) {
-            ax.dtick = roundDTick(roughDTick, __ONEMIN_209, roundBase60);
+        else if(roughX2 > __ONEMIN_210) {
+            ax.dtick = roundDTick(roughDTick, __ONEMIN_210, roundBase60);
         }
-        else if(roughX2 > __ONESEC_209) {
-            ax.dtick = roundDTick(roughDTick, __ONESEC_209, roundBase60);
+        else if(roughX2 > __ONESEC_210) {
+            ax.dtick = roundDTick(roughDTick, __ONESEC_210, roundBase60);
         }
         else {
             // milliseconds
@@ -28614,7 +28803,7 @@ axes.autoTicks = function(ax, roughDTick) {
     }
     else if(ax.type === 'log') {
         ax.tick0 = 0;
-        var rng = _$lib_166.simpleMap(ax.range, ax.r2l);
+        var rng = _$lib_167.simpleMap(ax.range, ax.r2l);
 
         if(roughDTick > 0.7) {
             // only show powers of 10
@@ -28695,9 +28884,9 @@ function autoTickRound(ax) {
             // show the month unless ticks are full multiples of a year
             else ax._tickround = (+(dtick.substr(1)) % 12 === 0) ? 'y' : 'm';
         }
-        else if((dtick >= __ONEDAY_209 && tick0len <= 10) || (dtick >= __ONEDAY_209 * 15)) ax._tickround = 'd';
-        else if((dtick >= __ONEMIN_209 && tick0len <= 16) || (dtick >= __ONEHOUR_209)) ax._tickround = 'M';
-        else if((dtick >= __ONESEC_209 && tick0len <= 19) || (dtick >= __ONEMIN_209)) ax._tickround = 'S';
+        else if((dtick >= __ONEDAY_210 && tick0len <= 10) || (dtick >= __ONEDAY_210 * 15)) ax._tickround = 'd';
+        else if((dtick >= __ONEMIN_210 && tick0len <= 16) || (dtick >= __ONEHOUR_210)) ax._tickround = 'M';
+        else if((dtick >= __ONESEC_210 && tick0len <= 19) || (dtick >= __ONEMIN_210)) ax._tickround = 'S';
         else {
             // tickround is a number of digits of fractional seconds
             // of any two adjacent ticks, at least one will have the maximum fractional digits
@@ -28744,7 +28933,7 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
         dtSigned = axSign * Number(dtick.substr(1));
 
     // Dates: months (or years - see Lib.incrementMonth)
-    if(tType === 'M') return _$lib_166.incrementMonth(x, dtSigned, calendar);
+    if(tType === 'M') return _$lib_167.incrementMonth(x, dtSigned, calendar);
 
     // Log scales: Linear, Digits
     else if(tType === 'L') return Math.log(Math.pow(10, x) + dtSigned) / Math.LN10;
@@ -28754,7 +28943,7 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
     else if(tType === 'D') {
         var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
             x2 = x + axSign * 0.01,
-            frac = _$lib_166.roundUp(_$lib_166.mod(x2, 1), tickset, axrev);
+            frac = _$lib_167.roundUp(_$lib_167.mod(x2, 1), tickset, axrev);
 
         return Math.floor(x2) +
             Math.log(_$d3_8.round(Math.pow(10, frac), 1)) / Math.LN10;
@@ -28765,7 +28954,7 @@ axes.tickIncrement = function(x, dtick, axrev, calendar) {
 // calculate the first tick on an axis
 axes.tickFirst = function(ax) {
     var r2l = ax.r2l || Number,
-        rng = _$lib_166.simpleMap(ax.range, r2l),
+        rng = _$lib_167.simpleMap(ax.range, r2l),
         axrev = rng[1] < rng[0],
         sRound = axrev ? Math.floor : Math.ceil,
         // add a tiny extra bit to make sure we get ticks
@@ -28779,7 +28968,7 @@ axes.tickFirst = function(ax) {
 
         // make sure no ticks outside the category list
         if(ax.type === 'category') {
-            tmin = _$lib_166.constrain(tmin, 0, ax._categories.length - 1);
+            tmin = _$lib_167.constrain(tmin, 0, ax._categories.length - 1);
         }
         return tmin;
     }
@@ -28809,7 +28998,7 @@ axes.tickFirst = function(ax) {
             t0 = axes.tickIncrement(t0, newDTick, mult < 0 ? !axrev : axrev, ax.calendar);
             cnt++;
         }
-        _$lib_166.error('tickFirst did not converge', ax);
+        _$lib_167.error('tickFirst did not converge', ax);
         return t0;
     }
 
@@ -28820,7 +29009,7 @@ axes.tickFirst = function(ax) {
     }
     else if(tType === 'D') {
         var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
-            frac = _$lib_166.roundUp(_$lib_166.mod(r0, 1), tickset, axrev);
+            frac = _$lib_167.roundUp(_$lib_167.mod(r0, 1), tickset, axrev);
 
         return Math.floor(r0) +
             Math.log(_$d3_8.round(Math.pow(10, frac), 1)) / Math.LN10;
@@ -28843,7 +29032,7 @@ axes.tickText = function(ax, x, hover) {
         tickVal2l = ax.type === 'category' ? ax.d2l_noadd : ax.d2l;
 
     if(arrayMode && Array.isArray(ax.ticktext)) {
-        var rng = _$lib_166.simpleMap(ax.range, ax.r2l),
+        var rng = _$lib_167.simpleMap(ax.range, ax.r2l),
             minDiff = Math.abs(rng[1] - rng[0]) / 10000;
         for(i = 0; i < ax.ticktext.length; i++) {
             if(Math.abs(x - tickVal2l(ax.tickvals[i])) < minDiff) break;
@@ -28900,7 +29089,7 @@ axes.tickText = function(ax, x, hover) {
  *     it's different from `val`.
  */
 axes.hoverLabelText = function(ax, val, val2) {
-    if(val2 !== __BADNUM_209 && val2 !== val) {
+    if(val2 !== __BADNUM_210 && val2 !== val) {
         return axes.hoverLabelText(ax, val) + ' - ' + axes.hoverLabelText(ax, val2);
     }
 
@@ -28943,7 +29132,7 @@ function formatDate(ax, out, hover, extraPrecision) {
         else tr = {y: 'm', m: 'd', d: 'M', M: 'S', S: 4}[tr];
     }
 
-    var dateStr = _$lib_166.formatDate(out.x, fmt, tr, ax._dateFormat, ax.calendar, ax._extraFormat),
+    var dateStr = _$lib_167.formatDate(out.x, fmt, tr, ax._dateFormat, ax.calendar, ax._extraFormat),
         headStr;
 
     var splitIndex = dateStr.indexOf('\n');
@@ -29008,7 +29197,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
     if(tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
-    else if(_$fastIsnumeric_11(dtick) || ((dtick.charAt(0) === 'D') && (_$lib_166.mod(x + 0.01, 1) < 0.1))) {
+    else if(_$fastIsnumeric_11(dtick) || ((dtick.charAt(0) === 'D') && (_$lib_167.mod(x + 0.01, 1) < 0.1))) {
         var p = Math.round(x);
         if(['e', 'E', 'power'].indexOf(ax.exponentformat) !== -1 ||
                 (isSIFormat(ax.exponentformat) && beyondSI(p))) {
@@ -29027,7 +29216,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         }
     }
     else if(dtick.charAt(0) === 'D') {
-        out.text = String(Math.round(Math.pow(10, _$lib_166.mod(x, 1))));
+        out.text = String(Math.round(Math.pow(10, _$lib_167.mod(x, 1))));
         out.fontSize *= 0.75;
     }
     else throw 'unrecognized dtick ' + String(dtick);
@@ -29082,7 +29271,7 @@ function formatAngle(ax, out, hover, extraPrecision, hideexp) {
             var frac = num2frac(num);
 
             if(frac[1] >= 100) {
-                out.text = numFormat(_$lib_166.deg2rad(out.x), ax, hideexp, extraPrecision);
+                out.text = numFormat(_$lib_167.deg2rad(out.x), ax, hideexp, extraPrecision);
             } else {
                 var isNeg = out.x < 0;
 
@@ -29230,7 +29419,7 @@ function numFormat(v, ax, fmtoverride, hover) {
             if(dp) v = v.substr(0, dp + tickRound).replace(/\.?0+$/, '');
         }
         // insert appropriate decimal point and thousands separator
-        v = _$lib_166.numSeparate(v, ax._separators, separatethousands);
+        v = _$lib_167.numSeparate(v, ax._separators, separatethousands);
     }
 
     // add exponent
@@ -29421,9 +29610,9 @@ axes.makeClipPaths = function(gd) {
 //          ax._rl (stored linearized range for use by zoom/pan)
 //     or can pass in an axis object directly
 axes.doTicks = function(gd, axid, skipTitle) {
-    var fullLayout = gd._fullLayout,
-        ax,
-        independent = false;
+    var fullLayout = gd._fullLayout;
+    var ax;
+    var independent = false;
 
     // allow passing an independent axis object instead of id
     if(typeof axid === 'object') {
@@ -29436,32 +29625,26 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
         if(axid === 'redraw') {
             fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
-                var plotinfo = fullLayout._plots[subplot],
-                    xa = plotinfo.xaxis,
-                    ya = plotinfo.yaxis;
+                var plotinfo = fullLayout._plots[subplot];
+                var xa = plotinfo.xaxis;
+                var ya = plotinfo.yaxis;
 
-                plotinfo.xaxislayer
-                    .selectAll('.' + xa._id + 'tick').remove();
-                plotinfo.yaxislayer
-                    .selectAll('.' + ya._id + 'tick').remove();
-                plotinfo.gridlayer
-                    .selectAll('path').remove();
-                plotinfo.zerolinelayer
-                    .selectAll('path').remove();
+                plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
+                plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
+                if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
+                if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
                 fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
                 fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
             });
         }
 
         if(!axid || axid === 'redraw') {
-            return _$lib_166.syncOrAsync(axes.list(gd, '', true).map(function(ax) {
+            return _$lib_167.syncOrAsync(axes.list(gd, '', true).map(function(ax) {
                 return function() {
                     if(!ax._id) return;
                     var axDone = axes.doTicks(gd, ax._id);
-                    if(axid === 'redraw') {
-                        ax._r = ax.range.slice();
-                        ax._rl = _$lib_166.simpleMap(ax._r, ax.r2l);
-                    }
+                    ax._r = ax.range.slice();
+                    ax._rl = _$lib_167.simpleMap(ax._r, ax.r2l);
                     return axDone;
                 };
             }));
@@ -29471,21 +29654,22 @@ axes.doTicks = function(gd, axid, skipTitle) {
     // set scaling to pixels
     ax.setScale();
 
-    var axLetter = axid.charAt(0),
-        counterLetter = axes.counterLetter(axid),
-        vals = axes.calcTicks(ax),
-        datafn = function(d) { return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_'); },
-        tcls = axid + 'tick',
-        gcls = axid + 'grid',
-        zcls = axid + 'zl',
-        pad = (ax.linewidth || 1) / 2,
-        labelStandoff = (ax.ticks === 'outside' ? ax.ticklen : 0),
-        labelShift = 0,
-        gridWidth = _$drawing_70.crispRound(gd, ax.gridwidth, 1),
-        zeroLineWidth = _$drawing_70.crispRound(gd, ax.zerolinewidth, gridWidth),
-        tickWidth = _$drawing_70.crispRound(gd, ax.tickwidth, 1),
-        sides, transfn, tickpathfn, subplots,
-        i;
+    var axLetter = axid.charAt(0);
+    var counterLetter = axes.counterLetter(axid);
+    var vals = ax._vals = axes.calcTicks(ax);
+    var datafn = function(d) { return [d.text, d.x, ax.mirror, d.font, d.fontSize, d.fontColor].join('_'); };
+    var tcls = axid + 'tick';
+    var gcls = axid + 'grid';
+    var zcls = axid + 'zl';
+    var pad = (ax.linewidth || 1) / 2;
+    var labelStandoff = (ax.ticks === 'outside' ? ax.ticklen : 0);
+    var labelShift = 0;
+    var gridWidth = _$drawing_70.crispRound(gd, ax.gridwidth, 1);
+    var zeroLineWidth = _$drawing_70.crispRound(gd, ax.zerolinewidth, gridWidth);
+    var tickWidth = _$drawing_70.crispRound(gd, ax.tickwidth, 1);
+    var sides, transfn, tickpathfn, subplots;
+    var tickLabels;
+    var i;
 
     if(ax._counterangle && ax.ticks === 'outside') {
         var caRad = ax._counterangle * Math.PI / 180;
@@ -29532,13 +29716,14 @@ axes.doTicks = function(gd, axid, skipTitle) {
         };
     }
     else {
-        _$lib_166.warn('Unrecognized doTicks axis:', axid);
+        _$lib_167.warn('Unrecognized doTicks axis:', axid);
         return;
     }
-    var axside = ax.side || sides[0],
+
+    var axside = ax.side || sides[0];
     // which direction do the side[0], side[1], and free ticks go?
     // then we flip if outside XOR y axis
-        ticksign = [-1, 1, axside === sides[1] ? 1 : -1];
+    var ticksign = [-1, 1, axside === sides[1] ? 1 : -1];
     if((ax.ticks !== 'inside') === (axLetter === 'x')) {
         ticksign = ticksign.map(function(v) { return -v; });
     }
@@ -29566,6 +29751,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     function drawTicks(container, tickpath) {
         var ticks = container.selectAll('path.' + tcls)
             .data(ax.ticks === 'inside' ? valsClipped : vals, datafn);
+
         if(tickpath && ax.ticks) {
             ticks.enter().append('path').classed(tcls, 1).classed('ticks', 1)
                 .classed('crisp', 1)
@@ -29581,7 +29767,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     function drawLabels(container, position) {
         // tick labels - for now just the main labels.
         // TODO: mirror labels, esp for subplots
-        var tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
+        tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
 
         if(!_$fastIsnumeric_11(position)) {
             tickLabels.remove();
@@ -29649,10 +29835,10 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     var thisLabel = _$d3_8.select(this),
                         newPromise = gd._promises.length;
                     thisLabel
-                        .call(_$svg_text_utils_187.positionText, labelx(d), labely(d))
+                        .call(_$svg_text_utils_188.positionText, labelx(d), labely(d))
                         .call(_$drawing_70.font, d.font, d.fontSize, d.fontColor)
                         .text(d.text)
-                        .call(_$svg_text_utils_187.convertToTspans, gd);
+                        .call(_$svg_text_utils_188.convertToTspans, gd);
                     newPromise = gd._promises[newPromise];
                     if(newPromise) {
                         // if we have an async label, we'll deal with that
@@ -29677,7 +29863,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         if(axid === 'angular') {
             tickLabels.each(function(d) {
                 _$d3_8.select(this).select('text')
-                    .call(_$svg_text_utils_187.positionText, labelx(d), labely(d));
+                    .call(_$svg_text_utils_188.positionText, labelx(d), labely(d));
             });
         }
 
@@ -29712,8 +29898,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
                             (labely(d) - d.fontSize / 2) + ')') :
                         '');
                 var anchorHeight = getAnchorHeight(
-                    _$svg_text_utils_187.lineCount(thisLabel),
-                    __LINE_SPACING_209 * d.fontSize,
+                    _$svg_text_utils_188.lineCount(thisLabel),
+                    __LINE_SPACING_210 * d.fontSize,
                     _$fastIsnumeric_11(angle) ? +angle : 0);
                 if(anchorHeight) {
                     transform += ' translate(0, ' + anchorHeight + ')';
@@ -29774,7 +29960,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     });
                 });
                 for(i = 0; i < lbbArray.length - 1; i++) {
-                    if(_$lib_166.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
+                    if(_$lib_167.bBoxIntersect(lbbArray[i], lbbArray[i + 1])) {
                         // any overlap at all - set 30 degrees
                         autoangle = 30;
                         break;
@@ -29916,7 +30102,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
             }
         }
 
-        var done = _$lib_166.syncOrAsync([
+        var done = _$lib_167.syncOrAsync([
             allLabelsReady,
             fixLabelOverlaps,
             calcBoundingBox,
@@ -29932,14 +30118,12 @@ axes.doTicks = function(gd, axid, skipTitle) {
         // now this only applies to regular cartesian axes; colorbars and
         // others ALWAYS call doTicks with skipTitle=true so they can
         // configure their own titles.
-        var ax = _$axis_ids_212.getFromId(gd, axid);
 
         // rangeslider takes over a bottom title so drop it here
         if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox && ax.side === 'bottom') return;
 
-        var avoidSelection = _$d3_8.select(gd).selectAll('g.' + axid + 'tick');
         var avoid = {
-            selection: avoidSelection,
+            selection: tickLabels,
             side: ax.side
         };
         var axLetter = axid.charAt(0);
@@ -29949,8 +30133,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
         var transform, counterAxis, x, y;
 
-        if(avoidSelection.size()) {
-            var translation = _$drawing_70.getTranslate(avoidSelection.node().parentNode);
+        if(tickLabels.size()) {
+            var translation = _$drawing_70.getTranslate(tickLabels.node().parentNode);
             avoid.offsetLeft = translation.x;
             avoid.offsetTop = translation.y;
         }
@@ -29961,7 +30145,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         if(axLetter === 'x') {
             counterAxis = (ax.anchor === 'free') ?
                 {_offset: gs.t + (1 - (ax.position || 0)) * gs.h, _length: 0} :
-                _$axis_ids_212.getFromId(gd, ax.anchor);
+                _$axis_ids_213.getFromId(gd, ax.anchor);
 
             x = ax._offset + ax._length / 2;
 
@@ -29979,7 +30163,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         else {
             counterAxis = (ax.anchor === 'free') ?
                 {_offset: gs.l + (ax.position || 0) * gs.w, _length: 0} :
-                _$axis_ids_212.getFromId(gd, ax.anchor);
+                _$axis_ids_213.getFromId(gd, ax.anchor);
 
             y = ax._offset + ax._length / 2;
             if(ax.side === 'right') {
@@ -30007,11 +30191,13 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
     function traceHasBarsOrFill(trace, subplot) {
         if(trace.visible !== true || trace.xaxis + trace.yaxis !== subplot) return false;
-        if(_$registry_258.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter]) return true;
+        if(_$registry_259.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axLetter]) return true;
         return trace.fill && trace.fill.charAt(trace.fill.length - 1) === axLetter;
     }
 
     function drawGrid(plotinfo, counteraxis, subplot) {
+        if(fullLayout._hasOnlyLargeSploms) return;
+
         var gridcontainer = plotinfo.gridlayer.selectAll('.' + axid);
         var zlcontainer = plotinfo.zerolinelayer;
         var gridvals = plotinfo['hidegrid' + axLetter] ? [] : valsClipped;
@@ -30045,7 +30231,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     break;
                 }
             }
-            var rng = _$lib_166.simpleMap(ax.range, ax.r2l),
+            var rng = _$lib_167.simpleMap(ax.range, ax.r2l),
                 showZl = (rng[0] * rng[1] <= 0) && ax.zeroline &&
                 (ax.type === 'linear' || ax.type === '-') && gridvals.length &&
                 (hasBarsOrFill || clipEnds({x: 0}) || !ax.showline);
@@ -30059,7 +30245,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     // If several zerolines enter at the same time we will sort once per,
                     // but generally this should be a minimal overhead.
                     zlcontainer.selectAll('path').sort(function(da, db) {
-                        return _$axis_ids_212.idSort(da.id, db.id);
+                        return _$axis_ids_213.idSort(da.id, db.id);
                     });
                 });
             zl.attr('transform', transfn)
@@ -30110,7 +30296,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
             }
             drawTicks(mainPlotinfo[axLetter + 'axislayer'], tickpath);
 
-            tickSubplots = Object.keys(ax._linepositions);
+            tickSubplots = Object.keys(ax._linepositions || {});
         }
 
         tickSubplots.map(function(subplot) {
@@ -30249,7 +30435,7 @@ function swapAxisGroup(gd, xIds, yIds) {
         var ann = gd._fullLayout.annotations[i];
         if(xIds.indexOf(ann.xref) !== -1 &&
                 yIds.indexOf(ann.yref) !== -1) {
-            _$lib_166.swapAttrs(layout.annotations[i], ['?']);
+            _$lib_167.swapAttrs(layout.annotations[i], ['?']);
         }
     }
 }
@@ -30258,7 +30444,7 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
     // in case the value is the default for either axis,
     // look at the first axis in each list and see if
     // this key's value is undefined
-    var np = _$lib_166.nestedProperty,
+    var np = _$lib_167.nestedProperty,
         xVal = np(layout[xFullAxes[0]._name], key).get(),
         yVal = np(layout[yFullAxes[0]._name], key).get(),
         i;
@@ -30295,15 +30481,15 @@ var _$hover_85 = {};
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 /* removed: var _$tinycolor_26 = require('tinycolor2'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$Events_157 = require('../../lib/events'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
-/* removed: var _$overrideCursor_177 = require('../../lib/override_cursor'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$Events_158 = require('../../lib/events'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$overrideCursor_178 = require('../../lib/override_cursor'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
 /* removed: var _$color_45 = require('../color'); */;
 /* removed: var _$dragelement_67 = require('../dragelement'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 
 /* removed: var _$helpers_84 = require('./helpers'); */;
 /* removed: var _$constants_82 = require('./constants'); */;
@@ -30350,9 +30536,9 @@ var HOVERTEXTPAD = _$constants_82.HOVERTEXTPAD;
 // We wrap the hovers in a timer, to limit their frequency.
 // The actual rendering is done by private function _hover.
 _$hover_85.hover = function hover(gd, evt, subplot, noHoverEvent) {
-    gd = _$lib_166.getGraphDiv(gd);
+    gd = _$lib_167.getGraphDiv(gd);
 
-    _$lib_166.throttle(
+    _$lib_167.throttle(
         gd._fullLayout._uid + _$constants_82.HOVERID,
         _$constants_82.HOVERMINTIME,
         function() { _hover(gd, evt, subplot, noHoverEvent); }
@@ -30475,8 +30661,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             // get updated properly so that we don't have
             // to use Axes.getFromId in general.
 
-            xaArray[i] = _$axes_209.getFromId(gd, plotObj.xaxis._id);
-            yaArray[i] = _$axes_209.getFromId(gd, plotObj.yaxis._id);
+            xaArray[i] = _$axes_210.getFromId(gd, plotObj.xaxis._id);
+            yaArray[i] = _$axes_210.getFromId(gd, plotObj.yaxis._id);
             continue;
         }
 
@@ -30498,7 +30684,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var hoverdistance = fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance;
     var spikedistance = fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance;
 
-        // hoverData: the set of candidate points we've found to highlight
+    // hoverData: the set of candidate points we've found to highlight
     var hoverData = [],
 
         // searchData: the data to search in. Mostly this is just a copy of
@@ -30548,7 +30734,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         for(curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
             trace = cd[0].trace;
-            if(trace.hoverinfo !== 'skip' && subplots.indexOf(_$helpers_84.getSubplot(trace)) !== -1) {
+            if(trace.hoverinfo !== 'skip' && _$helpers_84.isTraceInSubplots(trace, subplots)) {
                 searchData.push(cd);
             }
         }
@@ -30572,7 +30758,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             // fire the beforehover event and quit if it returns false
             // note that we're only calling this on real mouse events, so
             // manual calls to fx.hover will always run.
-            if(_$Events_157.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
+            if(_$Events_158.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
                 return;
             }
 
@@ -30597,7 +30783,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         else yvalArray = _$helpers_84.p2c(yaArray, ypx);
 
         if(!_$fastIsnumeric_11(xvalArray[0]) || !_$fastIsnumeric_11(yvalArray[0])) {
-            _$lib_166.warn('Fx.hover failed', evt, gd);
+            _$lib_167.warn('Fx.hover failed', evt, gd);
             return _$dragelement_67.unhoverRaw(gd, evt);
         }
     }
@@ -30621,8 +30807,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // the rest of this function from running and failing
         if(['carpet', 'contourcarpet'].indexOf(trace._module.name) !== -1) continue;
 
-        subplotId = _$helpers_84.getSubplot(trace);
-        subploti = subplots.indexOf(subplotId);
+        if(trace.type === 'splom') {
+            // splom traces do not generate overlay subplots,
+            // it is safe to assume here splom traces correspond to the 0th subplot
+            subploti = 0;
+            subplotId = subplots[subploti];
+        } else {
+            subplotId = _$helpers_84.getSubplot(trace);
+            subploti = subplots.indexOf(subplotId);
+        }
 
         // within one trace mode can sometimes be overridden
         mode = hovermode;
@@ -30716,7 +30909,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 }
             }
             else {
-                _$lib_166.log('Unrecognized trace type in hover:', trace);
+                _$lib_167.log('Unrecognized trace type in hover:', trace);
             }
         }
 
@@ -30893,8 +31086,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
     // we should improve the "fx" API so other plots can use it without these hack.
     if(evt.target && evt.target.tagName) {
-        var hasClickToShow = _$registry_258.getComponentMethod('annotations', 'hasClickToShow')(gd, newhoverdata);
-        _$overrideCursor_177(_$d3_8.select(evt.target), hasClickToShow ? 'pointer' : '');
+        var hasClickToShow = _$registry_259.getComponentMethod('annotations', 'hasClickToShow')(gd, newhoverdata);
+        _$overrideCursor_178(_$d3_8.select(evt.target), hasClickToShow ? 'pointer' : '');
     }
 
     // don't emit events if called manually
@@ -30979,22 +31172,20 @@ function createHoverText(hoverData, opts, gd) {
     commonLabel.exit().remove();
 
     commonLabel.each(function() {
-        var label = _$d3_8.select(this),
-            lpath = label.selectAll('path').data([0]),
-            ltext = label.selectAll('text').data([0]);
-
-        lpath.enter().append('path')
-            .style({'stroke-width': '1px'});
+        var label = _$d3_8.select(this);
+        var lpath = _$lib_167.ensureSingle(label, 'path', '', function(s) {
+            s.style({'stroke-width': '1px'});
+        });
+        var ltext = _$lib_167.ensureSingle(label, 'text', '', function(s) {
+            // prohibit tex interpretation until we can handle
+            // tex and regular text together
+            s.attr('data-notex', 1);
+        });
 
         lpath.style({
             fill: commonLabelOpts.bgcolor || _$color_45.defaultLine,
             stroke: commonLabelOpts.bordercolor || _$color_45.background,
         });
-
-        ltext.enter().append('text')
-            // prohibit tex interpretation until we can handle
-            // tex and regular text together
-            .attr('data-notex', 1);
 
         ltext.text(t0)
             .call(_$drawing_70.font,
@@ -31002,15 +31193,15 @@ function createHoverText(hoverData, opts, gd) {
                 commonLabelOpts.font.size || fontSize,
                 commonLabelOpts.font.color || _$color_45.background
              )
-            .call(_$svg_text_utils_187.positionText, 0, 0)
-            .call(_$svg_text_utils_187.convertToTspans, gd);
+            .call(_$svg_text_utils_188.positionText, 0, 0)
+            .call(_$svg_text_utils_188.convertToTspans, gd);
 
         label.attr('transform', '');
 
         var tbb = ltext.node().getBoundingClientRect();
         if(hovermode === 'x') {
             ltext.attr('text-anchor', 'middle')
-                .call(_$svg_text_utils_187.positionText, 0, (xa.side === 'top' ?
+                .call(_$svg_text_utils_188.positionText, 0, (xa.side === 'top' ?
                     (outerTop - tbb.bottom - HOVERARROWSIZE - HOVERTEXTPAD) :
                     (outerTop - tbb.top + HOVERARROWSIZE + HOVERTEXTPAD)));
 
@@ -31028,7 +31219,7 @@ function createHoverText(hoverData, opts, gd) {
         }
         else {
             ltext.attr('text-anchor', ya.side === 'right' ? 'start' : 'end')
-                .call(_$svg_text_utils_187.positionText,
+                .call(_$svg_text_utils_188.positionText,
                     (ya.side === 'right' ? 1 : -1) * (HOVERTEXTPAD + HOVERARROWSIZE),
                     outerTop - tbb.top - tbb.height / 2);
 
@@ -31094,7 +31285,7 @@ function createHoverText(hoverData, opts, gd) {
 
         if(d.name) {
             // strip out our pseudo-html elements from d.name (if it exists at all)
-            name = _$svg_text_utils_187.plainText(d.name || '');
+            name = _$svg_text_utils_188.plainText(d.name || '');
 
             var nameLength = Math.round(d.nameLength);
 
@@ -31103,13 +31294,6 @@ function createHoverText(hoverData, opts, gd) {
                 else name = name.substr(0, nameLength);
             }
         }
-
-        // used by other modules (initially just ternary) that
-        // manage their own hoverinfo independent of cleanPoint
-        // the rest of this will still apply, so such modules
-        // can still put things in (x|y|z)Label, text, and name
-        // and hoverinfo will still determine their visibility
-        if(d.extraText !== undefined) text += d.extraText;
 
         if(d.zLabel !== undefined) {
             if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
@@ -31129,6 +31313,13 @@ function createHoverText(hoverData, opts, gd) {
             text += (text ? '<br>' : '') + d.text;
         }
 
+        // used by other modules (initially just ternary) that
+        // manage their own hoverinfo independent of cleanPoint
+        // the rest of this will still apply, so such modules
+        // can still put things in (x|y|z)Label, text, and name
+        // and hoverinfo will still determine their visibility
+        if(d.extraText !== undefined) text += (text ? '<br>' : '') + d.extraText;
+
         // if 'text' is empty at this point,
         // put 'name' in main label and don't show secondary label
         if(text === '') {
@@ -31145,8 +31336,8 @@ function createHoverText(hoverData, opts, gd) {
                 d.fontColor || contrastColor)
             .text(text)
             .attr('data-notex', 1)
-            .call(_$svg_text_utils_187.positionText, 0, 0)
-            .call(_$svg_text_utils_187.convertToTspans, gd);
+            .call(_$svg_text_utils_188.positionText, 0, 0)
+            .call(_$svg_text_utils_188.convertToTspans, gd);
 
         var tx2 = g.select('text.name'),
             tx2width = 0;
@@ -31159,8 +31350,8 @@ function createHoverText(hoverData, opts, gd) {
                     traceColor)
                 .text(name)
                 .attr('data-notex', 1)
-                .call(_$svg_text_utils_187.positionText, 0, 0)
-                .call(_$svg_text_utils_187.convertToTspans, gd);
+                .call(_$svg_text_utils_188.positionText, 0, 0)
+                .call(_$svg_text_utils_188.convertToTspans, gd);
             tx2width = tx2.node().getBoundingClientRect().width + 2 * HOVERTEXTPAD;
         }
         else {
@@ -31429,12 +31620,12 @@ function alignHoverText(hoverLabels, rotateLabels) {
                 'V' + (offsetY - HOVERARROWSIZE) +
                 'Z'));
 
-        tx.call(_$svg_text_utils_187.positionText,
+        tx.call(_$svg_text_utils_188.positionText,
             txx + offsetX, offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD);
 
         if(d.tx2width) {
             g.select('text.name')
-                .call(_$svg_text_utils_187.positionText,
+                .call(_$svg_text_utils_188.positionText,
                     tx2x + alignShift * HOVERTEXTPAD + offsetX,
                     offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD);
             g.select('rect')
@@ -31454,11 +31645,11 @@ function cleanPoint(d, hovermode) {
 
     var getVal = Array.isArray(index) ?
         function(calcKey, traceKey) {
-            return _$lib_166.castOption(cd0, index, calcKey) ||
-                _$lib_166.extractOption({}, trace, '', traceKey);
+            return _$lib_167.castOption(cd0, index, calcKey) ||
+                _$lib_167.extractOption({}, trace, '', traceKey);
         } :
         function(calcKey, traceKey) {
-            return _$lib_166.extractOption(cd, trace, calcKey, traceKey);
+            return _$lib_167.extractOption(cd, trace, calcKey, traceKey);
         };
 
     function fill(key, calcKey, traceKey) {
@@ -31479,18 +31670,18 @@ function cleanPoint(d, hovermode) {
         (d.ya._offset + (d.y0 + d.y1) / 2);
 
     // then constrain all the positions to be on the plot
-    d.x0 = _$lib_166.constrain(d.x0, 0, d.xa._length);
-    d.x1 = _$lib_166.constrain(d.x1, 0, d.xa._length);
-    d.y0 = _$lib_166.constrain(d.y0, 0, d.ya._length);
-    d.y1 = _$lib_166.constrain(d.y1, 0, d.ya._length);
+    d.x0 = _$lib_167.constrain(d.x0, 0, d.xa._length);
+    d.x1 = _$lib_167.constrain(d.x1, 0, d.xa._length);
+    d.y0 = _$lib_167.constrain(d.y0, 0, d.ya._length);
+    d.y1 = _$lib_167.constrain(d.y1, 0, d.ya._length);
 
     // and convert the x and y label values into formatted text
     if(d.xLabelVal !== undefined) {
-        d.xLabel = ('xLabel' in d) ? d.xLabel : _$axes_209.hoverLabelText(d.xa, d.xLabelVal);
+        d.xLabel = ('xLabel' in d) ? d.xLabel : _$axes_210.hoverLabelText(d.xa, d.xLabelVal);
         d.xVal = d.xa.c2d(d.xLabelVal);
     }
     if(d.yLabelVal !== undefined) {
-        d.yLabel = ('yLabel' in d) ? d.yLabel : _$axes_209.hoverLabelText(d.ya, d.yLabelVal);
+        d.yLabel = ('yLabel' in d) ? d.yLabel : _$axes_210.hoverLabelText(d.ya, d.yLabelVal);
         d.yVal = d.ya.c2d(d.yLabelVal);
     }
 
@@ -31501,10 +31692,10 @@ function cleanPoint(d, hovermode) {
 
     // for box means and error bars, add the range to the label
     if(!isNaN(d.xerr) && !(d.xa.type === 'log' && d.xerr <= 0)) {
-        var xeText = _$axes_209.tickText(d.xa, d.xa.c2l(d.xerr), 'hover').text;
+        var xeText = _$axes_210.tickText(d.xa, d.xa.c2l(d.xerr), 'hover').text;
         if(d.xerrneg !== undefined) {
             d.xLabel += ' +' + xeText + ' / -' +
-                _$axes_209.tickText(d.xa, d.xa.c2l(d.xerrneg), 'hover').text;
+                _$axes_210.tickText(d.xa, d.xa.c2l(d.xerrneg), 'hover').text;
         }
         else d.xLabel += ' ± ' + xeText;
 
@@ -31514,10 +31705,10 @@ function cleanPoint(d, hovermode) {
         if(hovermode === 'x') d.distance += 1;
     }
     if(!isNaN(d.yerr) && !(d.ya.type === 'log' && d.yerr <= 0)) {
-        var yeText = _$axes_209.tickText(d.ya, d.ya.c2l(d.yerr), 'hover').text;
+        var yeText = _$axes_210.tickText(d.ya, d.ya.c2l(d.yerr), 'hover').text;
         if(d.yerrneg !== undefined) {
             d.yLabel += ' +' + yeText + ' / -' +
-                _$axes_209.tickText(d.ya, d.ya.c2l(d.yerrneg), 'hover').text;
+                _$axes_210.tickText(d.ya, d.ya.c2l(d.yerrneg), 'hover').text;
         }
         else d.yLabel += ' ± ' + yeText;
 
@@ -31743,11 +31934,11 @@ function spikesChanged(gd, oldspikepoints) {
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 var hover = _$hover_85.hover;
 
 var _$click_81 = function click(gd, evt, subplot) {
-    var annotationsDone = _$registry_258.getComponentMethod('annotations', 'onClick')(gd, gd._hoverdata);
+    var annotationsDone = _$registry_259.getComponentMethod('annotations', 'onClick')(gd, gd._hoverdata);
 
     // fallback to fail-safe in case the plot type's hover method doesn't pass the subplot.
     // Ternary, for example, didn't, but it was caught because tested.
@@ -31780,7 +31971,7 @@ var _$click_81 = function click(gd, evt, subplot) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 var _$handleHoverLabelDefaults_86 = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
     opts = opts || {};
@@ -31788,7 +31979,7 @@ var _$handleHoverLabelDefaults_86 = function handleHoverLabelDefaults(contIn, co
     coerce('hoverlabel.bgcolor', opts.bgcolor);
     coerce('hoverlabel.bordercolor', opts.bordercolor);
     coerce('hoverlabel.namelength', opts.namelength);
-    _$lib_166.coerceFont(coerce, 'hoverlabel.font', opts.font);
+    _$lib_167.coerceFont(coerce, 'hoverlabel.font', opts.font);
 };
 
 /**
@@ -31801,13 +31992,13 @@ var _$handleHoverLabelDefaults_86 = function handleHoverLabelDefaults(contIn, co
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$attributes_79 = require('./attributes'); */;
 /* removed: var _$handleHoverLabelDefaults_86 = require('./hoverlabel_defaults'); */;
 
 var _$supplyDefaults_83 = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(traceIn, traceOut, _$attributes_79, attr, dflt);
+        return _$lib_167.coerce(traceIn, traceOut, _$attributes_79, attr, dflt);
     }
 
     _$handleHoverLabelDefaults_86(traceIn, traceOut, coerce, layout.hoverlabel);
@@ -31887,6 +32078,14 @@ var _$layout_attributes_88 = {
             
         },
         editType: 'none'
+    },
+    selectdirection: {
+        valType: 'enumerated',
+        
+        values: ['h', 'v', 'd', 'any'],
+        dflt: 'any',
+        
+        editType: 'none'
     }
 };
 
@@ -31900,15 +32099,16 @@ var _$layout_attributes_88 = {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$layout_attributes_88 = require('./layout_attributes'); */;
 
 var _$supplyLayoutDefaults_89 = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(layoutIn, layoutOut, _$layout_attributes_88, attr, dflt);
+        return _$lib_167.coerce(layoutIn, layoutOut, _$layout_attributes_88, attr, dflt);
     }
 
-    coerce('dragmode');
+    var dragMode = coerce('dragmode');
+    if(dragMode === 'select') coerce('selectdirection');
 
     var hovermodeDflt;
     if(layoutOut._has('cartesian')) {
@@ -31965,13 +32165,13 @@ function isHoriz(fullData) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$handleHoverLabelDefaults_86 = require('./hoverlabel_defaults'); */;
 /* removed: var _$layout_attributes_88 = require('./layout_attributes'); */;
 
 var _$supplyLayoutGlobalDefaults_90 = function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(layoutIn, layoutOut, _$layout_attributes_88, attr, dflt);
+        return _$lib_167.coerce(layoutIn, layoutOut, _$layout_attributes_88, attr, dflt);
     }
 
     _$handleHoverLabelDefaults_86(layoutIn, layoutOut, coerce);
@@ -31988,7 +32188,7 @@ var _$supplyLayoutGlobalDefaults_90 = function supplyLayoutGlobalDefaults(layout
 'use strict';
 
 /* removed: var _$d3_8 = require('d3'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$dragelement_67 = require('../dragelement'); */;
 /* removed: var _$helpers_84 = require('./helpers'); */;
 /* removed: var _$layout_attributes_88 = require('./layout_attributes'); */;
@@ -32032,7 +32232,7 @@ var _$fx_87 = {
 function loneUnhover(containerOrSelection) {
     // duck type whether the arg is a d3 selection because ie9 doesn't
     // handle instanceof like modern browsers do.
-    var selection = _$lib_166.isD3Selection(containerOrSelection) ?
+    var selection = _$lib_167.isD3Selection(containerOrSelection) ?
             containerOrSelection :
             _$d3_8.select(containerOrSelection);
 
@@ -32043,15 +32243,15 @@ function loneUnhover(containerOrSelection) {
 // helpers for traces that use Fx.loneHover
 
 function castHoverOption(trace, ptNumber, attr) {
-    return _$lib_166.castOption(trace, ptNumber, 'hoverlabel.' + attr);
+    return _$lib_167.castOption(trace, ptNumber, 'hoverlabel.' + attr);
 }
 
 function castHoverinfo(trace, fullLayout, ptNumber) {
     function _coerce(val) {
-        return _$lib_166.coerceHoverinfo({hoverinfo: val}, {_module: trace._module}, fullLayout);
+        return _$lib_167.coerceHoverinfo({hoverinfo: val}, {_module: trace._module}, fullLayout);
     }
 
-    return _$lib_166.castOption(trace, ptNumber, 'hoverinfo', _coerce);
+    return _$lib_167.castOption(trace, ptNumber, 'hoverinfo', _coerce);
 }
 
 var _$constants_238 = {};
@@ -32229,7 +32429,7 @@ _$constants_238.layerNameToAdjective = {
     frame: 'frame'
 };
 
-var _$topojson_utils_190 = {};
+var _$topojson_utils_191 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -32241,7 +32441,7 @@ var _$topojson_utils_190 = {};
 
 'use strict';
 
-var topojsonUtils = _$topojson_utils_190 = {};
+var topojsonUtils = _$topojson_utils_191 = {};
 
 var locationmodeToLayer = _$constants_238.locationmodeToLayer;
 var topojsonFeature = _$topojsonClient_27.feature;
@@ -33874,7 +34074,7 @@ if (typeof window === 'object')
 
 var _$PolyBool_17 = PolyBool;
 
-var _$polygon_178 = {};
+var _$polygon_179 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -33886,10 +34086,10 @@ var _$polygon_178 = {};
 
 'use strict';
 
-var dot = _$matrix_172.dot;
-var __BADNUM_178 = _$numerical_147.BADNUM;
+var dot = _$matrix_173.dot;
+var __BADNUM_179 = _$numerical_147.BADNUM;
 
-var polygon = _$polygon_178 = {};
+var polygon = _$polygon_179 = {};
 
 /**
  * Turn an array of [x, y] pairs into a polygon object
@@ -33954,7 +34154,7 @@ polygon.tester = function tester(ptsIn) {
         var x = pt[0],
             y = pt[1];
 
-        if(x === __BADNUM_178 || x < xmin || x > xmax || y === __BADNUM_178 || y < ymin || y > ymax) {
+        if(x === __BADNUM_179 || x < xmin || x > xmax || y === __BADNUM_179 || y < ymin || y > ymax) {
             // pt is outside the bounding box of polygon
             return false;
         }
@@ -33967,7 +34167,7 @@ polygon.tester = function tester(ptsIn) {
         var x = pt[0],
             y = pt[1];
 
-        if(x === __BADNUM_178 || x < xmin || x > xmax || y === __BADNUM_178 || y < ymin || y > ymax) {
+        if(x === __BADNUM_179 || x < xmin || x > xmax || y === __BADNUM_179 || y < ymin || y > ymax) {
             // pt is outside the bounding box of polygon
             return false;
         }
@@ -34185,59 +34385,83 @@ polygon.filter = function filter(pts, tolerance) {
 'use strict';
 
 /* removed: var _$PolyBool_17 = require('polybooljs'); */;
-/* removed: var _$polygon_178 = require('../../lib/polygon'); */;
-/* removed: var _$throttle_188 = require('../../lib/throttle'); */;
+
+/* removed: var _$registry_259 = require('../../registry'); */;
 /* removed: var _$color_45 = require('../../components/color'); */;
-var makeEventData = _$helpers_84.makeEventData;
 /* removed: var _$fx_87 = require('../../components/fx'); */;
 
-/* removed: var _$axes_209 = require('./axes'); */;
-/* removed: var _$constants_214 = require('./constants'); */;
+/* removed: var _$polygon_179 = require('../../lib/polygon'); */;
+/* removed: var _$throttle_189 = require('../../lib/throttle'); */;
+var makeEventData = _$helpers_84.makeEventData;
+var getFromId = _$axis_ids_213.getFromId;
+var __sortModules_227 = _$sort_modules_257.sortModules;
 
-var filteredPolygon = _$polygon_178.filter;
-var polygonTester = _$polygon_178.tester;
-var multipolygonTester = _$polygon_178.multitester;
-var MINSELECT = _$constants_214.MINSELECT;
+/* removed: var _$constants_215 = require('./constants'); */;
+var MINSELECT = _$constants_215.MINSELECT;
+
+var filteredPolygon = _$polygon_179.filter;
+var polygonTester = _$polygon_179.tester;
+var multipolygonTester = _$polygon_179.multitester;
 
 function getAxId(ax) { return ax._id; }
 
-var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode) {
-    var gd = dragOptions.gd,
-        fullLayout = gd._fullLayout,
-        zoomLayer = fullLayout._zoomlayer,
-        dragBBox = dragOptions.element.getBoundingClientRect(),
-        plotinfo = dragOptions.plotinfo,
-        xs = plotinfo.xaxis._offset,
-        ys = plotinfo.yaxis._offset,
-        x0 = startX - dragBBox.left,
-        y0 = startY - dragBBox.top,
-        x1 = x0,
-        y1 = y0,
-        path0 = 'M' + x0 + ',' + y0,
-        pw = dragOptions.xaxes[0]._length,
-        ph = dragOptions.yaxes[0]._length,
-        xAxisIds = dragOptions.xaxes.map(getAxId),
-        yAxisIds = dragOptions.yaxes.map(getAxId),
-        allAxes = dragOptions.xaxes.concat(dragOptions.yaxes),
-        filterPoly, testPoly, mergedPolygons, currentPolygon,
-        subtract = e.altKey;
+function prepSelect(e, startX, startY, dragOptions, mode) {
+    var gd = dragOptions.gd;
+    var fullLayout = gd._fullLayout;
+    var zoomLayer = fullLayout._zoomlayer;
+    var dragBBox = dragOptions.element.getBoundingClientRect();
+    var plotinfo = dragOptions.plotinfo;
+    var xs = plotinfo.xaxis._offset;
+    var ys = plotinfo.yaxis._offset;
+    var x0 = startX - dragBBox.left;
+    var y0 = startY - dragBBox.top;
+    var x1 = x0;
+    var y1 = y0;
+    var path0 = 'M' + x0 + ',' + y0;
+    var pw = dragOptions.xaxes[0]._length;
+    var ph = dragOptions.yaxes[0]._length;
+    var xAxisIds = dragOptions.xaxes.map(getAxId);
+    var yAxisIds = dragOptions.yaxes.map(getAxId);
+    var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
+    var subtract = e.altKey;
 
+    var filterPoly, testPoly, mergedPolygons, currentPolygon;
+    var i, cd, trace, searchInfo, eventData;
 
-    // take over selection polygons from prev mode, if any
-    if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
+    var selectingOnSameSubplot = (
+        fullLayout._lastSelectedSubplot &&
+        fullLayout._lastSelectedSubplot === plotinfo.id
+    );
+
+    if(
+        selectingOnSameSubplot &&
+        (e.shiftKey || e.altKey) &&
+        (plotinfo.selection && plotinfo.selection.polygons) &&
+        !dragOptions.polygons
+    ) {
+        // take over selection polygons from prev mode, if any
         dragOptions.polygons = plotinfo.selection.polygons;
         dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
-    }
-    // create new polygons, if shift mode
-    else if((!e.shiftKey && !e.altKey) || ((e.shiftKey || e.altKey) && !plotinfo.selection)) {
+    } else if(
+        (!e.shiftKey && !e.altKey) ||
+        ((e.shiftKey || e.altKey) && !plotinfo.selection)
+    ) {
+        // create new polygons, if shift mode or selecting across different subplots
         plotinfo.selection = {};
         plotinfo.selection.polygons = dragOptions.polygons = [];
         plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
     }
 
-    if(mode === 'lasso') {
-        filterPoly = filteredPolygon([[x0, y0]], _$constants_214.BENDPX);
+    // clear selection outline when selecting a different subplot
+    if(!selectingOnSameSubplot) {
+        clearSelect(zoomLayer);
+        fullLayout._lastSelectedSubplot = plotinfo.id;
     }
+
+    if(mode === 'lasso') {
+        filterPoly = filteredPolygon([[x0, y0]], _$constants_215.BENDPX);
+    }
+
     var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1, 2]);
 
     outlines.enter()
@@ -34259,13 +34483,13 @@ var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode)
 
     // find the traces to search for selection points
     var searchTraces = [];
-    var throttleID = fullLayout._uid + _$constants_214.SELECTID;
+    var throttleID = fullLayout._uid + _$constants_215.SELECTID;
     var selection = [];
-    var i, cd, trace, searchInfo, eventData;
 
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
+
         if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
 
         if(dragOptions.subplot) {
@@ -34274,23 +34498,32 @@ var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode)
                 trace.geo === dragOptions.subplot
             ) {
                 searchTraces.push({
-                    selectPoints: trace._module.selectPoints,
-                    style: trace._module.style,
+                    _module: trace._module,
                     cd: cd,
                     xaxis: dragOptions.xaxes[0],
                     yaxis: dragOptions.yaxes[0]
                 });
             }
+        } else if(
+            trace.type === 'splom' &&
+            // FIXME: make sure we don't have more than single axis for splom
+            trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
+        ) {
+            searchTraces.push({
+                _module: trace._module,
+                cd: cd,
+                xaxis: dragOptions.xaxes[0],
+                yaxis: dragOptions.yaxes[0]
+            });
         } else {
             if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
             if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
 
             searchTraces.push({
-                selectPoints: trace._module.selectPoints,
-                style: trace._module.style,
+                _module: trace._module,
                 cd: cd,
-                xaxis: _$axes_209.getFromId(gd, trace.xaxis),
-                yaxis: _$axes_209.getFromId(gd, trace.yaxis)
+                xaxis: getFromId(gd, trace.xaxis),
+                yaxis: getFromId(gd, trace.yaxis)
             });
         }
     }
@@ -34342,7 +34575,18 @@ var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode)
             dy = Math.abs(y1 - y0);
 
         if(mode === 'select') {
-            if(dy < Math.min(dx * 0.6, MINSELECT)) {
+            var direction = fullLayout.selectdirection;
+
+            if(fullLayout.selectdirection === 'any') {
+                if(dy < Math.min(dx * 0.6, MINSELECT)) direction = 'h';
+                else if(dx < Math.min(dy * 0.6, MINSELECT)) direction = 'v';
+                else direction = 'd';
+            }
+            else {
+                direction = fullLayout.selectdirection;
+            }
+
+            if(direction === 'h') {
                 // horizontal motion: make a vertical box
                 currentPolygon = [[x0, 0], [x0, ph], [x1, ph], [x1, 0]];
                 currentPolygon.xmin = Math.min(x0, x1);
@@ -34356,7 +34600,7 @@ var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode)
                     'h4v' + (2 * MINSELECT) + 'h-4Z');
 
             }
-            else if(dx < Math.min(dy * 0.6, MINSELECT)) {
+            else if(direction === 'v') {
                 // vertical motion: make a horizontal box
                 currentPolygon = [[0, y0], [0, y1], [pw, y1], [pw, y0]];
                 currentPolygon.xmin = Math.min(0, pw);
@@ -34368,7 +34612,7 @@ var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode)
                     'M' + (x0 - MINSELECT) + ',' + (currentPolygon.ymax - 1) +
                     'v4h' + (2 * MINSELECT) + 'v-4Z');
             }
-            else {
+            else if(direction === 'd') {
                 // diagonal motion
                 currentPolygon = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
                 currentPolygon.xmin = Math.min(x0, x1);
@@ -34403,9 +34647,9 @@ var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode)
         outlines
             .attr('d', 'M' + paths.join('M') + 'Z');
 
-        _$throttle_188.throttle(
+        _$throttle_189.throttle(
             throttleID,
-            _$constants_214.SELECTDELAY,
+            _$constants_215.SELECTDELAY,
             function() {
                 selection = [];
 
@@ -34413,7 +34657,7 @@ var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode)
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 
-                    traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
+                    traceSelection = searchInfo._module.selectPoints(searchInfo, testPoly);
                     traceSelections.push(traceSelection);
 
                     thisSelection = fillSelectionItem(traceSelection, searchInfo);
@@ -34437,14 +34681,14 @@ var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode)
     dragOptions.clickFn = function(numClicks, evt) {
         corners.remove();
 
-        _$throttle_188.done(throttleID).then(function() {
-            _$throttle_188.clear(throttleID);
+        _$throttle_189.done(throttleID).then(function() {
+            _$throttle_189.clear(throttleID);
             if(numClicks === 2) {
                 // clear selection on doubleclick
                 outlines.remove();
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
-                    searchInfo.selectPoints(searchInfo, false);
+                    searchInfo._module.selectPoints(searchInfo, false);
                 }
 
                 updateSelectedState(gd, searchTraces);
@@ -34463,8 +34707,8 @@ var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode)
     dragOptions.doneFn = function() {
         corners.remove();
 
-        _$throttle_188.done(throttleID).then(function() {
-            _$throttle_188.clear(throttleID);
+        _$throttle_189.done(throttleID).then(function() {
+            _$throttle_189.clear(throttleID);
             dragOptions.gd.emit('plotly_selected', eventData);
 
             if(currentPolygon && dragOptions.polygons) {
@@ -34478,10 +34722,10 @@ var _$prepSelect_227 = function prepSelect(e, startX, startY, dragOptions, mode)
             }
         });
     };
-};
+}
 
 function updateSelectedState(gd, searchTraces, eventData) {
-    var i, searchInfo, trace;
+    var i, j, searchInfo, trace;
 
     if(eventData) {
         var pts = eventData.points || [];
@@ -34511,17 +34755,44 @@ function updateSelectedState(gd, searchTraces, eventData) {
             trace = searchTraces[i].cd[0].trace;
             delete trace.selectedpoints;
             delete trace._input.selectedpoints;
-
-            // delete scattergl selection
-            if(searchTraces[i].cd[0].t && searchTraces[i].cd[0].t.scene) {
-                searchTraces[i].cd[0].t.scene.clearSelect();
-            }
         }
     }
 
+    // group searchInfo traces by trace modules
+    var lookup = {};
+
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
-        if(searchInfo.style) searchInfo.style(gd, searchInfo.cd);
+
+        var name = searchInfo._module.name;
+        if(lookup[name]) {
+            lookup[name].push(searchInfo);
+        } else {
+            lookup[name] = [searchInfo];
+        }
+    }
+
+    var keys = Object.keys(lookup).sort(__sortModules_227);
+
+    for(i = 0; i < keys.length; i++) {
+        var items = lookup[keys[i]];
+        var len = items.length;
+        var item0 = items[0];
+        var trace0 = item0.cd[0].trace;
+
+        if(_$registry_259.traceIs(trace0, 'regl')) {
+            // plot regl traces per module
+            var cds = new Array(len);
+            for(j = 0; j < len; j++) {
+                cds[j] = items[j].cd;
+            }
+            item0._module.style(gd, cds);
+        } else {
+            // plot svg trace per trace
+            for(j = 0; j < len; j++) {
+                item0._module.style(gd, items[j].cd);
+            }
+        }
     }
 }
 
@@ -34563,6 +34834,18 @@ function fillSelectionItem(selection, searchInfo) {
 
     return selection;
 }
+
+function clearSelect(zoomlayer) {
+    // until we get around to persistent selections, remove the outline
+    // here. The selection itself will be removed when the plot redraws
+    // at the end.
+    zoomlayer.selectAll('.select-outline').remove();
+}
+
+var _$select_227 = {
+    prepSelect: prepSelect,
+    clearSelect: clearSelect
+};
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -35021,7 +35304,7 @@ var _$addProjectionsToD3_244 = addProjectionsToD3;
 'use strict';
 
 /* removed: var _$d3_8 = require('d3'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 var radians = Math.PI / 180;
 var degrees = 180 / Math.PI;
@@ -35064,11 +35347,11 @@ function sync(geo, projection, cb) {
     var eventData = {};
 
     function set(propStr, val) {
-        var fullNp = _$lib_166.nestedProperty(fullOpts, propStr);
+        var fullNp = _$lib_167.nestedProperty(fullOpts, propStr);
 
         if(fullNp.get() !== val) {
             fullNp.set(val);
-            _$lib_166.nestedProperty(userOpts, propStr).set(val);
+            _$lib_167.nestedProperty(userOpts, propStr).set(val);
             eventData[id + '.' + propStr] = val;
         }
     }
@@ -35490,20 +35773,20 @@ function d3_eventDispatch(target) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$color_45 = require('../../components/color'); */;
 /* removed: var _$drawing_70 = require('../../components/drawing'); */;
 /* removed: var _$fx_87 = require('../../components/fx'); */;
 /* removed: var _$plots_250 = require('../plots'); */;
-/* removed: var _$axes_209 = require('../cartesian/axes'); */;
+/* removed: var _$axes_210 = require('../cartesian/axes'); */;
 /* removed: var _$dragelement_67 = require('../../components/dragelement'); */;
-/* removed: var _$prepSelect_227 = require('../cartesian/select'); */;
+var __prepSelect_239 = _$select_227.prepSelect;
 
 /* removed: var _$createGeoZoom_245 = require('./zoom'); */;
 /* removed: var _$constants_238 = require('./constants'); */;
 
-/* removed: var _$topojson_utils_190 = require('../../lib/topojson_utils'); */;
+/* removed: var _$topojson_utils_191 = require('../../lib/topojson_utils'); */;
 var __topojsonFeature_239 = _$topojsonClient_27.feature;
 
 _$addProjectionsToD3_244(_$d3_8);
@@ -35548,7 +35831,7 @@ var _$createGeo_239 = function createGeo(opts) {
 proto.plot = function(geoCalcData, fullLayout, promises) {
     var _this = this;
     var geoLayout = fullLayout[this.id];
-    var topojsonNameNew = _$topojson_utils_190.getTopojsonName(geoLayout);
+    var topojsonNameNew = _$topojson_utils_191.getTopojsonName(geoLayout);
 
     if(_this.topojson === null || topojsonNameNew !== _this.topojsonName) {
         _this.topojsonName = topojsonNameNew;
@@ -35569,7 +35852,7 @@ proto.plot = function(geoCalcData, fullLayout, promises) {
 };
 
 proto.fetchTopojson = function() {
-    var topojsonPath = _$topojson_utils_190.getTopojsonPath(
+    var topojsonPath = _$topojson_utils_191.getTopojsonPath(
         this.topojsonURL,
         this.topojsonName
     );
@@ -35685,8 +35968,8 @@ proto.updateProjection = function(fullLayout, geoLayout) {
 
         this.viewInitial = null;
 
-        _$lib_166.warn(msg);
-        gd._promises.push(_$registry_258.call('relayout', gd, updateObj));
+        _$lib_167.warn(msg);
+        gd._promises.push(_$registry_259.call('relayout', gd, updateObj));
         return msg;
     }
 
@@ -35843,7 +36126,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
             updateObj[_this.id + '.' + k] = viewInitial[k];
         }
 
-        _$registry_258.call('relayout', gd, updateObj);
+        _$registry_259.call('relayout', gd, updateObj);
         gd.emit('plotly_doubleclick', null);
     }
 
@@ -35898,7 +36181,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
         };
 
         dragOptions.prepFn = function(e, startX, startY) {
-            _$prepSelect_227(e, startX, startY, dragOptions, dragMode);
+            __prepSelect_239(e, startX, startY, dragOptions, dragMode);
         };
 
         _$dragelement_67.init(dragOptions);
@@ -35968,7 +36251,7 @@ proto.makeFramework = function() {
         showexponent: 'all',
         exponentformat: 'B'
     };
-    _$axes_209.setConvert(_this.mockAxis, fullLayout);
+    _$axes_210.setConvert(_this.mockAxis, fullLayout);
 };
 
 proto.saveViewInitial = function(geoLayout) {
@@ -36200,7 +36483,7 @@ var _$domain_235 = {};
 
 'use strict';
 
-var __extendFlat_235 = _$extend_158.extendFlat;
+var __extendFlat_235 = _$extend_159.extendFlat;
 
 /**
  * Make a xy domain attribute group
@@ -36310,7 +36593,7 @@ _$domain_235.defaults = function(containerOut, layout, coerce, dfltDomains) {
 /* removed: var _$attributes_44 = require('../../../components/color/attributes'); */;
 var domainAttrs = _$domain_235.attributes;
 /* removed: var _$constants_238 = require('../constants'); */;
-var __overrideAll_243 = _$edit_types_194.overrideAll;
+var __overrideAll_243 = _$edit_types_195.overrideAll;
 
 var geoAxesAttrs = {
     range: {
@@ -36574,7 +36857,7 @@ var _$layout_attributes_243 = __overrideAll_243({
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 var handleDomainDefaults = _$domain_235.defaults;
 
 
@@ -36605,7 +36888,7 @@ var handleDomainDefaults = _$domain_235.defaults;
  *      additional items needed by this function here as well
  * }
  */
-var _$handleSubplotDefaults_257 = function handleSubplotDefaults(layoutIn, layoutOut, fullData, opts) {
+var _$handleSubplotDefaults_258 = function handleSubplotDefaults(layoutIn, layoutOut, fullData, opts) {
     var subplotType = opts.type;
     var subplotAttributes = opts.attributes;
     var handleDefaults = opts.handleDefaults;
@@ -36617,7 +36900,7 @@ var _$handleSubplotDefaults_257 = function handleSubplotDefaults(layoutIn, layou
     var subplotLayoutIn, subplotLayoutOut;
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(subplotLayoutIn, subplotLayoutOut, subplotAttributes, attr, dflt);
+        return _$lib_167.coerce(subplotLayoutIn, subplotLayoutOut, subplotAttributes, attr, dflt);
     }
 
     for(var i = 0; i < idsLength; i++) {
@@ -36649,14 +36932,14 @@ var _$handleSubplotDefaults_257 = function handleSubplotDefaults(layoutIn, layou
 
 'use strict';
 
-/* removed: var _$handleSubplotDefaults_257 = require('../../subplot_defaults'); */;
+/* removed: var _$handleSubplotDefaults_258 = require('../../subplot_defaults'); */;
 /* removed: var _$constants_238 = require('../constants'); */;
 /* removed: var _$layout_attributes_243 = require('./layout_attributes'); */;
 
 var axesNames = _$constants_238.axesNames;
 
 var _$supplyLayoutDefaults_242 = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    _$handleSubplotDefaults_257(layoutIn, layoutOut, fullData, {
+    _$handleSubplotDefaults_258(layoutIn, layoutOut, fullData, {
         type: 'geo',
         attributes: _$layout_attributes_243,
         handleDefaults: handleGeoDefaults,
@@ -36812,20 +37095,20 @@ var _$get_data_246 = {};
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../registry'); */;
-var SUBPLOT_PATTERN = _$constants_214.SUBPLOT_PATTERN;
+/* removed: var _$registry_259 = require('../registry'); */;
+var SUBPLOT_PATTERN = _$constants_215.SUBPLOT_PATTERN;
 
 /**
- * Get calcdata traces(s) associated with a given subplot
+ * Get calcdata trace(s) associated with a given subplot
  *
- * @param {array} calcData (as in gd.calcdata)
- * @param {string} type subplot type
- * @param {string} subplotId subplot id to look for
+ * @param {array} calcData: as in gd.calcdata
+ * @param {string} type: subplot type
+ * @param {string} subplotId: subplot id to look for
  *
  * @return {array} array of calcdata traces
  */
 _$get_data_246.getSubplotCalcData = function(calcData, type, subplotId) {
-    var basePlotModule = _$registry_258.subplotsRegistry[type];
+    var basePlotModule = _$registry_259.subplotsRegistry[type];
     if(!basePlotModule) return [];
 
     var attr = basePlotModule.attr;
@@ -36840,20 +37123,40 @@ _$get_data_246.getSubplotCalcData = function(calcData, type, subplotId) {
 
     return subplotCalcData;
 };
-
+/**
+ * Get calcdata trace(s) that can be plotted with a given module
+ * NOTE: this isn't necessarily just exactly matching trace type,
+ * if multiple trace types use the same plotting routine, they will be
+ * collected here.
+ * In order to not plot the same thing multiple times, we return two arrays,
+ * the calcdata we *will* plot with this module, and the ones we *won't*
+ *
+ * @param {array} calcdata: as in gd.calcdata
+ * @param {object|string} typeOrModule: the plotting module, or its name
+ *
+ * @return {array[array]} [foundCalcdata, remainingCalcdata]
+ */
 _$get_data_246.getModuleCalcData = function(calcdata, typeOrModule) {
     var moduleCalcData = [];
-    var _module = typeof typeOrModule === 'string' ? _$registry_258.getModule(typeOrModule) : typeOrModule;
-    if(!_module) return moduleCalcData;
+    var remainingCalcData = [];
+    var _module = typeof typeOrModule === 'string' ? _$registry_259.getModule(typeOrModule) : typeOrModule;
+    if(!_module) return [moduleCalcData, calcdata];
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
+        if(trace.visible !== true) continue;
 
-        if((trace._module === _module) && (trace.visible === true)) moduleCalcData.push(cd);
+        // we use this to find data to plot - so if there's a .plot
+        if(trace._module.plot === _module.plot) {
+            moduleCalcData.push(cd);
+        }
+        else {
+            remainingCalcData.push(cd);
+        }
     }
 
-    return moduleCalcData;
+    return [moduleCalcData, remainingCalcData];
 };
 
 /**
@@ -36867,9 +37170,9 @@ _$get_data_246.getModuleCalcData = function(calcdata, typeOrModule) {
  *
  */
 _$get_data_246.getSubplotData = function getSubplotData(data, type, subplotId) {
-    if(!_$registry_258.subplotsRegistry[type]) return [];
+    if(!_$registry_259.subplotsRegistry[type]) return [];
 
-    var attr = _$registry_258.subplotsRegistry[type].attr;
+    var attr = _$registry_259.subplotsRegistry[type].attr;
     var subplotData = [];
     var trace, subplotX, subplotY;
 
@@ -36882,7 +37185,7 @@ _$get_data_246.getSubplotData = function getSubplotData(data, type, subplotId) {
     for(var i = 0; i < data.length; i++) {
         trace = data[i];
 
-        if(type === 'gl2d' && _$registry_258.traceIs(trace, 'gl2d')) {
+        if(type === 'gl2d' && _$registry_259.traceIs(trace, 'gl2d')) {
             if(trace[attr[0]] === subplotX && trace[attr[1]] === subplotY) {
                 subplotData.push(trace);
             }
@@ -36909,7 +37212,7 @@ var _$geo_240 = {};
 
 /* removed: var _$createGeo_239 = require('./geo'); */;
 var getSubplotCalcData = _$get_data_246.getSubplotCalcData;
-var __counterRegex_240 = _$lib_166.counterRegex;
+var __counterRegex_240 = _$lib_167.counterRegex;
 
 var GEO = 'geo';
 
@@ -36996,19 +37299,19 @@ _$geo_240.updateFx = function(fullLayout) {
 
 'use strict';
 
-/* removed: var _$attributes_280 = require('../scatter/attributes'); */;
-/* removed: var _$attributes_206 = require('../../plots/attributes'); */;
+/* removed: var _$attributes_281 = require('../scatter/attributes'); */;
+/* removed: var _$attributes_207 = require('../../plots/attributes'); */;
 /* removed: var _$makeColorScaleAttributes_53 = require('../../components/colorscale/color_attributes'); */;
-var __dash_305 = _$attributes_69.dash;
+var __dash_306 = _$attributes_69.dash;
 
-var __extendFlat_305 = _$extend_158.extendFlat;
-var __overrideAll_305 = _$edit_types_194.overrideAll;
+var __extendFlat_306 = _$extend_159.extendFlat;
+var __overrideAll_306 = _$edit_types_195.overrideAll;
 
-var __scatterMarkerAttrs_305 = _$attributes_280.marker,
-    scatterLineAttrs = _$attributes_280.line,
-    scatterMarkerLineAttrs = __scatterMarkerAttrs_305.line;
+var __scatterMarkerAttrs_306 = _$attributes_281.marker,
+    scatterLineAttrs = _$attributes_281.line,
+    scatterMarkerLineAttrs = __scatterMarkerAttrs_306.line;
 
-var _$attributes_305 = __overrideAll_305({
+var _$attributes_306 = __overrideAll_306({
     lon: {
         valType: 'data_array',
         
@@ -37030,40 +37333,40 @@ var _$attributes_305 = __overrideAll_305({
         
     },
 
-    mode: __extendFlat_305({}, _$attributes_280.mode, {dflt: 'markers'}),
+    mode: __extendFlat_306({}, _$attributes_281.mode, {dflt: 'markers'}),
 
-    text: __extendFlat_305({}, _$attributes_280.text, {
+    text: __extendFlat_306({}, _$attributes_281.text, {
         
     }),
-    hovertext: __extendFlat_305({}, _$attributes_280.hovertext, {
+    hovertext: __extendFlat_306({}, _$attributes_281.hovertext, {
         
     }),
 
-    textfont: _$attributes_280.textfont,
-    textposition: _$attributes_280.textposition,
+    textfont: _$attributes_281.textfont,
+    textposition: _$attributes_281.textposition,
 
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
-        dash: __dash_305
+        dash: __dash_306
     },
-    connectgaps: _$attributes_280.connectgaps,
+    connectgaps: _$attributes_281.connectgaps,
 
-    marker: __extendFlat_305({
-        symbol: __scatterMarkerAttrs_305.symbol,
-        opacity: __scatterMarkerAttrs_305.opacity,
-        size: __scatterMarkerAttrs_305.size,
-        sizeref: __scatterMarkerAttrs_305.sizeref,
-        sizemin: __scatterMarkerAttrs_305.sizemin,
-        sizemode: __scatterMarkerAttrs_305.sizemode,
-        showscale: __scatterMarkerAttrs_305.showscale,
-        colorbar: __scatterMarkerAttrs_305.colorbar,
-        line: __extendFlat_305({
+    marker: __extendFlat_306({
+        symbol: __scatterMarkerAttrs_306.symbol,
+        opacity: __scatterMarkerAttrs_306.opacity,
+        size: __scatterMarkerAttrs_306.size,
+        sizeref: __scatterMarkerAttrs_306.sizeref,
+        sizemin: __scatterMarkerAttrs_306.sizemin,
+        sizemode: __scatterMarkerAttrs_306.sizemode,
+        showscale: __scatterMarkerAttrs_306.showscale,
+        colorbar: __scatterMarkerAttrs_306.colorbar,
+        line: __extendFlat_306({
             width: scatterMarkerLineAttrs.width
         },
             _$makeColorScaleAttributes_53('marker.line')
         ),
-        gradient: __scatterMarkerAttrs_305.gradient
+        gradient: __scatterMarkerAttrs_306.gradient
     },
         _$makeColorScaleAttributes_53('marker')
     ),
@@ -37075,12 +37378,12 @@ var _$attributes_305 = __overrideAll_305({
         
         
     },
-    fillcolor: _$attributes_280.fillcolor,
+    fillcolor: _$attributes_281.fillcolor,
 
-    selected: _$attributes_280.selected,
-    unselected: _$attributes_280.unselected,
+    selected: _$attributes_281.selected,
+    unselected: _$attributes_281.unselected,
 
-    hoverinfo: __extendFlat_305({}, _$attributes_206.hoverinfo, {
+    hoverinfo: __extendFlat_306({}, _$attributes_207.hoverinfo, {
         flags: ['lon', 'lat', 'location', 'text', 'name']
     })
 }, 'calc', 'nested');
@@ -37095,36 +37398,36 @@ var _$attributes_305 = __overrideAll_305({
 
 'use strict';
 
-/* removed: var _$attributes_305 = require('../scattergeo/attributes'); */;
+/* removed: var _$attributes_306 = require('../scattergeo/attributes'); */;
 /* removed: var _$attributes_51 = require('../../components/colorscale/attributes'); */;
 /* removed: var _$attributes_46 = require('../../components/colorbar/attributes'); */;
-/* removed: var _$attributes_206 = require('../../plots/attributes'); */;
+/* removed: var _$attributes_207 = require('../../plots/attributes'); */;
 
-/* removed: var _$extend_158 = require('../../lib/extend'); */;
-var __extendFlat_267 = _$extend_158.extendFlat;
-var __extendDeepAll_267 = _$extend_158.extendDeepAll;
+/* removed: var _$extend_159 = require('../../lib/extend'); */;
+var __extendFlat_268 = _$extend_159.extendFlat;
+var __extendDeepAll_268 = _$extend_159.extendDeepAll;
 
-var scatterGeoMarkerLineAttrs = _$attributes_305.marker.line;
+var scatterGeoMarkerLineAttrs = _$attributes_306.marker.line;
 
-var _$attributes_267 = __extendFlat_267({
+var _$attributes_268 = __extendFlat_268({
     locations: {
         valType: 'data_array',
         editType: 'calc',
         
     },
-    locationmode: _$attributes_305.locationmode,
+    locationmode: _$attributes_306.locationmode,
     z: {
         valType: 'data_array',
         editType: 'calc',
         
     },
-    text: __extendFlat_267({}, _$attributes_305.text, {
+    text: __extendFlat_268({}, _$attributes_306.text, {
         
     }),
     marker: {
         line: {
             color: scatterGeoMarkerLineAttrs.color,
-            width: __extendFlat_267({}, scatterGeoMarkerLineAttrs.width, {dflt: 1}),
+            width: __extendFlat_268({}, scatterGeoMarkerLineAttrs.width, {dflt: 1}),
             editType: 'calc'
         },
         opacity: {
@@ -37142,25 +37445,25 @@ var _$attributes_267 = __extendFlat_267({
 
     selected: {
         marker: {
-            opacity: _$attributes_305.selected.marker.opacity,
+            opacity: _$attributes_306.selected.marker.opacity,
             editType: 'plot'
         },
         editType: 'plot'
     },
     unselected: {
         marker: {
-            opacity: _$attributes_305.unselected.marker.opacity,
+            opacity: _$attributes_306.unselected.marker.opacity,
             editType: 'plot'
         },
         editType: 'plot'
     },
 
-    hoverinfo: __extendFlat_267({}, _$attributes_206.hoverinfo, {
+    hoverinfo: __extendFlat_268({}, _$attributes_207.hoverinfo, {
         editType: 'calc',
         flags: ['location', 'z', 'text', 'name']
     })
 },
-    __extendDeepAll_267({}, _$attributes_51, {
+    __extendDeepAll_268({}, _$attributes_51, {
         zmax: {editType: 'calc'},
         zmin: {editType: 'calc'}
     }),
@@ -37178,42 +37481,42 @@ var _$attributes_267 = __extendFlat_267({
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 
 // arrayOk attributes, merge them into calcdata array
-var _$arraysToCalcdata_279 = function arraysToCalcdata(cd, trace) {
+var _$arraysToCalcdata_280 = function arraysToCalcdata(cd, trace) {
 
     // so each point knows which index it originally came from
     for(var i = 0; i < cd.length; i++) cd[i].i = i;
 
-    _$lib_166.mergeArray(trace.text, cd, 'tx');
-    _$lib_166.mergeArray(trace.hovertext, cd, 'htx');
-    _$lib_166.mergeArray(trace.customdata, cd, 'data');
-    _$lib_166.mergeArray(trace.textposition, cd, 'tp');
+    _$lib_167.mergeArray(trace.text, cd, 'tx');
+    _$lib_167.mergeArray(trace.hovertext, cd, 'htx');
+    _$lib_167.mergeArray(trace.customdata, cd, 'data');
+    _$lib_167.mergeArray(trace.textposition, cd, 'tp');
     if(trace.textfont) {
-        _$lib_166.mergeArray(trace.textfont.size, cd, 'ts');
-        _$lib_166.mergeArray(trace.textfont.color, cd, 'tc');
-        _$lib_166.mergeArray(trace.textfont.family, cd, 'tf');
+        _$lib_167.mergeArray(trace.textfont.size, cd, 'ts');
+        _$lib_167.mergeArray(trace.textfont.color, cd, 'tc');
+        _$lib_167.mergeArray(trace.textfont.family, cd, 'tf');
     }
 
     var marker = trace.marker;
     if(marker) {
-        _$lib_166.mergeArray(marker.size, cd, 'ms');
-        _$lib_166.mergeArray(marker.opacity, cd, 'mo');
-        _$lib_166.mergeArray(marker.symbol, cd, 'mx');
-        _$lib_166.mergeArray(marker.color, cd, 'mc');
+        _$lib_167.mergeArray(marker.size, cd, 'ms');
+        _$lib_167.mergeArray(marker.opacity, cd, 'mo');
+        _$lib_167.mergeArray(marker.symbol, cd, 'mx');
+        _$lib_167.mergeArray(marker.color, cd, 'mc');
 
         var markerLine = marker.line;
         if(marker.line) {
-            _$lib_166.mergeArray(markerLine.color, cd, 'mlc');
-            _$lib_166.mergeArray(markerLine.width, cd, 'mlw');
+            _$lib_167.mergeArray(markerLine.color, cd, 'mlc');
+            _$lib_167.mergeArray(markerLine.width, cd, 'mlw');
         }
 
         var markerGradient = marker.gradient;
         if(markerGradient && markerGradient.type !== 'none') {
-            _$lib_166.mergeArray(markerGradient.type, cd, 'mgt');
-            _$lib_166.mergeArray(markerGradient.color, cd, 'mgc');
+            _$lib_167.mergeArray(markerGradient.type, cd, 'mgt');
+            _$lib_167.mergeArray(markerGradient.color, cd, 'mgc');
         }
     }
 };
@@ -37228,11 +37531,11 @@ var _$arraysToCalcdata_279 = function arraysToCalcdata(cd, trace) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
-var _$calcSelection_282 = function calcSelection(cd, trace) {
-    if(_$lib_166.isArrayOrTypedArray(trace.selectedpoints)) {
-        _$lib_166.tagSelected(cd, trace);
+var _$calcSelection_283 = function calcSelection(cd, trace) {
+    if(_$lib_167.isArrayOrTypedArray(trace.selectedpoints)) {
+        _$lib_167.tagSelected(cd, trace);
     }
 };
 
@@ -37248,13 +37551,13 @@ var _$calcSelection_282 = function calcSelection(cd, trace) {
 'use strict';
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
-var __BADNUM_268 = _$numerical_147.BADNUM;
+var __BADNUM_269 = _$numerical_147.BADNUM;
 
 /* removed: var _$calc_52 = require('../../components/colorscale/calc'); */;
-/* removed: var _$arraysToCalcdata_279 = require('../scatter/arrays_to_calcdata'); */;
-/* removed: var _$calcSelection_282 = require('../scatter/calc_selection'); */;
+/* removed: var _$arraysToCalcdata_280 = require('../scatter/arrays_to_calcdata'); */;
+/* removed: var _$calcSelection_283 = require('../scatter/calc_selection'); */;
 
-var _$calc_268 = function calc(gd, trace) {
+var _$calc_269 = function calc(gd, trace) {
     var len = trace.locations.length;
     var calcTrace = new Array(len);
 
@@ -37264,12 +37567,12 @@ var _$calc_268 = function calc(gd, trace) {
         var z = trace.z[i];
 
         calcPt.loc = typeof loc === 'string' ? loc : null;
-        calcPt.z = _$fastIsnumeric_11(z) ? z : __BADNUM_268;
+        calcPt.z = _$fastIsnumeric_11(z) ? z : __BADNUM_269;
     }
 
-    _$arraysToCalcdata_279(calcTrace, trace);
+    _$arraysToCalcdata_280(calcTrace, trace);
     _$calc_52(trace, trace.z, '', 'z');
-    _$calcSelection_282(calcTrace, trace);
+    _$calcSelection_283(calcTrace, trace);
 
     return calcTrace;
 };
@@ -37285,13 +37588,13 @@ var _$calc_268 = function calc(gd, trace) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$colorScaleDefaults_55 = require('../../components/colorscale/defaults'); */;
-/* removed: var _$attributes_267 = require('./attributes'); */;
+/* removed: var _$attributes_268 = require('./attributes'); */;
 
-var _$supplyDefaults_269 = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+var _$supplyDefaults_270 = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(traceIn, traceOut, _$attributes_267, attr, dflt);
+        return _$lib_167.coerce(traceIn, traceOut, _$attributes_268, attr, dflt);
     }
 
     var locations = coerce('locations');
@@ -37305,7 +37608,7 @@ var _$supplyDefaults_269 = function supplyDefaults(traceIn, traceOut, defaultCol
     }
 
     var z = coerce('z');
-    if(!_$lib_166.isArrayOrTypedArray(z)) {
+    if(!_$lib_167.isArrayOrTypedArray(z)) {
         traceOut.visible = false;
         return;
     }
@@ -37324,7 +37627,7 @@ var _$supplyDefaults_269 = function supplyDefaults(traceIn, traceOut, defaultCol
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
 
-    _$lib_166.coerceSelectionMarkerOpacity(traceOut, coerce);
+    _$lib_167.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
 /**
@@ -37338,7 +37641,7 @@ var _$supplyDefaults_269 = function supplyDefaults(traceIn, traceOut, defaultCol
 
 'use strict';
 
-var _$eventData_270 = function eventData(out, pt) {
+var _$eventData_271 = function eventData(out, pt) {
     out.location = pt.location;
     out.z = pt.z;
 
@@ -37355,7 +37658,7 @@ var _$eventData_270 = function eventData(out, pt) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 /** Fill hover 'pointData' container with 'correct' hover text value
  *
@@ -37370,15 +37673,15 @@ var _$eventData_270 = function eventData(out, pt) {
  *  @param {object} trace
  *  @param {object || array} contOut (mutated here)
  */
-var _$fillHoverText_288 = function fillHoverText(calcPt, trace, contOut) {
+var _$fillHoverText_289 = function fillHoverText(calcPt, trace, contOut) {
     var fill = Array.isArray(contOut) ?
         function(v) { contOut.push(v); } :
         function(v) { contOut.text = v; };
 
-    var htx = _$lib_166.extractOption(calcPt, trace, 'htx', 'hovertext');
+    var htx = _$lib_167.extractOption(calcPt, trace, 'htx', 'hovertext');
     if(isValid(htx)) return fill(htx);
 
-    var tx = _$lib_166.extractOption(calcPt, trace, 'tx', 'text');
+    var tx = _$lib_167.extractOption(calcPt, trace, 'tx', 'text');
     if(isValid(tx)) return fill(tx);
 };
 
@@ -37398,11 +37701,11 @@ function isValid(v) {
 
 'use strict';
 
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
-/* removed: var _$attributes_267 = require('./attributes'); */;
-/* removed: var _$fillHoverText_288 = require('../scatter/fill_hover_text'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$attributes_268 = require('./attributes'); */;
+/* removed: var _$fillHoverText_289 = require('../scatter/fill_hover_text'); */;
 
-var _$hoverPoints_271 = function hoverPoints(pointData, xval, yval) {
+var _$hoverPoints_272 = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var geo = pointData.subplot;
@@ -37446,7 +37749,7 @@ function makeHoverInfo(pointData, trace, pt, axis) {
     var hoverinfo = pt.hi || trace.hoverinfo;
 
     var parts = (hoverinfo === 'all') ?
-        _$attributes_267.hoverinfo.flags :
+        _$attributes_268.hoverinfo.flags :
         hoverinfo.split('+');
 
     var hasName = (parts.indexOf('name') !== -1);
@@ -37458,7 +37761,7 @@ function makeHoverInfo(pointData, trace, pt, axis) {
     var text = [];
 
     function formatter(val) {
-        return _$axes_209.tickText(axis, axis.c2l(val), 'hover').text;
+        return _$axes_210.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
     if(hasIdAsNameLabel) {
@@ -37470,7 +37773,7 @@ function makeHoverInfo(pointData, trace, pt, axis) {
 
     if(hasZ) text.push(formatter(pt.z));
     if(hasText) {
-        _$fillHoverText_288(pt, trace, text);
+        _$fillHoverText_289(pt, trace, text);
     }
 
     pointData.extraText = text.join('<br>');
@@ -37734,7 +38037,7 @@ var _$countryRegex_7 = {
   ZWE: 'zimbabwe|^(?!.*northern).*rhodesia'
 }
 
-var _$geo_location_utils_161 = {};
+var _$geo_location_utils_162 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -37747,19 +38050,19 @@ var _$geo_location_utils_161 = {};
 'use strict';
 
 /* removed: var _$countryRegex_7 = require('country-regex'); */;
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 
 
 // make list of all country iso3 ids from at runtime
 var countryIds = Object.keys(_$countryRegex_7);
 
 var locationmodeToIdFinder = {
-    'ISO-3': _$lib_166.identity,
-    'USA-states': _$lib_166.identity,
+    'ISO-3': _$lib_167.identity,
+    'USA-states': _$lib_167.identity,
     'country names': countryNameToISO3
 };
 
-_$geo_location_utils_161.locationToFeature = function(locationmode, location, features) {
+_$geo_location_utils_162.locationToFeature = function(locationmode, location, features) {
     if(!location || typeof location !== 'string') return false;
 
     var locationId = getLocationId(locationmode, location);
@@ -37771,7 +38074,7 @@ _$geo_location_utils_161.locationToFeature = function(locationmode, location, fe
             if(feature.id === locationId) return feature;
         }
 
-        _$lib_166.log([
+        _$lib_167.log([
             'Location with id', locationId,
             'does not have a matching topojson feature at this resolution.'
         ].join(' '));
@@ -37793,7 +38096,7 @@ function countryNameToISO3(countryName) {
         if(regex.test(countryName.trim().toLowerCase())) return iso3;
     }
 
-    _$lib_166.log('Unrecognized country name: ' + countryName + '.');
+    _$lib_167.log('Unrecognized country name: ' + countryName + '.');
 
     return false;
 }
@@ -37813,7 +38116,7 @@ function countryNameToISO3(countryName) {
 /* removed: var _$drawing_70 = require('../../components/drawing'); */;
 /* removed: var _$colorscale_60 = require('../../components/colorscale'); */;
 
-var _$style_275 = function style(gd, calcTrace) {
+var _$style_276 = function style(gd, calcTrace) {
     if(calcTrace) styleTrace(gd, calcTrace);
 };
 
@@ -37855,14 +38158,14 @@ function styleTrace(gd, calcTrace) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$polygon_178 = require('../../lib/polygon'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$polygon_179 = require('../../lib/polygon'); */;
 
-var getTopojsonFeatures = _$topojson_utils_190.getTopojsonFeatures;
-var locationToFeature = _$geo_location_utils_161.locationToFeature;
-/* removed: var _$style_275 = require('./style'); */;
+var getTopojsonFeatures = _$topojson_utils_191.getTopojsonFeatures;
+var locationToFeature = _$geo_location_utils_162.locationToFeature;
+/* removed: var _$style_276 = require('./style'); */;
 
-var _$plot_273 = function plot(gd, geo, calcData) {
+var _$plot_274 = function plot(gd, geo, calcData) {
     for(var i = 0; i < calcData.length; i++) {
         calcGeoJSON(calcData[i], geo.topojson);
     }
@@ -37882,7 +38185,7 @@ var _$plot_273 = function plot(gd, geo, calcData) {
         var sel = calcTrace[0].node3 = _$d3_8.select(this);
 
         var paths = sel.selectAll('path.choroplethlocation')
-            .data(_$lib_166.identity);
+            .data(_$lib_167.identity);
 
         paths.enter().append('path')
             .classed('choroplethlocation', true);
@@ -37890,7 +38193,7 @@ var _$plot_273 = function plot(gd, geo, calcData) {
         paths.exit().remove();
 
         // call style here within topojson request callback
-        _$style_275(gd, calcTrace);
+        _$style_276(gd, calcTrace);
     });
 };
 
@@ -37955,7 +38258,7 @@ function feature2polygons(feature) {
                 }
             }
 
-            polygons.push(_$polygon_178.tester(pts));
+            polygons.push(_$polygon_179.tester(pts));
         };
     } else if(loc === 'ATA') {
         // Antarctica has a landmass that wraps around every longitudes which
@@ -37965,7 +38268,7 @@ function feature2polygons(feature) {
 
             // polygon that do not cross anti-meridian need no special handling
             if(crossAntiMeridianIndex === null) {
-                return polygons.push(_$polygon_178.tester(pts));
+                return polygons.push(_$polygon_179.tester(pts));
             }
 
             // stitch polygon by adding pt over South Pole,
@@ -37991,14 +38294,14 @@ function feature2polygons(feature) {
             // polygon.tester by default appends pt[0] to the points list,
             // we must remove it here, to avoid a jump in longitude from 180 to -180,
             // that would confuse the 'contains' method
-            var tester = _$polygon_178.tester(stitch);
+            var tester = _$polygon_179.tester(stitch);
             tester.pts.pop();
             polygons.push(tester);
         };
     } else {
         // otherwise using same array ref is fine
         appendPolygon = function(pts) {
-            polygons.push(_$polygon_178.tester(pts));
+            polygons.push(_$polygon_179.tester(pts));
         };
     }
 
@@ -38030,7 +38333,7 @@ function feature2polygons(feature) {
 
 'use strict';
 
-var _$selectPoints_274 = function selectPoints(searchInfo, polygon) {
+var _$selectPoints_275 = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
@@ -38105,26 +38408,86 @@ var _$constants_47 = {
 
 'use strict';
 
+function findCategories(ax, opts) {
+    var dataAttr = opts.dataAttr || ax._id.charAt(0);
+    var lookup = {};
+    var axData;
+    var i, j;
 
-var _$handleCategoryOrderDefaults_213 = function handleCategoryOrderDefaults(containerIn, containerOut, coerce) {
+    if(opts.axData) {
+        // non-x/y case
+        axData = opts.axData;
+    } else {
+        // x/y case
+        axData = [];
+        for(i = 0; i < opts.data.length; i++) {
+            var trace = opts.data[i];
+            if(trace[dataAttr + 'axis'] === ax._id) {
+                axData.push(trace);
+            }
+        }
+    }
+
+    for(i = 0; i < axData.length; i++) {
+        var vals = axData[i][dataAttr];
+        for(j = 0; j < vals.length; j++) {
+            var v = vals[j];
+            if(v !== null && v !== undefined) {
+                lookup[v] = 1;
+            }
+        }
+    }
+
+    return Object.keys(lookup);
+}
+
+/**
+ * Fills in category* default and initial categories.
+ *
+ * @param {object} containerIn : input axis object
+ * @param {object} containerOut : full axis object
+ * @param {function} coerce : Lib.coerce fn wrapper
+ * @param {object} opts :
+ *   - data {array} : (full) data trace
+ * OR
+ *   - axData {array} : (full) data associated with axis being coerced here
+ *   - dataAttr {string} : attribute name corresponding to coordinate array
+ */
+var _$handleCategoryOrderDefaults_214 = function handleCategoryOrderDefaults(containerIn, containerOut, coerce, opts) {
     if(containerOut.type !== 'category') return;
 
-    var arrayIn = containerIn.categoryarray,
-        orderDefault;
-
+    var arrayIn = containerIn.categoryarray;
     var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
 
     // override default 'categoryorder' value when non-empty array is supplied
+    var orderDefault;
     if(isValidArray) orderDefault = 'array';
 
     var order = coerce('categoryorder', orderDefault);
+    var array;
 
     // coerce 'categoryarray' only in array order case
-    if(order === 'array') coerce('categoryarray');
+    if(order === 'array') {
+        array = coerce('categoryarray');
+    }
 
     // cannot set 'categoryorder' to 'array' with an invalid 'categoryarray'
     if(!isValidArray && order === 'array') {
-        containerOut.categoryorder = 'trace';
+        order = containerOut.categoryorder = 'trace';
+    }
+
+    // set up things for makeCalcdata
+    if(order === 'trace') {
+        containerOut._initialCategories = [];
+    } else if(order === 'array') {
+        containerOut._initialCategories = array.slice();
+    } else {
+        array = findCategories(containerOut, opts).sort();
+        if(order === 'category ascending') {
+            containerOut._initialCategories = array;
+        } else if(order === 'category descending') {
+            containerOut._initialCategories = array.reverse();
+        }
     }
 };
 
@@ -38140,7 +38503,7 @@ var _$handleCategoryOrderDefaults_213 = function handleCategoryOrderDefaults(con
 
 var colorMix = _$tinycolor_26.mix;
 var lightFraction = _$attributes_44.lightFraction;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 /**
  * @param {object} opts :
@@ -38152,13 +38515,13 @@ var lightFraction = _$attributes_44.lightFraction;
  *   - noZeroLine {boolean} : don't coerce zeroline* attributes
  *   - attributes {object} : attribute object associated with input containers
  */
-var _$handleLineGridDefaults_223 = function handleLineGridDefaults(containerIn, containerOut, coerce, opts) {
+var _$handleLineGridDefaults_224 = function handleLineGridDefaults(containerIn, containerOut, coerce, opts) {
     opts = opts || {};
 
     var dfltColor = opts.dfltColor;
 
     function coerce2(attr, dflt) {
-        return _$lib_166.coerce2(containerIn, containerOut, opts.attributes, attr, dflt);
+        return _$lib_167.coerce2(containerIn, containerOut, opts.attributes, attr, dflt);
     }
 
     var lineColor = coerce2('linecolor', dfltColor);
@@ -38200,97 +38563,18 @@ var _$handleLineGridDefaults_223 = function handleLineGridDefaults(containerIn, 
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-/* removed: var _$d3_8 = require('d3'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
-// flattenUniqueSort :: String -> Function -> [[String]] -> [String]
-function flattenUniqueSort(axisLetter, sortFunction, data) {
-
-    // Bisection based insertion sort of distinct values for logarithmic time complexity.
-    // Can't use a hashmap, which is O(1), because ES5 maps coerce keys to strings. If it ever becomes a bottleneck,
-    // code can be separated: a hashmap (JS object) based version if all values encountered are strings; and
-    // downgrading to this O(log(n)) array on the first encounter of a non-string value.
-
-    var categoryArray = [];
-
-    var traceLines = data.map(function(d) {return d[axisLetter];});
-
-    var i, j, tracePoints, category, insertionIndex;
-
-    var bisector = _$d3_8.bisector(sortFunction).left;
-
-    for(i = 0; i < traceLines.length; i++) {
-
-        tracePoints = traceLines[i];
-
-        for(j = 0; j < tracePoints.length; j++) {
-
-            category = tracePoints[j];
-
-            // skip loop: ignore null and undefined categories
-            if(category === null || category === undefined) continue;
-
-            insertionIndex = bisector(categoryArray, category);
-
-            // skip loop on already encountered values
-            if(insertionIndex < categoryArray.length && categoryArray[insertionIndex] === category) continue;
-
-            // insert value
-            categoryArray.splice(insertionIndex, 0, category);
-        }
-    }
-
-    return categoryArray;
-}
-
-
-/**
- * This pure function returns the ordered categories for specified axisLetter, categoryorder, categoryarray and data.
- *
- * If categoryorder is 'array', the result is a fresh copy of categoryarray, or if unspecified, an empty array.
- *
- * If categoryorder is 'category ascending' or 'category descending', the result is an array of ascending or descending
- * order of the unique categories encountered in the data for specified axisLetter.
- *
- * See cartesian/layout_attributes.js for the definition of categoryorder and categoryarray
- *
- */
-
-// orderedCategories :: String -> String -> [String] -> [[String]] -> [String]
-var _$orderedCategories_224 = function orderedCategories(axisLetter, categoryorder, categoryarray, data) {
-
-    switch(categoryorder) {
-        case 'array': return Array.isArray(categoryarray) ? categoryarray.slice() : [];
-        case 'category ascending': return flattenUniqueSort(axisLetter, _$d3_8.ascending, data);
-        case 'category descending': return flattenUniqueSort(axisLetter, _$d3_8.descending, data);
-        case 'trace': return [];
-        default: return [];
-    }
-};
-
-/**
-* Copyright 2012-2018, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-'use strict';
-
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
-
-/* removed: var _$layout_attributes_221 = require('./layout_attributes'); */;
+/* removed: var _$layout_attributes_222 = require('./layout_attributes'); */;
 /* removed: var _$handleTickValueDefaults_231 = require('./tick_value_defaults'); */;
 /* removed: var _$handleTickDefaults_230 = require('./tick_mark_defaults'); */;
 /* removed: var _$handleTickLabelDefaults_229 = require('./tick_label_defaults'); */;
-/* removed: var _$handleCategoryOrderDefaults_213 = require('./category_order_defaults'); */;
-/* removed: var _$handleLineGridDefaults_223 = require('./line_grid_defaults'); */;
+/* removed: var _$handleCategoryOrderDefaults_214 = require('./category_order_defaults'); */;
+/* removed: var _$handleLineGridDefaults_224 = require('./line_grid_defaults'); */;
 /* removed: var _$setConvert_228 = require('./set_convert'); */;
-/* removed: var _$orderedCategories_224 = require('./ordered_categories'); */;
 
 /**
  * options: object containing:
@@ -38304,8 +38588,9 @@ var _$orderedCategories_224 = function orderedCategories(axisLetter, categoryord
  *  data: the plot data, used to manage categories
  *  bgColor: the plot background color, to calculate default gridline colors
  */
-var _$handleAxisDefaults_211 = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
+var _$handleAxisDefaults_212 = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
+    var id = containerOut._id;
     var font = options.font || {};
 
     var visible = coerce('visible', !options.cheateronly);
@@ -38313,7 +38598,7 @@ var _$handleAxisDefaults_211 = function handleAxisDefaults(containerIn, containe
     var axType = containerOut.type;
 
     if(axType === 'date') {
-        var handleCalendarDefaults = _$registry_258.getComponentMethod('calendars', 'handleDefaults');
+        var handleCalendarDefaults = _$registry_259.getComponentMethod('calendars', 'handleDefaults');
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
     }
 
@@ -38332,11 +38617,7 @@ var _$handleAxisDefaults_211 = function handleAxisDefaults(containerIn, containe
     coerce('range');
     containerOut.cleanRange();
 
-    _$handleCategoryOrderDefaults_213(containerIn, containerOut, coerce);
-    containerOut._initialCategories = axType === 'category' ?
-        _$orderedCategories_224(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
-        [];
-
+    _$handleCategoryOrderDefaults_214(containerIn, containerOut, coerce, options);
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
 
@@ -38346,9 +38627,11 @@ var _$handleAxisDefaults_211 = function handleAxisDefaults(containerIn, containe
     // if axis.color was provided, use it for fonts too; otherwise,
     // inherit from global font color in case that was provided.
     var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : font.color;
+    // try to get default title from splom trace, fallback to graph-wide value
+    var dfltTitle = ((layoutOut._splomAxes || {})[letter] || {})[id] || layoutOut._dfltTitle[letter];
 
-    coerce('title', layoutOut._dfltTitle[letter]);
-    _$lib_166.coerceFont(coerce, 'titlefont', {
+    coerce('title', dfltTitle);
+    _$lib_167.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
         color: dfltFontColor
@@ -38357,11 +38640,11 @@ var _$handleAxisDefaults_211 = function handleAxisDefaults(containerIn, containe
     _$handleTickValueDefaults_231(containerIn, containerOut, coerce, axType);
     _$handleTickLabelDefaults_229(containerIn, containerOut, coerce, axType, options);
     _$handleTickDefaults_230(containerIn, containerOut, coerce, options);
-    _$handleLineGridDefaults_223(containerIn, containerOut, coerce, {
+    _$handleLineGridDefaults_224(containerIn, containerOut, coerce, {
         dfltColor: dfltColor,
         bgColor: options.bgColor,
         showGrid: options.showGrid,
-        attributes: _$layout_attributes_221
+        attributes: _$layout_attributes_222
     });
 
     if(containerOut.showline || containerOut.ticks) coerce('mirror');
@@ -38384,7 +38667,7 @@ var _$handleAxisDefaults_211 = function handleAxisDefaults(containerIn, containe
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 
 var _$handlePositionDefaults_225 = function handlePositionDefaults(containerIn, containerOut, coerce, options) {
@@ -38410,7 +38693,7 @@ var _$handlePositionDefaults_225 = function handlePositionDefaults(containerIn, 
     dfltSide = dfltSide || (letter === 'x' ? 'bottom' : 'left');
     dfltPosition = dfltPosition || 0;
 
-    var anchor = _$lib_166.coerce(containerIn, containerOut, {
+    var anchor = _$lib_167.coerce(containerIn, containerOut, {
         anchor: {
             valType: 'enumerated',
             values: ['free'].concat(counterAxes),
@@ -38420,7 +38703,7 @@ var _$handlePositionDefaults_225 = function handlePositionDefaults(containerIn, 
 
     if(anchor === 'free') coerce('position', dfltPosition);
 
-    _$lib_166.coerce(containerIn, containerOut, {
+    _$lib_167.coerce(containerIn, containerOut, {
         side: {
             valType: 'enumerated',
             values: letter === 'x' ? ['bottom', 'top'] : ['left', 'right'],
@@ -38430,7 +38713,7 @@ var _$handlePositionDefaults_225 = function handlePositionDefaults(containerIn, 
 
     var overlaying = false;
     if(overlayableAxes.length) {
-        overlaying = _$lib_166.coerce(containerIn, containerOut, {
+        overlaying = _$lib_167.coerce(containerIn, containerOut, {
             overlaying: {
                 valType: 'enumerated',
                 values: [false].concat(overlayableAxes),
@@ -38446,7 +38729,7 @@ var _$handlePositionDefaults_225 = function handlePositionDefaults(containerIn, 
         // perhaps I should make a private version _domain that all axes get???
         var domain = coerce('domain', dfltDomain);
         if(domain[0] > domain[1] - 0.01) containerOut.domain = dfltDomain;
-        _$lib_166.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
+        _$lib_167.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
     }
 
     coerce('layer');
@@ -38469,21 +38752,21 @@ var _$handlePositionDefaults_225 = function handlePositionDefaults(containerIn, 
 /* removed: var _$tinycolor_26 = require('tinycolor2'); */;
 
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 /* removed: var _$dragelement_67 = require('../dragelement'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
-var __extendFlat_49 = _$extend_158.extendFlat;
-/* removed: var _$setCursor_185 = require('../../lib/setcursor'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+var __extendFlat_49 = _$extend_159.extendFlat;
+/* removed: var _$setCursor_186 = require('../../lib/setcursor'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
 /* removed: var _$color_45 = require('../color'); */;
 /* removed: var _$titles_138 = require('../titles'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
 var __LINE_SPACING_49 = _$alignment_145.LINE_SPACING;
 
-/* removed: var _$handleAxisDefaults_211 = require('../../plots/cartesian/axis_defaults'); */;
+/* removed: var _$handleAxisDefaults_212 = require('../../plots/cartesian/axis_defaults'); */;
 /* removed: var _$handlePositionDefaults_225 = require('../../plots/cartesian/position_defaults'); */;
-/* removed: var _$layout_attributes_221 = require('../../plots/cartesian/layout_attributes'); */;
+/* removed: var _$layout_attributes_222 = require('../../plots/cartesian/layout_attributes'); */;
 
 /* removed: var _$attributes_46 = require('./attributes'); */;
 var cn = _$constants_47.cn;
@@ -38647,11 +38930,11 @@ var _$draw_49 = function draw(gd, id) {
         // Coerce w.r.t. Axes layoutAttributes:
         // re-use axes.js logic without updating _fullData
         function coerce(attr, dflt) {
-            return _$lib_166.coerce(cbAxisIn, cbAxisOut, _$layout_attributes_221, attr, dflt);
+            return _$lib_167.coerce(cbAxisIn, cbAxisOut, _$layout_attributes_222, attr, dflt);
         }
 
         // Prepare the Plotly axis object
-        _$handleAxisDefaults_211(cbAxisIn, cbAxisOut, coerce, axisOptions, fullLayout);
+        _$handleAxisDefaults_212(cbAxisIn, cbAxisOut, coerce, axisOptions, fullLayout);
         _$handlePositionDefaults_225(cbAxisIn, cbAxisOut, coerce, axisOptions);
 
         // position can't go in through supplyDefaults
@@ -38673,14 +38956,14 @@ var _$draw_49 = function draw(gd, id) {
             cbAxisOut.tick0 = opts.levels.start;
             var dtick = opts.levels.size;
             // expand if too many contours, so we don't get too many ticks
-            var autoNtick = _$lib_166.constrain(
+            var autoNtick = _$lib_167.constrain(
                     (yBottomPx - yTopPx) / 50, 4, 15) + 1,
                 dtFactor = (zrange[1] - zrange[0]) /
                     ((opts.nticks || autoNtick) * dtick);
             if(dtFactor > 1) {
                 var dtexp = Math.pow(10, Math.floor(
                     Math.log(dtFactor) / Math.LN10));
-                dtick *= dtexp * _$lib_166.roundUp(dtFactor / dtexp, [2, 5, 10]);
+                dtick *= dtexp * _$lib_167.roundUp(dtFactor / dtexp, [2, 5, 10]);
                 // if the contours are at round multiples, reset tick0
                 // so they're still at round multiples. Otherwise,
                 // keep the first label on the first contour level
@@ -38701,20 +38984,21 @@ var _$draw_49 = function draw(gd, id) {
         cbAxisOut.setScale();
 
         // now draw the elements
-        var container = fullLayout._infolayer.selectAll('g.' + id).data([0]);
-        container.enter().append('g').classed(id, true)
-            .classed(cn.colorbar, true)
-            .each(function() {
-                var s = _$d3_8.select(this);
-                s.append('rect').classed(cn.cbbg, true);
-                s.append('g').classed(cn.cbfills, true);
-                s.append('g').classed(cn.cblines, true);
-                s.append('g').classed(cn.cbaxis, true).classed(cn.crisp, true);
-                s.append('g').classed(cn.cbtitleunshift, true)
-                    .append('g').classed(cn.cbtitle, true);
-                s.append('rect').classed(cn.cboutline, true);
-                s.select('.cbtitle').datum(0);
-            });
+        var container = _$lib_167.ensureSingle(fullLayout._infolayer, 'g', id, function(s) {
+            s.classed(cn.colorbar, true)
+                .each(function() {
+                    var s = _$d3_8.select(this);
+                    s.append('rect').classed(cn.cbbg, true);
+                    s.append('g').classed(cn.cbfills, true);
+                    s.append('g').classed(cn.cblines, true);
+                    s.append('g').classed(cn.cbaxis, true).classed(cn.crisp, true);
+                    s.append('g').classed(cn.cbtitleunshift, true)
+                        .append('g').classed(cn.cbtitle, true);
+                    s.append('rect').classed(cn.cboutline, true);
+                    s.select('.cbtitle').datum(0);
+                });
+        });
+
         container.attr('transform', 'translate(' + Math.round(gs.l) +
             ',' + Math.round(gs.t) + ')');
         // TODO: this opposite transform is a hack until we make it
@@ -38785,7 +39069,7 @@ var _$draw_49 = function draw(gd, id) {
                     }
                     else {
                         cbAxisOut.domain[0] += titleHeight / gs.h;
-                        var nlines = _$svg_text_utils_187.lineCount(titleText);
+                        var nlines = _$svg_text_utils_188.lineCount(titleText);
                         titleTrans[1] += (1 - nlines) * lineSize;
                     }
 
@@ -38871,9 +39155,9 @@ var _$draw_49 = function draw(gd, id) {
             // so we don't need such complicated logic in Titles.draw
             // if title is on the top or bottom, we've already drawn it
             // this title call only handles side=right
-            return _$lib_166.syncOrAsync([
+            return _$lib_167.syncOrAsync([
                 function() {
-                    return _$axes_209.doTicks(gd, cbAxisOut, true);
+                    return _$axes_210.doTicks(gd, cbAxisOut, true);
                 },
                 function() {
                     if(['top', 'bottom'].indexOf(opts.titleside) === -1) {
@@ -38904,7 +39188,7 @@ var _$draw_49 = function draw(gd, id) {
         function drawTitle(titleClass, titleOpts) {
             var trace = getTrace(),
                 propName;
-            if(_$registry_258.traceIs(trace, 'markerColorscale')) {
+            if(_$registry_259.traceIs(trace, 'markerColorscale')) {
                 propName = 'marker.colorbar.title';
             }
             else propName = 'colorbar.title';
@@ -39004,7 +39288,7 @@ var _$draw_49 = function draw(gd, id) {
             });
         }
 
-        var cbDone = _$lib_166.syncOrAsync([
+        var cbDone = _$lib_167.syncOrAsync([
             _$plots_250.previousPromises,
             drawAxis,
             _$plots_250.previousPromises,
@@ -39024,7 +39308,7 @@ var _$draw_49 = function draw(gd, id) {
                 gd: gd,
                 prepFn: function() {
                     t0 = container.attr('transform');
-                    _$setCursor_185(container);
+                    _$setCursor_186(container);
                 },
                 moveFn: function(dx, dy) {
                     container.attr('transform',
@@ -39037,13 +39321,13 @@ var _$draw_49 = function draw(gd, id) {
 
                     var csr = _$dragelement_67.getCursor(xf, yf,
                         opts.xanchor, opts.yanchor);
-                    _$setCursor_185(container, csr);
+                    _$setCursor_186(container, csr);
                 },
                 doneFn: function() {
-                    _$setCursor_185(container);
+                    _$setCursor_186(container);
 
                     if(xf !== undefined && yf !== undefined) {
-                        _$registry_258.call('restyle',
+                        _$registry_259.call('restyle',
                             gd,
                             {'colorbar.x': xf, 'colorbar.y': yf},
                             getTrace().index
@@ -39073,8 +39357,8 @@ var _$draw_49 = function draw(gd, id) {
 
             // setter - for multi-part properties,
             // set only the parts that are provided
-            opts[name] = _$lib_166.isPlainObject(opts[name]) ?
-                 _$lib_166.extendFlat(opts[name], v) :
+            opts[name] = _$lib_167.isPlainObject(opts[name]) ?
+                 _$lib_167.extendFlat(opts[name], v) :
                  v;
 
             return component;
@@ -39111,20 +39395,20 @@ var _$draw_49 = function draw(gd, id) {
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
 /* removed: var _$colorscale_60 = require('../../components/colorscale'); */;
 /* removed: var _$draw_49 = require('../../components/colorbar/draw'); */;
 
 
-var _$colorbar_276 = function colorbar(gd, cd) {
+var _$colorbar_277 = function colorbar(gd, cd) {
     var trace = cd[0].trace,
         cbId = 'cb' + trace.uid,
         zmin = trace.zmin,
         zmax = trace.zmax;
 
-    if(!_$fastIsnumeric_11(zmin)) zmin = _$lib_166.aggNums(Math.min, null, trace.z);
-    if(!_$fastIsnumeric_11(zmax)) zmax = _$lib_166.aggNums(Math.max, null, trace.z);
+    if(!_$fastIsnumeric_11(zmin)) zmin = _$lib_167.aggNums(Math.min, null, trace.z);
+    if(!_$fastIsnumeric_11(zmax)) zmax = _$lib_167.aggNums(Math.max, null, trace.z);
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
@@ -39161,15 +39445,15 @@ var _$colorbar_276 = function colorbar(gd, cd) {
 
 var Choropleth = {};
 
-Choropleth.attributes = _$attributes_267;
-Choropleth.supplyDefaults = _$supplyDefaults_269;
-Choropleth.colorbar = _$colorbar_276;
-Choropleth.calc = _$calc_268;
-Choropleth.plot = _$plot_273;
-Choropleth.style = _$style_275;
-Choropleth.hoverPoints = _$hoverPoints_271;
-Choropleth.eventData = _$eventData_270;
-Choropleth.selectPoints = _$selectPoints_274;
+Choropleth.attributes = _$attributes_268;
+Choropleth.supplyDefaults = _$supplyDefaults_270;
+Choropleth.colorbar = _$colorbar_277;
+Choropleth.calc = _$calc_269;
+Choropleth.plot = _$plot_274;
+Choropleth.style = _$style_276;
+Choropleth.hoverPoints = _$hoverPoints_272;
+Choropleth.eventData = _$eventData_271;
+Choropleth.selectPoints = _$selectPoints_275;
 
 Choropleth.moduleType = 'trace';
 Choropleth.name = 'choropleth';
@@ -39179,7 +39463,7 @@ Choropleth.meta = {
     
 };
 
-var _$Choropleth_272 = Choropleth;
+var _$Choropleth_273 = Choropleth;
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -39191,12 +39475,12 @@ var _$Choropleth_272 = Choropleth;
 
 'use strict';
 
-var _$choropleth_3 = _$Choropleth_272;
+var _$choropleth_3 = _$Choropleth_273;
 
 var _$plotcss_1 = {};
 'use strict';
 
-/* removed: var _$lib_166 = require('../src/lib'); */;
+/* removed: var _$lib_167 = require('../src/lib'); */;
 var rules = {
     "X,X div": "font-family:'Open Sans', verdana, arial, sans-serif;margin:0;padding:0;",
     "X input,X button": "font-family:'Open Sans', verdana, arial, sans-serif;",
@@ -39255,7 +39539,7 @@ for(var selector in rules) {
     var fullSelector = selector.replace(/^,/,' ,')
         .replace(/X/g, '.js-plotly-plot .plotly')
         .replace(/Y/g, '.plotly-notifier');
-    _$lib_166.addStyleRule(fullSelector, rules[selector]);
+    _$lib_167.addStyleRule(fullSelector, rules[selector]);
 }
 
 'use strict';
@@ -40809,7 +41093,7 @@ var _$arrow_paths_29 = [
 
 /* removed: var _$arrow_paths_29 = require('./arrow_paths'); */;
 /* removed: var _$font_attributes_236 = require('../../plots/font_attributes'); */;
-/* removed: var _$constants_214 = require('../../plots/cartesian/constants'); */;
+/* removed: var _$constants_215 = require('../../plots/cartesian/constants'); */;
 
 
 var _$attributes_30 = {
@@ -41009,7 +41293,7 @@ var _$attributes_30 = {
         dflt: 'pixel',
         values: [
             'pixel',
-            _$constants_214.idRegex.x.toString()
+            _$constants_215.idRegex.x.toString()
         ],
         
         editType: 'calc',
@@ -41020,7 +41304,7 @@ var _$attributes_30 = {
         dflt: 'pixel',
         values: [
             'pixel',
-            _$constants_214.idRegex.y.toString()
+            _$constants_215.idRegex.y.toString()
         ],
         
         editType: 'calc',
@@ -41031,7 +41315,7 @@ var _$attributes_30 = {
         valType: 'enumerated',
         values: [
             'paper',
-            _$constants_214.idRegex.x.toString()
+            _$constants_215.idRegex.x.toString()
         ],
         
         editType: 'calc',
@@ -41062,7 +41346,7 @@ var _$attributes_30 = {
         valType: 'enumerated',
         values: [
             'paper',
-            _$constants_214.idRegex.y.toString()
+            _$constants_215.idRegex.y.toString()
         ],
         
         editType: 'calc',
@@ -41317,15 +41601,15 @@ var _$drawArrowHead_37 = function drawArrowHead(el3, ends, options) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 /* removed: var _$color_45 = require('../color'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
 /* removed: var _$fx_87 = require('../fx'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
-/* removed: var _$setCursor_185 = require('../../lib/setcursor'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$setCursor_186 = require('../../lib/setcursor'); */;
 /* removed: var _$dragelement_67 = require('../dragelement'); */;
 /* removed: var _$drawArrowHead_37 = require('./draw_arrow_head'); */;
 
@@ -41369,8 +41653,8 @@ function __draw_36(gd) {
 function drawOne(gd, index) {
     var fullLayout = gd._fullLayout;
     var options = fullLayout.annotations[index] || {};
-    var xa = _$axes_209.getFromId(gd, options.xref);
-    var ya = _$axes_209.getFromId(gd, options.yref);
+    var xa = _$axes_210.getFromId(gd, options.xref);
+    var ya = _$axes_210.getFromId(gd, options.yref);
 
     drawRaw(gd, options, index, false, xa, ya);
 }
@@ -41439,7 +41723,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var annTextGroupInner = annTextGroup.append('g')
         .style('pointer-events', textEvents ? 'all' : null)
-        .call(_$setCursor_185, 'default')
+        .call(_$setCursor_186, 'default')
         .on('click', function() {
             gd._dragging = false;
 
@@ -41523,7 +41807,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             }[options.align] || 'middle'
         });
 
-        _$svg_text_utils_187.convertToTspans(s, gd, drawGraphicalElements);
+        _$svg_text_utils_188.convertToTspans(s, gd, drawGraphicalElements);
         return s;
     }
 
@@ -41664,7 +41948,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 // partially visible
                 var maxPx = fullLayout[(axLetter === 'x') ? 'width' : 'height'];
                 if(axRef === 'paper') {
-                    posPx.head = _$lib_166.constrain(posPx.head, 1, maxPx - 1);
+                    posPx.head = _$lib_167.constrain(posPx.head, 1, maxPx - 1);
                 }
                 if(tailRef === 'pixel') {
                     var shiftPlus = -Math.max(posPx.tail - 3, posPx.text),
@@ -41729,7 +42013,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             var texty = borderfull + yShift - anntextBB.top;
             var textx = borderfull + xShift - anntextBB.left;
 
-            annText.call(_$svg_text_utils_187.positionText, textx, texty)
+            annText.call(_$svg_text_utils_188.positionText, textx, texty)
                 .call(_$drawing_70.setClipUrl, isSizeConstrained ? annClipID : null);
         }
 
@@ -41772,9 +42056,9 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
                 // find the edge of the text box, where we'll start the arrow:
                 // create transform matrix to rotate the text box corners
-                transform = _$lib_166.rotationXYMatrix(textangle, textX, textY),
-                applyTransform = _$lib_166.apply2DTransform(transform),
-                applyTransform2 = _$lib_166.apply2DTransform2(transform),
+                transform = _$lib_167.rotationXYMatrix(textangle, textX, textY),
+                applyTransform = _$lib_167.apply2DTransform(transform),
+                applyTransform2 = _$lib_167.apply2DTransform2(transform),
 
                 // calculate and transform bounding box
                 width = +annTextBG.attr('width'),
@@ -41796,7 +42080,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             // to get the parity of the number of intersections.
             if(edges.reduce(function(a, x) {
                 return a ^
-                    !!_$lib_166.segmentsIntersect(headX, headY, headX + 1e6, headY + 1e6,
+                    !!_$lib_167.segmentsIntersect(headX, headY, headX + 1e6, headY + 1e6,
                             x[0], x[1], x[2], x[3]);
             }, false)) {
                 // no line or arrow - so quit drawArrow now
@@ -41804,7 +42088,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             }
 
             edges.forEach(function(x) {
-                var p = _$lib_166.segmentsIntersect(tailX, tailY, headX, headY,
+                var p = _$lib_167.segmentsIntersect(tailX, tailY, headX, headY,
                             x[0], x[1], x[2], x[3]);
                 if(p) {
                     tailX = p.x;
@@ -41898,7 +42182,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         });
                     },
                     doneFn: function() {
-                        _$registry_258.call('relayout', gd, update);
+                        _$registry_259.call('relayout', gd, update);
                         var notesBox = document.querySelector('.js-notes-box-panel');
                         if(notesBox) notesBox.redraw(notesBox.selectedObj);
                     }
@@ -41976,11 +42260,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         transform: 'translate(' + dx + ',' + dy + ')' + baseTextTransform
                     });
 
-                    _$setCursor_185(annTextGroupInner, csr);
+                    _$setCursor_186(annTextGroupInner, csr);
                 },
                 doneFn: function() {
-                    _$setCursor_185(annTextGroupInner);
-                    _$registry_258.call('relayout', gd, update);
+                    _$setCursor_186(annTextGroupInner);
+                    _$registry_259.call('relayout', gd, update);
                     var notesBox = document.querySelector('.js-notes-box-panel');
                     if(notesBox) notesBox.redraw(notesBox.selectedObj);
                 }
@@ -41989,7 +42273,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     }
 
     if(edits.annotationText) {
-        annText.call(_$svg_text_utils_187.makeEditable, {delegate: annTextGroupInner, gd: gd})
+        annText.call(_$svg_text_utils_188.makeEditable, {delegate: annTextGroupInner, gd: gd})
             .call(textLayout)
             .on('edit', function(_text) {
                 options.text = _text;
@@ -42005,7 +42289,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     update[ya._name + '.autorange'] = true;
                 }
 
-                _$registry_258.call('relayout', gd, update);
+                _$registry_259.call('relayout', gd, update);
             });
     }
     else annText.call(textLayout);
@@ -42022,15 +42306,15 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 
 var __draw_31 = _$draw_36.draw;
 
 
 var _$calcAutorange_31 = function calcAutorange(gd) {
     var fullLayout = gd._fullLayout,
-        annotationList = _$lib_166.filterVisible(fullLayout.annotations);
+        annotationList = _$lib_167.filterVisible(fullLayout.annotations);
 
     if(!annotationList.length || !gd._fullData.length) return;
 
@@ -42041,9 +42325,9 @@ var _$calcAutorange_31 = function calcAutorange(gd) {
     });
 
     for(var axId in annotationAxes) {
-        var ax = _$axes_209.getFromId(gd, axId);
+        var ax = _$axes_210.getFromId(gd, axId);
         if(ax && ax.autorange) {
-            return _$lib_166.syncOrAsync([
+            return _$lib_167.syncOrAsync([
                 __draw_31,
                 annAutorange
             ], gd);
@@ -42058,9 +42342,9 @@ function annAutorange(gd) {
     // relative to their anchor points
     // use the arrow and the text bg rectangle,
     // as the whole anno may include hidden text in its bbox
-    _$lib_166.filterVisible(fullLayout.annotations).forEach(function(ann) {
-        var xa = _$axes_209.getFromId(gd, ann.xref),
-            ya = _$axes_209.getFromId(gd, ann.yref),
+    _$lib_167.filterVisible(fullLayout.annotations).forEach(function(ann) {
+        var xa = _$axes_210.getFromId(gd, ann.xref),
+            ya = _$axes_210.getFromId(gd, ann.yref),
             headSize = 3 * ann.arrowsize * ann.arrowwidth || 0,
             startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
 
@@ -42074,12 +42358,12 @@ function annAutorange(gd) {
 
             if(ann.axref === ann.xref) {
                 // expand for the arrowhead (padded by arrowhead)
-                _$axes_209.expand(xa, [xa.r2c(ann.x)], {
+                _$axes_210.expand(xa, [xa.r2c(ann.x)], {
                     ppadplus: headPlus,
                     ppadminus: headMinus
                 });
                 // again for the textbox (padded by textbox)
-                _$axes_209.expand(xa, [xa.r2c(ann.ax)], {
+                _$axes_210.expand(xa, [xa.r2c(ann.ax)], {
                     ppadplus: Math.max(ann._xpadplus, startHeadPlus),
                     ppadminus: Math.max(ann._xpadminus, startHeadMinus)
                 });
@@ -42087,7 +42371,7 @@ function annAutorange(gd) {
             else {
                 startHeadPlus = ann.ax ? startHeadPlus + ann.ax : startHeadPlus;
                 startHeadMinus = ann.ax ? startHeadMinus - ann.ax : startHeadMinus;
-                _$axes_209.expand(xa, [xa.r2c(ann.x)], {
+                _$axes_210.expand(xa, [xa.r2c(ann.x)], {
                     ppadplus: Math.max(ann._xpadplus, headPlus, startHeadPlus),
                     ppadminus: Math.max(ann._xpadminus, headMinus, startHeadMinus)
                 });
@@ -42101,11 +42385,11 @@ function annAutorange(gd) {
             startHeadMinus = startHeadSize + ann.yshift;
 
             if(ann.ayref === ann.yref) {
-                _$axes_209.expand(ya, [ya.r2c(ann.y)], {
+                _$axes_210.expand(ya, [ya.r2c(ann.y)], {
                     ppadplus: headPlus,
                     ppadminus: headMinus
                 });
-                _$axes_209.expand(ya, [ya.r2c(ann.ay)], {
+                _$axes_210.expand(ya, [ya.r2c(ann.ay)], {
                     ppadplus: Math.max(ann._ypadplus, startHeadPlus),
                     ppadminus: Math.max(ann._ypadminus, startHeadMinus)
                 });
@@ -42113,7 +42397,7 @@ function annAutorange(gd) {
             else {
                 startHeadPlus = ann.ay ? startHeadPlus + ann.ay : startHeadPlus;
                 startHeadMinus = ann.ay ? startHeadMinus - ann.ay : startHeadMinus;
-                _$axes_209.expand(ya, [ya.r2c(ann.y)], {
+                _$axes_210.expand(ya, [ya.r2c(ann.y)], {
                     ppadplus: Math.max(ann._ypadplus, headPlus, startHeadPlus),
                     ppadminus: Math.max(ann._ypadminus, headMinus, startHeadMinus)
                 });
@@ -42132,7 +42416,7 @@ function annAutorange(gd) {
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 
 var _$click_32 = {
     hasClickToShow: hasClickToShow,
@@ -42181,7 +42465,7 @@ function onClick(gd, hoverData) {
         update['annotations[' + offSet[i] + '].visible'] = false;
     }
 
-    return _$registry_258.call('update', gd, {}, update);
+    return _$registry_259.call('update', gd, {}, update);
 }
 
 /*
@@ -42265,7 +42549,7 @@ function clickData2r(d, ax) {
 'use strict';
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
-/* removed: var _$toLogRange_189 = require('../../lib/to_log_range'); */;
+/* removed: var _$toLogRange_190 = require('../../lib/to_log_range'); */;
 
 /*
  * convertCoords: when converting an axis between log and linear
@@ -42297,7 +42581,7 @@ var _$convertCoords_34 = function convertCoords(gd, ax, newType, doExtra) {
         var currentVal = ann[attr],
             newVal = null;
 
-        if(toLog) newVal = _$toLogRange_189(currentVal, ax.range);
+        if(toLog) newVal = _$toLogRange_190(currentVal, ax.range);
         else newVal = Math.pow(10, currentVal);
 
         // if conversion failed, delete the value so it gets a default value
@@ -42325,7 +42609,7 @@ var _$convertCoords_34 = function convertCoords(gd, ax, newType, doExtra) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$color_45 = require('../color'); */;
 
 // defaults common to 'annotations' and 'annotations3d'
@@ -42343,7 +42627,7 @@ var _$handleAnnotationCommonDefaults_33 = function handleAnnotationCommonDefault
 
     coerce('text', showArrow ? ' ' : fullLayout._dfltTitle.annotation);
     coerce('textangle');
-    _$lib_166.coerceFont(coerce, 'font', fullLayout.font);
+    _$lib_167.coerceFont(coerce, 'font', fullLayout.font);
 
     coerce('width');
     coerce('align');
@@ -42384,7 +42668,7 @@ var _$handleAnnotationCommonDefaults_33 = function handleAnnotationCommonDefault
             _$color_45.contrast(hoverBG)
         );
 
-        _$lib_166.coerceFont(coerce, 'hoverlabel.font', {
+        _$lib_167.coerceFont(coerce, 'hoverlabel.font', {
             family: globalHoverLabel.font.family,
             size: globalHoverLabel.font.size,
             color: globalHoverLabel.font.color || hoverBorder
@@ -42405,8 +42689,8 @@ var _$handleAnnotationCommonDefaults_33 = function handleAnnotationCommonDefault
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 /* removed: var _$handleAnnotationCommonDefaults_33 = require('./common_defaults'); */;
 /* removed: var _$attributes_30 = require('./attributes'); */;
 
@@ -42416,7 +42700,7 @@ var _$handleAnnotationDefaults_28 = function handleAnnotationDefaults(annIn, ann
     itemOpts = itemOpts || {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(annIn, annOut, _$attributes_30, attr, dflt);
+        return _$lib_167.coerce(annIn, annOut, _$attributes_30, attr, dflt);
     }
 
     var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
@@ -42436,15 +42720,15 @@ var _$handleAnnotationDefaults_28 = function handleAnnotationDefaults(annIn, ann
         var axLetter = axLetters[i];
 
         // xref, yref
-        var axRef = _$axes_209.coerceRef(annIn, annOut, gdMock, axLetter, '', 'paper');
+        var axRef = _$axes_210.coerceRef(annIn, annOut, gdMock, axLetter, '', 'paper');
 
         // x, y
-        _$axes_209.coercePosition(annOut, gdMock, coerce, axRef, axLetter, 0.5);
+        _$axes_210.coercePosition(annOut, gdMock, coerce, axRef, axLetter, 0.5);
 
         if(showArrow) {
             var arrowPosAttr = 'a' + axLetter,
                 // axref, ayref
-                aaxRef = _$axes_209.coerceRef(annIn, annOut, gdMock, arrowPosAttr, 'pixel');
+                aaxRef = _$axes_210.coerceRef(annIn, annOut, gdMock, arrowPosAttr, 'pixel');
 
             // for now the arrow can only be on the same axis or specified as pixels
             // TODO: sometime it might be interesting to allow it to be on *any* axis
@@ -42455,7 +42739,7 @@ var _$handleAnnotationDefaults_28 = function handleAnnotationDefaults(annIn, ann
 
             // ax, ay
             var aDflt = (aaxRef === 'pixel') ? arrowPosDflt[i] : 0.4;
-            _$axes_209.coercePosition(annOut, gdMock, coerce, aaxRef, arrowPosAttr, aDflt);
+            _$axes_210.coercePosition(annOut, gdMock, coerce, aaxRef, arrowPosAttr, aDflt);
         }
 
         // xanchor, yanchor
@@ -42466,11 +42750,11 @@ var _$handleAnnotationDefaults_28 = function handleAnnotationDefaults(annIn, ann
     }
 
     // if you have one coordinate you should have both
-    _$lib_166.noneOrAll(annIn, annOut, ['x', 'y']);
+    _$lib_167.noneOrAll(annIn, annOut, ['x', 'y']);
 
     // if you have one part of arrow length you should have both
     if(showArrow) {
-        _$lib_166.noneOrAll(annIn, annOut, ['ax', 'ay']);
+        _$lib_167.noneOrAll(annIn, annOut, ['ax', 'ay']);
     }
 
     if(clickToShow) {
@@ -42481,10 +42765,10 @@ var _$handleAnnotationDefaults_28 = function handleAnnotationDefaults(annIn, ann
         // so we don't have to do this little bit of logic on every hover event
         annOut._xclick = (xClick === undefined) ?
             annOut.x :
-            _$axes_209.cleanPosition(xClick, gdMock, annOut.xref);
+            _$axes_210.cleanPosition(xClick, gdMock, annOut.xref);
         annOut._yclick = (yClick === undefined) ?
             annOut.y :
-            _$axes_209.cleanPosition(yClick, gdMock, annOut.yref);
+            _$axes_210.cleanPosition(yClick, gdMock, annOut.yref);
     }
 
     return annOut;
@@ -42500,7 +42784,7 @@ var _$handleAnnotationDefaults_28 = function handleAnnotationDefaults(annIn, ann
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 
 /** Convenience wrapper for making array container logic DRY and consistent
  *
@@ -42532,12 +42816,12 @@ var _$handleAnnotationDefaults_28 = function handleAnnotationDefaults(annIn, ann
  *    links to supplementary data (e.g. fullData for layout components)
  *
  */
-var _$handleArrayContainerDefaults_205 = function handleArrayContainerDefaults(parentObjIn, parentObjOut, opts) {
+var _$handleArrayContainerDefaults_206 = function handleArrayContainerDefaults(parentObjIn, parentObjOut, opts) {
     var name = opts.name;
 
     var previousContOut = parentObjOut[name];
 
-    var contIn = _$lib_166.isArrayOrTypedArray(parentObjIn[name]) ? parentObjIn[name] : [],
+    var contIn = _$lib_167.isArrayOrTypedArray(parentObjIn[name]) ? parentObjIn[name] : [],
         contOut = parentObjOut[name] = [],
         i;
 
@@ -42546,7 +42830,7 @@ var _$handleArrayContainerDefaults_205 = function handleArrayContainerDefaults(p
             itemOut = {},
             itemOpts = {};
 
-        if(!_$lib_166.isPlainObject(itemIn)) {
+        if(!_$lib_167.isPlainObject(itemIn)) {
             itemOpts.itemIsNotPlainObject = true;
             itemIn = {};
         }
@@ -42561,10 +42845,10 @@ var _$handleArrayContainerDefaults_205 = function handleArrayContainerDefaults(p
 
     // in case this array gets its defaults rebuilt independent of the whole layout,
     // relink the private keys just for this array.
-    if(_$lib_166.isArrayOrTypedArray(previousContOut)) {
+    if(_$lib_167.isArrayOrTypedArray(previousContOut)) {
         var len = Math.min(previousContOut.length, contOut.length);
         for(i = 0; i < len; i++) {
-            _$lib_166.relinkPrivateKeys(contOut[i], previousContOut[i]);
+            _$lib_167.relinkPrivateKeys(contOut[i], previousContOut[i]);
         }
     }
 };
@@ -42580,7 +42864,7 @@ var _$handleArrayContainerDefaults_205 = function handleArrayContainerDefaults(p
 
 'use strict';
 
-/* removed: var _$handleArrayContainerDefaults_205 = require('../../plots/array_container_defaults'); */;
+/* removed: var _$handleArrayContainerDefaults_206 = require('../../plots/array_container_defaults'); */;
 /* removed: var _$handleAnnotationDefaults_28 = require('./annotation_defaults'); */;
 
 
@@ -42590,7 +42874,7 @@ var _$supplyLayoutDefaults_35 = function supplyLayoutDefaults(layoutIn, layoutOu
         handleItemDefaults: _$handleAnnotationDefaults_28
     };
 
-    _$handleArrayContainerDefaults_205(layoutIn, layoutOut, opts);
+    _$handleArrayContainerDefaults_206(layoutIn, layoutOut, opts);
 };
 
 /**
@@ -42604,8 +42888,8 @@ var _$supplyLayoutDefaults_35 = function supplyLayoutDefaults(layoutIn, layoutOu
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 /**
  * Factory function for checking component arrays for subplot references.
@@ -42618,12 +42902,12 @@ var _$supplyLayoutDefaults_35 = function supplyLayoutDefaults(layoutIn, layoutOu
  * @return {function}: with args layoutIn (gd.layout) and layoutOut (gd._fullLayout)
  * as expected of a component includeBasePlot method
  */
-var _$makeIncludeComponents_219 = function makeIncludeComponents(containerArrayName) {
+var _$makeIncludeComponents_220 = function makeIncludeComponents(containerArrayName) {
     return function includeComponents(layoutIn, layoutOut) {
         var array = layoutIn[containerArrayName];
         if(!Array.isArray(array)) return;
 
-        var Cartesian = _$registry_258.subplotsRegistry.cartesian;
+        var Cartesian = _$registry_259.subplotsRegistry.cartesian;
         var idRegex = Cartesian.idRegex;
         var subplots = layoutOut._subplots;
         var xaList = subplots.xaxis;
@@ -42633,7 +42917,7 @@ var _$makeIncludeComponents_219 = function makeIncludeComponents(containerArrayN
 
         for(var i = 0; i < array.length; i++) {
             var itemi = array[i];
-            if(!_$lib_166.isPlainObject(itemi)) continue;
+            if(!_$lib_167.isPlainObject(itemi)) continue;
 
             var xref = itemi.xref;
             var yref = itemi.yref;
@@ -42641,7 +42925,7 @@ var _$makeIncludeComponents_219 = function makeIncludeComponents(containerArrayN
             var hasXref = idRegex.x.test(xref);
             var hasYref = idRegex.y.test(yref);
             if(hasXref || hasYref) {
-                if(!hasCartesianOrGL2D) _$lib_166.pushUnique(layoutOut._basePlotModules, Cartesian);
+                if(!hasCartesianOrGL2D) _$lib_167.pushUnique(layoutOut._basePlotModules, Cartesian);
 
                 var newAxis = false;
                 if(hasXref && xaList.indexOf(xref) === -1) {
@@ -42687,7 +42971,7 @@ var _$annotations_38 = {
 
     layoutAttributes: _$attributes_30,
     supplyLayoutDefaults: _$supplyLayoutDefaults_35,
-    includeBasePlot: _$makeIncludeComponents_219('annotations'),
+    includeBasePlot: _$makeIncludeComponents_220('annotations'),
 
     calcAutorange: _$calcAutorange_31,
     draw: _$draw_36.draw,
@@ -42712,7 +42996,7 @@ var _$annotations_38 = {
 'use strict';
 
 /* removed: var _$attributes_30 = require('../annotations/attributes'); */;
-var __overrideAll_39 = _$edit_types_194.overrideAll;
+var __overrideAll_39 = _$edit_types_195.overrideAll;
 
 var _$attributes_39 = __overrideAll_39({
     _isLinkedToArray: 'annotation',
@@ -42798,8 +43082,8 @@ var _$attributes_39 = __overrideAll_39({
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 
 var _$convert_40 = function convert(scene) {
     var fullSceneLayout = scene.fullSceneLayout;
@@ -42836,16 +43120,16 @@ function mockAnnAxes(ann, scene) {
     };
 
     ann._xa = {};
-    _$lib_166.extendFlat(ann._xa, base);
-    _$axes_209.setConvert(ann._xa);
+    _$lib_167.extendFlat(ann._xa, base);
+    _$axes_210.setConvert(ann._xa);
     ann._xa._offset = size.l + domain.x[0] * size.w;
     ann._xa.l2p = function() {
         return 0.5 * (1 + ann._pdata[0] / ann._pdata[3]) * size.w * (domain.x[1] - domain.x[0]);
     };
 
     ann._ya = {};
-    _$lib_166.extendFlat(ann._ya, base);
-    _$axes_209.setConvert(ann._ya);
+    _$lib_167.extendFlat(ann._ya, base);
+    _$axes_210.setConvert(ann._ya);
     ann._ya._offset = size.t + (1 - domain.y[1]) * size.h;
     ann._ya.l2p = function() {
         return 0.5 * (1 - ann._pdata[1] / ann._pdata[3]) * size.h * (domain.y[1] - domain.y[0]);
@@ -42862,14 +43146,14 @@ function mockAnnAxes(ann, scene) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
-/* removed: var _$handleArrayContainerDefaults_205 = require('../../plots/array_container_defaults'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$handleArrayContainerDefaults_206 = require('../../plots/array_container_defaults'); */;
 /* removed: var _$handleAnnotationCommonDefaults_33 = require('../annotations/common_defaults'); */;
 /* removed: var _$attributes_39 = require('./attributes'); */;
 
 var _$handleDefaults_41 = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
-    _$handleArrayContainerDefaults_205(sceneLayoutIn, sceneLayoutOut, {
+    _$handleArrayContainerDefaults_206(sceneLayoutIn, sceneLayoutOut, {
         name: 'annotations',
         handleItemDefaults: __handleAnnotationDefaults_41,
         fullLayout: opts.fullLayout
@@ -42878,7 +43162,7 @@ var _$handleDefaults_41 = function handleDefaults(sceneLayoutIn, sceneLayoutOut,
 
 function __handleAnnotationDefaults_41(annIn, annOut, sceneLayout, opts, itemOpts) {
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(annIn, annOut, _$attributes_39, attr, dflt);
+        return _$lib_167.coerce(annIn, annOut, _$attributes_39, attr, dflt);
     }
 
     function coercePosition(axLetter) {
@@ -42888,7 +43172,7 @@ function __handleAnnotationDefaults_41(annIn, annOut, sceneLayout, opts, itemOpt
         var gdMock = { _fullLayout: {} };
         gdMock._fullLayout[axName] = sceneLayout[axName];
 
-        return _$axes_209.coercePosition(annOut, gdMock, coerce, axLetter, axLetter, 0.5);
+        return _$axes_210.coercePosition(annOut, gdMock, coerce, axLetter, axLetter, 0.5);
     }
 
 
@@ -42902,7 +43186,7 @@ function __handleAnnotationDefaults_41(annIn, annOut, sceneLayout, opts, itemOpt
     coercePosition('z');
 
     // if you have one coordinate you should all three
-    _$lib_166.noneOrAll(annIn, annOut, ['x', 'y', 'z']);
+    _$lib_167.noneOrAll(annIn, annOut, ['x', 'y', 'z']);
 
     // hard-set here for completeness
     annOut.xref = 'x';
@@ -42923,7 +43207,7 @@ function __handleAnnotationDefaults_41(annIn, annOut, sceneLayout, opts, itemOpt
         coerce('ay', -30);
 
         // if you have one part of arrow length you should have both
-        _$lib_166.noneOrAll(annIn, annOut, ['ax', 'ay']);
+        _$lib_167.noneOrAll(annIn, annOut, ['ax', 'ay']);
     }
 
     return annOut;
@@ -43023,8 +43307,8 @@ var _$draw_42 = function draw(scene) {
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 var _$annotations3d_43 = {
     moduleType: 'component',
@@ -43045,7 +43329,7 @@ var _$annotations3d_43 = {
 };
 
 function includeGL3D(layoutIn, layoutOut) {
-    var GL3D = _$registry_258.subplotsRegistry.gl3d;
+    var GL3D = _$registry_259.subplotsRegistry.gl3d;
     if(!GL3D) return;
 
     var attrRegex = GL3D.attrRegex;
@@ -43054,8 +43338,8 @@ function includeGL3D(layoutIn, layoutOut) {
     for(var i = 0; i < keys.length; i++) {
         var k = keys[i];
         if(attrRegex.test(k) && (layoutIn[k].annotations || []).length) {
-            _$lib_166.pushUnique(layoutOut._basePlotModules, GL3D);
-            _$lib_166.pushUnique(layoutOut._subplots.gl3d, k);
+            _$lib_167.pushUnique(layoutOut._basePlotModules, GL3D);
+            _$lib_167.pushUnique(layoutOut._subplots.gl3d, k);
         }
     }
 }
@@ -43290,8 +43574,8 @@ function makeComputeErrorValue(type, value) {
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 
 /* removed: var _$makeComputeError_74 = require('./compute_error'); */;
 
@@ -43303,10 +43587,10 @@ var _$calc_73 = function calc(gd) {
         var calcTrace = calcdata[i],
             trace = calcTrace[0].trace;
 
-        if(!_$registry_258.traceIs(trace, 'errorBarsOK')) continue;
+        if(!_$registry_259.traceIs(trace, 'errorBarsOK')) continue;
 
-        var xa = _$axes_209.getFromId(gd, trace.xaxis),
-            ya = _$axes_209.getFromId(gd, trace.yaxis);
+        var xa = _$axes_210.getFromId(gd, trace.xaxis),
+            ya = _$axes_210.getFromId(gd, trace.yaxis);
 
         calcOneAxis(calcTrace, trace, xa, 'x');
         calcOneAxis(calcTrace, trace, ya, 'y');
@@ -43336,7 +43620,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
         }
     }
 
-    _$axes_209.expand(axis, vals, {padded: true});
+    _$axes_210.expand(axis, vals, {padded: true});
 }
 
 /**
@@ -43351,8 +43635,8 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 /* removed: var _$attributes_72 = require('./attributes'); */;
 
@@ -43363,7 +43647,7 @@ var _$defaults_75 = function(traceIn, traceOut, defaultColor, opts) {
         containerIn = traceIn[objName] || {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(containerIn, containerOut, _$attributes_72, attr, dflt);
+        return _$lib_167.coerce(containerIn, containerOut, _$attributes_72, attr, dflt);
     }
 
     var hasErrorBars = (
@@ -43409,7 +43693,7 @@ var _$defaults_75 = function(traceIn, traceOut, defaultColor, opts) {
     if(!opts.inherit || !containerOut[copyAttr]) {
         coerce('color', defaultColor);
         coerce('thickness');
-        coerce('width', _$registry_258.traceIs(traceOut, 'gl3d') ? 0 : 4);
+        coerce('width', _$registry_259.traceIs(traceOut, 'gl3d') ? 0 : 4);
     }
 };
 
@@ -43428,7 +43712,7 @@ var _$defaults_75 = function(traceIn, traceOut, defaultColor, opts) {
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
 /* removed: var _$drawing_70 = require('../drawing'); */;
-/* removed: var _$subtypes_302 = require('../../traces/scatter/subtypes'); */;
+/* removed: var _$subtypes_303 = require('../../traces/scatter/subtypes'); */;
 
 var _$plot_77 = function plot(traces, plotinfo, transitionOpts) {
     var isNew;
@@ -43454,7 +43738,7 @@ var _$plot_77 = function plot(traces, plotinfo, transitionOpts) {
         }
 
         var sparse = (
-            _$subtypes_302.hasMarkers(trace) &&
+            _$subtypes_303.hasMarkers(trace) &&
             trace.marker.maxdisplayed > 0
         );
 
@@ -43632,24 +43916,24 @@ var _$style_78 = function style(traces) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-var __overrideAll_76 = _$edit_types_194.overrideAll;
+/* removed: var _$lib_167 = require('../../lib'); */;
+var __overrideAll_76 = _$edit_types_195.overrideAll;
 
 /* removed: var _$attributes_72 = require('./attributes'); */;
 /* removed: var _$calc_73 = require('./calc'); */;
 
 var xyAttrs = {
-    error_x: _$lib_166.extendFlat({}, _$attributes_72),
-    error_y: _$lib_166.extendFlat({}, _$attributes_72)
+    error_x: _$lib_167.extendFlat({}, _$attributes_72),
+    error_y: _$lib_167.extendFlat({}, _$attributes_72)
 };
 delete xyAttrs.error_x.copy_zstyle;
 delete xyAttrs.error_y.copy_zstyle;
 delete xyAttrs.error_y.copy_ystyle;
 
 var xyzAttrs = {
-    error_x: _$lib_166.extendFlat({}, _$attributes_72),
-    error_y: _$lib_166.extendFlat({}, _$attributes_72),
-    error_z: _$lib_166.extendFlat({}, _$attributes_72)
+    error_x: _$lib_167.extendFlat({}, _$attributes_72),
+    error_y: _$lib_167.extendFlat({}, _$attributes_72),
+    error_z: _$lib_167.extendFlat({}, _$attributes_72)
 };
 delete xyzAttrs.error_x.copy_ystyle;
 delete xyzAttrs.error_y.copy_ystyle;
@@ -43725,10 +44009,10 @@ function hoverInfo(calcPoint, trace, hoverPoint) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-var __counterRegex_91 = _$regex_181.counter;
+/* removed: var _$lib_167 = require('../../lib'); */;
+var __counterRegex_91 = _$regex_182.counter;
 var __domainAttrs_91 = _$domain_235.attributes;
-var cartesianIdRegex = _$constants_214.idRegex;
+var cartesianIdRegex = _$constants_215.idRegex;
 
 var gridAttrs = {
     rows: {
@@ -43810,7 +44094,7 @@ var gridAttrs = {
         values: ['bottom', 'bottom plot', 'top plot', 'top'],
         dflt: 'bottom plot',
         
-        editType: 'ticks',
+        editType: 'plot',
         
     },
     yside: {
@@ -43818,21 +44102,36 @@ var gridAttrs = {
         values: ['left', 'left plot', 'right plot', 'right'],
         dflt: 'left plot',
         
-        editType: 'ticks',
+        editType: 'plot',
         
     },
     editType: 'plot'
 };
 
+function getAxes(layout, grid, axLetter) {
+    var gridVal = grid[axLetter + 'axes'];
+    var splomVal = Object.keys((layout._splomAxes || {})[axLetter] || {});
+
+    if(Array.isArray(gridVal)) return gridVal;
+    if(splomVal.length) return splomVal;
+}
+
 // the shape of the grid - this needs to be done BEFORE supplyDataDefaults
 // so that non-subplot traces can place themselves in the grid
 function sizeDefaults(layoutIn, layoutOut) {
-    var gridIn = layoutIn.grid;
-    if(!gridIn) return;
+    var gridIn = layoutIn.grid || {};
+    var xAxes = getAxes(layoutOut, gridIn, 'x');
+    var yAxes = getAxes(layoutOut, gridIn, 'y');
+
+    if(!layoutIn.grid && !xAxes && !yAxes) return;
 
     var hasSubplotGrid = Array.isArray(gridIn.subplots) && Array.isArray(gridIn.subplots[0]);
-    var hasXaxes = Array.isArray(gridIn.xaxes);
-    var hasYaxes = Array.isArray(gridIn.yaxes);
+    var hasXaxes = Array.isArray(xAxes);
+    var hasYaxes = Array.isArray(yAxes);
+    var isSplomGenerated = (
+        hasXaxes && xAxes !== gridIn.xaxes &&
+        hasYaxes && yAxes !== gridIn.yaxes
+    );
 
     var dfltRows, dfltColumns;
 
@@ -43841,14 +44140,14 @@ function sizeDefaults(layoutIn, layoutOut) {
         dfltColumns = gridIn.subplots[0].length;
     }
     else {
-        if(hasYaxes) dfltRows = gridIn.yaxes.length;
-        if(hasXaxes) dfltColumns = gridIn.xaxes.length;
+        if(hasYaxes) dfltRows = yAxes.length;
+        if(hasXaxes) dfltColumns = xAxes.length;
     }
 
     var gridOut = layoutOut.grid = {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(gridIn, gridOut, gridAttrs, attr, dflt);
+        return _$lib_167.coerce(gridIn, gridOut, gridAttrs, attr, dflt);
     }
 
     var rows = coerce('rows', dfltRows);
@@ -43865,17 +44164,26 @@ function sizeDefaults(layoutIn, layoutOut) {
     var rowOrder = coerce('roworder');
     var reversed = rowOrder === 'top to bottom';
 
+    var dfltGapX = hasSubplotGrid ? 0.2 : 0.1;
+    var dfltGapY = hasSubplotGrid ? 0.3 : 0.1;
+
+    var dfltSideX, dfltSideY;
+    if(isSplomGenerated) {
+        dfltSideX = 'bottom';
+        dfltSideY = 'left';
+    }
+
     gridOut._domains = {
-        x: fillGridPositions('x', coerce, hasSubplotGrid ? 0.2 : 0.1, columns),
-        y: fillGridPositions('y', coerce, hasSubplotGrid ? 0.3 : 0.1, rows, reversed)
+        x: fillGridPositions('x', coerce, dfltGapX, dfltSideX, columns),
+        y: fillGridPositions('y', coerce, dfltGapY, dfltSideY, rows, reversed)
     };
 }
 
 // coerce x or y sizing attributes and return an array of domains for this direction
-function fillGridPositions(axLetter, coerce, dfltGap, len, reversed) {
+function fillGridPositions(axLetter, coerce, dfltGap, dfltSide, len, reversed) {
     var dirGap = coerce(axLetter + 'gap', dfltGap);
     var domain = coerce('domain.' + axLetter);
-    coerce(axLetter + 'side');
+    coerce(axLetter + 'side', dfltSide);
 
     var out = new Array(len);
     var start = domain[0];
@@ -43895,7 +44203,7 @@ function contentDefaults(layoutIn, layoutOut) {
     // make sure we got to the end of handleGridSizing
     if(!gridOut || !gridOut._domains) return;
 
-    var gridIn = layoutIn.grid;
+    var gridIn = layoutIn.grid || {};
     var subplots = layoutOut._subplots;
     var hasSubplotGrid = gridOut._hasSubplotGrid;
     var rows = gridOut.rows;
@@ -43941,8 +44249,10 @@ function contentDefaults(layoutIn, layoutOut) {
         }
     }
     else {
-        gridOut.xaxes = fillGridAxes(gridIn.xaxes, subplots.xaxis, columns, axisMap, 'x');
-        gridOut.yaxes = fillGridAxes(gridIn.yaxes, subplots.yaxis, rows, axisMap, 'y');
+        var xAxes = getAxes(layoutOut, gridIn, 'x');
+        var yAxes = getAxes(layoutOut, gridIn, 'y');
+        gridOut.xaxes = fillGridAxes(xAxes, subplots.xaxis, columns, axisMap, 'x');
+        gridOut.yaxes = fillGridAxes(yAxes, subplots.yaxis, rows, axisMap, 'y');
     }
 
     var anchors = gridOut._anchors = {};
@@ -44079,7 +44389,7 @@ var _$grid_91 = {
 
 'use strict';
 
-/* removed: var _$constants_214 = require('../../plots/cartesian/constants'); */;
+/* removed: var _$constants_215 = require('../../plots/cartesian/constants'); */;
 
 
 var _$attributes_92 = {
@@ -44182,7 +44492,7 @@ var _$attributes_92 = {
         valType: 'enumerated',
         values: [
             'paper',
-            _$constants_214.idRegex.x.toString()
+            _$constants_215.idRegex.x.toString()
         ],
         dflt: 'paper',
         
@@ -44194,7 +44504,7 @@ var _$attributes_92 = {
         valType: 'enumerated',
         values: [
             'paper',
-            _$constants_214.idRegex.y.toString()
+            _$constants_215.idRegex.y.toString()
         ],
         dflt: 'paper',
         
@@ -44216,7 +44526,7 @@ var _$attributes_92 = {
 'use strict';
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
-/* removed: var _$toLogRange_189 = require('../../lib/to_log_range'); */;
+/* removed: var _$toLogRange_190 = require('../../lib/to_log_range'); */;
 
 /*
  * convertCoords: when converting an axis between log and linear
@@ -44260,7 +44570,7 @@ var _$convertCoords_93 = function convertCoords(gd, ax, newType, doExtra) {
                 newSize = null;
 
             if(toLog) {
-                newPos = _$toLogRange_189(currentPos, ax.range);
+                newPos = _$toLogRange_190(currentPos, ax.range);
 
                 // this is the inverse of the conversion we do in fromLog below
                 // so that the conversion is reversible (notice the fromLog conversion
@@ -44296,9 +44606,9 @@ var _$convertCoords_93 = function convertCoords(gd, ax, newType, doExtra) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
-/* removed: var _$handleArrayContainerDefaults_205 = require('../../plots/array_container_defaults'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$handleArrayContainerDefaults_206 = require('../../plots/array_container_defaults'); */;
 
 /* removed: var _$attributes_92 = require('./attributes'); */;
 var name = 'images';
@@ -44309,14 +44619,14 @@ var _$supplyLayoutDefaults_94 = function supplyLayoutDefaults(layoutIn, layoutOu
         handleItemDefaults: imageDefaults
     };
 
-    _$handleArrayContainerDefaults_205(layoutIn, layoutOut, opts);
+    _$handleArrayContainerDefaults_206(layoutIn, layoutOut, opts);
 };
 
 
 function imageDefaults(imageIn, imageOut, fullLayout) {
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(imageIn, imageOut, _$attributes_92, attr, dflt);
+        return _$lib_167.coerce(imageIn, imageOut, _$attributes_92, attr, dflt);
     }
 
     var source = coerce('source');
@@ -44338,9 +44648,9 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     for(var i = 0; i < 2; i++) {
         // 'paper' is the fallback axref
         var axLetter = axLetters[i],
-            axRef = _$axes_209.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
+            axRef = _$axes_210.coerceRef(imageIn, imageOut, gdMock, axLetter, 'paper');
 
-        _$axes_209.coercePosition(imageOut, gdMock, coerce, axRef, axLetter, 0);
+        _$axes_210.coercePosition(imageOut, gdMock, coerce, axRef, axLetter, 0);
     }
 
     return imageOut;
@@ -44358,7 +44668,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 /* removed: var _$xmlns_namespaces_149 = require('../../constants/xmlns_namespaces'); */;
 
 var _$draw_95 = function draw(gd) {
@@ -44472,8 +44782,8 @@ var _$draw_95 = function draw(gd) {
         var thisImage = _$d3_8.select(this);
 
         // Axes if specified
-        var xa = _$axes_209.getFromId(gd, d.xref),
-            ya = _$axes_209.getFromId(gd, d.yref);
+        var xa = _$axes_210.getFromId(gd, d.xref),
+            ya = _$axes_210.getFromId(gd, d.yref);
 
         var size = fullLayout._size,
             width = xa ? Math.abs(xa.l2p(d.sizex) - xa.l2p(0)) : d.sizex * size.w,
@@ -44582,7 +44892,7 @@ var _$images_96 = {
 
     layoutAttributes: _$attributes_92,
     supplyLayoutDefaults: _$supplyLayoutDefaults_94,
-    includeBasePlot: _$makeIncludeComponents_219('images'),
+    includeBasePlot: _$makeIncludeComponents_220('images'),
 
     draw: _$draw_95,
 
@@ -44735,8 +45045,8 @@ _$helpers_104.isReversed = function isReversed(legendLayout) {
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 /* removed: var _$attributes_98 = require('./attributes'); */;
 /* removed: var _$layout_attributes_248 = require('../../plots/layout_attributes'); */;
@@ -44758,10 +45068,10 @@ var _$legendDefaults_100 = function legendDefaults(layoutIn, layoutOut, fullData
         if(_$helpers_104.legendGetsTrace(trace)) {
             visibleTraces++;
             // always show the legend by default if there's a pie
-            if(_$registry_258.traceIs(trace, 'pie')) visibleTraces++;
+            if(_$registry_259.traceIs(trace, 'pie')) visibleTraces++;
         }
 
-        if((_$registry_258.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
+        if((_$registry_259.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
                 ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
             defaultOrder = _$helpers_104.isGrouped({traceorder: defaultOrder}) ?
                 'grouped+reversed' : 'reversed';
@@ -44774,10 +45084,10 @@ var _$legendDefaults_100 = function legendDefaults(layoutIn, layoutOut, fullData
     }
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(containerIn, containerOut, _$attributes_98, attr, dflt);
+        return _$lib_167.coerce(containerIn, containerOut, _$attributes_98, attr, dflt);
     }
 
-    var showLegend = _$lib_166.coerce(layoutIn, layoutOut,
+    var showLegend = _$lib_167.coerce(layoutIn, layoutOut,
         _$layout_attributes_248, 'showlegend', visibleTraces > 1);
 
     if(showLegend === false) return;
@@ -44787,7 +45097,7 @@ var _$legendDefaults_100 = function legendDefaults(layoutIn, layoutOut, fullData
     coerce('bgcolor', layoutOut.paper_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
-    _$lib_166.coerceFont(coerce, 'font', layoutOut.font);
+    _$lib_167.coerceFont(coerce, 'font', layoutOut.font);
 
     coerce('orientation');
     if(containerOut.orientation === 'h') {
@@ -44813,7 +45123,7 @@ var _$legendDefaults_100 = function legendDefaults(layoutIn, layoutOut, fullData
     coerce('xanchor', defaultXAnchor);
     coerce('y', defaultY);
     coerce('yanchor', defaultYAnchor);
-    _$lib_166.noneOrAll(containerIn, containerOut, ['x', 'y']);
+    _$lib_167.noneOrAll(containerIn, containerOut, ['x', 'y']);
 };
 
 var _$anchor_utils_97 = {};
@@ -44893,7 +45203,7 @@ var _$constants_99 = {
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 /* removed: var _$helpers_104 = require('./helpers'); */;
 
 
@@ -44932,7 +45242,7 @@ var _$getLegendData_102 = function getLegendData(calcdata, opts) {
 
         if(!_$helpers_104.legendGetsTrace(trace) || !trace.showlegend) continue;
 
-        if(_$registry_258.traceIs(trace, 'pie')) {
+        if(_$registry_259.traceIs(trace, 'pie')) {
             if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
 
             for(j = 0; j < cd.length; j++) {
@@ -44996,8 +45306,8 @@ var _$getLegendData_102 = function getLegendData(calcdata, opts) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 
 var SHOWISOLATETIP = true;
 
@@ -45038,12 +45348,12 @@ var _$handleClick_103 = function handleClick(g, gd, numClicks) {
 
     function setVisibility(fullTrace, visibility) {
         var fullInput = fullTrace._fullInput;
-        if(_$registry_258.hasTransform(fullInput, 'groupby')) {
+        if(_$registry_259.hasTransform(fullInput, 'groupby')) {
             var kcont = carrs[fullInput.index];
             if(!kcont) {
-                var groupbyIndices = _$registry_258.getTransformIndices(fullInput, 'groupby');
+                var groupbyIndices = _$registry_259.getTransformIndices(fullInput, 'groupby');
                 var lastGroupbyIndex = groupbyIndices[groupbyIndices.length - 1];
-                kcont = _$lib_166.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
+                kcont = _$lib_167.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
                 carrs[fullInput.index] = kcont;
             }
 
@@ -45074,13 +45384,13 @@ var _$handleClick_103 = function handleClick(g, gd, numClicks) {
     }
 
     if(numClicks === 1 && SHOWISOLATETIP && gd.data && gd._context.showTips) {
-        _$lib_166.notifier(_$lib_166._(gd, 'Double-click on legend to isolate one trace'), 'long');
+        _$lib_167.notifier(_$lib_167._(gd, 'Double-click on legend to isolate one trace'), 'long');
         SHOWISOLATETIP = false;
     } else {
         SHOWISOLATETIP = false;
     }
 
-    if(_$registry_258.traceIs(fullTrace, 'pie')) {
+    if(_$registry_259.traceIs(fullTrace, 'pie')) {
         var thisLabel = legendItem.label,
             thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 
@@ -45099,7 +45409,7 @@ var _$handleClick_103 = function handleClick(g, gd, numClicks) {
             }
         }
 
-        _$registry_258.call('relayout', gd, 'hiddenlabels', hiddenSlices);
+        _$registry_259.call('relayout', gd, 'hiddenlabels', hiddenSlices);
     } else {
         var hasLegendgroup = legendgroup && legendgroup.length;
         var traceIndicesInGroup = [];
@@ -45149,7 +45459,7 @@ var _$handleClick_103 = function handleClick(g, gd, numClicks) {
 
                 isInGroup = (hasLegendgroup && fullData[i].legendgroup === legendgroup);
 
-                if(!isInGroup && fullData[i].visible === true && !_$registry_258.traceIs(fullData[i], 'notLegendIsolatable')) {
+                if(!isInGroup && fullData[i].visible === true && !_$registry_259.traceIs(fullData[i], 'notLegendIsolatable')) {
                     isIsolated = false;
                     break;
                 }
@@ -45159,7 +45469,7 @@ var _$handleClick_103 = function handleClick(g, gd, numClicks) {
                 // False is sticky; we don't change it.
                 if(fullData[i].visible === false) continue;
 
-                if(_$registry_258.traceIs(fullData[i], 'notLegendIsolatable')) {
+                if(_$registry_259.traceIs(fullData[i], 'notLegendIsolatable')) {
                     continue;
                 }
 
@@ -45205,11 +45515,11 @@ var _$handleClick_103 = function handleClick(g, gd, numClicks) {
             }
         }
 
-        _$registry_258.call('restyle', gd, attrUpdate, attrIndices);
+        _$registry_259.call('restyle', gd, attrUpdate, attrIndices);
     }
 };
 
-var _$helpers_277 = {};
+var _$helpers_278 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -45220,25 +45530,25 @@ var _$helpers_277 = {};
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
-_$helpers_277.formatPiePercent = function formatPiePercent(v, separators) {
+_$helpers_278.formatPiePercent = function formatPiePercent(v, separators) {
     var vRounded = (v * 100).toPrecision(3);
     if(vRounded.lastIndexOf('.') !== -1) {
         vRounded = vRounded.replace(/[.]?0+$/, '');
     }
-    return _$lib_166.numSeparate(vRounded, separators) + '%';
+    return _$lib_167.numSeparate(vRounded, separators) + '%';
 };
 
-_$helpers_277.formatPieValue = function formatPieValue(v, separators) {
+_$helpers_278.formatPieValue = function formatPieValue(v, separators) {
     var vRounded = v.toPrecision(10);
     if(vRounded.lastIndexOf('.') !== -1) {
         vRounded = vRounded.replace(/[.]?0+$/, '');
     }
-    return _$lib_166.numSeparate(vRounded, separators);
+    return _$lib_167.numSeparate(vRounded, separators);
 };
 
-_$helpers_277.getFirstFilled = function getFirstFilled(array, indices) {
+_$helpers_278.getFirstFilled = function getFirstFilled(array, indices) {
     if(!Array.isArray(array)) return;
     for(var i = 0; i < indices.length; i++) {
         var v = array[indices[i]];
@@ -45246,8 +45556,8 @@ _$helpers_277.getFirstFilled = function getFirstFilled(array, indices) {
     }
 };
 
-_$helpers_277.castOption = function castOption(item, indices) {
-    if(Array.isArray(item)) return _$helpers_277.getFirstFilled(item, indices);
+_$helpers_278.castOption = function castOption(item, indices) {
+    if(Array.isArray(item)) return _$helpers_278.getFirstFilled(item, indices);
     else if(item) return item;
 };
 
@@ -45262,9 +45572,9 @@ _$helpers_277.castOption = function castOption(item, indices) {
 'use strict';
 
 /* removed: var _$color_45 = require('../../components/color'); */;
-var castOption = _$helpers_277.castOption;
+var castOption = _$helpers_278.castOption;
 
-var _$styleOne_278 = function styleOne(s, pt, trace) {
+var _$styleOne_279 = function styleOne(s, pt, trace) {
     var line = trace.marker.line;
     var lineColor = castOption(line.color, pt.pts) || _$color_45.defaultLine;
     var lineWidth = castOption(line.width, pt.pts) || 0;
@@ -45282,28 +45592,23 @@ var _$styleOne_278 = function styleOne(s, pt, trace) {
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
 /* removed: var _$color_45 = require('../color'); */;
 
-/* removed: var _$subtypes_302 = require('../../traces/scatter/subtypes'); */;
-/* removed: var _$styleOne_278 = require('../../traces/pie/style_one'); */;
-
+/* removed: var _$subtypes_303 = require('../../traces/scatter/subtypes'); */;
+/* removed: var _$styleOne_279 = require('../../traces/pie/style_one'); */;
 
 var _$style_106 = function style(s, gd) {
     s.each(function(d) {
         var traceGroup = _$d3_8.select(this);
 
-        var layers = traceGroup.selectAll('g.layers')
-            .data([0]);
-        layers.enter().append('g')
-            .classed('layers', true);
+        var layers = _$lib_167.ensureSingle(traceGroup, 'g', 'layers');
         layers.style('opacity', d[0].trace.opacity);
 
         var fill = layers
@@ -45333,12 +45638,14 @@ var _$style_106 = function style(s, gd) {
     .each(styleBoxes)
     .each(stylePies)
     .each(styleLines)
-    .each(stylePoints);
+    .each(stylePoints)
+    .each(styleCandles)
+    .each(styleOHLC);
 
     function styleLines(d) {
         var trace = d[0].trace;
         var showFill = trace.visible && trace.fill && trace.fill !== 'none';
-        var showLine = _$subtypes_302.hasLines(trace);
+        var showLine = _$subtypes_303.hasLines(trace);
         var contours = trace.contours;
 
         if(contours && contours.type === 'constraint') {
@@ -45364,9 +45671,9 @@ var _$style_106 = function style(s, gd) {
     function stylePoints(d) {
         var d0 = d[0],
             trace = d0.trace,
-            showMarkers = _$subtypes_302.hasMarkers(trace),
-            showText = _$subtypes_302.hasText(trace),
-            showLines = _$subtypes_302.hasLines(trace);
+            showMarkers = _$subtypes_303.hasMarkers(trace),
+            showText = _$subtypes_303.hasText(trace),
+            showLines = _$subtypes_303.hasLines(trace);
 
         var dMod, tMod;
 
@@ -45374,7 +45681,7 @@ var _$style_106 = function style(s, gd) {
         // use d0.trace to infer arrayOk attributes
 
         function boundVal(attrIn, arrayToValFn, bounds) {
-            var valIn = _$lib_166.nestedProperty(trace, attrIn).get(),
+            var valIn = _$lib_167.nestedProperty(trace, attrIn).get(),
                 valToBound = (Array.isArray(valIn) && arrayToValFn) ?
                     arrayToValFn(valIn) : valIn;
 
@@ -45394,10 +45701,10 @@ var _$style_106 = function style(s, gd) {
 
             if(showMarkers) {
                 dEdit.mc = boundVal('marker.color', pickFirst);
-                dEdit.mo = boundVal('marker.opacity', _$lib_166.mean, [0.2, 1]);
-                dEdit.ms = boundVal('marker.size', _$lib_166.mean, [2, 16]);
+                dEdit.mo = boundVal('marker.opacity', _$lib_167.mean, [0.2, 1]);
+                dEdit.ms = boundVal('marker.size', _$lib_167.mean, [2, 16]);
                 dEdit.mlc = boundVal('marker.line.color', pickFirst);
-                dEdit.mlw = boundVal('marker.line.width', _$lib_166.mean, [0, 5]);
+                dEdit.mlw = boundVal('marker.line.width', _$lib_167.mean, [0, 5]);
                 tEdit.marker = {
                     sizeref: 1,
                     sizemin: 1,
@@ -45419,8 +45726,8 @@ var _$style_106 = function style(s, gd) {
                 dEdit.tf = boundVal('textfont.family', pickFirst);
             }
 
-            dMod = [_$lib_166.minExtend(d0, dEdit)];
-            tMod = _$lib_166.minExtend(trace, tEdit);
+            dMod = [_$lib_167.minExtend(d0, dEdit)];
+            tMod = _$lib_167.minExtend(trace, tEdit);
         }
 
         var ptgroup = _$d3_8.select(this).select('g.legendpoints');
@@ -45451,7 +45758,7 @@ var _$style_106 = function style(s, gd) {
             markerLine = marker.line || {},
             barpath = _$d3_8.select(this).select('g.legendpoints')
                 .selectAll('path.legendbar')
-                .data(_$registry_258.traceIs(trace, 'bar') ? [d] : []);
+                .data(_$registry_259.traceIs(trace, 'bar') ? [d] : []);
         barpath.enter().append('path').classed('legendbar', true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', 'translate(20,0)');
@@ -45474,7 +45781,7 @@ var _$style_106 = function style(s, gd) {
         var trace = d[0].trace,
             pts = _$d3_8.select(this).select('g.legendpoints')
                 .selectAll('path.legendbox')
-                .data(_$registry_258.traceIs(trace, 'box-violin') && trace.visible ? [d] : []);
+                .data(_$registry_259.traceIs(trace, 'box-violin') && trace.visible ? [d] : []);
         pts.enter().append('path').classed('legendbox', true)
             // if we want the median bar, prepend M6,0H-6
             .attr('d', 'M6,6H-6V-6H6Z')
@@ -45488,7 +45795,61 @@ var _$style_106 = function style(s, gd) {
                 .call(_$color_45.fill, trace.fillcolor);
 
             if(w) {
-                p.call(_$color_45.stroke, trace.line.color);
+                _$color_45.stroke(p, trace.line.color);
+            }
+        });
+    }
+
+    function styleCandles(d) {
+        var trace = d[0].trace,
+            pts = _$d3_8.select(this).select('g.legendpoints')
+                .selectAll('path.legendcandle')
+                .data(trace.type === 'candlestick' && trace.visible ? [d, d] : []);
+        pts.enter().append('path').classed('legendcandle', true)
+            .attr('d', function(_, i) {
+                if(i) return 'M-15,0H-8M-8,6V-6H8Z'; // increasing
+                return 'M15,0H8M8,-6V6H-8Z'; // decreasing
+            })
+            .attr('transform', 'translate(20,0)')
+            .style('stroke-miterlimit', 1);
+        pts.exit().remove();
+        pts.each(function(_, i) {
+            var container = trace[i ? 'increasing' : 'decreasing'];
+            var w = container.line.width,
+                p = _$d3_8.select(this);
+
+            p.style('stroke-width', w + 'px')
+                .call(_$color_45.fill, container.fillcolor);
+
+            if(w) {
+                _$color_45.stroke(p, container.line.color);
+            }
+        });
+    }
+
+    function styleOHLC(d) {
+        var trace = d[0].trace,
+            pts = _$d3_8.select(this).select('g.legendpoints')
+                .selectAll('path.legendohlc')
+                .data(trace.type === 'ohlc' && trace.visible ? [d, d] : []);
+        pts.enter().append('path').classed('legendohlc', true)
+            .attr('d', function(_, i) {
+                if(i) return 'M-15,0H0M-8,-6V0'; // increasing
+                return 'M15,0H0M8,6V0'; // decreasing
+            })
+            .attr('transform', 'translate(20,0)')
+            .style('stroke-miterlimit', 1);
+        pts.exit().remove();
+        pts.each(function(_, i) {
+            var container = trace[i ? 'increasing' : 'decreasing'];
+            var w = container.line.width,
+                p = _$d3_8.select(this);
+
+            p.style('fill', 'none')
+                .call(_$drawing_70.dashLine, container.line.dash, w);
+
+            if(w) {
+                _$color_45.stroke(p, container.line.color);
             }
         });
     }
@@ -45497,13 +45858,13 @@ var _$style_106 = function style(s, gd) {
         var trace = d[0].trace,
             pts = _$d3_8.select(this).select('g.legendpoints')
                 .selectAll('path.legendpie')
-                .data(_$registry_258.traceIs(trace, 'pie') && trace.visible ? [d] : []);
+                .data(_$registry_259.traceIs(trace, 'pie') && trace.visible ? [d] : []);
         pts.enter().append('path').classed('legendpie', true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', 'translate(20,0)');
         pts.exit().remove();
 
-        if(pts.size()) pts.call(_$styleOne_278, d[0], trace);
+        if(pts.size()) pts.call(_$styleOne_279, d[0], trace);
     }
 };
 
@@ -45519,13 +45880,13 @@ var _$style_106 = function style(s, gd) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 /* removed: var _$dragelement_67 = require('../dragelement'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
 /* removed: var _$color_45 = require('../color'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
 /* removed: var _$handleClick_103 = require('./handle_click'); */;
 
 /* removed: var _$constants_99 = require('./constants'); */;
@@ -45562,52 +45923,35 @@ var _$draw_101 = function draw(gd) {
         return;
     }
 
-    var legend = fullLayout._infolayer.selectAll('g.legend')
-        .data([0]);
+    var firstRender = false;
+    var legend = _$lib_167.ensureSingle(fullLayout._infolayer, 'g', 'legend', function(s) {
+        s.attr('pointer-events', 'all');
+        firstRender = true;
+    });
 
-    legend.enter().append('g')
-        .attr({
-            'class': 'legend',
-            'pointer-events': 'all'
-        });
+    var clipPath = _$lib_167.ensureSingleById(fullLayout._topdefs, 'clipPath', clipId, function(s) {
+        s.append('rect');
+    });
 
-    var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
-        .data([0]);
-
-    clipPath.enter().append('clipPath')
-        .attr('id', clipId)
-        .append('rect');
-
-    var bg = legend.selectAll('rect.bg')
-        .data([0]);
-
-    bg.enter().append('rect').attr({
-        'class': 'bg',
-        'shape-rendering': 'crispEdges'
+    var bg = _$lib_167.ensureSingle(legend, 'rect', 'bg', function(s) {
+        s.attr('shape-rendering', 'crispEdges');
     });
 
     bg.call(_$color_45.stroke, opts.bordercolor)
         .call(_$color_45.fill, opts.bgcolor)
         .style('stroke-width', opts.borderwidth + 'px');
 
-    var scrollBox = legend.selectAll('g.scrollbox')
-        .data([0]);
+    var scrollBox = _$lib_167.ensureSingle(legend, 'g', 'scrollbox');
 
-    scrollBox.enter().append('g')
-        .attr('class', 'scrollbox');
-
-    var scrollBar = legend.selectAll('rect.scrollbar')
-        .data([0]);
-
-    scrollBar.enter().append('rect')
-        .attr({
-            'class': 'scrollbar',
+    var scrollBar = _$lib_167.ensureSingle(legend, 'rect', 'scrollbar', function(s) {
+        s.attr({
             rx: 20,
             ry: 3,
             width: 0,
             height: 0
         })
         .call(_$color_45.fill, '#808BA4');
+    });
 
     var groups = scrollBox.selectAll('g.groups')
         .data(legendData);
@@ -45618,7 +45962,7 @@ var _$draw_101 = function draw(gd) {
     groups.exit().remove();
 
     var traces = groups.selectAll('g.traces')
-        .data(_$lib_166.identity);
+        .data(_$lib_167.identity);
 
     traces.enter().append('g').attr('class', 'traces');
     traces.exit().remove();
@@ -45626,7 +45970,7 @@ var _$draw_101 = function draw(gd) {
     traces.call(_$style_106, gd)
         .style('opacity', function(d) {
             var trace = d[0].trace;
-            if(_$registry_258.traceIs(trace, 'pie')) {
+            if(_$registry_259.traceIs(trace, 'pie')) {
                 return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
             } else {
                 return trace.visible === 'legendonly' ? 0.5 : 1;
@@ -45638,7 +45982,6 @@ var _$draw_101 = function draw(gd) {
                 .call(setupTraceToggle, gd);
         });
 
-    var firstRender = legend.enter().size() !== 0;
     if(firstRender) {
         computeLegendDimensions(gd, groups, traces);
         expandMargin(gd);
@@ -45780,7 +46123,7 @@ var _$draw_101 = function draw(gd) {
         scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
 
         legend.on('wheel', function() {
-            scrollBoxY = _$lib_166.constrain(
+            scrollBoxY = _$lib_167.constrain(
                 opts._scrollY +
                     _$d3_8.event.deltaY / scrollBarYMax * scrollBoxYMax,
                 0, scrollBoxYMax);
@@ -45801,7 +46144,7 @@ var _$draw_101 = function draw(gd) {
             var e = _$d3_8.event.sourceEvent;
             if(e.buttons === 2 || e.ctrlKey) return;
 
-            scrollBoxY = _$lib_166.constrain(
+            scrollBoxY = _$lib_167.constrain(
                 (e.clientY - eventY0) / scrollRatio + scrollBoxY0,
                 0, scrollBoxYMax);
             scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
@@ -45852,7 +46195,7 @@ var _$draw_101 = function draw(gd) {
             },
             doneFn: function() {
                 if(xf !== undefined && yf !== undefined) {
-                    _$registry_258.call('relayout', gd, {'legend.x': xf, 'legend.y': yf});
+                    _$registry_259.call('relayout', gd, {'legend.x': xf, 'legend.y': yf});
                 }
             },
             clickFn: function(numClicks, e) {
@@ -45883,14 +46226,11 @@ function drawTexts(g, gd) {
     var legendItem = g.data()[0][0],
         fullLayout = gd._fullLayout,
         trace = legendItem.trace,
-        isPie = _$registry_258.traceIs(trace, 'pie'),
+        isPie = _$registry_259.traceIs(trace, 'pie'),
         traceIndex = trace.index,
         name = isPie ? legendItem.label : trace.name;
 
-    var text = g.selectAll('text.legendtext')
-        .data([0]);
-
-    text.enter().append('text').classed('legendtext', true);
+    var text = _$lib_167.ensureSingle(g, 'text', 'legendtext');
 
     text.attr('text-anchor', 'start')
         .classed('user-select-none', true)
@@ -45898,13 +46238,13 @@ function drawTexts(g, gd) {
         .text(name);
 
     function textLayout(s) {
-        _$svg_text_utils_187.convertToTspans(s, gd, function() {
+        _$svg_text_utils_188.convertToTspans(s, gd, function() {
             computeTextDimensions(g, gd);
         });
     }
 
     if(gd._context.edits.legendText && !isPie) {
-        text.call(_$svg_text_utils_187.makeEditable, {gd: gd})
+        text.call(_$svg_text_utils_188.makeEditable, {gd: gd})
             .call(textLayout)
             .on('edit', function(text) {
                 this.text(text)
@@ -45914,24 +46254,14 @@ function drawTexts(g, gd) {
 
                 if(!this.text()) text = ' \u0020\u0020 ';
 
-                var transforms, direction;
                 var fullInput = legendItem.trace._fullInput || {};
                 var update = {};
 
-                // N.B. this block isn't super clean,
-                // is unfortunately untested at the moment,
-                // and only works for for 'ohlc' and 'candlestick',
-                // but should be generalized for other one-to-many transforms
-                if(['ohlc', 'candlestick'].indexOf(fullInput.type) !== -1) {
-                    transforms = legendItem.trace.transforms;
-                    direction = transforms[transforms.length - 1].direction;
-
-                    update[direction + '.name'] = text;
-                } else if(_$registry_258.hasTransform(fullInput, 'groupby')) {
-                    var groupbyIndices = _$registry_258.getTransformIndices(fullInput, 'groupby');
+                if(_$registry_259.hasTransform(fullInput, 'groupby')) {
+                    var groupbyIndices = _$registry_259.getTransformIndices(fullInput, 'groupby');
                     var index = groupbyIndices[groupbyIndices.length - 1];
 
-                    var kcont = _$lib_166.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
+                    var kcont = _$lib_167.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
 
                     if(origText === '') {
                         kcont.remove(legendItem.trace._group);
@@ -45944,7 +46274,7 @@ function drawTexts(g, gd) {
                     update.name = text;
                 }
 
-                return _$registry_258.call('restyle', gd, update, traceIndex);
+                return _$registry_259.call('restyle', gd, update, traceIndex);
             });
     } else {
         textLayout(text);
@@ -45955,15 +46285,11 @@ function setupTraceToggle(g, gd) {
     var newMouseDownTime,
         numClicks = 1;
 
-    var traceToggle = g.selectAll('rect')
-        .data([0]);
-
-    traceToggle.enter().append('rect')
-        .classed('legendtoggle', true)
-        .style('cursor', 'pointer')
-        .attr('pointer-events', 'all')
-        .call(_$color_45.fill, 'rgba(0,0,0,0)');
-
+    var traceToggle = _$lib_167.ensureSingle(g, 'rect', 'legendtoggle', function(s) {
+        s.style('cursor', 'pointer')
+            .attr('pointer-events', 'all')
+            .call(_$color_45.fill, 'rgba(0,0,0,0)');
+    });
 
     traceToggle.on('mousedown', function() {
         newMouseDownTime = (new Date()).getTime();
@@ -46021,7 +46347,7 @@ function computeTextDimensions(g, gd) {
     }
     else {
         var text = g.select('.legendtext');
-        var textLines = _$svg_text_utils_187.lineCount(text);
+        var textLines = _$svg_text_utils_188.lineCount(text);
         var textNode = text.node();
 
         height = lineHeight * textLines;
@@ -46032,7 +46358,7 @@ function computeTextDimensions(g, gd) {
         var textY = lineHeight * (0.3 + (1 - textLines) / 2);
         // TODO: this 40 should go in a constants file (along with other
         // values related to the legend symbol size)
-        _$svg_text_utils_187.positionText(text, 40, textY);
+        _$svg_text_utils_188.positionText(text, 40, textY);
     }
 
     height = Math.max(height, 16) + 3;
@@ -46320,7 +46646,7 @@ var _$button_attributes_112 = {
 
 /* removed: var _$font_attributes_236 = require('../../plots/font_attributes'); */;
 /* removed: var _$attributes_44 = require('../color/attributes'); */;
-var __extendFlat_111 = _$extend_158.extendFlat;
+var __extendFlat_111 = _$extend_159.extendFlat;
 /* removed: var _$button_attributes_112 = require('./button_attributes'); */;
 
 _$button_attributes_112 = __extendFlat_111(_$button_attributes_112, {
@@ -46446,7 +46772,7 @@ var _$constants_113 = {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$color_45 = require('../color'); */;
 
 /* removed: var _$attributes_111 = require('./attributes'); */;
@@ -46459,7 +46785,7 @@ var _$handleDefaults_114 = function handleDefaults(containerIn, containerOut, la
         selectorOut = containerOut.rangeselector = {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(selectorIn, selectorOut, _$attributes_111, attr, dflt);
+        return _$lib_167.coerce(selectorIn, selectorOut, _$attributes_111, attr, dflt);
     }
 
     var buttons = buttonsDefaults(selectorIn, selectorOut, calendar);
@@ -46470,12 +46796,12 @@ var _$handleDefaults_114 = function handleDefaults(containerIn, containerOut, la
     var posDflt = getPosDflt(containerOut, layout, counterAxes);
     coerce('x', posDflt[0]);
     coerce('y', posDflt[1]);
-    _$lib_166.noneOrAll(containerIn, containerOut, ['x', 'y']);
+    _$lib_167.noneOrAll(containerIn, containerOut, ['x', 'y']);
 
     coerce('xanchor');
     coerce('yanchor');
 
-    _$lib_166.coerceFont(coerce, 'font', layout.font);
+    _$lib_167.coerceFont(coerce, 'font', layout.font);
 
     var bgColor = coerce('bgcolor');
     coerce('activecolor', _$color_45.contrast(bgColor, _$constants_113.lightAmount, _$constants_113.darkAmount));
@@ -46490,14 +46816,14 @@ function buttonsDefaults(containerIn, containerOut, calendar) {
     var buttonIn, buttonOut;
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(buttonIn, buttonOut, _$button_attributes_112, attr, dflt);
+        return _$lib_167.coerce(buttonIn, buttonOut, _$button_attributes_112, attr, dflt);
     }
 
     for(var i = 0; i < buttonsIn.length; i++) {
         buttonIn = buttonsIn[i];
         buttonOut = {};
 
-        if(!_$lib_166.isPlainObject(buttonIn)) continue;
+        if(!_$lib_167.isPlainObject(buttonIn)) continue;
 
         var step = coerce('step');
         if(step !== 'all') {
@@ -46602,12 +46928,13 @@ function getXRange(axisLayout, buttonLayout) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
 /* removed: var _$color_45 = require('../color'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
-/* removed: var _$axis_ids_212 = require('../../plots/cartesian/axis_ids'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$axis_ids_213 = require('../../plots/cartesian/axis_ids'); */;
 /* removed: var _$anchor_utils_97 = require('../legend/anchor_utils'); */;
 
 /* removed: var _$alignment_145 = require('../../constants/alignment'); */;
@@ -46660,7 +46987,7 @@ var _$draw_115 = function draw(gd) {
             button.on('click', function() {
                 if(gd._dragged) return;
 
-                _$registry_258.call('relayout', gd, update);
+                _$registry_259.call('relayout', gd, update);
             });
 
             button.on('mouseover', function() {
@@ -46680,7 +47007,7 @@ var _$draw_115 = function draw(gd) {
 };
 
 function makeSelectorData(gd) {
-    var axes = _$axis_ids_212.list(gd, 'x', true);
+    var axes = _$axis_ids_213.list(gd, 'x', true);
     var data = [];
 
     for(var i = 0; i < axes.length; i++) {
@@ -46713,13 +47040,9 @@ function isActive(axisLayout, opts, update) {
 }
 
 function drawButtonRect(button, selectorLayout, d) {
-    var rect = button.selectAll('rect')
-        .data([0]);
-
-    rect.enter().append('rect')
-        .classed('selector-rect', true);
-
-    rect.attr('shape-rendering', 'crispEdges');
+    var rect = _$lib_167.ensureSingle(button, 'rect', 'selector-rect', function(s) {
+        s.attr('shape-rendering', 'crispEdges');
+    });
 
     rect.attr({
         'rx': _$constants_113.rx,
@@ -46739,17 +47062,13 @@ function getFillColor(selectorLayout, d) {
 
 function drawButtonText(button, selectorLayout, d, gd) {
     function textLayout(s) {
-        _$svg_text_utils_187.convertToTspans(s, gd);
+        _$svg_text_utils_188.convertToTspans(s, gd);
     }
 
-    var text = button.selectAll('text')
-        .data([0]);
-
-    text.enter().append('text')
-        .classed('selector-text', true)
-        .classed('user-select-none', true);
-
-    text.attr('text-anchor', 'middle');
+    var text = _$lib_167.ensureSingle(button, 'text', 'selector-text', function(s) {
+        s.classed('user-select-none', true)
+            .attr('text-anchor', 'middle');
+    });
 
     text.call(_$drawing_70.font, selectorLayout.font)
         .text(getLabel(d))
@@ -46775,7 +47094,7 @@ function reposition(gd, buttons, opts, axName, selector) {
         var text = button.select('.selector-text');
 
         var tHeight = opts.font.size * __LINE_SPACING_115;
-        var hEff = Math.max(tHeight * _$svg_text_utils_187.lineCount(text), 16) + 3;
+        var hEff = Math.max(tHeight * _$svg_text_utils_188.lineCount(text), 16) + 3;
 
         height = Math.max(height, hEff);
     });
@@ -46787,7 +47106,7 @@ function reposition(gd, buttons, opts, axName, selector) {
 
         var tWidth = text.node() && _$drawing_70.bBox(text.node()).width;
         var tHeight = opts.font.size * __LINE_SPACING_115;
-        var tLines = _$svg_text_utils_187.lineCount(text);
+        var tLines = _$svg_text_utils_188.lineCount(text);
 
         var wEff = Math.max(tWidth + 10, _$constants_113.minButtonWidth);
 
@@ -46806,7 +47125,7 @@ function reposition(gd, buttons, opts, axName, selector) {
             height: height
         });
 
-        _$svg_text_utils_187.positionText(text, wEff / 2,
+        _$svg_text_utils_188.positionText(text, wEff / 2,
             height / 2 - ((tLines - 1) * tHeight / 2) + 3);
 
         width += wEff + 5;
@@ -47017,8 +47336,8 @@ var _$constants_120 = {
 
 'use strict';
 
-var listAxes = _$axis_ids_212.list;
-var __getAutoRange_119 = _$autorange_208.getAutoRange;
+var listAxes = _$axis_ids_213.list;
+var __getAutoRange_119 = _$autorange_209.getAutoRange;
 /* removed: var _$constants_120 = require('./constants'); */;
 
 var _$calcAutorange_119 = function calcAutorange(gd) {
@@ -47090,29 +47409,31 @@ var _$oppaxis_attributes_124 = {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$attributes_118 = require('./attributes'); */;
 /* removed: var _$oppaxis_attributes_124 = require('./oppaxis_attributes'); */;
-/* removed: var _$axis_ids_212 = require('../../plots/cartesian/axis_ids'); */;
+/* removed: var _$axis_ids_213 = require('../../plots/cartesian/axis_ids'); */;
 
 var _$handleDefaults_121 = function handleDefaults(layoutIn, layoutOut, axName) {
-    if(!layoutIn[axName].rangeslider) return;
+    var axIn = layoutIn[axName];
+    var axOut = layoutOut[axName];
+
+    if(!(axIn.rangeslider || layoutOut._requestRangeslider[axOut._id])) return;
 
     // not super proud of this (maybe store _ in axis object instead
-    if(!_$lib_166.isPlainObject(layoutIn[axName].rangeslider)) {
-        layoutIn[axName].rangeslider = {};
+    if(!_$lib_167.isPlainObject(axIn.rangeslider)) {
+        axIn.rangeslider = {};
     }
 
-    var containerIn = layoutIn[axName].rangeslider,
-        axOut = layoutOut[axName],
-        containerOut = axOut.rangeslider = {};
+    var containerIn = axIn.rangeslider;
+    var containerOut = axOut.rangeslider = {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(containerIn, containerOut, _$attributes_118, attr, dflt);
+        return _$lib_167.coerce(containerIn, containerOut, _$attributes_118, attr, dflt);
     }
 
     function coerceRange(rangeContainerIn, rangeContainerOut, attr, dflt) {
-        return _$lib_166.coerce(rangeContainerIn, rangeContainerOut, _$oppaxis_attributes_124, attr, dflt);
+        return _$lib_167.coerce(rangeContainerIn, rangeContainerOut, _$oppaxis_attributes_124, attr, dflt);
     }
 
     var visible = coerce('visible');
@@ -47130,12 +47451,12 @@ var _$handleDefaults_121 = function handleDefaults(layoutIn, layoutOut, axName) 
     if(subplots) {
         var yIds = subplots.cartesian
             .filter(function(subplotId) {
-                return subplotId.substr(0, subplotId.indexOf('y')) === _$axis_ids_212.name2id(axName);
+                return subplotId.substr(0, subplotId.indexOf('y')) === _$axis_ids_213.name2id(axName);
             })
             .map(function(subplotId) {
                 return subplotId.substr(subplotId.indexOf('y'), subplotId.length);
             });
-        var yNames = _$lib_166.simpleMap(yIds, _$axis_ids_212.id2name);
+        var yNames = _$lib_167.simpleMap(yIds, _$axis_ids_213.id2name);
         for(var i = 0; i < yNames.length; i++) {
             var yName = yNames[i];
 
@@ -47172,7 +47493,7 @@ var _$handleDefaults_121 = function handleDefaults(layoutIn, layoutOut, axName) 
 'use strict';
 
 
-var _$attributes_207 = {
+var _$attributes_208 = {
     xaxis: {
         valType: 'subplotid',
         
@@ -47197,14 +47518,1392 @@ var _$attributes_207 = {
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
+
+/**
+ * Clear gl frame (if any). This is a common pattern as
+ * we usually set `preserveDrawingBuffer: true` during
+ * gl context creation (e.g. via `reglUtils.prepare`).
+ *
+ * @param {DOM node or object} gd : graph div object
+ */
+var _$clearGlCanvases_154 = function clearGlCanvases(gd) {
+    var fullLayout = gd._fullLayout;
+
+    if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
+        fullLayout._glcanvas.each(function(d) {
+            if(d.regl) d.regl.clear({color: true, depth: true});
+        });
+    }
+};
+
+/**
+* Copyright 2012-2018, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-var id2name = _$axis_ids_212.id2name;
+var FROM_BL = _$alignment_145.FROM_BL;
+
+var _$scaleZoom_226 = function scaleZoom(ax, factor, centerFraction) {
+    if(centerFraction === undefined) {
+        centerFraction = FROM_BL[ax.constraintoward || 'center'];
+    }
+
+    var rangeLinear = [ax.r2l(ax.range[0]), ax.r2l(ax.range[1])];
+    var center = rangeLinear[0] + (rangeLinear[1] - rangeLinear[0]) * centerFraction;
+
+    ax.range = ax._input.range = [
+        ax.l2r(center + (rangeLinear[0] - center) * factor),
+        ax.l2r(center + (rangeLinear[1] - center) * factor)
+    ];
+};
+
+/**
+* Copyright 2012-2018, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
 
-var _$handleConstraintDefaults_215 = function handleConstraintDefaults(containerIn, containerOut, coerce, allAxisIds, layoutOut) {
+'use strict';
+
+/* removed: var _$d3_8 = require('d3'); */;
+/* removed: var _$tinycolor_26 = require('tinycolor2'); */;
+/* removed: var _$hasPassiveEvents_14 = require('has-passive-events'); */;
+
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$clearGlCanvases_154 = require('../../lib/clear_gl_canvases'); */;
+/* removed: var _$color_45 = require('../../components/color'); */;
+/* removed: var _$drawing_70 = require('../../components/drawing'); */;
+/* removed: var _$fx_87 = require('../../components/fx'); */;
+/* removed: var _$setCursor_186 = require('../../lib/setcursor'); */;
+/* removed: var _$dragelement_67 = require('../../components/dragelement'); */;
+var __FROM_TL_218 = _$alignment_145.FROM_TL;
+
+/* removed: var _$plots_250 = require('../plots'); */;
+
+var doTicks = _$axes_210.doTicks;
+var __getFromId_218 = _$axis_ids_213.getFromId;
+var __prepSelect_218 = _$select_227.prepSelect;
+var __clearSelect_218 = _$select_227.clearSelect;
+/* removed: var _$scaleZoom_226 = require('./scale_zoom'); */;
+
+/* removed: var _$constants_215 = require('./constants'); */;
+var MINDRAG = _$constants_215.MINDRAG;
+var MINZOOM = _$constants_215.MINZOOM;
+
+
+// flag for showing "doubleclick to zoom out" only at the beginning
+var SHOWZOOMOUTTIP = true;
+
+// dragBox: create an element to drag one or more axis ends
+// inputs:
+//      plotinfo - which subplot are we making dragboxes on?
+//      x,y,w,h - left, top, width, height of the box
+//      ns - how does this drag the vertical axis?
+//          'n' - top only
+//          's' - bottom only
+//          'ns' - top and bottom together, difference unchanged
+//      ew - same for horizontal axis
+function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
+    // mouseDown stores ms of first mousedown event in the last
+    // DBLCLICKDELAY ms on the drag bars
+    // numClicks stores how many mousedowns have been seen
+    // within DBLCLICKDELAY so we can check for click or doubleclick events
+    // dragged stores whether a drag has occurred, so we don't have to
+    // redraw unnecessarily, ie if no move bigger than MINDRAG or MINZOOM px
+    var zoomlayer = gd._fullLayout._zoomlayer;
+    var isMainDrag = (ns + ew === 'nsew');
+    var singleEnd = (ns + ew).length === 1;
+
+    // main subplot x and y (i.e. found in plotinfo - the main ones)
+    var xa0, ya0;
+    // {ax._id: ax} hash objects
+    var xaHash, yaHash;
+    // xaHash/yaHash values (arrays)
+    var xaxes, yaxes;
+    // main axis offsets
+    var xs, ys;
+    // main axis lengths
+    var pw, ph;
+    // contains keys 'xaHash', 'yaHash', 'xaxes', and 'yaxes'
+    // which are the x/y {ax._id: ax} hash objects and their values
+    // for linked axis relative to this subplot
+    var links;
+    // set to ew/ns val when active, set to '' when inactive
+    var xActive, yActive;
+    // are all axes in this subplot are fixed?
+    var allFixedRanges;
+    // is subplot constrained?
+    var isSubplotConstrained;
+    // do we need to edit x/y ranges?
+    var editX, editY;
+
+    function recomputeAxisLists() {
+        xa0 = plotinfo.xaxis;
+        ya0 = plotinfo.yaxis;
+        pw = xa0._length;
+        ph = ya0._length;
+        xs = xa0._offset;
+        ys = ya0._offset;
+
+        xaHash = {};
+        xaHash[xa0._id] = xa0;
+        yaHash = {};
+        yaHash[ya0._id] = ya0;
+
+        // if we're dragging two axes at once, also drag overlays
+        if(ns && ew) {
+            var overlays = plotinfo.overlays;
+            for(var i = 0; i < overlays.length; i++) {
+                var xa = overlays[i].xaxis;
+                xaHash[xa._id] = xa;
+                var ya = overlays[i].yaxis;
+                yaHash[ya._id] = ya;
+            }
+        }
+
+        xaxes = hashValues(xaHash);
+        yaxes = hashValues(yaHash);
+        xActive = isDirectionActive(xaxes, ew);
+        yActive = isDirectionActive(yaxes, ns);
+        allFixedRanges = !yActive && !xActive;
+
+        links = calcLinks(gd, xaHash, yaHash);
+        isSubplotConstrained = links.isSubplotConstrained;
+        editX = ew || isSubplotConstrained;
+        editY = ns || isSubplotConstrained;
+    }
+
+    recomputeAxisLists();
+
+    var cursor = getDragCursor(yActive + xActive, gd._fullLayout.dragmode, isMainDrag);
+    var dragger = makeRectDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
+
+    // still need to make the element if the axes are disabled
+    // but nuke its events (except for maindrag which needs them for hover)
+    // and stop there
+    if(allFixedRanges && !isMainDrag) {
+        dragger.onmousedown = null;
+        dragger.style.pointerEvents = 'none';
+        return dragger;
+    }
+
+    var dragOptions = {
+        element: dragger,
+        gd: gd,
+        plotinfo: plotinfo,
+        prepFn: function(e, startX, startY) {
+            var dragModeNow = gd._fullLayout.dragmode;
+
+            recomputeAxisLists();
+
+            if(!allFixedRanges) {
+                if(isMainDrag) {
+                    // main dragger handles all drag modes, and changes
+                    // to pan (or to zoom if it already is pan) on shift
+                    if(e.shiftKey) {
+                        if(dragModeNow === 'pan') dragModeNow = 'zoom';
+                        else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+                    }
+                    else if(e.ctrlKey) {
+                        dragModeNow = 'pan';
+                    }
+                }
+                // all other draggers just pan
+                else dragModeNow = 'pan';
+            }
+
+            if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
+            else dragOptions.minDrag = undefined;
+
+            if(isSelectOrLasso(dragModeNow)) {
+                dragOptions.xaxes = xaxes;
+                dragOptions.yaxes = yaxes;
+                __prepSelect_218(e, startX, startY, dragOptions, dragModeNow);
+            }
+            else if(allFixedRanges) {
+                __clearSelect_218(zoomlayer);
+            }
+            else if(dragModeNow === 'zoom') {
+                dragOptions.moveFn = zoomMove;
+                dragOptions.doneFn = zoomDone;
+
+                // zoomMove takes care of the threshold, but we need to
+                // minimize this so that constrained zoom boxes will flip
+                // orientation at the right place
+                dragOptions.minDrag = 1;
+
+                zoomPrep(e, startX, startY);
+            }
+            else if(dragModeNow === 'pan') {
+                dragOptions.moveFn = plotDrag;
+                dragOptions.doneFn = dragTail;
+                __clearSelect_218(zoomlayer);
+            }
+        },
+        clickFn: function(numClicks, evt) {
+            removeZoombox(gd);
+
+            if(numClicks === 2 && !singleEnd) doubleClick();
+
+            if(isMainDrag) {
+                _$fx_87.click(gd, evt, plotinfo.id);
+            }
+            else if(numClicks === 1 && singleEnd) {
+                var ax = ns ? ya0 : xa0,
+                    end = (ns === 's' || ew === 'w') ? 0 : 1,
+                    attrStr = ax._name + '.range[' + end + ']',
+                    initialText = getEndText(ax, end),
+                    hAlign = 'left',
+                    vAlign = 'middle';
+
+                if(ax.fixedrange) return;
+
+                if(ns) {
+                    vAlign = (ns === 'n') ? 'top' : 'bottom';
+                    if(ax.side === 'right') hAlign = 'right';
+                }
+                else if(ew === 'e') hAlign = 'right';
+
+                if(gd._context.showAxisRangeEntryBoxes) {
+                    _$d3_8.select(dragger)
+                        .call(_$svg_text_utils_188.makeEditable, {
+                            gd: gd,
+                            immediate: true,
+                            background: gd._fullLayout.paper_bgcolor,
+                            text: String(initialText),
+                            fill: ax.tickfont ? ax.tickfont.color : '#444',
+                            horizontalAlign: hAlign,
+                            verticalAlign: vAlign
+                        })
+                        .on('edit', function(text) {
+                            var v = ax.d2r(text);
+                            if(v !== undefined) {
+                                _$registry_259.call('relayout', gd, attrStr, v);
+                            }
+                        });
+                }
+            }
+        }
+    };
+
+    _$dragelement_67.init(dragOptions);
+
+    var x0,
+        y0,
+        box,
+        lum,
+        path0,
+        dimmed,
+        zoomMode,
+        zb,
+        corners;
+
+    // collected changes to be made to the plot by relayout at the end
+    var updates = {};
+
+    function zoomPrep(e, startX, startY) {
+        var dragBBox = dragger.getBoundingClientRect();
+        x0 = startX - dragBBox.left;
+        y0 = startY - dragBBox.top;
+        box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
+        lum = gd._hmpixcount ?
+            (gd._hmlumcount / gd._hmpixcount) :
+            _$tinycolor_26(gd._fullLayout.plot_bgcolor).getLuminance();
+        path0 = 'M0,0H' + pw + 'V' + ph + 'H0V0';
+        dimmed = false;
+        zoomMode = 'xy';
+
+        zb = makeZoombox(zoomlayer, lum, xs, ys, path0);
+
+        corners = makeCorners(zoomlayer, xs, ys);
+
+        __clearSelect_218(zoomlayer);
+    }
+
+    function zoomMove(dx0, dy0) {
+        if(gd._transitioningWithDuration) {
+            return false;
+        }
+
+        var x1 = Math.max(0, Math.min(pw, dx0 + x0)),
+            y1 = Math.max(0, Math.min(ph, dy0 + y0)),
+            dx = Math.abs(x1 - x0),
+            dy = Math.abs(y1 - y0);
+
+        box.l = Math.min(x0, x1);
+        box.r = Math.max(x0, x1);
+        box.t = Math.min(y0, y1);
+        box.b = Math.max(y0, y1);
+
+        function noZoom() {
+            zoomMode = '';
+            box.r = box.l;
+            box.t = box.b;
+            corners.attr('d', 'M0,0Z');
+        }
+
+        if(isSubplotConstrained) {
+            if(dx > MINZOOM || dy > MINZOOM) {
+                zoomMode = 'xy';
+                if(dx / pw > dy / ph) {
+                    dy = dx * ph / pw;
+                    if(y0 > y1) box.t = y0 - dy;
+                    else box.b = y0 + dy;
+                }
+                else {
+                    dx = dy * pw / ph;
+                    if(x0 > x1) box.l = x0 - dx;
+                    else box.r = x0 + dx;
+                }
+                corners.attr('d', xyCorners(box));
+            }
+            else {
+                noZoom();
+            }
+        }
+        // look for small drags in one direction or the other,
+        // and only drag the other axis
+        else if(!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
+            if(dx < MINDRAG) {
+                noZoom();
+            }
+            else {
+                box.t = 0;
+                box.b = ph;
+                zoomMode = 'x';
+                corners.attr('d', xCorners(box, y0));
+            }
+        }
+        else if(!xActive || dx < Math.min(dy * 0.6, MINZOOM)) {
+            box.l = 0;
+            box.r = pw;
+            zoomMode = 'y';
+            corners.attr('d', yCorners(box, x0));
+        }
+        else {
+            zoomMode = 'xy';
+            corners.attr('d', xyCorners(box));
+        }
+        box.w = box.r - box.l;
+        box.h = box.b - box.t;
+
+        updateZoombox(zb, corners, box, path0, dimmed, lum);
+        dimmed = true;
+    }
+
+    function zoomDone() {
+        // more strict than dragged, which allows you to come back to where you started
+        // and still count as dragged
+        if(Math.min(box.h, box.w) < MINDRAG * 2) {
+            return removeZoombox(gd);
+        }
+
+        // TODO: edit linked axes in zoomAxRanges and in dragTail
+        if(zoomMode === 'xy' || zoomMode === 'x') {
+            zoomAxRanges(xaxes, box.l / pw, box.r / pw, updates, links.xaxes);
+        }
+        if(zoomMode === 'xy' || zoomMode === 'y') {
+            zoomAxRanges(yaxes, (ph - box.b) / ph, (ph - box.t) / ph, updates, links.yaxes);
+        }
+
+        removeZoombox(gd);
+        dragTail();
+        showDoubleClickNotifier(gd);
+    }
+
+    // scroll zoom, on all draggers except corners
+    var scrollViewBox = [0, 0, pw, ph];
+    // wait a little after scrolling before redrawing
+    var redrawTimer = null;
+    var REDRAWDELAY = _$constants_215.REDRAWDELAY;
+    var mainplot = plotinfo.mainplot ? gd._fullLayout._plots[plotinfo.mainplot] : plotinfo;
+
+    function zoomWheel(e) {
+        // deactivate mousewheel scrolling on embedded graphs
+        // devs can override this with layout._enablescrollzoom,
+        // but _ ensures this setting won't leave their page
+        if(!gd._context.scrollZoom && !gd._fullLayout._enablescrollzoom) {
+            return;
+        }
+
+        if(redrawTimer === null) {
+            __clearSelect_218(zoomlayer);
+        }
+
+        // If a transition is in progress, then disable any behavior:
+        if(gd._transitioningWithDuration) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+
+        var pc = gd.querySelector('.plotly');
+
+        recomputeAxisLists();
+
+        // if the plot has scrollbars (more than a tiny excess)
+        // disable scrollzoom too.
+        if(pc.scrollHeight - pc.clientHeight > 10 ||
+                pc.scrollWidth - pc.clientWidth > 10) {
+            return;
+        }
+
+        clearTimeout(redrawTimer);
+
+        var wheelDelta = -e.deltaY;
+        if(!isFinite(wheelDelta)) wheelDelta = e.wheelDelta / 10;
+        if(!isFinite(wheelDelta)) {
+            _$lib_167.log('Did not find wheel motion attributes: ', e);
+            return;
+        }
+
+        var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200),
+            gbb = mainplot.draglayer.select('.nsewdrag')
+                .node().getBoundingClientRect(),
+            xfrac = (e.clientX - gbb.left) / gbb.width,
+            yfrac = (gbb.bottom - e.clientY) / gbb.height,
+            i;
+
+        function zoomWheelOneAxis(ax, centerFraction, zoom) {
+            if(ax.fixedrange) return;
+
+            var axRange = _$lib_167.simpleMap(ax.range, ax.r2l),
+                v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
+            function doZoom(v) { return ax.l2r(v0 + (v - v0) * zoom); }
+            ax.range = axRange.map(doZoom);
+        }
+
+        if(editX) {
+            // if we're only zooming this axis because of constraints,
+            // zoom it about the center
+            if(!ew) xfrac = 0.5;
+
+            for(i = 0; i < xaxes.length; i++) {
+                zoomWheelOneAxis(xaxes[i], xfrac, zoom);
+            }
+
+            scrollViewBox[2] *= zoom;
+            scrollViewBox[0] += scrollViewBox[2] * xfrac * (1 / zoom - 1);
+        }
+        if(editY) {
+            if(!ns) yfrac = 0.5;
+
+            for(i = 0; i < yaxes.length; i++) {
+                zoomWheelOneAxis(yaxes[i], yfrac, zoom);
+            }
+
+            scrollViewBox[3] *= zoom;
+            scrollViewBox[1] += scrollViewBox[3] * (1 - yfrac) * (1 / zoom - 1);
+        }
+
+        // viewbox redraw at first
+        updateSubplots(scrollViewBox);
+        ticksAndAnnotations(ns, ew);
+
+        // then replot after a delay to make sure
+        // no more scrolling is coming
+        redrawTimer = setTimeout(function() {
+            scrollViewBox = [0, 0, pw, ph];
+
+            var zoomMode;
+            if(isSubplotConstrained) zoomMode = 'xy';
+            else zoomMode = (ew ? 'x' : '') + (ns ? 'y' : '');
+
+            dragTail(zoomMode);
+        }, REDRAWDELAY);
+
+        e.preventDefault();
+        return;
+    }
+
+    // everything but the corners gets wheel zoom
+    if(ns.length * ew.length !== 1) {
+        attachWheelEventHandler(dragger, zoomWheel);
+    }
+
+    // plotDrag: move the plot in response to a drag
+    function plotDrag(dx, dy) {
+        // If a transition is in progress, then disable any behavior:
+        if(gd._transitioningWithDuration) {
+            return;
+        }
+
+        if(xActive === 'ew' || yActive === 'ns') {
+            if(xActive) dragAxList(xaxes, dx);
+            if(yActive) dragAxList(yaxes, dy);
+            updateSubplots([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
+            ticksAndAnnotations(yActive, xActive);
+            return;
+        }
+
+        // dz: set a new value for one end (0 or 1) of an axis array axArray,
+        // and return a pixel shift for that end for the viewbox
+        // based on pixel drag distance d
+        // TODO: this makes (generally non-fatal) errors when you get
+        // near floating point limits
+        function dz(axArray, end, d) {
+            var otherEnd = 1 - end,
+                movedAx,
+                newLinearizedEnd;
+            for(var i = 0; i < axArray.length; i++) {
+                var axi = axArray[i];
+                if(axi.fixedrange) continue;
+                movedAx = axi;
+                newLinearizedEnd = axi._rl[otherEnd] +
+                    (axi._rl[end] - axi._rl[otherEnd]) / dZoom(d / axi._length);
+                var newEnd = axi.l2r(newLinearizedEnd);
+
+                // if l2r comes back false or undefined, it means we've dragged off
+                // the end of valid ranges - so stop.
+                if(newEnd !== false && newEnd !== undefined) axi.range[end] = newEnd;
+            }
+            return movedAx._length * (movedAx._rl[end] - newLinearizedEnd) /
+                (movedAx._rl[end] - movedAx._rl[otherEnd]);
+        }
+
+        if(isSubplotConstrained && xActive && yActive) {
+            // dragging a corner of a constrained subplot:
+            // respect the fixed corner, but harmonize dx and dy
+            var dxySign = ((xActive === 'w') === (yActive === 'n')) ? 1 : -1;
+            var dxyFraction = (dx / pw + dxySign * dy / ph) / 2;
+            dx = dxyFraction * pw;
+            dy = dxySign * dxyFraction * ph;
+        }
+
+        if(xActive === 'w') dx = dz(xaxes, 0, dx);
+        else if(xActive === 'e') dx = dz(xaxes, 1, -dx);
+        else if(!xActive) dx = 0;
+
+        if(yActive === 'n') dy = dz(yaxes, 1, dy);
+        else if(yActive === 's') dy = dz(yaxes, 0, -dy);
+        else if(!yActive) dy = 0;
+
+        var x0 = (xActive === 'w') ? dx : 0;
+        var y0 = (yActive === 'n') ? dy : 0;
+
+        if(isSubplotConstrained) {
+            var i;
+            if(!xActive && yActive.length === 1) {
+                // dragging one end of the y axis of a constrained subplot
+                // scale the other axis the same about its middle
+                for(i = 0; i < xaxes.length; i++) {
+                    xaxes[i].range = xaxes[i]._r.slice();
+                    _$scaleZoom_226(xaxes[i], 1 - dy / ph);
+                }
+                dx = dy * pw / ph;
+                x0 = dx / 2;
+            }
+            if(!yActive && xActive.length === 1) {
+                for(i = 0; i < yaxes.length; i++) {
+                    yaxes[i].range = yaxes[i]._r.slice();
+                    _$scaleZoom_226(yaxes[i], 1 - dx / pw);
+                }
+                dy = dx * ph / pw;
+                y0 = dy / 2;
+            }
+        }
+
+        updateSubplots([x0, y0, pw - dx, ph - dy]);
+        ticksAndAnnotations(yActive, xActive);
+    }
+
+    // Draw ticks and annotations (and other components) when ranges change.
+    // Also records the ranges that have changed for use by update at the end.
+    function ticksAndAnnotations(ns, ew) {
+        var activeAxIds = [],
+            i;
+
+        function pushActiveAxIds(axList) {
+            for(i = 0; i < axList.length; i++) {
+                if(!axList[i].fixedrange) activeAxIds.push(axList[i]._id);
+            }
+        }
+
+        if(editX) {
+            pushActiveAxIds(xaxes);
+            pushActiveAxIds(links.xaxes);
+        }
+        if(editY) {
+            pushActiveAxIds(yaxes);
+            pushActiveAxIds(links.yaxes);
+        }
+
+        updates = {};
+        for(i = 0; i < activeAxIds.length; i++) {
+            var axId = activeAxIds[i];
+            doTicks(gd, axId, true);
+            var ax = __getFromId_218(gd, axId);
+            updates[ax._name + '.range[0]'] = ax.range[0];
+            updates[ax._name + '.range[1]'] = ax.range[1];
+        }
+
+        function redrawObjs(objArray, method, shortCircuit) {
+            for(i = 0; i < objArray.length; i++) {
+                var obji = objArray[i];
+
+                if((ew && activeAxIds.indexOf(obji.xref) !== -1) ||
+                    (ns && activeAxIds.indexOf(obji.yref) !== -1)) {
+                    method(gd, i);
+                    // once is enough for images (which doesn't use the `i` arg anyway)
+                    if(shortCircuit) return;
+                }
+            }
+        }
+
+        // annotations and shapes 'draw' method is slow,
+        // use the finer-grained 'drawOne' method instead
+
+        redrawObjs(gd._fullLayout.annotations || [], _$registry_259.getComponentMethod('annotations', 'drawOne'));
+        redrawObjs(gd._fullLayout.shapes || [], _$registry_259.getComponentMethod('shapes', 'drawOne'));
+        redrawObjs(gd._fullLayout.images || [], _$registry_259.getComponentMethod('images', 'draw'), true);
+    }
+
+    function doubleClick() {
+        if(gd._transitioningWithDuration) return;
+
+        var doubleClickConfig = gd._context.doubleClick,
+            axList = (xActive ? xaxes : []).concat(yActive ? yaxes : []),
+            attrs = {};
+
+        var ax, i, rangeInitial;
+
+        // For reset+autosize mode:
+        // If *any* of the main axes is not at its initial range
+        // (or autoranged, if we have no initial range, to match the logic in
+        // doubleClickConfig === 'reset' below), we reset.
+        // If they are *all* at their initial ranges, then we autosize.
+        if(doubleClickConfig === 'reset+autosize') {
+
+            doubleClickConfig = 'autosize';
+
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if((ax._rangeInitial && (
+                        ax.range[0] !== ax._rangeInitial[0] ||
+                        ax.range[1] !== ax._rangeInitial[1]
+                    )) ||
+                    (!ax._rangeInitial && !ax.autorange)
+                ) {
+                    doubleClickConfig = 'reset';
+                    break;
+                }
+            }
+        }
+
+        if(doubleClickConfig === 'autosize') {
+            // don't set the linked axes here, so relayout marks them as shrinkable
+            // and we autosize just to the requested axis/axes
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if(!ax.fixedrange) attrs[ax._name + '.autorange'] = true;
+            }
+        }
+        else if(doubleClickConfig === 'reset') {
+            // when we're resetting, reset all linked axes too, so we get back
+            // to the fully-auto-with-constraints situation
+            if(xActive || isSubplotConstrained) axList = axList.concat(links.xaxes);
+            if(yActive && !isSubplotConstrained) axList = axList.concat(links.yaxes);
+
+            if(isSubplotConstrained) {
+                if(!xActive) axList = axList.concat(xaxes);
+                else if(!yActive) axList = axList.concat(yaxes);
+            }
+
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+
+                if(!ax._rangeInitial) {
+                    attrs[ax._name + '.autorange'] = true;
+                }
+                else {
+                    rangeInitial = ax._rangeInitial;
+                    attrs[ax._name + '.range[0]'] = rangeInitial[0];
+                    attrs[ax._name + '.range[1]'] = rangeInitial[1];
+                }
+            }
+        }
+
+        gd.emit('plotly_doubleclick', null);
+        _$registry_259.call('relayout', gd, attrs);
+    }
+
+    // dragTail - finish a drag event with a redraw
+    function dragTail() {
+        // put the subplot viewboxes back to default (Because we're going to)
+        // be repositioning the data in the relayout. But DON'T call
+        // ticksAndAnnotations again - it's unnecessary and would overwrite `updates`
+        updateSubplots([0, 0, pw, ph]);
+
+        // since we may have been redrawing some things during the drag, we may have
+        // accumulated MathJax promises - wait for them before we relayout.
+        _$lib_167.syncOrAsync([
+            _$plots_250.previousPromises,
+            function() { _$registry_259.call('relayout', gd, updates); }
+        ], gd);
+    }
+
+    // updateSubplots - find all plot viewboxes that should be
+    // affected by this drag, and update them. look for all plots
+    // sharing an affected axis (including the one being dragged),
+    // includes also scattergl and splom logic.
+    function updateSubplots(viewBox) {
+        var fullLayout = gd._fullLayout;
+        var plotinfos = fullLayout._plots;
+        var subplots = fullLayout._subplots.cartesian;
+
+        // TODO can we move these to outer scope?
+        var hasScatterGl = fullLayout._has('scattergl');
+        var hasOnlyLargeSploms = fullLayout._hasOnlyLargeSploms;
+        var hasSplom = hasOnlyLargeSploms || fullLayout._has('splom');
+        var hasSVG = fullLayout._has('svg');
+        var hasDraggedPts = fullLayout._has('draggedPts');
+
+        var i, sp, xa, ya;
+
+        if(hasSplom || hasScatterGl) {
+            _$clearGlCanvases_154(gd);
+        }
+
+        if(hasSplom) {
+            _$registry_259.subplotsRegistry.splom.drag(gd);
+            if(hasOnlyLargeSploms) return;
+        }
+
+        if(hasScatterGl) {
+            // loop over all subplots (w/o exceptions) here,
+            // as we cleared the gl canvases above
+            for(i = 0; i < subplots.length; i++) {
+                sp = plotinfos[subplots[i]];
+                xa = sp.xaxis;
+                ya = sp.yaxis;
+
+                var scene = sp._scene;
+                if(scene) {
+                    // FIXME: possibly we could update axis internal _r and _rl here
+                    var xrng = _$lib_167.simpleMap(xa.range, xa.r2l);
+                    var yrng = _$lib_167.simpleMap(ya.range, ya.r2l);
+                    scene.update({range: [xrng[0], yrng[0], xrng[1], yrng[1]]});
+                }
+            }
+        }
+
+        if(hasSVG) {
+            var xScaleFactor = viewBox[2] / xa0._length;
+            var yScaleFactor = viewBox[3] / ya0._length;
+
+            for(i = 0; i < subplots.length; i++) {
+                sp = plotinfos[subplots[i]];
+                xa = sp.xaxis;
+                ya = sp.yaxis;
+
+                var editX2 = editX && !xa.fixedrange && xaHash[xa._id];
+                var editY2 = editY && !ya.fixedrange && yaHash[ya._id];
+
+                var xScaleFactor2, yScaleFactor2;
+                var clipDx, clipDy;
+
+                if(editX2) {
+                    xScaleFactor2 = xScaleFactor;
+                    clipDx = ew ? viewBox[0] : getShift(xa, xScaleFactor2);
+                } else {
+                    xScaleFactor2 = getLinkedScaleFactor(xa, xScaleFactor, yScaleFactor);
+                    clipDx = scaleAndGetShift(xa, xScaleFactor2);
+                }
+
+                if(editY2) {
+                    yScaleFactor2 = yScaleFactor;
+                    clipDy = ns ? viewBox[1] : getShift(ya, yScaleFactor2);
+                } else {
+                    yScaleFactor2 = getLinkedScaleFactor(ya, xScaleFactor, yScaleFactor);
+                    clipDy = scaleAndGetShift(ya, yScaleFactor2);
+                }
+
+                // don't scale at all if neither axis is scalable here
+                if(!xScaleFactor2 && !yScaleFactor2) {
+                    continue;
+                }
+
+                // but if only one is, reset the other axis scaling
+                if(!xScaleFactor2) xScaleFactor2 = 1;
+                if(!yScaleFactor2) yScaleFactor2 = 1;
+
+                var plotDx = xa._offset - clipDx / xScaleFactor2;
+                var plotDy = ya._offset - clipDy / yScaleFactor2;
+
+                // TODO could be more efficient here:
+                // setTranslate and setScale do a lot of extra work
+                // when working independently, should perhaps combine
+                // them into a single routine.
+                sp.clipRect
+                    .call(_$drawing_70.setTranslate, clipDx, clipDy)
+                    .call(_$drawing_70.setScale, xScaleFactor2, yScaleFactor2);
+
+                sp.plot
+                    .call(_$drawing_70.setTranslate, plotDx, plotDy)
+                    .call(_$drawing_70.setScale, 1 / xScaleFactor2, 1 / yScaleFactor2);
+
+                // TODO move these selectAll calls out of here
+                // and stash them somewhere nice, see:
+                // https://github.com/plotly/plotly.js/issues/2548
+                if(hasDraggedPts) {
+                    var traceGroups = sp.plot
+                        .selectAll('.scatterlayer .trace, .boxlayer .trace, .violinlayer .trace');
+
+                    // This is specifically directed at marker points in scatter, box and violin traces,
+                    // applying an inverse scale to individual points to counteract
+                    // the scale of the trace as a whole:
+                    traceGroups.selectAll('.point')
+                        .call(_$drawing_70.setPointGroupScale, xScaleFactor2, yScaleFactor2);
+                    traceGroups.selectAll('.textpoint')
+                        .call(_$drawing_70.setTextPointsScale, xScaleFactor2, yScaleFactor2);
+                    traceGroups
+                        .call(_$drawing_70.hideOutsideRangePoints, sp);
+
+                    sp.plot.selectAll('.barlayer .trace')
+                        .call(_$drawing_70.hideOutsideRangePoints, sp, '.bartext');
+                }
+            }
+        }
+    }
+
+    // Find the appropriate scaling for this axis, if it's linked to the
+    // dragged axes by constraints. 0 is special, it means this axis shouldn't
+    // ever be scaled (will be converted to 1 if the other axis is scaled)
+    function getLinkedScaleFactor(ax, xScaleFactor, yScaleFactor) {
+        if(ax.fixedrange) return 0;
+
+        if(editX && links.xaHash[ax._id]) {
+            return xScaleFactor;
+        }
+        if(editY && (isSubplotConstrained ? links.xaHash : links.yaHash)[ax._id]) {
+            return yScaleFactor;
+        }
+        return 0;
+    }
+
+    function scaleAndGetShift(ax, scaleFactor) {
+        if(scaleFactor) {
+            ax.range = ax._r.slice();
+            _$scaleZoom_226(ax, scaleFactor);
+            return getShift(ax, scaleFactor);
+        }
+        return 0;
+    }
+
+    function getShift(ax, scaleFactor) {
+        return ax._length * (1 - scaleFactor) * __FROM_TL_218[ax.constraintoward || 'middle'];
+    }
+
+    return dragger;
+}
+
+function makeDragger(plotinfo, nodeName, dragClass, cursor) {
+    var dragger3 = _$lib_167.ensureSingle(plotinfo.draglayer, nodeName, dragClass, function(s) {
+        s.classed('drag', true)
+            .style({fill: 'transparent', 'stroke-width': 0})
+            .attr('data-subplot', plotinfo.id);
+    });
+
+    dragger3.call(_$setCursor_186, cursor);
+
+    return dragger3.node();
+}
+
+function makeRectDragger(plotinfo, dragClass, cursor, x, y, w, h) {
+    var dragger = makeDragger(plotinfo, 'rect', dragClass, cursor);
+    _$d3_8.select(dragger).call(_$drawing_70.setRect, x, y, w, h);
+    return dragger;
+}
+
+function isDirectionActive(axList, activeVal) {
+    for(var i = 0; i < axList.length; i++) {
+        if(!axList[i].fixedrange) return activeVal;
+    }
+    return '';
+}
+
+function getEndText(ax, end) {
+    var initialVal = ax.range[end],
+        diff = Math.abs(initialVal - ax.range[1 - end]),
+        dig;
+
+    // TODO: this should basically be ax.r2d but we're doing extra
+    // rounding here... can we clean up at all?
+    if(ax.type === 'date') {
+        return initialVal;
+    }
+    else if(ax.type === 'log') {
+        dig = Math.ceil(Math.max(0, -Math.log(diff) / Math.LN10)) + 3;
+        return _$d3_8.format('.' + dig + 'g')(Math.pow(10, initialVal));
+    }
+    else { // linear numeric (or category... but just show numbers here)
+        dig = Math.floor(Math.log(Math.abs(initialVal)) / Math.LN10) -
+            Math.floor(Math.log(diff) / Math.LN10) + 4;
+        return _$d3_8.format('.' + String(dig) + 'g')(initialVal);
+    }
+}
+
+function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes) {
+    var i,
+        axi,
+        axRangeLinear0,
+        axRangeLinearSpan;
+
+    for(i = 0; i < axList.length; i++) {
+        axi = axList[i];
+        if(axi.fixedrange) continue;
+
+        axRangeLinear0 = axi._rl[0];
+        axRangeLinearSpan = axi._rl[1] - axRangeLinear0;
+        axi.range = [
+            axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction),
+            axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction)
+        ];
+        updates[axi._name + '.range[0]'] = axi.range[0];
+        updates[axi._name + '.range[1]'] = axi.range[1];
+    }
+
+    // zoom linked axes about their centers
+    if(linkedAxes && linkedAxes.length) {
+        var linkedR0Fraction = (r0Fraction + (1 - r1Fraction)) / 2;
+
+        zoomAxRanges(linkedAxes, linkedR0Fraction, 1 - linkedR0Fraction, updates);
+    }
+}
+
+function dragAxList(axList, pix) {
+    for(var i = 0; i < axList.length; i++) {
+        var axi = axList[i];
+        if(!axi.fixedrange) {
+            axi.range = [
+                axi.l2r(axi._rl[0] - pix / axi._m),
+                axi.l2r(axi._rl[1] - pix / axi._m)
+            ];
+        }
+    }
+}
+
+// common transform for dragging one end of an axis
+// d>0 is compressing scale (cursor is over the plot,
+//  the axis end should move with the cursor)
+// d<0 is expanding (cursor is off the plot, axis end moves
+//  nonlinearly so you can expand far)
+function dZoom(d) {
+    return 1 - ((d >= 0) ? Math.min(d, 0.9) :
+        1 / (1 / Math.max(d, -0.3) + 3.222));
+}
+
+function getDragCursor(nsew, dragmode, isMainDrag) {
+    if(!nsew) return 'pointer';
+    if(nsew === 'nsew') {
+        // in this case here, clear cursor and
+        // use the cursor style set on <g .draglayer>
+        if(isMainDrag) return '';
+        if(dragmode === 'pan') return 'move';
+        return 'crosshair';
+    }
+    return nsew.toLowerCase() + '-resize';
+}
+
+function makeZoombox(zoomlayer, lum, xs, ys, path0) {
+    return zoomlayer.append('path')
+        .attr('class', 'zoombox')
+        .style({
+            'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+            'stroke-width': 0
+        })
+        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
+        .attr('d', path0 + 'Z');
+}
+
+function makeCorners(zoomlayer, xs, ys) {
+    return zoomlayer.append('path')
+        .attr('class', 'zoombox-corners')
+        .style({
+            fill: _$color_45.background,
+            stroke: _$color_45.defaultLine,
+            'stroke-width': 1,
+            opacity: 0
+        })
+        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
+        .attr('d', 'M0,0Z');
+}
+
+function updateZoombox(zb, corners, box, path0, dimmed, lum) {
+    zb.attr('d',
+        path0 + 'M' + (box.l) + ',' + (box.t) + 'v' + (box.h) +
+        'h' + (box.w) + 'v-' + (box.h) + 'h-' + (box.w) + 'Z');
+    transitionZoombox(zb, corners, dimmed, lum);
+}
+
+function transitionZoombox(zb, corners, dimmed, lum) {
+    if(!dimmed) {
+        zb.transition()
+            .style('fill', lum > 0.2 ? 'rgba(0,0,0,0.4)' :
+                'rgba(255,255,255,0.3)')
+            .duration(200);
+        corners.transition()
+            .style('opacity', 1)
+            .duration(200);
+    }
+}
+
+function removeZoombox(gd) {
+    _$d3_8.select(gd)
+        .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
+        .remove();
+}
+
+function showDoubleClickNotifier(gd) {
+    if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
+        _$lib_167.notifier(_$lib_167._(gd, 'Double-click to zoom back out'), 'long');
+        SHOWZOOMOUTTIP = false;
+    }
+}
+
+function isSelectOrLasso(dragmode) {
+    return dragmode === 'lasso' || dragmode === 'select';
+}
+
+function xCorners(box, y0) {
+    return 'M' +
+        (box.l - 0.5) + ',' + (y0 - MINZOOM - 0.5) +
+        'h-3v' + (2 * MINZOOM + 1) + 'h3ZM' +
+        (box.r + 0.5) + ',' + (y0 - MINZOOM - 0.5) +
+        'h3v' + (2 * MINZOOM + 1) + 'h-3Z';
+}
+
+function yCorners(box, x0) {
+    return 'M' +
+        (x0 - MINZOOM - 0.5) + ',' + (box.t - 0.5) +
+        'v-3h' + (2 * MINZOOM + 1) + 'v3ZM' +
+        (x0 - MINZOOM - 0.5) + ',' + (box.b + 0.5) +
+        'v3h' + (2 * MINZOOM + 1) + 'v-3Z';
+}
+
+function xyCorners(box) {
+    var clen = Math.floor(Math.min(box.b - box.t, box.r - box.l, MINZOOM) / 2);
+    return 'M' +
+        (box.l - 3.5) + ',' + (box.t - 0.5 + clen) + 'h3v' + (-clen) +
+            'h' + clen + 'v-3h-' + (clen + 3) + 'ZM' +
+        (box.r + 3.5) + ',' + (box.t - 0.5 + clen) + 'h-3v' + (-clen) +
+            'h' + (-clen) + 'v-3h' + (clen + 3) + 'ZM' +
+        (box.r + 3.5) + ',' + (box.b + 0.5 - clen) + 'h-3v' + clen +
+            'h' + (-clen) + 'v3h' + (clen + 3) + 'ZM' +
+        (box.l - 3.5) + ',' + (box.b + 0.5 - clen) + 'h3v' + clen +
+            'h' + clen + 'v3h-' + (clen + 3) + 'Z';
+}
+
+function calcLinks(gd, xaHash, yaHash) {
+    var constraintGroups = gd._fullLayout._axisConstraintGroups;
+    var isSubplotConstrained = false;
+    var xLinks = {};
+    var yLinks = {};
+    var xID, yID, xLinkID, yLinkID;
+
+    for(var i = 0; i < constraintGroups.length; i++) {
+        var group = constraintGroups[i];
+        // check if any of the x axes we're dragging is in this constraint group
+        for(xID in xaHash) {
+            if(group[xID]) {
+                // put the rest of these axes into xLinks, if we're not already
+                // dragging them, so we know to scale these axes automatically too
+                // to match the changes in the dragged x axes
+                for(xLinkID in group) {
+                    if(!(xLinkID.charAt(0) === 'x' ? xaHash : yaHash)[xLinkID]) {
+                        xLinks[xLinkID] = 1;
+                    }
+                }
+
+                // check if the x and y axes of THIS drag are linked
+                for(yID in yaHash) {
+                    if(group[yID]) isSubplotConstrained = true;
+                }
+            }
+        }
+
+        // now check if any of the y axes we're dragging is in this constraint group
+        // only look for outside links, as we've already checked for links within the dragger
+        for(yID in yaHash) {
+            if(group[yID]) {
+                for(yLinkID in group) {
+                    if(!(yLinkID.charAt(0) === 'x' ? xaHash : yaHash)[yLinkID]) {
+                        yLinks[yLinkID] = 1;
+                    }
+                }
+            }
+        }
+    }
+
+    if(isSubplotConstrained) {
+        // merge xLinks and yLinks if the subplot is constrained,
+        // since we'll always apply both anyway and the two will contain
+        // duplicates
+        _$lib_167.extendFlat(xLinks, yLinks);
+        yLinks = {};
+    }
+
+    var xaHashLinked = {};
+    var xaxesLinked = [];
+    for(xLinkID in xLinks) {
+        var xa = __getFromId_218(gd, xLinkID);
+        xaxesLinked.push(xa);
+        xaHashLinked[xa._id] = xa;
+    }
+
+    var yaHashLinked = {};
+    var yaxesLinked = [];
+    for(yLinkID in yLinks) {
+        var ya = __getFromId_218(gd, yLinkID);
+        yaxesLinked.push(ya);
+        yaHashLinked[ya._id] = ya;
+    }
+
+    return {
+        xaHash: xaHashLinked,
+        yaHash: yaHashLinked,
+        xaxes: xaxesLinked,
+        yaxes: yaxesLinked,
+        isSubplotConstrained: isSubplotConstrained
+    };
+}
+
+// still seems to be some confusion about onwheel vs onmousewheel...
+function attachWheelEventHandler(element, handler) {
+    if(!_$hasPassiveEvents_14) {
+        if(element.onwheel !== undefined) element.onwheel = handler;
+        else if(element.onmousewheel !== undefined) element.onmousewheel = handler;
+    }
+    else {
+        var wheelEventName = element.onwheel !== undefined ? 'wheel' : 'mousewheel';
+
+        if(element._onwheel) {
+            element.removeEventListener(wheelEventName, element._onwheel);
+        }
+        element._onwheel = handler;
+
+        element.addEventListener(wheelEventName, handler, {passive: false});
+    }
+}
+
+function hashValues(hash) {
+    var out = [];
+    for(var k in hash) out.push(hash[k]);
+    return out;
+}
+
+var _$dragbox_218 = {
+    makeDragBox: makeDragBox,
+
+    makeDragger: makeDragger,
+    makeRectDragger: makeRectDragger,
+    makeZoombox: makeZoombox,
+    makeCorners: makeCorners,
+
+    updateZoombox: updateZoombox,
+    xyCorners: xyCorners,
+    transitionZoombox: transitionZoombox,
+    removeZoombox: removeZoombox,
+    showDoubleClickNotifier: showDoubleClickNotifier,
+
+    attachWheelEventHandler: attachWheelEventHandler
+};
+
+var _$graph_interact_219 = {};
+/**
+* Copyright 2012-2018, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+/* removed: var _$d3_8 = require('d3'); */;
+
+/* removed: var _$fx_87 = require('../../components/fx'); */;
+/* removed: var _$dragelement_67 = require('../../components/dragelement'); */;
+/* removed: var _$setCursor_186 = require('../../lib/setcursor'); */;
+
+var __makeDragBox_219 = _$dragbox_218.makeDragBox;
+var DRAGGERSIZE = _$constants_215.DRAGGERSIZE;
+
+_$graph_interact_219.initInteractions = function initInteractions(gd) {
+    var fullLayout = gd._fullLayout;
+
+    if(gd._context.staticPlot) {
+        // this sweeps up more than just cartesian drag elements...
+        _$d3_8.select(gd).selectAll('.drag').remove();
+        return;
+    }
+
+    if(!fullLayout._has('cartesian') && !fullLayout._has('gl2d') && !fullLayout._has('splom')) return;
+
+    var subplots = Object.keys(fullLayout._plots || {}).sort(function(a, b) {
+        // sort overlays last, then by x axis number, then y axis number
+        if((fullLayout._plots[a].mainplot && true) ===
+            (fullLayout._plots[b].mainplot && true)) {
+            var aParts = a.split('y'),
+                bParts = b.split('y');
+            return (aParts[0] === bParts[0]) ?
+                (Number(aParts[1] || 1) - Number(bParts[1] || 1)) :
+                (Number(aParts[0] || 1) - Number(bParts[0] || 1));
+        }
+        return fullLayout._plots[a].mainplot ? 1 : -1;
+    });
+
+    subplots.forEach(function(subplot) {
+        var plotinfo = fullLayout._plots[subplot];
+        var xa = plotinfo.xaxis;
+        var ya = plotinfo.yaxis;
+
+        // main and corner draggers need not be repeated for
+        // overlaid subplots - these draggers drag them all
+        if(!plotinfo.mainplot) {
+            // main dragger goes over the grids and data, so we use its
+            // mousemove events for all data hover effects
+            var maindrag = __makeDragBox_219(gd, plotinfo, xa._offset, ya._offset,
+                xa._length, ya._length, 'ns', 'ew');
+
+            maindrag.onmousemove = function(evt) {
+                // This is on `gd._fullLayout`, *not* fullLayout because the reference
+                // changes by the time this is called again.
+                gd._fullLayout._rehover = function() {
+                    if(gd._fullLayout._hoversubplot === subplot) {
+                        _$fx_87.hover(gd, evt, subplot);
+                    }
+                };
+
+                _$fx_87.hover(gd, evt, subplot);
+
+                // Note that we have *not* used the cached fullLayout variable here
+                // since that may be outdated when this is called as a callback later on
+                gd._fullLayout._lasthover = maindrag;
+                gd._fullLayout._hoversubplot = subplot;
+            };
+
+            /*
+             * IMPORTANT:
+             * We must check for the presence of the drag cover here.
+             * If we don't, a 'mouseout' event is triggered on the
+             * maindrag before each 'click' event, which has the effect
+             * of clearing the hoverdata; thus, cancelling the click event.
+             */
+            maindrag.onmouseout = function(evt) {
+                if(gd._dragging) return;
+
+                // When the mouse leaves this maindrag, unset the hovered subplot.
+                // This may cause problems if it leaves the subplot directly *onto*
+                // another subplot, but that's a tiny corner case at the moment.
+                gd._fullLayout._hoversubplot = null;
+
+                _$dragelement_67.unhover(gd, evt);
+            };
+
+            // corner draggers
+            if(gd._context.showAxisDragHandles) {
+                __makeDragBox_219(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset - DRAGGERSIZE,
+                    DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');
+                __makeDragBox_219(gd, plotinfo, xa._offset + xa._length, ya._offset - DRAGGERSIZE,
+                    DRAGGERSIZE, DRAGGERSIZE, 'n', 'e');
+                __makeDragBox_219(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset + ya._length,
+                    DRAGGERSIZE, DRAGGERSIZE, 's', 'w');
+                __makeDragBox_219(gd, plotinfo, xa._offset + xa._length, ya._offset + ya._length,
+                    DRAGGERSIZE, DRAGGERSIZE, 's', 'e');
+            }
+        }
+        if(gd._context.showAxisDragHandles) {
+            // x axis draggers - if you have overlaid plots,
+            // these drag each axis separately
+            if(subplot === xa._mainSubplot) {
+                // the y position of the main x axis line
+                var y0 = xa._mainLinePosition;
+                if(xa.side === 'top') y0 -= DRAGGERSIZE;
+                __makeDragBox_219(gd, plotinfo, xa._offset + xa._length * 0.1, y0,
+                    xa._length * 0.8, DRAGGERSIZE, '', 'ew');
+                __makeDragBox_219(gd, plotinfo, xa._offset, y0,
+                    xa._length * 0.1, DRAGGERSIZE, '', 'w');
+                __makeDragBox_219(gd, plotinfo, xa._offset + xa._length * 0.9, y0,
+                    xa._length * 0.1, DRAGGERSIZE, '', 'e');
+            }
+            // y axis draggers
+            if(subplot === ya._mainSubplot) {
+                // the x position of the main y axis line
+                var x0 = ya._mainLinePosition;
+                if(ya.side !== 'right') x0 -= DRAGGERSIZE;
+                __makeDragBox_219(gd, plotinfo, x0, ya._offset + ya._length * 0.1,
+                    DRAGGERSIZE, ya._length * 0.8, 'ns', '');
+                __makeDragBox_219(gd, plotinfo, x0, ya._offset + ya._length * 0.9,
+                    DRAGGERSIZE, ya._length * 0.1, 's', '');
+                __makeDragBox_219(gd, plotinfo, x0, ya._offset,
+                    DRAGGERSIZE, ya._length * 0.1, 'n', '');
+            }
+        }
+    });
+
+    // In case you mousemove over some hovertext, send it to Fx.hover too
+    // we do this so that we can put the hover text in front of everything,
+    // but still be able to interact with everything as if it isn't there
+    var hoverLayer = fullLayout._hoverlayer.node();
+
+    hoverLayer.onmousemove = function(evt) {
+        evt.target = gd._fullLayout._lasthover;
+        _$fx_87.hover(gd, evt, fullLayout._hoversubplot);
+    };
+
+    hoverLayer.onclick = function(evt) {
+        evt.target = gd._fullLayout._lasthover;
+        _$fx_87.click(gd, evt);
+    };
+
+    // also delegate mousedowns... TODO: does this actually work?
+    hoverLayer.onmousedown = function(evt) {
+        gd._fullLayout._lasthover.onmousedown(evt);
+    };
+
+    _$graph_interact_219.updateFx(fullLayout);
+};
+
+// Minimal set of update needed on 'modebar' edits.
+// We only need to update the <g .draglayer> cursor style.
+//
+// Note that changing the axis configuration and/or the fixedrange attribute
+// should trigger a full initInteractions.
+_$graph_interact_219.updateFx = function(fullLayout) {
+    var cursor = fullLayout.dragmode === 'pan' ? 'move' : 'crosshair';
+    _$setCursor_186(fullLayout._draggers, cursor);
+};
+
+/**
+* Copyright 2012-2018, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+/* removed: var _$lib_167 = require('../../lib'); */;
+var id2name = _$axis_ids_213.id2name;
+
+
+var _$handleConstraintDefaults_216 = function handleConstraintDefaults(containerIn, containerOut, coerce, allAxisIds, layoutOut) {
     var constraintGroups = layoutOut._axisConstraintGroups;
     var thisID = containerOut._id;
     var letter = thisID.charAt(0);
@@ -47214,7 +48913,7 @@ var _$handleConstraintDefaults_215 = function handleConstraintDefaults(container
     // coerce the constraint mechanics even if this axis has no scaleanchor
     // because it may be the anchor of another axis.
     coerce('constrain');
-    _$lib_166.coerce(containerIn, containerOut, {
+    _$lib_167.coerce(containerIn, containerOut, {
         constraintoward: {
             valType: 'enumerated',
             values: letter === 'x' ? ['left', 'center', 'right'] : ['bottom', 'middle', 'top'],
@@ -47226,7 +48925,7 @@ var _$handleConstraintDefaults_215 = function handleConstraintDefaults(container
 
     var constraintOpts = getConstraintOpts(constraintGroups, thisID, allAxisIds, layoutOut);
 
-    var scaleanchor = _$lib_166.coerce(containerIn, containerOut, {
+    var scaleanchor = _$lib_167.coerce(containerIn, containerOut, {
         scaleanchor: {
             valType: 'enumerated',
             values: constraintOpts.linkableAxes
@@ -47246,7 +48945,7 @@ var _$handleConstraintDefaults_215 = function handleConstraintDefaults(container
             thisID, scaleanchor, scaleratio);
     }
     else if(allAxisIds.indexOf(containerIn.scaleanchor) !== -1) {
-        _$lib_166.warn('ignored ' + containerOut._name + '.scaleanchor: "' +
+        _$lib_167.warn('ignored ' + containerOut._name + '.scaleanchor: "' +
             containerIn.scaleanchor + '" to avoid either an infinite loop ' +
             'and possibly inconsistent scaleratios, or because the target' +
             'axis has fixed range.');
@@ -47353,9 +49052,9 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$autoType_210 = require('./axis_autotype'); */;
-var name2id = _$axis_ids_212.name2id;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$autoType_211 = require('./axis_autotype'); */;
+var name2id = _$axis_ids_213.name2id;
 
 /*
  *  data: the plot data to use in choosing auto type
@@ -47390,8 +49089,8 @@ function setAutoType(ax, data) {
     // only autotype if type is '-'
     if(ax.type !== '-') return;
 
-    var id = ax._id,
-        axLetter = id.charAt(0);
+    var id = ax._id;
+    var axLetter = id.charAt(0);
 
     // support 3d
     if(id.indexOf('scene') !== -1) id = axLetter;
@@ -47407,19 +49106,19 @@ function setAutoType(ax, data) {
         return;
     }
 
-    var calAttr = axLetter + 'calendar',
-        calendar = d0[calAttr];
+    var calAttr = axLetter + 'calendar';
+    var calendar = d0[calAttr];
+    var i;
 
     // check all boxes on this x axis to see
     // if they're dates, numbers, or categories
     if(isBoxWithoutPositionCoords(d0, axLetter)) {
-        var posLetter = getBoxPosLetter(d0),
-            boxPositions = [],
-            trace;
+        var posLetter = getBoxPosLetter(d0);
+        var boxPositions = [];
 
-        for(var i = 0; i < data.length; i++) {
-            trace = data[i];
-            if(!_$registry_258.traceIs(trace, 'box-violin') ||
+        for(i = 0; i < data.length; i++) {
+            var trace = data[i];
+            if(!_$registry_259.traceIs(trace, 'box-violin') ||
                (trace[axLetter + 'axis'] || axLetter) !== id) continue;
 
             if(trace[posLetter] !== undefined) boxPositions.push(trace[posLetter][0]);
@@ -47429,16 +49128,33 @@ function setAutoType(ax, data) {
             if(trace[calAttr] !== calendar) calendar = undefined;
         }
 
-        ax.type = _$autoType_210(boxPositions, calendar);
+        ax.type = _$autoType_211(boxPositions, calendar);
+    }
+    else if(d0.type === 'splom') {
+        var dimensions = d0.dimensions;
+        for(i = 0; i < dimensions.length; i++) {
+            var dim = dimensions[i];
+            if(dim.visible) {
+                ax.type = _$autoType_211(dim.values, calendar);
+                break;
+            }
+        }
     }
     else {
-        ax.type = _$autoType_210(d0[axLetter] || [d0[axLetter + '0']], calendar);
+        ax.type = _$autoType_211(d0[axLetter] || [d0[axLetter + '0']], calendar);
     }
 }
 
 function getFirstNonEmptyTrace(data, id, axLetter) {
     for(var i = 0; i < data.length; i++) {
         var trace = data[i];
+
+        if(trace.type === 'splom' &&
+                trace._commonLength > 0 &&
+                trace['_' + axLetter + 'axes'][id]
+        ) {
+            return trace;
+        }
 
         if((trace[axLetter + 'axis'] || axLetter) === id) {
             if(isBoxWithoutPositionCoords(trace, axLetter)) {
@@ -47457,8 +49173,8 @@ function getBoxPosLetter(trace) {
 
 function isBoxWithoutPositionCoords(trace, axLetter) {
     var posLetter = getBoxPosLetter(trace),
-        isBox = _$registry_258.traceIs(trace, 'box-violin'),
-        isCandlestick = _$registry_258.traceIs(trace._fullInput || {}, 'candlestick');
+        isBox = _$registry_259.traceIs(trace, 'box-violin'),
+        isCandlestick = _$registry_259.traceIs(trace._fullInput || {}, 'candlestick');
 
     return (
         isBox &&
@@ -47480,20 +49196,20 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$color_45 = require('../../components/color'); */;
 /* removed: var _$layout_attributes_248 = require('../layout_attributes'); */;
 
-/* removed: var _$layout_attributes_221 = require('./layout_attributes'); */;
+/* removed: var _$layout_attributes_222 = require('./layout_attributes'); */;
 /* removed: var _$handleTypeDefaults_233 = require('./type_defaults'); */;
-/* removed: var _$handleAxisDefaults_211 = require('./axis_defaults'); */;
-/* removed: var _$handleConstraintDefaults_215 = require('./constraint_defaults'); */;
+/* removed: var _$handleAxisDefaults_212 = require('./axis_defaults'); */;
+/* removed: var _$handleConstraintDefaults_216 = require('./constraint_defaults'); */;
 /* removed: var _$handlePositionDefaults_225 = require('./position_defaults'); */;
-/* removed: var _$axis_ids_212 = require('./axis_ids'); */;
+/* removed: var _$axis_ids_213 = require('./axis_ids'); */;
 
 
-var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+var _$supplyLayoutDefaults_223 = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var xaCheater = {};
     var xaNonCheater = {};
     var outerTicks = {};
@@ -47504,17 +49220,17 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
 
-        if(!_$registry_258.traceIs(trace, 'cartesian') && !_$registry_258.traceIs(trace, 'gl2d')) {
+        if(!_$registry_259.traceIs(trace, 'cartesian') && !_$registry_259.traceIs(trace, 'gl2d')) {
             continue;
         }
 
-        var xaName = _$axis_ids_212.id2name(trace.xaxis);
-        var yaName = _$axis_ids_212.id2name(trace.yaxis);
+        var xaName = _$axis_ids_213.id2name(trace.xaxis);
+        var yaName = _$axis_ids_213.id2name(trace.yaxis);
 
         // Two things trigger axis visibility:
         // 1. is not carpet
         // 2. carpet that's not cheater
-        if(!_$registry_258.traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
+        if(!_$registry_259.traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
             if(xaName) xaNonCheater[xaName] = 1;
         }
 
@@ -47527,12 +49243,12 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
         }
 
         // check for default formatting tweaks
-        if(_$registry_258.traceIs(trace, '2dMap')) {
+        if(_$registry_259.traceIs(trace, '2dMap')) {
             outerTicks[xaName] = true;
             outerTicks[yaName] = true;
         }
 
-        if(_$registry_258.traceIs(trace, 'oriented')) {
+        if(_$registry_259.traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation === 'h' ? yaName : xaName;
             noGrids[positionAxis] = true;
         }
@@ -47541,15 +49257,15 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
     var subplots = layoutOut._subplots;
     var xIds = subplots.xaxis;
     var yIds = subplots.yaxis;
-    var xNames = _$lib_166.simpleMap(xIds, _$axis_ids_212.id2name);
-    var yNames = _$lib_166.simpleMap(yIds, _$axis_ids_212.id2name);
+    var xNames = _$lib_167.simpleMap(xIds, _$axis_ids_213.id2name);
+    var yNames = _$lib_167.simpleMap(yIds, _$axis_ids_213.id2name);
     var axNames = xNames.concat(yNames);
 
     // plot_bgcolor only makes sense if there's a (2D) plot!
     // TODO: bgcolor for each subplot, to inherit from the main one
     var plot_bgcolor = _$color_45.background;
     if(xIds.length && yIds.length) {
-        plot_bgcolor = _$lib_166.coerce(layoutIn, layoutOut, _$layout_attributes_248, 'plot_bgcolor');
+        plot_bgcolor = _$lib_167.coerce(layoutIn, layoutOut, _$layout_attributes_248, 'plot_bgcolor');
     }
 
     var bgColor = _$color_45.combine(plot_bgcolor, layoutOut.paper_bgcolor);
@@ -47557,11 +49273,11 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
     var axName, axLetter, axLayoutIn, axLayoutOut;
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(axLayoutIn, axLayoutOut, _$layout_attributes_221, attr, dflt);
+        return _$lib_167.coerce(axLayoutIn, axLayoutOut, _$layout_attributes_222, attr, dflt);
     }
 
     function coerce2(attr, dflt) {
-        return _$lib_166.coerce2(axLayoutIn, axLayoutOut, _$layout_attributes_221, attr, dflt);
+        return _$lib_167.coerce2(axLayoutIn, axLayoutOut, _$layout_attributes_222, attr, dflt);
     }
 
     function getCounterAxes(axLetter) {
@@ -47578,7 +49294,7 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
             var axName2 = list[j];
 
             if(axName2 !== axName && !(layoutIn[axName2] || {}).overlaying) {
-                out.push(_$axis_ids_212.name2id(axName2));
+                out.push(_$axis_ids_213.name2id(axName2));
             }
         }
 
@@ -47589,7 +49305,7 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
     for(i = 0; i < axNames.length; i++) {
         axName = axNames[i];
 
-        if(!_$lib_166.isPlainObject(layoutIn[axName])) {
+        if(!_$lib_167.isPlainObject(layoutIn[axName])) {
             layoutIn[axName] = {};
         }
 
@@ -47613,7 +49329,7 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
             cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName]
         };
 
-        _$handleAxisDefaults_211(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
+        _$handleAxisDefaults_212(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
         var spikecolor = coerce2('spikecolor'),
             spikethickness = coerce2('spikethickness'),
@@ -47643,8 +49359,8 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
     }
 
     // quick second pass for range slider and selector defaults
-    var rangeSliderDefaults = _$registry_258.getComponentMethod('rangeslider', 'handleDefaults');
-    var rangeSelectorDefaults = _$registry_258.getComponentMethod('rangeselector', 'handleDefaults');
+    var rangeSliderDefaults = _$registry_259.getComponentMethod('rangeslider', 'handleDefaults');
+    var rangeSelectorDefaults = _$registry_259.getComponentMethod('rangeselector', 'handleDefaults');
 
     for(i = 0; i < xNames.length; i++) {
         axName = xNames[i];
@@ -47671,7 +49387,7 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
-        var anchoredAxis = layoutOut[_$axis_ids_212.id2name(axLayoutOut.anchor)];
+        var anchoredAxis = layoutOut[_$axis_ids_213.id2name(axLayoutOut.anchor)];
 
         var fixedRangeDflt = (
             anchoredAxis &&
@@ -47698,7 +49414,7 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
-        _$handleConstraintDefaults_215(axLayoutIn, axLayoutOut, coerce, allAxisIds, layoutOut);
+        _$handleConstraintDefaults_216(axLayoutIn, axLayoutOut, coerce, allAxisIds, layoutOut);
     }
 };
 
@@ -47714,10 +49430,10 @@ var _$supplyLayoutDefaults_222 = function supplyLayoutDefaults(layoutIn, layoutO
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 /* removed: var _$drawing_70 = require('../../components/drawing'); */;
-/* removed: var _$axes_209 = require('./axes'); */;
-var axisRegex = _$constants_214.attrRegex;
+/* removed: var _$axes_210 = require('./axes'); */;
+var axisRegex = _$constants_215.attrRegex;
 
 var _$transitionAxes_232 = function transitionAxes(gd, newLayout, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
@@ -47812,9 +49528,9 @@ var _$transitionAxes_232 = function transitionAxes(gd, newLayout, transitionOpts
             }
         }
 
-        redrawObjs(fullLayout.annotations || [], _$registry_258.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(fullLayout.shapes || [], _$registry_258.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], _$registry_258.getComponentMethod('images', 'draw'), true);
+        redrawObjs(fullLayout.annotations || [], _$registry_259.getComponentMethod('annotations', 'drawOne'));
+        redrawObjs(fullLayout.shapes || [], _$registry_259.getComponentMethod('shapes', 'drawOne'));
+        redrawObjs(fullLayout.images || [], _$registry_259.getComponentMethod('images', 'draw'), true);
     }
 
     if(!affectedSubplots.length) {
@@ -47829,7 +49545,7 @@ var _$transitionAxes_232 = function transitionAxes(gd, newLayout, transitionOpts
         activeAxIds = [xa._id, ya._id];
 
         for(i = 0; i < activeAxIds.length; i++) {
-            _$axes_209.doTicks(gd, activeAxIds[i], true);
+            _$axes_210.doTicks(gd, activeAxIds[i], true);
         }
 
         function redrawObjs(objArray, method, shortCircuit) {
@@ -47846,9 +49562,9 @@ var _$transitionAxes_232 = function transitionAxes(gd, newLayout, transitionOpts
             }
         }
 
-        redrawObjs(fullLayout.annotations || [], _$registry_258.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(fullLayout.shapes || [], _$registry_258.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], _$registry_258.getComponentMethod('images', 'draw'), true);
+        redrawObjs(fullLayout.annotations || [], _$registry_259.getComponentMethod('annotations', 'drawOne'));
+        redrawObjs(fullLayout.shapes || [], _$registry_259.getComponentMethod('shapes', 'drawOne'));
+        redrawObjs(fullLayout.images || [], _$registry_259.getComponentMethod('images', 'draw'), true);
     }
 
     function unsetSubplotTransform(subplot) {
@@ -47937,7 +49653,7 @@ var _$transitionAxes_232 = function transitionAxes(gd, newLayout, transitionOpts
         var plotDx = xa2._offset - fracDx,
             plotDy = ya2._offset - fracDy;
 
-        fullLayout._defs.select('#' + subplot.clipId + '> rect')
+        subplot.clipRect
             .call(_$drawing_70.setTranslate, clipDx, clipDy)
             .call(_$drawing_70.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
@@ -47976,7 +49692,7 @@ var _$transitionAxes_232 = function transitionAxes(gd, newLayout, transitionOpts
         // Signal that this transition has completed:
         onComplete && onComplete();
 
-        return _$registry_258.call('relayout', gd, aobj).then(function() {
+        return _$registry_259.call('relayout', gd, aobj).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }
@@ -47993,7 +49709,7 @@ var _$transitionAxes_232 = function transitionAxes(gd, newLayout, transitionOpts
             axi.range = axi._r.slice();
         }
 
-        return _$registry_258.call('relayout', gd, aobj).then(function() {
+        return _$registry_259.call('relayout', gd, aobj).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }
@@ -48033,7 +49749,7 @@ var _$transitionAxes_232 = function transitionAxes(gd, newLayout, transitionOpts
     return Promise.resolve();
 };
 
-var _$cartesian_220 = {};
+var _$cartesian_221 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -48046,33 +49762,41 @@ var _$cartesian_220 = {};
 'use strict';
 
 /* removed: var _$d3_8 = require('d3'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$plots_250 = require('../plots'); */;
 var getModuleCalcData = _$get_data_246.getModuleCalcData;
 
-/* removed: var _$axis_ids_212 = require('./axis_ids'); */;
-/* removed: var _$constants_214 = require('./constants'); */;
+/* removed: var _$axis_ids_213 = require('./axis_ids'); */;
+/* removed: var _$constants_215 = require('./constants'); */;
 /* removed: var _$xmlns_namespaces_149 = require('../../constants/xmlns_namespaces'); */;
 
-_$cartesian_220.name = 'cartesian';
+var ensureSingle = _$lib_167.ensureSingle;
 
-_$cartesian_220.attr = ['xaxis', 'yaxis'];
+function ensureSingleAndAddDatum(parent, nodeType, className) {
+    return _$lib_167.ensureSingle(parent, nodeType, className, function(s) {
+        s.datum(className);
+    });
+}
 
-_$cartesian_220.idRoot = ['x', 'y'];
+_$cartesian_221.name = 'cartesian';
 
-_$cartesian_220.idRegex = _$constants_214.idRegex;
+_$cartesian_221.attr = ['xaxis', 'yaxis'];
 
-_$cartesian_220.attrRegex = _$constants_214.attrRegex;
+_$cartesian_221.idRoot = ['x', 'y'];
 
-_$cartesian_220.attributes = _$attributes_207;
+_$cartesian_221.idRegex = _$constants_215.idRegex;
 
-_$cartesian_220.layoutAttributes = _$layout_attributes_221;
+_$cartesian_221.attrRegex = _$constants_215.attrRegex;
 
-_$cartesian_220.supplyLayoutDefaults = _$supplyLayoutDefaults_222;
+_$cartesian_221.attributes = _$attributes_208;
 
-_$cartesian_220.transitionAxes = _$transitionAxes_232;
+_$cartesian_221.layoutAttributes = _$layout_attributes_222;
 
-_$cartesian_220.finalizeSubplots = function(layoutIn, layoutOut) {
+_$cartesian_221.supplyLayoutDefaults = _$supplyLayoutDefaults_223;
+
+_$cartesian_221.transitionAxes = _$transitionAxes_232;
+
+_$cartesian_221.finalizeSubplots = function(layoutIn, layoutOut) {
     var subplots = layoutOut._subplots;
     var xList = subplots.xaxis;
     var yList = subplots.yaxis;
@@ -48092,14 +49816,14 @@ _$cartesian_220.finalizeSubplots = function(layoutIn, layoutOut) {
     for(i = 0; i < xList.length; i++) {
         xi = xList[i];
         if(!allX[xi]) {
-            yi = (layoutIn[_$axis_ids_212.id2name(xi)] || {}).anchor;
-            if(!_$constants_214.idRegex.y.test(yi)) yi = 'y';
+            yi = (layoutIn[_$axis_ids_213.id2name(xi)] || {}).anchor;
+            if(!_$constants_215.idRegex.y.test(yi)) yi = 'y';
             spSVG.push(xi + yi);
             spAll.push(xi + yi);
 
             if(!allY[yi]) {
                 allY[yi] = 1;
-                _$lib_166.pushUnique(yList, yi);
+                _$lib_167.pushUnique(yList, yi);
             }
         }
     }
@@ -48108,14 +49832,14 @@ _$cartesian_220.finalizeSubplots = function(layoutIn, layoutOut) {
     for(i = 0; i < yList.length; i++) {
         yi = yList[i];
         if(!allY[yi]) {
-            xi = (layoutIn[_$axis_ids_212.id2name(yi)] || {}).anchor;
-            if(!_$constants_214.idRegex.x.test(xi)) xi = 'x';
+            xi = (layoutIn[_$axis_ids_213.id2name(yi)] || {}).anchor;
+            if(!_$constants_215.idRegex.x.test(xi)) xi = 'x';
             spSVG.push(xi + yi);
             spAll.push(xi + yi);
 
             if(!allX[xi]) {
                 allX[xi] = 1;
-                _$lib_166.pushUnique(xList, xi);
+                _$lib_167.pushUnique(xList, xi);
             }
         }
     }
@@ -48127,7 +49851,7 @@ _$cartesian_220.finalizeSubplots = function(layoutIn, layoutOut) {
         xi = '';
         yi = '';
         for(var ki in layoutIn) {
-            if(_$constants_214.attrRegex.test(ki)) {
+            if(_$constants_215.attrRegex.test(ki)) {
                 var axLetter = ki.charAt(0);
                 if(axLetter === 'x') {
                     if(!xi || (+ki.substr(5) < +xi.substr(5))) {
@@ -48139,15 +49863,15 @@ _$cartesian_220.finalizeSubplots = function(layoutIn, layoutOut) {
                 }
             }
         }
-        xi = xi ? _$axis_ids_212.name2id(xi) : 'x';
-        yi = yi ? _$axis_ids_212.name2id(yi) : 'y';
+        xi = xi ? _$axis_ids_213.name2id(xi) : 'x';
+        yi = yi ? _$axis_ids_213.name2id(yi) : 'y';
         xList.push(xi);
         yList.push(yi);
         spSVG.push(xi + yi);
     }
 };
 
-_$cartesian_220.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
+_$cartesian_221.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var subplots = fullLayout._subplots.cartesian;
     var calcdata = gd.calcdata;
@@ -48161,17 +49885,6 @@ _$cartesian_220.plot = function(gd, traces, transitionOpts, makeOnCompleteCallba
         for(i = 0; i < calcdata.length; i++) {
             traces.push(i);
         }
-    }
-
-    // clear gl frame, if any, since we preserve drawing buffer
-    if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
-        fullLayout._glcanvas.each(function(d) {
-            if(d.regl) {
-                d.regl.clear({
-                    color: true
-                });
-            }
-        });
     }
 
     for(i = 0; i < subplots.length; i++) {
@@ -48231,7 +49944,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     // remaining plot traces should also be able to do this. Once implemented,
     // we won't need this - which should sometimes be a big speedup.
     if(plotinfo.plot) {
-        plotinfo.plot.selectAll('g:not(.scatterlayer)').selectAll('g.trace').remove();
+        plotinfo.plot.selectAll('g:not(.scatterlayer):not(.ohlclayer)').selectAll('g.trace').remove();
     }
 
     // plot all traces for each module at once
@@ -48239,60 +49952,78 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
         var _module = modules[j];
 
         // skip over non-cartesian trace modules
-        if(_module.basePlotModule.name !== 'cartesian') continue;
+        if(!_module.plot || _module.basePlotModule.name !== 'cartesian') continue;
 
         // plot all traces of this type on this subplot at once
-        var cdModule = getModuleCalcData(cdSubplot, _module);
+        var cdModuleAndOthers = getModuleCalcData(cdSubplot, _module);
+        var cdModule = cdModuleAndOthers[0];
+        // don't need to search the found traces again - in fact we need to NOT
+        // so that if two modules share the same plotter we don't double-plot
+        cdSubplot = cdModuleAndOthers[1];
 
-        if(_module.plot) _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+        _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }
 }
 
-_$cartesian_220.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldModules = oldFullLayout._modules || [],
-        newModules = newFullLayout._modules || [];
+_$cartesian_221.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldModules = oldFullLayout._modules || [];
+    var newModules = newFullLayout._modules || [];
+    var oldPlots = oldFullLayout._plots || {};
 
-    var hadScatter, hasScatter, hadGl, hasGl, i, oldPlots, ids, subplotInfo, moduleName;
+    var hadScatter, hasScatter;
+    var hadOHLC, hasOHLC;
+    var hadGl, hasGl;
+    var i, k, subplotInfo, moduleName;
 
+    // when going from a large splom graph to something else,
+    // we need to clear <g subplot> so that the new cartesian subplot
+    // can have the correct layer ordering
+    if(oldFullLayout._hasOnlyLargeSploms && !newFullLayout._hasOnlyLargeSploms) {
+        for(k in oldPlots) {
+            subplotInfo = oldPlots[k];
+            if(subplotInfo.plotgroup) subplotInfo.plotgroup.remove();
+        }
+    }
 
     for(i = 0; i < oldModules.length; i++) {
         moduleName = oldModules[i].name;
         if(moduleName === 'scatter') hadScatter = true;
         else if(moduleName === 'scattergl') hadGl = true;
+        else if(moduleName === 'ohlc') hadOHLC = true;
     }
 
     for(i = 0; i < newModules.length; i++) {
         moduleName = newModules[i].name;
         if(moduleName === 'scatter') hasScatter = true;
         else if(moduleName === 'scattergl') hasGl = true;
+        else if(moduleName === 'ohlc') hasOHLC = true;
     }
 
-    if(hadScatter && !hasScatter) {
-        oldPlots = oldFullLayout._plots;
-        ids = Object.keys(oldPlots || {});
+    var layersToEmpty = [];
+    if(hadScatter && !hasScatter) layersToEmpty.push('g.scatterlayer');
+    if(hadOHLC && !hasOHLC) layersToEmpty.push('g.ohlclayer');
 
-        for(i = 0; i < ids.length; i++) {
-            subplotInfo = oldPlots[ids[i]];
-
-            if(subplotInfo.plot) {
-                subplotInfo.plot.select('g.scatterlayer')
-                    .selectAll('g.trace')
-                    .remove();
+    if(layersToEmpty.length) {
+        for(var layeri = 0; layeri < layersToEmpty.length; layeri++) {
+            for(k in oldPlots) {
+                subplotInfo = oldPlots[k];
+                if(subplotInfo.plot) {
+                    subplotInfo.plot.select(layersToEmpty[layeri])
+                        .selectAll('g.trace')
+                        .remove();
+                }
             }
-        }
 
-        oldFullLayout._infolayer.selectAll('g.rangeslider-container')
-            .select('g.scatterlayer')
-            .selectAll('g.trace')
-            .remove();
+            oldFullLayout._infolayer.selectAll('g.rangeslider-container')
+                .select(layersToEmpty[layeri])
+                .selectAll('g.trace')
+                .remove();
+        }
     }
 
     if(hadGl && !hasGl) {
-        oldPlots = oldFullLayout._plots;
-        ids = Object.keys(oldPlots || {});
-
-        for(i = 0; i < ids.length; i++) {
-            subplotInfo = oldPlots[ids[i]];
+        for(k in oldPlots) {
+            subplotInfo = oldPlots[k];
 
             if(subplotInfo._scene) {
                 subplotInfo._scene.destroy();
@@ -48338,12 +50069,12 @@ _$cartesian_220.clean = function(newFullData, newFullLayout, oldFullData, oldFul
     }
 };
 
-_$cartesian_220.drawFramework = function(gd) {
-    var fullLayout = gd._fullLayout,
-        subplotData = makeSubplotData(gd);
+_$cartesian_221.drawFramework = function(gd) {
+    var fullLayout = gd._fullLayout;
+    var subplotData = makeSubplotData(gd);
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
-        .data(subplotData, _$lib_166.identity);
+        .data(subplotData, _$lib_167.identity);
 
     subplotLayers.enter().append('g')
         .attr('class', function(name) { return 'subplot ' + name; });
@@ -48362,7 +50093,8 @@ _$cartesian_220.drawFramework = function(gd) {
         // initialize list of overlay subplots
         plotinfo.overlays = [];
 
-        makeSubplotLayer(plotinfo);
+        makeSubplotLayer(gd, plotinfo);
+
         // fill in list of overlay subplots
         if(plotinfo.mainplot) {
             var mainplot = fullLayout._plots[plotinfo.mainplot];
@@ -48372,40 +50104,34 @@ _$cartesian_220.drawFramework = function(gd) {
         // make separate drag layers for each subplot,
         // but append them to paper rather than the plot groups,
         // so they end up on top of the rest
-        plotinfo.draglayer = joinLayer(fullLayout._draggers, 'g', name);
+        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', name);
     });
 };
 
-_$cartesian_220.rangePlot = function(gd, plotinfo, cdSubplot) {
-    makeSubplotLayer(plotinfo);
+_$cartesian_221.rangePlot = function(gd, plotinfo, cdSubplot) {
+    makeSubplotLayer(gd, plotinfo);
     plotOne(gd, plotinfo, cdSubplot);
     _$plots_250.style(gd);
 };
 
 function makeSubplotData(gd) {
-    var fullLayout = gd._fullLayout,
-        subplots = Object.keys(fullLayout._plots);
+    var fullLayout = gd._fullLayout;
+    var subplotData = [];
+    var overlays = [];
 
-    var subplotData = [],
-        overlays = [];
-
-    for(var i = 0; i < subplots.length; i++) {
-        var subplot = subplots[i],
-            plotinfo = fullLayout._plots[subplot];
-
-        var xa = plotinfo.xaxis;
-        var ya = plotinfo.yaxis;
-        var xa2 = xa._mainAxis;
-        var ya2 = ya._mainAxis;
-
+    for(var k in fullLayout._plots) {
+        var plotinfo = fullLayout._plots[k];
+        var xa2 = plotinfo.xaxis._mainAxis;
+        var ya2 = plotinfo.yaxis._mainAxis;
         var mainplot = xa2._id + ya2._id;
-        if(mainplot !== subplot && subplots.indexOf(mainplot) !== -1) {
+
+        if(mainplot !== k && fullLayout._plots[mainplot]) {
             plotinfo.mainplot = mainplot;
             plotinfo.mainplotinfo = fullLayout._plots[mainplot];
-            overlays.push(subplot);
-        }
-        else {
-            subplotData.push(subplot);
+            overlays.push(k);
+        } else {
+            subplotData.push(k);
+            plotinfo.mainplot = undefined;
         }
     }
 
@@ -48415,45 +50141,59 @@ function makeSubplotData(gd) {
     return subplotData;
 }
 
-function makeSubplotLayer(plotinfo) {
+function makeSubplotLayer(gd, plotinfo) {
     var plotgroup = plotinfo.plotgroup;
     var id = plotinfo.id;
-    var xLayer = _$constants_214.layerValue2layerClass[plotinfo.xaxis.layer];
-    var yLayer = _$constants_214.layerValue2layerClass[plotinfo.yaxis.layer];
+    var xLayer = _$constants_215.layerValue2layerClass[plotinfo.xaxis.layer];
+    var yLayer = _$constants_215.layerValue2layerClass[plotinfo.yaxis.layer];
+    var hasOnlyLargeSploms = gd._fullLayout._hasOnlyLargeSploms;
 
     if(!plotinfo.mainplot) {
-        var backLayer = joinLayer(plotgroup, 'g', 'layer-subplot');
-        plotinfo.shapelayer = joinLayer(backLayer, 'g', 'shapelayer');
-        plotinfo.imagelayer = joinLayer(backLayer, 'g', 'imagelayer');
+        if(hasOnlyLargeSploms) {
+            // TODO could do even better
+            // - we don't need plot (but we would have to mock it in lsInner
+            //   and other places
+            // - we don't (x|y)lines and (x|y)axislayer for most subplots
+            //   usually just the bottom x and left y axes.
+            plotinfo.plot = ensureSingle(plotgroup, 'g', 'plot');
+            plotinfo.xlines = ensureSingle(plotgroup, 'path', 'xlines-above');
+            plotinfo.ylines = ensureSingle(plotgroup, 'path', 'ylines-above');
+            plotinfo.xaxislayer = ensureSingle(plotgroup, 'g', 'xaxislayer-above');
+            plotinfo.yaxislayer = ensureSingle(plotgroup, 'g', 'yaxislayer-above');
+        }
+        else {
+            var backLayer = ensureSingle(plotgroup, 'g', 'layer-subplot');
+            plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
+            plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
 
-        plotinfo.gridlayer = joinLayer(plotgroup, 'g', 'gridlayer');
+            plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
+            plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
 
-        plotinfo.zerolinelayer = joinLayer(plotgroup, 'g', 'zerolinelayer');
+            ensureSingle(plotgroup, 'path', 'xlines-below');
+            ensureSingle(plotgroup, 'path', 'ylines-below');
+            plotinfo.overlinesBelow = ensureSingle(plotgroup, 'g', 'overlines-below');
 
-        joinLayer(plotgroup, 'path', 'xlines-below');
-        joinLayer(plotgroup, 'path', 'ylines-below');
-        plotinfo.overlinesBelow = joinLayer(plotgroup, 'g', 'overlines-below');
+            ensureSingle(plotgroup, 'g', 'xaxislayer-below');
+            ensureSingle(plotgroup, 'g', 'yaxislayer-below');
+            plotinfo.overaxesBelow = ensureSingle(plotgroup, 'g', 'overaxes-below');
 
-        joinLayer(plotgroup, 'g', 'xaxislayer-below');
-        joinLayer(plotgroup, 'g', 'yaxislayer-below');
-        plotinfo.overaxesBelow = joinLayer(plotgroup, 'g', 'overaxes-below');
+            plotinfo.plot = ensureSingle(plotgroup, 'g', 'plot');
+            plotinfo.overplot = ensureSingle(plotgroup, 'g', 'overplot');
 
-        plotinfo.plot = joinLayer(plotgroup, 'g', 'plot');
-        plotinfo.overplot = joinLayer(plotgroup, 'g', 'overplot');
+            plotinfo.xlines = ensureSingle(plotgroup, 'path', 'xlines-above');
+            plotinfo.ylines = ensureSingle(plotgroup, 'path', 'ylines-above');
+            plotinfo.overlinesAbove = ensureSingle(plotgroup, 'g', 'overlines-above');
 
-        joinLayer(plotgroup, 'path', 'xlines-above');
-        joinLayer(plotgroup, 'path', 'ylines-above');
-        plotinfo.overlinesAbove = joinLayer(plotgroup, 'g', 'overlines-above');
+            ensureSingle(plotgroup, 'g', 'xaxislayer-above');
+            ensureSingle(plotgroup, 'g', 'yaxislayer-above');
+            plotinfo.overaxesAbove = ensureSingle(plotgroup, 'g', 'overaxes-above');
 
-        joinLayer(plotgroup, 'g', 'xaxislayer-above');
-        joinLayer(plotgroup, 'g', 'yaxislayer-above');
-        plotinfo.overaxesAbove = joinLayer(plotgroup, 'g', 'overaxes-above');
-
-        // set refs to correct layers as determined by 'axis.layer'
-        plotinfo.xlines = plotgroup.select('.xlines-' + xLayer);
-        plotinfo.ylines = plotgroup.select('.ylines-' + yLayer);
-        plotinfo.xaxislayer = plotgroup.select('.xaxislayer-' + xLayer);
-        plotinfo.yaxislayer = plotgroup.select('.yaxislayer-' + yLayer);
+            // set refs to correct layers as determined by 'axis.layer'
+            plotinfo.xlines = plotgroup.select('.xlines-' + xLayer);
+            plotinfo.ylines = plotgroup.select('.ylines-' + yLayer);
+            plotinfo.xaxislayer = plotgroup.select('.xaxislayer-' + xLayer);
+            plotinfo.yaxislayer = plotgroup.select('.yaxislayer-' + yLayer);
+        }
     }
     else {
         var mainplotinfo = plotinfo.mainplotinfo;
@@ -48469,17 +50209,17 @@ function makeSubplotLayer(plotinfo) {
         plotinfo.gridlayer = mainplotinfo.gridlayer;
         plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
 
-        joinLayer(mainplotinfo.overlinesBelow, 'path', xId);
-        joinLayer(mainplotinfo.overlinesBelow, 'path', yId);
-        joinLayer(mainplotinfo.overaxesBelow, 'g', xId);
-        joinLayer(mainplotinfo.overaxesBelow, 'g', yId);
+        ensureSingle(mainplotinfo.overlinesBelow, 'path', xId);
+        ensureSingle(mainplotinfo.overlinesBelow, 'path', yId);
+        ensureSingle(mainplotinfo.overaxesBelow, 'g', xId);
+        ensureSingle(mainplotinfo.overaxesBelow, 'g', yId);
 
-        plotinfo.plot = joinLayer(mainplotinfo.overplot, 'g', id);
+        plotinfo.plot = ensureSingle(mainplotinfo.overplot, 'g', id);
 
-        joinLayer(mainplotinfo.overlinesAbove, 'path', xId);
-        joinLayer(mainplotinfo.overlinesAbove, 'path', yId);
-        joinLayer(mainplotinfo.overaxesAbove, 'g', xId);
-        joinLayer(mainplotinfo.overaxesAbove, 'g', yId);
+        ensureSingle(mainplotinfo.overlinesAbove, 'path', xId);
+        ensureSingle(mainplotinfo.overlinesAbove, 'path', yId);
+        ensureSingle(mainplotinfo.overaxesAbove, 'g', xId);
+        ensureSingle(mainplotinfo.overaxesAbove, 'g', yId);
 
         // set refs to correct layers as determined by 'abovetraces'
         plotinfo.xlines = mainplotgroup.select('.overlines-' + xLayer).select('.' + xId);
@@ -48488,14 +50228,16 @@ function makeSubplotLayer(plotinfo) {
         plotinfo.yaxislayer = mainplotgroup.select('.overaxes-' + yLayer).select('.' + yId);
     }
 
-    joinLayer(plotinfo.gridlayer, 'g', plotinfo.xaxis._id, plotinfo.xaxis._id);
-    joinLayer(plotinfo.gridlayer, 'g', plotinfo.yaxis._id, plotinfo.yaxis._id);
-    plotinfo.gridlayer.selectAll('g').sort(_$axis_ids_212.idSort);
-
     // common attributes for all subplots, overlays or not
 
-    for(var i = 0; i < _$constants_214.traceLayerClasses.length; i++) {
-        joinLayer(plotinfo.plot, 'g', _$constants_214.traceLayerClasses[i]);
+    if(!hasOnlyLargeSploms) {
+        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
+        ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
+        plotinfo.gridlayer.selectAll('g').sort(_$axis_ids_213.idSort);
+
+        for(var i = 0; i < _$constants_215.traceLayerClasses.length; i++) {
+            ensureSingle(plotinfo.plot, 'g', _$constants_215.traceLayerClasses[i]);
+        }
     }
 
     plotinfo.xlines
@@ -48548,17 +50290,7 @@ function removeSubplotExtras(subplotId, fullLayout) {
     fullLayout._defs.select('#clip' + fullLayout._uid + subplotId + 'plot').remove();
 }
 
-function joinLayer(parent, nodeType, className, dataVal) {
-    var layer = parent.selectAll('.' + className)
-        .data([dataVal || 0]);
-
-    layer.enter().append(nodeType)
-        .classed(className, true);
-
-    return layer;
-}
-
-_$cartesian_220.toSVG = function(gd) {
+_$cartesian_221.toSVG = function(gd) {
     var imageRoot = gd._fullLayout._glimages;
     var root = _$d3_8.select(gd).selectAll('.svg-container');
     var canvases = root.filter(function(d, i) {return i === root.size() - 1;})
@@ -48583,6 +50315,8 @@ _$cartesian_220.toSVG = function(gd) {
     canvases.each(canvasToImage);
 };
 
+_$cartesian_221.updateFx = _$graph_interact_219.updateFx;
+
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -48595,19 +50329,19 @@ _$cartesian_220.toSVG = function(gd) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
 /* removed: var _$color_45 = require('../color'); */;
 /* removed: var _$titles_138 = require('../titles'); */;
 
-/* removed: var _$cartesian_220 = require('../../plots/cartesian'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$cartesian_221 = require('../../plots/cartesian'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 
 /* removed: var _$dragelement_67 = require('../dragelement'); */;
-/* removed: var _$setCursor_185 = require('../../lib/setcursor'); */;
+/* removed: var _$setCursor_186 = require('../../lib/setcursor'); */;
 
 /* removed: var _$constants_120 = require('./constants'); */;
 
@@ -48663,8 +50397,8 @@ var _$draw_122 = function(gd) {
     rangeSliders.each(function(axisOpts) {
         var rangeSlider = _$d3_8.select(this),
             opts = axisOpts[_$constants_120.name],
-            oppAxisOpts = fullLayout[_$axes_209.id2name(axisOpts.anchor)],
-            oppAxisRangeOpts = opts[_$axes_209.id2name(axisOpts.anchor)];
+            oppAxisOpts = fullLayout[_$axes_210.id2name(axisOpts.anchor)],
+            oppAxisRangeOpts = opts[_$axes_210.id2name(axisOpts.anchor)];
 
         // update range
         // Expand slider range to the axis range
@@ -48689,9 +50423,9 @@ var _$draw_122 = function(gd) {
         var tickHeight = (axisOpts._boundingBox || {}).height || 0;
 
         var oppBottom = Infinity;
-        var subplotData = _$axes_209.getSubplots(gd, axisOpts);
+        var subplotData = _$axes_210.getSubplots(gd, axisOpts);
         for(var i = 0; i < subplotData.length; i++) {
-            var oppAxis = _$axes_209.getFromId(gd, subplotData[i].substr(subplotData[i].indexOf('y')));
+            var oppAxis = _$axes_210.getFromId(gd, subplotData[i].substr(subplotData[i].indexOf('y')));
             oppBottom = Math.min(oppBottom, oppAxis.domain[0]);
         }
 
@@ -48783,7 +50517,7 @@ var _$draw_122 = function(gd) {
 };
 
 function makeRangeSliderData(fullLayout) {
-    var axes = _$axes_209.list({ _fullLayout: fullLayout }, 'x', true),
+    var axes = _$axes_210.list({ _fullLayout: fullLayout }, 'x', true),
         name = _$constants_120.name,
         out = [];
 
@@ -48855,14 +50589,14 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
             opts._pixelMin = pixelMin;
             opts._pixelMax = pixelMax;
 
-            _$setCursor_185(_$d3_8.select(dragCover), cursor);
+            _$setCursor_186(_$d3_8.select(dragCover), cursor);
             setDataRange(rangeSlider, gd, axisOpts, opts);
         }
 
         function mouseUp() {
             dragCover.removeEventListener('mousemove', mouseMove);
             dragCover.removeEventListener('mouseup', mouseUp);
-            _$lib_166.removeElement(dragCover);
+            _$lib_167.removeElement(dragCover);
         }
     });
 }
@@ -48870,14 +50604,14 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
 function setDataRange(rangeSlider, gd, axisOpts, opts) {
 
     function clamp(v) {
-        return axisOpts.l2r(_$lib_166.constrain(v, opts._rl[0], opts._rl[1]));
+        return axisOpts.l2r(_$lib_167.constrain(v, opts._rl[0], opts._rl[1]));
     }
 
     var dataMin = clamp(opts.p2d(opts._pixelMin)),
         dataMax = clamp(opts.p2d(opts._pixelMax));
 
     window.requestAnimationFrame(function() {
-        _$registry_258.call('relayout', gd, axisOpts._name + '.range', [dataMin, dataMax]);
+        _$registry_259.call('relayout', gd, axisOpts._name + '.range', [dataMin, dataMax]);
     });
 }
 
@@ -48885,15 +50619,15 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts, oppAxisRang
     var hw2 = _$constants_120.handleWidth / 2;
 
     function clamp(v) {
-        return _$lib_166.constrain(v, 0, opts._width);
+        return _$lib_167.constrain(v, 0, opts._width);
     }
 
     function clampOppAxis(v) {
-        return _$lib_166.constrain(v, 0, opts._height);
+        return _$lib_167.constrain(v, 0, opts._height);
     }
 
     function clampHandle(v) {
-        return _$lib_166.constrain(v, -hw2, opts._width + hw2);
+        return _$lib_167.constrain(v, -hw2, opts._width + hw2);
     }
 
     var pixelMin = clamp(opts.d2p(axisOpts._rl[0])),
@@ -48945,16 +50679,13 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts, oppAxisRang
 }
 
 function drawBg(rangeSlider, gd, axisOpts, opts) {
-    var bg = rangeSlider.selectAll('rect.' + _$constants_120.bgClassName)
-        .data([0]);
-
-    bg.enter().append('rect')
-        .classed(_$constants_120.bgClassName, true)
-        .attr({
+    var bg = _$lib_167.ensureSingle(rangeSlider, 'rect', _$constants_120.bgClassName, function(s) {
+        s.attr({
             x: 0,
             y: 0,
             'shape-rendering': 'crispEdges'
         });
+    });
 
     var borderCorrect = (opts.borderwidth % 2) === 0 ?
             opts.borderwidth :
@@ -48976,13 +50707,9 @@ function drawBg(rangeSlider, gd, axisOpts, opts) {
 function addClipPath(rangeSlider, gd, axisOpts, opts) {
     var fullLayout = gd._fullLayout;
 
-    var clipPath = fullLayout._topdefs.selectAll('#' + opts._clipId)
-        .data([0]);
-
-    clipPath.enter().append('clipPath')
-        .attr('id', opts._clipId)
-        .append('rect')
-        .attr({ x: 0, y: 0 });
+    var clipPath = _$lib_167.ensureSingleById(fullLayout._topdefs, 'clipPath', opts._clipId, function(s) {
+        s.append('rect').attr({ x: 0, y: 0 });
+    });
 
     clipPath.select('rect').attr({
         width: opts._width,
@@ -48991,11 +50718,11 @@ function addClipPath(rangeSlider, gd, axisOpts, opts) {
 }
 
 function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
-    var subplotData = _$axes_209.getSubplots(gd, axisOpts),
+    var subplotData = _$axes_210.getSubplots(gd, axisOpts),
         calcData = gd.calcdata;
 
     var rangePlots = rangeSlider.selectAll('g.' + _$constants_120.rangePlotClassName)
-        .data(subplotData, _$lib_166.identity);
+        .data(subplotData, _$lib_167.identity);
 
     rangePlots.enter().append('g')
         .attr('class', function(id) { return _$constants_120.rangePlotClassName + ' ' + id; })
@@ -49011,7 +50738,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         var plotgroup = _$d3_8.select(this),
             isMainPlot = (i === 0);
 
-        var oppAxisOpts = _$axes_209.getFromId(gd, id, 'y'),
+        var oppAxisOpts = _$axes_210.getFromId(gd, id, 'y'),
             oppAxisName = oppAxisOpts._name,
             oppAxisRangeOpts = opts[oppAxisName];
 
@@ -49047,7 +50774,8 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
             id: id,
             plotgroup: plotgroup,
             xaxis: xa,
-            yaxis: ya
+            yaxis: ya,
+            isRangePlot: true
         };
 
         if(isMainPlot) mainplotinfo = plotinfo;
@@ -49056,7 +50784,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
             plotinfo.mainplotinfo = mainplotinfo;
         }
 
-        _$cartesian_220.rangePlot(gd, plotinfo, filterRangePlotCalcData(calcData, id));
+        _$cartesian_221.rangePlot(gd, plotinfo, filterRangePlotCalcData(calcData, id));
     });
 }
 
@@ -49076,25 +50804,24 @@ function filterRangePlotCalcData(calcData, subplotId) {
 }
 
 function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
-    var maskMin = rangeSlider.selectAll('rect.' + _$constants_120.maskMinClassName)
-        .data([0]);
-
-    maskMin.enter().append('rect')
-        .classed(_$constants_120.maskMinClassName, true)
-        .attr({ x: 0, y: 0 })
-        .attr('shape-rendering', 'crispEdges');
+    var maskMin = _$lib_167.ensureSingle(rangeSlider, 'rect', _$constants_120.maskMinClassName, function(s) {
+        s.attr({
+            x: 0,
+            y: 0,
+            'shape-rendering': 'crispEdges'
+        });
+    });
 
     maskMin
         .attr('height', opts._height)
         .call(_$color_45.fill, _$constants_120.maskColor);
 
-    var maskMax = rangeSlider.selectAll('rect.' + _$constants_120.maskMaxClassName)
-        .data([0]);
-
-    maskMax.enter().append('rect')
-        .classed(_$constants_120.maskMaxClassName, true)
-        .attr('y', 0)
-        .attr('shape-rendering', 'crispEdges');
+    var maskMax = _$lib_167.ensureSingle(rangeSlider, 'rect', _$constants_120.maskMaxClassName, function(s) {
+        s.attr({
+            y: 0,
+            'shape-rendering': 'crispEdges'
+        });
+    });
 
     maskMax
         .attr('height', opts._height)
@@ -49102,25 +50829,23 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
 
     // masks used for oppAxis zoom
     if(oppAxisRangeOpts.rangemode !== 'match') {
-        var maskMinOppAxis = rangeSlider.selectAll('rect.' + _$constants_120.maskMinOppAxisClassName)
-            .data([0]);
-
-        maskMinOppAxis.enter().append('rect')
-            .classed(_$constants_120.maskMinOppAxisClassName, true)
-            .attr('y', 0)
-            .attr('shape-rendering', 'crispEdges');
+        var maskMinOppAxis = _$lib_167.ensureSingle(rangeSlider, 'rect', _$constants_120.maskMinOppAxisClassName, function(s) {
+            s.attr({
+                y: 0,
+                'shape-rendering': 'crispEdges'
+            });
+        });
 
         maskMinOppAxis
             .attr('width', opts._width)
             .call(_$color_45.fill, _$constants_120.maskOppAxisColor);
 
-        var maskMaxOppAxis = rangeSlider.selectAll('rect.' + _$constants_120.maskMaxOppAxisClassName)
-            .data([0]);
-
-        maskMaxOppAxis.enter().append('rect')
-            .classed(_$constants_120.maskMaxOppAxisClassName, true)
-            .attr('y', 0)
-            .attr('shape-rendering', 'crispEdges');
+        var maskMaxOppAxis = _$lib_167.ensureSingle(rangeSlider, 'rect', _$constants_120.maskMaxOppAxisClassName, function(s) {
+            s.attr({
+                y: 0,
+                'shape-rendering': 'crispEdges'
+            });
+        });
 
         maskMaxOppAxis
             .attr('width', opts._width)
@@ -49132,14 +50857,13 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
 function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
     if(gd._context.staticPlot) return;
 
-    var slideBox = rangeSlider.selectAll('rect.' + _$constants_120.slideBoxClassName)
-        .data([0]);
-
-    slideBox.enter().append('rect')
-        .classed(_$constants_120.slideBoxClassName, true)
-        .attr('y', 0)
-        .attr('cursor', _$constants_120.slideBoxCursor)
-        .attr('shape-rendering', 'crispEdges');
+    var slideBox = _$lib_167.ensureSingle(rangeSlider, 'rect', _$constants_120.slideBoxClassName, function(s) {
+        s.attr({
+            y: 0,
+            cursor: _$constants_120.slideBoxCursor,
+            'shape-rendering': 'crispEdges'
+        });
+    });
 
     slideBox.attr({
         height: opts._height,
@@ -49148,21 +50872,11 @@ function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
 }
 
 function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
-
     // <g grabber />
-
-    var grabberMin = rangeSlider.selectAll('g.' + _$constants_120.grabberMinClassName)
-        .data([0]);
-    grabberMin.enter().append('g')
-        .classed(_$constants_120.grabberMinClassName, true);
-
-    var grabberMax = rangeSlider.selectAll('g.' + _$constants_120.grabberMaxClassName)
-        .data([0]);
-    grabberMax.enter().append('g')
-        .classed(_$constants_120.grabberMaxClassName, true);
+    var grabberMin = _$lib_167.ensureSingle(rangeSlider, 'g', _$constants_120.grabberMinClassName);
+    var grabberMax = _$lib_167.ensureSingle(rangeSlider, 'g', _$constants_120.grabberMaxClassName);
 
     // <g handle />
-
     var handleFixAttrs = {
         x: 0,
         width: _$constants_120.handleWidth,
@@ -49172,28 +50886,21 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
         'stroke-width': _$constants_120.handleStrokeWidth,
         'shape-rendering': 'crispEdges'
     };
-
     var handleDynamicAttrs = {
         y: Math.round(opts._height / 4),
         height: Math.round(opts._height / 2),
     };
-
-    var handleMin = grabberMin.selectAll('rect.' + _$constants_120.handleMinClassName)
-        .data([0]);
-    handleMin.enter().append('rect')
-        .classed(_$constants_120.handleMinClassName, true)
-        .attr(handleFixAttrs);
+    var handleMin = _$lib_167.ensureSingle(grabberMin, 'rect', _$constants_120.handleMinClassName, function(s) {
+        s.attr(handleFixAttrs);
+    });
     handleMin.attr(handleDynamicAttrs);
 
-    var handleMax = grabberMax.selectAll('rect.' + _$constants_120.handleMaxClassName)
-        .data([0]);
-    handleMax.enter().append('rect')
-        .classed(_$constants_120.handleMaxClassName, true)
-        .attr(handleFixAttrs);
+    var handleMax = _$lib_167.ensureSingle(grabberMax, 'rect', _$constants_120.handleMaxClassName, function(s) {
+        s.attr(handleFixAttrs);
+    });
     handleMax.attr(handleDynamicAttrs);
 
     // <g grabarea />
-
     if(gd._context.staticPlot) return;
 
     var grabAreaFixAttrs = {
@@ -49204,18 +50911,14 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
         cursor: _$constants_120.grabAreaCursor
     };
 
-    var grabAreaMin = grabberMin.selectAll('rect.' + _$constants_120.grabAreaMinClassName)
-        .data([0]);
-    grabAreaMin.enter().append('rect')
-        .classed(_$constants_120.grabAreaMinClassName, true)
-        .attr(grabAreaFixAttrs);
+    var grabAreaMin = _$lib_167.ensureSingle(grabberMin, 'rect', _$constants_120.grabAreaMinClassName, function(s) {
+        s.attr(grabAreaFixAttrs);
+    });
     grabAreaMin.attr('height', opts._height);
 
-    var grabAreaMax = grabberMax.selectAll('rect.' + _$constants_120.grabAreaMaxClassName)
-        .data([0]);
-    grabAreaMax.enter().append('rect')
-        .classed(_$constants_120.grabAreaMaxClassName, true)
-        .attr(grabAreaFixAttrs);
+    var grabAreaMax = _$lib_167.ensureSingle(grabberMax, 'rect', _$constants_120.grabAreaMaxClassName, function(s) {
+        s.attr(grabAreaFixAttrs);
+    });
     grabAreaMax.attr('height', opts._height);
 }
 
@@ -49242,7 +50945,7 @@ function clearPushMargins(gd) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$attributes_118 = require('./attributes'); */;
 /* removed: var _$oppaxis_attributes_124 = require('./oppaxis_attributes'); */;
 
@@ -49253,7 +50956,7 @@ var _$rangeslider_123 = {
     schema: {
         subplots: {
             xaxis: {
-                rangeslider: _$lib_166.extendFlat({}, _$attributes_118, {
+                rangeslider: _$lib_167.extendFlat({}, _$attributes_118, {
                     yaxis: _$oppaxis_attributes_124
                 })
             }
@@ -49277,9 +50980,9 @@ var _$rangeslider_123 = {
 'use strict';
 
 /* removed: var _$attributes_30 = require('../annotations/attributes'); */;
-var __scatterLineAttrs_125 = _$attributes_280.line;
+var __scatterLineAttrs_125 = _$attributes_281.line;
 var __dash_125 = _$attributes_69.dash;
-var __extendFlat_125 = _$extend_158.extendFlat;
+var __extendFlat_125 = _$extend_159.extendFlat;
 
 var _$attributes_125 = {
     _isLinkedToArray: 'shape',
@@ -49312,6 +51015,20 @@ var _$attributes_125 = {
     xref: __extendFlat_125({}, _$attributes_30.xref, {
         
     }),
+    xsizemode: {
+        valType: 'enumerated',
+        values: ['scaled', 'pixel'],
+        dflt: 'scaled',
+        
+        editType: 'calcIfAutorange+arraydraw',
+        
+    },
+    xanchor: {
+        valType: 'any',
+        
+        editType: 'calcIfAutorange+arraydraw',
+        
+    },
     x0: {
         valType: 'any',
         
@@ -49328,6 +51045,20 @@ var _$attributes_125 = {
     yref: __extendFlat_125({}, _$attributes_30.yref, {
         
     }),
+    ysizemode: {
+        valType: 'enumerated',
+        values: ['scaled', 'pixel'],
+        dflt: 'scaled',
+        
+        editType: 'calcIfAutorange+arraydraw',
+        
+    },
+    yanchor: {
+        valType: 'any',
+        
+        editType: 'calcIfAutorange+arraydraw',
+        
+    },
     y0: {
         valType: 'any',
         
@@ -49529,8 +51260,8 @@ _$helpers_130.getPixelToData = function(gd, axis, isVertical) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 
 /* removed: var _$constants_127 = require('./constants'); */;
 /* removed: var _$helpers_130 = require('./helpers'); */;
@@ -49538,29 +51269,83 @@ _$helpers_130.getPixelToData = function(gd, axis, isVertical) {
 
 var _$calcAutorange_126 = function calcAutorange(gd) {
     var fullLayout = gd._fullLayout,
-        shapeList = _$lib_166.filterVisible(fullLayout.shapes);
+        shapeList = _$lib_167.filterVisible(fullLayout.shapes);
 
     if(!shapeList.length || !gd._fullData.length) return;
 
     for(var i = 0; i < shapeList.length; i++) {
-        var shape = shapeList[i],
-            ppad = shape.line.width / 2;
+        var shape = shapeList[i];
 
         var ax, bounds;
 
         if(shape.xref !== 'paper') {
-            ax = _$axes_209.getFromId(gd, shape.xref);
-            bounds = shapeBounds(ax, shape.x0, shape.x1, shape.path, _$constants_127.paramIsX);
-            if(bounds) _$axes_209.expand(ax, bounds, {ppad: ppad});
+            var vx0 = shape.xsizemode === 'pixel' ? shape.xanchor : shape.x0,
+                vx1 = shape.xsizemode === 'pixel' ? shape.xanchor : shape.x1;
+            ax = _$axes_210.getFromId(gd, shape.xref);
+
+            bounds = shapeBounds(ax, vx0, vx1, shape.path, _$constants_127.paramIsX);
+
+            if(bounds) _$axes_210.expand(ax, bounds, calcXPaddingOptions(shape));
         }
 
         if(shape.yref !== 'paper') {
-            ax = _$axes_209.getFromId(gd, shape.yref);
-            bounds = shapeBounds(ax, shape.y0, shape.y1, shape.path, _$constants_127.paramIsY);
-            if(bounds) _$axes_209.expand(ax, bounds, {ppad: ppad});
+            var vy0 = shape.ysizemode === 'pixel' ? shape.yanchor : shape.y0,
+                vy1 = shape.ysizemode === 'pixel' ? shape.yanchor : shape.y1;
+            ax = _$axes_210.getFromId(gd, shape.yref);
+
+            bounds = shapeBounds(ax, vy0, vy1, shape.path, _$constants_127.paramIsY);
+            if(bounds) _$axes_210.expand(ax, bounds, calcYPaddingOptions(shape));
         }
     }
 };
+
+function calcXPaddingOptions(shape) {
+    return calcPaddingOptions(shape.line.width, shape.xsizemode, shape.x0, shape.x1, shape.path, false);
+}
+
+function calcYPaddingOptions(shape) {
+    return calcPaddingOptions(shape.line.width, shape.ysizemode, shape.y0, shape.y1, shape.path, true);
+}
+
+function calcPaddingOptions(lineWidth, sizeMode, v0, v1, path, isYAxis) {
+    var ppad = lineWidth / 2,
+        axisDirectionReverted = isYAxis;
+
+    if(sizeMode === 'pixel') {
+        var coords = path ?
+          extractPathCoords(path, isYAxis ? _$constants_127.paramIsY : _$constants_127.paramIsX) :
+          [v0, v1];
+        var maxValue = _$lib_167.aggNums(Math.max, null, coords),
+            minValue = _$lib_167.aggNums(Math.min, null, coords),
+            beforePad = minValue < 0 ? Math.abs(minValue) + ppad : ppad,
+            afterPad = maxValue > 0 ? maxValue + ppad : ppad;
+
+        return {
+            ppad: ppad,
+            ppadplus: axisDirectionReverted ? beforePad : afterPad,
+            ppadminus: axisDirectionReverted ? afterPad : beforePad
+        };
+    } else {
+        return {ppad: ppad};
+    }
+}
+
+function extractPathCoords(path, paramsToUse) {
+    var extractedCoordinates = [];
+
+    var segments = path.match(_$constants_127.segmentRE);
+    segments.forEach(function(segment) {
+        var relevantParamIdx = paramsToUse[segment.charAt(0)].drawn;
+        if(relevantParamIdx === undefined) return;
+
+        var params = segment.substr(1).match(_$constants_127.paramRE);
+        if(!params || params.length < relevantParamIdx) return;
+
+        extractedCoordinates.push(params[relevantParamIdx]);
+    });
+
+    return extractedCoordinates;
+}
 
 function shapeBounds(ax, v0, v1, path, paramsToUse) {
     var convertVal = (ax.type === 'category') ? ax.r2c : ax.d2c;
@@ -49605,8 +51390,8 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 
 /* removed: var _$attributes_125 = require('./attributes'); */;
 /* removed: var _$helpers_130 = require('./helpers'); */;
@@ -49617,7 +51402,7 @@ var _$handleShapeDefaults_132 = function handleShapeDefaults(shapeIn, shapeOut, 
     itemOpts = itemOpts || {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(shapeIn, shapeOut, _$attributes_125, attr, dflt);
+        return _$lib_167.coerce(shapeIn, shapeOut, _$attributes_125, attr, dflt);
     }
 
     var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
@@ -49632,32 +51417,37 @@ var _$handleShapeDefaults_132 = function handleShapeDefaults(shapeIn, shapeOut, 
     coerce('line.dash');
 
     var dfltType = shapeIn.path ? 'path' : 'rect',
-        shapeType = coerce('type', dfltType);
+        shapeType = coerce('type', dfltType),
+        xSizeMode = coerce('xsizemode'),
+        ySizeMode = coerce('ysizemode');
 
     // positioning
     var axLetters = ['x', 'y'];
     for(var i = 0; i < 2; i++) {
         var axLetter = axLetters[i],
-            gdMock = {_fullLayout: fullLayout};
+            attrAnchor = axLetter + 'anchor',
+            sizeMode = axLetter === 'x' ? xSizeMode : ySizeMode,
+            gdMock = {_fullLayout: fullLayout},
+            ax,
+            pos2r,
+            r2pos;
 
         // xref, yref
-        var axRef = _$axes_209.coerceRef(shapeIn, shapeOut, gdMock, axLetter, '', 'paper');
+        var axRef = _$axes_210.coerceRef(shapeIn, shapeOut, gdMock, axLetter, '', 'paper');
 
+        if(axRef !== 'paper') {
+            ax = _$axes_210.getFromId(gdMock, axRef);
+            r2pos = _$helpers_130.rangeToShapePosition(ax);
+            pos2r = _$helpers_130.shapePositionToRange(ax);
+        }
+        else {
+            pos2r = r2pos = _$lib_167.identity;
+        }
+
+        // Coerce x0, x1, y0, y1
         if(shapeType !== 'path') {
             var dflt0 = 0.25,
-                dflt1 = 0.75,
-                ax,
-                pos2r,
-                r2pos;
-
-            if(axRef !== 'paper') {
-                ax = _$axes_209.getFromId(gdMock, axRef);
-                r2pos = _$helpers_130.rangeToShapePosition(ax);
-                pos2r = _$helpers_130.shapePositionToRange(ax);
-            }
-            else {
-                pos2r = r2pos = _$lib_166.identity;
-            }
+                dflt1 = 0.75;
 
             // hack until V2.0 when log has regular range behavior - make it look like other
             // ranges to send to coerce, then put it back after
@@ -49670,9 +51460,13 @@ var _$handleShapeDefaults_132 = function handleShapeDefaults(shapeIn, shapeOut, 
             shapeIn[attr0] = pos2r(shapeIn[attr0], true);
             shapeIn[attr1] = pos2r(shapeIn[attr1], true);
 
-            // x0, x1 (and y0, y1)
-            _$axes_209.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflt0);
-            _$axes_209.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflt1);
+            if(sizeMode === 'pixel') {
+                coerce(attr0, 0);
+                coerce(attr1, 10);
+            } else {
+                _$axes_210.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflt0);
+                _$axes_210.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflt1);
+            }
 
             // hack part 2
             shapeOut[attr0] = r2pos(shapeOut[attr0]);
@@ -49680,13 +51474,26 @@ var _$handleShapeDefaults_132 = function handleShapeDefaults(shapeIn, shapeOut, 
             shapeIn[attr0] = in0;
             shapeIn[attr1] = in1;
         }
+
+        // Coerce xanchor and yanchor
+        if(sizeMode === 'pixel') {
+            // Hack for log axis described above
+            var inAnchor = shapeIn[attrAnchor];
+            shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
+
+            _$axes_210.coercePosition(shapeOut, gdMock, coerce, axRef, attrAnchor, 0.25);
+
+            // Hack part 2
+            shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
+            shapeIn[attrAnchor] = inAnchor;
+        }
     }
 
     if(shapeType === 'path') {
         coerce('path');
     }
     else {
-        _$lib_166.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
+        _$lib_167.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
     }
 
     return shapeOut;
@@ -49703,7 +51510,7 @@ var _$handleShapeDefaults_132 = function handleShapeDefaults(shapeIn, shapeOut, 
 
 'use strict';
 
-/* removed: var _$handleArrayContainerDefaults_205 = require('../../plots/array_container_defaults'); */;
+/* removed: var _$handleArrayContainerDefaults_206 = require('../../plots/array_container_defaults'); */;
 /* removed: var _$handleShapeDefaults_132 = require('./shape_defaults'); */;
 
 
@@ -49713,7 +51520,7 @@ var _$supplyLayoutDefaults_128 = function supplyLayoutDefaults(layoutIn, layoutO
         handleItemDefaults: _$handleShapeDefaults_132
     };
 
-    _$handleArrayContainerDefaults_205(layoutIn, layoutOut, opts);
+    _$handleArrayContainerDefaults_206(layoutIn, layoutOut, opts);
 };
 
 /**
@@ -49727,14 +51534,14 @@ var _$supplyLayoutDefaults_128 = function supplyLayoutDefaults(layoutIn, layoutO
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
 /* removed: var _$color_45 = require('../color'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
 
 /* removed: var _$dragelement_67 = require('../dragelement'); */;
-/* removed: var _$setCursor_185 = require('../../lib/setcursor'); */;
+/* removed: var _$setCursor_186 = require('../../lib/setcursor'); */;
 
 /* removed: var _$constants_127 = require('./constants'); */;
 /* removed: var _$helpers_130 = require('./helpers'); */;
@@ -49760,7 +51567,11 @@ function __draw_129(gd) {
     // Remove previous shapes before drawing new in shapes in fullLayout.shapes
     fullLayout._shapeUpperLayer.selectAll('path').remove();
     fullLayout._shapeLowerLayer.selectAll('path').remove();
-    fullLayout._shapeSubplotLayers.selectAll('path').remove();
+
+    for(var k in fullLayout._plots) {
+        var shapelayer = fullLayout._plots[k].shapelayer;
+        if(shapelayer) shapelayer.selectAll('path').remove();
+    }
 
     for(var i = 0; i < fullLayout.shapes.length; i++) {
         if(fullLayout.shapes[i].visible) {
@@ -49840,8 +51651,11 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
     var MINWIDTH = 10,
         MINHEIGHT = 10;
 
+    var xPixelSized = shapeOptions.xsizemode === 'pixel',
+        yPixelSized = shapeOptions.ysizemode === 'pixel';
+
     var update;
-    var x0, y0, x1, y1, astrX0, astrY0, astrX1, astrY1;
+    var x0, y0, x1, y1, xAnchor, yAnchor, astrX0, astrY0, astrX1, astrY1, astrXAnchor, astrYAnchor;
     var n0, s0, w0, e0, astrN, astrS, astrW, astrE, optN, optS, optW, optE;
     var pathIn, astrPath;
 
@@ -49853,7 +51667,6 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
             prepFn: startDrag,
             doneFn: endDrag
         },
-        dragBBox = dragOptions.element.getBoundingClientRect(),
         dragMode;
 
     _$dragelement_67.init(dragOptions);
@@ -49861,6 +51674,10 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
     shapePath.node().onmousemove = updateDragMode;
 
     function updateDragMode(evt) {
+        // element might not be on screen at time of setup,
+        // so obtain bounding box here
+        var dragBBox = dragOptions.element.getBoundingClientRect();
+
         // choose 'move' or 'resize'
         // based on initial position of cursor within the drag element
         var w = dragBBox.right - dragBBox.left,
@@ -49871,7 +51688,7 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
                 _$dragelement_67.getCursor(x / w, 1 - y / h) :
                 'move';
 
-        _$setCursor_185(shapePath, cursor);
+        _$setCursor_186(shapePath, cursor);
 
         // possible values 'move', 'sw', 'w', 'se', 'e', 'ne', 'n', 'nw' and 'w'
         dragMode = cursor.split('-')[0];
@@ -49879,8 +51696,8 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
 
     function startDrag(evt) {
         // setup conversion functions
-        xa = _$axes_209.getFromId(gd, shapeOptions.xref);
-        ya = _$axes_209.getFromId(gd, shapeOptions.yref);
+        xa = _$axes_210.getFromId(gd, shapeOptions.xref);
+        ya = _$axes_210.getFromId(gd, shapeOptions.yref);
 
         x2p = _$helpers_130.getDataToPixel(gd, xa);
         y2p = _$helpers_130.getDataToPixel(gd, ya, true);
@@ -49889,15 +51706,25 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
 
         // setup update strings and initial values
         var astr = 'shapes[' + index + ']';
+
+        if(xPixelSized) {
+            xAnchor = x2p(shapeOptions.xanchor);
+            astrXAnchor = astr + '.xanchor';
+        }
+        if(yPixelSized) {
+            yAnchor = y2p(shapeOptions.yanchor);
+            astrYAnchor = astr + '.yanchor';
+        }
+
         if(shapeOptions.type === 'path') {
             pathIn = shapeOptions.path;
             astrPath = astr + '.path';
         }
         else {
-            x0 = x2p(shapeOptions.x0);
-            y0 = y2p(shapeOptions.y0);
-            x1 = x2p(shapeOptions.x1);
-            y1 = y2p(shapeOptions.y1);
+            x0 = xPixelSized ? shapeOptions.x0 : x2p(shapeOptions.x0);
+            y0 = yPixelSized ? shapeOptions.y0 : y2p(shapeOptions.y0);
+            x1 = xPixelSized ? shapeOptions.x1 : x2p(shapeOptions.x1);
+            y1 = yPixelSized ? shapeOptions.y1 : y2p(shapeOptions.y1);
 
             astrX0 = astr + '.x0';
             astrY0 = astr + '.y0';
@@ -49913,7 +51740,10 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
             w0 = x1; astrW = astr + '.x1'; optW = 'x1';
             e0 = x0; astrE = astr + '.x0'; optE = 'x0';
         }
-        if(y0 < y1) {
+
+        // For fixed size shapes take opposing direction of y-axis into account.
+        // Hint: For data sized shapes this is done by the y2p function.
+        if((!yPixelSized && y0 < y1) || (yPixelSized && y0 > y1)) {
             n0 = y0; astrN = astr + '.y0'; optN = 'y0';
             s0 = y1; astrS = astr + '.y1'; optS = 'y1';
         }
@@ -49930,26 +51760,47 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
     }
 
     function endDrag() {
-        _$setCursor_185(shapePath);
-        _$registry_258.call('relayout', gd, update);
+        _$setCursor_186(shapePath);
+        _$registry_259.call('relayout', gd, update);
     }
 
     function moveShape(dx, dy) {
         if(shapeOptions.type === 'path') {
-            var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
-            if(xa && xa.type === 'date') moveX = _$helpers_130.encodeDate(moveX);
+            var noOp = function(coord) { return coord; },
+                moveX = noOp,
+                moveY = noOp;
 
-            var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
-            if(ya && ya.type === 'date') moveY = _$helpers_130.encodeDate(moveY);
+            if(xPixelSized) {
+                update[astrXAnchor] = shapeOptions.xanchor = p2x(xAnchor + dx);
+            } else {
+                moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+                if(xa && xa.type === 'date') moveX = _$helpers_130.encodeDate(moveX);
+            }
+
+            if(yPixelSized) {
+                update[astrYAnchor] = shapeOptions.yanchor = p2y(yAnchor + dy);
+            } else {
+                moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+                if(ya && ya.type === 'date') moveY = _$helpers_130.encodeDate(moveY);
+            }
 
             shapeOptions.path = movePath(pathIn, moveX, moveY);
             update[astrPath] = shapeOptions.path;
         }
         else {
-            update[astrX0] = shapeOptions.x0 = p2x(x0 + dx);
-            update[astrY0] = shapeOptions.y0 = p2y(y0 + dy);
-            update[astrX1] = shapeOptions.x1 = p2x(x1 + dx);
-            update[astrY1] = shapeOptions.y1 = p2y(y1 + dy);
+            if(xPixelSized) {
+                update[astrXAnchor] = shapeOptions.xanchor = p2x(xAnchor + dx);
+            } else {
+                update[astrX0] = shapeOptions.x0 = p2x(x0 + dx);
+                update[astrX1] = shapeOptions.x1 = p2x(x1 + dx);
+            }
+
+            if(yPixelSized) {
+                update[astrYAnchor] = shapeOptions.yanchor = p2y(yAnchor + dy);
+            } else {
+                update[astrY0] = shapeOptions.y0 = p2y(y0 + dy);
+                update[astrY1] = shapeOptions.y1 = p2y(y1 + dy);
+            }
         }
 
         shapePath.attr('d', getPathString(gd, shapeOptions));
@@ -49958,11 +51809,23 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
     function resizeShape(dx, dy) {
         if(shapeOptions.type === 'path') {
             // TODO: implement path resize
-            var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
-            if(xa && xa.type === 'date') moveX = _$helpers_130.encodeDate(moveX);
+            var noOp = function(coord) { return coord; },
+                moveX = noOp,
+                moveY = noOp;
 
-            var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
-            if(ya && ya.type === 'date') moveY = _$helpers_130.encodeDate(moveY);
+            if(xPixelSized) {
+                update[astrXAnchor] = shapeOptions.xanchor = p2x(xAnchor + dx);
+            } else {
+                moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+                if(xa && xa.type === 'date') moveX = _$helpers_130.encodeDate(moveX);
+            }
+
+            if(yPixelSized) {
+                update[astrYAnchor] = shapeOptions.yanchor = p2y(yAnchor + dy);
+            } else {
+                moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+                if(ya && ya.type === 'date') moveY = _$helpers_130.encodeDate(moveY);
+            }
 
             shapeOptions.path = movePath(pathIn, moveX, moveY);
             update[astrPath] = shapeOptions.path;
@@ -49973,14 +51836,21 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
                 newW = (~dragMode.indexOf('w')) ? w0 + dx : w0,
                 newE = (~dragMode.indexOf('e')) ? e0 + dx : e0;
 
-            if(newS - newN > MINHEIGHT) {
-                update[astrN] = shapeOptions[optN] = p2y(newN);
-                update[astrS] = shapeOptions[optS] = p2y(newS);
-            }
+            // Do things in opposing direction for y-axis.
+            // Hint: for data-sized shapes the reversal of axis direction is done in p2y.
+            if(~dragMode.indexOf('n') && yPixelSized) newN = n0 - dy;
+            if(~dragMode.indexOf('s') && yPixelSized) newS = s0 - dy;
 
+            // Update shape eventually. Again, be aware of the
+            // opposing direction of the y-axis of fixed size shapes.
+            if((!yPixelSized && newS - newN > MINHEIGHT) ||
+              (yPixelSized && newN - newS > MINHEIGHT)) {
+                update[astrN] = shapeOptions[optN] = yPixelSized ? newN : p2y(newN);
+                update[astrS] = shapeOptions[optS] = yPixelSized ? newS : p2y(newS);
+            }
             if(newE - newW > MINWIDTH) {
-                update[astrW] = shapeOptions[optW] = p2x(newW);
-                update[astrE] = shapeOptions[optE] = p2x(newE);
+                update[astrW] = shapeOptions[optW] = xPixelSized ? newW : p2x(newW);
+                update[astrE] = shapeOptions[optE] = xPixelSized ? newE : p2x(newE);
             }
         }
 
@@ -49990,13 +51860,11 @@ function __setupDragElement_129(gd, shapePath, shapeOptions, index) {
 
 function getPathString(gd, options) {
     var type = options.type,
-        xa = _$axes_209.getFromId(gd, options.xref),
-        ya = _$axes_209.getFromId(gd, options.yref),
+        xa = _$axes_210.getFromId(gd, options.xref),
+        ya = _$axes_210.getFromId(gd, options.yref),
         gs = gd._fullLayout._size,
-        x2r,
-        x2p,
-        y2r,
-        y2p;
+        x2r, x2p, y2r, y2p,
+        x0, x1, y0, y1;
 
     if(xa) {
         x2r = _$helpers_130.shapePositionToRange(xa);
@@ -50017,13 +51885,28 @@ function getPathString(gd, options) {
     if(type === 'path') {
         if(xa && xa.type === 'date') x2p = _$helpers_130.decodeDate(x2p);
         if(ya && ya.type === 'date') y2p = _$helpers_130.decodeDate(y2p);
-        return convertPath(options.path, x2p, y2p);
+        return convertPath(options, x2p, y2p);
     }
 
-    var x0 = x2p(options.x0),
-        x1 = x2p(options.x1),
-        y0 = y2p(options.y0),
+    if(options.xsizemode === 'pixel') {
+        var xAnchorPos = x2p(options.xanchor);
+        x0 = xAnchorPos + options.x0;
+        x1 = xAnchorPos + options.x1;
+    }
+    else {
+        x0 = x2p(options.x0);
+        x1 = x2p(options.x1);
+    }
+
+    if(options.ysizemode === 'pixel') {
+        var yAnchorPos = y2p(options.yanchor);
+        y0 = yAnchorPos - options.y0;
+        y1 = yAnchorPos - options.y1;
+    }
+    else {
+        y0 = y2p(options.y0);
         y1 = y2p(options.y1);
+    }
 
     if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
     if(type === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
@@ -50040,8 +51923,14 @@ function getPathString(gd, options) {
 }
 
 
-function convertPath(pathIn, x2p, y2p) {
-    // convert an SVG path string from data units to pixels
+function convertPath(options, x2p, y2p) {
+    var pathIn = options.path,
+        xSizemode = options.xsizemode,
+        ySizemode = options.ysizemode,
+        xAnchor = options.xanchor,
+        yAnchor = options.yanchor;
+
+
     return pathIn.replace(_$constants_127.segmentRE, function(segment) {
         var paramNumber = 0,
             segmentType = segment.charAt(0),
@@ -50050,8 +51939,14 @@ function convertPath(pathIn, x2p, y2p) {
             nParams = _$constants_127.numParams[segmentType];
 
         var paramString = segment.substr(1).replace(_$constants_127.paramRE, function(param) {
-            if(xParams[paramNumber]) param = x2p(param);
-            else if(yParams[paramNumber]) param = y2p(param);
+            if(xParams[paramNumber]) {
+                if(xSizemode === 'pixel') param = x2p(xAnchor) + Number(param);
+                else param = x2p(param);
+            }
+            else if(yParams[paramNumber]) {
+                if(ySizemode === 'pixel') param = y2p(yAnchor) - Number(param);
+                else param = y2p(param);
+            }
             paramNumber++;
 
             if(paramNumber > nParams) param = 'X';
@@ -50060,7 +51955,7 @@ function convertPath(pathIn, x2p, y2p) {
 
         if(paramNumber > nParams) {
             paramString = paramString.replace(/[\s,]*X.*/, '');
-            _$lib_166.log('Ignoring extra params in segment ' + segment);
+            _$lib_167.log('Ignoring extra params in segment ' + segment);
         }
 
         return segmentType + paramString;
@@ -50109,7 +52004,7 @@ var _$shapes_131 = {
 
     layoutAttributes: _$attributes_125,
     supplyLayoutDefaults: _$supplyLayoutDefaults_128,
-    includeBasePlot: _$makeIncludeComponents_219('shapes'),
+    includeBasePlot: _$makeIncludeComponents_220('shapes'),
 
     calcAutorange: _$calcAutorange_126,
     draw: _$draw_129.draw,
@@ -50266,9 +52161,9 @@ var _$pad_attributes_249 = {
 
 /* removed: var _$font_attributes_236 = require('../../plots/font_attributes'); */;
 /* removed: var _$pad_attributes_249 = require('../../plots/pad_attributes'); */;
-var __extendDeepAll_133 = _$extend_158.extendDeepAll;
-var __overrideAll_133 = _$edit_types_194.overrideAll;
-/* removed: var _$animation_attributes_204 = require('../../plots/animation_attributes'); */;
+var __extendDeepAll_133 = _$extend_159.extendDeepAll;
+var __overrideAll_133 = _$edit_types_195.overrideAll;
+/* removed: var _$animation_attributes_205 = require('../../plots/animation_attributes'); */;
 /* removed: var _$constants_134 = require('./constants'); */;
 
 var stepsAttrs = {
@@ -50388,7 +52283,7 @@ var _$attributes_133 = __overrideAll_133({
         },
         easing: {
             valType: 'enumerated',
-            values: _$animation_attributes_204.transition.easing.values,
+            values: _$animation_attributes_205.transition.easing.values,
             
             dflt: 'cubic-in-out',
             
@@ -50503,8 +52398,8 @@ var _$attributes_133 = __overrideAll_133({
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$handleArrayContainerDefaults_205 = require('../../plots/array_container_defaults'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$handleArrayContainerDefaults_206 = require('../../plots/array_container_defaults'); */;
 
 /* removed: var _$attributes_133 = require('./attributes'); */;
 /* removed: var _$constants_134 = require('./constants'); */;
@@ -50519,13 +52414,13 @@ var _$slidersDefaults_135 = function slidersDefaults(layoutIn, layoutOut) {
         handleItemDefaults: sliderDefaults
     };
 
-    _$handleArrayContainerDefaults_205(layoutIn, layoutOut, opts);
+    _$handleArrayContainerDefaults_206(layoutIn, layoutOut, opts);
 };
 
 function sliderDefaults(sliderIn, sliderOut, layoutOut) {
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(sliderIn, sliderOut, _$attributes_133, attr, dflt);
+        return _$lib_167.coerce(sliderIn, sliderOut, _$attributes_133, attr, dflt);
     }
 
     var steps = stepsDefaults(sliderIn, sliderOut);
@@ -50537,7 +52432,7 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
 
     coerce('x');
     coerce('y');
-    _$lib_166.noneOrAll(sliderIn, sliderOut, ['x', 'y']);
+    _$lib_167.noneOrAll(sliderIn, sliderOut, ['x', 'y']);
 
     coerce('xanchor');
     coerce('yanchor');
@@ -50550,7 +52445,7 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('pad.b');
     coerce('pad.l');
 
-    _$lib_166.coerceFont(coerce, 'font', layoutOut.font);
+    _$lib_167.coerceFont(coerce, 'font', layoutOut.font);
 
     var currentValueIsVisible = coerce('currentvalue.visible');
 
@@ -50560,7 +52455,7 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
         coerce('currentvalue.suffix');
         coerce('currentvalue.offset');
 
-        _$lib_166.coerceFont(coerce, 'currentvalue.font', sliderOut.font);
+        _$lib_167.coerceFont(coerce, 'currentvalue.font', sliderOut.font);
     }
 
     coerce('transition.duration');
@@ -50583,7 +52478,7 @@ function stepsDefaults(sliderIn, sliderOut) {
     var valueIn, valueOut;
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(valueIn, valueOut, stepAttrs, attr, dflt);
+        return _$lib_167.coerce(valueIn, valueOut, stepAttrs, attr, dflt);
     }
 
     for(var i = 0; i < valuesIn.length; i++) {
@@ -50592,7 +52487,7 @@ function stepsDefaults(sliderIn, sliderOut) {
 
         coerce('method');
 
-        if(!_$lib_166.isPlainObject(valueIn) || (valueOut.method !== 'skip' && !Array.isArray(valueIn.args))) {
+        if(!_$lib_167.isPlainObject(valueIn) || (valueOut.method !== 'skip' && !Array.isArray(valueIn.args))) {
             continue;
         }
 
@@ -50615,7 +52510,6 @@ function stepsDefaults(sliderIn, sliderOut) {
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 /* removed: var _$d3_8 = require('d3'); */;
@@ -50623,7 +52517,8 @@ function stepsDefaults(sliderIn, sliderOut) {
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
 /* removed: var _$color_45 = require('../color'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
 /* removed: var _$anchor_utils_97 = require('../legend/anchor_utils'); */;
 
 /* removed: var _$constants_134 = require('./constants'); */;
@@ -50631,7 +52526,6 @@ function stepsDefaults(sliderIn, sliderOut) {
 var __LINE_SPACING_136 = _$alignment_145.LINE_SPACING;
 var __FROM_TL_136 = _$alignment_145.FROM_TL;
 var __FROM_BR_136 = _$alignment_145.FROM_BR;
-
 
 var _$draw_136 = function draw(gd) {
     var fullLayout = gd._fullLayout,
@@ -50793,7 +52687,7 @@ function findDimensions(gd, sliderOpts) {
         sliderLabels.each(function(stepOpts) {
             var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);
             var curValSize = (curValPrefix.node() && _$drawing_70.bBox(curValPrefix.node())) || {width: 0, height: 0};
-            var lines = _$svg_text_utils_187.lineCount(curValPrefix);
+            var lines = _$svg_text_utils_188.lineCount(curValPrefix);
             dims.currentValueMaxWidth = Math.max(dims.currentValueMaxWidth, Math.ceil(curValSize.width));
             dims.currentValueHeight = Math.max(dims.currentValueHeight, Math.ceil(curValSize.height));
             dims.currentValueMaxLines = Math.max(dims.currentValueMaxLines, lines);
@@ -50873,10 +52767,8 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
 function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
     if(!sliderOpts.currentvalue.visible) return;
 
-    var x0, textAnchor;
-    var text = sliderGroup.selectAll('text')
-        .data([0]);
     var dims = sliderOpts._dims;
+    var x0, textAnchor;
 
     switch(sliderOpts.currentvalue.xanchor) {
         case 'right':
@@ -50895,13 +52787,13 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
             textAnchor = 'left';
     }
 
-    text.enter().append('text')
-        .classed(_$constants_134.labelClass, true)
-        .classed('user-select-none', true)
-        .attr({
-            'text-anchor': textAnchor,
-            'data-notex': 1
-        });
+    var text = _$lib_167.ensureSingle(sliderGroup, 'text', _$constants_134.labelClass, function(s) {
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': textAnchor,
+                'data-notex': 1
+            });
+    });
 
     var str = sliderOpts.currentvalue.prefix ? sliderOpts.currentvalue.prefix : '';
 
@@ -50918,26 +52810,23 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
 
     text.call(_$drawing_70.font, sliderOpts.currentvalue.font)
         .text(str)
-        .call(_$svg_text_utils_187.convertToTspans, sliderOpts._gd);
+        .call(_$svg_text_utils_188.convertToTspans, sliderOpts._gd);
 
-    var lines = _$svg_text_utils_187.lineCount(text);
+    var lines = _$svg_text_utils_188.lineCount(text);
 
     var y0 = (dims.currentValueMaxLines + 1 - lines) *
         sliderOpts.currentvalue.font.size * __LINE_SPACING_136;
 
-    _$svg_text_utils_187.positionText(text, x0, y0);
+    _$svg_text_utils_188.positionText(text, x0, y0);
 
     return text;
 }
 
 function drawGrip(sliderGroup, gd, sliderOpts) {
-    var grip = sliderGroup.selectAll('rect.' + _$constants_134.gripRectClass)
-        .data([0]);
-
-    grip.enter().append('rect')
-        .classed(_$constants_134.gripRectClass, true)
-        .call(attachGripEvents, gd, sliderGroup, sliderOpts)
-        .style('pointer-events', 'all');
+    var grip = _$lib_167.ensureSingle(sliderGroup, 'rect', _$constants_134.gripRectClass, function(s) {
+        s.call(attachGripEvents, gd, sliderGroup, sliderOpts)
+            .style('pointer-events', 'all');
+    });
 
     grip.attr({
         width: _$constants_134.gripWidth,
@@ -50945,37 +52834,30 @@ function drawGrip(sliderGroup, gd, sliderOpts) {
         rx: _$constants_134.gripRadius,
         ry: _$constants_134.gripRadius,
     })
-        .call(_$color_45.stroke, sliderOpts.bordercolor)
-        .call(_$color_45.fill, sliderOpts.bgcolor)
-        .style('stroke-width', sliderOpts.borderwidth + 'px');
+    .call(_$color_45.stroke, sliderOpts.bordercolor)
+    .call(_$color_45.fill, sliderOpts.bgcolor)
+    .style('stroke-width', sliderOpts.borderwidth + 'px');
 }
 
 function drawLabel(item, data, sliderOpts) {
-    var text = item.selectAll('text')
-        .data([0]);
-
-    text.enter().append('text')
-        .classed(_$constants_134.labelClass, true)
-        .classed('user-select-none', true)
-        .attr({
-            'text-anchor': 'middle',
-            'data-notex': 1
-        });
+    var text = _$lib_167.ensureSingle(item, 'text', _$constants_134.labelClass, function(s) {
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': 'middle',
+                'data-notex': 1
+            });
+    });
 
     text.call(_$drawing_70.font, sliderOpts.font)
         .text(data.step.label)
-        .call(_$svg_text_utils_187.convertToTspans, sliderOpts._gd);
+        .call(_$svg_text_utils_188.convertToTspans, sliderOpts._gd);
 
     return text;
 }
 
 function drawLabelGroup(sliderGroup, sliderOpts) {
-    var labels = sliderGroup.selectAll('g.' + _$constants_134.labelsClass)
-        .data([0]);
+    var labels = _$lib_167.ensureSingle(sliderGroup, 'g', _$constants_134.labelsClass);
     var dims = sliderOpts._dims;
-
-    labels.enter().append('g')
-        .classed(_$constants_134.labelsClass, true);
 
     var labelItems = labels.selectAll('g.' + _$constants_134.labelGroupClass)
         .data(dims.labelSteps);
@@ -51179,14 +53061,11 @@ function positionToNormalizedValue(sliderOpts, position) {
 }
 
 function drawTouchRect(sliderGroup, gd, sliderOpts) {
-    var rect = sliderGroup.selectAll('rect.' + _$constants_134.railTouchRectClass)
-        .data([0]);
     var dims = sliderOpts._dims;
-
-    rect.enter().append('rect')
-        .classed(_$constants_134.railTouchRectClass, true)
-        .call(attachGripEvents, gd, sliderGroup, sliderOpts)
-        .style('pointer-events', 'all');
+    var rect = _$lib_167.ensureSingle(sliderGroup, 'rect', _$constants_134.railTouchRectClass, function(s) {
+        s.call(attachGripEvents, gd, sliderGroup, sliderOpts)
+            .style('pointer-events', 'all');
+    });
 
     rect.attr({
         width: dims.inputAreaLength,
@@ -51199,14 +53078,9 @@ function drawTouchRect(sliderGroup, gd, sliderOpts) {
 }
 
 function drawRail(sliderGroup, sliderOpts) {
-    var rect = sliderGroup.selectAll('rect.' + _$constants_134.railRectClass)
-        .data([0]);
     var dims = sliderOpts._dims;
-
-    rect.enter().append('rect')
-        .classed(_$constants_134.railRectClass, true);
-
     var computedLength = dims.inputAreaLength - _$constants_134.railInset * 2;
+    var rect = _$lib_167.ensureSingle(sliderGroup, 'rect', _$constants_134.railRectClass);
 
     rect.attr({
         width: computedLength,
@@ -51215,9 +53089,9 @@ function drawRail(sliderGroup, sliderOpts) {
         ry: _$constants_134.railRadius,
         'shape-rendering': 'crispEdges'
     })
-        .call(_$color_45.stroke, sliderOpts.bordercolor)
-        .call(_$color_45.fill, sliderOpts.bgcolor)
-        .style('stroke-width', sliderOpts.borderwidth + 'px');
+    .call(_$color_45.stroke, sliderOpts.bordercolor)
+    .call(_$color_45.fill, sliderOpts.bgcolor)
+    .style('stroke-width', sliderOpts.borderwidth + 'px');
 
     _$drawing_70.setTranslate(rect,
         _$constants_134.railInset,
@@ -51272,8 +53146,8 @@ var _$sliders_137 = {
 
 /* removed: var _$font_attributes_236 = require('../../plots/font_attributes'); */;
 /* removed: var _$attributes_44 = require('../color/attributes'); */;
-var __extendFlat_139 = _$extend_158.extendFlat;
-var __overrideAll_139 = _$edit_types_194.overrideAll;
+var __extendFlat_139 = _$extend_159.extendFlat;
+var __overrideAll_139 = _$edit_types_195.overrideAll;
 /* removed: var _$pad_attributes_249 = require('../../plots/pad_attributes'); */;
 
 var buttonsAttrs = {
@@ -51504,8 +53378,8 @@ var _$constants_140 = {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$handleArrayContainerDefaults_205 = require('../../plots/array_container_defaults'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$handleArrayContainerDefaults_206 = require('../../plots/array_container_defaults'); */;
 
 /* removed: var _$attributes_139 = require('./attributes'); */;
 /* removed: var _$constants_140 = require('./constants'); */;
@@ -51520,13 +53394,13 @@ var _$updateMenusDefaults_141 = function updateMenusDefaults(layoutIn, layoutOut
         handleItemDefaults: menuDefaults
     };
 
-    _$handleArrayContainerDefaults_205(layoutIn, layoutOut, opts);
+    _$handleArrayContainerDefaults_206(layoutIn, layoutOut, opts);
 };
 
 function menuDefaults(menuIn, menuOut, layoutOut) {
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(menuIn, menuOut, _$attributes_139, attr, dflt);
+        return _$lib_167.coerce(menuIn, menuOut, _$attributes_139, attr, dflt);
     }
 
     var buttons = __buttonsDefaults_141(menuIn, menuOut);
@@ -51541,7 +53415,7 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
 
     coerce('x');
     coerce('y');
-    _$lib_166.noneOrAll(menuIn, menuOut, ['x', 'y']);
+    _$lib_167.noneOrAll(menuIn, menuOut, ['x', 'y']);
 
     coerce('xanchor');
     coerce('yanchor');
@@ -51551,7 +53425,7 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
     coerce('pad.b');
     coerce('pad.l');
 
-    _$lib_166.coerceFont(coerce, 'font', layoutOut.font);
+    _$lib_167.coerceFont(coerce, 'font', layoutOut.font);
 
     coerce('bgcolor', layoutOut.paper_bgcolor);
     coerce('bordercolor');
@@ -51565,7 +53439,7 @@ function __buttonsDefaults_141(menuIn, menuOut) {
     var buttonIn, buttonOut;
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(buttonIn, buttonOut, __buttonAttrs_141, attr, dflt);
+        return _$lib_167.coerce(buttonIn, buttonOut, __buttonAttrs_141, attr, dflt);
     }
 
     for(var i = 0; i < buttonsIn.length; i++) {
@@ -51574,7 +53448,7 @@ function __buttonsDefaults_141(menuIn, menuOut) {
 
         coerce('method');
 
-        if(!_$lib_166.isPlainObject(buttonIn) || (buttonOut.method !== 'skip' && !Array.isArray(buttonIn.args))) {
+        if(!_$lib_167.isPlainObject(buttonIn) || (buttonOut.method !== 'skip' && !Array.isArray(buttonIn.args))) {
             continue;
         }
 
@@ -51606,7 +53480,7 @@ var _$ScrollBox_144 = ScrollBox;
 /* removed: var _$color_45 = require('../color'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 /**
  * Helper class to setup a scroll box
@@ -51991,7 +53865,7 @@ ScrollBox.prototype._onBarDrag = function onBarDrag() {
     if(this.hbar) {
         var xMin = translateX + this._hbarXMin,
             xMax = xMin + this._hbarTranslateMax,
-            x = _$lib_166.constrain(_$d3_8.event.x, xMin, xMax),
+            x = _$lib_167.constrain(_$d3_8.event.x, xMin, xMax),
             xf = (x - xMin) / (xMax - xMin);
 
         var translateXMax = this.position.w - this._box.w;
@@ -52002,7 +53876,7 @@ ScrollBox.prototype._onBarDrag = function onBarDrag() {
     if(this.vbar) {
         var yMin = translateY + this._vbarYMin,
             yMax = yMin + this._vbarTranslateMax,
-            y = _$lib_166.constrain(_$d3_8.event.y, yMin, yMax),
+            y = _$lib_167.constrain(_$d3_8.event.y, yMin, yMax),
             yf = (y - yMin) / (yMax - yMin);
 
         var translateYMax = this.position.h - this._box.h;
@@ -52025,8 +53899,8 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     var translateXMax = this.position.w - this._box.w,
         translateYMax = this.position.h - this._box.h;
 
-    translateX = _$lib_166.constrain(translateX || 0, 0, translateXMax);
-    translateY = _$lib_166.constrain(translateY || 0, 0, translateYMax);
+    translateX = _$lib_167.constrain(translateX || 0, 0, translateXMax);
+    translateY = _$lib_167.constrain(translateY || 0, 0, translateYMax);
 
     this.translateX = translateX;
     this.translateY = translateY;
@@ -52075,7 +53949,8 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
 /* removed: var _$color_45 = require('../color'); */;
 /* removed: var _$drawing_70 = require('../drawing'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$svg_text_utils_188 = require('../../lib/svg_text_utils'); */;
 /* removed: var _$anchor_utils_97 = require('../legend/anchor_utils'); */;
 
 var __LINE_SPACING_142 = _$alignment_145.LINE_SPACING;
@@ -52139,12 +54014,9 @@ var _$draw_142 = function draw(gd) {
         .classed(_$constants_140.headerGroupClassName, true);
 
     // draw dropdown button container
-    var gButton = menus.selectAll('g.' + _$constants_140.dropdownButtonGroupClassName)
-        .data([0]);
-
-    gButton.enter().append('g')
-        .classed(_$constants_140.dropdownButtonGroupClassName, true)
-        .style('pointer-events', 'all');
+    var gButton = _$lib_167.ensureSingle(menus, 'g', _$constants_140.dropdownButtonGroupClassName, function(s) {
+        s.style('pointer-events', 'all');
+    });
 
     // find dimensions before plotting anything (this mutates menuOpts)
     for(var i = 0; i < menuData.length; i++) {
@@ -52251,36 +54123,30 @@ function __setActive_142(gd, menuOpts, buttonOpts, gHeader, gButton, scrollBox, 
 }
 
 function drawHeader(gd, gHeader, gButton, scrollBox, menuOpts) {
-    var header = gHeader.selectAll('g.' + _$constants_140.headerClassName)
-        .data([0]);
+    var header = _$lib_167.ensureSingle(gHeader, 'g', _$constants_140.headerClassName, function(s) {
+        s.style('pointer-events', 'all');
+    });
+
     var dims = menuOpts._dims;
-
-    header.enter().append('g')
-        .classed(_$constants_140.headerClassName, true)
-        .style('pointer-events', 'all');
-
-    var active = menuOpts.active,
-        headerOpts = menuOpts.buttons[active] || _$constants_140.blankHeaderOpts,
-        posOpts = { y: menuOpts.pad.t, yPad: 0, x: menuOpts.pad.l, xPad: 0, index: 0 },
-        positionOverrides = {
-            width: dims.headerWidth,
-            height: dims.headerHeight
-        };
+    var active = menuOpts.active;
+    var headerOpts = menuOpts.buttons[active] || _$constants_140.blankHeaderOpts;
+    var posOpts = { y: menuOpts.pad.t, yPad: 0, x: menuOpts.pad.l, xPad: 0, index: 0 };
+    var positionOverrides = {
+        width: dims.headerWidth,
+        height: dims.headerHeight
+    };
 
     header
         .call(drawItem, menuOpts, headerOpts, gd)
         .call(setItemPosition, menuOpts, posOpts, positionOverrides);
 
     // draw drop arrow at the right edge
-    var arrow = gHeader.selectAll('text.' + _$constants_140.headerArrowClassName)
-        .data([0]);
-
-    arrow.enter().append('text')
-        .classed(_$constants_140.headerArrowClassName, true)
-        .classed('user-select-none', true)
-        .attr('text-anchor', 'end')
-        .call(_$drawing_70.font, menuOpts.font)
-        .text(_$constants_140.arrowSymbol[menuOpts.direction]);
+    var arrow = _$lib_167.ensureSingle(gHeader, 'text', _$constants_140.headerArrowClassName, function(s) {
+        s.classed('user-select-none', true)
+            .attr('text-anchor', 'end')
+            .call(_$drawing_70.font, menuOpts.font)
+            .text(_$constants_140.arrowSymbol[menuOpts.direction]);
+    });
 
     arrow.attr({
         x: dims.headerWidth - _$constants_140.arrowOffsetX + menuOpts.pad.l,
@@ -52508,16 +54374,13 @@ function drawItem(item, menuOpts, itemOpts, gd) {
 }
 
 function drawItemRect(item, menuOpts) {
-    var rect = item.selectAll('rect')
-        .data([0]);
-
-    rect.enter().append('rect')
-        .classed(_$constants_140.itemRectClassName, true)
-        .attr({
+    var rect = _$lib_167.ensureSingle(item, 'rect', _$constants_140.itemRectClassName, function(s) {
+        s.attr({
             rx: _$constants_140.rx,
             ry: _$constants_140.ry,
             'shape-rendering': 'crispEdges'
         });
+    });
 
     rect.call(_$color_45.stroke, menuOpts.bordercolor)
         .call(_$color_45.fill, menuOpts.bgcolor)
@@ -52525,20 +54388,17 @@ function drawItemRect(item, menuOpts) {
 }
 
 function drawItemText(item, menuOpts, itemOpts, gd) {
-    var text = item.selectAll('text')
-        .data([0]);
-
-    text.enter().append('text')
-        .classed(_$constants_140.itemTextClassName, true)
-        .classed('user-select-none', true)
-        .attr({
-            'text-anchor': 'start',
-            'data-notex': 1
-        });
+    var text = _$lib_167.ensureSingle(item, 'text', _$constants_140.itemTextClassName, function(s) {
+        s.classed('user-select-none', true)
+            .attr({
+                'text-anchor': 'start',
+                'data-notex': 1
+            });
+    });
 
     text.call(_$drawing_70.font, menuOpts.font)
         .text(itemOpts.label)
-        .call(_$svg_text_utils_187.convertToTspans, gd);
+        .call(_$svg_text_utils_188.convertToTspans, gd);
 }
 
 function styleButtons(buttons, menuOpts) {
@@ -52601,7 +54461,7 @@ function __findDimensions_142(gd, menuOpts) {
 
         // height is determined by item text
         var tHeight = menuOpts.font.size * __LINE_SPACING_142;
-        var tLines = _$svg_text_utils_187.lineCount(text);
+        var tLines = _$svg_text_utils_188.lineCount(text);
         var hEff = Math.max(tHeight * tLines, _$constants_140.minHeight) + _$constants_140.textOffsetY;
 
         hEff = Math.ceil(hEff);
@@ -52715,10 +54575,10 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
     });
 
     var tHeight = menuOpts.font.size * __LINE_SPACING_142;
-    var tLines = _$svg_text_utils_187.lineCount(text);
+    var tLines = _$svg_text_utils_188.lineCount(text);
     var spanOffset = ((tLines - 1) * tHeight / 2);
 
-    _$svg_text_utils_187.positionText(text, _$constants_140.textOffsetX,
+    _$svg_text_utils_188.positionText(text, _$constants_140.textOffsetX,
         finalHeight / 2 - spanOffset + _$constants_140.textOffsetY);
 
     if(isVertical) {
@@ -52813,8 +54673,8 @@ if(typeof MathJax !== 'undefined') {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../lib'); */;
-/* removed: var _$plot_config_199 = require('../plot_api/plot_config'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
+/* removed: var _$plot_config_200 = require('../plot_api/plot_config'); */;
 
 
 /**
@@ -52834,8 +54694,8 @@ function copyArgArray(gd, args) {
         if(arg === gd) copy[i] = arg;
         else if(typeof arg === 'object') {
             copy[i] = Array.isArray(arg) ?
-                _$lib_166.extendDeep([], arg) :
-                _$lib_166.extendDeepAll({}, arg);
+                _$lib_167.extendDeep([], arg) :
+                _$lib_167.extendDeepAll({}, arg);
         }
         else copy[i] = arg;
     }
@@ -52849,7 +54709,7 @@ function copyArgArray(gd, args) {
 // -----------------------------------------------------
 
 
-var __queue_180 = {};
+var __queue_181 = {};
 
 // TODO: disable/enable undo and redo buttons appropriately
 
@@ -52862,7 +54722,7 @@ var __queue_180 = {};
  * @param redoFunc Function to redo this operation
  * @param redoArgs Args to supply redoFunc with
  */
-__queue_180.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
+__queue_181.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
     var queueObj,
         queueIndex;
 
@@ -52895,7 +54755,7 @@ __queue_180.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
         queueObj.redo.args.push(redoArgs);
     }
 
-    if(gd.undoQueue.queue.length > _$plot_config_199.queueLength) {
+    if(gd.undoQueue.queue.length > _$plot_config_200.queueLength) {
         gd.undoQueue.queue.shift();
         gd.undoQueue.index--;
     }
@@ -52906,7 +54766,7 @@ __queue_180.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
  *
  * @param gd
  */
-__queue_180.startSequence = function(gd) {
+__queue_181.startSequence = function(gd) {
     gd.undoQueue = gd.undoQueue || {index: 0, queue: [], sequence: false};
     gd.undoQueue.sequence = true;
     gd.undoQueue.beginSequence = true;
@@ -52919,7 +54779,7 @@ __queue_180.startSequence = function(gd) {
  *
  * @param gd
  */
-__queue_180.stopSequence = function(gd) {
+__queue_181.stopSequence = function(gd) {
     gd.undoQueue = gd.undoQueue || {index: 0, queue: [], sequence: false};
     gd.undoQueue.sequence = false;
     gd.undoQueue.beginSequence = false;
@@ -52930,7 +54790,7 @@ __queue_180.stopSequence = function(gd) {
  *
  * @param gd
  */
-__queue_180.undo = function undo(gd) {
+__queue_181.undo = function undo(gd) {
     var queueObj, i;
 
     if(gd.framework && gd.framework.isPolar) {
@@ -52952,7 +54812,7 @@ __queue_180.undo = function undo(gd) {
     // this sequence keeps things from adding to the queue during undo/redo
     gd.undoQueue.inSequence = true;
     for(i = 0; i < queueObj.undo.calls.length; i++) {
-        __queue_180.plotDo(gd, queueObj.undo.calls[i], queueObj.undo.args[i]);
+        __queue_181.plotDo(gd, queueObj.undo.calls[i], queueObj.undo.args[i]);
     }
     gd.undoQueue.inSequence = false;
     gd.autoplay = false;
@@ -52963,7 +54823,7 @@ __queue_180.undo = function undo(gd) {
  *
  * @param gd
  */
-__queue_180.redo = function redo(gd) {
+__queue_181.redo = function redo(gd) {
     var queueObj, i;
 
     if(gd.framework && gd.framework.isPolar) {
@@ -52982,7 +54842,7 @@ __queue_180.redo = function redo(gd) {
     // this sequence keeps things from adding to the queue during undo/redo
     gd.undoQueue.inSequence = true;
     for(i = 0; i < queueObj.redo.calls.length; i++) {
-        __queue_180.plotDo(gd, queueObj.redo.calls[i], queueObj.redo.args[i]);
+        __queue_181.plotDo(gd, queueObj.redo.calls[i], queueObj.redo.args[i]);
     }
     gd.undoQueue.inSequence = false;
     gd.autoplay = false;
@@ -53000,7 +54860,7 @@ __queue_180.redo = function redo(gd) {
  * @param func
  * @param args
  */
-__queue_180.plotDo = function(gd, func, args) {
+__queue_181.plotDo = function(gd, func, args) {
     gd.autoplay = true;
 
     // this *won't* copy gd and it preserves `undefined` properties!
@@ -53010,7 +54870,7 @@ __queue_180.plotDo = function(gd, func, args) {
     func.apply(null, args);
 };
 
-var _$queue_180 = __queue_180;
+var _$queue_181 = __queue_181;
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -53022,7 +54882,7 @@ var _$queue_180 = __queue_180;
 
 'use strict';
 
-var _$localeEnUs_191 = {
+var _$localeEnUs_192 = {
     moduleType: 'locale',
     name: 'en-US',
     dictionary: {
@@ -53043,14 +54903,14 @@ var _$localeEnUs_191 = {
 
 'use strict';
 
-var _$localeEn_192 = {
+var _$localeEn_193 = {
     moduleType: 'locale',
     name: 'en',
     dictionary: {
         'Click to enter Colorscale title': 'Click to enter Colourscale title'
     },
     format: {
-        days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         shortDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
         months: [
             'January', 'February', 'March', 'April', 'May', 'June',
@@ -53122,7 +54982,7 @@ function fromQuat(out, q) {
 
     return out;
 };
-var _$helpers_195 = {};
+var _$helpers_196 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53137,19 +54997,19 @@ var _$helpers_195 = {};
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 /* removed: var _$fromQuat_12 = require('gl-mat4/fromQuat'); */;
 
-/* removed: var _$registry_258 = require('../registry'); */;
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$registry_259 = require('../registry'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 /* removed: var _$plots_250 = require('../plots/plots'); */;
-/* removed: var _$axis_ids_212 = require('../plots/cartesian/axis_ids'); */;
-var cleanId = _$axis_ids_212.cleanId;
-var getFromTrace = _$axis_ids_212.getFromTrace;
+/* removed: var _$axis_ids_213 = require('../plots/cartesian/axis_ids'); */;
+var cleanId = _$axis_ids_213.cleanId;
+var getFromTrace = _$axis_ids_213.getFromTrace;
 /* removed: var _$color_45 = require('../components/color'); */;
 
 
 // clear the promise queue if one of them got rejected
-_$helpers_195.clearPromiseQueue = function(gd) {
+_$helpers_196.clearPromiseQueue = function(gd) {
     if(Array.isArray(gd._promises) && gd._promises.length > 0) {
-        _$lib_166.log('Clearing previous rejected promises from queue.');
+        _$lib_167.log('Clearing previous rejected promises from queue.');
     }
 
     gd._promises = [];
@@ -53158,7 +55018,7 @@ _$helpers_195.clearPromiseQueue = function(gd) {
 // make a few changes to the layout right away
 // before it gets used for anything
 // backward compatibility and cleanup of nonstandard options
-_$helpers_195.cleanLayout = function(layout) {
+_$helpers_196.cleanLayout = function(layout) {
     var i, j;
 
     if(!layout) layout = {};
@@ -53251,7 +55111,7 @@ _$helpers_195.cleanLayout = function(layout) {
     for(i = 0; i < annotationsLen; i++) {
         var ann = layout.annotations[i];
 
-        if(!_$lib_166.isPlainObject(ann)) continue;
+        if(!_$lib_167.isPlainObject(ann)) continue;
 
         if(ann.ref) {
             if(ann.ref === 'paper') {
@@ -53273,7 +55133,7 @@ _$helpers_195.cleanLayout = function(layout) {
     for(i = 0; i < shapesLen; i++) {
         var shape = layout.shapes[i];
 
-        if(!_$lib_166.isPlainObject(shape)) continue;
+        if(!_$lib_167.isPlainObject(shape)) continue;
 
         cleanAxRef(shape, 'xref');
         cleanAxRef(shape, 'yref');
@@ -53329,7 +55189,7 @@ function cleanAxRef(container, attr) {
  * Important: if you're going to add something here that modifies a data array,
  * update it in place so the new array === the old one.
  */
-_$helpers_195.cleanData = function(data, existingData) {
+_$helpers_196.cleanData = function(data, existingData) {
     // Enforce unique IDs
     var suids = [], // seen uids --- so we can weed out incoming repeats
         uids = data.concat(Array.isArray(existingData) ? existingData : [])
@@ -53345,10 +55205,10 @@ _$helpers_195.cleanData = function(data, existingData) {
             var newUid;
 
             for(i = 0; i < 100; i++) {
-                newUid = _$lib_166.randstr(uids);
+                newUid = _$lib_167.randstr(uids);
                 if(suids.indexOf(newUid) === -1) break;
             }
-            trace.uid = _$lib_166.randstr(uids);
+            trace.uid = _$lib_167.randstr(uids);
             uids.push(trace.uid);
         }
         // keep track of already seen uids, so that if there are
@@ -53368,7 +55228,7 @@ _$helpers_195.cleanData = function(data, existingData) {
         if(trace.error_y && 'opacity' in trace.error_y) {
             var dc = _$color_45.defaults,
                 yeColor = trace.error_y.color ||
-                (_$registry_258.traceIs(trace, 'bar') ? _$color_45.defaultLine : dc[tracei % dc.length]);
+                (_$registry_259.traceIs(trace, 'bar') ? _$color_45.defaultLine : dc[tracei % dc.length]);
             trace.error_y.color = _$color_45.addOpacity(
                 _$color_45.rgb(yeColor),
                 _$color_45.opacity(yeColor) * trace.error_y.opacity);
@@ -53378,17 +55238,17 @@ _$helpers_195.cleanData = function(data, existingData) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir === 'h' && (_$registry_258.traceIs(trace, 'bar') ||
+            if(trace.bardir === 'h' && (_$registry_259.traceIs(trace, 'bar') ||
                      trace.type.substr(0, 9) === 'histogram')) {
                 trace.orientation = 'h';
-                _$helpers_195.swapXYData(trace);
+                _$helpers_196.swapXYData(trace);
             }
             delete trace.bardir;
         }
 
         // now we have only one 1D histogram type, and whether
         // it uses x or y data depends on trace.orientation
-        if(trace.type === 'histogramy') _$helpers_195.swapXYData(trace);
+        if(trace.type === 'histogramy') _$helpers_196.swapXYData(trace);
         if(trace.type === 'histogramx' || trace.type === 'histogramy') {
             trace.type = 'histogram';
         }
@@ -53408,11 +55268,11 @@ _$helpers_195.cleanData = function(data, existingData) {
         if(trace.yaxis) trace.yaxis = cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if(_$registry_258.traceIs(trace, 'gl3d') && trace.scene) {
+        if(_$registry_259.traceIs(trace, 'gl3d') && trace.scene) {
             trace.scene = _$plots_250.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!_$registry_258.traceIs(trace, 'pie') && !_$registry_258.traceIs(trace, 'bar')) {
+        if(!_$registry_259.traceIs(trace, 'pie') && !_$registry_259.traceIs(trace, 'bar')) {
             if(Array.isArray(trace.textposition)) {
                 for(i = 0; i < trace.textposition.length; i++) {
                     trace.textposition[i] = cleanTextPosition(trace.textposition[i]);
@@ -53424,24 +55284,24 @@ _$helpers_195.cleanData = function(data, existingData) {
         }
 
         // fix typo in colorscale definition
-        if(_$registry_258.traceIs(trace, '2dMap')) {
+        if(_$registry_259.traceIs(trace, '2dMap')) {
             if(trace.colorscale === 'YIGnBu') trace.colorscale = 'YlGnBu';
             if(trace.colorscale === 'YIOrRd') trace.colorscale = 'YlOrRd';
         }
-        if(_$registry_258.traceIs(trace, 'markerColorscale') && trace.marker) {
+        if(_$registry_259.traceIs(trace, 'markerColorscale') && trace.marker) {
             var cont = trace.marker;
             if(cont.colorscale === 'YIGnBu') cont.colorscale = 'YlGnBu';
             if(cont.colorscale === 'YIOrRd') cont.colorscale = 'YlOrRd';
         }
 
         // fix typo in surface 'highlight*' definitions
-        if(trace.type === 'surface' && _$lib_166.isPlainObject(trace.contours)) {
+        if(trace.type === 'surface' && _$lib_167.isPlainObject(trace.contours)) {
             var dims = ['x', 'y', 'z'];
 
             for(i = 0; i < dims.length; i++) {
                 var opts = trace.contours[dims[i]];
 
-                if(!_$lib_166.isPlainObject(opts)) continue;
+                if(!_$lib_167.isPlainObject(opts)) continue;
 
                 if(opts.highlightColor) {
                     opts.highlightcolor = opts.highlightColor;
@@ -53455,6 +55315,32 @@ _$helpers_195.cleanData = function(data, existingData) {
             }
         }
 
+        // fixes from converting finance from transforms to real trace types
+        if(trace.type === 'candlestick' || trace.type === 'ohlc') {
+            var increasingShowlegend = (trace.increasing || {}).showlegend !== false;
+            var decreasingShowlegend = (trace.decreasing || {}).showlegend !== false;
+            var increasingName = cleanFinanceDir(trace.increasing);
+            var decreasingName = cleanFinanceDir(trace.decreasing);
+
+            // now figure out something smart to do with the separate direction
+            // names we removed
+            if((increasingName !== false) && (decreasingName !== false)) {
+                // both sub-names existed: base name previously had no effect
+                // so ignore it and try to find a shared part of the sub-names
+
+                var newName = commonPrefix(
+                    increasingName, decreasingName,
+                    increasingShowlegend, decreasingShowlegend
+                );
+                // if no common part, leave whatever name was (or wasn't) there
+                if(newName) trace.name = newName;
+            }
+            else if((increasingName || decreasingName) && !trace.name) {
+                // one sub-name existed but not the base name - just use the sub-name
+                trace.name = increasingName || decreasingName;
+            }
+        }
+
         // transforms backward compatibility fixes
         if(Array.isArray(trace.transforms)) {
             var transforms = trace.transforms;
@@ -53462,7 +55348,7 @@ _$helpers_195.cleanData = function(data, existingData) {
             for(i = 0; i < transforms.length; i++) {
                 var transform = transforms[i];
 
-                if(!_$lib_166.isPlainObject(transform)) continue;
+                if(!_$lib_167.isPlainObject(transform)) continue;
 
                 switch(transform.type) {
                     case 'filter':
@@ -53513,6 +55399,38 @@ _$helpers_195.cleanData = function(data, existingData) {
     }
 };
 
+function cleanFinanceDir(dirContainer) {
+    if(!_$lib_167.isPlainObject(dirContainer)) return false;
+
+    var dirName = dirContainer.name;
+
+    delete dirContainer.name;
+    delete dirContainer.showlegend;
+
+    return (typeof dirName === 'string' || typeof dirName === 'number') && String(dirName);
+}
+
+function commonPrefix(name1, name2, show1, show2) {
+    // if only one is shown in the legend, use that
+    if(show1 && !show2) return name1;
+    if(show2 && !show1) return name2;
+
+    // if both or neither are in the legend, check if one is blank (or whitespace)
+    // and use the other one
+    // note that hover labels can still use the name even if the legend doesn't
+    if(!name1.trim()) return name2;
+    if(!name2.trim()) return name1;
+
+    var minLen = Math.min(name1.length, name2.length);
+    var i;
+    for(i = 0; i < minLen; i++) {
+        if(name1.charAt(i) !== name2.charAt(i)) break;
+    }
+
+    var out = name1.substr(0, i);
+    return out.trim();
+}
+
 // textposition - support partial attributes (ie just 'top')
 // and incorrect use of middle / center etc.
 function cleanTextPosition(textposition) {
@@ -53535,9 +55453,9 @@ function emptyContainer(outer, innerStr) {
 
 
 // swap all the data and data attributes associated with x and y
-_$helpers_195.swapXYData = function(trace) {
+_$helpers_196.swapXYData = function(trace) {
     var i;
-    _$lib_166.swapAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
+    _$lib_167.swapAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
     if(Array.isArray(trace.z) && Array.isArray(trace.z[0])) {
         if(trace.transpose) delete trace.transpose;
         else trace.transpose = true;
@@ -53546,9 +55464,9 @@ _$helpers_195.swapXYData = function(trace) {
         var errorY = trace.error_y,
             copyYstyle = ('copy_ystyle' in errorY) ? errorY.copy_ystyle :
                 !(errorY.color || errorY.thickness || errorY.width);
-        _$lib_166.swapAttrs(trace, ['error_?.copy_ystyle']);
+        _$lib_167.swapAttrs(trace, ['error_?.copy_ystyle']);
         if(copyYstyle) {
-            _$lib_166.swapAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
+            _$lib_167.swapAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
         }
     }
     if(typeof trace.hoverinfo === 'string') {
@@ -53562,7 +55480,7 @@ _$helpers_195.swapXYData = function(trace) {
 };
 
 // coerce traceIndices input to array of trace indices
-_$helpers_195.coerceTraceIndices = function(gd, traceIndices) {
+_$helpers_196.coerceTraceIndices = function(gd, traceIndices) {
     if(_$fastIsnumeric_11(traceIndices)) {
         return [traceIndices];
     }
@@ -53585,7 +55503,7 @@ _$helpers_195.coerceTraceIndices = function(gd, traceIndices) {
  *  undo hash (N.B. undoit may be mutated here).
  *
  */
-_$helpers_195.manageArrayContainers = function(np, newVal, undoit) {
+_$helpers_196.manageArrayContainers = function(np, newVal, undoit) {
     var obj = np.obj,
         parts = np.parts,
         pLength = parts.length,
@@ -53598,7 +55516,7 @@ _$helpers_195.manageArrayContainers = function(np, newVal, undoit) {
 
         // Clear item in array container when new value is null
         var contPath = parts.slice(0, pLength - 1).join('.'),
-            cont = _$lib_166.nestedProperty(obj, contPath).get();
+            cont = _$lib_167.nestedProperty(obj, contPath).get();
         cont.splice(pLast, 1);
 
         // Note that nested property clears null / undefined at end of
@@ -53645,7 +55563,7 @@ function getParent(attr) {
  * @returns {Boolean}
  *  is a parent of attr present in aobj?
  */
-_$helpers_195.hasParent = function(aobj, attr) {
+_$helpers_196.hasParent = function(aobj, attr) {
     var attrParent = getParent(attr);
     while(attrParent) {
         if(attrParent in aobj) return true;
@@ -53662,12 +55580,12 @@ _$helpers_195.hasParent = function(aobj, attr) {
  * @param {object} layoutUpdate: any update being done concurrently to the layout,
  *   which may supercede clearing the axis types
  */
-var __axLetters_195 = ['x', 'y', 'z'];
-_$helpers_195.clearAxisTypes = function(gd, traces, layoutUpdate) {
+var __axLetters_196 = ['x', 'y', 'z'];
+_$helpers_196.clearAxisTypes = function(gd, traces, layoutUpdate) {
     for(var i = 0; i < traces.length; i++) {
         var trace = gd._fullData[i];
         for(var j = 0; j < 3; j++) {
-            var ax = getFromTrace(gd, trace, __axLetters_195[j]);
+            var ax = getFromTrace(gd, trace, __axLetters_196[j]);
 
             // do not clear log type - that's never an auto result so must have been intentional
             if(ax && ax.type !== 'log') {
@@ -53680,14 +55598,14 @@ _$helpers_195.clearAxisTypes = function(gd, traces, layoutUpdate) {
                 var typeAttr = axAttr + '.type';
 
                 if(layoutUpdate[axAttr] === undefined && layoutUpdate[typeAttr] === undefined) {
-                    _$lib_166.nestedProperty(gd.layout, typeAttr).set(null);
+                    _$lib_167.nestedProperty(gd.layout, typeAttr).set(null);
                 }
             }
         }
     }
 };
 
-_$helpers_195.clearAxisAutomargins = function(gd) {
+_$helpers_196.clearAxisAutomargins = function(gd) {
     var keys = Object.keys(gd._fullLayout._pushmargin);
     for(var i = 0; i < keys.length; i++) {
         if(keys[i].indexOf('automargin') !== -1) {
@@ -53696,7 +55614,7 @@ _$helpers_195.clearAxisAutomargins = function(gd) {
     }
 };
 
-var _$manage_arrays_197 = {};
+var _$manage_arrays_198 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -53708,21 +55626,21 @@ var _$manage_arrays_197 = {};
 
 'use strict';
 
-/* removed: var _$nestedProperty_174 = require('../lib/nested_property'); */;
-/* removed: var _$isPlainObject_168 = require('../lib/is_plain_object'); */;
-/* removed: var _$noop_175 = require('../lib/noop'); */;
-/* removed: var _$loggers_171 = require('../lib/loggers'); */;
-var sorterAsc = _$search_184.sorterAsc;
-/* removed: var _$registry_258 = require('../registry'); */;
+/* removed: var _$nestedProperty_175 = require('../lib/nested_property'); */;
+/* removed: var _$isPlainObject_169 = require('../lib/is_plain_object'); */;
+/* removed: var _$noop_176 = require('../lib/noop'); */;
+/* removed: var _$loggers_172 = require('../lib/loggers'); */;
+var sorterAsc = _$search_185.sorterAsc;
+/* removed: var _$registry_259 = require('../registry'); */;
 
 
-_$manage_arrays_197.containerArrayMatch = _$containerArrayMatch_193;
+_$manage_arrays_198.containerArrayMatch = _$containerArrayMatch_194;
 
-var isAddVal = _$manage_arrays_197.isAddVal = function isAddVal(val) {
-    return val === 'add' || _$isPlainObject_168(val);
+var isAddVal = _$manage_arrays_198.isAddVal = function isAddVal(val) {
+    return val === 'add' || _$isPlainObject_169(val);
 };
 
-var isRemoveVal = _$manage_arrays_197.isRemoveVal = function isRemoveVal(val) {
+var isRemoveVal = _$manage_arrays_198.isRemoveVal = function isRemoveVal(val) {
     return val === null || val === 'remove';
 };
 
@@ -53769,19 +55687,19 @@ var isRemoveVal = _$manage_arrays_197.isRemoveVal = function isRemoveVal(val) {
  * @returns {bool} `true` if it managed to complete drawing of the changes
  *  `false` would mean the parent should replot.
  */
-_$manage_arrays_197.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np, edits, flags) {
+_$manage_arrays_198.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np, edits, flags) {
     var componentType = np.astr,
-        supplyComponentDefaults = _$registry_258.getComponentMethod(componentType, 'supplyLayoutDefaults'),
-        draw = _$registry_258.getComponentMethod(componentType, 'draw'),
-        drawOne = _$registry_258.getComponentMethod(componentType, 'drawOne'),
-        replotLater = flags.replot || flags.recalc || (supplyComponentDefaults === _$noop_175) ||
-            (draw === _$noop_175),
+        supplyComponentDefaults = _$registry_259.getComponentMethod(componentType, 'supplyLayoutDefaults'),
+        draw = _$registry_259.getComponentMethod(componentType, 'draw'),
+        drawOne = _$registry_259.getComponentMethod(componentType, 'drawOne'),
+        replotLater = flags.replot || flags.recalc || (supplyComponentDefaults === _$noop_176) ||
+            (draw === _$noop_176),
         layout = gd.layout,
         fullLayout = gd._fullLayout;
 
     if(edits['']) {
         if(Object.keys(edits).length > 1) {
-            _$loggers_171.warn('Full array edits are incompatible with other edits',
+            _$loggers_172.warn('Full array edits are incompatible with other edits',
                 componentType);
         }
 
@@ -53790,7 +55708,7 @@ _$manage_arrays_197.applyContainerArrayChanges = function applyContainerArrayCha
         if(isRemoveVal(fullVal)) np.set(null);
         else if(Array.isArray(fullVal)) np.set(fullVal);
         else {
-            _$loggers_171.warn('Unrecognized full array edit value', componentType, fullVal);
+            _$loggers_172.warn('Unrecognized full array edit value', componentType, fullVal);
             return true;
         }
 
@@ -53809,7 +55727,7 @@ _$manage_arrays_197.applyContainerArrayChanges = function applyContainerArrayCha
         // redoing supplyDefaults
         // TODO: this assumes componentArray is in gd.layout - which will not be
         // true after we extend this to restyle
-        componentArrayFull = _$nestedProperty_174(fullLayout, componentType).get();
+        componentArrayFull = _$nestedProperty_175(fullLayout, componentType).get();
 
     var deletes = [],
         firstIndexChange = -1,
@@ -53831,13 +55749,13 @@ _$manage_arrays_197.applyContainerArrayChanges = function applyContainerArrayCha
         adding = isAddVal(objVal);
 
         if(componentNum < 0 || componentNum > componentArray.length - (adding ? 0 : 1)) {
-            _$loggers_171.warn('index out of range', componentType, componentNum);
+            _$loggers_172.warn('index out of range', componentType, componentNum);
             continue;
         }
 
         if(objVal !== undefined) {
             if(objKeys.length > 1) {
-                _$loggers_171.warn(
+                _$loggers_172.warn(
                     'Insertion & removal are incompatible with edits to the same index.',
                     componentType, componentNum);
             }
@@ -53851,7 +55769,7 @@ _$manage_arrays_197.applyContainerArrayChanges = function applyContainerArrayCha
                 if(componentArrayFull) componentArrayFull.splice(componentNum, 0, {});
             }
             else {
-                _$loggers_171.warn('Unrecognized full object edit value',
+                _$loggers_172.warn('Unrecognized full object edit value',
                     componentType, componentNum, objVal);
             }
 
@@ -53859,7 +55777,7 @@ _$manage_arrays_197.applyContainerArrayChanges = function applyContainerArrayCha
         }
         else {
             for(j = 0; j < objKeys.length; j++) {
-                _$nestedProperty_174(componentArray[componentNum], objKeys[j]).set(objEdits[objKeys[j]]);
+                _$nestedProperty_175(componentArray[componentNum], objKeys[j]).set(objEdits[objKeys[j]]);
             }
         }
     }
@@ -53881,7 +55799,7 @@ _$manage_arrays_197.applyContainerArrayChanges = function applyContainerArrayCha
 
     // finally draw all the components we need to
     // if we added or removed any, redraw all after it
-    if(drawOne !== _$noop_175) {
+    if(drawOne !== _$noop_176) {
         var indicesToDraw;
         if(firstIndexChange === -1) {
             // there's no re-indexing to do, so only redraw components that changed
@@ -53922,13 +55840,13 @@ var _$buttons_107 = {};
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
-/* removed: var _$axis_ids_212 = require('../../plots/cartesian/axis_ids'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$axis_ids_213 = require('../../plots/cartesian/axis_ids'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$ploticon_2 = require('../../../build/ploticon'); */;
 
-var ____107 = _$lib_166._;
+var ____107 = _$lib_167._;
 
 var modeBarButtons = _$buttons_107 = {};
 
@@ -53965,19 +55883,19 @@ modeBarButtons.toImage = {
     click: function(gd) {
         var format = 'png';
 
-        _$lib_166.notifier(____107(gd, 'Taking snapshot - this may take a few seconds'), 'long');
+        _$lib_167.notifier(____107(gd, 'Taking snapshot - this may take a few seconds'), 'long');
 
-        if(_$lib_166.isIE()) {
-            _$lib_166.notifier(____107(gd, 'IE only supports svg.  Changing format to svg.'), 'long');
+        if(_$lib_167.isIE()) {
+            _$lib_167.notifier(____107(gd, 'IE only supports svg.  Changing format to svg.'), 'long');
             format = 'svg';
         }
 
-        _$registry_258.call('downloadImage', gd, {'format': format})
+        _$registry_259.call('downloadImage', gd, {'format': format})
           .then(function(filename) {
-              _$lib_166.notifier(____107(gd, 'Snapshot succeeded') + ' - ' + filename, 'long');
+              _$lib_167.notifier(____107(gd, 'Snapshot succeeded') + ' - ' + filename, 'long');
           })
           .catch(function() {
-              _$lib_166.notifier(____107(gd, 'Sorry, there was a problem downloading your snapshot!'), 'long');
+              _$lib_167.notifier(____107(gd, 'Sorry, there was a problem downloading your snapshot!'), 'long');
           });
     }
 };
@@ -54091,7 +56009,7 @@ function handleCartesian(gd, ev) {
     var val = button.getAttribute('data-val') || true;
     var fullLayout = gd._fullLayout;
     var aobj = {};
-    var axList = _$axis_ids_212.list(gd, null, true);
+    var axList = _$axis_ids_213.list(gd, null, true);
     var allSpikesEnabled = 'on';
 
     var ax, i;
@@ -54161,7 +56079,7 @@ function handleCartesian(gd, ev) {
         aobj[astr] = val;
     }
 
-    _$registry_258.call('relayout', gd, aobj);
+    _$registry_259.call('relayout', gd, aobj);
 }
 
 modeBarButtons.zoom3d = {
@@ -54217,7 +56135,7 @@ function handleDrag3d(gd, ev) {
     var val2d = (val === 'pan') ? val : 'zoom';
     layoutUpdate.dragmode = val2d;
 
-    _$registry_258.call('relayout', gd, layoutUpdate);
+    _$registry_259.call('relayout', gd, layoutUpdate);
 }
 
 modeBarButtons.resetCameraDefault3d = {
@@ -54252,11 +56170,11 @@ function handleCamera3d(gd, ev) {
             aobj[key] = null;
         }
         else if(attr === 'resetLastSave') {
-            aobj[key] = _$lib_166.extendDeep({}, scene.cameraInitial);
+            aobj[key] = _$lib_167.extendDeep({}, scene.cameraInitial);
         }
     }
 
-    _$registry_258.call('relayout', gd, aobj);
+    _$registry_259.call('relayout', gd, aobj);
 }
 
 modeBarButtons.hoverClosest3d = {
@@ -54286,7 +56204,7 @@ function handleHover3d(gd, ev) {
     var layoutUpdate = {};
 
     if(val) {
-        layoutUpdate = _$lib_166.extendDeep(layout, val);
+        layoutUpdate = _$lib_167.extendDeep(layout, val);
         button._previousVal = null;
     }
     else {
@@ -54314,10 +56232,10 @@ function handleHover3d(gd, ev) {
             }
         }
 
-        button._previousVal = _$lib_166.extendDeep({}, currentSpikes);
+        button._previousVal = _$lib_167.extendDeep({}, currentSpikes);
     }
 
-    _$registry_258.call('relayout', gd, layoutUpdate);
+    _$registry_259.call('relayout', gd, layoutUpdate);
 }
 
 modeBarButtons.zoomInGeo = {
@@ -54373,7 +56291,7 @@ function handleGeo(gd, ev) {
             var scale = geoLayout.projection.scale;
             var newScale = (val === 'in') ? 2 * scale : 0.5 * scale;
 
-            _$registry_258.call('relayout', gd, id + '.projection.scale', newScale);
+            _$registry_259.call('relayout', gd, id + '.projection.scale', newScale);
         } else if(attr === 'reset') {
             resetView(gd, 'geo');
         }
@@ -54412,7 +56330,7 @@ function toggleHover(gd) {
 
     var newHover = gd._fullLayout.hovermode ? false : onHoverVal;
 
-    _$registry_258.call('relayout', gd, 'hovermode', newHover);
+    _$registry_259.call('relayout', gd, 'hovermode', newHover);
 }
 
 // buttons when more then one plot types are present
@@ -54467,13 +56385,13 @@ modeBarButtons.toggleSpikelines = {
 
         var aobj = setSpikelineVisibility(gd);
 
-        _$registry_258.call('relayout', gd, aobj);
+        _$registry_259.call('relayout', gd, aobj);
     }
 };
 
 function setSpikelineVisibility(gd) {
     var fullLayout = gd._fullLayout;
-    var axList = _$axis_ids_212.list(gd, null, true);
+    var axList = _$axis_ids_213.list(gd, null, true);
     var aobj = {};
 
     var ax, axName;
@@ -54514,7 +56432,7 @@ function resetView(gd, subplotType) {
         }
     }
 
-    _$registry_258.call('relayout', gd, aObj);
+    _$registry_259.call('relayout', gd, aObj);
 }
 
 /**
@@ -54530,7 +56448,7 @@ function resetView(gd, subplotType) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$ploticon_2 = require('../../../build/ploticon'); */;
 
 
@@ -54732,7 +56650,7 @@ __proto_110.updateActiveButton = function(buttonClicked) {
         else {
             var val = (dataAttr === null) ?
                 dataAttr :
-                _$lib_166.nestedProperty(fullLayout, dataAttr).get();
+                _$lib_167.nestedProperty(fullLayout, dataAttr).get();
 
             button3.classed('active', val === thisval);
         }
@@ -54772,7 +56690,7 @@ __proto_110.getLogo = function() {
 
     a.href = 'https://plot.ly/';
     a.target = '_blank';
-    a.setAttribute('data-title', _$lib_166._(this.graphInfo, 'Produced with Plotly'));
+    a.setAttribute('data-title', _$lib_167._(this.graphInfo, 'Produced with Plotly'));
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
     a.appendChild(this.createIcon(_$ploticon_2.plotlylogo));
@@ -54790,7 +56708,7 @@ __proto_110.removeAllButtons = function() {
 };
 
 __proto_110.destroy = function() {
-    _$lib_166.removeElement(this.container.querySelector('.modebar'));
+    _$lib_167.removeElement(this.container.querySelector('.modebar'));
 };
 
 function createModeBar(gd, buttons) {
@@ -54824,9 +56742,9 @@ var _$createModeBar_110 = createModeBar;
 
 'use strict';
 
-/* removed: var _$axis_ids_212 = require('../../plots/cartesian/axis_ids'); */;
-/* removed: var _$subtypes_302 = require('../../traces/scatter/subtypes'); */;
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$axis_ids_213 = require('../../plots/cartesian/axis_ids'); */;
+/* removed: var _$subtypes_303 = require('../../traces/scatter/subtypes'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 
 /* removed: var _$createModeBar_110 = require('./modebar'); */;
 /* removed: var _$buttons_107 = require('./buttons'); */;
@@ -54988,7 +56906,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
 }
 
 function areAllAxesFixed(fullLayout) {
-    var axList = _$axis_ids_212.list({_fullLayout: fullLayout}, null, true);
+    var axList = _$axis_ids_213.list({_fullLayout: fullLayout}, null, true);
 
     for(var i = 0; i < axList.length; i++) {
         if(!axList[i].fixedrange) {
@@ -55011,11 +56929,11 @@ function isSelectable(fullData) {
 
         if(!trace._module || !trace._module.selectPoints) continue;
 
-        if(_$registry_258.traceIs(trace, 'scatter-like')) {
-            if(_$subtypes_302.hasMarkers(trace) || _$subtypes_302.hasText(trace)) {
+        if(_$registry_259.traceIs(trace, 'scatter-like')) {
+            if(_$subtypes_303.hasMarkers(trace) || _$subtypes_303.hasText(trace)) {
                 selectable = true;
             }
-        } else if(_$registry_258.traceIs(trace, 'box-violin')) {
+        } else if(_$registry_259.traceIs(trace, 'box-violin')) {
             if(trace.boxpoints === 'all' || trace.points === 'all') {
                 selectable = true;
             }
@@ -55081,6 +56999,7 @@ var _$modebar_108 = {};
 
 _$modebar_108.manage = _$manageModeBar_109;
 
+var _$constraints_217 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -55092,1276 +57011,202 @@ _$modebar_108.manage = _$manageModeBar_109;
 
 'use strict';
 
-var FROM_BL = _$alignment_145.FROM_BL;
-
-var _$scaleZoom_226 = function scaleZoom(ax, factor, centerFraction) {
-    if(centerFraction === undefined) {
-        centerFraction = FROM_BL[ax.constraintoward || 'center'];
-    }
-
-    var rangeLinear = [ax.r2l(ax.range[0]), ax.r2l(ax.range[1])];
-    var center = rangeLinear[0] + (rangeLinear[1] - rangeLinear[0]) * centerFraction;
-
-    ax.range = ax._input.range = [
-        ax.l2r(center + (rangeLinear[0] - center) * factor),
-        ax.l2r(center + (rangeLinear[1] - center) * factor)
-    ];
-};
-
-/**
-* Copyright 2012-2018, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
-'use strict';
-
-/* removed: var _$d3_8 = require('d3'); */;
-/* removed: var _$tinycolor_26 = require('tinycolor2'); */;
-/* removed: var _$hasPassiveEvents_14 = require('has-passive-events'); */;
-
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$svg_text_utils_187 = require('../../lib/svg_text_utils'); */;
-/* removed: var _$color_45 = require('../../components/color'); */;
-/* removed: var _$drawing_70 = require('../../components/drawing'); */;
-/* removed: var _$fx_87 = require('../../components/fx'); */;
-/* removed: var _$setCursor_185 = require('../../lib/setcursor'); */;
-/* removed: var _$dragelement_67 = require('../../components/dragelement'); */;
-var __FROM_TL_217 = _$alignment_145.FROM_TL;
-
-/* removed: var _$plots_250 = require('../plots'); */;
-
-var doTicks = _$axes_209.doTicks;
-var getFromId = _$axis_ids_212.getFromId;
-/* removed: var _$prepSelect_227 = require('./select'); */;
+var __id2name_217 = _$axis_ids_213.id2name;
 /* removed: var _$scaleZoom_226 = require('./scale_zoom'); */;
+var __makePadFn_217 = _$autorange_209.makePadFn;
 
-/* removed: var _$constants_214 = require('./constants'); */;
-var MINDRAG = _$constants_214.MINDRAG;
-var MINZOOM = _$constants_214.MINZOOM;
+var ALMOST_EQUAL = _$numerical_147.ALMOST_EQUAL;
+
+var __FROM_BL_217 = _$alignment_145.FROM_BL;
 
 
-// flag for showing "doubleclick to zoom out" only at the beginning
-var SHOWZOOMOUTTIP = true;
-
-// dragBox: create an element to drag one or more axis ends
-// inputs:
-//      plotinfo - which subplot are we making dragboxes on?
-//      x,y,w,h - left, top, width, height of the box
-//      ns - how does this drag the vertical axis?
-//          'n' - top only
-//          's' - bottom only
-//          'ns' - top and bottom together, difference unchanged
-//      ew - same for horizontal axis
-function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
-    // mouseDown stores ms of first mousedown event in the last
-    // DBLCLICKDELAY ms on the drag bars
-    // numClicks stores how many mousedowns have been seen
-    // within DBLCLICKDELAY so we can check for click or doubleclick events
-    // dragged stores whether a drag has occurred, so we don't have to
-    // redraw unnecessarily, ie if no move bigger than MINDRAG or MINZOOM px
+_$constraints_217.enforce = function enforceAxisConstraints(gd) {
     var fullLayout = gd._fullLayout;
-    var zoomlayer = gd._fullLayout._zoomlayer;
-    var isMainDrag = (ns + ew === 'nsew');
-    var singleEnd = (ns + ew).length === 1;
+    var constraintGroups = fullLayout._axisConstraintGroups || [];
 
-    var subplots, xa, ya, xs, ys, pw, ph, xActive, yActive, cursor,
-        isSubplotConstrained, xaLinked, yaLinked;
+    var i, j, axisID, ax, normScale, mode, factor;
 
-    function recomputeAxisLists() {
-        xa = [plotinfo.xaxis];
-        ya = [plotinfo.yaxis];
-        var xa0 = xa[0];
-        var ya0 = ya[0];
-        pw = xa0._length;
-        ph = ya0._length;
-
-        var constraintGroups = fullLayout._axisConstraintGroups;
-        var xIDs = [xa0._id];
-        var yIDs = [ya0._id];
-
-        // if we're dragging two axes at once, also drag overlays
-        subplots = [plotinfo].concat((ns && ew) ? plotinfo.overlays : []);
-
-        for(var i = 1; i < subplots.length; i++) {
-            var subplotXa = subplots[i].xaxis,
-                subplotYa = subplots[i].yaxis;
-
-            if(xa.indexOf(subplotXa) === -1) {
-                xa.push(subplotXa);
-                xIDs.push(subplotXa._id);
-            }
-
-            if(ya.indexOf(subplotYa) === -1) {
-                ya.push(subplotYa);
-                yIDs.push(subplotYa._id);
-            }
-        }
-
-        xActive = isDirectionActive(xa, ew);
-        yActive = isDirectionActive(ya, ns);
-        cursor = getDragCursor(yActive + xActive, fullLayout.dragmode);
-        xs = xa0._offset;
-        ys = ya0._offset;
-
-        var links = calcLinks(constraintGroups, xIDs, yIDs);
-        isSubplotConstrained = links.xy;
-
-        // finally make the list of axis objects to link
-        xaLinked = [];
-        for(var xLinkID in links.x) { xaLinked.push(getFromId(gd, xLinkID)); }
-        yaLinked = [];
-        for(var yLinkID in links.y) { yaLinked.push(getFromId(gd, yLinkID)); }
-    }
-
-    recomputeAxisLists();
-
-    var dragger = makeRectDragger(plotinfo, ns + ew + 'drag', cursor, x, y, w, h);
-
-    var allFixedRanges = !yActive && !xActive;
-
-    // still need to make the element if the axes are disabled
-    // but nuke its events (except for maindrag which needs them for hover)
-    // and stop there
-    if(allFixedRanges && !isMainDrag) {
-        dragger.onmousedown = null;
-        dragger.style.pointerEvents = 'none';
-        return dragger;
-    }
-
-    var dragOptions = {
-        element: dragger,
-        gd: gd,
-        plotinfo: plotinfo,
-        prepFn: function(e, startX, startY) {
-            var dragModeNow = gd._fullLayout.dragmode;
-
-            if(!allFixedRanges) {
-                if(isMainDrag) {
-                    // main dragger handles all drag modes, and changes
-                    // to pan (or to zoom if it already is pan) on shift
-                    if(e.shiftKey) {
-                        if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                        else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
-                    }
-                    else if(e.ctrlKey) {
-                        dragModeNow = 'pan';
-                    }
-                }
-                // all other draggers just pan
-                else dragModeNow = 'pan';
-            }
-
-            if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
-            else dragOptions.minDrag = undefined;
-
-            if(isSelectOrLasso(dragModeNow)) {
-                dragOptions.xaxes = xa;
-                dragOptions.yaxes = ya;
-                _$prepSelect_227(e, startX, startY, dragOptions, dragModeNow);
-            }
-            else if(allFixedRanges) {
-                clearSelect(zoomlayer);
-            }
-            else if(dragModeNow === 'zoom') {
-                dragOptions.moveFn = zoomMove;
-                dragOptions.doneFn = zoomDone;
-
-                // zoomMove takes care of the threshold, but we need to
-                // minimize this so that constrained zoom boxes will flip
-                // orientation at the right place
-                dragOptions.minDrag = 1;
-
-                zoomPrep(e, startX, startY);
-            }
-            else if(dragModeNow === 'pan') {
-                dragOptions.moveFn = plotDrag;
-                dragOptions.doneFn = dragTail;
-                clearSelect(zoomlayer);
-            }
-        },
-        clickFn: function(numClicks, evt) {
-            removeZoombox(gd);
-
-            if(numClicks === 2 && !singleEnd) doubleClick();
-
-            if(isMainDrag) {
-                _$fx_87.click(gd, evt, plotinfo.id);
-            }
-            else if(numClicks === 1 && singleEnd) {
-                var ax = ns ? ya[0] : xa[0],
-                    end = (ns === 's' || ew === 'w') ? 0 : 1,
-                    attrStr = ax._name + '.range[' + end + ']',
-                    initialText = getEndText(ax, end),
-                    hAlign = 'left',
-                    vAlign = 'middle';
-
-                if(ax.fixedrange) return;
-
-                if(ns) {
-                    vAlign = (ns === 'n') ? 'top' : 'bottom';
-                    if(ax.side === 'right') hAlign = 'right';
-                }
-                else if(ew === 'e') hAlign = 'right';
-
-                if(gd._context.showAxisRangeEntryBoxes) {
-                    _$d3_8.select(dragger)
-                        .call(_$svg_text_utils_187.makeEditable, {
-                            gd: gd,
-                            immediate: true,
-                            background: fullLayout.paper_bgcolor,
-                            text: String(initialText),
-                            fill: ax.tickfont ? ax.tickfont.color : '#444',
-                            horizontalAlign: hAlign,
-                            verticalAlign: vAlign
-                        })
-                        .on('edit', function(text) {
-                            var v = ax.d2r(text);
-                            if(v !== undefined) {
-                                _$registry_258.call('relayout', gd, attrStr, v);
-                            }
-                        });
-                }
-            }
-        }
-    };
-
-    _$dragelement_67.init(dragOptions);
-
-    var x0,
-        y0,
-        box,
-        lum,
-        path0,
-        dimmed,
-        zoomMode,
-        zb,
-        corners;
-
-    // collected changes to be made to the plot by relayout at the end
-    var updates = {};
-
-    function zoomPrep(e, startX, startY) {
-        var dragBBox = dragger.getBoundingClientRect();
-        x0 = startX - dragBBox.left;
-        y0 = startY - dragBBox.top;
-        box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
-        lum = gd._hmpixcount ?
-            (gd._hmlumcount / gd._hmpixcount) :
-            _$tinycolor_26(gd._fullLayout.plot_bgcolor).getLuminance();
-        path0 = 'M0,0H' + pw + 'V' + ph + 'H0V0';
-        dimmed = false;
-        zoomMode = 'xy';
-
-        zb = makeZoombox(zoomlayer, lum, xs, ys, path0);
-
-        corners = makeCorners(zoomlayer, xs, ys);
-
-        clearSelect(zoomlayer);
-    }
-
-    function zoomMove(dx0, dy0) {
-        if(gd._transitioningWithDuration) {
-            return false;
-        }
-
-        var x1 = Math.max(0, Math.min(pw, dx0 + x0)),
-            y1 = Math.max(0, Math.min(ph, dy0 + y0)),
-            dx = Math.abs(x1 - x0),
-            dy = Math.abs(y1 - y0);
-
-        box.l = Math.min(x0, x1);
-        box.r = Math.max(x0, x1);
-        box.t = Math.min(y0, y1);
-        box.b = Math.max(y0, y1);
-
-        function noZoom() {
-            zoomMode = '';
-            box.r = box.l;
-            box.t = box.b;
-            corners.attr('d', 'M0,0Z');
-        }
-
-        if(isSubplotConstrained) {
-            if(dx > MINZOOM || dy > MINZOOM) {
-                zoomMode = 'xy';
-                if(dx / pw > dy / ph) {
-                    dy = dx * ph / pw;
-                    if(y0 > y1) box.t = y0 - dy;
-                    else box.b = y0 + dy;
-                }
-                else {
-                    dx = dy * pw / ph;
-                    if(x0 > x1) box.l = x0 - dx;
-                    else box.r = x0 + dx;
-                }
-                corners.attr('d', xyCorners(box));
-            }
-            else {
-                noZoom();
-            }
-        }
-        // look for small drags in one direction or the other,
-        // and only drag the other axis
-        else if(!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
-            if(dx < MINDRAG) {
-                noZoom();
-            }
-            else {
-                box.t = 0;
-                box.b = ph;
-                zoomMode = 'x';
-                corners.attr('d', xCorners(box, y0));
-            }
-        }
-        else if(!xActive || dx < Math.min(dy * 0.6, MINZOOM)) {
-            box.l = 0;
-            box.r = pw;
-            zoomMode = 'y';
-            corners.attr('d', yCorners(box, x0));
-        }
-        else {
-            zoomMode = 'xy';
-            corners.attr('d', xyCorners(box));
-        }
-        box.w = box.r - box.l;
-        box.h = box.b - box.t;
-
-        updateZoombox(zb, corners, box, path0, dimmed, lum);
-        dimmed = true;
-    }
-
-    function zoomDone() {
-        // more strict than dragged, which allows you to come back to where you started
-        // and still count as dragged
-        if(Math.min(box.h, box.w) < MINDRAG * 2) {
-            return removeZoombox(gd);
-        }
-
-        // TODO: edit linked axes in zoomAxRanges and in dragTail
-        if(zoomMode === 'xy' || zoomMode === 'x') zoomAxRanges(xa, box.l / pw, box.r / pw, updates, xaLinked);
-        if(zoomMode === 'xy' || zoomMode === 'y') zoomAxRanges(ya, (ph - box.b) / ph, (ph - box.t) / ph, updates, yaLinked);
-
-        removeZoombox(gd);
-        dragTail();
-        showDoubleClickNotifier(gd);
-    }
-
-    // scroll zoom, on all draggers except corners
-    var scrollViewBox = [0, 0, pw, ph];
-    // wait a little after scrolling before redrawing
-    var redrawTimer = null;
-    var REDRAWDELAY = _$constants_214.REDRAWDELAY;
-    var mainplot = plotinfo.mainplot ?
-            fullLayout._plots[plotinfo.mainplot] : plotinfo;
-
-    function zoomWheel(e) {
-        // deactivate mousewheel scrolling on embedded graphs
-        // devs can override this with layout._enablescrollzoom,
-        // but _ ensures this setting won't leave their page
-        if(!gd._context.scrollZoom && !fullLayout._enablescrollzoom) {
-            return;
-        }
-
-        if(redrawTimer === null) {
-            clearSelect(zoomlayer);
-        }
-
-        // If a transition is in progress, then disable any behavior:
-        if(gd._transitioningWithDuration) {
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-        }
-
-        var pc = gd.querySelector('.plotly');
-
-        recomputeAxisLists();
-
-        // if the plot has scrollbars (more than a tiny excess)
-        // disable scrollzoom too.
-        if(pc.scrollHeight - pc.clientHeight > 10 ||
-                pc.scrollWidth - pc.clientWidth > 10) {
-            return;
-        }
-
-        clearTimeout(redrawTimer);
-
-        var wheelDelta = -e.deltaY;
-        if(!isFinite(wheelDelta)) wheelDelta = e.wheelDelta / 10;
-        if(!isFinite(wheelDelta)) {
-            _$lib_166.log('Did not find wheel motion attributes: ', e);
-            return;
-        }
-
-        var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 200),
-            gbb = mainplot.draglayer.select('.nsewdrag')
-                .node().getBoundingClientRect(),
-            xfrac = (e.clientX - gbb.left) / gbb.width,
-            yfrac = (gbb.bottom - e.clientY) / gbb.height,
-            i;
-
-        function zoomWheelOneAxis(ax, centerFraction, zoom) {
-            if(ax.fixedrange) return;
-
-            var axRange = _$lib_166.simpleMap(ax.range, ax.r2l),
-                v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
-            function doZoom(v) { return ax.l2r(v0 + (v - v0) * zoom); }
-            ax.range = axRange.map(doZoom);
-        }
-
-        if(ew || isSubplotConstrained) {
-            // if we're only zooming this axis because of constraints,
-            // zoom it about the center
-            if(!ew) xfrac = 0.5;
-
-            for(i = 0; i < xa.length; i++) zoomWheelOneAxis(xa[i], xfrac, zoom);
-
-            scrollViewBox[2] *= zoom;
-            scrollViewBox[0] += scrollViewBox[2] * xfrac * (1 / zoom - 1);
-        }
-        if(ns || isSubplotConstrained) {
-            if(!ns) yfrac = 0.5;
-
-            for(i = 0; i < ya.length; i++) zoomWheelOneAxis(ya[i], yfrac, zoom);
-
-            scrollViewBox[3] *= zoom;
-            scrollViewBox[1] += scrollViewBox[3] * (1 - yfrac) * (1 / zoom - 1);
-        }
-
-        // viewbox redraw at first
-        updateSubplots(scrollViewBox);
-        ticksAndAnnotations(ns, ew);
-
-        // then replot after a delay to make sure
-        // no more scrolling is coming
-        redrawTimer = setTimeout(function() {
-            scrollViewBox = [0, 0, pw, ph];
-
-            var zoomMode;
-            if(isSubplotConstrained) zoomMode = 'xy';
-            else zoomMode = (ew ? 'x' : '') + (ns ? 'y' : '');
-
-            dragTail(zoomMode);
-        }, REDRAWDELAY);
-
-        e.preventDefault();
-        return;
-    }
-
-    // everything but the corners gets wheel zoom
-    if(ns.length * ew.length !== 1) {
-        attachWheelEventHandler(dragger, zoomWheel);
-    }
-
-    // plotDrag: move the plot in response to a drag
-    function plotDrag(dx, dy) {
-        // If a transition is in progress, then disable any behavior:
-        if(gd._transitioningWithDuration) {
-            return;
-        }
-
-        recomputeAxisLists();
-
-        if(xActive === 'ew' || yActive === 'ns') {
-            if(xActive) dragAxList(xa, dx);
-            if(yActive) dragAxList(ya, dy);
-            updateSubplots([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
-            ticksAndAnnotations(yActive, xActive);
-            return;
-        }
-
-        // dz: set a new value for one end (0 or 1) of an axis array axArray,
-        // and return a pixel shift for that end for the viewbox
-        // based on pixel drag distance d
-        // TODO: this makes (generally non-fatal) errors when you get
-        // near floating point limits
-        function dz(axArray, end, d) {
-            var otherEnd = 1 - end,
-                movedAx,
-                newLinearizedEnd;
-            for(var i = 0; i < axArray.length; i++) {
-                var axi = axArray[i];
-                if(axi.fixedrange) continue;
-                movedAx = axi;
-                newLinearizedEnd = axi._rl[otherEnd] +
-                    (axi._rl[end] - axi._rl[otherEnd]) / dZoom(d / axi._length);
-                var newEnd = axi.l2r(newLinearizedEnd);
-
-                // if l2r comes back false or undefined, it means we've dragged off
-                // the end of valid ranges - so stop.
-                if(newEnd !== false && newEnd !== undefined) axi.range[end] = newEnd;
-            }
-            return movedAx._length * (movedAx._rl[end] - newLinearizedEnd) /
-                (movedAx._rl[end] - movedAx._rl[otherEnd]);
-        }
-
-        if(isSubplotConstrained && xActive && yActive) {
-            // dragging a corner of a constrained subplot:
-            // respect the fixed corner, but harmonize dx and dy
-            var dxySign = ((xActive === 'w') === (yActive === 'n')) ? 1 : -1;
-            var dxyFraction = (dx / pw + dxySign * dy / ph) / 2;
-            dx = dxyFraction * pw;
-            dy = dxySign * dxyFraction * ph;
-        }
-
-        if(xActive === 'w') dx = dz(xa, 0, dx);
-        else if(xActive === 'e') dx = dz(xa, 1, -dx);
-        else if(!xActive) dx = 0;
-
-        if(yActive === 'n') dy = dz(ya, 1, dy);
-        else if(yActive === 's') dy = dz(ya, 0, -dy);
-        else if(!yActive) dy = 0;
-
-        var x0 = (xActive === 'w') ? dx : 0;
-        var y0 = (yActive === 'n') ? dy : 0;
-
-        if(isSubplotConstrained) {
-            var i;
-            if(!xActive && yActive.length === 1) {
-                // dragging one end of the y axis of a constrained subplot
-                // scale the other axis the same about its middle
-                for(i = 0; i < xa.length; i++) {
-                    xa[i].range = xa[i]._r.slice();
-                    _$scaleZoom_226(xa[i], 1 - dy / ph);
-                }
-                dx = dy * pw / ph;
-                x0 = dx / 2;
-            }
-            if(!yActive && xActive.length === 1) {
-                for(i = 0; i < ya.length; i++) {
-                    ya[i].range = ya[i]._r.slice();
-                    _$scaleZoom_226(ya[i], 1 - dx / pw);
-                }
-                dy = dx * ph / pw;
-                y0 = dy / 2;
-            }
-        }
-
-        updateSubplots([x0, y0, pw - dx, ph - dy]);
-
-        ticksAndAnnotations(yActive, xActive);
-    }
-
-    // Draw ticks and annotations (and other components) when ranges change.
-    // Also records the ranges that have changed for use by update at the end.
-    function ticksAndAnnotations(ns, ew) {
-        var activeAxIds = [],
-            i;
-
-        function pushActiveAxIds(axList) {
-            for(i = 0; i < axList.length; i++) {
-                if(!axList[i].fixedrange) activeAxIds.push(axList[i]._id);
-            }
-        }
-
-        if(ew || isSubplotConstrained) {
-            pushActiveAxIds(xa);
-            pushActiveAxIds(xaLinked);
-        }
-        if(ns || isSubplotConstrained) {
-            pushActiveAxIds(ya);
-            pushActiveAxIds(yaLinked);
-        }
-
-        updates = {};
-        for(i = 0; i < activeAxIds.length; i++) {
-            var axId = activeAxIds[i];
-            doTicks(gd, axId, true);
-            var ax = getFromId(gd, axId);
-            updates[ax._name + '.range[0]'] = ax.range[0];
-            updates[ax._name + '.range[1]'] = ax.range[1];
-        }
-
-        function redrawObjs(objArray, method, shortCircuit) {
-            for(i = 0; i < objArray.length; i++) {
-                var obji = objArray[i];
-
-                if((ew && activeAxIds.indexOf(obji.xref) !== -1) ||
-                    (ns && activeAxIds.indexOf(obji.yref) !== -1)) {
-                    method(gd, i);
-                    // once is enough for images (which doesn't use the `i` arg anyway)
-                    if(shortCircuit) return;
-                }
-            }
-        }
-
-        // annotations and shapes 'draw' method is slow,
-        // use the finer-grained 'drawOne' method instead
-
-        redrawObjs(fullLayout.annotations || [], _$registry_258.getComponentMethod('annotations', 'drawOne'));
-        redrawObjs(fullLayout.shapes || [], _$registry_258.getComponentMethod('shapes', 'drawOne'));
-        redrawObjs(fullLayout.images || [], _$registry_258.getComponentMethod('images', 'draw'), true);
-    }
-
-    function doubleClick() {
-        if(gd._transitioningWithDuration) return;
-
-        var doubleClickConfig = gd._context.doubleClick,
-            axList = (xActive ? xa : []).concat(yActive ? ya : []),
-            attrs = {};
-
-        var ax, i, rangeInitial;
-
-        // For reset+autosize mode:
-        // If *any* of the main axes is not at its initial range
-        // (or autoranged, if we have no initial range, to match the logic in
-        // doubleClickConfig === 'reset' below), we reset.
-        // If they are *all* at their initial ranges, then we autosize.
-        if(doubleClickConfig === 'reset+autosize') {
-
-            doubleClickConfig = 'autosize';
-
-            for(i = 0; i < axList.length; i++) {
-                ax = axList[i];
-                if((ax._rangeInitial && (
-                        ax.range[0] !== ax._rangeInitial[0] ||
-                        ax.range[1] !== ax._rangeInitial[1]
-                    )) ||
-                    (!ax._rangeInitial && !ax.autorange)
-                ) {
-                    doubleClickConfig = 'reset';
-                    break;
-                }
-            }
-        }
-
-        if(doubleClickConfig === 'autosize') {
-            // don't set the linked axes here, so relayout marks them as shrinkable
-            // and we autosize just to the requested axis/axes
-            for(i = 0; i < axList.length; i++) {
-                ax = axList[i];
-                if(!ax.fixedrange) attrs[ax._name + '.autorange'] = true;
-            }
-        }
-        else if(doubleClickConfig === 'reset') {
-            // when we're resetting, reset all linked axes too, so we get back
-            // to the fully-auto-with-constraints situation
-            if(xActive || isSubplotConstrained) axList = axList.concat(xaLinked);
-            if(yActive && !isSubplotConstrained) axList = axList.concat(yaLinked);
-
-            if(isSubplotConstrained) {
-                if(!xActive) axList = axList.concat(xa);
-                else if(!yActive) axList = axList.concat(ya);
-            }
-
-            for(i = 0; i < axList.length; i++) {
-                ax = axList[i];
-
-                if(!ax._rangeInitial) {
-                    attrs[ax._name + '.autorange'] = true;
-                }
-                else {
-                    rangeInitial = ax._rangeInitial;
-                    attrs[ax._name + '.range[0]'] = rangeInitial[0];
-                    attrs[ax._name + '.range[1]'] = rangeInitial[1];
-                }
-            }
-        }
-
-        gd.emit('plotly_doubleclick', null);
-        _$registry_258.call('relayout', gd, attrs);
-    }
-
-    // dragTail - finish a drag event with a redraw
-    function dragTail() {
-        // put the subplot viewboxes back to default (Because we're going to)
-        // be repositioning the data in the relayout. But DON'T call
-        // ticksAndAnnotations again - it's unnecessary and would overwrite `updates`
-        updateSubplots([0, 0, pw, ph]);
-
-        // since we may have been redrawing some things during the drag, we may have
-        // accumulated MathJax promises - wait for them before we relayout.
-        _$lib_166.syncOrAsync([
-            _$plots_250.previousPromises,
-            function() { _$registry_258.call('relayout', gd, updates); }
-        ], gd);
-    }
-
-    // updateSubplots - find all plot viewboxes that should be
-    // affected by this drag, and update them. look for all plots
-    // sharing an affected axis (including the one being dragged)
-    function updateSubplots(viewBox) {
-        var plotinfos = fullLayout._plots;
-        var subplots = Object.keys(plotinfos);
-        var xScaleFactor = viewBox[2] / xa[0]._length;
-        var yScaleFactor = viewBox[3] / ya[0]._length;
-        var editX = ew || isSubplotConstrained;
-        var editY = ns || isSubplotConstrained;
-
-        var i, xScaleFactor2, yScaleFactor2, clipDx, clipDy;
-
-        // Find the appropriate scaling for this axis, if it's linked to the
-        // dragged axes by constraints. 0 is special, it means this axis shouldn't
-        // ever be scaled (will be converted to 1 if the other axis is scaled)
-        function getLinkedScaleFactor(ax) {
-            if(ax.fixedrange) return 0;
-
-            if(editX && xaLinked.indexOf(ax) !== -1) {
-                return xScaleFactor;
-            }
-            if(editY && (isSubplotConstrained ? xaLinked : yaLinked).indexOf(ax) !== -1) {
-                return yScaleFactor;
-            }
-            return 0;
-        }
-
-        function scaleAndGetShift(ax, scaleFactor) {
-            if(scaleFactor) {
-                ax.range = ax._r.slice();
-                _$scaleZoom_226(ax, scaleFactor);
-                return getShift(ax, scaleFactor);
-            }
-            return 0;
-        }
-
-        function getShift(ax, scaleFactor) {
-            return ax._length * (1 - scaleFactor) * __FROM_TL_217[ax.constraintoward || 'middle'];
-        }
-
-        // clear gl frame, if any, since we preserve drawing buffer
-        // FIXME: code duplication with cartesian.plot
-        if(fullLayout._glcanvas && fullLayout._glcanvas.size()) {
-            fullLayout._glcanvas.each(function(d) {
-                if(d.regl) {
-                    d.regl.clear({
-                        color: true
-                    });
-                }
-            });
-        }
-
-        for(i = 0; i < subplots.length; i++) {
-            var subplot = plotinfos[subplots[i]],
-                xa2 = subplot.xaxis,
-                ya2 = subplot.yaxis,
-                editX2 = editX && !xa2.fixedrange && (xa.indexOf(xa2) !== -1),
-                editY2 = editY && !ya2.fixedrange && (ya.indexOf(ya2) !== -1);
-
-            // scattergl translate
-            if(subplot._scene && subplot._scene.update) {
-                // FIXME: possibly we could update axis internal _r and _rl here
-                var xaRange = _$lib_166.simpleMap(xa2.range, xa2.r2l),
-                    yaRange = _$lib_166.simpleMap(ya2.range, ya2.r2l);
-                subplot._scene.update(
-                    {range: [xaRange[0], yaRange[0], xaRange[1], yaRange[1]]}
-                );
-            }
-
-            if(editX2) {
-                xScaleFactor2 = xScaleFactor;
-                clipDx = ew ? viewBox[0] : getShift(xa2, xScaleFactor2);
-            }
-            else {
-                xScaleFactor2 = getLinkedScaleFactor(xa2);
-                clipDx = scaleAndGetShift(xa2, xScaleFactor2);
-            }
-
-            if(editY2) {
-                yScaleFactor2 = yScaleFactor;
-                clipDy = ns ? viewBox[1] : getShift(ya2, yScaleFactor2);
-            }
-            else {
-                yScaleFactor2 = getLinkedScaleFactor(ya2);
-                clipDy = scaleAndGetShift(ya2, yScaleFactor2);
-            }
-
-            // don't scale at all if neither axis is scalable here
-            if(!xScaleFactor2 && !yScaleFactor2) {
-                continue;
-            }
-
-            // but if only one is, reset the other axis scaling
-            if(!xScaleFactor2) xScaleFactor2 = 1;
-            if(!yScaleFactor2) yScaleFactor2 = 1;
-
-            var plotDx = xa2._offset - clipDx / xScaleFactor2,
-                plotDy = ya2._offset - clipDy / yScaleFactor2;
-
-            fullLayout._defs.select('#' + subplot.clipId + '> rect')
-                .call(_$drawing_70.setTranslate, clipDx, clipDy)
-                .call(_$drawing_70.setScale, xScaleFactor2, yScaleFactor2);
-
-            var traceGroups = subplot.plot
-                .selectAll('.scatterlayer .trace, .boxlayer .trace, .violinlayer .trace');
-
-            subplot.plot
-                .call(_$drawing_70.setTranslate, plotDx, plotDy)
-                .call(_$drawing_70.setScale, 1 / xScaleFactor2, 1 / yScaleFactor2);
-
-            // This is specifically directed at marker points in scatter, box and violin traces,
-            // applying an inverse scale to individual points to counteract
-            // the scale of the trace as a whole:
-            traceGroups.selectAll('.point')
-                .call(_$drawing_70.setPointGroupScale, xScaleFactor2, yScaleFactor2);
-            traceGroups.selectAll('.textpoint')
-                .call(_$drawing_70.setTextPointsScale, xScaleFactor2, yScaleFactor2);
-            traceGroups
-                .call(_$drawing_70.hideOutsideRangePoints, subplot);
-
-            subplot.plot.selectAll('.barlayer .trace')
-                .call(_$drawing_70.hideOutsideRangePoints, subplot, '.bartext');
-        }
-    }
-
-    return dragger;
-}
-
-function makeDragger(plotinfo, nodeName, dragClass, cursor) {
-    var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
-
-    dragger3.enter().append(nodeName)
-        .classed('drag', true)
-        .classed(dragClass, true)
-        .style({fill: 'transparent', 'stroke-width': 0})
-        .attr('data-subplot', plotinfo.id);
-
-    dragger3.call(_$setCursor_185, cursor);
-
-    return dragger3.node();
-}
-
-function makeRectDragger(plotinfo, dragClass, cursor, x, y, w, h) {
-    var dragger = makeDragger(plotinfo, 'rect', dragClass, cursor);
-    _$d3_8.select(dragger).call(_$drawing_70.setRect, x, y, w, h);
-    return dragger;
-}
-
-function isDirectionActive(axList, activeVal) {
-    for(var i = 0; i < axList.length; i++) {
-        if(!axList[i].fixedrange) return activeVal;
-    }
-    return '';
-}
-
-function getEndText(ax, end) {
-    var initialVal = ax.range[end],
-        diff = Math.abs(initialVal - ax.range[1 - end]),
-        dig;
-
-    // TODO: this should basically be ax.r2d but we're doing extra
-    // rounding here... can we clean up at all?
-    if(ax.type === 'date') {
-        return initialVal;
-    }
-    else if(ax.type === 'log') {
-        dig = Math.ceil(Math.max(0, -Math.log(diff) / Math.LN10)) + 3;
-        return _$d3_8.format('.' + dig + 'g')(Math.pow(10, initialVal));
-    }
-    else { // linear numeric (or category... but just show numbers here)
-        dig = Math.floor(Math.log(Math.abs(initialVal)) / Math.LN10) -
-            Math.floor(Math.log(diff) / Math.LN10) + 4;
-        return _$d3_8.format('.' + String(dig) + 'g')(initialVal);
-    }
-}
-
-function zoomAxRanges(axList, r0Fraction, r1Fraction, updates, linkedAxes) {
-    var i,
-        axi,
-        axRangeLinear0,
-        axRangeLinearSpan;
-
-    for(i = 0; i < axList.length; i++) {
-        axi = axList[i];
-        if(axi.fixedrange) continue;
-
-        axRangeLinear0 = axi._rl[0];
-        axRangeLinearSpan = axi._rl[1] - axRangeLinear0;
-        axi.range = [
-            axi.l2r(axRangeLinear0 + axRangeLinearSpan * r0Fraction),
-            axi.l2r(axRangeLinear0 + axRangeLinearSpan * r1Fraction)
-        ];
-        updates[axi._name + '.range[0]'] = axi.range[0];
-        updates[axi._name + '.range[1]'] = axi.range[1];
-    }
-
-    // zoom linked axes about their centers
-    if(linkedAxes && linkedAxes.length) {
-        var linkedR0Fraction = (r0Fraction + (1 - r1Fraction)) / 2;
-
-        zoomAxRanges(linkedAxes, linkedR0Fraction, 1 - linkedR0Fraction, updates);
-    }
-}
-
-function dragAxList(axList, pix) {
-    for(var i = 0; i < axList.length; i++) {
-        var axi = axList[i];
-        if(!axi.fixedrange) {
-            axi.range = [
-                axi.l2r(axi._rl[0] - pix / axi._m),
-                axi.l2r(axi._rl[1] - pix / axi._m)
-            ];
-        }
-    }
-}
-
-// common transform for dragging one end of an axis
-// d>0 is compressing scale (cursor is over the plot,
-//  the axis end should move with the cursor)
-// d<0 is expanding (cursor is off the plot, axis end moves
-//  nonlinearly so you can expand far)
-function dZoom(d) {
-    return 1 - ((d >= 0) ? Math.min(d, 0.9) :
-        1 / (1 / Math.max(d, -0.3) + 3.222));
-}
-
-function getDragCursor(nsew, dragmode) {
-    if(!nsew) return 'pointer';
-    if(nsew === 'nsew') {
-        if(dragmode === 'pan') return 'move';
-        return 'crosshair';
-    }
-    return nsew.toLowerCase() + '-resize';
-}
-
-function makeZoombox(zoomlayer, lum, xs, ys, path0) {
-    return zoomlayer.append('path')
-        .attr('class', 'zoombox')
-        .style({
-            'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
-            'stroke-width': 0
-        })
-        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
-        .attr('d', path0 + 'Z');
-}
-
-function makeCorners(zoomlayer, xs, ys) {
-    return zoomlayer.append('path')
-        .attr('class', 'zoombox-corners')
-        .style({
-            fill: _$color_45.background,
-            stroke: _$color_45.defaultLine,
-            'stroke-width': 1,
-            opacity: 0
-        })
-        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
-        .attr('d', 'M0,0Z');
-}
-
-function clearSelect(zoomlayer) {
-    // until we get around to persistent selections, remove the outline
-    // here. The selection itself will be removed when the plot redraws
-    // at the end.
-    zoomlayer.selectAll('.select-outline').remove();
-}
-
-function updateZoombox(zb, corners, box, path0, dimmed, lum) {
-    zb.attr('d',
-        path0 + 'M' + (box.l) + ',' + (box.t) + 'v' + (box.h) +
-        'h' + (box.w) + 'v-' + (box.h) + 'h-' + (box.w) + 'Z');
-    transitionZoombox(zb, corners, dimmed, lum);
-}
-
-function transitionZoombox(zb, corners, dimmed, lum) {
-    if(!dimmed) {
-        zb.transition()
-            .style('fill', lum > 0.2 ? 'rgba(0,0,0,0.4)' :
-                'rgba(255,255,255,0.3)')
-            .duration(200);
-        corners.transition()
-            .style('opacity', 1)
-            .duration(200);
-    }
-}
-
-function removeZoombox(gd) {
-    _$d3_8.select(gd)
-        .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
-        .remove();
-}
-
-function showDoubleClickNotifier(gd) {
-    if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-        _$lib_166.notifier(_$lib_166._(gd, 'Double-click to zoom back out'), 'long');
-        SHOWZOOMOUTTIP = false;
-    }
-}
-
-function isSelectOrLasso(dragmode) {
-    return dragmode === 'lasso' || dragmode === 'select';
-}
-
-function xCorners(box, y0) {
-    return 'M' +
-        (box.l - 0.5) + ',' + (y0 - MINZOOM - 0.5) +
-        'h-3v' + (2 * MINZOOM + 1) + 'h3ZM' +
-        (box.r + 0.5) + ',' + (y0 - MINZOOM - 0.5) +
-        'h3v' + (2 * MINZOOM + 1) + 'h-3Z';
-}
-
-function yCorners(box, x0) {
-    return 'M' +
-        (x0 - MINZOOM - 0.5) + ',' + (box.t - 0.5) +
-        'v-3h' + (2 * MINZOOM + 1) + 'v3ZM' +
-        (x0 - MINZOOM - 0.5) + ',' + (box.b + 0.5) +
-        'v3h' + (2 * MINZOOM + 1) + 'v-3Z';
-}
-
-function xyCorners(box) {
-    var clen = Math.floor(Math.min(box.b - box.t, box.r - box.l, MINZOOM) / 2);
-    return 'M' +
-        (box.l - 3.5) + ',' + (box.t - 0.5 + clen) + 'h3v' + (-clen) +
-            'h' + clen + 'v-3h-' + (clen + 3) + 'ZM' +
-        (box.r + 3.5) + ',' + (box.t - 0.5 + clen) + 'h-3v' + (-clen) +
-            'h' + (-clen) + 'v-3h' + (clen + 3) + 'ZM' +
-        (box.r + 3.5) + ',' + (box.b + 0.5 - clen) + 'h-3v' + clen +
-            'h' + (-clen) + 'v3h' + (clen + 3) + 'ZM' +
-        (box.l - 3.5) + ',' + (box.b + 0.5 - clen) + 'h3v' + clen +
-            'h' + clen + 'v3h-' + (clen + 3) + 'Z';
-}
-
-function calcLinks(constraintGroups, xIDs, yIDs) {
-    var isSubplotConstrained = false;
-    var xLinks = {};
-    var yLinks = {};
-    var i, j, k;
-
-    var group, xLinkID, yLinkID;
     for(i = 0; i < constraintGroups.length; i++) {
-        group = constraintGroups[i];
-        // check if any of the x axes we're dragging is in this constraint group
-        for(j = 0; j < xIDs.length; j++) {
-            if(group[xIDs[j]]) {
-                // put the rest of these axes into xLinks, if we're not already
-                // dragging them, so we know to scale these axes automatically too
-                // to match the changes in the dragged x axes
-                for(xLinkID in group) {
-                    if((xLinkID.charAt(0) === 'x' ? xIDs : yIDs).indexOf(xLinkID) === -1) {
-                        xLinks[xLinkID] = 1;
-                    }
-                }
+        var group = constraintGroups[i];
+        var axisIDs = Object.keys(group);
 
-                // check if the x and y axes of THIS drag are linked
-                for(k = 0; k < yIDs.length; k++) {
-                    if(group[yIDs[k]]) isSubplotConstrained = true;
+        var minScale = Infinity;
+        var maxScale = 0;
+        // mostly matchScale will be the same as minScale
+        // ie we expand axis ranges to encompass *everything*
+        // that's currently in any of their ranges, but during
+        // autorange of a subset of axes we will ignore other
+        // axes for this purpose.
+        var matchScale = Infinity;
+        var normScales = {};
+        var axes = {};
+        var hasAnyDomainConstraint = false;
+
+        // find the (normalized) scale of each axis in the group
+        for(j = 0; j < axisIDs.length; j++) {
+            axisID = axisIDs[j];
+            axes[axisID] = ax = fullLayout[__id2name_217(axisID)];
+
+            if(ax._inputDomain) ax.domain = ax._inputDomain.slice();
+            else ax._inputDomain = ax.domain.slice();
+
+            if(!ax._inputRange) ax._inputRange = ax.range.slice();
+
+            // set axis scale here so we can use _m rather than
+            // having to calculate it from length and range
+            ax.setScale();
+
+            // abs: inverted scales still satisfy the constraint
+            normScales[axisID] = normScale = Math.abs(ax._m) / group[axisID];
+            minScale = Math.min(minScale, normScale);
+            if(ax.constrain === 'domain' || !ax._constraintShrinkable) {
+                matchScale = Math.min(matchScale, normScale);
+            }
+
+            // this has served its purpose, so remove it
+            delete ax._constraintShrinkable;
+            maxScale = Math.max(maxScale, normScale);
+
+            if(ax.constrain === 'domain') hasAnyDomainConstraint = true;
+        }
+
+        // Do we have a constraint mismatch? Give a small buffer for rounding errors
+        if(minScale > ALMOST_EQUAL * maxScale && !hasAnyDomainConstraint) continue;
+
+        // now increase any ranges we need to until all normalized scales are equal
+        for(j = 0; j < axisIDs.length; j++) {
+            axisID = axisIDs[j];
+            normScale = normScales[axisID];
+            ax = axes[axisID];
+            mode = ax.constrain;
+
+            // even if the scale didn't change, if we're shrinking domain
+            // we need to recalculate in case `constraintoward` changed
+            if(normScale !== matchScale || mode === 'domain') {
+                factor = normScale / matchScale;
+
+                if(mode === 'range') {
+                    _$scaleZoom_226(ax, factor);
+                }
+                else {
+                    // mode === 'domain'
+
+                    var inputDomain = ax._inputDomain;
+                    var domainShrunk = (ax.domain[1] - ax.domain[0]) /
+                        (inputDomain[1] - inputDomain[0]);
+                    var rangeShrunk = (ax.r2l(ax.range[1]) - ax.r2l(ax.range[0])) /
+                        (ax.r2l(ax._inputRange[1]) - ax.r2l(ax._inputRange[0]));
+
+                    factor /= domainShrunk;
+
+                    if(factor * rangeShrunk < 1) {
+                        // we've asked to magnify the axis more than we can just by
+                        // enlarging the domain - so we need to constrict range
+                        ax.domain = ax._input.domain = inputDomain.slice();
+                        _$scaleZoom_226(ax, factor);
+                        continue;
+                    }
+
+                    if(rangeShrunk < 1) {
+                        // the range has previously been constricted by ^^, but we've
+                        // switched to the domain-constricted regime, so reset range
+                        ax.range = ax._input.range = ax._inputRange.slice();
+                        factor *= rangeShrunk;
+                    }
+
+                    if(ax.autorange && ax._min.length && ax._max.length) {
+                        /*
+                         * range & factor may need to change because range was
+                         * calculated for the larger scaling, so some pixel
+                         * paddings may get cut off when we reduce the domain.
+                         *
+                         * This is easier than the regular autorange calculation
+                         * because we already know the scaling `m`, but we still
+                         * need to cut out impossible constraints (like
+                         * annotations with super-long arrows). That's what
+                         * outerMin/Max are for - if the expansion was going to
+                         * go beyond the original domain, it must be impossible
+                         */
+                        var rl0 = ax.r2l(ax.range[0]);
+                        var rl1 = ax.r2l(ax.range[1]);
+                        var rangeCenter = (rl0 + rl1) / 2;
+                        var rangeMin = rangeCenter;
+                        var rangeMax = rangeCenter;
+                        var halfRange = Math.abs(rl1 - rangeCenter);
+                        // extra tiny bit for rounding errors, in case we actually
+                        // *are* expanding to the full domain
+                        var outerMin = rangeCenter - halfRange * factor * 1.0001;
+                        var outerMax = rangeCenter + halfRange * factor * 1.0001;
+                        var getPad = __makePadFn_217(ax);
+
+                        updateDomain(ax, factor);
+                        ax.setScale();
+                        var m = Math.abs(ax._m);
+                        var newVal;
+                        var k;
+
+                        for(k = 0; k < ax._min.length; k++) {
+                            newVal = ax._min[k].val - getPad(ax._min[k]) / m;
+                            if(newVal > outerMin && newVal < rangeMin) {
+                                rangeMin = newVal;
+                            }
+                        }
+
+                        for(k = 0; k < ax._max.length; k++) {
+                            newVal = ax._max[k].val + getPad(ax._max[k]) / m;
+                            if(newVal < outerMax && newVal > rangeMax) {
+                                rangeMax = newVal;
+                            }
+                        }
+
+                        var domainExpand = (rangeMax - rangeMin) / (2 * halfRange);
+                        factor /= domainExpand;
+
+                        rangeMin = ax.l2r(rangeMin);
+                        rangeMax = ax.l2r(rangeMax);
+                        ax.range = ax._input.range = (rl0 < rl1) ?
+                            [rangeMin, rangeMax] : [rangeMax, rangeMin];
+                    }
+
+                    updateDomain(ax, factor);
                 }
             }
         }
-
-        // now check if any of the y axes we're dragging is in this constraint group
-        // only look for outside links, as we've already checked for links within the dragger
-        for(j = 0; j < yIDs.length; j++) {
-            if(group[yIDs[j]]) {
-                for(yLinkID in group) {
-                    if((yLinkID.charAt(0) === 'x' ? xIDs : yIDs).indexOf(yLinkID) === -1) {
-                        yLinks[yLinkID] = 1;
-                    }
-                }
-            }
-        }
     }
-
-    if(isSubplotConstrained) {
-        // merge xLinks and yLinks if the subplot is constrained,
-        // since we'll always apply both anyway and the two will contain
-        // duplicates
-        _$lib_166.extendFlat(xLinks, yLinks);
-        yLinks = {};
-    }
-    return {
-        x: xLinks,
-        y: yLinks,
-        xy: isSubplotConstrained
-    };
-}
-
-// still seems to be some confusion about onwheel vs onmousewheel...
-function attachWheelEventHandler(element, handler) {
-    if(!_$hasPassiveEvents_14) {
-        if(element.onwheel !== undefined) element.onwheel = handler;
-        else if(element.onmousewheel !== undefined) element.onmousewheel = handler;
-    }
-    else {
-        var wheelEventName = element.onwheel !== undefined ? 'wheel' : 'mousewheel';
-
-        if(element._onwheel) {
-            element.removeEventListener(wheelEventName, element._onwheel);
-        }
-        element._onwheel = handler;
-
-        element.addEventListener(wheelEventName, handler, {passive: false});
-    }
-}
-
-var _$dragbox_217 = {
-    makeDragBox: makeDragBox,
-
-    makeDragger: makeDragger,
-    makeRectDragger: makeRectDragger,
-    makeZoombox: makeZoombox,
-    makeCorners: makeCorners,
-
-    updateZoombox: updateZoombox,
-    xyCorners: xyCorners,
-    transitionZoombox: transitionZoombox,
-    removeZoombox: removeZoombox,
-    clearSelect: clearSelect,
-    showDoubleClickNotifier: showDoubleClickNotifier,
-
-    attachWheelEventHandler: attachWheelEventHandler
 };
 
-/**
-* Copyright 2012-2018, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
-'use strict';
-
-/* removed: var _$d3_8 = require('d3'); */;
-
-/* removed: var _$fx_87 = require('../../components/fx'); */;
-/* removed: var _$dragelement_67 = require('../../components/dragelement'); */;
-
-/* removed: var _$constants_214 = require('./constants'); */;
-var __makeDragBox_218 = _$dragbox_217.makeDragBox;
-
-var _$initInteractions_218 = function initInteractions(gd) {
-    var fullLayout = gd._fullLayout;
-
-    if(gd._context.staticPlot) {
-        // this sweeps up more than just cartesian drag elements...
-        _$d3_8.select(gd).selectAll('.drag').remove();
-        return;
+// For use before autoranging, check if this axis was previously constrained
+// by domain but no longer is
+_$constraints_217.clean = function cleanConstraints(gd, ax) {
+    if(ax._inputDomain) {
+        var isConstrained = false;
+        var axId = ax._id;
+        var constraintGroups = gd._fullLayout._axisConstraintGroups;
+        for(var j = 0; j < constraintGroups.length; j++) {
+            if(constraintGroups[j][axId]) {
+                isConstrained = true;
+                break;
+            }
+        }
+        if(!isConstrained || ax.constrain !== 'domain') {
+            ax._input.domain = ax.domain = ax._inputDomain;
+            delete ax._inputDomain;
+        }
     }
-
-    if(!fullLayout._has('cartesian') && !fullLayout._has('gl2d')) return;
-
-    var subplots = Object.keys(fullLayout._plots || {}).sort(function(a, b) {
-        // sort overlays last, then by x axis number, then y axis number
-        if((fullLayout._plots[a].mainplot && true) ===
-            (fullLayout._plots[b].mainplot && true)) {
-            var aParts = a.split('y'),
-                bParts = b.split('y');
-            return (aParts[0] === bParts[0]) ?
-                (Number(aParts[1] || 1) - Number(bParts[1] || 1)) :
-                (Number(aParts[0] || 1) - Number(bParts[0] || 1));
-        }
-        return fullLayout._plots[a].mainplot ? 1 : -1;
-    });
-
-    subplots.forEach(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot];
-
-        var xa = plotinfo.xaxis;
-        var ya = plotinfo.yaxis;
-
-        var DRAGGERSIZE = _$constants_214.DRAGGERSIZE;
-
-        // main and corner draggers need not be repeated for
-        // overlaid subplots - these draggers drag them all
-        if(!plotinfo.mainplot) {
-            // main dragger goes over the grids and data, so we use its
-            // mousemove events for all data hover effects
-            var maindrag = __makeDragBox_218(gd, plotinfo, xa._offset, ya._offset,
-                xa._length, ya._length, 'ns', 'ew');
-
-            maindrag.onmousemove = function(evt) {
-                // This is on `gd._fullLayout`, *not* fullLayout because the reference
-                // changes by the time this is called again.
-                gd._fullLayout._rehover = function() {
-                    if(gd._fullLayout._hoversubplot === subplot) {
-                        _$fx_87.hover(gd, evt, subplot);
-                    }
-                };
-
-                _$fx_87.hover(gd, evt, subplot);
-
-                // Note that we have *not* used the cached fullLayout variable here
-                // since that may be outdated when this is called as a callback later on
-                gd._fullLayout._lasthover = maindrag;
-                gd._fullLayout._hoversubplot = subplot;
-            };
-
-            /*
-             * IMPORTANT:
-             * We must check for the presence of the drag cover here.
-             * If we don't, a 'mouseout' event is triggered on the
-             * maindrag before each 'click' event, which has the effect
-             * of clearing the hoverdata; thus, cancelling the click event.
-             */
-            maindrag.onmouseout = function(evt) {
-                if(gd._dragging) return;
-
-                // When the mouse leaves this maindrag, unset the hovered subplot.
-                // This may cause problems if it leaves the subplot directly *onto*
-                // another subplot, but that's a tiny corner case at the moment.
-                gd._fullLayout._hoversubplot = null;
-
-                _$dragelement_67.unhover(gd, evt);
-            };
-
-            // corner draggers
-            if(gd._context.showAxisDragHandles) {
-                __makeDragBox_218(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset - DRAGGERSIZE,
-                    DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');
-                __makeDragBox_218(gd, plotinfo, xa._offset + xa._length, ya._offset - DRAGGERSIZE,
-                    DRAGGERSIZE, DRAGGERSIZE, 'n', 'e');
-                __makeDragBox_218(gd, plotinfo, xa._offset - DRAGGERSIZE, ya._offset + ya._length,
-                    DRAGGERSIZE, DRAGGERSIZE, 's', 'w');
-                __makeDragBox_218(gd, plotinfo, xa._offset + xa._length, ya._offset + ya._length,
-                    DRAGGERSIZE, DRAGGERSIZE, 's', 'e');
-            }
-        }
-        if(gd._context.showAxisDragHandles) {
-            // x axis draggers - if you have overlaid plots,
-            // these drag each axis separately
-            if(subplot === xa._mainSubplot) {
-                // the y position of the main x axis line
-                var y0 = xa._mainLinePosition;
-                if(xa.side === 'top') y0 -= DRAGGERSIZE;
-                __makeDragBox_218(gd, plotinfo, xa._offset + xa._length * 0.1, y0,
-                    xa._length * 0.8, DRAGGERSIZE, '', 'ew');
-                __makeDragBox_218(gd, plotinfo, xa._offset, y0,
-                    xa._length * 0.1, DRAGGERSIZE, '', 'w');
-                __makeDragBox_218(gd, plotinfo, xa._offset + xa._length * 0.9, y0,
-                    xa._length * 0.1, DRAGGERSIZE, '', 'e');
-            }
-            // y axis draggers
-            if(subplot === ya._mainSubplot) {
-                // the x position of the main y axis line
-                var x0 = ya._mainLinePosition;
-                if(ya.side !== 'right') x0 -= DRAGGERSIZE;
-                __makeDragBox_218(gd, plotinfo, x0, ya._offset + ya._length * 0.1,
-                    DRAGGERSIZE, ya._length * 0.8, 'ns', '');
-                __makeDragBox_218(gd, plotinfo, x0, ya._offset + ya._length * 0.9,
-                    DRAGGERSIZE, ya._length * 0.1, 's', '');
-                __makeDragBox_218(gd, plotinfo, x0, ya._offset,
-                    DRAGGERSIZE, ya._length * 0.1, 'n', '');
-            }
-        }
-    });
-
-    // In case you mousemove over some hovertext, send it to Fx.hover too
-    // we do this so that we can put the hover text in front of everything,
-    // but still be able to interact with everything as if it isn't there
-    var hoverLayer = fullLayout._hoverlayer.node();
-
-    hoverLayer.onmousemove = function(evt) {
-        evt.target = fullLayout._lasthover;
-        _$fx_87.hover(gd, evt, fullLayout._hoversubplot);
-    };
-
-    hoverLayer.onclick = function(evt) {
-        evt.target = fullLayout._lasthover;
-        _$fx_87.click(gd, evt);
-    };
-
-    // also delegate mousedowns... TODO: does this actually work?
-    hoverLayer.onmousedown = function(evt) {
-        fullLayout._lasthover.onmousedown(evt);
-    };
 };
 
-var _$subroutines_201 = {};
+function updateDomain(ax, factor) {
+    var inputDomain = ax._inputDomain;
+    var centerFraction = __FROM_BL_217[ax.constraintoward];
+    var center = inputDomain[0] + (inputDomain[1] - inputDomain[0]) * centerFraction;
+
+    ax.domain = ax._input.domain = [
+        center + (inputDomain[0] - center) / factor,
+        center + (inputDomain[1] - center) / factor
+    ];
+}
+
+var _$subroutines_202 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -56373,21 +57218,27 @@ var _$subroutines_201 = {};
 'use strict';
 
 /* removed: var _$d3_8 = require('d3'); */;
-/* removed: var _$registry_258 = require('../registry'); */;
+/* removed: var _$registry_259 = require('../registry'); */;
 /* removed: var _$plots_250 = require('../plots/plots'); */;
-/* removed: var _$lib_166 = require('../lib'); */;
+
+/* removed: var _$lib_167 = require('../lib'); */;
+/* removed: var _$clearGlCanvases_154 = require('../lib/clear_gl_canvases'); */;
 
 /* removed: var _$color_45 = require('../components/color'); */;
 /* removed: var _$drawing_70 = require('../components/drawing'); */;
 /* removed: var _$titles_138 = require('../components/titles'); */;
 /* removed: var _$modebar_108 = require('../components/modebar'); */;
-/* removed: var _$axes_209 = require('../plots/cartesian/axes'); */;
-/* removed: var _$initInteractions_218 = require('../plots/cartesian/graph_interact'); */;
-/* removed: var _$constants_214 = require('../plots/cartesian/constants'); */;
-/* removed: var _$alignment_145 = require('../constants/alignment'); */;
 
-_$subroutines_201.layoutStyles = function(gd) {
-    return _$lib_166.syncOrAsync([_$plots_250.doAutoMargin, _$subroutines_201.lsInner], gd);
+/* removed: var _$axes_210 = require('../plots/cartesian/axes'); */;
+/* removed: var _$constants_215 = require('../plots/cartesian/constants'); */;
+/* removed: var _$alignment_145 = require('../constants/alignment'); */;
+/* removed: var _$constraints_217 = require('../plots/cartesian/constraints'); */;
+var enforceAxisConstraints = _$constraints_217.enforce;
+var cleanAxisConstraints = _$constraints_217.clean;
+var __doAutoRange_202 = _$autorange_209.doAutoRange;
+
+_$subroutines_202.layoutStyles = function(gd) {
+    return _$lib_167.syncOrAsync([_$plots_250.doAutoMargin, _$subroutines_202.lsInner], gd);
 };
 
 function overlappingDomain(xDomain, yDomain, domains) {
@@ -56405,11 +57256,11 @@ function overlappingDomain(xDomain, yDomain, domains) {
     return false;
 }
 
-_$subroutines_201.lsInner = function(gd) {
+_$subroutines_202.lsInner = function(gd) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
     var pad = gs.p;
-    var axList = _$axes_209.list(gd);
+    var axList = _$axes_210.list(gd);
 
     // _has('cartesian') means SVG specifically, not GL2D - but GL2D
     // can still get here because it makes some of the SVG structure
@@ -56488,31 +57339,17 @@ _$subroutines_201.lsInner = function(gd) {
 
         var xDomain = plotinfo.xaxis.domain;
         var yDomain = plotinfo.yaxis.domain;
-        var plotgroupBgData = [];
+        var plotgroup = plotinfo.plotgroup;
 
         if(overlappingDomain(xDomain, yDomain, lowerDomains)) {
-            plotgroupBgData = [0];
-        }
-        else {
+            var pgNode = plotgroup.node();
+            var plotgroupBg = plotinfo.bg = _$lib_167.ensureSingle(plotgroup, 'rect', 'bg');
+            pgNode.insertBefore(plotgroupBg.node(), pgNode.childNodes[0]);
+        } else {
+            plotgroup.select('rect.bg').remove();
             lowerBackgroundIDs.push(subplot);
             lowerDomains.push([xDomain, yDomain]);
         }
-
-        // create the plot group backgrounds now, since
-        // they're all independent selections
-        var plotgroupBg = plotinfo.plotgroup.selectAll('.bg')
-            .data(plotgroupBgData);
-
-        plotgroupBg.enter().append('rect')
-            .classed('bg', true);
-
-        plotgroupBg.exit().remove();
-
-        plotgroupBg.each(function() {
-            plotinfo.bg = plotgroupBg;
-            var pgNode = plotinfo.plotgroup.node();
-            pgNode.insertBefore(this, pgNode.childNodes[0]);
-        });
     });
 
     // now create all the lower-layer backgrounds at once now that
@@ -56544,23 +57381,17 @@ _$subroutines_201.lsInner = function(gd) {
         }
 
         // Clip so that data only shows up on the plot area.
-        plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
+        var clipId = plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        var plotClip = fullLayout._clips.selectAll('#' + plotinfo.clipId)
-            .data([0]);
+        var plotClip = _$lib_167.ensureSingleById(fullLayout._clips, 'clipPath', clipId, function(s) {
+            s.classed('plotclip', true)
+                .append('rect');
+        });
 
-        plotClip.enter().append('clipPath')
-            .attr({
-                'class': 'plotclip',
-                'id': plotinfo.clipId
-            })
-            .append('rect');
-
-        plotClip.selectAll('rect')
-            .attr({
-                'width': xa._length,
-                'height': ya._length
-            });
+        plotinfo.clipRect = plotClip.select('rect').attr({
+            width: xa._length,
+            height: ya._length
+        });
 
         _$drawing_70.setTranslate(plotinfo.plot, xa._offset, ya._offset);
 
@@ -56569,16 +57400,16 @@ _$subroutines_201.lsInner = function(gd) {
 
         if(plotinfo._hasClipOnAxisFalse) {
             plotClipId = null;
-            layerClipId = plotinfo.clipId;
+            layerClipId = clipId;
         } else {
-            plotClipId = plotinfo.clipId;
+            plotClipId = clipId;
             layerClipId = null;
         }
 
         _$drawing_70.setClipUrl(plotinfo.plot, plotClipId);
 
-        for(i = 0; i < _$constants_214.traceLayerClasses.length; i++) {
-            var layer = _$constants_214.traceLayerClasses[i];
+        for(i = 0; i < _$constants_215.traceLayerClasses.length; i++) {
+            var layer = _$constants_215.traceLayerClasses[i];
             if(layer !== 'scatterlayer' && layer !== 'barlayer') {
                 plotinfo.plot.selectAll('g.' + layer).call(_$drawing_70.setClipUrl, layerClipId);
             }
@@ -56702,8 +57533,8 @@ _$subroutines_201.lsInner = function(gd) {
         plotinfo.ylines.attr('d', yPath);
     });
 
-    _$axes_209.makeClipPaths(gd);
-    _$subroutines_201.drawMainTitle(gd);
+    _$axes_210.makeClipPaths(gd);
+    _$subroutines_202.drawMainTitle(gd);
     _$modebar_108.manage(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
@@ -56760,7 +57591,7 @@ function findCounterAxisLineWidth(ax, side, counterAx, axList) {
     return 0;
 }
 
-_$subroutines_201.drawMainTitle = function(gd) {
+_$subroutines_202.drawMainTitle = function(gd) {
     var fullLayout = gd._fullLayout;
 
     _$titles_138.draw(gd, 'gtitle', {
@@ -56779,7 +57610,7 @@ _$subroutines_201.drawMainTitle = function(gd) {
 // call it regardless of what change we made, in case
 // supplyDefaults brought in an array that was already
 // in gd.data but not in gd._fullData previously
-_$subroutines_201.doTraceStyle = function(gd) {
+_$subroutines_202.doTraceStyle = function(gd) {
     for(var i = 0; i < gd.calcdata.length; i++) {
         var cdi = gd.calcdata[i],
             _module = ((cdi[0] || {}).trace || {})._module || {},
@@ -56789,12 +57620,12 @@ _$subroutines_201.doTraceStyle = function(gd) {
     }
 
     _$plots_250.style(gd);
-    _$registry_258.getComponentMethod('legend', 'draw')(gd);
+    _$registry_259.getComponentMethod('legend', 'draw')(gd);
 
     return _$plots_250.previousPromises(gd);
 };
 
-_$subroutines_201.doColorBars = function(gd) {
+_$subroutines_202.doColorBars = function(gd) {
     for(var i = 0; i < gd.calcdata.length; i++) {
         var cdi0 = gd.calcdata[i][0];
 
@@ -56802,7 +57633,7 @@ _$subroutines_201.doColorBars = function(gd) {
             var trace = cdi0.trace,
                 cb = cdi0.t.cb;
 
-            if(_$registry_258.traceIs(trace, 'contour')) {
+            if(_$registry_259.traceIs(trace, 'contour')) {
                 cb.line({
                     width: trace.contours.showlines !== false ?
                         trace.line.width : 0,
@@ -56811,7 +57642,7 @@ _$subroutines_201.doColorBars = function(gd) {
                         cb._opts.line.color : trace.line.color
                 });
             }
-            if(_$registry_258.traceIs(trace, 'markerColorscale')) {
+            if(_$registry_259.traceIs(trace, 'markerColorscale')) {
                 cb.options(trace.marker.colorbar)();
             }
             else cb.options(trace.colorbar)();
@@ -56822,28 +57653,33 @@ _$subroutines_201.doColorBars = function(gd) {
 };
 
 // force plot() to redo the layout and replot with the modified layout
-_$subroutines_201.layoutReplot = function(gd) {
+_$subroutines_202.layoutReplot = function(gd) {
     var layout = gd.layout;
     gd.layout = undefined;
-    return _$registry_258.call('plot', gd, '', layout);
+    return _$registry_259.call('plot', gd, '', layout);
 };
 
-_$subroutines_201.doLegend = function(gd) {
-    _$registry_258.getComponentMethod('legend', 'draw')(gd);
+_$subroutines_202.doLegend = function(gd) {
+    _$registry_259.getComponentMethod('legend', 'draw')(gd);
     return _$plots_250.previousPromises(gd);
 };
 
-_$subroutines_201.doTicksRelayout = function(gd) {
-    _$axes_209.doTicks(gd, 'redraw');
-    _$subroutines_201.drawMainTitle(gd);
+_$subroutines_202.doTicksRelayout = function(gd) {
+    _$axes_210.doTicks(gd, 'redraw');
+
+    if(gd._fullLayout._hasOnlyLargeSploms) {
+        _$clearGlCanvases_154(gd);
+        _$registry_259.subplotsRegistry.splom.plot(gd);
+    }
+
+    _$subroutines_202.drawMainTitle(gd);
     return _$plots_250.previousPromises(gd);
 };
 
-_$subroutines_201.doModeBar = function(gd) {
+_$subroutines_202.doModeBar = function(gd) {
     var fullLayout = gd._fullLayout;
 
     _$modebar_108.manage(gd);
-    _$initInteractions_218(gd);
 
     for(var i = 0; i < fullLayout._basePlotModules.length; i++) {
         var updateFx = fullLayout._basePlotModules[i].updateFx;
@@ -56853,7 +57689,7 @@ _$subroutines_201.doModeBar = function(gd) {
     return _$plots_250.previousPromises(gd);
 };
 
-_$subroutines_201.doCamera = function(gd) {
+_$subroutines_202.doCamera = function(gd) {
     var fullLayout = gd._fullLayout;
     var sceneIds = fullLayout._subplots.gl3d;
 
@@ -56865,212 +57701,86 @@ _$subroutines_201.doCamera = function(gd) {
     }
 };
 
-var _$constraints_216 = {};
-/**
-* Copyright 2012-2018, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
-'use strict';
-
-var __id2name_216 = _$axis_ids_212.id2name;
-/* removed: var _$scaleZoom_226 = require('./scale_zoom'); */;
-var __makePadFn_216 = _$autorange_208.makePadFn;
-
-var ALMOST_EQUAL = _$numerical_147.ALMOST_EQUAL;
-
-var __FROM_BL_216 = _$alignment_145.FROM_BL;
-
-
-_$constraints_216.enforce = function enforceAxisConstraints(gd) {
+_$subroutines_202.drawData = function(gd) {
     var fullLayout = gd._fullLayout;
-    var constraintGroups = fullLayout._axisConstraintGroups || [];
+    var calcdata = gd.calcdata;
+    var rangesliderContainers = fullLayout._infolayer.selectAll('g.rangeslider-container');
+    var i;
 
-    var i, j, axisID, ax, normScale, mode, factor;
+    // in case of traces that were heatmaps or contour maps
+    // previously, remove them and their colorbars explicitly
+    for(i = 0; i < calcdata.length; i++) {
+        var trace = calcdata[i][0].trace;
+        var isVisible = (trace.visible === true);
+        var uid = trace.uid;
 
-    for(i = 0; i < constraintGroups.length; i++) {
-        var group = constraintGroups[i];
-        var axisIDs = Object.keys(group);
+        if(!isVisible || !_$registry_259.traceIs(trace, '2dMap')) {
+            var query = (
+                '.hm' + uid +
+                ',.contour' + uid +
+                ',#clip' + uid
+            );
 
-        var minScale = Infinity;
-        var maxScale = 0;
-        // mostly matchScale will be the same as minScale
-        // ie we expand axis ranges to encompass *everything*
-        // that's currently in any of their ranges, but during
-        // autorange of a subset of axes we will ignore other
-        // axes for this purpose.
-        var matchScale = Infinity;
-        var normScales = {};
-        var axes = {};
-        var hasAnyDomainConstraint = false;
+            fullLayout._paper
+                .selectAll(query)
+                .remove();
 
-        // find the (normalized) scale of each axis in the group
-        for(j = 0; j < axisIDs.length; j++) {
-            axisID = axisIDs[j];
-            axes[axisID] = ax = fullLayout[__id2name_216(axisID)];
-
-            if(ax._inputDomain) ax.domain = ax._inputDomain.slice();
-            else ax._inputDomain = ax.domain.slice();
-
-            if(!ax._inputRange) ax._inputRange = ax.range.slice();
-
-            // set axis scale here so we can use _m rather than
-            // having to calculate it from length and range
-            ax.setScale();
-
-            // abs: inverted scales still satisfy the constraint
-            normScales[axisID] = normScale = Math.abs(ax._m) / group[axisID];
-            minScale = Math.min(minScale, normScale);
-            if(ax.constrain === 'domain' || !ax._constraintShrinkable) {
-                matchScale = Math.min(matchScale, normScale);
-            }
-
-            // this has served its purpose, so remove it
-            delete ax._constraintShrinkable;
-            maxScale = Math.max(maxScale, normScale);
-
-            if(ax.constrain === 'domain') hasAnyDomainConstraint = true;
+            rangesliderContainers
+                .selectAll(query)
+                .remove();
         }
 
-        // Do we have a constraint mismatch? Give a small buffer for rounding errors
-        if(minScale > ALMOST_EQUAL * maxScale && !hasAnyDomainConstraint) continue;
-
-        // now increase any ranges we need to until all normalized scales are equal
-        for(j = 0; j < axisIDs.length; j++) {
-            axisID = axisIDs[j];
-            normScale = normScales[axisID];
-            ax = axes[axisID];
-            mode = ax.constrain;
-
-            // even if the scale didn't change, if we're shrinking domain
-            // we need to recalculate in case `constraintoward` changed
-            if(normScale !== matchScale || mode === 'domain') {
-                factor = normScale / matchScale;
-
-                if(mode === 'range') {
-                    _$scaleZoom_226(ax, factor);
-                }
-                else {
-                    // mode === 'domain'
-
-                    var inputDomain = ax._inputDomain;
-                    var domainShrunk = (ax.domain[1] - ax.domain[0]) /
-                        (inputDomain[1] - inputDomain[0]);
-                    var rangeShrunk = (ax.r2l(ax.range[1]) - ax.r2l(ax.range[0])) /
-                        (ax.r2l(ax._inputRange[1]) - ax.r2l(ax._inputRange[0]));
-
-                    factor /= domainShrunk;
-
-                    if(factor * rangeShrunk < 1) {
-                        // we've asked to magnify the axis more than we can just by
-                        // enlarging the domain - so we need to constrict range
-                        ax.domain = ax._input.domain = inputDomain.slice();
-                        _$scaleZoom_226(ax, factor);
-                        continue;
-                    }
-
-                    if(rangeShrunk < 1) {
-                        // the range has previously been constricted by ^^, but we've
-                        // switched to the domain-constricted regime, so reset range
-                        ax.range = ax._input.range = ax._inputRange.slice();
-                        factor *= rangeShrunk;
-                    }
-
-                    if(ax.autorange && ax._min.length && ax._max.length) {
-                        /*
-                         * range & factor may need to change because range was
-                         * calculated for the larger scaling, so some pixel
-                         * paddings may get cut off when we reduce the domain.
-                         *
-                         * This is easier than the regular autorange calculation
-                         * because we already know the scaling `m`, but we still
-                         * need to cut out impossible constraints (like
-                         * annotations with super-long arrows). That's what
-                         * outerMin/Max are for - if the expansion was going to
-                         * go beyond the original domain, it must be impossible
-                         */
-                        var rl0 = ax.r2l(ax.range[0]);
-                        var rl1 = ax.r2l(ax.range[1]);
-                        var rangeCenter = (rl0 + rl1) / 2;
-                        var rangeMin = rangeCenter;
-                        var rangeMax = rangeCenter;
-                        var halfRange = Math.abs(rl1 - rangeCenter);
-                        // extra tiny bit for rounding errors, in case we actually
-                        // *are* expanding to the full domain
-                        var outerMin = rangeCenter - halfRange * factor * 1.0001;
-                        var outerMax = rangeCenter + halfRange * factor * 1.0001;
-                        var getPad = __makePadFn_216(ax);
-
-                        updateDomain(ax, factor);
-                        ax.setScale();
-                        var m = Math.abs(ax._m);
-                        var newVal;
-                        var k;
-
-                        for(k = 0; k < ax._min.length; k++) {
-                            newVal = ax._min[k].val - getPad(ax._min[k]) / m;
-                            if(newVal > outerMin && newVal < rangeMin) {
-                                rangeMin = newVal;
-                            }
-                        }
-
-                        for(k = 0; k < ax._max.length; k++) {
-                            newVal = ax._max[k].val + getPad(ax._max[k]) / m;
-                            if(newVal < outerMax && newVal > rangeMax) {
-                                rangeMax = newVal;
-                            }
-                        }
-
-                        var domainExpand = (rangeMax - rangeMin) / (2 * halfRange);
-                        factor /= domainExpand;
-
-                        rangeMin = ax.l2r(rangeMin);
-                        rangeMax = ax.l2r(rangeMax);
-                        ax.range = ax._input.range = (rl0 < rl1) ?
-                            [rangeMin, rangeMax] : [rangeMax, rangeMin];
-                    }
-
-                    updateDomain(ax, factor);
-                }
-            }
+        if(!isVisible || !trace._module.colorbar) {
+            fullLayout._infolayer.selectAll('.cb' + uid).remove();
         }
     }
-};
 
-// For use before autoranging, check if this axis was previously constrained
-// by domain but no longer is
-_$constraints_216.clean = function cleanConstraints(gd, ax) {
-    if(ax._inputDomain) {
-        var isConstrained = false;
-        var axId = ax._id;
-        var constraintGroups = gd._fullLayout._axisConstraintGroups;
-        for(var j = 0; j < constraintGroups.length; j++) {
-            if(constraintGroups[j][axId]) {
-                isConstrained = true;
-                break;
-            }
-        }
-        if(!isConstrained || ax.constrain !== 'domain') {
-            ax._input.domain = ax.domain = ax._inputDomain;
-            delete ax._inputDomain;
-        }
+    _$clearGlCanvases_154(gd);
+
+    // loop over the base plot modules present on graph
+    var basePlotModules = fullLayout._basePlotModules;
+    for(i = 0; i < basePlotModules.length; i++) {
+        basePlotModules[i].plot(gd);
     }
+
+    // styling separate from drawing
+    _$plots_250.style(gd);
+
+    // show annotations and shapes
+    _$registry_259.getComponentMethod('shapes', 'draw')(gd);
+    _$registry_259.getComponentMethod('annotations', 'draw')(gd);
+
+    // Mark the first render as complete
+    fullLayout._replotting = false;
+
+    return _$plots_250.previousPromises(gd);
 };
 
-function updateDomain(ax, factor) {
-    var inputDomain = ax._inputDomain;
-    var centerFraction = __FROM_BL_216[ax.constraintoward];
-    var center = inputDomain[0] + (inputDomain[1] - inputDomain[0]) * centerFraction;
+_$subroutines_202.doAutoRangeAndConstraints = function(gd) {
+    var axList = _$axes_210.list(gd, '', true);
 
-    ax.domain = ax._input.domain = [
-        center + (inputDomain[0] - center) / factor,
-        center + (inputDomain[1] - center) / factor
-    ];
-}
+    for(var i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+        cleanAxisConstraints(gd, ax);
+        __doAutoRange_202(ax);
+    }
+
+    enforceAxisConstraints(gd);
+};
+
+// An initial paint must be completed before these components can be
+// correctly sized and the whole plot re-margined. fullLayout._replotting must
+// be set to false before these will work properly.
+_$subroutines_202.finalDraw = function(gd) {
+    _$registry_259.getComponentMethod('shapes', 'draw')(gd);
+    _$registry_259.getComponentMethod('images', 'draw')(gd);
+    _$registry_259.getComponentMethod('annotations', 'draw')(gd);
+    _$registry_259.getComponentMethod('legend', 'draw')(gd);
+    _$registry_259.getComponentMethod('rangeslider', 'draw')(gd);
+    _$registry_259.getComponentMethod('rangeselector', 'draw')(gd);
+    _$registry_259.getComponentMethod('sliders', 'draw')(gd);
+    _$registry_259.getComponentMethod('updatemenus', 'draw')(gd);
+};
 
 var _$micropolar_254 = {};
 /**
@@ -57082,8 +57792,8 @@ var _$micropolar_254 = {};
 */
 
 /* removed: var _$d3_8 = require('d3'); */;
-/* removed: var _$lib_166 = require('../../../lib'); */;
-var __extendDeepAll_254 = _$lib_166.extendDeepAll;
+/* removed: var _$lib_167 = require('../../../lib'); */;
+var __extendDeepAll_254 = _$lib_167.extendDeepAll;
 var __MID_SHIFT_254 = _$alignment_145.MID_SHIFT;
 
 var µ = _$micropolar_254 = { version: '0.2.2' };
@@ -58571,12 +59281,12 @@ var _$micropolar_manager_255 = {};
 'use strict';
 
 /* removed: var _$d3_8 = require('d3'); */;
-/* removed: var _$lib_166 = require('../../../lib'); */;
+/* removed: var _$lib_167 = require('../../../lib'); */;
 /* removed: var _$color_45 = require('../../../components/color'); */;
 
 /* removed: var _$micropolar_254 = require('./micropolar'); */;
 /* removed: var _$UndoManager_256 = require('./undo_manager'); */;
-var __extendDeepAll_255 = _$lib_166.extendDeepAll;
+var __extendDeepAll_255 = _$lib_167.extendDeepAll;
 
 var manager = _$micropolar_manager_255 = {};
 
@@ -58658,7 +59368,7 @@ var Polar = _$legacy_253 = _$micropolar_254;
 
 Polar.manager = _$micropolar_manager_255;
 
-var _$plot_api_198 = {};
+var _$plot_api_199 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -58675,33 +59385,29 @@ var _$plot_api_198 = {};
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 /* removed: var _$hasHover_13 = require('has-hover'); */;
 
-/* removed: var _$lib_166 = require('../lib'); */;
-/* removed: var _$Events_157 = require('../lib/events'); */;
-/* removed: var _$queue_180 = require('../lib/queue'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
+/* removed: var _$Events_158 = require('../lib/events'); */;
+/* removed: var _$queue_181 = require('../lib/queue'); */;
 
-/* removed: var _$registry_258 = require('../registry'); */;
-/* removed: var _$plot_schema_200 = require('./plot_schema'); */;
+/* removed: var _$registry_259 = require('../registry'); */;
+/* removed: var _$plot_schema_201 = require('./plot_schema'); */;
 /* removed: var _$plots_250 = require('../plots/plots'); */;
 /* removed: var _$legacy_253 = require('../plots/polar/legacy'); */;
-/* removed: var _$initInteractions_218 = require('../plots/cartesian/graph_interact'); */;
 
-/* removed: var _$axes_209 = require('../plots/cartesian/axes'); */;
+/* removed: var _$axes_210 = require('../plots/cartesian/axes'); */;
 /* removed: var _$drawing_70 = require('../components/drawing'); */;
 /* removed: var _$color_45 = require('../components/color'); */;
+var initInteractions = _$graph_interact_219.initInteractions;
 /* removed: var _$xmlns_namespaces_149 = require('../constants/xmlns_namespaces'); */;
-/* removed: var _$svg_text_utils_187 = require('../lib/svg_text_utils'); */;
+/* removed: var _$svg_text_utils_188 = require('../lib/svg_text_utils'); */;
 
-/* removed: var _$plot_config_199 = require('./plot_config'); */;
-/* removed: var _$manage_arrays_197 = require('./manage_arrays'); */;
-/* removed: var _$helpers_195 = require('./helpers'); */;
-/* removed: var _$subroutines_201 = require('./subroutines'); */;
-/* removed: var _$edit_types_194 = require('./edit_types'); */;
+/* removed: var _$plot_config_200 = require('./plot_config'); */;
+/* removed: var _$manage_arrays_198 = require('./manage_arrays'); */;
+/* removed: var _$helpers_196 = require('./helpers'); */;
+/* removed: var _$subroutines_202 = require('./subroutines'); */;
+/* removed: var _$edit_types_195 = require('./edit_types'); */;
 
-/* removed: var _$constants_214 = require('../plots/cartesian/constants'); */;
-/* removed: var _$constraints_216 = require('../plots/cartesian/constraints'); */;
-var enforceAxisConstraints = _$constraints_216.enforce;
-var cleanAxisConstraints = _$constraints_216.clean;
-var __doAutoRange_198 = _$autorange_208.doAutoRange;
+var AX_NAME_PATTERN = _$constants_215.AX_NAME_PATTERN;
 
 var numericNameWarningCount = 0;
 var numericNameWarningCountLimit = 5;
@@ -58727,15 +59433,15 @@ var numericNameWarningCountLimit = 5;
  *      object containing `data`, `layout`, `config`, and `frames` members
  *
  */
-_$plot_api_198.plot = function(gd, data, layout, config) {
+_$plot_api_199.plot = function(gd, data, layout, config) {
     var frames;
 
-    gd = _$lib_166.getGraphDiv(gd);
+    gd = _$lib_167.getGraphDiv(gd);
 
     // Events.init is idempotent and bails early if gd has already been init'd
-    _$Events_157.init(gd);
+    _$Events_158.init(gd);
 
-    if(_$lib_166.isPlainObject(data)) {
+    if(_$lib_167.isPlainObject(data)) {
         var obj = data;
         data = obj.data;
         layout = obj.layout;
@@ -58743,19 +59449,19 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
         frames = obj.frames;
     }
 
-    var okToPlot = _$Events_157.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
+    var okToPlot = _$Events_158.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
     if(okToPlot === false) return Promise.reject();
 
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
-    if(!data && !layout && !_$lib_166.isPlotDiv(gd)) {
-        _$lib_166.warn('Calling Plotly.plot as if redrawing ' +
+    if(!data && !layout && !_$lib_167.isPlotDiv(gd)) {
+        _$lib_167.warn('Calling Plotly.plot as if redrawing ' +
             'but this container doesn\'t yet have a plot.', gd);
     }
 
     function addFrames() {
         if(frames) {
-            return _$plot_api_198.addFrames(gd, frames);
+            return _$plot_api_199.addFrames(gd, frames);
         }
     }
 
@@ -58774,6 +59480,9 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
     // so we can share cached text across tabs
     _$drawing_70.makeTester();
 
+    // clear stashed base url
+    delete _$drawing_70.baseUrl;
+
     // collect promises for any async actions during plotting
     // any part of the plotting code can push to gd._promises, then
     // before we move to the next step, we check that they're all
@@ -58785,7 +59494,7 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass a non-array for data
     if(Array.isArray(data)) {
-        _$helpers_195.cleanData(data, gd.data);
+        _$helpers_196.cleanData(data, gd.data);
 
         if(graphWasEmpty) gd.data = data;
         else gd.data.push.apply(gd.data, data);
@@ -58796,7 +59505,7 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
         gd.empty = false;
     }
 
-    if(!gd.layout || graphWasEmpty) gd.layout = _$helpers_195.cleanLayout(layout);
+    if(!gd.layout || graphWasEmpty) gd.layout = _$helpers_196.cleanLayout(layout);
 
     // if the user is trying to drag the axes, allow new data and layout
     // to come in but don't allow a replot.
@@ -58818,7 +59527,7 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
 
     // Legacy polar plots
     if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
-        _$lib_166.log('Legacy polar charts are deprecated!');
+        _$lib_167.log('Legacy polar charts are deprecated!');
         return plotPolar(gd, data, layout);
     }
 
@@ -58839,7 +59548,7 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
     _$drawing_70.initGradients(gd);
 
     // save initial show spikes once per graph
-    if(graphWasEmpty) _$axes_209.saveShowSpikeInitial(gd);
+    if(graphWasEmpty) _$axes_210.saveShowSpikeInitial(gd);
 
     // prepare the data and find the autorange
 
@@ -58906,9 +59615,7 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
                 .attr('height', fullLayout.height);
         }
 
-        return _$lib_166.syncOrAsync([
-            _$subroutines_201.layoutStyles
-        ], gd);
+        return _$plots_250.previousPromises(gd);
     }
 
     // draw anything that can affect margins.
@@ -58916,10 +59623,10 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
         var calcdata = gd.calcdata;
         var i, cd, trace;
 
-        _$registry_258.getComponentMethod('legend', 'draw')(gd);
-        _$registry_258.getComponentMethod('rangeselector', 'draw')(gd);
-        _$registry_258.getComponentMethod('sliders', 'draw')(gd);
-        _$registry_258.getComponentMethod('updatemenus', 'draw')(gd);
+        _$registry_259.getComponentMethod('legend', 'draw')(gd);
+        _$registry_259.getComponentMethod('rangeselector', 'draw')(gd);
+        _$registry_259.getComponentMethod('sliders', 'draw')(gd);
+        _$registry_259.getComponentMethod('updatemenus', 'draw')(gd);
 
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -58938,9 +59645,9 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
     function marginPushersAgain() {
         if(JSON.stringify(fullLayout._size) === oldmargins) return;
 
-        return _$lib_166.syncOrAsync([
+        return _$lib_167.syncOrAsync([
             marginPushers,
-            _$subroutines_201.layoutStyles
+            _$subroutines_202.layoutStyles
         ], gd);
     }
 
@@ -58961,7 +59668,7 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
         var subplotInfo, i, j;
 
         for(j = 0; j < modules.length; j++) {
-            _$lib_166.pushUnique(setPositionsArray, modules[j].setPositions);
+            _$lib_167.pushUnique(setPositionsArray, modules[j].setPositions);
         }
 
         if(setPositionsArray.length) {
@@ -58975,113 +59682,31 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
         }
 
         // calc and autorange for errorbars
-        _$registry_258.getComponentMethod('errorbars', 'calc')(gd);
+        _$registry_259.getComponentMethod('errorbars', 'calc')(gd);
 
         // TODO: autosize extra for text markers and images
         // see https://github.com/plotly/plotly.js/issues/1111
-        return _$lib_166.syncOrAsync([
-            _$registry_258.getComponentMethod('shapes', 'calcAutorange'),
-            _$registry_258.getComponentMethod('annotations', 'calcAutorange'),
+        return _$lib_167.syncOrAsync([
+            _$registry_259.getComponentMethod('shapes', 'calcAutorange'),
+            _$registry_259.getComponentMethod('annotations', 'calcAutorange'),
             doAutoRangeAndConstraints,
-            _$registry_258.getComponentMethod('rangeslider', 'calcAutorange')
+            _$registry_259.getComponentMethod('rangeslider', 'calcAutorange')
         ], gd);
     }
 
     function doAutoRangeAndConstraints() {
         if(gd._transitioning) return;
 
-        var axList = _$axes_209.list(gd, '', true);
-        for(var i = 0; i < axList.length; i++) {
-            var ax = axList[i];
-            cleanAxisConstraints(gd, ax);
-
-            __doAutoRange_198(ax);
-        }
-
-        enforceAxisConstraints(gd);
+        _$subroutines_202.doAutoRangeAndConstraints(gd);
 
         // store initial ranges *after* enforcing constraints, otherwise
         // we will never look like we're at the initial ranges
-        if(graphWasEmpty) _$axes_209.saveRangeInitial(gd);
+        if(graphWasEmpty) _$axes_210.saveRangeInitial(gd);
     }
 
     // draw ticks, titles, and calculate axis scaling (._b, ._m)
     function drawAxes() {
-        return _$axes_209.doTicks(gd, 'redraw');
-    }
-
-    // Now plot the data
-    function drawData() {
-        var calcdata = gd.calcdata,
-            i,
-            rangesliderContainers = fullLayout._infolayer.selectAll('g.rangeslider-container');
-
-        // in case of traces that were heatmaps or contour maps
-        // previously, remove them and their colorbars explicitly
-        for(i = 0; i < calcdata.length; i++) {
-            var trace = calcdata[i][0].trace,
-                isVisible = (trace.visible === true),
-                uid = trace.uid;
-
-            if(!isVisible || !_$registry_258.traceIs(trace, '2dMap')) {
-                var query = (
-                    '.hm' + uid +
-                    ',.contour' + uid +
-                    ',#clip' + uid
-                );
-
-                fullLayout._paper
-                    .selectAll(query)
-                    .remove();
-
-                rangesliderContainers
-                    .selectAll(query)
-                    .remove();
-            }
-
-            if(!isVisible || !trace._module.colorbar) {
-                fullLayout._infolayer.selectAll('.cb' + uid).remove();
-            }
-        }
-
-        // loop over the base plot modules present on graph
-        var basePlotModules = fullLayout._basePlotModules;
-        for(i = 0; i < basePlotModules.length; i++) {
-            basePlotModules[i].plot(gd);
-        }
-
-        // keep reference to shape layers in subplots
-        var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
-        fullLayout._shapeSubplotLayers = layerSubplot.selectAll('.shapelayer');
-
-        // styling separate from drawing
-        _$plots_250.style(gd);
-
-        // show annotations and shapes
-        _$registry_258.getComponentMethod('shapes', 'draw')(gd);
-        _$registry_258.getComponentMethod('annotations', 'draw')(gd);
-
-        // source links
-        _$plots_250.addLinks(gd);
-
-        // Mark the first render as complete
-        fullLayout._replotting = false;
-
-        return _$plots_250.previousPromises(gd);
-    }
-
-    // An initial paint must be completed before these components can be
-    // correctly sized and the whole plot re-margined. fullLayout._replotting must
-    // be set to false before these will work properly.
-    function finalDraw() {
-        _$registry_258.getComponentMethod('shapes', 'draw')(gd);
-        _$registry_258.getComponentMethod('images', 'draw')(gd);
-        _$registry_258.getComponentMethod('annotations', 'draw')(gd);
-        _$registry_258.getComponentMethod('legend', 'draw')(gd);
-        _$registry_258.getComponentMethod('rangeslider', 'draw')(gd);
-        _$registry_258.getComponentMethod('rangeselector', 'draw')(gd);
-        _$registry_258.getComponentMethod('sliders', 'draw')(gd);
-        _$registry_258.getComponentMethod('updatemenus', 'draw')(gd);
+        return _$axes_210.doTicks(gd, graphWasEmpty ? '' : 'redraw');
     }
 
     var seq = [
@@ -59092,19 +59717,20 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
         marginPushersAgain
     ];
     if(hasCartesian) seq.push(positionAndAutorange);
-    seq.push(_$subroutines_201.layoutStyles);
+    seq.push(_$subroutines_202.layoutStyles);
     if(hasCartesian) seq.push(drawAxes);
     seq.push(
-        drawData,
-        finalDraw,
-        _$initInteractions_218,
+        _$subroutines_202.drawData,
+        _$subroutines_202.finalDraw,
+        initInteractions,
+        _$plots_250.addLinks,
         _$plots_250.rehover,
         _$plots_250.previousPromises
     );
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
-    var plotDone = _$lib_166.syncOrAsync(seq, gd);
+    var plotDone = _$lib_167.syncOrAsync(seq, gd);
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function() {
@@ -59113,15 +59739,15 @@ _$plot_api_198.plot = function(gd, data, layout, config) {
     });
 };
 
-_$plot_api_198.setPlotConfig = function setPlotConfig(obj) {
-    return _$lib_166.extendFlat(_$plot_config_199, obj);
+_$plot_api_199.setPlotConfig = function setPlotConfig(obj) {
+    return _$lib_167.extendFlat(_$plot_config_200, obj);
 };
 
 function setBackground(gd, bgColor) {
     try {
         gd._fullLayout._paper.style('background', bgColor);
     } catch(e) {
-        _$lib_166.error(e);
+        _$lib_167.error(e);
     }
 }
 
@@ -59131,7 +59757,7 @@ function opaqueSetBackground(gd, bgColor) {
 }
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = _$lib_166.extendDeep({}, _$plot_config_199);
+    if(!gd._context) gd._context = _$lib_167.extendDeep({}, _$plot_config_200);
     var context = gd._context;
 
     var i, keys, key;
@@ -59247,7 +59873,7 @@ function plotPolar(gd, data, layout) {
     if(txt === '' || !txt) opacity = 0;
 
     var titleLayout = function() {
-        this.call(_$svg_text_utils_187.convertToTspans, gd);
+        this.call(_$svg_text_utils_188.convertToTspans, gd);
         // TODO: html/mathjax
         // TODO: center title
     };
@@ -59256,7 +59882,7 @@ function plotPolar(gd, data, layout) {
         .call(titleLayout);
 
     if(gd._context.edits.titleText) {
-        var placeholderText = _$lib_166._(gd, 'Click to enter Plot title');
+        var placeholderText = _$lib_167._(gd, 'Click to enter Plot title');
         if(!txt || txt === placeholderText) {
             opacity = 0.2;
             // placeholder is not going through convertToTspans
@@ -59275,7 +59901,7 @@ function plotPolar(gd, data, layout) {
         }
 
         var setContenteditable = function() {
-            this.call(_$svg_text_utils_187.makeEditable, {gd: gd})
+            this.call(_$svg_text_utils_188.makeEditable, {gd: gd})
                 .on('edit', function(text) {
                     gd.framework({layout: {title: text}});
                     this.text(text)
@@ -59297,18 +59923,18 @@ function plotPolar(gd, data, layout) {
 }
 
 // convenience function to force a full redraw, mostly for use by plotly.js
-_$plot_api_198.redraw = function(gd) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.redraw = function(gd) {
+    gd = _$lib_167.getGraphDiv(gd);
 
-    if(!_$lib_166.isPlotDiv(gd)) {
+    if(!_$lib_167.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
-    _$helpers_195.cleanData(gd.data, gd.data);
-    _$helpers_195.cleanLayout(gd.layout);
+    _$helpers_196.cleanData(gd.data, gd.data);
+    _$helpers_196.cleanLayout(gd.layout);
 
     gd.calcdata = undefined;
-    return _$plot_api_198.plot(gd).then(function() {
+    return _$plot_api_199.plot(gd).then(function() {
         gd.emit('plotly_redraw');
         return gd;
     });
@@ -59322,14 +59948,14 @@ _$plot_api_198.redraw = function(gd) {
  * @param {Object} layout
  * @param {Object} config
  */
-_$plot_api_198.newPlot = function(gd, data, layout, config) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.newPlot = function(gd, data, layout, config) {
+    gd = _$lib_167.getGraphDiv(gd);
 
     // remove gl contexts
-    _$plots_250.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {});
+    _$plots_250.cleanPlot([], {}, gd._fullData || [], gd._fullLayout || {}, gd.calcdata || []);
 
     _$plots_250.purge(gd);
-    return _$plot_api_198.plot(gd, data, layout, config);
+    return _$plot_api_199.plot(gd, data, layout, config);
 };
 
 /**
@@ -59482,12 +60108,12 @@ function checkAddTracesArgs(gd, traces, newIndices) {
  */
 function assertExtendTracesArgs(gd, update, indices, maxPoints) {
 
-    var maxPointsIsObject = _$lib_166.isPlainObject(maxPoints);
+    var maxPointsIsObject = _$lib_167.isPlainObject(maxPoints);
 
     if(!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array');
     }
-    if(!_$lib_166.isPlainObject(update)) {
+    if(!_$lib_167.isPlainObject(update)) {
         throw new Error('update must be a key:value object');
     }
 
@@ -59530,7 +60156,7 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
  */
 function getExtendProperties(gd, update, indices, maxPoints) {
 
-    var maxPointsIsObject = _$lib_166.isPlainObject(maxPoints),
+    var maxPointsIsObject = _$lib_167.isPlainObject(maxPoints),
         updateProps = [];
     var trace, target, prop, insert, maxp;
 
@@ -59550,7 +60176,7 @@ function getExtendProperties(gd, update, indices, maxPoints) {
              * instance that references the key and value for this particular trace.
              */
             trace = gd.data[indices[j]];
-            prop = _$lib_166.nestedProperty(trace, key);
+            prop = _$lib_167.nestedProperty(trace, key);
 
             /*
              * Target is the existing gd.data.trace.dataArray value like "x" or "marker.size"
@@ -59559,10 +60185,10 @@ function getExtendProperties(gd, update, indices, maxPoints) {
             target = prop.get();
             insert = update[key][j];
 
-            if(!_$lib_166.isArrayOrTypedArray(insert)) {
+            if(!_$lib_167.isArrayOrTypedArray(insert)) {
                 throw new Error('attribute: ' + key + ' index: ' + j + ' must be an array');
             }
-            if(!_$lib_166.isArrayOrTypedArray(target)) {
+            if(!_$lib_167.isArrayOrTypedArray(target)) {
                 throw new Error('cannot extend missing or non-array attribute: ' + key);
             }
             if(target.constructor !== insert.constructor) {
@@ -59657,13 +60283,13 @@ function concatTypedArray(arr0, arr1) {
  * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening.
  *
  */
-_$plot_api_198.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
+    gd = _$lib_167.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
         var newArray, remainder;
 
-        if(_$lib_166.isTypedArray(target)) {
+        if(_$lib_167.isTypedArray(target)) {
             if(maxp < 0) {
                 var none = new target.constructor(0);
                 var both = concatTypedArray(target, insert);
@@ -59708,20 +60334,20 @@ _$plot_api_198.extendTraces = function extendTraces(gd, update, indices, maxPoin
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = _$plot_api_198.redraw(gd);
+    var promise = _$plot_api_199.redraw(gd);
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    _$queue_180.add(gd, _$plot_api_198.prependTraces, undoArgs, extendTraces, arguments);
+    _$queue_181.add(gd, _$plot_api_199.prependTraces, undoArgs, extendTraces, arguments);
 
     return promise;
 };
 
-_$plot_api_198.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
+    gd = _$lib_167.getGraphDiv(gd);
 
     function updateArray(target, insert, maxp) {
         var newArray, remainder;
 
-        if(_$lib_166.isTypedArray(target)) {
+        if(_$lib_167.isTypedArray(target)) {
             if(maxp <= 0) {
                 var none = new target.constructor(0);
                 var both = concatTypedArray(insert, target);
@@ -59765,9 +60391,9 @@ _$plot_api_198.prependTraces = function prependTraces(gd, update, indices, maxPo
     }
 
     var undo = spliceTraces(gd, update, indices, maxPoints, updateArray);
-    var promise = _$plot_api_198.redraw(gd);
+    var promise = _$plot_api_199.redraw(gd);
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    _$queue_180.add(gd, _$plot_api_198.extendTraces, undoArgs, prependTraces, arguments);
+    _$queue_181.add(gd, _$plot_api_199.extendTraces, undoArgs, prependTraces, arguments);
 
     return promise;
 };
@@ -59781,11 +60407,11 @@ _$plot_api_198.prependTraces = function prependTraces(gd, update, indices, maxPo
  * @param {Number[]|Number} [newIndices=[gd.data.length]] Locations to add traces
  *
  */
-_$plot_api_198.addTraces = function addTraces(gd, traces, newIndices) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.addTraces = function addTraces(gd, traces, newIndices) {
+    gd = _$lib_167.getGraphDiv(gd);
 
     var currentIndices = [],
-        undoFunc = _$plot_api_198.deleteTraces,
+        undoFunc = _$plot_api_199.deleteTraces,
         redoFunc = addTraces,
         undoArgs = [gd, currentIndices],
         redoArgs = [gd, traces],  // no newIndices here
@@ -59802,10 +60428,10 @@ _$plot_api_198.addTraces = function addTraces(gd, traces, newIndices) {
 
     // make sure traces do not repeat existing ones
     traces = traces.map(function(trace) {
-        return _$lib_166.extendFlat({}, trace);
+        return _$lib_167.extendFlat({}, trace);
     });
 
-    _$helpers_195.cleanData(traces, gd.data);
+    _$helpers_196.cleanData(traces, gd.data);
 
     // add the traces to gd.data (no redrawing yet!)
     for(i = 0; i < traces.length; i++) {
@@ -59820,8 +60446,8 @@ _$plot_api_198.addTraces = function addTraces(gd, traces, newIndices) {
     // if the user didn't define newIndices, they just want the traces appended
     // i.e., we can simply redraw and be done
     if(typeof newIndices === 'undefined') {
-        promise = _$plot_api_198.redraw(gd);
-        _$queue_180.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+        promise = _$plot_api_199.redraw(gd);
+        _$queue_181.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         return promise;
     }
 
@@ -59844,10 +60470,10 @@ _$plot_api_198.addTraces = function addTraces(gd, traces, newIndices) {
 
     // if we're here, the user has defined specific places to place the new traces
     // this requires some extra work that moveTraces will do
-    _$queue_180.startSequence(gd);
-    _$queue_180.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
-    promise = _$plot_api_198.moveTraces(gd, currentIndices, newIndices);
-    _$queue_180.stopSequence(gd);
+    _$queue_181.startSequence(gd);
+    _$queue_181.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    promise = _$plot_api_199.moveTraces(gd, currentIndices, newIndices);
+    _$queue_181.stopSequence(gd);
     return promise;
 };
 
@@ -59858,11 +60484,11 @@ _$plot_api_198.addTraces = function addTraces(gd, traces, newIndices) {
  * @param {Object[]} gd.data The array of traces we're removing from
  * @param {Number|Number[]} indices The indices
  */
-_$plot_api_198.deleteTraces = function deleteTraces(gd, indices) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.deleteTraces = function deleteTraces(gd, indices) {
+    gd = _$lib_167.getGraphDiv(gd);
 
     var traces = [],
-        undoFunc = _$plot_api_198.addTraces,
+        undoFunc = _$plot_api_199.addTraces,
         redoFunc = deleteTraces,
         undoArgs = [gd, traces, indices],
         redoArgs = [gd, indices],
@@ -59881,14 +60507,14 @@ _$plot_api_198.deleteTraces = function deleteTraces(gd, indices) {
     indices = positivifyIndices(indices, gd.data.length - 1);
 
     // we want descending here so that splicing later doesn't affect indexing
-    indices.sort(_$lib_166.sorterDes);
+    indices.sort(_$lib_167.sorterDes);
     for(i = 0; i < indices.length; i += 1) {
         deletedTrace = gd.data.splice(indices[i], 1)[0];
         traces.push(deletedTrace);
     }
 
-    var promise = _$plot_api_198.redraw(gd);
-    _$queue_180.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    var promise = _$plot_api_199.redraw(gd);
+    _$queue_181.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
 };
@@ -59924,8 +60550,8 @@ _$plot_api_198.deleteTraces = function deleteTraces(gd, indices) {
  *      // reorder all traces (assume there are 5--a, b, c, d, e)
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
-_$plot_api_198.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
+    gd = _$lib_167.getGraphDiv(gd);
 
     var newData = [],
         movingTraceMap = [],
@@ -59985,8 +60611,8 @@ _$plot_api_198.moveTraces = function moveTraces(gd, currentIndices, newIndices) 
 
     gd.data = newData;
 
-    var promise = _$plot_api_198.redraw(gd);
-    _$queue_180.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    var promise = _$plot_api_199.redraw(gd);
+    _$queue_181.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
 };
@@ -60021,55 +60647,55 @@ _$plot_api_198.moveTraces = function moveTraces(gd, currentIndices, newIndices) 
  * If the array is too short, it will wrap around (useful for
  * style files that want to specify cyclical default values).
  */
-_$plot_api_198.restyle = function restyle(gd, astr, val, _traces) {
-    gd = _$lib_166.getGraphDiv(gd);
-    _$helpers_195.clearPromiseQueue(gd);
+_$plot_api_199.restyle = function restyle(gd, astr, val, _traces) {
+    gd = _$lib_167.getGraphDiv(gd);
+    _$helpers_196.clearPromiseQueue(gd);
 
     var aobj = {};
     if(typeof astr === 'string') aobj[astr] = val;
-    else if(_$lib_166.isPlainObject(astr)) {
+    else if(_$lib_167.isPlainObject(astr)) {
         // the 3-arg form
-        aobj = _$lib_166.extendFlat({}, astr);
+        aobj = _$lib_167.extendFlat({}, astr);
         if(_traces === undefined) _traces = val;
     }
     else {
-        _$lib_166.warn('Restyle fail.', astr, val, _traces);
+        _$lib_167.warn('Restyle fail.', astr, val, _traces);
         return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
 
-    var traces = _$helpers_195.coerceTraceIndices(gd, _traces);
+    var traces = _$helpers_196.coerceTraceIndices(gd, _traces);
 
-    var specs = _restyle(gd, aobj, traces),
-        flags = specs.flags;
+    var specs = _restyle(gd, aobj, traces);
+    var flags = specs.flags;
 
     // clear calcdata and/or axis types if required so they get regenerated
     if(flags.clearCalc) gd.calcdata = undefined;
-    if(flags.clearAxisTypes) _$helpers_195.clearAxisTypes(gd, traces, {});
+    if(flags.clearAxisTypes) _$helpers_196.clearAxisTypes(gd, traces, {});
 
     // fill in redraw sequence
     var seq = [];
 
     if(flags.fullReplot) {
-        seq.push(_$plot_api_198.plot);
+        seq.push(_$plot_api_199.plot);
     } else {
         seq.push(_$plots_250.previousPromises);
 
         _$plots_250.supplyDefaults(gd);
 
-        if(flags.style) seq.push(_$subroutines_201.doTraceStyle);
-        if(flags.colorbars) seq.push(_$subroutines_201.doColorBars);
+        if(flags.style) seq.push(_$subroutines_202.doTraceStyle);
+        if(flags.colorbars) seq.push(_$subroutines_202.doColorBars);
     }
 
     seq.push(_$plots_250.rehover);
 
-    _$queue_180.add(gd,
+    _$queue_181.add(gd,
         restyle, [gd, specs.undoit, specs.traces],
         restyle, [gd, specs.redoit, specs.traces]
     );
 
-    var plotDone = _$lib_166.syncOrAsync(seq, gd);
+    var plotDone = _$lib_167.syncOrAsync(seq, gd);
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function() {
@@ -60092,7 +60718,7 @@ function _restyle(gd, aobj, traces) {
         i;
 
     // initialize flags
-    var flags = _$edit_types_194.traceFlags();
+    var flags = _$edit_types_195.traceFlags();
 
     // copies of the change (and previous values of anything affected)
     // for the undo / redo queue
@@ -60105,7 +60731,7 @@ function _restyle(gd, aobj, traces) {
 
     // for autoranging multiple axes
     function addToAxlist(axid) {
-        var axName = _$axes_209.id2name(axid);
+        var axName = _$axes_210.id2name(axid);
         if(axlist.indexOf(axName) === -1) axlist.push(axName);
     }
 
@@ -60124,13 +60750,13 @@ function _restyle(gd, aobj, traces) {
             return;
         }
         // quit if explicitly setting this elsewhere
-        if(attr in aobj || _$helpers_195.hasParent(aobj, attr)) return;
+        if(attr in aobj || _$helpers_196.hasParent(aobj, attr)) return;
 
         var extraparam;
         if(attr.substr(0, 6) === 'LAYOUT') {
-            extraparam = _$lib_166.nestedProperty(gd.layout, attr.replace('LAYOUT', ''));
+            extraparam = _$lib_167.nestedProperty(gd.layout, attr.replace('LAYOUT', ''));
         } else {
-            extraparam = _$lib_166.nestedProperty(data[traces[i]], attr);
+            extraparam = _$lib_167.nestedProperty(data[traces[i]], attr);
         }
 
         if(!(attr in undoit)) {
@@ -60147,7 +60773,7 @@ function _restyle(gd, aobj, traces) {
     // now make the changes to gd.data (and occasionally gd.layout)
     // and figure out what kind of graphics update we need to do
     for(var ai in aobj) {
-        if(_$helpers_195.hasParent(aobj, ai)) {
+        if(_$helpers_196.hasParent(aobj, ai)) {
             throw new Error('cannot set ' + ai + 'and a parent attribute simultaneously');
         }
 
@@ -60162,7 +60788,7 @@ function _restyle(gd, aobj, traces) {
         redoit[ai] = vi;
 
         if(ai.substr(0, 6) === 'LAYOUT') {
-            param = _$lib_166.nestedProperty(gd.layout, ai.replace('LAYOUT', ''));
+            param = _$lib_167.nestedProperty(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [undefinedToNull(param.get())];
             // since we're allowing val to be an array, allow it here too,
             // even though that's meaningless
@@ -60178,17 +60804,17 @@ function _restyle(gd, aobj, traces) {
         for(i = 0; i < traces.length; i++) {
             cont = data[traces[i]];
             contFull = fullData[traces[i]];
-            param = _$lib_166.nestedProperty(cont, ai);
+            param = _$lib_167.nestedProperty(cont, ai);
             oldVal = param.get();
             newVal = Array.isArray(vi) ? vi[i % vi.length] : vi;
 
             if(newVal === undefined) continue;
 
-            valObject = _$plot_schema_200.getTraceValObject(contFull, param.parts);
+            valObject = _$plot_schema_201.getTraceValObject(contFull, param.parts);
 
             if(valObject && valObject.impliedEdits && newVal !== null) {
                 for(var impliedKey in valObject.impliedEdits) {
-                    doextra(_$lib_166.relativeAttr(ai, impliedKey), valObject.impliedEdits[impliedKey], i);
+                    doextra(_$lib_167.relativeAttr(ai, impliedKey), valObject.impliedEdits[impliedKey], i);
                 }
             }
 
@@ -60228,19 +60854,19 @@ function _restyle(gd, aobj, traces) {
                     labelsTo = 'y';
                     valuesTo = 'x';
                 }
-                _$lib_166.swapAttrs(cont, ['?', '?src'], 'labels', labelsTo);
-                _$lib_166.swapAttrs(cont, ['d?', '?0'], 'label', labelsTo);
-                _$lib_166.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
+                _$lib_167.swapAttrs(cont, ['?', '?src'], 'labels', labelsTo);
+                _$lib_167.swapAttrs(cont, ['d?', '?0'], 'label', labelsTo);
+                _$lib_167.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
 
                 if(oldVal === 'pie') {
-                    _$lib_166.nestedProperty(cont, 'marker.color')
-                        .set(_$lib_166.nestedProperty(cont, 'marker.colors').get());
+                    _$lib_167.nestedProperty(cont, 'marker.color')
+                        .set(_$lib_167.nestedProperty(cont, 'marker.colors').get());
 
                     // super kludgy - but if all pies are gone we won't remove them otherwise
                     fullLayout._pielayer.selectAll('g.trace').remove();
-                } else if(_$registry_258.traceIs(cont, 'cartesian')) {
-                    _$lib_166.nestedProperty(cont, 'marker.colors')
-                        .set(_$lib_166.nestedProperty(cont, 'marker.color').get());
+                } else if(_$registry_259.traceIs(cont, 'cartesian')) {
+                    _$lib_167.nestedProperty(cont, 'marker.colors')
+                        .set(_$lib_167.nestedProperty(cont, 'marker.color').get());
                 }
             }
 
@@ -60269,23 +60895,23 @@ function _restyle(gd, aobj, traces) {
                     cont.orientation =
                         {v: 'h', h: 'v'}[contFull.orientation];
                 }
-                _$helpers_195.swapXYData(cont);
+                _$helpers_196.swapXYData(cont);
                 flags.calc = flags.clearAxisTypes = true;
             }
             else if(_$plots_250.dataArrayContainers.indexOf(param.parts[0]) !== -1) {
                 // TODO: use manageArrays.applyContainerArrayChanges here too
-                _$helpers_195.manageArrayContainers(param, newVal, undoit);
+                _$helpers_196.manageArrayContainers(param, newVal, undoit);
                 flags.calc = true;
             }
             else {
                 if(valObject) {
                     // must redo calcdata when restyling array values of arrayOk attributes
                     if(valObject.arrayOk && (
-                        _$lib_166.isArrayOrTypedArray(newVal) || _$lib_166.isArrayOrTypedArray(oldVal))
+                        _$lib_167.isArrayOrTypedArray(newVal) || _$lib_167.isArrayOrTypedArray(oldVal))
                     ) {
                         flags.calc = true;
                     }
-                    else _$edit_types_194.update(flags, valObject);
+                    else _$edit_types_195.update(flags, valObject);
                 }
                 else {
                     /*
@@ -60304,12 +60930,12 @@ function _restyle(gd, aobj, traces) {
 
         // swap the data attributes of the relevant x and y axes?
         if(['swapxyaxes', 'orientationaxes'].indexOf(ai) !== -1) {
-            _$axes_209.swap(gd, traces);
+            _$axes_210.swap(gd, traces);
         }
 
         // swap hovermode if set to "compare x/y data"
         if(ai === 'orientationaxes') {
-            var hovermode = _$lib_166.nestedProperty(gd.layout, 'hovermode');
+            var hovermode = _$lib_167.nestedProperty(gd.layout, 'hovermode');
             if(hovermode.get() === 'x') {
                 hovermode.set('y');
             } else if(hovermode.get() === 'y') {
@@ -60324,7 +60950,7 @@ function _restyle(gd, aobj, traces) {
             for(i = 0; i < traces.length; i++) {
                 var trace = data[traces[i]];
 
-                if(_$registry_258.traceIs(trace, 'cartesian')) {
+                if(_$registry_259.traceIs(trace, 'cartesian')) {
                     addToAxlist(trace.xaxis || 'x');
                     addToAxlist(trace.yaxis || 'y');
 
@@ -60341,7 +60967,7 @@ function _restyle(gd, aobj, traces) {
 
     // do we need to force a recalc?
     var autorangeOn = false;
-    var axList = _$axes_209.list(gd);
+    var axList = _$axes_210.list(gd);
     for(i = 0; i < axList.length; i++) {
         if(axList[i].autorange) {
             autorangeOn = true;
@@ -60362,7 +60988,7 @@ function _restyle(gd, aobj, traces) {
         undoit: undoit,
         redoit: redoit,
         traces: traces,
-        eventData: _$lib_166.extendDeepNoArrays([], [redoit, traces])
+        eventData: _$lib_167.extendDeepNoArrays([], [redoit, traces])
     };
 }
 
@@ -60386,9 +61012,9 @@ function _restyle(gd, aobj, traces) {
  *  attribute object `{astr1: val1, astr2: val2 ...}`
  *  allows setting multiple attributes simultaneously
  */
-_$plot_api_198.relayout = function relayout(gd, astr, val) {
-    gd = _$lib_166.getGraphDiv(gd);
-    _$helpers_195.clearPromiseQueue(gd);
+_$plot_api_199.relayout = function relayout(gd, astr, val) {
+    gd = _$lib_167.getGraphDiv(gd);
+    _$helpers_196.clearPromiseQueue(gd);
 
     if(gd.framework && gd.framework.isPolar) {
         return Promise.resolve(gd);
@@ -60397,21 +61023,21 @@ _$plot_api_198.relayout = function relayout(gd, astr, val) {
     var aobj = {};
     if(typeof astr === 'string') {
         aobj[astr] = val;
-    } else if(_$lib_166.isPlainObject(astr)) {
-        aobj = _$lib_166.extendFlat({}, astr);
+    } else if(_$lib_167.isPlainObject(astr)) {
+        aobj = _$lib_167.extendFlat({}, astr);
     } else {
-        _$lib_166.warn('Relayout fail.', astr, val);
+        _$lib_167.warn('Relayout fail.', astr, val);
         return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
 
-    var specs = _relayout(gd, aobj),
-        flags = specs.flags;
+    var specs = _relayout(gd, aobj);
+    var flags = specs.flags;
 
     // clear calcdata if required
     if(flags.calc) gd.calcdata = undefined;
-    if(flags.margins) _$helpers_195.clearAxisAutomargins(gd);
+    if(flags.margins) _$helpers_196.clearAxisAutomargins(gd);
 
     // fill in redraw sequence
 
@@ -60421,26 +61047,50 @@ _$plot_api_198.relayout = function relayout(gd, astr, val) {
     var seq = [_$plots_250.previousPromises];
 
     if(flags.layoutReplot) {
-        seq.push(_$subroutines_201.layoutReplot);
+        seq.push(_$subroutines_202.layoutReplot);
     }
     else if(Object.keys(aobj).length) {
         _$plots_250.supplyDefaults(gd);
 
-        if(flags.legend) seq.push(_$subroutines_201.doLegend);
-        if(flags.layoutstyle) seq.push(_$subroutines_201.layoutStyles);
-        if(flags.ticks) seq.push(_$subroutines_201.doTicksRelayout);
-        if(flags.modebar) seq.push(_$subroutines_201.doModeBar);
-        if(flags.camera) seq.push(_$subroutines_201.doCamera);
+        if(flags.legend) seq.push(_$subroutines_202.doLegend);
+        if(flags.layoutstyle) seq.push(_$subroutines_202.layoutStyles);
+
+        if(flags.axrange) {
+            // N.B. leave as sequence of subroutines (for now) instead of
+            // subroutine of its own so that finalDraw always gets
+            // executed after drawData
+            seq.push(
+                // TODO
+                // no test fail when commenting out doAutoRangeAndConstraints,
+                // but I think we do need this (maybe just the enforce part?)
+                // Am I right?
+                // More info in:
+                // https://github.com/plotly/plotly.js/issues/2540
+                _$subroutines_202.doAutoRangeAndConstraints,
+                // TODO
+                // can target specific axes,
+                // do not have to redraw all axes here
+                // See:
+                // https://github.com/plotly/plotly.js/issues/2547
+                _$subroutines_202.doTicksRelayout,
+                _$subroutines_202.drawData,
+                _$subroutines_202.finalDraw
+            );
+        }
+
+        if(flags.ticks) seq.push(_$subroutines_202.doTicksRelayout);
+        if(flags.modebar) seq.push(_$subroutines_202.doModeBar);
+        if(flags.camera) seq.push(_$subroutines_202.doCamera);
     }
 
     seq.push(_$plots_250.rehover);
 
-    _$queue_180.add(gd,
+    _$queue_181.add(gd,
         relayout, [gd, specs.undoit],
         relayout, [gd, specs.redoit]
     );
 
-    var plotDone = _$lib_166.syncOrAsync(seq, gd);
+    var plotDone = _$lib_167.syncOrAsync(seq, gd);
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
@@ -60453,7 +61103,7 @@ function _relayout(gd, aobj) {
     var layout = gd.layout,
         fullLayout = gd._fullLayout,
         keys = Object.keys(aobj),
-        axes = _$axes_209.list(gd),
+        axes = _$axes_210.list(gd),
         arrayEdits = {},
         arrayStr,
         i,
@@ -60476,7 +61126,7 @@ function _relayout(gd, aobj) {
     }
 
     // initialize flags
-    var flags = _$edit_types_194.layoutFlags();
+    var flags = _$edit_types_195.layoutFlags();
 
     // copies of the change (and previous values of anything affected)
     // for the undo / redo queue
@@ -60495,9 +61145,9 @@ function _relayout(gd, aobj) {
 
         // if we have another value for this attribute (explicitly or
         // via a parent) do not override with this auto-generated extra
-        if(attr in aobj || _$helpers_195.hasParent(aobj, attr)) return;
+        if(attr in aobj || _$helpers_196.hasParent(aobj, attr)) return;
 
-        var p = _$lib_166.nestedProperty(layout, attr);
+        var p = _$lib_167.nestedProperty(layout, attr);
         if(!(attr in undoit)) {
             undoit[attr] = undefinedToNull(p.get());
         }
@@ -60511,18 +61161,18 @@ function _relayout(gd, aobj) {
     var axId;
 
     function recordAlteredAxis(pleafPlus) {
-        var axId = _$axes_209.name2id(pleafPlus.split('.')[0]);
+        var axId = _$axes_210.name2id(pleafPlus.split('.')[0]);
         rangesAltered[axId] = 1;
         return axId;
     }
 
     // alter gd.layout
     for(var ai in aobj) {
-        if(_$helpers_195.hasParent(aobj, ai)) {
+        if(_$helpers_196.hasParent(aobj, ai)) {
             throw new Error('cannot set ' + ai + 'and a parent attribute simultaneously');
         }
 
-        var p = _$lib_166.nestedProperty(layout, ai);
+        var p = _$lib_167.nestedProperty(layout, ai);
         var vi = aobj[ai];
         var plen = p.parts.length;
         // p.parts may end with an index integer if the property is an array
@@ -60534,8 +61184,8 @@ function _relayout(gd, aobj) {
         var pleafPlus = p.parts[pend - 1] + '.' + pleaf;
         // trunk nodes (everything except the leaf)
         var ptrunk = p.parts.slice(0, pend).join('.');
-        var parentIn = _$lib_166.nestedProperty(gd.layout, ptrunk).get();
-        var parentFull = _$lib_166.nestedProperty(fullLayout, ptrunk).get();
+        var parentIn = _$lib_167.nestedProperty(gd.layout, ptrunk).get();
+        var parentFull = _$lib_167.nestedProperty(fullLayout, ptrunk).get();
         var vOld = p.get();
 
         if(vi === undefined) continue;
@@ -60546,11 +61196,11 @@ function _relayout(gd, aobj) {
         // op and has no flag.
         undoit[ai] = (pleaf === 'reverse') ? vi : undefinedToNull(vOld);
 
-        var valObject = _$plot_schema_200.getLayoutValObject(fullLayout, p.parts);
+        var valObject = _$plot_schema_201.getLayoutValObject(fullLayout, p.parts);
 
         if(valObject && valObject.impliedEdits && vi !== null) {
             for(var impliedKey in valObject.impliedEdits) {
-                doextra(_$lib_166.relativeAttr(ai, impliedKey), valObject.impliedEdits[impliedKey]);
+                doextra(_$lib_167.relativeAttr(ai, impliedKey), valObject.impliedEdits[impliedKey]);
             }
         }
 
@@ -60564,12 +61214,12 @@ function _relayout(gd, aobj) {
         // check autorange vs range
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             recordAlteredAxis(pleafPlus);
-            _$lib_166.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
+            _$lib_167.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
         }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.autorange$/)) {
             recordAlteredAxis(pleafPlus);
-            _$lib_166.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
-            var axFull = _$lib_166.nestedProperty(fullLayout, ptrunk).get();
+            _$lib_167.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
+            var axFull = _$lib_167.nestedProperty(fullLayout, ptrunk).get();
             if(axFull._inputDomain) {
                 // if we're autoranging and this axis has a constrained domain,
                 // reset it so we don't get locked into a shrunken size
@@ -60577,7 +61227,7 @@ function _relayout(gd, aobj) {
             }
         }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.domain(\[[0|1]\])?$/)) {
-            _$lib_166.nestedProperty(fullLayout, ptrunk + '._inputDomain').set(null);
+            _$lib_167.nestedProperty(fullLayout, ptrunk + '._inputDomain').set(null);
         }
 
         // toggling axis type between log and linear: we need to convert
@@ -60637,8 +61287,8 @@ function _relayout(gd, aobj) {
 
                 // Annotations and images also need to convert to/from linearized coords
                 // Shapes do not need this :)
-                _$registry_258.getComponentMethod('annotations', 'convertCoords')(gd, parentFull, vi, doextra);
-                _$registry_258.getComponentMethod('images', 'convertCoords')(gd, parentFull, vi, doextra);
+                _$registry_259.getComponentMethod('annotations', 'convertCoords')(gd, parentFull, vi, doextra);
+                _$registry_259.getComponentMethod('images', 'convertCoords')(gd, parentFull, vi, doextra);
             }
             else {
                 // any other type changes: the range from the previous type
@@ -60646,18 +61296,18 @@ function _relayout(gd, aobj) {
                 doextra(ptrunk + '.autorange', true);
                 doextra(ptrunk + '.range', null);
             }
-            _$lib_166.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
+            _$lib_167.nestedProperty(fullLayout, ptrunk + '._inputRange').set(null);
         }
-        else if(pleaf.match(_$constants_214.AX_NAME_PATTERN)) {
-            var fullProp = _$lib_166.nestedProperty(fullLayout, ai).get(),
+        else if(pleaf.match(AX_NAME_PATTERN)) {
+            var fullProp = _$lib_167.nestedProperty(fullLayout, ai).get(),
                 newType = (vi || {}).type;
 
             // This can potentially cause strange behavior if the autotype is not
             // numeric (linear, because we don't auto-log) but the previous type
             // was log. That's a very strange edge case though
             if(!newType || newType === '-') newType = 'linear';
-            _$registry_258.getComponentMethod('annotations', 'convertCoords')(gd, fullProp, newType, doextra);
-            _$registry_258.getComponentMethod('images', 'convertCoords')(gd, fullProp, newType, doextra);
+            _$registry_259.getComponentMethod('annotations', 'convertCoords')(gd, fullProp, newType, doextra);
+            _$registry_259.getComponentMethod('images', 'convertCoords')(gd, fullProp, newType, doextra);
         }
 
         // alter gd.layout
@@ -60666,12 +61316,12 @@ function _relayout(gd, aobj) {
         // so we can ensure consistent behavior adding/removing items
         // and order-independence for add/remove/edit all together in
         // one relayout call
-        var containerArrayMatch = _$manage_arrays_197.containerArrayMatch(ai);
+        var containerArrayMatch = _$manage_arrays_198.containerArrayMatch(ai);
         if(containerArrayMatch) {
             arrayStr = containerArrayMatch.array;
             i = containerArrayMatch.index;
             var propStr = containerArrayMatch.property;
-            var componentArray = _$lib_166.nestedProperty(layout, arrayStr);
+            var componentArray = _$lib_167.nestedProperty(layout, arrayStr);
             var obji = (componentArray || [])[i] || {};
             var objToAutorange = obji;
 
@@ -60681,28 +61331,29 @@ function _relayout(gd, aobj) {
             if(i === '') {
                 // replacing the entire array - too many possibilities, just recalc
                 if(checkForAutorange) flags.calc = true;
-                else _$edit_types_194.update(flags, updateValObject);
+                else _$edit_types_195.update(flags, updateValObject);
                 checkForAutorange = false; // clear this, we're already doing a recalc
             }
             else if(propStr === '') {
                 // special handling of undoit if we're adding or removing an element
                 // ie 'annotations[2]' which can be {...} (add) or null (remove)
                 objToAutorange = vi;
-                if(_$manage_arrays_197.isAddVal(vi)) {
+                if(_$manage_arrays_198.isAddVal(vi)) {
                     undoit[ai] = null;
                 }
-                else if(_$manage_arrays_197.isRemoveVal(vi)) {
+                else if(_$manage_arrays_198.isRemoveVal(vi)) {
                     undoit[ai] = obji;
                     objToAutorange = obji;
                 }
-                else _$lib_166.warn('unrecognized full object value', aobj);
+                else _$lib_167.warn('unrecognized full object value', aobj);
             }
 
             if(checkForAutorange && (refAutorange(gd, objToAutorange, 'x') || refAutorange(gd, objToAutorange, 'y'))) {
                 flags.calc = true;
             }
-            else _$edit_types_194.update(flags, updateValObject);
-
+            else {
+                _$edit_types_195.update(flags, updateValObject);
+            }
 
             // prepare the edits object we'll send to applyContainerArrayChanges
             if(!arrayEdits[arrayStr]) arrayEdits[arrayStr] = {};
@@ -60731,7 +61382,7 @@ function _relayout(gd, aobj) {
             ) {
                 flags.plot = true;
             }
-            else if(valObject) _$edit_types_194.update(flags, valObject);
+            else if(valObject) _$edit_types_195.update(flags, valObject);
             else flags.calc = true;
 
             p.set(vi);
@@ -60740,8 +61391,8 @@ function _relayout(gd, aobj) {
 
     // now we've collected component edits - execute them all together
     for(arrayStr in arrayEdits) {
-        var finished = _$manage_arrays_197.applyContainerArrayChanges(gd,
-            _$lib_166.nestedProperty(layout, arrayStr), arrayEdits[arrayStr], flags);
+        var finished = _$manage_arrays_198.applyContainerArrayChanges(gd,
+            _$lib_167.nestedProperty(layout, arrayStr), arrayEdits[arrayStr], flags);
         if(!finished) flags.plot = true;
     }
 
@@ -60759,7 +61410,7 @@ function _relayout(gd, aobj) {
                 flags.calc = true;
                 for(var groupAxId in group) {
                     if(!rangesAltered[groupAxId]) {
-                        _$axes_209.getFromId(gd, groupAxId)._constraintShrinkable = true;
+                        _$axes_210.getFromId(gd, groupAxId)._constraintShrinkable = true;
                     }
                 }
             }
@@ -60783,7 +61434,7 @@ function _relayout(gd, aobj) {
         flags: flags,
         undoit: undoit,
         redoit: redoit,
-        eventData: _$lib_166.extendDeep({}, redoit)
+        eventData: _$lib_167.extendDeep({}, redoit)
     };
 }
 
@@ -60805,9 +61456,9 @@ function updateAutosize(gd) {
 
 // for editing annotations or shapes - is it on autoscaled axes?
 function refAutorange(gd, obj, axLetter) {
-    if(!_$lib_166.isPlainObject(obj)) return false;
+    if(!_$lib_167.isPlainObject(obj)) return false;
     var axRef = obj[axLetter + 'ref'] || axLetter,
-        ax = _$axes_209.getFromId(gd, axRef);
+        ax = _$axes_210.getFromId(gd, axRef);
 
     if(!ax && axRef.charAt(0) === axLetter) {
         // fall back on the primary axis in case we've referenced a
@@ -60817,7 +61468,7 @@ function refAutorange(gd, obj, axLetter) {
         // The only thing this is used for is to determine whether to
         // do a full `recalc`, so the only ill effect of this error is
         // to waste some time.
-        ax = _$axes_209.getFromId(gd, axLetter);
+        ax = _$axes_210.getFromId(gd, axLetter);
     }
     return (ax || {}).autorange;
 }
@@ -60837,32 +61488,32 @@ function refAutorange(gd, obj, axLetter) {
  *  integer or array of integers for the traces to alter (all if omitted)
  *
  */
-_$plot_api_198.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
-    gd = _$lib_166.getGraphDiv(gd);
-    _$helpers_195.clearPromiseQueue(gd);
+_$plot_api_199.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
+    gd = _$lib_167.getGraphDiv(gd);
+    _$helpers_196.clearPromiseQueue(gd);
 
     if(gd.framework && gd.framework.isPolar) {
         return Promise.resolve(gd);
     }
 
-    if(!_$lib_166.isPlainObject(traceUpdate)) traceUpdate = {};
-    if(!_$lib_166.isPlainObject(layoutUpdate)) layoutUpdate = {};
+    if(!_$lib_167.isPlainObject(traceUpdate)) traceUpdate = {};
+    if(!_$lib_167.isPlainObject(layoutUpdate)) layoutUpdate = {};
 
     if(Object.keys(traceUpdate).length) gd.changed = true;
     if(Object.keys(layoutUpdate).length) gd.changed = true;
 
-    var traces = _$helpers_195.coerceTraceIndices(gd, _traces);
+    var traces = _$helpers_196.coerceTraceIndices(gd, _traces);
 
-    var restyleSpecs = _restyle(gd, _$lib_166.extendFlat({}, traceUpdate), traces),
-        restyleFlags = restyleSpecs.flags;
+    var restyleSpecs = _restyle(gd, _$lib_167.extendFlat({}, traceUpdate), traces);
+    var restyleFlags = restyleSpecs.flags;
 
-    var relayoutSpecs = _relayout(gd, _$lib_166.extendFlat({}, layoutUpdate)),
-        relayoutFlags = relayoutSpecs.flags;
+    var relayoutSpecs = _relayout(gd, _$lib_167.extendFlat({}, layoutUpdate));
+    var relayoutFlags = relayoutSpecs.flags;
 
     // clear calcdata and/or axis types if required
     if(restyleFlags.clearCalc || relayoutFlags.calc) gd.calcdata = undefined;
-    if(restyleFlags.clearAxisTypes) _$helpers_195.clearAxisTypes(gd, traces, layoutUpdate);
-    if(relayoutFlags.margins) _$helpers_195.clearAxisAutomargins(gd);
+    if(restyleFlags.clearAxisTypes) _$helpers_196.clearAxisTypes(gd, traces, layoutUpdate);
+    if(relayoutFlags.margins) _$helpers_196.clearAxisAutomargins(gd);
 
     // fill in redraw sequence
     var seq = [];
@@ -60876,35 +61527,43 @@ _$plot_api_198.update = function update(gd, traceUpdate, layoutUpdate, _traces) 
         gd.data = undefined;
         gd.layout = undefined;
 
-        seq.push(function() { return _$plot_api_198.plot(gd, data, layout); });
+        seq.push(function() { return _$plot_api_199.plot(gd, data, layout); });
     }
     else if(restyleFlags.fullReplot) {
-        seq.push(_$plot_api_198.plot);
+        seq.push(_$plot_api_199.plot);
     }
     else if(relayoutFlags.layoutReplot) {
-        seq.push(_$subroutines_201.layoutReplot);
+        seq.push(_$subroutines_202.layoutReplot);
     }
     else {
         seq.push(_$plots_250.previousPromises);
         _$plots_250.supplyDefaults(gd);
 
-        if(restyleFlags.style) seq.push(_$subroutines_201.doTraceStyle);
-        if(restyleFlags.colorbars) seq.push(_$subroutines_201.doColorBars);
-        if(relayoutFlags.legend) seq.push(_$subroutines_201.doLegend);
-        if(relayoutFlags.layoutstyle) seq.push(_$subroutines_201.layoutStyles);
-        if(relayoutFlags.ticks) seq.push(_$subroutines_201.doTicksRelayout);
-        if(relayoutFlags.modebar) seq.push(_$subroutines_201.doModeBar);
-        if(relayoutFlags.camera) seq.push(_$subroutines_201.doCamera);
+        if(restyleFlags.style) seq.push(_$subroutines_202.doTraceStyle);
+        if(restyleFlags.colorbars) seq.push(_$subroutines_202.doColorBars);
+        if(relayoutFlags.legend) seq.push(_$subroutines_202.doLegend);
+        if(relayoutFlags.layoutstyle) seq.push(_$subroutines_202.layoutStyles);
+        if(relayoutFlags.axrange) {
+            seq.push(
+                _$subroutines_202.doAutoRangeAndConstraints,
+                _$subroutines_202.doTicksRelayout,
+                _$subroutines_202.drawData,
+                _$subroutines_202.finalDraw
+            );
+        }
+        if(relayoutFlags.ticks) seq.push(_$subroutines_202.doTicksRelayout);
+        if(relayoutFlags.modebar) seq.push(_$subroutines_202.doModeBar);
+        if(relayoutFlags.camera) seq.push(_$subroutines_202.doCamera);
     }
 
     seq.push(_$plots_250.rehover);
 
-    _$queue_180.add(gd,
+    _$queue_181.add(gd,
         update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
         update, [gd, restyleSpecs.redoit, relayoutSpecs.redoit, restyleSpecs.traces]
     );
 
-    var plotDone = _$lib_166.syncOrAsync(seq, gd);
+    var plotDone = _$lib_167.syncOrAsync(seq, gd);
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
@@ -60940,23 +61599,23 @@ _$plot_api_198.update = function update(gd, traceUpdate, layoutUpdate, _traces) 
  *      object containing `data`, `layout`, `config`, and `frames` members
  *
  */
-_$plot_api_198.react = function(gd, data, layout, config) {
+_$plot_api_199.react = function(gd, data, layout, config) {
     var frames, plotDone;
 
-    function addFrames() { return _$plot_api_198.addFrames(gd, frames); }
+    function addFrames() { return _$plot_api_199.addFrames(gd, frames); }
 
-    gd = _$lib_166.getGraphDiv(gd);
+    gd = _$lib_167.getGraphDiv(gd);
 
     var oldFullData = gd._fullData;
     var oldFullLayout = gd._fullLayout;
 
     // you can use this as the initial draw as well as to update
-    if(!_$lib_166.isPlotDiv(gd) || !oldFullData || !oldFullLayout) {
-        plotDone = _$plot_api_198.newPlot(gd, data, layout, config);
+    if(!_$lib_167.isPlotDiv(gd) || !oldFullData || !oldFullLayout) {
+        plotDone = _$plot_api_199.newPlot(gd, data, layout, config);
     }
     else {
 
-        if(_$lib_166.isPlainObject(data)) {
+        if(_$lib_167.isPlainObject(data)) {
             var obj = data;
             data = obj.data;
             layout = obj.layout;
@@ -60968,16 +61627,16 @@ _$plot_api_198.react = function(gd, data, layout, config) {
         // assume that if there's a config at all, we're reacting to it too,
         // and completely replace the previous config
         if(config) {
-            var oldConfig = _$lib_166.extendDeep({}, gd._context);
+            var oldConfig = _$lib_167.extendDeep({}, gd._context);
             gd._context = undefined;
             setPlotContext(gd, config);
             configChanged = diffConfig(oldConfig, gd._context);
         }
 
         gd.data = data || [];
-        _$helpers_195.cleanData(gd.data, []);
+        _$helpers_196.cleanData(gd.data, []);
         gd.layout = layout || {};
-        _$helpers_195.cleanLayout(gd.layout);
+        _$helpers_196.cleanLayout(gd.layout);
 
         _$plots_250.supplyDefaults(gd);
 
@@ -61001,7 +61660,7 @@ _$plot_api_198.react = function(gd, data, layout, config) {
 
         // clear calcdata if required
         if(restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;
-        if(relayoutFlags.margins) _$helpers_195.clearAxisAutomargins(gd);
+        if(relayoutFlags.margins) _$helpers_196.clearAxisAutomargins(gd);
 
         // Note: what restyle/relayout use impliedEdits and clearAxisTypes for
         // must be handled by the user when using Plotly.react.
@@ -61017,21 +61676,21 @@ _$plot_api_198.react = function(gd, data, layout, config) {
 
         if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
             gd._fullLayout._skipDefaults = true;
-            seq.push(_$plot_api_198.plot);
+            seq.push(_$plot_api_199.plot);
         }
         else {
             for(var componentType in relayoutFlags.arrays) {
                 var indices = relayoutFlags.arrays[componentType];
                 if(indices.length) {
-                    var drawOne = _$registry_258.getComponentMethod(componentType, 'drawOne');
-                    if(drawOne !== _$lib_166.noop) {
+                    var drawOne = _$registry_259.getComponentMethod(componentType, 'drawOne');
+                    if(drawOne !== _$lib_167.noop) {
                         for(var i = 0; i < indices.length; i++) {
                             drawOne(gd, indices[i]);
                         }
                     }
                     else {
-                        var draw = _$registry_258.getComponentMethod(componentType, 'draw');
-                        if(draw === _$lib_166.noop) {
+                        var draw = _$registry_259.getComponentMethod(componentType, 'draw');
+                        if(draw === _$lib_167.noop) {
                             throw new Error('cannot draw components: ' + componentType);
                         }
                         draw(gd);
@@ -61040,18 +61699,26 @@ _$plot_api_198.react = function(gd, data, layout, config) {
             }
 
             seq.push(_$plots_250.previousPromises);
-            if(restyleFlags.style) seq.push(_$subroutines_201.doTraceStyle);
-            if(restyleFlags.colorbars) seq.push(_$subroutines_201.doColorBars);
-            if(relayoutFlags.legend) seq.push(_$subroutines_201.doLegend);
-            if(relayoutFlags.layoutstyle) seq.push(_$subroutines_201.layoutStyles);
-            if(relayoutFlags.ticks) seq.push(_$subroutines_201.doTicksRelayout);
-            if(relayoutFlags.modebar) seq.push(_$subroutines_201.doModeBar);
-            if(relayoutFlags.camera) seq.push(_$subroutines_201.doCamera);
+            if(restyleFlags.style) seq.push(_$subroutines_202.doTraceStyle);
+            if(restyleFlags.colorbars) seq.push(_$subroutines_202.doColorBars);
+            if(relayoutFlags.legend) seq.push(_$subroutines_202.doLegend);
+            if(relayoutFlags.layoutstyle) seq.push(_$subroutines_202.layoutStyles);
+            if(relayoutFlags.axrange) {
+                seq.push(
+                    _$subroutines_202.doAutoRangeAndConstraints,
+                    _$subroutines_202.doTicksRelayout,
+                    _$subroutines_202.drawData,
+                    _$subroutines_202.finalDraw
+                );
+            }
+            if(relayoutFlags.ticks) seq.push(_$subroutines_202.doTicksRelayout);
+            if(relayoutFlags.modebar) seq.push(_$subroutines_202.doModeBar);
+            if(relayoutFlags.camera) seq.push(_$subroutines_202.doCamera);
         }
 
         seq.push(_$plots_250.rehover);
 
-        plotDone = _$lib_166.syncOrAsync(seq, gd);
+        plotDone = _$lib_167.syncOrAsync(seq, gd);
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
     }
 
@@ -61074,12 +61741,12 @@ function diffData(gd, oldFullData, newFullData, immutable) {
         };
     }
 
-    var flags = _$edit_types_194.traceFlags();
+    var flags = _$edit_types_195.traceFlags();
     flags.arrays = {};
     var i, trace;
 
     function getTraceValObject(parts) {
-        return _$plot_schema_200.getTraceValObject(trace, parts);
+        return _$plot_schema_201.getTraceValObject(trace, parts);
     }
 
     var diffOpts = {
@@ -61089,11 +61756,17 @@ function diffData(gd, oldFullData, newFullData, immutable) {
         gd: gd
     };
 
+
+    var seenUIDs = {};
+
     for(i = 0; i < oldFullData.length; i++) {
-        trace = newFullData[i];
+        trace = newFullData[i]._fullInput;
+        if(seenUIDs[trace.uid]) continue;
+        seenUIDs[trace.uid] = 1;
+
         diffOpts.autoranged = trace.xaxis ? (
-            _$axes_209.getFromId(gd, trace.xaxis).autorange ||
-            _$axes_209.getFromId(gd, trace.yaxis).autorange
+            _$axes_210.getFromId(gd, trace.xaxis).autorange ||
+            _$axes_210.getFromId(gd, trace.yaxis).autorange
         ) : false;
         getDiffFlags(oldFullData[i], trace, [], diffOpts);
     }
@@ -61106,11 +61779,11 @@ function diffData(gd, oldFullData, newFullData, immutable) {
 }
 
 function diffLayout(gd, oldFullLayout, newFullLayout, immutable) {
-    var flags = _$edit_types_194.layoutFlags();
+    var flags = _$edit_types_195.layoutFlags();
     flags.arrays = {};
 
     function getLayoutValObject(parts) {
-        return _$plot_schema_200.getLayoutValObject(newFullLayout, parts);
+        return _$plot_schema_201.getLayoutValObject(newFullLayout, parts);
     }
 
     var diffOpts = {
@@ -61149,10 +61822,10 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             return;
         }
         if(inArray && editType.indexOf('arraydraw') !== -1) {
-            _$lib_166.pushUnique(flags.arrays[inArray], arrayIndex);
+            _$lib_167.pushUnique(flags.arrays[inArray], arrayIndex);
             return;
         }
-        _$edit_types_194.update(flags, valObject);
+        _$edit_types_195.update(flags, valObject);
     }
 
     function valObjectCanBeDataArray(valObject) {
@@ -61232,7 +61905,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
             for(i = 0; i < minLen; i++) {
                 getDiffFlags(oldVal[i], newVal[i], parts.concat(i),
                     // add array indices, but not if we're already in an array
-                    _$lib_166.extendFlat({inArray: key, arrayIndex: i}, opts));
+                    _$lib_167.extendFlat({inArray: key, arrayIndex: i}, opts));
             }
 
             // put this at the end so that we know our collected array indices are sorted
@@ -61244,7 +61917,7 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
                 }
             }
         }
-        else if(!valType && _$lib_166.isPlainObject(oldVal)) {
+        else if(!valType && _$lib_167.isPlainObject(oldVal)) {
             getDiffFlags(oldVal, newVal, parts, opts);
         }
         else if(canBeDataArray) {
@@ -61298,7 +61971,7 @@ function diffConfig(oldConfig, newConfig) {
         var oldVal = oldConfig[key];
         var newVal = newConfig[key];
         if(oldVal !== newVal) {
-            if(_$lib_166.isPlainObject(oldVal) && _$lib_166.isPlainObject(newVal)) {
+            if(_$lib_167.isPlainObject(oldVal) && _$lib_167.isPlainObject(newVal)) {
                 if(diffConfig(oldVal, newVal)) {
                     return true;
                 }
@@ -61309,7 +61982,7 @@ function diffConfig(oldConfig, newConfig) {
                 }
                 for(var i = 0; i < oldVal.length; i++) {
                     if(oldVal[i] !== newVal[i]) {
-                        if(_$lib_166.isPlainObject(oldVal[i]) && _$lib_166.isPlainObject(newVal[i])) {
+                        if(_$lib_167.isPlainObject(oldVal[i]) && _$lib_167.isPlainObject(newVal[i])) {
                             if(diffConfig(oldVal[i], newVal[i])) {
                                 return true;
                             }
@@ -61354,10 +62027,10 @@ function diffConfig(oldConfig, newConfig) {
  * @param {object} animationOpts
  *      configuration for the animation
  */
-_$plot_api_198.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
+    gd = _$lib_167.getGraphDiv(gd);
 
-    if(!_$lib_166.isPlotDiv(gd)) {
+    if(!_$lib_167.isPlotDiv(gd)) {
         throw new Error(
             'This element is not a Plotly plot: ' + gd + '. It\'s likely that you\'ve failed ' +
             'to create a plot before animating it. For more details, see ' +
@@ -61531,7 +62204,7 @@ _$plot_api_198.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts
                 _$plots_250.transition(gd,
                     newFrame.frame.data,
                     newFrame.frame.layout,
-                    _$helpers_195.coerceTraceIndices(gd, newFrame.frame.traces),
+                    _$helpers_196.coerceTraceIndices(gd, newFrame.frame.traces),
                     newFrame.frameOpts,
                     newFrame.transitionOpts
                 ).then(function() {
@@ -61601,13 +62274,13 @@ _$plot_api_198.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts
         var frameList = [];
         var allFrames = frameOrGroupNameOrFrameList === undefined || frameOrGroupNameOrFrameList === null;
         var isFrameArray = Array.isArray(frameOrGroupNameOrFrameList);
-        var isSingleFrame = !allFrames && !isFrameArray && _$lib_166.isPlainObject(frameOrGroupNameOrFrameList);
+        var isSingleFrame = !allFrames && !isFrameArray && _$lib_167.isPlainObject(frameOrGroupNameOrFrameList);
 
         if(isSingleFrame) {
             // In this case, a simple object has been passed to animate.
             frameList.push({
                 type: 'object',
-                data: setTransitionConfig(_$lib_166.extendFlat({}, frameOrGroupNameOrFrameList))
+                data: setTransitionConfig(_$lib_167.extendFlat({}, frameOrGroupNameOrFrameList))
             });
         } else if(allFrames || ['string', 'number'].indexOf(typeof frameOrGroupNameOrFrameList) !== -1) {
             // In this case, null or undefined has been passed so that we want to
@@ -61636,10 +62309,10 @@ _$plot_api_198.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts
                         name: frameOrName,
                         data: setTransitionConfig({name: frameOrName})
                     });
-                } else if(_$lib_166.isPlainObject(frameOrName)) {
+                } else if(_$lib_167.isPlainObject(frameOrName)) {
                     frameList.push({
                         type: 'object',
-                        data: setTransitionConfig(_$lib_166.extendFlat({}, frameOrName))
+                        data: setTransitionConfig(_$lib_167.extendFlat({}, frameOrName))
                     });
                 }
             }
@@ -61649,7 +62322,7 @@ _$plot_api_198.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts
         for(i = 0; i < frameList.length; i++) {
             frame = frameList[i];
             if(frame.type === 'byname' && !trans._frameHash[frame.data.name]) {
-                _$lib_166.warn('animate failure: frame not found: "' + frame.data.name + '"');
+                _$lib_167.warn('animate failure: frame not found: "' + frame.data.name + '"');
                 reject();
                 return;
             }
@@ -61718,14 +62391,14 @@ _$plot_api_198.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts
  *      provided, an index will be provided in serial order. If already used, the frame
  *      will be overwritten.
  */
-_$plot_api_198.addFrames = function(gd, frameList, indices) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.addFrames = function(gd, frameList, indices) {
+    gd = _$lib_167.getGraphDiv(gd);
 
     if(frameList === null || frameList === undefined) {
         return Promise.resolve();
     }
 
-    if(!_$lib_166.isPlotDiv(gd)) {
+    if(!_$lib_167.isPlotDiv(gd)) {
         throw new Error(
             'This element is not a Plotly plot: ' + gd + '. It\'s likely that you\'ve failed ' +
             'to create a plot before adding frames. For more details, see ' +
@@ -61752,7 +62425,7 @@ _$plot_api_198.addFrames = function(gd, frameList, indices) {
     var insertions = [];
     var _frameHashLocal = {};
     for(i = frameList.length - 1; i >= 0; i--) {
-        if(!_$lib_166.isPlainObject(frameList[i])) continue;
+        if(!_$lib_167.isPlainObject(frameList[i])) continue;
 
         // The entire logic for checking for this type of name collision can be removed once we migrate to ES6 and
         // use a Map instead of an Object instance, as Map keys aren't converted to strings.
@@ -61764,14 +62437,14 @@ _$plot_api_198.addFrames = function(gd, frameList, indices) {
         if(name && newName && typeof newName === 'number' && collisionPresent && numericNameWarningCount < numericNameWarningCountLimit) {
             numericNameWarningCount++;
 
-            _$lib_166.warn('addFrames: overwriting frame "' + (_frameHash[name] || _frameHashLocal[name]).name +
+            _$lib_167.warn('addFrames: overwriting frame "' + (_frameHash[name] || _frameHashLocal[name]).name +
                 '" with a frame whose name of type "number" also equates to "' +
                 name + '". This is valid but may potentially lead to unexpected ' +
                 'behavior since all plotly.js frame names are stored internally ' +
                 'as strings.');
 
             if(numericNameWarningCount === numericNameWarningCountLimit) {
-                _$lib_166.warn('addFrames: This API call has yielded too many of these warnings. ' +
+                _$lib_167.warn('addFrames: This API call has yielded too many of these warnings. ' +
                     'For the rest of this call, further warnings about numeric frame ' +
                     'names will be suppressed.');
             }
@@ -61800,7 +62473,7 @@ _$plot_api_198.addFrames = function(gd, frameList, indices) {
         frame = insertions[i].frame;
 
         if(typeof frame.name === 'number') {
-            _$lib_166.warn('Warning: addFrames accepts frames with numeric names, but the numbers are' +
+            _$lib_167.warn('Warning: addFrames accepts frames with numeric names, but the numbers are' +
                 'implicitly cast to strings');
 
         }
@@ -61833,7 +62506,7 @@ _$plot_api_198.addFrames = function(gd, frameList, indices) {
         undoArgs = [gd, revops],
         redoArgs = [gd, ops];
 
-    if(_$queue_180) _$queue_180.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    if(_$queue_181) _$queue_181.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return _$plots_250.modifyFrames(gd, ops);
 };
@@ -61847,10 +62520,10 @@ _$plot_api_198.addFrames = function(gd, frameList, indices) {
  * @param {array of integers} frameList
  *      list of integer indices of frames to be deleted
  */
-_$plot_api_198.deleteFrames = function(gd, frameList) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.deleteFrames = function(gd, frameList) {
+    gd = _$lib_167.getGraphDiv(gd);
 
-    if(!_$lib_166.isPlotDiv(gd)) {
+    if(!_$lib_167.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
@@ -61880,7 +62553,7 @@ _$plot_api_198.deleteFrames = function(gd, frameList) {
         undoArgs = [gd, revops],
         redoArgs = [gd, ops];
 
-    if(_$queue_180) _$queue_180.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    if(_$queue_181) _$queue_181.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return _$plots_250.modifyFrames(gd, ops);
 };
@@ -61891,20 +62564,21 @@ _$plot_api_198.deleteFrames = function(gd, frameList) {
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  */
-_$plot_api_198.purge = function purge(gd) {
-    gd = _$lib_166.getGraphDiv(gd);
+_$plot_api_199.purge = function purge(gd) {
+    gd = _$lib_167.getGraphDiv(gd);
 
-    var fullLayout = gd._fullLayout || {},
-        fullData = gd._fullData || [];
+    var fullLayout = gd._fullLayout || {};
+    var fullData = gd._fullData || [];
+    var calcdata = gd.calcdata || [];
 
     // remove gl contexts
-    _$plots_250.cleanPlot([], {}, fullData, fullLayout);
+    _$plots_250.cleanPlot([], {}, fullData, fullLayout, calcdata);
 
     // purge properties
     _$plots_250.purge(gd);
 
     // purge event emitter methods
-    _$Events_157.purge(gd);
+    _$Events_158.purge(gd);
 
     // remove plot container
     if(fullLayout._container) fullLayout._container.remove();
@@ -61962,7 +62636,7 @@ function makePlotFramework(gd) {
         _$d3_8.selectAll('defs').each(function() {
             if(this.id) otherUids.push(this.id.split('-')[1]);
         });
-        fullLayout._uid = _$lib_166.randstr(otherUids);
+        fullLayout._uid = _$lib_167.randstr(otherUids);
     }
 
     fullLayout._paperdiv.selectAll('.main-svg')
@@ -62038,7 +62712,7 @@ function makePlotFramework(gd) {
     gd.emit('plotly_framework');
 }
 
-var _$helpers_262 = {};
+var _$helpers_263 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -62050,7 +62724,7 @@ var _$helpers_262 = {};
 
 'use strict';
 
-_$helpers_262.getDelay = function(fullLayout) {
+_$helpers_263.getDelay = function(fullLayout) {
     if(!fullLayout._has) return 0;
 
     return (
@@ -62060,7 +62734,7 @@ _$helpers_262.getDelay = function(fullLayout) {
     ) ? 500 : 0;
 };
 
-_$helpers_262.getRedrawFunc = function(gd) {
+_$helpers_263.getRedrawFunc = function(gd) {
     var fullLayout = gd._fullLayout || {};
     var hasPolar = fullLayout._has && fullLayout._has('polar');
     var hasLegacyPolar = !hasPolar && gd.data && gd.data[0] && gd.data[0].r;
@@ -62085,11 +62759,11 @@ _$helpers_262.getRedrawFunc = function(gd) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../lib'); */;
-var __EventEmitter_264 = _$EventEmitter_10.EventEmitter;
+/* removed: var _$lib_167 = require('../lib'); */;
+var __EventEmitter_265 = _$EventEmitter_10.EventEmitter;
 
 function svgToImg(opts) {
-    var ev = opts.emitter || new __EventEmitter_264();
+    var ev = opts.emitter || new __EventEmitter_265();
 
     var promise = new Promise(function(resolve, reject) {
         var Image = window.Image;
@@ -62097,7 +62771,7 @@ function svgToImg(opts) {
         var format = opts.format || 'png';
 
         // IE only support svg
-        if(_$lib_166.isIE() && format !== 'svg') {
+        if(_$lib_167.isIE() && format !== 'svg') {
             var ieSvgError = new Error('Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.');
             reject(ieSvgError);
             // eventually remove the ev
@@ -62188,7 +62862,7 @@ function svgToImg(opts) {
     return ev;
 }
 
-var _$svgToImg_264 = svgToImg;
+var _$svgToImg_265 = svgToImg;
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -62203,7 +62877,7 @@ var _$svgToImg_264 = svgToImg;
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 /* removed: var _$drawing_70 = require('../components/drawing'); */;
 /* removed: var _$color_45 = require('../components/color'); */;
 
@@ -62228,7 +62902,7 @@ function xmlEntityEncode(str) {
     return str.replace(/&(?!\w+;|\#[0-9]+;| \#x[0-9A-F]+;)/g, '&amp;');
 }
 
-var _$toSVG_266 = function toSVG(gd, format, scale) {
+var _$toSVG_267 = function toSVG(gd, format, scale) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._paper;
     var toppaper = fullLayout._toppaper;
@@ -62351,7 +63025,7 @@ var _$toSVG_266 = function toSVG(gd, format, scale) {
     //  see https://github.com/kangax/fabric.js/issues/1957
     //      http://stackoverflow.com/questions/18112047/canvas-todataurl-working-in-all-browsers-except-ie10
     // Leave here just in case the CORS/tainted IE issue gets resolved
-    if(_$lib_166.isIE()) {
+    if(_$lib_167.isIE()) {
         // replace double quote with single quote
         s = s.replace(/"/gi, '\'');
         // url in svg are single quoted
@@ -62376,14 +63050,14 @@ var _$toSVG_266 = function toSVG(gd, format, scale) {
 
 'use strict';
 
-/* removed: var _$plot_api_198 = require('./plot_api'); */;
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$plot_api_199 = require('./plot_api'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 
-/* removed: var _$helpers_262 = require('../snapshot/helpers'); */;
-/* removed: var _$toSVG_266 = require('../snapshot/tosvg'); */;
-/* removed: var _$svgToImg_264 = require('../snapshot/svgtoimg'); */;
+/* removed: var _$helpers_263 = require('../snapshot/helpers'); */;
+/* removed: var _$toSVG_267 = require('../snapshot/tosvg'); */;
+/* removed: var _$svgToImg_265 = require('../snapshot/svgtoimg'); */;
 
-var __attrs_202 = {
+var __attrs_203 = {
     format: {
         valType: 'enumerated',
         values: ['png', 'jpeg', 'webp', 'svg'],
@@ -62436,19 +63110,19 @@ function toImage(gd, opts) {
     var layout;
     var config;
 
-    if(_$lib_166.isPlainObject(gd)) {
+    if(_$lib_167.isPlainObject(gd)) {
         data = gd.data || [];
         layout = gd.layout || {};
         config = gd.config || {};
     } else {
-        gd = _$lib_166.getGraphDiv(gd);
-        data = _$lib_166.extendDeep([], gd.data);
-        layout = _$lib_166.extendDeep({}, gd.layout);
+        gd = _$lib_167.getGraphDiv(gd);
+        data = _$lib_167.extendDeep([], gd.data);
+        layout = _$lib_167.extendDeep({}, gd.layout);
         config = gd._context;
     }
 
     function isImpliedOrValid(attr) {
-        return !(attr in opts) || _$lib_166.validate(opts[attr], __attrs_202[attr]);
+        return !(attr in opts) || _$lib_167.validate(opts[attr], __attrs_203[attr]);
     }
 
     if(!isImpliedOrValid('width') || !isImpliedOrValid('height')) {
@@ -62462,7 +63136,7 @@ function toImage(gd, opts) {
     var fullOpts = {};
 
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(opts, fullOpts, __attrs_202, attr, dflt);
+        return _$lib_167.coerce(opts, fullOpts, __attrs_203, attr, dflt);
     }
 
     var format = coerce('format');
@@ -62479,31 +63153,31 @@ function toImage(gd, opts) {
     document.body.appendChild(clonedGd);
 
     // extend layout with image options
-    var layoutImage = _$lib_166.extendFlat({}, layout);
+    var layoutImage = _$lib_167.extendFlat({}, layout);
     if(width) layoutImage.width = width;
     if(height) layoutImage.height = height;
 
     // extend config for static plot
-    var configImage = _$lib_166.extendFlat({}, config, {
+    var configImage = _$lib_167.extendFlat({}, config, {
         staticPlot: true,
         setBackground: setBackground
     });
 
-    var redrawFunc = _$helpers_262.getRedrawFunc(clonedGd);
+    var redrawFunc = _$helpers_263.getRedrawFunc(clonedGd);
 
     function wait() {
         return new Promise(function(resolve) {
-            setTimeout(resolve, _$helpers_262.getDelay(clonedGd._fullLayout));
+            setTimeout(resolve, _$helpers_263.getDelay(clonedGd._fullLayout));
         });
     }
 
     function convert() {
         return new Promise(function(resolve, reject) {
-            var svg = _$toSVG_266(clonedGd, format, scale);
+            var svg = _$toSVG_267(clonedGd, format, scale);
             var width = clonedGd._fullLayout.width;
             var height = clonedGd._fullLayout.height;
 
-            _$plot_api_198.purge(clonedGd);
+            _$plot_api_199.purge(clonedGd);
             document.body.removeChild(clonedGd);
 
             if(format === 'svg') {
@@ -62515,9 +63189,9 @@ function toImage(gd, opts) {
             }
 
             var canvas = document.createElement('canvas');
-            canvas.id = _$lib_166.randstr();
+            canvas.id = _$lib_167.randstr();
 
-            _$svgToImg_264({
+            _$svgToImg_265({
                 format: format,
                 width: width,
                 height: height,
@@ -62544,7 +63218,7 @@ function toImage(gd, opts) {
     }
 
     return new Promise(function(resolve, reject) {
-        _$plot_api_198.plot(clonedGd, data, layoutImage, configImage)
+        _$plot_api_199.plot(clonedGd, data, layoutImage, configImage)
             .then(redrawFunc)
             .then(wait)
             .then(convert)
@@ -62553,7 +63227,7 @@ function toImage(gd, opts) {
     });
 }
 
-var _$toImage_202 = toImage;
+var _$toImage_203 = toImage;
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -62565,14 +63239,14 @@ var _$toImage_202 = toImage;
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 /* removed: var _$plots_250 = require('../plots/plots'); */;
-/* removed: var _$plot_schema_200 = require('./plot_schema'); */;
-/* removed: var _$plot_config_199 = require('./plot_config'); */;
+/* removed: var _$plot_schema_201 = require('./plot_schema'); */;
+/* removed: var _$plot_config_200 = require('./plot_config'); */;
 
-var __isPlainObject_203 = _$lib_166.isPlainObject;
-var __isArray_203 = Array.isArray;
-var __isArrayOrTypedArray_203 = _$lib_166.isArrayOrTypedArray;
+var __isPlainObject_204 = _$lib_167.isPlainObject;
+var __isArray_204 = Array.isArray;
+var __isArrayOrTypedArray_204 = _$lib_167.isArrayOrTypedArray;
 
 /**
  * Validate a data array and layout object.
@@ -62595,15 +63269,15 @@ var __isArrayOrTypedArray_203 = _$lib_166.isArrayOrTypedArray;
  *  - {string} msg
  *      error message (shown in console in logger config argument is enable)
  */
-var _$valiate_203 = function valiate(data, layout) {
-    var schema = _$plot_schema_200.get();
+var _$valiate_204 = function valiate(data, layout) {
+    var schema = _$plot_schema_201.get();
     var errorList = [];
-    var gd = {_context: _$lib_166.extendFlat({}, _$plot_config_199)};
+    var gd = {_context: _$lib_167.extendFlat({}, _$plot_config_200)};
 
     var dataIn, layoutIn;
 
-    if(__isArray_203(data)) {
-        gd.data = _$lib_166.extendDeep([], data);
+    if(__isArray_204(data)) {
+        gd.data = _$lib_167.extendDeep([], data);
         dataIn = data;
     }
     else {
@@ -62612,8 +63286,8 @@ var _$valiate_203 = function valiate(data, layout) {
         errorList.push(format('array', 'data'));
     }
 
-    if(__isPlainObject_203(layout)) {
-        gd.layout = _$lib_166.extendDeep({}, layout);
+    if(__isPlainObject_204(layout)) {
+        gd.layout = _$lib_167.extendDeep({}, layout);
         layoutIn = layout;
     }
     else {
@@ -62637,7 +63311,7 @@ var _$valiate_203 = function valiate(data, layout) {
         var traceIn = dataIn[i],
             base = ['data', i];
 
-        if(!__isPlainObject_203(traceIn)) {
+        if(!__isPlainObject_204(traceIn)) {
             errorList.push(format('object', base));
             continue;
         }
@@ -62657,13 +63331,13 @@ var _$valiate_203 = function valiate(data, layout) {
             errorList.push(format('invisible', base));
         }
 
-        __crawl_203(traceIn, traceOut, traceSchema, errorList, base);
+        __crawl_204(traceIn, traceOut, traceSchema, errorList, base);
 
         var transformsIn = traceIn.transforms,
             transformsOut = traceOut.transforms;
 
         if(transformsIn) {
-            if(!__isArray_203(transformsIn)) {
+            if(!__isArray_204(transformsIn)) {
                 errorList.push(format('array', base, ['transforms']));
             }
 
@@ -62673,7 +63347,7 @@ var _$valiate_203 = function valiate(data, layout) {
                 var path = ['transforms', j],
                     transformType = transformsIn[j].type;
 
-                if(!__isPlainObject_203(transformsIn[j])) {
+                if(!__isPlainObject_204(transformsIn[j])) {
                     errorList.push(format('object', base, path));
                     continue;
                 }
@@ -62688,7 +63362,7 @@ var _$valiate_203 = function valiate(data, layout) {
                     values: Object.keys(schema.transforms)
                 };
 
-                __crawl_203(transformsIn[j], transformsOut[j], transformSchema, errorList, base, path);
+                __crawl_204(transformsIn[j], transformsOut[j], transformSchema, errorList, base, path);
             }
         }
     }
@@ -62696,13 +63370,13 @@ var _$valiate_203 = function valiate(data, layout) {
     var layoutOut = gd._fullLayout,
         layoutSchema = fillLayoutSchema(schema, dataOut);
 
-    __crawl_203(layoutIn, layoutOut, layoutSchema, errorList, 'layout');
+    __crawl_204(layoutIn, layoutOut, layoutSchema, errorList, 'layout');
 
     // return undefined if no validation errors were found
     return (errorList.length === 0) ? void(0) : errorList;
 };
 
-function __crawl_203(objIn, objOut, schema, list, base, path) {
+function __crawl_204(objIn, objOut, schema, list, base, path) {
     path = path || [];
 
     var keys = Object.keys(objIn);
@@ -62727,10 +63401,10 @@ function __crawl_203(objIn, objOut, schema, list, base, path) {
         if(!isInSchema(schema, k)) {
             list.push(format('schema', base, p));
         }
-        else if(__isPlainObject_203(valIn) && __isPlainObject_203(valOut)) {
-            __crawl_203(valIn, valOut, nestedSchema, list, base, p);
+        else if(__isPlainObject_204(valIn) && __isPlainObject_204(valOut)) {
+            __crawl_204(valIn, valOut, nestedSchema, list, base, p);
         }
-        else if(isInfoArray && __isArray_203(valIn)) {
+        else if(isInfoArray && __isArray_204(valIn)) {
             if(valIn.length > valOut.length) {
                 list.push(format('unused', base, p.concat(valOut.length)));
             }
@@ -62740,7 +63414,7 @@ function __crawl_203(objIn, objOut, schema, list, base, path) {
             var m, n, item, valInPart, valOutPart;
             if(nestedSchema.dimensions === 2) {
                 for(n = 0; n < len; n++) {
-                    if(__isArray_203(valIn[n])) {
+                    if(__isArray_204(valIn[n])) {
                         if(valIn[n].length > valOut[n].length) {
                             list.push(format('unused', base, p.concat(n, valOut[n].length)));
                         }
@@ -62749,7 +63423,7 @@ function __crawl_203(objIn, objOut, schema, list, base, path) {
                             item = arrayItems ? items[n][m] : items;
                             valInPart = valIn[n][m];
                             valOutPart = valOut[n][m];
-                            if(!_$lib_166.validate(valInPart, item)) {
+                            if(!_$lib_167.validate(valInPart, item)) {
                                 list.push(format('value', base, p.concat(n, m), valInPart));
                             }
                             else if(valOutPart !== valInPart && valOutPart !== +valInPart) {
@@ -62767,7 +63441,7 @@ function __crawl_203(objIn, objOut, schema, list, base, path) {
                     item = arrayItems ? items[n] : items;
                     valInPart = valIn[n];
                     valOutPart = valOut[n];
-                    if(!_$lib_166.validate(valInPart, item)) {
+                    if(!_$lib_167.validate(valInPart, item)) {
                         list.push(format('value', base, p.concat(n), valInPart));
                     }
                     else if(valOutPart !== valInPart && valOutPart !== +valInPart) {
@@ -62776,7 +63450,7 @@ function __crawl_203(objIn, objOut, schema, list, base, path) {
                 }
             }
         }
-        else if(nestedSchema.items && !isInfoArray && __isArray_203(valIn)) {
+        else if(nestedSchema.items && !isInfoArray && __isArray_204(valIn)) {
             var _nestedSchema = items[Object.keys(items)[0]],
                 indexList = [];
 
@@ -62790,9 +63464,9 @@ function __crawl_203(objIn, objOut, schema, list, base, path) {
                 _p = p.slice();
                 _p.push(_index);
 
-                if(__isPlainObject_203(valIn[_index]) && __isPlainObject_203(valOut[j])) {
+                if(__isPlainObject_204(valIn[_index]) && __isPlainObject_204(valOut[j])) {
                     indexList.push(_index);
-                    __crawl_203(valIn[_index], valOut[j], _nestedSchema, list, base, _p);
+                    __crawl_204(valIn[_index], valOut[j], _nestedSchema, list, base, _p);
                 }
             }
 
@@ -62801,7 +63475,7 @@ function __crawl_203(objIn, objOut, schema, list, base, path) {
                 _p = p.slice();
                 _p.push(j);
 
-                if(!__isPlainObject_203(valIn[j])) {
+                if(!__isPlainObject_204(valIn[j])) {
                     list.push(format('object', base, _p, valIn[j]));
                 }
                 else if(indexList.indexOf(j) === -1) {
@@ -62809,16 +63483,16 @@ function __crawl_203(objIn, objOut, schema, list, base, path) {
                 }
             }
         }
-        else if(!__isPlainObject_203(valIn) && __isPlainObject_203(valOut)) {
+        else if(!__isPlainObject_204(valIn) && __isPlainObject_204(valOut)) {
             list.push(format('object', base, p, valIn));
         }
-        else if(!__isArrayOrTypedArray_203(valIn) && __isArrayOrTypedArray_203(valOut) && !isInfoArray && !isColorscale) {
+        else if(!__isArrayOrTypedArray_204(valIn) && __isArrayOrTypedArray_204(valOut) && !isInfoArray && !isColorscale) {
             list.push(format('array', base, p, valIn));
         }
         else if(!(k in objOut)) {
             list.push(format('unused', base, p, valIn));
         }
-        else if(!_$lib_166.validate(valIn, nestedSchema)) {
+        else if(!_$lib_167.validate(valIn, nestedSchema)) {
             list.push(format('value', base, p, valIn));
         }
         else if(nestedSchema.valType === 'enumerated' &&
@@ -62838,7 +63512,7 @@ function fillLayoutSchema(schema, dataOut) {
             traceLayoutAttr = schema.traces[traceType].layoutAttributes;
 
         if(traceLayoutAttr) {
-            _$lib_166.extendFlat(schema.layout.layoutAttributes, traceLayoutAttr);
+            _$lib_167.extendFlat(schema.layout.layoutAttributes, traceLayoutAttr);
         }
     }
 
@@ -62870,7 +63544,7 @@ var code2msgFunc = {
         return inBase(base) + 'key ' + astr + ' is not part of the schema';
     },
     unused: function(base, astr, valIn) {
-        var target = __isPlainObject_203(valIn) ? 'container' : 'key';
+        var target = __isPlainObject_204(valIn) ? 'container' : 'key';
 
         return inBase(base) + target + ' ' + astr + ' did not get coerced';
     },
@@ -62896,7 +63570,7 @@ var code2msgFunc = {
 };
 
 function inBase(base) {
-    if(__isArray_203(base)) return 'In data trace ' + base[1] + ', ';
+    if(__isArray_204(base)) return 'In data trace ' + base[1] + ', ';
 
     return 'In ' + base + ', ';
 }
@@ -62909,7 +63583,7 @@ function format(code, base, path, valIn, valOut) {
     // container is either 'data' or 'layout
     // trace is the trace index if 'data', null otherwise
 
-    if(__isArray_203(base)) {
+    if(__isArray_204(base)) {
         container = base[0];
         trace = base[1];
     }
@@ -62922,7 +63596,7 @@ function format(code, base, path, valIn, valOut) {
     var msg = code2msgFunc[code](base, astr, valIn, valOut);
 
     // log to console if logger config option is enabled
-    _$lib_166.log(msg);
+    _$lib_167.log(msg);
 
     return {
         code: code,
@@ -62952,7 +63626,7 @@ function getNestedSchema(schema, key) {
     return schema[parts.keyMinusId];
 }
 
-var idRegex = _$lib_166.counterRegex('([a-z]+)');
+var idRegex = _$lib_167.counterRegex('([a-z]+)');
 
 function splitKey(key) {
     var idMatch = key.match(idRegex);
@@ -62964,7 +63638,7 @@ function splitKey(key) {
 }
 
 function convertPathToAttributeString(path) {
-    if(!__isArray_203(path)) return String(path);
+    if(!__isArray_204(path)) return String(path);
 
     var astr = '';
 
@@ -63053,7 +63727,7 @@ var fileSaver = function(url, name) {
     return promise;
 };
 
-var _$fileSaver_261 = fileSaver;
+var _$fileSaver_262 = fileSaver;
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -63066,9 +63740,9 @@ var _$fileSaver_261 = fileSaver;
 
 'use strict';
 
-/* removed: var _$toImage_202 = require('../plot_api/to_image'); */;
-/* removed: var _$lib_166 = require('../lib'); */; // for isIE
-/* removed: var _$fileSaver_261 = require('./filesaver'); */;
+/* removed: var _$toImage_203 = require('../plot_api/to_image'); */;
+/* removed: var _$lib_167 = require('../lib'); */; // for isIE
+/* removed: var _$fileSaver_262 = require('./filesaver'); */;
 
 /**
  * @param {object} gd figure Object
@@ -63096,19 +63770,19 @@ function downloadImage(gd, opts) {
         //   can now draw to canvas, but CORS tainted canvas
         //   does not allow toDataURL
         //   svg format will work though
-        if(_$lib_166.isIE() && opts.format !== 'svg') {
+        if(_$lib_167.isIE() && opts.format !== 'svg') {
             reject(new Error('Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.'));
         }
 
         gd._snapshotInProgress = true;
-        var promise = _$toImage_202(gd, opts);
+        var promise = _$toImage_203(gd, opts);
 
         var filename = opts.filename || gd.fn || 'newplot';
         filename += '.' + opts.format;
 
         promise.then(function(result) {
             gd._snapshotInProgress = false;
-            return _$fileSaver_261(result, filename);
+            return _$fileSaver_262(result, filename);
         }).then(function(name) {
             resolve(name);
         }).catch(function(err) {
@@ -63118,9 +63792,9 @@ function downloadImage(gd, opts) {
     });
 }
 
-var _$downloadImage_260 = downloadImage;
+var _$downloadImage_261 = downloadImage;
 
-var _$plot_api_196 = {};
+var _$plot_api_197 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -63131,29 +63805,29 @@ var _$plot_api_196 = {};
 
 'use strict';
 
-/* removed: var _$plot_api_198 = require('./plot_api'); */;
+/* removed: var _$plot_api_199 = require('./plot_api'); */;
 
-_$plot_api_196.plot = _$plot_api_198.plot;
-_$plot_api_196.newPlot = _$plot_api_198.newPlot;
-_$plot_api_196.restyle = _$plot_api_198.restyle;
-_$plot_api_196.relayout = _$plot_api_198.relayout;
-_$plot_api_196.redraw = _$plot_api_198.redraw;
-_$plot_api_196.update = _$plot_api_198.update;
-_$plot_api_196.react = _$plot_api_198.react;
-_$plot_api_196.extendTraces = _$plot_api_198.extendTraces;
-_$plot_api_196.prependTraces = _$plot_api_198.prependTraces;
-_$plot_api_196.addTraces = _$plot_api_198.addTraces;
-_$plot_api_196.deleteTraces = _$plot_api_198.deleteTraces;
-_$plot_api_196.moveTraces = _$plot_api_198.moveTraces;
-_$plot_api_196.purge = _$plot_api_198.purge;
-_$plot_api_196.addFrames = _$plot_api_198.addFrames;
-_$plot_api_196.deleteFrames = _$plot_api_198.deleteFrames;
-_$plot_api_196.animate = _$plot_api_198.animate;
-_$plot_api_196.setPlotConfig = _$plot_api_198.setPlotConfig;
+_$plot_api_197.plot = _$plot_api_199.plot;
+_$plot_api_197.newPlot = _$plot_api_199.newPlot;
+_$plot_api_197.restyle = _$plot_api_199.restyle;
+_$plot_api_197.relayout = _$plot_api_199.relayout;
+_$plot_api_197.redraw = _$plot_api_199.redraw;
+_$plot_api_197.update = _$plot_api_199.update;
+_$plot_api_197.react = _$plot_api_199.react;
+_$plot_api_197.extendTraces = _$plot_api_199.extendTraces;
+_$plot_api_197.prependTraces = _$plot_api_199.prependTraces;
+_$plot_api_197.addTraces = _$plot_api_199.addTraces;
+_$plot_api_197.deleteTraces = _$plot_api_199.deleteTraces;
+_$plot_api_197.moveTraces = _$plot_api_199.moveTraces;
+_$plot_api_197.purge = _$plot_api_199.purge;
+_$plot_api_197.addFrames = _$plot_api_199.addFrames;
+_$plot_api_197.deleteFrames = _$plot_api_199.deleteFrames;
+_$plot_api_197.animate = _$plot_api_199.animate;
+_$plot_api_197.setPlotConfig = _$plot_api_199.setPlotConfig;
 
-_$plot_api_196.toImage = _$toImage_202;
-_$plot_api_196.validate = _$valiate_203;
-_$plot_api_196.downloadImage = _$downloadImage_260;
+_$plot_api_197.toImage = _$toImage_203;
+_$plot_api_197.validate = _$valiate_204;
+_$plot_api_197.downloadImage = _$downloadImage_261;
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -63166,10 +63840,10 @@ _$plot_api_196.downloadImage = _$downloadImage_260;
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 
-var __extendFlat_259 = _$lib_166.extendFlat;
-var extendDeep = _$lib_166.extendDeep;
+var __extendFlat_260 = _$lib_167.extendFlat;
+var extendDeep = _$lib_167.extendDeep;
 
 // Put default plotTile layouts here
 function cloneLayoutOverride(tileClass) {
@@ -63214,7 +63888,7 @@ function keyIsAxis(keyName) {
 }
 
 
-var _$clonePlot_259 = function clonePlot(graphObj, options) {
+var _$clonePlot_260 = function clonePlot(graphObj, options) {
 
     // Polar plot compatibility
     if(graphObj.framework && graphObj.framework.isPolar) {
@@ -63287,9 +63961,9 @@ var _$clonePlot_259 = function clonePlot(graphObj, options) {
                 scene.zaxis = {};
             }
 
-            __extendFlat_259(scene.xaxis, axesImageOverride);
-            __extendFlat_259(scene.yaxis, axesImageOverride);
-            __extendFlat_259(scene.zaxis, axesImageOverride);
+            __extendFlat_260(scene.xaxis, axesImageOverride);
+            __extendFlat_260(scene.yaxis, axesImageOverride);
+            __extendFlat_260(scene.zaxis, axesImageOverride);
 
             // TODO what does this do?
             scene._scene = null;
@@ -63338,27 +64012,27 @@ var _$clonePlot_259 = function clonePlot(graphObj, options) {
 
 'use strict';
 
-var __EventEmitter_265 = _$EventEmitter_10.EventEmitter;
+var __EventEmitter_266 = _$EventEmitter_10.EventEmitter;
 
-/* removed: var _$registry_258 = require('../registry'); */;
-/* removed: var _$lib_166 = require('../lib'); */;
+/* removed: var _$registry_259 = require('../registry'); */;
+/* removed: var _$lib_167 = require('../lib'); */;
 
-/* removed: var _$helpers_262 = require('./helpers'); */;
-/* removed: var _$clonePlot_259 = require('./cloneplot'); */;
-/* removed: var _$toSVG_266 = require('./tosvg'); */;
-/* removed: var _$svgToImg_264 = require('./svgtoimg'); */;
+/* removed: var _$helpers_263 = require('./helpers'); */;
+/* removed: var _$clonePlot_260 = require('./cloneplot'); */;
+/* removed: var _$toSVG_267 = require('./tosvg'); */;
+/* removed: var _$svgToImg_265 = require('./svgtoimg'); */;
 
 /**
  * @param {object} gd figure Object
  * @param {object} opts option object
  * @param opts.format 'jpeg' | 'png' | 'webp' | 'svg'
  */
-function __toImage_265(gd, opts) {
+function __toImage_266(gd, opts) {
 
     // first clone the GD so we can operate in a clean environment
-    var ev = new __EventEmitter_265();
+    var ev = new __EventEmitter_266();
 
-    var clone = _$clonePlot_259(gd, {format: 'png'});
+    var clone = _$clonePlot_260(gd, {format: 'png'});
     var clonedGd = clone.gd;
 
     // put the cloned div somewhere off screen before attaching to DOM
@@ -63367,15 +64041,15 @@ function __toImage_265(gd, opts) {
     document.body.appendChild(clonedGd);
 
     function wait() {
-        var delay = _$helpers_262.getDelay(clonedGd._fullLayout);
+        var delay = _$helpers_263.getDelay(clonedGd._fullLayout);
 
         setTimeout(function() {
-            var svg = _$toSVG_266(clonedGd);
+            var svg = _$toSVG_267(clonedGd);
 
             var canvas = document.createElement('canvas');
-            canvas.id = _$lib_166.randstr();
+            canvas.id = _$lib_167.randstr();
 
-            ev = _$svgToImg_264({
+            ev = _$svgToImg_265({
                 format: opts.format,
                 width: clonedGd._fullLayout.width,
                 height: clonedGd._fullLayout.height,
@@ -63391,9 +64065,9 @@ function __toImage_265(gd, opts) {
         }, delay);
     }
 
-    var redrawFunc = _$helpers_262.getRedrawFunc(clonedGd);
+    var redrawFunc = _$helpers_263.getRedrawFunc(clonedGd);
 
-    _$registry_258.call('plot', clonedGd, clone.data, clone.layout, clone.config)
+    _$registry_259.call('plot', clonedGd, clone.data, clone.layout, clone.config)
         .then(redrawFunc)
         .then(wait)
         .catch(function(err) {
@@ -63404,7 +64078,7 @@ function __toImage_265(gd, opts) {
     return ev;
 }
 
-var _$toImage_265 = __toImage_265;
+var _$toImage_266 = __toImage_266;
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -63417,19 +64091,19 @@ var _$toImage_265 = __toImage_265;
 
 'use strict';
 
-/* removed: var _$helpers_262 = require('./helpers'); */;
+/* removed: var _$helpers_263 = require('./helpers'); */;
 
 var Snapshot = {
-    getDelay: _$helpers_262.getDelay,
-    getRedrawFunc: _$helpers_262.getRedrawFunc,
-    clone: _$clonePlot_259,
-    toSVG: _$toSVG_266,
-    svgToImg: _$svgToImg_264,
-    toImage: _$toImage_265,
-    downloadImage: _$downloadImage_260
+    getDelay: _$helpers_263.getDelay,
+    getRedrawFunc: _$helpers_263.getRedrawFunc,
+    clone: _$clonePlot_260,
+    toSVG: _$toSVG_267,
+    svgToImg: _$svgToImg_265,
+    toImage: _$toImage_266,
+    downloadImage: _$downloadImage_261
 };
 
-var _$Snapshot_263 = Snapshot;
+var _$Snapshot_264 = Snapshot;
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -63445,15 +64119,15 @@ var _$Snapshot_263 = Snapshot;
 /* removed: var _$hasColorscale_59 = require('../../components/colorscale/has_colorscale'); */;
 /* removed: var _$calc_52 = require('../../components/colorscale/calc'); */;
 
-/* removed: var _$subtypes_302 = require('./subtypes'); */;
+/* removed: var _$subtypes_303 = require('./subtypes'); */;
 
 
-var _$calcMarkerColorscale_285 = function calcMarkerColorscale(trace) {
-    if(_$subtypes_302.hasLines(trace) && _$hasColorscale_59(trace, 'line')) {
+var _$calcMarkerColorscale_286 = function calcMarkerColorscale(trace) {
+    if(_$subtypes_303.hasLines(trace) && _$hasColorscale_59(trace, 'line')) {
         _$calc_52(trace, trace.line.color, 'line', 'c');
     }
 
-    if(_$subtypes_302.hasMarkers(trace)) {
+    if(_$subtypes_303.hasMarkers(trace)) {
         if(_$hasColorscale_59(trace, 'marker')) {
             _$calc_52(trace, trace.marker.color, 'marker', 'c');
         }
@@ -63474,19 +64148,19 @@ var _$calcMarkerColorscale_285 = function calcMarkerColorscale(trace) {
 'use strict';
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
-var __isArrayOrTypedArray_281 = _$lib_166.isArrayOrTypedArray;
+var __isArrayOrTypedArray_282 = _$lib_167.isArrayOrTypedArray;
 
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
-var __BADNUM_281 = _$numerical_147.BADNUM;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
+var __BADNUM_282 = _$numerical_147.BADNUM;
 
-/* removed: var _$subtypes_302 = require('./subtypes'); */;
-/* removed: var _$calcMarkerColorscale_285 = require('./colorscale_calc'); */;
-/* removed: var _$arraysToCalcdata_279 = require('./arrays_to_calcdata'); */;
-/* removed: var _$calcSelection_282 = require('./calc_selection'); */;
+/* removed: var _$subtypes_303 = require('./subtypes'); */;
+/* removed: var _$calcMarkerColorscale_286 = require('./colorscale_calc'); */;
+/* removed: var _$arraysToCalcdata_280 = require('./arrays_to_calcdata'); */;
+/* removed: var _$calcSelection_283 = require('./calc_selection'); */;
 
-function __calc_281(gd, trace) {
-    var xa = _$axes_209.getFromId(gd, trace.xaxis || 'x');
-    var ya = _$axes_209.getFromId(gd, trace.yaxis || 'y');
+function __calc_282(gd, trace) {
+    var xa = _$axes_210.getFromId(gd, trace.xaxis || 'x');
+    var ya = _$axes_210.getFromId(gd, trace.yaxis || 'y');
     var x = xa.makeCalcdata(trace, 'x');
     var y = ya.makeCalcdata(trace, 'y');
     var serieslen = trace._length;
@@ -63498,16 +64172,16 @@ function __calc_281(gd, trace) {
     for(var i = 0; i < serieslen; i++) {
         cd[i] = (_$fastIsnumeric_11(x[i]) && _$fastIsnumeric_11(y[i])) ?
             {x: x[i], y: y[i]} :
-            {x: __BADNUM_281, y: __BADNUM_281};
+            {x: __BADNUM_282, y: __BADNUM_282};
 
         if(trace.ids) {
             cd[i].id = String(trace.ids[i]);
         }
     }
 
-    _$arraysToCalcdata_279(cd, trace);
-    _$calcMarkerColorscale_285(trace);
-    _$calcSelection_282(cd, trace);
+    _$arraysToCalcdata_280(cd, trace);
+    _$calcMarkerColorscale_286(trace);
+    _$calcSelection_283(cd, trace);
 
     gd.firstscatter = false;
     return cd;
@@ -63540,9 +64214,9 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
     }
 
     // if no error bars, markers or text, or fill to y=0 remove x padding
-    else if(!trace.error_y.visible && (
+    else if(!(trace.error_y || {}).visible && (
             ['tonexty', 'tozeroy'].indexOf(trace.fill) !== -1 ||
-            (!_$subtypes_302.hasMarkers(trace) && !_$subtypes_302.hasText(trace))
+            (!_$subtypes_303.hasMarkers(trace) && !_$subtypes_303.hasText(trace))
         )) {
         xOptions.padded = false;
         xOptions.ppad = 0;
@@ -63561,12 +64235,12 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
         yOptions.padded = false;
     }
 
-    _$axes_209.expand(xa, x, xOptions);
-    _$axes_209.expand(ya, y, yOptions);
+    _$axes_210.expand(xa, x, xOptions);
+    _$axes_210.expand(ya, y, yOptions);
 }
 
 function calcMarkerSize(trace, serieslen) {
-    if(!_$subtypes_302.hasMarkers(trace)) return;
+    if(!_$subtypes_303.hasMarkers(trace)) return;
 
     // Treat size like x or y arrays --- Run d2c
     // this needs to go before ppad computation
@@ -63584,10 +64258,10 @@ function calcMarkerSize(trace, serieslen) {
         };
     }
 
-    if(__isArrayOrTypedArray_281(marker.size)) {
+    if(__isArrayOrTypedArray_282(marker.size)) {
         // I tried auto-type but category and dates dont make much sense.
         var ax = {type: 'linear'};
-        _$axes_209.setConvert(ax);
+        _$axes_210.setConvert(ax);
 
         var s = ax.makeCalcdata(trace.marker, 'size');
 
@@ -63602,8 +64276,8 @@ function calcMarkerSize(trace, serieslen) {
     }
 }
 
-var _$calc_281 = {
-    calc: __calc_281,
+var _$calc_282 = {
+    calc: __calc_282,
     calcMarkerSize: calcMarkerSize,
     calcAxisExpansion: calcAxisExpansion
 };
@@ -63621,7 +64295,7 @@ var _$calc_281 = {
 
 
 // remove opacity for any trace that has a fill or is filled to
-var _$cleanData_283 = function cleanData(fullData) {
+var _$cleanData_284 = function cleanData(fullData) {
     for(var i = 0; i < fullData.length; i++) {
         var tracei = fullData[i];
         if(tracei.type !== 'scatter') continue;
@@ -63659,13 +64333,13 @@ var _$cleanData_283 = function cleanData(fullData) {
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$plots_250 = require('../../plots/plots'); */;
 /* removed: var _$colorscale_60 = require('../../components/colorscale'); */;
 /* removed: var _$draw_49 = require('../../components/colorbar/draw'); */;
 
 
-var _$colorbar_284 = function colorbar(gd, cd) {
+var _$colorbar_285 = function colorbar(gd, cd) {
     var trace = cd[0].trace,
         marker = trace.marker,
         cbId = 'cb' + trace.uid;
@@ -63683,8 +64357,8 @@ var _$colorbar_284 = function colorbar(gd, cd) {
         cmin = marker.cmin,
         cmax = marker.cmax;
 
-    if(!_$fastIsnumeric_11(cmin)) cmin = _$lib_166.aggNums(Math.min, null, vals);
-    if(!_$fastIsnumeric_11(cmax)) cmax = _$lib_166.aggNums(Math.max, null, vals);
+    if(!_$fastIsnumeric_11(cmin)) cmin = _$lib_167.aggNums(Math.min, null, vals);
+    if(!_$fastIsnumeric_11(cmax)) cmax = _$lib_167.aggNums(Math.max, null, vals);
 
     var cb = cd[0].t.cb = _$draw_49(gd, cbId);
     var sclFunc = _$colorscale_60.makeColorScaleFunc(
@@ -63713,9 +64387,9 @@ var _$colorbar_284 = function colorbar(gd, cd) {
 'use strict';
 
 /* removed: var _$color_45 = require('../../components/color'); */;
-var __isArrayOrTypedArray_289 = _$lib_166.isArrayOrTypedArray;
+var __isArrayOrTypedArray_290 = _$lib_167.isArrayOrTypedArray;
 
-var _$fillColorDefaults_289 = function fillColorDefaults(traceIn, traceOut, defaultColor, coerce) {
+var _$fillColorDefaults_290 = function fillColorDefaults(traceIn, traceOut, defaultColor, coerce) {
     var inheritColorFromMarker = false;
 
     if(traceOut.marker) {
@@ -63723,10 +64397,10 @@ var _$fillColorDefaults_289 = function fillColorDefaults(traceIn, traceOut, defa
         var markerColor = traceOut.marker.color,
             markerLineColor = (traceOut.marker.line || {}).color;
 
-        if(markerColor && !__isArrayOrTypedArray_289(markerColor)) {
+        if(markerColor && !__isArrayOrTypedArray_290(markerColor)) {
             inheritColorFromMarker = markerColor;
         }
-        else if(markerLineColor && !__isArrayOrTypedArray_289(markerLineColor)) {
+        else if(markerLineColor && !__isArrayOrTypedArray_290(markerLineColor)) {
             inheritColorFromMarker = markerLineColor;
         }
     }
@@ -63748,11 +64422,11 @@ var _$fillColorDefaults_289 = function fillColorDefaults(traceIn, traceOut, defa
 
 'use strict';
 
-var __isArrayOrTypedArray_293 = _$lib_166.isArrayOrTypedArray;
+var __isArrayOrTypedArray_294 = _$lib_167.isArrayOrTypedArray;
 /* removed: var _$hasColorscale_59 = require('../../components/colorscale/has_colorscale'); */;
 /* removed: var _$colorScaleDefaults_55 = require('../../components/colorscale/defaults'); */;
 
-var _$lineDefaults_293 = function lineDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
+var _$lineDefaults_294 = function lineDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
     var markerColor = (traceIn.marker || {}).color;
 
     coerce('line.color', defaultColor);
@@ -63761,7 +64435,7 @@ var _$lineDefaults_293 = function lineDefaults(traceIn, traceOut, defaultColor, 
         _$colorScaleDefaults_55(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
     }
     else {
-        var lineColorDflt = (__isArrayOrTypedArray_293(markerColor) ? false : markerColor) || defaultColor;
+        var lineColorDflt = (__isArrayOrTypedArray_294(markerColor) ? false : markerColor) || defaultColor;
         coerce('line.color', lineColorDflt);
     }
 
@@ -63782,7 +64456,7 @@ var _$lineDefaults_293 = function lineDefaults(traceIn, traceOut, defaultColor, 
 
 
 // common to 'scatter' and 'scatterternary'
-var _$handleLineShapeDefaults_295 = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
+var _$handleLineShapeDefaults_296 = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     var shape = coerce('line.shape');
     if(shape === 'spline') coerce('line.smoothing');
 };
@@ -63802,7 +64476,7 @@ var _$handleLineShapeDefaults_295 = function handleLineShapeDefaults(traceIn, tr
 /* removed: var _$hasColorscale_59 = require('../../components/colorscale/has_colorscale'); */;
 /* removed: var _$colorScaleDefaults_55 = require('../../components/colorscale/defaults'); */;
 
-/* removed: var _$subtypes_302 = require('./subtypes'); */;
+/* removed: var _$subtypes_303 = require('./subtypes'); */;
 
 /*
  * opts: object of flags to control features not all marker users support
@@ -63810,8 +64484,8 @@ var _$handleLineShapeDefaults_295 = function handleLineShapeDefaults(traceIn, tr
  *   gradient: caller supports gradients
  *   noSelect: caller does not support selected/unselected attribute containers
  */
-var _$markerDefaults_298 = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
-    var isBubble = _$subtypes_302.isBubble(traceIn),
+var _$markerDefaults_299 = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
+    var isBubble = _$subtypes_303.isBubble(traceIn),
         lineColor = (traceIn.line || {}).color,
         defaultMLC;
 
@@ -63880,17 +64554,17 @@ var _$markerDefaults_298 = function markerDefaults(traceIn, traceOut, defaultCol
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
 /*
  * opts: object of flags to control features not all text users support
  *   noSelect: caller does not support selected/unselected attribute containers
  */
-var _$text_defaults_303 = function(traceIn, traceOut, layout, coerce, opts) {
+var _$text_defaults_304 = function(traceIn, traceOut, layout, coerce, opts) {
     opts = opts || {};
 
     coerce('textposition');
-    _$lib_166.coerceFont(coerce, 'textfont', layout.font);
+    _$lib_167.coerceFont(coerce, 'textfont', layout.font);
 
     if(!opts.noSelect) {
         coerce('selected.textfont.color');
@@ -63909,15 +64583,15 @@ var _$text_defaults_303 = function(traceIn, traceOut, layout, coerce, opts) {
 
 'use strict';
 
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 
 
-var _$handleXYDefaults_304 = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
+var _$handleXYDefaults_305 = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     var len,
         x = coerce('x'),
         y = coerce('y');
 
-    var handleCalendarDefaults = _$registry_258.getComponentMethod('calendars', 'handleTraceDefaults');
+    var handleCalendarDefaults = _$registry_259.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
 
     if(x) {
@@ -63953,27 +64627,27 @@ var _$handleXYDefaults_304 = function handleXYDefaults(traceIn, traceOut, layout
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 
-/* removed: var _$attributes_280 = require('./attributes'); */;
-/* removed: var _$constants_286 = require('./constants'); */;
-/* removed: var _$subtypes_302 = require('./subtypes'); */;
-/* removed: var _$handleXYDefaults_304 = require('./xy_defaults'); */;
-/* removed: var _$markerDefaults_298 = require('./marker_defaults'); */;
-/* removed: var _$lineDefaults_293 = require('./line_defaults'); */;
-/* removed: var _$handleLineShapeDefaults_295 = require('./line_shape_defaults'); */;
-/* removed: var _$text_defaults_303 = require('./text_defaults'); */;
-/* removed: var _$fillColorDefaults_289 = require('./fillcolor_defaults'); */;
+/* removed: var _$attributes_281 = require('./attributes'); */;
+/* removed: var _$constants_287 = require('./constants'); */;
+/* removed: var _$subtypes_303 = require('./subtypes'); */;
+/* removed: var _$handleXYDefaults_305 = require('./xy_defaults'); */;
+/* removed: var _$markerDefaults_299 = require('./marker_defaults'); */;
+/* removed: var _$lineDefaults_294 = require('./line_defaults'); */;
+/* removed: var _$handleLineShapeDefaults_296 = require('./line_shape_defaults'); */;
+/* removed: var _$text_defaults_304 = require('./text_defaults'); */;
+/* removed: var _$fillColorDefaults_290 = require('./fillcolor_defaults'); */;
 
-var _$supplyDefaults_287 = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+var _$supplyDefaults_288 = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(traceIn, traceOut, _$attributes_280, attr, dflt);
+        return _$lib_167.coerce(traceIn, traceOut, _$attributes_281, attr, dflt);
     }
 
-    var len = _$handleXYDefaults_304(traceIn, traceOut, layout, coerce),
+    var len = _$handleXYDefaults_305(traceIn, traceOut, layout, coerce),
         // TODO: default mode by orphan points...
-        defaultMode = len < _$constants_286.PTS_LINESONLY ? 'lines+markers' : 'lines';
+        defaultMode = len < _$constants_287.PTS_LINESONLY ? 'lines+markers' : 'lines';
     if(!len) {
         traceOut.visible = false;
         return;
@@ -63983,24 +64657,24 @@ var _$supplyDefaults_287 = function supplyDefaults(traceIn, traceOut, defaultCol
     coerce('hovertext');
     coerce('mode', defaultMode);
 
-    if(_$subtypes_302.hasLines(traceOut)) {
-        _$lineDefaults_293(traceIn, traceOut, defaultColor, layout, coerce);
-        _$handleLineShapeDefaults_295(traceIn, traceOut, coerce);
+    if(_$subtypes_303.hasLines(traceOut)) {
+        _$lineDefaults_294(traceIn, traceOut, defaultColor, layout, coerce);
+        _$handleLineShapeDefaults_296(traceIn, traceOut, coerce);
         coerce('connectgaps');
         coerce('line.simplify');
     }
 
-    if(_$subtypes_302.hasMarkers(traceOut)) {
-        _$markerDefaults_298(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+    if(_$subtypes_303.hasMarkers(traceOut)) {
+        _$markerDefaults_299(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
     }
 
-    if(_$subtypes_302.hasText(traceOut)) {
-        _$text_defaults_303(traceIn, traceOut, layout, coerce);
+    if(_$subtypes_303.hasText(traceOut)) {
+        _$text_defaults_304(traceIn, traceOut, layout, coerce);
     }
 
     var dfltHoverOn = [];
 
-    if(_$subtypes_302.hasMarkers(traceOut) || _$subtypes_302.hasText(traceOut)) {
+    if(_$subtypes_303.hasMarkers(traceOut) || _$subtypes_303.hasText(traceOut)) {
         coerce('cliponaxis');
         coerce('marker.maxdisplayed');
         dfltHoverOn.push('points');
@@ -64008,8 +64682,8 @@ var _$supplyDefaults_287 = function supplyDefaults(traceIn, traceOut, defaultCol
 
     coerce('fill');
     if(traceOut.fill !== 'none') {
-        _$fillColorDefaults_289(traceIn, traceOut, defaultColor, coerce);
-        if(!_$subtypes_302.hasLines(traceOut)) _$handleLineShapeDefaults_295(traceIn, traceOut, coerce);
+        _$fillColorDefaults_290(traceIn, traceOut, defaultColor, coerce);
+        if(!_$subtypes_303.hasLines(traceOut)) _$handleLineShapeDefaults_296(traceIn, traceOut, coerce);
     }
 
     if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
@@ -64017,11 +64691,11 @@ var _$supplyDefaults_287 = function supplyDefaults(traceIn, traceOut, defaultCol
     }
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
 
-    var errorBarsSupplyDefaults = _$registry_258.getComponentMethod('errorbars', 'supplyDefaults');
+    var errorBarsSupplyDefaults = _$registry_259.getComponentMethod('errorbars', 'supplyDefaults');
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 
-    _$lib_166.coerceSelectionMarkerOpacity(traceOut, coerce);
+    _$lib_167.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
 /**
@@ -64036,10 +64710,10 @@ var _$supplyDefaults_287 = function supplyDefaults(traceIn, traceOut, defaultCol
 'use strict';
 
 /* removed: var _$color_45 = require('../../components/color'); */;
-/* removed: var _$subtypes_302 = require('./subtypes'); */;
+/* removed: var _$subtypes_303 = require('./subtypes'); */;
 
 
-var _$getTraceColor_290 = function getTraceColor(trace, di) {
+var _$getTraceColor_291 = function getTraceColor(trace, di) {
     var lc, tc;
 
     // TODO: text modes
@@ -64070,7 +64744,7 @@ var _$getTraceColor_290 = function getTraceColor(trace, di) {
         else {
             lc = (trace.line || {}).color;
             return (lc && _$color_45.opacity(lc) &&
-                _$subtypes_302.hasLines(trace) && trace.line.width) ?
+                _$subtypes_303.hasLines(trace) && trace.line.width) ?
                     lc : trace.fillcolor;
         }
     }
@@ -64086,14 +64760,14 @@ var _$getTraceColor_290 = function getTraceColor(trace, di) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$fx_87 = require('../../components/fx'); */;
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$getTraceColor_290 = require('./get_trace_color'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$getTraceColor_291 = require('./get_trace_color'); */;
 /* removed: var _$color_45 = require('../../components/color'); */;
-/* removed: var _$fillHoverText_288 = require('./fill_hover_text'); */;
+/* removed: var _$fillHoverText_289 = require('./fill_hover_text'); */;
 
-var _$hoverPoints_291 = function hoverPoints(pointData, xval, yval, hovermode) {
+var _$hoverPoints_292 = function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var xa = pointData.xa;
@@ -64146,8 +64820,8 @@ var _$hoverPoints_291 = function hoverPoints(pointData, xval, yval, hovermode) {
             var yc = ya.c2p(di.y, true);
             var rad = di.mrc || 1;
 
-            _$lib_166.extendFlat(pointData, {
-                color: _$getTraceColor_290(trace, di),
+            _$lib_167.extendFlat(pointData, {
+                color: _$getTraceColor_291(trace, di),
 
                 x0: xc - rad,
                 x1: xc + rad,
@@ -64160,8 +64834,8 @@ var _$hoverPoints_291 = function hoverPoints(pointData, xval, yval, hovermode) {
                 spikeDistance: dxy(di)
             });
 
-            _$fillHoverText_288(di, trace, pointData);
-            _$registry_258.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
+            _$fillHoverText_289(di, trace, pointData);
+            _$registry_259.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
             return [pointData];
         }
@@ -64233,7 +64907,7 @@ var _$hoverPoints_291 = function hoverPoints(pointData, xval, yval, hovermode) {
                 color = trace.line.color;
             }
 
-            _$lib_166.extendFlat(pointData, {
+            _$lib_167.extendFlat(pointData, {
                 // never let a 2D override 1D type as closest point
                 // also: no spikeDistance, it's not allowed for fills
                 distance: pointData.maxHoverDistance,
@@ -64267,14 +64941,14 @@ var _$hoverPoints_291 = function hoverPoints(pointData, xval, yval, hovermode) {
 
 'use strict';
 
-var __BADNUM_294 = _$numerical_147.BADNUM;
-/* removed: var _$lib_166 = require('../../lib'); */;
-var __segmentsIntersect_294 = _$lib_166.segmentsIntersect;
-var constrain = _$lib_166.constrain;
-/* removed: var _$constants_286 = require('./constants'); */;
+var __BADNUM_295 = _$numerical_147.BADNUM;
+/* removed: var _$lib_167 = require('../../lib'); */;
+var __segmentsIntersect_295 = _$lib_167.segmentsIntersect;
+var constrain = _$lib_167.constrain;
+/* removed: var _$constants_287 = require('./constants'); */;
 
 
-var _$linePoints_294 = function linePoints(d, opts) {
+var _$linePoints_295 = function linePoints(d, opts) {
     var xa = opts.xaxis;
     var ya = opts.yaxis;
     var simplify = opts.simplify;
@@ -64283,7 +64957,7 @@ var _$linePoints_294 = function linePoints(d, opts) {
     var shape = opts.shape;
     var linear = shape === 'linear';
     var segments = [];
-    var minTolerance = _$constants_286.minTolerance;
+    var minTolerance = _$constants_287.minTolerance;
     var pts = new Array(d.length);
     var pti = 0;
 
@@ -64321,7 +64995,7 @@ var _$linePoints_294 = function linePoints(d, opts) {
         var di = d[index];
         var x = xa.c2p(di.x);
         var y = ya.c2p(di.y);
-        if(x === __BADNUM_294 || y === __BADNUM_294) return di.intoCenter || false;
+        if(x === __BADNUM_295 || y === __BADNUM_295) return di.intoCenter || false;
         return [x, y];
     }
 
@@ -64329,7 +65003,7 @@ var _$linePoints_294 = function linePoints(d, opts) {
     function getTolerance(pt) {
         var xFrac = pt[0] / xa._length;
         var yFrac = pt[1] / ya._length;
-        return (1 + _$constants_286.toleranceGrowth * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) * baseTolerance;
+        return (1 + _$constants_287.toleranceGrowth * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) * baseTolerance;
     }
 
     function ptDist(pt1, pt2) {
@@ -64341,7 +65015,7 @@ var _$linePoints_294 = function linePoints(d, opts) {
     // last bit of filtering: clip paths that are VERY far off-screen
     // so we don't get near the browser's hard limit (+/- 2^29 px in Chrome and FF)
 
-    var maxScreensAway = _$constants_286.maxScreensAway;
+    var maxScreensAway = _$constants_287.maxScreensAway;
 
     // find the intersections between the segment from pt1 to pt2
     // and the large rectangle maxScreensAway around the viewport
@@ -64370,7 +65044,7 @@ var _$linePoints_294 = function linePoints(d, opts) {
         var ptCount = 0;
         for(var i = 0; i < 4; i++) {
             var edge = edges[i];
-            var ptInt = __segmentsIntersect_294(pt1[0], pt1[1], pt2[0], pt2[1],
+            var ptInt = __segmentsIntersect_295(pt1[0], pt1[1], pt2[0], pt2[1],
                 edge[0], edge[1], edge[2], edge[3]);
             if(ptInt && (!ptCount ||
                 Math.abs(ptInt.x - out[0][0]) > 1 ||
@@ -64424,7 +65098,7 @@ var _$linePoints_294 = function linePoints(d, opts) {
             if(ptInt1) out.push(ptInt1);
             if(ptInt2) out.push(ptInt2);
 
-            var midShift = 2 * _$lib_166.constrain((pt1[dim] + pt2[dim]) / 2, limit0, limit1) -
+            var midShift = 2 * _$lib_167.constrain((pt1[dim] + pt2[dim]) / 2, limit0, limit1) -
                 ((ptInt1 || pt1)[dim] + (ptInt2 || pt2)[dim]);
             if(midShift) {
                 var ptToAlter;
@@ -64677,7 +65351,7 @@ var _$linePoints_294 = function linePoints(d, opts) {
 
 'use strict';
 
-var _$linkTraces_296 = function linkTraces(gd, plotinfo, cdscatter) {
+var _$linkTraces_297 = function linkTraces(gd, plotinfo, cdscatter) {
     var trace, i;
     var prevtrace = null;
 
@@ -64719,17 +65393,17 @@ var _$linkTraces_296 = function linkTraces(gd, plotinfo, cdscatter) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$registry_258 = require('../../registry'); */;
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 /* removed: var _$drawing_70 = require('../../components/drawing'); */;
 
-/* removed: var _$subtypes_302 = require('./subtypes'); */;
-/* removed: var _$linePoints_294 = require('./line_points'); */;
-/* removed: var _$linkTraces_296 = require('./link_traces'); */;
-var __polygonTester_299 = _$polygon_178.tester;
+/* removed: var _$subtypes_303 = require('./subtypes'); */;
+/* removed: var _$linePoints_295 = require('./line_points'); */;
+/* removed: var _$linkTraces_297 = require('./link_traces'); */;
+var __polygonTester_300 = _$polygon_179.tester;
 
-var _$plot_299 = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCompleteCallback) {
-    var i, uids, selection, join, onComplete;
+var _$plot_300 = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCompleteCallback) {
+    var i, uids, join, onComplete;
 
     var scatterlayer = plotinfo.plot.select('g.scatterlayer');
 
@@ -64738,9 +65412,8 @@ var _$plot_299 = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
     var isFullReplot = !transitionOpts;
     var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
 
-    selection = scatterlayer.selectAll('g.trace');
-
-    join = selection.data(cdscatter, function(d) { return d[0].trace.uid; });
+    join = scatterlayer.selectAll('g.trace')
+        .data(cdscatter, function(d) { return d[0].trace.uid; });
 
     // Append new traces:
     join.enter().append('g')
@@ -64752,7 +65425,7 @@ var _$plot_299 = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
     // After the elements are created but before they've been draw, we have to perform
     // this extra step of linking the traces. This allows appending of fill layers so that
     // the z-order of fill layers is correct.
-    _$linkTraces_296(gd, plotinfo, cdscatter);
+    _$linkTraces_297(gd, plotinfo, cdscatter);
 
     createFills(gd, scatterlayer, plotinfo);
 
@@ -64791,12 +65464,12 @@ var _$plot_299 = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
             // Must run the selection again since otherwise enters/updates get grouped together
             // and these get executed out of order. Except we need them in order!
             scatterlayer.selectAll('g.trace').each(function(d, i) {
-                __plotOne_299(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
+                __plotOne_300(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
             });
         });
     } else {
         scatterlayer.selectAll('g.trace').each(function(d, i) {
-            __plotOne_299(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
+            __plotOne_300(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
         });
     }
 
@@ -64851,7 +65524,7 @@ function createFills(gd, scatterlayer, plotinfo) {
     });
 }
 
-function __plotOne_299(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionOpts) {
+function __plotOne_300(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionOpts) {
     var join, i;
 
     // Since this has been reorganized and we're executing this on individual traces,
@@ -64873,7 +65546,7 @@ function __plotOne_299(gd, idx, plotinfo, cdscatter, cdscatterAll, element, tran
         tr = _$d3_8.select(element);
 
     // error bars are at the bottom
-    _$registry_258.getComponentMethod('errorbars', 'plot')(tr, plotinfo, transitionOpts);
+    _$registry_259.getComponentMethod('errorbars', 'plot')(tr, plotinfo, transitionOpts);
 
     if(trace.visible !== true) return;
 
@@ -64885,7 +65558,7 @@ function __plotOne_299(gd, idx, plotinfo, cdscatter, cdscatterAll, element, tran
     if(ownFillDir !== 'x' && ownFillDir !== 'y') ownFillDir = '';
 
     // store node for tweaking by selectPoints
-    cdscatter[0].node3 = tr;
+    if(!plotinfo.isRangePlot) cdscatter[0].node3 = tr;
 
     var prevRevpath = '';
     var prevPolygons = [];
@@ -64911,11 +65584,11 @@ function __plotOne_299(gd, idx, plotinfo, cdscatter, cdscatterAll, element, tran
 
     // initialize line join data / method
     var segments = [],
-        makeUpdate = _$lib_166.noop;
+        makeUpdate = _$lib_167.noop;
 
     ownFillEl3 = trace._ownFill;
 
-    if(_$subtypes_302.hasLines(trace) || trace.fill !== 'none') {
+    if(_$subtypes_303.hasLines(trace) || trace.fill !== 'none') {
 
         if(tonext) {
             // This tells .style which trace to use for fill information:
@@ -64952,7 +65625,7 @@ function __plotOne_299(gd, idx, plotinfo, cdscatter, cdscatterAll, element, tran
             return revpathbase(pts.reverse());
         };
 
-        segments = _$linePoints_294(cdscatter, {
+        segments = _$linePoints_295(cdscatter, {
             xaxis: xa,
             yaxis: ya,
             connectGaps: trace.connectgaps,
@@ -64967,7 +65640,7 @@ function __plotOne_299(gd, idx, plotinfo, cdscatter, cdscatterAll, element, tran
         // need to redraw when you change hoveron...
         thisPolygons = trace._polygons = new Array(segments.length);
         for(i = 0; i < segments.length; i++) {
-            trace._polygons[i] = __polygonTester_299(segments[i]);
+            trace._polygons[i] = __polygonTester_300(segments[i]);
         }
 
         if(segments.length) {
@@ -64993,7 +65666,7 @@ function __plotOne_299(gd, idx, plotinfo, cdscatter, cdscatterAll, element, tran
                     revpath = thisrevpath + 'Z' + revpath;
                 }
 
-                if(_$subtypes_302.hasLines(trace) && pts.length > 1) {
+                if(_$subtypes_303.hasLines(trace) && pts.length > 1) {
                     var el = _$d3_8.select(this);
 
                     // This makes the coloring work correctly:
@@ -65120,19 +65793,19 @@ function __plotOne_299(gd, idx, plotinfo, cdscatter, cdscatterAll, element, tran
 
         var trace = d[0].trace,
             s = _$d3_8.select(this),
-            showMarkers = _$subtypes_302.hasMarkers(trace),
-            showText = _$subtypes_302.hasText(trace);
+            showMarkers = _$subtypes_303.hasMarkers(trace),
+            showText = _$subtypes_303.hasText(trace);
 
         var keyFunc = getKeyFunc(trace),
             markerFilter = hideFilter,
             textFilter = hideFilter;
 
         if(showMarkers) {
-            markerFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : _$lib_166.identity;
+            markerFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : _$lib_167.identity;
         }
 
         if(showText) {
-            textFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : _$lib_166.identity;
+            textFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : _$lib_167.identity;
         }
 
         // marker points
@@ -65253,11 +65926,11 @@ function __plotOne_299(gd, idx, plotinfo, cdscatter, cdscatterAll, element, tran
 function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     var xa = plotinfo.xaxis,
         ya = plotinfo.yaxis,
-        xr = _$d3_8.extent(_$lib_166.simpleMap(xa.range, xa.r2c)),
-        yr = _$d3_8.extent(_$lib_166.simpleMap(ya.range, ya.r2c));
+        xr = _$d3_8.extent(_$lib_167.simpleMap(xa.range, xa.r2c)),
+        yr = _$d3_8.extent(_$lib_167.simpleMap(ya.range, ya.r2c));
 
     var trace = cdscatter[0].trace;
-    if(!_$subtypes_302.hasMarkers(trace)) return;
+    if(!_$subtypes_303.hasMarkers(trace)) return;
     // if marker.maxdisplayed is used, select a maximum of
     // mnum markers to show, from the set that are in the viewport
     var mnum = trace.marker.maxdisplayed;
@@ -65272,7 +65945,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
         tnum = 0;
     cdscatterAll.forEach(function(cdj, j) {
         var tracei = cdj[0].trace;
-        if(_$subtypes_302.hasMarkers(tracei) &&
+        if(_$subtypes_303.hasMarkers(tracei) &&
                 tracei.marker.maxdisplayed > 0 && j < idx) {
             tnum++;
         }
@@ -65303,9 +65976,9 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
 
 'use strict';
 
-/* removed: var _$subtypes_302 = require('./subtypes'); */;
+/* removed: var _$subtypes_303 = require('./subtypes'); */;
 
-var _$selectPoints_300 = function selectPoints(searchInfo, polygon) {
+var _$selectPoints_301 = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd,
         xa = searchInfo.xaxis,
         ya = searchInfo.yaxis,
@@ -65316,7 +65989,7 @@ var _$selectPoints_300 = function selectPoints(searchInfo, polygon) {
         x,
         y;
 
-    var hasOnlyLines = (!_$subtypes_302.hasMarkers(trace) && !_$subtypes_302.hasText(trace));
+    var hasOnlyLines = (!_$subtypes_303.hasMarkers(trace) && !_$subtypes_303.hasText(trace));
     if(hasOnlyLines) return [];
 
     if(polygon === false) { // clear selection
@@ -65359,9 +66032,9 @@ var _$selectPoints_300 = function selectPoints(searchInfo, polygon) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 /* removed: var _$drawing_70 = require('../../components/drawing'); */;
-/* removed: var _$registry_258 = require('../../registry'); */;
+/* removed: var _$registry_259 = require('../../registry'); */;
 
-function __style_301(gd, cd) {
+function __style_302(gd, cd) {
     var s = cd ? cd[0].node3 : _$d3_8.select(gd).selectAll('g.trace.scatter');
 
     s.style('opacity', function(d) {
@@ -65380,7 +66053,7 @@ function __style_301(gd, cd) {
     s.selectAll('g.trace path.js-fill')
         .call(_$drawing_70.fillGroupStyle);
 
-    _$registry_258.getComponentMethod('errorbars', 'style')(s);
+    _$registry_259.getComponentMethod('errorbars', 'style')(s);
 }
 
 function stylePoints(sel, trace, gd) {
@@ -65393,8 +66066,8 @@ function stylePoints(sel, trace, gd) {
     _$drawing_70.selectedTextStyle(txs, trace);
 }
 
-var _$style_301 = {
-    style: __style_301,
+var _$style_302 = {
+    style: __style_302,
     stylePoints: stylePoints
 };
 
@@ -65411,35 +66084,35 @@ var _$style_301 = {
 
 var Scatter = {};
 
-/* removed: var _$subtypes_302 = require('./subtypes'); */;
-Scatter.hasLines = _$subtypes_302.hasLines;
-Scatter.hasMarkers = _$subtypes_302.hasMarkers;
-Scatter.hasText = _$subtypes_302.hasText;
-Scatter.isBubble = _$subtypes_302.isBubble;
+/* removed: var _$subtypes_303 = require('./subtypes'); */;
+Scatter.hasLines = _$subtypes_303.hasLines;
+Scatter.hasMarkers = _$subtypes_303.hasMarkers;
+Scatter.hasText = _$subtypes_303.hasText;
+Scatter.isBubble = _$subtypes_303.isBubble;
 
 // traces with < this many points are by default shown
 // with points and lines, > just get lines
-Scatter.attributes = _$attributes_280;
-Scatter.supplyDefaults = _$supplyDefaults_287;
-Scatter.cleanData = _$cleanData_283;
-Scatter.calc = _$calc_281.calc;
-Scatter.arraysToCalcdata = _$arraysToCalcdata_279;
-Scatter.plot = _$plot_299;
-Scatter.colorbar = _$colorbar_284;
-Scatter.style = _$style_301.style;
-Scatter.hoverPoints = _$hoverPoints_291;
-Scatter.selectPoints = _$selectPoints_300;
+Scatter.attributes = _$attributes_281;
+Scatter.supplyDefaults = _$supplyDefaults_288;
+Scatter.cleanData = _$cleanData_284;
+Scatter.calc = _$calc_282.calc;
+Scatter.arraysToCalcdata = _$arraysToCalcdata_280;
+Scatter.plot = _$plot_300;
+Scatter.colorbar = _$colorbar_285;
+Scatter.style = _$style_302.style;
+Scatter.hoverPoints = _$hoverPoints_292;
+Scatter.selectPoints = _$selectPoints_301;
 Scatter.animatable = true;
 
 Scatter.moduleType = 'trace';
 Scatter.name = 'scatter';
-Scatter.basePlotModule = _$cartesian_220;
-Scatter.categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend', 'scatter-like'];
+Scatter.basePlotModule = _$cartesian_221;
+Scatter.categories = ['cartesian', 'svg', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend', 'scatter-like', 'draggedPts'];
 Scatter.meta = {
     
 };
 
-var _$Scatter_292 = Scatter;
+var _$Scatter_293 = Scatter;
 
 var _$core_150 = {};
 /**
@@ -65453,7 +66126,7 @@ var _$core_150 = {};
 'use strict';
 
 // package version injected by `npm run preprocess`
-_$core_150.version = '1.35.2';
+_$core_150.version = '1.36.0';
 
 // inject promise polyfill
 _$es6Promise_9.polyfill();
@@ -65465,24 +66138,24 @@ _$plotcss_1;
 _$mathjax_config_151;
 
 // include registry module and expose register method
-/* removed: var _$registry_258 = require('./registry'); */;
-var register = _$core_150.register = _$registry_258.register;
+/* removed: var _$registry_259 = require('./registry'); */;
+var register = _$core_150.register = _$registry_259.register;
 
 // expose plot api methods
-/* removed: var _$plot_api_196 = require('./plot_api'); */;
-var methodNames = Object.keys(_$plot_api_196);
+/* removed: var _$plot_api_197 = require('./plot_api'); */;
+var methodNames = Object.keys(_$plot_api_197);
 for(var i = 0; i < methodNames.length; i++) {
     var __name_150 = methodNames[i];
-    _$core_150[__name_150] = _$plot_api_196[__name_150];
+    _$core_150[__name_150] = _$plot_api_197[__name_150];
     register({
         moduleType: 'apiMethod',
         name: __name_150,
-        fn: _$plot_api_196[__name_150]
+        fn: _$plot_api_197[__name_150]
     });
 }
 
 // scatter is the only trace included by default
-register(_$Scatter_292);
+register(_$Scatter_293);
 
 // register all registrable components modules
 register([
@@ -65502,8 +66175,8 @@ register([
 
 // locales en and en-US are required for default behavior
 register([
-    _$localeEn_192,
-    _$localeEnUs_191
+    _$localeEn_193,
+    _$localeEnUs_192
 ]);
 
 // plot icons
@@ -65512,9 +66185,9 @@ _$core_150.Icons = _$ploticon_2;
 // unofficial 'beta' plot methods, use at your own risk
 _$core_150.Plots = _$plots_250;
 _$core_150.Fx = _$fx_87;
-_$core_150.Snapshot = _$Snapshot_263;
-_$core_150.PlotSchema = _$plot_schema_200;
-_$core_150.Queue = _$queue_180;
+_$core_150.Snapshot = _$Snapshot_264;
+_$core_150.PlotSchema = _$plot_schema_201;
+_$core_150.Queue = _$queue_181;
 
 // export d3 used in the bundle
 _$core_150.d3 = _$d3_8;
@@ -65543,15 +66216,15 @@ var _$core_4 = _$core_150;
 'use strict';
 
 /* removed: var _$fastIsnumeric_11 = require('fast-isnumeric'); */;
-var __BADNUM_306 = _$numerical_147.BADNUM;
+var __BADNUM_307 = _$numerical_147.BADNUM;
 
-/* removed: var _$calcMarkerColorscale_285 = require('../scatter/colorscale_calc'); */;
-/* removed: var _$arraysToCalcdata_279 = require('../scatter/arrays_to_calcdata'); */;
-/* removed: var _$calcSelection_282 = require('../scatter/calc_selection'); */;
+/* removed: var _$calcMarkerColorscale_286 = require('../scatter/colorscale_calc'); */;
+/* removed: var _$arraysToCalcdata_280 = require('../scatter/arrays_to_calcdata'); */;
+/* removed: var _$calcSelection_283 = require('../scatter/calc_selection'); */;
 
-var ____306 = _$lib_166._;
+var ____307 = _$lib_167._;
 
-var _$calc_306 = function calc(gd, trace) {
+var _$calc_307 = function calc(gd, trace) {
     var hasLocationData = Array.isArray(trace.locations);
     var len = hasLocationData ? trace.locations.length : trace._length;
     var calcTrace = new Array(len);
@@ -65567,19 +66240,19 @@ var _$calc_306 = function calc(gd, trace) {
             var lat = trace.lat[i];
 
             if(_$fastIsnumeric_11(lon) && _$fastIsnumeric_11(lat)) calcPt.lonlat = [+lon, +lat];
-            else calcPt.lonlat = [__BADNUM_306, __BADNUM_306];
+            else calcPt.lonlat = [__BADNUM_307, __BADNUM_307];
         }
     }
 
-    _$arraysToCalcdata_279(calcTrace, trace);
-    _$calcMarkerColorscale_285(trace);
-    _$calcSelection_282(calcTrace, trace);
+    _$arraysToCalcdata_280(calcTrace, trace);
+    _$calcMarkerColorscale_286(trace);
+    _$calcSelection_283(calcTrace, trace);
 
     if(len) {
         calcTrace[0].t = {
             labels: {
-                lat: ____306(gd, 'lat:') + ' ',
-                lon: ____306(gd, 'lon:') + ' '
+                lat: ____307(gd, 'lat:') + ' ',
+                lon: ____307(gd, 'lon:') + ' '
             }
         };
     }
@@ -65598,20 +66271,20 @@ var _$calc_306 = function calc(gd, trace) {
 
 'use strict';
 
-/* removed: var _$lib_166 = require('../../lib'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
 
-/* removed: var _$subtypes_302 = require('../scatter/subtypes'); */;
-/* removed: var _$markerDefaults_298 = require('../scatter/marker_defaults'); */;
-/* removed: var _$lineDefaults_293 = require('../scatter/line_defaults'); */;
-/* removed: var _$text_defaults_303 = require('../scatter/text_defaults'); */;
-/* removed: var _$fillColorDefaults_289 = require('../scatter/fillcolor_defaults'); */;
+/* removed: var _$subtypes_303 = require('../scatter/subtypes'); */;
+/* removed: var _$markerDefaults_299 = require('../scatter/marker_defaults'); */;
+/* removed: var _$lineDefaults_294 = require('../scatter/line_defaults'); */;
+/* removed: var _$text_defaults_304 = require('../scatter/text_defaults'); */;
+/* removed: var _$fillColorDefaults_290 = require('../scatter/fillcolor_defaults'); */;
 
-/* removed: var _$attributes_305 = require('./attributes'); */;
+/* removed: var _$attributes_306 = require('./attributes'); */;
 
 
-var _$supplyDefaults_307 = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+var _$supplyDefaults_308 = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
-        return _$lib_166.coerce(traceIn, traceOut, _$attributes_305, attr, dflt);
+        return _$lib_167.coerce(traceIn, traceOut, _$attributes_306, attr, dflt);
     }
 
     var len = handleLonLatLocDefaults(traceIn, traceOut, coerce);
@@ -65624,22 +66297,22 @@ var _$supplyDefaults_307 = function supplyDefaults(traceIn, traceOut, defaultCol
     coerce('hovertext');
     coerce('mode');
 
-    if(_$subtypes_302.hasLines(traceOut)) {
-        _$lineDefaults_293(traceIn, traceOut, defaultColor, layout, coerce);
+    if(_$subtypes_303.hasLines(traceOut)) {
+        _$lineDefaults_294(traceIn, traceOut, defaultColor, layout, coerce);
         coerce('connectgaps');
     }
 
-    if(_$subtypes_302.hasMarkers(traceOut)) {
-        _$markerDefaults_298(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
+    if(_$subtypes_303.hasMarkers(traceOut)) {
+        _$markerDefaults_299(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
     }
 
-    if(_$subtypes_302.hasText(traceOut)) {
-        _$text_defaults_303(traceIn, traceOut, layout, coerce);
+    if(_$subtypes_303.hasText(traceOut)) {
+        _$text_defaults_304(traceIn, traceOut, layout, coerce);
     }
 
     coerce('fill');
     if(traceOut.fill !== 'none') {
-        _$fillColorDefaults_289(traceIn, traceOut, defaultColor, coerce);
+        _$fillColorDefaults_290(traceIn, traceOut, defaultColor, coerce);
     }
 };
 
@@ -65675,7 +66348,7 @@ function handleLonLatLocDefaults(traceIn, traceOut, coerce) {
 'use strict';
 
 
-var _$eventData_308 = function eventData(out, pt) {
+var _$eventData_309 = function eventData(out, pt) {
     out.lon = pt.lon;
     out.lat = pt.lat;
     out.location = pt.loc ? pt.loc : null;
@@ -65695,14 +66368,14 @@ var _$eventData_308 = function eventData(out, pt) {
 'use strict';
 
 /* removed: var _$fx_87 = require('../../components/fx'); */;
-/* removed: var _$axes_209 = require('../../plots/cartesian/axes'); */;
-var __BADNUM_309 = _$numerical_147.BADNUM;
+/* removed: var _$axes_210 = require('../../plots/cartesian/axes'); */;
+var __BADNUM_310 = _$numerical_147.BADNUM;
 
-/* removed: var _$getTraceColor_290 = require('../scatter/get_trace_color'); */;
-/* removed: var _$fillHoverText_288 = require('../scatter/fill_hover_text'); */;
-/* removed: var _$attributes_305 = require('./attributes'); */;
+/* removed: var _$getTraceColor_291 = require('../scatter/get_trace_color'); */;
+/* removed: var _$fillHoverText_289 = require('../scatter/fill_hover_text'); */;
+/* removed: var _$attributes_306 = require('./attributes'); */;
 
-var _$hoverPoints_309 = function hoverPoints(pointData, xval, yval) {
+var _$hoverPoints_310 = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var xa = pointData.xa;
@@ -65715,7 +66388,7 @@ var _$hoverPoints_309 = function hoverPoints(pointData, xval, yval) {
     function distFn(d) {
         var lonlat = d.lonlat;
 
-        if(lonlat[0] === __BADNUM_309) return Infinity;
+        if(lonlat[0] === __BADNUM_310) return Infinity;
         if(isLonLatOverEdges(lonlat)) return Infinity;
 
         var pt = project(lonlat);
@@ -65749,7 +66422,7 @@ var _$hoverPoints_309 = function hoverPoints(pointData, xval, yval) {
     pointData.lon = lonlat[0];
     pointData.lat = lonlat[1];
 
-    pointData.color = _$getTraceColor_290(trace, di);
+    pointData.color = _$getTraceColor_291(trace, di);
     pointData.extraText = getExtraText(trace, di, geo.mockAxis, cd[0].t.labels);
 
     return [pointData];
@@ -65759,7 +66432,7 @@ function getExtraText(trace, pt, axis, labels) {
     var hoverinfo = pt.hi || trace.hoverinfo;
 
     var parts = hoverinfo === 'all' ?
-        _$attributes_305.hoverinfo.flags :
+        _$attributes_306.hoverinfo.flags :
         hoverinfo.split('+');
 
     var hasLocation = parts.indexOf('location') !== -1 && Array.isArray(trace.locations);
@@ -65769,7 +66442,7 @@ function getExtraText(trace, pt, axis, labels) {
     var text = [];
 
     function format(val) {
-        return _$axes_209.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
+        return _$axes_210.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
     }
 
     if(hasLocation) {
@@ -65783,13 +66456,13 @@ function getExtraText(trace, pt, axis, labels) {
     }
 
     if(hasText) {
-        _$fillHoverText_288(pt, trace, text);
+        _$fillHoverText_289(pt, trace, text);
     }
 
     return text.join('<br>');
 }
 
-var _$geojson_utils_162 = {};
+var _$geojson_utils_163 = {};
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
@@ -65801,7 +66474,7 @@ var _$geojson_utils_162 = {};
 
 'use strict';
 
-var __BADNUM_162 = _$numerical_147.BADNUM;
+var __BADNUM_163 = _$numerical_147.BADNUM;
 
 /**
  * Convert calcTrace to GeoJSON 'MultiLineString' coordinate arrays
@@ -65814,7 +66487,7 @@ var __BADNUM_162 = _$numerical_147.BADNUM;
  *  return line coords array (or array of arrays)
  *
  */
-_$geojson_utils_162.calcTraceToLineCoords = function(calcTrace) {
+_$geojson_utils_163.calcTraceToLineCoords = function(calcTrace) {
     var trace = calcTrace[0].trace;
     var connectgaps = trace.connectgaps;
 
@@ -65825,7 +66498,7 @@ _$geojson_utils_162.calcTraceToLineCoords = function(calcTrace) {
         var calcPt = calcTrace[i];
         var lonlat = calcPt.lonlat;
 
-        if(lonlat[0] !== __BADNUM_162) {
+        if(lonlat[0] !== __BADNUM_163) {
             lineString.push(lonlat);
         } else if(!connectgaps && lineString.length > 0) {
             coords.push(lineString);
@@ -65850,7 +66523,7 @@ _$geojson_utils_162.calcTraceToLineCoords = function(calcTrace) {
  *  GeoJSON object
  *
  */
-_$geojson_utils_162.makeLine = function(coords) {
+_$geojson_utils_163.makeLine = function(coords) {
     if(coords.length === 1) {
         return {
             type: 'LineString',
@@ -65872,7 +66545,7 @@ _$geojson_utils_162.makeLine = function(coords) {
  * @return {object} out
  *  GeoJSON object
  */
-_$geojson_utils_162.makePolygon = function(coords) {
+_$geojson_utils_163.makePolygon = function(coords) {
     if(coords.length === 1) {
         return {
             type: 'Polygon',
@@ -65899,7 +66572,7 @@ _$geojson_utils_162.makePolygon = function(coords) {
  *  Blank GeoJSON object
  *
  */
-_$geojson_utils_162.makeBlank = function() {
+_$geojson_utils_163.makeBlank = function() {
     return {
         type: 'Point',
         coordinates: []
@@ -65920,19 +66593,19 @@ _$geojson_utils_162.makeBlank = function() {
 /* removed: var _$drawing_70 = require('../../components/drawing'); */;
 /* removed: var _$color_45 = require('../../components/color'); */;
 
-var __stylePoints_313 = _$style_301.stylePoints;
+var __stylePoints_314 = _$style_302.stylePoints;
 
-var _$style_313 = function style(gd, calcTrace) {
-    if(calcTrace) __styleTrace_313(gd, calcTrace);
+var _$style_314 = function style(gd, calcTrace) {
+    if(calcTrace) __styleTrace_314(gd, calcTrace);
 };
 
-function __styleTrace_313(gd, calcTrace) {
+function __styleTrace_314(gd, calcTrace) {
     var trace = calcTrace[0].trace;
     var s = calcTrace[0].node3;
 
     s.style('opacity', calcTrace[0].trace.opacity);
 
-    __stylePoints_313(s, trace, gd);
+    __stylePoints_314(s, trace, gd);
 
     // this part is incompatible with Drawing.lineGroupStyle
     s.selectAll('path.js-line')
@@ -65964,23 +66637,23 @@ function __styleTrace_313(gd, calcTrace) {
 
 /* removed: var _$d3_8 = require('d3'); */;
 
-/* removed: var _$lib_166 = require('../../lib'); */;
-var __BADNUM_311 = _$numerical_147.BADNUM;
-var __getTopojsonFeatures_311 = _$topojson_utils_190.getTopojsonFeatures;
-var __locationToFeature_311 = _$geo_location_utils_161.locationToFeature;
-/* removed: var _$geojson_utils_162 = require('../../lib/geojson_utils'); */;
-/* removed: var _$subtypes_302 = require('../scatter/subtypes'); */;
-/* removed: var _$style_313 = require('./style'); */;
+/* removed: var _$lib_167 = require('../../lib'); */;
+var __BADNUM_312 = _$numerical_147.BADNUM;
+var __getTopojsonFeatures_312 = _$topojson_utils_191.getTopojsonFeatures;
+var __locationToFeature_312 = _$geo_location_utils_162.locationToFeature;
+/* removed: var _$geojson_utils_163 = require('../../lib/geojson_utils'); */;
+/* removed: var _$subtypes_303 = require('../scatter/subtypes'); */;
+/* removed: var _$style_314 = require('./style'); */;
 
-var _$plot_311 = function plot(gd, geo, calcData) {
+var _$plot_312 = function plot(gd, geo, calcData) {
     for(var i = 0; i < calcData.length; i++) {
-        __calcGeoJSON_311(calcData[i], geo.topojson);
+        __calcGeoJSON_312(calcData[i], geo.topojson);
     }
 
     function keyFunc(d) { return d[0].trace.uid; }
 
     function removeBADNUM(d, node) {
-        if(d.lonlat[0] === __BADNUM_311) {
+        if(d.lonlat[0] === __BADNUM_312) {
             _$d3_8.select(node).remove();
         }
     }
@@ -66001,12 +66674,12 @@ var _$plot_311 = function plot(gd, geo, calcData) {
         var s = calcTrace[0].node3 = _$d3_8.select(this);
         var trace = calcTrace[0].trace;
 
-        if(_$subtypes_302.hasLines(trace) || trace.fill !== 'none') {
-            var lineCoords = _$geojson_utils_162.calcTraceToLineCoords(calcTrace);
+        if(_$subtypes_303.hasLines(trace) || trace.fill !== 'none') {
+            var lineCoords = _$geojson_utils_163.calcTraceToLineCoords(calcTrace);
 
             var lineData = (trace.fill !== 'none') ?
-                _$geojson_utils_162.makePolygon(lineCoords) :
-                _$geojson_utils_162.makeLine(lineCoords);
+                _$geojson_utils_163.makePolygon(lineCoords) :
+                _$geojson_utils_163.makeLine(lineCoords);
 
             s.selectAll('path.js-line')
                 .data([{geojson: lineData, trace: trace}])
@@ -66015,40 +66688,40 @@ var _$plot_311 = function plot(gd, geo, calcData) {
                 .style('stroke-miterlimit', 2);
         }
 
-        if(_$subtypes_302.hasMarkers(trace)) {
+        if(_$subtypes_303.hasMarkers(trace)) {
             s.selectAll('path.point')
-                .data(_$lib_166.identity)
+                .data(_$lib_167.identity)
              .enter().append('path')
                 .classed('point', true)
                 .each(function(calcPt) { removeBADNUM(calcPt, this); });
         }
 
-        if(_$subtypes_302.hasText(trace)) {
+        if(_$subtypes_303.hasText(trace)) {
             s.selectAll('g')
-                .data(_$lib_166.identity)
+                .data(_$lib_167.identity)
               .enter().append('g')
                 .append('text')
                 .each(function(calcPt) { removeBADNUM(calcPt, this); });
         }
 
         // call style here within topojson request callback
-        _$style_313(gd, calcTrace);
+        _$style_314(gd, calcTrace);
     });
 };
 
-function __calcGeoJSON_311(calcTrace, topojson) {
+function __calcGeoJSON_312(calcTrace, topojson) {
     var trace = calcTrace[0].trace;
 
     if(!Array.isArray(trace.locations)) return;
 
-    var features = __getTopojsonFeatures_311(trace, topojson);
+    var features = __getTopojsonFeatures_312(trace, topojson);
     var locationmode = trace.locationmode;
 
     for(var i = 0; i < calcTrace.length; i++) {
         var calcPt = calcTrace[i];
-        var feature = __locationToFeature_311(locationmode, calcPt.loc, features);
+        var feature = __locationToFeature_312(locationmode, calcPt.loc, features);
 
-        calcPt.lonlat = feature ? feature.properties.ct : [__BADNUM_311, __BADNUM_311];
+        calcPt.lonlat = feature ? feature.properties.ct : [__BADNUM_312, __BADNUM_312];
     }
 }
 
@@ -66062,9 +66735,9 @@ function __calcGeoJSON_311(calcTrace, topojson) {
 
 'use strict';
 
-/* removed: var _$subtypes_302 = require('../scatter/subtypes'); */;
+/* removed: var _$subtypes_303 = require('../scatter/subtypes'); */;
 
-var _$selectPoints_312 = function selectPoints(searchInfo, polygon) {
+var _$selectPoints_313 = function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
@@ -66073,7 +66746,7 @@ var _$selectPoints_312 = function selectPoints(searchInfo, polygon) {
 
     var di, lonlat, x, y, i;
 
-    var hasOnlyLines = (!_$subtypes_302.hasMarkers(trace) && !_$subtypes_302.hasText(trace));
+    var hasOnlyLines = (!_$subtypes_303.hasMarkers(trace) && !_$subtypes_303.hasText(trace));
     if(hasOnlyLines) return [];
 
     if(polygon === false) {
@@ -66116,15 +66789,15 @@ var _$selectPoints_312 = function selectPoints(searchInfo, polygon) {
 
 var ScatterGeo = {};
 
-ScatterGeo.attributes = _$attributes_305;
-ScatterGeo.supplyDefaults = _$supplyDefaults_307;
-ScatterGeo.colorbar = _$colorbar_284;
-ScatterGeo.calc = _$calc_306;
-ScatterGeo.plot = _$plot_311;
-ScatterGeo.style = _$style_313;
-ScatterGeo.hoverPoints = _$hoverPoints_309;
-ScatterGeo.eventData = _$eventData_308;
-ScatterGeo.selectPoints = _$selectPoints_312;
+ScatterGeo.attributes = _$attributes_306;
+ScatterGeo.supplyDefaults = _$supplyDefaults_308;
+ScatterGeo.colorbar = _$colorbar_285;
+ScatterGeo.calc = _$calc_307;
+ScatterGeo.plot = _$plot_312;
+ScatterGeo.style = _$style_314;
+ScatterGeo.hoverPoints = _$hoverPoints_310;
+ScatterGeo.eventData = _$eventData_309;
+ScatterGeo.selectPoints = _$selectPoints_313;
 
 ScatterGeo.moduleType = 'trace';
 ScatterGeo.name = 'scattergeo';
@@ -66135,7 +66808,7 @@ ScatterGeo.meta = {
     
 };
 
-var _$ScatterGeo_310 = ScatterGeo;
+var _$ScatterGeo_311 = ScatterGeo;
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
@@ -66147,7 +66820,7 @@ var _$ScatterGeo_310 = ScatterGeo;
 
 'use strict';
 
-var _$scattergeo_6 = _$ScatterGeo_310;
+var _$scattergeo_6 = _$ScatterGeo_311;
 
 /**
 * Copyright 2012-2018, Plotly, Inc.
