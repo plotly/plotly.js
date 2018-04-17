@@ -192,8 +192,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         }
     }
 
-    var direction = fullLayout.selectdirection;
-
     dragOptions.moveFn = function(dx0, dy0) {
         x1 = Math.max(0, Math.min(pw, dx0 + x0));
         y1 = Math.max(0, Math.min(ph, dy0 + y0));
@@ -202,6 +200,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             dy = Math.abs(y1 - y0);
 
         if(mode === 'select') {
+            var direction = fullLayout.selectdirection;
 
             if(fullLayout.selectdirection === 'any') {
                 if(dy < Math.min(dx * 0.6, MINSELECT)) direction = 'h';
