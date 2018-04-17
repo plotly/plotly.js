@@ -557,69 +557,61 @@ describe('@flaky Test select box and lasso in general:', function() {
 
         var gd = createGraphDiv();
 
-        var selectPath = [[170 - 68, 100 - 96], [255 - 68, 160 - 96]];
+        // drag around just the center point, but if we have a selectdirection we may
+        // get either the ones to the left and right or above and below
+        var selectPath = [[175, 175], [225, 225]];
 
-        Plotly.newPlot(gd, [
-            {x: [1, 1, 1, 1, 1, 2, 2, 2, 3, 3], type: 'histogram'},
-            {x: [1, 2, 3], y: [-1, -2, -3], type: 'bar'}
-        ], {
+        function selectDrag() {
+            resetEvents(gd);
+            drag(selectPath);
+            return selectedPromise;
+        }
+
+        function assertSelectedPointNumbers(pointNumbers) {
+            var pts = selectedData.points;
+            expect(pts.length).toBe(pointNumbers.length);
+            pointNumbers.forEach(function(pointNumber, i) {
+                expect(pts[i].pointNumber).toBe(pointNumber);
+            });
+        }
+
+        Plotly.newPlot(gd, [{
+            x: [1, 1, 1, 2, 2, 2, 3, 3, 3],
+            y: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+            mode: 'markers'
+        }], {
             width: 400,
-            height: 300,
-            showlegend: false,
-            dragmode: 'select'
+            height: 400,
+            dragmode: 'select',
+            margin: {l: 100, r: 100, t: 100, b: 100},
+            xaxis: {range: [0, 4]},
+            yaxis: {range: [0, 4]}
         })
-            .then(function() {
-                // expect(gd.fullLayout.selectdirection).toBe('any');
-                resetEvents(gd);
-                drag(selectPath);
+        .then(selectDrag)
+        .then(function() {
+            expect(gd._fullLayout.selectdirection).toBe('any');
+            assertSelectedPointNumbers([4]);
 
-                selectedPromise.then(function() {
-                    expect(selectedData.points.length).toBe(1);
-                    expect(selectedData.points[0].x).toBe(1.8);
-                    expect(selectedData.points[0].y).toBe(3);
-                });
+            return Plotly.relayout(gd, {selectdirection: 'h'});
+        })
+        .then(selectDrag)
+        .then(function() {
+            assertSelectedPointNumbers([3, 4, 5]);
 
-                return Plotly.relayout(gd, {selectdirection: 'h'});
-            })
-            .then(function() {
-                resetEvents(gd);
-                drag(selectPath);
+            return Plotly.relayout(gd, {selectdirection: 'v'});
+        })
+        .then(selectDrag)
+        .then(function() {
+            assertSelectedPointNumbers([1, 4, 7]);
 
-                selectedPromise.then(function()
-                {
-                    expect(selectedData.points.length).toBe(2);
-                    expect(selectedData.points[0].x).toBe(1.8);
-                    expect(selectedData.points[1].x).toBe(2.2);
-                });
-
-                return Plotly.relayout(gd, {selectdirection: 'v'});
-            })
-            .then(function() {
-                resetEvents(gd);
-                drag(selectPath);
-
-                selectedPromise.then(function()
-                {
-                    expect(selectedData.points.length).toBe(2);
-                    expect(selectedData.points[0].x).toBe(1.8);
-                    expect(selectedData.points[1].x).toBe(2.8000000000000003);
-                });
-
-                return Plotly.relayout(gd, {selectdirection: 'd'});
-            })
-            .then(function() {
-                resetEvents(gd);
-                drag(selectPath);
-
-                selectedPromise.then(function()
-                {
-                    expect(selectedData.points.length).toBe(2);
-                    expect(selectedData.points[0].x).toBe(1.8);
-                    expect(selectedData.points[1].x).toBe(2.2);
-                });
-            })
-            .catch(fail) // hmm, we should change the name of this import to failTest, since fail is already a jasmine global, for sync failure, we're overriding it here with our async version (we've already done this in other places)
-            .then(done);
+            return Plotly.relayout(gd, {selectdirection: 'd'});
+        })
+        .then(selectDrag)
+        .then(function() {
+            assertSelectedPointNumbers([4]);
+        })
+        .catch(failTest)
+        .then(done);
 
     });
 
