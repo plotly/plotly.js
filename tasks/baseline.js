@@ -14,4 +14,6 @@ var cmd = containerCommands.getRunCmd(
 );
 
 console.log(msg);
-common.execCmd(cmd);
+common.execCmd(containerCommands.ping, function() {
+    common.execCmd(cmd);
+});

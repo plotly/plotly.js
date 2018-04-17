@@ -36,32 +36,37 @@ module.exports = function handleShapeDefaults(shapeIn, shapeOut, fullLayout, opt
     coerce('line.dash');
 
     var dfltType = shapeIn.path ? 'path' : 'rect',
-        shapeType = coerce('type', dfltType);
+        shapeType = coerce('type', dfltType),
+        xSizeMode = coerce('xsizemode'),
+        ySizeMode = coerce('ysizemode');
 
     // positioning
     var axLetters = ['x', 'y'];
     for(var i = 0; i < 2; i++) {
         var axLetter = axLetters[i],
-            gdMock = {_fullLayout: fullLayout};
+            attrAnchor = axLetter + 'anchor',
+            sizeMode = axLetter === 'x' ? xSizeMode : ySizeMode,
+            gdMock = {_fullLayout: fullLayout},
+            ax,
+            pos2r,
+            r2pos;
 
         // xref, yref
         var axRef = Axes.coerceRef(shapeIn, shapeOut, gdMock, axLetter, '', 'paper');
 
+        if(axRef !== 'paper') {
+            ax = Axes.getFromId(gdMock, axRef);
+            r2pos = helpers.rangeToShapePosition(ax);
+            pos2r = helpers.shapePositionToRange(ax);
+        }
+        else {
+            pos2r = r2pos = Lib.identity;
+        }
+
+        // Coerce x0, x1, y0, y1
         if(shapeType !== 'path') {
             var dflt0 = 0.25,
-                dflt1 = 0.75,
-                ax,
-                pos2r,
-                r2pos;
-
-            if(axRef !== 'paper') {
-                ax = Axes.getFromId(gdMock, axRef);
-                r2pos = helpers.rangeToShapePosition(ax);
-                pos2r = helpers.shapePositionToRange(ax);
-            }
-            else {
-                pos2r = r2pos = Lib.identity;
-            }
+                dflt1 = 0.75;
 
             // hack until V2.0 when log has regular range behavior - make it look like other
             // ranges to send to coerce, then put it back after
@@ -74,15 +79,32 @@ module.exports = function handleShapeDefaults(shapeIn, shapeOut, fullLayout, opt
             shapeIn[attr0] = pos2r(shapeIn[attr0], true);
             shapeIn[attr1] = pos2r(shapeIn[attr1], true);
 
-            // x0, x1 (and y0, y1)
-            Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflt0);
-            Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflt1);
+            if(sizeMode === 'pixel') {
+                coerce(attr0, 0);
+                coerce(attr1, 10);
+            } else {
+                Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr0, dflt0);
+                Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attr1, dflt1);
+            }
 
             // hack part 2
             shapeOut[attr0] = r2pos(shapeOut[attr0]);
             shapeOut[attr1] = r2pos(shapeOut[attr1]);
             shapeIn[attr0] = in0;
             shapeIn[attr1] = in1;
+        }
+
+        // Coerce xanchor and yanchor
+        if(sizeMode === 'pixel') {
+            // Hack for log axis described above
+            var inAnchor = shapeIn[attrAnchor];
+            shapeIn[attrAnchor] = pos2r(shapeIn[attrAnchor], true);
+
+            Axes.coercePosition(shapeOut, gdMock, coerce, axRef, attrAnchor, 0.25);
+
+            // Hack part 2
+            shapeOut[attrAnchor] = r2pos(shapeOut[attrAnchor]);
+            shapeIn[attrAnchor] = inAnchor;
         }
     }
 

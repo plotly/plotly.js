@@ -1,0 +1,259 @@
+{
+  "data": [
+    {
+      "x": [1,4],
+      "y": [1,4]
+    }, {
+      "x": [1,3,4],
+      "y": ["Giraffes","Apes","Zebras"],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }, {
+      "x": [
+        "2018-01-01 00:00:00",
+        "2018-02-01 00:00:00",
+        "2018-03-01 00:00:00"
+      ],
+      "y": [1,5,7],
+      "xaxis": "x3",
+      "yaxis": "y3"
+    }, {
+      "x": [1,4],
+      "y": [1,5],
+      "xaxis": "x4",
+      "yaxis": "y4"
+    }
+  ],
+  "layout": {
+    "title": "Fixed size shapes",
+    "autosize": false,
+    "width": 1000,
+    "height": 800,
+    "xaxis": {
+      "domain": [0,0.30],
+      "anchor": "y",
+      "title": "rect, circle, line"
+    },
+    "yaxis": {
+      "domain": [0.55,1],
+      "type": "log",
+      "anchor": "x"
+    },
+    "xaxis2": {
+      "domain":[0.33,0.66],
+      "anchor": "y2",
+      "title": "triangle as path"
+    },
+    "yaxis2": {
+      "domain": [0.55,1],
+      "type": "categorical",
+      "anchor": "x2"
+    },
+    "xaxis3": {
+      "domain":[0.70,1],
+      "anchor": "y3",
+      "title": "drag / resize for auto-range"
+    },
+    "yaxis3": {
+      "domain": [0.55,1],
+      "type": "linear",
+      "anchor": "x3"
+    },
+    "xaxis4": {
+      "domain": [0,0.30],
+      "anchor": "y4",
+      "title": "xy pos & x size paper, y size pixel"
+    },
+    "yaxis4": {
+      "domain": [0,0.45],
+      "type": "linear",
+      "anchor": "x4"
+    },
+    "xaxis5": {
+      "domain":[0.33,0.66],
+      "anchor": "y5",
+      "title": "rects w/ mixed size modes"
+    },
+    "yaxis5": {
+      "domain": [0,0.45],
+      "type": "linear",
+      "anchor": "x5"
+    },
+    "xaxis6": {
+      "domain":[0.70,1],
+      "anchor": "y6",
+      "title": "paths w/ mixed size modes"
+    },
+    "yaxis6": {
+      "domain": [0,0.45],
+      "type": "linear",
+      "anchor": "x6"
+    },
+    "shapes": [
+      {
+        "type": "circle",
+        "xref": "x",
+        "xsizemode": "pixel",
+        "yref": "y",
+        "ysizemode": "pixel",
+        "fillcolor": "rgba(96, 171, 50,0.7)",
+        "xanchor": 8,
+        "yanchor": 8,
+        "x0": -20,
+        "x1": 20,
+        "y0": 20,
+        "y1": -20,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "rect",
+        "xref": "x",
+        "xsizemode": "pixel",
+        "yref": "y",
+        "ysizemode": "pixel",
+        "fillcolor": "rgba(96, 171, 50,0.7)",
+        "xanchor": 7,
+        "yanchor": 8,
+        "x0": -20,
+        "x1": 20,
+        "y0": 20,
+        "y1": -20,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "line",
+        "xref": "x",
+        "xsizemode": "pixel",
+        "yref": "y",
+        "ysizemode": "pixel",
+        "fillcolor": "rgba(96, 171, 50,0.7)",
+        "xanchor": 6,
+        "yanchor": 2,
+        "x0": -20,
+        "x1": 60,
+        "y0": 0,
+        "y1": 40,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "path",
+        "xref": "x2",
+        "xsizemode": "pixel",
+        "yref": "y2",
+        "ysizemode": "pixel",
+        "fillcolor": "rgba(96, 171, 50,0.7)",
+        "xanchor": -1,
+        "yanchor": 1,
+        "path": "M0,0 L30,0 L15,15 Z",
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "rect",
+        "xref": "x3",
+        "xsizemode": "pixel",
+        "yref": "y3",
+        "ysizemode": "pixel",
+        "fillcolor": "rgba(96, 171, 50,0.7)",
+        "xanchor": "2018-02-15 00:00:00",
+        "yanchor": 2,
+        "x0": 3,
+        "x1": 53,
+        "y0": 20,
+        "y1": -20,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "rect",
+        "xref": "paper",
+        "xsizemode": "scaled",
+        "yref": "paper",
+        "ysizemode": "pixel",
+        "fillcolor": "rgba(96, 171, 50,0.7)",
+        "xanchor": 0,
+        "yanchor": 0,
+        "x0": 0,
+        "x1": 0.3,
+        "y0": 10,
+        "y1": -10,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "rect",
+        "xref": "x5",
+        "xsizemode": "scaled",
+        "yref": "y5",
+        "ysizemode": "pixel",
+        "fillcolor": "rgba(96, 171, 50,0.7)",
+        "xanchor": 0,
+        "yanchor": 10,
+        "x0": 0,
+        "x1": 10,
+        "y0": 0,
+        "y1": -30,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "rect",
+        "xref": "x5",
+        "xsizemode": "pixel",
+        "yref": "y5",
+        "ysizemode": "scaled",
+        "fillcolor": "rgba(96, 171, 50,0.7)",
+        "xanchor": 3,
+        "yanchor": 3,
+        "x0": 0,
+        "x1": 30,
+        "y0": 0,
+        "y1": 10,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "path",
+        "xref": "x6",
+        "xsizemode": "pixel",
+        "yref": "y6",
+        "ysizemode": "scaled",
+        "fillcolor": "rgba(96, 171, 50,0.7)",
+        "xanchor": 10,
+        "yanchor": 10,
+        "path": "M0,0 L30,0 L15,4 Z",
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "path",
+        "xref": "x6",
+        "xsizemode": "scaled",
+        "yref": "y6",
+        "ysizemode": "pixel",
+        "fillcolor": "rgba(96, 171, 50,0.7)",
+        "xanchor": 10,
+        "yanchor": 10,
+        "path": "M0,0 L10,0 L5,25 Z",
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      }
+    ]
+  },
+  "config": {
+    "editable": "true"
+  }
+}

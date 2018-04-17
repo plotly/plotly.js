@@ -12,11 +12,14 @@ var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var delay = require('../assets/delay');
 var doubleClick = require('../assets/double_click');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var assertElemRightTo = customAssertions.assertElemRightTo;
+var assertElemTopsAligned = customAssertions.assertElemTopsAligned;
+var assertElemInside = customAssertions.assertElemInside;
 
 describe('hover info', function() {
     'use strict';
@@ -509,7 +512,7 @@ describe('hover info', function() {
                     name: 'one'
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -545,7 +548,7 @@ describe('hover info', function() {
                     name: 'one'
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -584,7 +587,7 @@ describe('hover info', function() {
                     });
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -620,7 +623,7 @@ describe('hover info', function() {
                     name: 'one'
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -690,7 +693,7 @@ describe('hover info', function() {
                     assertHoverLabelStyle(d3.select(this), styles[i]);
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -728,7 +731,7 @@ describe('hover info', function() {
                     name: 'one'
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -766,7 +769,7 @@ describe('hover info', function() {
                     name: 'one'
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -788,7 +791,7 @@ describe('hover info', function() {
                     axis: '2'
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -830,7 +833,7 @@ describe('hover info', function() {
                 expect(pt.xaxis).toBe(gd._fullLayout.xaxis);
                 expect(pt.yaxis).toBe(gd._fullLayout.yaxis);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -855,7 +858,7 @@ describe('hover info', function() {
                     axis: '3.3'
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -883,7 +886,7 @@ describe('hover info', function() {
                     axis: 'soup - nuts'
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -909,7 +912,7 @@ describe('hover info', function() {
                     nums: 'x: 3 - 5\ny: 4 - 6\nz: 3'
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -933,8 +936,111 @@ describe('hover info', function() {
                     nums: 'x: 3.3\ny: 4.2\nz: 3'
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
+        });
+    });
+
+    ['candlestick', 'ohlc'].forEach(function(type) {
+        describe(type + ' hoverinfo', function() {
+            var gd;
+
+            function financeMock(traceUpdates, layoutUpdates) {
+                return {
+                    data: [Lib.extendFlat({}, {
+                        type: type,
+                        x: ['2011-01-01', '2011-01-02', '2011-01-03'],
+                        open: [1, 2, 3],
+                        high: [3, 4, 5],
+                        low: [0, 1, 2],
+                        close: [0, 3, 2]
+                    }, traceUpdates || {})],
+                    layout: Lib.extendDeep({}, {
+                        width: 400,
+                        height: 400,
+                        margin: {l: 50, r: 50, t: 50, b: 50}
+                    }, layoutUpdates || {})
+                };
+            }
+
+            beforeEach(function() {
+                gd = createGraphDiv();
+            });
+
+            it('has the right basic and event behavior', function(done) {
+                var pts;
+                Plotly.plot(gd, financeMock({
+                    customdata: [11, 22, 33]
+                }))
+                .then(function() {
+                    gd.on('plotly_hover', function(e) { pts = e.points; });
+
+                    _hoverNatural(gd, 150, 150);
+                    assertHoverLabelContent({
+                        nums: 'open: 2\nhigh: 4\nlow: 1\nclose: 3  ▲',
+                        axis: 'Jan 2, 2011'
+                    });
+                })
+                .then(function() {
+                    expect(pts).toBeDefined();
+                    expect(pts.length).toBe(1);
+                    expect(pts[0]).toEqual(jasmine.objectContaining({
+                        x: '2011-01-02',
+                        open: 2,
+                        high: 4,
+                        low: 1,
+                        close: 3,
+                        customdata: 22,
+                        curveNumber: 0,
+                        pointNumber: 1,
+                        data: gd.data[0],
+                        fullData: gd._fullData[0],
+                        xaxis: gd._fullLayout.xaxis,
+                        yaxis: gd._fullLayout.yaxis
+                    }));
+
+                    return Plotly.relayout(gd, {hovermode: 'closest'});
+                })
+                .then(function() {
+                    _hoverNatural(gd, 150, 150);
+                    assertHoverLabelContent({
+                        nums: 'Jan 2, 2011\nopen: 2\nhigh: 4\nlow: 1\nclose: 3  ▲'
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
+            it('shows text iff text is in hoverinfo', function(done) {
+                Plotly.plot(gd, financeMock({text: ['A', 'B', 'C']}))
+                .then(function() {
+                    _hover(gd, 150, 150);
+                    assertHoverLabelContent({
+                        nums: 'open: 2\nhigh: 4\nlow: 1\nclose: 3  ▲\nB',
+                        axis: 'Jan 2, 2011'
+                    });
+
+                    return Plotly.restyle(gd, {hoverinfo: 'x+text'});
+                })
+                .then(function() {
+                    _hover(gd, 150, 150);
+                    assertHoverLabelContent({
+                        nums: 'B',
+                        axis: 'Jan 2, 2011'
+                    });
+
+                    return Plotly.restyle(gd, {hoverinfo: 'x+y'});
+                })
+                .then(function() {
+                    _hover(gd, 150, 150);
+                    assertHoverLabelContent({
+                        nums: 'open: 2\nhigh: 4\nlow: 1\nclose: 3  ▲',
+                        axis: 'Jan 2, 2011'
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
         });
     });
 
@@ -1040,7 +1146,7 @@ describe('hover info', function() {
             .then(function() {
                 expect(hoverHandler).not.toHaveBeenCalled();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1067,7 +1173,7 @@ describe('hover info', function() {
             .then(function() {
                 expect(hoverHandler).toHaveBeenCalledTimes(1);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -1104,7 +1210,7 @@ describe('hover info', function() {
 
                 expect(labelCount()).toBe(7);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1136,15 +1242,6 @@ describe('hover info', function() {
           msgPrefixFmt + 'Primary text inside box');
         assertElemInside(nodes.secondaryText, nodes.secondaryBox,
           msgPrefixFmt + 'Secondary text inside box');
-
-        function assertElemInside(elem, container, msg) {
-            var elemBB = elem.getBoundingClientRect();
-            var contBB = container.getBoundingClientRect();
-            expect(contBB.left < elemBB.left &&
-              contBB.right > elemBB.right &&
-              contBB.top < elemBB.top &&
-              contBB.bottom > elemBB.bottom).toBe(true, msg);
-        }
     }
 
     function assertSecondaryRightToPrimaryBox(nodes, msgPrefix) {
@@ -1154,22 +1251,6 @@ describe('hover info', function() {
           msgPrefixFmt + 'Secondary box right to primary box');
         assertElemTopsAligned(nodes.secondaryBox, nodes.primaryBox,
           msgPrefixFmt + 'Top edges of primary and secondary boxes aligned');
-
-        function assertElemRightTo(elem, refElem, msg) {
-            var elemBB = elem.getBoundingClientRect();
-            var refElemBB = refElem.getBoundingClientRect();
-            expect(elemBB.left >= refElemBB.right).toBe(true, msg);
-        }
-
-        function assertElemTopsAligned(elem1, elem2, msg) {
-            var elem1BB = elem1.getBoundingClientRect();
-            var elem2BB = elem2.getBoundingClientRect();
-
-            // Hint: toBeWithin tolerance is exclusive, hence a
-            // diff of exactly 1 would fail the test
-            var tolerance = 1.1;
-            expect(elem1BB.top - elem2BB.top).toBeWithin(0, tolerance, msg);
-        }
     }
 
     describe('centered', function() {
@@ -1432,7 +1513,7 @@ describe('hover on many lines+bars', function() {
             expect(d3.select(gd).selectAll('g.hovertext').size()).toBe(2);
             expect(d3.select(gd).selectAll('g.axistext').size()).toBe(1);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1581,7 +1662,7 @@ describe('hover on fill', function() {
             // gives same results w/o closing point
             assertLabelsCorrect([200, 200], [73.75, 250], 'trace 0');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1618,7 +1699,7 @@ describe('hover on fill', function() {
             // then make sure we can still select a *different* item afterward
             assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1644,7 +1725,7 @@ describe('hover on fill', function() {
             // hover on the cartesian trace in the corner
             assertLabelsCorrect([363, 122], [363, 122], 'trace 38');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1718,7 +1799,9 @@ describe('hover updates', function() {
         }).then(function() {
             // Assert label restored:
             assertLabelsCorrect(null, [103, 100], 'trace 10.5', 'animation/update 3');
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should not trigger infinite loop of plotly_unhover events', function(done) {
@@ -1973,7 +2056,7 @@ describe('Test hover label custom styling:', function() {
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -2029,33 +2112,8 @@ describe('Test hover label custom styling:', function() {
                 text: [11, 'Gravitas', 'rgb(255, 0, 0)']
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
-    });
-});
-
-describe('ohlc hover interactions', function() {
-    var data = [{
-        type: 'candlestick',
-        x: ['2011-01-01', '2012-01-01'],
-        open: [2, 2],
-        high: [3, 3],
-        low: [0, 0],
-        close: [3, 3],
-    }];
-
-    beforeEach(function() {
-        this.gd = createGraphDiv();
-    });
-
-    afterEach(destroyGraphDiv);
-
-    // See: https://github.com/plotly/plotly.js/issues/1807
-    it('should not fail in appendArrayPointValue', function() {
-        Plotly.plot(this.gd, data);
-        mouseEvent('mousemove', 203, 213);
-
-        expect(d3.select('.hovertext').size()).toBe(1);
     });
 });
 

@@ -384,20 +384,10 @@ function drawTexts(g, gd) {
 
                 if(!this.text()) text = ' \u0020\u0020 ';
 
-                var transforms, direction;
                 var fullInput = legendItem.trace._fullInput || {};
                 var update = {};
 
-                // N.B. this block isn't super clean,
-                // is unfortunately untested at the moment,
-                // and only works for for 'ohlc' and 'candlestick',
-                // but should be generalized for other one-to-many transforms
-                if(['ohlc', 'candlestick'].indexOf(fullInput.type) !== -1) {
-                    transforms = legendItem.trace.transforms;
-                    direction = transforms[transforms.length - 1].direction;
-
-                    update[direction + '.name'] = text;
-                } else if(Registry.hasTransform(fullInput, 'groupby')) {
+                if(Registry.hasTransform(fullInput, 'groupby')) {
                     var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
                     var index = groupbyIndices[groupbyIndices.length - 1];
 

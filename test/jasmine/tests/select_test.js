@@ -6,7 +6,7 @@ var doubleClick = require('../assets/double_click');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var touchEvent = require('../assets/touch_event');
 
@@ -190,7 +190,7 @@ describe('@flaky Test select box and lasso in general:', function() {
             .then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -282,7 +282,7 @@ describe('@flaky Test select box and lasso in general:', function() {
             .then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -336,7 +336,7 @@ describe('@flaky Test select box and lasso in general:', function() {
             .then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -355,7 +355,7 @@ describe('@flaky Test select box and lasso in general:', function() {
             .then(function() {
                 expect(gd.data[0].selectedpoints).toBeUndefined();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -374,7 +374,7 @@ describe('@flaky Test select box and lasso in general:', function() {
             .then(function() {
                 expect(gd._fullData[0].selectedpoints).toBeUndefined();
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -408,7 +408,7 @@ describe('@flaky Test select box and lasso in general:', function() {
             .then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -488,7 +488,7 @@ describe('@flaky Test select box and lasso in general:', function() {
         .then(function() {
             checkPointCount(0, '(multiple invisible traces lasso)');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -527,7 +527,7 @@ describe('@flaky Test select box and lasso in general:', function() {
             expect(selectedData.points[0].x).toBe(0);
             expect(selectedData.points[0].y).toBe(0);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -549,7 +549,7 @@ describe('@flaky Test select box and lasso in general:', function() {
         .then(function() {
             assertSelectionNodes(0, 0);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -801,7 +801,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 LASSOEVENTS, 'scatterternary lasso after relayout'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -837,7 +837,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 null, LASSOEVENTS, 'scattercarpet lasso'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -848,6 +848,10 @@ describe('@flaky Test select box and lasso per trace:', function() {
         var assertSelectedPoints = makeAssertSelectedPoints();
 
         var fig = Lib.extendDeep({}, require('@mocks/mapbox_bubbles-text'));
+
+        fig.data[0].lon.push(null);
+        fig.data[0].lat.push(null);
+
         fig.layout.dragmode = 'select';
         fig.config = {
             mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
@@ -890,7 +894,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattermapbox pan'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
@@ -956,7 +960,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 [[370, 120], [500, 200]], null, null, NOEVENTS, 'scattergeo pan'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
@@ -994,7 +998,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 LASSOEVENTS, 'scatterpolar lasso'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1057,7 +1061,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 [[370, 120], [500, 200]], null, [280, 190], NOEVENTS, 'choropleth pan'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
@@ -1130,7 +1134,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 null, BOXEVENTS, 'bar select'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1190,7 +1194,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 null, BOXEVENTS, 'date/category select'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1239,7 +1243,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 null, BOXEVENTS, 'histogram select'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1303,7 +1307,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 null, BOXEVENTS, 'box select'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1366,8 +1370,85 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 null, BOXEVENTS, 'violin select'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
+    });
+
+    ['ohlc', 'candlestick'].forEach(function(type) {
+        it('should work for ' + type + ' traces', function(done) {
+            var assertPoints = makeAssertPoints(['curveNumber', 'x', 'open', 'high', 'low', 'close']);
+            var assertSelectedPoints = makeAssertSelectedPoints();
+            var assertRanges = makeAssertRanges();
+            var assertLassoPoints = makeAssertLassoPoints();
+            var l0 = 275;
+            var lv0 = '2011-01-03 18:00';
+            var r0 = 325;
+            var rv0 = '2011-01-04 06:00';
+            var l1 = 75;
+            var lv1 = '2011-01-01 18:00';
+            var r1 = 125;
+            var rv1 = '2011-01-02 06:00';
+            var t = 75;
+            var tv = 7.565;
+            var b = 225;
+            var bv = -1.048;
+
+            function countUnSelectedPaths(selector) {
+                var unselected = 0;
+                d3.select(gd).selectAll(selector).each(function() {
+                    var opacity = this.style.opacity;
+                    if(opacity < 1) unselected++;
+                });
+                return unselected;
+            }
+
+            Plotly.newPlot(gd, [{
+                type: type,
+                x: ['2011-01-02', '2011-01-03', '2011-01-04'],
+                open: [1, 2, 3],
+                high: [3, 4, 5],
+                low: [0, 1, 2],
+                close: [0, 3, 2]
+            }], {
+                width: 400,
+                height: 400,
+                margin: {l: 50, r: 50, t: 50, b: 50},
+                yaxis: {range: [-3, 9]},
+                dragmode: 'lasso'
+            })
+            .then(function() {
+                return _run(
+                    [[l0, t], [l0, b], [r0, b], [r0, t], [l0, t]],
+                    function() {
+                        assertPoints([[0, '2011-01-04', 3, 5, 2, 2]]);
+                        assertSelectedPoints([[2]]);
+                        assertLassoPoints([
+                            [lv0, lv0, rv0, rv0, lv0],
+                            [tv, bv, bv, tv, tv]
+                        ]);
+                        expect(countUnSelectedPaths('.cartesianlayer .trace path')).toBe(2);
+                        expect(countUnSelectedPaths('.rangeslider-rangeplot .trace path')).toBe(0);
+                    },
+                    null, LASSOEVENTS, type + ' lasso'
+                );
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'select');
+            })
+            .then(function() {
+                return _run(
+                    [[l1, t], [r1, b]],
+                    function() {
+                        assertPoints([[0, '2011-01-02', 1, 3, 0, 0]]);
+                        assertSelectedPoints([[0]]);
+                        assertRanges([[lv1, rv1], [bv, tv]]);
+                    },
+                    null, BOXEVENTS, type + ' select'
+                );
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     it('should work on traces with enabled transforms', function(done) {
@@ -1409,7 +1490,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 BOXEVENTS, 'transformed trace select (all points selected)'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1466,7 +1547,7 @@ describe('Test that selections persist:', function() {
                 style: [0.2, 1, 0.2]
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1512,7 +1593,7 @@ describe('Test that selections persist:', function() {
                 style: [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 1, 1, 1],
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1554,7 +1635,7 @@ describe('Test that selections persist:', function() {
                 style: [0.2, 1, 0.2, 0.2, 0.2],
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

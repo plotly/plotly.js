@@ -42,13 +42,18 @@ module.exports = function plot(gd, plotinfo, cd) {
         var cd0 = d[0];
         var t = cd0.t;
         var trace = cd0.trace;
-        var sel = cd0.node3 = d3.select(this);
+        var sel = d3.select(this);
+        if(!plotinfo.isRangePlot) cd0.node3 = sel;
         var numViolins = fullLayout._numViolins;
         var group = (fullLayout.violinmode === 'group' && numViolins > 1);
+        var groupFraction = 1 - fullLayout.violingap;
         // violin max half width
-        var bdPos = t.bdPos = t.dPos * (1 - fullLayout.violingap) * (1 - fullLayout.violingroupgap) / (group ? numViolins : 1);
+        var bdPos = t.bdPos = t.dPos * groupFraction * (1 - fullLayout.violingroupgap) / (group ? numViolins : 1);
         // violin center offset
-        var bPos = t.bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numViolins) * (1 - fullLayout.violingap) : 0;
+        var bPos = t.bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numViolins) * groupFraction : 0;
+        // half-width within which to accept hover for this violin
+        // always split the distance to the closest violin
+        t.wHover = t.dPos * (group ? groupFraction / numViolins : 1);
 
         if(trace.visible !== true || t.empty) {
             d3.select(this).remove();

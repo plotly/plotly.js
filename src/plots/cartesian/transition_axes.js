@@ -233,7 +233,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         var plotDx = xa2._offset - fracDx,
             plotDy = ya2._offset - fracDy;
 
-        fullLayout._defs.select('#' + subplot.clipId + '> rect')
+        subplot.clipRect
             .call(Drawing.setTranslate, clipDx, clipDy)
             .call(Drawing.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
 

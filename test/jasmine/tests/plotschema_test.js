@@ -349,6 +349,15 @@ describe('plot schema', function() {
         expect(scatterglSchema.error_y.copy_ystyle).toBeUndefined();
         expect(scatterglSchema.error_y.copy_zstyle).toBeUndefined();
     });
+
+    it('should convert regex valObject fields to strings', function() {
+        var splomAttrs = plotSchema.traces.splom.attributes;
+
+        expect(typeof splomAttrs.xaxes.items.regex).toBe('string');
+        expect(splomAttrs.xaxes.items.regex).toBe('/^x([2-9]|[1-9][0-9]+)?$/');
+        expect(typeof splomAttrs.yaxes.items.regex).toBe('string');
+        expect(splomAttrs.yaxes.items.regex).toBe('/^y([2-9]|[1-9][0-9]+)?$/');
+    });
 });
 
 describe('getTraceValObject', function() {

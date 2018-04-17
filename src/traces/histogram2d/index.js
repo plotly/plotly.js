@@ -23,7 +23,7 @@ Histogram2D.eventData = require('../histogram/event_data');
 Histogram2D.moduleType = 'trace';
 Histogram2D.name = 'histogram2d';
 Histogram2D.basePlotModule = require('../../plots/cartesian');
-Histogram2D.categories = ['cartesian', '2dMap', 'histogram'];
+Histogram2D.categories = ['cartesian', 'svg', '2dMap', 'histogram'];
 Histogram2D.meta = {
     hrName: 'histogram_2d',
     description: [

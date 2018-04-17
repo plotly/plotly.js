@@ -8,7 +8,6 @@
 
 'use strict';
 
-var createRegl = require('regl');
 var createScatter = require('regl-scatter2d');
 var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
@@ -17,6 +16,7 @@ var arrayRange = require('array-range');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var prepareRegl = require('../../lib/prepare_regl');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 
 var subTypes = require('../scatter/subtypes');
@@ -121,7 +121,7 @@ function calc(gd, trace) {
     scene.count++;
 
     // stash scene ref
-    stash.scene = scene;
+    stash._scene = scene;
     stash.index = scene.count - 1;
     stash.x = x;
     stash.y = y;
@@ -280,16 +280,6 @@ function sceneUpdate(gd, subplot) {
             }
         };
 
-        // remove selection
-        scene.clearSelect = function clearSelect() {
-            if(!scene.selectBatch) return;
-            scene.selectBatch = null;
-            scene.unselectBatch = null;
-            scene.scatter2d.update(scene.markerOptions);
-            scene.clear();
-            scene.draw();
-        };
-
         // remove scene resources
         scene.destroy = function destroy() {
             if(scene.fill2d) scene.fill2d.destroy();
@@ -326,7 +316,7 @@ function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
     var fullLayout = gd._fullLayout;
-    var scene = cdata[0][0].t.scene;
+    var scene = cdata[0][0].t._scene;
     var dragmode = fullLayout.dragmode;
 
     // we may have more subplots than initialized data due to Axes.getSubplots method
@@ -336,20 +326,7 @@ function plot(gd, subplot, cdata) {
     var width = fullLayout.width;
     var height = fullLayout.height;
 
-    // make sure proper regl instances are created
-    fullLayout._glcanvas.each(function(d) {
-        if(d.regl || d.pick) return;
-        d.regl = createRegl({
-            canvas: this,
-            attributes: {
-                antialias: !d.pick,
-                preserveDrawingBuffer: true
-            },
-            extensions: ['ANGLE_instanced_arrays', 'OES_element_index_uint'],
-            pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio
-        });
-    });
-
+    prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
     var regl = fullLayout._glcanvas.data()[0].regl;
 
     // that is needed for fills
@@ -631,9 +608,9 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     // pick the id closest to the point
     // note that point possibly may not be found
-    var minDist = maxDistance;
     var id, ptx, pty, i, dx, dy, dist, dxy;
 
+    var minDist = maxDistance;
     if(hovermode === 'x') {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
@@ -662,8 +639,23 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     }
 
     pointData.index = id;
+    pointData.distance = minDist;
+    pointData.dxy = dxy;
 
     if(id === undefined) return [pointData];
+
+    calcHover(pointData, x, y, trace);
+
+    return [pointData];
+}
+
+
+function calcHover(pointData, x, y, trace) {
+    var xa = pointData.xa;
+    var ya = pointData.ya;
+    var minDist = pointData.distance;
+    var dxy = pointData.dxy;
+    var id = pointData.index;
 
     // the closest data point
     var di = {
@@ -750,8 +742,9 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     fillHoverText(di, trace, pointData);
     Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
-    return [pointData];
+    return pointData;
 }
+
 
 function selectPoints(searchInfo, polygon) {
     var cd = searchInfo.cd;
@@ -760,7 +753,7 @@ function selectPoints(searchInfo, polygon) {
     var stash = cd[0].t;
     var x = stash.x;
     var y = stash.y;
-    var scene = stash.scene;
+    var scene = stash._scene;
 
     if(!scene) return selection;
 
@@ -813,13 +806,19 @@ function selectPoints(searchInfo, polygon) {
     return selection;
 }
 
-function style(gd, cd) {
-    if(cd) {
-        var stash = cd[0].t;
-        var scene = stash.scene;
+function style(gd, cds) {
+    if(!cds) return;
+
+    var stash = cds[0][0].t;
+    var scene = stash._scene;
+
+    // don't clear the subplot if there are splom traces
+    // on the graph
+    if(!gd._fullLayout._has('splom')) {
         scene.clear();
-        scene.draw();
     }
+
+    scene.draw();
 }
 
 module.exports = {
@@ -840,6 +839,7 @@ module.exports = {
 
     sceneOptions: sceneOptions,
     sceneUpdate: sceneUpdate,
+    calcHover: calcHover,
 
     meta: {
         hrName: 'scatter_gl',

@@ -22,20 +22,35 @@ module.exports = function style(gd, cd) {
         var trace = d[0].trace;
         var lineWidth = trace.line.width;
 
-        el.selectAll('path.box')
-            .style('stroke-width', lineWidth + 'px')
-            .call(Color.stroke, trace.line.color)
-            .call(Color.fill, trace.fillcolor);
+        function styleBox(boxSel, lineWidth, lineColor, fillColor) {
+            boxSel.style('stroke-width', lineWidth + 'px')
+                .call(Color.stroke, lineColor)
+                .call(Color.fill, fillColor);
+        }
 
-        el.selectAll('path.mean')
-            .style({
-                'stroke-width': lineWidth,
-                'stroke-dasharray': (2 * lineWidth) + 'px,' + lineWidth + 'px'
-            })
-            .call(Color.stroke, trace.line.color);
+        var allBoxes = el.selectAll('path.box');
 
-        var pts = el.selectAll('path.point');
-        Drawing.pointStyle(pts, trace, gd);
-        Drawing.selectedPointStyle(pts, trace);
+        if(trace.type === 'candlestick') {
+            allBoxes.each(function(boxData) {
+                var thisBox = d3.select(this);
+                var container = trace[boxData.dir]; // dir = 'increasing' or 'decreasing'
+                styleBox(thisBox, container.line.width, container.line.color, container.fillcolor);
+                // TODO: custom selection style for candlesticks
+                thisBox.style('opacity', trace.selectedpoints && !boxData.selected ? 0.3 : 1);
+            });
+        }
+        else {
+            styleBox(allBoxes, lineWidth, trace.line.color, trace.fillcolor);
+            el.selectAll('path.mean')
+                .style({
+                    'stroke-width': lineWidth,
+                    'stroke-dasharray': (2 * lineWidth) + 'px,' + lineWidth + 'px'
+                })
+                .call(Color.stroke, trace.line.color);
+
+            var pts = el.selectAll('path.point');
+            Drawing.pointStyle(pts, trace, gd);
+            Drawing.selectedPointStyle(pts, trace);
+        }
     });
 };

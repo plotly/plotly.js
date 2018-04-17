@@ -16,7 +16,7 @@ var TABLE = 'table';
 exports.name = TABLE;
 
 exports.plot = function(gd) {
-    var calcData = getModuleCalcData(gd.calcdata, TABLE);
+    var calcData = getModuleCalcData(gd.calcdata, TABLE)[0];
     if(calcData.length) tablePlot(gd, calcData);
 };
 

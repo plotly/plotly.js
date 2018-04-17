@@ -25,6 +25,7 @@ var editTypes = require('./edit_types');
 
 var extendFlat = Lib.extendFlat;
 var extendDeepAll = Lib.extendDeepAll;
+var isPlainObject = Lib.isPlainObject;
 
 var IS_SUBPLOT_OBJ = '_isSubplotObj';
 var IS_LINKED_TO_ARRAY = '_isLinkedToArray';
@@ -140,7 +141,7 @@ exports.crawl = function(attrs, callback, specifiedLevel, attrString) {
 
         if(exports.isValObject(attr)) return;
 
-        if(Lib.isPlainObject(attr) && attrName !== 'impliedEdits') {
+        if(isPlainObject(attr) && attrName !== 'impliedEdits') {
             exports.crawl(attr, callback, level + 1, fullAttrString);
         }
     });
@@ -255,12 +256,13 @@ exports.getTraceValObject = function(trace, parts) {
     var moduleAttrs, valObject;
 
     if(head === 'transforms') {
-        if(!Array.isArray(trace.transforms)) return false;
+        var transforms = trace.transforms;
+        if(!Array.isArray(transforms) || !transforms.length) return false;
         var tNum = parts[1];
-        if(!isIndex(tNum) || tNum >= trace.transforms.length) {
+        if(!isIndex(tNum) || tNum >= transforms.length) {
             return false;
         }
-        moduleAttrs = (Registry.transformsRegistry[trace.transforms[tNum].type] || {}).attributes;
+        moduleAttrs = (Registry.transformsRegistry[transforms[tNum].type] || {}).attributes;
         valObject = moduleAttrs && moduleAttrs[parts[2]];
         i = 3; // start recursing only inside the transform
     }
@@ -387,7 +389,7 @@ function recurseIntoValObject(valObject, parts, i) {
     // the innermost schema item we find.
     for(; i < parts.length; i++) {
         var newValObject = valObject[parts[i]];
-        if(Lib.isPlainObject(newValObject)) valObject = newValObject;
+        if(isPlainObject(newValObject)) valObject = newValObject;
         else break;
 
         if(i === parts.length - 1) break;
@@ -486,13 +488,12 @@ function getLayoutAttributes() {
 
         if(!_module.layoutAttributes) continue;
 
-        if(_module.name === 'cartesian') {
-            handleBasePlotModule(layoutAttributes, _module, 'xaxis');
-            handleBasePlotModule(layoutAttributes, _module, 'yaxis');
-        }
-        else {
+        if(Array.isArray(_module.attr)) {
+            for(var i = 0; i < _module.attr.length; i++) {
+                handleBasePlotModule(layoutAttributes, _module, _module.attr[i]);
+            }
+        } else {
             var astr = _module.attr === 'subplot' ? _module.name : _module.attr;
-
             handleBasePlotModule(layoutAttributes, _module, astr);
         }
     }
@@ -565,6 +566,7 @@ function getFramesAttributes() {
 function formatAttributes(attrs) {
     mergeValTypeAndRole(attrs);
     formatArrayContainers(attrs);
+    stringify(attrs);
 
     return attrs;
 }
@@ -596,7 +598,7 @@ function mergeValTypeAndRole(attrs) {
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
             }
         }
-        else if(Lib.isPlainObject(attr)) {
+        else if(isPlainObject(attr)) {
             // all attrs container objects get role 'object'
             attr.role = 'object';
         }
@@ -622,6 +624,29 @@ function formatArrayContainers(attrs) {
     }
 
     exports.crawl(attrs, callback);
+}
+
+// this can take around 10ms and should only be run from PlotSchema.get(),
+// to ensure JSON.stringify(PlotSchema.get()) gives the intended result.
+function stringify(attrs) {
+    function walk(attr) {
+        for(var k in attr) {
+            if(isPlainObject(attr[k])) {
+                walk(attr[k]);
+            } else if(Array.isArray(attr[k])) {
+                for(var i = 0; i < attr[k].length; i++) {
+                    walk(attr[k][i]);
+                }
+            } else {
+                // as JSON.stringify(/test/) // => {}
+                if(attr[k] instanceof RegExp) {
+                    attr[k] = attr[k].toString();
+                }
+            }
+        }
+    }
+
+    walk(attrs);
 }
 
 function assignPolarLayoutAttrs(layoutAttributes) {

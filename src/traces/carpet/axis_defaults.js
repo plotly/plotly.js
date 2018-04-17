@@ -17,13 +17,12 @@ var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
 var handleCategoryOrderDefaults = require('../../plots/cartesian/category_order_defaults');
 var setConvert = require('../../plots/cartesian/set_convert');
-var orderedCategories = require('../../plots/cartesian/ordered_categories');
 var autoType = require('../../plots/cartesian/axis_autotype');
 
 /**
  * options: object containing:
  *
- *  letter: 'x' or 'y'
+ *  letter: 'a' or 'b'
  *  title: name of the axis (ie 'Colorbar') to go in default title
  *  name: axis object name (ie 'xaxis') if one should be stored
  *  font: the default font to inherit
@@ -104,7 +103,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
     }
 
+    // we need some of the other functions setConvert attaches, but for
+    // path finding, override pixel scaling to simple passthrough (identity)
     setConvert(containerOut, options.fullLayout);
+    containerOut.c2p = Lib.identity;
 
     var dfltColor = coerce('color', options.dfltColor);
     // if axis.color was provided, use it for fonts too; otherwise,
@@ -133,7 +135,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
-    handleCategoryOrderDefaults(containerIn, containerOut, coerce);
+    handleCategoryOrderDefaults(containerIn, containerOut, coerce, {
+        data: options.data,
+        dataAttr: letter
+    });
 
     var gridColor = coerce2('gridcolor', addOpacity(dfltColor, 0.3));
     var gridWidth = coerce2('gridwidth');
@@ -175,11 +180,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
             delete containerOut.minorgridcolor;
         }
     }
-
-    // fill in categories
-    containerOut._initialCategories = axType === 'category' ?
-        orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
-        [];
 
     if(containerOut.showticklabels === 'none') {
         delete containerOut.tickfont;

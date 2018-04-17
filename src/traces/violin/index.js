@@ -23,7 +23,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'violin',
     basePlotModule: require('../../plots/cartesian'),
-    categories: ['cartesian', 'symbols', 'oriented', 'box-violin', 'showLegend'],
+    categories: ['cartesian', 'svg', 'symbols', 'oriented', 'box-violin', 'showLegend', 'draggedPts', 'violinLayout'],
     meta: {
         description: [
             'In vertical (horizontal) violin plots,',

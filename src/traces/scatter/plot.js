@@ -21,7 +21,7 @@ var linkTraces = require('./link_traces');
 var polygonTester = require('../../lib/polygon').tester;
 
 module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCompleteCallback) {
-    var i, uids, selection, join, onComplete;
+    var i, uids, join, onComplete;
 
     var scatterlayer = plotinfo.plot.select('g.scatterlayer');
 
@@ -30,9 +30,8 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
     var isFullReplot = !transitionOpts;
     var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
 
-    selection = scatterlayer.selectAll('g.trace');
-
-    join = selection.data(cdscatter, function(d) { return d[0].trace.uid; });
+    join = scatterlayer.selectAll('g.trace')
+        .data(cdscatter, function(d) { return d[0].trace.uid; });
 
     // Append new traces:
     join.enter().append('g')
@@ -177,7 +176,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     if(ownFillDir !== 'x' && ownFillDir !== 'y') ownFillDir = '';
 
     // store node for tweaking by selectPoints
-    cdscatter[0].node3 = tr;
+    if(!plotinfo.isRangePlot) cdscatter[0].node3 = tr;
 
     var prevRevpath = '';
     var prevPolygons = [];

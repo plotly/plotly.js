@@ -131,7 +131,7 @@ function plot(container, subplot, cdata) {
         scene.count = cdata.length;
 
         // stash scene ref
-        stash.scene = scene;
+        stash._scene = scene;
         stash.index = traceIndex;
         stash.x = x;
         stash.y = y;

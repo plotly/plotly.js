@@ -22,7 +22,8 @@ var dragElement = require('../../components/dragelement');
 var dragBox = require('../cartesian/dragbox');
 var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
-var prepSelect = require('../cartesian/select');
+var prepSelect = require('../cartesian/select').prepSelect;
+var clearSelect = require('../cartesian/select').clearSelect;
 var setCursor = require('../../lib/setcursor');
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
@@ -634,7 +635,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         zb = dragBox.makeZoombox(zoomlayer, lum, cx, cy, path0);
         zb.attr('fill-rule', 'evenodd');
         corners = dragBox.makeCorners(zoomlayer, cx, cy);
-        dragBox.clearSelect(zoomlayer);
+        clearSelect(zoomlayer);
     }
 
     function zoomMove(dx, dy) {
@@ -868,7 +869,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;
 
-        dragBox.clearSelect(fullLayout._zoomlayer);
+        clearSelect(fullLayout._zoomlayer);
     };
 
     dragOpts.clampFn = function(dx, dy) {
@@ -1000,7 +1001,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;
 
-        dragBox.clearSelect(fullLayout._zoomlayer);
+        clearSelect(fullLayout._zoomlayer);
     };
 
     dragElement.init(dragOpts);

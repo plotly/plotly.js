@@ -20,27 +20,6 @@ var lineAttrs = scatterAttrs.line;
 
 function directionAttrs(lineColorDefault) {
     return {
-        name: {
-            valType: 'string',
-            role: 'info',
-            editType: 'style',
-            description: [
-                'Sets the segment name.',
-                'The segment name appear as the legend item and on hover.'
-            ].join(' ')
-        },
-
-        showlegend: {
-            valType: 'boolean',
-            role: 'info',
-            dflt: true,
-            editType: 'style',
-            description: [
-                'Determines whether or not an item corresponding to this',
-                'segment is shown in the legend.'
-            ].join(' ')
-        },
-
         line: {
             color: extendFlat({}, lineAttrs.color, {dflt: lineColorDefault}),
             width: lineAttrs.width,
@@ -64,28 +43,24 @@ module.exports = {
 
     open: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the open values.'
     },
 
     high: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the high values.'
     },
 
     low: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the low values.'
     },
 
     close: {
         valType: 'data_array',
-        dflt: [],
         editType: 'calc',
         description: 'Sets the close values.'
     },

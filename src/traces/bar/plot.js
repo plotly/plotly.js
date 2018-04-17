@@ -42,9 +42,11 @@ module.exports = function plot(gd, plotinfo, cdbar) {
     bartraces.enter().append('g')
         .attr('class', 'trace bars');
 
-    bartraces.each(function(d) {
-        d[0].node3 = d3.select(this);
-    });
+    if(!plotinfo.isRangePlot) {
+        bartraces.each(function(d) {
+            d[0].node3 = d3.select(this);
+        });
+    }
 
     bartraces.append('g')
         .attr('class', 'points')

@@ -3,7 +3,6 @@ Thanks for your interest in plotly.js!
 ### Translations:
 
 - Make a PR directly to the main repository
-- Label it `type: translation`
 - Please @ mention a few other speakers of this language who can help review your translations.
 - If you've omitted any keys from [dist/translation_keys.txt](https://github.com/plotly/plotly.js/blob/master/dist/translation-keys.txt) - which means they will fall back on the US English text - just make a short comment about why in the PR description: the English text works fine in your language, or you would like someone else to help translating those, or whatever the reason.
 - You should only update files in `lib/locales/`, not those in `dist/`

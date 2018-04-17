@@ -215,7 +215,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var hoverdistance = fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance;
     var spikedistance = fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance;
 
-        // hoverData: the set of candidate points we've found to highlight
+    // hoverData: the set of candidate points we've found to highlight
     var hoverData = [],
 
         // searchData: the data to search in. Mostly this is just a copy of
@@ -265,7 +265,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         for(curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
             trace = cd[0].trace;
-            if(trace.hoverinfo !== 'skip' && subplots.indexOf(helpers.getSubplot(trace)) !== -1) {
+            if(trace.hoverinfo !== 'skip' && helpers.isTraceInSubplots(trace, subplots)) {
                 searchData.push(cd);
             }
         }
@@ -338,8 +338,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // the rest of this function from running and failing
         if(['carpet', 'contourcarpet'].indexOf(trace._module.name) !== -1) continue;
 
-        subplotId = helpers.getSubplot(trace);
-        subploti = subplots.indexOf(subplotId);
+        if(trace.type === 'splom') {
+            // splom traces do not generate overlay subplots,
+            // it is safe to assume here splom traces correspond to the 0th subplot
+            subploti = 0;
+            subplotId = subplots[subploti];
+        } else {
+            subplotId = helpers.getSubplot(trace);
+            subploti = subplots.indexOf(subplotId);
+        }
 
         // within one trace mode can sometimes be overridden
         mode = hovermode;
@@ -819,13 +826,6 @@ function createHoverText(hoverData, opts, gd) {
             }
         }
 
-        // used by other modules (initially just ternary) that
-        // manage their own hoverinfo independent of cleanPoint
-        // the rest of this will still apply, so such modules
-        // can still put things in (x|y|z)Label, text, and name
-        // and hoverinfo will still determine their visibility
-        if(d.extraText !== undefined) text += d.extraText;
-
         if(d.zLabel !== undefined) {
             if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
             if(d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
@@ -843,6 +843,13 @@ function createHoverText(hoverData, opts, gd) {
         if(d.text && !Array.isArray(d.text)) {
             text += (text ? '<br>' : '') + d.text;
         }
+
+        // used by other modules (initially just ternary) that
+        // manage their own hoverinfo independent of cleanPoint
+        // the rest of this will still apply, so such modules
+        // can still put things in (x|y|z)Label, text, and name
+        // and hoverinfo will still determine their visibility
+        if(d.extraText !== undefined) text += (text ? '<br>' : '') + d.extraText;
 
         // if 'text' is empty at this point,
         // put 'name' in main label and don't show secondary label

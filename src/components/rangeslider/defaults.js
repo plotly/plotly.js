@@ -14,16 +14,18 @@ var oppAxisAttrs = require('./oppaxis_attributes');
 var axisIds = require('../../plots/cartesian/axis_ids');
 
 module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
-    if(!layoutIn[axName].rangeslider) return;
+    var axIn = layoutIn[axName];
+    var axOut = layoutOut[axName];
+
+    if(!(axIn.rangeslider || layoutOut._requestRangeslider[axOut._id])) return;
 
     // not super proud of this (maybe store _ in axis object instead
-    if(!Lib.isPlainObject(layoutIn[axName].rangeslider)) {
-        layoutIn[axName].rangeslider = {};
+    if(!Lib.isPlainObject(axIn.rangeslider)) {
+        axIn.rangeslider = {};
     }
 
-    var containerIn = layoutIn[axName].rangeslider,
-        axOut = layoutOut[axName],
-        containerOut = axOut.rangeslider = {};
+    var containerIn = axIn.rangeslider;
+    var containerOut = axOut.rangeslider = {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);

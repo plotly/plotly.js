@@ -10,59 +10,83 @@
 'use strict';
 
 var polybool = require('polybooljs');
-var polygon = require('../../lib/polygon');
-var throttle = require('../../lib/throttle');
-var color = require('../../components/color');
-var makeEventData = require('../../components/fx/helpers').makeEventData;
+
+var Registry = require('../../registry');
+var Color = require('../../components/color');
 var Fx = require('../../components/fx');
 
-var axes = require('./axes');
+var polygon = require('../../lib/polygon');
+var throttle = require('../../lib/throttle');
+var makeEventData = require('../../components/fx/helpers').makeEventData;
+var getFromId = require('./axis_ids').getFromId;
+var sortModules = require('../sort_modules').sortModules;
+
 var constants = require('./constants');
+var MINSELECT = constants.MINSELECT;
 
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
 var multipolygonTester = polygon.multitester;
-var MINSELECT = constants.MINSELECT;
 
 function getAxId(ax) { return ax._id; }
 
-module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
-    var gd = dragOptions.gd,
-        fullLayout = gd._fullLayout,
-        zoomLayer = fullLayout._zoomlayer,
-        dragBBox = dragOptions.element.getBoundingClientRect(),
-        plotinfo = dragOptions.plotinfo,
-        xs = plotinfo.xaxis._offset,
-        ys = plotinfo.yaxis._offset,
-        x0 = startX - dragBBox.left,
-        y0 = startY - dragBBox.top,
-        x1 = x0,
-        y1 = y0,
-        path0 = 'M' + x0 + ',' + y0,
-        pw = dragOptions.xaxes[0]._length,
-        ph = dragOptions.yaxes[0]._length,
-        xAxisIds = dragOptions.xaxes.map(getAxId),
-        yAxisIds = dragOptions.yaxes.map(getAxId),
-        allAxes = dragOptions.xaxes.concat(dragOptions.yaxes),
-        filterPoly, testPoly, mergedPolygons, currentPolygon,
-        subtract = e.altKey;
+function prepSelect(e, startX, startY, dragOptions, mode) {
+    var gd = dragOptions.gd;
+    var fullLayout = gd._fullLayout;
+    var zoomLayer = fullLayout._zoomlayer;
+    var dragBBox = dragOptions.element.getBoundingClientRect();
+    var plotinfo = dragOptions.plotinfo;
+    var xs = plotinfo.xaxis._offset;
+    var ys = plotinfo.yaxis._offset;
+    var x0 = startX - dragBBox.left;
+    var y0 = startY - dragBBox.top;
+    var x1 = x0;
+    var y1 = y0;
+    var path0 = 'M' + x0 + ',' + y0;
+    var pw = dragOptions.xaxes[0]._length;
+    var ph = dragOptions.yaxes[0]._length;
+    var xAxisIds = dragOptions.xaxes.map(getAxId);
+    var yAxisIds = dragOptions.yaxes.map(getAxId);
+    var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
+    var subtract = e.altKey;
 
+    var filterPoly, testPoly, mergedPolygons, currentPolygon;
+    var i, cd, trace, searchInfo, eventData;
 
-    // take over selection polygons from prev mode, if any
-    if((e.shiftKey || e.altKey) && (plotinfo.selection && plotinfo.selection.polygons) && !dragOptions.polygons) {
+    var selectingOnSameSubplot = (
+        fullLayout._lastSelectedSubplot &&
+        fullLayout._lastSelectedSubplot === plotinfo.id
+    );
+
+    if(
+        selectingOnSameSubplot &&
+        (e.shiftKey || e.altKey) &&
+        (plotinfo.selection && plotinfo.selection.polygons) &&
+        !dragOptions.polygons
+    ) {
+        // take over selection polygons from prev mode, if any
         dragOptions.polygons = plotinfo.selection.polygons;
         dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
-    }
-    // create new polygons, if shift mode
-    else if((!e.shiftKey && !e.altKey) || ((e.shiftKey || e.altKey) && !plotinfo.selection)) {
+    } else if(
+        (!e.shiftKey && !e.altKey) ||
+        ((e.shiftKey || e.altKey) && !plotinfo.selection)
+    ) {
+        // create new polygons, if shift mode or selecting across different subplots
         plotinfo.selection = {};
         plotinfo.selection.polygons = dragOptions.polygons = [];
         plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
     }
 
+    // clear selection outline when selecting a different subplot
+    if(!selectingOnSameSubplot) {
+        clearSelect(zoomLayer);
+        fullLayout._lastSelectedSubplot = plotinfo.id;
+    }
+
     if(mode === 'lasso') {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
+
     var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1, 2]);
 
     outlines.enter()
@@ -74,8 +98,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     var corners = zoomLayer.append('path')
         .attr('class', 'zoombox-corners')
         .style({
-            fill: color.background,
-            stroke: color.defaultLine,
+            fill: Color.background,
+            stroke: Color.defaultLine,
             'stroke-width': 1
         })
         .attr('transform', 'translate(' + xs + ', ' + ys + ')')
@@ -86,11 +110,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     var searchTraces = [];
     var throttleID = fullLayout._uid + constants.SELECTID;
     var selection = [];
-    var i, cd, trace, searchInfo, eventData;
 
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
+
         if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
 
         if(dragOptions.subplot) {
@@ -99,23 +123,32 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 trace.geo === dragOptions.subplot
             ) {
                 searchTraces.push({
-                    selectPoints: trace._module.selectPoints,
-                    style: trace._module.style,
+                    _module: trace._module,
                     cd: cd,
                     xaxis: dragOptions.xaxes[0],
                     yaxis: dragOptions.yaxes[0]
                 });
             }
+        } else if(
+            trace.type === 'splom' &&
+            // FIXME: make sure we don't have more than single axis for splom
+            trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
+        ) {
+            searchTraces.push({
+                _module: trace._module,
+                cd: cd,
+                xaxis: dragOptions.xaxes[0],
+                yaxis: dragOptions.yaxes[0]
+            });
         } else {
             if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
             if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
 
             searchTraces.push({
-                selectPoints: trace._module.selectPoints,
-                style: trace._module.style,
+                _module: trace._module,
                 cd: cd,
-                xaxis: axes.getFromId(gd, trace.xaxis),
-                yaxis: axes.getFromId(gd, trace.yaxis)
+                xaxis: getFromId(gd, trace.xaxis),
+                yaxis: getFromId(gd, trace.yaxis)
             });
         }
     }
@@ -250,7 +283,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 
-                    traceSelection = searchInfo.selectPoints(searchInfo, testPoly);
+                    traceSelection = searchInfo._module.selectPoints(searchInfo, testPoly);
                     traceSelections.push(traceSelection);
 
                     thisSelection = fillSelectionItem(traceSelection, searchInfo);
@@ -281,7 +314,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 outlines.remove();
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
-                    searchInfo.selectPoints(searchInfo, false);
+                    searchInfo._module.selectPoints(searchInfo, false);
                 }
 
                 updateSelectedState(gd, searchTraces);
@@ -315,10 +348,10 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             }
         });
     };
-};
+}
 
 function updateSelectedState(gd, searchTraces, eventData) {
-    var i, searchInfo, trace;
+    var i, j, searchInfo, trace;
 
     if(eventData) {
         var pts = eventData.points || [];
@@ -348,17 +381,44 @@ function updateSelectedState(gd, searchTraces, eventData) {
             trace = searchTraces[i].cd[0].trace;
             delete trace.selectedpoints;
             delete trace._input.selectedpoints;
-
-            // delete scattergl selection
-            if(searchTraces[i].cd[0].t && searchTraces[i].cd[0].t.scene) {
-                searchTraces[i].cd[0].t.scene.clearSelect();
-            }
         }
     }
 
+    // group searchInfo traces by trace modules
+    var lookup = {};
+
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
-        if(searchInfo.style) searchInfo.style(gd, searchInfo.cd);
+
+        var name = searchInfo._module.name;
+        if(lookup[name]) {
+            lookup[name].push(searchInfo);
+        } else {
+            lookup[name] = [searchInfo];
+        }
+    }
+
+    var keys = Object.keys(lookup).sort(sortModules);
+
+    for(i = 0; i < keys.length; i++) {
+        var items = lookup[keys[i]];
+        var len = items.length;
+        var item0 = items[0];
+        var trace0 = item0.cd[0].trace;
+
+        if(Registry.traceIs(trace0, 'regl')) {
+            // plot regl traces per module
+            var cds = new Array(len);
+            for(j = 0; j < len; j++) {
+                cds[j] = items[j].cd;
+            }
+            item0._module.style(gd, cds);
+        } else {
+            // plot svg trace per trace
+            for(j = 0; j < len; j++) {
+                item0._module.style(gd, items[j].cd);
+            }
+        }
     }
 }
 
@@ -400,3 +460,15 @@ function fillSelectionItem(selection, searchInfo) {
 
     return selection;
 }
+
+function clearSelect(zoomlayer) {
+    // until we get around to persistent selections, remove the outline
+    // here. The selection itself will be removed when the plot redraws
+    // at the end.
+    zoomlayer.selectAll('.select-outline').remove();
+}
+
+module.exports = {
+    prepSelect: prepSelect,
+    clearSelect: clearSelect
+};

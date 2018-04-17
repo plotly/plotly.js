@@ -15,7 +15,7 @@ module.exports = {
         'Click to enter Colorscale title': 'Click to enter Colourscale title'
     },
     format: {
-        days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
         shortDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
         months: [
             'January', 'February', 'March', 'April', 'May', 'June',

@@ -221,11 +221,17 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .attr('fill', 'none');
 
     columnBoundaryRect
-        .attr('width', function(d) {return d.columnWidth;})
-        .attr('height', function(d) {return d.calcdata.height + c.uplift;});
+        .attr('width', function(d) { return d.columnWidth + 2 * roundHalfWidth(d); })
+        .attr('height', function(d) {return d.calcdata.height + 2 * roundHalfWidth(d) + c.uplift;})
+        .attr('x', function(d) { return -roundHalfWidth(d); })
+        .attr('y', function(d) { return -roundHalfWidth(d); });
 
     updateBlockYPosition(null, cellsColumnBlock, tableControlView);
 };
+
+function roundHalfWidth(d) {
+    return Math.ceil(d.calcdata.maxLineWidth / 2);
+}
 
 function scrollAreaBottomClipKey(gd, d) {
     return 'clip' + gd._fullLayout._uid + '_scrollAreaBottomClip_' + d.key;

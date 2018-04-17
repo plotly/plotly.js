@@ -14,19 +14,28 @@ var isNumeric = require('fast-isnumeric');
 
 // pure functions, don't alter but passes on `gd` and parts of `trace` without deep copying
 module.exports = function calc(gd, trace) {
-    var cellsValues = trace.cells.values;
+    var cellsValues = squareStringMatrix(trace.cells.values);
     var slicer = function(a) {
         return a.slice(trace.header.values.length, a.length);
     };
-    var headerValues = trace.header.values.map(function(c) {
-        return Array.isArray(c) ? c : [c];
-    }).concat(slicer(cellsValues).map(function() {return [''];}));
+    var headerValuesIn = squareStringMatrix(trace.header.values);
+    if(headerValuesIn.length && !headerValuesIn[0].length) {
+        headerValuesIn[0] = [''];
+        headerValuesIn = squareStringMatrix(headerValuesIn);
+    }
+    var headerValues = headerValuesIn
+        .concat(slicer(cellsValues).map(function() {
+            return emptyStrings((headerValuesIn[0] || ['']).length);
+        }));
+
     var domain = trace.domain;
     var groupWidth = Math.floor(gd._fullLayout._size.w * (domain.x[1] - domain.x[0]));
     var groupHeight = Math.floor(gd._fullLayout._size.h * (domain.y[1] - domain.y[0]));
-    var headerRowHeights = trace.header.values.length ? headerValues[0].map(function() {return trace.header.height;}) : [c.emptyHeaderHeight];
-    var rowHeights = cellsValues.length ? cellsValues[0].map(function() {return trace.cells.height;}) : [];
-    var headerHeight = headerRowHeights.reduce(function(a, b) {return a + b;}, 0);
+    var headerRowHeights = trace.header.values.length ?
+        headerValues[0].map(function() { return trace.header.height; }) :
+        [c.emptyHeaderHeight];
+    var rowHeights = cellsValues.length ? cellsValues[0].map(function() { return trace.cells.height; }) : [];
+    var headerHeight = headerRowHeights.reduce(sum, 0);
     var scrollHeight = groupHeight - headerHeight;
     var minimumFillHeight = scrollHeight + c.uplift;
     var anchorToRowBlock = makeAnchorToRowBlock(rowHeights, minimumFillHeight);
@@ -41,10 +50,12 @@ module.exports = function calc(gd, trace) {
             trace.columnwidth;
         return isNumeric(value) ? Number(value) : 1;
     });
-    var totalColumnWidths = columnWidths.reduce(function(p, n) {return p + n;}, 0);
+    var totalColumnWidths = columnWidths.reduce(sum, 0);
 
     // fit columns in the available vertical space as there's no vertical scrolling now
-    columnWidths = columnWidths.map(function(d) {return d / totalColumnWidths * groupWidth;});
+    columnWidths = columnWidths.map(function(d) { return d / totalColumnWidths * groupWidth; });
+
+    var maxLineWidth = Math.max(arrayMax(trace.header.line.width), arrayMax(trace.cells.line.width));
 
     var calcdata = {
         key: trace.index,
@@ -52,13 +63,14 @@ module.exports = function calc(gd, trace) {
         translateY: gd._fullLayout._size.h * (1 - domain.y[1]),
         size: gd._fullLayout._size,
         width: groupWidth,
+        maxLineWidth: maxLineWidth,
         height: groupHeight,
         columnOrder: columnOrder, // will be mutated on column move, todo use in callback
         groupHeight: groupHeight,
         rowBlocks: rowBlocks,
         headerRowBlocks: headerRowBlocks,
         scrollY: 0, // will be mutated on scroll
-        cells: trace.cells,
+        cells: extendFlat({}, trace.cells, {values: cellsValues}),
         headerCells: extendFlat({}, trace.header, {values: headerValues}),
         gdColumns: headerValues.map(function(d) {return d[0];}),
         gdColumnsOriginalOrder: headerValues.map(function(d) {return d[0];}),
@@ -88,6 +100,47 @@ module.exports = function calc(gd, trace) {
 
     return calcdata;
 };
+
+function arrayMax(maybeArray) {
+    if(Array.isArray(maybeArray)) {
+        var max = 0;
+        for(var i = 0; i < maybeArray.length; i++) {
+            max = Math.max(max, arrayMax(maybeArray[i]));
+        }
+        return max;
+    }
+    return maybeArray;
+}
+
+function sum(a, b) { return a + b; }
+
+// fill matrix in place to equal lengths
+// and ensure it's uniformly 2D
+function squareStringMatrix(matrixIn) {
+    var matrix = matrixIn.slice();
+    var minLen = Infinity;
+    var maxLen = 0;
+    var i;
+    for(i = 0; i < matrix.length; i++) {
+        if(!Array.isArray(matrix[i])) matrix[i] = [matrix[i]];
+        minLen = Math.min(minLen, matrix[i].length);
+        maxLen = Math.max(maxLen, matrix[i].length);
+    }
+
+    if(minLen !== maxLen) {
+        for(i = 0; i < matrix.length; i++) {
+            var padLen = maxLen - matrix[i].length;
+            if(padLen) matrix[i] = matrix[i].concat(emptyStrings(padLen));
+        }
+    }
+    return matrix;
+}
+
+function emptyStrings(len) {
+    var padArray = new Array(len);
+    for(var j = 0; j < len; j++) padArray[j] = '';
+    return padArray;
+}
 
 function xScale(d) {
     return d.calcdata.columns.reduce(function(prev, next) {

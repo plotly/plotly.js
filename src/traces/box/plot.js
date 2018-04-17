@@ -32,19 +32,22 @@ function plot(gd, plotinfo, cdbox) {
         var cd0 = d[0];
         var t = cd0.t;
         var trace = cd0.trace;
-        var sel = cd0.node3 = d3.select(this);
+        var sel = d3.select(this);
+        if(!plotinfo.isRangePlot) cd0.node3 = sel;
         var numBoxes = fullLayout._numBoxes;
+
+        var groupFraction = (1 - fullLayout.boxgap);
 
         var group = (fullLayout.boxmode === 'group' && numBoxes > 1);
         // box half width
-        var bdPos = t.dPos * (1 - fullLayout.boxgap) * (1 - fullLayout.boxgroupgap) / (group ? numBoxes : 1);
+        var bdPos = t.dPos * groupFraction * (1 - fullLayout.boxgroupgap) / (group ? numBoxes : 1);
         // box center offset
-        var bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numBoxes) * (1 - fullLayout.boxgap) : 0;
+        var bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numBoxes) * groupFraction : 0;
         // whisker width
         var wdPos = bdPos * trace.whiskerwidth;
 
         if(trace.visible !== true || t.empty) {
-            d3.select(this).remove();
+            sel.remove();
             return;
         }
 
@@ -62,6 +65,9 @@ function plot(gd, plotinfo, cdbox) {
         t.bPos = bPos;
         t.bdPos = bdPos;
         t.wdPos = wdPos;
+        // half-width within which to accept hover for this box
+        // always split the distance to the closest box
+        t.wHover = t.dPos * (group ? groupFraction / numBoxes : 1);
 
         // boxes and whiskers
         plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, t);
@@ -121,8 +127,16 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
                 valAxis.c2p(d.med, true),
                 Math.min(q1, q3) + 1, Math.max(q1, q3) - 1
             );
-            var lf = valAxis.c2p(trace.boxpoints === false ? d.min : d.lf, true);
-            var uf = valAxis.c2p(trace.boxpoints === false ? d.max : d.uf, true);
+
+            // for compatibility with box, violin, and candlestick
+            // perhaps we should put this into cd0.t instead so it's more explicit,
+            // but what we have now is:
+            // - box always has d.lf, but boxpoints can be anything
+            // - violin has d.lf and should always use it (boxpoints is undefined)
+            // - candlestick has only min/max
+            var useExtremes = (d.lf === undefined) || (trace.boxpoints === false);
+            var lf = valAxis.c2p(useExtremes ? d.min : d.lf, true);
+            var uf = valAxis.c2p(useExtremes ? d.max : d.uf, true);
             var ln = valAxis.c2p(d.ln, true);
             var un = valAxis.c2p(d.un, true);
 
@@ -222,7 +236,7 @@ function plotPoints(sel, axes, trace, t) {
                         maxJitterFactor = Math.max(jitterFactor, maxJitterFactor);
                     }
                 }
-                newJitter = trace.jitter * 2 / maxJitterFactor;
+                newJitter = trace.jitter * 2 / (maxJitterFactor || 1);
             }
 
             // fills in 'x' and 'y' in calcdata 'pts' item
