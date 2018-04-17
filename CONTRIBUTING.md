@@ -183,15 +183,15 @@ it may be necessary to to fix the width, height, margins, X axis range and Y axi
 
 ```
 Plotly.newPlot(gd, [{
-            x: [1, 1, 1, 2, 2, 2, 3, 3, 3],
-            y: [1, 2, 3, 1, 2, 3, 1, 2, 3],
-            mode: 'markers'
-        }], {
-            width: 400, height: 400,
-            margin: {l: 100, r: 100, t: 100, b: 100},
-            xaxis: {range: [0, 4]},
-            yaxis: {range: [0, 4]}
-     });
+    x: [1, 1, 1, 2, 2, 2, 3, 3, 3],
+    y: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+    mode: 'markers'
+}], {
+    width: 400, height: 400,
+    margin: {l: 100, r: 100, t: 100, b: 100},
+    xaxis: {range: [0, 4]},
+    yaxis: {range: [0, 4]}
+});
 ```
 
 This will produce the following plot, and say you want to simulate a selection path of (175, 175) to (225, 225):
