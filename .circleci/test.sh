@@ -33,7 +33,7 @@ case $1 in
         ;;
 
     jasmine2)
-        npm run test-jasmine -- --tags=gl --skip-tags=noCI,flaky || EXIT_STATE=$?
+        retry npm run test-jasmine -- --tags=gl --skip-tags=noCI,flaky
         retry npm run test-jasmine -- --tags=flaky --skip-tags=noCI
         npm run test-bundle || EXIT_STATE=$?
         exit $EXIT_STATE
