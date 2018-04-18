@@ -10,6 +10,14 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.36.1] -- 2018-04-18
+
+### Fixed
+- Fix `scattergl` in dist and CDN bundles
+  (due to `browser-pack-flat` discrepancy introduced in 1.36.0)
+  by removing `browser-pack-flat` from our bundling pipeline [#2572]
+
+
 ## [1.36.0] -- 2018-04-17
 
 ### Added
