@@ -29,7 +29,7 @@ var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
 
 function calc(gd, trace) {
     var dimensions = trace.dimensions;
-    var commonLength = trace._commonLength;
+    var commonLength = trace._length;
     var stash = {};
     var opts = {};
     // 'c' for calculated, 'l' for linear,
@@ -228,7 +228,7 @@ function plotOne(gd, cd0) {
     scene.unselectBatch = null;
 
     if(selectMode) {
-        var commonLength = trace._commonLength;
+        var commonLength = trace._length;
 
         if(!scene.selectBatch) {
             scene.selectBatch = [];

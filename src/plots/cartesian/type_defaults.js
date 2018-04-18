@@ -107,7 +107,7 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
         var trace = data[i];
 
         if(trace.type === 'splom' &&
-                trace._commonLength > 0 &&
+                trace._length > 0 &&
                 trace['_' + axLetter + 'axes'][id]
         ) {
             return trace;

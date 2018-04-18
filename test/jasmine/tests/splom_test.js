@@ -82,7 +82,7 @@ describe('Test splom trace defaults:', function() {
         });
 
         var fullTrace = gd._fullData[0];
-        expect(fullTrace._commonLength).toBe(3, 'common length');
+        expect(fullTrace._length).toBe(3, 'common length');
         expect(fullTrace.dimensions[0]._length).toBe(3, 'dim 0 length');
         expect(fullTrace.dimensions[1]._length).toBe(3, 'dim 1 length');
         expect(fullTrace.xaxes).toEqual(['x', 'x2']);
