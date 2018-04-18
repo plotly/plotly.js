@@ -274,7 +274,7 @@ var extraFormatKeys = [
 // gd._fullLayout._transformModules
 //   is a list of all the transform modules invoked.
 //
-plots.supplyDefaults = function(gd) {
+plots.supplyDefaults = function(gd, skipCalcUpdate) {
     var oldFullLayout = gd._fullLayout || {};
 
     if(oldFullLayout._skipDefaults) {
@@ -458,22 +458,26 @@ plots.supplyDefaults = function(gd) {
     }
 
     // update object references in calcdata
-    if(oldCalcdata.length === newFullData.length) {
-        for(i = 0; i < newFullData.length; i++) {
-            var newTrace = newFullData[i];
-            var cd0 = oldCalcdata[i][0];
-            if(cd0 && cd0.trace) {
-                if(cd0.trace._hasCalcTransform) {
-                    remapTransformedArrays(cd0, newTrace);
-                } else {
-                    cd0.trace = newTrace;
-                }
-            }
-        }
+    if(!skipCalcUpdate && oldCalcdata.length === newFullData.length) {
+        plots.supplyDefaultsUpdateCalc(oldCalcdata, newFullData);
     }
 
     // sort base plot modules for consistent ordering
     newFullLayout._basePlotModules.sort(sortBasePlotModules);
+};
+
+plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
+    for(var i = 0; i < newFullData.length; i++) {
+        var newTrace = newFullData[i];
+        var cd0 = oldCalcdata[i][0];
+        if(cd0 && cd0.trace) {
+            if(cd0.trace._hasCalcTransform) {
+                remapTransformedArrays(cd0, newTrace);
+            } else {
+                cd0.trace = newTrace;
+            }
+        }
+    }
 };
 
 /**

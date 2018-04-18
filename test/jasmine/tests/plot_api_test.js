@@ -2955,6 +2955,190 @@ describe('Test plot api', function() {
             .then(done);
         });
 
+        function aggregatedPie(i) {
+            var labels = i <= 1 ?
+                ['A', 'B', 'A', 'C', 'A', 'B', 'C', 'A', 'B', 'C', 'A'] :
+                ['X', 'Y', 'Z', 'Z', 'Y', 'Z', 'X', 'Z', 'Y', 'Z', 'X'];
+            var trace = {
+                type: 'pie',
+                values: [4, 1, 4, 4, 1, 4, 4, 2, 1, 1, 15],
+                labels: labels,
+                transforms: [{
+                    type: 'aggregate',
+                    groups: labels,
+                    aggregations: [{target: 'values', func: 'sum'}]
+                }]
+            };
+            return {
+                data: [trace],
+                layout: {
+                    datarevision: i,
+                    colorway: ['red', 'orange', 'yellow', 'green', 'blue', 'violet']
+                }
+            };
+        }
+
+        var aggPie1CD = [[
+            {v: 26, label: 'A', color: 'red', i: 0},
+            {v: 9, label: 'C', color: 'orange', i: 2},
+            {v: 6, label: 'B', color: 'yellow', i: 1}
+        ]];
+
+        var aggPie2CD = [[
+            {v: 23, label: 'X', color: 'red', i: 0},
+            {v: 15, label: 'Z', color: 'orange', i: 2},
+            {v: 3, label: 'Y', color: 'yellow', i: 1}
+        ]];
+
+        function aggregatedScatter(i) {
+            return {
+                data: [{
+                    x: [1, 2, 3, 4, 6, 5],
+                    y: [2, 1, 3, 5, 6, 4],
+                    transforms: [{
+                        type: 'aggregate',
+                        groups: [1, -1, 1, -1, 1, -1],
+                        aggregations: i > 1 ? [{func: 'last', target: 'x'}] : []
+                    }]
+                }],
+                layout: {daterevision: i + 10}
+            };
+        }
+
+        var aggScatter1CD = [[
+            {x: 1, y: 2, i: 0},
+            {x: 2, y: 1, i: 1}
+        ]];
+
+        var aggScatter2CD = [[
+            {x: 6, y: 2, i: 0},
+            {x: 5, y: 1, i: 1}
+        ]];
+
+        function aggregatedParcoords(i) {
+            return {
+                data: [{
+                    type: 'parcoords',
+                    dimensions: [
+                        {label: 'A', values: [1, 2, 3, 4]},
+                        {label: 'B', values: [4, 3, 2, 1]}
+                    ],
+                    transforms: i ? [{
+                        type: 'aggregate',
+                        groups: [1, 2, 1, 2],
+                        aggregations: [
+                            {target: 'dimensions[0].values', func: i > 1 ? 'avg' : 'first'},
+                            {target: 'dimensions[1].values', func: i > 1 ? 'first' : 'avg'}
+                        ]
+                    }] :
+                    []
+                }]
+            };
+        }
+
+        var aggParcoords0Vals = [[1, 2, 3, 4], [4, 3, 2, 1]];
+        var aggParcoords1Vals = [[1, 2], [3, 2]];
+        var aggParcoords2Vals = [[2, 3], [4, 3]];
+
+        function checkCalcData(expectedCD) {
+            return function() {
+                expect(gd.calcdata.length).toBe(expectedCD.length);
+                expectedCD.forEach(function(expectedCDi, i) {
+                    var cdi = gd.calcdata[i];
+                    expect(cdi.length).toBe(expectedCDi.length, i);
+                    expectedCDi.forEach(function(expectedij, j) {
+                        expect(cdi[j]).toEqual(jasmine.objectContaining(expectedij));
+                    });
+                });
+            };
+        }
+
+        function checkValues(expectedVals) {
+            return function() {
+                expect(gd._fullData.length).toBe(1);
+                var dims = gd._fullData[0].dimensions;
+                expect(dims.length).toBe(expectedVals.length);
+                expectedVals.forEach(function(expected, i) {
+                    expect(dims[i].values).toEqual(expected);
+                });
+            };
+        }
+
+        function reactWith(fig) {
+            return function() { return Plotly.react(gd, fig); };
+        }
+
+        it('can change pie aggregations', function(done) {
+            Plotly.newPlot(gd, aggregatedPie(1))
+            .then(checkCalcData(aggPie1CD))
+
+            .then(reactWith(aggregatedPie(2)))
+            .then(checkCalcData(aggPie2CD))
+
+            .then(reactWith(aggregatedPie(1)))
+            .then(checkCalcData(aggPie1CD))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can change scatter aggregations', function(done) {
+            Plotly.newPlot(gd, aggregatedScatter(1))
+            .then(checkCalcData(aggScatter1CD))
+
+            .then(reactWith(aggregatedScatter(2)))
+            .then(checkCalcData(aggScatter2CD))
+
+            .then(reactWith(aggregatedScatter(1)))
+            .then(checkCalcData(aggScatter1CD))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can change parcoords aggregations', function(done) {
+            Plotly.newPlot(gd, aggregatedParcoords(0))
+            .then(checkValues(aggParcoords0Vals))
+
+            .then(reactWith(aggregatedParcoords(1)))
+            .then(checkValues(aggParcoords1Vals))
+
+            .then(reactWith(aggregatedParcoords(2)))
+            .then(checkValues(aggParcoords2Vals))
+
+            .then(reactWith(aggregatedParcoords(0)))
+            .then(checkValues(aggParcoords0Vals))
+
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can change type with aggregations', function(done) {
+            Plotly.newPlot(gd, aggregatedScatter(1))
+            .then(checkCalcData(aggScatter1CD))
+
+            .then(reactWith(aggregatedPie(1)))
+            .then(checkCalcData(aggPie1CD))
+
+            .then(reactWith(aggregatedParcoords(1)))
+            .then(checkValues(aggParcoords1Vals))
+
+            .then(reactWith(aggregatedScatter(1)))
+            .then(checkCalcData(aggScatter1CD))
+
+            .then(reactWith(aggregatedParcoords(2)))
+            .then(checkValues(aggParcoords2Vals))
+
+            .then(reactWith(aggregatedPie(2)))
+            .then(checkCalcData(aggPie2CD))
+
+            .then(reactWith(aggregatedScatter(2)))
+            .then(checkCalcData(aggScatter2CD))
+
+            .then(reactWith(aggregatedParcoords(0)))
+            .then(checkValues(aggParcoords0Vals))
+            .catch(failTest)
+            .then(done);
+        });
+
         it('can change frames without redrawing', function(done) {
             var data = [{y: [1, 2, 3]}];
             var layout = {};

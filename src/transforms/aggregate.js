@@ -254,6 +254,8 @@ exports.calcTransform = function(gd, trace, opts) {
             enabled: true
         });
     }
+
+    trace._length = groupings.length;
 };
 
 function aggregateOneArray(gd, trace, groupings, aggregation) {
