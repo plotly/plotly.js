@@ -221,17 +221,6 @@ exports.findArrayAttributes = function(trace) {
         }
     }
 
-    // Look into the fullInput module attributes for array attributes
-    // to make sure that 'custom' array attributes are detected.
-    //
-    // At the moment, we need this block to make sure that
-    // ohlc and candlestick 'open', 'high', 'low', 'close' can be
-    // used with filter and groupby transforms.
-    if(trace._fullInput && trace._fullInput._module && trace._fullInput._module.attributes) {
-        exports.crawl(trace._fullInput._module.attributes, callback);
-        arrayAttributes = Lib.filterUnique(arrayAttributes);
-    }
-
     return arrayAttributes;
 };
 
