@@ -438,11 +438,11 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._hasTernary = newFullLayout._has('ternary');
     newFullLayout._hasPie = newFullLayout._has('pie');
 
-    // clean subplots and other artifacts from previous plot calls
-    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
-
     // relink / initialize subplot axis objects
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
+
+    // clean subplots and other artifacts from previous plot calls
+    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
 
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);

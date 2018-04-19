@@ -304,7 +304,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     else if(oldSubplotList.cartesian) {
         for(i = 0; i < oldSubplotList.cartesian.length; i++) {
             var oldSubplotId = oldSubplotList.cartesian[i];
-            if(newSubplotList.cartesian.indexOf(oldSubplotId) === -1) {
+            if(!newPlots[oldSubplotId]) {
                 var selector = '.' + oldSubplotId + ',.' + oldSubplotId + '-x,.' + oldSubplotId + '-y';
                 oldFullLayout._cartesianlayer.selectAll(selector).remove();
                 removeSubplotExtras(oldSubplotId, oldFullLayout);
