@@ -129,23 +129,20 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     // traces are removed
     if(!Array.isArray(traces)) {
         traces = [];
-
-        for(i = 0; i < calcdata.length; i++) {
-            traces.push(i);
-        }
+        for(i = 0; i < calcdata.length; i++) traces.push(i);
     }
 
     for(i = 0; i < subplots.length; i++) {
-        var subplot = subplots[i],
-            subplotInfo = fullLayout._plots[subplot];
+        var subplot = subplots[i];
+        var subplotInfo = fullLayout._plots[subplot];
 
         // Get all calcdata for this subplot:
         var cdSubplot = [];
         var pcd;
 
         for(var j = 0; j < calcdata.length; j++) {
-            var cd = calcdata[j],
-                trace = cd[0].trace;
+            var cd = calcdata[j];
+            var trace = cd[0].trace;
 
             // Skip trace if whitelist provided and it's not whitelisted:
             // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
@@ -285,12 +282,11 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     // delete any titles we don't need anymore
     // check if axis list has changed, and if so clear old titles
     if(oldSubplotList.xaxis && oldSubplotList.yaxis) {
-        var oldAxIDs = oldSubplotList.xaxis.concat(oldSubplotList.yaxis);
-        var newAxIDs = newSubplotList.xaxis.concat(newSubplotList.yaxis);
-
+        var oldAxIDs = axisIds.listIds({_fullLayout: oldFullLayout});
         for(i = 0; i < oldAxIDs.length; i++) {
-            if(newAxIDs.indexOf(oldAxIDs[i]) === -1) {
-                oldFullLayout._infolayer.selectAll('.g-' + oldAxIDs[i] + 'title').remove();
+            var oldAxId = oldAxIDs[i];
+            if(!newFullLayout[axisIds.id2name(oldAxId)]) {
+                oldFullLayout._infolayer.selectAll('.g-' + oldAxId + 'title').remove();
             }
         }
     }
@@ -516,11 +512,8 @@ function purgeSubplotLayers(layers, fullLayout) {
 
     // must remove overlaid subplot trace layers 'manually'
 
-    var subplots = fullLayout._plots;
-    var subplotIds = Object.keys(subplots);
-
-    for(var i = 0; i < subplotIds.length; i++) {
-        var subplotInfo = subplots[subplotIds[i]];
+    for(var k in fullLayout._plots) {
+        var subplotInfo = fullLayout._plots[k];
         var overlays = subplotInfo.overlays || [];
 
         for(var j = 0; j < overlays.length; j++) {
