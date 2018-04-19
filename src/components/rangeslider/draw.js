@@ -448,15 +448,16 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
 
         Plots.supplyDefaults(mockFigure);
 
-        var xa = mockFigure._fullLayout.xaxis,
-            ya = mockFigure._fullLayout[oppAxisName];
+        var xa = mockFigure._fullLayout.xaxis;
+        var ya = mockFigure._fullLayout[oppAxisName];
 
         var plotinfo = {
             id: id,
             plotgroup: plotgroup,
             xaxis: xa,
             yaxis: ya,
-            isRangePlot: true
+            isRangePlot: true,
+            plotMethods: opts._plotMethods
         };
 
         if(isMainPlot) mainplotinfo = plotinfo;
@@ -466,6 +467,10 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         }
 
         Cartesian.rangePlot(gd, plotinfo, filterRangePlotCalcData(calcData, id));
+
+        // stash list of plot methods on range-plot for later,
+        // so that they can be called to clear traces of 'gone' modules
+        opts._plotMethods = plotinfo.plotMethods;
     });
 }
 
