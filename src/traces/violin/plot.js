@@ -34,9 +34,14 @@ module.exports = function plot(gd, plotinfo, cd) {
 
     var traces = plotinfo.plot.select('.violinlayer')
         .selectAll('g.trace.violins')
-            .data(cd)
-      .enter().append('g')
+        .data(cd, function(d) { return d[0].trace.uid; });
+
+    traces.enter().append('g')
         .attr('class', 'trace violins');
+
+    traces.exit().remove();
+
+    traces.order();
 
     traces.each(function(d) {
         var cd0 = d[0];
@@ -69,78 +74,81 @@ module.exports = function plot(gd, plotinfo, cd) {
         var hasMeanLine = trace.meanline && trace.meanline.visible;
         var groupStats = fullLayout._violinScaleGroupStats[trace.scalegroup];
 
-        sel.selectAll('path.violin')
-            .data(Lib.identity)
-            .enter().append('path')
+        var violins = sel.selectAll('path.violin').data(Lib.identity);
+
+        violins.enter().append('path')
             .style('vector-effect', 'non-scaling-stroke')
-            .attr('class', 'violin')
-            .each(function(d) {
-                var pathSel = d3.select(this);
-                var density = d.density;
-                var len = density.length;
-                var posCenter = d.pos + bPos;
-                var posCenterPx = posAxis.c2p(posCenter);
-                var scale;
+            .attr('class', 'violin');
 
-                switch(trace.scalemode) {
-                    case 'width':
-                        scale = groupStats.maxWidth / bdPos;
-                        break;
-                    case 'count':
-                        scale = (groupStats.maxWidth / bdPos) * (groupStats.maxCount / d.pts.length);
-                        break;
+        violins.exit().remove();
+
+        violins.each(function(d) {
+            var pathSel = d3.select(this);
+            var density = d.density;
+            var len = density.length;
+            var posCenter = d.pos + bPos;
+            var posCenterPx = posAxis.c2p(posCenter);
+            var scale;
+
+            switch(trace.scalemode) {
+                case 'width':
+                    scale = groupStats.maxWidth / bdPos;
+                    break;
+                case 'count':
+                    scale = (groupStats.maxWidth / bdPos) * (groupStats.maxCount / d.pts.length);
+                    break;
+            }
+
+            var pathPos, pathNeg, path;
+            var i, k, pts, pt;
+
+            if(hasPositiveSide) {
+                pts = new Array(len);
+                for(i = 0; i < len; i++) {
+                    pt = pts[i] = {};
+                    pt[t.posLetter] = posCenter + (density[i].v / scale);
+                    pt[t.valLetter] = density[i].t;
                 }
+                pathPos = makePath(pts);
+            }
 
-                var pathPos, pathNeg, path;
-                var i, k, pts, pt;
+            if(hasNegativeSide) {
+                pts = new Array(len);
+                for(k = 0, i = len - 1; k < len; k++, i--) {
+                    pt = pts[k] = {};
+                    pt[t.posLetter] = posCenter - (density[i].v / scale);
+                    pt[t.valLetter] = density[i].t;
+                }
+                pathNeg = makePath(pts);
+            }
+
+            if(hasBothSides) {
+                path = pathPos + 'L' + pathNeg.substr(1) + 'Z';
+            }
+            else {
+                var startPt = [posCenterPx, valAxis.c2p(density[0].t)];
+                var endPt = [posCenterPx, valAxis.c2p(density[len - 1].t)];
+
+                if(trace.orientation === 'h') {
+                    startPt.reverse();
+                    endPt.reverse();
+                }
 
                 if(hasPositiveSide) {
-                    pts = new Array(len);
-                    for(i = 0; i < len; i++) {
-                        pt = pts[i] = {};
-                        pt[t.posLetter] = posCenter + (density[i].v / scale);
-                        pt[t.valLetter] = density[i].t;
-                    }
-                    pathPos = makePath(pts);
+                    path = 'M' + startPt + 'L' + pathPos.substr(1) + 'L' + endPt;
+                } else {
+                    path = 'M' + endPt + 'L' + pathNeg.substr(1) + 'L' + startPt;
                 }
+            }
+            pathSel.attr('d', path);
 
-                if(hasNegativeSide) {
-                    pts = new Array(len);
-                    for(k = 0, i = len - 1; k < len; k++, i--) {
-                        pt = pts[k] = {};
-                        pt[t.posLetter] = posCenter - (density[i].v / scale);
-                        pt[t.valLetter] = density[i].t;
-                    }
-                    pathNeg = makePath(pts);
-                }
-
-                if(hasBothSides) {
-                    path = pathPos + 'L' + pathNeg.substr(1) + 'Z';
-                }
-                else {
-                    var startPt = [posCenterPx, valAxis.c2p(density[0].t)];
-                    var endPt = [posCenterPx, valAxis.c2p(density[len - 1].t)];
-
-                    if(trace.orientation === 'h') {
-                        startPt.reverse();
-                        endPt.reverse();
-                    }
-
-                    if(hasPositiveSide) {
-                        path = 'M' + startPt + 'L' + pathPos.substr(1) + 'L' + endPt;
-                    } else {
-                        path = 'M' + endPt + 'L' + pathNeg.substr(1) + 'L' + startPt;
-                    }
-                }
-                pathSel.attr('d', path);
-
-                // save a few things used in getPositionOnKdePath, getKdeValue
-                // on hover and for meanline draw block below
-                d.posCenterPx = posCenterPx;
-                d.posDensityScale = scale * bdPos;
-                d.path = pathSel.node();
-                d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
-            });
+            // save a few things used in getPositionOnKdePath, getKdeValue
+            // on hover and for meanline draw block below
+            d.posCenterPx = posCenterPx;
+            d.posDensityScale = scale * bdPos;
+            d.path = pathSel.node();
+            d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
+        });
 
         if(hasBox) {
             var boxWidth = trace.box.width;
@@ -179,24 +187,27 @@ module.exports = function plot(gd, plotinfo, cd) {
         }
         else {
             if(hasMeanLine) {
-                sel.selectAll('path.mean')
-                    .data(Lib.identity)
-                    .enter().append('path')
+                var meanPaths = sel.selectAll('path.mean').data(Lib.identity);
+
+                meanPaths.enter().append('path')
                     .attr('class', 'mean')
                     .style({
                         fill: 'none',
                         'vector-effect': 'non-scaling-stroke'
-                    })
-                    .each(function(d) {
-                        var v = valAxis.c2p(d.mean, true);
-                        var p = helpers.getPositionOnKdePath(d, trace, v);
-
-                        d3.select(this).attr('d',
-                            trace.orientation === 'h' ?
-                                'M' + v + ',' + p[0] + 'V' + p[1] :
-                                'M' + p[0] + ',' + v + 'H' + p[1]
-                        );
                     });
+
+                meanPaths.exit().remove();
+
+                meanPaths.each(function(d) {
+                    var v = valAxis.c2p(d.mean, true);
+                    var p = helpers.getPositionOnKdePath(d, trace, v);
+
+                    d3.select(this).attr('d',
+                        trace.orientation === 'h' ?
+                            'M' + v + ',' + p[0] + 'V' + p[1] :
+                            'M' + p[0] + ',' + v + 'H' + p[1]
+                    );
+                });
             }
         }
 

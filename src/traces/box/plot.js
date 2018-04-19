@@ -24,9 +24,14 @@ function plot(gd, plotinfo, cdbox) {
 
     var boxtraces = plotinfo.plot.select('.boxlayer')
         .selectAll('g.trace.boxes')
-            .data(cdbox)
-      .enter().append('g')
+        .data(cdbox, function(d) { return d[0].trace.uid; });
+
+    boxtraces.enter().append('g')
         .attr('class', 'trace boxes');
+
+    boxtraces.exit().remove();
+
+    boxtraces.order();
 
     boxtraces.each(function(d) {
         var cd0 = d[0];
@@ -105,67 +110,70 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    sel.selectAll('path.box')
-        .data(Lib.identity)
-        .enter().append('path')
+    var paths = sel.selectAll('path.box').data(Lib.identity);
+
+    paths.enter().append('path')
         .style('vector-effect', 'non-scaling-stroke')
-        .attr('class', 'box')
-        .each(function(d) {
-            var pos = d.pos;
-            var posc = posAxis.c2p(pos + bPos, true) + bPosPxOffset;
-            var pos0 = posAxis.c2p(pos + bPos - bdPos0, true) + bPosPxOffset;
-            var pos1 = posAxis.c2p(pos + bPos + bdPos1, true) + bPosPxOffset;
-            var posw0 = posAxis.c2p(pos + bPos - wdPos, true) + bPosPxOffset;
-            var posw1 = posAxis.c2p(pos + bPos + wdPos, true) + bPosPxOffset;
-            var posm0 = posAxis.c2p(pos + bPos - bdPos0 * nw, true) + bPosPxOffset;
-            var posm1 = posAxis.c2p(pos + bPos + bdPos1 * nw, true) + bPosPxOffset;
-            var q1 = valAxis.c2p(d.q1, true);
-            var q3 = valAxis.c2p(d.q3, true);
-            // make sure median isn't identical to either of the
-            // quartiles, so we can see it
-            var m = Lib.constrain(
-                valAxis.c2p(d.med, true),
-                Math.min(q1, q3) + 1, Math.max(q1, q3) - 1
-            );
+        .attr('class', 'box');
 
-            // for compatibility with box, violin, and candlestick
-            // perhaps we should put this into cd0.t instead so it's more explicit,
-            // but what we have now is:
-            // - box always has d.lf, but boxpoints can be anything
-            // - violin has d.lf and should always use it (boxpoints is undefined)
-            // - candlestick has only min/max
-            var useExtremes = (d.lf === undefined) || (trace.boxpoints === false);
-            var lf = valAxis.c2p(useExtremes ? d.min : d.lf, true);
-            var uf = valAxis.c2p(useExtremes ? d.max : d.uf, true);
-            var ln = valAxis.c2p(d.ln, true);
-            var un = valAxis.c2p(d.un, true);
+    paths.exit().remove();
 
-            if(trace.orientation === 'h') {
-                d3.select(this).attr('d',
-                    'M' + m + ',' + posm0 + 'V' + posm1 + // median line
-                    'M' + q1 + ',' + pos0 + 'V' + pos1 + // left edge
-                    (notched ? 'H' + ln + 'L' + m + ',' + posm1 + 'L' + un + ',' + pos1 : '') + // top notched edge
-                    'H' + q3 + // end of the top edge
-                    'V' + pos0 + // right edge
-                    (notched ? 'H' + un + 'L' + m + ',' + posm0 + 'L' + ln + ',' + pos0 : '') + // bottom notched edge
-                    'Z' + // end of the box
-                    'M' + q1 + ',' + posc + 'H' + lf + 'M' + q3 + ',' + posc + 'H' + uf + // whiskers
-                    ((whiskerWidth === 0) ? '' : // whisker caps
-                        'M' + lf + ',' + posw0 + 'V' + posw1 + 'M' + uf + ',' + posw0 + 'V' + posw1));
-            } else {
-                d3.select(this).attr('d',
-                    'M' + posm0 + ',' + m + 'H' + posm1 + // median line
-                    'M' + pos0 + ',' + q1 + 'H' + pos1 + // top of the box
-                    (notched ? 'V' + ln + 'L' + posm1 + ',' + m + 'L' + pos1 + ',' + un : '') + // notched right edge
-                    'V' + q3 + // end of the right edge
-                    'H' + pos0 + // bottom of the box
-                    (notched ? 'V' + un + 'L' + posm0 + ',' + m + 'L' + pos0 + ',' + ln : '') + // notched left edge
-                    'Z' + // end of the box
-                    'M' + posc + ',' + q1 + 'V' + lf + 'M' + posc + ',' + q3 + 'V' + uf + // whiskers
-                    ((whiskerWidth === 0) ? '' : // whisker caps
-                        'M' + posw0 + ',' + lf + 'H' + posw1 + 'M' + posw0 + ',' + uf + 'H' + posw1));
-            }
-        });
+    paths.each(function(d) {
+        var pos = d.pos;
+        var posc = posAxis.c2p(pos + bPos, true) + bPosPxOffset;
+        var pos0 = posAxis.c2p(pos + bPos - bdPos0, true) + bPosPxOffset;
+        var pos1 = posAxis.c2p(pos + bPos + bdPos1, true) + bPosPxOffset;
+        var posw0 = posAxis.c2p(pos + bPos - wdPos, true) + bPosPxOffset;
+        var posw1 = posAxis.c2p(pos + bPos + wdPos, true) + bPosPxOffset;
+        var posm0 = posAxis.c2p(pos + bPos - bdPos0 * nw, true) + bPosPxOffset;
+        var posm1 = posAxis.c2p(pos + bPos + bdPos1 * nw, true) + bPosPxOffset;
+        var q1 = valAxis.c2p(d.q1, true);
+        var q3 = valAxis.c2p(d.q3, true);
+        // make sure median isn't identical to either of the
+        // quartiles, so we can see it
+        var m = Lib.constrain(
+            valAxis.c2p(d.med, true),
+            Math.min(q1, q3) + 1, Math.max(q1, q3) - 1
+        );
+
+        // for compatibility with box, violin, and candlestick
+        // perhaps we should put this into cd0.t instead so it's more explicit,
+        // but what we have now is:
+        // - box always has d.lf, but boxpoints can be anything
+        // - violin has d.lf and should always use it (boxpoints is undefined)
+        // - candlestick has only min/max
+        var useExtremes = (d.lf === undefined) || (trace.boxpoints === false);
+        var lf = valAxis.c2p(useExtremes ? d.min : d.lf, true);
+        var uf = valAxis.c2p(useExtremes ? d.max : d.uf, true);
+        var ln = valAxis.c2p(d.ln, true);
+        var un = valAxis.c2p(d.un, true);
+
+        if(trace.orientation === 'h') {
+            d3.select(this).attr('d',
+                'M' + m + ',' + posm0 + 'V' + posm1 + // median line
+                'M' + q1 + ',' + pos0 + 'V' + pos1 + // left edge
+                (notched ? 'H' + ln + 'L' + m + ',' + posm1 + 'L' + un + ',' + pos1 : '') + // top notched edge
+                'H' + q3 + // end of the top edge
+                'V' + pos0 + // right edge
+                (notched ? 'H' + un + 'L' + m + ',' + posm0 + 'L' + ln + ',' + pos0 : '') + // bottom notched edge
+                'Z' + // end of the box
+                'M' + q1 + ',' + posc + 'H' + lf + 'M' + q3 + ',' + posc + 'H' + uf + // whiskers
+                ((whiskerWidth === 0) ? '' : // whisker caps
+                    'M' + lf + ',' + posw0 + 'V' + posw1 + 'M' + uf + ',' + posw0 + 'V' + posw1));
+        } else {
+            d3.select(this).attr('d',
+                'M' + posm0 + ',' + m + 'H' + posm1 + // median line
+                'M' + pos0 + ',' + q1 + 'H' + pos1 + // top of the box
+                (notched ? 'V' + ln + 'L' + posm1 + ',' + m + 'L' + pos1 + ',' + un : '') + // notched right edge
+                'V' + q3 + // end of the right edge
+                'H' + pos0 + // bottom of the box
+                (notched ? 'V' + un + 'L' + posm0 + ',' + m + 'L' + pos0 + ',' + ln : '') + // notched left edge
+                'Z' + // end of the box
+                'M' + posc + ',' + q1 + 'V' + lf + 'M' + posc + ',' + q3 + 'V' + uf + // whiskers
+                ((whiskerWidth === 0) ? '' : // whisker caps
+                    'M' + posw0 + ',' + lf + 'H' + posw1 + 'M' + posw0 + ',' + uf + 'H' + posw1));
+        }
+    });
 }
 
 function plotPoints(sel, axes, trace, t) {
@@ -180,7 +188,7 @@ function plotPoints(sel, axes, trace, t) {
     // repeatable pseudo-random number generator
     Lib.seedPseudoRandom();
 
-    sel.selectAll('g.points')
+    var gPoints = sel.selectAll('g.points')
         // since box plot points get an extra level of nesting, each
         // box needs the trace styling info
         .data(function(d) {
@@ -189,10 +197,14 @@ function plotPoints(sel, axes, trace, t) {
                 v.trace = trace;
             });
             return d;
-        })
-        .enter().append('g')
-        .attr('class', 'points')
-      .selectAll('path')
+        });
+
+    gPoints.enter().append('g')
+        .attr('class', 'points');
+
+    gPoints.exit().remove();
+
+    var paths = gPoints.selectAll('path')
         .data(function(d) {
             var i;
 
@@ -265,10 +277,14 @@ function plotPoints(sel, axes, trace, t) {
             }
 
             return pts;
-        })
-        .enter().append('path')
-        .classed('point', true)
-        .call(Drawing.translatePoints, xa, ya);
+        });
+
+    paths.enter().append('path')
+        .classed('point', true);
+
+    paths.exit().remove();
+
+    paths.call(Drawing.translatePoints, xa, ya);
 }
 
 function plotBoxMean(sel, axes, trace, t) {
@@ -288,38 +304,41 @@ function plotBoxMean(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    sel.selectAll('path.mean')
-        .data(Lib.identity)
-        .enter().append('path')
+    var paths = sel.selectAll('path.mean').data(Lib.identity);
+
+    paths.enter().append('path')
         .attr('class', 'mean')
         .style({
             fill: 'none',
             'vector-effect': 'non-scaling-stroke'
-        })
-        .each(function(d) {
-            var posc = posAxis.c2p(d.pos + bPos, true) + bPosPxOffset;
-            var pos0 = posAxis.c2p(d.pos + bPos - bdPos0, true) + bPosPxOffset;
-            var pos1 = posAxis.c2p(d.pos + bPos + bdPos1, true) + bPosPxOffset;
-            var m = valAxis.c2p(d.mean, true);
-            var sl = valAxis.c2p(d.mean - d.sd, true);
-            var sh = valAxis.c2p(d.mean + d.sd, true);
-
-            if(trace.orientation === 'h') {
-                d3.select(this).attr('d',
-                    'M' + m + ',' + pos0 + 'V' + pos1 +
-                    (trace.boxmean === 'sd' ?
-                        'm0,0L' + sl + ',' + posc + 'L' + m + ',' + pos0 + 'L' + sh + ',' + posc + 'Z' :
-                        '')
-                );
-            } else {
-                d3.select(this).attr('d',
-                    'M' + pos0 + ',' + m + 'H' + pos1 +
-                    (trace.boxmean === 'sd' ?
-                        'm0,0L' + posc + ',' + sl + 'L' + pos0 + ',' + m + 'L' + posc + ',' + sh + 'Z' :
-                        '')
-                );
-            }
         });
+
+    paths.exit().remove();
+
+    paths.each(function(d) {
+        var posc = posAxis.c2p(d.pos + bPos, true) + bPosPxOffset;
+        var pos0 = posAxis.c2p(d.pos + bPos - bdPos0, true) + bPosPxOffset;
+        var pos1 = posAxis.c2p(d.pos + bPos + bdPos1, true) + bPosPxOffset;
+        var m = valAxis.c2p(d.mean, true);
+        var sl = valAxis.c2p(d.mean - d.sd, true);
+        var sh = valAxis.c2p(d.mean + d.sd, true);
+
+        if(trace.orientation === 'h') {
+            d3.select(this).attr('d',
+                'M' + m + ',' + pos0 + 'V' + pos1 +
+                (trace.boxmean === 'sd' ?
+                    'm0,0L' + sl + ',' + posc + 'L' + m + ',' + pos0 + 'L' + sh + ',' + posc + 'Z' :
+                    '')
+            );
+        } else {
+            d3.select(this).attr('d',
+                'M' + pos0 + ',' + m + 'H' + pos1 +
+                (trace.boxmean === 'sd' ?
+                    'm0,0L' + posc + ',' + sl + 'L' + pos0 + ',' + m + 'L' + posc + ',' + sh + 'Z' :
+                    '')
+            );
+        }
+    });
 }
 
 module.exports = {
