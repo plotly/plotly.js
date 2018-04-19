@@ -116,27 +116,18 @@ exports.calcTransform = function(gd, trace, opts) {
 };
 
 function getIndices(opts, targetArray, d2c, len) {
+    var sortedArray = new Array(len);
     var indices = new Array(len);
+    var i;
 
-    var sortedArray = targetArray
-        .slice(0, len)
-        .sort(getSortFunc(opts, d2c));
+    for(i = 0; i < len; i++) {
+        sortedArray[i] = {v: targetArray[i], i: i};
+    }
 
-    for(var i = 0; i < len; i++) {
-        var vTarget = targetArray[i];
+    sortedArray.sort(getSortFunc(opts, d2c));
 
-        for(var j = 0; j < len; j++) {
-            var vSorted = sortedArray[j];
-
-            if(vTarget === vSorted) {
-                indices[j] = i;
-
-                // clear sortedArray item to get correct
-                // index of duplicate items (if any)
-                sortedArray[j] = null;
-                break;
-            }
-        }
+    for(i = 0; i < len; i++) {
+        indices[i] = sortedArray[i].i;
     }
 
     return indices;
@@ -145,8 +136,8 @@ function getIndices(opts, targetArray, d2c, len) {
 function getSortFunc(opts, d2c) {
     switch(opts.order) {
         case 'ascending':
-            return function(a, b) { return d2c(a) - d2c(b); };
+            return function(a, b) { return d2c(a.v) - d2c(b.v); };
         case 'descending':
-            return function(a, b) { return d2c(b) - d2c(a); };
+            return function(a, b) { return d2c(b.v) - d2c(a.v); };
     }
 }
