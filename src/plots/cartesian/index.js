@@ -179,105 +179,68 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
 };
 
 function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback) {
-    var fullLayout = gd._fullLayout,
-        modules = fullLayout._modules;
+    var fullLayout = gd._fullLayout;
+    var modules = fullLayout._modules;
+    // list of plot methods to call (this list includes plot methods of 'gone' modules)
+    var plotMethodsToCall = plotinfo.plotMethods || [];
+    // list of plot methods of visible module on this subplot
+    var plotMethods = [];
+    var i, plotMethod;
 
-    // remove old traces, then redraw everything
-    //
-    // TODO: scatterlayer is manually excluded from this since it knows how
-    // to update instead of fully removing and redrawing every time. The
-    // remaining plot traces should also be able to do this. Once implemented,
-    // we won't need this - which should sometimes be a big speedup.
-    if(plotinfo.plot) {
-        plotinfo.plot.selectAll('g:not(.scatterlayer):not(.ohlclayer)').selectAll('g.trace').remove();
+    for(i = 0; i < modules.length; i++) {
+        var _module = modules[i];
+
+        if(_module.basePlotModule.name === 'cartesian') {
+            plotMethod = _module.plot;
+            Lib.pushUnique(plotMethodsToCall, plotMethod);
+            Lib.pushUnique(plotMethods, plotMethod);
+        }
     }
 
-    // plot all traces for each module at once
-    for(var j = 0; j < modules.length; j++) {
-        var _module = modules[j];
-
-        // skip over non-cartesian trace modules
-        if(!_module.plot || _module.basePlotModule.name !== 'cartesian') continue;
+    for(i = 0; i < plotMethodsToCall.length; i++) {
+        plotMethod = plotMethodsToCall[i];
 
         // plot all traces of this type on this subplot at once
-        var cdModuleAndOthers = getModuleCalcData(cdSubplot, _module);
+        var cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
         var cdModule = cdModuleAndOthers[0];
         // don't need to search the found traces again - in fact we need to NOT
         // so that if two modules share the same plotter we don't double-plot
         cdSubplot = cdModuleAndOthers[1];
 
-        _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+        plotMethod(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
     }
+
+    // save list of plot methods on subplot for later,
+    // so that they can be called to clear traces of 'gone' modules
+    plotinfo.plotMethods = plotMethods;
 }
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    var oldModules = oldFullLayout._modules || [];
-    var newModules = newFullLayout._modules || [];
     var oldPlots = oldFullLayout._plots || {};
-
-    var hadScatter, hasScatter;
-    var hadOHLC, hasOHLC;
-    var hadGl, hasGl;
-    var i, k, subplotInfo, moduleName;
+    var newPlots = newFullLayout._plots || {};
+    var oldSubplotList = oldFullLayout._subplots || {};
+    var plotinfo;
+    var i, k;
 
     // when going from a large splom graph to something else,
     // we need to clear <g subplot> so that the new cartesian subplot
     // can have the correct layer ordering
     if(oldFullLayout._hasOnlyLargeSploms && !newFullLayout._hasOnlyLargeSploms) {
         for(k in oldPlots) {
-            subplotInfo = oldPlots[k];
-            if(subplotInfo.plotgroup) subplotInfo.plotgroup.remove();
+            plotinfo = oldPlots[k];
+            if(plotinfo.plotgroup) plotinfo.plotgroup.remove();
         }
     }
 
-    for(i = 0; i < oldModules.length; i++) {
-        moduleName = oldModules[i].name;
-        if(moduleName === 'scatter') hadScatter = true;
-        else if(moduleName === 'scattergl') hadGl = true;
-        else if(moduleName === 'ohlc') hadOHLC = true;
-    }
-
-    for(i = 0; i < newModules.length; i++) {
-        moduleName = newModules[i].name;
-        if(moduleName === 'scatter') hasScatter = true;
-        else if(moduleName === 'scattergl') hasGl = true;
-        else if(moduleName === 'ohlc') hasOHLC = true;
-    }
-
-    var layersToEmpty = [];
-    if(hadScatter && !hasScatter) layersToEmpty.push('g.scatterlayer');
-    if(hadOHLC && !hasOHLC) layersToEmpty.push('g.ohlclayer');
-
-    if(layersToEmpty.length) {
-        for(var layeri = 0; layeri < layersToEmpty.length; layeri++) {
-            for(k in oldPlots) {
-                subplotInfo = oldPlots[k];
-                if(subplotInfo.plot) {
-                    subplotInfo.plot.select(layersToEmpty[layeri])
-                        .selectAll('g.trace')
-                        .remove();
-                }
-            }
-
-            oldFullLayout._infolayer.selectAll('g.rangeslider-container')
-                .select(layersToEmpty[layeri])
-                .selectAll('g.trace')
-                .remove();
-        }
-    }
+    var hadGl = (oldFullLayout._has && oldFullLayout._has('gl'));
+    var hasGl = (newFullLayout._has && newFullLayout._has('gl'));
 
     if(hadGl && !hasGl) {
         for(k in oldPlots) {
-            subplotInfo = oldPlots[k];
-
-            if(subplotInfo._scene) {
-                subplotInfo._scene.destroy();
-            }
+            plotinfo = oldPlots[k];
+            if(plotinfo._scene) plotinfo._scene.destroy();
         }
     }
-
-    var oldSubplotList = oldFullLayout._subplots || {};
-    var newSubplotList = newFullLayout._subplots || {xaxis: [], yaxis: []};
 
     // delete any titles we don't need anymore
     // check if axis list has changed, and if so clear old titles

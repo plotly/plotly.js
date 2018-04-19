@@ -45,26 +45,42 @@ exports.getSubplotCalcData = function(calcData, type, subplotId) {
  * the calcdata we *will* plot with this module, and the ones we *won't*
  *
  * @param {array} calcdata: as in gd.calcdata
- * @param {object|string} typeOrModule: the plotting module, or its name
+ * @param {object|string|fn} arg1:
+ *  the plotting module, or its name, or its plot method
  *
  * @return {array[array]} [foundCalcdata, remainingCalcdata]
  */
-exports.getModuleCalcData = function(calcdata, typeOrModule) {
+exports.getModuleCalcData = function(calcdata, arg1) {
     var moduleCalcData = [];
     var remainingCalcData = [];
-    var _module = typeof typeOrModule === 'string' ? Registry.getModule(typeOrModule) : typeOrModule;
-    if(!_module) return [moduleCalcData, calcdata];
+
+    var plotMethod;
+    if(arg1) {
+        var typeOfArg1 = typeof arg1;
+        if(typeOfArg1 === 'string') {
+            plotMethod = Registry.getModule(arg1).plot;
+        } else if(typeOfArg1 === 'function') {
+            plotMethod = arg1;
+        } else {
+            plotMethod = arg1.plot;
+        }
+    }
+    if(!plotMethod) {
+        return [moduleCalcData, calcdata];
+    }
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
         if(trace.visible !== true) continue;
 
-        // we use this to find data to plot - so if there's a .plot
-        if(trace._module.plot === _module.plot) {
+        // group calcdata trace not by 'module' (as the name of this function
+        // would suggest), but by 'module plot method' so that if some traces
+        // share the same module plot method (e.g. bar and histogram), we
+        // only call it one!
+        if(trace._module.plot === plotMethod) {
             moduleCalcData.push(cd);
-        }
-        else {
+        } else {
             remainingCalcData.push(cd);
         }
     }
