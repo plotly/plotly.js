@@ -224,7 +224,10 @@ exports.calcTransform = function(gd, trace, opts) {
 
     var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
 
-    for(i = 0; i < groupArray.length; i++) {
+    var len = groupArray.length;
+    if(trace._length) len = Math.min(len, trace._length);
+
+    for(i = 0; i < len; i++) {
         vi = groupArray[i];
         groupIndex = groupIndices[vi];
         if(groupIndex === undefined) {

@@ -84,10 +84,13 @@ exports.calcTransform = function(gd, trace, opts) {
     if(!targetArray) return;
 
     var target = opts.target;
+
     var len = targetArray.length;
+    if(trace._length) len = Math.min(len, trace._length);
+
     var arrayAttrs = trace._arrayAttrs;
     var d2c = Axes.getDataToCoordFunc(gd, trace, target, targetArray);
-    var indices = getIndices(opts, targetArray, d2c);
+    var indices = getIndices(opts, targetArray, d2c, len);
     var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
     var indexToPoints = {};
     var i, j;
@@ -109,14 +112,14 @@ exports.calcTransform = function(gd, trace, opts) {
     }
 
     opts._indexToPoints = indexToPoints;
+    trace._length = len;
 };
 
-function getIndices(opts, targetArray, d2c) {
-    var len = targetArray.length;
+function getIndices(opts, targetArray, d2c, len) {
     var indices = new Array(len);
 
     var sortedArray = targetArray
-        .slice()
+        .slice(0, len)
         .sort(getSortFunc(opts, d2c));
 
     for(var i = 0; i < len; i++) {
