@@ -19,6 +19,12 @@ var Lib = require('../../lib');
 var alignmentConstants = require('../../constants/alignment');
 
 module.exports = function plot(gd, plotinfo, cdcarpet) {
+    if(!cdcarpet.length) {
+        plotinfo.plot.select('.carpetlayer')
+            .selectAll('g.trace')
+            .remove();
+    }
+
     for(var i = 0; i < cdcarpet.length; i++) {
         plotOne(gd, plotinfo, cdcarpet[i]);
     }
@@ -33,7 +39,7 @@ function plotOne(gd, plotinfo, cd) {
         bax = trace.baxis,
         fullLayout = gd._fullLayout;
 
-    var gridLayer = plotinfo.plot.selectAll('.carpetlayer');
+    var gridLayer = plotinfo.plot.select('.carpetlayer');
     var clipLayer = fullLayout._clips;
 
     var axisLayer = Lib.ensureSingle(gridLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
