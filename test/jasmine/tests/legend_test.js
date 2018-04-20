@@ -973,8 +973,8 @@ describe('legend interaction', function() {
             }).then(function() {
                 // Verify the group names have been cleaned up:
                 expect(gd.data[1].transforms[0].styles).toEqual([
-                    {target: 3},
-                    {target: 4}
+                    {target: 3, value: {}},
+                    {target: 4, value: {}}
                 ]);
             }).catch(fail).then(done);
         });

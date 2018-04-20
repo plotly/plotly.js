@@ -100,17 +100,20 @@ describe('sliders defaults', function() {
             method: 'relayout',
             label: 'Label #1',
             value: 'label-1',
-            execute: true
+            execute: true,
+            args: []
         }, {
             method: 'update',
             label: 'Label #2',
             value: 'Label #2',
-            execute: true
+            execute: true,
+            args: []
         }, {
             method: 'animate',
             label: 'step-2',
             value: 'lacks-label',
-            execute: true
+            execute: true,
+            args: []
         }]);
     });
 
