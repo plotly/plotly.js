@@ -18,10 +18,20 @@ var dv = (typeof DataView === 'undefined') ?
     function() {} :
     DataView;
 
-exports.isTypedArray = function(a) {
+function isTypedArray(a) {
     return ab.isView(a) && !(a instanceof dv);
-};
+}
 
-exports.isArrayOrTypedArray = function(a) {
-    return Array.isArray(a) || exports.isTypedArray(a);
+function isArrayOrTypedArray(a) {
+    return Array.isArray(a) || isTypedArray(a);
+}
+
+function is1D(a) {
+    return !isArrayOrTypedArray(a[0]);
+}
+
+module.exports = {
+    isTypedArray: isTypedArray,
+    isArrayOrTypedArray: isArrayOrTypedArray,
+    is1D: is1D
 };

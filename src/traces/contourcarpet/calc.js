@@ -9,7 +9,8 @@
 'use strict';
 
 var colorscaleCalc = require('../../components/colorscale/calc');
-var hasColumns = require('../heatmap/has_columns');
+var is1D = require('../../lib').is1D;
+
 var convertColumnData = require('../heatmap/convert_column_xyz');
 var clean2dArray = require('../heatmap/clean_2d_array');
 var maxRowLength = require('../heatmap/max_row_length');
@@ -69,7 +70,7 @@ function heatmappishCalc(gd, trace) {
     aax._minDtick = 0;
     bax._minDtick = 0;
 
-    if(hasColumns(trace)) convertColumnData(trace, aax, bax, 'a', 'b', ['z']);
+    if(is1D(trace.z)) convertColumnData(trace, aax, bax, 'a', 'b', ['z']);
     a = trace._a = trace._a || trace.a;
     b = trace._b = trace._b || trace.b;
 
