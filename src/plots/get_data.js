@@ -55,15 +55,12 @@ exports.getModuleCalcData = function(calcdata, arg1) {
     var remainingCalcData = [];
 
     var plotMethod;
-    if(arg1) {
-        var typeOfArg1 = typeof arg1;
-        if(typeOfArg1 === 'string') {
-            plotMethod = Registry.getModule(arg1).plot;
-        } else if(typeOfArg1 === 'function') {
-            plotMethod = arg1;
-        } else {
-            plotMethod = arg1.plot;
-        }
+    if(typeof arg1 === 'string') {
+        plotMethod = Registry.getModule(arg1).plot;
+    } else if(typeof arg1 === 'function') {
+        plotMethod = arg1;
+    } else {
+        plotMethod = arg1.plot;
     }
     if(!plotMethod) {
         return [moduleCalcData, calcdata];
