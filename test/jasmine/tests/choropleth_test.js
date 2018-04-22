@@ -30,14 +30,26 @@ describe('Test choropleth', function() {
             traceOut = {};
         });
 
-        it('should slice z if it is longer than locations', function() {
+        it('should set _length based on locations and z but not slice', function() {
             traceIn = {
                 locations: ['CAN', 'USA'],
                 z: [1, 2, 3]
             };
 
             Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.z).toEqual([1, 2, 3]);
+            expect(traceOut.locations).toEqual(['CAN', 'USA']);
+            expect(traceOut._length).toBe(2);
+
+            traceIn = {
+                locations: ['CAN', 'USA', 'ALB'],
+                z: [1, 2]
+            };
+
+            Choropleth.supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.z).toEqual([1, 2]);
+            expect(traceOut.locations).toEqual(['CAN', 'USA', 'ALB']);
+            expect(traceOut._length).toBe(2);
         });
 
         it('should make trace invisible if locations is not defined', function() {
@@ -51,6 +63,7 @@ describe('Test choropleth', function() {
 
         it('should make trace invisible if z is not an array', function() {
             traceIn = {
+                locations: ['CAN', 'USA'],
                 z: 'no gonna work'
             };
 

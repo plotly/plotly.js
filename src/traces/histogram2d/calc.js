@@ -33,7 +33,7 @@ module.exports = function calc(gd, trace) {
 
     var i, j, n, m;
 
-    var serieslen = Math.min(x.length, y.length);
+    var serieslen = trace._length;
     if(x.length > serieslen) x.splice(serieslen, x.length - serieslen);
     if(y.length > serieslen) y.splice(serieslen, y.length - serieslen);
 

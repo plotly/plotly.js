@@ -27,7 +27,9 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
         y = coerce(yName);
 
         // column z must be accompanied by xName and yName arrays
-        if(!x || !y) return 0;
+        if(!(x && x.length && y && y.length)) return 0;
+
+        traceOut._length = Math.min(x.length, y.length, z.length);
     }
     else {
         x = coordDefaults(xName, coerce);
@@ -37,12 +39,14 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce, layout, x
         if(!isValidZ(z)) return 0;
 
         coerce('transpose');
+
+        traceOut._length = null;
     }
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, [xName, yName], layout);
 
-    return traceOut.z.length;
+    return true;
 };
 
 function coordDefaults(coordStr, coerce) {

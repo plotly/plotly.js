@@ -86,4 +86,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
+
+    // disable 1D transforms
+    traceOut._length = null;
 };

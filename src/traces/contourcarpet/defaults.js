@@ -69,5 +69,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     } else {
         traceOut._defaultColor = defaultColor;
+        traceOut._length = null;
     }
 };

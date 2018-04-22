@@ -48,12 +48,11 @@ module.exports = function calc(gd, trace) {
     var dPos = dv.minDiff / 2;
     var posBins = makeBins(posDistinct, dPos);
 
-    var vLen = val.length;
     var pLen = posDistinct.length;
     var ptsPerBin = initNestedArray(pLen);
 
     // bin pts info per position bins
-    for(i = 0; i < vLen; i++) {
+    for(i = 0; i < trace._length; i++) {
         var v = val[i];
         if(!isNumeric(v)) continue;
 

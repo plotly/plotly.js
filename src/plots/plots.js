@@ -1178,6 +1178,11 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
 };
 
 plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
+    // For now we only allow transforms on 1D traces, ie those that specify a _length.
+    // If we were to implement 2D transforms, we'd need to have each transform
+    // describe its own applicability and disable itself when it doesn't apply.
+    if(!traceOut._length) return;
+
     var globalTransforms = layout._globalTransforms || [];
     var transformModules = layout._transformModules || [];
 

@@ -3,6 +3,8 @@ var Lib = require('@src/lib');
 var setConvert = require('@src/plots/cartesian/set_convert');
 
 var supplyDefaults = require('@src/traces/histogram/defaults');
+var supplyDefaults2D = require('@src/traces/histogram2d/defaults');
+var supplyDefaults2DC = require('@src/traces/histogram2dcontour/defaults');
 var calc = require('@src/traces/histogram/calc');
 var getBinSpanLabelRound = require('@src/traces/histogram/bin_label_vals');
 
@@ -36,37 +38,34 @@ describe('Test histogram', function() {
             expect(traceOut.visible).toBe(false);
         });
 
-        it('should set visible to false when type is histogram2d and x or y are empty', function() {
+        it('should set visible to false when type is histogram2d(contour) and x or y are empty', function() {
             traceIn = {
                 type: 'histogram2d',
                 x: [],
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults2D(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
-                type: 'histogram2d',
                 x: [1, 2, 2],
                 y: []
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults2D(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
-                type: 'histogram2d',
                 x: [],
                 y: []
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults2D(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
             traceIn = {
-                type: 'histogram2dcontour',
                 x: [],
                 y: [1, 2, 2]
             };
-            supplyDefaults(traceIn, traceOut, '', {});
+            supplyDefaults2DC(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
         });
 

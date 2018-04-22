@@ -3262,10 +3262,26 @@ describe('Test plot api', function() {
                     return out;
                 }
 
+                // Make sure we define `_length` in every trace *in supplyDefaults*.
+                // This is only relevant for traces that *have* a 1D concept of length,
+                // and in addition to simplifying calc/plot logic later on, ths serves
+                // as a signal to transforms about how they should operate. For traces
+                // that do NOT have a 1D length, `_length` should be `null`.
+                var mockGD = Lib.extendDeep({}, mock);
+                supplyAllDefaults(mockGD);
+                expect(mockGD._fullData.length).not.toBeLessThan((mock.data || []).length, mockSpec[0]);
+                mockGD._fullData.forEach(function(trace, i) {
+                    var len = trace._length;
+                    if(trace.visible !== false && len !== null) {
+                        expect(typeof len).toBe('number', mockSpec[0] + ' trace ' + i + ': type=' + trace.type);
+                    }
+                });
+
                 Plotly.newPlot(gd, mock)
                 .then(countPlots)
                 .then(function() {
                     initialJson = fullJson();
+
                     return Plotly.react(gd, mock);
                 })
                 .then(function() {

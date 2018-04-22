@@ -175,6 +175,7 @@ describe('heatmap convertColumnXYZ', function() {
     var ya = makeMockAxis();
 
     function checkConverted(trace, x, y, z) {
+        trace._length = Math.min(trace.x.length, trace.y.length, trace.z.length);
         convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
         expect(trace._x).toEqual(x);
         expect(trace._y).toEqual(y);
@@ -216,7 +217,8 @@ describe('heatmap convertColumnXYZ', function() {
             x: [1, 1, 1, 2, 2, 2],
             y: [1, 2, 3, 1, 2, 3],
             z: [1, 2, 3, 4, 5, 6],
-            text: ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+            text: ['a', 'b', 'c', 'd', 'e', 'f', 'g'],
+            _length: 6
         };
 
         convertColumnXYZ(trace, xa, ya, 'x', 'y', ['z']);
