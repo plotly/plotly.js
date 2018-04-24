@@ -422,7 +422,6 @@ describe('Rangeslider visibility property', function() {
     });
 
     it('should clear traces in range plot when needed', function(done) {
-
         function count(query) {
             return d3.select(getRangeSlider()).selectAll(query).size();
         }
@@ -468,12 +467,12 @@ describe('Rangeslider visibility property', function() {
             }]);
         })
         .then(function() {
-            expect(count('g.imagelayer > g.hm')).toEqual(1);
+            expect(count('g.heatmaplayer > g.hm')).toEqual(1);
 
             return Plotly.restyle(gd, 'visible', false);
         })
         .then(function() {
-            expect(count('g.imagelayer > g.hm')).toEqual(0);
+            expect(count('g.heatmaplayer > g.hm')).toEqual(0);
 
             return Plotly.restyle(gd, {
                 visible: true,
@@ -481,25 +480,25 @@ describe('Rangeslider visibility property', function() {
             });
         })
         .then(function() {
-            expect(count('g.maplayer > g.contour')).toEqual(1);
+            expect(count('g.contourlayer > g.contour')).toEqual(1);
 
             return Plotly.restyle(gd, 'type', 'heatmap');
         })
         .then(function() {
-            expect(count('g.imagelayer > g.hm')).toEqual(1);
-            expect(count('g.maplayer > g.contour')).toEqual(0);
+            expect(count('g.heatmaplayer > g.hm')).toEqual(1);
+            expect(count('g.contourlayer > g.contour')).toEqual(0);
 
             return Plotly.restyle(gd, 'type', 'contour');
         })
         .then(function() {
-            expect(count('g.imagelayer > g.hm')).toEqual(0);
-            expect(count('g.maplayer > g.contour')).toEqual(1);
+            expect(count('g.heatmaplayer > g.hm')).toEqual(0);
+            expect(count('g.contourlayer > g.contour')).toEqual(1);
 
             return Plotly.deleteTraces(gd, [0]);
         })
         .then(function() {
-            expect(count('g.imagelayer > g.hm')).toEqual(0);
-            expect(count('g.maplayer > g.contour')).toEqual(0);
+            expect(count('g.heatmaplayer > g.hm')).toEqual(0);
+            expect(count('g.contourlayer > g.contour')).toEqual(0);
         })
         .catch(failTest)
         .then(done);
