@@ -146,6 +146,21 @@ describe('scatterternary defaults', function() {
         expect(traceOut._length).toBe(1);
     });
 
+    it('is set visible: false if a, b, or c is empty', function() {
+        var trace0 = {
+            a: [1, 2],
+            b: [2, 1],
+            c: [2, 2]
+        };
+
+        ['a', 'b', 'c'].forEach(function(letter) {
+            traceIn = Lib.extendDeep({}, trace0);
+            traceIn[letter] = [];
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.visible).toBe(false, letter);
+        });
+    });
+
     it('should include \'name\' in \'hoverinfo\' default if multi trace graph', function() {
         traceIn = {
             type: 'scatterternary',

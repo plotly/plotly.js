@@ -34,13 +34,30 @@ describe('Test histogram', function() {
             traceIn = {
                 y: []
             };
+            traceOut = {};
+            supplyDefaults(traceIn, traceOut, '', {});
+            expect(traceOut.visible).toBe(false);
+        });
+
+        it('should set visible to false when x or y is empty AND the other is present', function() {
+            traceIn = {
+                x: [],
+                y: [1, 2, 2]
+            };
+            supplyDefaults(traceIn, traceOut, '', {});
+            expect(traceOut.visible).toBe(false);
+
+            traceIn = {
+                x: [1, 2, 2],
+                y: []
+            };
+            traceOut = {};
             supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
         });
 
         it('should set visible to false when type is histogram2d(contour) and x or y are empty', function() {
             traceIn = {
-                type: 'histogram2d',
                 x: [],
                 y: [1, 2, 2]
             };
@@ -51,6 +68,7 @@ describe('Test histogram', function() {
                 x: [1, 2, 2],
                 y: []
             };
+            traceOut = {};
             supplyDefaults2D(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
@@ -58,6 +76,7 @@ describe('Test histogram', function() {
                 x: [],
                 y: []
             };
+            traceOut = {};
             supplyDefaults2D(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
 
@@ -65,6 +84,7 @@ describe('Test histogram', function() {
                 x: [],
                 y: [1, 2, 2]
             };
+            traceOut = {};
             supplyDefaults2DC(traceIn, traceOut, '', {});
             expect(traceOut.visible).toBe(false);
         });
@@ -80,6 +100,7 @@ describe('Test histogram', function() {
                 x: [1, 2, 2],
                 y: [1, 2, 2]
             };
+            traceOut = {};
             supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.orientation).toBe('v');
         });
@@ -111,6 +132,7 @@ describe('Test histogram', function() {
             traceIn = {
                 x: [1, 2, 2]
             };
+            traceOut = {};
             supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.autobinx).toBeUndefined();
         });
@@ -130,6 +152,7 @@ describe('Test histogram', function() {
             traceIn = {
                 y: [1, 2, 2]
             };
+            traceOut = {};
             supplyDefaults(traceIn, traceOut, '', {});
             expect(traceOut.autobiny).toBeUndefined();
         });

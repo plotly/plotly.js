@@ -141,7 +141,7 @@ describe('finance charts defaults:', function() {
         expect(out._fullData[1]._fullInput.x).toBeDefined();
     });
 
-    it('should set visible to *false* when minimum supplied length is 0', function() {
+    it('should set visible to *false* when a component (other than x) is missing', function() {
         var trace0 = Lib.extendDeep({}, mock0, { type: 'ohlc' });
         trace0.close = undefined;
 
@@ -158,6 +158,17 @@ describe('finance charts defaults:', function() {
         });
 
         expect(visibilities).toEqual([false, false]);
+    });
+
+    it('should return visible: false if any data component is empty', function() {
+        ['ohlc', 'candlestick'].forEach(function(type) {
+            ['open', 'high', 'low', 'close', 'x'].forEach(function(attr) {
+                var trace = Lib.extendDeep({}, mock1, {type: type});
+                trace[attr] = [];
+                var out = _supply([trace]);
+                expect(out._fullData[0].visible).toBe(false, type + ' - ' + attr);
+            });
+        });
     });
 
     it('direction *showlegend* should be inherited from trace-wide *showlegend*', function() {

@@ -24,8 +24,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var x = coerce('x');
     var y = coerce('y');
-    var hasX = x && x.length;
-    var hasY = y && y.length;
 
     var cumulative = coerce('cumulative.enabled');
     if(cumulative) {
@@ -35,12 +33,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
 
-    var orientation = coerce('orientation', (hasY && !hasX) ? 'h' : 'v');
+    var orientation = coerce('orientation', (y && !x) ? 'h' : 'v');
     var sampleLetter = orientation === 'v' ? 'x' : 'y';
     var aggLetter = orientation === 'v' ? 'y' : 'x';
-    var sample = traceOut[sampleLetter];
 
-    var len = (hasX && hasY) ? Math.min(x.length && y.length) : (sample || []).length;
+    var len = (x && y) ? Math.min(x.length && y.length) : (traceOut[sampleLetter] || []).length;
 
     if(!len) {
         traceOut.visible = false;

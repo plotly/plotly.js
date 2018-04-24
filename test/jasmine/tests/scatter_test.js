@@ -79,6 +79,22 @@ describe('Test scatter', function() {
             expect(traceOut.visible).toBe(false);
         });
 
+        [{letter: 'y', counter: 'x'}, {letter: 'x', counter: 'y'}].forEach(function(spec) {
+            var l = spec.letter;
+            var c = spec.counter;
+            var c0 = c + '0';
+            var dc = 'd' + c;
+            it('should be visible using ' + c0 + '/' + dc + ' if ' + c + ' is missing completely but ' + l + ' is present', function() {
+                traceIn = {};
+                traceIn[spec.letter] = [1, 2];
+                supplyDefaults(traceIn, traceOut, defaultColor, layout);
+                expect(traceOut.visible).toBe(undefined, l); // visible: true gets set above the module level
+                expect(traceOut._length).toBe(2, l);
+                expect(traceOut[c0]).toBe(0, c0);
+                expect(traceOut[dc]).toBe(1, dc);
+            });
+        });
+
         it('should correctly assign \'hoveron\' default', function() {
             traceIn = {
                 x: [1, 2, 3],

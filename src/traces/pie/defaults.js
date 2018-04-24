@@ -21,9 +21,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var len;
 
     var vals = coerce('values');
-    var hasVals = Lib.isArrayOrTypedArray(vals) && vals.length;
+    var hasVals = Lib.isArrayOrTypedArray(vals);
     var labels = coerce('labels');
-    if(Array.isArray(labels) && labels.length) {
+    if(Array.isArray(labels)) {
         len = labels.length;
         if(hasVals) len = Math.min(len, vals.length);
     }
@@ -38,6 +38,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
         coerce('label0');
         coerce('dlabel');
+    }
+
+    if(!len) {
+        traceOut.visible = false;
+        return;
     }
     traceOut._length = len;
 
