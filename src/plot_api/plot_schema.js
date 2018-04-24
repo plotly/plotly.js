@@ -266,6 +266,9 @@ exports.getTraceValObject = function(trace, parts) {
     var moduleAttrs, valObject;
 
     if(head === 'transforms') {
+        if(parts.length === 1) {
+            return baseAttributes.transforms;
+        }
         var transforms = trace.transforms;
         if(!Array.isArray(transforms) || !transforms.length) return false;
         var tNum = parts[1];

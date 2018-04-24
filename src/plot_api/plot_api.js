@@ -2467,13 +2467,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         return valObject.valType === 'data_array' || valObject.arrayOk;
     }
 
-    // for transforms: look at _fullInput rather than the transform result, which often
-    // contains generated arrays.
-    var newFullInput = newContainer._fullInput;
-    var oldFullInput = oldContainer._fullInput;
-    if(newFullInput && newFullInput !== newContainer) newContainer = newFullInput;
-    if(oldFullInput && oldFullInput !== oldContainer) oldContainer = oldFullInput;
-
     for(key in oldContainer) {
         // short-circuit based on previous calls or previous keys that already maximized the pathway
         if(flags.calc) return;

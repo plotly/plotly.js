@@ -182,6 +182,70 @@ describe('groupby', function() {
             .then(done);
         });
 
+        it('Plotly.react should work', function(done) {
+            var data = Lib.extendDeep([], mockData0);
+            data[0].marker = { size: 20 };
+
+            var gd = createGraphDiv();
+            var dims = [4, 3];
+
+            Plotly.plot(gd, data).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                gd.data[0].marker.opacity = 0.4;
+                // contrived test of relinkPrivateKeys
+                // we'll have to do better if we refactor it to opt-in instead of catchall
+                gd._fullData[0].marker._boo = 'here I am';
+                return Plotly.react(gd, gd.data, gd.layout);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [0.4, 0.4]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(0.4);
+                expect(gd._fullData[1].marker.opacity).toEqual(0.4);
+                expect(gd._fullData[0].marker._boo).toBe('here I am');
+
+                gd.data[0].marker.opacity = 1;
+                return Plotly.react(gd, gd.data, gd.layout);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(1);
+                expect(gd._fullData[1].marker.opacity).toEqual(1);
+
+                // edit just affects the first group
+                gd.data[0].transforms[0].styles[0].value.marker.color = 'green';
+                return Plotly.react(gd, gd.data, gd.layout);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(0, 128, 0)', 'rgb(0, 0, 255)'],
+                    [1, 1]
+                );
+
+                expect(gd._fullData[0].marker.opacity).toEqual(1);
+                expect(gd._fullData[1].marker.opacity).toEqual(1);
+
+                // edit just affects the second group
+                gd.data[0].transforms[0].styles[1].value.marker.color = 'red';
+                return Plotly.react(gd, gd.data, gd.layout);
+            }).then(function() {
+                assertStyle(dims,
+                    ['rgb(0, 128, 0)', 'rgb(255, 0, 0)'],
+                    [1, 1]
+                );
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('Plotly.extendTraces should work', function(done) {
             var data = Lib.extendDeep([], mockData0);
 
