@@ -15,7 +15,7 @@ var boxPlot = require('../box/plot');
 var linePoints = require('../scatter/line_points');
 var helpers = require('./helpers');
 
-module.exports = function plot(gd, plotinfo, cd) {
+module.exports = function plot(gd, plotinfo, cd, violinLayer) {
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
@@ -32,8 +32,7 @@ module.exports = function plot(gd, plotinfo, cd) {
         return Drawing.smoothopen(segments[0], 1);
     }
 
-    var traces = plotinfo.plot.select('.violinlayer')
-        .selectAll('g.trace.violins')
+    var traces = violinLayer.selectAll('g.trace.violins')
         .data(cd, function(d) { return d[0].trace.uid; });
 
     traces.enter().append('g')

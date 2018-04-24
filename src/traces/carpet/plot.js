@@ -30,7 +30,7 @@ module.exports = function plot(gd, plotinfo, cdcarpet) {
     }
 };
 
-function plotOne(gd, plotinfo, cd) {
+function plotOne(gd, plotinfo, cd, carpetLayer) {
     var t = cd[0];
     var trace = cd[0].trace,
         xa = plotinfo.xaxis,
@@ -39,10 +39,9 @@ function plotOne(gd, plotinfo, cd) {
         bax = trace.baxis,
         fullLayout = gd._fullLayout;
 
-    var gridLayer = plotinfo.plot.select('.carpetlayer');
     var clipLayer = fullLayout._clips;
 
-    var axisLayer = Lib.ensureSingle(gridLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
+    var axisLayer = Lib.ensureSingle(carpetLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
     var minorLayer = Lib.ensureSingle(axisLayer, 'g', 'minorlayer');
     var majorLayer = Lib.ensureSingle(axisLayer, 'g', 'majorlayer');
     var boundaryLayer = Lib.ensureSingle(axisLayer, 'g', 'boundarylayer');

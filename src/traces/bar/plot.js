@@ -30,13 +30,12 @@ var attributes = require('./attributes'),
 // padding in pixels around text
 var TEXTPAD = 3;
 
-module.exports = function plot(gd, plotinfo, cdbar) {
-    var xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        fullLayout = gd._fullLayout;
+module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+    var fullLayout = gd._fullLayout;
 
-    var bartraces = plotinfo.plot.select('.barlayer')
-        .selectAll('g.trace.bars')
+    var bartraces = barLayer.selectAll('g.trace.bars')
         .data(cdbar, function(d) { return d[0].trace.uid; });
 
     bartraces.enter().append('g')

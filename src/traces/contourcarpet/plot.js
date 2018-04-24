@@ -32,7 +32,7 @@ module.exports = function plot(gd, plotinfo, cdcontours) {
     }
 };
 
-function plotOne(gd, plotinfo, cd) {
+function plotOne(gd, plotinfo, cd, contourcarpetLayer) {
     var trace = cd[0].trace;
 
     var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
@@ -96,7 +96,7 @@ function plotOne(gd, plotinfo, cd) {
     mapPathinfo(pathinfo, ab2p);
 
     // draw everything
-    var plotGroup = contourPlot.makeContourGroup(plotinfo, cd, id);
+    var plotGroup = contourPlot.makeContourGroup(contourcarpetLayer, cd, id);
 
     // Compute the boundary path
     var seg, xp, yp, i;

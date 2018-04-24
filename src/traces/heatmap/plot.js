@@ -25,7 +25,7 @@ module.exports = function(gd, plotinfo, cdheatmaps) {
     }
 };
 
-function plotOne(gd, plotinfo, cd) {
+function plotOne(gd, plotinfo, cd, heatmapLayer) {
     var cd0 = cd[0];
     var trace = cd0.trace;
     var uid = trace.uid;
@@ -137,8 +137,7 @@ function plotOne(gd, plotinfo, cd) {
     // if image is entirely off-screen, don't even draw it
     var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
 
-    var plotgroup = plotinfo.plot.select('.imagelayer')
-        .selectAll('g.hm.' + id)
+    var plotgroup = heatmapLayer.selectAll('g.hm.' + id)
         .data(isOffScreen ? [] : [0]);
 
     plotgroup.enter().append('g')

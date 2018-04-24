@@ -10,10 +10,13 @@
 'use strict';
 
 var d3 = require('d3');
+
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Plots = require('../plots');
-var getModuleCalcData = require('../get_data').getModuleCalcData;
+var Drawing = require('../../components/drawing');
 
+var getModuleCalcData = require('../get_data').getModuleCalcData;
 var axisIds = require('./axis_ids');
 var constants = require('./constants');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
@@ -179,40 +182,75 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
 };
 
 function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback) {
+    var traceLayerClasses = constants.traceLayerClasses;
     var fullLayout = gd._fullLayout;
     var modules = fullLayout._modules;
-    // list of plot methods to call (this list includes plot methods of 'gone' modules)
-    var plotMethodsToCall = plotinfo.plotMethods || [];
-    // list of plot methods of visible module on this subplot
-    var plotMethods = [];
-    var i, plotMethod;
+    var _module, cdModuleAndOthers, cdModule;
 
-    for(i = 0; i < modules.length; i++) {
-        var _module = modules[i];
+    var layerData = [];
 
-        if(_module.basePlotModule.name === 'cartesian') {
-            plotMethod = _module.plot;
-            Lib.pushUnique(plotMethodsToCall, plotMethod);
-            Lib.pushUnique(plotMethods, plotMethod);
+    for(var i = 0; i < traceLayerClasses.length; i++) {
+        var className = traceLayerClasses[i];
+
+        for(var j = 0; j < modules.length; j++) {
+            _module = modules[j];
+
+            if(_module.basePlotModule.name === 'cartesian' &&
+                (_module.layerName || _module.name + 'layer') === className
+            ) {
+                var plotMethod = _module.plot;
+
+                // plot all traces of this type on this subplot at once
+                cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
+                cdModule = cdModuleAndOthers[0];
+                // don't need to search the found traces again - in fact we need to NOT
+                // so that if two modules share the same plotter we don't double-plot
+                cdSubplot = cdModuleAndOthers[1];
+
+                if(cdModule.length) {
+                    layerData.push({
+                        className: className,
+                        plotMethod: plotMethod,
+                        cdModule: cdModule
+                    });
+                }
+                break;
+            }
         }
     }
 
-    for(i = 0; i < plotMethodsToCall.length; i++) {
-        plotMethod = plotMethodsToCall[i];
+    var layers = plotinfo.plot.selectAll('g.mlayer')
+        .data(layerData, function(d) { return d.className; });
 
-        // plot all traces of this type on this subplot at once
-        var cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
-        var cdModule = cdModuleAndOthers[0];
-        // don't need to search the found traces again - in fact we need to NOT
-        // so that if two modules share the same plotter we don't double-plot
-        cdSubplot = cdModuleAndOthers[1];
+    layers.enter().append('g')
+        .attr('class', function(d) { return d.className; })
+        .classed('mlayer', true);
 
-        plotMethod(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+    layers.exit().remove();
+
+    layers.order();
+
+    layers.each(function(d) {
+        var sel = d3.select(this);
+        var className = d.className;
+
+        d.plotMethod(
+            gd, plotinfo, d.cdModule, sel,
+            transitionOpts, makeOnCompleteCallback
+        );
+
+        // layers that allow `cliponaxis: false`
+        if(className !== 'scatterlayer' && className !== 'barlayer') {
+            Drawing.setClipUrl(sel, plotinfo.layerClipId);
+        }
+    });
+
+    // call Scattergl.plot separately
+    if(fullLayout._has('scattergl')) {
+        _module = Registry.getModule('scattergl');
+        cdModule = getModuleCalcData(cdSubplot, _module)[0];
+        _module.plot(gd, plotinfo, cdModule);
     }
-
-    // save list of plot methods on subplot for later,
-    // so that they can be called to clear traces of 'gone' modules
-    plotinfo.plotMethods = plotMethods;
 }
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
@@ -441,10 +479,6 @@ function makeSubplotLayer(gd, plotinfo) {
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
         plotinfo.gridlayer.selectAll('g').sort(axisIds.idSort);
-
-        for(var i = 0; i < constants.traceLayerClasses.length; i++) {
-            ensureSingle(plotinfo.plot, 'g', constants.traceLayerClasses[i]);
-        }
     }
 
     plotinfo.xlines

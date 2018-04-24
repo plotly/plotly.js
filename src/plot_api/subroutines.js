@@ -21,7 +21,6 @@ var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
 
 var Axes = require('../plots/cartesian/axes');
-var cartesianConstants = require('../plots/cartesian/constants');
 var alignmentConstants = require('../constants/alignment');
 var axisConstraints = require('../plots/cartesian/constraints');
 var enforceAxisConstraints = axisConstraints.enforce;
@@ -199,15 +198,9 @@ exports.lsInner = function(gd) {
 
         Drawing.setClipUrl(plotinfo.plot, plotClipId);
 
-        for(i = 0; i < cartesianConstants.traceLayerClasses.length; i++) {
-            var layer = cartesianConstants.traceLayerClasses[i];
-            if(layer !== 'scatterlayer' && layer !== 'barlayer') {
-                plotinfo.plot.selectAll('g.' + layer).call(Drawing.setClipUrl, layerClipId);
-            }
-        }
-
         // stash layer clipId value (null or same as clipId)
-        // to DRY up Drawing.setClipUrl calls downstream
+        // to DRY up Drawing.setClipUrl calls on trace-module and trace layers
+        // downstream
         plotinfo.layerClipId = layerClipId;
 
         // figure out extra axis line and tick positions as needed

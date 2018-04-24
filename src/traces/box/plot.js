@@ -17,13 +17,12 @@ var Drawing = require('../../components/drawing');
 var JITTERCOUNT = 5; // points either side of this to include
 var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
-function plot(gd, plotinfo, cdbox) {
+function plot(gd, plotinfo, cdbox, boxLayer) {
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var boxtraces = plotinfo.plot.select('.boxlayer')
-        .selectAll('g.trace.boxes')
+    var boxtraces = boxLayer.selectAll('g.trace.boxes')
         .data(cdbox, function(d) { return d[0].trace.uid; });
 
     boxtraces.enter().append('g')
