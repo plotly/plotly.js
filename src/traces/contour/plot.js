@@ -27,9 +27,18 @@ var constants = require('./constants');
 var costConstants = constants.LABELOPTIMIZER;
 
 
-exports.plot = function plot(gd, plotinfo, cdcontours) {
-    for(var i = 0; i < cdcontours.length; i++) {
-        plotOne(gd, plotinfo, cdcontours[i]);
+exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
+    var i;
+
+    contourLayer.selectAll('g.contour').each(function(d) {
+        for(i = 0; i < cdcontours.length; i++) {
+            if(d.trace.uid === cdcontours[i][0].trace.uid) return;
+        }
+        d3.select(this).remove();
+    });
+
+    for(i = 0; i < cdcontours.length; i++) {
+        plotOne(gd, plotinfo, cdcontours[i], contourLayer);
     }
 };
 

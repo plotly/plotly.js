@@ -488,34 +488,13 @@ exports.doCamera = function(gd) {
 exports.drawData = function(gd) {
     var fullLayout = gd._fullLayout;
     var calcdata = gd.calcdata;
-    var rangesliderContainers = fullLayout._infolayer.selectAll('g.rangeslider-container');
     var i;
 
-    // in case of traces that were heatmaps or contour maps
-    // previously, remove them and their colorbars explicitly
+    // remove old colorbars explicitly
     for(i = 0; i < calcdata.length; i++) {
         var trace = calcdata[i][0].trace;
-        var isVisible = (trace.visible === true);
-        var uid = trace.uid;
-
-        if(!isVisible || !Registry.traceIs(trace, '2dMap')) {
-            var query = (
-                '.hm' + uid +
-                ',.contour' + uid +
-                ',#clip' + uid
-            );
-
-            fullLayout._paper
-                .selectAll(query)
-                .remove();
-
-            rangesliderContainers
-                .selectAll(query)
-                .remove();
-        }
-
-        if(!isVisible || !trace._module.colorbar) {
-            fullLayout._infolayer.selectAll('.cb' + uid).remove();
+        if(trace.visible !== true || !trace._module.colorbar) {
+            fullLayout._infolayer.select('.cb' + trace.uid).remove();
         }
     }
 

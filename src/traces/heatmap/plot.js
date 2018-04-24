@@ -9,6 +9,7 @@
 
 'use strict';
 
+var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
@@ -18,32 +19,28 @@ var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var maxRowLength = require('./max_row_length');
 
+module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
+    var i;
 
-module.exports = function(gd, plotinfo, cdheatmaps) {
-    for(var i = 0; i < cdheatmaps.length; i++) {
-        plotOne(gd, plotinfo, cdheatmaps[i]);
+    heatmapLayer.selectAll('.hm > image').each(function(d) {
+        var oldTrace = d.trace || {};
+        for(i = 0; i < cdheatmaps.length; i++) {
+            if(oldTrace.uid === cdheatmaps[i][0].trace.uid) return;
+        }
+        d3.select(this.parentNode).remove();
+    });
+
+    for(i = 0; i < cdheatmaps.length; i++) {
+        plotOne(gd, plotinfo, cdheatmaps[i], heatmapLayer);
     }
 };
 
 function plotOne(gd, plotinfo, cd, heatmapLayer) {
     var cd0 = cd[0];
     var trace = cd0.trace;
-    var uid = trace.uid;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var fullLayout = gd._fullLayout;
-    var id = 'hm' + uid;
-
-    // in case this used to be a contour map
-    fullLayout._paper.selectAll('.contour' + uid).remove();
-    fullLayout._infolayer.selectAll('g.rangeslider-container')
-        .selectAll('.contour' + uid).remove();
-
-    if(trace.visible !== true) {
-        fullLayout._paper.selectAll('.' + id).remove();
-        fullLayout._infolayer.selectAll('.cb' + uid).remove();
-        return;
-    }
+    var id = 'hm' + trace.uid;
 
     var z = cd0.z;
     var x = cd0.x;

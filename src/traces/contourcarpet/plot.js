@@ -26,9 +26,18 @@ var lookupCarpet = require('../carpet/lookup_carpetid');
 var closeBoundaries = require('../contour/close_boundaries');
 
 
-module.exports = function plot(gd, plotinfo, cdcontours) {
-    for(var i = 0; i < cdcontours.length; i++) {
-        plotOne(gd, plotinfo, cdcontours[i]);
+module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
+    var i;
+
+    contourcarpetLayer.selectAll('g.contour').each(function(d) {
+        for(i = 0; i < cdcontours.length; i++) {
+            if(d.trace.uid === cdcontours[i][0].trace.uid) return;
+        }
+        d3.select(this).remove();
+    });
+
+    for(i = 0; i < cdcontours.length; i++) {
+        plotOne(gd, plotinfo, cdcontours[i], contourcarpetLayer);
     }
 };
 
@@ -46,7 +55,6 @@ function plotOne(gd, plotinfo, cd, contourcarpetLayer) {
     var uid = trace.uid;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var fullLayout = gd._fullLayout;
     var id = 'contour' + uid;
     var pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
     var isConstraint = contours.type === 'constraint';
@@ -57,11 +65,6 @@ function plotOne(gd, plotinfo, cd, contourcarpetLayer) {
     function ab2p(ab) {
         var pt = carpet.ab2xy(ab[0], ab[1], true);
         return [xa.c2p(pt[0]), ya.c2p(pt[1])];
-    }
-
-    if(trace.visible !== true) {
-        fullLayout._infolayer.selectAll('.cb' + uid).remove();
-        return;
     }
 
     // Define the perimeter in a/b coordinates:

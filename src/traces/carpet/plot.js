@@ -18,15 +18,20 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var Lib = require('../../lib');
 var alignmentConstants = require('../../constants/alignment');
 
-module.exports = function plot(gd, plotinfo, cdcarpet) {
-    if(!cdcarpet.length) {
-        plotinfo.plot.select('.carpetlayer')
-            .selectAll('g.trace')
-            .remove();
-    }
+module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
+    var i;
 
-    for(var i = 0; i < cdcarpet.length; i++) {
-        plotOne(gd, plotinfo, cdcarpet[i]);
+    carpetLayer.selectAll('g.trace').each(function() {
+        var classString = d3.select(this).attr('class');
+        var oldUid = classString.split('carpet')[1].split(/\s/)[0];
+        for(i = 0; i < cdcarpet.length; i++) {
+            if(oldUid === cdcarpet[i][0].trace.uid) return;
+        }
+        d3.select(this).remove();
+    });
+
+    for(i = 0; i < cdcarpet.length; i++) {
+        plotOne(gd, plotinfo, cdcarpet[i], carpetLayer);
     }
 };
 
