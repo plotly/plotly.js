@@ -51,7 +51,7 @@ function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
             coerce('x0');
             len = y.length;
         }
-    } else if(x && x.length) {
+    } else if(hasX) {
         defaultOrientation = 'h';
         coerce('y0');
         len = x.length;

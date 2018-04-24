@@ -9,7 +9,7 @@
 'use strict';
 
 var colorscaleCalc = require('../../components/colorscale/calc');
-var is1D = require('../../lib').is1D;
+var isArray1D = require('../../lib').isArray1D;
 
 var convertColumnData = require('../heatmap/convert_column_xyz');
 var clean2dArray = require('../heatmap/clean_2d_array');
@@ -70,7 +70,7 @@ function heatmappishCalc(gd, trace) {
     aax._minDtick = 0;
     bax._minDtick = 0;
 
-    if(is1D(trace.z)) convertColumnData(trace, aax, bax, 'a', 'b', ['z']);
+    if(isArray1D(trace.z)) convertColumnData(trace, aax, bax, 'a', 'b', ['z']);
     a = trace._a = trace._a || trace.a;
     b = trace._b = trace._b || trace.b;
 

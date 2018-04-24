@@ -17,7 +17,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     var col1 = trace[var1Name].slice(0, colLen);
     var col2 = trace[var2Name].slice(0, colLen);
     var textCol = trace.text;
-    var hasColumnText = (textCol !== undefined && Lib.is1D(textCol));
+    var hasColumnText = (textCol !== undefined && Lib.isArray1D(textCol));
     var col1Calendar = trace[var1Name + 'calendar'];
     var col2Calendar = trace[var2Name + 'calendar'];
 

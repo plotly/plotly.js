@@ -58,7 +58,7 @@ module.exports = function calc(gd, trace) {
     }
     else {
         var zIn = trace.z;
-        if(Lib.is1D(zIn)) {
+        if(Lib.isArray1D(zIn)) {
             convertColumnData(trace, xa, ya, 'x', 'y', ['z']);
             x = trace._x;
             y = trace._y;

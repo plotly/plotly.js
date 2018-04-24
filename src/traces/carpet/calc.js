@@ -9,7 +9,7 @@
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
-var is1D = require('../../lib').is1D;
+var isArray1D = require('../../lib').isArray1D;
 var cheaterBasis = require('./cheater_basis');
 var arrayMinmax = require('./array_minmax');
 var calcGridlines = require('./calc_gridlines');
@@ -29,8 +29,8 @@ module.exports = function calc(gd, trace) {
     var x = trace.x;
     var y = trace.y;
     var cols = [];
-    if(x && is1D(x)) cols.push('x');
-    if(y && is1D(y)) cols.push('y');
+    if(x && isArray1D(x)) cols.push('x');
+    if(y && isArray1D(y)) cols.push('y');
 
     if(cols.length) {
         convertColumnData(trace, aax, bax, 'a', 'b', cols);

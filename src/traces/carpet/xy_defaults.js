@@ -9,7 +9,7 @@
 
 'use strict';
 
-var is1D = require('../../lib').is1D;
+var isArray1D = require('../../lib').isArray1D;
 
 module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     var x = coerce('x');
@@ -20,7 +20,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
 
     traceOut._cheater = !x;
 
-    if((!hasX || is1D(x)) && (!hasY || is1D(y))) {
+    if((!hasX || isArray1D(x)) && (!hasY || isArray1D(y))) {
         var len = hasX ? x.length : Infinity;
         if(hasY) len = Math.min(len, y.length);
         if(traceOut.a && traceOut.a.length) len = Math.min(len, traceOut.a.length);

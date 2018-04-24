@@ -35,7 +35,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
     var isConstraint = (coerce('contours.type') === 'constraint');
-    coerce('connectgaps', Lib.is1D(traceOut.z));
+    coerce('connectgaps', Lib.isArray1D(traceOut.z));
 
     // trace-level showlegend has already been set, but is only allowed if this is a constraint
     if(!isConstraint) delete traceOut.showlegend;

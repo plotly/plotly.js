@@ -30,7 +30,7 @@ lib.ensureArray = require('./ensure_array');
 var isArrayModule = require('./is_array');
 lib.isTypedArray = isArrayModule.isTypedArray;
 lib.isArrayOrTypedArray = isArrayModule.isArrayOrTypedArray;
-lib.is1D = isArrayModule.is1D;
+lib.isArray1D = isArrayModule.isArray1D;
 
 var coerceModule = require('./coerce');
 lib.valObjectMeta = coerceModule.valObjectMeta;

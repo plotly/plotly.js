@@ -2270,7 +2270,7 @@ exports.react = function(gd, data, layout, config) {
         // "true" skips updating calcdata and remapping arrays from calcTransforms,
         // which supplyDefaults usually does at the end, but we may need to NOT do
         // if the diff (which we haven't determined yet) says we'll recalc
-        Plots.supplyDefaults(gd, true);
+        Plots.supplyDefaults(gd, {skipUpdateCalc: true});
 
         var newFullData = gd._fullData;
         var newFullLayout = gd._fullLayout;

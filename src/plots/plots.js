@@ -254,27 +254,37 @@ var extraFormatKeys = [
     'year', 'month', 'dayMonth', 'dayMonthYear'
 ];
 
-// Fill in default values:
-//
-// gd.data, gd.layout:
-//   are precisely what the user specified,
-//   these fields shouldn't be modified nor used directly
-//   after the supply defaults step.
-//
-// gd._fullData, gd._fullLayout:
-//   are complete descriptions of how to draw the plot,
-//   use these fields in all required computations.
-//
-// gd._fullLayout._modules
-//   is a list of all the trace modules required to draw the plot.
-//
-// gd._fullLayout._basePlotModules
-//   is a list of all the plot modules required to draw the plot.
-//
-// gd._fullLayout._transformModules
-//   is a list of all the transform modules invoked.
-//
-plots.supplyDefaults = function(gd, skipCalcUpdate) {
+/*
+ * Fill in default values
+ * @param {DOM element} gd
+ * @param {object} opts
+ * @param {boolean} opts.skipUpdateCalc: normally if the existing gd.calcdata looks
+ *   compatible with the new gd._fullData we finish by linking the new _fullData traces
+ *   to the old gd.calcdata, so it's correctly set if we're not going to recalc. But also,
+ *   if there are calcTransforms on the trace, we first remap data arrays from the old full
+ *   trace into the new one. Use skipUpdateCalc to defer this (needed by Plotly.react)
+ *
+ * gd.data, gd.layout:
+ *   are precisely what the user specified,
+ *   these fields shouldn't be modified nor used directly
+ *   after the supply defaults step.
+ *
+ * gd._fullData, gd._fullLayout:
+ *   are complete descriptions of how to draw the plot,
+ *   use these fields in all required computations.
+ *
+ * gd._fullLayout._modules
+ *   is a list of all the trace modules required to draw the plot.
+ *
+ * gd._fullLayout._basePlotModules
+ *   is a list of all the plot modules required to draw the plot.
+ *
+ * gd._fullLayout._transformModules
+ *   is a list of all the transform modules invoked.
+ *
+ */
+plots.supplyDefaults = function(gd, opts) {
+    var skipUpdateCalc = opts && opts.skipUpdateCalc;
     var oldFullLayout = gd._fullLayout || {};
 
     if(oldFullLayout._skipDefaults) {
@@ -458,7 +468,7 @@ plots.supplyDefaults = function(gd, skipCalcUpdate) {
     }
 
     // update object references in calcdata
-    if(!skipCalcUpdate && oldCalcdata.length === newFullData.length) {
+    if(!skipUpdateCalc && oldCalcdata.length === newFullData.length) {
         plots.supplyDefaultsUpdateCalc(oldCalcdata, newFullData);
     }
 
@@ -471,11 +481,18 @@ plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
         var newTrace = newFullData[i];
         var cd0 = oldCalcdata[i][0];
         if(cd0 && cd0.trace) {
-            if(cd0.trace._hasCalcTransform) {
-                remapTransformedArrays(cd0, newTrace);
-            } else {
-                cd0.trace = newTrace;
+            var oldTrace = cd0.trace;
+            if(oldTrace._hasCalcTransform) {
+                var arrayAttrs = oldTrace._arrayAttrs;
+                var j, astr, oldArrayVal;
+
+                for(j = 0; j < arrayAttrs.length; j++) {
+                    astr = arrayAttrs[j];
+                    oldArrayVal = Lib.nestedProperty(oldTrace, astr).get().slice();
+                    Lib.nestedProperty(newTrace, astr).set(oldArrayVal);
+                }
             }
+            cd0.trace = newTrace;
         }
     }
 };
@@ -520,25 +537,6 @@ function emptySubplotLists() {
         out[collectableSubplotTypes[i]] = [];
     }
     return out;
-}
-
-function remapTransformedArrays(cd0, newTrace) {
-    var oldTrace = cd0.trace;
-    var arrayAttrs = oldTrace._arrayAttrs;
-    var transformedArrayHash = {};
-    var i, astr;
-
-    for(i = 0; i < arrayAttrs.length; i++) {
-        astr = arrayAttrs[i];
-        transformedArrayHash[astr] = Lib.nestedProperty(oldTrace, astr).get().slice();
-    }
-
-    cd0.trace = newTrace;
-
-    for(i = 0; i < arrayAttrs.length; i++) {
-        astr = arrayAttrs[i];
-        Lib.nestedProperty(cd0.trace, astr).set(transformedArrayHash[astr]);
-    }
 }
 
 /**
