@@ -1001,9 +1001,13 @@ describe('legend interaction', function() {
             };
         }
 
+        function extractVisibilities(data) {
+            return data.map(function(trace) { return trace.visible; });
+        }
+
         function assertVisible(expectation) {
             return function() {
-                var actual = gd._fullData.map(function(trace) { return trace.visible; });
+                var actual = extractVisibilities(gd._fullData);
                 expect(actual).toEqual(expectation);
             };
         }
@@ -1164,6 +1168,102 @@ describe('legend interaction', function() {
                     .then(click(1, 2))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
                     .catch(failTest).then(done);
+            });
+        });
+
+        describe('custom legend click/doubleclick handlers', function() {
+            var fig, to;
+
+            beforeEach(function() {
+                fig = Lib.extendDeep({}, require('@mocks/0.json'));
+            });
+
+            afterEach(function() {
+                clearTimeout(to);
+            });
+
+            function setupFail() {
+                to = setTimeout(function() {
+                    fail('did not trigger plotly_legendclick');
+                }, 2 * DBLCLICKDELAY);
+            }
+
+            it('should call custom click handler before default handler', function(done) {
+                Plotly.newPlot(gd, fig).then(function() {
+                    var gotCalled = false;
+
+                    gd.on('plotly_legendclick', function(d) {
+                        gotCalled = true;
+                        expect(extractVisibilities(d.fullData)).toEqual([true, true, true]);
+                        expect(extractVisibilities(gd._fullData)).toEqual([true, true, true]);
+                    });
+                    gd.on('plotly_restyle', function() {
+                        expect(extractVisibilities(gd._fullData)).toEqual([true, 'legendonly', true]);
+                        if(gotCalled) done();
+                    });
+                    setupFail();
+                })
+                .then(click(1, 1))
+                .catch(failTest);
+            });
+
+            it('should call custom doubleclick handler before default handler', function(done) {
+                Plotly.newPlot(gd, fig).then(function() {
+                    var gotCalled = false;
+
+                    gd.on('plotly_legenddoubleclick', function(d) {
+                        gotCalled = true;
+                        expect(extractVisibilities(d.fullData)).toEqual([true, true, true]);
+                        expect(extractVisibilities(gd._fullData)).toEqual([true, true, true]);
+                    });
+                    gd.on('plotly_restyle', function() {
+                        expect(extractVisibilities(gd._fullData)).toEqual(['legendonly', true, 'legendonly']);
+                        if(gotCalled) done();
+                    });
+                    setupFail();
+                })
+                .then(click(1, 2))
+                .catch(failTest);
+            });
+
+            it('should not call default click handler if custom handler return *false*', function(done) {
+                Plotly.newPlot(gd, fig).then(function() {
+                    gd.on('plotly_legendclick', function(d) {
+                        Plotly.relayout(gd, 'title', 'just clicked on trace #' + d.curveNumber);
+                        return false;
+                    });
+                    gd.on('plotly_relayout', function(d) {
+                        expect(typeof d).toBe('object');
+                        expect(d.title).toBe('just clicked on trace #2');
+                        done();
+                    });
+                    gd.on('plotly_restyle', function() {
+                        fail('should not have triggered plotly_restyle');
+                    });
+                    setupFail();
+                })
+                .then(click(2, 1))
+                .catch(failTest);
+            });
+
+            it('should not call default doubleclick handle if custom handler return *false*', function(done) {
+                Plotly.newPlot(gd, fig).then(function() {
+                    gd.on('plotly_legenddoubleclick', function(d) {
+                        Plotly.relayout(gd, 'title', 'just double clicked on trace #' + d.curveNumber);
+                        return false;
+                    });
+                    gd.on('plotly_relayout', function(d) {
+                        expect(typeof d).toBe('object');
+                        expect(d.title).toBe('just double clicked on trace #0');
+                        done();
+                    });
+                    gd.on('plotly_restyle', function() {
+                        fail('should not have triggered plotly_restyle');
+                    });
+                    setupFail();
+                })
+                .then(click(0, 2))
+                .catch(failTest);
             });
         });
     });
