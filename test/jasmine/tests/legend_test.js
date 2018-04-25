@@ -9,11 +9,10 @@ var helpers = require('@src/components/legend/helpers');
 var anchorUtils = require('@src/components/legend/anchor_utils');
 
 var d3 = require('d3');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-
 
 describe('legend defaults', function() {
     'use strict';
@@ -538,7 +537,7 @@ describe('legend relayout update', function() {
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(1);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -575,7 +574,7 @@ describe('legend relayout update', function() {
         }).then(function() {
             assertLegendStyle('rgb(0, 0, 255)', 'rgb(255, 0, 0)', 10);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -907,7 +906,7 @@ describe('legend interaction', function() {
             .then(function() {
                 assertVisible(gd, [true, true, true, true]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -976,7 +975,7 @@ describe('legend interaction', function() {
                     {target: 3},
                     {target: 4}
                 ]);
-            }).catch(fail).then(done);
+            }).catch(failTest).then(done);
         });
     });
 
@@ -1023,7 +1022,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, 'legendonly', true]))
                     .then(click(0))
                     .then(assertVisible([false, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('clicking once toggles true -> legendonly', function(done) {
@@ -1031,7 +1030,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, 'legendonly', true]))
                     .then(click(1))
                     .then(assertVisible([false, 'legendonly', 'legendonly']))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('double-clicking isolates a visible trace ', function(done) {
@@ -1040,14 +1039,14 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, true]))
                     .then(click(0, 2))
                     .then(assertVisible([false, true, 'legendonly']))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('double-clicking an isolated trace shows all non-hidden traces', function(done) {
                 Promise.resolve()
                     .then(click(0, 2))
                     .then(assertVisible([false, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
         });
 
@@ -1077,7 +1076,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, 'legendonly', true, 'legendonly']))
                     .then(click(1))
                     .then(assertVisible([false, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('isolates legendgroups as a whole', function(done) {
@@ -1086,7 +1085,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, 'legendonly', true]))
                     .then(click(1, 2))
                     .then(assertVisible([false, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
         });
 
@@ -1119,7 +1118,7 @@ describe('legend interaction', function() {
             it('computes the initial visibility correctly', function(done) {
                 Promise.resolve()
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('toggles the visibility of a non-groupby trace in the presence of groupby traces', function(done) {
@@ -1128,7 +1127,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, 'legendonly', true, true, true, true, true]))
                     .then(click(1))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('toggles the visibility of the first group in a groupby trace', function(done) {
@@ -1137,7 +1136,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, 'legendonly', true, true, true, true, true, true]))
                     .then(click(0))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('toggles the visibility of the third group in a groupby trace', function(done) {
@@ -1146,7 +1145,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, true, true, 'legendonly', true, true, true]))
                     .then(click(3))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('double-clicking isolates a non-groupby trace', function(done) {
@@ -1155,7 +1154,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, 'legendonly', 'legendonly', 'legendonly', 'legendonly', 'legendonly', 'legendonly']))
                     .then(click(0, 2))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('double-clicking isolates a groupby trace', function(done) {
@@ -1164,7 +1163,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, 'legendonly', true, 'legendonly', 'legendonly', 'legendonly', 'legendonly', 'legendonly']))
                     .then(click(1, 2))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
         });
     });
