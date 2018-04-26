@@ -1742,6 +1742,51 @@ describe('Test lib.js:', function() {
     });
 
     describe('keyedContainer', function() {
+        describe('with no existing container', function() {
+            it('creates a named container only when setting a value', function() {
+                var container = {};
+                var kCont = Lib.keyedContainer(container, 'styles');
+
+                expect(kCont.get('name1')).toBeUndefined();
+                expect(container).toEqual({});
+
+                kCont.set('name1', null);
+                expect(container).toEqual({});
+
+                kCont.set('name1', 'value1');
+                expect(container).toEqual({
+                    styles: [{name: 'name1', value: 'value1'}]
+                });
+                expect(kCont.get('name1')).toBe('value1');
+                expect(kCont.get('name2')).toBeUndefined();
+            });
+        });
+
+        describe('with no path', function() {
+            it('adds elements just like when there is a path', function() {
+                var arr = [];
+                var kCont = Lib.keyedContainer(arr);
+
+                expect(kCont.get('name1')).toBeUndefined();
+                expect(arr).toEqual([]);
+
+                kCont.set('name1', null);
+                expect(arr).toEqual([]);
+
+                kCont.set('name1', 'value1');
+                expect(arr).toEqual([{name: 'name1', value: 'value1'}]);
+                expect(kCont.get('name1')).toBe('value1');
+                expect(kCont.get('name2')).toBeUndefined();
+            });
+
+            it('does not barf if the array is missing', function() {
+                var kCont = Lib.keyedContainer();
+                kCont.set('name1', null);
+                kCont.set('name1', 'value1');
+                expect(kCont.get('name1')).toBeUndefined();
+            });
+        });
+
         describe('with a filled container', function() {
             var container, carr;
 
