@@ -159,9 +159,6 @@ module.exports = function plot(gd, plotinfo, cd) {
                 bPosPxOffset = boxLineWidth;
             }
 
-            // do not draw whiskers on inner boxes
-            trace.whiskerwidth = 0;
-
             boxPlot.plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, {
                 bPos: bPos,
                 bdPos: bdPosScaled,
