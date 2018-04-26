@@ -3190,8 +3190,9 @@ describe('Test plot api', function() {
             ['gl2d_line_dash', require('@mocks/gl2d_line_dash.json')],
             ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
             ['gl2d_pointcloud-basic', require('@mocks/gl2d_pointcloud-basic.json')],
-            ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
+            ['gl3d_annotations', require('@mocks/gl3d_annotations.json')],
             ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')],
+            ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
             ['glpolar_style', require('@mocks/glpolar_style.json')],
             ['layout_image', require('@mocks/layout_image.json')],
             ['layout-colorway', require('@mocks/layout-colorway.json')],
@@ -3201,6 +3202,7 @@ describe('Test plot api', function() {
             ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
             ['sankey_energy', require('@mocks/sankey_energy.json')],
             ['scattercarpet', require('@mocks/scattercarpet.json')],
+            ['shapes', require('@mocks/shapes.json')],
             ['splom_iris', require('@mocks/splom_iris.json')],
             ['table_wrapped_birds', require('@mocks/table_wrapped_birds.json')],
             ['ternary_fill', require('@mocks/ternary_fill.json')],
@@ -3226,7 +3228,7 @@ describe('Test plot api', function() {
         // Only include scattermapbox locally, see below
         delete typesTested.scattermapbox;
 
-        // Not being supported? This isn't part of the main bundle, and it's pretty broken,
+        // Not really being supported... This isn't part of the main bundle, and it's pretty broken,
         // but it gets registered and used by a couple of the gl2d tests.
         delete typesTested.contourgl;
 
