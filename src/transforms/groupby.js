@@ -73,7 +73,8 @@ exports.attributes = {
                 'For example, with `groups` set to *[\'a\', \'b\', \'a\', \'b\']*',
                 'and `styles` set to *[{target: \'a\', value: { marker: { color: \'red\' } }}]',
                 'marker points in group *\'a\'* will be drawn in red.'
-            ].join(' ')
+            ].join(' '),
+            _compareAsJSON: true
         },
         editType: 'calc'
     },
@@ -115,9 +116,15 @@ exports.supplyDefaults = function(transformIn, traceOut, layout) {
 
     if(styleIn) {
         for(i = 0; i < styleIn.length; i++) {
-            styleOut[i] = {};
+            var thisStyle = styleOut[i] = {};
             Lib.coerce(styleIn[i], styleOut[i], exports.attributes.styles, 'target');
-            Lib.coerce(styleIn[i], styleOut[i], exports.attributes.styles, 'value');
+            var value = Lib.coerce(styleIn[i], styleOut[i], exports.attributes.styles, 'value');
+
+            // so that you can edit value in place and have Plotly.react notice it, or
+            // rebuild it every time and have Plotly.react NOT think it changed:
+            // use _compareAsJSON to say we should diff the _JSON_value
+            if(Lib.isPlainObject(value)) thisStyle.value = Lib.extendDeep({}, value);
+            else if(value) delete thisStyle.value;
         }
     }
 

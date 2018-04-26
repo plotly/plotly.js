@@ -2493,6 +2493,8 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         // in case type changed, we may not even *have* a valObject.
         if(!valObject) continue;
 
+        if(valObject._compareAsJSON && JSON.stringify(oldVal) === JSON.stringify(newVal)) continue;
+
         var valType = valObject.valType;
         var i;
 
