@@ -99,7 +99,7 @@ function heatmappishCalc(gd, trace) {
         z: z,
     };
 
-    if(trace.contours.type === 'levels') {
+    if(trace.contours.type === 'levels' && trace.contours.coloring !== 'none') {
         // auto-z and autocolorscale if applicable
         colorscaleCalc(trace, z, '', 'z');
     }

@@ -161,7 +161,8 @@ function transformOne(trace, state) {
     var groupNameObj;
 
     var opts = state.transform;
-    var groups = trace.transforms[state.transformIndex].groups;
+    var transformIndex = state.transformIndex;
+    var groups = trace.transforms[transformIndex].groups;
     var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
 
     if(!(Array.isArray(groups)) || groups.length === 0) {
@@ -196,7 +197,10 @@ function transformOne(trace, state) {
         // Start with a deep extend that just copies array references.
         newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
         newTrace._group = groupName;
-        newTrace.transforms[state.transformIndex]._indexToPoints = {};
+        // helper function for when we need to push updates back to the input,
+        // outside of the normal restyle/relayout pathway, like filling in auto values
+        newTrace.updateStyle = styleUpdater(groupName, transformIndex);
+        newTrace.transforms[transformIndex]._indexToPoints = {};
 
         var suppliedName = null;
         if(groupNameObj) {
@@ -254,7 +258,7 @@ function transformOne(trace, state) {
     for(j = 0; j < len; j++) {
         newTrace = newData[indexLookup[groups[j]]];
 
-        var indexToPoints = newTrace.transforms[state.transformIndex]._indexToPoints;
+        var indexToPoints = newTrace.transforms[transformIndex]._indexToPoints;
         indexToPoints[indexCnts[groups[j]]] = originalPointsAccessor(j);
         indexCnts[groups[j]]++;
     }
@@ -271,4 +275,15 @@ function transformOne(trace, state) {
     }
 
     return newData;
+}
+
+function styleUpdater(groupName, transformIndex) {
+    return function(trace, attr, value) {
+        Lib.keyedContainer(
+            trace,
+            'transforms[' + transformIndex + '].styles',
+            'target',
+            'value.' + attr
+        ).set(String(groupName), value);
+    };
 }
