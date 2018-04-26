@@ -89,10 +89,6 @@ var Events = {
      * all handlers for a particular event and returns the return value
      * of the LAST handler. This function also triggers jQuery's
      * triggerHandler for backwards compatibility.
-     *
-     * Note: triggerHandler has been recommended for deprecation in v2.0.0,
-     * so the additional behavior of triggerHandler triggering internal events
-     * is deliberate excluded in order to avoid reinforcing more usage.
      */
     triggerHandler: function(plotObj, event, data) {
         var jQueryHandlerValue;
