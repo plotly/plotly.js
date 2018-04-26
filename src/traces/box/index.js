@@ -17,7 +17,8 @@ Box.supplyLayoutDefaults = require('./layout_defaults').supplyLayoutDefaults;
 Box.calc = require('./calc');
 Box.setPositions = require('./set_positions').setPositions;
 Box.plot = require('./plot').plot;
-Box.style = require('./style');
+Box.style = require('./style').style;
+Box.styleOnSelect = require('./style').styleOnSelect;
 Box.hoverPoints = require('./hover').hoverPoints;
 Box.selectPoints = require('./select');
 

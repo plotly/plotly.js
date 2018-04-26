@@ -20,7 +20,8 @@ Bar.setPositions = require('./set_positions');
 Bar.colorbar = require('../scatter/colorbar');
 Bar.arraysToCalcdata = require('./arrays_to_calcdata');
 Bar.plot = require('./plot');
-Bar.style = require('./style');
+Bar.style = require('./style').style;
+Bar.styleOnSelect = require('./style').styleOnSelect;
 Bar.hoverPoints = require('./hover');
 Bar.selectPoints = require('./select');
 

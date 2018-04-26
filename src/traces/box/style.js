@@ -12,7 +12,7 @@ var d3 = require('d3');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 
-module.exports = function style(gd, cd) {
+function style(gd, cd) {
     var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.boxes');
 
     s.style('opacity', function(d) { return d[0].trace.opacity; });
@@ -53,4 +53,21 @@ module.exports = function style(gd, cd) {
             Drawing.selectedPointStyle(pts, trace);
         }
     });
+}
+
+function styleOnSelect(gd, cd) {
+    var s = cd[0].node3;
+    var trace = cd[0].trace;
+    var pts = s.selectAll('path.point');
+
+    if(trace.selectedpoints) {
+        Drawing.selectedPointStyle(pts, trace, gd);
+    } else {
+        Drawing.pointStyle(pts, trace, gd);
+    }
+}
+
+module.exports = {
+    style: style,
+    styleOnSelect: styleOnSelect
 };
