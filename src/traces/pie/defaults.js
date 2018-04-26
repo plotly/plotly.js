@@ -18,19 +18,33 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var coerceFont = Lib.coerceFont;
+    var len;
 
     var vals = coerce('values');
+    var hasVals = Lib.isArrayOrTypedArray(vals);
     var labels = coerce('labels');
+    if(Array.isArray(labels)) {
+        len = labels.length;
+        if(hasVals) len = Math.min(len, vals.length);
+    }
     if(!Array.isArray(labels)) {
-        if(!Lib.isArrayOrTypedArray(vals) || !vals.length) {
+        if(!hasVals) {
             // must have at least one of vals or labels
             traceOut.visible = false;
             return;
         }
 
+        len = vals.length;
+
         coerce('label0');
         coerce('dlabel');
     }
+
+    if(!len) {
+        traceOut.visible = false;
+        return;
+    }
+    traceOut._length = len;
 
     var lineWidth = coerce('marker.line.width');
     if(lineWidth) coerce('marker.line.color');

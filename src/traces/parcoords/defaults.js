@@ -26,7 +26,7 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
             // TODO: I think it would be better to keep showing lines beyond the last line color
             // but I'm not sure what color to give these lines - probably black or white
             // depending on the background color?
-            traceOut._commonLength = Math.min(traceOut._commonLength, lineColor.length);
+            traceOut._length = Math.min(traceOut._length, lineColor.length);
         }
         else {
             traceOut.line.color = defaultColor;
@@ -84,7 +84,7 @@ function dimensionsDefaults(traceIn, traceOut) {
         dimensionsOut.push(dimensionOut);
     }
 
-    traceOut._commonLength = commonLength;
+    traceOut._length = commonLength;
 
     return dimensionsOut;
 }
@@ -108,7 +108,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // but we can't do this in dimensionsDefaults (yet?) because line.color can also
     // truncate
     for(var i = 0; i < dimensions.length; i++) {
-        if(dimensions[i].visible) dimensions[i]._length = traceOut._commonLength;
+        if(dimensions[i].visible) dimensions[i]._length = traceOut._length;
     }
 
     // make default font size 10px (default is 12),

@@ -87,7 +87,7 @@ function convertStyle(gd, trace) {
 }
 
 function convertMarkerStyle(trace) {
-    var count = trace._length || trace._commonLength;
+    var count = trace._length;
     var optsIn = trace.marker;
     var optsOut = {};
     var i;

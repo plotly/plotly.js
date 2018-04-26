@@ -224,7 +224,10 @@ exports.calcTransform = function(gd, trace, opts) {
 
     var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
 
-    for(i = 0; i < groupArray.length; i++) {
+    var len = groupArray.length;
+    if(trace._length) len = Math.min(len, trace._length);
+
+    for(i = 0; i < len; i++) {
         vi = groupArray[i];
         groupIndex = groupIndices[vi];
         if(groupIndex === undefined) {
@@ -254,6 +257,8 @@ exports.calcTransform = function(gd, trace, opts) {
             enabled: true
         });
     }
+
+    trace._length = groupings.length;
 };
 
 function aggregateOneArray(gd, trace, groupings, aggregation) {
@@ -270,6 +275,12 @@ function aggregateOneArray(gd, trace, groupings, aggregation) {
         arrayOut[i] = func(arrayIn, groupings[i]);
     }
     targetNP.set(arrayOut);
+
+    if(aggregation.func === 'count') {
+        // count does not depend on an input array, so it's likely not part of _arrayAttrs yet
+        // but after this transform it most definitely *is* an array attribute.
+        Lib.pushUnique(trace._arrayAttrs, attr);
+    }
 }
 
 function getAggregateFunction(opts, conversions) {

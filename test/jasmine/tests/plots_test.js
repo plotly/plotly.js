@@ -276,12 +276,12 @@ describe('Test Plots', function() {
 
     describe('Plots.supplyTransformDefaults', function() {
         it('should accept an empty layout when transforms present', function() {
-            var traceOut = {};
+            var traceOut = {y: [1], _length: 1};
             Plots.supplyTransformDefaults({}, traceOut, {
                 _globalTransforms: [{ type: 'filter'}]
             });
 
-            // This isn't particularly interseting. More relevant is that
+            // This isn't particularly interesting. More relevant is that
             // the above supplyTransformDefaults call didn't fail due to
             // missing transformModules data.
             expect(traceOut.transforms.length).toEqual(1);

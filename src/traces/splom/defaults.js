@@ -86,7 +86,7 @@ function handleDimensionsDefaults(traceIn, traceOut) {
         if(dimOut.visible) dimOut._length = commonLength;
     }
 
-    traceOut._commonLength = commonLength;
+    traceOut._length = commonLength;
 
     return dimensionsOut.length;
 }

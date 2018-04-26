@@ -142,7 +142,7 @@ function model(layout, d, i) {
         color: lineColor.map(d3.scale.linear().domain(dimensionExtent({
             values: lineColor,
             range: [line.cmin, line.cmax],
-            _length: trace._commonLength
+            _length: trace._length
         }))),
         blockLineCount: c.blockLineCount,
         canvasOverdrag: c.overdrag * c.canvasPixelRatio

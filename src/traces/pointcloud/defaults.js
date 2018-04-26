@@ -40,4 +40,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     coerce('marker.sizemax');
     coerce('marker.border.color', defaultColor);
     coerce('marker.border.arearatio');
+
+    // disable 1D transforms - that would defeat the purpose of this trace type, performance!
+    traceOut._length = null;
 };

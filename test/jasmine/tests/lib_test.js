@@ -328,7 +328,7 @@ describe('Test lib.js:', function() {
             expect(obj).toEqual({a: false, b: '', c: 0, d: NaN});
         });
 
-        it('should not remove data arrays or empty objects inside container arrays', function() {
+        it('should not remove arrays or empty objects inside container arrays', function() {
             var obj = {
                     annotations: [{a: [1, 2, 3]}],
                     c: [1, 2, 3],
@@ -351,11 +351,17 @@ describe('Test lib.js:', function() {
             propS.set(null);
 
             // 'a' and 'c' are both potentially data arrays so we need to keep them
-            expect(obj).toEqual({annotations: [{a: []}], c: []});
+            expect(obj).toEqual({
+                annotations: [{a: []}],
+                c: [],
+                domain: [],
+                range: [],
+                shapes: []
+            });
         });
 
 
-        it('should allow empty object sub-containers only in arrays', function() {
+        it('should allow empty object sub-containers', function() {
             var obj = {},
                 prop = np(obj, 'a[1].b.c'),
                 // we never set a value into a[0] so it doesn't even get {}
@@ -370,7 +376,7 @@ describe('Test lib.js:', function() {
 
             prop.set(null);
             expect(prop.get()).toBe(undefined);
-            expect(obj).toEqual({a: [undefined, {}]});
+            expect(obj).toEqual({a: [undefined, {b: {}}]});
         });
 
         it('does not prune inside `args` arrays', function() {
@@ -378,7 +384,7 @@ describe('Test lib.js:', function() {
                 args = np(obj, 'args');
 
             args.set([]);
-            expect(obj.args).toBeUndefined();
+            expect(obj.args).toEqual([]);
 
             args.set([null]);
             expect(obj.args).toEqual([null]);
@@ -1736,6 +1742,51 @@ describe('Test lib.js:', function() {
     });
 
     describe('keyedContainer', function() {
+        describe('with no existing container', function() {
+            it('creates a named container only when setting a value', function() {
+                var container = {};
+                var kCont = Lib.keyedContainer(container, 'styles');
+
+                expect(kCont.get('name1')).toBeUndefined();
+                expect(container).toEqual({});
+
+                kCont.set('name1', null);
+                expect(container).toEqual({});
+
+                kCont.set('name1', 'value1');
+                expect(container).toEqual({
+                    styles: [{name: 'name1', value: 'value1'}]
+                });
+                expect(kCont.get('name1')).toBe('value1');
+                expect(kCont.get('name2')).toBeUndefined();
+            });
+        });
+
+        describe('with no path', function() {
+            it('adds elements just like when there is a path', function() {
+                var arr = [];
+                var kCont = Lib.keyedContainer(arr);
+
+                expect(kCont.get('name1')).toBeUndefined();
+                expect(arr).toEqual([]);
+
+                kCont.set('name1', null);
+                expect(arr).toEqual([]);
+
+                kCont.set('name1', 'value1');
+                expect(arr).toEqual([{name: 'name1', value: 'value1'}]);
+                expect(kCont.get('name1')).toBe('value1');
+                expect(kCont.get('name2')).toBeUndefined();
+            });
+
+            it('does not barf if the array is missing', function() {
+                var kCont = Lib.keyedContainer();
+                kCont.set('name1', null);
+                kCont.set('name1', 'value1');
+                expect(kCont.get('name1')).toBeUndefined();
+            });
+        });
+
         describe('with a filled container', function() {
             var container, carr;
 
@@ -1950,7 +2001,7 @@ describe('Test lib.js:', function() {
 
                 expect(container).toEqual({styles: [
                     {foo: 'name4', bar: {value: 'value1'}},
-                    {foo: 'name2'},
+                    {foo: 'name2', bar: {}},
                     {foo: 'name3', bar: {value: 'value3'}}
                 ]});
 
@@ -1971,7 +2022,7 @@ describe('Test lib.js:', function() {
 
                 carr.remove('name');
 
-                expect(container.styles).toEqual([{foo: 'name', extra: 'data'}]);
+                expect(container.styles).toEqual([{foo: 'name', bar: {}, extra: 'data'}]);
 
                 expect(carr.constructUpdate()).toEqual({
                     'styles[0].bar.value': null,
@@ -2006,7 +2057,7 @@ describe('Test lib.js:', function() {
 
                 expect(container.styles).toEqual([
                     {foo: 'name1', bar: {extra: 'data'}},
-                    {foo: 'name2'},
+                    {foo: 'name2', bar: {}},
                     {foo: 'name3', bar: {value: 'value3', extra: 'data'}},
                 ]);
 
@@ -2029,7 +2080,7 @@ describe('Test lib.js:', function() {
                 carr.remove('name1');
 
                 expect(container.styles).toEqual([
-                    {foo: 'name1'},
+                    {foo: 'name1', bar: {}},
                     {foo: 'name2', bar: {value: 'value2', extra: 'data2'}},
                 ]);
 

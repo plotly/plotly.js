@@ -38,19 +38,28 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 function handleSampleDefaults(traceIn, traceOut, coerce, layout) {
     var y = coerce('y');
     var x = coerce('x');
+    var hasX = x && x.length;
 
-    var defaultOrientation;
+    var defaultOrientation, len;
 
     if(y && y.length) {
         defaultOrientation = 'v';
-        if(!x) coerce('x0');
-    } else if(x && x.length) {
+        if(hasX) {
+            len = Math.min(x.length, y.length);
+        }
+        else {
+            coerce('x0');
+            len = y.length;
+        }
+    } else if(hasX) {
         defaultOrientation = 'h';
         coerce('y0');
+        len = x.length;
     } else {
         traceOut.visible = false;
         return;
     }
+    traceOut._length = len;
 
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y'], layout);
