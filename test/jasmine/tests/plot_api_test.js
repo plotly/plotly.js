@@ -3067,7 +3067,7 @@ describe('Test plot api', function() {
             };
         }
 
-        function reactWith(fig) {
+        function reactTo(fig) {
             return function() { return Plotly.react(gd, fig); };
         }
 
@@ -3075,10 +3075,10 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, aggregatedPie(1))
             .then(checkCalcData(aggPie1CD))
 
-            .then(reactWith(aggregatedPie(2)))
+            .then(reactTo(aggregatedPie(2)))
             .then(checkCalcData(aggPie2CD))
 
-            .then(reactWith(aggregatedPie(1)))
+            .then(reactTo(aggregatedPie(1)))
             .then(checkCalcData(aggPie1CD))
             .catch(failTest)
             .then(done);
@@ -3088,10 +3088,10 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, aggregatedScatter(1))
             .then(checkCalcData(aggScatter1CD))
 
-            .then(reactWith(aggregatedScatter(2)))
+            .then(reactTo(aggregatedScatter(2)))
             .then(checkCalcData(aggScatter2CD))
 
-            .then(reactWith(aggregatedScatter(1)))
+            .then(reactTo(aggregatedScatter(1)))
             .then(checkCalcData(aggScatter1CD))
             .catch(failTest)
             .then(done);
@@ -3101,13 +3101,13 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, aggregatedParcoords(0))
             .then(checkValues(aggParcoords0Vals))
 
-            .then(reactWith(aggregatedParcoords(1)))
+            .then(reactTo(aggregatedParcoords(1)))
             .then(checkValues(aggParcoords1Vals))
 
-            .then(reactWith(aggregatedParcoords(2)))
+            .then(reactTo(aggregatedParcoords(2)))
             .then(checkValues(aggParcoords2Vals))
 
-            .then(reactWith(aggregatedParcoords(0)))
+            .then(reactTo(aggregatedParcoords(0)))
             .then(checkValues(aggParcoords0Vals))
 
             .catch(failTest)
@@ -3118,25 +3118,25 @@ describe('Test plot api', function() {
             Plotly.newPlot(gd, aggregatedScatter(1))
             .then(checkCalcData(aggScatter1CD))
 
-            .then(reactWith(aggregatedPie(1)))
+            .then(reactTo(aggregatedPie(1)))
             .then(checkCalcData(aggPie1CD))
 
-            .then(reactWith(aggregatedParcoords(1)))
+            .then(reactTo(aggregatedParcoords(1)))
             .then(checkValues(aggParcoords1Vals))
 
-            .then(reactWith(aggregatedScatter(1)))
+            .then(reactTo(aggregatedScatter(1)))
             .then(checkCalcData(aggScatter1CD))
 
-            .then(reactWith(aggregatedParcoords(2)))
+            .then(reactTo(aggregatedParcoords(2)))
             .then(checkValues(aggParcoords2Vals))
 
-            .then(reactWith(aggregatedPie(2)))
+            .then(reactTo(aggregatedPie(2)))
             .then(checkCalcData(aggPie2CD))
 
-            .then(reactWith(aggregatedScatter(2)))
+            .then(reactTo(aggregatedScatter(2)))
             .then(checkCalcData(aggScatter2CD))
 
-            .then(reactWith(aggregatedParcoords(0)))
+            .then(reactTo(aggregatedParcoords(0)))
             .then(checkValues(aggParcoords0Vals))
             .catch(failTest)
             .then(done);
