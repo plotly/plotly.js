@@ -16,6 +16,7 @@ ScatterTernary.colorbar = require('../scatter/colorbar');
 ScatterTernary.calc = require('./calc');
 ScatterTernary.plot = require('./plot');
 ScatterTernary.style = require('../scatter/style').style;
+ScatterTernary.styleOnSelect = require('../scatter/style').styleOnSelect;
 ScatterTernary.hoverPoints = require('./hover');
 ScatterTernary.selectPoints = require('../scatter/select');
 ScatterTernary.eventData = require('./event_data');

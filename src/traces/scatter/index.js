@@ -27,6 +27,7 @@ Scatter.arraysToCalcdata = require('./arrays_to_calcdata');
 Scatter.plot = require('./plot');
 Scatter.colorbar = require('./colorbar');
 Scatter.style = require('./style').style;
+Scatter.styleOnSelect = require('./style').styleOnSelect;
 Scatter.hoverPoints = require('./hover');
 Scatter.selectPoints = require('./select');
 Scatter.animatable = true;

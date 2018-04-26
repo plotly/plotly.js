@@ -45,7 +45,20 @@ function stylePoints(sel, trace, gd) {
     Drawing.selectedTextStyle(txs, trace);
 }
 
+function styleOnSelect(gd, cd) {
+    var s = cd[0].node3;
+    var trace = cd[0].trace;
+
+    if(trace.selectedpoints) {
+        Drawing.selectedPointStyle(s.selectAll('path.point'), trace, gd);
+        Drawing.selectedPointStyle(s.selectAll('text'), trace, gd);
+    } else {
+        stylePoints(s, trace, gd);
+    }
+}
+
 module.exports = {
     style: style,
-    stylePoints: stylePoints
+    stylePoints: stylePoints,
+    styleOnSelect: styleOnSelect
 };
