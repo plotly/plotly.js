@@ -3167,7 +3167,7 @@ describe('Test plot api', function() {
             .then(done);
         });
 
-        var mockList = [
+        var svgMockList = [
             ['1', require('@mocks/1.json')],
             ['4', require('@mocks/4.json')],
             ['5', require('@mocks/5.json')],
@@ -3186,14 +3186,6 @@ describe('Test plot api', function() {
             ['cheater_smooth', require('@mocks/cheater_smooth.json')],
             ['finance_style', require('@mocks/finance_style.json')],
             ['geo_first', require('@mocks/geo_first.json')],
-            ['gl2d_heatmapgl', require('@mocks/gl2d_heatmapgl.json')],
-            ['gl2d_line_dash', require('@mocks/gl2d_line_dash.json')],
-            ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
-            ['gl2d_pointcloud-basic', require('@mocks/gl2d_pointcloud-basic.json')],
-            ['gl3d_annotations', require('@mocks/gl3d_annotations.json')],
-            ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')],
-            ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
-            ['glpolar_style', require('@mocks/glpolar_style.json')],
             ['layout_image', require('@mocks/layout_image.json')],
             ['layout-colorway', require('@mocks/layout-colorway.json')],
             ['polar_categories', require('@mocks/polar_categories.json')],
@@ -3219,14 +3211,22 @@ describe('Test plot api', function() {
             }]
         ];
 
+        var glMockList = [
+            ['gl2d_heatmapgl', require('@mocks/gl2d_heatmapgl.json')],
+            ['gl2d_line_dash', require('@mocks/gl2d_line_dash.json')],
+            ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
+            ['gl2d_pointcloud-basic', require('@mocks/gl2d_pointcloud-basic.json')],
+            ['gl3d_annotations', require('@mocks/gl3d_annotations.json')],
+            ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')],
+            ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
+            ['glpolar_style', require('@mocks/glpolar_style.json')],
+        ];
+
         // make sure we've included every trace type in this suite
         var typesTested = {};
         var itemType;
         for(itemType in Registry.modules) { typesTested[itemType] = 0; }
         for(itemType in Registry.transformsRegistry) { typesTested[itemType] = 0; }
-
-        // Only include scattermapbox locally, see below
-        delete typesTested.scattermapbox;
 
         // Not really being supported... This isn't part of the main bundle, and it's pretty broken,
         // but it gets registered and used by a couple of the gl2d tests.
@@ -3320,15 +3320,19 @@ describe('Test plot api', function() {
             .then(done);
         }
 
-        mockList.forEach(function(mockSpec) {
-            it('can redraw "' + mockSpec[0] + '" with no changes as a noop', function(done) {
+        svgMockList.forEach(function(mockSpec) {
+            it('can redraw "' + mockSpec[0] + '" with no changes as a noop (svg mocks)', function(done) {
+                _runReactMock(mockSpec, done);
+            });
+        });
+
+        glMockList.forEach(function(mockSpec) {
+            it('can redraw "' + mockSpec[0] + '" with no changes as a noop (gl mocks)', function(done) {
                 _runReactMock(mockSpec, done);
             });
         });
 
         it('@noCI can redraw scattermapbox with no changes as a noop', function(done) {
-            typesTested.scattermapbox = 0;
-
             Plotly.setPlotConfig({
                 mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
             });
@@ -3336,7 +3340,10 @@ describe('Test plot api', function() {
             _runReactMock(['scattermapbox', require('@mocks/mapbox_bubbles-text.json')], done);
         });
 
-        it('tested every trace & transform type at least once', function() {
+        // since CI breaks up gl/svg types, and drops scattermapbox, this test won't work there
+        // but I should hope that if someone is doing something as major as adding a new type,
+        // they'll run the full test suite locally!
+        it('@noCI tested every trace & transform type at least once', function() {
             for(var itemType in typesTested) {
                 expect(typesTested[itemType]).toBeGreaterThan(0, itemType + ' was not tested');
             }
