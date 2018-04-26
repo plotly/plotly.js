@@ -2403,7 +2403,7 @@ function diffData(gd, oldFullData, newFullData, immutable) {
             Axes.getFromId(gd, trace.xaxis).autorange ||
             Axes.getFromId(gd, trace.yaxis).autorange
         ) : false;
-        getDiffFlags(oldFullData[i], trace, [], diffOpts);
+        getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
     }
 
     if(flags.calc || flags.plot || flags.calcIfAutorange) {
