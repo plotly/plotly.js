@@ -265,9 +265,9 @@ var extraFormatKeys = [
  *   trace into the new one. Use skipUpdateCalc to defer this (needed by Plotly.react)
  *
  * gd.data, gd.layout:
- *   are precisely what the user specified,
- *   these fields shouldn't be modified nor used directly
- *   after the supply defaults step.
+ *   are precisely what the user specified (except as modified by cleanData/cleanLayout),
+ *   these fields shouldn't be modified (except for filling in some auto values)
+ *   nor used directly after the supply defaults step.
  *
  * gd._fullData, gd._fullLayout:
  *   are complete descriptions of how to draw the plot,
