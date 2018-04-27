@@ -214,7 +214,7 @@ function transformOne(trace, state) {
             suppliedName = groupNameObj.get(groupName);
         }
 
-        if(suppliedName) {
+        if(suppliedName || suppliedName === '') {
             newTrace.name = suppliedName;
         } else {
             newTrace.name = Lib.templateString(opts.nameformat, {
