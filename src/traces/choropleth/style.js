@@ -13,9 +13,9 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
 
-module.exports = function style(gd, calcTrace) {
+function style(gd, calcTrace) {
     if(calcTrace) styleTrace(gd, calcTrace);
-};
+}
 
 function styleTrace(gd, calcTrace) {
     var trace = calcTrace[0].trace;
@@ -40,5 +40,21 @@ function styleTrace(gd, calcTrace) {
             .style('opacity', marker.opacity);
     });
 
-    Drawing.selectedPointStyle(locs, trace);
+    Drawing.selectedPointStyle(locs, trace, gd);
 }
+
+function styleOnSelect(gd, calcTrace) {
+    var s = calcTrace[0].node3;
+    var trace = calcTrace[0].trace;
+
+    if(trace.selectedpoints) {
+        Drawing.selectedPointStyle(s.selectAll('.choroplethlocation'), trace, gd);
+    } else {
+        styleTrace(gd, calcTrace);
+    }
+}
+
+module.exports = {
+    style: style,
+    styleOnSelect: styleOnSelect
+};
