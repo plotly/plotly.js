@@ -279,11 +279,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         if(hasUserCalledHover) {
             if('xpx' in evt) xpx = evt.xpx;
             else xpx = xaArray[0]._length / 2;
-            evt.pointerX = xpx + xaArray[0]._offset;
 
             if('ypx' in evt) ypx = evt.ypx;
             else ypx = yaArray[0]._length / 2;
-            evt.pointerY = ypx + yaArray[0]._offset;
         }
         else {
             // fire the beforehover event and quit if it returns false
@@ -300,12 +298,13 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             // in case hover was called from mouseout into hovertext,
             // it's possible you're not actually over the plot anymore
-            if(xpx < 0 || xpx > dbb.width || ypx < 0 || ypx > dbb.height) {
+            if(xpx < 0 || xpx > xaArray[0]._length || ypx < 0 || ypx > yaArray[0]._length) {
                 return dragElement.unhoverRaw(gd, evt);
             }
-            evt.pointerX = evt.offsetX;
-            evt.pointerY = evt.offsetY;
         }
+
+        evt.pointerX = xpx + xaArray[0]._offset;
+        evt.pointerY = ypx + yaArray[0]._offset;
 
         if('xval' in evt) xvalArray = helpers.flat(subplots, evt.xval);
         else xvalArray = helpers.p2c(xaArray, xpx);
