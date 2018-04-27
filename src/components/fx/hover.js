@@ -713,9 +713,12 @@ function createHoverText(hoverData, opts, gd) {
             s.attr('data-notex', 1);
         });
 
+        var commonBgColor = commonLabelOpts.bgcolor || Color.defaultLine;
+        var commonStroke = commonLabelOpts.bordercolor || Color.contrast(commonBgColor);
+
         lpath.style({
-            fill: commonLabelOpts.bgcolor || Color.defaultLine,
-            stroke: commonLabelOpts.bordercolor || Color.background,
+            fill: commonBgColor,
+            stroke: commonStroke
         });
 
         ltext.text(t0)
