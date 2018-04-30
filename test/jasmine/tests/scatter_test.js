@@ -893,25 +893,36 @@ describe('Test Scatter.style', function() {
 
     afterEach(destroyGraphDiv);
 
+    function assertPts(attr, getterFn, expectation, msg2) {
+        var selector = attr.indexOf('textfont') === 0 ? '.textpoint > text' : '.point';
+
+        d3.select(gd).selectAll('.trace').each(function(_, i) {
+            var pts = d3.select(this).selectAll(selector);
+            var expi = expectation[i];
+
+            expect(pts.size())
+                .toBe(expi.length, '# of pts for trace ' + i + msg2);
+
+            pts.each(function(_, j) {
+                var msg3 = ' for pt ' + j + ' in trace ' + i + msg2;
+                expect(getterFn(this)).toBe(expi[j], attr + msg3);
+            });
+        });
+    }
+
     function makeCheckFn(attr, getterFn) {
         return function(update, expectation, msg) {
-            var msg2 = ' (' + msg + ')';
             var promise = update ? Plotly.restyle(gd, update) : Promise.resolve();
-            var selector = attr.indexOf('textfont') === 0 ? '.textpoint > text' : '.point';
 
             return promise.then(function() {
-                d3.selectAll('.trace').each(function(_, i) {
-                    var pts = d3.select(this).selectAll(selector);
-                    var expi = expectation[i];
+                assertPts(attr, getterFn, expectation, ' (' + msg + ' after restyle)');
 
-                    expect(pts.size())
-                        .toBe(expi.length, '# of pts for trace ' + i + msg2);
-
-                    pts.each(function(_, j) {
-                        var msg3 = ' for pt ' + j + ' in trace ' + i + msg2;
-                        expect(getterFn(this)).toBe(expi[j], attr + msg3);
-                    });
+                // make sure styleOnSelect (called during selection)
+                // gives same results as restyle
+                gd.calcdata.forEach(function(cd) {
+                    Scatter.styleOnSelect(gd, cd);
                 });
+                assertPts(attr, getterFn, expectation, ' (' + msg + ' via Scatter.styleOnSelect)');
             });
         };
     }
