@@ -17,20 +17,21 @@ var orientText = require('./orient_text');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Lib = require('../../lib');
 var alignmentConstants = require('../../constants/alignment');
+var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
-    var i;
+    var uidLookup = getUidsFromCalcData(cdcarpet);
 
     carpetLayer.selectAll('g.trace').each(function() {
         var classString = d3.select(this).attr('class');
         var oldUid = classString.split('carpet')[1].split(/\s/)[0];
-        for(i = 0; i < cdcarpet.length; i++) {
-            if(oldUid === cdcarpet[i][0].trace.uid) return;
+
+        if(!uidLookup[oldUid]) {
+            d3.select(this).remove();
         }
-        d3.select(this).remove();
     });
 
-    for(i = 0; i < cdcarpet.length; i++) {
+    for(var i = 0; i < cdcarpet.length; i++) {
         plotOne(gd, plotinfo, cdcarpet[i], carpetLayer);
     }
 };

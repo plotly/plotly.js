@@ -13,6 +13,7 @@ var map1dArray = require('../carpet/map_1d_array');
 var makepath = require('../carpet/makepath');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
+var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');
@@ -25,18 +26,16 @@ var mapPathinfo = require('./map_pathinfo');
 var lookupCarpet = require('../carpet/lookup_carpetid');
 var closeBoundaries = require('../contour/close_boundaries');
 
-
 module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
-    var i;
+    var uidLookup = getUidsFromCalcData(cdcontours);
 
     contourcarpetLayer.selectAll('g.contour').each(function(d) {
-        for(i = 0; i < cdcontours.length; i++) {
-            if(d.trace.uid === cdcontours[i][0].trace.uid) return;
+        if(!uidLookup[d.trace.uid]) {
+            d3.select(this).remove();
         }
-        d3.select(this).remove();
     });
 
-    for(i = 0; i < cdcontours.length; i++) {
+    for(var i = 0; i < cdcontours.length; i++) {
         plotOne(gd, plotinfo, cdcontours[i], contourcarpetLayer);
     }
 };

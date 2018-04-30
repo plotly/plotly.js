@@ -16,21 +16,22 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Colorscale = require('../../components/colorscale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 var maxRowLength = require('./max_row_length');
 
 module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
-    var i;
+    var uidLookup = getUidsFromCalcData(cdheatmaps);
 
     heatmapLayer.selectAll('.hm > image').each(function(d) {
         var oldTrace = d.trace || {};
-        for(i = 0; i < cdheatmaps.length; i++) {
-            if(oldTrace.uid === cdheatmaps[i][0].trace.uid) return;
+
+        if(!uidLookup[oldTrace.uid]) {
+            d3.select(this.parentNode).remove();
         }
-        d3.select(this.parentNode).remove();
     });
 
-    for(i = 0; i < cdheatmaps.length; i++) {
+    for(var i = 0; i < cdheatmaps.length; i++) {
         plotOne(gd, plotinfo, cdheatmaps[i], heatmapLayer);
     }
 };

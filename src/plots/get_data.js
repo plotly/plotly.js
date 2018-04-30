@@ -123,3 +123,20 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
 
     return subplotData;
 };
+
+/**
+ * Get a lookup object of trace uids corresponding in a given calcdata array.
+ *
+ * @param {array} calcdata: as in gd.calcdata (or a subset)
+ * @return {object} lookup object of uids (`uid: 1`)
+ */
+exports.getUidsFromCalcData = function(calcdata) {
+    var out = {};
+
+    for(var i = 0; i < calcdata.length; i++) {
+        var trace = calcdata[i][0].trace;
+        out[trace.uid] = 1;
+    }
+
+    return out;
+};

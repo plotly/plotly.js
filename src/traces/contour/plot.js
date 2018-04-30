@@ -16,6 +16,7 @@ var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Axes = require('../../plots/cartesian/axes');
 var setConvert = require('../../plots/cartesian/set_convert');
+var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 var heatmapPlot = require('../heatmap/plot');
 var makeCrossings = require('./make_crossings');
@@ -26,18 +27,16 @@ var closeBoundaries = require('./close_boundaries');
 var constants = require('./constants');
 var costConstants = constants.LABELOPTIMIZER;
 
-
 exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
-    var i;
+    var uidLookup = getUidsFromCalcData(cdcontours);
 
     contourLayer.selectAll('g.contour').each(function(d) {
-        for(i = 0; i < cdcontours.length; i++) {
-            if(d.trace.uid === cdcontours[i][0].trace.uid) return;
+        if(!uidLookup[d.trace.uid]) {
+            d3.select(this).remove();
         }
-        d3.select(this).remove();
     });
 
-    for(i = 0; i < cdcontours.length; i++) {
+    for(var i = 0; i < cdcontours.length; i++) {
         plotOne(gd, plotinfo, cdcontours[i], contourLayer);
     }
 };
