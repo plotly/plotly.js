@@ -1,0 +1,226 @@
+{
+  "data": [
+    {
+      "x": [1],
+      "y": [1]
+    },
+    {
+      "x": [1,3,4],
+      "y": ["Giraffes","Apes","Zebras"],
+      "xaxis": "x2",
+      "yaxis": "y2"
+    }
+  ],
+  "layout": {
+    "title": "Editable line shapes",
+    "autosize": false,
+    "width": 1000,
+    "height": 800,
+    "xaxis": {
+      "domain": [0,0.45],
+      "anchor": "y"
+    },
+    "yaxis": {
+      "domain": [0.55,0.92],
+      "type": "log",
+      "anchor": "x"
+    },
+    "xaxis2": {
+      "domain":[0.50,0.95],
+      "anchor": "y2"
+    },
+    "yaxis2": {
+      "domain": [0.55,0.92],
+      "type": "categorical",
+      "anchor": "x2"
+    },
+    "xaxis3": {
+      "domain":[0,0.45],
+      "range": ["2018-04-01", "2018-04-30"],
+      "type": "date",
+      "anchor": "y3"
+    },
+    "yaxis3": {
+      "domain": [0,0.37],
+      "anchor": "x3"
+    },
+    "xaxis4": {
+      "domain": [0.50,0.95],
+      "anchor": "y4"
+    },
+    "yaxis4": {
+      "domain": [0,0.37],
+      "type": "linear",
+      "anchor": "x4"
+    },
+    "annotations": [
+      {
+        "text": "Fixed and log scaled", "xref": "paper", "yref": "paper", "x": 0, "y": 1,
+        "xanchor": "left", "showarrow": false, "font": {"size": 24}
+      },
+      {
+        "text": "Fixed and categorical scaled", "xref": "paper", "yref": "paper", "x": 0.5, "y": 1,
+        "xanchor": "left", "showarrow": false, "font": {"size": 24}
+      },
+      {
+        "text": "Fixed and date scaled", "xref": "paper", "yref": "paper", "x": 0, "y": 0.42,
+        "xanchor": "left", "showarrow": false, "font": {"size": 24}
+      },
+      {
+        "text": "Thick lines shapes", "xref": "paper", "yref": "paper", "x": 0.5, "y": 0.42,
+        "xanchor": "left", "showarrow": false, "font": {"size": 24}
+      },
+      {
+        "text": "Green is fixed size", "xref": "x4", "yref": "y4", "x": 1, "y": 2,
+        "showarrow": true, "font": {"size": 14, "color": "rgba(96, 171, 50, 1)"}
+      },
+      {
+        "text": "Violet is data scaled", "xref": "x4", "yref": "y4", "x": 2.1, "y": 2.1,
+        "showarrow": true, "font": {"size": 14, "color": "rgba(96, 50, 171, 1)"},
+        "ax": 40
+      },
+      {
+        "text": "Brown is paper scaled", "xref": "paper", "yref": "paper", "x": 0.9, "y": 0.9,
+        "showarrow": true, "font": {"size": 14, "color": "rgba(171, 96, 50, 1)"},
+        "ax": 40, "ay": 50
+      }
+    ],
+    "shapes": [
+      {
+        "type": "line",
+        "xref": "x",
+        "xsizemode": "pixel",
+        "yref": "y",
+        "ysizemode": "pixel",
+        "xanchor": 0,
+        "yanchor": 2,
+        "x0": 0,
+        "x1": 60,
+        "y0": 0,
+        "y1": 40,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "line",
+        "xref": "x",
+        "yref": "y",
+        "x0": 0,
+        "x1": 4,
+        "y0": 1,
+        "y1": 10,
+        "line": {
+          "color": "rgba(96, 50, 171, 1)"
+        }
+      },
+      {
+        "type": "line",
+        "xref": "x2",
+        "xsizemode": "pixel",
+        "yref": "y2",
+        "ysizemode": "pixel",
+        "xanchor": 2,
+        "yanchor": 2,
+        "x0": 0,
+        "x1": 60,
+        "y0": 0,
+        "y1": 40,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "line",
+        "xref": "x2",
+        "xsizemode": "scaled",
+        "yref": "y2",
+        "ysizemode": "scaled",
+        "x0": 0,
+        "x1": 5,
+        "y0": "Zebras",
+        "y1": "Apes",
+        "line": {
+          "color": "rgba(96, 50, 171, 1)"
+        }
+      },
+      {
+        "type": "line",
+        "xref": "x3",
+        "xsizemode": "pixel",
+        "yref": "y3",
+        "ysizemode": "pixel",
+        "xanchor": "2018-04-15",
+        "yanchor": 2,
+        "x0": 0,
+        "x1": 60,
+        "y0": 0,
+        "y1": 40,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)"
+        }
+      },
+      {
+        "type": "line",
+        "xref": "x3",
+        "xsizemode": "scaled",
+        "yref": "y3",
+        "ysizemode": "scaled",
+        "x0": "2018-04-05",
+        "x1": "2018-04-20",
+        "y0": 0,
+        "y1": 40,
+        "line": {
+          "color": "rgba(96, 50, 171, 1)"
+        }
+      },
+      {
+        "type": "line",
+        "xref": "x4",
+        "xsizemode": "pixel",
+        "yref": "y4",
+        "ysizemode": "pixel",
+        "xanchor": 1,
+        "yanchor": 2,
+        "x0": 0,
+        "x1": 120,
+        "y0": 0,
+        "y1": -40,
+        "line": {
+          "color": "rgba(96, 171, 50, 1)",
+          "width": 30
+        }
+      },
+      {
+        "type": "line",
+        "xref": "x4",
+        "xsizemode": "scaled",
+        "yref": "y4",
+        "ysizemode": "scaled",
+        "x0": 1,
+        "x1": 3,
+        "y0": 3,
+        "y1": 1,
+        "line": {
+          "color": "rgba(96, 50, 171, 1)",
+          "width": 30
+        }
+      },
+      {
+        "type": "line",
+        "xref": "paper",
+        "yref": "paper",
+        "x0": 0,
+        "y0": 0,
+        "x1": 1,
+        "y1": 1,
+        "line": {
+          "color": "rgba(171, 96, 50, 1)"
+        }
+      }
+    ]
+  },
+  "config": {
+    "editable": "true"
+  }
+}
