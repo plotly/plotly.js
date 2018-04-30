@@ -1549,16 +1549,30 @@ describe('bar hover', function() {
         var fig = Lib.extendDeep({}, require('@mocks/bar_cliponaxis-false.json'));
         gd = createGraphDiv();
 
-        // only show one trace
+        // only show one bar trace
         fig.data = [fig.data[0]];
+
+        // add a non-bar trace to make sure its module layer gets clipped
+        fig.data.push({
+            type: 'contour',
+            z: [[0, 0.5, 1], [0.5, 1, 3]]
+        });
+
+        function _assertClip(sel, exp, size, msg) {
+            if(exp === null) {
+                expect(sel.size()).toBe(0, msg + 'selection should not exist');
+            } else {
+                assertClip(sel, exp, size, msg);
+            }
+        }
 
         function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
             var subplotLayer = d3.select('.plot');
             var barLayer = subplotLayer.select('.barlayer');
 
-            assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
-            assertClip(subplotLayer.select('.maplayer'), layerClips[1], 1, 'some other trace layer');
-            assertClip(barLayer, layerClips[2], 1, 'bar layer');
+            _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
+            _assertClip(subplotLayer.select('.contourlayer'), layerClips[1], 1, 'some other trace layer');
+            _assertClip(barLayer, layerClips[2], 1, 'bar layer');
 
             assertNodeDisplay(
                 barLayer.selectAll('.point'),
@@ -1589,7 +1603,7 @@ describe('bar hover', function() {
         })
         .then(function() {
             _assert(
-                [true, false, false],
+                [true, null, null],
                 [],
                 [],
                 [false, 0]

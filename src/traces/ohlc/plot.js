@@ -12,11 +12,9 @@ var d3 = require('d3');
 
 var Lib = require('../../lib');
 
-module.exports = function plot(gd, plotinfo, cdOHLC) {
+module.exports = function plot(gd, plotinfo, cdOHLC, ohlcLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-
-    var ohlcLayer = plotinfo.plot.select('g.ohlclayer');
 
     var traces = ohlcLayer.selectAll('g.trace')
         .data(cdOHLC, function(d) { return d[0].trace.uid; });

@@ -456,8 +456,7 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
             plotgroup: plotgroup,
             xaxis: xa,
             yaxis: ya,
-            isRangePlot: true,
-            plotMethods: opts._plotMethods
+            isRangePlot: true
         };
 
         if(isMainPlot) mainplotinfo = plotinfo;
@@ -467,10 +466,6 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
         }
 
         Cartesian.rangePlot(gd, plotinfo, filterRangePlotCalcData(calcData, id));
-
-        // stash list of plot methods on range-plot for later,
-        // so that they can be called to clear traces of 'gone' modules
-        opts._plotMethods = plotinfo.plotMethods;
     });
 }
 

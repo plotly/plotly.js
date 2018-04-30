@@ -1231,13 +1231,27 @@ describe('Test scatter *clipnaxis*:', function() {
         // add lines
         fig.data[0].mode = 'markers+lines+text';
 
+        // add a non-scatter trace to make sure its module layer gets clipped
+        fig.data.push({
+            type: 'contour',
+            z: [[0, 0.5, 1], [0.5, 1, 3]]
+        });
+
+        function _assertClip(sel, exp, size, msg) {
+            if(exp === null) {
+                expect(sel.size()).toBe(0, msg + 'selection should not exist');
+            } else {
+                assertClip(sel, exp, size, msg);
+            }
+        }
+
         function _assert(layerClips, nodeDisplays, errorBarClips, lineClips) {
             var subplotLayer = d3.select('.plot');
             var scatterLayer = subplotLayer.select('.scatterlayer');
 
-            assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
-            assertClip(subplotLayer.select('.maplayer'), layerClips[1], 1, 'some other trace layer');
-            assertClip(scatterLayer, layerClips[2], 1, 'scatter layer');
+            _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
+            _assertClip(subplotLayer.select('.contourlayer'), layerClips[1], 1, 'some other trace layer');
+            _assertClip(scatterLayer, layerClips[2], 1, 'scatter layer');
 
             assertNodeDisplay(
                 scatterLayer.selectAll('.point'),
@@ -1274,7 +1288,7 @@ describe('Test scatter *clipnaxis*:', function() {
         })
         .then(function() {
             _assert(
-                [true, false, false],
+                [true, null, null],
                 [],
                 [false, 0],
                 [false, 0]
@@ -1292,7 +1306,7 @@ describe('Test scatter *clipnaxis*:', function() {
         })
         .then(function() {
             _assert(
-                [true, false, false],
+                [true, null, null],
                 [],
                 [false, 0],
                 [false, 0]

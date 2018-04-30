@@ -15,6 +15,7 @@ Histogram2D.attributes = require('./attributes');
 Histogram2D.supplyDefaults = require('./defaults');
 Histogram2D.calc = require('../heatmap/calc');
 Histogram2D.plot = require('../heatmap/plot');
+Histogram2D.layerName = 'heatmaplayer';
 Histogram2D.colorbar = require('../heatmap/colorbar');
 Histogram2D.style = require('../heatmap/style');
 Histogram2D.hoverPoints = require('./hover');

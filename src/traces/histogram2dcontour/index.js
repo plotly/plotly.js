@@ -15,6 +15,7 @@ Histogram2dContour.attributes = require('./attributes');
 Histogram2dContour.supplyDefaults = require('./defaults');
 Histogram2dContour.calc = require('../contour/calc');
 Histogram2dContour.plot = require('../contour/plot').plot;
+Histogram2dContour.layerName = 'contourlayer';
 Histogram2dContour.style = require('../contour/style');
 Histogram2dContour.colorbar = require('../contour/colorbar');
 Histogram2dContour.hoverPoints = require('../contour/hover');

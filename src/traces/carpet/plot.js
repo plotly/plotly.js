@@ -17,20 +17,26 @@ var orientText = require('./orient_text');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Lib = require('../../lib');
 var alignmentConstants = require('../../constants/alignment');
+var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
-module.exports = function plot(gd, plotinfo, cdcarpet) {
-    if(!cdcarpet.length) {
-        plotinfo.plot.select('.carpetlayer')
-            .selectAll('g.trace')
-            .remove();
-    }
+module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
+    var uidLookup = getUidsFromCalcData(cdcarpet);
+
+    carpetLayer.selectAll('g.trace').each(function() {
+        var classString = d3.select(this).attr('class');
+        var oldUid = classString.split('carpet')[1].split(/\s/)[0];
+
+        if(!uidLookup[oldUid]) {
+            d3.select(this).remove();
+        }
+    });
 
     for(var i = 0; i < cdcarpet.length; i++) {
-        plotOne(gd, plotinfo, cdcarpet[i]);
+        plotOne(gd, plotinfo, cdcarpet[i], carpetLayer);
     }
 };
 
-function plotOne(gd, plotinfo, cd) {
+function plotOne(gd, plotinfo, cd, carpetLayer) {
     var t = cd[0];
     var trace = cd[0].trace,
         xa = plotinfo.xaxis,
@@ -39,10 +45,9 @@ function plotOne(gd, plotinfo, cd) {
         bax = trace.baxis,
         fullLayout = gd._fullLayout;
 
-    var gridLayer = plotinfo.plot.select('.carpetlayer');
     var clipLayer = fullLayout._clips;
 
-    var axisLayer = Lib.ensureSingle(gridLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
+    var axisLayer = Lib.ensureSingle(carpetLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
     var minorLayer = Lib.ensureSingle(axisLayer, 'g', 'minorlayer');
     var majorLayer = Lib.ensureSingle(axisLayer, 'g', 'majorlayer');
     var boundaryLayer = Lib.ensureSingle(axisLayer, 'g', 'boundarylayer');
