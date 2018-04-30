@@ -581,11 +581,14 @@ drawing.selectedPointStyle = function(s, trace) {
         });
     }
 
-    s.each(function(d) {
-        for(var i = 0; i < seq.length; i++) {
-            seq[i](d3.select(this), d);
-        }
-    });
+    if(seq.length) {
+        s.each(function(d) {
+            var pt = d3.select(this);
+            for(var i = 0; i < seq.length; i++) {
+                seq[i](pt, d);
+            }
+        });
+    }
 };
 
 drawing.tryColorscale = function(marker, prefix) {
