@@ -52,10 +52,13 @@ proto.update = function(graphInfo, buttons) {
     else this.element.className = 'modebar';
 
     // if buttons or logo have changed, redraw modebar interior
-    var needsNewButtons = !this.hasButtons(buttons),
-        needsNewLogo = (this.hasLogo !== context.displaylogo);
+    var needsNewButtons = !this.hasButtons(buttons);
+    var needsNewLogo = (this.hasLogo !== context.displaylogo);
+    var needsNewLocale = (this.locale !== context.locale);
 
-    if(needsNewButtons || needsNewLogo) {
+    this.locale = context.locale;
+
+    if(needsNewButtons || needsNewLogo || needsNewLocale) {
         this.removeAllButtons();
 
         this.updateButtons(buttons);

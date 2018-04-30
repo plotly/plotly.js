@@ -369,4 +369,38 @@ describe('localization', function() {
             .catch(failTest)
             .then(done);
     });
+
+    it('updates ticks and modebar tooltips on Plotly.react', function(done) {
+        Plotly.register({
+            moduleType: 'locale',
+            name: 'xx',
+            dictionary: {Zoom: 'Bigger'},
+            format: {month: '%Y %b'}
+        });
+
+        function getZoomTip() {
+            return gd.querySelector('.modebar-btn[data-val="zoom"]').getAttribute('data-title');
+        }
+
+        plot('en')
+        .then(function() {
+            expect(firstXLabel()).toBe('Jan 2001');
+            expect(getZoomTip()).toBe('Zoom');
+
+            return Plotly.react(gd, gd.data, gd.layout, {locale: 'xx'});
+        })
+        .then(function() {
+            expect(firstXLabel()).toBe('2001 Jan');
+            expect(getZoomTip()).toBe('Bigger');
+
+            // this is discouraged usage, but it works
+            return Plotly.plot(gd, [], {}, {locale: 'en'});
+        })
+        .then(function() {
+            expect(firstXLabel()).toBe('Jan 2001');
+            expect(getZoomTip()).toBe('Zoom');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
