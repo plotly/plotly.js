@@ -546,7 +546,7 @@ function plot(gd, subplot, cdata) {
         }
     }
 
-    // uploat viewport/range data to GPU
+    // upload viewport/range data to GPU
     if(scene.fill2d) {
         scene.fill2d.update(vpRange);
     }
