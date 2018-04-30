@@ -79,7 +79,7 @@ function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     if(x && y && z) {
         // TODO: what happens if one is missing?
         len = Math.min(x.length, y.length, z.length);
-        traceOut._xlength = traceOut._ylength = traceOut._zlength = len;
+        traceOut._length = traceOut._xlength = traceOut._ylength = traceOut._zlength = len;
     }
 
     return len;

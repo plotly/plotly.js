@@ -74,6 +74,23 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.visible).toBe(false);
     });
 
+    [{letter: 'y', counter: 'x'}, {letter: 'x', counter: 'y'}].forEach(function(spec) {
+        var l = spec.letter;
+        var c = spec.counter;
+        var c0 = c + '0';
+        var dc = 'd' + c;
+        it('should be visible using ' + c0 + '/' + dc + ' if ' + c + ' is missing completely but ' + l + ' is present', function() {
+            traceIn = {};
+            traceIn[l] = [1, 2];
+            supplyDefaults(traceIn, traceOut, defaultColor, {});
+            expect(traceOut.visible).toBe(undefined, l); // visible: true gets set above the module level
+            expect(traceOut._length).toBe(2, l);
+            expect(traceOut[c0]).toBe(0, c0);
+            expect(traceOut[dc]).toBe(1, dc);
+            expect(traceOut.orientation).toBe(l === 'x' ? 'h' : 'v', l);
+        });
+    });
+
     it('should not set base, offset or width', function() {
         traceIn = {
             y: [1, 2, 3]
@@ -1549,16 +1566,30 @@ describe('bar hover', function() {
         var fig = Lib.extendDeep({}, require('@mocks/bar_cliponaxis-false.json'));
         gd = createGraphDiv();
 
-        // only show one trace
+        // only show one bar trace
         fig.data = [fig.data[0]];
+
+        // add a non-bar trace to make sure its module layer gets clipped
+        fig.data.push({
+            type: 'contour',
+            z: [[0, 0.5, 1], [0.5, 1, 3]]
+        });
+
+        function _assertClip(sel, exp, size, msg) {
+            if(exp === null) {
+                expect(sel.size()).toBe(0, msg + 'selection should not exist');
+            } else {
+                assertClip(sel, exp, size, msg);
+            }
+        }
 
         function _assert(layerClips, barDisplays, barTextDisplays, barClips) {
             var subplotLayer = d3.select('.plot');
             var barLayer = subplotLayer.select('.barlayer');
 
-            assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
-            assertClip(subplotLayer.select('.maplayer'), layerClips[1], 1, 'some other trace layer');
-            assertClip(barLayer, layerClips[2], 1, 'bar layer');
+            _assertClip(subplotLayer, layerClips[0], 1, 'subplot layer');
+            _assertClip(subplotLayer.select('.contourlayer'), layerClips[1], 1, 'some other trace layer');
+            _assertClip(barLayer, layerClips[2], 1, 'bar layer');
 
             assertNodeDisplay(
                 barLayer.selectAll('.point'),
@@ -1589,7 +1620,7 @@ describe('bar hover', function() {
         })
         .then(function() {
             _assert(
-                [true, false, false],
+                [true, null, null],
                 [],
                 [],
                 [false, 0]

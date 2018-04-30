@@ -607,6 +607,9 @@ exports.makeEditable = function(context, options) {
         var cStyle = context.node().style;
         var fontSize = parseFloat(cStyle.fontSize || 12);
 
+        var initialText = options.text;
+        if(initialText === undefined) initialText = context.attr('data-unformatted');
+
         div.classed('plugin-editable editable', true)
             .style({
                 position: 'absolute',
@@ -621,7 +624,7 @@ exports.makeEditable = function(context, options) {
                 'box-sizing': 'border-box'
             })
             .attr({contenteditable: true})
-            .text(options.text || context.attr('data-unformatted'))
+            .text(initialText)
             .call(alignHTMLWith(context, container, options))
             .on('blur', function() {
                 gd._editing = false;

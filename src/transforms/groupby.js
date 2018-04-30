@@ -73,7 +73,8 @@ exports.attributes = {
                 'For example, with `groups` set to *[\'a\', \'b\', \'a\', \'b\']*',
                 'and `styles` set to *[{target: \'a\', value: { marker: { color: \'red\' } }}]',
                 'marker points in group *\'a\'* will be drawn in red.'
-            ].join(' ')
+            ].join(' '),
+            _compareAsJSON: true
         },
         editType: 'calc'
     },
@@ -115,9 +116,15 @@ exports.supplyDefaults = function(transformIn, traceOut, layout) {
 
     if(styleIn) {
         for(i = 0; i < styleIn.length; i++) {
-            styleOut[i] = {};
+            var thisStyle = styleOut[i] = {};
             Lib.coerce(styleIn[i], styleOut[i], exports.attributes.styles, 'target');
-            Lib.coerce(styleIn[i], styleOut[i], exports.attributes.styles, 'value');
+            var value = Lib.coerce(styleIn[i], styleOut[i], exports.attributes.styles, 'value');
+
+            // so that you can edit value in place and have Plotly.react notice it, or
+            // rebuild it every time and have Plotly.react NOT think it changed:
+            // use _compareAsJSON to say we should diff the _JSON_value
+            if(Lib.isPlainObject(value)) thisStyle.value = Lib.extendDeep({}, value);
+            else if(value) delete thisStyle.value;
         }
     }
 
@@ -161,7 +168,8 @@ function transformOne(trace, state) {
     var groupNameObj;
 
     var opts = state.transform;
-    var groups = trace.transforms[state.transformIndex].groups;
+    var transformIndex = state.transformIndex;
+    var groups = trace.transforms[transformIndex].groups;
     var originalPointsAccessor = pointsAccessorFunction(trace.transforms, opts);
 
     if(!(Array.isArray(groups)) || groups.length === 0) {
@@ -196,14 +204,17 @@ function transformOne(trace, state) {
         // Start with a deep extend that just copies array references.
         newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
         newTrace._group = groupName;
-        newTrace.transforms[state.transformIndex]._indexToPoints = {};
+        // helper function for when we need to push updates back to the input,
+        // outside of the normal restyle/relayout pathway, like filling in auto values
+        newTrace.updateStyle = styleUpdater(groupName, transformIndex);
+        newTrace.transforms[transformIndex]._indexToPoints = {};
 
         var suppliedName = null;
         if(groupNameObj) {
             suppliedName = groupNameObj.get(groupName);
         }
 
-        if(suppliedName) {
+        if(suppliedName || suppliedName === '') {
             newTrace.name = suppliedName;
         } else {
             newTrace.name = Lib.templateString(opts.nameformat, {
@@ -254,7 +265,7 @@ function transformOne(trace, state) {
     for(j = 0; j < len; j++) {
         newTrace = newData[indexLookup[groups[j]]];
 
-        var indexToPoints = newTrace.transforms[state.transformIndex]._indexToPoints;
+        var indexToPoints = newTrace.transforms[transformIndex]._indexToPoints;
         indexToPoints[indexCnts[groups[j]]] = originalPointsAccessor(j);
         indexCnts[groups[j]]++;
     }
@@ -271,4 +282,15 @@ function transformOne(trace, state) {
     }
 
     return newData;
+}
+
+function styleUpdater(groupName, transformIndex) {
+    return function(trace, attr, value) {
+        Lib.keyedContainer(
+            trace,
+            'transforms[' + transformIndex + '].styles',
+            'target',
+            'value.' + attr
+        ).set(String(groupName), value);
+    };
 }

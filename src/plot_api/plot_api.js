@@ -2267,7 +2267,10 @@ exports.react = function(gd, data, layout, config) {
         gd.layout = layout || {};
         helpers.cleanLayout(gd.layout);
 
-        Plots.supplyDefaults(gd);
+        // "true" skips updating calcdata and remapping arrays from calcTransforms,
+        // which supplyDefaults usually does at the end, but we may need to NOT do
+        // if the diff (which we haven't determined yet) says we'll recalc
+        Plots.supplyDefaults(gd, {skipUpdateCalc: true});
 
         var newFullData = gd._fullData;
         var newFullLayout = gd._fullLayout;
@@ -2289,6 +2292,9 @@ exports.react = function(gd, data, layout, config) {
 
         // clear calcdata if required
         if(restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;
+        // otherwise do the calcdata updates and calcTransform array remaps that we skipped earlier
+        else Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
+
         if(relayoutFlags.margins) helpers.clearAxisAutomargins(gd);
 
         // Note: what restyle/relayout use impliedEdits and clearAxisTypes for
@@ -2397,7 +2403,7 @@ function diffData(gd, oldFullData, newFullData, immutable) {
             Axes.getFromId(gd, trace.xaxis).autorange ||
             Axes.getFromId(gd, trace.yaxis).autorange
         ) : false;
-        getDiffFlags(oldFullData[i], trace, [], diffOpts);
+        getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
     }
 
     if(flags.calc || flags.plot || flags.calcIfAutorange) {
@@ -2461,13 +2467,6 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
         return valObject.valType === 'data_array' || valObject.arrayOk;
     }
 
-    // for transforms: look at _fullInput rather than the transform result, which often
-    // contains generated arrays.
-    var newFullInput = newContainer._fullInput;
-    var oldFullInput = oldContainer._fullInput;
-    if(newFullInput && newFullInput !== newContainer) newContainer = newFullInput;
-    if(oldFullInput && oldFullInput !== oldContainer) oldContainer = oldFullInput;
-
     for(key in oldContainer) {
         // short-circuit based on previous calls or previous keys that already maximized the pathway
         if(flags.calc) return;
@@ -2493,6 +2492,8 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
 
         // in case type changed, we may not even *have* a valObject.
         if(!valObject) continue;
+
+        if(valObject._compareAsJSON && JSON.stringify(oldVal) === JSON.stringify(newVal)) continue;
 
         var valType = valObject.valType;
         var i;

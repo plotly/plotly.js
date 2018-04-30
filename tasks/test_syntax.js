@@ -73,6 +73,9 @@ function assertSrcContents() {
     // Forbidden in IE in any context
     var IE_BLACK_LIST = ['classList'];
 
+    // not implemented in FF, or inconsistent with others
+    var FF_BLACK_LIST = ['offsetX', 'offsetY'];
+
     // require'd built-in modules
     var BUILTINS = ['events'];
 
@@ -102,6 +105,9 @@ function assertSrcContents() {
                     }
                     else if(IE_SVG_BLACK_LIST.indexOf(lastPart) !== -1) {
                         logs.push(file + ' : contains .' + lastPart + ' (IE failure in SVG)');
+                    }
+                    else if(FF_BLACK_LIST.indexOf(lastPart) !== -1) {
+                        logs.push(file + ' : contains .' + lastPart + ' (FF failure)');
                     }
                 }
                 else if(node.type === 'Identifier' && node.source() === 'getComputedStyle') {

@@ -254,27 +254,37 @@ var extraFormatKeys = [
     'year', 'month', 'dayMonth', 'dayMonthYear'
 ];
 
-// Fill in default values:
-//
-// gd.data, gd.layout:
-//   are precisely what the user specified,
-//   these fields shouldn't be modified nor used directly
-//   after the supply defaults step.
-//
-// gd._fullData, gd._fullLayout:
-//   are complete descriptions of how to draw the plot,
-//   use these fields in all required computations.
-//
-// gd._fullLayout._modules
-//   is a list of all the trace modules required to draw the plot.
-//
-// gd._fullLayout._basePlotModules
-//   is a list of all the plot modules required to draw the plot.
-//
-// gd._fullLayout._transformModules
-//   is a list of all the transform modules invoked.
-//
-plots.supplyDefaults = function(gd) {
+/*
+ * Fill in default values
+ * @param {DOM element} gd
+ * @param {object} opts
+ * @param {boolean} opts.skipUpdateCalc: normally if the existing gd.calcdata looks
+ *   compatible with the new gd._fullData we finish by linking the new _fullData traces
+ *   to the old gd.calcdata, so it's correctly set if we're not going to recalc. But also,
+ *   if there are calcTransforms on the trace, we first remap data arrays from the old full
+ *   trace into the new one. Use skipUpdateCalc to defer this (needed by Plotly.react)
+ *
+ * gd.data, gd.layout:
+ *   are precisely what the user specified (except as modified by cleanData/cleanLayout),
+ *   these fields shouldn't be modified (except for filling in some auto values)
+ *   nor used directly after the supply defaults step.
+ *
+ * gd._fullData, gd._fullLayout:
+ *   are complete descriptions of how to draw the plot,
+ *   use these fields in all required computations.
+ *
+ * gd._fullLayout._modules
+ *   is a list of all the trace modules required to draw the plot.
+ *
+ * gd._fullLayout._basePlotModules
+ *   is a list of all the plot modules required to draw the plot.
+ *
+ * gd._fullLayout._transformModules
+ *   is a list of all the transform modules invoked.
+ *
+ */
+plots.supplyDefaults = function(gd, opts) {
+    var skipUpdateCalc = opts && opts.skipUpdateCalc;
     var oldFullLayout = gd._fullLayout || {};
 
     if(oldFullLayout._skipDefaults) {
@@ -438,11 +448,11 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._hasTernary = newFullLayout._has('ternary');
     newFullLayout._hasPie = newFullLayout._has('pie');
 
-    // clean subplots and other artifacts from previous plot calls
-    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
-
     // relink / initialize subplot axis objects
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
+
+    // clean subplots and other artifacts from previous plot calls
+    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcdata);
 
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
@@ -458,22 +468,33 @@ plots.supplyDefaults = function(gd) {
     }
 
     // update object references in calcdata
-    if(oldCalcdata.length === newFullData.length) {
-        for(i = 0; i < newFullData.length; i++) {
-            var newTrace = newFullData[i];
-            var cd0 = oldCalcdata[i][0];
-            if(cd0 && cd0.trace) {
-                if(cd0.trace._hasCalcTransform) {
-                    remapTransformedArrays(cd0, newTrace);
-                } else {
-                    cd0.trace = newTrace;
-                }
-            }
-        }
+    if(!skipUpdateCalc && oldCalcdata.length === newFullData.length) {
+        plots.supplyDefaultsUpdateCalc(oldCalcdata, newFullData);
     }
 
     // sort base plot modules for consistent ordering
     newFullLayout._basePlotModules.sort(sortBasePlotModules);
+};
+
+plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
+    for(var i = 0; i < newFullData.length; i++) {
+        var newTrace = newFullData[i];
+        var cd0 = oldCalcdata[i][0];
+        if(cd0 && cd0.trace) {
+            var oldTrace = cd0.trace;
+            if(oldTrace._hasCalcTransform) {
+                var arrayAttrs = oldTrace._arrayAttrs;
+                var j, astr, oldArrayVal;
+
+                for(j = 0; j < arrayAttrs.length; j++) {
+                    astr = arrayAttrs[j];
+                    oldArrayVal = Lib.nestedProperty(oldTrace, astr).get().slice();
+                    Lib.nestedProperty(newTrace, astr).set(oldArrayVal);
+                }
+            }
+            cd0.trace = newTrace;
+        }
+    }
 };
 
 /**
@@ -516,25 +537,6 @@ function emptySubplotLists() {
         out[collectableSubplotTypes[i]] = [];
     }
     return out;
-}
-
-function remapTransformedArrays(cd0, newTrace) {
-    var oldTrace = cd0.trace;
-    var arrayAttrs = oldTrace._arrayAttrs;
-    var transformedArrayHash = {};
-    var i, astr;
-
-    for(i = 0; i < arrayAttrs.length; i++) {
-        astr = arrayAttrs[i];
-        transformedArrayHash[astr] = Lib.nestedProperty(oldTrace, astr).get().slice();
-    }
-
-    cd0.trace = newTrace;
-
-    for(i = 0; i < arrayAttrs.length; i++) {
-        astr = arrayAttrs[i];
-        Lib.nestedProperty(cd0.trace, astr).set(transformedArrayHash[astr]);
-    }
 }
 
 /**
@@ -672,8 +674,6 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
         }
     }
 
-    var hasPaper = !!oldFullLayout._paper;
-    var hasInfoLayer = !!oldFullLayout._infolayer;
     var hadGl = oldFullLayout._has && oldFullLayout._has('gl');
     var hasGl = newFullLayout._has && newFullLayout._has('gl');
 
@@ -683,6 +683,8 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
             oldFullLayout._glcanvas = null;
         }
     }
+
+    var hasInfoLayer = !!oldFullLayout._infolayer;
 
     oldLoop:
     for(i = 0; i < oldFullData.length; i++) {
@@ -695,26 +697,9 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
             if(oldUid === newTrace.uid) continue oldLoop;
         }
 
-        var query = (
-            '.hm' + oldUid +
-            ',.contour' + oldUid +
-            ',.carpet' + oldUid +
-            ',#clip' + oldUid +
-            ',.trace' + oldUid
-        );
-
-        // clean old heatmap, contour traces and clip paths
-        // that rely on uid identifiers
-        if(hasPaper) {
-            oldFullLayout._paper.selectAll(query).remove();
-        }
-
-        // clean old colorbars and range slider plot
+        // clean old colorbars
         if(hasInfoLayer) {
-            oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
-
-            oldFullLayout._infolayer.selectAll('g.rangeslider-container')
-                .selectAll(query).remove();
+            oldFullLayout._infolayer.select('.cb' + oldUid).remove();
         }
     }
 
@@ -1174,6 +1159,11 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
 };
 
 plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
+    // For now we only allow transforms on 1D traces, ie those that specify a _length.
+    // If we were to implement 2D transforms, we'd need to have each transform
+    // describe its own applicability and disable itself when it doesn't apply.
+    if(!traceOut._length) return;
+
     var globalTransforms = layout._globalTransforms || [];
     var transformModules = layout._transformModules || [];
 

@@ -61,15 +61,16 @@ module.exports = {
     DFLTRANGEY: [-1, 4],
 
     // Layers to keep trace types in the right order
+    // N.B. each  'unique' plot method must have its own layer
     traceLayerClasses: [
-        'imagelayer',
-        'maplayer',
+        'heatmaplayer',
+        'contourcarpetlayer', 'contourlayer',
         'barlayer',
         'carpetlayer',
         'violinlayer',
         'boxlayer',
         'ohlclayer',
-        'scatterlayer'
+        'scattercarpetlayer', 'scatterlayer'
     ],
 
     layerValue2layerClass: {

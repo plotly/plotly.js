@@ -15,7 +15,7 @@ var wrap = require('../../lib/gup').wrap;
 
 module.exports = function calc(gd, trace) {
     var cs = !!trace.line.colorscale && Lib.isArrayOrTypedArray(trace.line.color);
-    var color = cs ? trace.line.color : constHalf(trace._commonLength);
+    var color = cs ? trace.line.color : constHalf(trace._length);
     var cscale = cs ? trace.line.colorscale : [[0, trace.line.color], [1, trace.line.color]];
 
     if(hasColorscale(trace, 'line')) {

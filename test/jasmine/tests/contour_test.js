@@ -407,4 +407,55 @@ describe('contour plotting and editing', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should always draw heatmap coloring layer below contour lines', function(done) {
+        var cnt = 0;
+
+        function _assert(exp) {
+            var msg = ' index in <g.contourlayer> (call #' + cnt + ')';
+            var contourLayer = gd.querySelector('.xy > .plot > .contourlayer');
+            var hmIndex = -1;
+            var contoursIndex = -1;
+
+            for(var i in contourLayer.children) {
+                var child = contourLayer.children[i];
+                if(child.querySelector) {
+                    if(child.querySelector('.hm')) hmIndex = +i;
+                    else if(child.querySelector('.contourlevel')) contoursIndex = +i;
+                }
+            }
+
+            expect(hmIndex).toBe(exp.hmIndex, 'heatmap' + msg);
+            expect(contoursIndex).toBe(exp.contoursIndex, 'contours' + msg);
+            cnt++;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'contour',
+            z: [[1, 2, 3], [1, 3, 0]],
+            contours: {coloring: 'heatmap'}
+        }])
+        .then(function() {
+            _assert({
+                hmIndex: 0,
+                contoursIndex: 1
+            });
+            return Plotly.restyle(gd, 'contours.coloring', 'lines');
+        })
+        .then(function() {
+            _assert({
+                hmIndex: -1,
+                contoursIndex: 1
+            });
+            return Plotly.restyle(gd, 'contours.coloring', 'heatmap');
+        })
+        .then(function() {
+            _assert({
+                hmIndex: 0,
+                contoursIndex: 1
+            });
+        })
+        .catch(fail)
+        .then(done);
+    });
 });

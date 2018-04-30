@@ -21,7 +21,6 @@ var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
 
 var Axes = require('../plots/cartesian/axes');
-var cartesianConstants = require('../plots/cartesian/constants');
 var alignmentConstants = require('../constants/alignment');
 var axisConstraints = require('../plots/cartesian/constraints');
 var enforceAxisConstraints = axisConstraints.enforce;
@@ -199,15 +198,9 @@ exports.lsInner = function(gd) {
 
         Drawing.setClipUrl(plotinfo.plot, plotClipId);
 
-        for(i = 0; i < cartesianConstants.traceLayerClasses.length; i++) {
-            var layer = cartesianConstants.traceLayerClasses[i];
-            if(layer !== 'scatterlayer' && layer !== 'barlayer') {
-                plotinfo.plot.selectAll('g.' + layer).call(Drawing.setClipUrl, layerClipId);
-            }
-        }
-
         // stash layer clipId value (null or same as clipId)
-        // to DRY up Drawing.setClipUrl calls downstream
+        // to DRY up Drawing.setClipUrl calls on trace-module and trace layers
+        // downstream
         plotinfo.layerClipId = layerClipId;
 
         // figure out extra axis line and tick positions as needed
@@ -495,34 +488,13 @@ exports.doCamera = function(gd) {
 exports.drawData = function(gd) {
     var fullLayout = gd._fullLayout;
     var calcdata = gd.calcdata;
-    var rangesliderContainers = fullLayout._infolayer.selectAll('g.rangeslider-container');
     var i;
 
-    // in case of traces that were heatmaps or contour maps
-    // previously, remove them and their colorbars explicitly
+    // remove old colorbars explicitly
     for(i = 0; i < calcdata.length; i++) {
         var trace = calcdata[i][0].trace;
-        var isVisible = (trace.visible === true);
-        var uid = trace.uid;
-
-        if(!isVisible || !Registry.traceIs(trace, '2dMap')) {
-            var query = (
-                '.hm' + uid +
-                ',.contour' + uid +
-                ',#clip' + uid
-            );
-
-            fullLayout._paper
-                .selectAll(query)
-                .remove();
-
-            rangesliderContainers
-                .selectAll(query)
-                .remove();
-        }
-
-        if(!isVisible || !trace._module.colorbar) {
-            fullLayout._infolayer.selectAll('.cb' + uid).remove();
+        if(trace.visible !== true || !trace._module.colorbar) {
+            fullLayout._infolayer.select('.cb' + trace.uid).remove();
         }
     }
 

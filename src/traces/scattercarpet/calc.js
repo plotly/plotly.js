@@ -28,7 +28,7 @@ module.exports = function calc(gd, trace) {
     trace.yaxis = carpet.yaxis;
 
     // make the calcdata array
-    var serieslen = trace.a.length;
+    var serieslen = trace._length;
     var cd = new Array(serieslen);
     var a, b;
     var needsCull = false;

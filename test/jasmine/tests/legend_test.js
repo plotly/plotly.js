@@ -919,11 +919,11 @@ describe('legend interaction', function() {
                 x: [1, 2, 3],
                 y: [5, 4, 3]
             }, {
-                x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-                y: [1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9],
+                x: [1, 2, 3, 4, 5, 6, 7, 8],
+                y: [1, 3, 2, 4, 3, 5, 4, 6],
                 transforms: [{
                     type: 'groupby',
-                    groups: [1, 2, 1, 2, 3, 4, 3, 4, 5, 6, 5, 6, 7, 8]
+                    groups: [1, 2, 1, 2, 3, 4, 3, 4]
                 }]
             }],
             config: {editable: true}
@@ -946,35 +946,68 @@ describe('legend interaction', function() {
             }).then(delay(20));
         }
 
+        function assertLabels(expected) {
+            var labels = [];
+            d3.selectAll('text.legendtext').each(function() {
+                labels.push(this.textContent);
+            });
+            expect(labels).toEqual(expected);
+        }
+
         it('sets and unsets trace group names', function(done) {
+            assertLabels(['trace 0', '1 (trace 1)', '2 (trace 1)', '3 (trace 1)', '4 (trace 1)']);
             // Set the name of the first trace:
             _setValue(0, 'foo').then(function() {
                 expect(gd.data[0].name).toEqual('foo');
-            }).then(function() {
+                // labels shorter than half the longest get padded with spaces to match the longest length
+                assertLabels(['foo        ', '1 (trace 1)', '2 (trace 1)', '3 (trace 1)', '4 (trace 1)']);
+
                 // Set the name of the third legend item:
-                return _setValue(3, 'bar');
+                return _setValue(3, 'barbar');
             }).then(function() {
                 expect(gd.data[1].transforms[0].styles).toEqual([
-                    {value: {name: 'bar'}, target: 3}
+                    {value: {name: 'barbar'}, target: 3}
                 ]);
-            }).then(function() {
-                return _setValue(4, 'asdf');
+                assertLabels(['foo        ', '1 (trace 1)', '2 (trace 1)', 'barbar', '4 (trace 1)']);
+
+                return _setValue(2, 'asdf');
             }).then(function() {
                 expect(gd.data[1].transforms[0].styles).toEqual([
-                    {value: {name: 'bar'}, target: 3},
-                    {value: {name: 'asdf'}, target: 4}
+                    {value: {name: 'barbar'}, target: 3},
+                    {value: {name: 'asdf'}, target: 2}
                 ]);
-            }).then(function() {
-                // Unset the group names:
+                assertLabels(['foo        ', '1 (trace 1)', 'asdf       ', 'barbar', '4 (trace 1)']);
+
+                // Clear the group names:
                 return _setValue(3, '');
             }).then(function() {
-                return _setValue(4, '');
+                assertLabels(['foo        ', '1 (trace 1)', 'asdf       ', '           ', '4 (trace 1)']);
+                return _setValue(2, '');
             }).then(function() {
-                // Verify the group names have been cleaned up:
+                // Verify the group names have been cleared:
                 expect(gd.data[1].transforms[0].styles).toEqual([
-                    {target: 3},
-                    {target: 4}
+                    {target: 3, value: {name: ''}},
+                    {target: 2, value: {name: ''}}
                 ]);
+                assertLabels(['foo        ', '1 (trace 1)', '           ', '           ', '4 (trace 1)']);
+
+                return _setValue(0, '');
+            }).then(function() {
+                expect(gd.data[0].name).toEqual('');
+                assertLabels(['           ', '1 (trace 1)', '           ', '           ', '4 (trace 1)']);
+
+                return _setValue(0, 'boo~~~');
+            }).then(function() {
+                expect(gd.data[0].name).toEqual('boo~~~');
+                assertLabels(['boo~~~', '1 (trace 1)', '           ', '           ', '4 (trace 1)']);
+
+                return _setValue(2, 'hoo');
+            }).then(function() {
+                expect(gd.data[1].transforms[0].styles).toEqual([
+                    {target: 3, value: {name: ''}},
+                    {target: 2, value: {name: 'hoo'}}
+                ]);
+                assertLabels(['boo~~~', '1 (trace 1)', 'hoo        ', '           ', '4 (trace 1)']);
             }).catch(failTest).then(done);
         });
     });

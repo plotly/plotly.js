@@ -32,20 +32,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut.xaxis = 'x';
     traceOut.yaxis = 'y';
 
-    var a = coerce('a'),
-        b = coerce('b'),
-        len;
-
-    len = Math.min(a.length, b.length);
+    var a = coerce('a');
+    var b = coerce('b');
+    var len = Math.min(a.length, b.length);
 
     if(!len) {
         traceOut.visible = false;
         return;
     }
 
-    // cut all data arrays down to same length
-    if(a && len < a.length) traceOut.a = a.slice(0, len);
-    if(b && len < b.length) traceOut.b = b.slice(0, len);
+    traceOut._length = len;
 
     coerce('text');
 

@@ -448,8 +448,8 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
 
         Plots.supplyDefaults(mockFigure);
 
-        var xa = mockFigure._fullLayout.xaxis,
-            ya = mockFigure._fullLayout[oppAxisName];
+        var xa = mockFigure._fullLayout.xaxis;
+        var ya = mockFigure._fullLayout[oppAxisName];
 
         var plotinfo = {
             id: id,
