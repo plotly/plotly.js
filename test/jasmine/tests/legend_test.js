@@ -1299,5 +1299,113 @@ describe('legend interaction', function() {
                 .catch(failTest);
             });
         });
+
+        describe('legend click/doubleclick event data', function() {
+            function _assert(act, exp) {
+                for(var k in exp) {
+                    if(k === 'event' || k === 'node') {
+                        expect(act[k]).toBeDefined();
+                    } else if(k === 'group') {
+                        expect(act[k]).toEqual(exp[k]);
+                    } else {
+                        expect(act[k]).toBe(exp[k], 'key ' + k);
+                    }
+                }
+
+                expect(Object.keys(act).length)
+                    .toBe(Object.keys(exp).length, '# of keys');
+            }
+
+            function clickAndCheck(clickArg, exp) {
+                Lib.extendFlat(exp, {
+                    event: true,
+                    node: true,
+                    data: gd.data,
+                    layout: gd.layout,
+                    frames: gd._transitionData._frames,
+                    config: gd._context,
+                    fullData: gd._fullData,
+                    fullLayout: gd._fullLayout
+                });
+
+                var evtName = {
+                    1: 'plotly_legendclick',
+                    2: 'plotly_legenddoubleclick'
+                }[clickArg[1]];
+
+                return new Promise(function(resolve, reject) {
+                    var hasBeenCalled = false;
+
+                    var to = setTimeout(function() {
+                        reject('did not trigger ' + evtName);
+                    }, 2 * DBLCLICKDELAY);
+
+                    gd.on(evtName, function(d) {
+                        hasBeenCalled = true;
+                        _assert(d, exp);
+                    });
+                    gd.on('plotly_restyle', function() {
+                        if(hasBeenCalled) {
+                            clearTimeout(to);
+                            resolve();
+                        }
+                    });
+
+                    click(clickArg[0], clickArg[1])();
+                });
+            }
+
+            it('should have correct keys (base case)', function(done) {
+                Plotly.newPlot(gd, [{
+                    x: [1, 2, 3, 4, 5],
+                    y: [1, 2, 1, 2, 3]
+                }], {
+                    showlegend: true
+                })
+                .then(function() {
+                    return clickAndCheck([0, 1], {
+                        curveNumber: 0,
+                        expandedIndex: 0
+                    });
+                })
+                .then(function() {
+                    return clickAndCheck([0, 2], {
+                        curveNumber: 0,
+                        expandedIndex: 0
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
+            it('should have correct keys (groupby case)', function(done) {
+                Plotly.newPlot(gd, [{
+                    x: [1, 2, 3, 4, 5],
+                    y: [1, 2, 1, 2, 3],
+                    transforms: [{
+                        type: 'groupby',
+                        groups: ['a', 'b', 'b', 'a', 'b']
+                    }]
+                }, {
+                    x: [1, 2, 3, 4, 5],
+                    y: [1, 2, 1, 2, 3],
+                }])
+                .then(function() {
+                    return clickAndCheck([1, 1], {
+                        curveNumber: 0,
+                        expandedIndex: 1,
+                        group: 'b'
+                    });
+                })
+                .then(function() {
+                    return clickAndCheck([2, 2], {
+                        curveNumber: 1,
+                        expandedIndex: 2
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+        });
     });
 });

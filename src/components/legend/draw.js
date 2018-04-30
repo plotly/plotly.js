@@ -355,14 +355,14 @@ module.exports = function draw(gd) {
     }
 };
 
-function clickOrDoubleClick(gd, legend, clickedTrace, numClicks, evt) {
-    var datum = clickedTrace.data()[0][0];
+function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
+    var trace = legendItem.data()[0][0].trace;
 
     var evtData = {
         event: evt,
-        node: clickedTrace.node(),
-        itemNumber: datum.i,
-        curveNumber: datum.trace.index,
+        node: legendItem.node(),
+        curveNumber: trace.index,
+        expandedIndex: trace._expandedIndex,
         data: gd.data,
         layout: gd.layout,
         frames: gd._transitionData._frames,
@@ -371,12 +371,16 @@ function clickOrDoubleClick(gd, legend, clickedTrace, numClicks, evt) {
         fullLayout: gd._fullLayout
     };
 
+    if(trace._group) {
+        evtData.group = trace._group;
+    }
+
     var returnVal;
 
     if(numClicks === 1) {
         legend._clickTimeout = setTimeout(function() {
             returnVal = Events.triggerHandler(gd, 'plotly_legendclick', evtData);
-            if(returnVal !== false) handleClick(clickedTrace, gd, numClicks);
+            if(returnVal !== false) handleClick(legendItem, gd, numClicks);
         }, DBLCLICKDELAY);
     }
     else if(numClicks === 2) {
@@ -384,7 +388,7 @@ function clickOrDoubleClick(gd, legend, clickedTrace, numClicks, evt) {
         gd._legendMouseDownTime = 0;
 
         returnVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
-        if(returnVal !== false) handleClick(clickedTrace, gd, numClicks);
+        if(returnVal !== false) handleClick(legendItem, gd, numClicks);
     }
 }
 
