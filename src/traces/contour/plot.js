@@ -16,6 +16,7 @@ var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Axes = require('../../plots/cartesian/axes');
 var setConvert = require('../../plots/cartesian/set_convert');
+var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 var heatmapPlot = require('../heatmap/plot');
 var makeCrossings = require('./make_crossings');
@@ -26,32 +27,34 @@ var closeBoundaries = require('./close_boundaries');
 var constants = require('./constants');
 var costConstants = constants.LABELOPTIMIZER;
 
+exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
+    var uidLookup = getUidsFromCalcData(cdcontours);
 
-exports.plot = function plot(gd, plotinfo, cdcontours) {
+    contourLayer.selectAll('g.contour').each(function(d) {
+        if(!uidLookup[d.trace.uid]) {
+            d3.select(this).remove();
+        }
+    });
+
     for(var i = 0; i < cdcontours.length; i++) {
-        plotOne(gd, plotinfo, cdcontours[i]);
+        plotOne(gd, plotinfo, cdcontours[i], contourLayer);
     }
 };
 
-function plotOne(gd, plotinfo, cd) {
-    var trace = cd[0].trace,
-        x = cd[0].x,
-        y = cd[0].y,
-        contours = trace.contours,
-        uid = trace.uid,
-        xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        fullLayout = gd._fullLayout,
-        id = 'contour' + uid,
-        pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
-
-    if(trace.visible !== true) {
-        fullLayout._paper.selectAll('.' + id + ',.hm' + uid).remove();
-        fullLayout._infolayer.selectAll('.cb' + uid).remove();
-        return;
-    }
+function plotOne(gd, plotinfo, cd, contourLayer) {
+    var trace = cd[0].trace;
+    var x = cd[0].x;
+    var y = cd[0].y;
+    var contours = trace.contours;
+    var id = 'contour' + trace.uid;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+    var fullLayout = gd._fullLayout;
+    var pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
 
     // use a heatmap to fill - draw it behind the lines
+    var heatmapColoringLayer = Lib.ensureSingle(contourLayer, 'g', 'heatmapcoloring');
+    var cdheatmaps = [];
     if(contours.coloring === 'heatmap') {
         if(trace.zauto && (trace.autocontour === false)) {
             trace._input.zmin = trace.zmin =
@@ -59,15 +62,9 @@ function plotOne(gd, plotinfo, cd) {
             trace._input.zmax = trace.zmax =
                 trace.zmin + pathinfo.length * contours.size;
         }
-
-        heatmapPlot(gd, plotinfo, [cd]);
+        cdheatmaps = [cd];
     }
-    // in case this used to be a heatmap (or have heatmap fill)
-    else {
-        fullLayout._paper.selectAll('.hm' + uid).remove();
-        fullLayout._infolayer.selectAll('g.rangeslider-container')
-            .selectAll('.hm' + uid).remove();
-    }
+    heatmapPlot(gd, plotinfo, cdheatmaps, heatmapColoringLayer);
 
     makeCrossings(pathinfo);
     findAllPaths(pathinfo);
@@ -90,15 +87,15 @@ function plotOne(gd, plotinfo, cd) {
     }
 
     // draw everything
-    var plotGroup = exports.makeContourGroup(plotinfo, cd, id);
+    var plotGroup = exports.makeContourGroup(contourLayer, cd, id);
     makeBackground(plotGroup, perimeter, contours);
     makeFills(plotGroup, fillPathinfo, perimeter, contours);
     makeLinesAndLabels(plotGroup, pathinfo, gd, cd[0], contours, perimeter);
     clipGaps(plotGroup, plotinfo, fullLayout._clips, cd[0], perimeter);
 }
 
-exports.makeContourGroup = function(plotinfo, cd, id) {
-    var plotgroup = plotinfo.plot.select('.maplayer')
+exports.makeContourGroup = function(layer, cd, id) {
+    var plotgroup = layer
         .selectAll('g.contour.' + id)
         .data(cd);
 

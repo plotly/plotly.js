@@ -60,5 +60,7 @@ module.exports = function plot(gd, subplot, moduleCalcData) {
         }
     }
 
-    scatterPlot(gd, plotinfo, moduleCalcData);
+    var scatterLayer = subplot.layers.frontplot.select('g.scatterlayer');
+
+    scatterPlot(gd, plotinfo, moduleCalcData, scatterLayer);
 };
