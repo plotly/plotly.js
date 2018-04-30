@@ -76,8 +76,8 @@ function styleOnSelect(gd, cd) {
     var trace = cd[0].trace;
 
     if(trace.selectedpoints) {
-        Drawing.selectedPointStyle(s.selectAll('path'), trace, gd);
-        Drawing.selectedPointStyle(s.selectAll('text'), trace, gd);
+        Drawing.selectedPointStyle(s.selectAll('path'), trace);
+        Drawing.selectedTextStyle(s.selectAll('text'), trace);
     } else {
         stylePoints(s, trace, gd);
     }
