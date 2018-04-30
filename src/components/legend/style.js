@@ -110,8 +110,8 @@ module.exports = function style(s, gd) {
 
         // constrain text, markers, etc so they'll fit on the legend
         if(showMarkers || showText || showLines) {
-            var dEdit = {},
-                tEdit = {};
+            var dEdit = {};
+            var tEdit = {};
 
             if(showMarkers) {
                 dEdit.mc = boundVal('marker.color', pickFirst);
@@ -142,6 +142,9 @@ module.exports = function style(s, gd) {
 
             dMod = [Lib.minExtend(d0, dEdit)];
             tMod = Lib.minExtend(trace, tEdit);
+
+            // always show legend items in base state
+            tMod.selectedpoints = null;
         }
 
         var ptgroup = d3.select(this).select('g.legendpoints');

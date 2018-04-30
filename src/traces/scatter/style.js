@@ -36,13 +36,8 @@ function style(gd, cd) {
 }
 
 function stylePoints(sel, trace, gd) {
-    var pts = sel.selectAll('path.point');
-    var txs = sel.selectAll('text');
-
-    Drawing.pointStyle(pts, trace, gd);
-    Drawing.textPointStyle(txs, trace, gd);
-    Drawing.selectedPointStyle(pts, trace);
-    Drawing.selectedTextStyle(txs, trace);
+    Drawing.pointStyle(sel.selectAll('path.point'), trace, gd);
+    Drawing.textPointStyle(sel.selectAll('text'), trace, gd);
 }
 
 function styleOnSelect(gd, cd) {

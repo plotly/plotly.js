@@ -50,7 +50,6 @@ function style(gd, cd) {
 
             var pts = el.selectAll('path.point');
             Drawing.pointStyle(pts, trace, gd);
-            Drawing.selectedPointStyle(pts, trace);
         }
     });
 }
@@ -61,7 +60,7 @@ function styleOnSelect(gd, cd) {
     var pts = s.selectAll('path.point');
 
     if(trace.selectedpoints) {
-        Drawing.selectedPointStyle(pts, trace, gd);
+        Drawing.selectedPointStyle(pts, trace);
     } else {
         Drawing.pointStyle(pts, trace, gd);
     }

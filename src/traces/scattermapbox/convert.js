@@ -205,33 +205,27 @@ function makeCircleOpts(calcTrace) {
         for(i = 0; i < features.length; i++) {
             var d = features[i].properties;
 
-            var mo2 = fns.opacityFn(d);
-            if(mo2 !== undefined) d.mo = addTraceOpacity(mo2);
-            else if(d.mo === undefined) d.mo = addTraceOpacity(marker.opacity);
-
-            if(fns.colorFn) {
-                var mc2 = fns.colorFn(d);
-                if(mc2) d.mcc = mc2;
-                else if(!d.mcc) d.mcc = marker.color;
+            if(fns.selectedOpacityFn) {
+                d.mo = addTraceOpacity(fns.selectedOpacityFn(d));
             }
-
-            if(fns.sizeFn) {
-                var mrc2 = fns.sizeFn(d);
-                if(mrc2 !== undefined) d.mrc = mrc2;
-                else if(d.mrc === undefined) d.mrc = size2radius(marker.size);
+            if(fns.selectedColorFn) {
+                d.mcc = fns.selectedColorFn(d);
+            }
+            if(fns.selectedSizeFn) {
+                d.mrc = fns.selectedSizeFn(d);
             }
         }
     }
 
     return {
         geojson: {type: 'FeatureCollection', features: features},
-        mcc: arrayColor || (fns && fns.colorFn) ?
+        mcc: arrayColor || (fns && fns.selectedColorFn) ?
             {type: 'identity', property: 'mcc'} :
             marker.color,
-        mrc: arraySize || (fns && fns.sizeFn) ?
+        mrc: arraySize || (fns && fns.selectedSizeFn) ?
             {type: 'identity', property: 'mrc'} :
             size2radius(marker.size),
-        mo: arrayOpacity || selectedpoints ?
+        mo: arrayOpacity || (fns && fns.selectedOpacityFn) ?
             {type: 'identity', property: 'mo'} :
             addTraceOpacity(marker.opacity)
     };

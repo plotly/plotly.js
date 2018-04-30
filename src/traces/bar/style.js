@@ -47,7 +47,6 @@ function stylePoints(sel, trace, gd) {
     var txs = sel.selectAll('text');
 
     Drawing.pointStyle(pts, trace, gd);
-    Drawing.selectedPointStyle(pts, trace);
 
     txs.each(function(d) {
         var tx = d3.select(this);
@@ -67,8 +66,6 @@ function stylePoints(sel, trace, gd) {
 
         Drawing.font(tx, cast('family'), cast('size'), cast('color'));
     });
-
-    Drawing.selectedTextStyle(txs, trace);
 }
 
 function styleOnSelect(gd, cd) {
