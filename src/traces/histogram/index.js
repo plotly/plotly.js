@@ -32,6 +32,7 @@ Histogram.supplyLayoutDefaults = require('../bar/layout_defaults');
 Histogram.calc = require('./calc');
 Histogram.setPositions = require('../bar/set_positions');
 Histogram.plot = require('../bar/plot');
+Histogram.layerName = 'barlayer';
 Histogram.style = require('../bar/style').style;
 Histogram.styleOnSelect = require('../bar/style').styleOnSelect;
 Histogram.colorbar = require('../scatter/colorbar');

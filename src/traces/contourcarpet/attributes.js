@@ -40,9 +40,6 @@ module.exports = extendFlat({}, {
     atype: heatmapAttrs.xtype,
     btype: heatmapAttrs.ytype,
 
-    // unimplemented - looks like connectgaps is implied true
-    // connectgaps: heatmapAttrs.connectgaps,
-
     fillcolor: contourAttrs.fillcolor,
 
     autocontour: contourAttrs.autocontour,

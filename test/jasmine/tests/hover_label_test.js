@@ -1918,7 +1918,7 @@ describe('Test hover label custom styling:', function() {
                 text: [20, 'Arial', 'rgb(255, 0, 0)']
             });
             assertCommonLabel({
-                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
             });
         })
@@ -1930,7 +1930,7 @@ describe('Test hover label custom styling:', function() {
                 text: [20, 'Arial', 'rgb(0, 128, 0)']
             });
             assertCommonLabel({
-                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
             });
         })
@@ -1942,7 +1942,7 @@ describe('Test hover label custom styling:', function() {
                 text: [20, 'Arial', 'rgb(0, 0, 255)']
             });
             assertCommonLabel({
-                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
             });
 
@@ -1969,7 +1969,7 @@ describe('Test hover label custom styling:', function() {
 
             assertPtLabel(null);
             assertCommonLabel({
-                path: ['rgb(255, 255, 255)', 'rgb(255, 255, 255)'],
+                path: ['rgb(255, 255, 255)', 'rgb(68, 68, 68)'],
                 text: [13, 'Arial', 'rgb(255, 255, 255)']
             });
 

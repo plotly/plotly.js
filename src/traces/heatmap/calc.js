@@ -15,7 +15,6 @@ var Axes = require('../../plots/cartesian/axes');
 
 var histogram2dCalc = require('../histogram2d/calc');
 var colorscaleCalc = require('../../components/colorscale/calc');
-var hasColumns = require('./has_columns');
 var convertColumnData = require('./convert_column_xyz');
 var maxRowLength = require('./max_row_length');
 var clean2dArray = require('./clean_2d_array');
@@ -59,7 +58,7 @@ module.exports = function calc(gd, trace) {
     }
     else {
         var zIn = trace.z;
-        if(hasColumns(trace)) {
+        if(Lib.isArray1D(zIn)) {
             convertColumnData(trace, xa, ya, 'x', 'y', ['z']);
             x = trace._x;
             y = trace._y;

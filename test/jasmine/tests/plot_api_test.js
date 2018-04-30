@@ -12,6 +12,7 @@ var helpers = require('@src/plot_api/helpers');
 var editTypes = require('@src/plot_api/edit_types');
 var annotations = require('@src/components/annotations');
 var images = require('@src/components/images');
+var Registry = require('@src/registry');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -1053,14 +1054,14 @@ describe('Test plot api', function() {
             var mlcmax1 = 6;
             var mlcscl1 = 'greens';
 
-            function check(auto, msg) {
+            function check(auto, autocolorscale, msg) {
                 expect(gd.data[0].marker.cauto).toBe(auto, msg);
                 expect(gd.data[0].marker.cmin).negateIf(auto).toBe(mcmin0);
-                expect(gd._fullData[0].marker.autocolorscale).toBe(auto, msg);
+                expect(gd._fullData[0].marker.autocolorscale).toBe(autocolorscale, msg);
                 expect(gd.data[0].marker.colorscale).toEqual(auto ? autocscale : mcscl0);
                 expect(gd.data[1].marker.line.cauto).toBe(auto, msg);
                 expect(gd.data[1].marker.line.cmax).negateIf(auto).toBe(mlcmax1);
-                expect(gd._fullData[1].marker.line.autocolorscale).toBe(auto, msg);
+                expect(gd._fullData[1].marker.line.autocolorscale).toBe(autocolorscale, msg);
                 expect(gd.data[1].marker.line.colorscale).toEqual(auto ? autocscale : mlcscl1);
             }
 
@@ -1069,28 +1070,30 @@ describe('Test plot api', function() {
                 {y: [2, 1], mode: 'markers', marker: {line: {width: 2, color: [3, 4]}}}
             ])
             .then(function() {
-                check(true, 'initial');
+                // autocolorscale is actually true after supplyDefaults, but during calc it's set
+                // to false when we push the resulting colorscale back to the input container
+                check(true, false, 'initial');
                 return Plotly.restyle(gd, {'marker.cmin': mcmin0, 'marker.colorscale': mcscl0}, null, [0]);
             })
             .then(function() {
                 return Plotly.restyle(gd, {'marker.line.cmax': mlcmax1, 'marker.line.colorscale': mlcscl1}, null, [1]);
             })
             .then(function() {
-                check(false, 'set min/max/scale');
+                check(false, false, 'set min/max/scale');
                 return Plotly.restyle(gd, {'marker.cauto': true, 'marker.autocolorscale': true}, null, [0]);
             })
             .then(function() {
                 return Plotly.restyle(gd, {'marker.line.cauto': true, 'marker.line.autocolorscale': true}, null, [1]);
             })
             .then(function() {
-                check(true, 'reset');
+                check(true, true, 'reset');
                 return Queue.undo(gd);
             })
             .then(function() {
                 return Queue.undo(gd);
             })
             .then(function() {
-                check(false, 'undo');
+                check(false, false, 'undo');
             })
             .catch(failTest)
             .then(done);
@@ -2955,6 +2958,190 @@ describe('Test plot api', function() {
             .then(done);
         });
 
+        function aggregatedPie(i) {
+            var labels = i <= 1 ?
+                ['A', 'B', 'A', 'C', 'A', 'B', 'C', 'A', 'B', 'C', 'A'] :
+                ['X', 'Y', 'Z', 'Z', 'Y', 'Z', 'X', 'Z', 'Y', 'Z', 'X'];
+            var trace = {
+                type: 'pie',
+                values: [4, 1, 4, 4, 1, 4, 4, 2, 1, 1, 15],
+                labels: labels,
+                transforms: [{
+                    type: 'aggregate',
+                    groups: labels,
+                    aggregations: [{target: 'values', func: 'sum'}]
+                }]
+            };
+            return {
+                data: [trace],
+                layout: {
+                    datarevision: i,
+                    colorway: ['red', 'orange', 'yellow', 'green', 'blue', 'violet']
+                }
+            };
+        }
+
+        var aggPie1CD = [[
+            {v: 26, label: 'A', color: 'red', i: 0},
+            {v: 9, label: 'C', color: 'orange', i: 2},
+            {v: 6, label: 'B', color: 'yellow', i: 1}
+        ]];
+
+        var aggPie2CD = [[
+            {v: 23, label: 'X', color: 'red', i: 0},
+            {v: 15, label: 'Z', color: 'orange', i: 2},
+            {v: 3, label: 'Y', color: 'yellow', i: 1}
+        ]];
+
+        function aggregatedScatter(i) {
+            return {
+                data: [{
+                    x: [1, 2, 3, 4, 6, 5],
+                    y: [2, 1, 3, 5, 6, 4],
+                    transforms: [{
+                        type: 'aggregate',
+                        groups: [1, -1, 1, -1, 1, -1],
+                        aggregations: i > 1 ? [{func: 'last', target: 'x'}] : []
+                    }]
+                }],
+                layout: {daterevision: i + 10}
+            };
+        }
+
+        var aggScatter1CD = [[
+            {x: 1, y: 2, i: 0},
+            {x: 2, y: 1, i: 1}
+        ]];
+
+        var aggScatter2CD = [[
+            {x: 6, y: 2, i: 0},
+            {x: 5, y: 1, i: 1}
+        ]];
+
+        function aggregatedParcoords(i) {
+            return {
+                data: [{
+                    type: 'parcoords',
+                    dimensions: [
+                        {label: 'A', values: [1, 2, 3, 4]},
+                        {label: 'B', values: [4, 3, 2, 1]}
+                    ],
+                    transforms: i ? [{
+                        type: 'aggregate',
+                        groups: [1, 2, 1, 2],
+                        aggregations: [
+                            {target: 'dimensions[0].values', func: i > 1 ? 'avg' : 'first'},
+                            {target: 'dimensions[1].values', func: i > 1 ? 'first' : 'avg'}
+                        ]
+                    }] :
+                    []
+                }]
+            };
+        }
+
+        var aggParcoords0Vals = [[1, 2, 3, 4], [4, 3, 2, 1]];
+        var aggParcoords1Vals = [[1, 2], [3, 2]];
+        var aggParcoords2Vals = [[2, 3], [4, 3]];
+
+        function checkCalcData(expectedCD) {
+            return function() {
+                expect(gd.calcdata.length).toBe(expectedCD.length);
+                expectedCD.forEach(function(expectedCDi, i) {
+                    var cdi = gd.calcdata[i];
+                    expect(cdi.length).toBe(expectedCDi.length, i);
+                    expectedCDi.forEach(function(expectedij, j) {
+                        expect(cdi[j]).toEqual(jasmine.objectContaining(expectedij));
+                    });
+                });
+            };
+        }
+
+        function checkValues(expectedVals) {
+            return function() {
+                expect(gd._fullData.length).toBe(1);
+                var dims = gd._fullData[0].dimensions;
+                expect(dims.length).toBe(expectedVals.length);
+                expectedVals.forEach(function(expected, i) {
+                    expect(dims[i].values).toEqual(expected);
+                });
+            };
+        }
+
+        function reactTo(fig) {
+            return function() { return Plotly.react(gd, fig); };
+        }
+
+        it('can change pie aggregations', function(done) {
+            Plotly.newPlot(gd, aggregatedPie(1))
+            .then(checkCalcData(aggPie1CD))
+
+            .then(reactTo(aggregatedPie(2)))
+            .then(checkCalcData(aggPie2CD))
+
+            .then(reactTo(aggregatedPie(1)))
+            .then(checkCalcData(aggPie1CD))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can change scatter aggregations', function(done) {
+            Plotly.newPlot(gd, aggregatedScatter(1))
+            .then(checkCalcData(aggScatter1CD))
+
+            .then(reactTo(aggregatedScatter(2)))
+            .then(checkCalcData(aggScatter2CD))
+
+            .then(reactTo(aggregatedScatter(1)))
+            .then(checkCalcData(aggScatter1CD))
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can change parcoords aggregations', function(done) {
+            Plotly.newPlot(gd, aggregatedParcoords(0))
+            .then(checkValues(aggParcoords0Vals))
+
+            .then(reactTo(aggregatedParcoords(1)))
+            .then(checkValues(aggParcoords1Vals))
+
+            .then(reactTo(aggregatedParcoords(2)))
+            .then(checkValues(aggParcoords2Vals))
+
+            .then(reactTo(aggregatedParcoords(0)))
+            .then(checkValues(aggParcoords0Vals))
+
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can change type with aggregations', function(done) {
+            Plotly.newPlot(gd, aggregatedScatter(1))
+            .then(checkCalcData(aggScatter1CD))
+
+            .then(reactTo(aggregatedPie(1)))
+            .then(checkCalcData(aggPie1CD))
+
+            .then(reactTo(aggregatedParcoords(1)))
+            .then(checkValues(aggParcoords1Vals))
+
+            .then(reactTo(aggregatedScatter(1)))
+            .then(checkCalcData(aggScatter1CD))
+
+            .then(reactTo(aggregatedParcoords(2)))
+            .then(checkValues(aggParcoords2Vals))
+
+            .then(reactTo(aggregatedPie(2)))
+            .then(checkCalcData(aggPie2CD))
+
+            .then(reactTo(aggregatedScatter(2)))
+            .then(checkCalcData(aggScatter2CD))
+
+            .then(reactTo(aggregatedParcoords(0)))
+            .then(checkValues(aggParcoords0Vals))
+            .catch(failTest)
+            .then(done);
+        });
+
         it('can change frames without redrawing', function(done) {
             var data = [{y: [1, 2, 3]}];
             var layout = {};
@@ -2980,7 +3167,7 @@ describe('Test plot api', function() {
             .then(done);
         });
 
-        var mockList = [
+        var svgMockList = [
             ['1', require('@mocks/1.json')],
             ['4', require('@mocks/4.json')],
             ['5', require('@mocks/5.json')],
@@ -2999,12 +3186,6 @@ describe('Test plot api', function() {
             ['cheater_smooth', require('@mocks/cheater_smooth.json')],
             ['finance_style', require('@mocks/finance_style.json')],
             ['geo_first', require('@mocks/geo_first.json')],
-            ['gl2d_line_dash', require('@mocks/gl2d_line_dash.json')],
-            ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
-            ['gl2d_pointcloud-basic', require('@mocks/gl2d_pointcloud-basic.json')],
-            ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
-            ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')],
-            ['glpolar_style', require('@mocks/glpolar_style.json')],
             ['layout_image', require('@mocks/layout_image.json')],
             ['layout-colorway', require('@mocks/layout-colorway.json')],
             ['polar_categories', require('@mocks/polar_categories.json')],
@@ -3012,12 +3193,15 @@ describe('Test plot api', function() {
             ['range_selector_style', require('@mocks/range_selector_style.json')],
             ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
             ['sankey_energy', require('@mocks/sankey_energy.json')],
+            ['scattercarpet', require('@mocks/scattercarpet.json')],
+            ['shapes', require('@mocks/shapes.json')],
             ['splom_iris', require('@mocks/splom_iris.json')],
             ['table_wrapped_birds', require('@mocks/table_wrapped_birds.json')],
             ['ternary_fill', require('@mocks/ternary_fill.json')],
             ['text_chart_arrays', require('@mocks/text_chart_arrays.json')],
+            ['transforms', require('@mocks/transforms.json')],
             ['updatemenus', require('@mocks/updatemenus.json')],
-            ['violins', require('@mocks/violins.json')],
+            ['violin_side-by-side', require('@mocks/violin_side-by-side.json')],
             ['world-cals', require('@mocks/world-cals.json')],
             ['typed arrays', {
                 data: [{
@@ -3027,70 +3211,142 @@ describe('Test plot api', function() {
             }]
         ];
 
-        mockList.forEach(function(mockSpec) {
-            it('can redraw "' + mockSpec[0] + '" with no changes as a noop', function(done) {
-                var mock = mockSpec[1];
-                var initialJson;
+        var glMockList = [
+            ['gl2d_heatmapgl', require('@mocks/gl2d_heatmapgl.json')],
+            ['gl2d_line_dash', require('@mocks/gl2d_line_dash.json')],
+            ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
+            ['gl2d_pointcloud-basic', require('@mocks/gl2d_pointcloud-basic.json')],
+            ['gl3d_annotations', require('@mocks/gl3d_annotations.json')],
+            ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')],
+            ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
+            ['glpolar_style', require('@mocks/glpolar_style.json')],
+        ];
 
-                function fullJson() {
-                    var out = JSON.parse(Plotly.Plots.graphJson({
-                        data: gd._fullData,
-                        layout: gd._fullLayout
-                    }));
+        // make sure we've included every trace type in this suite
+        var typesTested = {};
+        var itemType;
+        for(itemType in Registry.modules) { typesTested[itemType] = 0; }
+        for(itemType in Registry.transformsRegistry) { typesTested[itemType] = 0; }
 
-                    // TODO: does it matter that ax.tick0/dtick/range and zmin/zmax
-                    // are often not regenerated without a calc step?
-                    // in as far as editor and others rely on _full, I think the
-                    // answer must be yes, but I'm not sure about within plotly.js
-                    [
-                        'xaxis', 'xaxis2', 'xaxis3', 'xaxis4', 'xaxis5',
-                        'yaxis', 'yaxis2', 'yaxis3', 'yaxis4',
-                        'zaxis'
-                    ].forEach(function(axName) {
-                        var ax = out.layout[axName];
+        // Not really being supported... This isn't part of the main bundle, and it's pretty broken,
+        // but it gets registered and used by a couple of the gl2d tests.
+        delete typesTested.contourgl;
+
+        function _runReactMock(mockSpec, done) {
+            var mock = mockSpec[1];
+            var initialJson;
+
+            function fullJson() {
+                var out = JSON.parse(Plotly.Plots.graphJson({
+                    data: gd._fullData.map(function(trace) { return trace._fullInput; }),
+                    layout: gd._fullLayout
+                }));
+
+                // TODO: does it matter that ax.tick0/dtick/range and zmin/zmax
+                // are often not regenerated without a calc step?
+                // in as far as editor and others rely on _full, I think the
+                // answer must be yes, but I'm not sure about within plotly.js
+                [
+                    'xaxis', 'xaxis2', 'xaxis3', 'xaxis4', 'xaxis5',
+                    'yaxis', 'yaxis2', 'yaxis3', 'yaxis4',
+                    'zaxis'
+                ].forEach(function(axName) {
+                    var ax = out.layout[axName];
+                    if(ax) {
+                        delete ax.dtick;
+                        delete ax.tick0;
+
+                        // TODO this one I don't understand and can't reproduce
+                        // in the dashboard but it's needed here?
+                        delete ax.range;
+                    }
+                    if(out.layout.scene) {
+                        ax = out.layout.scene[axName];
                         if(ax) {
                             delete ax.dtick;
                             delete ax.tick0;
-
-                            // TODO this one I don't understand and can't reproduce
-                            // in the dashboard but it's needed here?
+                            // TODO: this is the only one now that uses '_input_' + key
+                            // as a hack to tell Plotly.react to ignore changes.
+                            // Can we kill this?
                             delete ax.range;
                         }
-                        if(out.layout.scene) {
-                            ax = out.layout.scene[axName];
-                            if(ax) {
-                                delete ax.dtick;
-                                delete ax.tick0;
-                                // TODO: this is the only one now that uses '_input_' + key
-                                // as a hack to tell Plotly.react to ignore changes.
-                                // Can we kill this?
-                                delete ax.range;
-                            }
-                        }
-                    });
-                    out.data.forEach(function(trace) {
-                        if(trace.type === 'contourcarpet') {
-                            delete trace.zmin;
-                            delete trace.zmax;
-                        }
-                    });
+                    }
+                });
+                out.data.forEach(function(trace) {
+                    if(trace.type === 'contourcarpet') {
+                        delete trace.zmin;
+                        delete trace.zmax;
+                    }
+                });
 
-                    return out;
+                return out;
+            }
+
+            // Make sure we define `_length` in every trace *in supplyDefaults*.
+            // This is only relevant for traces that *have* a 1D concept of length,
+            // and in addition to simplifying calc/plot logic later on, ths serves
+            // as a signal to transforms about how they should operate. For traces
+            // that do NOT have a 1D length, `_length` should be `null`.
+            var mockGD = Lib.extendDeep({}, mock);
+            supplyAllDefaults(mockGD);
+            expect(mockGD._fullData.length).not.toBeLessThan((mock.data || []).length, mockSpec[0]);
+            mockGD._fullData.forEach(function(trace, i) {
+                var len = trace._length;
+                if(trace.visible !== false && len !== null) {
+                    expect(typeof len).toBe('number', mockSpec[0] + ' trace ' + i + ': type=' + trace.type);
                 }
 
-                Plotly.newPlot(gd, mock)
-                .then(countPlots)
-                .then(function() {
-                    initialJson = fullJson();
-                    return Plotly.react(gd, mock);
-                })
-                .then(function() {
-                    expect(fullJson()).toEqual(initialJson);
-                    countCalls({});
-                })
-                .catch(failTest)
-                .then(done);
+                typesTested[trace.type]++;
+
+                if(trace.transforms) {
+                    trace.transforms.forEach(function(transform) {
+                        typesTested[transform.type]++;
+                    });
+                }
             });
+
+            Plotly.newPlot(gd, mock)
+            .then(countPlots)
+            .then(function() {
+                initialJson = fullJson();
+
+                return Plotly.react(gd, mock);
+            })
+            .then(function() {
+                expect(fullJson()).toEqual(initialJson);
+                countCalls({});
+            })
+            .catch(failTest)
+            .then(done);
+        }
+
+        svgMockList.forEach(function(mockSpec) {
+            it('can redraw "' + mockSpec[0] + '" with no changes as a noop (svg mocks)', function(done) {
+                _runReactMock(mockSpec, done);
+            });
+        });
+
+        glMockList.forEach(function(mockSpec) {
+            it('can redraw "' + mockSpec[0] + '" with no changes as a noop (gl mocks)', function(done) {
+                _runReactMock(mockSpec, done);
+            });
+        });
+
+        it('@noCI can redraw scattermapbox with no changes as a noop', function(done) {
+            Plotly.setPlotConfig({
+                mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+            });
+
+            _runReactMock(['scattermapbox', require('@mocks/mapbox_bubbles-text.json')], done);
+        });
+
+        // since CI breaks up gl/svg types, and drops scattermapbox, this test won't work there
+        // but I should hope that if someone is doing something as major as adding a new type,
+        // they'll run the full test suite locally!
+        it('@noCI tested every trace & transform type at least once', function() {
+            for(var itemType in typesTested) {
+                expect(typesTested[itemType]).toBeGreaterThan(0, itemType + ' was not tested');
+            }
         });
     });
 

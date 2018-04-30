@@ -9,41 +9,39 @@
 
 'use strict';
 
+var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Colorscale = require('../../components/colorscale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 var maxRowLength = require('./max_row_length');
 
+module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
+    var uidLookup = getUidsFromCalcData(cdheatmaps);
 
-module.exports = function(gd, plotinfo, cdheatmaps) {
+    heatmapLayer.selectAll('.hm > image').each(function(d) {
+        var oldTrace = d.trace || {};
+
+        if(!uidLookup[oldTrace.uid]) {
+            d3.select(this.parentNode).remove();
+        }
+    });
+
     for(var i = 0; i < cdheatmaps.length; i++) {
-        plotOne(gd, plotinfo, cdheatmaps[i]);
+        plotOne(gd, plotinfo, cdheatmaps[i], heatmapLayer);
     }
 };
 
-function plotOne(gd, plotinfo, cd) {
+function plotOne(gd, plotinfo, cd, heatmapLayer) {
     var cd0 = cd[0];
     var trace = cd0.trace;
-    var uid = trace.uid;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var fullLayout = gd._fullLayout;
-    var id = 'hm' + uid;
-
-    // in case this used to be a contour map
-    fullLayout._paper.selectAll('.contour' + uid).remove();
-    fullLayout._infolayer.selectAll('g.rangeslider-container')
-        .selectAll('.contour' + uid).remove();
-
-    if(trace.visible !== true) {
-        fullLayout._paper.selectAll('.' + id).remove();
-        fullLayout._infolayer.selectAll('.cb' + uid).remove();
-        return;
-    }
+    var id = 'hm' + trace.uid;
 
     var z = cd0.z;
     var x = cd0.x;
@@ -137,8 +135,7 @@ function plotOne(gd, plotinfo, cd) {
     // if image is entirely off-screen, don't even draw it
     var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
 
-    var plotgroup = plotinfo.plot.select('.imagelayer')
-        .selectAll('g.hm.' + id)
+    var plotgroup = heatmapLayer.selectAll('g.hm.' + id)
         .data(isOffScreen ? [] : [0]);
 
     plotgroup.enter().append('g')

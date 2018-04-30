@@ -182,7 +182,7 @@ describe('parcoords initialization tests', function() {
                 {values: [], visible: true},
                 {values: [1, 2], visible: false} // shouldn't be truncated to as visible: false
             ]});
-            expect(fullTrace._commonLength).toBe(3);
+            expect(fullTrace._length).toBe(3);
         });
 
         it('cleans up constraintrange', function() {

@@ -41,9 +41,9 @@ module.exports = function draw(gd) {
 
     if(!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
 
-    var opts = fullLayout.legend,
-        legendData = fullLayout.showlegend && getLegendData(gd.calcdata, opts),
-        hiddenSlices = fullLayout.hiddenlabels || [];
+    var opts = fullLayout.legend;
+    var legendData = fullLayout.showlegend && getLegendData(gd.calcdata, opts);
+    var hiddenSlices = fullLayout.hiddenlabels || [];
 
     if(!fullLayout.showlegend || !legendData.length) {
         fullLayout._infolayer.selectAll('.legend').remove();
@@ -51,6 +51,17 @@ module.exports = function draw(gd) {
 
         Plots.autoMargin(gd, 'legend');
         return;
+    }
+
+    var maxLength = 0;
+    for(var i = 0; i < legendData.length; i++) {
+        for(var j = 0; j < legendData[i].length; j++) {
+            var item = legendData[i][j][0];
+            var trace = item.trace;
+            var isPie = Registry.traceIs(trace, 'pie');
+            var name = isPie ? item.label : trace.name;
+            maxLength = Math.max(maxLength, name && name.length || 0);
+        }
     }
 
     var firstRender = false;
@@ -108,7 +119,7 @@ module.exports = function draw(gd) {
         })
         .each(function() {
             d3.select(this)
-                .call(drawTexts, gd)
+                .call(drawTexts, gd, maxLength)
                 .call(setupTraceToggle, gd);
         });
 
@@ -352,20 +363,21 @@ module.exports = function draw(gd) {
     }
 };
 
-function drawTexts(g, gd) {
-    var legendItem = g.data()[0][0],
-        fullLayout = gd._fullLayout,
-        trace = legendItem.trace,
-        isPie = Registry.traceIs(trace, 'pie'),
-        traceIndex = trace.index,
-        name = isPie ? legendItem.label : trace.name;
+function drawTexts(g, gd, maxLength) {
+    var legendItem = g.data()[0][0];
+    var fullLayout = gd._fullLayout;
+    var trace = legendItem.trace;
+    var isPie = Registry.traceIs(trace, 'pie');
+    var traceIndex = trace.index;
+    var name = isPie ? legendItem.label : trace.name;
+    var isEditable = gd._context.edits.legendText && !isPie;
 
-    var text = Lib.ensureSingle(g, 'text', 'legendtext');
+    var textEl = Lib.ensureSingle(g, 'text', 'legendtext');
 
-    text.attr('text-anchor', 'start')
+    textEl.attr('text-anchor', 'start')
         .classed('user-select-none', true)
         .call(Drawing.font, fullLayout.legend.font)
-        .text(name);
+        .text(isEditable ? ensureLength(name, maxLength) : name);
 
     function textLayout(s) {
         svgTextUtils.convertToTspans(s, gd, function() {
@@ -373,16 +385,12 @@ function drawTexts(g, gd) {
         });
     }
 
-    if(gd._context.edits.legendText && !isPie) {
-        text.call(svgTextUtils.makeEditable, {gd: gd})
+    if(isEditable) {
+        textEl.call(svgTextUtils.makeEditable, {gd: gd, text: name})
             .call(textLayout)
-            .on('edit', function(text) {
-                this.text(text)
+            .on('edit', function(newName) {
+                this.text(ensureLength(newName, maxLength))
                     .call(textLayout);
-
-                var origText = text;
-
-                if(!this.text()) text = ' \u0020\u0020 ';
 
                 var fullInput = legendItem.trace._fullInput || {};
                 var update = {};
@@ -393,22 +401,33 @@ function drawTexts(g, gd) {
 
                     var kcont = Lib.keyedContainer(fullInput, 'transforms[' + index + '].styles', 'target', 'value.name');
 
-                    if(origText === '') {
-                        kcont.remove(legendItem.trace._group);
-                    } else {
-                        kcont.set(legendItem.trace._group, text);
-                    }
+                    kcont.set(legendItem.trace._group, newName);
 
                     update = kcont.constructUpdate();
                 } else {
-                    update.name = text;
+                    update.name = newName;
                 }
 
                 return Registry.call('restyle', gd, update, traceIndex);
             });
     } else {
-        textLayout(text);
+        textLayout(textEl);
     }
+}
+
+/*
+ * Make sure we have a reasonably clickable region.
+ * If this string is missing or very short, pad it with spaces out to at least
+ * 4 characters, up to the max length of other labels, on the assumption that
+ * most characters are wider than spaces so a string of spaces will usually be
+ * no wider than the real labels.
+ */
+function ensureLength(str, maxLength) {
+    var targetLength = Math.max(4, maxLength);
+    if(str && str.trim().length >= targetLength / 2) return str;
+    str = str || '';
+    for(var i = targetLength - str.length; i > 0; i--) str += ' ';
+    return str;
 }
 
 function setupTraceToggle(g, gd) {

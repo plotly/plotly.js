@@ -17,7 +17,7 @@ var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 
 module.exports = function calc(gd, trace) {
-    var len = trace.locations.length;
+    var len = trace._length;
     var calcTrace = new Array(len);
 
     for(var i = 0; i < len; i++) {

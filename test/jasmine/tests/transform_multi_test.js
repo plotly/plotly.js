@@ -45,6 +45,17 @@ describe('general transforms:', function() {
         expect(traceOut.transforms).toEqual([{}]);
     });
 
+    it('does not transform traces with no length', function() {
+        traceIn = {
+            y: [],
+            transforms: [{}]
+        };
+
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+
+        expect(traceOut.transforms).toBeUndefined();
+    });
+
     it('supplyTraceDefaults should supply the transform defaults', function() {
         traceIn = {
             y: [2, 1, 2],
@@ -198,11 +209,12 @@ describe('user-defined transforms:', function() {
         var transformIn = { type: 'fake' };
         var transformOut = {};
 
-        var calledSupplyDefaults = false;
-        var calledTransform = false;
-        var calledSupplyLayoutDefaults = false;
+        var calledSupplyDefaults = 0;
+        var calledTransform = 0;
+        var calledSupplyLayoutDefaults = 0;
 
         var dataIn = [{
+            y: [1, 2, 3],
             transforms: [transformIn]
         }];
 
@@ -212,10 +224,19 @@ describe('user-defined transforms:', function() {
         var transitionData = {};
 
         function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
-            expect(_transformIn).toBe(transformIn);
+            if(!calledSupplyDefaults) {
+                expect(_transformIn).toBe(transformIn);
+            }
+            else {
+                // second supplyDefaults call has _module attached
+                expect(_transformIn).toEqual(jasmine.objectContaining({
+                    type: 'fake',
+                    _module: jasmine.objectContaining({name: 'fake'})
+                }));
+            }
             expect(_layout).toBe(fullLayout);
 
-            calledSupplyDefaults = true;
+            calledSupplyDefaults++;
 
             return transformOut;
         }
@@ -227,7 +248,7 @@ describe('user-defined transforms:', function() {
             expect(opts.layout).toBe(layout);
             expect(opts.fullLayout).toBe(fullLayout);
 
-            calledTransform = true;
+            calledTransform++;
 
             return dataOut;
         }
@@ -238,7 +259,7 @@ describe('user-defined transforms:', function() {
             expect(_fullData).toBe(fullData);
             expect(_transitionData).toBe(transitionData);
 
-            calledSupplyLayoutDefaults = true;
+            calledSupplyLayoutDefaults++;
         }
 
         var fakeTransformModule = {
@@ -254,9 +275,9 @@ describe('user-defined transforms:', function() {
         Plots.supplyDataDefaults(dataIn, fullData, layout, fullLayout);
         Plots.supplyLayoutModuleDefaults(layout, fullLayout, fullData, transitionData);
         delete Plots.transformsRegistry.fake;
-        expect(calledSupplyDefaults).toBe(true);
-        expect(calledTransform).toBe(true);
-        expect(calledSupplyLayoutDefaults).toBe(true);
+        expect(calledSupplyDefaults).toBe(2);
+        expect(calledTransform).toBe(1);
+        expect(calledSupplyLayoutDefaults).toBe(1);
     });
 
 });

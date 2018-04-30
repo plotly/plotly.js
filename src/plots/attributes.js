@@ -156,5 +156,13 @@ module.exports = {
             ].join(' ')
         },
         editType: 'calc'
+    },
+    transforms: {
+        _isLinkedToArray: 'transform',
+        editType: 'calc',
+        description: [
+            'An array of operations that manipulate the trace data,',
+            'for example filtering or sorting the data arrays.'
+        ].join(' ')
     }
 };

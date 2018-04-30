@@ -257,6 +257,46 @@ describe('aggregate', function() {
         expect(traceOut.marker.color).toBeCloseToArray([Math.sqrt(1 / 3), 0], 5);
     });
 
+    it('handles ragged data - extra groups are ignored', function() {
+        Plotly.newPlot(gd, [{
+            x: [1, 1, 2, 2, 1, 3, 4],
+            y: [1, 2, 3, 4, 5], // shortest array controls all
+            transforms: [{
+                type: 'aggregate',
+                groups: [1, 2, 1, 1, 1, 3, 3, 4, 4, 5],
+                aggregations: [
+                    {target: 'x', func: 'mode'},
+                    {target: 'y', func: 'median'},
+                ]
+            }]
+        }]);
+
+        var traceOut = gd._fullData[0];
+
+        expect(traceOut.x).toEqual([2, 1]);
+        expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
+    });
+
+    it('handles ragged data - groups is the shortest, others are ignored', function() {
+        Plotly.newPlot(gd, [{
+            x: [1, 1, 2, 2, 1, 3, 4],
+            y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            transforms: [{
+                type: 'aggregate',
+                groups: [1, 2, 1, 1, 1], // shortest array controls all
+                aggregations: [
+                    {target: 'x', func: 'mode'},
+                    {target: 'y', func: 'median'},
+                ]
+            }]
+        }]);
+
+        var traceOut = gd._fullData[0];
+
+        expect(traceOut.x).toEqual([2, 1]);
+        expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
+    });
+
     it('links fullData aggregations to userData via _index', function() {
         Plotly.newPlot(gd, [{
             x: [1, 2, 3, 4, 5],

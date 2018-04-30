@@ -36,7 +36,9 @@ module.exports = {
     supplyDefaults: require('./defaults'),
     calc: require('./calc'),
     plot: require('../box/plot').plot,
+    layerName: 'boxlayer',
     style: require('../box/style').style,
+    styleOnSelect: require('../box/style').styleOnSelect,
     hoverPoints: require('../ohlc/hover'),
     selectPoints: require('../ohlc/select')
 };

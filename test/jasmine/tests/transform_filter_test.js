@@ -365,6 +365,7 @@ describe('filter transforms calc:', function() {
         expect(out[0].x).toEqual([undefined, undefined, undefined, undefined, 1, 2, 3]);
         expect(out[0].y).toEqual([undefined, undefined, undefined, undefined, 2, 3, 1]);
         expect(out[0].marker.color).toEqual([undefined, undefined, undefined, undefined, 0.2, 0.3, 0.4]);
+        expect(out[0].transforms[0]._indexToPoints).toEqual({4: [4], 5: [5], 6: [6]});
     });
 
     it('two filter transforms with `preservegaps: true` should commute', function() {
@@ -391,6 +392,11 @@ describe('filter transforms calc:', function() {
         var out1 = _transform([Lib.extendDeep({}, base, {
             transforms: [transform1, transform0]
         })]);
+        // _indexToPoints differs in the first transform but matches in the second
+        expect(out0[0].transforms[0]._indexToPoints).toEqual({3: [3], 4: [4], 5: [5], 6: [6]});
+        expect(out1[0].transforms[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [2], 3: [3], 4: [4]});
+        expect(out0[0].transforms[1]._indexToPoints).toEqual({3: [3], 4: [4]});
+        expect(out1[0].transforms[1]._indexToPoints).toEqual({3: [3], 4: [4]});
 
         ['x', 'y', 'ids', 'marker.color', 'marker.size'].forEach(function(k) {
             var v0 = Lib.nestedProperty(out0[0], k).get();
@@ -424,6 +430,12 @@ describe('filter transforms calc:', function() {
             transforms: [transform1, transform0]
         })]);
 
+        // _indexToPoints differs in the first transform but matches in the second
+        expect(out0[0].transforms[0]._indexToPoints).toEqual({0: [3], 1: [4], 2: [5], 3: [6]});
+        expect(out1[0].transforms[0]._indexToPoints).toEqual({0: [0], 1: [1], 2: [2], 3: [3], 4: [4]});
+        expect(out0[0].transforms[1]._indexToPoints).toEqual({0: [3], 1: [4]});
+        expect(out1[0].transforms[1]._indexToPoints).toEqual({0: [3], 1: [4]});
+
         ['x', 'y', 'ids', 'marker.color', 'marker.size'].forEach(function(k) {
             var v0 = Lib.nestedProperty(out0[0], k).get();
             var v1 = Lib.nestedProperty(out1[0], k).get();
@@ -431,7 +443,7 @@ describe('filter transforms calc:', function() {
         });
     });
 
-    it('two filter transforms with different `preservegaps` values should not necessary commute', function() {
+    it('two filter transforms with different `preservegaps` values should not necessarily commute', function() {
         var transform0 = {
             type: 'filter',
             preservegaps: true,
@@ -861,6 +873,36 @@ describe('filter transforms calc:', function() {
 
         it('with numeric items', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: [1, 1, 0, 0, 1, 0, 1],
+                    operation: '{}',
+                    value: 0
+                }]
+            })]);
+
+            _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
+            expect(out[0].transforms[0].target).toEqual([0, 0, 0]);
+        });
+
+        it('with ragged items - longer target', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    target: [1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 1],
+                    operation: '{}',
+                    value: 0
+                }]
+            })]);
+
+            _assert(out, [-2, 0, 2], [3, 1, 3], [0.3, 0.1, 0.3]);
+            expect(out[0].transforms[0].target).toEqual([0, 0, 0]);
+        });
+
+        it('with ragged items - longer data', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                x: _base.x.concat(_base.x),
+                y: _base.y.concat(_base.y),
+                ids: _base.ids.concat(['a1', 'a2', 'a3', 'a4']),
+                marker: {color: _base.marker.color.concat(_base.marker.color)},
                 transforms: [{
                     target: [1, 1, 0, 0, 1, 0, 1],
                     operation: '{}',

@@ -20,17 +20,15 @@ var linePoints = require('./line_points');
 var linkTraces = require('./link_traces');
 var polygonTester = require('../../lib/polygon').tester;
 
-module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCompleteCallback) {
+module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transitionOpts, makeOnCompleteCallback) {
     var i, uids, join, onComplete;
-
-    var scatterlayer = plotinfo.plot.select('g.scatterlayer');
 
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
     var isFullReplot = !transitionOpts;
     var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
 
-    join = scatterlayer.selectAll('g.trace')
+    join = scatterLayer.selectAll('g.trace')
         .data(cdscatter, function(d) { return d[0].trace.uid; });
 
     // Append new traces:
@@ -45,7 +43,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
     // the z-order of fill layers is correct.
     linkTraces(gd, plotinfo, cdscatter);
 
-    createFills(gd, scatterlayer, plotinfo);
+    createFills(gd, scatterLayer, plotinfo);
 
     // Sort the traces, once created, so that the ordering is preserved even when traces
     // are shown and hidden. This is needed since we're not just wiping everything out
@@ -54,7 +52,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
         uids[cdscatter[i][0].trace.uid] = i;
     }
 
-    scatterlayer.selectAll('g.trace').sort(function(a, b) {
+    scatterLayer.selectAll('g.trace').sort(function(a, b) {
         var idx1 = uids[a[0].trace.uid];
         var idx2 = uids[b[0].trace.uid];
         return idx1 > idx2 ? 1 : -1;
@@ -81,12 +79,12 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
         transition.each(function() {
             // Must run the selection again since otherwise enters/updates get grouped together
             // and these get executed out of order. Except we need them in order!
-            scatterlayer.selectAll('g.trace').each(function(d, i) {
+            scatterLayer.selectAll('g.trace').each(function(d, i) {
                 plotOne(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
             });
         });
     } else {
-        scatterlayer.selectAll('g.trace').each(function(d, i) {
+        scatterLayer.selectAll('g.trace').each(function(d, i) {
             plotOne(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
         });
     }
@@ -96,13 +94,13 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
     }
 
     // remove paths that didn't get used
-    scatterlayer.selectAll('path:not([d])').remove();
+    scatterLayer.selectAll('path:not([d])').remove();
 };
 
-function createFills(gd, scatterlayer, plotinfo) {
+function createFills(gd, scatterLayer, plotinfo) {
     var trace;
 
-    scatterlayer.selectAll('g.trace').each(function(d) {
+    scatterLayer.selectAll('g.trace').each(function(d) {
         var tr = d3.select(this);
 
         // Loop only over the traces being redrawn:

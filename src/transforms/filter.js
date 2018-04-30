@@ -158,9 +158,13 @@ exports.calcTransform = function(gd, trace, opts) {
     if(!targetArray) return;
 
     var target = opts.target;
+
     var len = targetArray.length;
+    if(trace._length) len = Math.min(len, trace._length);
+
     var targetCalendar = opts.targetcalendar;
     var arrayAttrs = trace._arrayAttrs;
+    var preservegaps = opts.preservegaps;
 
     // even if you provide targetcalendar, if target is a string and there
     // is a calendar attribute matching target it will get used instead.
@@ -184,7 +188,7 @@ exports.calcTransform = function(gd, trace, opts) {
 
     var initFn;
     var fillFn;
-    if(opts.preservegaps) {
+    if(preservegaps) {
         initFn = function(np) {
             originalArrays[np.astr] = Lib.extendDeep([], np.get());
             np.set(new Array(len));
@@ -216,6 +220,7 @@ exports.calcTransform = function(gd, trace, opts) {
             forAllAttrs(fillFn, i);
             indexToPoints[index++] = originalPointsAccessor(i);
         }
+        else if(preservegaps) index++;
     }
 
     opts._indexToPoints = indexToPoints;

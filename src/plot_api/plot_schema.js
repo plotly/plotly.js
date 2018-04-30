@@ -171,9 +171,12 @@ exports.isValObject = function(obj) {
 exports.findArrayAttributes = function(trace) {
     var arrayAttributes = [];
     var stack = [];
+    var isArrayStack = [];
+    var baseContainer, baseAttrName;
 
     function callback(attr, attrName, attrs, level) {
         stack = stack.slice(0, level).concat([attrName]);
+        isArrayStack = isArrayStack.slice(0, level).concat([attr && attr._isLinkedToArray]);
 
         var splittableAttr = (
             attr &&
@@ -190,46 +193,53 @@ exports.findArrayAttributes = function(trace) {
 
         if(!splittableAttr) return;
 
-        var astr = toAttrString(stack);
-        var val = Lib.nestedProperty(trace, astr).get();
-        if(!Lib.isArrayOrTypedArray(val)) return;
-
-        arrayAttributes.push(astr);
+        crawlIntoTrace(baseContainer, 0, '');
     }
 
-    function toAttrString(stack) {
-        return stack.join('.');
+    function crawlIntoTrace(container, i, astrPartial) {
+        var item = container[stack[i]];
+        var newAstrPartial = astrPartial + stack[i];
+        if(i === stack.length - 1) {
+            if(Lib.isArrayOrTypedArray(item)) {
+                arrayAttributes.push(baseAttrName + newAstrPartial);
+            }
+        }
+        else {
+            if(isArrayStack[i]) {
+                if(Array.isArray(item)) {
+                    for(var j = 0; j < item.length; j++) {
+                        if(Lib.isPlainObject(item[j])) {
+                            crawlIntoTrace(item[j], i + 1, newAstrPartial + '[' + j + '].');
+                        }
+                    }
+                }
+            }
+            else if(Lib.isPlainObject(item)) {
+                crawlIntoTrace(item, i + 1, newAstrPartial + '.');
+            }
+        }
     }
 
+    baseContainer = trace;
+    baseAttrName = '';
     exports.crawl(baseAttributes, callback);
     if(trace._module && trace._module.attributes) {
         exports.crawl(trace._module.attributes, callback);
     }
 
-    if(trace.transforms) {
-        var transforms = trace.transforms;
-
+    var transforms = trace.transforms;
+    if(transforms) {
         for(var i = 0; i < transforms.length; i++) {
             var transform = transforms[i];
             var module = transform._module;
 
             if(module) {
-                stack = ['transforms[' + i + ']'];
+                baseAttrName = 'transforms[' + i + '].';
+                baseContainer = transform;
 
-                exports.crawl(module.attributes, callback, 1);
+                exports.crawl(module.attributes, callback);
             }
         }
-    }
-
-    // Look into the fullInput module attributes for array attributes
-    // to make sure that 'custom' array attributes are detected.
-    //
-    // At the moment, we need this block to make sure that
-    // ohlc and candlestick 'open', 'high', 'low', 'close' can be
-    // used with filter and groupby transforms.
-    if(trace._fullInput && trace._fullInput._module && trace._fullInput._module.attributes) {
-        exports.crawl(trace._fullInput._module.attributes, callback);
-        arrayAttributes = Lib.filterUnique(arrayAttributes);
     }
 
     return arrayAttributes;
@@ -256,6 +266,9 @@ exports.getTraceValObject = function(trace, parts) {
     var moduleAttrs, valObject;
 
     if(head === 'transforms') {
+        if(parts.length === 1) {
+            return baseAttributes.transforms;
+        }
         var transforms = trace.transforms;
         if(!Array.isArray(transforms) || !transforms.length) return false;
         var tNum = parts[1];
