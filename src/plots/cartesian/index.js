@@ -189,35 +189,33 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
 
     var layerData = [];
 
-    for(var i = 0; i < traceLayerClasses.length; i++) {
-        var className = traceLayerClasses[i];
+    for(var i = 0; i < modules.length; i++) {
+        _module = modules[i];
+        var name = _module.name;
 
-        for(var j = 0; j < modules.length; j++) {
-            _module = modules[j];
+        if(Registry.modules[name].categories.svg) {
+            var className = (_module.layerName || name + 'layer');
+            var plotMethod = _module.plot;
 
-            if(_module.basePlotModule.name === 'cartesian' &&
-                (_module.layerName || _module.name + 'layer') === className
-            ) {
-                var plotMethod = _module.plot;
+            // plot all traces of this type on this subplot at once
+            cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
+            cdModule = cdModuleAndOthers[0];
+            // don't need to search the found traces again - in fact we need to NOT
+            // so that if two modules share the same plotter we don't double-plot
+            cdSubplot = cdModuleAndOthers[1];
 
-                // plot all traces of this type on this subplot at once
-                cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
-                cdModule = cdModuleAndOthers[0];
-                // don't need to search the found traces again - in fact we need to NOT
-                // so that if two modules share the same plotter we don't double-plot
-                cdSubplot = cdModuleAndOthers[1];
-
-                if(cdModule.length) {
-                    layerData.push({
-                        className: className,
-                        plotMethod: plotMethod,
-                        cdModule: cdModule
-                    });
-                }
-                break;
+            if(cdModule.length) {
+                layerData.push({
+                    i: traceLayerClasses.indexOf(className),
+                    className: className,
+                    plotMethod: plotMethod,
+                    cdModule: cdModule
+                });
             }
         }
     }
+
+    layerData.sort(function(a, b) { return a.i - b.i; });
 
     var layers = plotinfo.plot.selectAll('g.mlayer')
         .data(layerData, function(d) { return d.className; });
