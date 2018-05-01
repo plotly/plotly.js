@@ -549,6 +549,21 @@ describe('@gl Test splom interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should work with typed arrays', function(done) {
+        Plotly.plot(gd, [{
+            type: 'splom',
+            dimensions: [{
+                label: 'A',
+                values: new Int32Array([1, 2, 3])
+            }, {
+                label: 'B',
+                values: new Int32Array([2, 5, 6])
+            }]
+        }])
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('@gl Test splom hover:', function() {
