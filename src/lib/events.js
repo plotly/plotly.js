@@ -58,7 +58,7 @@ var Events = {
         plotObj.removeAllListeners = ev.removeAllListeners.bind(ev);
 
         /*
-         * Create funtions for managing internal events. These are *only* triggered
+         * Create functions for managing internal events. These are *only* triggered
          * by the mirroring of external events via the emit function.
          */
         plotObj._internalOn = internalEv.on.bind(internalEv);
@@ -93,6 +93,7 @@ var Events = {
     triggerHandler: function(plotObj, event, data) {
         var jQueryHandlerValue;
         var nodeEventHandlerValue;
+
         /*
          * If jQuery exists run all its handlers for this event and
          * collect the return value of the LAST handler function
@@ -110,30 +111,41 @@ var Events = {
         var handlers = ev._events[event];
         if(!handlers) return jQueryHandlerValue;
 
-        /*
-         * handlers can be function or an array of functions
-         */
-        if(typeof handlers === 'function') handlers = [handlers];
-        var lastHandler = handlers.pop();
-
-        /*
-         * Call all the handlers except the last one.
-         */
-        for(var i = 0; i < handlers.length; i++) {
-            handlers[i](data);
+        // making sure 'this' is the EventEmitter instance
+        function apply(handler) {
+            // The 'once' case, we can't just call handler() as we need
+            // the return value here. So,
+            // - remove handler
+            // - call listener and grab return value!
+            // - stash 'fired' key to not call handler twice
+            if(handler.listener) {
+                ev.removeListener(event, handler.listener);
+                if(!handler.fired) {
+                    handler.fired = true;
+                    return handler.listener.apply(ev, [data]);
+                }
+            } else {
+                return handler.apply(ev, [data]);
+            }
         }
 
-        /*
-         * Now call the final handler and collect its value
-         */
-        nodeEventHandlerValue = lastHandler(data);
+        // handlers can be function or an array of functions
+        handlers = Array.isArray(handlers) ? handlers : [handlers];
+
+        var i;
+        for(i = 0; i < handlers.length - 1; i++) {
+            apply(handlers[i]);
+        }
+        // now call the final handler and collect its value
+        nodeEventHandlerValue = apply(handlers[i]);
 
         /*
          * Return either the jQuery handler value if it exists or the
          * nodeEventHandler value. jQuery event value supersedes nodejs
          * events for backwards compatibility reasons.
          */
-        return jQueryHandlerValue !== undefined ? jQueryHandlerValue :
+        return jQueryHandlerValue !== undefined ?
+            jQueryHandlerValue :
             nodeEventHandlerValue;
     },
 
