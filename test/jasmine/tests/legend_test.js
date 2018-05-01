@@ -1353,6 +1353,8 @@ describe('legend interaction', function() {
                     });
 
                     gd.once('plotly_restyle', done);
+                    gd.once('plotly_relayout', done);
+
                     click(clickArg[0], clickArg[1])();
                 });
             }
@@ -1403,6 +1405,30 @@ describe('legend interaction', function() {
                     return clickAndCheck([2, 2], {
                         curveNumber: 1,
                         expandedIndex: 2
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
+            it('should have correct keys (pie case)', function(done) {
+                Plotly.newPlot(gd, [{
+                    type: 'pie',
+                    labels: ['A', 'B', 'C', 'D'],
+                    values: [1, 2, 1, 3]
+                }])
+                .then(function() {
+                    return clickAndCheck([0, 1], {
+                        curveNumber: 0,
+                        expandedIndex: 0,
+                        label: 'D'
+                    });
+                })
+                .then(function() {
+                    return clickAndCheck([2, 2], {
+                        curveNumber: 0,
+                        expandedIndex: 0,
+                        label: 'A'
                     });
                 })
                 .catch(failTest)
