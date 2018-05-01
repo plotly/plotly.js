@@ -10,6 +10,39 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.37.0] -- 2018-05-01
+
+### Added
+- Add `plotly_legendclick` and `plotly_legenddoubleclick` events [#2581]
+- Add Swahili (`sw`) locale [#2526]
+
+### Changed
+- Improve cartesian trace update and removal by using more d3-iomatic patterns.
+  This results in some performance improvements during redraws [#2574]
+- Our internal `Lib.nestedProperty` no longer prunes empty containers in
+  `gd.data`, `gd.layout`, `gd._fullData` and `gd._fulllayout`.
+  We made this change to clean up some of the `Plotly.react` internals.
+  This also lead to a slight performance boost [#2577]
+
+### Fixed
+- Fix `Plotly.react`'s handling of transformed traces [#2577]
+- Fix Safari support for `scattergl` and `splom` traces [#2593]
+- Fix `scattergl` point clustering edge cases [#2593]
+- Fix `scattergl` selection after double-click on graphs
+  with more than 1e5 points [#2593]
+- Fix artificial number of lines limit in `scattergl` traces [#2568]
+- Fix typed array support in color array in `scattergl` traces [#2596]
+- Fix typed array support for `splom` traces [#2596]
+- Make `scatter` and `scattercarpet` coexist on same subplot [#2574]
+- Fix incorrect fallback border color for axis common hover labels [#2557]
+- Fix handling of blank editable legend items [#2587]
+- Fix spikelines positioning in Firefox [#2590]
+- Fix `Plotly.react` modebar updates when the locale changes [#2592]
+- Fix `scatter` selection performance regression (dating back to 1.32.0) [#2583]
+- Fix `plotly_beforeplot` and `plotly_beforehover` event handlers when attached
+  with `gd.once` [#2581]
+
+
 ## [1.36.1] -- 2018-04-18
 
 ### Fixed
