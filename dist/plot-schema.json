@@ -380,6 +380,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "x": {
                     "valType": "data_array",
                     "editType": "calc+clearAxisTypes",
@@ -2256,6 +2266,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "x": {
                     "valType": "data_array",
                     "editType": "calc+clearAxisTypes",
@@ -3824,6 +3844,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "y": {
                     "valType": "data_array",
                     "editType": "calc+clearAxisTypes",
@@ -4722,6 +4752,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "z": {
@@ -5657,6 +5697,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "x": {
@@ -7114,6 +7164,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "x": {
                     "valType": "data_array",
                     "editType": "calc+clearAxisTypes",
@@ -8108,6 +8168,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "x": {
@@ -9272,6 +9342,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "labels": {
                     "valType": "data_array",
                     "editType": "calc",
@@ -9851,6 +9931,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "z": {
@@ -10960,6 +11050,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "a": {
@@ -12508,6 +12608,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "y": {
                     "valType": "data_array",
                     "editType": "calc+clearAxisTypes",
@@ -13457,6 +13567,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "x": {
@@ -15125,6 +15245,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "z": {
                     "valType": "data_array",
                     "description": "Sets the z coordinates.",
@@ -16344,6 +16474,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "color": {
                     "valType": "color",
                     "role": "style",
@@ -17412,6 +17552,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "lon": {
@@ -18918,6 +19068,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "locations": {
                     "valType": "data_array",
                     "editType": "calc",
@@ -19766,6 +19926,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "x": {
@@ -21432,6 +21602,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "dimensions": {
                     "items": {
                         "dimension": {
@@ -22751,6 +22931,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "x": {
                     "valType": "data_array",
                     "editType": "calc+clearAxisTypes",
@@ -23135,6 +23325,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "z": {
@@ -23978,6 +24178,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "domain": {
@@ -25023,6 +25233,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "lon": {
                     "valType": "data_array",
                     "description": "Sets the longitude coordinates (in degrees East).",
@@ -26036,6 +26256,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "domain": {
                     "x": {
                         "valType": "info_array",
@@ -26570,6 +26800,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "domain": {
@@ -27240,6 +27480,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "carpet": {
@@ -28611,6 +28861,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "carpet": {
@@ -30132,6 +30392,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "carpet": {
                     "valType": "string",
                     "role": "info",
@@ -31181,6 +31451,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "x": {
                     "valType": "data_array",
                     "editType": "calc+clearAxisTypes",
@@ -31627,6 +31907,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "x": {
                     "valType": "data_array",
                     "editType": "calc+clearAxisTypes",
@@ -32070,6 +32360,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "mode": {
@@ -33610,6 +33910,16 @@
                     "editType": "calc",
                     "role": "object"
                 },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
+                    "role": "object"
+                },
                 "mode": {
                     "valType": "flaglist",
                     "flags": [
@@ -34991,6 +35301,16 @@
                         "description": "Sets the maximum number of points to keep on the plots from an incoming stream. If `maxpoints` is set to *50*, only the newest 50 points will be displayed on the plot."
                     },
                     "editType": "calc",
+                    "role": "object"
+                },
+                "transforms": {
+                    "items": {
+                        "transform": {
+                            "editType": "calc",
+                            "description": "An array of operations that manipulate the trace data, for example filtering or sorting the data arrays.",
+                            "role": "object"
+                        }
+                    },
                     "role": "object"
                 },
                 "r": {
@@ -44582,7 +44902,8 @@
                                 "role": "info",
                                 "dflt": {},
                                 "editType": "calc",
-                                "description": "Sets each group styles. For example, with `groups` set to *['a', 'b', 'a', 'b']* and `styles` set to *[{target: 'a', value: { marker: { color: 'red' } }}] marker points in group *'a'* will be drawn in red."
+                                "description": "Sets each group styles. For example, with `groups` set to *['a', 'b', 'a', 'b']* and `styles` set to *[{target: 'a', value: { marker: { color: 'red' } }}] marker points in group *'a'* will be drawn in red.",
+                                "_compareAsJSON": true
                             },
                             "editType": "calc",
                             "role": "object"
