@@ -1485,6 +1485,55 @@ describe('@flaky Test select box and lasso per trace:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should work on scatter/bar traces with text nodes', function(done) {
+        var assertSelectedPoints = makeAssertSelectedPoints();
+
+        function assertFillOpacity(exp) {
+            var txtPts = d3.select(gd).select('g.plot').selectAll('text');
+
+            expect(txtPts.size()).toBe(exp.length, '# of text nodes');
+
+            txtPts.each(function(_, i) {
+                var act = Number(this.style['fill-opacity']);
+                expect(act).toBe(exp[i], 'node ' + i + ' fill opacity');
+            });
+        }
+
+        Plotly.plot(gd, [{
+            mode: 'markers+text',
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+            text: ['a', 'b', 'c']
+        }, {
+            type: 'bar',
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+            text: ['A', 'B', 'C'],
+            textposition: 'outside'
+        }], {
+            dragmode: 'select',
+            showlegend: false,
+            width: 400,
+            height: 400,
+            margin: {l: 0, t: 0, r: 0, b: 0}
+        })
+        .then(function() {
+            return _run(
+                [[10, 10], [100, 300]],
+                function() {
+                    assertSelectedPoints({0: [0], 1: [0]});
+                    assertFillOpacity([1, 0.2, 0.2, 1, 0.2, 0.2]);
+                },
+                null, BOXEVENTS, 'selecting first scatter/bar text nodes'
+            );
+        })
+        .then(function() {
+            assertFillOpacity([1, 1, 1, 1, 1, 1]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test that selections persist:', function() {

@@ -37,7 +37,7 @@ module.exports = {
     calc: require('./calc'),
     plot: require('../box/plot').plot,
     layerName: 'boxlayer',
-    style: require('../box/style'),
+    style: require('../box/style').style,
     hoverPoints: require('../ohlc/hover'),
     selectPoints: require('../ohlc/select')
 };

@@ -819,7 +819,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         }
         // Then look for a subplot with the counteraxis overlaying the anchor
         // If that fails just use the first subplot including this axis
-        if(!mainSubplotID || ids.indexOf(mainSubplotID) === -1) {
+        if(!mainSubplotID || !newSubplots[mainSubplotID]) {
             mainSubplotID = '';
             for(j = 0; j < ids.length; j++) {
                 id = ids[j];

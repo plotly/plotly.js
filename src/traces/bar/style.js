@@ -13,7 +13,7 @@ var d3 = require('d3');
 var Drawing = require('../../components/drawing');
 var Registry = require('../../registry');
 
-module.exports = function style(gd, cd) {
+function style(gd, cd) {
     var s = cd ? cd[0].node3 : d3.select(gd).selectAll('g.trace.bars');
     var barcount = s.size();
     var fullLayout = gd._fullLayout;
@@ -35,34 +35,52 @@ module.exports = function style(gd, cd) {
 
     s.selectAll('g.points').each(function(d) {
         var sel = d3.select(this);
-        var pts = sel.selectAll('path');
-        var txs = sel.selectAll('text');
         var trace = d[0].trace;
-
-        Drawing.pointStyle(pts, trace, gd);
-        Drawing.selectedPointStyle(pts, trace);
-
-        txs.each(function(d) {
-            var tx = d3.select(this);
-            var textFont;
-
-            if(tx.classed('bartext-inside')) {
-                textFont = trace.insidetextfont;
-            } else if(tx.classed('bartext-outside')) {
-                textFont = trace.outsidetextfont;
-            }
-            if(!textFont) textFont = trace.textfont;
-
-            function cast(k) {
-                var cont = textFont[k];
-                return Array.isArray(cont) ? cont[d.i] : cont;
-            }
-
-            Drawing.font(tx, cast('family'), cast('size'), cast('color'));
-        });
-
-        Drawing.selectedTextStyle(txs, trace);
+        stylePoints(sel, trace, gd);
     });
 
     Registry.getComponentMethod('errorbars', 'style')(s);
+}
+
+function stylePoints(sel, trace, gd) {
+    var pts = sel.selectAll('path');
+    var txs = sel.selectAll('text');
+
+    Drawing.pointStyle(pts, trace, gd);
+
+    txs.each(function(d) {
+        var tx = d3.select(this);
+        var textFont;
+
+        if(tx.classed('bartext-inside')) {
+            textFont = trace.insidetextfont;
+        } else if(tx.classed('bartext-outside')) {
+            textFont = trace.outsidetextfont;
+        }
+        if(!textFont) textFont = trace.textfont;
+
+        function cast(k) {
+            var cont = textFont[k];
+            return Array.isArray(cont) ? cont[d.i] : cont;
+        }
+
+        Drawing.font(tx, cast('family'), cast('size'), cast('color'));
+    });
+}
+
+function styleOnSelect(gd, cd) {
+    var s = cd[0].node3;
+    var trace = cd[0].trace;
+
+    if(trace.selectedpoints) {
+        Drawing.selectedPointStyle(s.selectAll('path'), trace);
+        Drawing.selectedTextStyle(s.selectAll('text'), trace);
+    } else {
+        stylePoints(s, trace, gd);
+    }
+}
+
+module.exports = {
+    style: style,
+    styleOnSelect: styleOnSelect
 };

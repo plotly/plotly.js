@@ -16,6 +16,7 @@ ScatterCarpet.colorbar = require('../scatter/colorbar');
 ScatterCarpet.calc = require('./calc');
 ScatterCarpet.plot = require('./plot');
 ScatterCarpet.style = require('../scatter/style').style;
+ScatterCarpet.styleOnSelect = require('../scatter/style').styleOnSelect;
 ScatterCarpet.hoverPoints = require('./hover');
 ScatterCarpet.selectPoints = require('../scatter/select');
 ScatterCarpet.eventData = require('./event_data');

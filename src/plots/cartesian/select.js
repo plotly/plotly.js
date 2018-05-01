@@ -404,6 +404,8 @@ function updateSelectedState(gd, searchTraces, eventData) {
         var len = items.length;
         var item0 = items[0];
         var trace0 = item0.cd[0].trace;
+        var _module = item0._module;
+        var styleSelection = _module.styleOnSelect || _module.style;
 
         if(Registry.traceIs(trace0, 'regl')) {
             // plot regl traces per module
@@ -411,11 +413,11 @@ function updateSelectedState(gd, searchTraces, eventData) {
             for(j = 0; j < len; j++) {
                 cds[j] = items[j].cd;
             }
-            item0._module.style(gd, cds);
+            styleSelection(gd, cds);
         } else {
             // plot svg trace per trace
             for(j = 0; j < len; j++) {
-                item0._module.style(gd, items[j].cd);
+                styleSelection(gd, items[j].cd);
             }
         }
     }

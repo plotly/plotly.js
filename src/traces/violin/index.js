@@ -17,6 +17,7 @@ module.exports = {
     setPositions: require('./set_positions'),
     plot: require('./plot'),
     style: require('./style'),
+    styleOnSelect: require('../scatter/style').styleOnSelect,
     hoverPoints: require('./hover'),
     selectPoints: require('../box/select'),
 
