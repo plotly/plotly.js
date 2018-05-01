@@ -375,20 +375,20 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
         evtData.group = trace._group;
     }
 
-    var returnVal;
+    var clickVal = Events.triggerHandler(gd, 'plotly_legendclick', evtData);
+    if(clickVal === false) return;
 
     if(numClicks === 1) {
         legend._clickTimeout = setTimeout(function() {
-            returnVal = Events.triggerHandler(gd, 'plotly_legendclick', evtData);
-            if(returnVal !== false) handleClick(legendItem, gd, numClicks);
+            handleClick(legendItem, gd, numClicks);
         }, DBLCLICKDELAY);
     }
     else if(numClicks === 2) {
         if(legend._clickTimeout) clearTimeout(legend._clickTimeout);
         gd._legendMouseDownTime = 0;
 
-        returnVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
-        if(returnVal !== false) handleClick(legendItem, gd, numClicks);
+        var dblClickVal = Events.triggerHandler(gd, 'plotly_legenddoubleclick', evtData);
+        if(dblClickVal !== false) handleClick(legendItem, gd, numClicks);
     }
 }
 

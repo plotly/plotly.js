@@ -1340,17 +1340,19 @@ describe('legend interaction', function() {
                         reject('did not trigger ' + evtName);
                     }, 2 * DBLCLICKDELAY);
 
-                    gd.on(evtName, function(d) {
-                        hasBeenCalled = true;
-                        _assert(d, exp);
-                    });
-                    gd.on('plotly_restyle', function() {
+                    function done() {
                         if(hasBeenCalled) {
                             clearTimeout(to);
                             resolve();
                         }
+                    }
+
+                    gd.once(evtName, function(d) {
+                        hasBeenCalled = true;
+                        _assert(d, exp);
                     });
 
+                    gd.once('plotly_restyle', done);
                     click(clickArg[0], clickArg[1])();
                 });
             }
