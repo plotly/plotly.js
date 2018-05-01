@@ -917,6 +917,37 @@ describe('@gl Test gl2d plots', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should work with typed array', function(done) {
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            mode: 'markers',
+            x: new Float32Array([1, 2, 3]),
+            y: new Float32Array([1, 2, 1]),
+            marker: {
+                size: 20,
+                colorscale: [[0, 'gray'], [1, 'red']],
+                cmin: 0,
+                cmax: 1,
+                showscale: true,
+                color: new Float32Array([0, 0.5, 1.0])
+            }
+        }])
+        .then(function() {
+            var opts = gd.calcdata[0][0].t._scene.markerOptions[0];
+
+            expect(opts.colors).toBeCloseTo2DArray([
+                [0.5, 0.5, 0.5, 1],
+                [0.75, 0.25, 0.25, 1],
+                [1, 0, 0, 1]
+            ]);
+
+            expect(opts.positions)
+                .toBeCloseToArray([1, 1, 2, 2, 3, 1]);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('Test scattergl autorange:', function() {

@@ -14,6 +14,7 @@ var rgba = require('color-normalize');
 
 var Colorscale = require('../components/colorscale');
 var colorDflt = require('../components/color/attributes').defaultLine;
+var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
 
 var colorDfltRgba = rgba(colorDflt);
 var opacityDflt = 1;
@@ -37,10 +38,10 @@ function validateOpacity(opacityIn) {
 }
 
 function formatColor(containerIn, opacityIn, len) {
-    var colorIn = containerIn.color,
-        isArrayColorIn = Array.isArray(colorIn),
-        isArrayOpacityIn = Array.isArray(opacityIn),
-        colorOut = [];
+    var colorIn = containerIn.color;
+    var isArrayColorIn = isArrayOrTypedArray(colorIn);
+    var isArrayOpacityIn = isArrayOrTypedArray(opacityIn);
+    var colorOut = [];
 
     var sclFunc, getColor, getOpacity, colori, opacityi;
 
