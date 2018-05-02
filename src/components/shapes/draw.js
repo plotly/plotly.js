@@ -152,7 +152,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
             element: sensoryElement.node(),
             gd: gd,
             prepFn: startDrag,
-            doneFn: endDrag
+            doneFn: endDrag,
+            clickFn: abortDrag
         },
         dragMode;
 
@@ -295,16 +296,22 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
 
         // setup dragMode and the corresponding handler
         updateDragMode(evt);
+        renderVisualCues(shapeLayer, shapeOptions);
         deactivateClipPathTemporarily(shapePath, shapeOptions, gd);
         dragOptions.moveFn = (dragMode === 'move') ? moveShape : resizeShape;
     }
 
     function endDrag() {
         setCursor(shapePath);
+        removeVisualCues(shapeLayer);
 
         // Don't rely on clipPath being activated during re-layout
         setClipPath(shapePath, gd, shapeOptions);
         Registry.call('relayout', gd, update);
+    }
+
+    function abortDrag() {
+        removeVisualCues(shapeLayer);
     }
 
     function moveShape(dx, dy) {
@@ -347,6 +354,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
         }
 
         shapePath.attr('d', getPathString(gd, shapeOptions));
+        renderVisualCues(shapeLayer, shapeOptions);
     }
 
     function resizeShape(dx, dy) {
@@ -411,6 +419,52 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
         }
 
         shapePath.attr('d', getPathString(gd, shapeOptions));
+        renderVisualCues(shapeLayer, shapeOptions);
+    }
+
+    function renderVisualCues(shapeLayer, shapeOptions) {
+        if(xPixelSized || yPixelSized) {
+            renderAnchor();
+        }
+
+        function renderAnchor() {
+            var isNotPath = shapeOptions.type !== 'path';
+
+            // d3 join with dummy data to satisfy d3 data-binding
+            var visualCues = shapeLayer.selectAll('.visual-cue').data([0]);
+
+            // Enter
+            visualCues.enter()
+              .append('path')
+              .attr({
+                  'fill': '#fff',
+                  'fill-rule': 'evenodd',
+                  'stroke': '#000',
+                  'stroke-width': 1
+              })
+              .classed('visual-cue', true);
+
+            // Update
+            var anchorX = x2p(xPixelSized ?
+              shapeOptions.xanchor :
+              isNotPath ?
+                shapeOptions.x0 :
+                helpers.extractPathCoords(shapeOptions.path, constants.paramIsX)[0]);
+            var anchorY = y2p(yPixelSized ?
+              shapeOptions.yanchor :
+              isNotPath ?
+                shapeOptions.y0 :
+                helpers.extractPathCoords(shapeOptions.path, constants.paramIsY)[0]);
+
+            var crossHairPath = 'M' + (anchorX - 1) + ',' + (anchorY - 1) +
+              'l-8,0 l0,-2 l8,0  l0,-8 l2,0 l0,8  l8,0 l0,2 l-8,0  l0,8 l-2,0 Z';
+
+            visualCues.attr('d', crossHairPath);
+        }
+    }
+
+    function removeVisualCues(shapeLayer) {
+        shapeLayer.selectAll('.visual-cue').remove();
     }
 
     function deactivateClipPathTemporarily(shapePath, shapeOptions, gd) {
