@@ -132,7 +132,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
 
     var xPixelSized = shapeOptions.xsizemode === 'pixel',
         yPixelSized = shapeOptions.ysizemode === 'pixel',
-        isLine = shapeOptions.type === 'line';
+        isLine = shapeOptions.type === 'line',
+        isPath = shapeOptions.type === 'path';
 
     var update;
     var x0, y0, x1, y1, xAnchor, yAnchor, astrX0, astrY0, astrX1, astrY1, astrXAnchor, astrYAnchor;
@@ -232,7 +233,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
                 h = dragBBox.bottom - dragBBox.top,
                 x = evt.clientX - dragBBox.left,
                 y = evt.clientY - dragBBox.top,
-                cursor = (w > MINWIDTH && h > MINHEIGHT && !evt.shiftKey) ?
+                cursor = (!isPath && w > MINWIDTH && h > MINHEIGHT && !evt.shiftKey) ?
                     dragElement.getCursor(x / w, 1 - y / h) :
                     'move';
 
@@ -358,8 +359,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
     }
 
     function resizeShape(dx, dy) {
-        if(shapeOptions.type === 'path') {
-            // TODO: implement path resize
+        if(isPath) {
+            // TODO: implement path resize, don't forget to update dragMode code
             var noOp = function(coord) { return coord; },
                 moveX = noOp,
                 moveY = noOp;
