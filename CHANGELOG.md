@@ -10,6 +10,12 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.37.1] -- 2018-05-02
+
+### Fixed
+- Fix `Plotly.react` when adding/removing traces (bug introduced in 1.37.0) [#2603]
+
+
 ## [1.37.0] -- 2018-05-01
 
 ### Added
