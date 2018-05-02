@@ -2372,7 +2372,7 @@ function diffData(gd, oldFullData, newFullData, immutable) {
     if(oldFullData.length !== newFullData.length) {
         return {
             fullReplot: true,
-            clearCalc: true
+            calc: true
         };
     }
 

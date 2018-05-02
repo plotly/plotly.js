@@ -2610,6 +2610,29 @@ describe('Test plot api', function() {
             images.draw.calls.reset();
         }
 
+        it('can add / remove traces', function(done) {
+            var data1 = [{y: [1, 2, 3], mode: 'markers'}];
+            var data2 = [data1[0], {y: [2, 3, 1], mode: 'markers'}];
+            var layout = {};
+            Plotly.newPlot(gd, data1, layout)
+            .then(countPlots)
+            .then(function() {
+                expect(d3.selectAll('.point').size()).toBe(3);
+
+                return Plotly.react(gd, data2, layout);
+            })
+            .then(function() {
+                expect(d3.selectAll('.point').size()).toBe(6);
+
+                return Plotly.react(gd, data1, layout);
+            })
+            .then(function() {
+                expect(d3.selectAll('.point').size()).toBe(3);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('should notice new data by ===, without layout.datarevision', function(done) {
             var data = [{y: [1, 2, 3], mode: 'markers'}];
             var layout = {};
