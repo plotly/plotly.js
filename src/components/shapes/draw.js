@@ -181,7 +181,6 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
 
         // Helper circles for resizing
         var circleStyle = {
-            'cursor': 'default',
             'fill-opacity': '0' // ensure not visible
         };
         var circleRadius = sensoryWidth / 2 > minSensoryWidth ? sensoryWidth / 2 : minSensoryWidth;
@@ -193,7 +192,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
               'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
               'r': circleRadius
           })
-          .style(circleStyle);
+          .style(circleStyle)
+          .classed('cursor-grab', true);
 
         g.append('circle')
           .attr({
@@ -202,7 +202,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
               'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
               'r': circleRadius
           })
-          .style(circleStyle);
+          .style(circleStyle)
+          .classed('cursor-grab', true);
 
         return g;
     }
