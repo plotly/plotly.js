@@ -115,6 +115,10 @@ module.exports = {
      */
     modeBarButtons: false,
 
+    // statically override options for toImage modebar button
+    // allowed keys are format, filename, width, height
+    toImageButtonDefaults: {},
+
     // add the plotly logo on the end of the mode bar
     displaylogo: true,
 

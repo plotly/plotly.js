@@ -47,19 +47,29 @@ var modeBarButtons = module.exports = {};
 
 modeBarButtons.toImage = {
     name: 'toImage',
-    title: function(gd) { return _(gd, 'Download plot as a png'); },
+    title: function(gd) { return _(gd, 'Download plot'); },
     icon: Icons.camera,
     click: function(gd) {
-        var format = 'png';
+        var toImageButtonDefaults = gd._context.toImageButtonDefaults;
+        var opts = {format: toImageButtonDefaults.format || 'png'};
 
         Lib.notifier(_(gd, 'Taking snapshot - this may take a few seconds'), 'long');
 
         if(Lib.isIE()) {
             Lib.notifier(_(gd, 'IE only supports svg.  Changing format to svg.'), 'long');
-            format = 'svg';
+            opts.format = 'svg';
         }
 
-        Registry.call('downloadImage', gd, {'format': format})
+        if(toImageButtonDefaults.width) {
+            opts.width = toImageButtonDefaults.width;
+        }
+        if(toImageButtonDefaults.height) {
+            opts.height = toImageButtonDefaults.height;
+        }
+        if(toImageButtonDefaults.filename) {
+            opts.filename = toImageButtonDefaults.filename;
+        }
+        Registry.call('downloadImage', gd, opts)
           .then(function(filename) {
               Lib.notifier(_(gd, 'Snapshot succeeded') + ' - ' + filename, 'long');
           })
