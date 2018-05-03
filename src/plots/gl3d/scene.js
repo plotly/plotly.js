@@ -192,6 +192,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     };
 
     scene.glplot.canvas.addEventListener('mouseup', relayoutCallback.bind(null, scene));
+    scene.glplot.canvas.addEventListener('mousemove', relayoutCallback.bind(null, scene));
     scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
 
     if(!scene.staticMode) {
