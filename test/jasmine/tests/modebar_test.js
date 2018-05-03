@@ -5,6 +5,7 @@ var manageModeBar = require('@src/components/modebar/manage');
 
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
+var Registry = require('@src/registry');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var selectButton = require('../assets/modebar_button');
@@ -766,6 +767,42 @@ describe('ModeBar', function() {
                 );
             }
         }
+
+        describe('toImage handlers', function() {
+            beforeEach(function() {
+                spyOn(Registry, 'call').and.callFake(function() {
+                    return Promise.resolve();
+                });
+                gd = createGraphDiv();
+            });
+
+            it('should use defaults', function(done) {
+                Plotly.plot(gd, {data: [], layout: {}})
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'toImage').click();
+                    expect(Registry.call).toHaveBeenCalledWith('downloadImage', gd,
+                        {format: 'png'});
+                    done();
+                });
+            });
+
+            it('should accept overriding defaults', function(done) {
+                Plotly.plot(gd, {data: [], layout: {}, config: {
+                    toImageButtonDefaults: {
+                        format: 'svg',
+                        filename: 'x',
+                        unsupported: 'should not pass'
+                    }
+                } })
+                .then(function() {
+                    selectButton(gd._fullLayout._modeBar, 'toImage').click();
+                    expect(Registry.call).toHaveBeenCalledWith('downloadImage', gd,
+                        {format: 'svg', filename: 'x'});
+                    done();
+                });
+            });
+
+        });
 
         describe('cartesian handlers', function() {
 

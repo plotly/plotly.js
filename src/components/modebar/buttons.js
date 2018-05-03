@@ -60,15 +60,12 @@ modeBarButtons.toImage = {
             opts.format = 'svg';
         }
 
-        if(toImageButtonDefaults.width) {
-            opts.width = toImageButtonDefaults.width;
-        }
-        if(toImageButtonDefaults.height) {
-            opts.height = toImageButtonDefaults.height;
-        }
-        if(toImageButtonDefaults.filename) {
-            opts.filename = toImageButtonDefaults.filename;
-        }
+        ['filename', 'width', 'height', 'scale'].forEach(function(key) {
+            if(toImageButtonDefaults[key]) {
+                opts[key] = toImageButtonDefaults[key];
+            }
+        });
+
         Registry.call('downloadImage', gd, opts)
           .then(function(filename) {
               Lib.notifier(_(gd, 'Snapshot succeeded') + ' - ' + filename, 'long');
