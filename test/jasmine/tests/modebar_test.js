@@ -788,7 +788,7 @@ describe('ModeBar', function() {
 
             it('should accept overriding defaults', function(done) {
                 Plotly.plot(gd, {data: [], layout: {}, config: {
-                    toImageButtonDefaults: {
+                    toImageButtonOptions: {
                         format: 'svg',
                         filename: 'x',
                         unsupported: 'should not pass'
