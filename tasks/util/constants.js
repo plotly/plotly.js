@@ -51,6 +51,7 @@ module.exports = {
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
     pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
     pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
+    pathToMathJax: path.join(pathToDist, 'extras', 'mathjax', 'MathJax.js'),
 
     pathToFontSVG: path.join(pathToSrc, 'fonts/ploticon/ploticon.svg'),
     pathToFontSVGBuild: path.join(pathToBuild, 'ploticon.js'),
@@ -78,11 +79,9 @@ module.exports = {
     mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ',
     pathToCredentials: path.join(pathToBuild, 'credentials.json'),
 
-    testContainerImage: 'plotly/testbed:latest',
-    testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'imagetest',
-    testContainerPort: '9010',
-    testContainerUrl: 'http://localhost:9010/',
-    testContainerHome: '/var/www/streambed/image_server/plotly.js',
+    testContainerImage: 'quay.io/plotly/image-exporter:single-entry',
+    testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'orcabed',
+    testContainerHome: '/var/www/image-exporter/plotly.js',
 
     uglifyOptions: {
         mangle: true,
