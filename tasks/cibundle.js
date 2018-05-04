@@ -17,7 +17,6 @@ _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyBuild, {
     standalone: 'Plotly',
     debug: true,
     compressAttrs: true,
-    packFlat: true,
     pathToMinBundle: constants.pathToPlotlyDistMin
 });
 
