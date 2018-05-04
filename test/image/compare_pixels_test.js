@@ -14,8 +14,8 @@ var argv = require('minimist')(process.argv.slice(2), {
         help: ['h', 'info']
     },
     'default': {
-        threshold: '1e-3',
-        'parallel-limit': '4'
+        threshold: 0.1,
+        'parallel-limit': 4
     }
 });
 
