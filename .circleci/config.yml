@@ -80,17 +80,12 @@ jobs:
 
   test-image:
     docker:
-      - image: plotly/testbed:latest
-    working_directory: /var/www/streambed/image_server/plotly.js/
+      - image: quay.io/plotly/image-exporter:single-entry
+    working_directory: /var/www/image-exporter/plotly.js/
     steps:
       - checkout
       - attach_workspace:
-          at: /var/www/streambed/image_server/plotly.js/
-      - run:
-          name: Run and setup container
-          command: |
-            supervisord &
-            npm run docker -- setup
+          at: /var/www/image-exporter/plotly.js/
       - run:
           name: Run image tests
           command: ./.circleci/test.sh image
@@ -99,17 +94,12 @@ jobs:
 
   test-image2:
     docker:
-      - image: plotly/testbed:latest
-    working_directory: /var/www/streambed/image_server/plotly.js/
+      - image: quay.io/plotly/image-exporter:single-entry
+    working_directory: /var/www/image-exporter/plotly.js/
     steps:
       - checkout
       - attach_workspace:
-          at: /var/www/streambed/image_server/plotly.js/
-      - run:
-          name: Run and setup container
-          command: |
-            supervisord &
-            npm run docker -- setup
+          at: /var/www/image-exporter/plotly.js/
       - run:
           name: Run image tests
           command: ./.circleci/test.sh image2
