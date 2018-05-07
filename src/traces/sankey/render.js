@@ -430,7 +430,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('left', 0)
         .style('shape-rendering', 'geometricPrecision')
         .style('pointer-events', 'auto')
-        .style('box-sizing', 'content-box')
         .attr('transform', sankeyTransform);
 
     sankey.transition()
