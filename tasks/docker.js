@@ -30,7 +30,7 @@ switch(arg) {
             '--shm-size=2g',
             '--volume /dev/shm:/dev/shm',
             // save files as local owner
-            '--user `id --user`',
+            '--user `id -u`',
             // override container entry point
             '--entrypoint /bin/bash',
             img
@@ -38,7 +38,14 @@ switch(arg) {
 
         // if docker-run fails, try docker-start.
         errorCb = function(err) {
-            if(err) common.execCmd('docker start ' + name);
+            if(err) {
+                if(err.message && err.message.indexOf('already in use') !== -1) {
+                    common.execCmd('docker start ' + name);
+                }
+                else {
+                    console.log(err);
+                }
+            }
         };
 
         break;
