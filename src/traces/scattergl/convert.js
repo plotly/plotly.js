@@ -360,10 +360,11 @@ function convertLinePositions(gd, trace, positions) {
     };
 }
 
-function convertErrorBarPositions(gd, trace, positions) {
+function convertErrorBarPositions(gd, trace, pos, x, y) {
     var calcFromTrace = Registry.getComponentMethod('errorbars', 'calcFromTrace');
-    var vals = calcFromTrace(trace, gd._fullLayout);
-    var count = positions.length / 2;
+    var _trace = Lib.extendFlat({}, trace, {x: x, y: y});
+    var vals = calcFromTrace(_trace, gd._fullLayout);
+    var count = pos.length / 2;
     var out = {};
 
     function put(axLetter) {
@@ -373,8 +374,8 @@ function convertErrorBarPositions(gd, trace, positions) {
         var eOffset = {x: [0, 1, 2, 3], y: [2, 3, 0, 1]}[axLetter];
 
         for(var i = 0, p = 0; i < count; i++, p += 4) {
-            errors[p + eOffset[0]] = positions[i * 2 + pOffset] - ax.d2l(vals[i][axLetter + 's']) || 0;
-            errors[p + eOffset[1]] = ax.d2l(vals[i][axLetter + 'h']) - positions[i * 2 + pOffset] || 0;
+            errors[p + eOffset[0]] = pos[i * 2 + pOffset] - ax.c2l(vals[i][axLetter + 's']) || 0;
+            errors[p + eOffset[1]] = ax.c2l(vals[i][axLetter + 'h']) - pos[i * 2 + pOffset] || 0;
             errors[p + eOffset[2]] = 0;
             errors[p + eOffset[3]] = 0;
         }
@@ -382,16 +383,15 @@ function convertErrorBarPositions(gd, trace, positions) {
         return errors;
     }
 
-
     if(trace.error_x && trace.error_x.visible) {
         out.x = {
-            positions: positions,
+            positions: pos,
             errors: put('x')
         };
     }
     if(trace.error_y && trace.error_y.visible) {
         out.y = {
-            positions: positions,
+            positions: pos,
             errors: put('y')
         };
     }
