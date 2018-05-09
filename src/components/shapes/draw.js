@@ -447,24 +447,39 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
               .classed('visual-cue', true);
 
             // Update
-            var anchorX = x2p(xPixelSized ?
-              shapeOptions.xanchor :
-              isNotPath ?
-                shapeOptions.x0 :
-                helpers.extractPathCoords(shapeOptions.path, constants.paramIsX)[0]);
-            var anchorY = y2p(yPixelSized ?
-              shapeOptions.yanchor :
-              isNotPath ?
-                shapeOptions.y0 :
-                helpers.extractPathCoords(shapeOptions.path, constants.paramIsY)[0]);
+            var posX = x2p(
+              xPixelSized ?
+                shapeOptions.xanchor :
+                Lib.midRange(
+                  isNotPath ?
+                    [shapeOptions.x0, shapeOptions.x1] :
+                    helpers.extractPathCoords(shapeOptions.path, constants.paramIsX))
+            );
+            var posY = y2p(
+              yPixelSized ?
+                shapeOptions.yanchor :
+                Lib.midRange(
+                  isNotPath ?
+                    [shapeOptions.y0, shapeOptions.y1] :
+                    helpers.extractPathCoords(shapeOptions.path, constants.paramIsY))
+            );
 
-            anchorX = helpers.transformPosForSharpStrokeRendering(anchorX, strokeWidth);
-            anchorY = helpers.transformPosForSharpStrokeRendering(anchorY, strokeWidth);
+            posX = helpers.roundPositionForSharpStrokeRendering(posX, strokeWidth);
+            posY = helpers.roundPositionForSharpStrokeRendering(posY, strokeWidth);
 
-            var crossHairPath = 'M' + (anchorX - 1) + ',' + (anchorY - 1) +
-              'h-8v2h8 v8h2v-8 h8v-2h-8 v-8h-2 Z';
-
-            visualCues.attr('d', crossHairPath);
+            if(xPixelSized && yPixelSized) {
+                var crossPath = 'M' + (posX - 1 - strokeWidth) + ',' + (posY - 1 - strokeWidth) +
+                  'h-8v2h8 v8h2v-8 h8v-2h-8 v-8h-2 Z';
+                visualCues.attr('d', crossPath);
+            } else if(xPixelSized) {
+                var vBarPath = 'M' + (posX - 1 - strokeWidth) + ',' + (posY - 9 - strokeWidth) +
+                  'v18 h2 v-18 Z';
+                visualCues.attr('d', vBarPath);
+            } else {
+                var hBarPath = 'M' + (posX - 9 - strokeWidth) + ',' + (posY - 1 - strokeWidth) +
+                  'h18 v2 h-18 Z';
+                visualCues.attr('d', hBarPath);
+            }
         }
     }
 

@@ -108,12 +108,12 @@ describe('Test lib.js:', function() {
     });
 
     describe('mean() should', function() {
-        it('toss out non-numerics (strings):', function() {
+        it('toss out non-numerics (strings)', function() {
             var input = [1, 2, 'apple', 'orange'],
                 res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
-        it('toss out non-numerics (NaN):', function() {
+        it('toss out non-numerics (NaN)', function() {
             var input = [1, 2, NaN],
                 res = Lib.mean(input);
             expect(res).toEqual(1.5);
@@ -122,6 +122,34 @@ describe('Test lib.js:', function() {
             var input = ['1', '2'],
                 res = Lib.mean(input);
             expect(res).toEqual(1.5);
+        });
+    });
+
+    describe('midRange() should', function() {
+        it('should calculate the arithmetic mean of the maximum and minimum value of a given array', function() {
+            var input = [1, 5.5, 6, 15, 10, 13],
+                res = Lib.midRange(input);
+            expect(res).toEqual(8);
+        });
+        it('toss out non-numerics (strings)', function() {
+            var input = [1, 2, 'apple', 'orange'],
+                res = Lib.midRange(input);
+            expect(res).toEqual(1.5);
+        });
+        it('toss out non-numerics (NaN)', function() {
+            var input = [1, 2, NaN],
+                res = Lib.midRange(input);
+            expect(res).toEqual(1.5);
+        });
+        it('should be able to deal with array of length 1', function() {
+            var input = [10],
+                res = Lib.midRange(input);
+            expect(res).toEqual(10);
+        });
+        it('should return undefined for an empty array', function() {
+            var input = [],
+                res = Lib.midRange(input);
+            expect(res).toBeUndefined();
         });
     });
 

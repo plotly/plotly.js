@@ -11,6 +11,8 @@
 
 var constants = require('./constants');
 
+var Lib = require('../../lib');
+
 // special position conversion functions... category axis positions can't be
 // specified by their data values, because they don't make a continuous mapping.
 // so these have to be specified in terms of the category serial numbers,
@@ -50,7 +52,7 @@ exports.extractPathCoords = function(path, paramsToUse) {
         var params = segment.substr(1).match(constants.paramRE);
         if(!params || params.length < relevantParamIdx) return;
 
-        extractedCoordinates.push(params[relevantParamIdx]);
+        extractedCoordinates.push(Lib.cleanNumber(params[relevantParamIdx]));
     });
 
     return extractedCoordinates;
@@ -98,7 +100,7 @@ exports.getPixelToData = function(gd, axis, isVertical) {
 };
 
 /**
- * Based on the given stroke width, transforms the passed
+ * Based on the given stroke width, rounds the passed
  * position value to represent either a full or half pixel.
  *
  * In case of an odd stroke width (e.g. 1), this measure ensures
@@ -113,7 +115,7 @@ exports.getPixelToData = function(gd, axis, isVertical) {
  * @param {number} strokeWidth The stroke width
  * @returns {number} either an integer or a .5 decimal number
  */
-exports.transformPosForSharpStrokeRendering = function(pos, strokeWidth) {
+exports.roundPositionForSharpStrokeRendering = function(pos, strokeWidth) {
     var strokeWidthIsOdd = Math.round(strokeWidth % 2) === 1;
     var posValAsInt = Math.round(pos);
 
