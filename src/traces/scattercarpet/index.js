@@ -24,7 +24,7 @@ ScatterCarpet.eventData = require('./event_data');
 ScatterCarpet.moduleType = 'trace';
 ScatterCarpet.name = 'scattercarpet';
 ScatterCarpet.basePlotModule = require('../../plots/cartesian');
-ScatterCarpet.categories = ['svg', 'carpet', 'symbols', 'markerColorscale', 'showLegend', 'carpetDependent', 'draggedPts'];
+ScatterCarpet.categories = ['svg', 'carpet', 'symbols', 'markerColorscale', 'showLegend', 'carpetDependent', 'zoomScale'];
 ScatterCarpet.meta = {
     hrName: 'scatter_carpet',
     description: [
