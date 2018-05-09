@@ -462,7 +462,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
             anchorY = helpers.transformPosForSharpStrokeRendering(anchorY, strokeWidth);
 
             var crossHairPath = 'M' + (anchorX - 1) + ',' + (anchorY - 1) +
-              'l-8,0 l0,-2 l8,0  l0,-8 l2,0 l0,8  l8,0 l0,2 l-8,0  l0,8 l-2,0 Z';
+              'h-8v2h8 v8h2v-8 h8v-2h-8 v-8h-2 Z';
 
             visualCues.attr('d', crossHairPath);
         }
