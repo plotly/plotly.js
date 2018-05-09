@@ -96,3 +96,26 @@ exports.getPixelToData = function(gd, axis, isVertical) {
 
     return pixelToData;
 };
+
+/**
+ * Based on the given stroke width, transforms the passed
+ * position value to represent either a full or half pixel.
+ *
+ * In case of an odd stroke width (e.g. 1), this measure ensures
+ * that a stroke positioned at the returned position isn't rendered
+ * blurry due to anti-aliasing.
+ *
+ * In case of an even stroke width (e.g. 2), this measure ensures
+ * that the position value is transformed to a full pixel value
+ * so that anti-aliasing doesn't take effect either.
+ *
+ * @param {number} pos The raw position value to be transformed
+ * @param {number} strokeWidth The stroke width
+ * @returns {number} either an integer or a .5 decimal number
+ */
+exports.transformPosForSharpStrokeRendering = function(pos, strokeWidth) {
+    var strokeWidthIsOdd = Math.round(strokeWidth % 2) === 1;
+    var posValAsInt = Math.round(pos);
+
+    return strokeWidthIsOdd ? posValAsInt + 0.5 : posValAsInt;
+};

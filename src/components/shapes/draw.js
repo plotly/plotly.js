@@ -435,13 +435,14 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
             var visualCues = shapeLayer.selectAll('.visual-cue').data([0]);
 
             // Enter
+            var strokeWidth = 1;
             visualCues.enter()
               .append('path')
               .attr({
                   'fill': '#fff',
                   'fill-rule': 'evenodd',
                   'stroke': '#000',
-                  'stroke-width': 1
+                  'stroke-width': strokeWidth
               })
               .classed('visual-cue', true);
 
@@ -456,6 +457,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
               isNotPath ?
                 shapeOptions.y0 :
                 helpers.extractPathCoords(shapeOptions.path, constants.paramIsY)[0]);
+
+            anchorX = helpers.transformPosForSharpStrokeRendering(anchorX, strokeWidth);
+            anchorY = helpers.transformPosForSharpStrokeRendering(anchorY, strokeWidth);
 
             var crossHairPath = 'M' + (anchorX - 1) + ',' + (anchorY - 1) +
               'l-8,0 l0,-2 l8,0  l0,-8 l2,0 l0,8  l8,0 l0,2 l-8,0  l0,8 l-2,0 Z';
