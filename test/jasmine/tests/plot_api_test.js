@@ -669,6 +669,21 @@ describe('Test plot api', function() {
                 destroyGraphDiv();
             });
         });
+
+        it('should trigger calc on axis range updates when constraints are present', function() {
+            gd = mock({
+                data: [{
+                    y: [1, 2, 1]
+                }],
+                layout: {
+                    xaxis: {constrain: 'domain'},
+                    yaxis: {scaleanchor: 'x'}
+                }
+            });
+
+            Plotly.relayout(gd, 'xaxis.range[0]', 0);
+            expect(gd.calcdata).toBeUndefined();
+        });
     });
 
     describe('Plotly.restyle subroutines switchboard', function() {

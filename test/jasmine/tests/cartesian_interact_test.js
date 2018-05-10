@@ -554,6 +554,39 @@ describe('axis zoom/pan and main plot zoom', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('updates axis layout when the constraints require it', function(done) {
+        function _assert(xGridCnt) {
+            var xGrid = d3.select(gd).selectAll('.gridlayer > .x > path.xgrid');
+            expect(xGrid.size()).toEqual(xGridCnt);
+        }
+
+        Plotly.plot(gd, [{
+            x: [1, 1.5, 0, -1.5, -1, -1.5, 0, 1.5, 1],
+            y: [0, 1.5, 1, 1.5, 0, -1.5, -1, -1.5, 0],
+            line: {shape: 'spline'}
+        }], {
+            xaxis: {constrain: 'domain'},
+            yaxis: {scaleanchor: 'x'},
+            width: 700,
+            height: 500
+        })
+        .then(function() {
+            _assert(2);
+
+            return Plotly.relayout(gd, {
+                'xaxis.range[0]': 0,
+                'xaxis.range[1]': 1,
+                'yaxis.range[0]': 0,
+                'yaxis.range[1]': 1
+            });
+        })
+        .then(function() {
+            _assert(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Event data:', function() {
