@@ -631,7 +631,7 @@ describe('Test plot api', function() {
         });
 
         it('should trigger minimal sequence for cartesian axis range updates', function() {
-            var seq = ['doAutoRangeAndConstraints', 'doTicksRelayout', 'drawData', 'finalDraw'];
+            var seq = ['doTicksRelayout', 'drawData', 'finalDraw'];
 
             function _assert(msg) {
                 expect(gd.calcdata).toBeDefined();
