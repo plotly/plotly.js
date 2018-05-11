@@ -14,13 +14,16 @@ var wrap = require('../../lib/gup').wrap;
 
 function circularityPresent(nodeList, sources, targets) {
 
-    var nodes = nodeList.map(function() {return [];});
+    var nodes = nodeList.map(function() { return []; });
+    var nodeLen = nodes.length;
 
     for(var i = 0; i < Math.min(sources.length, targets.length); i++) {
-        if(sources[i] === targets[i]) {
-            return true; // self-link which is also a scc of one
+        if(Lib.isIndex(sources[i], nodeLen) && Lib.isIndex(targets[i], nodeLen)) {
+            if(sources[i] === targets[i]) {
+                return true; // self-link which is also a scc of one
+            }
+            nodes[sources[i]].push(targets[i]);
         }
-        nodes[sources[i]].push(targets[i]);
     }
 
     var scc = tarjan(nodes);

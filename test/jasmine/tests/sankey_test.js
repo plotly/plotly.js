@@ -58,30 +58,31 @@ describe('sankey tests', function() {
         });
     });
 
-    describe('log warning if issue is encountered with graph structure',
-        function() {
+    describe('No warnings for missing nodes', function() {
+        // we used to warn when some nodes were not used in the links
+        // not doing that anymore, it's not really consistent with
+        // the rest of our data processing.
+        it('some nodes are not linked', function() {
 
-            it('some nodes are not linked', function() {
-
-                var warnings = [];
-                spyOn(Lib, 'warn').and.callFake(function(msg) {
-                    warnings.push(msg);
-                });
-
-                _supply({
-                    node: {
-                        label: ['a', 'b', 'c']
-                    },
-                    link: {
-                        value: [1],
-                        source: [0],
-                        target: [1]
-                    }
-                });
-
-                expect(warnings.length).toEqual(1);
+            var warnings = [];
+            spyOn(Lib, 'warn').and.callFake(function(msg) {
+                warnings.push(msg);
             });
+
+            _supply({
+                node: {
+                    label: ['a', 'b', 'c']
+                },
+                link: {
+                    value: [1],
+                    source: [0],
+                    target: [1]
+                }
+            });
+
+            expect(warnings.length).toEqual(0);
         });
+    });
 
     describe('sankey global defaults', function() {
 

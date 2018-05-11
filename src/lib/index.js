@@ -134,6 +134,19 @@ lib.ensureNumber = function num(v) {
     return isNumeric(v) ? Number(v) : BADNUM;
 };
 
+/**
+ * Is v a valid array index? Accepts numeric strings as well as numbers.
+ *
+ * @param {any} v: the value to test
+ * @param {Optional[integer]} len: the array length we are indexing
+ *
+ * @return {bool}: v is a valid array index
+ */
+lib.isIndex = function(v, len) {
+    if(len !== undefined && v >= len) return false;
+    return isNumeric(v) && (v >= 0) && (v % 1 === 0);
+};
+
 lib.noop = require('./noop');
 lib.identity = require('./identity');
 
