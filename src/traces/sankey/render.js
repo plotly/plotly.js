@@ -16,9 +16,12 @@ var Drawing = require('../../components/drawing');
 var d3sankey = require('@plotly/d3-sankey').sankey;
 var d3Force = require('d3-force');
 var Lib = require('../../lib');
-var keyFun = require('../../lib/gup').keyFun;
-var repeat = require('../../lib/gup').repeat;
-var unwrap = require('../../lib/gup').unwrap;
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
+var isIndex = Lib.isIndex;
+var gup = require('../../lib/gup');
+var keyFun = gup.keyFun;
+var repeat = gup.repeat;
+var unwrap = gup.unwrap;
 
 // basic data utilities
 
@@ -63,44 +66,79 @@ function switchToSankeyFormat(nodes) {
 
 // view models
 
-function sankeyModel(layout, d, i) {
-    var trace = unwrap(d).trace,
-        domain = trace.domain,
-        nodeSpec = trace.node,
-        linkSpec = trace.link,
-        arrangement = trace.arrangement,
-        horizontal = trace.orientation === 'h',
-        nodePad = trace.node.pad,
-        nodeThickness = trace.node.thickness,
-        nodeLineColor = trace.node.line.color,
-        nodeLineWidth = trace.node.line.width,
-        linkLineColor = trace.link.line.color,
-        linkLineWidth = trace.link.line.width,
-        valueFormat = trace.valueformat,
-        valueSuffix = trace.valuesuffix,
-        textFont = trace.textfont;
+function sankeyModel(layout, d, traceIndex) {
+    var trace = unwrap(d).trace;
+    var domain = trace.domain;
+    var nodeSpec = trace.node;
+    var linkSpec = trace.link;
+    var arrangement = trace.arrangement;
+    var horizontal = trace.orientation === 'h';
+    var nodePad = trace.node.pad;
+    var nodeThickness = trace.node.thickness;
+    var nodeLineColor = trace.node.line.color;
+    var nodeLineWidth = trace.node.line.width;
+    var linkLineColor = trace.link.line.color;
+    var linkLineWidth = trace.link.line.width;
+    var valueFormat = trace.valueformat;
+    var valueSuffix = trace.valuesuffix;
+    var textFont = trace.textfont;
 
-    var width = layout.width * (domain.x[1] - domain.x[0]),
-        height = layout.height * (domain.y[1] - domain.y[0]);
+    var width = layout.width * (domain.x[1] - domain.x[0]);
+    var height = layout.height * (domain.y[1] - domain.y[0]);
 
-    var nodes = nodeSpec.label.map(function(l, i) {
-        return {
-            pointNumber: i,
-            label: l,
-            color: Lib.isArrayOrTypedArray(nodeSpec.color) ? nodeSpec.color[i] : nodeSpec.color
-        };
-    });
+    var links = [];
+    var hasLinkColorArray = isArrayOrTypedArray(linkSpec.color);
+    var linkedNodes = {};
 
-    var links = linkSpec.value.map(function(d, i) {
-        return {
+    var nodeCount = nodeSpec.label.length;
+    var i;
+    for(i = 0; i < linkSpec.value.length; i++) {
+        var val = linkSpec.value[i];
+        // remove negative values, but keep zeros with special treatment
+        var source = linkSpec.source[i];
+        var target = linkSpec.target[i];
+        if(!(val > 0 && isIndex(source, nodeCount) && isIndex(target, nodeCount))) {
+            continue;
+        }
+
+        source = +source;
+        target = +target;
+        linkedNodes[source] = linkedNodes[target] = true;
+
+        links.push({
             pointNumber: i,
             label: linkSpec.label[i],
-            color: Lib.isArrayOrTypedArray(linkSpec.color) ? linkSpec.color[i] : linkSpec.color,
-            source: linkSpec.source[i],
-            target: linkSpec.target[i],
-            value: d
-        };
-    });
+            color: hasLinkColorArray ? linkSpec.color[i] : linkSpec.color,
+            source: source,
+            target: target,
+            value: +val
+        });
+    }
+
+    var hasNodeColorArray = isArrayOrTypedArray(nodeSpec.color);
+    var nodes = [];
+    var removedNodes = false;
+    var nodeIndices = {};
+    for(i = 0; i < nodeCount; i++) {
+        if(linkedNodes[i]) {
+            var l = nodeSpec.label[i];
+            nodeIndices[i] = nodes.length;
+            nodes.push({
+                pointNumber: i,
+                label: l,
+                color: hasNodeColorArray ? nodeSpec.color[i] : nodeSpec.color
+            });
+        }
+        else removedNodes = true;
+    }
+
+    // need to re-index links now, since we didn't put all the nodes in
+    if(removedNodes) {
+        for(i = 0; i < links.length; i++) {
+            links[i].source = nodeIndices[links[i].source];
+            links[i].target = nodeIndices[links[i].target];
+        }
+    }
 
     var sankey = d3sankey()
         .size(horizontal ? [width, height] : [height, width])
@@ -120,7 +158,7 @@ function sankeyModel(layout, d, i) {
     switchToForceFormat(nodes);
 
     return {
-        key: i,
+        key: traceIndex,
         trace: trace,
         guid: Math.floor(1e12 * (1 + Math.random())),
         horizontal: horizontal,
@@ -430,7 +468,6 @@ module.exports = function(svg, styledData, layout, callbacks) {
         .style('left', 0)
         .style('shape-rendering', 'geometricPrecision')
         .style('pointer-events', 'auto')
-        .style('box-sizing', 'content-box')
         .attr('transform', sankeyTransform);
 
     sankey.transition()
