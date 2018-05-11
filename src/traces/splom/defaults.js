@@ -150,6 +150,13 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
         // note that some the entries here may be undefined
         diag[i] = [xa, ya];
     }
+
+    // when lower half is omitted, override grid default
+    // to make sure axes remain on the left/bottom of the plot area
+    if(!showLower) {
+        layout._splomGridDflt.xside = 'bottom';
+        layout._splomGridDflt.yside = 'left';
+    }
 }
 
 function fillAxisIdArray(axLetter, len) {
