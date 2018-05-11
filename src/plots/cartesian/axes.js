@@ -1498,14 +1498,70 @@ axes.makeClipPaths = function(gd) {
     });
 };
 
-/** Main axis drawing routine!
+/** Main multi-axis drawing routine!
+ *
+ * @param {DOM element} gd : graph div
+ * @param {string or array of strings} arg : polymorphic argument
+ * @param {boolean} skipTitle : optional flag to skip axis title draw/update
+ *
+ * Signature 1: Axes.doTicks(gd, 'redraw')
+ *   use this to clear and redraw all axes on graph
+ *
+ * Signature 2: Axes.doTicks(gd, '')
+ *   use this to draw all axes on graph w/o the selectAll().remove()
+ *   of the 'redraw' signature
+ *
+ * Signature 3: Axes.doTicks(gd, [axId, axId2, ...])
+ *   where the items are axis id string,
+ *   use this to update multiple axes in one call
+ *
+ * N.B doTicks updates:
+ * - ax._r (stored range for use by zoom/pan)
+ * - ax._rl (stored linearized range for use by zoom/pan)
+ */
+axes.doTicks = function(gd, arg, skipTitle) {
+    var fullLayout = gd._fullLayout;
+
+    if(arg === 'redraw') {
+        fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
+            var plotinfo = fullLayout._plots[subplot];
+            var xa = plotinfo.xaxis;
+            var ya = plotinfo.yaxis;
+
+            plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
+            plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
+            if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
+            if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
+            fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
+            fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
+        });
+    }
+
+    var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
+
+    Lib.syncOrAsync(axList.map(function(axid) {
+        return function() {
+            if(!axid) return;
+
+            var axDone = axes.doTicksSingle(gd, axid, skipTitle);
+
+            var ax = axes.getFromId(gd, axid);
+            ax._r = ax.range.slice();
+            ax._rl = Lib.simpleMap(ax._r, ax.r2l);
+
+            return axDone;
+        };
+    }));
+};
+
+/** Per axis drawing routine!
  *
  * This routine draws axis ticks and much more (... grids, labels, title etc.)
  * Supports multiple argument signatures.
  * N.B. this thing is async in general (because of MathJax rendering)
  *
  * @param {DOM element} gd : graph div
- * @param {object or string or array of strings} arg : polymorphic argument
+ * @param {string or array of strings} arg : polymorphic argument
  * @param {boolean} skipTitle : optional flag to skip axis title draw/update
  * @return {promise}
  *
@@ -1514,23 +1570,8 @@ axes.makeClipPaths = function(gd) {
  *
  * Signature 2: Axes.doTicks(gd, axId)
  *   where axId is a axis id string
- *
- * Signature 3: Axes.doTicks(gd, 'redraw')
- *   use this to clear and redraw all axes on graph
- *
- * Signature 4: Axes.doTicks(gd, '')
- *   use this to draw all axes on graph w/o the selectAll().remove()
- *   of the 'redraw' signature
- *
- * Signature 5: Axes.doTicks(gd, [axId, axId2, ...])
- *   where the items are axis id string,
- *   use this to update multiple axes in one call
- *
- * N.B signatures 3, 4 and 5 reset:
- * - ax._r (stored range for use by zoom/pan)
- * - ax._rl (stored linearized range for use by zoom/pan)
  */
-axes.doTicks = function(gd, arg, skipTitle) {
+axes.doTicksSingle = function(gd, arg, skipTitle) {
     var fullLayout = gd._fullLayout;
     var independent = false;
     var ax;
@@ -1538,34 +1579,6 @@ axes.doTicks = function(gd, arg, skipTitle) {
     if(Lib.isPlainObject(arg)) {
         ax = arg;
         independent = true;
-    } else if(!arg || arg === 'redraw' || Array.isArray(arg)) {
-        var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
-
-        if(arg === 'redraw') {
-            fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
-                var plotinfo = fullLayout._plots[subplot];
-                var xa = plotinfo.xaxis;
-                var ya = plotinfo.yaxis;
-
-                plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
-                plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
-                if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
-                if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
-                fullLayout._infolayer.select('.g-' + xa._id + 'title').remove();
-                fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
-            });
-        }
-
-        return Lib.syncOrAsync(axList.map(function(a) {
-            return function() {
-                if(!a) return;
-                var axDone = axes.doTicks(gd, a);
-                var ax = axes.getFromId(gd, a);
-                ax._r = ax.range.slice();
-                ax._rl = Lib.simpleMap(ax._r, ax.r2l);
-                return axDone;
-            };
-        }));
     } else {
         ax = axes.getFromId(gd, arg);
     }
