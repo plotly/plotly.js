@@ -14,8 +14,8 @@ var wrap = require('../../lib/gup').wrap;
 
 function circularityPresent(nodeList, sources, targets) {
 
-    var nodes = nodeList.map(function() { return []; });
-    var nodeLen = nodes.length;
+    var nodeLen = nodeList.length;
+    var nodes = Lib.init2dArray(nodeLen, 0);
 
     for(var i = 0; i < Math.min(sources.length, targets.length); i++) {
         if(Lib.isIndex(sources[i], nodeLen) && Lib.isIndex(targets[i], nodeLen)) {
