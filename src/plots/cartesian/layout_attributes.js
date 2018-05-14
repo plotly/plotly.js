@@ -77,7 +77,7 @@ module.exports = {
         valType: 'enumerated',
         values: [true, false, 'reversed'],
         dflt: true,
-        role: 'style',
+        role: 'info',
         editType: 'calc',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         description: [
@@ -91,7 +91,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
         dflt: 'normal',
-        role: 'style',
+        role: 'info',
         editType: 'plot',
         description: [
             'If *normal*, the range is computed in relation to the extrema',
