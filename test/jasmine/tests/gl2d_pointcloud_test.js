@@ -181,21 +181,18 @@ describe('@gl pointcloud traces', function() {
 
             return Plotly.relayout(gd, 'xaxis.range', [3, 6]);
         }).then(function() {
-
-            expect(scene2d.xaxis._min).toEqual([]);
-            expect(scene2d.xaxis._max).toEqual([]);
+            expect(scene2d.xaxis._min).toEqual(xBaselineMins);
+            expect(scene2d.xaxis._max).toEqual(xBaselineMaxes);
 
             return Plotly.relayout(gd, 'xaxis.autorange', true);
         }).then(function() {
-
             expect(scene2d.xaxis._min).toEqual(xBaselineMins);
             expect(scene2d.xaxis._max).toEqual(xBaselineMaxes);
 
             return Plotly.relayout(gd, 'yaxis.range', [8, 20]);
         }).then(function() {
-
-            expect(scene2d.yaxis._min).toEqual([]);
-            expect(scene2d.yaxis._max).toEqual([]);
+            expect(scene2d.yaxis._min).toEqual(yBaselineMins);
+            expect(scene2d.yaxis._max).toEqual(yBaselineMaxes);
 
             return Plotly.relayout(gd, 'yaxis.autorange', true);
         }).then(function() {

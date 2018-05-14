@@ -210,10 +210,6 @@ function doAutoRange(ax) {
     }
 }
 
-function needsAutorange(ax) {
-    return ax.autorange || ax._rangesliderAutorange;
-}
-
 /*
  * expand: if autoranging, include new data in the outer limits for this axis.
  * Note that `expand` is called during `calc`, when we don't yet know the axis
@@ -236,8 +232,6 @@ function needsAutorange(ax) {
  *          and make it a tight bound if possible
  */
 function expand(ax, data, options) {
-    if(!needsAutorange(ax) || !data) return;
-
     if(!ax._min) ax._min = [];
     if(!ax._max) ax._max = [];
     if(!options) options = {};
