@@ -376,9 +376,9 @@ proto.drawAxes = function(doTitles) {
         caxis = _this.caxis;
     // 3rd arg true below skips titles, so we can configure them
     // correctly later on.
-    Axes.doTicks(gd, aaxis, true);
-    Axes.doTicks(gd, baxis, true);
-    Axes.doTicks(gd, caxis, true);
+    Axes.doTicksSingle(gd, aaxis, true);
+    Axes.doTicksSingle(gd, baxis, true);
+    Axes.doTicksSingle(gd, caxis, true);
 
     if(doTitles) {
         var apad = Math.max(aaxis.showticklabels ? aaxis.tickfont.size / 2 : 0,
