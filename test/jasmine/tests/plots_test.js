@@ -922,6 +922,16 @@ describe('grids', function() {
         })
         .then(function() {
             expect(gd._fullLayout.grid).toBeUndefined();
+
+            // check Plotly.validate on the same grids too
+            [true, {}, {rows: 1, columns: 1}].forEach(function(gridVal) {
+                var validation = Plotly.validate([], {grid: gridVal});
+                expect(validation.length).toBe(1);
+                expect(validation[0]).toEqual(jasmine.objectContaining({
+                    astr: 'grid',
+                    code: 'unused'
+                }));
+            });
         })
         .catch(failTest)
         .then(done);
