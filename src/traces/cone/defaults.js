@@ -39,7 +39,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('vy');
     coerce('vz');
 
-    coerce('text');
+    coerce('sizeref');
+    coerce('sizemode');
 
     // TODO do these attributes work?
     coerce('lighting.ambient');
@@ -56,6 +57,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     // TODO should the default be viridis
     // ... and should we restrict cmin,cmax > 0 ???
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
+
+    coerce('text');
 
     // disable 1D transforms
     // x/y/z should match lengths, u/v/w and vx/vy/vz  should match as well, but

@@ -21,6 +21,7 @@ function zip3(x, y, z) {
 }
 
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
+var sizeMode2sizeKey = {scaled: 'coneSize', absolute: 'absoluteConeSize'};
 
 exports.cone2mesh = function cone2mesh(trace, sceneLayout, dataScale) {
     var coneOpts = {};
@@ -61,9 +62,7 @@ exports.cone2mesh = function cone2mesh(trace, sceneLayout, dataScale) {
     coneOpts.colormap = parseColorScale(trace.colorscale);
     coneOpts.vertexIntensityBounds = [trace.cmin, trace.cmax];
 
-    // sizemode:
-    // sizeref,
-    coneOpts.coneSize = 2;
+    coneOpts[sizeMode2sizeKey[trace.sizemode]] = trace.sizeref;
 
     return conePlot(coneOpts);
 };

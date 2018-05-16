@@ -80,9 +80,28 @@ var attrs = {
         description: 'Sets the z coordinates of the vector field mesh.'
     },
 
-    // TODO
-//     sizemode: {},
-//     sizeref: {},
+    sizemode: {
+        valType: 'enumerated',
+        values: ['scaled', 'absolute'],
+        role: 'info',
+        editType: 'calc',
+        dflt: 'scaled',
+        description: [
+            'Sets the mode by which the cones are sized.',
+            'If *scaled*, `sizeref` scales such that the reference cone size',
+            'for the maximum vector magnitude is 1.',
+            'If *absolute*, `sizeref` scales such that the reference cone size',
+            'for vector magnitude 1 is one grid unit.'
+        ].join(' ')
+    },
+    sizeref: {
+        valType: 'number',
+        role: 'info',
+        editType: 'calc',
+        min: 0,
+        dflt: 1,
+        description: 'Sets the cone size reference value.'
+    },
 
     text: {
         valType: 'string',
