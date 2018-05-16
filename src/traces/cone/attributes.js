@@ -110,7 +110,9 @@ var attrs = {
         arrayOk: true,
         editType: 'calc',
         description: [
-
+            'Sets the text elements associated with the cones.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
         ].join(' ')
     }
 };

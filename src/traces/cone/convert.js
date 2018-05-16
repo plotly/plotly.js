@@ -6,23 +6,24 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var createMesh = require('gl-cone3d').createConeMesh;
+var createScatterPlot = require('gl-scatter3d');
+var createConeMesh = require('gl-cone3d').createConeMesh;
 var cone2mesh = require('./helpers').cone2mesh;
 
-function Mesh3DTrace(scene, mesh, uid) {
+function Cone(scene, uid) {
     this.scene = scene;
     this.uid = uid;
-    this.mesh = mesh;
+    this.mesh = null;
+    this.pts = null;
     this.data = null;
 }
 
-var proto = Mesh3DTrace.prototype;
+var proto = Cone.prototype;
 
 proto.handlePick = function(selection) {
-    if(selection.object === this.mesh) {
+    if(selection.object === this.pts) {
         var selectIndex = selection.index = selection.data.index;
 
         selection.traceCoordinate = [
@@ -48,25 +49,44 @@ function convert(scene, trace) {
 
 proto.update = function(data) {
     this.data = data;
-    this.mesh.update(convert(this.scene, data));
+
+    var meshData = convert(this.scene, data);
+
+    this.mesh.update(meshData);
+    this.pts.update({position: meshData._pts});
 };
 
 proto.dispose = function() {
+    this.scene.glplot.remove(this.pts);
+    this.pts.dispose();
     this.scene.glplot.remove(this.mesh);
     this.mesh.dispose();
 };
 
-function createMesh3DTrace(scene, data) {
+function createConeTrace(scene, data) {
     var gl = scene.glplot.gl;
-    var meshData = convert(scene, data);
-    var mesh = createMesh(gl, meshData);
-    var result = new Mesh3DTrace(scene, mesh, data.uid);
 
-    result.data = data;
-    mesh._trace = result;
+    var meshData = convert(scene, data);
+    var mesh = createConeMesh(gl, meshData);
+
+    var pts = createScatterPlot({
+        gl: gl,
+        position: meshData._pts,
+        project: false,
+        opacity: 0
+    });
+
+    var cone = new Cone(scene, data.uid);
+    cone.mesh = mesh;
+    cone.pts = pts;
+    cone.data = data;
+    mesh._trace = cone;
+    pts._trace = cone;
+
+    scene.glplot.add(pts);
     scene.glplot.add(mesh);
 
-    return result;
+    return cone;
 }
 
-module.exports = createMesh3DTrace;
+module.exports = createConeTrace;

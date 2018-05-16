@@ -64,5 +64,8 @@ exports.cone2mesh = function cone2mesh(trace, sceneLayout, dataScale) {
 
     coneOpts[sizeMode2sizeKey[trace.sizemode]] = trace.sizeref;
 
-    return conePlot(coneOpts);
+    var meshOpts = conePlot(coneOpts);
+    meshOpts._pts = coneOpts.positions;
+
+    return meshOpts;
 };
