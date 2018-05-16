@@ -8,10 +8,18 @@
 
 'use strict';
 
+var cone2mesh = require('./helpers').cone2mesh;
 var colorscaleCalc = require('../../components/colorscale/calc');
 
 module.exports = function calc(gd, trace) {
-    if(trace.intensity) {
-        colorscaleCalc(trace, trace.intensity, '', 'c');
-    }
+    var fullLayout = gd._fullLayout;
+
+    // TODO skip when 'cmin' and 'cmax' are set
+    // TODO find way to "merge" this cone2mesh call with the one in convert.js
+    //
+    // TODO should show in absolute or normalize length?
+
+    var meshData = cone2mesh(trace, fullLayout[trace.scene]);
+
+    colorscaleCalc(trace, meshData.vertexIntensity, '', 'c');
 };

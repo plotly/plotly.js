@@ -9,17 +9,14 @@
 
 'use strict';
 
-var cone2mesh = require('gl-cone3d');
-var createMesh = cone2mesh.createConeMesh;
+var createMesh = require('gl-cone3d').createConeMesh;
+var cone2mesh = require('./helpers').cone2mesh;
 
 function Mesh3DTrace(scene, mesh, uid) {
     this.scene = scene;
     this.uid = uid;
     this.mesh = mesh;
-    this.name = '';
-    this.color = '#fff';
     this.data = null;
-    this.showContour = false;
 }
 
 var proto = Mesh3DTrace.prototype;
@@ -45,40 +42,9 @@ proto.handlePick = function(selection) {
     }
 };
 
-function zip3(x, y, z) {
-    var result = new Array(x.length);
-    for(var i = 0; i < x.length; ++i) {
-        result[i] = [x[i], y[i], z[i]];
-    }
-    return result;
-}
-
 function convert(scene, trace) {
-    var layout = scene.fullSceneLayout;
-
-    // Unpack position data
-    function toDataCoords(axis, coord, scale) {
-        return coord.map(function(x) {
-            return axis.d2l(x) * scale;
-        });
-    }
-
-    var meshData = cone2mesh({
-        positions: zip3(
-            toDataCoords(layout.xaxis, trace.cx, scene.dataScale[0]),
-            toDataCoords(layout.yaxis, trace.cy, scene.dataScale[1]),
-            toDataCoords(layout.zaxis, trace.cz, scene.dataScale[2])
-        ),
-        vectors: zip3(
-            toDataCoords(layout.xaxis, trace.u, scene.dataScale[0]),
-            toDataCoords(layout.yaxis, trace.v, scene.dataScale[1]),
-            toDataCoords(layout.zaxis, trace.w, scene.dataScale[2])
-        ),
-        colormap: 'portland'
-    });
-
-    return meshData;
-};
+    return cone2mesh(trace, scene.fullSceneLayout, scene.dataScale);
+}
 
 proto.update = function(data) {
     this.data = data;

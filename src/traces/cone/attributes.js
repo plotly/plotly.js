@@ -19,61 +19,70 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var attrs = {
     x: {
         valType: 'data_array',
-        editType: 'calc',
-        description: ''
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: [
+            'Sets the x positions of the cones.',
+            'When `vx`, `vy`, `vz` are not set,',
+            ' these are also the x coordinates of the u/v/w vector field.'
+        ].join(' ')
     },
     y: {
         valType: 'data_array',
-        editType: 'calc'
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: [
+            'Sets the y positions of the cones.',
+            'When `vx`, `vy`, `vz` are not set,',
+            ' these are also the y coordinates of the u/v/w vector field.'
+        ].join(' ')
     },
     z: {
         valType: 'data_array',
-        editType: 'calc'
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: [
+            'Sets the z positions of the cones.',
+            'When `vx`, `vy`, `vz` are not set,',
+            ' these are also the z coordinates of the u/v/w vector field.'
+        ].join(' ')
     },
 
     u: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-        ].join(' ')
+        description: 'Sets the x components of the vector field.'
     },
     v: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-        ].join(' ')
-
+        description: 'Sets the y components of the vector field.'
     },
     w: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-        ].join(' ')
-
+        description: 'Sets the z components of the vector field.'
     },
 
-    cx: {
+    vx: {
         valType: 'data_array',
-        editType: 'calc+clearAxisTypes',
-        description: [
-        ].join(' ')
+        editType: 'calc',
+        description: 'Sets the x coordinates of the vector field mesh.'
     },
-    cy: {
+    vy: {
         valType: 'data_array',
-        editType: 'calc+clearAxisTypes',
-        description: [
-        ].join(' ')
+        editType: 'calc',
+        description: 'Sets the y coordinates of the vector field mesh.'
     },
-    cz: {
+    vz: {
         valType: 'data_array',
-        editType: 'calc+clearAxisTypes',
-        description: [
-        ].join(' ')
+        editType: 'calc',
+        description: 'Sets the z coordinates of the vector field mesh.'
     },
 
     // TODO
 //     sizemode: {},
-//     sizescale: {},
+//     sizeref: {},
 
     text: {
         valType: 'string',
@@ -87,10 +96,11 @@ var attrs = {
     }
 };
 
-extendFlat(attrs, colorAttrs('', 'calc', false), {
+extendFlat(attrs, colorAttrs('', 'calc', true), {
     showscale: colorscaleAttrs.showscale,
     colorbar: colorbarAttrs
 });
+delete attrs.color;
 
 var fromMesh3d = ['opacity', 'flatshading', 'lightposition', 'lighting'];
 

@@ -19,26 +19,29 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    // TODO do 2D versions of these work?
+    var u = coerce('u');
+    var v = coerce('v');
+    var w = coerce('w');
 
     var x = coerce('x');
     var y = coerce('y');
     var z = coerce('z');
 
-    traceOut._xlength = x.length;
-    traceOut._ylength = y.length;
-    traceOut._zlength = z.length;
+    if(
+        !u || !u.length || !v || !v.length || !w || !w.length ||
+        !x || !x.length || !y || !y.length || !z || !z.length
+    ) {
+        traceOut.visible = false;
+        return;
+    }
 
-    coerce('u');
-    coerce('v');
-    coerce('w');
-
-    coerce('cx');
-    coerce('cy');
-    coerce('cz');
+    coerce('vx');
+    coerce('vy');
+    coerce('vz');
 
     coerce('text');
 
+    // TODO do these attributes work?
     coerce('lighting.ambient');
     coerce('lighting.diffuse');
     coerce('lighting.specular');
@@ -50,5 +53,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('lightposition.y');
     coerce('lightposition.z');
 
+    // TODO should the default be viridis
+    // ... and should we restrict cmin,cmax > 0 ???
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
+
+    // disable 1D transforms
+    // x/y/z should match lengths, u/v/w and vx/vy/vz  should match as well, but
+    // the two sets have different lengths so transforms wouldn't work.
+    traceOut._length = null;
 };
