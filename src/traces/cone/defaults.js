@@ -35,9 +35,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    coerce('vx');
-    coerce('vy');
-    coerce('vz');
+    coerce('cones.x');
+    coerce('cones.y');
+    coerce('cones.z');
 
     coerce('sizeref');
     coerce('sizemode');
@@ -56,14 +56,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('lightposition.y');
     coerce('lightposition.z');
 
-    // TODO should the default be viridis
-    // ... and should we restrict cmin,cmax > 0 ???
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
 
     coerce('text');
 
     // disable 1D transforms
-    // x/y/z should match lengths, u/v/w and vx/vy/vz  should match as well, but
+    // x/y/z and u/v/w should match lengths, cones.(x|y|z) should match as well, but
     // the two sets have different lengths so transforms wouldn't work.
     traceOut._length = null;
 };

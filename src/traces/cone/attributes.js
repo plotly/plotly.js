@@ -22,9 +22,9 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the x positions of the cones.',
-            'When `vx`, `vy`, `vz` are not set,',
-            ' these are also the x coordinates of the u/v/w vector field.'
+            'Sets the x coordinates of the vector field',
+            'If `cones` positions are not provided, this array',
+            'corresponds to the x coordinates of the cones displayed as well.'
         ].join(' ')
     },
     y: {
@@ -32,9 +32,9 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the y positions of the cones.',
-            'When `vx`, `vy`, `vz` are not set,',
-            ' these are also the y coordinates of the u/v/w vector field.'
+            'Sets the y coordinates of the vector field',
+            'If `cones` positions are not provided, this array',
+            'corresponds to the y coordinates of the cones displayed as well.'
         ].join(' ')
     },
     z: {
@@ -42,9 +42,9 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the z positions of the cones.',
-            'When `vx`, `vy`, `vz` are not set,',
-            ' these are also the z coordinates of the u/v/w vector field.'
+            'Sets the z coordinates of the vector field',
+            'If `cones` positions are not provided, this array',
+            'corresponds to the z coordinates of the cones displayed as well.'
         ].join(' ')
     },
 
@@ -64,20 +64,37 @@ var attrs = {
         description: 'Sets the z components of the vector field.'
     },
 
-    vx: {
-        valType: 'data_array',
+    cones: {
+        // potential attributes to add:
+        //
+        // - meshmode: 'cartesian-product', 'pts', 'grid'
+        //
+        // under `meshmode: 'grid'`
+        // - (x|y|z)grid.start
+        // - (x|y|z)grid.end
+        // - (x|y|z)grid.size
+
+        x: {
+            valType: 'data_array',
+            editType: 'calc',
+            description: 'Sets the x coordinates of the cones to be displayed.'
+        },
+        y: {
+            valType: 'data_array',
+            editType: 'calc',
+            description: 'Sets the y coordinates of the cones to be displayed.'
+        },
+        z: {
+            valType: 'data_array',
+            editType: 'calc',
+            description: 'Sets the z coordinates of the cones to be displayed.'
+        },
+
         editType: 'calc',
-        description: 'Sets the x coordinates of the vector field mesh.'
-    },
-    vy: {
-        valType: 'data_array',
-        editType: 'calc',
-        description: 'Sets the y coordinates of the vector field mesh.'
-    },
-    vz: {
-        valType: 'data_array',
-        editType: 'calc',
-        description: 'Sets the z coordinates of the vector field mesh.'
+        description: [
+            'By setting `cones.x`, `cones.y` and `cones.z` to 1D arrays,',
+            'plotly creates a mesh using the cartesian product of those 3 arrays.'
+        ].join(' ')
     },
 
     sizemode: {

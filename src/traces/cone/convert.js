@@ -71,6 +71,7 @@ var anchor2coneOffset = {tip: 1, tail: 0, cm: 0.25, center: 0.5};
 function convert(scene, trace) {
     var sceneLayout = scene.fullSceneLayout;
     var dataScale = scene.dataScale;
+    var hasConesPos = trace.cones && trace.cones.x && trace.cones.y && trace.cones.z;
     var coneOpts = {};
 
     function toDataCoords(arr, axisName) {
@@ -91,11 +92,11 @@ function convert(scene, trace) {
         toDataCoords(trace.z, 'zaxis')
     );
 
-    if(trace.vx && trace.vy && trace.vz) {
+    if(hasConesPos) {
         coneOpts.meshgrid = [
-            toDataCoords(trace.vx, 'xaxis'),
-            toDataCoords(trace.vy, 'yaxis'),
-            toDataCoords(trace.vz, 'zaxis')
+            toDataCoords(trace.cones.x, 'xaxis'),
+            toDataCoords(trace.cones.y, 'yaxis'),
+            toDataCoords(trace.cones.z, 'zaxis')
         ];
     }
 
