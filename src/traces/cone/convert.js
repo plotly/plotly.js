@@ -9,8 +9,11 @@
 'use strict';
 
 var createScatterPlot = require('gl-scatter3d');
+var conePlot = require('gl-cone3d');
 var createConeMesh = require('gl-cone3d').createConeMesh;
-var cone2mesh = require('./helpers').cone2mesh;
+
+var simpleMap = require('../../lib').simpleMap;
+var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 
 function Cone(scene, uid) {
     this.scene = scene;
@@ -43,8 +46,57 @@ proto.handlePick = function(selection) {
     }
 };
 
+function zip3(x, y, z) {
+    var result = new Array(x.length);
+    for(var i = 0; i < x.length; i++) {
+        result[i] = [x[i], y[i], z[i]];
+    }
+    return result;
+}
+
+var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
+var sizeMode2sizeKey = {scaled: 'coneSize', absolute: 'absoluteConeSize'};
+
 function convert(scene, trace) {
-    return cone2mesh(trace, scene.fullSceneLayout, scene.dataScale);
+    var sceneLayout = scene.fullSceneLayout;
+    var dataScale = scene.dataScale;
+    var coneOpts = {};
+
+    function toDataCoords(arr, axisName) {
+        var ax = sceneLayout[axisName];
+        var scale = dataScale[axisName2scaleIndex[axisName]];
+        return simpleMap(arr, function(v) { return ax.d2l(v) * scale; });
+    }
+
+    coneOpts.vectors = zip3(
+        toDataCoords(trace.u, 'xaxis'),
+        toDataCoords(trace.v, 'yaxis'),
+        toDataCoords(trace.w, 'zaxis')
+    );
+
+    coneOpts.positions = zip3(
+        toDataCoords(trace.x, 'xaxis'),
+        toDataCoords(trace.y, 'yaxis'),
+        toDataCoords(trace.z, 'zaxis')
+    );
+
+    if(trace.vx && trace.vy && trace.vz) {
+        coneOpts.meshgrid = [
+            toDataCoords(trace.vx, 'xaxis'),
+            toDataCoords(trace.vy, 'yaxis'),
+            toDataCoords(trace.vz, 'zaxis')
+        ];
+    }
+
+    coneOpts.colormap = parseColorScale(trace.colorscale);
+    coneOpts.vertexIntensityBounds = [trace.cmin / trace.cmax, 1];
+
+    coneOpts[sizeMode2sizeKey[trace.sizemode]] = trace.sizeref;
+
+    var meshOpts = conePlot(coneOpts);
+    meshOpts._pts = coneOpts.positions;
+
+    return meshOpts;
 }
 
 proto.update = function(data) {
