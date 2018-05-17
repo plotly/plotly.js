@@ -5,6 +5,11 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var delay = require('../assets/delay');
+var mouseEvent = require('../assets/mouse_event');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
 describe('Test cone defaults', function() {
     var gd;
@@ -86,6 +91,42 @@ describe('@gl Test cone interactions', function() {
             var scene = gd._fullLayout.scene;
 
             expect(scene).toBeUndefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should display hover labels', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-simple.json'));
+        // only one trace on one scene
+        fig.data = [fig.data[0]];
+        fig.data[0].showscale = false;
+        delete fig.layout.scene.domain;
+        fig.layout.margin = {l: 0, t: 0, r: 0, b: 0};
+        fig.layout.width = 400;
+        fig.layout.height = 400;
+
+        function _hover() {
+            mouseEvent('mouseover', 200, 200);
+            return delay(20)();
+        }
+
+        Plotly.plot(gd, fig)
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelContent({
+                nums: ['x: 3', 'y: 3', 'z: 3', 'norm: 2.00'].join('\n')
+            });
+
+            return Plotly.restyle(gd, 'hoverinfo', 'u+v+w');
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelContent({
+                nums: ['u: 0', 'v: 0', 'w: 2'].join('\n')
+            });
         })
         .catch(failTest)
         .then(done);
