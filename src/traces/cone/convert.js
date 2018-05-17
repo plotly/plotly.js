@@ -28,20 +28,32 @@ var proto = Cone.prototype;
 proto.handlePick = function(selection) {
     if(selection.object === this.pts) {
         var selectIndex = selection.index = selection.data.index;
+        var xx, yy, zz;
+        var uu, vv, ww;
 
-        var uu = this.data.u[selectIndex];
-        var vv = this.data.v[selectIndex];
-        var ww = this.data.w[selectIndex];
+        if(this._uvw) {
+            uu = this._uvw[selectIndex][0];
+            vv = this._uvw[selectIndex][1];
+            ww = this._uvw[selectIndex][2];
+        } else {
+            uu = this.data.u[selectIndex];
+            vv = this.data.v[selectIndex];
+            ww = this.data.w[selectIndex];
+        }
+
+        if(this._xyz) {
+            xx = this._xyz[selectIndex][0];
+            yy = this._xyz[selectIndex][1];
+            zz = this._xyz[selectIndex][2];
+        } else {
+            xx = this.data.x[selectIndex];
+            yy = this.data.y[selectIndex];
+            zz = this.data.z[selectIndex];
+        }
 
         selection.traceCoordinate = [
-            this.data.x[selectIndex],
-            this.data.y[selectIndex],
-            this.data.z[selectIndex],
-
-            uu,
-            vv,
-            ww,
-
+            xx, yy, zz,
+            uu, vv, ww,
             Math.sqrt(uu * uu + vv * vv + ww * ww)
         ];
 
@@ -107,7 +119,29 @@ function convert(scene, trace) {
     coneOpts.coneOffset = anchor2coneOffset[trace.anchor];
 
     var meshOpts = conePlot(coneOpts);
-    meshOpts._pts = coneOpts.positions;
+
+    if(hasConesPos) {
+        // used for transparent gl-scatter3d hover trace
+        var pts = meshOpts._pts = [];
+        // used on hover
+        var xyz = meshOpts._xyz = [];
+        var uvw = meshOpts._uvw = [];
+
+        // that 48 increment comes from gl-vis/gl-cone3d/cone.js
+        for(var i = 0; i < meshOpts.positions.length; i += 48) {
+            var pos = meshOpts.positions[i];
+            pts.push([pos[0], pos[1], pos[2]]);
+            xyz.push([pos[0] / dataScale[0], pos[1] / dataScale[1], pos[2] / dataScale[2]]);
+
+            var vec = meshOpts.vectors[i];
+            uvw.push([vec[0] / dataScale[0], vec[1] / dataScale[1], vec[2] / dataScale[2]]);
+        }
+
+    } else {
+        meshOpts._pts = coneOpts.positions;
+        // don't fill _xyz and _uvw here,
+        // trace arrays do just fine on hover
+    }
 
     return meshOpts;
 }
@@ -145,6 +179,8 @@ function createConeTrace(scene, data) {
     cone.mesh = mesh;
     cone.pts = pts;
     cone.data = data;
+    cone._xyz = meshData._xyz;
+    cone._uvw = meshData._uvw;
     mesh._trace = cone;
     pts._trace = cone;
 
