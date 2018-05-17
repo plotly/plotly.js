@@ -129167,6 +129167,8 @@
       "colorscale": "Viridis",
       "cmin": 0,
       "cmax": 1
+      "hoverinfo": "u+v+w+text",
+      "text": "-> wind <-"
     }
   ],
   "layout": {

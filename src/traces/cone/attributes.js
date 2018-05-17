@@ -142,6 +142,10 @@ fromMesh3d.forEach(function(k) {
     attrs[k] = mesh3dAttrs[k];
 });
 
-attrs.hoverinfo = extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'});
+attrs.hoverinfo = extendFlat({}, baseAttrs.hoverinfo, {
+    editType: 'calc',
+    flags: ['x', 'y', 'z', 'u', 'v', 'w', 'norm', 'text', 'name'],
+    dflt: 'x+y+z+norm+text'
+});
 
 module.exports = attrs;

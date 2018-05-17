@@ -29,10 +29,20 @@ proto.handlePick = function(selection) {
     if(selection.object === this.pts) {
         var selectIndex = selection.index = selection.data.index;
 
+        var uu = this.data.u[selectIndex];
+        var vv = this.data.v[selectIndex];
+        var ww = this.data.w[selectIndex];
+
         selection.traceCoordinate = [
             this.data.x[selectIndex],
             this.data.y[selectIndex],
-            this.data.z[selectIndex]
+            this.data.z[selectIndex],
+
+            uu,
+            vv,
+            ww,
+
+            Math.sqrt(uu * uu + vv * vv + ww * ww)
         ];
 
         var text = this.data.text;

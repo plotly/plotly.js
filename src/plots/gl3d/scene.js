@@ -71,18 +71,43 @@ function render(scene) {
         trace = lastPicked.data;
         var ptNumber = selection.index;
         var hoverinfo = Fx.castHoverinfo(trace, scene.fullLayout, ptNumber);
+        var hoverinfoParts = hoverinfo.split('+');
+        var isHoverinfoAll = hoverinfo === 'all';
 
-        var xVal = formatter('xaxis', selection.traceCoordinate[0]),
-            yVal = formatter('yaxis', selection.traceCoordinate[1]),
-            zVal = formatter('zaxis', selection.traceCoordinate[2]);
+        var xVal = formatter('xaxis', selection.traceCoordinate[0]);
+        var yVal = formatter('yaxis', selection.traceCoordinate[1]);
+        var zVal = formatter('zaxis', selection.traceCoordinate[2]);
 
-        if(hoverinfo !== 'all') {
-            var hoverinfoParts = hoverinfo.split('+');
+        if(!isHoverinfoAll) {
             if(hoverinfoParts.indexOf('x') === -1) xVal = undefined;
             if(hoverinfoParts.indexOf('y') === -1) yVal = undefined;
             if(hoverinfoParts.indexOf('z') === -1) zVal = undefined;
             if(hoverinfoParts.indexOf('text') === -1) selection.textLabel = undefined;
             if(hoverinfoParts.indexOf('name') === -1) lastPicked.name = undefined;
+        }
+
+        var tx;
+
+        if(trace.type === 'cone') {
+            var coneTx = [];
+            if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
+                coneTx.push('u: ' + formatter('xaxis', selection.traceCoordinate[3]));
+            }
+            if(isHoverinfoAll || hoverinfoParts.indexOf('v') !== -1) {
+                coneTx.push('v: ' + formatter('yaxis', selection.traceCoordinate[4]));
+            }
+            if(isHoverinfoAll || hoverinfoParts.indexOf('w') !== -1) {
+                coneTx.push('w: ' + formatter('zaxis', selection.traceCoordinate[5]));
+            }
+            if(isHoverinfoAll || hoverinfoParts.indexOf('norm') !== -1) {
+                coneTx.push('norm: ' + selection.traceCoordinate[6].toPrecision(3));
+            }
+            if(selection.textLabel) {
+                coneTx.push(selection.textLabel);
+            }
+            tx = coneTx.join('<br>');
+        } else {
+            tx = selection.textLabel;
         }
 
         if(scene.fullSceneLayout.hovermode) {
@@ -92,7 +117,7 @@ function render(scene) {
                 xLabel: xVal,
                 yLabel: yVal,
                 zLabel: zVal,
-                text: selection.textLabel,
+                text: tx,
                 name: lastPicked.name,
                 color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || lastPicked.color,
                 borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
