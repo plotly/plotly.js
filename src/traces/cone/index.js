@@ -27,11 +27,8 @@ module.exports = {
             'Specify a vector field using 6 1D arrays,',
             '3 position arrays `x`, `y` and `z`',
             'and 3 vector component arrays `u`, `v`, `w`.',
-            '',
-            'If nothing else is provided, the cones are drawn exactly at the positions given',
-            'by `x`, `y` and `z`.',
-            'To specify the cone positions manually, use arrays attributes',
-            '`cones.x`, `cones.y` and `cones.z`.'
+            'The cones are drawn exactly at the positions given',
+            'by `x`, `y` and `z`.'
         ].join(' ')
     }
 };

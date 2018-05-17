@@ -28,13 +28,12 @@ var proto = Cone.prototype;
 proto.handlePick = function(selection) {
     if(selection.object === this.pts) {
         var selectIndex = selection.index = selection.data.index;
-        var dataScale = this.scene.dataScale;
-        var xx = this._positions[selectIndex][0] / dataScale[0];
-        var yy = this._positions[selectIndex][1] / dataScale[1];
-        var zz = this._positions[selectIndex][2] / dataScale[2];
-        var uu = this._vectors[selectIndex][0] / dataScale[0];
-        var vv = this._vectors[selectIndex][1] / dataScale[1];
-        var ww = this._vectors[selectIndex][2] / dataScale[2];
+        var xx = this.data.x[selectIndex];
+        var yy = this.data.y[selectIndex];
+        var zz = this.data.z[selectIndex];
+        var uu = this.data.u[selectIndex];
+        var vv = this.data.v[selectIndex];
+        var ww = this.data.w[selectIndex];
 
         selection.traceCoordinate = [
             xx, yy, zz,
@@ -88,21 +87,18 @@ function convert(scene, trace) {
         toDataCoords(trace.z, 'zaxis')
     );
 
-    if(trace.cones && trace.cones.x && trace.cones.y && trace.cones.z) {
-        coneOpts.meshgrid = [
-            toDataCoords(trace.cones.x, 'xaxis'),
-            toDataCoords(trace.cones.y, 'yaxis'),
-            toDataCoords(trace.cones.z, 'zaxis')
-        ];
-    }
-
     coneOpts.colormap = parseColorScale(trace.colorscale);
     coneOpts.vertexIntensityBounds = [trace.cmin / trace._normMax, trace.cmax / trace._normMax];
 
     coneOpts[sizeMode2sizeKey[trace.sizemode]] = trace.sizeref;
     coneOpts.coneOffset = anchor2coneOffset[trace.anchor];
 
-    return conePlot(coneOpts);
+    var meshData = conePlot(coneOpts);
+
+    // stash positions for gl-scatter3d 'hover' trace
+    meshData._pts = coneOpts.positions;
+
+    return meshData;
 }
 
 proto.update = function(data) {
@@ -129,7 +125,7 @@ function createConeTrace(scene, data) {
 
     var pts = createScatterPlot({
         gl: gl,
-        position: meshData._positions,
+        position: meshData._pts,
         project: false,
         opacity: 0
     });
@@ -140,10 +136,6 @@ function createConeTrace(scene, data) {
     cone.data = data;
     mesh._trace = cone;
     pts._trace = cone;
-
-    // stash these for hover
-    cone._positions = meshData._positions;
-    cone._vectors = meshData._vectors;
 
     scene.glplot.add(pts);
     scene.glplot.add(mesh);

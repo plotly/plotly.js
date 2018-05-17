@@ -35,10 +35,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    coerce('cones.x');
-    coerce('cones.y');
-    coerce('cones.z');
-
     coerce('sizeref');
     coerce('sizemode');
 
@@ -60,8 +56,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
 
-    // disable 1D transforms
-    // x/y/z and u/v/w should match lengths, cones.(x|y|z) should match as well, but
-    // the two sets have different lengths so transforms wouldn't work.
+    // disable 1D transforms (for now)
     traceOut._length = null;
 };

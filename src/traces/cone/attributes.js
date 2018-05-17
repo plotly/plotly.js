@@ -23,8 +23,7 @@ var attrs = {
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the x coordinates of the vector field',
-            'If `cones` positions are not provided, this array',
-            'corresponds to the x coordinates of the cones displayed as well.'
+            'and of the displayed cones.'
         ].join(' ')
     },
     y: {
@@ -33,8 +32,7 @@ var attrs = {
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the y coordinates of the vector field',
-            'If `cones` positions are not provided, this array',
-            'corresponds to the y coordinates of the cones displayed as well.'
+            'and of the displayed cones.'
         ].join(' ')
     },
     z: {
@@ -43,8 +41,7 @@ var attrs = {
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the z coordinates of the vector field',
-            'If `cones` positions are not provided, this array',
-            'corresponds to the z coordinates of the cones displayed as well.'
+            'and of the displayed cones.'
         ].join(' ')
     },
 
@@ -64,38 +61,49 @@ var attrs = {
         description: 'Sets the z components of the vector field.'
     },
 
-    cones: {
-        // potential attributes to add:
-        //
-        // - meshmode: 'cartesian-product', 'pts', 'grid'
-        //
-        // under `meshmode: 'grid'`
-        // - (x|y|z)grid.start
-        // - (x|y|z)grid.end
-        // - (x|y|z)grid.size
-
-        x: {
-            valType: 'data_array',
-            editType: 'calc',
-            description: 'Sets the x coordinates of the cones to be displayed.'
-        },
-        y: {
-            valType: 'data_array',
-            editType: 'calc',
-            description: 'Sets the y coordinates of the cones to be displayed.'
-        },
-        z: {
-            valType: 'data_array',
-            editType: 'calc',
-            description: 'Sets the z coordinates of the cones to be displayed.'
-        },
-
-        editType: 'calc',
-        description: [
-            'By setting `cones.x`, `cones.y` and `cones.z` to 1D arrays,',
-            'plotly creates a mesh using the cartesian product of those 3 arrays.'
-        ].join(' ')
-    },
+    // TODO add way to specify cone positions independently of the vector field
+    // provided, similar to MATLAB's coneplot Cx/Cy/Cz meshgrids,
+    // see https://www.mathworks.com/help/matlab/ref/coneplot.html
+    //
+    // Alternatively, if our goal is only to 'fill in gaps' in the vector data,
+    // we could try to extend the heatmap 'connectgaps' algorithm to 3D.
+    // From AJ: this particular algorithm which amounts to a Poisson equation,
+    // both for interpolation and extrapolation - is the right one to use for
+    // cones too.  It makes a field with zero divergence, which is a good
+    // baseline assumption for vector fields.
+    //
+    // cones: {
+    //     // potential attributes to add:
+    //     //
+    //     // - meshmode: 'cartesian-product', 'pts', 'grid'
+    //     //
+    //     // under `meshmode: 'grid'`
+    //     // - (x|y|z)grid.start
+    //     // - (x|y|z)grid.end
+    //     // - (x|y|z)grid.size
+    //
+    //     x: {
+    //         valType: 'data_array',
+    //         editType: 'calc',
+    //         description: 'Sets the x coordinates of the cones to be displayed.'
+    //     },
+    //     y: {
+    //         valType: 'data_array',
+    //         editType: 'calc',
+    //         description: 'Sets the y coordinates of the cones to be displayed.'
+    //     },
+    //     z: {
+    //         valType: 'data_array',
+    //         editType: 'calc',
+    //         description: 'Sets the z coordinates of the cones to be displayed.'
+    //     },
+    //
+    //     editType: 'calc',
+    //     description: [
+    //         'By setting `cones.x`, `cones.y` and `cones.z` to 1D arrays,',
+    //         'plotly creates a mesh using the cartesian product of those 3 arrays.'
+    //     ].join(' ')
+    // },
 
     sizemode: {
         valType: 'enumerated',
@@ -128,7 +136,7 @@ var attrs = {
         dflt: 'cm',
         description: [
             'Sets the cones\' anchor with respect to their x/y/z positions.',
-            'Note that *cm* denote the cone\'s center of mass with corresponds to',
+            'Note that *cm* denote the cone\'s center of mass which corresponds to',
             '1/4 from the tail to tip.'
         ].join(' ')
     },
