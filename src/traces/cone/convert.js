@@ -28,28 +28,13 @@ var proto = Cone.prototype;
 proto.handlePick = function(selection) {
     if(selection.object === this.pts) {
         var selectIndex = selection.index = selection.data.index;
-        var xx, yy, zz;
-        var uu, vv, ww;
-
-        if(this._uvw) {
-            uu = this._uvw[selectIndex][0];
-            vv = this._uvw[selectIndex][1];
-            ww = this._uvw[selectIndex][2];
-        } else {
-            uu = this.data.u[selectIndex];
-            vv = this.data.v[selectIndex];
-            ww = this.data.w[selectIndex];
-        }
-
-        if(this._xyz) {
-            xx = this._xyz[selectIndex][0];
-            yy = this._xyz[selectIndex][1];
-            zz = this._xyz[selectIndex][2];
-        } else {
-            xx = this.data.x[selectIndex];
-            yy = this.data.y[selectIndex];
-            zz = this.data.z[selectIndex];
-        }
+        var dataScale = this.scene.dataScale;
+        var xx = this._positions[selectIndex][0] / dataScale[0];
+        var yy = this._positions[selectIndex][1] / dataScale[1];
+        var zz = this._positions[selectIndex][2] / dataScale[2];
+        var uu = this._vectors[selectIndex][0] / dataScale[0];
+        var vv = this._vectors[selectIndex][1] / dataScale[1];
+        var ww = this._vectors[selectIndex][2] / dataScale[2];
 
         selection.traceCoordinate = [
             xx, yy, zz,
@@ -83,7 +68,6 @@ var anchor2coneOffset = {tip: 1, tail: 0, cm: 0.25, center: 0.5};
 function convert(scene, trace) {
     var sceneLayout = scene.fullSceneLayout;
     var dataScale = scene.dataScale;
-    var hasConesPos = trace.cones && trace.cones.x && trace.cones.y && trace.cones.z;
     var coneOpts = {};
 
     function toDataCoords(arr, axisName) {
@@ -104,7 +88,7 @@ function convert(scene, trace) {
         toDataCoords(trace.z, 'zaxis')
     );
 
-    if(hasConesPos) {
+    if(trace.cones && trace.cones.x && trace.cones.y && trace.cones.z) {
         coneOpts.meshgrid = [
             toDataCoords(trace.cones.x, 'xaxis'),
             toDataCoords(trace.cones.y, 'yaxis'),
@@ -118,32 +102,7 @@ function convert(scene, trace) {
     coneOpts[sizeMode2sizeKey[trace.sizemode]] = trace.sizeref;
     coneOpts.coneOffset = anchor2coneOffset[trace.anchor];
 
-    var meshOpts = conePlot(coneOpts);
-
-    if(hasConesPos) {
-        // used for transparent gl-scatter3d hover trace
-        var pts = meshOpts._pts = [];
-        // used on hover
-        var xyz = meshOpts._xyz = [];
-        var uvw = meshOpts._uvw = [];
-
-        // that 48 increment comes from gl-vis/gl-cone3d/cone.js
-        for(var i = 0; i < meshOpts.positions.length; i += 48) {
-            var pos = meshOpts.positions[i];
-            pts.push([pos[0], pos[1], pos[2]]);
-            xyz.push([pos[0] / dataScale[0], pos[1] / dataScale[1], pos[2] / dataScale[2]]);
-
-            var vec = meshOpts.vectors[i];
-            uvw.push([vec[0] / dataScale[0], vec[1] / dataScale[1], vec[2] / dataScale[2]]);
-        }
-
-    } else {
-        meshOpts._pts = coneOpts.positions;
-        // don't fill _xyz and _uvw here,
-        // trace arrays do just fine on hover
-    }
-
-    return meshOpts;
+    return conePlot(coneOpts);
 }
 
 proto.update = function(data) {
@@ -170,7 +129,7 @@ function createConeTrace(scene, data) {
 
     var pts = createScatterPlot({
         gl: gl,
-        position: meshData._pts,
+        position: meshData._positions,
         project: false,
         opacity: 0
     });
@@ -179,10 +138,12 @@ function createConeTrace(scene, data) {
     cone.mesh = mesh;
     cone.pts = pts;
     cone.data = data;
-    cone._xyz = meshData._xyz;
-    cone._uvw = meshData._uvw;
     mesh._trace = cone;
     pts._trace = cone;
+
+    // stash these for hover
+    cone._positions = meshData._positions;
+    cone._vectors = meshData._vectors;
 
     scene.glplot.add(pts);
     scene.glplot.add(mesh);
