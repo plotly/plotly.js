@@ -42,6 +42,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('sizeref');
     coerce('sizemode');
 
+    coerce('anchor');
+
     // TODO do these attributes work?
     coerce('lighting.ambient');
     coerce('lighting.diffuse');

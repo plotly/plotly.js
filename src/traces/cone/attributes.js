@@ -103,6 +103,19 @@ var attrs = {
         description: 'Sets the cone size reference value.'
     },
 
+    anchor: {
+        valType: 'enumerated',
+        role: 'info',
+        editType: 'calc',
+        values: ['tip', 'tail', 'cm', 'center'],
+        dflt: 'cm',
+        description: [
+            'Sets the cones\' anchor with respect to their x/y/z positions.',
+            'Note that *cm* denote the cone\'s center of mass with corresponds to',
+            '1/4 from the tail to tip.'
+        ].join(' ')
+    },
+
     text: {
         valType: 'string',
         role: 'info',

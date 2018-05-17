@@ -56,6 +56,7 @@ function zip3(x, y, z) {
 
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
 var sizeMode2sizeKey = {scaled: 'coneSize', absolute: 'absoluteConeSize'};
+var anchor2coneOffset = {tip: 1, tail: 0, cm: 0.25, center: 0.5};
 
 function convert(scene, trace) {
     var sceneLayout = scene.fullSceneLayout;
@@ -92,6 +93,7 @@ function convert(scene, trace) {
     coneOpts.vertexIntensityBounds = [trace.cmin / trace.cmax, 1];
 
     coneOpts[sizeMode2sizeKey[trace.sizemode]] = trace.sizeref;
+    coneOpts.coneOffset = anchor2coneOffset[trace.anchor];
 
     var meshOpts = conePlot(coneOpts);
     meshOpts._pts = coneOpts.positions;
