@@ -480,9 +480,12 @@ proto.plot = function(sceneData, fullLayout, layout) {
             var axLetter = axis._name.charAt(0);
 
             for(j = 0; j < objects.length; j++) {
-                var objBounds = objects[j].bounds;
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i]);
-                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i]);
+                var obj = objects[j];
+                var objBounds = obj.bounds;
+                // add worse-case pad for cone traces
+                var pad = (obj._trace.data._normMax || 0) * dataScale[i];
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i] - pad);
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i] + pad);
             }
 
             for(j = 0; j < annotations.length; j++) {

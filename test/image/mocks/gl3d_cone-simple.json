@@ -10,10 +10,21 @@
       "w": [0, 0, 2],
       "sizemode": "absolute",
       "sizeref": 2
+    },
+    {
+      "type": "cone",
+      "x": [1, 2, 3],
+      "y": [1, 2, 3],
+      "z": [1, 2, 3],
+      "u": [1, 0, 0],
+      "v": [0, 3, 0],
+      "w": [0, 0, 2],
+      "scene": "scene2"
     }
   ],
   "layout": {
     "scene": {
+      "domain": {"x": [0, 0.5]},
       "xaxis": {
         "range": [-2, 5]
       },
@@ -23,6 +34,9 @@
       "zaxis": {
         "range": [-2, 5]
       }
+    },
+    "scene2": {
+      "domain": {"x": [0.5, 1]}
     }
   }
 }

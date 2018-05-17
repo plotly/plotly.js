@@ -28,5 +28,7 @@ module.exports = function calc(gd, trace) {
         normMin = Math.min(normMin, norm);
     }
 
+    trace._normMax = normMax;
+
     colorscaleCalc(trace, [normMin, normMax], '', 'c');
 };
