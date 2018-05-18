@@ -60,7 +60,7 @@ describe('Test cone defaults', function() {
     });
 });
 
-describe('@gl Test cone autorange', function() {
+describe('@gl Test cone autorange:', function() {
     var gd;
 
     beforeEach(function() {
@@ -116,6 +116,55 @@ describe('@gl Test cone autorange', function() {
         .then(function() {
             _assertAxisRanges('scaled down',
                 [-0.39, 4.39], [-0.39, 4.39], [-0.39, 4.39]
+            );
+
+            var trace = fig.data[0];
+
+            var x = trace.x.slice();
+            x.push(5);
+            var y = trace.y.slice();
+            y.push(5);
+            var z = trace.z.slice();
+            z.push(5);
+            var u = trace.u.slice();
+            u.push(0);
+            var v = trace.v.slice();
+            v.push(0);
+            var w = trace.w.slice();
+            w.push(0);
+
+            return Plotly.restyle(gd, {
+                x: [x], y: [y], z: [z],
+                u: [u], v: [v], w: [w]
+            });
+        })
+        .then(function() {
+            _assertAxisRanges('after adding one cone outside range but with norm-0',
+                [-0.45, 6.45], [-0.45, 6.45], [-0.45, 6.45]
+            );
+
+            return Plotly.restyle(gd, 'sizeref', 10);
+        })
+        .then(function() {
+            _assertAxisRanges('after increasing sizeref',
+                [-12.4, 18.4], [-12.4, 18.4], [-12.4, 18.4]
+            );
+
+            return Plotly.restyle(gd, 'sizeref', 0.1);
+        })
+        .then(function() {
+            _assertAxisRanges('after decreasing sizeref',
+                [0.74, 5.26], [0.74, 5.26], [0.74, 5.26]
+            );
+
+            return Plotly.restyle(gd, {
+                sizemode: 'absolute',
+                sizeref: 2
+            });
+        })
+        .then(function() {
+            _assertAxisRanges('with sizemode absolute',
+                [-1.25, 7.25], [-1.25, 7.25], [-1.25, 7.25]
             );
         })
         .catch(failTest)

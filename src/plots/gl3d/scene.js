@@ -508,7 +508,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 var obj = objects[j];
                 var objBounds = obj.bounds;
                 var fullTrace = obj._trace.data;
-                var pad = fullTrace._pad ? fullTrace._pad / dataScale[i] : 0;
+                var pad = fullTrace._pad || 0;
 
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i] - pad);
                 sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i] + pad);
