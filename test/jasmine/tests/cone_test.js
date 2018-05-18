@@ -82,7 +82,6 @@ describe('@gl Test cone autorange:', function() {
     it('should add pad around cone position to make sure they fit on the scene', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-autorange.json'));
 
-        // the resulting image should be independent of what I multiply by here
         function makeScaleFn(s) {
             return function(v) { return v * s; };
         }
@@ -92,6 +91,7 @@ describe('@gl Test cone autorange:', function() {
                 [-0.66, 4.66], [-0.66, 4.66], [-0.66, 4.66]
             );
 
+            // the resulting image should be independent of what I multiply by here
             var trace = fig.data[0];
             var m = makeScaleFn(10);
             var u = trace.u.map(m);
@@ -105,6 +105,7 @@ describe('@gl Test cone autorange:', function() {
                 [-0.66, 4.66], [-0.66, 4.66], [-0.66, 4.66]
             );
 
+            // the resulting image should be independent of what I multiply by here
             var trace = fig.data[0];
             var m = makeScaleFn(0.2);
             var u = trace.u.map(m);
@@ -165,6 +166,21 @@ describe('@gl Test cone autorange:', function() {
         .then(function() {
             _assertAxisRanges('with sizemode absolute',
                 [0.63, 5.37], [0.63, 5.37], [0.63, 5.37]
+            );
+
+            var trace = fig.data[0];
+            var m = makeScaleFn(2);
+            var x = trace.x.map(m);
+            var y = trace.y.map(m);
+            var z = trace.z.map(m);
+
+            return Plotly.restyle(gd, {
+                x: [x], y: [y], z: [z]
+            });
+        })
+        .then(function() {
+            _assertAxisRanges('after spacing out the x/y/z coordinates',
+                [1.25, 10.75], [1.25, 10.75], [1.25, 10.75]
             );
         })
         .catch(failTest)
