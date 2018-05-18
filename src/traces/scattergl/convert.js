@@ -16,7 +16,7 @@ var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 
-var formatColor = require('../../lib/gl_format_color');
+var formatColor = require('../../lib/gl_format_color').formatColor;
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 

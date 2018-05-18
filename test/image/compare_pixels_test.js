@@ -86,6 +86,7 @@ else {
  * - font-wishlist
  * - all gl2d
  * - all mapbox
+ * - gl3d_cone-*
  *
  * don't behave consistently from run-to-run and/or
  * machine-to-machine; skip over them for now.
@@ -95,7 +96,8 @@ function untestableFilter(mockName) {
     var cond = !(
         mockName === 'font-wishlist' ||
         mockName.indexOf('gl2d_') !== -1 ||
-        mockName.indexOf('mapbox_') !== -1
+        mockName.indexOf('mapbox_') !== -1 ||
+        mockName.indexOf('gl3d_cone-') !== -1
     );
 
     if(!cond) console.log(' -', mockName);
