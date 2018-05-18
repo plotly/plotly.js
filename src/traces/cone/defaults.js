@@ -40,14 +40,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('anchor');
 
-    // TODO do these attributes work?
     coerce('lighting.ambient');
     coerce('lighting.diffuse');
     coerce('lighting.specular');
     coerce('lighting.roughness');
     coerce('lighting.fresnel');
-    coerce('lighting.vertexnormalsepsilon');
-    coerce('lighting.facenormalsepsilon');
     coerce('lightposition.x');
     coerce('lightposition.y');
     coerce('lightposition.z');

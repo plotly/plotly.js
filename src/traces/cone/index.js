@@ -12,7 +12,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'cone',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d', '2dMap', 'noOpacity'],
+    categories: ['gl3d'],
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),

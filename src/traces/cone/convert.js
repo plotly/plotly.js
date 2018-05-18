@@ -98,6 +98,15 @@ function convert(scene, trace) {
     // stash positions for gl-scatter3d 'hover' trace
     meshData._pts = coneOpts.positions;
 
+    // pass gl-mesh3d lighting attributes
+    meshData.lightPosition = [trace.lightposition.x, trace.lightposition.y, trace.lightposition.z];
+    meshData.ambient = trace.lighting.ambient;
+    meshData.diffuse = trace.lighting.diffuse;
+    meshData.specular = trace.lighting.specular;
+    meshData.roughness = trace.lighting.roughness;
+    meshData.fresnel = trace.lighting.fresnel;
+    meshData.opacity = trace.opacity;
+
     return meshData;
 }
 

@@ -161,7 +161,7 @@ extendFlat(attrs, colorAttrs('', 'calc', true), {
 });
 delete attrs.color;
 
-var fromMesh3d = ['opacity', 'flatshading', 'lightposition', 'lighting'];
+var fromMesh3d = ['opacity', 'lightposition', 'lighting'];
 
 fromMesh3d.forEach(function(k) {
     attrs[k] = mesh3dAttrs[k];
