@@ -29,8 +29,14 @@ describe('Test cone defaults', function() {
         };
     }
 
+    it('should not set `visible: false` for traces with x,y,z,u,v,w arrays', function() {
+        gd = makeGD();
+        supplyAllDefaults(gd);
+        expect(gd._fullData[0].visible).toBe(true);
+    });
+
     it('should set `visible: false` for traces missing x,y,z,u,v,w arrays', function() {
-        var keysToDelete = ['x', 'y', 'z', 'u', 'v', 'w', ''];
+        var keysToDelete = ['x', 'y', 'z', 'u', 'v', 'w'];
 
         keysToDelete.forEach(function(k) {
             gd = makeGD();
