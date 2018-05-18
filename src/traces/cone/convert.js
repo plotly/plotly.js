@@ -109,7 +109,8 @@ function convert(scene, trace) {
     meshData.opacity = trace.opacity;
 
     // stash autorange pad value
-    trace._pad = anchor2coneSpan[trace.anchor] * meshData.vectorScale * trace._normMax * trace.sizeref;
+    trace._pad = anchor2coneSpan[trace.anchor] * meshData.vectorScale * trace.sizeref;
+    if(trace.sizemode === 'scaled') trace._pad *= trace._normMax;
 
     return meshData;
 }

@@ -10,7 +10,12 @@
       "w": [0, 0, 2],
       "sizemode": "absolute",
       "sizeref": 2,
-      "anchor": "tip"
+      "anchor": "tip",
+      "colorbar": {
+        "x": 0,
+        "xanchor": "right",
+        "side": "left"
+      }
     },
     {
       "type": "cone",
@@ -26,18 +31,15 @@
   "layout": {
     "scene": {
       "domain": {"x": [0, 0.5]},
-      "xaxis": {
-        "range": [-2, 5]
-      },
-      "yaxis": {
-        "range": [-2, 5]
-      },
-      "zaxis": {
-        "range": [-2, 5]
+      "camera": {
+        "eye": {"x": -1.57, "y": 1.36, "z": 0.58}
       }
     },
     "scene2": {
-      "domain": {"x": [0.5, 1]}
+      "domain": {"x": [0.5, 1]},
+      "camera": {
+        "eye": {"x": -1.57, "y": 1.36, "z": 0.58}
+      }
     },
     "width": 800
   }
