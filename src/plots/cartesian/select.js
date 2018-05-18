@@ -278,6 +278,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             function() {
                 selection = [];
 
+                // TODO What's the point of maintaining traceSelections array? Not used anywhere. Delete it.
                 var thisSelection, traceSelections = [], traceSelection;
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
@@ -308,9 +309,10 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
         throttle.done(throttleID).then(function() {
             throttle.clear(throttleID);
+
+            // clear visual boundaries of selection area if displayed
+            outlines.remove();
             if(numClicks === 2) {
-                // clear selection on doubleclick
-                outlines.remove();
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
                     searchInfo._module.selectPoints(searchInfo, false);
@@ -320,6 +322,9 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 gd.emit('plotly_deselect', null);
             }
             else {
+                // TODO What to do with the code below because we now have behavior for a single click
+                selectOnClick(gd, numClicks);
+
                 // TODO: remove in v2 - this was probably never intended to work as it does,
                 // but in case anyone depends on it we don't want to break it now.
                 gd.emit('plotly_selected', undefined);
@@ -346,6 +351,50 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 [].push.apply(dragOptions.mergedPolygons, mergedPolygons);
             }
         });
+    };
+}
+
+// Missing features
+// ----------------
+// TODO handle clearing selection, really?
+// TODO handle un-selecting a data-point
+// TODO do we have to consider multiple traces?
+function selectOnClick(gd, numClicks) {
+    var calcData = gd.calcdata[0];
+
+    var hoverData = gd._hoverdata;
+
+    var isHoverDataSet = hoverData && hoverData.length > 0;
+    var isSingleClick = numClicks === 1;
+    var selectPreconditionsMet = isHoverDataSet && isSingleClick;
+
+    if(selectPreconditionsMet) {
+        var pointAlreadySelected = false;
+        if(pointAlreadySelected) {
+            // Un-select data point
+        }
+        else {
+            var trace = calcData[0].trace;
+            var hoverDataItem = hoverData[0];
+            var traceSelection = trace._module.selectPoint(calcData, hoverDataItem);
+
+            var searchInfo =
+              _createSearchInfo(trace._module, calcData, hoverDataItem.xaxis, hoverDataItem.yaxis);
+            var selection = fillSelectionItem(traceSelection, searchInfo);
+            var eventData = {points: selection};
+
+            updateSelectedState(gd, [searchInfo], eventData);
+        }
+    }
+}
+
+// TODO Consider using in other places around here as well
+function _createSearchInfo(module, calcData, xaxis, yaxis) {
+    return {
+        _module: module,
+        cd: calcData,
+        xaxis: xaxis,
+        yaxis: yaxis
     };
 }
 
@@ -471,5 +520,6 @@ function clearSelect(zoomlayer) {
 
 module.exports = {
     prepSelect: prepSelect,
-    clearSelect: clearSelect
+    clearSelect: clearSelect,
+    selectOnClick: selectOnClick
 };

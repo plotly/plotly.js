@@ -30,6 +30,8 @@ var doTicksSingle = require('./axes').doTicksSingle;
 var getFromId = require('./axis_ids').getFromId;
 var prepSelect = require('./select').prepSelect;
 var clearSelect = require('./select').clearSelect;
+var selectOnClick = require('./select').selectOnClick;
+
 var scaleZoom = require('./scale_zoom');
 
 var constants = require('./constants');
@@ -171,13 +173,16 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
         else dragOptions.minDrag = undefined;
 
+        // TODO Maybe rename into isBoxOrLassoSelect
         if(isSelectOrLasso(dragModeNow)) {
             dragOptions.xaxes = xaxes;
             dragOptions.yaxes = yaxes;
             // this attaches moveFn, clickFn, doneFn on dragOptions
+            // TODO Maybe rename the function to prepSelectOnDrag
             prepSelect(e, startX, startY, dragOptions, dragModeNow);
         } else {
             dragOptions.clickFn = clickFn;
+            // TODO Is this good? prepFn will always clear and reset the selection when not in lasso or select mode, but now we've a select mode on click, a selectOnClick behavior so to speak
             clearAndResetSelect();
 
             if(!allFixedRanges) {
@@ -212,8 +217,11 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(numClicks === 2 && !singleEnd) doubleClick();
 
         if(isMainDrag) {
-            Fx.click(gd, evt, plotinfo.id);
+            var clickHandler = obtainClickHandler();
+            clickHandler(gd, numClicks);
         }
+        // Allow manual editing of range bounds through an input field
+        // TODO consider extracting that to a method for clarity
         else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya0 : xa0,
                 end = (ns === 's' || ew === 'w') ? 0 : 1,
@@ -618,6 +626,15 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         redrawObjs(gd._fullLayout.annotations || [], Registry.getComponentMethod('annotations', 'drawOne'));
         redrawObjs(gd._fullLayout.shapes || [], Registry.getComponentMethod('shapes', 'drawOne'));
         redrawObjs(gd._fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
+    }
+
+    function obtainClickHandler() {
+        // TODO differentiate based on `clickmode` attr here
+        // Thought: we may end up returning thin wrapping functions that
+        // call the real functions based on the `clickmode` attr
+
+        // return Fx.click;
+        return selectOnClick;
     }
 
     function doubleClick() {
