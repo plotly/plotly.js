@@ -164,7 +164,7 @@ describe('@gl Test cone autorange:', function() {
         })
         .then(function() {
             _assertAxisRanges('with sizemode absolute',
-                [-2.31, 8.31], [-2.31, 8.31], [-2.31, 8.31]
+                [0.63, 5.37], [0.63, 5.37], [0.63, 5.37]
             );
         })
         .catch(failTest)
@@ -234,7 +234,7 @@ describe('@gl Test cone interactions', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelContent({
-                nums: ['x: 3', 'y: 3', 'z: 3', 'norm: 2.00'].join('\n')
+                nums: ['x: 2', 'y: 2', 'z: 2', 'norm: 3.00'].join('\n')
             });
 
             return Plotly.restyle(gd, 'hoverinfo', 'u+v+w');
@@ -243,7 +243,7 @@ describe('@gl Test cone interactions', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelContent({
-                nums: ['u: 0', 'v: 0', 'w: 2'].join('\n')
+                nums: ['u: 0', 'v: 3', 'w: 0'].join('\n')
             });
         })
         .catch(failTest)
