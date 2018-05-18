@@ -63,6 +63,7 @@ function zip3(x, y, z) {
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
 var sizeMode2sizeKey = {scaled: 'coneSize', absolute: 'absoluteConeSize'};
 var anchor2coneOffset = {tip: 1, tail: 0, cm: 0.25, center: 0.5};
+var anchor2coneSpan = {tip: 1, tail: 1, cm: 0.75, center: 0.5};
 
 function convert(scene, trace) {
     var sceneLayout = scene.fullSceneLayout;
@@ -106,6 +107,9 @@ function convert(scene, trace) {
     meshData.roughness = trace.lighting.roughness;
     meshData.fresnel = trace.lighting.fresnel;
     meshData.opacity = trace.opacity;
+
+    // stash autorange pad value
+    trace._pad = anchor2coneSpan[trace.anchor] * meshData.vectorScale * trace._normMax * trace.sizeref;
 
     return meshData;
 }

@@ -74,9 +74,9 @@ describe('@gl Test cone autorange:', function() {
 
     function _assertAxisRanges(msg, xrng, yrng, zrng) {
         var sceneLayout = gd._fullLayout.scene;
-        expect(sceneLayout.xaxis.range).toBeCloseToArray(xrng, 2, 'xaxis range -' + msg);
-        expect(sceneLayout.yaxis.range).toBeCloseToArray(yrng, 2, 'yaxis range -' + msg);
-        expect(sceneLayout.zaxis.range).toBeCloseToArray(zrng, 2, 'zaxis range -' + msg);
+        expect(sceneLayout.xaxis.range).toBeCloseToArray(xrng, 2, 'xaxis range - ' + msg);
+        expect(sceneLayout.yaxis.range).toBeCloseToArray(yrng, 2, 'yaxis range - ' + msg);
+        expect(sceneLayout.zaxis.range).toBeCloseToArray(zrng, 2, 'zaxis range - ' + msg);
     }
 
     it('should add pad around cone position to make sure they fit on the scene', function(done) {
@@ -89,7 +89,7 @@ describe('@gl Test cone autorange:', function() {
 
         Plotly.plot(gd, fig).then(function() {
             _assertAxisRanges('base',
-                [-0.39, 4.39], [-0.39, 4.39], [-0.39, 4.39]
+                [-0.66, 4.66], [-0.66, 4.66], [-0.66, 4.66]
             );
 
             var trace = fig.data[0];
@@ -102,7 +102,7 @@ describe('@gl Test cone autorange:', function() {
         })
         .then(function() {
             _assertAxisRanges('scaled up',
-                [-0.39, 4.39], [-0.39, 4.39], [-0.39, 4.39]
+                [-0.66, 4.66], [-0.66, 4.66], [-0.66, 4.66]
             );
 
             var trace = fig.data[0];
@@ -115,7 +115,7 @@ describe('@gl Test cone autorange:', function() {
         })
         .then(function() {
             _assertAxisRanges('scaled down',
-                [-0.39, 4.39], [-0.39, 4.39], [-0.39, 4.39]
+                [-0.66, 4.66], [-0.66, 4.66], [-0.66, 4.66]
             );
 
             var trace = fig.data[0];
@@ -140,21 +140,21 @@ describe('@gl Test cone autorange:', function() {
         })
         .then(function() {
             _assertAxisRanges('after adding one cone outside range but with norm-0',
-                [-0.45, 6.45], [-0.45, 6.45], [-0.45, 6.45]
+                [-0.72, 6.72], [-0.72, 6.72], [-0.72, 6.72]
             );
 
             return Plotly.restyle(gd, 'sizeref', 10);
         })
         .then(function() {
             _assertAxisRanges('after increasing sizeref',
-                [-12.4, 18.4], [-12.4, 18.4], [-12.4, 18.4]
+                [-15.06, 21.06], [-15.06, 21.06], [-15.06, 21.06]
             );
 
             return Plotly.restyle(gd, 'sizeref', 0.1);
         })
         .then(function() {
             _assertAxisRanges('after decreasing sizeref',
-                [0.74, 5.26], [0.74, 5.26], [0.74, 5.26]
+                [0.72, 5.28], [0.72, 5.28], [0.72, 5.28]
             );
 
             return Plotly.restyle(gd, {
@@ -164,7 +164,7 @@ describe('@gl Test cone autorange:', function() {
         })
         .then(function() {
             _assertAxisRanges('with sizemode absolute',
-                [-1.25, 7.25], [-1.25, 7.25], [-1.25, 7.25]
+                [-2.31, 8.31], [-2.31, 8.31], [-2.31, 8.31]
             );
         })
         .catch(failTest)
