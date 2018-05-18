@@ -60,6 +60,69 @@ describe('Test cone defaults', function() {
     });
 });
 
+describe('@gl Test cone autorange', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function _assertAxisRanges(msg, xrng, yrng, zrng) {
+        var sceneLayout = gd._fullLayout.scene;
+        expect(sceneLayout.xaxis.range).toBeCloseToArray(xrng, 2, 'xaxis range -' + msg);
+        expect(sceneLayout.yaxis.range).toBeCloseToArray(yrng, 2, 'yaxis range -' + msg);
+        expect(sceneLayout.zaxis.range).toBeCloseToArray(zrng, 2, 'zaxis range -' + msg);
+    }
+
+    it('should add pad around cone position to make sure they fit on the scene', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-autorange.json'));
+
+        // the resulting image should be independent of what I multiply by here
+        function makeScaleFn(s) {
+            return function(v) { return v * s; };
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assertAxisRanges('base',
+                [-0.39, 4.39], [-0.39, 4.39], [-0.39, 4.39]
+            );
+
+            var trace = fig.data[0];
+            var m = makeScaleFn(10);
+            var u = trace.u.map(m);
+            var v = trace.v.map(m);
+            var w = trace.w.map(m);
+
+            return Plotly.restyle(gd, {u: [u], v: [v], w: [w]});
+        })
+        .then(function() {
+            _assertAxisRanges('scaled up',
+                [-0.39, 4.39], [-0.39, 4.39], [-0.39, 4.39]
+            );
+
+            var trace = fig.data[0];
+            var m = makeScaleFn(0.2);
+            var u = trace.u.map(m);
+            var v = trace.v.map(m);
+            var w = trace.w.map(m);
+
+            return Plotly.restyle(gd, {u: [u], v: [v], w: [w]});
+        })
+        .then(function() {
+            _assertAxisRanges('scaled down',
+                [-0.39, 4.39], [-0.39, 4.39], [-0.39, 4.39]
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('@gl Test cone interactions', function() {
     var gd;
 

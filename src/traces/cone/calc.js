@@ -35,8 +35,8 @@ module.exports = function calc(gd, trace) {
 
     // stash max norm value to convert cmix/cmax -> vertexIntensityBounds
     trace._normMax = normMax;
-    // stash max 'component' value for autorange pad
-    trace._compMax = Math.sqrt(compMax);
+    // stash autorange pad using max 'component' value
+    trace._pad = Math.sqrt(compMax) / (normMax || 1);
 
     colorscaleCalc(trace, [normMin, normMax], '', 'c');
 };
