@@ -265,4 +265,28 @@ describe('@gl Test cone interactions', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should display hover labels (multi-trace case)', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-single.json'));
+        fig.layout.margin = {l: 0, t: 0, r: 0, b: 0};
+        fig.layout.width = 400;
+        fig.layout.height = 400;
+
+        function _hover() {
+            mouseEvent('mouseover', 245, 230);
+            return delay(20)();
+        }
+
+        Plotly.plot(gd, fig)
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelContent({
+                nums: ['x: 1', 'y: 1', 'z: 1', 'norm: 1.41'].join('\n'),
+                name: 'blue cone'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
