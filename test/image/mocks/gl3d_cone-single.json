@@ -2,19 +2,8 @@
   "data": [
     {
       "type": "cone",
-      "name": "blue cone",
       "x": [1], "y": [1], "z": [1],
-      "u": [1], "v": [1], "w": [0],
-      "colorscale": "Blues",
-      "showscale": false
-    },
-    {
-      "type": "cone",
-      "name": "green cone",
-      "x": [3], "y": [3], "z": [3],
-      "u": [0], "v": [0], "w": [2],
-      "colorscale": "Greens",
-      "showscale": false
+      "u": [1], "v": [1], "w": [0]
     }
   ],
   "layout": {

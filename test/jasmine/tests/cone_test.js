@@ -267,17 +267,35 @@ describe('@gl Test cone interactions', function() {
     });
 
     it('should display hover labels (multi-trace case)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-single.json'));
-        fig.layout.margin = {l: 0, t: 0, r: 0, b: 0};
-        fig.layout.width = 400;
-        fig.layout.height = 400;
-
         function _hover() {
             mouseEvent('mouseover', 245, 230);
             return delay(20)();
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.plot(gd, [{
+            type: 'cone',
+            name: 'blue cone',
+            x: [1], y: [1], z: [1],
+            u: [1], v: [1], w: [0],
+            colorscale: 'Blues',
+            showscale: false
+        }, {
+            type: 'cone',
+            name: 'green cone',
+            x: [3], y: [3], z: [3],
+            u: [0], v: [0], w: [2],
+            colorscale: 'Greens',
+            showscale: false
+        }], {
+            scene: {
+                camera: {
+                    eye: {x: -0.76, y: 1.8, z: 0.92}
+                }
+            },
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            width: 400,
+            height: 400
+        })
         .then(delay(20))
         .then(_hover)
         .then(function() {
