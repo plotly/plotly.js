@@ -17,20 +17,15 @@ module.exports = function calc(gd, trace) {
     var len = Math.min(u.length, v.length, w.length);
     var normMax = -Infinity;
     var normMin = Infinity;
-    var compMax = -Infinity;
 
     for(var i = 0; i < len; i++) {
         var uu = u[i];
-        var u2 = uu * uu;
         var vv = v[i];
-        var v2 = vv * vv;
         var ww = w[i];
-        var w2 = ww * ww;
-        var norm = Math.sqrt(u2 + v2 + w2);
+        var norm = Math.sqrt(uu * uu + vv * vv + ww * ww);
 
         normMax = Math.max(normMax, norm);
         normMin = Math.min(normMin, norm);
-        compMax = Math.max(compMax, u2, v2, w2);
     }
 
     trace._normMax = normMax;
