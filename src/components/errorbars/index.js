@@ -12,7 +12,6 @@ var Lib = require('../../lib');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var attributes = require('./attributes');
-var calc = require('./calc');
 
 var xyAttrs = {
     error_x: Lib.extendFlat({}, attributes),
@@ -48,7 +47,8 @@ module.exports = {
 
     supplyDefaults: require('./defaults'),
 
-    calc: calc,
+    calc: require('./calc'),
+    makeComputeError: require('./compute_error'),
 
     plot: require('./plot'),
     style: require('./style'),

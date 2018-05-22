@@ -21,7 +21,6 @@ var AxisIDs = require('../../plots/cartesian/axis_ids');
 var formatColor = require('../../lib/gl_format_color').formatColor;
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
-var makeComputeError = require('../../components/errorbars/compute_error');
 
 var constants = require('./constants');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
@@ -364,6 +363,7 @@ function convertLinePositions(gd, trace, positions) {
 }
 
 function convertErrorBarPositions(gd, trace, positions, x, y) {
+    var makeComputeError = Registry.getComponentMethod('errorbars', 'makeComputeError');
     var xa = AxisIDs.getFromId(gd, trace.xaxis);
     var ya = AxisIDs.getFromId(gd, trace.yaxis);
     var count = positions.length / 2;
