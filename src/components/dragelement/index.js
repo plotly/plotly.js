@@ -217,7 +217,7 @@ dragElement.init = function init(options) {
         }
 
         if(gd._dragged) {
-            if(options.doneFn) options.doneFn(e);
+            if(options.doneFn) options.doneFn();
         }
         else {
             if(options.clickFn) options.clickFn(numClicks, initialEvent);

@@ -21,6 +21,8 @@ var Lib = require('../../../src/lib');
  *  @param {bool} cancelContext: act as though `preventDefault` was called during a `contextmenu`
  *    handler, which stops native contextmenu and therefore allows mouseup events to be fired.
  *    Only relevant if button=2 or ctrlKey=true.
+ * @param {array(2)} opts.slop - shift [x, y] between mousedown and mouseup
+ *    to simulate a sloppy click
  */
 module.exports = function click(x, y, optsIn) {
     var opts = Lib.extendFlat({}, optsIn || {});
@@ -43,10 +45,16 @@ module.exports = function click(x, y, optsIn) {
 
     var downOpts = Lib.extendFlat({buttons: buttons}, opts);
     var upOpts = opts;
+    var slop = opts.slop || [];
+    var slopX = slop[0] || 0;
+    var slopY = slop[1] || 0;
+    var slopOpts = Lib.extendFlat({}, downOpts);
+    delete slopOpts.button;
 
     mouseEvent('mousemove', x, y, moveOpts);
     mouseEvent('mousedown', x, y, downOpts);
     if(callContext) mouseEvent('contextmenu', x, y, downOpts);
+    if(slopX || slopY) mouseEvent('mousemove', x + slopX, y + slopY, slopOpts);
     if(!callContext) mouseEvent('mouseup', x, y, upOpts);
     if(!rightClick) mouseEvent('click', x, y, upOpts);
 };

@@ -117,8 +117,7 @@ describe('Test click interactions:', function() {
             expect(contextPassthroughs).toBe(0);
         });
 
-        it('should contain the correct fields', function() {
-            click(pointPos[0], pointPos[1]);
+        function checkPointData() {
             expect(futureData.points.length).toEqual(1);
             expect(clickPassthroughs).toBe(2);
             expect(contextPassthroughs).toBe(0);
@@ -136,6 +135,16 @@ describe('Test click interactions:', function() {
             var evt = futureData.event;
             expect(evt.clientX).toEqual(pointPos[0]);
             expect(evt.clientY).toEqual(pointPos[1]);
+        }
+
+        it('should contain the correct fields', function() {
+            click(pointPos[0], pointPos[1]);
+            checkPointData();
+        });
+
+        it('should work with a sloppy click (shift < minDrag before mouseup)', function() {
+            click(pointPos[0], pointPos[1], {slop: [4, 4]});
+            checkPointData();
         });
 
         it('works with fixedrange axes', function(done) {
