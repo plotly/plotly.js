@@ -81,7 +81,7 @@ describe('dragElement', function() {
         expect(args[1]).toEqual(10);
     });
 
-    it('should pass the event to doneFn on mouseup after mousemove', function() {
+    it('does not pass the event to doneFn on mouseup after mousemove', function() {
         var args = [];
         var options = {
             element: this.element,
@@ -99,8 +99,7 @@ describe('dragElement', function() {
         mouseEvent('mousemove', this.x + 10, this.y + 10);
         mouseEvent('mouseup', this.x, this.y);
 
-        expect(args.length).toBe(1);
-        expect(args[0].type).toBe('mouseup');
+        expect(args.length).toBe(0);
     });
 
     it('should pass numClicks and event to clickFn on mouseup after no/small mousemove', function() {
