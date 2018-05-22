@@ -60,7 +60,7 @@ function Polar(gd, id) {
         .attr('class', id);
 
     // unfortunately, we have to keep track of some axis tick settings
-    // so that we don't have to call Axes.doTicks with its special redraw flag
+    // so that we don't have to call Axes.doTicksSingle with its special redraw flag
     this.radialTickLayout = null;
     this.angularTickLayout = null;
 }
@@ -286,7 +286,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         anchor: 'free',
         position: 0,
 
-        // dummy truthy value to make Axes.doTicks draw the grid
+        // dummy truthy value to make Axes.doTicksSingle draw the grid
         _counteraxis: true,
 
         // don't use automargins routine for labels
@@ -302,7 +302,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     // rotate auto tick labels by 180 if in quadrant II and III to make them
     // readable from left-to-right
     //
-    // TODO try moving deeper in doTicks for better results?
+    // TODO try moving deeper in doTicksSingle for better results?
     if(ax.tickangle === 'auto' && (a0 > 90 && a0 <= 270)) {
         ax.tickangle = 180;
     }
@@ -324,7 +324,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         _this.radialTickLayout = newTickLayout;
     }
 
-    Axes.doTicks(gd, ax, true);
+    Axes.doTicksSingle(gd, ax, true);
 
     updateElement(layers['radial-axis'], radialLayout.showticklabels || radialLayout.ticks, {
         transform: strTranslate(cx, cy) + strRotate(-radialLayout.angle)
@@ -413,7 +413,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         anchor: 'free',
         position: 0,
 
-        // dummy truthy value to make Axes.doTicks draw the grid
+        // dummy truthy value to make Axes.doTicksSingle draw the grid
         _counteraxis: true,
 
         // don't use automargins routine for labels
@@ -460,7 +460,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     setScale(ax, angularLayout, fullLayout);
 
     // wrapper around c2rad from setConvertAngular
-    // note that linear ranges are always set in degrees for Axes.doTicks
+    // note that linear ranges are always set in degrees for Axes.doTicksSingle
     function c2rad(d) {
         return ax.c2rad(d.x, 'degrees');
     }
@@ -530,7 +530,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         _this.angularTickLayout = newTickLayout;
     }
 
-    Axes.doTicks(gd, ax, true);
+    Axes.doTicksSingle(gd, ax, true);
 
     updateElement(layers['angular-line'].select('path'), angularLayout.showline, {
         d: pathSectorClosed(radius, sector),
@@ -833,7 +833,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         if((drange > 0) !== (rprime > range0[0])) return;
         rng1 = radialAxis.range[1] = rprime;
 
-        Axes.doTicks(gd, _this.radialAxis, true);
+        Axes.doTicksSingle(gd, _this.radialAxis, true);
         layers['radial-grid']
             .attr('transform', strTranslate(cx, cy))
             .selectAll('path').attr('transform', null);
@@ -961,7 +961,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
         }
 
         setConvertAngular(angularAxis);
-        Axes.doTicks(gd, angularAxis, true);
+        Axes.doTicksSingle(gd, angularAxis, true);
 
         if(_this._hasClipOnAxisFalse && !isFullCircle(sector)) {
             // mutate sector to trick isPtWithinSector

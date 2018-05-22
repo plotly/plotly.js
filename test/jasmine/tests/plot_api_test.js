@@ -631,7 +631,7 @@ describe('Test plot api', function() {
         });
 
         it('should trigger minimal sequence for cartesian axis range updates', function() {
-            var seq = ['doAutoRangeAndConstraints', 'doTicksRelayout', 'drawData', 'finalDraw'];
+            var seq = ['doTicksRelayout', 'drawData', 'finalDraw'];
 
             function _assert(msg) {
                 expect(gd.calcdata).toBeDefined();
@@ -643,21 +643,20 @@ describe('Test plot api', function() {
                 });
             }
 
-            var trace = {y: [1, 2, 1]};
-
             var specs = [
                 ['relayout', ['xaxis.range[0]', 0]],
                 ['relayout', ['xaxis.range[1]', 3]],
                 ['relayout', ['xaxis.range', [-1, 5]]],
-                ['update', [{}, {'xaxis.range': [-1, 10]}]],
-                ['react', [[trace], {xaxis: {range: [0, 1]}}]]
+                ['update', [{}, {'xaxis.range': [-1, 10]}]]
             ];
 
             specs.forEach(function(s) {
-                // create 'real' div for Plotly.react to work
-                gd = createGraphDiv();
-                Plotly.plot(gd, [trace], {xaxis: {range: [1, 2]}});
-                mock(gd);
+                gd = mock({
+                    data: [{y: [1, 2, 1]}],
+                    layout: {
+                        xaxis: {range: [1, 2]}
+                    }
+                });
 
                 Plotly[s[0]](gd, s[1][0], s[1][1]);
 
@@ -665,9 +664,22 @@ describe('Test plot api', function() {
                     'Plotly.', s[0],
                     '(gd, ', JSON.stringify(s[1][0]), ', ', JSON.stringify(s[1][1]), ')'
                 ].join(''));
-
-                destroyGraphDiv();
             });
+        });
+
+        it('should trigger calc on axis range updates when constraints are present', function() {
+            gd = mock({
+                data: [{
+                    y: [1, 2, 1]
+                }],
+                layout: {
+                    xaxis: {constrain: 'domain'},
+                    yaxis: {scaleanchor: 'x'}
+                }
+            });
+
+            Plotly.relayout(gd, 'xaxis.range[0]', 0);
+            expect(gd.calcdata).toBeUndefined();
         });
     });
 
@@ -2753,6 +2765,24 @@ describe('Test plot api', function() {
             })
             .then(function() {
                 countCalls({doColorBars: 1, plot: 1});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('picks up minimal sequence for cartesian axis range updates', function(done) {
+            var data = [{y: [1, 2, 1]}];
+            var layout = {xaxis: {range: [1, 2]}};
+            var layout2 = {xaxis: {range: [0, 1]}};
+
+            Plotly.newPlot(gd, data, layout)
+            .then(countPlots)
+            .then(function() {
+                return Plotly.react(gd, data, layout2);
+            })
+            .then(function() {
+                expect(subroutines.doTicksRelayout).toHaveBeenCalledTimes(1);
+                expect(subroutines.layoutStyles).not.toHaveBeenCalled();
             })
             .catch(failTest)
             .then(done);

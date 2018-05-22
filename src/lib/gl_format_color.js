@@ -10,6 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var tinycolor = require('tinycolor2');
 var rgba = require('color-normalize');
 
 var Colorscale = require('../components/colorscale');
@@ -85,4 +86,21 @@ function formatColor(containerIn, opacityIn, len) {
     return colorOut;
 }
 
-module.exports = formatColor;
+function parseColorScale(colorscale, alpha) {
+    if(alpha === undefined) alpha = 1;
+
+    return colorscale.map(function(elem) {
+        var index = elem[0];
+        var color = tinycolor(elem[1]);
+        var rgb = color.toRgb();
+        return {
+            index: index,
+            rgb: [rgb.r, rgb.g, rgb.b, alpha]
+        };
+    });
+}
+
+module.exports = {
+    formatColor: formatColor,
+    parseColorScale: parseColorScale
+};

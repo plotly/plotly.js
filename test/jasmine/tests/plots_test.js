@@ -908,6 +908,35 @@ describe('grids', function() {
         });
     }
 
+    it('does not barf on invalid grid objects', function(done) {
+        Plotly.newPlot(gd, makeData(['xy']), {grid: true})
+        .then(function() {
+            expect(gd._fullLayout.grid).toBeUndefined();
+
+            return Plotly.newPlot(gd, makeData(['xy']), {grid: {}});
+        })
+        .then(function() {
+            expect(gd._fullLayout.grid).toBeUndefined();
+
+            return Plotly.newPlot(gd, makeData(['xy']), {grid: {rows: 1, columns: 1}});
+        })
+        .then(function() {
+            expect(gd._fullLayout.grid).toBeUndefined();
+
+            // check Plotly.validate on the same grids too
+            [true, {}, {rows: 1, columns: 1}].forEach(function(gridVal) {
+                var validation = Plotly.validate([], {grid: gridVal});
+                expect(validation.length).toBe(1);
+                expect(validation[0]).toEqual(jasmine.objectContaining({
+                    astr: 'grid',
+                    code: 'unused'
+                }));
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('defaults to a coupled layout', function(done) {
         Plotly.newPlot(gd,
             // leave some empty rows/columns

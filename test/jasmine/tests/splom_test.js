@@ -100,9 +100,10 @@ describe('Test splom trace defaults:', function() {
         expect(subplots.cartesian).toEqual(['xy', 'xy2', 'x2y', 'x2y2']);
     });
 
-    it('should use special `grid.xside` and `grid.yside` defaults on splom generated grids', function() {
+    it('should use special `grid.xside` and `grid.yside` defaults on splom w/o lower half generated grids', function() {
         var gridOut;
 
+        // base case
         _supply({
             dimensions: [
                 {values: [1, 2, 3]},
@@ -111,9 +112,23 @@ describe('Test splom trace defaults:', function() {
         });
 
         gridOut = gd._fullLayout.grid;
+        expect(gridOut.xside).toBe('bottom plot');
+        expect(gridOut.yside).toBe('left plot');
+
+        // w/o lower half case
+        _supply({
+            dimensions: [
+                {values: [1, 2, 3]},
+                {values: [2, 1, 2]}
+            ],
+            showlowerhalf: false
+        });
+
+        gridOut = gd._fullLayout.grid;
         expect(gridOut.xside).toBe('bottom');
         expect(gridOut.yside).toBe('left');
 
+        // non-splom generated grid
         _supply({
             dimensions: [
                 {values: [1, 2, 3]},
