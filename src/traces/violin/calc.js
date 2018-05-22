@@ -71,7 +71,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-// Default to Silveman's rule of thumb, but if 'too small' use Scott's rule
+// Default to Silveman's rule of thumb
 // - https://stats.stackexchange.com/a/6671
 // - https://en.wikipedia.org/wiki/Kernel_density_estimation#A_rule-of-thumb_bandwidth_estimator
 // - https://github.com/statsmodels/statsmodels/blob/master/statsmodels/nonparametric/bandwidths.py
@@ -80,21 +80,27 @@ function silvermanRule(len, ssd, iqr) {
     return 1.059 * a * Math.pow(len, -0.2);
 }
 
-function scottRule(len, ssd) {
-    return ssd * Math.pow(len, -0.2);
-}
-
 function calcBandwidth(trace, cdi, vals) {
-    if(trace.bandwidth) return trace.bandwidth;
+    var bw;
 
-    var len = vals.length;
-    var ssd = Lib.stdev(vals, len - 1, cdi.mean);
-    var bw = silvermanRule(len, ssd, cdi.q3 - cdi.q1);
-
-    if((cdi.max - cdi.min) / bw > 1e5) {
-        bw = scottRule(len, ssd);
+    if(trace.bandwidth) {
+        bw = trace.bandwidth;
+    } else {
+        var len = vals.length;
+        var ssd = Lib.stdev(vals, len - 1, cdi.mean);
+        bw = silvermanRule(len, ssd, cdi.q3 - cdi.q1);
     }
-    return bw;
+
+    // Limit how small the bandwidth can be.
+    //
+    // Silverman's rule of thumb can be "very" small
+    // when IQR does a poor job at describing the spread
+    // of the distribution.
+    // We also want to limit custom bandwidths
+    // to not blow up kde computations.
+    return ((cdi.max - cdi.min) / bw) < 1e5 ?
+        bw :
+        (cdi.max - cdi.min) / 100;
 }
 
 function calcSpan(trace, cdi, valAxis, bandwidth) {
