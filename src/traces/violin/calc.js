@@ -81,15 +81,7 @@ function silvermanRule(len, ssd, iqr) {
 }
 
 function calcBandwidth(trace, cdi, vals) {
-    var bw;
-
-    if(trace.bandwidth) {
-        bw = trace.bandwidth;
-    } else {
-        var len = vals.length;
-        var ssd = Lib.stdev(vals, len - 1, cdi.mean);
-        bw = silvermanRule(len, ssd, cdi.q3 - cdi.q1);
-    }
+    var span = cdi.max - cdi.min;
 
     // Limit how small the bandwidth can be.
     //
@@ -98,9 +90,17 @@ function calcBandwidth(trace, cdi, vals) {
     // of the distribution.
     // We also want to limit custom bandwidths
     // to not blow up kde computations.
-    return ((cdi.max - cdi.min) / bw) < 1e5 ?
-        bw :
-        (cdi.max - cdi.min) / 100;
+
+    if(trace.bandwidth) {
+        return Math.max(trace.bandwidth, span / 1e4);
+    } else {
+        var len = vals.length;
+        var ssd = Lib.stdev(vals, len - 1, cdi.mean);
+        return Math.max(
+            silvermanRule(len, ssd, cdi.q3 - cdi.q1),
+            span / 100
+        );
+    }
 }
 
 function calcSpan(trace, cdi, valAxis, bandwidth) {
