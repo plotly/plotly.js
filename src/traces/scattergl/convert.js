@@ -374,7 +374,7 @@ function convertErrorBarPositions(gd, trace, positions, x, y) {
         var opts = trace['error_' + axLetter];
 
         if(opts && opts.visible && (ax.type === 'linear' || ax.type === 'log')) {
-            var computeError = makeComputeError(trace['error_' + axLetter]);
+            var computeError = makeComputeError(opts);
             var pOffset = {x: 0, y: 1}[axLetter];
             var eOffset = {x: [0, 1, 2, 3], y: [2, 3, 0, 1]}[axLetter];
             var errors = new Float64Array(4 * count);
