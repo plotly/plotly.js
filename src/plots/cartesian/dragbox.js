@@ -252,6 +252,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         zb,
         corners;
 
+    // zoom takes over minDrag, so it also has to take over gd._dragged
+    var zoomDragged;
+
     // collected changes to be made to the plot by relayout at the end
     var updates = {};
 
@@ -266,6 +269,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         path0 = 'M0,0H' + pw + 'V' + ph + 'H0V0';
         dimmed = false;
         zoomMode = 'xy';
+        zoomDragged = false;
 
         zb = makeZoombox(zoomlayer, lum, xs, ys, path0);
 
@@ -340,6 +344,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
         box.w = box.r - box.l;
         box.h = box.b - box.t;
+
+        if(zoomMode) zoomDragged = true;
+        gd._dragged = zoomDragged;
 
         updateZoombox(zb, corners, box, path0, dimmed, lum);
         dimmed = true;
@@ -458,12 +465,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // no more scrolling is coming
         redrawTimer = setTimeout(function() {
             scrollViewBox = [0, 0, pw, ph];
-
-            var zoomMode;
-            if(isSubplotConstrained) zoomMode = 'xy';
-            else zoomMode = (ew ? 'x' : '') + (ns ? 'y' : '');
-
-            dragTail(zoomMode);
+            dragTail();
         }, REDRAWDELAY);
 
         e.preventDefault();
