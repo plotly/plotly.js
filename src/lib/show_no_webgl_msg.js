@@ -31,7 +31,7 @@ module.exports = function showWebGlMsg(scene) {
     };
 
     var div = document.createElement('div');
-    div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
+    div.textContent = 'Webgl is not supported by your browser - visit https://get.webgl.org for more info';
     div.style.cursor = 'pointer';
     div.style.fontSize = '24px';
     div.style.color = Color.defaults[0];
@@ -39,7 +39,7 @@ module.exports = function showWebGlMsg(scene) {
     scene.container.appendChild(div);
     scene.container.style.background = '#FFFFFF';
     scene.container.onclick = function() {
-        window.open('http://get.webgl.org');
+        window.open('https://get.webgl.org');
     };
 
     // return before setting up camera and onrender methods

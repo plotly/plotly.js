@@ -18,7 +18,7 @@ var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var lookupCarpet = require('../carpet/lookup_carpetid');
 
 module.exports = function calc(gd, trace) {
-    var carpet = trace.carpetTrace = lookupCarpet(gd, trace);
+    var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
     if(!carpet || !carpet.visible || carpet.visible === 'legendonly') return;
     var i;
 
@@ -28,7 +28,7 @@ module.exports = function calc(gd, trace) {
     trace.yaxis = carpet.yaxis;
 
     // make the calcdata array
-    var serieslen = trace.a.length;
+    var serieslen = trace._length;
     var cd = new Array(serieslen);
     var a, b;
     var needsCull = false;

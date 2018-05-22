@@ -12,11 +12,11 @@ var Registry = require('../registry');
 var SUBPLOT_PATTERN = require('./cartesian/constants').SUBPLOT_PATTERN;
 
 /**
- * Get calcdata traces(s) associated with a given subplot
+ * Get calcdata trace(s) associated with a given subplot
  *
- * @param {array} calcData (as in gd.calcdata)
- * @param {string} type subplot type
- * @param {string} subplotId subplot id to look for
+ * @param {array} calcData: as in gd.calcdata
+ * @param {string} type: subplot type
+ * @param {string} subplotId: subplot id to look for
  *
  * @return {array} array of calcdata traces
  */
@@ -36,20 +36,53 @@ exports.getSubplotCalcData = function(calcData, type, subplotId) {
 
     return subplotCalcData;
 };
-
-exports.getModuleCalcData = function(calcdata, typeOrModule) {
+/**
+ * Get calcdata trace(s) that can be plotted with a given module
+ * NOTE: this isn't necessarily just exactly matching trace type,
+ * if multiple trace types use the same plotting routine, they will be
+ * collected here.
+ * In order to not plot the same thing multiple times, we return two arrays,
+ * the calcdata we *will* plot with this module, and the ones we *won't*
+ *
+ * @param {array} calcdata: as in gd.calcdata
+ * @param {object|string|fn} arg1:
+ *  the plotting module, or its name, or its plot method
+ *
+ * @return {array[array]} [foundCalcdata, remainingCalcdata]
+ */
+exports.getModuleCalcData = function(calcdata, arg1) {
     var moduleCalcData = [];
-    var _module = typeof typeOrModule === 'string' ? Registry.getModule(typeOrModule) : typeOrModule;
-    if(!_module) return moduleCalcData;
+    var remainingCalcData = [];
+
+    var plotMethod;
+    if(typeof arg1 === 'string') {
+        plotMethod = Registry.getModule(arg1).plot;
+    } else if(typeof arg1 === 'function') {
+        plotMethod = arg1;
+    } else {
+        plotMethod = arg1.plot;
+    }
+    if(!plotMethod) {
+        return [moduleCalcData, calcdata];
+    }
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
+        if(trace.visible !== true) continue;
 
-        if((trace._module === _module) && (trace.visible === true)) moduleCalcData.push(cd);
+        // group calcdata trace not by 'module' (as the name of this function
+        // would suggest), but by 'module plot method' so that if some traces
+        // share the same module plot method (e.g. bar and histogram), we
+        // only call it one!
+        if(trace._module.plot === plotMethod) {
+            moduleCalcData.push(cd);
+        } else {
+            remainingCalcData.push(cd);
+        }
     }
 
-    return moduleCalcData;
+    return [moduleCalcData, remainingCalcData];
 };
 
 /**
@@ -89,4 +122,21 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     }
 
     return subplotData;
+};
+
+/**
+ * Get a lookup object of trace uids corresponding in a given calcdata array.
+ *
+ * @param {array} calcdata: as in gd.calcdata (or a subset)
+ * @return {object} lookup object of uids (`uid: 1`)
+ */
+exports.getUidsFromCalcData = function(calcdata) {
+    var out = {};
+
+    for(var i = 0; i < calcdata.length; i++) {
+        var trace = calcdata[i][0].trace;
+        out[trace.uid] = 1;
+    }
+
+    return out;
 };

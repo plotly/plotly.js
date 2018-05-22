@@ -25,5 +25,7 @@ module.exports = function plot(gd, ternary, moduleCalcData) {
         layerClipId: ternary._hasClipOnAxisFalse ? ternary.clipIdRelative : null
     };
 
-    scatterPlot(gd, plotinfo, moduleCalcData);
+    var scatterLayer = ternary.layers.frontplot.select('g.scatterlayer');
+
+    scatterPlot(gd, plotinfo, moduleCalcData, scatterLayer);
 };

@@ -511,6 +511,32 @@ describe('Test carpet interactions:', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('scattercarpet should be able to coexist with scatter traces', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
+
+        function _assert(exp) {
+            expect(d3.selectAll('.point').size())
+                .toBe(exp, 'number of scatter pts on graph');
+        }
+
+        Plotly.newPlot(gd, mock).then(function() {
+            _assert(12);
+
+            return Plotly.addTraces(gd, {
+                y: [1, 2, 1]
+            });
+        })
+        .then(function() {
+            _assert(15);
+            return Plotly.deleteTraces(gd, [0]);
+        })
+        .then(function() {
+            _assert(3);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('scattercarpet array attributes', function() {

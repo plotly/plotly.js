@@ -33,6 +33,7 @@ var setConvert = require('./set_convert');
  */
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options, layoutOut) {
     var letter = options.letter;
+    var id = containerOut._id;
     var font = options.font || {};
 
     var visible = coerce('visible', !options.cheateronly);
@@ -69,8 +70,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // if axis.color was provided, use it for fonts too; otherwise,
     // inherit from global font color in case that was provided.
     var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : font.color;
+    // try to get default title from splom trace, fallback to graph-wide value
+    var dfltTitle = ((layoutOut._splomAxes || {})[letter] || {})[id] || layoutOut._dfltTitle[letter];
 
-    coerce('title', layoutOut._dfltTitle[letter]);
+    coerce('title', dfltTitle);
     Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),

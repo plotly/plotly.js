@@ -15,7 +15,6 @@ var Axes = require('../../plots/cartesian/axes');
 
 var histogram2dCalc = require('../histogram2d/calc');
 var colorscaleCalc = require('../../components/colorscale/calc');
-var hasColumns = require('./has_columns');
 var convertColumnData = require('./convert_column_xyz');
 var maxRowLength = require('./max_row_length');
 var clean2dArray = require('./clean_2d_array');
@@ -58,10 +57,12 @@ module.exports = function calc(gd, trace) {
         z = binned.z;
     }
     else {
-        if(hasColumns(trace)) {
+        var zIn = trace.z;
+        if(Lib.isArray1D(zIn)) {
             convertColumnData(trace, xa, ya, 'x', 'y', ['z']);
-            x = trace.x;
-            y = trace.y;
+            x = trace._x;
+            y = trace._y;
+            zIn = trace._z;
         } else {
             x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
             y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
@@ -72,7 +73,7 @@ module.exports = function calc(gd, trace) {
         y0 = trace.y0 || 0;
         dy = trace.dy || 1;
 
-        z = clean2dArray(trace.z, trace.transpose);
+        z = clean2dArray(zIn, trace.transpose);
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
@@ -131,7 +132,7 @@ module.exports = function calc(gd, trace) {
         x: xArray,
         y: yArray,
         z: z,
-        text: trace.text
+        text: trace._text || trace.text
     };
 
     if(xIn && xIn.length === xArray.length - 1) cd0.xCenter = xIn;

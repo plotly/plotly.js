@@ -12,7 +12,6 @@ var Lib = require('../../lib');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 var attributes = require('./attributes');
-var calc = require('./calc');
 
 var xyAttrs = {
     error_x: Lib.extendFlat({}, attributes),
@@ -48,37 +47,13 @@ module.exports = {
 
     supplyDefaults: require('./defaults'),
 
-    calc: calc,
-    calcFromTrace: calcFromTrace,
+    calc: require('./calc'),
+    makeComputeError: require('./compute_error'),
 
     plot: require('./plot'),
     style: require('./style'),
     hoverInfo: hoverInfo
 };
-
-function calcFromTrace(trace, layout) {
-    var x = trace.x || [],
-        y = trace.y || [],
-        len = x.length || y.length;
-
-    var calcdataMock = new Array(len);
-
-    for(var i = 0; i < len; i++) {
-        calcdataMock[i] = {
-            x: x[i],
-            y: y[i]
-        };
-    }
-
-    calcdataMock[0].trace = trace;
-
-    calc({
-        calcdata: [calcdataMock],
-        _fullLayout: layout
-    });
-
-    return calcdataMock;
-}
 
 function hoverInfo(calcPoint, trace, hoverPoint) {
     if((trace.error_y || {}).visible) {

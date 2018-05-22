@@ -530,6 +530,63 @@ describe('axis zoom/pan and main plot zoom', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('updates linked axes when there are constraints (axes_scaleanchor mock)', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/axes_scaleanchor.json'));
+
+        function _assert(y3rng, y4rng) {
+            expect(gd._fullLayout.yaxis3.range).toBeCloseToArray(y3rng, 2, 'y3 rng');
+            expect(gd._fullLayout.yaxis4.range).toBeCloseToArray(y4rng, 2, 'y3 rng');
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            _assert([-0.36, 4.36], [-0.36, 4.36]);
+        })
+        .then(doDrag('x2y3', 'nsew', 0, 100))
+        .then(function() {
+            _assert([-0.36, 2], [0.82, 3.18]);
+        })
+        .then(doDrag('x2y4', 'nsew', 0, 50))
+        .then(function() {
+            _assert([0.41, 1.23], [1.18, 2]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('updates axis layout when the constraints require it', function(done) {
+        function _assert(xGridCnt) {
+            var xGrid = d3.select(gd).selectAll('.gridlayer > .x > path.xgrid');
+            expect(xGrid.size()).toEqual(xGridCnt);
+        }
+
+        Plotly.plot(gd, [{
+            x: [1, 1.5, 0, -1.5, -1, -1.5, 0, 1.5, 1],
+            y: [0, 1.5, 1, 1.5, 0, -1.5, -1, -1.5, 0],
+            line: {shape: 'spline'}
+        }], {
+            xaxis: {constrain: 'domain'},
+            yaxis: {scaleanchor: 'x'},
+            width: 700,
+            height: 500
+        })
+        .then(function() {
+            _assert(2);
+
+            return Plotly.relayout(gd, {
+                'xaxis.range[0]': 0,
+                'xaxis.range[1]': 1,
+                'yaxis.range[0]': 0,
+                'yaxis.range[1]': 1
+            });
+        })
+        .then(function() {
+            _assert(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Event data:', function() {

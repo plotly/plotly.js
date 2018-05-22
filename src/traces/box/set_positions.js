@@ -25,21 +25,23 @@ function setPositions(gd, plotinfo) {
         var minPad = 0;
         var maxPad = 0;
 
-        // make list of boxes
+        // make list of boxes / candlesticks
+        // For backward compatibility, candlesticks are treated as if they *are* box traces here
         for(var j = 0; j < calcdata.length; j++) {
             var cd = calcdata[j];
             var t = cd[0].t;
             var trace = cd[0].trace;
 
-            if(trace.visible === true && trace.type === 'box' &&
+            if(trace.visible === true &&
+                    (trace.type === 'box' || trace.type === 'candlestick') &&
                     !t.empty &&
-                    trace.orientation === orientation &&
+                    (trace.orientation || 'v') === orientation &&
                     trace.xaxis === xa._id &&
                     trace.yaxis === ya._id
               ) {
                 boxList.push(j);
 
-                if(trace.boxpoints !== false) {
+                if(trace.boxpoints) {
                     minPad = Math.max(minPad, trace.jitter - trace.pointpos - 1);
                     maxPad = Math.max(maxPad, trace.jitter + trace.pointpos - 1);
                 }

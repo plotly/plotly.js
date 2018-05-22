@@ -143,7 +143,7 @@ var gridAttrs = {
         values: ['bottom', 'bottom plot', 'top plot', 'top'],
         dflt: 'bottom plot',
         role: 'info',
-        editType: 'ticks',
+        editType: 'plot',
         description: [
             'Sets where the x axis labels and titles go. *bottom* means',
             'the very bottom of the grid. *bottom plot* is the lowest plot',
@@ -155,7 +155,7 @@ var gridAttrs = {
         values: ['left', 'left plot', 'right plot', 'right'],
         dflt: 'left plot',
         role: 'info',
-        editType: 'ticks',
+        editType: 'plot',
         description: [
             'Sets where the y axis labels and titles go. *left* means',
             'the very left edge of the grid. *left plot* is the leftmost plot',
@@ -165,15 +165,30 @@ var gridAttrs = {
     editType: 'plot'
 };
 
+function getAxes(layout, grid, axLetter) {
+    var gridVal = grid[axLetter + 'axes'];
+    var splomVal = Object.keys((layout._splomAxes || {})[axLetter] || {});
+
+    if(Array.isArray(gridVal)) return gridVal;
+    if(splomVal.length) return splomVal;
+}
+
 // the shape of the grid - this needs to be done BEFORE supplyDataDefaults
 // so that non-subplot traces can place themselves in the grid
 function sizeDefaults(layoutIn, layoutOut) {
-    var gridIn = layoutIn.grid;
-    if(!gridIn) return;
+    var gridIn = layoutIn.grid || {};
+    var xAxes = getAxes(layoutOut, gridIn, 'x');
+    var yAxes = getAxes(layoutOut, gridIn, 'y');
+
+    if(!layoutIn.grid && !xAxes && !yAxes) return;
 
     var hasSubplotGrid = Array.isArray(gridIn.subplots) && Array.isArray(gridIn.subplots[0]);
-    var hasXaxes = Array.isArray(gridIn.xaxes);
-    var hasYaxes = Array.isArray(gridIn.yaxes);
+    var hasXaxes = Array.isArray(xAxes);
+    var hasYaxes = Array.isArray(yAxes);
+    var isSplomGenerated = (
+        hasXaxes && xAxes !== gridIn.xaxes &&
+        hasYaxes && yAxes !== gridIn.yaxes
+    );
 
     var dfltRows, dfltColumns;
 
@@ -182,11 +197,11 @@ function sizeDefaults(layoutIn, layoutOut) {
         dfltColumns = gridIn.subplots[0].length;
     }
     else {
-        if(hasYaxes) dfltRows = gridIn.yaxes.length;
-        if(hasXaxes) dfltColumns = gridIn.xaxes.length;
+        if(hasYaxes) dfltRows = yAxes.length;
+        if(hasXaxes) dfltColumns = xAxes.length;
     }
 
-    var gridOut = layoutOut.grid = {};
+    var gridOut = {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(gridIn, gridOut, gridAttrs, attr, dflt);
@@ -206,17 +221,28 @@ function sizeDefaults(layoutIn, layoutOut) {
     var rowOrder = coerce('roworder');
     var reversed = rowOrder === 'top to bottom';
 
+    var dfltGapX = hasSubplotGrid ? 0.2 : 0.1;
+    var dfltGapY = hasSubplotGrid ? 0.3 : 0.1;
+
+    var dfltSideX, dfltSideY;
+    if(isSplomGenerated && layoutOut._splomGridDflt) {
+        dfltSideX = layoutOut._splomGridDflt.xside;
+        dfltSideY = layoutOut._splomGridDflt.yside;
+    }
+
     gridOut._domains = {
-        x: fillGridPositions('x', coerce, hasSubplotGrid ? 0.2 : 0.1, columns),
-        y: fillGridPositions('y', coerce, hasSubplotGrid ? 0.3 : 0.1, rows, reversed)
+        x: fillGridPositions('x', coerce, dfltGapX, dfltSideX, columns),
+        y: fillGridPositions('y', coerce, dfltGapY, dfltSideY, rows, reversed)
     };
+
+    layoutOut.grid = gridOut;
 }
 
 // coerce x or y sizing attributes and return an array of domains for this direction
-function fillGridPositions(axLetter, coerce, dfltGap, len, reversed) {
+function fillGridPositions(axLetter, coerce, dfltGap, dfltSide, len, reversed) {
     var dirGap = coerce(axLetter + 'gap', dfltGap);
     var domain = coerce('domain.' + axLetter);
-    coerce(axLetter + 'side');
+    coerce(axLetter + 'side', dfltSide);
 
     var out = new Array(len);
     var start = domain[0];
@@ -236,7 +262,7 @@ function contentDefaults(layoutIn, layoutOut) {
     // make sure we got to the end of handleGridSizing
     if(!gridOut || !gridOut._domains) return;
 
-    var gridIn = layoutIn.grid;
+    var gridIn = layoutIn.grid || {};
     var subplots = layoutOut._subplots;
     var hasSubplotGrid = gridOut._hasSubplotGrid;
     var rows = gridOut.rows;
@@ -282,8 +308,10 @@ function contentDefaults(layoutIn, layoutOut) {
         }
     }
     else {
-        gridOut.xaxes = fillGridAxes(gridIn.xaxes, subplots.xaxis, columns, axisMap, 'x');
-        gridOut.yaxes = fillGridAxes(gridIn.yaxes, subplots.yaxis, rows, axisMap, 'y');
+        var xAxes = getAxes(layoutOut, gridIn, 'x');
+        var yAxes = getAxes(layoutOut, gridIn, 'y');
+        gridOut.xaxes = fillGridAxes(xAxes, subplots.xaxis, columns, axisMap, 'x');
+        gridOut.yaxes = fillGridAxes(yAxes, subplots.yaxis, rows, axisMap, 'y');
     }
 
     var anchors = gridOut._anchors = {};

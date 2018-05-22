@@ -26,8 +26,6 @@ module.exports = function handleABDefaults(traceIn, traceOut, fullLayout, coerce
     }
 
     mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor);
-
-    return;
 };
 
 function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {

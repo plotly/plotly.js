@@ -48,12 +48,11 @@ module.exports = function calc(gd, trace) {
     var dPos = dv.minDiff / 2;
     var posBins = makeBins(posDistinct, dPos);
 
-    var vLen = val.length;
     var pLen = posDistinct.length;
     var ptsPerBin = initNestedArray(pLen);
 
     // bin pts info per position bins
-    for(i = 0; i < vLen; i++) {
+    for(i = 0; i < trace._length; i++) {
         var v = val[i];
         if(!isNumeric(v)) continue;
 
@@ -142,11 +141,6 @@ module.exports = function calc(gd, trace) {
                 uf: _(gd, 'upper fence:')
             }
         };
-
-        // don't show labels in candlestick hover labels
-        if(trace._fullInput && trace._fullInput.type === 'candlestick') {
-            delete cd[0].t.labels;
-        }
 
         fullLayout[numKey]++;
         return cd;

@@ -13,7 +13,6 @@ describe('Test Plots', function() {
     'use strict';
 
     describe('Plots.supplyDefaults', function() {
-
         it('should not throw an error when gd is a plain object', function() {
             var height = 100,
                 gd = {
@@ -154,6 +153,26 @@ describe('Test Plots', function() {
 
             testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
         });
+
+        it('should sort base plot modules on fullLayout object', function() {
+            var gd = Lib.extendDeep({}, require('@mocks/plot_types.json'));
+            gd.data.unshift({type: 'scattergl'});
+            gd.data.push({type: 'splom'});
+
+            supplyAllDefaults(gd);
+            var names = gd._fullLayout._basePlotModules.map(function(m) {
+                return m.name;
+            });
+
+            expect(names).toEqual([
+                'splom',
+                'cartesian',
+                'gl3d',
+                'geo',
+                'pie',
+                'ternary'
+            ]);
+        });
     });
 
     describe('Plots.supplyLayoutGlobalDefaults should', function() {
@@ -257,12 +276,12 @@ describe('Test Plots', function() {
 
     describe('Plots.supplyTransformDefaults', function() {
         it('should accept an empty layout when transforms present', function() {
-            var traceOut = {};
+            var traceOut = {y: [1], _length: 1};
             Plots.supplyTransformDefaults({}, traceOut, {
                 _globalTransforms: [{ type: 'filter'}]
             });
 
-            // This isn't particularly interseting. More relevant is that
+            // This isn't particularly interesting. More relevant is that
             // the above supplyTransformDefaults call didn't fail due to
             // missing transformModules data.
             expect(traceOut.transforms.length).toEqual(1);
@@ -888,6 +907,35 @@ describe('grids', function() {
             expect(gd._fullLayout[axName]).toBeUndefined(axName);
         });
     }
+
+    it('does not barf on invalid grid objects', function(done) {
+        Plotly.newPlot(gd, makeData(['xy']), {grid: true})
+        .then(function() {
+            expect(gd._fullLayout.grid).toBeUndefined();
+
+            return Plotly.newPlot(gd, makeData(['xy']), {grid: {}});
+        })
+        .then(function() {
+            expect(gd._fullLayout.grid).toBeUndefined();
+
+            return Plotly.newPlot(gd, makeData(['xy']), {grid: {rows: 1, columns: 1}});
+        })
+        .then(function() {
+            expect(gd._fullLayout.grid).toBeUndefined();
+
+            // check Plotly.validate on the same grids too
+            [true, {}, {rows: 1, columns: 1}].forEach(function(gridVal) {
+                var validation = Plotly.validate([], {grid: gridVal});
+                expect(validation.length).toBe(1);
+                expect(validation[0]).toEqual(jasmine.objectContaining({
+                    astr: 'grid',
+                    code: 'unused'
+                }));
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 
     it('defaults to a coupled layout', function(done) {
         Plotly.newPlot(gd,

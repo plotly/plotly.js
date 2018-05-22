@@ -1,6 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var setConvert = require('@src/plots/cartesian/set_convert');
+var name2id = require('@src/plots/cartesian/axis_ids').name2id;
 
 var RangeSlider = require('@src/components/rangeslider');
 var constants = require('@src/components/rangeslider/constants');
@@ -421,7 +422,6 @@ describe('Rangeslider visibility property', function() {
     });
 
     it('should clear traces in range plot when needed', function(done) {
-
         function count(query) {
             return d3.select(getRangeSlider()).selectAll(query).size();
         }
@@ -467,12 +467,12 @@ describe('Rangeslider visibility property', function() {
             }]);
         })
         .then(function() {
-            expect(count('g.imagelayer > g.hm')).toEqual(1);
+            expect(count('g.heatmaplayer > g.hm')).toEqual(1);
 
             return Plotly.restyle(gd, 'visible', false);
         })
         .then(function() {
-            expect(count('g.imagelayer > g.hm')).toEqual(0);
+            expect(count('g.heatmaplayer > g.hm')).toEqual(0);
 
             return Plotly.restyle(gd, {
                 visible: true,
@@ -480,25 +480,25 @@ describe('Rangeslider visibility property', function() {
             });
         })
         .then(function() {
-            expect(count('g.maplayer > g.contour')).toEqual(1);
+            expect(count('g.contourlayer > g.contour')).toEqual(1);
 
             return Plotly.restyle(gd, 'type', 'heatmap');
         })
         .then(function() {
-            expect(count('g.imagelayer > g.hm')).toEqual(1);
-            expect(count('g.maplayer > g.contour')).toEqual(0);
+            expect(count('g.heatmaplayer > g.hm')).toEqual(1);
+            expect(count('g.contourlayer > g.contour')).toEqual(0);
 
             return Plotly.restyle(gd, 'type', 'contour');
         })
         .then(function() {
-            expect(count('g.imagelayer > g.hm')).toEqual(0);
-            expect(count('g.maplayer > g.contour')).toEqual(1);
+            expect(count('g.heatmaplayer > g.hm')).toEqual(0);
+            expect(count('g.contourlayer > g.contour')).toEqual(1);
 
             return Plotly.deleteTraces(gd, [0]);
         })
         .then(function() {
-            expect(count('g.imagelayer > g.hm')).toEqual(0);
-            expect(count('g.maplayer > g.contour')).toEqual(0);
+            expect(count('g.heatmaplayer > g.hm')).toEqual(0);
+            expect(count('g.contourlayer > g.contour')).toEqual(0);
         })
         .catch(failTest)
         .then(done);
@@ -509,7 +509,11 @@ describe('Rangeslider handleDefaults function', function() {
 
     function _supply(layoutIn, layoutOut, axName) {
         setConvert(layoutOut[axName]);
+        layoutOut[axName]._id = name2id(axName);
+        if(!layoutOut._requestRangeslider) layoutOut._requestRangeslider = {};
         RangeSlider.handleDefaults(layoutIn, layoutOut, axName);
+        // we don't care about this after it's done its job
+        delete layoutOut._requestRangeslider;
     }
 
     it('should not coerce anything if rangeslider isn\'t set', function() {
@@ -519,6 +523,7 @@ describe('Rangeslider handleDefaults function', function() {
 
         _supply(layoutIn, layoutOut, 'xaxis');
         expect(layoutIn).toEqual(expected);
+        expect(layoutOut.xaxis.rangeslider).toBeUndefined();
     });
 
     it('should not mutate layoutIn', function() {
@@ -544,6 +549,27 @@ describe('Rangeslider handleDefaults function', function() {
             };
 
         _supply(layoutIn, layoutOut, 'xaxis');
+        expect(layoutOut.xaxis.rangeslider).toEqual(expected);
+    });
+
+    it('should set defaults if rangeslider is requested', function() {
+        var layoutIn = { xaxis: {}},
+            layoutOut = { xaxis: {}, _requestRangeslider: {x: true} },
+            expected = {
+                visible: true,
+                autorange: true,
+                thickness: 0.15,
+                bgcolor: '#fff',
+                borderwidth: 0,
+                bordercolor: '#444',
+                _input: {}
+            };
+
+        _supply(layoutIn, layoutOut, 'xaxis');
+        // in fact we DO mutate layoutIn - which we should probably try not to do,
+        // but that's a problem for another time.
+        // see https://github.com/plotly/plotly.js/issues/1473
+        expect(layoutIn).toEqual({xaxis: {rangeslider: {}}});
         expect(layoutOut.xaxis.rangeslider).toEqual(expected);
     });
 

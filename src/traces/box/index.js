@@ -17,14 +17,15 @@ Box.supplyLayoutDefaults = require('./layout_defaults').supplyLayoutDefaults;
 Box.calc = require('./calc');
 Box.setPositions = require('./set_positions').setPositions;
 Box.plot = require('./plot').plot;
-Box.style = require('./style');
+Box.style = require('./style').style;
+Box.styleOnSelect = require('./style').styleOnSelect;
 Box.hoverPoints = require('./hover').hoverPoints;
 Box.selectPoints = require('./select');
 
 Box.moduleType = 'trace';
 Box.name = 'box';
 Box.basePlotModule = require('../../plots/cartesian');
-Box.categories = ['cartesian', 'symbols', 'oriented', 'box-violin', 'showLegend'];
+Box.categories = ['cartesian', 'svg', 'symbols', 'oriented', 'box-violin', 'showLegend', 'boxLayout', 'zoomScale'];
 Box.meta = {
     description: [
         'In vertical (horizontal) box plots,',

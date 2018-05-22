@@ -15,7 +15,7 @@ var polygon = require('../../lib/polygon');
 
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
-var style = require('./style');
+var style = require('./style').style;
 
 module.exports = function plot(gd, geo, calcData) {
     for(var i = 0; i < calcData.length; i++) {

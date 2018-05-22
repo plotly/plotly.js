@@ -177,6 +177,27 @@ which shows the baseline image, the generated image, the diff and the json mocks
 
 To view the results of a run on CircleCI, download the `build/test_images/` and `build/test_images_diff/` artifacts into your local repo and then run `npm run start-image_viewer`.
 
+### Writing interaction tests
+Keep in mind that the interaction coordinates are relative to the top-left corner of the plot, including the margins. To produce a reliable interaction test, 
+it may be necessary to fix the width, height, margins, X axis range and Y axis range of the plot. For example:
+
+```
+Plotly.newPlot(gd, [{
+    x: [1, 1, 1, 2, 2, 2, 3, 3, 3],
+    y: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+    mode: 'markers'
+}], {
+    width: 400, height: 400,
+    margin: {l: 100, r: 100, t: 100, b: 100},
+    xaxis: {range: [0, 4]},
+    yaxis: {range: [0, 4]}
+});
+```
+
+This will produce the following plot, and say you want to simulate a selection path of (175, 175) to (225, 225):
+
+<img src="https://user-images.githubusercontent.com/31989842/38890553-0bc6190c-4282-11e8-8efc-077bf05ca565.png">
+
 
 ## Repo organization
 

@@ -19,22 +19,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var locations = coerce('locations');
-
-    var len;
-    if(locations) len = locations.length;
-
-    if(!locations || !len) {
-        traceOut.visible = false;
-        return;
-    }
-
     var z = coerce('z');
-    if(!Lib.isArrayOrTypedArray(z)) {
+
+    if(!(locations && locations.length && Lib.isArrayOrTypedArray(z) && z.length)) {
         traceOut.visible = false;
         return;
     }
-
-    if(z.length > len) traceOut.z = z.slice(0, len);
+    traceOut._length = Math.min(locations.length, z.length);
 
     coerce('locationmode');
 

@@ -1,23 +1,23 @@
 Autoscale                                              // components/modebar/buttons.js:137
 Box Select                                             // components/modebar/buttons.js:101
-Click to enter Colorscale title                        // plots/plots.js:317
-Click to enter Component A title                       // plots/ternary/ternary.js:394
-Click to enter Component B title                       // plots/ternary/ternary.js:409
-Click to enter Component C title                       // plots/ternary/ternary.js:420
-Click to enter Plot title                              // plot_api/plot_api.js:598
-Click to enter X axis title                            // plots/plots.js:315
-Click to enter Y axis title                            // plots/plots.js:316
-Click to enter radial axis title                       // plots/polar/polar.js:376
+Click to enter Colorscale title                        // plots/plots.js:326
+Click to enter Component A title                       // plots/ternary/ternary.js:390
+Click to enter Component B title                       // plots/ternary/ternary.js:405
+Click to enter Component C title                       // plots/ternary/ternary.js:416
+Click to enter Plot title                              // plot_api/plot_api.js:514
+Click to enter X axis title                            // plots/plots.js:324
+Click to enter Y axis title                            // plots/plots.js:325
+Click to enter radial axis title                       // plots/polar/polar.js:377
 Compare data on hover                                  // components/modebar/buttons.js:165
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:89
-Double-click to zoom back out                          // plots/cartesian/dragbox.js:969
+Double-click to zoom back out                          // plots/cartesian/dragbox.js:1005
 Download plot as a png                                 // components/modebar/buttons.js:50
 Edit in Chart Studio                                   // components/modebar/buttons.js:74
 IE only supports svg.  Changing format to svg.         // components/modebar/buttons.js:58
 Lasso Select                                           // components/modebar/buttons.js:110
 Orbital rotation                                       // components/modebar/buttons.js:274
 Pan                                                    // components/modebar/buttons.js:92
-Produced with Plotly                                   // components/modebar/modebar.js:256
+Produced with Plotly                                   // components/modebar/modebar.js:259
 Reset                                                  // components/modebar/buttons.js:430
 Reset axes                                             // components/modebar/buttons.js:146
 Reset camera to default                                // components/modebar/buttons.js:312
@@ -34,25 +34,25 @@ Turntable rotation                                     // components/modebar/but
 Zoom                                                   // components/modebar/buttons.js:83
 Zoom in                                                // components/modebar/buttons.js:119
 Zoom out                                               // components/modebar/buttons.js:128
-close:                                                 // traces/ohlc/transform.js:139
-high:                                                  // traces/ohlc/transform.js:137
+close:                                                 // traces/ohlc/calc.js:104
+high:                                                  // traces/ohlc/calc.js:102
 incoming flow count:                                   // traces/sankey/plot.js:142
 kde:                                                   // traces/violin/calc.js:73
 lat:                                                   // traces/scattergeo/calc.js:48
 lon:                                                   // traces/scattergeo/calc.js:49
-low:                                                   // traces/ohlc/transform.js:138
-lower fence:                                           // traces/box/calc.js:141
-max:                                                   // traces/box/calc.js:139
-mean ± σ:                                              // traces/box/calc.js:140
-mean:                                                  // traces/box/calc.js:140
-median:                                                // traces/box/calc.js:135
-min:                                                   // traces/box/calc.js:136
-new text                                               // plots/plots.js:318
-open:                                                  // traces/ohlc/transform.js:136
+low:                                                   // traces/ohlc/calc.js:103
+lower fence:                                           // traces/box/calc.js:140
+max:                                                   // traces/box/calc.js:138
+mean ± σ:                                              // traces/box/calc.js:139
+mean:                                                  // traces/box/calc.js:139
+median:                                                // traces/box/calc.js:134
+min:                                                   // traces/box/calc.js:135
+new text                                               // plots/plots.js:327
+open:                                                  // traces/ohlc/calc.js:101
 outgoing flow count:                                   // traces/sankey/plot.js:143
-q1:                                                    // traces/box/calc.js:137
-q3:                                                    // traces/box/calc.js:138
+q1:                                                    // traces/box/calc.js:136
+q3:                                                    // traces/box/calc.js:137
 source:                                                // traces/sankey/plot.js:140
 target:                                                // traces/sankey/plot.js:141
-trace                                                  // plots/plots.js:320
-upper fence:                                           // traces/box/calc.js:142
+trace                                                  // plots/plots.js:329
+upper fence:                                           // traces/box/calc.js:141

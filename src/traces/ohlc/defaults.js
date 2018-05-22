@@ -11,19 +11,15 @@
 
 var Lib = require('../../lib');
 var handleOHLC = require('./ohlc_defaults');
-var handleDirectionDefaults = require('./direction_defaults');
 var attributes = require('./attributes');
-var helpers = require('./helpers');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    helpers.pushDummyTransformOpts(traceIn, traceOut);
-
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
     var len = handleOHLC(traceIn, traceOut, coerce, layout);
-    if(len === 0) {
+    if(!len) {
         traceOut.visible = false;
         return;
     }
@@ -36,11 +32,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
     coerce('tickwidth');
+
+    layout._requestRangeslider[traceOut.xaxis] = true;
 };
 
 function handleDirection(traceIn, traceOut, coerce, direction) {
-    handleDirectionDefaults(traceIn, traceOut, coerce, direction);
-
     coerce(direction + '.line.color');
     coerce(direction + '.line.width', traceOut.line.width);
     coerce(direction + '.line.dash', traceOut.line.dash);

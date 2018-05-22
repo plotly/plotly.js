@@ -220,6 +220,25 @@ describe('Events', function() {
             expect(eventBaton).toBe(3);
             expect(result).toBe('pong');
         });
+
+        it('works with *once* event handlers', function() {
+            var eventBaton = 0;
+
+            Events.init(plotDiv);
+
+            plotDiv.once('ping', function() {
+                eventBaton++;
+                return 'pong';
+            });
+
+            var result = Events.triggerHandler(plotDiv, 'ping');
+            expect(result).toBe('pong');
+            expect(eventBaton).toBe(1);
+
+            var nop = Events.triggerHandler(plotDiv, 'ping');
+            expect(nop).toBeUndefined();
+            expect(eventBaton).toBe(1);
+        });
     });
 
     describe('purge', function() {

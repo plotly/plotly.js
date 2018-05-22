@@ -24,7 +24,8 @@ var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
 var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
-var prepSelect = require('../cartesian/select');
+var prepSelect = require('../cartesian/select').prepSelect;
+var clearSelect = require('../cartesian/select').clearSelect;
 var constants = require('../cartesian/constants');
 
 function Ternary(options, fullLayout) {
@@ -375,9 +376,9 @@ proto.drawAxes = function(doTitles) {
         caxis = _this.caxis;
     // 3rd arg true below skips titles, so we can configure them
     // correctly later on.
-    Axes.doTicks(gd, aaxis, true);
-    Axes.doTicks(gd, baxis, true);
-    Axes.doTicks(gd, caxis, true);
+    Axes.doTicksSingle(gd, aaxis, true);
+    Axes.doTicksSingle(gd, baxis, true);
+    Axes.doTicksSingle(gd, caxis, true);
 
     if(doTitles) {
         var apad = Math.max(aaxis.showticklabels ? aaxis.tickfont.size / 2 : 0,
@@ -478,7 +479,7 @@ proto.initInteractions = function() {
                 dragOptions.moveFn = plotDrag;
                 dragOptions.doneFn = dragDone;
                 panPrep();
-                clearSelect();
+                clearSelect(zoomContainer);
             }
             else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
@@ -536,7 +537,7 @@ proto.initInteractions = function() {
             })
             .attr('d', 'M0,0Z');
 
-        clearSelect();
+        clearSelect(zoomContainer);
     }
 
     function getAFrac(x, y) { return 1 - (y / _this.h); }
@@ -678,13 +679,6 @@ proto.initInteractions = function() {
         attrs[_this.id + '.caxis.min'] = mins.c;
 
         Registry.call('relayout', gd, attrs);
-    }
-
-    function clearSelect() {
-        // until we get around to persistent selections, remove the outline
-        // here. The selection itself will be removed when the plot redraws
-        // at the end.
-        zoomContainer.selectAll('.select-outline').remove();
     }
 
     // finally, set up hover and click

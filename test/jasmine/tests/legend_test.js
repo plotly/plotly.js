@@ -9,11 +9,10 @@ var helpers = require('@src/components/legend/helpers');
 var anchorUtils = require('@src/components/legend/anchor_utils');
 
 var d3 = require('d3');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-
 
 describe('legend defaults', function() {
     'use strict';
@@ -538,7 +537,7 @@ describe('legend relayout update', function() {
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(1);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -575,7 +574,7 @@ describe('legend relayout update', function() {
         }).then(function() {
             assertLegendStyle('rgb(0, 0, 255)', 'rgb(255, 0, 0)', 10);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -907,7 +906,7 @@ describe('legend interaction', function() {
             .then(function() {
                 assertVisible(gd, [true, true, true, true]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -920,11 +919,11 @@ describe('legend interaction', function() {
                 x: [1, 2, 3],
                 y: [5, 4, 3]
             }, {
-                x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
-                y: [1, 3, 2, 4, 3, 5, 4, 6, 5, 7, 6, 8, 7, 9],
+                x: [1, 2, 3, 4, 5, 6, 7, 8],
+                y: [1, 3, 2, 4, 3, 5, 4, 6],
                 transforms: [{
                     type: 'groupby',
-                    groups: [1, 2, 1, 2, 3, 4, 3, 4, 5, 6, 5, 6, 7, 8]
+                    groups: [1, 2, 1, 2, 3, 4, 3, 4]
                 }]
             }],
             config: {editable: true}
@@ -947,36 +946,69 @@ describe('legend interaction', function() {
             }).then(delay(20));
         }
 
+        function assertLabels(expected) {
+            var labels = [];
+            d3.selectAll('text.legendtext').each(function() {
+                labels.push(this.textContent);
+            });
+            expect(labels).toEqual(expected);
+        }
+
         it('sets and unsets trace group names', function(done) {
+            assertLabels(['trace 0', '1 (trace 1)', '2 (trace 1)', '3 (trace 1)', '4 (trace 1)']);
             // Set the name of the first trace:
             _setValue(0, 'foo').then(function() {
                 expect(gd.data[0].name).toEqual('foo');
-            }).then(function() {
+                // labels shorter than half the longest get padded with spaces to match the longest length
+                assertLabels(['foo        ', '1 (trace 1)', '2 (trace 1)', '3 (trace 1)', '4 (trace 1)']);
+
                 // Set the name of the third legend item:
-                return _setValue(3, 'bar');
+                return _setValue(3, 'barbar');
             }).then(function() {
                 expect(gd.data[1].transforms[0].styles).toEqual([
-                    {value: {name: 'bar'}, target: 3}
+                    {value: {name: 'barbar'}, target: 3}
                 ]);
-            }).then(function() {
-                return _setValue(4, 'asdf');
+                assertLabels(['foo        ', '1 (trace 1)', '2 (trace 1)', 'barbar', '4 (trace 1)']);
+
+                return _setValue(2, 'asdf');
             }).then(function() {
                 expect(gd.data[1].transforms[0].styles).toEqual([
-                    {value: {name: 'bar'}, target: 3},
-                    {value: {name: 'asdf'}, target: 4}
+                    {value: {name: 'barbar'}, target: 3},
+                    {value: {name: 'asdf'}, target: 2}
                 ]);
-            }).then(function() {
-                // Unset the group names:
+                assertLabels(['foo        ', '1 (trace 1)', 'asdf       ', 'barbar', '4 (trace 1)']);
+
+                // Clear the group names:
                 return _setValue(3, '');
             }).then(function() {
-                return _setValue(4, '');
+                assertLabels(['foo        ', '1 (trace 1)', 'asdf       ', '           ', '4 (trace 1)']);
+                return _setValue(2, '');
             }).then(function() {
-                // Verify the group names have been cleaned up:
+                // Verify the group names have been cleared:
                 expect(gd.data[1].transforms[0].styles).toEqual([
-                    {target: 3},
-                    {target: 4}
+                    {target: 3, value: {name: ''}},
+                    {target: 2, value: {name: ''}}
                 ]);
-            }).catch(fail).then(done);
+                assertLabels(['foo        ', '1 (trace 1)', '           ', '           ', '4 (trace 1)']);
+
+                return _setValue(0, '');
+            }).then(function() {
+                expect(gd.data[0].name).toEqual('');
+                assertLabels(['           ', '1 (trace 1)', '           ', '           ', '4 (trace 1)']);
+
+                return _setValue(0, 'boo~~~');
+            }).then(function() {
+                expect(gd.data[0].name).toEqual('boo~~~');
+                assertLabels(['boo~~~', '1 (trace 1)', '           ', '           ', '4 (trace 1)']);
+
+                return _setValue(2, 'hoo');
+            }).then(function() {
+                expect(gd.data[1].transforms[0].styles).toEqual([
+                    {target: 3, value: {name: ''}},
+                    {target: 2, value: {name: 'hoo'}}
+                ]);
+                assertLabels(['boo~~~', '1 (trace 1)', 'hoo        ', '           ', '4 (trace 1)']);
+            }).catch(failTest).then(done);
         });
     });
 
@@ -1002,9 +1034,13 @@ describe('legend interaction', function() {
             };
         }
 
+        function extractVisibilities(data) {
+            return data.map(function(trace) { return trace.visible; });
+        }
+
         function assertVisible(expectation) {
             return function() {
-                var actual = gd._fullData.map(function(trace) { return trace.visible; });
+                var actual = extractVisibilities(gd._fullData);
                 expect(actual).toEqual(expectation);
             };
         }
@@ -1023,7 +1059,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, 'legendonly', true]))
                     .then(click(0))
                     .then(assertVisible([false, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('clicking once toggles true -> legendonly', function(done) {
@@ -1031,7 +1067,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, 'legendonly', true]))
                     .then(click(1))
                     .then(assertVisible([false, 'legendonly', 'legendonly']))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('double-clicking isolates a visible trace ', function(done) {
@@ -1040,14 +1076,14 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, true]))
                     .then(click(0, 2))
                     .then(assertVisible([false, true, 'legendonly']))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('double-clicking an isolated trace shows all non-hidden traces', function(done) {
                 Promise.resolve()
                     .then(click(0, 2))
                     .then(assertVisible([false, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
         });
 
@@ -1077,7 +1113,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, 'legendonly', true, 'legendonly']))
                     .then(click(1))
                     .then(assertVisible([false, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('isolates legendgroups as a whole', function(done) {
@@ -1086,7 +1122,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, 'legendonly', true]))
                     .then(click(1, 2))
                     .then(assertVisible([false, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
         });
 
@@ -1119,7 +1155,7 @@ describe('legend interaction', function() {
             it('computes the initial visibility correctly', function(done) {
                 Promise.resolve()
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('toggles the visibility of a non-groupby trace in the presence of groupby traces', function(done) {
@@ -1128,7 +1164,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, 'legendonly', true, true, true, true, true]))
                     .then(click(1))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('toggles the visibility of the first group in a groupby trace', function(done) {
@@ -1137,7 +1173,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, 'legendonly', true, true, true, true, true, true]))
                     .then(click(0))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('toggles the visibility of the third group in a groupby trace', function(done) {
@@ -1146,7 +1182,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, true, true, 'legendonly', true, true, true]))
                     .then(click(3))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('double-clicking isolates a non-groupby trace', function(done) {
@@ -1155,7 +1191,7 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, true, 'legendonly', 'legendonly', 'legendonly', 'legendonly', 'legendonly', 'legendonly']))
                     .then(click(0, 2))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
             });
 
             it('double-clicking isolates a groupby trace', function(done) {
@@ -1164,7 +1200,239 @@ describe('legend interaction', function() {
                     .then(assertVisible([false, 'legendonly', true, 'legendonly', 'legendonly', 'legendonly', 'legendonly', 'legendonly']))
                     .then(click(1, 2))
                     .then(assertVisible([false, true, true, true, true, true, true, true]))
-                    .catch(fail).then(done);
+                    .catch(failTest).then(done);
+            });
+        });
+
+        describe('custom legend click/doubleclick handlers', function() {
+            var fig, to;
+
+            beforeEach(function() {
+                fig = Lib.extendDeep({}, require('@mocks/0.json'));
+            });
+
+            afterEach(function() {
+                clearTimeout(to);
+            });
+
+            function setupFail() {
+                to = setTimeout(function() {
+                    fail('did not trigger plotly_legendclick');
+                }, 2 * DBLCLICKDELAY);
+            }
+
+            it('should call custom click handler before default handler', function(done) {
+                Plotly.newPlot(gd, fig).then(function() {
+                    var gotCalled = false;
+
+                    gd.on('plotly_legendclick', function(d) {
+                        gotCalled = true;
+                        expect(extractVisibilities(d.fullData)).toEqual([true, true, true]);
+                        expect(extractVisibilities(gd._fullData)).toEqual([true, true, true]);
+                    });
+                    gd.on('plotly_restyle', function() {
+                        expect(extractVisibilities(gd._fullData)).toEqual([true, 'legendonly', true]);
+                        if(gotCalled) done();
+                    });
+                    setupFail();
+                })
+                .then(click(1, 1))
+                .catch(failTest);
+            });
+
+            it('should call custom doubleclick handler before default handler', function(done) {
+                Plotly.newPlot(gd, fig).then(function() {
+                    var gotCalled = false;
+
+                    gd.on('plotly_legenddoubleclick', function(d) {
+                        gotCalled = true;
+                        expect(extractVisibilities(d.fullData)).toEqual([true, true, true]);
+                        expect(extractVisibilities(gd._fullData)).toEqual([true, true, true]);
+                    });
+                    gd.on('plotly_restyle', function() {
+                        expect(extractVisibilities(gd._fullData)).toEqual(['legendonly', true, 'legendonly']);
+                        if(gotCalled) done();
+                    });
+                    setupFail();
+                })
+                .then(click(1, 2))
+                .catch(failTest);
+            });
+
+            it('should not call default click handler if custom handler return *false*', function(done) {
+                Plotly.newPlot(gd, fig).then(function() {
+                    gd.on('plotly_legendclick', function(d) {
+                        Plotly.relayout(gd, 'title', 'just clicked on trace #' + d.curveNumber);
+                        return false;
+                    });
+                    gd.on('plotly_relayout', function(d) {
+                        expect(typeof d).toBe('object');
+                        expect(d.title).toBe('just clicked on trace #2');
+                        done();
+                    });
+                    gd.on('plotly_restyle', function() {
+                        fail('should not have triggered plotly_restyle');
+                    });
+                    setupFail();
+                })
+                .then(click(2, 1))
+                .catch(failTest);
+            });
+
+            it('should not call default doubleclick handle if custom handler return *false*', function(done) {
+                Plotly.newPlot(gd, fig).then(function() {
+                    gd.on('plotly_legenddoubleclick', function(d) {
+                        Plotly.relayout(gd, 'title', 'just double clicked on trace #' + d.curveNumber);
+                        return false;
+                    });
+                    gd.on('plotly_relayout', function(d) {
+                        expect(typeof d).toBe('object');
+                        expect(d.title).toBe('just double clicked on trace #0');
+                        done();
+                    });
+                    gd.on('plotly_restyle', function() {
+                        fail('should not have triggered plotly_restyle');
+                    });
+                    setupFail();
+                })
+                .then(click(0, 2))
+                .catch(failTest);
+            });
+        });
+
+        describe('legend click/doubleclick event data', function() {
+            function _assert(act, exp) {
+                for(var k in exp) {
+                    if(k === 'event' || k === 'node') {
+                        expect(act[k]).toBeDefined();
+                    } else if(k === 'group') {
+                        expect(act[k]).toEqual(exp[k]);
+                    } else {
+                        expect(act[k]).toBe(exp[k], 'key ' + k);
+                    }
+                }
+
+                expect(Object.keys(act).length)
+                    .toBe(Object.keys(exp).length, '# of keys');
+            }
+
+            function clickAndCheck(clickArg, exp) {
+                Lib.extendFlat(exp, {
+                    event: true,
+                    node: true,
+                    data: gd.data,
+                    layout: gd.layout,
+                    frames: gd._transitionData._frames,
+                    config: gd._context,
+                    fullData: gd._fullData,
+                    fullLayout: gd._fullLayout
+                });
+
+                var evtName = {
+                    1: 'plotly_legendclick',
+                    2: 'plotly_legenddoubleclick'
+                }[clickArg[1]];
+
+                return new Promise(function(resolve, reject) {
+                    var hasBeenCalled = false;
+
+                    var to = setTimeout(function() {
+                        reject('did not trigger ' + evtName);
+                    }, 2 * DBLCLICKDELAY);
+
+                    function done() {
+                        if(hasBeenCalled) {
+                            clearTimeout(to);
+                            resolve();
+                        }
+                    }
+
+                    gd.once(evtName, function(d) {
+                        hasBeenCalled = true;
+                        _assert(d, exp);
+                    });
+
+                    gd.once('plotly_restyle', done);
+                    gd.once('plotly_relayout', done);
+
+                    click(clickArg[0], clickArg[1])();
+                });
+            }
+
+            it('should have correct keys (base case)', function(done) {
+                Plotly.newPlot(gd, [{
+                    x: [1, 2, 3, 4, 5],
+                    y: [1, 2, 1, 2, 3]
+                }], {
+                    showlegend: true
+                })
+                .then(function() {
+                    return clickAndCheck([0, 1], {
+                        curveNumber: 0,
+                        expandedIndex: 0
+                    });
+                })
+                .then(function() {
+                    return clickAndCheck([0, 2], {
+                        curveNumber: 0,
+                        expandedIndex: 0
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
+            it('should have correct keys (groupby case)', function(done) {
+                Plotly.newPlot(gd, [{
+                    x: [1, 2, 3, 4, 5],
+                    y: [1, 2, 1, 2, 3],
+                    transforms: [{
+                        type: 'groupby',
+                        groups: ['a', 'b', 'b', 'a', 'b']
+                    }]
+                }, {
+                    x: [1, 2, 3, 4, 5],
+                    y: [1, 2, 1, 2, 3],
+                }])
+                .then(function() {
+                    return clickAndCheck([1, 1], {
+                        curveNumber: 0,
+                        expandedIndex: 1,
+                        group: 'b'
+                    });
+                })
+                .then(function() {
+                    return clickAndCheck([2, 2], {
+                        curveNumber: 1,
+                        expandedIndex: 2
+                    });
+                })
+                .catch(failTest)
+                .then(done);
+            });
+
+            it('should have correct keys (pie case)', function(done) {
+                Plotly.newPlot(gd, [{
+                    type: 'pie',
+                    labels: ['A', 'B', 'C', 'D'],
+                    values: [1, 2, 1, 3]
+                }])
+                .then(function() {
+                    return clickAndCheck([0, 1], {
+                        curveNumber: 0,
+                        expandedIndex: 0,
+                        label: 'D'
+                    });
+                })
+                .then(function() {
+                    return clickAndCheck([2, 2], {
+                        curveNumber: 0,
+                        expandedIndex: 0,
+                        label: 'A'
+                    });
+                })
+                .catch(failTest)
+                .then(done);
             });
         });
     });
