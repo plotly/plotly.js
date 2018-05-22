@@ -10,6 +10,39 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.38.0] -- 2018-05-23
+
+### Added
+
+- Add 3D `cone` traces to visualize vector fields [#2641, #2647]
+- Add ability to interactively change length and rotate line shapes [#2594]
+- Add `toImageButtonOptions` config object to override to-image mode bar button
+  options [#2607]
+- Add Brazilian Portuguese (`pt-br`) locale [#2622]
+- Add Italian (`it`) locale [#2632]
+
+### Changed
+- Improve cartesian scroll and pan (mostly) performance for graphs with
+  many marker or/and text nodes [#2623]
+- Improve `splom` first render and axis-range relayout performance [#2628]
+- Improve multi-axis axis-range relayout performance by updating minimal set of
+  axes instead of all axes [#2628]
+- Use "grab" cursor to denote when annotations and shapes are draggable [#2594]
+- Ignore zero and negative link values in `sankey` traces [#2629]
+- Ignore unused and malformed links `sankey` traces without logging [#2629]
+
+### Fixed
+- Fix `scattergl` error bar computations when input value are numeric strings [#2620]
+- Fix `scattergl` error bar computations for `x0`/`dx` and `y0`/`dy` coordinates [#2620]
+- Fix `violin` kde span edge cases [#2650]
+- Make `sankey` traces accept numeric strings [#2629]
+- Fix axis range edits under axis constraints [#2620]
+- Fix "sloppy click" event emission during cartesian zoom [#2649]
+- Fix layout `grid` validation which lead to exceptions [#2638]
+- Fix `parcoords` rendering in old Safari version [#2612]
+- Link to https://get.webgl.org instead of http version in no WebGL message [#2617]
+
+
 ## [1.37.1] -- 2018-05-02
 
 ### Fixed
