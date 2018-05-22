@@ -38,11 +38,8 @@ module.exports = function calc(gd, trace) {
     for(var i = 0; i < cd.length; i++) {
         var cdi = cd[i];
         var vals = cdi.pts.map(helpers.extractVal);
-        var len = vals.length;
 
-        // sample standard deviation
-        var ssd = Lib.stdev(vals, len - 1, cdi.mean);
-        var bandwidth = cdi.bandwidth = trace.bandwidth || ruleOfThumbBandwidth(vals, ssd, cdi.q3 - cdi.q1);
+        var bandwidth = cdi.bandwidth = calcBandwidth(trace, cdi, vals);
         var span = cdi.span = calcSpan(trace, cdi, valAxis, bandwidth);
 
         // step that well covers the bandwidth and is multiple of span distance
@@ -74,13 +71,30 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-// Default to Silveman's rule of thumb:
+// Default to Silveman's rule of thumb, but if 'too small' use Scott's rule
 // - https://stats.stackexchange.com/a/6671
 // - https://en.wikipedia.org/wiki/Kernel_density_estimation#A_rule-of-thumb_bandwidth_estimator
 // - https://github.com/statsmodels/statsmodels/blob/master/statsmodels/nonparametric/bandwidths.py
-function ruleOfThumbBandwidth(vals, ssd, iqr) {
+function silvermanRule(len, ssd, iqr) {
     var a = Math.min(ssd, iqr / 1.349);
-    return 1.059 * a * Math.pow(vals.length, -0.2);
+    return 1.059 * a * Math.pow(len, -0.2);
+}
+
+function scottRule(len, ssd) {
+    return ssd * Math.pow(len, -0.2);
+}
+
+function calcBandwidth(trace, cdi, vals) {
+    if(trace.bandwidth) return trace.bandwidth;
+
+    var len = vals.length;
+    var ssd = Lib.stdev(vals, len - 1, cdi.mean);
+    var bw = silvermanRule(len, ssd, cdi.q3 - cdi.q1);
+
+    if((cdi.max - cdi.min) / bw > 1e5) {
+        bw = scottRule(len, ssd);
+    }
+    return bw;
 }
 
 function calcSpan(trace, cdi, valAxis, bandwidth) {
