@@ -49,36 +49,11 @@ module.exports = {
     supplyDefaults: require('./defaults'),
 
     calc: calc,
-    calcFromTrace: calcFromTrace,
 
     plot: require('./plot'),
     style: require('./style'),
     hoverInfo: hoverInfo
 };
-
-function calcFromTrace(trace, layout) {
-    var x = trace.x || [],
-        y = trace.y || [],
-        len = x.length || y.length;
-
-    var calcdataMock = new Array(len);
-
-    for(var i = 0; i < len; i++) {
-        calcdataMock[i] = {
-            x: x[i],
-            y: y[i]
-        };
-    }
-
-    calcdataMock[0].trace = trace;
-
-    calc({
-        calcdata: [calcdataMock],
-        _fullLayout: layout
-    });
-
-    return calcdataMock;
-}
 
 function hoverInfo(calcPoint, trace, hoverPoint) {
     if((trace.error_y || {}).visible) {
