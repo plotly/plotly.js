@@ -20,6 +20,7 @@ and more.
 
 * [Quick start options](#quick-start-options)
 * [Modules](#modules)
+* [Building plotly.js](#building-plotlyjs)
 * [Bugs and feature requests](#bugs-and-feature-requests)
 * [Documentation](#documentation)
 * [Contributing](#contributing)
@@ -103,24 +104,9 @@ Important: the plotly.js code base contains some non-ascii characters. Therefore
 <script src="my-plotly-bundle.js" charset="utf-8"></script>
 ```
 
+## Building plotly.js
 
-#### Building plotly.js with Webpack
-
-For plotly.js to build with Webpack you will need to install [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json`. This adds Browserify transform compatibility to Webpack which is necessary for some plotly.js dependencies.
-
-A repo that demonstrates how to build plotly.js with Webpack can be found [here](https://github.com/rreusser/plotly-webpack). In short add `ify-loader` to the `module` section in your `webpack.config.js`:
-```js
-...
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                loader: 'ify-loader'
-            }
-        ]
-    },
-...
-```
+Building instructions using `webpack`, `browserify` and other build frameworks are in [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md)
 
 ## Bugs and feature requests
 
