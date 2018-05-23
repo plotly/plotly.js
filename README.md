@@ -20,7 +20,7 @@ and more.
 
 * [Quick start options](#quick-start-options)
 * [Modules](#modules)
-* [Building plotly.js](##building-plotlyjs)
+* [Building plotly.js](#building-plotlyjs)
 * [Bugs and feature requests](#bugs-and-feature-requests)
 * [Documentation](#documentation)
 * [Contributing](#contributing)
@@ -106,7 +106,7 @@ Important: the plotly.js code base contains some non-ascii characters. Therefore
 
 ## Building plotly.js
 
-Building instructions using `webpack`, `browserify` and other build frameworks in [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md)
+Building instructions using `webpack`, `browserify` and other build frameworks are in [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md)
 
 ## Bugs and feature requests
 
