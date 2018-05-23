@@ -47,14 +47,14 @@ browserify -t path/to/plotly.js/tasks/util/compress_attributes.js index.js > bun
 
 ## Angular CLI
 
-Currently Angular CLI use Webpack under the hood to bundle and build your Angular application.
-Sadly it doesn't allow to override its Webpack config, and therefore to use the plugin mentioned in the [Webpack](#webpack) section.
+Currently Angular CLI uses Webpack under the hood to bundle and build your Angular application.
+Sadly it doesn't allow you to override its Webpack config in order to add the plugin mentioned in the [Webpack](#webpack) section.
 Without this plugin your build will fail when it tries to build glslify for WebGL plots.
 
-Currently 2 solutions exists to circumvent this issue :
+Currently 2 solutions exists to circumvent this issue:
 
-1) If you need to use WebGL plots, you can create a Webpack config from your Angular CLI projet with [ng eject](https://github.com/angular/angular-cli/wiki/eject). This will allow you to follow the instructions regarding Webpack.
-2) If you don't need to use WebGL plots, you can make a custom build containing only the required modules for your plots. The clean way to do it with Angular CLI is not the method described in the [Modules](https://github.com/plotly/plotly.js/blob/master/README.md#modules) section of the README but the following :
+1) If you need to use WebGL plots, you can create a Webpack config from your Angular CLI project with [ng eject](https://github.com/angular/angular-cli/wiki/eject). This will allow you to follow the instructions regarding Webpack.
+2) If you don't need to use WebGL plots, you can make a custom build containing only the required modules for your plots. The clean way to do it with Angular CLI is not the method described in the [Modules](https://github.com/plotly/plotly.js/blob/master/README.md#modules) section of the README but the following:
 
 ```typescript
 // in the Component you want to create a graph
@@ -64,7 +64,7 @@ import * as Plotly from 'plotly.js';
 ```json
 // in src/tsconfig.app.json
 // List here the modules you want to import
-// this exemple is for scatter plots
+// this example is for scatter plots
 {
     "compilerOptions": {
         "paths": {
