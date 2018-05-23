@@ -3272,6 +3272,7 @@ describe('Test plot api', function() {
             ['gl3d_annotations', require('@mocks/gl3d_annotations.json')],
             ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')],
             ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
+            ['gl3d_cone-autorange', require('@mocks/gl3d_cone-autorange.json')],
             ['glpolar_style', require('@mocks/glpolar_style.json')],
         ];
 
