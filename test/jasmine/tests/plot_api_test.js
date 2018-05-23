@@ -2560,7 +2560,7 @@ describe('Test plot api', function() {
         });
     });
 
-    describe('Plotly.react', function() {
+    describe('@noCIdep Plotly.react', function() {
         var mockedMethods = [
             'doTraceStyle',
             'doColorBars',
