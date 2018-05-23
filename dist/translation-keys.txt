@@ -1,5 +1,5 @@
-Autoscale                                              // components/modebar/buttons.js:137
-Box Select                                             // components/modebar/buttons.js:101
+Autoscale                                              // components/modebar/buttons.js:150
+Box Select                                             // components/modebar/buttons.js:114
 Click to enter Colorscale title                        // plots/plots.js:326
 Click to enter Component A title                       // plots/ternary/ternary.js:390
 Click to enter Component B title                       // plots/ternary/ternary.js:405
@@ -8,36 +8,37 @@ Click to enter Plot title                              // plot_api/plot_api.js:5
 Click to enter X axis title                            // plots/plots.js:324
 Click to enter Y axis title                            // plots/plots.js:325
 Click to enter radial axis title                       // plots/polar/polar.js:377
-Compare data on hover                                  // components/modebar/buttons.js:165
+Compare data on hover                                  // components/modebar/buttons.js:178
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:89
 Double-click to zoom back out                          // plots/cartesian/dragbox.js:1005
-Download plot as a png                                 // components/modebar/buttons.js:50
-Edit in Chart Studio                                   // components/modebar/buttons.js:74
-IE only supports svg.  Changing format to svg.         // components/modebar/buttons.js:58
-Lasso Select                                           // components/modebar/buttons.js:110
-Orbital rotation                                       // components/modebar/buttons.js:274
-Pan                                                    // components/modebar/buttons.js:92
+Download plot                                          // components/modebar/buttons.js:55
+Download plot as a png                                 // components/modebar/buttons.js:54
+Edit in Chart Studio                                   // components/modebar/buttons.js:87
+IE only supports svg.  Changing format to svg.         // components/modebar/buttons.js:65
+Lasso Select                                           // components/modebar/buttons.js:123
+Orbital rotation                                       // components/modebar/buttons.js:287
+Pan                                                    // components/modebar/buttons.js:105
 Produced with Plotly                                   // components/modebar/modebar.js:259
-Reset                                                  // components/modebar/buttons.js:430
-Reset axes                                             // components/modebar/buttons.js:146
-Reset camera to default                                // components/modebar/buttons.js:312
-Reset camera to last save                              // components/modebar/buttons.js:320
-Reset view                                             // components/modebar/buttons.js:579
-Reset views                                            // components/modebar/buttons.js:527
-Show closest data on hover                             // components/modebar/buttons.js:155
-Snapshot succeeded                                     // components/modebar/buttons.js:64
-Sorry, there was a problem downloading your snapshot!  // components/modebar/buttons.js:67
-Taking snapshot - this may take a few seconds          // components/modebar/buttons.js:55
-Toggle Spike Lines                                     // components/modebar/buttons.js:546
-Toggle show closest data on hover                      // components/modebar/buttons.js:351
-Turntable rotation                                     // components/modebar/buttons.js:283
-Zoom                                                   // components/modebar/buttons.js:83
-Zoom in                                                // components/modebar/buttons.js:119
-Zoom out                                               // components/modebar/buttons.js:128
+Reset                                                  // components/modebar/buttons.js:443
+Reset axes                                             // components/modebar/buttons.js:159
+Reset camera to default                                // components/modebar/buttons.js:325
+Reset camera to last save                              // components/modebar/buttons.js:333
+Reset view                                             // components/modebar/buttons.js:592
+Reset views                                            // components/modebar/buttons.js:540
+Show closest data on hover                             // components/modebar/buttons.js:168
+Snapshot succeeded                                     // components/modebar/buttons.js:77
+Sorry, there was a problem downloading your snapshot!  // components/modebar/buttons.js:80
+Taking snapshot - this may take a few seconds          // components/modebar/buttons.js:62
+Toggle Spike Lines                                     // components/modebar/buttons.js:559
+Toggle show closest data on hover                      // components/modebar/buttons.js:364
+Turntable rotation                                     // components/modebar/buttons.js:296
+Zoom                                                   // components/modebar/buttons.js:96
+Zoom in                                                // components/modebar/buttons.js:132
+Zoom out                                               // components/modebar/buttons.js:141
 close:                                                 // traces/ohlc/calc.js:104
 high:                                                  // traces/ohlc/calc.js:102
 incoming flow count:                                   // traces/sankey/plot.js:142
-kde:                                                   // traces/violin/calc.js:73
+kde:                                                   // traces/violin/calc.js:69
 lat:                                                   // traces/scattergeo/calc.js:48
 lon:                                                   // traces/scattergeo/calc.js:49
 low:                                                   // traces/ohlc/calc.js:103
