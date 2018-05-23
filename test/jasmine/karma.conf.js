@@ -210,6 +210,13 @@ func.defaultConfig = {
     // A few tests don't behave well on CI
     // add @noCI to the spec description to skip a spec on CI
     //
+    // Although not recommended, some tests "depend" on other
+    // tests to pass (e.g. the Plotly.react tests check that
+    // all available traces and transforms are tested). Tag these
+    // with @noCIdep, so that
+    // - $ npm run test-jasmine -- tags=noCI,noCIdep
+    // can pass.
+    //
     // Label tests that require a WebGL-context by @gl so that
     // they can be skipped using:
     // - $ npm run test-jasmine -- --skip-tags=gl
