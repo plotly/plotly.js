@@ -77,7 +77,7 @@ module.exports = function calc(gd, trace) {
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
-            trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);
+            interp2d(z, trace._emptypoints);
         }
     }
 
