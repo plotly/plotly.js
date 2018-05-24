@@ -789,7 +789,7 @@ describe('@gl parcoords basic use', function() {
 
     afterAll(purgeGraphDiv);
 
-    it('should create three WebGL context per graph', function() {
+    it('should create three WebGL contexts per graph', function() {
         var cnt = 0;
         d3.select(gd).selectAll('canvas').each(function(d) {
             if(d.regl) cnt++;

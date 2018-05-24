@@ -949,7 +949,7 @@ describe('@gl Test gl2d plots', function() {
         .then(done);
     });
 
-    it('should create two WebGL context per graph', function(done) {
+    it('should create two WebGL contexts per graph', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl2d_stacked_subplots.json'));
 
         Plotly.plot(gd, fig).then(function() {
