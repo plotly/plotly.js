@@ -8,7 +8,7 @@ var ScatterGl = require('@src/traces/scattergl');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var touchEvent = require('../assets/touch_event');
 var drag = require('../assets/drag');
@@ -202,7 +202,7 @@ describe('@gl Test gl plot side effects', function() {
         .then(function() {
             expect(gd.querySelector('.gl-canvas-context').width).toBe(300);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -350,7 +350,7 @@ describe('@gl Test gl2d plots', function() {
                 'yaxis.range[1]': jasmine.any(Number)
             }));
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -381,7 +381,7 @@ describe('@gl Test gl2d plots', function() {
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -423,7 +423,7 @@ describe('@gl Test gl2d plots', function() {
             expect(scene.error2d.draw).toHaveBeenCalledTimes(2, 'twice for x AND y');
             expect(scene.scatter2d.draw).toHaveBeenCalledTimes(3, 'both traces have markers');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -451,7 +451,7 @@ describe('@gl Test gl2d plots', function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
             expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -490,7 +490,7 @@ describe('@gl Test gl2d plots', function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 158, 100)[3]).not.toBe(0);
             expect(readPixel(gd.querySelector('.gl-canvas-focus'), 168, 100)[3]).not.toBe(0);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -514,7 +514,7 @@ describe('@gl Test gl2d plots', function() {
             expect(countCanvases()).toBe(0);
             expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -567,7 +567,7 @@ describe('@gl Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([6, 8], 3);
             expect(gd.layout.yaxis.range).toBeCloseToArray([5, 7], 3);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -634,7 +634,7 @@ describe('@gl Test gl2d plots', function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([-8.2, 24.2], 1);
             expect(gd.layout.yaxis.range).toBeCloseToArray([-0.12, 16.1], 1);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -690,7 +690,7 @@ describe('@gl Test gl2d plots', function() {
         .then(function() {
             assertAnnotation([327, 331]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -744,7 +744,7 @@ describe('@gl Test gl2d plots', function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(1);
 
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -768,7 +768,7 @@ describe('@gl Test gl2d plots', function() {
         .then(function() {
             expect(ScatterGl.calc).toHaveBeenCalledTimes(2);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -852,7 +852,7 @@ describe('@gl Test gl2d plots', function() {
             expect(scene.selectBatch).toBe(null, msg);
             expect(scene.unselectBatch).toBe(null, msg);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -869,7 +869,7 @@ describe('@gl Test gl2d plots', function() {
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 100, 80)[0]).toBe(0);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -914,7 +914,7 @@ describe('@gl Test gl2d plots', function() {
             // and 105545275 after.
             expect(total).toBeGreaterThan(4e6);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -945,7 +945,7 @@ describe('@gl Test gl2d plots', function() {
             expect(opts.positions)
                 .toBeCloseToArray([1, 1, 2, 2, 3, 1]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -987,7 +987,7 @@ describe('Test scattergl autorange:', function() {
                     expect(gd._fullLayout.xaxis.range).toBeCloseToArray(glRangeX, 'x range');
                     expect(gd._fullLayout.yaxis.range).toBeCloseToArray(glRangeY, 'y range');
                 })
-                .catch(fail)
+                .catch(failTest)
                 .then(done);
             });
         });
@@ -1026,7 +1026,7 @@ describe('Test scattergl autorange:', function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.079, 1.079], 2, 'x range');
                 expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.105, 1.105], 2, 'y range');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1044,7 +1044,7 @@ describe('Test scattergl autorange:', function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.119, 1.119], 2, 'x range');
                 expect(gd._fullLayout.yaxis.range).toBeCloseToArray([-0.199, 1.199], 2, 'y range');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
