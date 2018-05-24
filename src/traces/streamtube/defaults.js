@@ -19,42 +19,44 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    // TODO do 2D versions of these work?
+    var u = coerce('u');
+    var v = coerce('v');
+    var w = coerce('w');
 
     var x = coerce('x');
     var y = coerce('y');
     var z = coerce('z');
 
-    traceOut._xlength = x.length;
-    traceOut._ylength = y.length;
-    traceOut._zlength = z.length;
+    if(
+        !u || !u.length || !v || !v.length || !w || !w.length ||
+        !x || !x.length || !y || !y.length || !z || !z.length
+    ) {
+        traceOut.visible = false;
+        return;
+    }
 
-    coerce('u');
-    coerce('v');
-    coerce('w');
+    // TODO optional or required for v1 ??
+    coerce('startx');
+    coerce('starty');
+    coerce('startz');
 
-    coerce('cx');
-    coerce('cy');
-    coerce('cz');
-
-    coerce('maxLength');
-    coerce('widthScale');
-    coerce('bounds');
-
-    coerce('colormap');
-
-    coerce('text');
+    // TODO adapt these
+    // coerce('maxLength');
+    // coerce('widthScale');
 
     coerce('lighting.ambient');
     coerce('lighting.diffuse');
     coerce('lighting.specular');
     coerce('lighting.roughness');
     coerce('lighting.fresnel');
-    coerce('lighting.vertexnormalsepsilon');
-    coerce('lighting.facenormalsepsilon');
     coerce('lightposition.x');
     coerce('lightposition.y');
     coerce('lightposition.z');
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'});
+
+    coerce('text');
+
+    // disable 1D transforms (for now)
+    traceOut._length = null;
 };

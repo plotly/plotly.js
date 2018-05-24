@@ -19,95 +19,67 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var attrs = {
     x: {
         valType: 'data_array',
-        editType: 'calc',
-        description: ''
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: 'Sets the x coordinates of the vector field'
     },
     y: {
         valType: 'data_array',
-        editType: 'calc'
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: 'Sets the y coordinates of the vector field'
     },
     z: {
         valType: 'data_array',
-        editType: 'calc'
+        role: 'info',
+        editType: 'calc+clearAxisTypes',
+        description: 'Sets the z coordinates of the vector field'
     },
 
     u: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-        ].join(' ')
+        description: 'Sets the x components of the vector field.'
     },
     v: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-        ].join(' ')
-
+        description: 'Sets the y components of the vector field.'
     },
     w: {
         valType: 'data_array',
         editType: 'calc',
-        description: [
-        ].join(' ')
-
+        description: 'Sets the z components of the vector field.'
     },
 
-    cx: {
+    startx: {
         valType: 'data_array',
-        editType: 'calc+clearAxisTypes',
-        description: [
-        ].join(' ')
-    },
-    cy: {
-        valType: 'data_array',
-        editType: 'calc+clearAxisTypes',
-        description: [
-        ].join(' ')
-    },
-    cz: {
-        valType: 'data_array',
-        editType: 'calc+clearAxisTypes',
-        description: [
-        ].join(' ')
-    },
-
-    bounds: {
-        valType: 'data_array',
-        editType: 'calc+clearAxisTypes',
-        description: [
-        ].join(' ')
-    },
-
-    colormap: {
-        valType: 'string',
-        role: 'style',
         editType: 'calc',
         description: [
+            'Sets the x components of the starting position of the streamtubes',
+            ''
         ].join(' ')
     },
-
-    maxLength: {
-        valType: 'number',
-        min: 1,
-        dflt: 1000,
+    starty: {
+        valType: 'data_array',
         editType: 'calc',
         description: [
+            'Sets the y components of the starting position of the streamtubes',
+            ''
         ].join(' ')
     },
-
-    widthScale: {
-        valType: 'number',
-        role: 'style',
-        min: 0,
-        dflt: 100,
+    startz: {
+        valType: 'data_array',
         editType: 'calc',
         description: [
+            'Sets the z components of the starting position of the streamtubes',
+            ''
         ].join(' ')
     },
 
     // TODO
-//     sizemode: {},
-//     sizescale: {},
+    // maxLength
+    // widthScale
 
     text: {
         valType: 'string',
@@ -116,22 +88,29 @@ var attrs = {
         arrayOk: true,
         editType: 'calc',
         description: [
-
+            'Sets the text elements associated with the cones.',
+            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
+            'these elements will be seen in the hover labels.'
         ].join(' ')
     }
 };
 
-extendFlat(attrs, colorAttrs('', 'calc', false), {
+extendFlat(attrs, colorAttrs('', 'calc', true), {
     showscale: colorscaleAttrs.showscale,
     colorbar: colorbarAttrs
 });
+delete attrs.color;
 
-var fromMesh3d = ['opacity', 'flatshading', 'lightposition', 'lighting'];
-
+var fromMesh3d = ['opacity', 'lightposition', 'lighting'];
 fromMesh3d.forEach(function(k) {
     attrs[k] = mesh3dAttrs[k];
 });
 
-attrs.hoverinfo = extendFlat({}, baseAttrs.hoverinfo, {editType: 'calc'});
+// TODO maybe add divergence field?
+attrs.hoverinfo = extendFlat({}, baseAttrs.hoverinfo, {
+    editType: 'calc',
+    flags: ['x', 'y', 'z', 'u', 'v', 'w', 'norm', 'text', 'name'],
+    dflt: 'x+y+z+norm+text+name'
+});
 
 module.exports = attrs;

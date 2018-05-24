@@ -6,51 +6,22 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-/*
-    Usage example:
-
-    var x = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
-    var y = x, z = x;
-    var len = x.length * y.length * z.length;
-    var u=[],v=[],w=[]; for (var i=0; i<len; i++) { u.push(1+Math.sin(i)); v.push(Math.cos(i)); w.push(Math.sin(i*0.3)*0.3); }
-    var cx=[],cy=[],cz=[]; for (var i=0; i<7; i++) for(var j=0; j<7; j++) { cx.push(-5); cy.push(i-3); cz.push(j-3); }
-
-    Plotly.newPlot(gd, [{
-      type: 'streamtube',
-      cx, cy, cz,
-      u, v, w,
-      x, y, z,
-      bounds: [[-5, -5, -5], [5, 5, 5]], 
-      widthScale: 100, 
-      colormap:'portland'
-    }], {
-      scene: {
-        xaxis: {range: [-5, 5]},
-        yaxis: {range: [-5, 5]},
-        zaxis: {range: [-5, 5]}
-      }
-    })
-
-*/
-
-
-
 'use strict';
 
 var tube2mesh = require('gl-streamtube3d');
-var createMesh = tube2mesh.createTubeMesh;
+var createTubeMesh = tube2mesh.createTubeMesh;
 
-function Mesh3DTrace(scene, mesh, uid) {
+var simpleMap = require('../../lib').simpleMap;
+var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
+
+function Streamtube(scene, uid) {
     this.scene = scene;
     this.uid = uid;
-    this.mesh = mesh;
-    this.name = '';
-    this.color = '#fff';
+    this.mesh = null;
     this.data = null;
-    this.showContour = false;
 }
 
-var proto = Mesh3DTrace.prototype;
+var proto = Streamtube.prototype;
 
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
@@ -81,85 +52,84 @@ function zip3(x, y, z) {
     return result;
 }
 
+var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
+
 function convert(scene, trace) {
-    var layout = scene.fullSceneLayout;
+    var sceneLayout = scene.fullSceneLayout;
+    var dataScale = scene.dataScale;
+    var tubeOpts = {};
 
-    // Unpack position data
-    function toDataCoords(axis, coord, scale) {
-        return coord.map(function(x) {
-            return axis.d2l(x) * scale;
-        });
+    function toDataCoords(arr, axisName) {
+        var ax = sceneLayout[axisName];
+        var scale = dataScale[axisName2scaleIndex[axisName]];
+        return simpleMap(arr, function(v) { return ax.d2l(v) * scale; });
     }
 
-    function min(a) {
-        var result = a[0];
-        for (var i=1; i<a.length; i++) {
-            if (a[i] < result) {
-                result = a[i];
-            }
-        }
-        return result;
-    }
-
-    function max(a) {
-        var result = a[0];
-        for (var i=1; i<a.length; i++) {
-            if (a[i] > result) {
-                result = a[i];
-            }
-        }
-        return result;
-    }
-
-    var params = {
-        startingPositions: zip3(
-            toDataCoords(layout.xaxis, trace.cx, scene.dataScale[0]),
-            toDataCoords(layout.yaxis, trace.cy, scene.dataScale[1]),
-            toDataCoords(layout.zaxis, trace.cz, scene.dataScale[2])
-        ),
-        meshgrid: [
-            toDataCoords(layout.xaxis, trace.x, scene.dataScale[0]),
-            toDataCoords(layout.yaxis, trace.y, scene.dataScale[1]),
-            toDataCoords(layout.zaxis, trace.z, scene.dataScale[2])
-        ],
-        vectors: zip3(
-            toDataCoords(layout.xaxis, trace.u, scene.dataScale[0]),
-            toDataCoords(layout.yaxis, trace.v, scene.dataScale[1]),
-            toDataCoords(layout.zaxis, trace.w, scene.dataScale[2])
-        ),
-        colormap: trace.colormap,
-        maxLength: trace.maxLength,
-        widthScale: trace.widthScale
-    };
-
-    var bounds = trace.bounds || [
-        [min(trace.x.concat(trace.cx)), min(trace.y.concat(trace.cy)), min(trace.z.concat(trace.cz))], 
-        [max(trace.x.concat(trace.cx)), max(trace.y.concat(trace.cy)), max(trace.z.concat(trace.cz))]
-    ];
-
-    bounds = [
-        [
-            layout.xaxis.d2l(bounds[0][0]) * scene.dataScale[0],
-            layout.yaxis.d2l(bounds[0][1]) * scene.dataScale[1],
-            layout.zaxis.d2l(bounds[0][2]) * scene.dataScale[2]
-        ],
-        [
-            layout.xaxis.d2l(bounds[1][0]) * scene.dataScale[0],
-            layout.yaxis.d2l(bounds[1][1]) * scene.dataScale[1],
-            layout.zaxis.d2l(bounds[1][2]) * scene.dataScale[2]
-        ],
-    ];
-
-    var meshData = tube2mesh(
-        params,
-        bounds
+    tubeOpts.vectors = zip3(
+        toDataCoords(trace.u, 'xaxis'),
+        toDataCoords(trace.v, 'yaxis'),
+        toDataCoords(trace.w, 'zaxis')
     );
 
-    return meshData;
-};
+    // TODO make this optional?
+    // N.B. this is a "meshgrid" but shouldn't this be the position
+    // of the vector field ???
+    tubeOpts.meshgrid = [
+        toDataCoords(trace.x, 'xaxis'),
+        toDataCoords(trace.y, 'yaxis'),
+        toDataCoords(trace.z, 'zaxis')
+    ];
 
-proto.update = function(trace) {
-    var meshData = convert(trace);
+    // TODO make this optional?
+    tubeOpts.startingPositions = zip3(
+        toDataCoords(trace.startx, 'xaxis'),
+        toDataCoords(trace.starty, 'yaxis'),
+        toDataCoords(trace.startz, 'zaxis')
+    );
+
+    tubeOpts.colormap = parseColorScale(trace.colorscale);
+
+    // TODO
+    // tubeOpts.maxLength
+    // tubeOpts.widthScale
+
+    // TODO the widhScale default looks BRUTAL
+    tubeOpts.widthScale = 100;
+
+    var xbnds = toDataCoords(trace._xbnds, 'xaxis');
+    var ybnds = toDataCoords(trace._ybnds, 'yaxis');
+    var zbnds = toDataCoords(trace._zbnds, 'zaxis');
+    var bounds = [
+        [xbnds[0], ybnds[0], zbnds[0]],
+        [xbnds[1], ybnds[1], zbnds[1]]
+    ];
+
+    var meshData = tube2mesh(tubeOpts, bounds);
+
+    // TODO cmin/cmax correspond to the min/max vector norm
+    // in the u/v/w arrays, which in general is NOT equal to max
+    // intensity that colors the tubes.
+    //
+    // Maybe we should use meshData.vertexIntensities instead to
+    // determine the auto values for "cmin" and "cmax"?
+    meshData.vertexIntensityBounds = [trace.cmin, trace.cmax];
+
+    // pass gl-mesh3d lighting attributes
+    meshData.lightPosition = [trace.lightposition.x, trace.lightposition.y, trace.lightposition.z];
+    meshData.ambient = trace.lighting.ambient;
+    meshData.diffuse = trace.lighting.diffuse;
+    meshData.specular = trace.lighting.specular;
+    meshData.roughness = trace.lighting.roughness;
+    meshData.fresnel = trace.lighting.fresnel;
+    meshData.opacity = trace.opacity;
+
+    return meshData;
+}
+
+proto.update = function(data) {
+    this.data = data;
+
+    var meshData = convert(this.scene, data);
     this.mesh.update(meshData);
 };
 
@@ -168,17 +138,20 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-function createMesh3DTrace(scene, trace) {
+function createStreamtubeTrace(scene, data) {
     var gl = scene.glplot.gl;
-    var meshData = convert(scene, trace);
-    var mesh = createMesh(gl, meshData);
-    var result = new Mesh3DTrace(scene, mesh, trace.uid);
-    result.data = {hoverinfo: 'skip'};
 
-    mesh._trace = result;
+    var meshData = convert(scene, data);
+    var mesh = createTubeMesh(gl, meshData);
+
+    var streamtube = new Streamtube(scene, data.uid);
+    streamtube.mesh = mesh;
+    streamtube.data = data;
+    mesh._trace = streamtube;
+
     scene.glplot.add(mesh);
 
-    return result;
+    return streamtube;
 }
 
-module.exports = createMesh3DTrace;
+module.exports = createStreamtubeTrace;

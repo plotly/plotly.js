@@ -12,17 +12,19 @@ module.exports = {
     moduleType: 'trace',
     name: 'streamtube',
     basePlotModule: require('../../plots/gl3d'),
-    categories: ['gl3d', '2dMap', 'noOpacity'],
+    categories: ['gl3d'],
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
-    colorbar: require('./colorbar'),
+    colorbar: require('../cone/colorbar'),
     calc: require('./calc'),
     plot: require('./convert'),
 
     meta: {
         description: [
-            '...'
+            'Use streamtube trace to visualize flow in a vector field',
+            '',
+            '....'
         ].join(' ')
     }
 };
