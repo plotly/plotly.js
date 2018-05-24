@@ -6,7 +6,7 @@ root=$(dirname $0)/..
 # tests that aren't run on CI (yet)
 
 # jasmine specs with @noCI tag
-npm run test-jasmine -- --tags=noCI --nowatch || EXIT_STATE=$?
+npm run test-jasmine -- --tags=noCI,noCIdep --nowatch || EXIT_STATE=$?
 
 # mapbox image tests take too much resources on CI
 #

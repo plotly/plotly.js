@@ -587,6 +587,35 @@ describe('heatmap plot', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('can change z values with connected gaps', function(done) {
+        var gd = createGraphDiv();
+        Plotly.newPlot(gd, [{
+            type: 'heatmap', connectgaps: true,
+            z: [[1, 2], [null, 4], [1, 2]]
+        }])
+        .then(function() {
+            expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2]]);
+
+            return Plotly.react(gd, [{
+                type: 'heatmap', connectgaps: true,
+                z: [[6, 5], [8, 7], [null, 10]]
+            }]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0][0].z).toEqual([[6, 5], [8, 7], [9, 10]]);
+
+            return Plotly.react(gd, [{
+                type: 'heatmap', connectgaps: true,
+                z: [[1, 2], [null, 4], [1, 2]]
+            }]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2]]);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('heatmap hover', function() {

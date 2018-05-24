@@ -84,7 +84,7 @@ function heatmappishCalc(gd, trace) {
     z = trace._z = clean2dArray(trace._z || trace.z, trace.transpose);
 
     trace._emptypoints = findEmpties(z);
-    trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);
+    interp2d(z, trace._emptypoints);
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
     var xlen = maxRowLength(z),
