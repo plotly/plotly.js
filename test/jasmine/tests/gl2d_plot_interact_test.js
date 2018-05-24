@@ -948,6 +948,20 @@ describe('@gl Test gl2d plots', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should create two WebGL context per graph', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl2d_stacked_subplots.json'));
+
+        Plotly.plot(gd, fig).then(function() {
+            var cnt = 0;
+            d3.select(gd).selectAll('canvas').each(function(d) {
+                if(d.regl) cnt++;
+            });
+            expect(cnt).toBe(2);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test scattergl autorange:', function() {

@@ -770,8 +770,8 @@ describe('@gl parcoords Lifecycle methods', function() {
 });
 
 describe('@gl parcoords basic use', function() {
-    var mockCopy,
-        gd;
+    var mockCopy;
+    var gd;
 
     beforeEach(function(done) {
         mockCopy = Lib.extendDeep({}, mock);
@@ -788,6 +788,14 @@ describe('@gl parcoords basic use', function() {
     });
 
     afterAll(purgeGraphDiv);
+
+    it('should create three WebGL context per graph', function() {
+        var cnt = 0;
+        d3.select(gd).selectAll('canvas').each(function(d) {
+            if(d.regl) cnt++;
+        });
+        expect(cnt).toBe(3);
+    });
 
     it('`Plotly.plot` should have proper fields on `gd.data` on initial rendering', function() {
 
