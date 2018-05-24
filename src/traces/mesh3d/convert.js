@@ -16,6 +16,7 @@ var convexHull = require('convex-hull');
 
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
+var zip3 = require('../../lib/zip3');
 
 function Mesh3DTrace(scene, mesh, uid) {
     this.scene = scene;
@@ -52,14 +53,6 @@ proto.handlePick = function(selection) {
 
 function parseColorArray(colors) {
     return colors.map(str2RgbaArray);
-}
-
-function zip3(x, y, z) {
-    var result = new Array(x.length);
-    for(var i = 0; i < x.length; ++i) {
-        result[i] = [x[i], y[i], z[i]];
-    }
-    return result;
 }
 
 proto.update = function(data) {
