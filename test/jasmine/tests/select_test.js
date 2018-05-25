@@ -612,9 +612,115 @@ describe('@flaky Test select box and lasso in general:', function() {
         })
         .catch(failTest)
         .then(done);
-
     });
 
+    it('should clear selected points on double click only on pan/lasso modes', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/0.json'));
+        fig.data = [fig.data[0]];
+        fig.layout.xaxis.autorange = false;
+        fig.layout.xaxis.range = [2, 8];
+        fig.layout.yaxis.autorange = false;
+        fig.layout.yaxis.range = [0, 3];
+
+        function _assert(msg, exp) {
+            expect(gd.layout.xaxis.range)
+                .toBeCloseToArray(exp.xrng, 2, 'xaxis range - ' + msg);
+            expect(gd.layout.yaxis.range)
+                .toBeCloseToArray(exp.yrng, 2, 'yaxis range - ' + msg);
+
+            if(exp.selpts === null) {
+                expect('selectedpoints' in gd.data[0])
+                    .toBe(false, 'cleared selectedpoints - ' + msg);
+            } else {
+                expect(gd.data[0].selectedpoints)
+                    .toBeCloseToArray(exp.selpts, 2, 'selectedpoints - ' + msg);
+            }
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('base', {
+                xrng: [2, 8],
+                yrng: [0, 3],
+                selpts: null
+            });
+            return Plotly.relayout(gd, 'xaxis.range', [0, 10]);
+        })
+        .then(function() {
+            _assert('after xrng relayout', {
+                xrng: [0, 10],
+                yrng: [0, 3],
+                selpts: null
+            });
+            return doubleClick(200, 200);
+        })
+        .then(function() {
+            _assert('after double-click under dragmode zoom', {
+                xrng: [2, 8],
+                yrng: [0, 3],
+                selpts: null
+            });
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            _assert('after relayout to select', {
+                xrng: [2, 8],
+                yrng: [0, 3],
+                selpts: null
+            });
+            return drag([[100, 100], [400, 400]]);
+        })
+        .then(function() {
+            _assert('after selection', {
+                xrng: [2, 8],
+                yrng: [0, 3],
+                selpts: [40, 41, 42, 43, 44, 45, 46, 47, 48]
+            });
+            return doubleClick(200, 200);
+        })
+        .then(function() {
+            _assert('after double-click under dragmode select', {
+                xrng: [2, 8],
+                yrng: [0, 3],
+                selpts: null
+            });
+            return drag([[100, 100], [400, 400]]);
+        })
+        .then(function() {
+            _assert('after selection 2', {
+                xrng: [2, 8],
+                yrng: [0, 3],
+                selpts: [40, 41, 42, 43, 44, 45, 46, 47, 48]
+            });
+            return Plotly.relayout(gd, 'dragmode', 'pan');
+        })
+        .then(function() {
+            _assert('after relayout to pan', {
+                xrng: [2, 8],
+                yrng: [0, 3],
+                selpts: [40, 41, 42, 43, 44, 45, 46, 47, 48]
+            });
+            return Plotly.relayout(gd, 'yaxis.range', [0, 20]);
+        })
+        .then(function() {
+            _assert('after yrng relayout', {
+                xrng: [2, 8],
+                yrng: [0, 20],
+                selpts: [40, 41, 42, 43, 44, 45, 46, 47, 48]
+            });
+            return doubleClick(200, 200);
+        })
+        .then(function() {
+            _assert('after double-click under dragmode pan', {
+                xrng: [2, 8],
+                yrng: [0, 3],
+                // N.B. does not clear selection!
+                selpts: [40, 41, 42, 43, 44, 45, 46, 47, 48]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('@flaky Test select box and lasso per trace:', function() {
