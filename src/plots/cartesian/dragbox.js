@@ -174,30 +174,32 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(isSelectOrLasso(dragModeNow)) {
             dragOptions.xaxes = xaxes;
             dragOptions.yaxes = yaxes;
+            // this attaches moveFn, clickFn, doneFn on dragOptions
             prepSelect(e, startX, startY, dragOptions, dragModeNow);
-        }
-        else if(allFixedRanges) {
-            clearSelect(zoomlayer);
-        }
-        else if(dragModeNow === 'zoom') {
-            dragOptions.moveFn = zoomMove;
-            dragOptions.doneFn = zoomDone;
+        } else {
+            dragOptions.clickFn = clickFn;
 
-            // zoomMove takes care of the threshold, but we need to
-            // minimize this so that constrained zoom boxes will flip
-            // orientation at the right place
-            dragOptions.minDrag = 1;
+            if(allFixedRanges) {
+                clearSelect(zoomlayer);
+            } else if(dragModeNow === 'zoom') {
+                dragOptions.moveFn = zoomMove;
+                dragOptions.doneFn = zoomDone;
 
-            zoomPrep(e, startX, startY);
-        }
-        else if(dragModeNow === 'pan') {
-            dragOptions.moveFn = plotDrag;
-            dragOptions.doneFn = dragTail;
-            clearSelect(zoomlayer);
+                // zoomMove takes care of the threshold, but we need to
+                // minimize this so that constrained zoom boxes will flip
+                // orientation at the right place
+                dragOptions.minDrag = 1;
+
+                zoomPrep(e, startX, startY);
+            } else if(dragModeNow === 'pan') {
+                dragOptions.moveFn = plotDrag;
+                dragOptions.doneFn = dragTail;
+                clearSelect(zoomlayer);
+            }
         }
     };
 
-    dragOptions.clickFn = function(numClicks, evt) {
+    function clickFn(numClicks, evt) {
         removeZoombox(gd);
 
         if(numClicks === 2 && !singleEnd) doubleClick();
@@ -240,7 +242,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     });
             }
         }
-    };
+    }
 
     dragElement.init(dragOptions);
 
