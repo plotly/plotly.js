@@ -492,12 +492,11 @@ function plot(gd, subplot, cdata) {
 
             // regenerate scene batch, if traces number changed during selection
             if(trace.selectedpoints) {
-                scene.selectBatch[id] = trace.selectedpoints;
+                var selPts = scene.selectBatch[id] = Lib.selIndices2selPoints(trace);
 
-                var selPts = trace.selectedpoints;
                 var selDict = {};
                 for(i = 0; i < selPts.length; i++) {
-                    selDict[selPts[i]] = true;
+                    selDict[selPts[i]] = 1;
                 }
                 var unselPts = [];
                 for(i = 0; i < stash.count; i++) {
