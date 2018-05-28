@@ -144,40 +144,44 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var dragOptions = {
         element: dragger,
         gd: gd,
-        plotinfo: plotinfo,
-        prepFn: function(e, startX, startY) {
-            var dragModeNow = gd._fullLayout.dragmode;
+        plotinfo: plotinfo
+    };
 
-            recomputeAxisLists();
+    dragOptions.prepFn = function(e, startX, startY) {
+        var dragModeNow = gd._fullLayout.dragmode;
 
-            if(!allFixedRanges) {
-                if(isMainDrag) {
-                    // main dragger handles all drag modes, and changes
-                    // to pan (or to zoom if it already is pan) on shift
-                    if(e.shiftKey) {
-                        if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                        else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
-                    }
-                    else if(e.ctrlKey) {
-                        dragModeNow = 'pan';
-                    }
+        recomputeAxisLists();
+
+        if(!allFixedRanges) {
+            if(isMainDrag) {
+                // main dragger handles all drag modes, and changes
+                // to pan (or to zoom if it already is pan) on shift
+                if(e.shiftKey) {
+                    if(dragModeNow === 'pan') dragModeNow = 'zoom';
+                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
                 }
-                // all other draggers just pan
-                else dragModeNow = 'pan';
+                else if(e.ctrlKey) {
+                    dragModeNow = 'pan';
+                }
             }
+            // all other draggers just pan
+            else dragModeNow = 'pan';
+        }
 
-            if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
-            else dragOptions.minDrag = undefined;
+        if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
+        else dragOptions.minDrag = undefined;
 
-            if(isSelectOrLasso(dragModeNow)) {
-                dragOptions.xaxes = xaxes;
-                dragOptions.yaxes = yaxes;
-                prepSelect(e, startX, startY, dragOptions, dragModeNow);
-            }
-            else if(allFixedRanges) {
+        if(isSelectOrLasso(dragModeNow)) {
+            dragOptions.xaxes = xaxes;
+            dragOptions.yaxes = yaxes;
+            // this attaches moveFn, clickFn, doneFn on dragOptions
+            prepSelect(e, startX, startY, dragOptions, dragModeNow);
+        } else {
+            dragOptions.clickFn = clickFn;
+
+            if(allFixedRanges) {
                 clearSelect(zoomlayer);
-            }
-            else if(dragModeNow === 'zoom') {
+            } else if(dragModeNow === 'zoom') {
                 dragOptions.moveFn = zoomMove;
                 dragOptions.doneFn = zoomDone;
 
@@ -187,58 +191,58 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 dragOptions.minDrag = 1;
 
                 zoomPrep(e, startX, startY);
-            }
-            else if(dragModeNow === 'pan') {
+            } else if(dragModeNow === 'pan') {
                 dragOptions.moveFn = plotDrag;
                 dragOptions.doneFn = dragTail;
                 clearSelect(zoomlayer);
             }
-        },
-        clickFn: function(numClicks, evt) {
-            removeZoombox(gd);
-
-            if(numClicks === 2 && !singleEnd) doubleClick();
-
-            if(isMainDrag) {
-                Fx.click(gd, evt, plotinfo.id);
-            }
-            else if(numClicks === 1 && singleEnd) {
-                var ax = ns ? ya0 : xa0,
-                    end = (ns === 's' || ew === 'w') ? 0 : 1,
-                    attrStr = ax._name + '.range[' + end + ']',
-                    initialText = getEndText(ax, end),
-                    hAlign = 'left',
-                    vAlign = 'middle';
-
-                if(ax.fixedrange) return;
-
-                if(ns) {
-                    vAlign = (ns === 'n') ? 'top' : 'bottom';
-                    if(ax.side === 'right') hAlign = 'right';
-                }
-                else if(ew === 'e') hAlign = 'right';
-
-                if(gd._context.showAxisRangeEntryBoxes) {
-                    d3.select(dragger)
-                        .call(svgTextUtils.makeEditable, {
-                            gd: gd,
-                            immediate: true,
-                            background: gd._fullLayout.paper_bgcolor,
-                            text: String(initialText),
-                            fill: ax.tickfont ? ax.tickfont.color : '#444',
-                            horizontalAlign: hAlign,
-                            verticalAlign: vAlign
-                        })
-                        .on('edit', function(text) {
-                            var v = ax.d2r(text);
-                            if(v !== undefined) {
-                                Registry.call('relayout', gd, attrStr, v);
-                            }
-                        });
-                }
-            }
         }
     };
+
+    function clickFn(numClicks, evt) {
+        removeZoombox(gd);
+
+        if(numClicks === 2 && !singleEnd) doubleClick();
+
+        if(isMainDrag) {
+            Fx.click(gd, evt, plotinfo.id);
+        }
+        else if(numClicks === 1 && singleEnd) {
+            var ax = ns ? ya0 : xa0,
+                end = (ns === 's' || ew === 'w') ? 0 : 1,
+                attrStr = ax._name + '.range[' + end + ']',
+                initialText = getEndText(ax, end),
+                hAlign = 'left',
+                vAlign = 'middle';
+
+            if(ax.fixedrange) return;
+
+            if(ns) {
+                vAlign = (ns === 'n') ? 'top' : 'bottom';
+                if(ax.side === 'right') hAlign = 'right';
+            }
+            else if(ew === 'e') hAlign = 'right';
+
+            if(gd._context.showAxisRangeEntryBoxes) {
+                d3.select(dragger)
+                    .call(svgTextUtils.makeEditable, {
+                        gd: gd,
+                        immediate: true,
+                        background: gd._fullLayout.paper_bgcolor,
+                        text: String(initialText),
+                        fill: ax.tickfont ? ax.tickfont.color : '#444',
+                        horizontalAlign: hAlign,
+                        verticalAlign: vAlign
+                    })
+                    .on('edit', function(text) {
+                        var v = ax.d2r(text);
+                        if(v !== undefined) {
+                            Registry.call('relayout', gd, attrStr, v);
+                        }
+                    });
+            }
+        }
+    }
 
     dragElement.init(dragOptions);
 

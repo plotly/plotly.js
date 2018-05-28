@@ -23,8 +23,12 @@ var createRegl = require('regl');
  * @param {array} extensions : list of extension to pass to createRegl
  */
 module.exports = function prepareRegl(gd, extensions) {
-    gd._fullLayout._glcanvas.each(function(d) {
+    var fullLayout = gd._fullLayout;
+
+    fullLayout._glcanvas.each(function(d) {
         if(d.regl) return;
+        // only parcoords needs pick layer
+        if(d.pick && !fullLayout._has('parcoords')) return;
 
         d.regl = createRegl({
             canvas: this,
