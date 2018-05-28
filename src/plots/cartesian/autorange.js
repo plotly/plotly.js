@@ -232,6 +232,7 @@ function doAutoRange(ax) {
  *          and make it a tight bound if possible
  */
 function expand(ax, data, options) {
+
     if(!ax._min) ax._min = [];
     if(!ax._max) ax._max = [];
     if(!options) options = {};
