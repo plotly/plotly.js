@@ -687,7 +687,7 @@ proto.initInteractions = function() {
 
     function dragDone() {
         var attrs = {};
-        computeDragUpdates(attrs)
+        computeDragUpdates(attrs);
         Registry.call('relayout', gd, attrs);
     }
 
