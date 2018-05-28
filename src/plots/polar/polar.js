@@ -680,24 +680,30 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         zb.attr('d', path1);
         corners.attr('d', cpath);
         dragBox.transitionZoombox(zb, corners, dimmed, lum);
+        var updateObj = {};
+        computeZoomUpdates(updateObj);
+        gd.emit('plotly_relayouting', updateObj);
         dimmed = true;
+    }
+
+    function computeZoomUpdates(update) {
+        var radialAxis = _this.radialAxis;
+        var radialRange = radialAxis.range;
+        var drange = radialRange[1] - radialRange[0];
+        update[_this.id + '.radialaxis.range'] = [
+            radialRange[0] + r0 * drange / radius,
+            radialRange[0] + r1 * drange / radius
+        ];
     }
 
     function zoomDone() {
         dragBox.removeZoombox(gd);
 
         if(r0 === null || r1 === null) return;
+        var updateObj = {};
+        computeZoomUpdates(updateObj);
 
         dragBox.showDoubleClickNotifier(gd);
-
-        var radialAxis = _this.radialAxis;
-        var radialRange = radialAxis.range;
-        var drange = radialRange[1] - radialRange[0];
-        var updateObj = {};
-        updateObj[_this.id + '.radialaxis.range'] = [
-            radialRange[0] + r0 * drange / radius,
-            radialRange[0] + r1 * drange / radius
-        ];
 
         Registry.call('relayout', gd, updateObj);
     }
