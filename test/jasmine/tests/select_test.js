@@ -42,11 +42,13 @@ function drag(path, options) {
     mouseEvent('mouseup', path[len - 1][0], path[len - 1][1], options);
 }
 
-function assertSelectionNodes(cornerCnt, outlineCnt) {
+function assertSelectionNodes(cornerCnt, outlineCnt, _msg) {
+    var msg = _msg ? ' - ' + _msg : '';
+
     expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-        .toBe(cornerCnt, 'selection corner count');
+        .toBe(cornerCnt, 'selection corner count' + msg);
     expect(d3.selectAll('.zoomlayer > .select-outline').size())
-        .toBe(outlineCnt, 'selection outline count');
+        .toBe(outlineCnt, 'selection outline count' + msg);
 }
 
 var selectingCnt, selectingData, selectedCnt, selectedData, deselectCnt, doubleClickData;
