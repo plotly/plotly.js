@@ -82,7 +82,7 @@ function calc(gd, trace) {
 
     // create scene options and scene
     calcColorscales(trace);
-    var opts = sceneOptions(gd, subplot, trace, positions);
+    var opts = sceneOptions(gd, subplot, trace, positions, x, y);
     var scene = sceneUpdate(gd, subplot);
 
     // Re-use SVG scatter axis expansion routine except
@@ -133,7 +133,7 @@ function calc(gd, trace) {
 }
 
 // create scene options
-function sceneOptions(gd, subplot, trace, positions) {
+function sceneOptions(gd, subplot, trace, positions, x, y) {
     var opts = convertStyle(gd, trace);
 
     if(opts.marker) {
@@ -148,7 +148,7 @@ function sceneOptions(gd, subplot, trace, positions) {
     }
 
     if(opts.errorX || opts.errorY) {
-        var errors = convertErrorBarPositions(gd, trace, positions);
+        var errors = convertErrorBarPositions(gd, trace, positions, x, y);
 
         if(opts.errorX) {
             Lib.extendFlat(opts.errorX, errors.x);

@@ -205,6 +205,7 @@ function assertFileNames() {
                 base === 'CONTRIBUTING.md' ||
                 base === 'CHANGELOG.md' ||
                 base === 'SECURITY.md' ||
+                base === 'BUILDING.md' ||
                 file.indexOf('mathjax') !== -1
             ) return;
 

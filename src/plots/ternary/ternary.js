@@ -376,9 +376,9 @@ proto.drawAxes = function(doTitles) {
         caxis = _this.caxis;
     // 3rd arg true below skips titles, so we can configure them
     // correctly later on.
-    Axes.doTicks(gd, aaxis, true);
-    Axes.doTicks(gd, baxis, true);
-    Axes.doTicks(gd, caxis, true);
+    Axes.doTicksSingle(gd, aaxis, true);
+    Axes.doTicksSingle(gd, baxis, true);
+    Axes.doTicksSingle(gd, caxis, true);
 
     if(doTitles) {
         var apad = Math.max(aaxis.showticklabels ? aaxis.tickfont.size / 2 : 0,
@@ -587,17 +587,22 @@ proto.initInteractions = function() {
                 .duration(200);
             dimmed = true;
         }
+        var updates = {};
+        computeZoomUpdates(updates);
+        gd.emit('plotly_relayouting', updates);
     }
 
+    function computeZoomUpdates(attrs) {
+        attrs[_this.id + '.aaxis.min'] = mins.a;
+        attrs[_this.id + '.baxis.min'] = mins.b;
+        attrs[_this.id + '.caxis.min'] = mins.c;
+    }
     function zoomDone() {
         removeZoombox(gd);
 
         if(mins === mins0) return;
-
         var attrs = {};
-        attrs[_this.id + '.aaxis.min'] = mins.a;
-        attrs[_this.id + '.baxis.min'] = mins.b;
-        attrs[_this.id + '.caxis.min'] = mins.c;
+        computeZoomUpdates(attrs);
 
         Registry.call('relayout', gd, attrs);
 
@@ -670,14 +675,19 @@ proto.initInteractions = function() {
                 .select('.scatterlayer').selectAll('.trace')
                 .call(Drawing.hideOutsideRangePoints, _this);
         }
+        var attrs = {};
+        computeDragUpdates(attrs);
+        gd.emit('plotly_relayout', attrs);
+    }
+    function computeDragUpdates(attrs) {
+        attrs[_this.id + '.aaxis.min'] = mins.a;
+        attrs[_this.id + '.baxis.min'] = mins.b;
+        attrs[_this.id + '.caxis.min'] = mins.c;
     }
 
     function dragDone() {
         var attrs = {};
-        attrs[_this.id + '.aaxis.min'] = mins.a;
-        attrs[_this.id + '.baxis.min'] = mins.b;
-        attrs[_this.id + '.caxis.min'] = mins.c;
-
+        computeDragUpdates(attrs)
         Registry.call('relayout', gd, attrs);
     }
 

@@ -14,9 +14,9 @@ var ndarray = require('ndarray');
 var homography = require('ndarray-homography');
 var fill = require('ndarray-fill');
 var ops = require('ndarray-ops');
-var tinycolor = require('tinycolor2');
 
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
+var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 
 var MIN_RESOLUTION = 128;
@@ -91,20 +91,6 @@ proto.handlePick = function(selection) {
         return true;
     }
 };
-
-function parseColorScale(colorscale, alpha) {
-    if(alpha === undefined) alpha = 1;
-
-    return colorscale.map(function(elem) {
-        var index = elem[0];
-        var color = tinycolor(elem[1]);
-        var rgb = color.toRgb();
-        return {
-            index: index,
-            rgb: [rgb.r, rgb.g, rgb.b, alpha]
-        };
-    });
-}
 
 function isColormapCircular(colormap) {
     var first = colormap[0].rgb,

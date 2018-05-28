@@ -10,13 +10,12 @@
 'use strict';
 
 var createMesh = require('gl-mesh3d');
-var tinycolor = require('tinycolor2');
 var triangulate = require('delaunay-triangulate');
 var alphaShape = require('alpha-shape');
 var convexHull = require('convex-hull');
 
+var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
-
 
 function Mesh3DTrace(scene, mesh, uid) {
     this.scene = scene;
@@ -50,18 +49,6 @@ proto.handlePick = function(selection) {
         return true;
     }
 };
-
-function parseColorScale(colorscale) {
-    return colorscale.map(function(elem) {
-        var index = elem[0];
-        var color = tinycolor(elem[1]);
-        var rgb = color.toRgb();
-        return {
-            index: index,
-            rgb: [rgb.r, rgb.g, rgb.b, 1]
-        };
-    });
-}
 
 function parseColorArray(colors) {
     return colors.map(str2RgbaArray);

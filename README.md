@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
+[![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/master/LICENSE)
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
 plotly.js is a high-level, declarative charting library. plotly.js ships with over 20
@@ -19,6 +20,7 @@ and more.
 
 * [Quick start options](#quick-start-options)
 * [Modules](#modules)
+* [Building plotly.js](#building-plotlyjs)
 * [Bugs and feature requests](#bugs-and-feature-requests)
 * [Documentation](#documentation)
 * [Contributing](#contributing)
@@ -102,24 +104,9 @@ Important: the plotly.js code base contains some non-ascii characters. Therefore
 <script src="my-plotly-bundle.js" charset="utf-8"></script>
 ```
 
+## Building plotly.js
 
-#### Building plotly.js with Webpack
-
-For plotly.js to build with Webpack you will need to install [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json`. This adds Browserify transform compatibility to Webpack which is necessary for some plotly.js dependencies.
-
-A repo that demonstrates how to build plotly.js with Webpack can be found [here](https://github.com/rreusser/plotly-webpack). In short add `ify-loader` to the `module` section in your `webpack.config.js`:
-```js
-...
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                loader: 'ify-loader'
-            }
-        ]
-    },
-...
-```
+Building instructions using `webpack`, `browserify` and other build frameworks are in [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md)
 
 ## Bugs and feature requests
 
@@ -175,6 +162,7 @@ plotly.js charts can also be created and saved online for free at [plot.ly/creat
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) |
 |**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) |
+| **Dmitry Yv.** | [@dy](https://github.com/dy) | [@DimaYv](https://twitter.com/dimayv)|
 |**Ricky Reusser**| [@rreusser](https://github.com/rreusser) | [@rickyreusser](https://twitter.com/rickyreusser) |
 |**Robert Monfera**| [@monfera](https://github.com/monfera) | [@monfera](https://twitter.com/monfera) |
 |**Nicolas Riesco**| [@n-riesco](https://github.com/n-riesco) | |

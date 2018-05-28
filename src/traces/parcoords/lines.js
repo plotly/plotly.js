@@ -176,7 +176,7 @@ function setAttributes(attributes, sampleCount, points) {
 function emptyAttributes(regl) {
     var attributes = {};
     for(var i = 0; i < 16; i++) {
-        attributes['p' + i.toString(16)] = regl.buffer({usage: 'dynamic', type: 'float', data: null});
+        attributes['p' + i.toString(16)] = regl.buffer({usage: 'dynamic', type: 'float', data: new Uint8Array(0)});
     }
     return attributes;
 }

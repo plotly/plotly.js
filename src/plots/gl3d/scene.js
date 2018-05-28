@@ -71,18 +71,43 @@ function render(scene) {
         trace = lastPicked.data;
         var ptNumber = selection.index;
         var hoverinfo = Fx.castHoverinfo(trace, scene.fullLayout, ptNumber);
+        var hoverinfoParts = hoverinfo.split('+');
+        var isHoverinfoAll = hoverinfo === 'all';
 
-        var xVal = formatter('xaxis', selection.traceCoordinate[0]),
-            yVal = formatter('yaxis', selection.traceCoordinate[1]),
-            zVal = formatter('zaxis', selection.traceCoordinate[2]);
+        var xVal = formatter('xaxis', selection.traceCoordinate[0]);
+        var yVal = formatter('yaxis', selection.traceCoordinate[1]);
+        var zVal = formatter('zaxis', selection.traceCoordinate[2]);
 
-        if(hoverinfo !== 'all') {
-            var hoverinfoParts = hoverinfo.split('+');
+        if(!isHoverinfoAll) {
             if(hoverinfoParts.indexOf('x') === -1) xVal = undefined;
             if(hoverinfoParts.indexOf('y') === -1) yVal = undefined;
             if(hoverinfoParts.indexOf('z') === -1) zVal = undefined;
             if(hoverinfoParts.indexOf('text') === -1) selection.textLabel = undefined;
             if(hoverinfoParts.indexOf('name') === -1) lastPicked.name = undefined;
+        }
+
+        var tx;
+
+        if(trace.type === 'cone') {
+            var coneTx = [];
+            if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
+                coneTx.push('u: ' + formatter('xaxis', selection.traceCoordinate[3]));
+            }
+            if(isHoverinfoAll || hoverinfoParts.indexOf('v') !== -1) {
+                coneTx.push('v: ' + formatter('yaxis', selection.traceCoordinate[4]));
+            }
+            if(isHoverinfoAll || hoverinfoParts.indexOf('w') !== -1) {
+                coneTx.push('w: ' + formatter('zaxis', selection.traceCoordinate[5]));
+            }
+            if(isHoverinfoAll || hoverinfoParts.indexOf('norm') !== -1) {
+                coneTx.push('norm: ' + selection.traceCoordinate[6].toPrecision(3));
+            }
+            if(selection.textLabel) {
+                coneTx.push(selection.textLabel);
+            }
+            tx = coneTx.join('<br>');
+        } else {
+            tx = selection.textLabel;
         }
 
         if(scene.fullSceneLayout.hovermode) {
@@ -92,7 +117,7 @@ function render(scene) {
                 xLabel: xVal,
                 yLabel: yVal,
                 zLabel: zVal,
-                text: selection.textLabel,
+                text: tx,
                 name: lastPicked.name,
                 color: Fx.castHoverOption(trace, ptNumber, 'bgcolor') || lastPicked.color,
                 borderColor: Fx.castHoverOption(trace, ptNumber, 'bordercolor'),
@@ -190,8 +215,6 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         scene.saveCamera(scene.graphDiv.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
-
-    scene.glplot.canvas.addEventListener('mouseup', relayoutCallback.bind(null, scene));
     scene.glplot.canvas.addEventListener('mousemove', relayoutCallback.bind(null, scene));
     scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
 
@@ -307,39 +330,42 @@ proto.recoverContext = function() {
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
-function coordinateBound(axis, coord, len, d, bounds, calendar) {
-    var x;
-    if(!Lib.isArrayOrTypedArray(coord)) {
-        bounds[0][d] = Math.min(bounds[0][d], 0);
-        bounds[1][d] = Math.max(bounds[1][d], len - 1);
-        return;
-    }
+function computeTraceBounds(scene, trace, bounds) {
+    var sceneLayout = scene.fullSceneLayout;
 
-    for(var i = 0; i < (len || coord.length); ++i) {
-        if(Lib.isArrayOrTypedArray(coord[i])) {
-            for(var j = 0; j < coord[i].length; ++j) {
-                x = axis.d2l(coord[i][j], 0, calendar);
-                if(!isNaN(x) && isFinite(x)) {
-                    bounds[0][d] = Math.min(bounds[0][d], x);
-                    bounds[1][d] = Math.max(bounds[1][d], x);
+    for(var d = 0; d < 3; d++) {
+        var axisName = axisProperties[d];
+        var axLetter = axisName.charAt(0);
+        var ax = sceneLayout[axisName];
+        var coords = trace[axLetter];
+        var calendar = trace[axLetter + 'calendar'];
+        var len = trace['_' + axLetter + 'length'];
+
+        if(!Lib.isArrayOrTypedArray(coords)) {
+            bounds[0][d] = Math.min(bounds[0][d], 0);
+            bounds[1][d] = Math.max(bounds[1][d], len - 1);
+        } else {
+            var v;
+
+            for(var i = 0; i < (len || coords.length); i++) {
+                if(Lib.isArrayOrTypedArray(coords[i])) {
+                    for(var j = 0; j < coords[i].length; ++j) {
+                        v = ax.d2l(coords[i][j], 0, calendar);
+                        if(!isNaN(v) && isFinite(v)) {
+                            bounds[0][d] = Math.min(bounds[0][d], v);
+                            bounds[1][d] = Math.max(bounds[1][d], v);
+                        }
+                    }
+                } else {
+                    v = ax.d2l(coords[i], 0, calendar);
+                    if(!isNaN(v) && isFinite(v)) {
+                        bounds[0][d] = Math.min(bounds[0][d], v);
+                        bounds[1][d] = Math.max(bounds[1][d], v);
+                    }
                 }
             }
         }
-        else {
-            x = axis.d2l(coord[i], 0, calendar);
-            if(!isNaN(x) && isFinite(x)) {
-                bounds[0][d] = Math.min(bounds[0][d], x);
-                bounds[1][d] = Math.max(bounds[1][d], x);
-            }
-        }
     }
-}
-
-function computeTraceBounds(scene, trace, bounds) {
-    var sceneLayout = scene.fullSceneLayout;
-    coordinateBound(sceneLayout.xaxis, trace.x, trace._xlength, 0, bounds, trace.xcalendar);
-    coordinateBound(sceneLayout.yaxis, trace.y, trace._ylength, 1, bounds, trace.ycalendar);
-    coordinateBound(sceneLayout.zaxis, trace.z, trace._zlength, 2, bounds, trace.zcalendar);
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
@@ -478,9 +504,12 @@ proto.plot = function(sceneData, fullLayout, layout) {
             var axLetter = axis._name.charAt(0);
 
             for(j = 0; j < objects.length; j++) {
-                var objBounds = objects[j].bounds;
-                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i]);
-                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i]);
+                var obj = objects[j];
+                var objBounds = obj.bounds;
+                var pad = obj._trace.data._pad || 0;
+
+                sceneBounds[0][i] = Math.min(sceneBounds[0][i], objBounds[0][i] / dataScale[i] - pad);
+                sceneBounds[1][i] = Math.max(sceneBounds[1][i], objBounds[1][i] / dataScale[i] + pad);
             }
 
             for(j = 0; j < annotations.length; j++) {

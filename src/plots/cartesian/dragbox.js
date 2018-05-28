@@ -26,7 +26,7 @@ var FROM_TL = require('../../constants/alignment').FROM_TL;
 
 var Plots = require('../plots');
 
-var doTicks = require('./axes').doTicks;
+var doTicksSingle = require('./axes').doTicksSingle;
 var getFromId = require('./axis_ids').getFromId;
 var prepSelect = require('./select').prepSelect;
 var clearSelect = require('./select').clearSelect;
@@ -82,6 +82,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var isSubplotConstrained;
     // do we need to edit x/y ranges?
     var editX, editY;
+    // graph-wide optimization flags
+    var hasScatterGl, hasOnlyLargeSploms, hasSplom, hasSVG;
 
     function recomputeAxisLists() {
         xa0 = plotinfo.xaxis;
@@ -117,6 +119,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         isSubplotConstrained = links.isSubplotConstrained;
         editX = ew || isSubplotConstrained;
         editY = ns || isSubplotConstrained;
+
+        var fullLayout = gd._fullLayout;
+        hasScatterGl = fullLayout._has('scattergl');
+        hasOnlyLargeSploms = fullLayout._hasOnlyLargeSploms;
+        hasSplom = hasOnlyLargeSploms || fullLayout._has('splom');
+        hasSVG = fullLayout._has('svg');
     }
 
     recomputeAxisLists();
@@ -244,6 +252,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         zb,
         corners;
 
+    // zoom takes over minDrag, so it also has to take over gd._dragged
+    var zoomDragged;
+
     // collected changes to be made to the plot by relayout at the end
     var updates = {};
 
@@ -258,6 +269,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         path0 = 'M0,0H' + pw + 'V' + ph + 'H0V0';
         dimmed = false;
         zoomMode = 'xy';
+        zoomDragged = false;
 
         zb = makeZoombox(zoomlayer, lum, xs, ys, path0);
 
@@ -333,7 +345,42 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         box.w = box.r - box.l;
         box.h = box.b - box.t;
 
+        if(zoomMode) zoomDragged = true;
+        gd._dragged = zoomDragged;
+
         updateZoombox(zb, corners, box, path0, dimmed, lum);
+        // what event data do we emit here? In gl3d, camera location is emitted.
+        // what is needed for relayouting a cartesian plot?
+        // for plotly_relayout, the payload is always 'updates'
+        //             updates[ax._name + '.range[0]'] = ax.range[0];
+        //             updates[ax._name + '.range[1]'] = ax.range[1];
+        // For plotly_relayout, the event is emitted at the end of zoomDone. The payload is not
+        // computed until zoomAxRanges is called.
+        // Actual drawing is spread out in several functions
+        //        updateSubplots
+        //        ticksAndAnnotations
+        //        relayout() in plot_api.js
+        // zoom
+        //         zoomMove
+        //             no drawing
+        //         zoomDone
+        //             zoomAxRanges
+        //                 no drawing but modifying updates
+        //             dragtail
+        //                 updateSubplots
+        //                      drawing subplots
+        //                 relayout() in plot_api.js
+        // zoomwheel
+        //         zoomwheel
+        //             updateSubplots
+        //             ticksandannotations
+        //                 this modifies the updates
+        //             dragtail on delay
+        //                 updateSubplots
+        //                 relayout() in plot_api.js
+        //
+        computeZoomUpdates();
+        gd.emit('plotly_relayouting', updates);
         dimmed = true;
     }
 
@@ -343,7 +390,13 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(Math.min(box.h, box.w) < MINDRAG * 2) {
             return removeZoombox(gd);
         }
+        computeZoomUpdates();
 
+        removeZoombox(gd);
+        dragTail();
+        showDoubleClickNotifier(gd);
+    }
+    function computeZoomUpdates() {
         // TODO: edit linked axes in zoomAxRanges and in dragTail
         if(zoomMode === 'xy' || zoomMode === 'x') {
             zoomAxRanges(xaxes, box.l / pw, box.r / pw, updates, links.xaxes);
@@ -351,10 +404,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(zoomMode === 'xy' || zoomMode === 'y') {
             zoomAxRanges(yaxes, (ph - box.b) / ph, (ph - box.t) / ph, updates, links.yaxes);
         }
-
-        removeZoombox(gd);
-        dragTail();
-        showDoubleClickNotifier(gd);
     }
 
     // scroll zoom, on all draggers except corners
@@ -363,7 +412,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var redrawTimer = null;
     var REDRAWDELAY = constants.REDRAWDELAY;
     var mainplot = plotinfo.mainplot ? gd._fullLayout._plots[plotinfo.mainplot] : plotinfo;
-
     function zoomWheel(e) {
         // deactivate mousewheel scrolling on embedded graphs
         // devs can override this with layout._enablescrollzoom,
@@ -450,12 +498,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // no more scrolling is coming
         redrawTimer = setTimeout(function() {
             scrollViewBox = [0, 0, pw, ph];
-
-            var zoomMode;
-            if(isSubplotConstrained) zoomMode = 'xy';
-            else zoomMode = (ew ? 'x' : '') + (ns ? 'y' : '');
-
-            dragTail(zoomMode);
+            dragTail();
         }, REDRAWDELAY);
 
         e.preventDefault();
@@ -479,6 +522,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(yActive) dragAxList(yaxes, dy);
             updateSubplots([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
             ticksAndAnnotations(yActive, xActive);
+            // updates computed in ticksAndAnnotations
+            gd.emit('plotly_relayout', updates);
             return;
         }
 
@@ -551,6 +596,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         updateSubplots([x0, y0, pw - dx, ph - dy]);
         ticksAndAnnotations(yActive, xActive);
+        // updates computed in ticksAndAnnotations
+        gd.emit('plotly_relayout', updates);
     }
 
     // Draw ticks and annotations (and other components) when ranges change.
@@ -577,7 +624,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         updates = {};
         for(i = 0; i < activeAxIds.length; i++) {
             var axId = activeAxIds[i];
-            doTicks(gd, axId, true);
+            doTicksSingle(gd, axId, true);
             var ax = getFromId(gd, axId);
             updates[ax._name + '.range[0]'] = ax.range[0];
             updates[ax._name + '.range[1]'] = ax.range[1];
@@ -688,6 +735,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         ], gd);
     }
 
+    // x/y scaleFactor stash,
+    // minimizes number of per-point DOM updates in updateSubplots below
+    var xScaleFactorOld, yScaleFactorOld;
+
     // updateSubplots - find all plot viewboxes that should be
     // affected by this drag, and update them. look for all plots
     // sharing an affected axis (including the one being dragged),
@@ -696,14 +747,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var fullLayout = gd._fullLayout;
         var plotinfos = fullLayout._plots;
         var subplots = fullLayout._subplots.cartesian;
-
-        // TODO can we move these to outer scope?
-        var hasScatterGl = fullLayout._has('scattergl');
-        var hasOnlyLargeSploms = fullLayout._hasOnlyLargeSploms;
-        var hasSplom = hasOnlyLargeSploms || fullLayout._has('splom');
-        var hasSVG = fullLayout._has('svg');
-        var hasDraggedPts = fullLayout._has('draggedPts');
-
         var i, sp, xa, ya;
 
         if(hasSplom || hasScatterGl) {
@@ -788,26 +831,20 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     .call(Drawing.setTranslate, plotDx, plotDy)
                     .call(Drawing.setScale, 1 / xScaleFactor2, 1 / yScaleFactor2);
 
-                // TODO move these selectAll calls out of here
-                // and stash them somewhere nice, see:
-                // https://github.com/plotly/plotly.js/issues/2548
-                if(hasDraggedPts) {
-                    var traceGroups = sp.plot
-                        .selectAll('.scatterlayer .trace, .boxlayer .trace, .violinlayer .trace');
-
-                    // This is specifically directed at marker points in scatter, box and violin traces,
-                    // applying an inverse scale to individual points to counteract
-                    // the scale of the trace as a whole:
-                    traceGroups.selectAll('.point')
-                        .call(Drawing.setPointGroupScale, xScaleFactor2, yScaleFactor2);
-                    traceGroups.selectAll('.textpoint')
-                        .call(Drawing.setTextPointsScale, xScaleFactor2, yScaleFactor2);
-                    traceGroups
-                        .call(Drawing.hideOutsideRangePoints, sp);
-
-                    sp.plot.selectAll('.barlayer .trace')
-                        .call(Drawing.hideOutsideRangePoints, sp, '.bartext');
+                // apply an inverse scale to individual points to counteract
+                // the scale of the trace group.
+                // apply only when scale changes, as adjusting the scale of
+                // all the points can be expansive.
+                if(xScaleFactor2 !== xScaleFactorOld || yScaleFactor2 !== yScaleFactorOld) {
+                    Drawing.setPointGroupScale(sp.zoomScalePts, xScaleFactor2, yScaleFactor2);
+                    Drawing.setTextPointsScale(sp.zoomScaleTxt, xScaleFactor2, yScaleFactor2);
                 }
+
+                Drawing.hideOutsideRangePoints(sp.clipOnAxisFalseTraces, sp);
+
+                // update x/y scaleFactor stash
+                xScaleFactorOld = xScaleFactor2;
+                yScaleFactorOld = yScaleFactor2;
             }
         }
     }

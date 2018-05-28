@@ -8,15 +8,17 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
 var svgSdf = require('svg-path-sdf');
 var rgba = require('color-normalize');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
+var Axes = require('../../plots/cartesian/axes');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 
-var formatColor = require('../../lib/gl_format_color');
+var formatColor = require('../../lib/gl_format_color').formatColor;
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 
@@ -360,42 +362,60 @@ function convertLinePositions(gd, trace, positions) {
     };
 }
 
-function convertErrorBarPositions(gd, trace, positions) {
-    var calcFromTrace = Registry.getComponentMethod('errorbars', 'calcFromTrace');
-    var vals = calcFromTrace(trace, gd._fullLayout);
+function convertErrorBarPositions(gd, trace, positions, x, y) {
+    var makeComputeError = Registry.getComponentMethod('errorbars', 'makeComputeError');
+    var xa = AxisIDs.getFromId(gd, trace.xaxis);
+    var ya = AxisIDs.getFromId(gd, trace.yaxis);
     var count = positions.length / 2;
     var out = {};
 
-    function put(axLetter) {
-        var errors = new Float64Array(4 * count);
-        var ax = AxisIDs.getFromId(gd, trace[axLetter + 'axis']);
-        var pOffset = {x: 0, y: 1}[axLetter];
-        var eOffset = {x: [0, 1, 2, 3], y: [2, 3, 0, 1]}[axLetter];
+    function convertOneAxis(coords, ax) {
+        var axLetter = ax._id.charAt(0);
+        var opts = trace['error_' + axLetter];
 
-        for(var i = 0, p = 0; i < count; i++, p += 4) {
-            errors[p + eOffset[0]] = positions[i * 2 + pOffset] - ax.d2l(vals[i][axLetter + 's']) || 0;
-            errors[p + eOffset[1]] = ax.d2l(vals[i][axLetter + 'h']) - positions[i * 2 + pOffset] || 0;
-            errors[p + eOffset[2]] = 0;
-            errors[p + eOffset[3]] = 0;
+        if(opts && opts.visible && (ax.type === 'linear' || ax.type === 'log')) {
+            var computeError = makeComputeError(opts);
+            var pOffset = {x: 0, y: 1}[axLetter];
+            var eOffset = {x: [0, 1, 2, 3], y: [2, 3, 0, 1]}[axLetter];
+            var errors = new Float64Array(4 * count);
+            var minShoe = Infinity;
+            var maxHat = -Infinity;
+
+            for(var i = 0, j = 0; i < count; i++, j += 4) {
+                var dc = coords[i];
+
+                if(isNumeric(dc)) {
+                    var dl = positions[i * 2 + pOffset];
+                    var vals = computeError(dc, i);
+                    var lv = vals[0];
+                    var hv = vals[1];
+
+                    if(isNumeric(lv) && isNumeric(hv)) {
+                        var shoe = dc - lv;
+                        var hat = dc + hv;
+
+                        errors[j + eOffset[0]] = dl - ax.c2l(shoe);
+                        errors[j + eOffset[1]] = ax.c2l(hat) - dl;
+                        errors[j + eOffset[2]] = 0;
+                        errors[j + eOffset[3]] = 0;
+
+                        minShoe = Math.min(minShoe, dc - lv);
+                        maxHat = Math.max(maxHat, dc + hv);
+                    }
+                }
+            }
+
+            Axes.expand(ax, [minShoe, maxHat], {padded: true});
+
+            out[axLetter] = {
+                positions: positions,
+                errors: errors
+            };
         }
-
-        return errors;
     }
 
-
-    if(trace.error_x && trace.error_x.visible) {
-        out.x = {
-            positions: positions,
-            errors: put('x')
-        };
-    }
-    if(trace.error_y && trace.error_y.visible) {
-        out.y = {
-            positions: positions,
-            errors: put('y')
-        };
-    }
-
+    convertOneAxis(x, xa);
+    convertOneAxis(y, ya);
     return out;
 }
 
