@@ -169,6 +169,12 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         self.yaxis.p2c = function() { return evt.lngLat.lat; };
 
         Fx.hover(gd, evt, self.id);
+
+        var update = {};
+        var view = self.getView();
+        update[self.id] = Lib.extendFlat({}, view);
+        gd.emit('plotly_relayouting', update);
+
     });
 
     map.on('click', function(evt) {
