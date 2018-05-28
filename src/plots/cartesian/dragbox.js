@@ -349,6 +349,38 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         gd._dragged = zoomDragged;
 
         updateZoombox(zb, corners, box, path0, dimmed, lum);
+        // what event data do we emit here? In gl3d, camera location is emitted.
+        // what is needed for relayouting a cartesian plot?
+        // for plotly_relayout, the payload is always 'updates'
+        //             updates[ax._name + '.range[0]'] = ax.range[0];
+        //             updates[ax._name + '.range[1]'] = ax.range[1];
+        // For plotly_relayout, the event is emitted at the end of zoomDone. The payload is not
+        // computed until zoomAxRanges is called.
+        // Actual drawing is spread out in several functions
+        //        updateSubplots
+        //        ticksAndAnnotations
+        //        relayout() in plot_api.js
+        // zoom
+        //         zoomMove
+        //             no drawing
+        //         zoomDone
+        //             zoomAxRanges
+        //                 no drawing but modifying updates
+        //             dragtail
+        //                 updateSubplots
+        //                      drawing subplots
+        //                 relayout() in plot_api.js
+        // zoomwheel
+        //         zoomwheel
+        //             updateSubplots
+        //             ticksandannotations
+        //                 this modifies the updates
+        //             dragtail on delay
+        //                 updateSubplots
+        //                 relayout() in plot_api.js
+        //
+        computeZoomUpdates();
+        gd.emit('plotly_relayouting', updates);
         dimmed = true;
     }
 
@@ -358,7 +390,13 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(Math.min(box.h, box.w) < MINDRAG * 2) {
             return removeZoombox(gd);
         }
+        computeZoomUpdates();
 
+        removeZoombox(gd);
+        dragTail();
+        showDoubleClickNotifier(gd);
+    }
+    function computeZoomUpdates() {
         // TODO: edit linked axes in zoomAxRanges and in dragTail
         if(zoomMode === 'xy' || zoomMode === 'x') {
             zoomAxRanges(xaxes, box.l / pw, box.r / pw, updates, links.xaxes);
@@ -366,10 +404,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(zoomMode === 'xy' || zoomMode === 'y') {
             zoomAxRanges(yaxes, (ph - box.b) / ph, (ph - box.t) / ph, updates, links.yaxes);
         }
-
-        removeZoombox(gd);
-        dragTail();
-        showDoubleClickNotifier(gd);
     }
 
     // scroll zoom, on all draggers except corners
@@ -378,7 +412,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var redrawTimer = null;
     var REDRAWDELAY = constants.REDRAWDELAY;
     var mainplot = plotinfo.mainplot ? gd._fullLayout._plots[plotinfo.mainplot] : plotinfo;
-
     function zoomWheel(e) {
         // deactivate mousewheel scrolling on embedded graphs
         // devs can override this with layout._enablescrollzoom,
@@ -489,6 +522,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if(yActive) dragAxList(yaxes, dy);
             updateSubplots([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
             ticksAndAnnotations(yActive, xActive);
+            // updates computed in ticksAndAnnotations
+            gd.emit('plotly_relayout', updates);
             return;
         }
 
@@ -561,6 +596,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         updateSubplots([x0, y0, pw - dx, ph - dy]);
         ticksAndAnnotations(yActive, xActive);
+        // updates computed in ticksAndAnnotations
+        gd.emit('plotly_relayout', updates);
     }
 
     // Draw ticks and annotations (and other components) when ranges change.
