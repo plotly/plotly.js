@@ -723,6 +723,131 @@ describe('@flaky Test select box and lasso in general:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should remember selection polygons from previous select/lasso mode', function(done) {
+        var gd = createGraphDiv();
+        var path1 = [[150, 150], [170, 170]];
+        var path2 = [[193, 193], [213, 193]];
+
+        var fig = Lib.extendDeep({}, mock);
+        fig.layout.margin = {l: 0, t: 0, r: 0, b: 0};
+        fig.layout.width = 500;
+        fig.layout.height = 500;
+        fig.layout.dragmode = 'select';
+
+        // d attr to array of segment [x,y]
+        function outline2coords(outline) {
+            if(!outline.size()) return [[]];
+
+            return outline.attr('d')
+                .replace(/Z/g, '')
+                .split('M')
+                .filter(Boolean)
+                .map(function(s) {
+                    return s.split('L')
+                        .map(function(s) { return s.split(',').map(Number); });
+                })
+                .reduce(function(a, b) { return a.concat(b); });
+        }
+
+        function _assert(msg, exp) {
+            var outline = d3.select(gd).select('.zoomlayer').select('.select-outline-1');
+
+            if(exp.outline) {
+                expect(outline2coords(outline)).toBeCloseTo2DArray(exp.outline, 2, msg);
+            } else {
+                assertSelectionNodes(0, 0, msg);
+            }
+        }
+
+        function _drag(path, opts) {
+            return function() {
+                resetEvents(gd);
+                drag(path, opts);
+                return selectedPromise;
+            };
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() { _assert('base', {outline: false}); })
+        .then(_drag(path1))
+        .then(function() {
+            _assert('select path1', {
+                outline: [[150, 150], [150, 170], [170, 170], [170, 150], [150, 150]]
+            });
+        })
+        .then(_drag(path2))
+        .then(function() {
+            _assert('select path2', {
+                outline: [[193, 0], [193, 500], [213, 500], [213, 0], [193, 0]]
+            });
+        })
+        .then(_drag(path1))
+        .then(_drag(path2, {shiftKey: true}))
+        .then(function() {
+            _assert('select path1+path2', {
+                outline: [
+                    [170, 170], [170, 150], [150, 150], [150, 170], [170, 170],
+                    [213, 500], [213, 0], [193, 0], [193, 500], [213, 500]
+                ]
+            });
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            // N.B. all relayout calls clear the selection outline at the moment,
+            // perhaps we could make an exception for select <-> lasso ?
+            _assert('after relayout -> lasso', {outline: false});
+        })
+        .then(_drag(lassoPath, {shiftKey: true}))
+        .then(function() {
+            // merged with previous 'select' polygon
+            _assert('after shift lasso', {
+                outline: [
+                    [170, 170], [170, 150], [150, 150], [150, 170], [170, 170],
+                    [213, 500], [213, 0], [193, 0], [193, 500], [213, 500],
+                    [335, 243], [328, 169], [316, 171], [318, 239], [335, 243]
+                ]
+            });
+        })
+        .then(_drag(lassoPath))
+        .then(function() {
+            _assert('after lasso (no-shift)', {
+                outline: [[316, 171], [318, 239], [335, 243], [328, 169], [316, 171]]
+            });
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'pan');
+        })
+        .then(function() {
+            _assert('after relayout -> pan', {outline: false});
+            drag(path2);
+            _assert('after pan', {outline: false});
+            return Plotly.relayout(gd, 'dragmode', 'select');
+        })
+        .then(function() {
+            _assert('after relayout back to select', {outline: false});
+        })
+        .then(_drag(path1, {shiftKey: true}))
+        .then(function() {
+            // this used to merged 'lasso' polygons before (see #2669)
+            _assert('shift select path1 after pan', {
+                outline: [[150, 150], [150, 170], [170, 170], [170, 150], [150, 150]]
+            });
+        })
+        .then(_drag(path2, {shiftKey: true}))
+        .then(function() {
+            _assert('shift select path1+path2 after pan', {
+                outline: [
+                    [170, 170], [170, 150], [150, 150], [150, 170], [170, 170],
+                    [213, 500], [213, 0], [193, 0], [193, 500], [213, 500]
+                ]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('@flaky Test select box and lasso per trace:', function() {

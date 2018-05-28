@@ -178,6 +178,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             prepSelect(e, startX, startY, dragOptions, dragModeNow);
         } else {
             dragOptions.clickFn = clickFn;
+            // clear selection polygon cache (if any)
+            plotinfo.selection = false;
 
             if(allFixedRanges) {
                 clearSelect(zoomlayer);
