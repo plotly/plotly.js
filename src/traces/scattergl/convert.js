@@ -219,7 +219,7 @@ function convertMarkerSelection(trace, target) {
     if(target.marker && target.marker.symbol) {
         optsOut = convertMarkerStyle(Lib.extendFlat({}, optsIn, target.marker));
     } else if(target.marker) {
-        if(target.marker.size) optsOut.sizes = target.marker.size;
+        if(target.marker.size) optsOut.sizes = target.marker.size / 2;
         if(target.marker.color) optsOut.colors = target.marker.color;
         if(target.marker.opacity !== undefined) optsOut.opacity = target.marker.opacity;
     }
