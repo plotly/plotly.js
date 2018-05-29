@@ -84,10 +84,8 @@ function convert(scene, trace) {
 
     // TODO
     // tubeOpts.maxLength
-    // tubeOpts.widthScale
 
-    // TODO the widhScale default looks BRUTAL
-    tubeOpts.widthScale = 100;
+    tubeOpts.tubeSize = trace.sizeref;
 
     var xbnds = toDataCoords(trace._xbnds, 'xaxis');
     var ybnds = toDataCoords(trace._ybnds, 'yaxis');
@@ -99,12 +97,9 @@ function convert(scene, trace) {
 
     var meshData = tube2mesh(tubeOpts, bounds);
 
-    // TODO cmin/cmax correspond to the min/max vector norm
+    // N.B. cmin/cmax correspond to the min/max vector norm
     // in the u/v/w arrays, which in general is NOT equal to max
     // intensity that colors the tubes.
-    //
-    // Maybe we should use meshData.vertexIntensities instead to
-    // determine the auto values for "cmin" and "cmax"?
     meshData.vertexIntensityBounds = [trace.cmin, trace.cmax];
 
     // pass gl-mesh3d lighting attributes

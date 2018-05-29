@@ -42,7 +42,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     // TODO adapt these
     // coerce('maxLength');
-    // coerce('widthScale');
+    // coerce('sizemode');
+
+    coerce('sizeref');
 
     coerce('lighting.ambient');
     coerce('lighting.diffuse');

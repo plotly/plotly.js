@@ -79,7 +79,15 @@ var attrs = {
 
     // TODO
     // maxLength
-    // widthScale
+
+    sizeref: {
+        valType: 'number',
+        role: 'info',
+        editType: 'calc',
+        min: 0,
+        dflt: 1,
+        description: ''
+    },
 
     text: {
         valType: 'string',
