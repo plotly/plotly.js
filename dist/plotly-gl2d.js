@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.38.0
+* plotly.js (gl2d) v1.38.1
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -64389,7 +64389,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.38.0';
+exports.version = '1.38.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -67038,6 +67038,17 @@ lib.extractOption = function(calcPt, trace, calcKey, traceKey) {
     if(!Array.isArray(traceVal)) return traceVal;
 };
 
+function makePtIndex2PtNumber(indexToPoints) {
+    var ptIndex2ptNumber = {};
+    for(var k in indexToPoints) {
+        var pts = indexToPoints[k];
+        for(var j = 0; j < pts.length; j++) {
+            ptIndex2ptNumber[pts[j]] = +k;
+        }
+    }
+    return ptIndex2ptNumber;
+}
+
 /** Tag selected calcdata items
  *
  * N.B. note that point 'index' corresponds to input data array index
@@ -67058,13 +67069,7 @@ lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
 
     // make pt index-to-number map object, which takes care of transformed traces
     if(indexToPoints) {
-        ptIndex2ptNumber = {};
-        for(var k in indexToPoints) {
-            var pts = indexToPoints[k];
-            for(var j = 0; j < pts.length; j++) {
-                ptIndex2ptNumber[pts[j]] = k;
-            }
-        }
+        ptIndex2ptNumber = makePtIndex2PtNumber(indexToPoints);
     }
 
     function isCdIndexValid(v) {
@@ -67082,6 +67087,30 @@ lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
                 calcTrace[cdIndex].selected = 1;
             }
         }
+    }
+};
+
+lib.selIndices2selPoints = function(trace) {
+    var selectedpoints = trace.selectedpoints;
+    var indexToPoints = trace._indexToPoints;
+
+    if(indexToPoints) {
+        var ptIndex2ptNumber = makePtIndex2PtNumber(indexToPoints);
+        var out = [];
+
+        for(var i = 0; i < selectedpoints.length; i++) {
+            var ptIndex = selectedpoints[i];
+            if(lib.isIndex(ptIndex)) {
+                var ptNumber = ptIndex2ptNumber[ptIndex];
+                if(lib.isIndex(ptNumber)) {
+                    out.push(ptNumber);
+                }
+            }
+        }
+
+        return out;
+    } else {
+        return selectedpoints;
     }
 };
 
@@ -68773,8 +68802,12 @@ var createRegl = require('regl');
  * @param {array} extensions : list of extension to pass to createRegl
  */
 module.exports = function prepareRegl(gd, extensions) {
-    gd._fullLayout._glcanvas.each(function(d) {
+    var fullLayout = gd._fullLayout;
+
+    fullLayout._glcanvas.each(function(d) {
         if(d.regl) return;
+        // only parcoords needs pick layer
+        if(d.pick && !fullLayout._has('parcoords')) return;
 
         d.regl = createRegl({
             canvas: this,
@@ -80959,101 +80992,112 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var dragOptions = {
         element: dragger,
         gd: gd,
-        plotinfo: plotinfo,
-        prepFn: function(e, startX, startY) {
-            var dragModeNow = gd._fullLayout.dragmode;
+        plotinfo: plotinfo
+    };
 
-            recomputeAxisLists();
+    dragOptions.prepFn = function(e, startX, startY) {
+        var dragModeNow = gd._fullLayout.dragmode;
+
+        recomputeAxisLists();
+
+        if(!allFixedRanges) {
+            if(isMainDrag) {
+                // main dragger handles all drag modes, and changes
+                // to pan (or to zoom if it already is pan) on shift
+                if(e.shiftKey) {
+                    if(dragModeNow === 'pan') dragModeNow = 'zoom';
+                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+                }
+                else if(e.ctrlKey) {
+                    dragModeNow = 'pan';
+                }
+            }
+            // all other draggers just pan
+            else dragModeNow = 'pan';
+        }
+
+        if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
+        else dragOptions.minDrag = undefined;
+
+        if(isSelectOrLasso(dragModeNow)) {
+            dragOptions.xaxes = xaxes;
+            dragOptions.yaxes = yaxes;
+            // this attaches moveFn, clickFn, doneFn on dragOptions
+            prepSelect(e, startX, startY, dragOptions, dragModeNow);
+        } else {
+            dragOptions.clickFn = clickFn;
+            clearAndResetSelect();
 
             if(!allFixedRanges) {
-                if(isMainDrag) {
-                    // main dragger handles all drag modes, and changes
-                    // to pan (or to zoom if it already is pan) on shift
-                    if(e.shiftKey) {
-                        if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                        else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
-                    }
-                    else if(e.ctrlKey) {
-                        dragModeNow = 'pan';
-                    }
-                }
-                // all other draggers just pan
-                else dragModeNow = 'pan';
-            }
+                if(dragModeNow === 'zoom') {
+                    dragOptions.moveFn = zoomMove;
+                    dragOptions.doneFn = zoomDone;
 
-            if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
-            else dragOptions.minDrag = undefined;
+                    // zoomMove takes care of the threshold, but we need to
+                    // minimize this so that constrained zoom boxes will flip
+                    // orientation at the right place
+                    dragOptions.minDrag = 1;
 
-            if(isSelectOrLasso(dragModeNow)) {
-                dragOptions.xaxes = xaxes;
-                dragOptions.yaxes = yaxes;
-                prepSelect(e, startX, startY, dragOptions, dragModeNow);
-            }
-            else if(allFixedRanges) {
-                clearSelect(zoomlayer);
-            }
-            else if(dragModeNow === 'zoom') {
-                dragOptions.moveFn = zoomMove;
-                dragOptions.doneFn = zoomDone;
-
-                // zoomMove takes care of the threshold, but we need to
-                // minimize this so that constrained zoom boxes will flip
-                // orientation at the right place
-                dragOptions.minDrag = 1;
-
-                zoomPrep(e, startX, startY);
-            }
-            else if(dragModeNow === 'pan') {
-                dragOptions.moveFn = plotDrag;
-                dragOptions.doneFn = dragTail;
-                clearSelect(zoomlayer);
-            }
-        },
-        clickFn: function(numClicks, evt) {
-            removeZoombox(gd);
-
-            if(numClicks === 2 && !singleEnd) doubleClick();
-
-            if(isMainDrag) {
-                Fx.click(gd, evt, plotinfo.id);
-            }
-            else if(numClicks === 1 && singleEnd) {
-                var ax = ns ? ya0 : xa0,
-                    end = (ns === 's' || ew === 'w') ? 0 : 1,
-                    attrStr = ax._name + '.range[' + end + ']',
-                    initialText = getEndText(ax, end),
-                    hAlign = 'left',
-                    vAlign = 'middle';
-
-                if(ax.fixedrange) return;
-
-                if(ns) {
-                    vAlign = (ns === 'n') ? 'top' : 'bottom';
-                    if(ax.side === 'right') hAlign = 'right';
-                }
-                else if(ew === 'e') hAlign = 'right';
-
-                if(gd._context.showAxisRangeEntryBoxes) {
-                    d3.select(dragger)
-                        .call(svgTextUtils.makeEditable, {
-                            gd: gd,
-                            immediate: true,
-                            background: gd._fullLayout.paper_bgcolor,
-                            text: String(initialText),
-                            fill: ax.tickfont ? ax.tickfont.color : '#444',
-                            horizontalAlign: hAlign,
-                            verticalAlign: vAlign
-                        })
-                        .on('edit', function(text) {
-                            var v = ax.d2r(text);
-                            if(v !== undefined) {
-                                Registry.call('relayout', gd, attrStr, v);
-                            }
-                        });
+                    zoomPrep(e, startX, startY);
+                } else if(dragModeNow === 'pan') {
+                    dragOptions.moveFn = plotDrag;
+                    dragOptions.doneFn = dragTail;
                 }
             }
         }
     };
+
+    function clearAndResetSelect() {
+        // clear selection polygon cache (if any)
+        dragOptions.plotinfo.selection = false;
+        // clear selection outlines
+        clearSelect(zoomlayer);
+    }
+
+    function clickFn(numClicks, evt) {
+        removeZoombox(gd);
+
+        if(numClicks === 2 && !singleEnd) doubleClick();
+
+        if(isMainDrag) {
+            Fx.click(gd, evt, plotinfo.id);
+        }
+        else if(numClicks === 1 && singleEnd) {
+            var ax = ns ? ya0 : xa0,
+                end = (ns === 's' || ew === 'w') ? 0 : 1,
+                attrStr = ax._name + '.range[' + end + ']',
+                initialText = getEndText(ax, end),
+                hAlign = 'left',
+                vAlign = 'middle';
+
+            if(ax.fixedrange) return;
+
+            if(ns) {
+                vAlign = (ns === 'n') ? 'top' : 'bottom';
+                if(ax.side === 'right') hAlign = 'right';
+            }
+            else if(ew === 'e') hAlign = 'right';
+
+            if(gd._context.showAxisRangeEntryBoxes) {
+                d3.select(dragger)
+                    .call(svgTextUtils.makeEditable, {
+                        gd: gd,
+                        immediate: true,
+                        background: gd._fullLayout.paper_bgcolor,
+                        text: String(initialText),
+                        fill: ax.tickfont ? ax.tickfont.color : '#444',
+                        horizontalAlign: hAlign,
+                        verticalAlign: vAlign
+                    })
+                    .on('edit', function(text) {
+                        var v = ax.d2r(text);
+                        if(v !== undefined) {
+                            Registry.call('relayout', gd, attrStr, v);
+                        }
+                    });
+            }
+        }
+    }
 
     dragElement.init(dragOptions);
 
@@ -81089,8 +81133,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         zb = makeZoombox(zoomlayer, lum, xs, ys, path0);
 
         corners = makeCorners(zoomlayer, xs, ys);
-
-        clearSelect(zoomlayer);
     }
 
     function zoomMove(dx0, dy0) {
@@ -81202,9 +81244,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        if(redrawTimer === null) {
-            clearSelect(zoomlayer);
-        }
+        clearAndResetSelect();
 
         // If a transition is in progress, then disable any behavior:
         if(gd._transitioningWithDuration) {
@@ -90177,7 +90217,15 @@ plots.doCalcdata = function(gd, traces) {
             // we need one round of trace module calc before
             // the calc transform to 'fill in' the categories list
             // used for example in the data-to-coordinate method
-            if(_module && _module.calc) _module.calc(gd, trace);
+            if(_module && _module.calc) {
+                var cdi = _module.calc(gd, trace);
+
+                // must clear scene 'batches', so that 2nd
+                // _module.calc call starts from scratch
+                if(cdi[0] && cdi[0].t && cdi[0].t._scene) {
+                    delete cdi[0].t._scene.dirty;
+                }
+            }
 
             for(j = 0; j < trace.transforms.length; j++) {
                 var transform = trace.transforms[j];
@@ -94366,7 +94414,7 @@ module.exports = function calc(gd, trace) {
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
-            trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);
+            interp2d(z, trace._emptypoints);
         }
     }
 
@@ -94775,8 +94823,8 @@ module.exports = function findEmpties(z) {
 
 var Lib = require('../../lib');
 
-var INTERPTHRESHOLD = 1e-2,
-    NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+var INTERPTHRESHOLD = 1e-2;
+var NEIGHBORSHIFTS = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
 function correctionOvershoot(maxFractionalChange) {
     // start with less overshoot, until we know it's converging,
@@ -94784,25 +94832,28 @@ function correctionOvershoot(maxFractionalChange) {
     return 0.5 - 0.25 * Math.min(1, maxFractionalChange * 0.5);
 }
 
-module.exports = function interp2d(z, emptyPoints, savedInterpZ) {
-    // fill in any missing data in 2D array z using an iterative
-    // poisson equation solver with zero-derivative BC at edges
-    // amazingly, this just amounts to repeatedly averaging all the existing
-    // nearest neighbors (at least if we don't take x/y scaling into account)
-    var maxFractionalChange = 1,
-        i,
-        thisPt;
+/*
+ * interp2d: Fill in missing data from a 2D array using an iterative
+ *   poisson equation solver with zero-derivative BC at edges.
+ *   Amazingly, this just amounts to repeatedly averaging all the existing
+ *   nearest neighbors, at least if we don't take x/y scaling into account,
+ *   which is the right approach here where x and y may not even have the
+ *   same units.
+ *
+ * @param {array of arrays} z
+ *      The 2D array to fill in. Will be mutated here. Assumed to already be
+ *      cleaned, so all entries are numbers except gaps, which are `undefined`.
+ * @param {array of arrays} emptyPoints
+ *      Each entry [i, j, neighborCount] for empty points z[i][j] and the number
+ *      of neighbors that are *not* missing. Assumed to be sorted from most to
+ *      least neighbors, as produced by heatmap/find_empties.
+ */
+module.exports = function interp2d(z, emptyPoints) {
+    var maxFractionalChange = 1;
+    var i;
 
-    if(Array.isArray(savedInterpZ)) {
-        for(i = 0; i < emptyPoints.length; i++) {
-            thisPt = emptyPoints[i];
-            z[thisPt[0]][thisPt[1]] = savedInterpZ[thisPt[0]][thisPt[1]];
-        }
-    }
-    else {
-        // one pass to fill in a starting value for all the empties
-        iterateInterp2d(z, emptyPoints);
-    }
+    // one pass to fill in a starting value for all the empties
+    iterateInterp2d(z, emptyPoints);
 
     // we're don't need to iterate lone empties - remove them
     for(i = 0; i < emptyPoints.length; i++) {
@@ -101772,10 +101823,10 @@ function convertMarkerStyle(trace) {
         // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
         if(multiLineWidth) {
             for(i = 0; i < count; i++) {
-                borderSizes[i] = markerSizeFunc(optsIn.line.width[i]);
+                borderSizes[i] = optsIn.line.width[i] / 2;
             }
         } else {
-            s = markerSizeFunc(optsIn.line.width);
+            s = optsIn.line.width / 2;
             for(i = 0; i < count; i++) {
                 borderSizes[i] = s;
             }
@@ -101799,7 +101850,7 @@ function convertMarkerSelection(trace, target) {
     if(target.marker && target.marker.symbol) {
         optsOut = convertMarkerStyle(Lib.extendFlat({}, optsIn, target.marker));
     } else if(target.marker) {
-        if(target.marker.size) optsOut.sizes = target.marker.size;
+        if(target.marker.size) optsOut.sizes = target.marker.size / 2;
         if(target.marker.color) optsOut.colors = target.marker.color;
         if(target.marker.opacity !== undefined) optsOut.opacity = target.marker.opacity;
     }
@@ -102572,12 +102623,11 @@ function plot(gd, subplot, cdata) {
 
             // regenerate scene batch, if traces number changed during selection
             if(trace.selectedpoints) {
-                scene.selectBatch[id] = trace.selectedpoints;
+                var selPts = scene.selectBatch[id] = Lib.selIndices2selPoints(trace);
 
-                var selPts = trace.selectedpoints;
                 var selDict = {};
                 for(i = 0; i < selPts.length; i++) {
-                    selDict[selPts[i]] = true;
+                    selDict[selPts[i]] = 1;
                 }
                 var unselPts = [];
                 for(i = 0; i < stash.count; i++) {
