@@ -745,6 +745,7 @@ describe('@flaky Test select box and lasso in general:', function() {
         fig.layout.width = 500;
         fig.layout.height = 500;
         fig.layout.dragmode = 'select';
+        fig.config = {scrollZoom: true};
 
         // d attr to array of segment [x,y]
         function outline2coords(outline) {
@@ -854,6 +855,16 @@ describe('@flaky Test select box and lasso in general:', function() {
                     [170, 170], [170, 150], [150, 150], [150, 170], [170, 170],
                     [213, 500], [213, 0], [193, 0], [193, 500], [213, 500]
                 ]
+            });
+        })
+        .then(function() {
+            mouseEvent('mousemove', 200, 200);
+            mouseEvent('scroll', 200, 200, {deltaX: 0, deltaY: -20});
+        })
+        .then(_drag(path1, {shiftKey: true}))
+        .then(function() {
+            _assert('shift select path1 after scroll', {
+                outline: [[150, 150], [150, 170], [170, 170], [170, 150], [150, 150]]
             });
         })
         .catch(failTest)

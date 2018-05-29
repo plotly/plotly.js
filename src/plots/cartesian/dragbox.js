@@ -178,11 +178,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             prepSelect(e, startX, startY, dragOptions, dragModeNow);
         } else {
             dragOptions.clickFn = clickFn;
-            // clear selection polygon cache (if any)
-            plotinfo.selection = false;
 
             if(allFixedRanges) {
-                clearSelect(zoomlayer);
+                clearAndResetSelect();
             } else if(dragModeNow === 'zoom') {
                 dragOptions.moveFn = zoomMove;
                 dragOptions.doneFn = zoomDone;
@@ -196,10 +194,17 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             } else if(dragModeNow === 'pan') {
                 dragOptions.moveFn = plotDrag;
                 dragOptions.doneFn = dragTail;
-                clearSelect(zoomlayer);
+                clearAndResetSelect();
             }
         }
     };
+
+    function clearAndResetSelect() {
+        // clear selection polygon cache (if any)
+        dragOptions.plotinfo.selection = false;
+        // clear selection outlines
+        clearSelect(zoomlayer);
+    }
 
     function clickFn(numClicks, evt) {
         removeZoombox(gd);
@@ -281,7 +286,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         corners = makeCorners(zoomlayer, xs, ys);
 
-        clearSelect(zoomlayer);
+        clearAndResetSelect();
     }
 
     function zoomMove(dx0, dy0) {
@@ -393,7 +398,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        clearSelect(zoomlayer);
+        clearAndResetSelect();
 
         // If a transition is in progress, then disable any behavior:
         if(gd._transitioningWithDuration) {
