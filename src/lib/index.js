@@ -478,6 +478,17 @@ lib.extractOption = function(calcPt, trace, calcKey, traceKey) {
     if(!Array.isArray(traceVal)) return traceVal;
 };
 
+function makePtIndex2PtNumber(indexToPoints) {
+    var ptIndex2ptNumber = {};
+    for(var k in indexToPoints) {
+        var pts = indexToPoints[k];
+        for(var j = 0; j < pts.length; j++) {
+            ptIndex2ptNumber[pts[j]] = +k;
+        }
+    }
+    return ptIndex2ptNumber;
+}
+
 /** Tag selected calcdata items
  *
  * N.B. note that point 'index' corresponds to input data array index
@@ -498,13 +509,7 @@ lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
 
     // make pt index-to-number map object, which takes care of transformed traces
     if(indexToPoints) {
-        ptIndex2ptNumber = {};
-        for(var k in indexToPoints) {
-            var pts = indexToPoints[k];
-            for(var j = 0; j < pts.length; j++) {
-                ptIndex2ptNumber[pts[j]] = k;
-            }
-        }
+        ptIndex2ptNumber = makePtIndex2PtNumber(indexToPoints);
     }
 
     function isCdIndexValid(v) {
@@ -522,6 +527,30 @@ lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
                 calcTrace[cdIndex].selected = 1;
             }
         }
+    }
+};
+
+lib.selIndices2selPoints = function(trace) {
+    var selectedpoints = trace.selectedpoints;
+    var indexToPoints = trace._indexToPoints;
+
+    if(indexToPoints) {
+        var ptIndex2ptNumber = makePtIndex2PtNumber(indexToPoints);
+        var out = [];
+
+        for(var i = 0; i < selectedpoints.length; i++) {
+            var ptIndex = selectedpoints[i];
+            if(lib.isIndex(ptIndex)) {
+                var ptNumber = ptIndex2ptNumber[ptIndex];
+                if(lib.isIndex(ptNumber)) {
+                    out.push(ptNumber);
+                }
+            }
+        }
+
+        return out;
+    } else {
+        return selectedpoints;
     }
 };
 

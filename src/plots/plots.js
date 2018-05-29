@@ -2342,7 +2342,15 @@ plots.doCalcdata = function(gd, traces) {
             // we need one round of trace module calc before
             // the calc transform to 'fill in' the categories list
             // used for example in the data-to-coordinate method
-            if(_module && _module.calc) _module.calc(gd, trace);
+            if(_module && _module.calc) {
+                var cdi = _module.calc(gd, trace);
+
+                // must clear scene 'batches', so that 2nd
+                // _module.calc call starts from scratch
+                if(cdi[0] && cdi[0].t && cdi[0].t._scene) {
+                    delete cdi[0].t._scene.dirty;
+                }
+            }
 
             for(j = 0; j < trace.transforms.length; j++) {
                 var transform = trace.transforms[j];
