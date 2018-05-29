@@ -178,26 +178,33 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             prepSelect(e, startX, startY, dragOptions, dragModeNow);
         } else {
             dragOptions.clickFn = clickFn;
+            clearAndResetSelect();
 
-            if(allFixedRanges) {
-                clearSelect(zoomlayer);
-            } else if(dragModeNow === 'zoom') {
-                dragOptions.moveFn = zoomMove;
-                dragOptions.doneFn = zoomDone;
+            if(!allFixedRanges) {
+                if(dragModeNow === 'zoom') {
+                    dragOptions.moveFn = zoomMove;
+                    dragOptions.doneFn = zoomDone;
 
-                // zoomMove takes care of the threshold, but we need to
-                // minimize this so that constrained zoom boxes will flip
-                // orientation at the right place
-                dragOptions.minDrag = 1;
+                    // zoomMove takes care of the threshold, but we need to
+                    // minimize this so that constrained zoom boxes will flip
+                    // orientation at the right place
+                    dragOptions.minDrag = 1;
 
-                zoomPrep(e, startX, startY);
-            } else if(dragModeNow === 'pan') {
-                dragOptions.moveFn = plotDrag;
-                dragOptions.doneFn = dragTail;
-                clearSelect(zoomlayer);
+                    zoomPrep(e, startX, startY);
+                } else if(dragModeNow === 'pan') {
+                    dragOptions.moveFn = plotDrag;
+                    dragOptions.doneFn = dragTail;
+                }
             }
         }
     };
+
+    function clearAndResetSelect() {
+        // clear selection polygon cache (if any)
+        dragOptions.plotinfo.selection = false;
+        // clear selection outlines
+        clearSelect(zoomlayer);
+    }
 
     function clickFn(numClicks, evt) {
         removeZoombox(gd);
@@ -278,8 +285,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         zb = makeZoombox(zoomlayer, lum, xs, ys, path0);
 
         corners = makeCorners(zoomlayer, xs, ys);
-
-        clearSelect(zoomlayer);
     }
 
     function zoomMove(dx0, dy0) {
@@ -391,9 +396,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        if(redrawTimer === null) {
-            clearSelect(zoomlayer);
-        }
+        clearAndResetSelect();
 
         // If a transition is in progress, then disable any behavior:
         if(gd._transitioningWithDuration) {

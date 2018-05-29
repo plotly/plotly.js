@@ -203,7 +203,7 @@ function coercePosition(precision) {
 }
 
 function arrayToStr(array) {
-    return '[ ' + array.join(', ') + ' ]';
+    return '[' + array.join(', ') + ']';
 }
 
 beforeAll(function() {
