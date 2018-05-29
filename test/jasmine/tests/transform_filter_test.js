@@ -8,6 +8,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
 var supplyAllDefaults = require('../assets/supply_defaults');
+var failTest = require('../assets/fail_test');
 
 var assertDims = customAssertions.assertDims;
 var assertStyle = customAssertions.assertStyle;
@@ -1078,11 +1079,11 @@ describe('filter transforms interactions', function() {
         Plotly.plot(createGraphDiv(), data).then(function(gd) {
             assertDims([3]);
 
-            var uid = data[0].uid;
+            var uid = gd._fullData[0]._fullInput.uid;
             expect(gd._fullData[0].uid).toEqual(uid + '0');
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.restyle should work', function(done) {
@@ -1095,11 +1096,11 @@ describe('filter transforms interactions', function() {
         var uid;
         function assertUid(gd) {
             expect(gd._fullData[0].uid)
-                .toEqual(uid + '0', 'should preserve uid on restyle');
+                .toBe(uid + '0', 'should preserve uid on restyle');
         }
 
         Plotly.plot(gd, data).then(function() {
-            uid = gd.data[0].uid;
+            uid = gd._fullData[0]._fullInput.uid;
 
             expect(gd._fullData[0].marker.color).toEqual('red');
             assertUid(gd);
@@ -1127,9 +1128,9 @@ describe('filter transforms interactions', function() {
 
             expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4]);
             expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0, 2]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.extendTraces should work', function(done) {
@@ -1152,9 +1153,9 @@ describe('filter transforms interactions', function() {
             expect(gd._fullData[0].x.length).toEqual(5);
 
             assertDims([5]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('Plotly.deleteTraces should work', function(done) {
@@ -1172,9 +1173,9 @@ describe('filter transforms interactions', function() {
             return Plotly.deleteTraces(gd, [0]);
         }).then(function() {
             assertDims([]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
 
     });
 
@@ -1197,9 +1198,9 @@ describe('filter transforms interactions', function() {
             return Plotly.restyle(gd, 'visible', [true, true], [0, 1]);
         }).then(function() {
             assertDims([3, 4]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('zooming in/out should not change filtered data', function(done) {
@@ -1225,6 +1226,7 @@ describe('filter transforms interactions', function() {
             expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
             expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -1268,6 +1270,7 @@ describe('filter transforms interactions', function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['i']);
             expect(gd._fullLayout.yaxis._categories).toEqual([]);
         })
+        .catch(failTest)
         .then(done);
     });
 

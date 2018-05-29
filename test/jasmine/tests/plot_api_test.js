@@ -1497,9 +1497,7 @@ describe('Test plot api', function() {
         it('should work when newIndices is undefined', function() {
             Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}]);
             expect(gd.data[2].name).toBeDefined();
-            expect(gd.data[2].uid).toBeDefined();
             expect(gd.data[3].name).toBeDefined();
-            expect(gd.data[3].uid).toBeDefined();
             expect(plotApi.redraw).toHaveBeenCalled();
             expect(plotApi.moveTraces).not.toHaveBeenCalled();
         });
@@ -1507,9 +1505,7 @@ describe('Test plot api', function() {
         it('should work when newIndices is defined', function() {
             Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}], [1, 3]);
             expect(gd.data[2].name).toBeDefined();
-            expect(gd.data[2].uid).toBeDefined();
             expect(gd.data[3].name).toBeDefined();
-            expect(gd.data[3].uid).toBeDefined();
             expect(plotApi.redraw).not.toHaveBeenCalled();
             expect(plotApi.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [1, 3]);
         });
@@ -1517,9 +1513,7 @@ describe('Test plot api', function() {
         it('should work when newIndices has negative indices', function() {
             Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}], [-3, -1]);
             expect(gd.data[2].name).toBeDefined();
-            expect(gd.data[2].uid).toBeDefined();
             expect(gd.data[3].name).toBeDefined();
-            expect(gd.data[3].uid).toBeDefined();
             expect(plotApi.redraw).not.toHaveBeenCalled();
             expect(plotApi.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [-3, -1]);
         });
@@ -1527,7 +1521,6 @@ describe('Test plot api', function() {
         it('should work when newIndices is an integer', function() {
             Plotly.addTraces(gd, {'name': 'c'}, 0);
             expect(gd.data[2].name).toBeDefined();
-            expect(gd.data[2].uid).toBeDefined();
             expect(plotApi.redraw).not.toHaveBeenCalled();
             expect(plotApi.moveTraces).toHaveBeenCalledWith(gd, [-1], [0]);
         });

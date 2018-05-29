@@ -124,7 +124,6 @@ describe('@gl @flaky Test hover and click interactions', function() {
             'data', 'fullData', 'xaxis', 'yaxis'
         ]), 'event data keys');
 
-        expect(typeof pt.data.uid).toBe('string', msg + ' - uid');
         expect(pt.xaxis.domain.length).toBe(2, msg + ' - xaxis');
         expect(pt.yaxis.domain.length).toBe(2, msg + ' - yaxis');
 
@@ -149,7 +148,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
             return delay(100)()
                 .then(_hover)
                 .then(function(eventData) {
-                    assertEventData(eventData, expected);
+                    assertEventData(eventData, expected, opts.msg);
 
                     var g = d3.select('g.hovertext');
                     if(g.node() === null) {
