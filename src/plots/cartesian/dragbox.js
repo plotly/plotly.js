@@ -527,7 +527,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             updateSubplots([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
             ticksAndAnnotations(yActive, xActive);
             // updates computed in ticksAndAnnotations
-            gd.emit('plotly_relayout', updates);
+            gd.emit('plotly_relayouting', updates);
             return;
         }
 
@@ -601,7 +601,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         updateSubplots([x0, y0, pw - dx, ph - dy]);
         ticksAndAnnotations(yActive, xActive);
         // updates computed in ticksAndAnnotations
-        gd.emit('plotly_relayout', updates);
+        gd.emit('plotly_relayouting', updates);
     }
 
     // Draw ticks and annotations (and other components) when ranges change.

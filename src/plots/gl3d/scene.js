@@ -215,7 +215,16 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         scene.saveCamera(scene.graphDiv.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
-    scene.glplot.canvas.addEventListener('mousemove', relayoutCallback.bind(null, scene));
+    var relayoutingCallback = function(scene) {
+        if(scene.fullSceneLayout.dragmode === false) return;
+        var update = {};
+        update[scene.id + '.camera'] = getLayoutCamera(scene.camera);
+        // scene.saveCamera(scene.graphDiv.layout);
+        scene.graphDiv.emit('plotly_relayouting', update);
+    };
+
+    scene.glplot.canvas.addEventListener('mousemove', relayoutingCallback.bind(null, scene));
+    scene.glplot.canvas.addEventListener('mouseup', relayoutCallback.bind(null, scene));
     scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene), passiveSupported ? {passive: false} : false);
 
     if(!scene.staticMode) {
