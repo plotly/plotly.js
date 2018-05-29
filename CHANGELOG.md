@@ -10,6 +10,21 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.38.1] -- 2018-05-29
+
+### Fixed
+- Fix transforms on `scattergl` traces [#2677]
+- Fix `marker.line.width` scaling in `scattergl` traces [#2677]
+- Fix `[un]selected.marker.size` scaling in `scattergl` traces [#2677]
+- Create two not three WebGL contexts for scattergl/splom graphs
+  (bug introduced 1.36.0) [#2656]
+- Fix `z` updates of interpolated values on heatmap and contour traces with gaps [#2657]
+- Fix select/pan double-click behavior when relayout from one another
+  (bug introduced in 1.36.0) [#2668]
+- Fix shift selection behavior after pan/scroll
+  (bug introduced in 1.36.0) [#2676]
+
+
 ## [1.38.0] -- 2018-05-23
 
 ### Added
