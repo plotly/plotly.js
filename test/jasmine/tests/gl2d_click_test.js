@@ -689,4 +689,27 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should work on trace with enabled transforms', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl2d_transforms.json'));
+        fig.layout.dragmode = 'select';
+        fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
+        fig.layout.height = 500;
+        fig.layout.width = 500;
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, fig)
+        .then(delay(100))
+        .then(function() { return select([[100, 100], [250, 250]]); })
+        .then(function(eventData) {
+            assertEventData(eventData, {
+                points: [
+                    { x: 3, y: 4 },
+                    { x: 2, y: 4 }
+                ]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
