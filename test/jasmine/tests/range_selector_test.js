@@ -7,6 +7,7 @@ var Lib = require('@src/lib');
 var Color = require('@src/components/color');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 var getRectCenter = require('../assets/get_rect_center');
 var mouseEvent = require('../assets/mouse_event');
 var setConvert = require('@src/plots/cartesian/set_convert');
@@ -461,7 +462,9 @@ describe('range selector interactions:', function() {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        .catch(failTest)
+        .then(done);
     });
 
     afterEach(destroyGraphDiv);
@@ -495,9 +498,9 @@ describe('range selector interactions:', function() {
         Plotly.relayout(gd, 'xaxis.rangeselector.visible', false).then(function() {
             assertNodeCount('.rangeselector', 0);
             assertNodeCount('.button', 0);
-            done();
-        });
-
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should be able to remove button(s) on `relayout`', function(done) {
@@ -511,9 +514,9 @@ describe('range selector interactions:', function() {
             return Plotly.relayout(gd, 'xaxis.rangeselector.buttons[1]', 'remove');
         }).then(function() {
             assertNodeCount('.button', len - 2);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should be able to change its style on `relayout`', function(done) {
@@ -527,9 +530,9 @@ describe('range selector interactions:', function() {
             return Plotly.relayout(gd, prefix + 'activecolor', 'blue');
         }).then(function() {
             checkButtonColor('rgb(255, 0, 0)', 'rgb(0, 0, 255)');
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should update range and active button when clicked', function() {
@@ -589,8 +592,8 @@ describe('range selector interactions:', function() {
 
             // 'all' should be after an autoscale
             checkActiveButton(buttons.size() - 1, 'back to all');
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

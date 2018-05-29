@@ -2631,11 +2631,9 @@ describe('Test axes', function() {
 
             Plotly.plot(gd, data)
             .then(function() {
-                initialSize = Lib.extendDeep({}, gd._fullLayout._size);
                 expect(gd._fullLayout.xaxis._lastangle).toBe(30);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+
+                initialSize = previousSize = Lib.extendDeep({}, gd._fullLayout._size);
                 return Plotly.relayout(gd, {'yaxis.automargin': true});
             })
             .then(function() {
@@ -2644,9 +2642,8 @@ describe('Test axes', function() {
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBe(previousSize.b);
                 expect(size.t).toBe(previousSize.t);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+
+                previousSize = Lib.extendDeep({}, size);
                 return Plotly.relayout(gd, {'xaxis.automargin': true});
             })
             .then(function() {
@@ -2655,9 +2652,8 @@ describe('Test axes', function() {
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBeGreaterThan(previousSize.b);
                 expect(size.t).toBe(previousSize.t);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+
+                previousSize = Lib.extendDeep({}, size);
                 savedBottom = previousSize.b;
                 return Plotly.relayout(gd, {'xaxis.tickangle': 45});
             })
@@ -2667,9 +2663,8 @@ describe('Test axes', function() {
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBeGreaterThan(previousSize.b);
                 expect(size.t).toBe(previousSize.t);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+
+                previousSize = Lib.extendDeep({}, size);
                 return Plotly.relayout(gd, {'xaxis.tickangle': 30});
             })
             .then(function() {
@@ -2678,9 +2673,8 @@ describe('Test axes', function() {
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBe(savedBottom);
                 expect(size.t).toBe(previousSize.t);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+
+                previousSize = Lib.extendDeep({}, size);
                 return Plotly.relayout(gd, {'yaxis.ticklen': 30});
             })
             .then(function() {
@@ -2689,17 +2683,15 @@ describe('Test axes', function() {
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBe(previousSize.b);
                 expect(size.t).toBe(previousSize.t);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+
+                previousSize = Lib.extendDeep({}, size);
                 return Plotly.relayout(gd, {'yaxis.titlefont.size': 30});
             })
             .then(function() {
                 var size = gd._fullLayout._size;
                 expect(size).toEqual(previousSize);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+
+                previousSize = Lib.extendDeep({}, size);
                 return Plotly.relayout(gd, {'yaxis.title': 'hello'});
             })
             .then(function() {
@@ -2708,10 +2700,9 @@ describe('Test axes', function() {
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBe(previousSize.b);
                 expect(size.t).toBe(previousSize.t);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
-                return Plotly.relayout(gd, { 'yaxis.anchor': 'free' });
+
+                previousSize = Lib.extendDeep({}, size);
+                return Plotly.relayout(gd, {'yaxis.anchor': 'free'});
             })
             .then(function() {
                 var size = gd._fullLayout._size;
@@ -2719,10 +2710,9 @@ describe('Test axes', function() {
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBe(previousSize.b);
                 expect(size.t).toBe(previousSize.t);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
-                return Plotly.relayout(gd, { 'yaxis.position': 0.1});
+
+                previousSize = Lib.extendDeep({}, size);
+                return Plotly.relayout(gd, {'yaxis.position': 0.1});
             })
             .then(function() {
                 var size = gd._fullLayout._size;
@@ -2730,10 +2720,9 @@ describe('Test axes', function() {
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBe(previousSize.b);
                 expect(size.t).toBe(previousSize.t);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
-                return Plotly.relayout(gd, { 'yaxis.anchor': 'x' });
+
+                previousSize = Lib.extendDeep({}, size);
+                return Plotly.relayout(gd, {'yaxis.anchor': 'x'});
             })
             .then(function() {
                 var size = gd._fullLayout._size;
@@ -2741,9 +2730,8 @@ describe('Test axes', function() {
                 expect(size.r).toBe(previousSize.r);
                 expect(size.b).toBe(previousSize.b);
                 expect(size.t).toBe(previousSize.t);
-            })
-            .then(function() {
-                previousSize = Lib.extendDeep({}, gd._fullLayout._size);
+
+                previousSize = Lib.extendDeep({}, size);
                 return Plotly.relayout(gd, {
                     'yaxis.side': 'right',
                     'xaxis.side': 'top'
@@ -2756,8 +2744,7 @@ describe('Test axes', function() {
                 expect(size.r).toBe(previousSize.l);
                 expect(size.b).toBe(initialSize.b);
                 expect(size.t).toBe(previousSize.b);
-            })
-            .then(function() {
+
                 return Plotly.relayout(gd, {
                     'xaxis.automargin': false,
                     'yaxis.automargin': false
