@@ -539,16 +539,27 @@ describe('@flaky Test select box and lasso in general:', function() {
         mockCopy.layout.dragmode = 'select';
         mockCopy.config = {scrollZoom: true};
 
-        Plotly.plot(gd, mockCopy).then(function() {
+        function _drag() {
             resetEvents(gd);
             drag(selectPath);
             return selectedPromise;
-        })
-        .then(function() {
+        }
+
+        function _scroll() {
             mouseEvent('mousemove', selectPath[0][0], selectPath[0][1]);
             mouseEvent('scroll', selectPath[0][0], selectPath[0][1], {deltaX: 0, deltaY: -20});
-        })
+        }
+
+        Plotly.plot(gd, mockCopy)
+        .then(_drag)
+        .then(_scroll)
         .then(function() {
+            assertSelectionNodes(0, 0);
+        })
+        .then(_drag)
+        .then(_scroll)
+        .then(function() {
+            // make sure it works the 2nd time aroung
             assertSelectionNodes(0, 0);
         })
         .catch(failTest)

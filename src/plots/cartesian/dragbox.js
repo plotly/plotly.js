@@ -393,9 +393,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             return;
         }
 
-        if(redrawTimer === null) {
-            clearSelect(zoomlayer);
-        }
+        clearSelect(zoomlayer);
 
         // If a transition is in progress, then disable any behavior:
         if(gd._transitioningWithDuration) {
