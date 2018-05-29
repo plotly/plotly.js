@@ -178,23 +178,23 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             prepSelect(e, startX, startY, dragOptions, dragModeNow);
         } else {
             dragOptions.clickFn = clickFn;
+            clearAndResetSelect();
 
-            if(allFixedRanges) {
-                clearAndResetSelect();
-            } else if(dragModeNow === 'zoom') {
-                dragOptions.moveFn = zoomMove;
-                dragOptions.doneFn = zoomDone;
+            if(!allFixedRanges) {
+                if(dragModeNow === 'zoom') {
+                    dragOptions.moveFn = zoomMove;
+                    dragOptions.doneFn = zoomDone;
 
-                // zoomMove takes care of the threshold, but we need to
-                // minimize this so that constrained zoom boxes will flip
-                // orientation at the right place
-                dragOptions.minDrag = 1;
+                    // zoomMove takes care of the threshold, but we need to
+                    // minimize this so that constrained zoom boxes will flip
+                    // orientation at the right place
+                    dragOptions.minDrag = 1;
 
-                zoomPrep(e, startX, startY);
-            } else if(dragModeNow === 'pan') {
-                dragOptions.moveFn = plotDrag;
-                dragOptions.doneFn = dragTail;
-                clearAndResetSelect();
+                    zoomPrep(e, startX, startY);
+                } else if(dragModeNow === 'pan') {
+                    dragOptions.moveFn = plotDrag;
+                    dragOptions.doneFn = dragTail;
+                }
             }
         }
     };
@@ -285,8 +285,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         zb = makeZoombox(zoomlayer, lum, xs, ys, path0);
 
         corners = makeCorners(zoomlayer, xs, ys);
-
-        clearAndResetSelect();
     }
 
     function zoomMove(dx0, dy0) {
