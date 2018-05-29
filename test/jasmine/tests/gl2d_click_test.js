@@ -4,7 +4,7 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test.js');
+var failTest = require('../assets/fail_test.js');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -217,7 +217,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -256,7 +256,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -295,7 +295,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -315,7 +315,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -343,7 +343,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -376,7 +376,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -409,7 +409,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -451,7 +451,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(run2)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -499,7 +499,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(run2)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -527,7 +527,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
 
         Plotly.plot(gd, _mock)
         .then(run)
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -623,7 +623,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
             });
 
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -647,7 +647,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
                 ]
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -667,7 +667,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
                 points: [{x: 0.004, y: 12.5}]
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -686,7 +686,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
                 points: [{ x: 0.099, y: 2.75 }]
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
