@@ -10,6 +10,5 @@
 
 module.exports = {
     min: 'zmin',
-    max: 'zmax',
-    vals: 'z'
+    max: 'zmax'
 };

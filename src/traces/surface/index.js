@@ -15,8 +15,7 @@ Surface.attributes = require('./attributes');
 Surface.supplyDefaults = require('./defaults');
 Surface.colorbar = {
     min: 'cmin',
-    max: 'cmax',
-    vals: ['surfacecolor', 'z']
+    max: 'cmax'
 };
 Surface.calc = require('./calc');
 Surface.plot = require('./convert');

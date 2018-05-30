@@ -19,7 +19,6 @@ module.exports = {
     colorbar: {
         min: 'cmin',
         max: 'cmax'
-        // no vals, these are calculated automatically from vector norms
     },
     calc: require('./calc'),
     plot: require('./convert'),

@@ -12,6 +12,5 @@
 module.exports = {
     container: 'marker',
     min: 'cmin',
-    max: 'cmax',
-    vals: 'color'
+    max: 'cmax'
 };

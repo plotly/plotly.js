@@ -17,8 +17,7 @@ Parcoords.plot = require('./plot');
 Parcoords.colorbar = {
     container: 'line',
     min: 'cmin',
-    max: 'cmax',
-    vals: 'color'
+    max: 'cmax'
 };
 
 Parcoords.moduleType = 'trace';

@@ -9,9 +9,6 @@
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-
-var aggNums = require('../../lib').aggNums;
 var Colorscale = require('../colorscale');
 var drawColorbar = require('./draw');
 
@@ -53,21 +50,6 @@ module.exports = function connectColorbar(gd, cd, moduleOpts) {
 
     var zmin = container[moduleOpts.min];
     var zmax = container[moduleOpts.max];
-
-    var valAttr = moduleOpts.vals;
-    var vals;
-    if(Array.isArray(valAttr)) {
-        for(var i = 0; i < valAttr.length; i++) {
-            vals = container[valAttr[i]];
-            if(vals) break;
-        }
-    }
-    else vals = container[valAttr];
-
-    if(vals) {
-        if(!isNumeric(zmin)) zmin = aggNums(Math.min, null, vals);
-        if(!isNumeric(zmax)) zmax = aggNums(Math.max, null, vals);
-    }
 
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
     var sclFunc = Colorscale.makeColorScaleFunc(

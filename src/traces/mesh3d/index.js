@@ -16,8 +16,7 @@ Mesh3D.supplyDefaults = require('./defaults');
 Mesh3D.calc = require('./calc');
 Mesh3D.colorbar = {
     min: 'cmin',
-    max: 'cmax',
-    vals: 'intensity'
+    max: 'cmax'
 };
 Mesh3D.plot = require('./convert');
 
