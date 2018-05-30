@@ -1,5 +1,7 @@
 # Building plotly.js
 
+The easiest way to bundle plotly.js into your application is to use the one of the distributed plotly.js packages on npm. These distributed packages should just work with **any** build framework. That said, if you're looking to save a few bytes, read the section below corresponding to your building framework.
+
 ## Webpack
 
 For plotly.js to build with Webpack you will need to install [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json`. This adds Browserify transform compatibility to Webpack which is necessary for some plotly.js dependencies.
