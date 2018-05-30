@@ -929,7 +929,9 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
     for(i = 0; i < dataIn.length; i++) {
         trace = dataIn[i];
-        fullTrace = plots.supplyTraceDefaults(trace, colorCnt, fullLayout, i);
+        fullTrace = plots.supplyTraceDefaults(trace, colorCnt, fullLayout, i,
+            // reuse uid we may have pulled out of oldFullData
+            fullLayout._traceUids[i]);
 
         fullTrace.uid = fullLayout._traceUids[i];
 
@@ -942,15 +944,16 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
             for(var j = 0; j < expandedTraces.length; j++) {
                 var expandedTrace = expandedTraces[j];
-                var fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, fullLayout, i);
+                var fullExpandedTrace = plots.supplyTraceDefaults(
+                    expandedTrace, cnt, fullLayout, i,
+                    // set uid using parent uid and expanded index
+                    // to promote consistency between update calls
+                    fullTrace.uid + j
+                );
 
                 // relink private (i.e. underscore) keys expanded trace to full expanded trace so
                 // that transform supply-default methods can set _ keys for future use.
                 relinkPrivateKeys(fullExpandedTrace, expandedTrace);
-
-                // set uid using parent uid and expanded index
-                // to promote consistency between update calls
-                fullExpandedTrace.uid = fullTrace.uid + j;
 
                 // add info about parent data trace
                 fullExpandedTrace.index = i;
@@ -1076,10 +1079,10 @@ plots.supplyFrameDefaults = function(frameIn) {
     return frameOut;
 };
 
-plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) {
+plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex, uid) {
     var colorway = layout.colorway || Color.defaults;
-    var traceOut = {},
-        defaultColor = colorway[colorIndex % colorway.length];
+    var traceOut = {uid: uid};
+    var defaultColor = colorway[colorIndex % colorway.length];
 
     var i;
 
