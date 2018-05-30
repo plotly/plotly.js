@@ -36,25 +36,32 @@ You can grab the relevant MathJax files in `./dist/extras/mathjax/`.
 ### To include localization
 
 Plotly.js defaults to US English (en-US) and includes British English (en) in the standard bundle.
-Many other localizations are available - here is an example using Swiss-German (de-CH),
-see the contents of this directory for the full list.
-They are also available on our CDN as https://cdn.plot.ly/plotly-locale-de-ch-latest.js OR https://cdn.plot.ly/plotly-locale-de-ch-1.38.1.js
-Note that the file names are all lowercase, even though the region is uppercase when you apply a locale.
+This example uses Swiss-German (de-CH), but many other localizations are available (see the contents of this directory for the full list). All available locales have working date localizations, but only a subset will localize on-graph text (e.g., modebar controls). See [here](https://github.com/plotly/plotly.js/pulls?q=is%3Apr+label%3A%22type%3A+translation%22+is%3Aclosed) for a list of "fully-supported" locales.
 
-*After* the plotly.js script tag, add:
+#### Loading and registering locales
+
+Some locales build on other locales (e.g., "de-CH" builds on "de"). In this case, first load the base locale (e.g., "de"), then load the actual locale (e.g., "de-CH"):
 
 ```html
+<script src="plotly-locale-de.js"></script>
 <script src="plotly-locale-de-ch.js"></script>
+```
+
+Locale bundles are also available on our CDN (e.g., https://cdn.plot.ly/plotly-locale-de-ch-latest.js OR https://cdn.plot.ly/plotly-locale-de-ch-1.38.1.js). Note that the file names here are all lowercase, but the region is uppercase when you apply a locale.
+
+#### Apply a locale
+
+After registering a locale, you can it as the default for all Plotly plots:
+
+```html
 <script>Plotly.setPlotConfig({locale: 'de-CH'})</script>
 ```
 
-The first line loads and registers the locale definition with plotly.js, the second sets it as the default for all Plotly plots.
-You can also include multiple locale definitions and apply them to each plot separately as a `config` parameter:
+Or, apply the (registered) locale to particular plot(s) as a `config` parameter:
 
 ```js
 Plotly.newPlot(graphDiv, data, layout, {locale: 'de-CH'})
 ```
-
 # Bundle information
 
 The main plotly.js bundle includes all the official (non-beta) trace modules.
