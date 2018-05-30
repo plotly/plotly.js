@@ -842,7 +842,7 @@ function createHoverText(hoverData, opts, gd) {
         else if(d.yLabel === undefined) text = d.xLabel;
         else text = '(' + d.xLabel + ', ' + d.yLabel + ')';
 
-        if(d.text && !Array.isArray(d.text)) {
+        if((d.text || d.text === 0) && !Array.isArray(d.text)) {
             text += (text ? '<br>' : '') + d.text;
         }
 
