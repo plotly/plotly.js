@@ -363,31 +363,45 @@ describe('Rangeslider visibility property', function() {
 
     afterEach(destroyGraphDiv);
 
+    function plotHeight() {
+        return d3.select('.xgrid').node().getBoundingClientRect().height;
+    }
+
+    function defaultLayout(opts) {
+        return Lib.extendDeep({
+            width: 500,
+            height: 600,
+            margin: {l: 50, r: 50, t: 100, b: 100}
+        }, opts || {});
+    }
+
     it('should not add the slider to the DOM by default', function(done) {
-        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], defaultLayout())
         .then(function() {
             var rangeSlider = getRangeSlider();
             expect(rangeSlider).not.toBeDefined();
+            expect(plotHeight()).toBe(400);
         })
         .catch(failTest)
         .then(done);
     });
 
     it('should add the slider if rangeslider is set to anything', function(done) {
-        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], defaultLayout())
         .then(function() {
             return Plotly.relayout(gd, 'xaxis.rangeslider', 'exists');
         })
         .then(function() {
             var rangeSlider = getRangeSlider();
             expect(rangeSlider).toBeDefined();
+            expect(plotHeight()).toBeLessThan(400);
         })
         .catch(failTest)
         .then(done);
     });
 
     it('should add the slider if visible changed to `true`', function(done) {
-        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], defaultLayout())
         .then(function() {
             return Plotly.relayout(gd, 'xaxis.rangeslider.visible', true);
         })
@@ -395,6 +409,7 @@ describe('Rangeslider visibility property', function() {
             var rangeSlider = getRangeSlider();
             expect(rangeSlider).toBeDefined();
             expect(countRangeSliderClipPaths()).toEqual(1);
+            expect(plotHeight()).toBeLessThan(400);
         })
         .catch(failTest)
         .then(done);
@@ -404,11 +419,11 @@ describe('Rangeslider visibility property', function() {
         Plotly.plot(gd, [{
             x: [1, 2, 3],
             y: [2, 3, 4]
-        }], {
+        }], defaultLayout({
             xaxis: {
                 rangeslider: { visible: true }
             }
-        })
+        }))
         .then(function() {
             return Plotly.relayout(gd, 'xaxis.rangeslider.visible', false);
         })
@@ -416,6 +431,7 @@ describe('Rangeslider visibility property', function() {
             var rangeSlider = getRangeSlider();
             expect(rangeSlider).not.toBeDefined();
             expect(countRangeSliderClipPaths()).toEqual(0);
+            expect(plotHeight()).toBe(400);
         })
         .catch(failTest)
         .then(done);
@@ -434,11 +450,11 @@ describe('Rangeslider visibility property', function() {
             type: 'bar',
             x: [1, 2, 3],
             y: [2, 5, 2]
-        }], {
+        }], defaultLayout({
             xaxis: {
                 rangeslider: { visible: true }
             }
-        })
+        }))
         .then(function() {
             expect(count('g.scatterlayer > g.trace')).toEqual(1);
             expect(count('g.barlayer > g.trace')).toEqual(1);

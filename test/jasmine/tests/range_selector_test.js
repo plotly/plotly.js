@@ -597,3 +597,63 @@ describe('range selector interactions:', function() {
         .then(done);
     });
 });
+
+describe('range selector automargin', function() {
+    'use strict';
+
+    var mock = require('@mocks/range_selector.json');
+
+    var gd, mockCopy;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+        mockCopy = Lib.extendDeep({}, mock, {layout: {
+            width: 500,
+            height: 500,
+            margin: {l: 50, r: 50, t: 100, b: 100}
+        }});
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        .catch(failTest)
+        .then(done);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function plotWidth() {
+        return d3.selectAll('.ygrid').node().getBoundingClientRect().width;
+    }
+
+    function plotHeight() {
+        return d3.selectAll('.xgrid').node().getBoundingClientRect().height;
+    }
+
+    it('updates automargin when hiding, showing, or moving', function(done) {
+        expect(plotWidth()).toBe(400);
+        expect(plotHeight()).toBe(300);
+
+        Plotly.relayout(gd, {
+            'xaxis.rangeselector.y': 1.3,
+            'xaxis.rangeselector.xanchor': 'center'
+        })
+        .then(function() {
+            expect(plotWidth()).toBeLessThan(400);
+            expect(plotHeight()).toBeLessThan(300);
+
+            return Plotly.relayout(gd, {'xaxis.rangeselector.visible': false});
+        })
+        .then(function() {
+            expect(plotWidth()).toBe(400);
+            expect(plotHeight()).toBe(300);
+
+            return Plotly.relayout(gd, {'xaxis.rangeselector.visible': true});
+        })
+        .then(function() {
+            expect(plotWidth()).toBeLessThan(400);
+            expect(plotHeight()).toBeLessThan(300);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+});

@@ -524,18 +524,36 @@ describe('legend relayout update', function() {
     afterEach(destroyGraphDiv);
 
     it('should hide and show the legend', function(done) {
-        var mockCopy = Lib.extendDeep({}, mock);
+        var mockCopy = Lib.extendDeep({}, mock, {layout: {
+            legend: {x: 1.1, xanchor: 'left'},
+            margin: {l: 50, r: 50},
+            width: 500
+        }});
+
+        function plotWidth() {
+            return d3.select('.ygrid').node().getBoundingClientRect().width;
+        }
+
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(1);
+            // check that the margins changed
+            expect(plotWidth()).toBeLessThan(400);
             return Plotly.relayout(gd, {showlegend: false});
         })
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(0);
+            expect(plotWidth()).toBe(400);
             return Plotly.relayout(gd, {showlegend: true});
         })
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(1);
+            expect(plotWidth()).toBeLessThan(400);
+            return Plotly.relayout(gd, {'legend.x': 0.7});
+        })
+        .then(function() {
+            expect(d3.selectAll('g.legend').size()).toBe(1);
+            expect(plotWidth()).toBe(400);
         })
         .catch(failTest)
         .then(done);
