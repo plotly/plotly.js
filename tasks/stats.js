@@ -108,6 +108,7 @@ function getMainBundleInfo() {
         '- using CDN URL ' + cdnRoot + 'latest' + MINJS + ' OR ' + cdnRoot + pkg.version + MINJS,
         '',
         'or as raw javascript:',
+        '- using the `plotly.js-dist` npm package (starting in `v1.39.0`)',
         '- using dist file `dist/plotly.js`',
         '- using CDN URL ' + cdnRoot + 'latest' + JS + ' OR ' + cdnRoot + pkg.version + JS,
         '- using CommonJS with `require(\'plotly.js\')`',
@@ -127,7 +128,8 @@ function getMainBundleInfo() {
         'Starting in `v1.15.0`, plotly.js also ships with several _partial_ bundles:',
         '',
         constants.partialBundlePaths.map(makeBundleHeaderInfo).join('\n'),
-        ''
+        '',
+        'Starting in `v1.39.0`, each plotly.js partial bundle has a corresponding npm package with no dependency.'
     ];
 }
 
@@ -155,25 +157,54 @@ function makeBundleInfo(pathObj) {
     var name = pathObj.name;
     var sizes = findSizes(pathObj);
     var moduleList = common.findModuleList(pathObj.index);
+    var pkgName = 'plotly.js-' + name + '-dist';
 
     return [
         '### plotly.js ' + name,
         '',
         'The `' + name + '` partial bundle contains trace modules ' + common.formatEnumeration(moduleList) + '.',
         '',
-        '| Way to import | Location |',
-        '|---------------|----------|',
-        '| dist bundle | ' + '`dist/plotly-' + name + JS + '` |',
-        '| dist bundle (minified) | ' + '`dist/plotly-' + name + MINJS + '` |',
-        '| CDN URL (latest) | ' + cdnRoot + name + '-latest' + JS + ' |',
-        '| CDN URL (latest minified) | ' + cdnRoot + name + '-latest' + MINJS + ' |',
-        '| CDN URL (tagged) | ' + cdnRoot + name + '-' + pkg.version + JS + ' |',
-        '| CDN URL (tagged minified) | ' + cdnRoot + name + '-' + pkg.version + MINJS + ' |',
-        '| CommonJS | ' + '`require(\'plotly.js/lib/' + 'index-' + name + '\')`' + ' |',
+        '#### Stats',
         '',
         '| Raw size | Minified size | Minified + gzip size |',
         '|------|-----------------|------------------------|',
         '| ' + sizes.raw + ' | ' + sizes.minified + ' | ' + sizes.gzipped + ' |',
+        '',
+        '#### CDN links',
+        '',
+        '| Flavor | URL |',
+        '| ------ | --- |',
+        '| CDN URL (latest) | ' + cdnRoot + name + '-latest' + JS + ' |',
+        '| CDN URL (latest minified) | ' + cdnRoot + name + '-latest' + MINJS + ' |',
+        '| CDN URL (tagged) | ' + cdnRoot + name + '-' + pkg.version + JS + ' |',
+        '| CDN URL (tagged minified) | ' + cdnRoot + name + '-' + pkg.version + MINJS + ' |',
+        '',
+        '#### npm package (starting in `v1.39.0`)',
+        '',
+        'Install with',
+        '```',
+        'npm install ' + pkgName,
+        '```',
+        '',
+        'ES6 module usage:',
+        '```js',
+        'import Plotly from \'' + pkgName + '\'',
+        '```',
+        '',
+        'CommonJS usage:',
+        '```js',
+        'var Plotly = require(\'' + pkgName + '\');',
+        '```',
+        '',
+        '#### plotly.js dist files',
+        '',
+        '| Way to import | Location |',
+        '|---------------|----------|',
+        '| dist bundle | ' + '`dist/plotly-' + name + JS + '` |',
+        '| dist bundle (minified) | ' + '`dist/plotly-' + name + MINJS + '` |',
+        '| ES6 module | ' + '`import Plotly from \'plotly.js/lib/' + 'index-' + name + '\'`' + ' |',
+        '| CommonJS | ' + '`require(\'plotly.js/lib/' + 'index-' + name + '\')`' + ' |',
+        '',
         ''
     ].join('\n');
 }
