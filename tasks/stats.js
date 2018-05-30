@@ -1,7 +1,6 @@
 var path = require('path');
 var fs = require('fs');
 
-var falafel = require('falafel');
 var gzipSize = require('gzip-size');
 var prettySize = require('prettysize');
 
@@ -11,7 +10,6 @@ var pkg = require('../package.json');
 
 var pathDistREADME = path.join(constants.pathToDist, 'README.md');
 var cdnRoot = 'https://cdn.plot.ly/plotly-';
-var coreModules = ['scatter'];
 
 var ENC = 'utf-8';
 var JS = '.js';
@@ -156,12 +154,12 @@ function makeBundleHeaderInfo(pathObj) {
 function makeBundleInfo(pathObj) {
     var name = pathObj.name;
     var sizes = findSizes(pathObj);
-    var moduleList = coreModules.concat(scrapeContent(pathObj));
+    var moduleList = common.findModuleList(pathObj.index);
 
     return [
         '### plotly.js ' + name,
         '',
-        formatBundleInfo(name, moduleList),
+        'The `' + name + '` partial bundle contains trace modules ' + common.formatEnumeration(moduleList) + '.',
         '',
         '| Way to import | Location |',
         '|---------------|----------|',
@@ -196,51 +194,4 @@ function findSizes(pathObj) {
     }
 
     return sizes;
-}
-
-function scrapeContent(pathObj) {
-    var code = fs.readFileSync(pathObj.index, ENC);
-    var moduleList = [];
-
-    falafel(code, function(node) {
-        if(isModuleNode(node)) {
-            var moduleName = node.value.replace('./', '');
-            moduleList.push(moduleName);
-        }
-    });
-
-    return moduleList;
-}
-
-function isModuleNode(node) {
-    return (
-        node.type === 'Literal' &&
-        node.parent &&
-        node.parent.type === 'CallExpression' &&
-        node.parent.callee &&
-        node.parent.callee.type === 'Identifier' &&
-        node.parent.callee.name === 'require' &&
-        node.parent.parent &&
-        node.parent.parent.type === 'ArrayExpression'
-    );
-}
-
-function formatBundleInfo(bundleName, moduleList) {
-    var enumeration = moduleList.map(function(moduleName, i) {
-        var len = moduleList.length,
-            ending;
-
-        if(i === len - 2) ending = ' and';
-        else if(i < len - 1) ending = ',';
-        else ending = '';
-
-        return '`' + moduleName + '`' + ending;
-    });
-
-    return [
-        'The', '`' + bundleName + '`',
-        'partial bundle contains the',
-        enumeration.join(' '),
-        'trace modules.'
-    ].join(' ');
 }

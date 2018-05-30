@@ -11,23 +11,27 @@ var packagesSpecs = constants.partialBundlePaths
     .map(function(d) {
         return {
             name: 'plotly.js-' + d.name + '-dist',
+            index: d.index,
             main: 'plotly-' + d.name + '.js',
             dist: d.dist,
-            desc: 'Ready-to-use plotly.js ' + d.name + ' distributed bundle',
+            desc: 'Ready-to-use plotly.js ' + d.name + ' distributed bundle.',
         };
     })
     .concat([{
         name: 'plotly.js-dist',
+        index: path.join(constants.pathToLib, 'index.js'),
         main: 'plotly.js',
         dist: constants.pathToPlotlyDist,
-        desc: 'Ready-to-use plotly.js distributed bundle',
+        desc: 'Ready-to-use plotly.js distributed bundle.',
     }]);
 
 packagesSpecs.forEach(function(d) {
     var pkgPath = path.join(constants.pathToBuild, d.name);
 
     function initDirectory(cb) {
-        if(!common.doesDirExist(pkgPath)) {
+        if(common.doesDirExist(pkgPath)) {
+            cb();
+        } else {
             fs.mkdir(pkgPath, cb);
         }
     }
@@ -53,10 +57,14 @@ packagesSpecs.forEach(function(d) {
     }
 
     function writeREADME(cb) {
+        var moduleList = common.findModuleList(d.index);
+
         var cnt = [
             '# ' + d.name,
             '',
             d.desc,
+            '',
+            'Contains trace modules ' + common.formatEnumeration(moduleList) + '.',
             '',
             'For more info on plotly.js, go to https://github.com/plotly/plotly.js',
             '',
@@ -82,13 +90,13 @@ packagesSpecs.forEach(function(d) {
     }
 
     function publishToNPM(cb) {
+        if(process.env.DRYRUN) {
+            console.log('dry run, did not publish ' + d.name);
+            cb();
+            return;
+        }
         exec('npm publish', {cwd: pkgPath}, cb).stdout.pipe(process.stdout);
     }
-
-    // TODO
-    // - add minified file?
-    // - what to do with dist/topojson/
-    // - what to do with mathjax/
 
     runSeries([
         initDirectory,
