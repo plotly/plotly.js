@@ -12,7 +12,6 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
-var Plots = require('../../plots/plots');
 var Colorscale = require('../../components/colorscale');
 var drawColorbar = require('../../components/colorbar/draw');
 
@@ -28,10 +27,7 @@ module.exports = function colorbar(gd, cd) {
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
-    if(!trace.showscale) {
-        Plots.autoMargin(gd, cbId);
-        return;
-    }
+    if(!trace.showscale) return;
 
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
     var sclFunc = Colorscale.makeColorScaleFunc(

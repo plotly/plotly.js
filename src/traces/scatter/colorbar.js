@@ -12,7 +12,6 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
-var Plots = require('../../plots/plots');
 var Colorscale = require('../../components/colorscale');
 var drawColorbar = require('../../components/colorbar/draw');
 
@@ -26,10 +25,7 @@ module.exports = function colorbar(gd, cd) {
 
     // TODO make Colorbar.draw support multiple colorbar per trace
 
-    if((marker === undefined) || !marker.showscale) {
-        Plots.autoMargin(gd, cbId);
-        return;
-    }
+    if((marker === undefined) || !marker.showscale) return;
 
     var vals = marker.color,
         cmin = marker.cmin,
