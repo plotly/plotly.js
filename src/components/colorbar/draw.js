@@ -447,12 +447,10 @@ module.exports = function draw(gd, id) {
         }
 
         function drawTitle(titleClass, titleOpts) {
-            var trace = getTrace(),
-                propName;
-            if(Registry.traceIs(trace, 'markerColorscale')) {
-                propName = 'marker.colorbar.title';
-            }
-            else propName = 'colorbar.title';
+            var trace = getTrace();
+            var propName = 'colorbar.title';
+            var containerName = trace._module.colorbar.container;
+            if(containerName) propName = containerName + '.' + propName;
 
             var dfltTitleOpts = {
                 propContainer: cbAxisOut,

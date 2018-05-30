@@ -473,10 +473,10 @@ exports.doColorBars = function(gd) {
                         cb._opts.line.color : trace.line.color
                 });
             }
-            if(Registry.traceIs(trace, 'markerColorscale')) {
-                cb.options(trace.marker.colorbar)();
-            }
-            else cb.options(trace.colorbar)();
+            var moduleOpts = trace._module.colorbar;
+            var containerName = moduleOpts.container;
+            var opts = (containerName ? trace[containerName] : trace).colorbar;
+            cb.options(opts)();
         }
     }
 

@@ -26,6 +26,7 @@ var Polar = require('../plots/polar/legacy');
 var Axes = require('../plots/cartesian/axes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
+var connectColorbar = require('../components/colorbar/connect');
 var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
@@ -265,10 +266,11 @@ exports.plot = function(gd, data, layout, config) {
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
             trace = cd[0].trace;
-            if(trace.visible !== true || !trace._module.colorbar) {
+            var colorbarOpts = trace._module.colorbar;
+            if(trace.visible !== true || !colorbarOpts) {
                 Plots.autoMargin(gd, 'cb' + trace.uid);
             }
-            else trace._module.colorbar(gd, cd);
+            else connectColorbar(gd, cd, colorbarOpts);
         }
 
         Plots.doAutoMargin(gd);
@@ -1448,6 +1450,11 @@ function _restyle(gd, aobj, traces) {
 
             if(newVal === undefined) continue;
 
+            var finalPart = param.parts[param.parts.length - 1];
+            var prefix = ai.substr(0, ai.length - finalPart.length - 1);
+            var prefixDot = prefix ? prefix + '.' : '';
+            var innerContFull = prefix ? Lib.nestedProperty(contFull, prefix) : contFull;
+
             valObject = PlotSchema.getTraceValObject(contFull, param.parts);
 
             if(valObject && valObject.impliedEdits && newVal !== null) {
@@ -1461,31 +1468,30 @@ function _restyle(gd, aobj, traces) {
             // note that colorbar fractional sizing is based on the
             // original plot size, before anything (like a colorbar)
             // increases the margins
-            else if(ai === 'colorbar.thicknessmode' && param.get() !== newVal &&
-                        ['fraction', 'pixels'].indexOf(newVal) !== -1 &&
-                        contFull.colorbar) {
-                var thicknorm =
-                    ['top', 'bottom'].indexOf(contFull.colorbar.orient) !== -1 ?
-                        (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
-                        (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r);
-                doextra('colorbar.thickness', contFull.colorbar.thickness *
-                    (newVal === 'fraction' ? 1 / thicknorm : thicknorm), i);
-            }
-            else if(ai === 'colorbar.lenmode' && param.get() !== newVal &&
-                        ['fraction', 'pixels'].indexOf(newVal) !== -1 &&
-                        contFull.colorbar) {
-                var lennorm =
-                    ['top', 'bottom'].indexOf(contFull.colorbar.orient) !== -1 ?
-                        (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
-                        (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
-                doextra('colorbar.len', contFull.colorbar.len *
-                    (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
-            }
-            else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
-                doextra('colorbar.tickmode', 'linear', i);
+            else if((finalPart === 'thicknessmode' || finalPart === 'lenmode') &&
+                    oldVal !== newVal &&
+                    (newVal === 'fraction' || newVal === 'pixels') &&
+                    innerContFull
+            ) {
+                if(finalPart === 'thicknessmode') {
+                    var thicknorm =
+                        ['top', 'bottom'].indexOf(innerContFull.orient) !== -1 ?
+                            (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
+                            (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r);
+                    doextra(prefixDot + 'thickness', innerContFull.thickness *
+                        (newVal === 'fraction' ? 1 / thicknorm : thicknorm), i);
+                }
+                else {
+                    var lennorm =
+                        ['top', 'bottom'].indexOf(innerContFull.orient) !== -1 ?
+                            (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
+                            (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
+                    doextra(prefixDot + 'len', innerContFull.len *
+                        (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
+                }
             }
 
-            if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
+            else if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
                 var labelsTo = 'x',
                     valuesTo = 'y';
                 if((newVal === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {

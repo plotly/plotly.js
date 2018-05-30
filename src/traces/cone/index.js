@@ -16,7 +16,11 @@ module.exports = {
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
-    colorbar: require('./colorbar'),
+    colorbar: {
+        min: 'cmin',
+        max: 'cmax'
+        // no vals, these are calculated automatically from vector norms
+    },
     calc: require('./calc'),
     plot: require('./convert'),
 

@@ -274,14 +274,14 @@ exports.cleanData = function(data) {
         }
 
         // fix typo in colorscale definition
-        if(Registry.traceIs(trace, '2dMap')) {
-            if(trace.colorscale === 'YIGnBu') trace.colorscale = 'YlGnBu';
-            if(trace.colorscale === 'YIOrRd') trace.colorscale = 'YlOrRd';
-        }
-        if(Registry.traceIs(trace, 'markerColorscale') && trace.marker) {
-            var cont = trace.marker;
-            if(cont.colorscale === 'YIGnBu') cont.colorscale = 'YlGnBu';
-            if(cont.colorscale === 'YIOrRd') cont.colorscale = 'YlOrRd';
+        var _module = Registry.getModule(trace);
+        if(_module && _module.colorbar) {
+            var containerName = _module.colorbar.container;
+            var container = containerName ? trace[containerName] : trace;
+            if(container && container.colorscale) {
+                if(container.colorscale === 'YIGnBu') container.colorscale = 'YlGnBu';
+                if(container.colorscale === 'YIOrRd') container.colorscale = 'YlOrRd';
+            }
         }
 
         // fix typo in surface 'highlight*' definitions

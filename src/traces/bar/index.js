@@ -17,7 +17,7 @@ Bar.supplyDefaults = require('./defaults');
 Bar.supplyLayoutDefaults = require('./layout_defaults');
 Bar.calc = require('./calc');
 Bar.setPositions = require('./set_positions');
-Bar.colorbar = require('../scatter/colorbar');
+Bar.colorbar = require('../scatter/marker_colorbar');
 Bar.arraysToCalcdata = require('./arrays_to_calcdata');
 Bar.plot = require('./plot');
 Bar.style = require('./style').style;
@@ -28,7 +28,7 @@ Bar.selectPoints = require('./select');
 Bar.moduleType = 'trace';
 Bar.name = 'bar';
 Bar.basePlotModule = require('../../plots/cartesian');
-Bar.categories = ['cartesian', 'svg', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend', 'zoomScale'];
+Bar.categories = ['cartesian', 'svg', 'bar', 'oriented', 'errorBarsOK', 'showLegend', 'zoomScale'];
 Bar.meta = {
     description: [
         'The data visualized by the span of the bars is set in `y`',

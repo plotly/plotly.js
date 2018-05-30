@@ -14,13 +14,13 @@ Scatter3D.plot = require('./convert');
 Scatter3D.attributes = require('./attributes');
 Scatter3D.markerSymbols = require('../../constants/gl3d_markers');
 Scatter3D.supplyDefaults = require('./defaults');
-Scatter3D.colorbar = require('../scatter/colorbar');
+Scatter3D.colorbar = require('../scatter/marker_colorbar');
 Scatter3D.calc = require('./calc');
 
 Scatter3D.moduleType = 'trace';
 Scatter3D.name = 'scatter3d';
 Scatter3D.basePlotModule = require('../../plots/gl3d');
-Scatter3D.categories = ['gl3d', 'symbols', 'markerColorscale', 'showLegend'];
+Scatter3D.categories = ['gl3d', 'symbols', 'showLegend'];
 Scatter3D.meta = {
     hrName: 'scatter_3d',
     description: [

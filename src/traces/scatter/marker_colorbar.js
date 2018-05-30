@@ -6,10 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+
 'use strict';
 
 module.exports = {
-    min: 'zmin',
-    max: 'zmax',
-    vals: 'z'
+    container: 'marker',
+    min: 'cmin',
+    max: 'cmax',
+    vals: 'color'
 };
