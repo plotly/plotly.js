@@ -181,7 +181,7 @@ function makeBundleInfo(pathObj) {
         '',
         '#### npm package (starting in `v1.39.0`)',
         '',
-        'Install with',
+        'Install [`' + pkgName + '`](https://www.npmjs.com/package/' + pkgName + ') with',
         '```',
         'npm install ' + pkgName,
         '```',
