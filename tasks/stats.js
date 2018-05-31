@@ -129,7 +129,7 @@ function getMainBundleInfo() {
         '',
         constants.partialBundlePaths.map(makeBundleHeaderInfo).join('\n'),
         '',
-        'Starting in `v1.39.0`, each plotly.js partial bundle has a corresponding npm package with no dependency.'
+        'Starting in `v1.39.0`, each plotly.js partial bundle has a corresponding npm package with no dependencies.'
     ];
 }
 

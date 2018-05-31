@@ -51,7 +51,7 @@ packagesSpecs.forEach(function(d) {
 
         fs.writeFile(
             path.join(pkgPath, 'package.json'),
-            JSON.stringify(cnt, null, 2),
+            JSON.stringify(cnt, null, 2) + '\n',
             cb
         );
     }

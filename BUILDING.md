@@ -1,6 +1,6 @@
 # Building plotly.js
 
-The easiest way to bundle plotly.js into your application is to use the one of the distributed plotly.js packages on npm. These distributed packages should just work with **any** build framework. That said, if you're looking to save a few bytes, read the section below corresponding to your building framework.
+The easiest way to bundle plotly.js into your application is to use one of the distributed plotly.js packages on npm. These distributed packages should just work with **any** build framework. That said, if you're looking to save a few bytes, read the section below corresponding to your building framework.
 
 ## Webpack
 
