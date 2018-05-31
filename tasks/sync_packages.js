@@ -46,7 +46,12 @@ packagesSpecs.forEach(function(d) {
             repository: pkg.repository,
             bugs: pkg.bugs,
             author: pkg.author,
-            keywords: pkg.keywords
+            keywords: pkg.keywords,
+            files: [
+                'LICENSE',
+                'README.md',
+                d.main
+            ]
         };
 
         fs.writeFile(
