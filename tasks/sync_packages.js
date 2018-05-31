@@ -100,8 +100,16 @@ packagesSpecs.forEach(function(d) {
         );
     }
 
-    function copyDist(cb) {
+    function copyMain(cb) {
         fs.copy(d.dist, path.join(pkgPath, d.main), cb);
+    }
+
+    function copyLicense(cb) {
+        fs.copy(
+            path.join(constants.pathToRoot, 'LICENSE'),
+            path.join(pkgPath, 'LICENSE'),
+            cb
+        );
     }
 
     function publishToNPM(cb) {
@@ -117,7 +125,8 @@ packagesSpecs.forEach(function(d) {
         initDirectory,
         writePackageJSON,
         writeREADME,
-        copyDist,
+        copyMain,
+        copyLicense,
         publishToNPM
     ], function(err) {
         if(err) throw err;
