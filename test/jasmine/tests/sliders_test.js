@@ -6,7 +6,8 @@ var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
+var delay = require('../assets/delay');
 
 describe('sliders defaults', function() {
     'use strict';
@@ -166,7 +167,7 @@ describe('sliders defaults', function() {
         });
     });
 
-    it('allow the `skip` method', function() {
+    it('allows the `skip` method', function() {
         layoutIn.sliders = [{
             steps: [{
                 method: 'skip',
@@ -295,7 +296,7 @@ describe('ugly internal manipulation of steps', function() {
             // The selected option no longer exists, so confirm it's
             // been fixed during the process of updating/drawing it:
             expect(gd._fullLayout.sliders[0].active).toEqual(0);
-        }).catch(fail).then(done);
+        }).catch(failTest).then(done);
     });
 });
 
@@ -366,7 +367,8 @@ describe('sliders interactions', function() {
             expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
         })
-        .catch(fail).then(done);
+        .catch(failTest)
+        .then(done);
     });
 
     it('should respond to mouse clicks', function(done) {
@@ -396,7 +398,8 @@ describe('sliders interactions', function() {
         var mousemoveFill = firstGrip.node().style.fill;
         expect(mousemoveFill).toEqual(mousedownFill);
 
-        setTimeout(function() {
+        delay(100)()
+        .then(function() {
             expect(mockCopy.layout.sliders[0].active).toEqual(0);
 
             gd.dispatchEvent(new MouseEvent('mouseup'));
@@ -404,9 +407,9 @@ describe('sliders interactions', function() {
             var mouseupFill = firstGrip.node().style.fill;
             expect(mouseupFill).toEqual(originalFill);
             expect(mockCopy.layout.sliders[0].active).toEqual(0);
-
-            done();
-        }, 100);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should issue events on interaction', function(done) {
@@ -427,15 +430,14 @@ describe('sliders interactions', function() {
             cntEnd++;
         });
 
-        function assertEventCounts(starts, interactions, noninteractions, ends) {
-            expect(
-                [cntStart, cntInteraction, cntNonInteraction, cntEnd]
-            ).toEqual(
-                [starts, interactions, noninteractions, ends]
-            );
+        function assertEventCounts(starts, interactions, noninteractions, ends, msg) {
+            expect(cntStart).toBe(starts, 'starts: ' + msg);
+            expect(cntInteraction).toBe(interactions, 'interactions: ' + msg);
+            expect(cntNonInteraction).toBe(noninteractions, 'noninteractions: ' + msg);
+            expect(cntEnd).toBe(ends, 'ends: ' + msg);
         }
 
-        assertEventCounts(0, 0, 0, 0);
+        assertEventCounts(0, 0, 0, 0, 'initial');
 
         var firstGroup = gd._fullLayout._infolayer.select('.' + constants.railTouchRectClass);
         var railNode = firstGroup.node();
@@ -447,30 +449,31 @@ describe('sliders interactions', function() {
             clientX: touchRect.left + touchRect.width - 5,
         }));
 
-        setTimeout(function() {
+        delay(50)()
+        .then(function() {
             // One slider received a mousedown, one received an interaction, and one received a change:
-            assertEventCounts(1, 1, 1, 0);
+            assertEventCounts(1, 1, 1, 0, 'mousedown');
 
             // Drag to the left side:
             gd.dispatchEvent(new MouseEvent('mousemove', {
                 clientY: touchRect.top + 5,
                 clientX: touchRect.left + 5,
             }));
+        })
+        .then(delay(50))
+        .then(function() {
+            // On move, now to changes for the each slider, and no ends:
+            assertEventCounts(1, 2, 2, 0, 'mousemove');
 
-            setTimeout(function() {
-                // On move, now to changes for the each slider, and no ends:
-                assertEventCounts(1, 2, 2, 0);
-
-                gd.dispatchEvent(new MouseEvent('mouseup'));
-
-                setTimeout(function() {
-                    // Now an end:
-                    assertEventCounts(1, 2, 2, 1);
-
-                    done();
-                }, 50);
-            }, 50);
-        }, 50);
+            gd.dispatchEvent(new MouseEvent('mouseup'));
+        })
+        .then(delay(50))
+        .then(function() {
+            // Now an end:
+            assertEventCounts(1, 2, 2, 1, 'mouseup');
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     function assertNodeCount(query, cnt) {
