@@ -11,7 +11,7 @@
 var tube2mesh = require('gl-streamtube3d');
 var createTubeMesh = tube2mesh.createTubeMesh;
 
-var simpleMap = require('../../lib').simpleMap;
+var Lib = require('../../lib');
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var zip3 = require('../../lib/zip3');
 
@@ -47,33 +47,54 @@ proto.handlePick = function(selection) {
 
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
 
+function distinctVals(col) {
+    return Lib.distinctVals(col).vals;
+}
+
+function getBoundPads(vec) {
+    var len = vec.length;
+    if(len === 1) {
+        return [0.5, 0.5];
+    } else {
+        return [vec[1] - vec[0], vec[len - 1] - vec[len - 2]];
+    }
+}
+
 function convert(scene, trace) {
     var sceneLayout = scene.fullSceneLayout;
     var dataScale = scene.dataScale;
+    var len = trace._len;
     var tubeOpts = {};
 
     function toDataCoords(arr, axisName) {
         var ax = sceneLayout[axisName];
         var scale = dataScale[axisName2scaleIndex[axisName]];
-        return simpleMap(arr, function(v) { return ax.d2l(v) * scale; });
+        return Lib.simpleMap(arr, function(v) { return ax.d2l(v) * scale; });
     }
 
-    tubeOpts.vectors = zip3(
-        toDataCoords(trace.u, 'xaxis'),
-        toDataCoords(trace.v, 'yaxis'),
-        toDataCoords(trace.w, 'zaxis')
-    );
+    var u = toDataCoords(trace.u.slice(0, len), 'xaxis');
+    var v = toDataCoords(trace.v.slice(0, len), 'yaxis');
+    var w = toDataCoords(trace.w.slice(0, len), 'zaxis');
+
+    tubeOpts.vectors = zip3(u, v, w);
+
+    var valsx = distinctVals(trace.x.slice(0, len));
+    var valsy = distinctVals(trace.y.slice(0, len));
+    var valsz = distinctVals(trace.z.slice(0, len));
+
+    // Over-specified mesh case, this would error in tube2mesh
+    if(valsx.length * valsy.length * valsz.length > len) {
+        return {positions: [], cells: []};
+    }
+
+    var meshx = toDataCoords(valsx, 'xaxis');
+    var meshy = toDataCoords(valsy, 'yaxis');
+    var meshz = toDataCoords(valsz, 'zaxis');
+
+    tubeOpts.meshgrid = [meshx, meshy, meshz];
 
     // TODO make this optional?
-    // N.B. this is a "meshgrid" but shouldn't this be the position
-    // of the vector field ???
-    tubeOpts.meshgrid = [
-        toDataCoords(trace.x, 'xaxis'),
-        toDataCoords(trace.y, 'yaxis'),
-        toDataCoords(trace.z, 'zaxis')
-    ];
-
-    // TODO make this optional?
+    // Default to in-between x/y/z mesh
     tubeOpts.startingPositions = zip3(
         toDataCoords(trace.startx, 'xaxis'),
         toDataCoords(trace.starty, 'yaxis'),
@@ -87,12 +108,19 @@ function convert(scene, trace) {
 
     tubeOpts.tubeSize = trace.sizeref;
 
+    // add some padding around the bounds
+    // to e.g. allow tubes starting from a slice of the x/y/z mesh
+    // to go beyond bounds a little bit w/o getting clipped
     var xbnds = toDataCoords(trace._xbnds, 'xaxis');
     var ybnds = toDataCoords(trace._ybnds, 'yaxis');
     var zbnds = toDataCoords(trace._zbnds, 'zaxis');
+    var xpads = getBoundPads(meshx);
+    var ypads = getBoundPads(meshy);
+    var zpads = getBoundPads(meshz);
+
     var bounds = [
-        [xbnds[0], ybnds[0], zbnds[0]],
-        [xbnds[1], ybnds[1], zbnds[1]]
+        [xbnds[0] - xpads[0], ybnds[0] - ypads[0], zbnds[0] - zpads[0]],
+        [xbnds[1] + xpads[1], ybnds[1] + ypads[1], zbnds[1] + zpads[1]]
     ];
 
     var meshData = tube2mesh(tubeOpts, bounds);
@@ -103,13 +131,21 @@ function convert(scene, trace) {
     meshData.vertexIntensityBounds = [trace.cmin / trace._normMax, trace.cmax / trace._normMax];
 
     // pass gl-mesh3d lighting attributes
-    meshData.lightPosition = [trace.lightposition.x, trace.lightposition.y, trace.lightposition.z];
+    var lp = trace.lightposition;
+    meshData.lightPosition = [lp.x, lp.y, lp.z];
     meshData.ambient = trace.lighting.ambient;
     meshData.diffuse = trace.lighting.diffuse;
     meshData.specular = trace.lighting.specular;
     meshData.roughness = trace.lighting.roughness;
     meshData.fresnel = trace.lighting.fresnel;
     meshData.opacity = trace.opacity;
+
+    // TODO
+    // stash autorange pad value
+    // - include pad!
+    // - include tubeScale
+//     trace._pad = meshData.tubeScale * trace.sizeref;
+//     if(trace.sizemode === 'scaled') trace._pad *= trace._normMax;
 
     return meshData;
 }

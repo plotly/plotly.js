@@ -16,11 +16,20 @@ module.exports = function calc(gd, trace) {
     var u = trace.u;
     var v = trace.v;
     var w = trace.w;
-    var vlen = Math.min(u.length, v.length, w.length);
-    var normMax = -Infinity;
+    var x = trace.x;
+    var y = trace.y;
+    var z = trace.z;
+    var len = Math.min(x.length, y.length, z.length, u.length, v.length, w.length);
+
+    var startx = trace.startx;
+    var starty = trace.starty;
+    var startz = trace.startz;
+    var slen = Math.min(startx.length, starty.length, startz.length);
+
+    var normMax = 0;
     var normMin = Infinity;
 
-    for(i = 0; i < vlen; i++) {
+    for(i = 0; i < len; i++) {
         var uu = u[i];
         var vv = v[i];
         var ww = w[i];
@@ -29,8 +38,6 @@ module.exports = function calc(gd, trace) {
         normMax = Math.max(normMax, norm);
         normMin = Math.min(normMin, norm);
     }
-
-    trace._normMax = normMax;
 
     colorscaleCalc(trace, [normMin, normMax], '', 'c');
 
@@ -41,12 +48,7 @@ module.exports = function calc(gd, trace) {
     var zMax = -Infinity;
     var zMin = Infinity;
 
-    var x = trace.x;
-    var y = trace.y;
-    var z = trace.z;
-    var plen = Math.min(x.length, y.length, z.length);
-
-    for(i = 0; i < plen; i++) {
+    for(i = 0; i < len; i++) {
         var xx = x[i];
         xMax = Math.max(xMax, xx);
         xMin = Math.min(xMin, xx);
@@ -59,12 +61,6 @@ module.exports = function calc(gd, trace) {
         zMax = Math.max(zMax, zz);
         zMin = Math.min(zMin, zz);
     }
-
-    var startx = trace.startx;
-    var starty = trace.starty;
-    var startz = trace.startz;
-    var slen = Math.min(startx.length, starty.length, startz.length);
-
     for(i = 0; i < slen; i++) {
         var sx = startx[i];
         xMax = Math.max(xMax, sx);
@@ -79,6 +75,8 @@ module.exports = function calc(gd, trace) {
         zMin = Math.min(zMin, sz);
     }
 
+    trace._len = len;
+    trace._normMax = normMax;
     trace._xbnds = [xMin, xMax];
     trace._ybnds = [yMin, yMax];
     trace._zbnds = [zMin, zMax];

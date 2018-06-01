@@ -60,5 +60,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
 
     // disable 1D transforms (for now)
+    // x/y/z and u/v/w have matching lengths,
+    // but they don't have to match with start(x|y|z)
     traceOut._length = null;
 };
