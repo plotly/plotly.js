@@ -13,6 +13,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var failTest = require('../assets/fail_test');
+var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
 var TOL = 6;
 
@@ -363,10 +364,6 @@ describe('Rangeslider visibility property', function() {
 
     afterEach(destroyGraphDiv);
 
-    function plotHeight() {
-        return d3.select('.xgrid').node().getBoundingClientRect().height;
-    }
-
     function defaultLayout(opts) {
         return Lib.extendDeep({
             width: 500,
@@ -380,7 +377,7 @@ describe('Rangeslider visibility property', function() {
         .then(function() {
             var rangeSlider = getRangeSlider();
             expect(rangeSlider).not.toBeDefined();
-            expect(plotHeight()).toBe(400);
+            assertPlotSize({height: 400});
         })
         .catch(failTest)
         .then(done);
@@ -394,7 +391,7 @@ describe('Rangeslider visibility property', function() {
         .then(function() {
             var rangeSlider = getRangeSlider();
             expect(rangeSlider).toBeDefined();
-            expect(plotHeight()).toBeLessThan(400);
+            assertPlotSize({heightLessThan: 400});
         })
         .catch(failTest)
         .then(done);
@@ -409,7 +406,7 @@ describe('Rangeslider visibility property', function() {
             var rangeSlider = getRangeSlider();
             expect(rangeSlider).toBeDefined();
             expect(countRangeSliderClipPaths()).toEqual(1);
-            expect(plotHeight()).toBeLessThan(400);
+            assertPlotSize({heightLessThan: 400});
         })
         .catch(failTest)
         .then(done);
@@ -431,7 +428,7 @@ describe('Rangeslider visibility property', function() {
             var rangeSlider = getRangeSlider();
             expect(rangeSlider).not.toBeDefined();
             expect(countRangeSliderClipPaths()).toEqual(0);
-            expect(plotHeight()).toBe(400);
+            assertPlotSize({height: 400});
         })
         .catch(failTest)
         .then(done);

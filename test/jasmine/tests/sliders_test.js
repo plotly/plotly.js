@@ -8,6 +8,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
+var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
 describe('sliders defaults', function() {
     'use strict';
@@ -324,12 +325,14 @@ describe('sliders interactions', function() {
     it('should draw only visible sliders', function(done) {
         expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
         expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
+        assertPlotSize({heightLessThan: 270}, 'initial');
 
         Plotly.relayout(gd, 'sliders[0].visible', false).then(function() {
             assertNodeCount('.' + constants.groupClassName, 1);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
             expect(gd.layout.sliders.length).toEqual(2);
+            assertPlotSize({heightLessThan: 270}, 'hide 0');
 
             return Plotly.relayout(gd, 'sliders[1]', null);
         })
@@ -338,6 +341,7 @@ describe('sliders interactions', function() {
             expect(gd._fullLayout._pushmargin['slider-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeUndefined();
             expect(gd.layout.sliders.length).toEqual(1);
+            assertPlotSize({height: 270}, 'delete 1');
 
             return Plotly.relayout(gd, {
                 'sliders[0].visible': true,
@@ -347,6 +351,7 @@ describe('sliders interactions', function() {
             assertNodeCount('.' + constants.groupClassName, 1);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeUndefined();
+            assertPlotSize({heightLessThan: 270}, 'reshow 0');
 
             return Plotly.relayout(gd, {
                 'sliders[1]': {

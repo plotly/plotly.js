@@ -11,6 +11,7 @@ var failTest = require('../assets/fail_test');
 var getRectCenter = require('../assets/get_rect_center');
 var mouseEvent = require('../assets/mouse_event');
 var setConvert = require('@src/plots/cartesian/set_convert');
+var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
 
 describe('range selector defaults:', function() {
@@ -620,37 +621,25 @@ describe('range selector automargin', function() {
 
     afterEach(destroyGraphDiv);
 
-    function plotWidth() {
-        return d3.selectAll('.ygrid').node().getBoundingClientRect().width;
-    }
-
-    function plotHeight() {
-        return d3.selectAll('.xgrid').node().getBoundingClientRect().height;
-    }
-
     it('updates automargin when hiding, showing, or moving', function(done) {
-        expect(plotWidth()).toBe(400);
-        expect(plotHeight()).toBe(300);
+        assertPlotSize({width: 400, height: 300}, 'initial');
 
         Plotly.relayout(gd, {
             'xaxis.rangeselector.y': 1.3,
             'xaxis.rangeselector.xanchor': 'center'
         })
         .then(function() {
-            expect(plotWidth()).toBeLessThan(400);
-            expect(plotHeight()).toBeLessThan(300);
+            assertPlotSize({widthLessThan: 400, heightLessThan: 300}, 'moved');
 
             return Plotly.relayout(gd, {'xaxis.rangeselector.visible': false});
         })
         .then(function() {
-            expect(plotWidth()).toBe(400);
-            expect(plotHeight()).toBe(300);
+            assertPlotSize({width: 400, height: 300}, 'hidden');
 
             return Plotly.relayout(gd, {'xaxis.rangeselector.visible': true});
         })
         .then(function() {
-            expect(plotWidth()).toBeLessThan(400);
-            expect(plotHeight()).toBeLessThan(300);
+            assertPlotSize({widthLessThan: 400, heightLessThan: 300}, 'reshow');
         })
         .catch(failTest)
         .then(done);

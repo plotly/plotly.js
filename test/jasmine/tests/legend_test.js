@@ -13,6 +13,7 @@ var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
 describe('legend defaults', function() {
     'use strict';
@@ -530,30 +531,26 @@ describe('legend relayout update', function() {
             width: 500
         }});
 
-        function plotWidth() {
-            return d3.select('.ygrid').node().getBoundingClientRect().width;
-        }
-
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(1);
             // check that the margins changed
-            expect(plotWidth()).toBeLessThan(400);
+            assertPlotSize({widthLessThan: 400});
             return Plotly.relayout(gd, {showlegend: false});
         })
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(0);
-            expect(plotWidth()).toBe(400);
+            assertPlotSize({width: 400});
             return Plotly.relayout(gd, {showlegend: true});
         })
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(1);
-            expect(plotWidth()).toBeLessThan(400);
+            assertPlotSize({widthLessThan: 400});
             return Plotly.relayout(gd, {'legend.x': 0.7});
         })
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(1);
-            expect(plotWidth()).toBe(400);
+            assertPlotSize({width: 400});
         })
         .catch(failTest)
         .then(done);

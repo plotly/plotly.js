@@ -216,3 +216,29 @@ exports.assertElemInside = function(elem, container, msg) {
       contBB.top < elemBB.top &&
       contBB.bottom > elemBB.bottom).toBe(true, msg);
 };
+
+/*
+ * quick plot area dimension check: test width and/or height of the inner
+ * plot area (single subplot) to verify that the margins are as expected
+ * opts can have keys (all optional):
+ *   width (exact width match)
+ *   height (exact height match)
+ *   widthLessThan (width must be less than this)
+ *   heightLessThan (height must be less than this)
+ */
+exports.assertPlotSize = function(opts, msg) {
+    var width = opts.width;
+    var height = opts.height;
+    var widthLessThan = opts.widthLessThan;
+    var heightLessThan = opts.heightLessThan;
+
+    var actualWidth = d3.select('.ygrid').node().getBoundingClientRect().width;
+    var actualHeight = d3.select('.xgrid').node().getBoundingClientRect().height;
+
+    var msgPlus = msg ? ': ' + msg : '';
+
+    if(width) expect(actualWidth).toBeWithin(width, 1, 'width' + msgPlus);
+    if(height) expect(actualHeight).toBeWithin(height, 1, 'height' + msgPlus);
+    if(widthLessThan) expect(actualWidth).toBeLessThan(widthLessThan - 1, 'widthLessThan' + msgPlus);
+    if(heightLessThan) expect(actualHeight).toBeLessThan(heightLessThan - 1, 'heightLessThan' + msgPlus);
+};
