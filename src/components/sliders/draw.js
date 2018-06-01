@@ -36,10 +36,20 @@ module.exports = function draw(gd) {
         .classed(constants.containerClassName, true)
         .style('cursor', 'ew-resize');
 
-    sliders.exit().remove();
+    function clearSlider(sliderOpts) {
+        if(sliderOpts._commandObserver) {
+            sliderOpts._commandObserver.remove();
+            delete sliderOpts._commandObserver;
+        }
 
-    // If no more sliders, clear the margisn:
-    if(sliders.exit().size()) clearPushMargins(gd);
+        Plots.autoMargin(gd, autoMarginId(sliderOpts));
+    }
+
+    sliders.exit().each(function() {
+        d3.select(this).selectAll('g.' + constants.groupClassName)
+            .each(clearSlider);
+    })
+    .remove();
 
     // Return early if no menus visible:
     if(sliderData.length === 0) return;
@@ -50,14 +60,9 @@ module.exports = function draw(gd) {
     sliderGroups.enter().append('g')
         .classed(constants.groupClassName, true);
 
-    sliderGroups.exit().each(function(sliderOpts) {
-        d3.select(this).remove();
-
-        sliderOpts._commandObserver.remove();
-        delete sliderOpts._commandObserver;
-
-        Plots.autoMargin(gd, constants.autoMarginIdRoot + sliderOpts._index);
-    });
+    sliderGroups.exit()
+        .each(clearSlider)
+        .remove();
 
     // Find the dimensions of the sliders:
     for(var i = 0; i < sliderData.length; i++) {
@@ -91,6 +96,10 @@ module.exports = function draw(gd) {
         drawSlider(gd, d3.select(this), sliderOpts);
     });
 };
+
+function autoMarginId(sliderOpts) {
+    return constants.autoMarginIdRoot + sliderOpts._index;
+}
 
 // This really only just filters by visibility:
 function makeSliderData(fullLayout, gd) {
@@ -239,7 +248,7 @@ function findDimensions(gd, sliderOpts) {
         marginOpts.r = dims.outerLength * FROM_BR[xanchor];
     }
 
-    Plots.autoMargin(gd, constants.autoMarginIdRoot + sliderOpts._index, marginOpts);
+    Plots.autoMargin(gd, autoMarginId(sliderOpts), marginOpts);
 }
 
 function drawSlider(gd, sliderGroup, sliderOpts) {
@@ -604,17 +613,4 @@ function drawRail(sliderGroup, sliderOpts) {
         constants.railInset,
         (dims.inputAreaWidth - constants.railWidth) * 0.5 + dims.currentValueTotalHeight
     );
-}
-
-function clearPushMargins(gd) {
-    var pushMargins = gd._fullLayout._pushmargin || {},
-        keys = Object.keys(pushMargins);
-
-    for(var i = 0; i < keys.length; i++) {
-        var k = keys[i];
-
-        if(k.indexOf(constants.autoMarginIdRoot) !== -1) {
-            Plots.autoMargin(gd, k);
-        }
-    }
 }
