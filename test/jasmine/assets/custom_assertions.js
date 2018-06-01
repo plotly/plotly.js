@@ -232,8 +232,9 @@ exports.assertPlotSize = function(opts, msg) {
     var widthLessThan = opts.widthLessThan;
     var heightLessThan = opts.heightLessThan;
 
-    var actualWidth = d3.select('.ygrid').node().getBoundingClientRect().width;
-    var actualHeight = d3.select('.xgrid').node().getBoundingClientRect().height;
+    var plotBB = d3.select('.bglayer .bg').node().getBoundingClientRect();
+    var actualWidth = plotBB.width;
+    var actualHeight = plotBB.height;
 
     var msgPlus = msg ? ': ' + msg : '';
 

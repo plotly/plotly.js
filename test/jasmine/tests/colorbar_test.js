@@ -5,6 +5,7 @@ var Colorbar = require('@src/components/colorbar');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
+var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
 
 describe('Test colorbar:', function() {
@@ -127,11 +128,7 @@ describe('Test colorbar:', function() {
                 var colorbars = d3.select(gd).selectAll('.colorbar');
                 expect(colorbars.size()).toBe(present ? 1 : 0);
 
-                var yLines = d3.select(gd).selectAll('.ygrid');
-                expect(yLines.size()).toBeGreaterThan(0);
-                var yLineWidth = +yLines.node().getBoundingClientRect().width;
-                if(expandedMargin) expect(yLineWidth).toBeLessThan(400);
-                else expect(yLineWidth).toBe(400);
+                assertPlotSize(expandedMargin ? {widthLessThan: 400} : {width: 400});
             }
 
             Plotly.newPlot(gd, [{
@@ -170,11 +167,7 @@ describe('Test colorbar:', function() {
                 var colorbars = d3.select(gd).selectAll('.colorbar');
                 expect(colorbars.size()).toBe(present ? 1 : 0);
 
-                var yLines = d3.select(gd).selectAll('.ygrid');
-                expect(yLines.size()).toBeGreaterThan(0);
-                var yLineWidth = +yLines.node().getBoundingClientRect().width;
-                if(expandedMargin) expect(yLineWidth).toBeLessThan(400);
-                else expect(yLineWidth).toBe(400);
+                assertPlotSize(expandedMargin ? {widthLessThan: 400} : {width: 400});
             }
 
             Plotly.newPlot(gd, [{
