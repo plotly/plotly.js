@@ -312,7 +312,7 @@ describe('sliders interactions', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        mockCopy = Lib.extendDeep({}, mock);
+        mockCopy = Lib.extendDeep({}, mock, {layout: {sliders: [{x: 0.25}, {}]}});
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
@@ -320,6 +320,37 @@ describe('sliders interactions', function() {
     afterEach(function() {
         Plotly.purge(gd);
         destroyGraphDiv();
+    });
+
+    it('positions sliders repeatably when they push margins', function(done) {
+        function checkPositions(msg) {
+            d3.select(gd).selectAll('.slider-group').each(function(d, i) {
+                var sliderBB = this.getBoundingClientRect();
+                var gdBB = gd.getBoundingClientRect();
+                if(i === 0) {
+                    expect(sliderBB.left - gdBB.left)
+                        .toBeWithin(12, 3, 'left: ' + msg);
+                }
+                else {
+                    expect(gdBB.bottom - sliderBB.bottom)
+                        .toBeWithin(8, 3, 'bottom: ' + msg);
+                }
+            });
+        }
+
+        checkPositions('initial');
+
+        Plotly.relayout(gd, {'sliders[0].x': 0.35, 'sliders[1].y': -0.3})
+        .then(function() {
+            checkPositions('increased left & bottom');
+
+            return Plotly.relayout(gd, {'sliders[0].x': 0.1, 'sliders[1].y': -0.1});
+        })
+        .then(function() {
+            checkPositions('back to original');
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should draw only visible sliders', function(done) {
