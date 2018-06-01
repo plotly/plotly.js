@@ -89,11 +89,11 @@ var attrs = {
         description: ''
     },
 
+    // TODO maybe just remove completely?
     text: {
         valType: 'string',
         role: 'info',
         dflt: '',
-        arrayOk: true,
         editType: 'calc',
         description: [
             'Sets the text elements associated with the cones.',

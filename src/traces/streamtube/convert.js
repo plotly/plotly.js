@@ -15,6 +15,8 @@ var Lib = require('../../lib');
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var zip3 = require('../../lib/zip3');
 
+var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
+
 function Streamtube(scene, uid) {
     this.scene = scene;
     this.uid = uid;
@@ -25,27 +27,35 @@ function Streamtube(scene, uid) {
 var proto = Streamtube.prototype;
 
 proto.handlePick = function(selection) {
+    var sceneLayout = this.scene.fullSceneLayout;
+    var dataScale = this.scene.dataScale;
+
+    function fromDataScale(v, axisName) {
+        var ax = sceneLayout[axisName];
+        var scale = dataScale[axisName2scaleIndex[axisName]];
+        return ax.l2c(v) / scale;
+    }
+
     if(selection.object === this.mesh) {
-        var selectIndex = selection.index = selection.data.index;
+        var pos = selection.data.position;
+        var vel = selection.data.velocity;
+
+        var uu = fromDataScale(vel[0], 'xaxis');
+        var vv = fromDataScale(vel[1], 'yaxis');
+        var ww = fromDataScale(vel[2], 'zaxis')
 
         selection.traceCoordinate = [
-            this.data.x[selectIndex],
-            this.data.y[selectIndex],
-            this.data.z[selectIndex]
-        ];
+            fromDataScale(pos[0], 'xaxis'),
+            fromDataScale(pos[1], 'yaxis'),
+            fromDataScale(pos[2], 'zaxis'),
 
-        var text = this.data.text;
-        if(Array.isArray(text) && text[selectIndex] !== undefined) {
-            selection.textLabel = text[selectIndex];
-        } else if(text) {
-            selection.textLabel = text;
-        }
+            uu, vv, ww,
+            Math.sqrt(uu * uu + vv * vv + ww * ww)
+        ];
 
         return true;
     }
 };
-
-var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
 
 function distinctVals(col) {
     return Lib.distinctVals(col).vals;

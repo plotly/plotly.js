@@ -88,7 +88,7 @@ function render(scene) {
 
         var tx;
 
-        if(trace.type === 'cone') {
+        if(trace.type === 'cone' || trace.type === 'streamtube') {
             var coneTx = [];
             if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
                 coneTx.push('u: ' + formatter('xaxis', selection.traceCoordinate[3]));
