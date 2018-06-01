@@ -100,7 +100,7 @@ function convert(scene, trace) {
     // N.B. cmin/cmax correspond to the min/max vector norm
     // in the u/v/w arrays, which in general is NOT equal to max
     // intensity that colors the tubes.
-    meshData.vertexIntensityBounds = [trace.cmin, trace.cmax];
+    meshData.vertexIntensityBounds = [trace.cmin / trace._normMax, trace.cmax / trace._normMax];
 
     // pass gl-mesh3d lighting attributes
     meshData.lightPosition = [trace.lightposition.x, trace.lightposition.y, trace.lightposition.z];
