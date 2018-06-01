@@ -38,19 +38,19 @@ proto.handlePick = function(selection) {
 
     if(selection.object === this.mesh) {
         var pos = selection.data.position;
-        var vel = selection.data.velocity;
 
-        var uu = fromDataScale(vel[0], 'xaxis');
-        var vv = fromDataScale(vel[1], 'yaxis');
-        var ww = fromDataScale(vel[2], 'zaxis')
+        // TODO
+        // wait for patch in gl-streamtube3d
+        // to grab u/v/w
 
         selection.traceCoordinate = [
             fromDataScale(pos[0], 'xaxis'),
             fromDataScale(pos[1], 'yaxis'),
             fromDataScale(pos[2], 'zaxis'),
 
-            uu, vv, ww,
-            Math.sqrt(uu * uu + vv * vv + ww * ww)
+            null, null, null,
+
+            selection.data.intensity * this.data._normMax
         ];
 
         return true;
