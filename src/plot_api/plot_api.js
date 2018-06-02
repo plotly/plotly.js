@@ -1453,7 +1453,8 @@ function _restyle(gd, aobj, traces) {
             var finalPart = param.parts[param.parts.length - 1];
             var prefix = ai.substr(0, ai.length - finalPart.length - 1);
             var prefixDot = prefix ? prefix + '.' : '';
-            var innerContFull = prefix ? Lib.nestedProperty(contFull, prefix) : contFull;
+            var innerContFull = prefix ?
+                Lib.nestedProperty(contFull, prefix).get() : contFull;
 
             valObject = PlotSchema.getTraceValObject(contFull, param.parts);
 
@@ -1473,19 +1474,16 @@ function _restyle(gd, aobj, traces) {
                     (newVal === 'fraction' || newVal === 'pixels') &&
                     innerContFull
             ) {
+                var gs = fullLayout._size;
+                var orient = innerContFull.orient;
+                var topOrBottom = (orient === 'top') || (orient === 'bottom');
                 if(finalPart === 'thicknessmode') {
-                    var thicknorm =
-                        ['top', 'bottom'].indexOf(innerContFull.orient) !== -1 ?
-                            (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
-                            (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r);
+                    var thicknorm = topOrBottom ? gs.h : gs.w;
                     doextra(prefixDot + 'thickness', innerContFull.thickness *
                         (newVal === 'fraction' ? 1 / thicknorm : thicknorm), i);
                 }
                 else {
-                    var lennorm =
-                        ['top', 'bottom'].indexOf(innerContFull.orient) !== -1 ?
-                            (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
-                            (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
+                    var lennorm = topOrBottom ? gs.w : gs.h;
                     doextra(prefixDot + 'len', innerContFull.len *
                         (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
                 }

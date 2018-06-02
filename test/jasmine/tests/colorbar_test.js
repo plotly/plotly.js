@@ -64,18 +64,33 @@ describe('Test colorbar:', function() {
 
         // let heatmap stand in for all traces with trace.{showscale, colorbar}
         // also test impliedEdits for colorbars at the trace root
-        it('can show and hide heatmap colorbars', function(done) {
-            function assertCB(present, expandedMargin) {
+        it('can show and hide heatmap colorbars and sizes correctly with automargin', function(done) {
+            function assertCB(msg, present, expandedMarginR, expandedMarginT, cbTop, cbHeight) {
                 var colorbars = d3.select(gd).selectAll('.colorbar');
                 expect(colorbars.size()).toBe(present ? 1 : 0);
 
+                var cbbg = colorbars.selectAll('.colorbar .cbbg');
+
                 // check that the displayed object has the right size,
                 // not just that fullLayout._size changed
-                var heatmap = d3.select(gd).selectAll('.hm image');
-                expect(heatmap.size()).toBe(1);
-                var hmWidth = +heatmap.attr('width');
-                if(expandedMargin) expect(hmWidth).toBeLessThan(400);
-                else expect(hmWidth).toBe(400);
+                var plotSizeTest = {};
+                if(expandedMarginR) plotSizeTest.widthLessThan = 400;
+                else plotSizeTest.width = 400;
+
+                if(expandedMarginT) plotSizeTest.heightLessThan = 400;
+                else plotSizeTest.height = 400;
+
+                assertPlotSize(plotSizeTest);
+
+                if(present) {
+                    if(!cbHeight) cbHeight = 400;
+                    var bgHeight = +cbbg.attr('height');
+                    if(expandedMarginT) expect(bgHeight).toBeLessThan(cbHeight - 2);
+                    else expect(bgHeight).toBeWithin(cbHeight, 2);
+
+                    var topShift = cbbg.node().getBoundingClientRect().top - gd.getBoundingClientRect().top;
+                    expect(topShift).toBeWithin(cbTop, 2);
+                }
             }
 
             var thickPx, lenFrac;
@@ -89,17 +104,32 @@ describe('Test colorbar:', function() {
                 margin: {l: 50, r: 50, t: 50, b: 50}
             })
             .then(function() {
-                assertCB(true, true);
+                assertCB('initial', true, true, false, 50);
 
                 return Plotly.restyle(gd, {showscale: false});
             })
             .then(function() {
-                assertCB(false, false);
+                assertCB('hidden', false, false, false);
 
-                return Plotly.restyle(gd, {showscale: true, 'colorbar.x': 0.7});
+                return Plotly.restyle(gd, {showscale: true, 'colorbar.y': 0.8});
             })
             .then(function() {
-                assertCB(true, false);
+                assertCB('up high', true, true, true, 12);
+
+                return Plotly.restyle(gd, {'colorbar.y': 0.7});
+            })
+            .then(function() {
+                assertCB('a little lower', true, true, true, 12);
+
+                return Plotly.restyle(gd, {
+                    'colorbar.x': 0.7,
+                    'colorbar.y': 0.5,
+                    'colorbar.thickness': 50,
+                    'colorbar.len': 0.5
+                });
+            })
+            .then(function() {
+                assertCB('mid-plot', true, false, false, 150, 200);
 
                 thickPx = gd._fullData[0].colorbar.thickness;
                 lenFrac = gd._fullData[0].colorbar.len;
@@ -116,7 +146,7 @@ describe('Test colorbar:', function() {
                 expect(gd._fullData[0].colorbar.len)
                     .toBeCloseTo(lenFrac * 400, 3);
 
-                assertCB(true, true);
+                assertCB('changed size modes', true, true, false, 150, 200);
             })
             .catch(failTest)
             .then(done);
