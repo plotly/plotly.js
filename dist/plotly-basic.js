@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v1.38.1
+* plotly.js (basic) v1.38.2
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -19631,7 +19631,7 @@ drawing.textPointStyle = function(s, trace, gd) {
         var p = d3.select(this);
         var text = Lib.extractOption(d, trace, 'tx', 'text');
 
-        if(!text) {
+        if(!text && text !== 0) {
             p.remove();
             return;
         }
@@ -22501,7 +22501,7 @@ function createHoverText(hoverData, opts, gd) {
         else if(d.yLabel === undefined) text = d.xLabel;
         else text = '(' + d.xLabel + ', ' + d.yLabel + ')';
 
-        if(d.text && !Array.isArray(d.text)) {
+        if((d.text || d.text === 0) && !Array.isArray(d.text)) {
             text += (text ? '<br>' : '') + d.text;
         }
 
@@ -33021,7 +33021,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.38.1';
+exports.version = '1.38.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -61041,10 +61041,12 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         orientation = trace.orientation;
 
     var text = getText(trace, i);
-    if(!text) return;
-
     textPosition = getTextPosition(trace, i);
-    if(textPosition === 'none') return;
+
+    if(!text || textPosition === 'none') {
+        bar.select('text').remove();
+        return;
+    }
 
     var textFont = getTextFont(trace, i, gd._fullLayout.font),
         insideTextFont = getInsideTextFont(trace, i, textFont),
