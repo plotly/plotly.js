@@ -189,10 +189,12 @@ function appendBarText(gd, bar, calcTrace, i, x0, x1, y0, y1) {
         orientation = trace.orientation;
 
     var text = getText(trace, i);
-    if(!text) return;
-
     textPosition = getTextPosition(trace, i);
-    if(textPosition === 'none') return;
+
+    if(!text || textPosition === 'none') {
+        bar.select('text').remove();
+        return;
+    }
 
     var textFont = getTextFont(trace, i, gd._fullLayout.font),
         insideTextFont = getInsideTextFont(trace, i, textFont),
