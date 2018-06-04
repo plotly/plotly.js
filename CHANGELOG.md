@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.38.2] -- 2018-06-04
+
+### Fixed
+- Fix bar text removal (bug introduced in 1.36.0) [#2689]
+- Fix handling number `0` in hover labels and on-graph text [#2682]
+
+
 ## [1.38.1] -- 2018-05-29
 
 ### Fixed
