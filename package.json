@@ -83,7 +83,7 @@
     "gl-select-box": "^1.0.2",
     "gl-spikes2d": "^1.0.1",
     "gl-surface3d": "^1.3.4",
-    "gl-streamtube3d": "git@github.com:gl-vis/gl-streamtube3d#0ce19fad7570e9d501d7dcc218f3101528dd3e64",
+    "gl-streamtube3d": "git@github.com:gl-vis/gl-streamtube3d#ad17c0af85eda664297d881d5743ed19b7509dc0",
     "glslify": "^6.1.1",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
