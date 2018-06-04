@@ -51,6 +51,8 @@ proto.handlePick = function(selection) {
 
             // u/v/w norm
             selection.data.intensity * this.data._normMax,
+            // divergence
+            selection.data.divergence
         ];
 
         return true;

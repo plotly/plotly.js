@@ -268,6 +268,12 @@ describe('@gl Test streamtube hover', function() {
                     'w: 0.1693927'
                 ].join('\n')
             });
+            return Plotly.restyle(gd, 'hoverinfo', 'divergence');
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelContent({nums: 'divergence: 0.465'});
         })
         .catch(failTest)
         .then(done);

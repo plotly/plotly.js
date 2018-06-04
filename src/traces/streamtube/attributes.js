@@ -114,10 +114,9 @@ fromMesh3d.forEach(function(k) {
     attrs[k] = mesh3dAttrs[k];
 });
 
-// TODO maybe add divergence field?
 attrs.hoverinfo = extendFlat({}, baseAttrs.hoverinfo, {
     editType: 'calc',
-    flags: ['x', 'y', 'z', 'u', 'v', 'w', 'norm', 'text', 'name'],
+    flags: ['x', 'y', 'z', 'u', 'v', 'w', 'norm', 'divergence', 'text', 'name'],
     dflt: 'x+y+z+norm+text+name'
 });
 
