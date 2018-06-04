@@ -103,13 +103,42 @@ function convert(scene, trace) {
 
     tubeOpts.meshgrid = [meshx, meshy, meshz];
 
-    // TODO make this optional?
-    // Default to in-between x/y/z mesh
-    tubeOpts.startingPositions = zip3(
-        toDataCoords(trace.startx, 'xaxis'),
-        toDataCoords(trace.starty, 'yaxis'),
-        toDataCoords(trace.startz, 'zaxis')
-    );
+    if(trace.startx && trace.starty && trace.startz) {
+        var slen = trace._slen;
+        tubeOpts.startingPositions = zip3(
+            toDataCoords(trace.startx.slice(0, slen), 'xaxis'),
+            toDataCoords(trace.starty.slice(0, slen), 'yaxis'),
+            toDataCoords(trace.startz.slice(0, slen), 'zaxis')
+        );
+    } else {
+        // Default starting positions: cut xz plane at min-y,
+        // takes all x/y/z pts on that plane except those on the edges
+        // to generate "well-defined" tubes
+        var sy0 = sceneLayout.yaxis.d2l(trace._ybnds[0]) * dataScale[1];
+        var sx, sz;
+        if(valsx.length > 2 && valsz.length > 2) {
+            sx = valsx.slice(1, valsx.length - 1);
+            sz = valsz.slice(1, valsy.length - 1);
+        } else {
+            // use all pts on 2x2 and 1x1 planes
+            sx = valsx.slice();
+            sz = valsz.slice();
+        }
+
+        var startingPositions = new Array(sx.length * sz.length);
+        var m = 0;
+
+        for(var i = 0; i < sx.length; i++) {
+            for(var k = 0; k < sz.length; k++) {
+                startingPositions[m++] = [
+                    sceneLayout.xaxis.d2l(sx[i]) * dataScale[0],
+                    sy0,
+                    sceneLayout.zaxis.d2l(sz[k]) * dataScale[2]
+                ];
+            }
+        }
+        tubeOpts.startingPositions = startingPositions;
+    }
 
     tubeOpts.colormap = parseColorScale(trace.colorscale);
 

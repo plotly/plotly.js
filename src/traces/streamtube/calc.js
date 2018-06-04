@@ -21,9 +21,9 @@ module.exports = function calc(gd, trace) {
     var z = trace.z;
     var len = Math.min(x.length, y.length, z.length, u.length, v.length, w.length);
 
-    var startx = trace.startx;
-    var starty = trace.starty;
-    var startz = trace.startz;
+    var startx = trace.startx || [];
+    var starty = trace.starty || [];
+    var startz = trace.startz || [];
     var slen = Math.min(startx.length, starty.length, startz.length);
 
     var normMax = 0;
@@ -76,6 +76,7 @@ module.exports = function calc(gd, trace) {
     }
 
     trace._len = len;
+    trace._slen = slen;
     trace._normMax = normMax;
     trace._xbnds = [xMin, xMax];
     trace._ybnds = [yMin, yMax];
