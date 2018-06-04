@@ -150,12 +150,8 @@ function convert(scene, trace) {
     meshData.fresnel = trace.lighting.fresnel;
     meshData.opacity = trace.opacity;
 
-    // TODO
     // stash autorange pad value
-    // - include pad!
-    // - include tubeScale
-//     trace._pad = meshData.tubeScale * trace.sizeref;
-//     if(trace.sizemode === 'scaled') trace._pad *= trace._normMax;
+    trace._pad = meshData.tubeScale * trace.sizeref * 2;
 
     return meshData;
 }
