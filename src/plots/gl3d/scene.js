@@ -130,6 +130,7 @@ function render(scene) {
             });
         }
 
+        // TODO not sure if streamtube x/y/z should be emitted as x/y/z
         var pointData = {
             x: selection.traceCoordinate[0],
             y: selection.traceCoordinate[1],
@@ -448,7 +449,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
         }
         trace = this.traces[data.uid];
         if(trace) {
-            trace.update(data);
+            if(trace.data.type === data.type) {
+                trace.update(data);
+            } else {
+                trace.dispose();
+                trace = data._module.plot(this, data);
+                this.traces[data.uid] = trace;
+            }
         } else {
             trace = data._module.plot(this, data);
             this.traces[data.uid] = trace;
