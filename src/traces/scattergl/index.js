@@ -326,7 +326,15 @@ function plot(gd, subplot, cdata) {
     var width = fullLayout.width;
     var height = fullLayout.height;
 
-    prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    if(!success) {
+        scene.error2d = false;
+        scene.line2d = false;
+        scene.scatter2d = false;
+        scene.fill2d = false;
+        return;
+    }
+
     var regl = fullLayout._glcanvas.data()[0].regl;
 
     // that is needed for fills

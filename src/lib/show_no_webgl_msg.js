@@ -21,7 +21,7 @@ var noop = function() {};
  * Expects 'scene' to have property 'container'
  *
  */
-module.exports = function showWebGlMsg(scene) {
+module.exports = function showNoWebGlMsg(scene) {
     for(var prop in scene) {
         if(typeof scene[prop] === 'function') scene[prop] = noop;
     }
@@ -36,6 +36,10 @@ module.exports = function showWebGlMsg(scene) {
     div.style.cursor = 'pointer';
     div.style.fontSize = '24px';
     div.style.color = Color.defaults[0];
+    div.style.position = 'absolute';
+    div.style.left = '20px';
+    div.style.top = '50%';
+    div.style.width = div.style.height = '100%';
 
     scene.container.appendChild(div);
     scene.container.style.background = '#FFFFFF';

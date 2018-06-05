@@ -45,6 +45,7 @@ function Scene2D(options, fullLayout) {
     this.updateRefs(fullLayout);
 
     this.makeFramework();
+    if(this.stopped) return;
 
     // update options
     this.glplotOptions = createOptions(this);
@@ -121,7 +122,11 @@ proto.makeFramework = function() {
             premultipliedAlpha: true
         });
 
-        if(!gl) showNoWebGlMsg(this);
+        if(!gl) {
+            showNoWebGlMsg(this);
+            this.stopped = true;
+            return;
+        }
 
         this.canvas = liveCanvas;
         this.gl = gl;
