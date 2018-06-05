@@ -129218,15 +129218,16 @@
         15,
         15
       ],
-      "sizeref": 0.6,
+      "sizeref": 0.3,
       "colorscale": "Portland",
-      "showscale": false
+      "showscale": false,
+      "maxdisplayed": 3000
     }
   ],
   "layout": {
     "scene": {
       "aspectratio": {
-        "x": 1,
+        "x": 2,
         "y": 1,
         "z": 0.3
       }

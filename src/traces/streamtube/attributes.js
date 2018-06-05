@@ -77,6 +77,17 @@ var attrs = {
         ].join(' ')
     },
 
+    maxdisplayed: {
+        valType: 'integer',
+        min: 0,
+        dflt: 1000,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'The maximum number of displayed segments in a streamtube.'
+        ].join(' ')
+    },
+
     // TODO
     //
     // Should add 'absolute' (like cone traces have), but currently gl-streamtube3d's
@@ -95,7 +106,6 @@ var attrs = {
     //         'Sets the mode by which the streamtubes are sized.'
     //     ].join(' ')
     // },
-    // maxLength
 
     sizeref: {
         valType: 'number',

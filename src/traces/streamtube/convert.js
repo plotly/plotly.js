@@ -145,11 +145,8 @@ function convert(scene, trace) {
     }
 
     tubeOpts.colormap = parseColorScale(trace.colorscale);
-
-    // TODO
-    // tubeOpts.maxLength
-
     tubeOpts.tubeSize = trace.sizeref;
+    tubeOpts.maxLength = trace.maxdisplayed;
 
     // add some padding around the bounds
     // to e.g. allow tubes starting from a slice of the x/y/z mesh

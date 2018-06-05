@@ -38,9 +38,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('starty');
     coerce('startz');
 
-    // TODO adapt these
-    // coerce('maxLength');
-
+    coerce('maxdisplayed');
     coerce('sizeref');
 
     coerce('lighting.ambient');
