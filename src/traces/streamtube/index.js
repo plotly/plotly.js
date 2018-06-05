@@ -22,9 +22,16 @@ module.exports = {
 
     meta: {
         description: [
-            'Use streamtube trace to visualize flow in a vector field',
+            'Use streamtube trace to visualize flow in a vector fields.',
             '',
-            '....'
+            'Specify a vector field using 6 1D arrays of equal length,',
+            '3 position arrays `x`, `y` and `z`',
+            'and 3 vector component arrays `u`, `v`, `w`.',
+            '',
+            'By default, the tubes\' starting positions will be cut from the vector field\'s',
+            'x-z plane at its minimum y value.',
+            'To specify your own starting position, use attributes `startx`, `starty`',
+            'and `startz`.'
         ].join(' ')
     }
 };

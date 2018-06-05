@@ -21,19 +21,19 @@ var attrs = {
         valType: 'data_array',
         role: 'info',
         editType: 'calc+clearAxisTypes',
-        description: 'Sets the x coordinates of the vector field'
+        description: 'Sets the x coordinates of the vector field.'
     },
     y: {
         valType: 'data_array',
         role: 'info',
         editType: 'calc+clearAxisTypes',
-        description: 'Sets the y coordinates of the vector field'
+        description: 'Sets the y coordinates of the vector field.'
     },
     z: {
         valType: 'data_array',
         role: 'info',
         editType: 'calc+clearAxisTypes',
-        description: 'Sets the z coordinates of the vector field'
+        description: 'Sets the z coordinates of the vector field.'
     },
 
     u: {
@@ -57,7 +57,6 @@ var attrs = {
         editType: 'calc',
         description: [
             'Sets the x components of the starting position of the streamtubes',
-            ''
         ].join(' ')
     },
     starty: {
@@ -65,7 +64,6 @@ var attrs = {
         editType: 'calc',
         description: [
             'Sets the y components of the starting position of the streamtubes',
-            ''
         ].join(' ')
     },
     startz: {
@@ -73,7 +71,6 @@ var attrs = {
         editType: 'calc',
         description: [
             'Sets the z components of the starting position of the streamtubes',
-            ''
         ].join(' ')
     },
 
