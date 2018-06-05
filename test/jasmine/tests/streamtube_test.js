@@ -305,6 +305,7 @@ describe('@gl Test streamtube hover', function() {
             mouseEvent('mouseover', 193, 177);
             return delay(20)();
         }
+
         Plotly.plot(gd, fig)
         .then(delay(20))
         .then(_hover)
@@ -318,6 +319,59 @@ describe('@gl Test streamtube hover', function() {
                 ].join('\n'),
                 name: 'TUBE!'
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should emit correct event data', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
+        fig.data[0].showscale = false;
+        fig.layout.margin = {l: 0, t: 0, r: 0, b: 0};
+        fig.layout.width = 400;
+        fig.layout.height = 400;
+
+        var TOL = 2;
+        var ptData;
+
+        function _hover() {
+            mouseEvent('mouseover', 188, 199);
+            return delay(20)();
+        }
+
+        Plotly.plot(gd, fig)
+        .then(delay(20))
+        .then(function() {
+            gd.on('plotly_hover', function(d) { ptData = d.points[0]; });
+        })
+        .then(_hover)
+        .then(function() {
+            if(ptData) {
+                expect(Object.keys(ptData).length).toBe(12, 'key cnt');
+
+                expect(ptData.tubex).toBeCloseTo(2.25, TOL, 'tubex');
+                expect(ptData.tubey).toBeCloseTo(0.59, TOL, 'tubey');
+                expect(ptData.tubez).toBeCloseTo(1.09, TOL, 'tubez');
+
+                expect(ptData.tubeu).toBeCloseTo(1.85, TOL, 'tubeu');
+                expect(ptData.tubev).toBeCloseTo(0.73, TOL, 'tubev');
+                expect(ptData.tubew).toBeCloseTo(0.17, TOL, 'tubew');
+
+                expect(ptData.norm).toBeCloseTo(2.06, TOL, 'norm');
+                expect(ptData.divergence).toBeCloseTo(0.47, TOL, 'divergence');
+
+                expect(ptData.curveNumber).toBe(0, 'curve number');
+                expect(ptData.pointNumber).toBe(undefined, 'point number');
+
+                expect(ptData.x).toBe(undefined, 'x');
+                expect(ptData.y).toBe(undefined, 'y');
+                expect(ptData.z).toBe(undefined, 'z');
+
+                expect(ptData.data).not.toBe(undefined, 'trace data');
+                expect(ptData.fullData).not.toBe(undefined, 'full trace data');
+            } else {
+                fail('did not trigger plotly_hover');
+            }
         })
         .catch(failTest)
         .then(done);

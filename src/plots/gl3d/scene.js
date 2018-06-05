@@ -144,6 +144,10 @@ function render(scene) {
             pointNumber: ptNumber
         };
 
+        if(trace._module.eventData) {
+            pointData = trace._module.eventData(pointData, selection, trace, {}, ptNumber);
+        }
+
         Fx.appendArrayPointValue(pointData, trace, ptNumber);
 
         var eventData = {points: [pointData]};

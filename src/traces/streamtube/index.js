@@ -19,6 +19,25 @@ module.exports = {
     colorbar: require('../cone/colorbar'),
     calc: require('./calc'),
     plot: require('./convert'),
+    eventData: function(out, pt) {
+        out.tubex = out.x;
+        out.tubey = out.y;
+        out.tubez = out.z;
+
+        out.tubeu = pt.traceCoordinate[3];
+        out.tubev = pt.traceCoordinate[4];
+        out.tubew = pt.traceCoordinate[5];
+
+        out.norm = pt.traceCoordinate[6];
+        out.divergence = pt.traceCoordinate[7];
+
+        // Does not correspond to input x/y/z, so delete them
+        delete out.x;
+        delete out.y;
+        delete out.z;
+
+        return out;
+    },
 
     meta: {
         description: [
