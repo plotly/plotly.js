@@ -204,7 +204,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         * The destroy method - which will remove the container from the DOM
         * is overridden with a function that removes the container only.
         */
-        showNoWebGlMsg(scene);
+        return showNoWebGlMsg(scene);
     }
 
     var relayoutCallback = function(scene) {

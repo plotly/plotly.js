@@ -31,7 +31,8 @@ module.exports = function showWebGlMsg(scene) {
     };
 
     var div = document.createElement('div');
-    div.textContent = 'Webgl is not supported by your browser - visit https://get.webgl.org for more info';
+    div.className = 'no-webgl';
+    div.textContent = 'WebGL is not supported by your browser - visit https://get.webgl.org for more info';
     div.style.cursor = 'pointer';
     div.style.fontSize = '24px';
     div.style.color = Color.defaults[0];
