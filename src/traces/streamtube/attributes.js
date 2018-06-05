@@ -89,16 +89,16 @@ var attrs = {
         description: ''
     },
 
-    // TODO maybe just remove completely?
     text: {
         valType: 'string',
         role: 'info',
         dflt: '',
         editType: 'calc',
         description: [
-            'Sets the text elements associated with the cones.',
-            'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
-            'these elements will be seen in the hover labels.'
+            'Sets a text element associated with this trace.',
+            'If trace `hoverinfo` contains a *text* flag,',
+            'this text element will be seen in all hover labels.',
+            'Note that streamtube traces do not support array `text` values.'
         ].join(' ')
     }
 };

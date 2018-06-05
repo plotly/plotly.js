@@ -274,6 +274,15 @@ describe('@gl Test streamtube hover', function() {
         .then(_hover)
         .then(function() {
             assertHoverLabelContent({nums: 'divergence: 0.465'});
+            return Plotly.restyle(gd, {
+                hoverinfo: 'text',
+                text: '!SCALAR TX!'
+            });
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(function() {
+            assertHoverLabelContent({nums: '!SCALAR TX!'});
         })
         .catch(failTest)
         .then(done);

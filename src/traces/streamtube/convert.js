@@ -55,6 +55,8 @@ proto.handlePick = function(selection) {
             selection.data.divergence
         ];
 
+        selection.textLabel = this.data.text;
+
         return true;
     }
 };
