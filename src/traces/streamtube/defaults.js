@@ -40,7 +40,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     // TODO adapt these
     // coerce('maxLength');
-    // coerce('sizemode');
 
     coerce('sizeref');
 

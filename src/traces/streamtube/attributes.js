@@ -78,6 +78,23 @@ var attrs = {
     },
 
     // TODO
+    //
+    // Should add 'absolute' (like cone traces have), but currently gl-streamtube3d's
+    // `absoluteTubeSize` doesn't behave well enough for our needs.
+    //
+    // 'fixed' would be a nice addition to plot stream 'lines', see
+    // https://github.com/plotly/plotly.js/commit/812be20750e21e0a1831975001c248d365850f73#r29129877
+    //
+    // sizemode: {
+    //     valType: 'enumerated',
+    //     values: ['scaled', 'absolute', 'fixed'],
+    //     dflt: 'scaled',
+    //     role: 'info',
+    //     editType: 'calc',
+    //     description: [
+    //         'Sets the mode by which the streamtubes are sized.'
+    //     ].join(' ')
+    // },
     // maxLength
 
     sizeref: {
@@ -86,7 +103,11 @@ var attrs = {
         editType: 'calc',
         min: 0,
         dflt: 1,
-        description: ''
+        description: [
+            'The scaling factor for the streamtubes.',
+            'The default is 1, which avoids two max divergence tubes from touching',
+            'at adjacent starting positions.'
+        ].join(' ')
     },
 
     text: {
