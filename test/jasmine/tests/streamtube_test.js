@@ -30,7 +30,7 @@ describe('Test streamtube defaults', function() {
     }
 
     it('should not set `visible: false` for traces with x,y,z,u,v,w arrays', function() {
-        // even when startx/starty/startz are missing
+        // even when starts.x/starts.y/starts.z are missing
         gd = makeGD();
         supplyAllDefaults(gd);
         expect(gd._fullData[0].visible).toBe(true);

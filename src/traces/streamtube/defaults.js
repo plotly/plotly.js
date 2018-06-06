@@ -34,9 +34,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
-    coerce('startx');
-    coerce('starty');
-    coerce('startz');
+    coerce('starts.x');
+    coerce('starts.y');
+    coerce('starts.z');
 
     coerce('maxdisplayed');
     coerce('sizeref');
@@ -56,6 +56,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     // disable 1D transforms (for now)
     // x/y/z and u/v/w have matching lengths,
-    // but they don't have to match with start(x|y|z)
+    // but they don't have to match with starts.(x|y|z)
     traceOut._length = null;
 };

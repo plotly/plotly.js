@@ -107,12 +107,12 @@ function convert(scene, trace) {
 
     tubeOpts.meshgrid = [meshx, meshy, meshz];
 
-    if(trace.startx && trace.starty && trace.startz) {
+    if(trace.starts) {
         var slen = trace._slen;
         tubeOpts.startingPositions = zip3(
-            toDataCoords(trace.startx.slice(0, slen), 'xaxis'),
-            toDataCoords(trace.starty.slice(0, slen), 'yaxis'),
-            toDataCoords(trace.startz.slice(0, slen), 'zaxis')
+            toDataCoords(trace.starts.x.slice(0, slen), 'xaxis'),
+            toDataCoords(trace.starts.y.slice(0, slen), 'yaxis'),
+            toDataCoords(trace.starts.z.slice(0, slen), 'zaxis')
         );
     } else {
         // Default starting positions: cut xz plane at min-y,

@@ -49,8 +49,8 @@ module.exports = {
             '',
             'By default, the tubes\' starting positions will be cut from the vector field\'s',
             'x-z plane at its minimum y value.',
-            'To specify your own starting position, use attributes `startx`, `starty`',
-            'and `startz`.'
+            'To specify your own starting position, use attributes `starts.x`, `starts.y`',
+            'and `starts.z`.'
         ].join(' ')
     }
 };

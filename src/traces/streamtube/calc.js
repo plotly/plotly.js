@@ -21,10 +21,14 @@ module.exports = function calc(gd, trace) {
     var z = trace.z;
     var len = Math.min(x.length, y.length, z.length, u.length, v.length, w.length);
 
-    var startx = trace.startx || [];
-    var starty = trace.starty || [];
-    var startz = trace.startz || [];
-    var slen = Math.min(startx.length, starty.length, startz.length);
+    var slen = 0;
+    var startx, starty, startz;
+    if(trace.starts) {
+        startx = trace.starts.x || [];
+        starty = trace.starts.y || [];
+        startz = trace.starts.z || [];
+        slen = Math.min(startx.length, starty.length, startz.length);
+    }
 
     var normMax = 0;
     var normMin = Infinity;

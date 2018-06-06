@@ -52,26 +52,28 @@ var attrs = {
         description: 'Sets the z components of the vector field.'
     },
 
-    startx: {
-        valType: 'data_array',
-        editType: 'calc',
-        description: [
-            'Sets the x components of the starting position of the streamtubes',
-        ].join(' ')
-    },
-    starty: {
-        valType: 'data_array',
-        editType: 'calc',
-        description: [
-            'Sets the y components of the starting position of the streamtubes',
-        ].join(' ')
-    },
-    startz: {
-        valType: 'data_array',
-        editType: 'calc',
-        description: [
-            'Sets the z components of the starting position of the streamtubes',
-        ].join(' ')
+    starts: {
+        x: {
+            valType: 'data_array',
+            editType: 'calc',
+            description: [
+                'Sets the x components of the starting position of the streamtubes',
+            ].join(' ')
+        },
+        y: {
+            valType: 'data_array',
+            editType: 'calc',
+            description: [
+                'Sets the y components of the starting position of the streamtubes',
+            ].join(' ')
+        },
+        z: {
+            valType: 'data_array',
+            editType: 'calc',
+            description: [
+                'Sets the z components of the starting position of the streamtubes',
+            ].join(' ')
+        }
     },
 
     maxdisplayed: {
