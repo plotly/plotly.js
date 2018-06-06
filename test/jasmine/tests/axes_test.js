@@ -2655,6 +2655,40 @@ describe('Test axes', function() {
 
                 previousSize = Lib.extendDeep({}, size);
                 savedBottom = previousSize.b;
+
+                // move all the long x labels off-screen
+                return Plotly.relayout(gd, {'xaxis.range': [-10, -5]});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.t).toBe(previousSize.t);
+                expect(size.b).toBe(initialSize.b);
+
+                // move all the long y labels off-screen
+                return Plotly.relayout(gd, {'yaxis.range': [-10, -5]});
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(initialSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.t).toBe(previousSize.t);
+                expect(size.b).toBe(initialSize.b);
+
+                // bring the long labels back
+                return Plotly.relayout(gd, {
+                    'xaxis.autorange': true,
+                    'yaxis.autorange': true
+                });
+            })
+            .then(function() {
+                var size = gd._fullLayout._size;
+                expect(size.l).toBe(previousSize.l);
+                expect(size.r).toBe(previousSize.r);
+                expect(size.t).toBe(previousSize.t);
+                expect(size.b).toBe(previousSize.b);
+
                 return Plotly.relayout(gd, {'xaxis.tickangle': 45});
             })
             .then(function() {

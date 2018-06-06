@@ -1732,8 +1732,7 @@ function addAxRangeSequence(seq, rangesAltered) {
     seq.push(
         doTicks,
         subroutines.drawData,
-        subroutines.finalDraw,
-        subroutines.drawMarginPushers
+        subroutines.finalDraw
     );
 }
 
