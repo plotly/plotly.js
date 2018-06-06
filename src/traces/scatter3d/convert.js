@@ -50,7 +50,10 @@ proto.handlePick = function(selection) {
         (selection.object === this.linePlot ||
          selection.object === this.delaunayMesh ||
          selection.object === this.textMarkers ||
-         selection.object === this.scatterPlot)) {
+         selection.object === this.scatterPlot)
+    ) {
+        var ind = selection.index = selection.data.index;
+
         if(selection.object.highlight) {
             selection.object.highlight(null);
         }
@@ -58,20 +61,22 @@ proto.handlePick = function(selection) {
             selection.object = this.scatterPlot;
             this.scatterPlot.highlight(selection.data);
         }
+
+        selection.textLabel = '';
         if(this.textLabels) {
-            if(this.textLabels[selection.data.index] !== undefined) {
-                selection.textLabel = this.textLabels[selection.data.index];
+            if(Array.isArray(this.textLabels)) {
+                if(this.textLabels[ind] || this.textLabels[ind] === 0) {
+                    selection.textLabel = this.textLabels[ind];
+                }
             } else {
                 selection.textLabel = this.textLabels;
             }
         }
-        else selection.textLabel = '';
 
-        var selectIndex = selection.index = selection.data.index;
         selection.traceCoordinate = [
-            this.data.x[selectIndex],
-            this.data.y[selectIndex],
-            this.data.z[selectIndex]
+            this.data.x[ind],
+            this.data.y[ind],
+            this.data.z[ind]
         ];
 
         return true;
