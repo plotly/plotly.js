@@ -199,6 +199,8 @@ function sceneUpdate(gd, subplot) {
             Lib.extendFlat(scene, initOpts, resetOpts);
         };
 
+        scene.init();
+
         // apply new option to all regl components (used on drag)
         scene.update = function update(opt) {
             var opts = new Array(scene.count);
