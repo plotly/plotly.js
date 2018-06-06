@@ -527,7 +527,7 @@ describe('legend relayout update', function() {
     it('should hide and show the legend', function(done) {
         var mockCopy = Lib.extendDeep({}, mock, {layout: {
             legend: {x: 1.1, xanchor: 'left'},
-            margin: {l: 50, r: 50},
+            margin: {l: 50, r: 50, pad: 0},
             width: 500
         }});
 

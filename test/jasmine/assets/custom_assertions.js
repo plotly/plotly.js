@@ -220,6 +220,10 @@ exports.assertElemInside = function(elem, container, msg) {
 /*
  * quick plot area dimension check: test width and/or height of the inner
  * plot area (single subplot) to verify that the margins are as expected
+ *
+ * Note: if you use margin.pad on the plot, width and height will be larger
+ * than you expected by twice that padding.
+ *
  * opts can have keys (all optional):
  *   width (exact width match)
  *   height (exact height match)
