@@ -73,7 +73,8 @@ var attrs = {
             description: [
                 'Sets the z components of the starting position of the streamtubes',
             ].join(' ')
-        }
+        },
+        editType: 'calc'
     },
 
     maxdisplayed: {
