@@ -59,6 +59,23 @@ describe('Plotly w/o WebGL support:', function() {
         })
         .then(function() {
             checkNoWebGLMsg(false);
+
+            // one with all regl2d modules
+            return Plotly.react(gd, [{
+                type: 'scattergl',
+                mode: 'lines+markers',
+                fill: 'tozerox',
+                y: [1, 2, 1],
+                error_x: { value: 10 },
+                error_y: { value: 10 }
+            }]);
+        })
+        .then(function() {
+            checkNoWebGLMsg(true);
+            return Plotly.react(gd, require('@mocks/10.json'));
+        })
+        .then(function() {
+            checkNoWebGLMsg(false);
         })
         .catch(failTest)
         .then(done);
