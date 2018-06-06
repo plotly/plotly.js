@@ -102,7 +102,7 @@ function render(scene) {
             if(isHoverinfoAll || hoverinfoParts.indexOf('norm') !== -1) {
                 vectorTx.push('norm: ' + selection.traceCoordinate[6].toPrecision(3));
             }
-            if(isHoverinfoAll || hoverinfoParts.indexOf('divergence') !== -1) {
+            if(trace.type === 'streamtube' && (isHoverinfoAll || hoverinfoParts.indexOf('divergence') !== -1)) {
                 vectorTx.push('divergence: ' + selection.traceCoordinate[7].toPrecision(3));
             }
             if(selection.textLabel) {

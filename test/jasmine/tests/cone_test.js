@@ -261,6 +261,18 @@ describe('@gl Test cone interactions', function() {
             assertHoverLabelContent({
                 nums: ['u: 0', 'v: 3', 'w: 0'].join('\n')
             });
+
+            return Plotly.restyle(gd, 'hoverinfo', 'all');
+        })
+        .then(function() {
+            assertHoverLabelContent({
+                name: 'trace 0',
+                nums: [
+                    'x: 2', 'y: 2', 'z: 2',
+                    'u: 0', 'v: 3', 'w: 0',
+                    'norm: 3.00'
+                ].join('\n')
+            });
         })
         .catch(failTest)
         .then(done);
