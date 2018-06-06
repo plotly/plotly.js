@@ -549,7 +549,7 @@ module.exports = function draw(gd, id) {
                 marginOpts.b = outerheight * bFrac;
             }
             else {
-                marginOpts.t = marginOpts.b = 0; // TODO - not zero?
+                marginOpts.t = marginOpts.b = 0;
                 marginOpts.yt = opts.y + opts.len * tFrac;
                 marginOpts.yb = opts.y - opts.len * bFrac;
             }

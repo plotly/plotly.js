@@ -361,9 +361,10 @@ exports.plot = function(gd, data, layout, config) {
         initInteractions,
         Plots.addLinks,
         Plots.rehover,
-        // TODO: shouldn't really need doAutoMargin here, but without it some
-        // edits don't manage to tweak the margins the way they should
-        // in the tests, the only one that presently breaks is axis.position
+        // TODO: doAutoMargin is only needed here for axis automargin, which
+        // happens outside of marginPushers where all the other automargins are
+        // calculated. Would be much better to separate margin calculations from
+        // component drawing - see https://github.com/plotly/plotly.js/issues/2704
         Plots.doAutoMargin,
         Plots.previousPromises
     );

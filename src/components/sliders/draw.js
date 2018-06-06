@@ -42,6 +42,9 @@ module.exports = function draw(gd) {
             delete sliderOpts._commandObserver;
         }
 
+        // Most components don't need to explicitly remove autoMargin, because
+        // marginPushers does this - but slider updates don't go through
+        // a full replot so we need to explicitly remove it.
         Plots.autoMargin(gd, autoMarginId(sliderOpts));
     }
 

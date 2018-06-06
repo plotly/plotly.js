@@ -72,7 +72,7 @@ module.exports = function draw(gd) {
         // marginPushers does this - but updatemenu updates don't go through
         // a full replot so we need to explicitly remove it.
         // This is for removing *all* updatemenus, removing individuals is
-        // handled below, in hederGroups.exit
+        // handled below, in headerGroups.exit
         d3.select(this).selectAll('g.' + constants.headerGroupClassName)
             .each(clearAutoMargin);
     }).remove();
