@@ -23,7 +23,10 @@ var Drawing = require('../drawing');
 var Color = require('../color');
 var Titles = require('../titles');
 var svgTextUtils = require('../../lib/svg_text_utils');
-var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
+var alignmentConstants = require('../../constants/alignment');
+var LINE_SPACING = alignmentConstants.LINE_SPACING;
+var FROM_TL = alignmentConstants.FROM_TL;
+var FROM_BR = alignmentConstants.FROM_BR;
 
 var handleAxisDefaults = require('../../plots/cartesian/axis_defaults');
 var handleAxisPositionDefaults = require('../../plots/cartesian/position_defaults');
@@ -122,13 +125,13 @@ module.exports = function draw(gd, id) {
         // when the colorbar itself is pushing the margins.
         // but then the fractional size is calculated based on the
         // actual graph size, so that the axes will size correctly.
-        var originalPlotHeight = fullLayout.height - fullLayout.margin.t - fullLayout.margin.b,
-            originalPlotWidth = fullLayout.width - fullLayout.margin.l - fullLayout.margin.r,
+        var plotHeight = gs.h,
+            plotWidth = gs.w,
             thickPx = Math.round(opts.thickness *
-                (opts.thicknessmode === 'fraction' ? originalPlotWidth : 1)),
+                (opts.thicknessmode === 'fraction' ? plotWidth : 1)),
             thickFrac = thickPx / gs.w,
             lenPx = Math.round(opts.len *
-                (opts.lenmode === 'fraction' ? originalPlotHeight : 1)),
+                (opts.lenmode === 'fraction' ? plotHeight : 1)),
             lenFrac = lenPx / gs.h,
             xpadFrac = opts.xpad / gs.w,
             yExtraPx = (opts.borderwidth + opts.outlinewidth) / 2,
@@ -447,12 +450,10 @@ module.exports = function draw(gd, id) {
         }
 
         function drawTitle(titleClass, titleOpts) {
-            var trace = getTrace(),
-                propName;
-            if(Registry.traceIs(trace, 'markerColorscale')) {
-                propName = 'marker.colorbar.title';
-            }
-            else propName = 'colorbar.title';
+            var trace = getTrace();
+            var propName = 'colorbar.title';
+            var containerName = trace._module.colorbar.container;
+            if(containerName) propName = containerName + '.' + propName;
 
             var dfltTitleOpts = {
                 propContainer: cbAxisOut,
@@ -539,14 +540,35 @@ module.exports = function draw(gd, id) {
                 'translate(' + (gs.l - xoffset) + ',' + gs.t + ')');
 
             // auto margin adjustment
-            Plots.autoMargin(gd, id, {
-                x: opts.x,
-                y: opts.y,
-                l: outerwidth * ({right: 1, center: 0.5}[opts.xanchor] || 0),
-                r: outerwidth * ({left: 1, center: 0.5}[opts.xanchor] || 0),
-                t: outerheight * ({bottom: 1, middle: 0.5}[opts.yanchor] || 0),
-                b: outerheight * ({top: 1, middle: 0.5}[opts.yanchor] || 0)
-            });
+            var marginOpts = {};
+            var tFrac = FROM_TL[opts.yanchor];
+            var bFrac = FROM_BR[opts.yanchor];
+            if(opts.lenmode === 'pixels') {
+                marginOpts.y = opts.y;
+                marginOpts.t = outerheight * tFrac;
+                marginOpts.b = outerheight * bFrac;
+            }
+            else {
+                marginOpts.t = marginOpts.b = 0;
+                marginOpts.yt = opts.y + opts.len * tFrac;
+                marginOpts.yb = opts.y - opts.len * bFrac;
+            }
+
+            var lFrac = FROM_TL[opts.xanchor];
+            var rFrac = FROM_BR[opts.xanchor];
+            if(opts.thicknessmode === 'pixels') {
+                marginOpts.x = opts.x;
+                marginOpts.l = outerwidth * lFrac;
+                marginOpts.r = outerwidth * rFrac;
+            }
+            else {
+                var extraThickness = outerwidth - thickPx;
+                marginOpts.l = extraThickness * lFrac;
+                marginOpts.r = extraThickness * rFrac;
+                marginOpts.xl = opts.x - opts.thickness * lFrac;
+                marginOpts.xr = opts.x + opts.thickness * rFrac;
+            }
+            Plots.autoMargin(gd, id, marginOpts);
         }
 
         var cbDone = Lib.syncOrAsync([

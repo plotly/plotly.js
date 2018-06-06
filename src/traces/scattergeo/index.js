@@ -13,7 +13,7 @@ var ScatterGeo = {};
 
 ScatterGeo.attributes = require('./attributes');
 ScatterGeo.supplyDefaults = require('./defaults');
-ScatterGeo.colorbar = require('../scatter/colorbar');
+ScatterGeo.colorbar = require('../scatter/marker_colorbar');
 ScatterGeo.calc = require('./calc');
 ScatterGeo.plot = require('./plot');
 ScatterGeo.style = require('./style');
@@ -25,7 +25,7 @@ ScatterGeo.selectPoints = require('./select');
 ScatterGeo.moduleType = 'trace';
 ScatterGeo.name = 'scattergeo';
 ScatterGeo.basePlotModule = require('../../plots/geo');
-ScatterGeo.categories = ['geo', 'symbols', 'markerColorscale', 'showLegend', 'scatter-like'];
+ScatterGeo.categories = ['geo', 'symbols', 'showLegend', 'scatter-like'];
 ScatterGeo.meta = {
     hrName: 'scatter_geo',
     description: [

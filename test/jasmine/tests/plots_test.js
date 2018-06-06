@@ -37,6 +37,7 @@ describe('Test Plots', function() {
                 type: 'contour',
                 _empties: [1, 2, 3]
             }];
+            oldFullData.forEach(function(trace) { trace._fullInput = trace; });
 
             var oldFullLayout = {
                 _plots: { xy: { plot: {} } },

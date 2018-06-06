@@ -460,10 +460,11 @@ module.exports = {
     name: 'splom',
 
     basePlotModule: require('./base_plot'),
-    categories: ['gl', 'regl', 'cartesian', 'symbols', 'markerColorscale', 'showLegend', 'scatter-like'],
+    categories: ['gl', 'regl', 'cartesian', 'symbols', 'showLegend', 'scatter-like'],
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
+    colorbar: require('../scatter/marker_colorbar'),
 
     calc: calc,
     plot: plot,

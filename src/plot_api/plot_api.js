@@ -26,6 +26,7 @@ var Polar = require('../plots/polar/legacy');
 var Axes = require('../plots/cartesian/axes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
+var connectColorbar = require('../components/colorbar/connect');
 var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var svgTextUtils = require('../lib/svg_text_utils');
@@ -123,7 +124,7 @@ exports.plot = function(gd, data, layout, config) {
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass a non-array for data
     if(Array.isArray(data)) {
-        helpers.cleanData(data, gd.data);
+        helpers.cleanData(data);
 
         if(graphWasEmpty) gd.data = data;
         else gd.data.push.apply(gd.data, data);
@@ -252,18 +253,24 @@ exports.plot = function(gd, data, layout, config) {
         var calcdata = gd.calcdata;
         var i, cd, trace;
 
-        Registry.getComponentMethod('legend', 'draw')(gd);
-        Registry.getComponentMethod('rangeselector', 'draw')(gd);
-        Registry.getComponentMethod('sliders', 'draw')(gd);
-        Registry.getComponentMethod('updatemenus', 'draw')(gd);
+        // First reset the list of things that are allowed to change the margins
+        // So any deleted traces or components will be wiped out of the
+        // automargin calculation.
+        // This means *every* margin pusher must be listed here, even if it
+        // doesn't actually try to push the margins until later.
+        Plots.clearAutoMarginIds(gd);
+
+        subroutines.drawMarginPushers(gd);
+        Axes.allowAutoMargin(gd);
 
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
             trace = cd[0].trace;
-            if(trace.visible !== true || !trace._module.colorbar) {
+            var colorbarOpts = trace._module.colorbar;
+            if(trace.visible !== true || !colorbarOpts) {
                 Plots.autoMargin(gd, 'cb' + trace.uid);
             }
-            else trace._module.colorbar(gd, cd);
+            else connectColorbar(gd, cd, colorbarOpts);
         }
 
         Plots.doAutoMargin(gd);
@@ -354,6 +361,11 @@ exports.plot = function(gd, data, layout, config) {
         initInteractions,
         Plots.addLinks,
         Plots.rehover,
+        // TODO: doAutoMargin is only needed here for axis automargin, which
+        // happens outside of marginPushers where all the other automargins are
+        // calculated. Would be much better to separate margin calculations from
+        // component drawing - see https://github.com/plotly/plotly.js/issues/2704
+        Plots.doAutoMargin,
         Plots.previousPromises
     );
 
@@ -559,7 +571,7 @@ exports.redraw = function(gd) {
         throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
-    helpers.cleanData(gd.data, gd.data);
+    helpers.cleanData(gd.data);
     helpers.cleanLayout(gd.layout);
 
     gd.calcdata = undefined;
@@ -1060,7 +1072,7 @@ exports.addTraces = function addTraces(gd, traces, newIndices) {
         return Lib.extendFlat({}, trace);
     });
 
-    helpers.cleanData(traces, gd.data);
+    helpers.cleanData(traces);
 
     // add the traces to gd.data (no redrawing yet!)
     for(i = 0; i < traces.length; i++) {
@@ -1439,6 +1451,12 @@ function _restyle(gd, aobj, traces) {
 
             if(newVal === undefined) continue;
 
+            var finalPart = param.parts[param.parts.length - 1];
+            var prefix = ai.substr(0, ai.length - finalPart.length - 1);
+            var prefixDot = prefix ? prefix + '.' : '';
+            var innerContFull = prefix ?
+                Lib.nestedProperty(contFull, prefix).get() : contFull;
+
             valObject = PlotSchema.getTraceValObject(contFull, param.parts);
 
             if(valObject && valObject.impliedEdits && newVal !== null) {
@@ -1452,31 +1470,27 @@ function _restyle(gd, aobj, traces) {
             // note that colorbar fractional sizing is based on the
             // original plot size, before anything (like a colorbar)
             // increases the margins
-            else if(ai === 'colorbar.thicknessmode' && param.get() !== newVal &&
-                        ['fraction', 'pixels'].indexOf(newVal) !== -1 &&
-                        contFull.colorbar) {
-                var thicknorm =
-                    ['top', 'bottom'].indexOf(contFull.colorbar.orient) !== -1 ?
-                        (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
-                        (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r);
-                doextra('colorbar.thickness', contFull.colorbar.thickness *
-                    (newVal === 'fraction' ? 1 / thicknorm : thicknorm), i);
-            }
-            else if(ai === 'colorbar.lenmode' && param.get() !== newVal &&
-                        ['fraction', 'pixels'].indexOf(newVal) !== -1 &&
-                        contFull.colorbar) {
-                var lennorm =
-                    ['top', 'bottom'].indexOf(contFull.colorbar.orient) !== -1 ?
-                        (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
-                        (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
-                doextra('colorbar.len', contFull.colorbar.len *
-                    (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
-            }
-            else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
-                doextra('colorbar.tickmode', 'linear', i);
+            else if((finalPart === 'thicknessmode' || finalPart === 'lenmode') &&
+                    oldVal !== newVal &&
+                    (newVal === 'fraction' || newVal === 'pixels') &&
+                    innerContFull
+            ) {
+                var gs = fullLayout._size;
+                var orient = innerContFull.orient;
+                var topOrBottom = (orient === 'top') || (orient === 'bottom');
+                if(finalPart === 'thicknessmode') {
+                    var thicknorm = topOrBottom ? gs.h : gs.w;
+                    doextra(prefixDot + 'thickness', innerContFull.thickness *
+                        (newVal === 'fraction' ? 1 / thicknorm : thicknorm), i);
+                }
+                else {
+                    var lennorm = topOrBottom ? gs.w : gs.h;
+                    doextra(prefixDot + 'len', innerContFull.len *
+                        (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
+                }
             }
 
-            if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
+            else if(ai === 'type' && (newVal === 'pie') !== (oldVal === 'pie')) {
                 var labelsTo = 'x',
                     valuesTo = 'y';
                 if((newVal === 'bar' || oldVal === 'bar') && cont.orientation === 'h') {
@@ -1666,7 +1680,6 @@ exports.relayout = function relayout(gd, astr, val) {
 
     // clear calcdata if required
     if(flags.calc) gd.calcdata = undefined;
-    if(flags.margins) helpers.clearAxisAutomargins(gd);
 
     // fill in redraw sequence
 
@@ -1685,16 +1698,7 @@ exports.relayout = function relayout(gd, astr, val) {
         if(flags.layoutstyle) seq.push(subroutines.layoutStyles);
 
         if(flags.axrange) {
-            // N.B. leave as sequence of subroutines (for now) instead of
-            // subroutine of its own so that finalDraw always gets
-            // executed after drawData
-            seq.push(
-                function(gd) {
-                    return subroutines.doTicksRelayout(gd, specs.rangesAltered);
-                },
-                subroutines.drawData,
-                subroutines.finalDraw
-            );
+            addAxRangeSequence(seq, specs.rangesAltered);
         }
 
         if(flags.ticks) seq.push(subroutines.doTicksRelayout);
@@ -1717,6 +1721,21 @@ exports.relayout = function relayout(gd, astr, val) {
         return gd;
     });
 };
+
+function addAxRangeSequence(seq, rangesAltered) {
+    // N.B. leave as sequence of subroutines (for now) instead of
+    // subroutine of its own so that finalDraw always gets
+    // executed after drawData
+    var doTicks = rangesAltered ?
+        function(gd) { return subroutines.doTicksRelayout(gd, rangesAltered); } :
+        subroutines.doTicksRelayout;
+
+    seq.push(
+        doTicks,
+        subroutines.drawData,
+        subroutines.finalDraw
+    );
+}
 
 var AX_RANGE_RE = /^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/;
 var AX_AUTORANGE_RE = /^[xyz]axis[0-9]*\.autorange$/;
@@ -2137,7 +2156,6 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     // clear calcdata and/or axis types if required
     if(restyleFlags.clearCalc || relayoutFlags.calc) gd.calcdata = undefined;
     if(restyleFlags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, layoutUpdate);
-    if(relayoutFlags.margins) helpers.clearAxisAutomargins(gd);
 
     // fill in redraw sequence
     var seq = [];
@@ -2168,13 +2186,7 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
         if(relayoutFlags.legend) seq.push(subroutines.doLegend);
         if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
         if(relayoutFlags.axrange) {
-            seq.push(
-                function(gd) {
-                    return subroutines.doTicksRelayout(gd, relayoutSpecs.rangesAltered);
-                },
-                subroutines.drawData,
-                subroutines.finalDraw
-            );
+            addAxRangeSequence(seq, relayoutSpecs.rangesAltered);
         }
         if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
         if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
@@ -2259,7 +2271,7 @@ exports.react = function(gd, data, layout, config) {
         }
 
         gd.data = data || [];
-        helpers.cleanData(gd.data, []);
+        helpers.cleanData(gd.data);
         gd.layout = layout || {};
         helpers.cleanLayout(gd.layout);
 
@@ -2290,8 +2302,6 @@ exports.react = function(gd, data, layout, config) {
         if(restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;
         // otherwise do the calcdata updates and calcTransform array remaps that we skipped earlier
         else Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
-
-        if(relayoutFlags.margins) helpers.clearAxisAutomargins(gd);
 
         // Note: what restyle/relayout use impliedEdits and clearAxisTypes for
         // must be handled by the user when using Plotly.react.
@@ -2334,13 +2344,7 @@ exports.react = function(gd, data, layout, config) {
             if(restyleFlags.colorbars) seq.push(subroutines.doColorBars);
             if(relayoutFlags.legend) seq.push(subroutines.doLegend);
             if(relayoutFlags.layoutstyle) seq.push(subroutines.layoutStyles);
-            if(relayoutFlags.axrange) {
-                seq.push(
-                    subroutines.doTicksRelayout,
-                    subroutines.drawData,
-                    subroutines.finalDraw
-                );
-            }
+            if(relayoutFlags.axrange) addAxRangeSequence(seq);
             if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
             if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
             if(relayoutFlags.camera) seq.push(subroutines.doCamera);
@@ -3257,9 +3261,9 @@ function makePlotFramework(gd) {
         .classed('main-svg', true);
 
     if(!fullLayout._uid) {
-        var otherUids = [];
+        var otherUids = {};
         d3.selectAll('defs').each(function() {
-            if(this.id) otherUids.push(this.id.split('-')[1]);
+            if(this.id) otherUids[this.id.split('-')[1]] = 1;
         });
         fullLayout._uid = Lib.randstr(otherUids);
     }

@@ -343,23 +343,29 @@ describe('update menus interactions', function() {
         destroyGraphDiv();
     });
 
+    function assertPushMargins(specs) {
+        specs.forEach(function(val, i) {
+            var push = gd._fullLayout._pushmargin['updatemenu-' + i];
+            if(val) expect(push).toBeDefined(i);
+            else expect(push).toBeUndefined(i);
+        });
+    }
+
     it('should draw only visible menus', function(done) {
         var initialUM1 = Lib.extendDeep({}, gd.layout.updatemenus[1]);
         assertMenus([0, 0]);
-        expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeDefined();
-        expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeDefined();
+        assertPushMargins([true, true]);
 
-        Plotly.relayout(gd, 'updatemenus[0].visible', false).then(function() {
+        Plotly.relayout(gd, 'updatemenus[0].visible', false)
+        .then(function() {
             assertMenus([0]);
-            expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeUndefined();
-            expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeDefined();
+            assertPushMargins([false, true]);
 
             return Plotly.relayout(gd, 'updatemenus[1]', null);
         })
         .then(function() {
             assertNodeCount('.' + constants.containerClassName, 0);
-            expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeUndefined();
-            expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
+            assertPushMargins([false, false]);
 
             return Plotly.relayout(gd, {
                 'updatemenus[0].visible': true,
@@ -368,8 +374,7 @@ describe('update menus interactions', function() {
         })
         .then(function() {
             assertMenus([0, 0]);
-            expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeDefined();
-            expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeDefined();
+            assertPushMargins([true, true]);
 
             return Plotly.relayout(gd, {
                 'updatemenus[0].visible': false,
@@ -378,8 +383,7 @@ describe('update menus interactions', function() {
         })
         .then(function() {
             assertNodeCount('.' + constants.containerClassName, 0);
-            expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeUndefined();
-            expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
+            assertPushMargins([false, false]);
 
             return Plotly.relayout(gd, {
                 'updatemenus[2]': {
@@ -392,17 +396,13 @@ describe('update menus interactions', function() {
         })
         .then(function() {
             assertMenus([0]);
-            expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeUndefined();
-            expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
-            expect(gd._fullLayout._pushmargin['updatemenu-2']).toBeDefined();
+            assertPushMargins([false, false, true]);
 
             return Plotly.relayout(gd, 'updatemenus[0].visible', true);
         })
         .then(function() {
             assertMenus([0, 0]);
-            expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeDefined();
-            expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
-            expect(gd._fullLayout._pushmargin['updatemenu-2']).toBeDefined();
+            assertPushMargins([true, false, true]);
             expect(gd.layout.updatemenus.length).toEqual(3);
 
             return Plotly.relayout(gd, 'updatemenus[0]', null);
@@ -410,11 +410,13 @@ describe('update menus interactions', function() {
         .then(function() {
             assertMenus([0]);
             expect(gd.layout.updatemenus.length).toEqual(2);
+            assertPushMargins([false, true, false]);
 
             return Plotly.relayout(gd, 'updatemenus', null);
         })
         .then(function() {
             expect(gd.layout.updatemenus).toBeUndefined();
+            assertPushMargins([false, false, false]);
 
         })
         .then(done);

@@ -389,6 +389,9 @@ plots.supplyDefaults = function(gd, opts) {
     // eg set `_requestRangeslider.x2 = true` for xaxis2
     newFullLayout._requestRangeslider = {};
 
+    // pull uids from old data to use as new defaults
+    newFullLayout._traceUids = getTraceUids(oldFullData, newData);
+
     // then do the data
     newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
     plots.supplyDataDefaults(newData, newFullData, newLayout, newFullLayout);
@@ -498,6 +501,46 @@ plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
         }
     }
 };
+
+/**
+ * Create a list of uid strings satisfying (in this order of importance):
+ * 1. all unique, all strings
+ * 2. matches input uids if provided
+ * 3. matches previous data uids
+ */
+function getTraceUids(oldFullData, newData) {
+    var len = newData.length;
+    var oldFullInput = [];
+    var i, prevFullInput;
+    for(i = 0; i < oldFullData.length; i++) {
+        var thisFullInput = oldFullData[i]._fullInput;
+        if(thisFullInput !== prevFullInput) oldFullInput.push(thisFullInput);
+        prevFullInput = thisFullInput;
+    }
+    var oldLen = oldFullInput.length;
+    var out = new Array(len);
+    var seenUids = {};
+
+    function setUid(uid, i) {
+        out[i] = uid;
+        seenUids[uid] = 1;
+    }
+
+    function tryUid(uid, i) {
+        if(uid && typeof uid === 'string' && !seenUids[uid]) {
+            setUid(uid, i);
+            return true;
+        }
+    }
+
+    for(i = 0; i < len; i++) {
+        if(tryUid(newData[i].uid, i)) continue;
+        if(i < oldLen && tryUid(oldFullInput[i].uid, i)) continue;
+        setUid(Lib.randstr(seenUids), i);
+    }
+
+    return out;
+}
 
 /**
  * Make a container for collecting subplots we need to display.
@@ -886,7 +929,11 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
     for(i = 0; i < dataIn.length; i++) {
         trace = dataIn[i];
-        fullTrace = plots.supplyTraceDefaults(trace, colorCnt, fullLayout, i);
+        fullTrace = plots.supplyTraceDefaults(trace, colorCnt, fullLayout, i,
+            // reuse uid we may have pulled out of oldFullData
+            fullLayout._traceUids[i]);
+
+        fullTrace.uid = fullLayout._traceUids[i];
 
         fullTrace.index = i;
         fullTrace._input = trace;
@@ -897,15 +944,16 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
             for(var j = 0; j < expandedTraces.length; j++) {
                 var expandedTrace = expandedTraces[j];
-                var fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, fullLayout, i);
+                var fullExpandedTrace = plots.supplyTraceDefaults(
+                    expandedTrace, cnt, fullLayout, i,
+                    // set uid using parent uid and expanded index
+                    // to promote consistency between update calls
+                    fullTrace.uid + j
+                );
 
                 // relink private (i.e. underscore) keys expanded trace to full expanded trace so
                 // that transform supply-default methods can set _ keys for future use.
                 relinkPrivateKeys(fullExpandedTrace, expandedTrace);
-
-                // mutate uid here using parent uid and expanded index
-                // to promote consistency between update calls
-                expandedTrace.uid = fullExpandedTrace.uid = fullTrace.uid + j;
 
                 // add info about parent data trace
                 fullExpandedTrace.index = i;
@@ -1031,10 +1079,10 @@ plots.supplyFrameDefaults = function(frameIn) {
     return frameOut;
 };
 
-plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) {
+plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex, uid) {
     var colorway = layout.colorway || Color.defaults;
-    var traceOut = {},
-        defaultColor = colorway[colorIndex % colorway.length];
+    var traceOut = {uid: uid};
+    var defaultColor = colorway[colorIndex % colorway.length];
 
     var i;
 
@@ -1045,7 +1093,6 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
     var visible = coerce('visible');
 
     coerce('type');
-    coerce('uid');
     coerce('name', layout._traceWord + ' ' + traceInIndex);
 
     // we want even invisible traces to make their would-be subplots visible
@@ -1543,32 +1590,73 @@ plots.sanitizeMargins = function(fullLayout) {
     }
 };
 
-// called by components to see if we need to
-// expand the margins to show them
-// o is {x,l,r,y,t,b} where x and y are plot fractions,
-// the rest are pixels in each direction
-// or leave o out to delete this entry (like if it's hidden)
+plots.clearAutoMarginIds = function(gd) {
+    gd._fullLayout._pushmarginIds = {};
+};
+
+plots.allowAutoMargin = function(gd, id) {
+    gd._fullLayout._pushmarginIds[id] = 1;
+};
+
+function setupAutoMargin(fullLayout) {
+    if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
+    if(!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
+}
+
+/**
+ * autoMargin: called by components that may need to expand the margins to
+ * be rendered on-plot.
+ *
+ * @param {DOM element} gd
+ * @param {string} id - an identifier unique (within this plot) to this object,
+ *     so we can remove a previous margin expansion from the same object.
+ * @param {object} o - the margin requirements of this object, or omit to delete
+ *     this entry (like if it's hidden). Keys are:
+ *     x, y: plot fraction of the anchor point.
+ *     xl, xr, yt, yb: if the object has an extent defined in plot fraction,
+ *         you can specify both edges as plot fractions in each dimension
+ *     l, r, t, b: the pixels to pad past the plot fraction x[l|r] and y[t|b]
+ *     pad: extra pixels to add in all directions, default 12 (why?)
+ */
 plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
 
-    if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
+    setupAutoMargin(fullLayout);
+
+    var pushMargin = fullLayout._pushmargin;
+    var pushMarginIds = fullLayout._pushmarginIds;
 
     if(fullLayout.margin.autoexpand !== false) {
-        if(!o) delete fullLayout._pushmargin[id];
+        if(!o) {
+            delete pushMargin[id];
+            delete pushMarginIds[id];
+        }
         else {
-            var pad = o.pad === undefined ? 12 : o.pad;
+            var pad = o.pad;
+            if(pad === undefined) {
+                var margin = fullLayout.margin;
+                // if no explicit pad is given, use 12px unless there's a
+                // specified margin that's smaller than that
+                pad = Math.min(12, margin.l, margin.r, margin.t, margin.b);
+            }
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
             if(o.l + o.r > fullLayout.width * 0.5) o.l = o.r = 0;
             if(o.b + o.t > fullLayout.height * 0.5) o.b = o.t = 0;
 
-            fullLayout._pushmargin[id] = {
-                l: {val: o.x, size: o.l + pad},
-                r: {val: o.x, size: o.r + pad},
-                b: {val: o.y, size: o.b + pad},
-                t: {val: o.y, size: o.t + pad}
+            var xl = o.xl !== undefined ? o.xl : o.x;
+            var xr = o.xr !== undefined ? o.xr : o.x;
+            var yt = o.yt !== undefined ? o.yt : o.y;
+            var yb = o.yb !== undefined ? o.yb : o.y;
+
+            pushMargin[id] = {
+                l: {val: xl, size: o.l + pad},
+                r: {val: xr, size: o.r + pad},
+                b: {val: yb, size: o.b + pad},
+                t: {val: yt, size: o.t + pad}
             };
+            pushMarginIds[id] = 1;
         }
 
         if(!fullLayout._replotting) plots.doAutoMargin(gd);
@@ -1578,7 +1666,7 @@ plots.autoMargin = function(gd, id, o) {
 plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     if(!fullLayout._size) fullLayout._size = {};
-    if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
+    setupAutoMargin(fullLayout);
 
     var gs = fullLayout._size,
         oldmargins = JSON.stringify(gs);
@@ -1586,16 +1674,21 @@ plots.doAutoMargin = function(gd) {
     // adjust margins for outside components
     // fullLayout.margin is the requested margin,
     // fullLayout._size has margins and plotsize after adjustment
-    var ml = Math.max(fullLayout.margin.l || 0, 0),
-        mr = Math.max(fullLayout.margin.r || 0, 0),
-        mt = Math.max(fullLayout.margin.t || 0, 0),
-        mb = Math.max(fullLayout.margin.b || 0, 0),
-        pm = fullLayout._pushmargin;
+    var ml = Math.max(fullLayout.margin.l || 0, 0);
+    var mr = Math.max(fullLayout.margin.r || 0, 0);
+    var mt = Math.max(fullLayout.margin.t || 0, 0);
+    var mb = Math.max(fullLayout.margin.b || 0, 0);
+    var pushMargin = fullLayout._pushmargin;
+    var pushMarginIds = fullLayout._pushmarginIds;
 
     if(fullLayout.margin.autoexpand !== false) {
 
+        for(var k in pushMargin) {
+            if(!pushMarginIds[k]) delete pushMargin[k];
+        }
+
         // fill in the requested margins
-        pm.base = {
+        pushMargin.base = {
             l: {val: 0, size: ml},
             r: {val: 1, size: mr},
             t: {val: 1, size: mt},
@@ -1605,19 +1698,19 @@ plots.doAutoMargin = function(gd) {
         // now cycle through all the combinations of l and r
         // (and t and b) to find the required margins
 
-        for(var k1 in pm) {
+        for(var k1 in pushMargin) {
 
-            var pushleft = pm[k1].l || {},
-                pushbottom = pm[k1].b || {},
+            var pushleft = pushMargin[k1].l || {},
+                pushbottom = pushMargin[k1].b || {},
                 fl = pushleft.val,
                 pl = pushleft.size,
                 fb = pushbottom.val,
                 pb = pushbottom.size;
 
-            for(var k2 in pm) {
-                if(isNumeric(pl) && pm[k2].r) {
-                    var fr = pm[k2].r.val,
-                        pr = pm[k2].r.size;
+            for(var k2 in pushMargin) {
+                if(isNumeric(pl) && pushMargin[k2].r) {
+                    var fr = pushMargin[k2].r.val,
+                        pr = pushMargin[k2].r.size;
 
                     if(fr > fl) {
                         var newl = (pl * fr +
@@ -1631,9 +1724,9 @@ plots.doAutoMargin = function(gd) {
                     }
                 }
 
-                if(isNumeric(pb) && pm[k2].t) {
-                    var ft = pm[k2].t.val,
-                        pt = pm[k2].t.size;
+                if(isNumeric(pb) && pushMargin[k2].t) {
+                    var ft = pushMargin[k2].t.val,
+                        pt = pushMargin[k2].t.size;
 
                     if(ft > fb) {
                         var newb = (pb * ft +

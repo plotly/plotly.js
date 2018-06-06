@@ -2007,8 +2007,12 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
         }
 
         function doAutoMargins() {
-            if(!ax.automargin) { return; }
+            var pushKey = ax._name + '.automargin';
             if(axLetter !== 'x' && axLetter !== 'y') { return; }
+            if(!ax.automargin) {
+                Plots.autoMargin(gd, pushKey);
+                return;
+            }
 
             var s = ax.side[0];
             var push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
@@ -2028,11 +2032,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
                 push[s] += ax.titlefont.size;
             }
 
-            var pushKey = ax._name + '.automargin';
-            var prevPush = fullLayout._pushmargin[pushKey];
-            if(!prevPush || prevPush[s].size < push[s]) {
-                Plots.autoMargin(gd, pushKey, push);
-            }
+            Plots.autoMargin(gd, pushKey, push);
         }
 
         var done = Lib.syncOrAsync([
@@ -2252,6 +2252,28 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
         var mainContainer = mainPlotinfo[axLetter + 'axislayer'];
 
         return drawLabels(mainContainer, ax._mainLinePosition);
+    }
+};
+
+/**
+ * Find all margin pushers for 2D axes and reserve them for later use
+ * Both label and rangeslider automargin calculations happen later so
+ * we need to explicitly allow their ids in order to not delete them.
+ *
+ * TODO: can we pull the actual automargin calls forward to avoid this hack?
+ * We're probably also doing multiple redraws in this case, would be faster
+ * if we can just do the whole calculation ahead of time and draw once.
+ */
+axes.allowAutoMargin = function(gd) {
+    var axList = axes.list(gd, '', true);
+    for(var i = 0; i < axList.length; i++) {
+        var ax = axList[i];
+        if(ax.automargin) {
+            Plots.allowAutoMargin(gd, ax._name + '.automargin');
+        }
+        if(ax.rangeslider && ax.rangeslider.visible) {
+            Plots.allowAutoMargin(gd, 'rangeslider' + ax._id);
+        }
     }
 };
 

@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
 var drawColorbar = require('../../components/colorbar/draw');
 
 var makeColorMap = require('./make_color_map');
@@ -22,10 +21,7 @@ module.exports = function colorbar(gd, cd) {
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
-    if(!trace.showscale) {
-        Plots.autoMargin(gd, cbId);
-        return;
-    }
+    if(!trace.showscale) return;
 
     var cb = drawColorbar(gd, cbId);
     cd[0].t.cb = cb;

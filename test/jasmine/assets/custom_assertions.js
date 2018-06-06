@@ -216,3 +216,34 @@ exports.assertElemInside = function(elem, container, msg) {
       contBB.top < elemBB.top &&
       contBB.bottom > elemBB.bottom).toBe(true, msg);
 };
+
+/*
+ * quick plot area dimension check: test width and/or height of the inner
+ * plot area (single subplot) to verify that the margins are as expected
+ *
+ * Note: if you use margin.pad on the plot, width and height will be larger
+ * than you expected by twice that padding.
+ *
+ * opts can have keys (all optional):
+ *   width (exact width match)
+ *   height (exact height match)
+ *   widthLessThan (width must be less than this)
+ *   heightLessThan (height must be less than this)
+ */
+exports.assertPlotSize = function(opts, msg) {
+    var width = opts.width;
+    var height = opts.height;
+    var widthLessThan = opts.widthLessThan;
+    var heightLessThan = opts.heightLessThan;
+
+    var plotBB = d3.select('.bglayer .bg').node().getBoundingClientRect();
+    var actualWidth = plotBB.width;
+    var actualHeight = plotBB.height;
+
+    var msgPlus = msg ? ': ' + msg : '';
+
+    if(width) expect(actualWidth).toBeWithin(width, 1, 'width' + msgPlus);
+    if(height) expect(actualHeight).toBeWithin(height, 1, 'height' + msgPlus);
+    if(widthLessThan) expect(actualWidth).toBeLessThan(widthLessThan - 1, 'widthLessThan' + msgPlus);
+    if(heightLessThan) expect(actualHeight).toBeLessThan(heightLessThan - 1, 'heightLessThan' + msgPlus);
+};

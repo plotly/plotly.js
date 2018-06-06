@@ -15,7 +15,8 @@ function supplyDataDefaults(dataIn, dataOut) {
     return Plots.supplyDataDefaults(dataIn, dataOut, {}, {
         _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
         _modules: [],
-        _basePlotModules: []
+        _basePlotModules: [],
+        _traceUids: dataIn.map(function() { return Lib.randstr(); })
     });
 }
 

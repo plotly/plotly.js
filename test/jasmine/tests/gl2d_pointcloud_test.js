@@ -138,12 +138,6 @@ var plotData = {
     }
 };
 
-function makePlot(gd, mock, done) {
-    return Plotly.plot(gd, mock.data, mock.layout)
-        .then(null, failTest)
-        .then(done);
-}
-
 describe('@gl pointcloud traces', function() {
 
     var gd;
@@ -157,8 +151,10 @@ describe('@gl pointcloud traces', function() {
         destroyGraphDiv();
     });
 
-    it('render without raising an error', function(done) {
-        makePlot(gd, plotData, done);
+    it('renders without raising an error', function(done) {
+        Plotly.plot(gd, plotData)
+        .catch(failTest)
+        .then(done);
     });
 
     it('should update properly', function(done) {
@@ -171,10 +167,11 @@ describe('@gl pointcloud traces', function() {
         var yBaselineMins = [{val: 0, pad: 50, extrapad: false}];
         var yBaselineMaxes = [{val: 9, pad: 50, extrapad: false}];
 
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+        Plotly.plot(gd, mock)
+        .then(function() {
             scene2d = gd._fullLayout._plots.xy._scene2d;
 
-            expect(scene2d.traces[mock.data[0].uid].type).toEqual('pointcloud');
+            expect(scene2d.traces[gd._fullData[0].uid].type).toBe('pointcloud');
 
             expect(scene2d.xaxis._min).toEqual(xBaselineMins);
             expect(scene2d.xaxis._max).toEqual(xBaselineMaxes);
@@ -204,8 +201,8 @@ describe('@gl pointcloud traces', function() {
         }).then(function() {
             expect(scene2d.yaxis._min).toEqual(yBaselineMins);
             expect(scene2d.yaxis._max).toEqual(yBaselineMaxes);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
