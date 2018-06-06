@@ -1632,7 +1632,13 @@ plots.autoMargin = function(gd, id, o) {
             delete pushMarginIds[id];
         }
         else {
-            var pad = o.pad === undefined ? 12 : o.pad;
+            var pad = o.pad;
+            if(pad === undefined) {
+                var margin = fullLayout.margin;
+                // if no explicit pad is given, use 12px unless there's a
+                // specified margin that's smaller than that
+                pad = Math.min(12, margin.l, margin.r, margin.t, margin.b);
+            }
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
