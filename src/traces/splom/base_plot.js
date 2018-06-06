@@ -24,7 +24,8 @@ function plot(gd) {
     var _module = Registry.getModule(SPLOM);
     var splomCalcData = getModuleCalcData(gd.calcdata, _module)[0];
 
-    prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    if(!success) return;
 
     if(fullLayout._hasOnlyLargeSploms) {
         drawGrid(gd);
@@ -209,7 +210,10 @@ function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcda
             var trace = cd0.trace;
             var scene = cd0.t._scene;
 
-            if(trace.type === 'splom' && scene && scene.matrix) {
+            if(
+                trace.type === 'splom' &&
+                scene && scene.matrix && scene.matrix.destroy
+            ) {
                 scene.matrix.destroy();
                 cd0.t._scene = null;
             }

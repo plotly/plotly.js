@@ -166,7 +166,7 @@ function sceneUpdate(gd, subplot) {
     var scene = subplot._scene;
     var fullLayout = gd._fullLayout;
 
-    var reset = {
+    var resetOpts = {
         // number of traces in subplot, since scene:subplot → 1:1
         count: 0,
         // whether scene requires init hook in plot call (dirty plot call)
@@ -181,7 +181,7 @@ function sceneUpdate(gd, subplot) {
         errorYOptions: []
     };
 
-    var first = {
+    var initOpts = {
         selectBatch: null,
         unselectBatch: null,
         // regl- component stubs, initialized in dirty plot call
@@ -193,7 +193,13 @@ function sceneUpdate(gd, subplot) {
     };
 
     if(!subplot._scene) {
-        scene = subplot._scene = Lib.extendFlat({}, reset, first);
+        scene = subplot._scene = {};
+
+        scene.init = function init() {
+            Lib.extendFlat(scene, initOpts, resetOpts);
+        };
+
+        scene.init();
 
         // apply new option to all regl components (used on drag)
         scene.update = function update(opt) {
@@ -306,7 +312,7 @@ function sceneUpdate(gd, subplot) {
 
     // In case if we have scene from the last calc - reset data
     if(!scene.dirty) {
-        Lib.extendFlat(scene, reset);
+        Lib.extendFlat(scene, resetOpts);
     }
 
     return scene;
@@ -326,7 +332,12 @@ function plot(gd, subplot, cdata) {
     var width = fullLayout.width;
     var height = fullLayout.height;
 
-    prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    if(!success) {
+        scene.init();
+        return;
+    }
+
     var regl = fullLayout._glcanvas.data()[0].regl;
 
     // that is needed for fills

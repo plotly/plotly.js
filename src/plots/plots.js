@@ -725,6 +725,7 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
     if(hadGl && !hasGl) {
         if(oldFullLayout._glcontainer !== undefined) {
             oldFullLayout._glcontainer.selectAll('.gl-canvas').remove();
+            oldFullLayout._glcontainer.selectAll('.no-webgl').remove();
             oldFullLayout._glcanvas = null;
         }
     }
