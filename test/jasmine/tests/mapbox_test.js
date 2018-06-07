@@ -827,6 +827,14 @@ describe('@noCI, mapbox plots', function() {
             doubleClickCnt++;
         });
 
+        function _scroll(p) {
+            return new Promise(function(resolve) {
+                mouseEvent('mousemove', p[0], p[1]);
+                mouseEvent('scroll', p[0], p[1], {deltaY: -400});
+                setTimeout(resolve, 1000);
+            });
+        }
+
         function assertLayout(center, zoom, opts) {
             var mapInfo = getMapInfo(gd),
                 layout = gd.layout.mapbox;
@@ -858,13 +866,17 @@ describe('@noCI, mapbox plots', function() {
         .then(function() {
             expect(doubleClickCnt).toBe(1, 'double click cnt');
             assertLayout([-4.710, 19.475], 1.234);
+
+            return _scroll(pointPos);
+        })
+        .then(function() {
+            expect(getMapInfo(gd).zoom).toBeGreaterThan(1.234);
+            expect(relayoutCnt).toBe(2);
         })
         .catch(failTest)
         .then(done);
-
-        // TODO test scroll
-
     }, LONG_TIMEOUT_INTERVAL);
+
 
     it('should respond to click interactions by', function(done) {
         var ptData;
@@ -1001,13 +1013,8 @@ describe('@noCI, mapbox plots', function() {
     }
 
     function _click(pos, cb) {
-        var promise = _mouseEvent('mousemove', pos, noop).then(function() {
-            return _mouseEvent('mousedown', pos, noop);
-        }).then(function() {
-            return _mouseEvent('click', pos, cb);
-        });
-
-        return promise;
+        mouseEvent('mousemove', pos[0], pos[1]);
+        return _mouseEvent('click', pos, cb);
     }
 
     function _doubleClick(pos) {

@@ -130,6 +130,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     if(self.isStatic) return;
 
+    var wheeling = false;
+
     // keep track of pan / zoom in user layout and emit relayout event
     map.on('moveend', function(eventData) {
         if(!self.map) return;
@@ -149,11 +151,16 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         // mouse target (filtering out API calls) to not
         // duplicate 'plotly_relayout' events.
 
-        if(eventData.originalEvent) {
+        if(eventData.originalEvent || wheeling) {
             var update = {};
             update[self.id] = Lib.extendFlat({}, view);
             gd.emit('plotly_relayout', update);
         }
+        wheeling = false;
+    });
+
+    map.on('wheel', function() {
+        wheeling = true;
     });
 
     map.on('mousemove', function(evt) {
