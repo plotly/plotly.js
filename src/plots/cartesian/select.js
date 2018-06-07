@@ -358,6 +358,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
 // TODO do we have to consider multiple traces?
+// TODO implement selection retention (Shift key) for lasso and box
 function selectOnClick(gd, numClicks, evt) {
     var calcData = gd.calcdata[0];
 
@@ -368,26 +369,40 @@ function selectOnClick(gd, numClicks, evt) {
     var selectPreconditionsMet = isHoverDataSet && isSingleClick;
 
     if(selectPreconditionsMet) {
-        var trace = calcData[0].trace;
-        var hoverDatum = hoverData[0];
+        var trace = calcData[0].trace,
+            hoverDatum = hoverData[0],
+            module = trace._module;
 
-        var retainCurrentSelection = evt.shiftKey;
-        var pointAlreadySelected = isPointAlreadySelected(trace, hoverDatum.pointNumber);
-        var traceSelection = pointAlreadySelected ?
-          trace._module.deselectPoint(calcData, hoverDatum, retainCurrentSelection) :
-          trace._module.selectPoint(calcData, hoverDatum, retainCurrentSelection);
+        // Execute selection by delegating to respective module
+        var retainSelection = evt.shiftKey,
+            pointSelected = isPointSelected(trace, hoverDatum.pointNumber),
+            onePointSelectedOnly = isOnePointSelectedOnly(trace);
+
+        var shouldDeselectPoint = (pointSelected && onePointSelectedOnly) ||
+          (pointSelected && !onePointSelectedOnly && retainSelection);
+
+        var newTraceSelection = shouldDeselectPoint ?
+          module.deselectPoint(calcData, hoverDatum, retainSelection) :
+          module.selectPoint(calcData, hoverDatum, retainSelection);
+
+        // Update selection state
         var searchInfo =
-          _createSearchInfo(trace._module, calcData, hoverDatum.xaxis, hoverDatum.yaxis);
-        var selection = fillSelectionItem(traceSelection, searchInfo);
+          _createSearchInfo(module, calcData, hoverDatum.xaxis, hoverDatum.yaxis);
+        var selection = fillSelectionItem(newTraceSelection, searchInfo);
         var eventData = {points: selection};
 
         updateSelectedState(gd, [searchInfo], eventData);
     }
 }
 
-function isPointAlreadySelected(trace, pointNumber) {
+function isPointSelected(trace, pointNumber) {
     if(!trace.selectedpoints && !Array.isArray(trace.selectedpoints)) return false;
     return trace.selectedpoints.indexOf(pointNumber) > -1;
+}
+
+function isOnePointSelectedOnly(trace) {
+    if(!trace.selectedpoints && !Array.isArray(trace.selectedpoints)) return false;
+    return trace.selectedpoints.length === 1;
 }
 
 // TODO Consider using in other places around here as well
