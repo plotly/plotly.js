@@ -47,17 +47,29 @@ function selectPoints(searchInfo, polygon) {
 }
 
 function selectPoint(calcData, hoverDataItem) {
+    return _togglePointSelectedState(calcData, hoverDataItem, true);
+}
+
+function deselectPoint(calcData, hoverDataItem) {
+    return _togglePointSelectedState(calcData, hoverDataItem, false);
+}
+
+function _togglePointSelectedState(calcData, hoverDataItem, selected) {
     var selection = [];
     var selectedPointNumber = hoverDataItem.pointNumber;
     var cdItem = calcData[selectedPointNumber];
 
     _clearSelection(calcData);
 
-    cdItem.selected = 1;
-    selection.push(_newSelectionItem(
-      selectedPointNumber,
-      hoverDataItem.xaxis.c2d(cdItem.x),
-      hoverDataItem.yaxis.c2d(cdItem.y)));
+    if(selected) {
+        cdItem.selected = 1;
+        selection.push(_newSelectionItem(
+          selectedPointNumber,
+          hoverDataItem.xaxis.c2d(cdItem.x),
+          hoverDataItem.yaxis.c2d(cdItem.y)));
+    } else {
+        cdItem.selected = 0;
+    }
 
     return selection;
 }
@@ -79,5 +91,6 @@ function _newSelectionItem(pointNumber, xInData, yInData) {
 
 module.exports = {
     selectPoints: selectPoints,
-    selectPoint: selectPoint
+    selectPoint: selectPoint,
+    deselectPoint: deselectPoint
 };

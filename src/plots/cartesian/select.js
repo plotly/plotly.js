@@ -369,23 +369,25 @@ function selectOnClick(gd, numClicks) {
     var selectPreconditionsMet = isHoverDataSet && isSingleClick;
 
     if(selectPreconditionsMet) {
-        var pointAlreadySelected = false;
-        if(pointAlreadySelected) {
-            // Un-select data point
-        }
-        else {
-            var trace = calcData[0].trace;
-            var hoverDataItem = hoverData[0];
-            var traceSelection = trace._module.selectPoint(calcData, hoverDataItem);
+        var trace = calcData[0].trace;
+        var hoverDatum = hoverData[0];
 
-            var searchInfo =
-              _createSearchInfo(trace._module, calcData, hoverDataItem.xaxis, hoverDataItem.yaxis);
-            var selection = fillSelectionItem(traceSelection, searchInfo);
-            var eventData = {points: selection};
+        var pointAlreadySelected = isPointAlreadySelected(trace, hoverDatum.pointNumber);
+        var traceSelection = pointAlreadySelected ?
+          trace._module.deselectPoint(calcData, hoverDatum) :
+          trace._module.selectPoint(calcData, hoverDatum);
+        var searchInfo =
+          _createSearchInfo(trace._module, calcData, hoverDatum.xaxis, hoverDatum.yaxis);
+        var selection = fillSelectionItem(traceSelection, searchInfo);
+        var eventData = {points: selection};
 
-            updateSelectedState(gd, [searchInfo], eventData);
-        }
+        updateSelectedState(gd, [searchInfo], eventData);
     }
+}
+
+function isPointAlreadySelected(trace, pointNumber) {
+    if(!trace.selectedpoints && !Array.isArray(trace.selectedpoints)) return false;
+    return trace.selectedpoints.indexOf(pointNumber) > -1;
 }
 
 // TODO Consider using in other places around here as well
@@ -398,6 +400,17 @@ function _createSearchInfo(module, calcData, xaxis, yaxis) {
     };
 }
 
+/**
+ * Updates the selection state properties of the passed traces
+ * and initiates proper selection styling.
+ *
+ * If no eventData is passed, the selection state is cleared
+ * for the traces passed.
+ *
+ * @param gd
+ * @param searchTraces
+ * @param eventData
+ */
 function updateSelectedState(gd, searchTraces, eventData) {
     var i, j, searchInfo, trace;
 
