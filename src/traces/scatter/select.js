@@ -46,29 +46,35 @@ function selectPoints(searchInfo, polygon) {
     return selection;
 }
 
-function selectPoint(calcData, hoverDataItem) {
-    return _togglePointSelectedState(calcData, hoverDataItem, true);
+function selectPoint(calcData, hoverDataItem, retain) {
+    return _togglePointSelectedState(calcData, hoverDataItem, true, retain);
 }
 
-function deselectPoint(calcData, hoverDataItem) {
-    return _togglePointSelectedState(calcData, hoverDataItem, false);
+function deselectPoint(calcData, hoverDataItem, retain) {
+    return _togglePointSelectedState(calcData, hoverDataItem, false, retain);
 }
 
-function _togglePointSelectedState(calcData, hoverDataItem, selected) {
+function _togglePointSelectedState(calcData, hoverDataItem, selected, retain) {
     var selection = [];
     var selectedPointNumber = hoverDataItem.pointNumber;
     var cdItem = calcData[selectedPointNumber];
 
-    _clearSelection(calcData);
+    if(!retain) _clearSelection(calcData);
 
     if(selected) {
         cdItem.selected = 1;
-        selection.push(_newSelectionItem(
-          selectedPointNumber,
-          hoverDataItem.xaxis.c2d(cdItem.x),
-          hoverDataItem.yaxis.c2d(cdItem.y)));
     } else {
         cdItem.selected = 0;
+    }
+
+    for(var i = 0; i < calcData.length; i++) {
+        cdItem = calcData[i];
+        if(cdItem.selected === 1) {
+            selection.push(_newSelectionItem(
+              i,
+              hoverDataItem.xaxis.c2d(cdItem.x),
+              hoverDataItem.yaxis.c2d(cdItem.y)));
+        }
     }
 
     return selection;

@@ -218,7 +218,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         if(isMainDrag) {
             var clickHandler = obtainClickHandler();
-            clickHandler(gd, numClicks);
+            clickHandler(gd, numClicks, evt);
         }
         // Allow manual editing of range bounds through an input field
         // TODO consider extracting that to a method for clarity

@@ -323,7 +323,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             }
             else {
                 // TODO What to do with the code below because we now have behavior for a single click
-                selectOnClick(gd, numClicks);
+                selectOnClick(gd, numClicks, evt);
 
                 // TODO: remove in v2 - this was probably never intended to work as it does,
                 // but in case anyone depends on it we don't want to break it now.
@@ -358,7 +358,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
 // TODO do we have to consider multiple traces?
-function selectOnClick(gd, numClicks) {
+function selectOnClick(gd, numClicks, evt) {
     var calcData = gd.calcdata[0];
 
     var hoverData = gd._hoverdata;
@@ -371,10 +371,11 @@ function selectOnClick(gd, numClicks) {
         var trace = calcData[0].trace;
         var hoverDatum = hoverData[0];
 
+        var retainCurrentSelection = evt.shiftKey;
         var pointAlreadySelected = isPointAlreadySelected(trace, hoverDatum.pointNumber);
         var traceSelection = pointAlreadySelected ?
-          trace._module.deselectPoint(calcData, hoverDatum) :
-          trace._module.selectPoint(calcData, hoverDatum);
+          trace._module.deselectPoint(calcData, hoverDatum, retainCurrentSelection) :
+          trace._module.selectPoint(calcData, hoverDatum, retainCurrentSelection);
         var searchInfo =
           _createSearchInfo(trace._module, calcData, hoverDatum.xaxis, hoverDatum.yaxis);
         var selection = fillSelectionItem(traceSelection, searchInfo);
