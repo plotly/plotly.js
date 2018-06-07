@@ -356,8 +356,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
 // Missing features
 // ----------------
-// TODO handle clearing selection, really?
-// TODO handle un-selecting a data-point
+// TODO handle clearing selection when no point is clicked (based on hoverData)
 // TODO do we have to consider multiple traces?
 function selectOnClick(gd, numClicks) {
     var calcData = gd.calcdata[0];
@@ -414,8 +413,13 @@ function _createSearchInfo(module, calcData, xaxis, yaxis) {
 function updateSelectedState(gd, searchTraces, eventData) {
     var i, j, searchInfo, trace;
 
-    if(eventData) {
-        var pts = eventData.points || [];
+    // TODO previously eventData without a point would still set a selection
+    // and all points would appear as non-selected. Moving to another drag mode like
+    // zoom would leave this state. Discuss if the new behavior is better.
+    var selectionNonEmpty = eventData && eventData.points && eventData.points.length > 0;
+    if(selectionNonEmpty) {
+        // var pts = eventData.points || []; TODO remove eventually
+        var pts = eventData.points;
 
         for(i = 0; i < searchTraces.length; i++) {
             trace = searchTraces[i].cd[0].trace;
