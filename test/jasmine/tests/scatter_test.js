@@ -489,6 +489,9 @@ describe('Test scatter', function() {
                 [-822, 20], [-802, 2], [-801.5, 1.1], [-800, 0],
                 [900, 0], [901.5, 1.1], [902, 2], [922, 20]
             ], [
+                // all that's really important here (and the next check) is that
+                // the points [-800, 0] and [900, 0] are connected. What we do
+                // with other points beyond those doesn't matter too much.
                 [-822, 20], [-800, 0],
                 [900, 0], [922, 20]
             ]);
@@ -506,6 +509,8 @@ describe('Test scatter', function() {
                 [-801, 925], [-800, 902], [-800.5, 901.1], [-800, 900],
                 [900, -800], [900.5, -801.1], [900, -802], [901, -825]
             ], [
+                // similarly here, we just care that
+                // [-800, 900] connects to [900, -800]
                 [-801, 925], [-800, 900],
                 [900, -800], [901, -825]
             ]);
