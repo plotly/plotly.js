@@ -405,6 +405,10 @@ describe('Test scatter', function() {
 
         // TODO: test coarser decimation outside plot, and removing very near duplicates from the four of a cluster
 
+        function reverseXY(v) { return [v[1], v[0]]; }
+
+        function reverseXY2(v) { return v.map(reverseXY); }
+
         it('should clip extreme points without changing on-screen paths', function() {
             var ptsIn = [
                 // first bunch: rays going in/out in many directions
@@ -458,8 +462,6 @@ describe('Test scatter', function() {
                 [[2100, 2100], [-2000, 2100], [-2000, -2000], [2100, -2000], [2100, 2100]]
             ];
 
-            function reverseXY(v) { return [v[1], v[0]]; }
-
             ptsIn.forEach(function(ptsIni, i) {
                 // disable clustering for these tests
                 var ptsOut = callLinePoints(ptsIni, {simplify: false});
@@ -471,6 +473,47 @@ describe('Test scatter', function() {
                 expect(ptsOut2.length).toBe(1, i);
                 expect(ptsOut2[0]).toBeCloseTo2DArray(ptsExpected[i].map(reverseXY), 1, i);
             });
+        });
+
+        it('works when far off-screen points cross the viewport', function() {
+            function _check(ptsIn, ptsExpected) {
+                var ptsOut = callLinePoints(ptsIn);
+                expect(JSON.stringify(ptsOut)).toEqual(JSON.stringify([ptsExpected]));
+
+                var ptsOut2 = callLinePoints(ptsIn.map(reverseXY)).map(reverseXY2);
+                expect(JSON.stringify(ptsOut2)).toEqual(JSON.stringify([ptsExpected]));
+            }
+
+            // first cross the viewport horizontally/vertically
+            _check([
+                [-822, 20], [-802, 2], [-801.5, 1.1], [-800, 0],
+                [900, 0], [901.5, 1.1], [902, 2], [922, 20]
+            ], [
+                // all that's really important here (and the next check) is that
+                // the points [-800, 0] and [900, 0] are connected. What we do
+                // with other points beyond those doesn't matter too much.
+                [-822, 20], [-800, 0],
+                [900, 0], [922, 20]
+            ]);
+
+            _check([
+                [-804, 4], [-802, 2], [-801.5, 1.1], [-800, 0],
+                [900, 0], [901.5, 1.1], [902, 2], [904, 4]
+            ], [
+                [-804, 4], [-800, 0],
+                [900, 0]
+            ]);
+
+            // now cross the viewport diagonally
+            _check([
+                [-801, 925], [-800, 902], [-800.5, 901.1], [-800, 900],
+                [900, -800], [900.5, -801.1], [900, -802], [901, -825]
+            ], [
+                // similarly here, we just care that
+                // [-800, 900] connects to [900, -800]
+                [-801, 925], [-800, 900],
+                [900, -800], [901, -825]
+            ]);
         });
     });
 
