@@ -1001,13 +1001,8 @@ describe('@noCI, mapbox plots', function() {
     }
 
     function _click(pos, cb) {
-        var promise = _mouseEvent('mousemove', pos, noop).then(function() {
-            return _mouseEvent('mousedown', pos, noop);
-        }).then(function() {
-            return _mouseEvent('click', pos, cb);
-        });
-
-        return promise;
+        mouseEvent('mousemove', pos[0], pos[1]);
+        return _mouseEvent('click', pos, cb);
     }
 
     function _doubleClick(pos) {
