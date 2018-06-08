@@ -8,7 +8,6 @@
 
 'use strict';
 
-var createScatterPlot = require('gl-scatter3d');
 var conePlot = require('gl-cone3d');
 var createConeMesh = require('gl-cone3d').createConeMesh;
 
@@ -19,14 +18,13 @@ function Cone(scene, uid) {
     this.scene = scene;
     this.uid = uid;
     this.mesh = null;
-    this.pts = null;
     this.data = null;
 }
 
 var proto = Cone.prototype;
 
 proto.handlePick = function(selection) {
-    if(selection.object === this.pts) {
+    if(selection.object === this.mesh) {
         var selectIndex = selection.index = selection.data.index;
         var xx = this.data.x[selectIndex];
         var yy = this.data.y[selectIndex];
@@ -96,8 +94,6 @@ function convert(scene, trace) {
 
     var meshData = conePlot(coneOpts);
 
-    // stash positions for gl-scatter3d 'hover' trace
-    meshData._pts = coneOpts.positions;
 
     // pass gl-mesh3d lighting attributes
     meshData.lightPosition = [trace.lightposition.x, trace.lightposition.y, trace.lightposition.z];
@@ -119,14 +115,10 @@ proto.update = function(data) {
     this.data = data;
 
     var meshData = convert(this.scene, data);
-
     this.mesh.update(meshData);
-    this.pts.update({position: meshData._pts});
 };
 
 proto.dispose = function() {
-    this.scene.glplot.remove(this.pts);
-    this.pts.dispose();
     this.scene.glplot.remove(this.mesh);
     this.mesh.dispose();
 };
@@ -137,21 +129,11 @@ function createConeTrace(scene, data) {
     var meshData = convert(scene, data);
     var mesh = createConeMesh(gl, meshData);
 
-    var pts = createScatterPlot({
-        gl: gl,
-        position: meshData._pts,
-        project: false,
-        opacity: 0
-    });
-
     var cone = new Cone(scene, data.uid);
     cone.mesh = mesh;
-    cone.pts = pts;
     cone.data = data;
     mesh._trace = cone;
-    pts._trace = cone;
 
-    scene.glplot.add(pts);
     scene.glplot.add(mesh);
 
     return cone;
