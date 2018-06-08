@@ -1171,11 +1171,29 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex, 
     return traceOut;
 };
 
+/**
+ * hasMakesDataTransform: does this trace have a transform that makes its own
+ * data, either by grabbing it from somewhere else or by creating it from input
+ * parameters? If so, we should still keep going with supplyDefaults
+ * even if the trace is invisible, which may just be because it has no data yet.
+ */
+function hasMakesDataTransform(traceIn) {
+    var transformsIn = traceIn.transforms;
+    if(Array.isArray(transformsIn) && transformsIn.length) {
+        for(var i = 0; i < transformsIn.length; i++) {
+            var _module = transformsRegistry[transformsIn[i].type];
+            if(_module && _module.makesData) return true;
+        }
+    }
+    return false;
+}
+
 plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
     // For now we only allow transforms on 1D traces, ie those that specify a _length.
     // If we were to implement 2D transforms, we'd need to have each transform
     // describe its own applicability and disable itself when it doesn't apply.
-    if(!traceOut._length) return;
+    // Also allow transforms that make their own data, but not in globalTransforms
+    if(!(traceOut._length || hasMakesDataTransform(traceIn))) return;
 
     var globalTransforms = layout._globalTransforms || [];
     var transformModules = layout._transformModules || [];
