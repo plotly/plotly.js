@@ -90,7 +90,7 @@ plots.resize = function(gd) {
 
         gd._redrawTimer = setTimeout(function() {
             // return if there is nothing to resize
-            if(gd.layout.width && gd.layout.height) {
+            if(gd.layout && gd.layout.width && gd.layout.height) {
                 resolve(gd);
                 return;
             }
