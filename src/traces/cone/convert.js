@@ -59,7 +59,6 @@ function zip3(x, y, z) {
 }
 
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
-var sizeMode2sizeKey = {scaled: 'coneSize', absolute: 'absoluteConeSize'};
 var anchor2coneOffset = {tip: 1, tail: 0, cm: 0.25, center: 0.5};
 var anchor2coneSpan = {tip: 1, tail: 1, cm: 0.75, center: 0.5};
 
@@ -88,15 +87,21 @@ function convert(scene, trace) {
 
     coneOpts.colormap = parseColorScale(trace.colorscale);
     coneOpts.vertexIntensityBounds = [trace.cmin / trace._normMax, trace.cmax / trace._normMax];
-
-    coneOpts[sizeMode2sizeKey[trace.sizemode]] = trace.sizeref;
     coneOpts.coneOffset = anchor2coneOffset[trace.anchor];
+
+    if(trace.sizemode === 'scaled') {
+        // unitless sizeref
+        coneOpts.coneSize = trace.sizeref || 0.5;
+    } else {
+        // sizeref here has unit of velocity
+        coneOpts.coneSize = (trace.sizeref / trace._normMax) || 0.5;
+    }
 
     var meshData = conePlot(coneOpts);
 
-
     // pass gl-mesh3d lighting attributes
-    meshData.lightPosition = [trace.lightposition.x, trace.lightposition.y, trace.lightposition.z];
+    var lp = trace.lightposition;
+    meshData.lightPosition = [lp.x, lp.y, lp.z];
     meshData.ambient = trace.lighting.ambient;
     meshData.diffuse = trace.lighting.diffuse;
     meshData.specular = trace.lighting.specular;
@@ -105,8 +110,7 @@ function convert(scene, trace) {
     meshData.opacity = trace.opacity;
 
     // stash autorange pad value
-    trace._pad = anchor2coneSpan[trace.anchor] * meshData.vectorScale * trace.sizeref;
-    if(trace.sizemode === 'scaled') trace._pad *= trace._normMax;
+    trace._pad = anchor2coneSpan[trace.anchor] * meshData.vectorScale * meshData.coneScale * trace._normMax;
 
     return meshData;
 }
