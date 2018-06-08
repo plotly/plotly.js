@@ -209,7 +209,7 @@ describe('@gl Test cone interactions', function() {
             var scene = gd._fullLayout.scene._scene;
             var objs = scene.glplot.objects;
 
-            expect(objs.length).toBe(4);
+            expect(objs.length).toBe(2);
 
             return Plotly.deleteTraces(gd, [0]);
         })
@@ -217,7 +217,7 @@ describe('@gl Test cone interactions', function() {
             var scene = gd._fullLayout.scene._scene;
             var objs = scene.glplot.objects;
 
-            expect(objs.length).toBe(2);
+            expect(objs.length).toBe(1);
 
             return Plotly.deleteTraces(gd, [0]);
         })
