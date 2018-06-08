@@ -69,7 +69,7 @@
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.1",
     "font-atlas-sdf": "^1.3.3",
-    "gl-cone3d": "^v1.0.1",
+    "gl-cone3d": "git@github.com:gl-vis/gl-cone3d#3b3ef9d465a8e30d14a9a4a1cc88d4deebec64a9",
     "gl-contour2d": "^1.1.4",
     "gl-error3d": "^1.0.7",
     "gl-heatmap2d": "^1.0.4",
