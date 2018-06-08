@@ -280,6 +280,61 @@ describe('user-defined transforms:', function() {
         expect(calledSupplyLayoutDefaults).toBe(1);
     });
 
+    it('handles `makesData` transforms when the incoming trace has no data', function() {
+        var transformIn = {type: 'linemaker', x0: 3, y0: 2, x1: 5, y1: 10, n: 3};
+        var dataIn = [{transforms: [transformIn], mode: 'lines+markers'}];
+        var fullData = [];
+        var layout = {};
+        var fullLayout = Lib.extendDeep({}, mockFullLayout);
+
+        var lineMakerModule = {
+            moduleType: 'transform',
+            name: 'linemaker',
+            makesData: true,
+            attributes: {},
+            supplyDefaults: function(transformIn) {
+                return Lib.extendFlat({}, transformIn);
+            },
+            transform: function(data, state) {
+                var transform = state.transform;
+                var trace = data[0];
+                var n = transform.n;
+                var x = new Array(n);
+                var y = new Array(n);
+
+                // our exciting transform - make a line!
+                for(var i = 0; i < n; i++) {
+                    x[i] = transform.x0 + (i / (n - 1)) * (transform.x1 - transform.x0);
+                    y[i] = transform.y0 + (i / (n - 1)) * (transform.y1 - transform.y0);
+                }
+
+                // we didn't coerce mode before, because there was no data
+                expect(trace.mode).toBeUndefined();
+                expect(trace.line).toBeUndefined();
+                expect(trace.marker).toBeUndefined();
+
+                // just put the input trace back in here, it'll get coerced again after the transform
+                var traceOut = Lib.extendFlat(trace._input, {x: x, y: y});
+
+                return [traceOut];
+            }
+        };
+
+        Plotly.register(lineMakerModule);
+        Plots.supplyDataDefaults(dataIn, fullData, layout, fullLayout);
+        delete Plots.transformsRegistry.linemaker;
+
+        expect(fullData.length).toBe(1);
+        var traceOut = fullData[0];
+        expect(traceOut.x).toEqual([3, 4, 5]);
+        expect(traceOut.y).toEqual([2, 6, 10]);
+
+        // make sure we redid supplyDefaults after the data arrays were added
+        expect(traceOut.mode).toBe('lines+markers');
+        expect(traceOut.line).toBeDefined();
+        expect(traceOut.marker).toBeDefined();
+    });
+
 });
 
 describe('multiple transforms:', function() {
