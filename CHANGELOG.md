@@ -10,6 +10,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.38.3] -- 2018-06-11
+
+### Fixed
+- Fix `cone` axis padding when under `sizemode: 'absolute'` [#2715]
+- Fix `cone` scaling on irregular grids [#2715]
+- Fix `cone` `sizemode: 'absolute'` scaling and attribute description [#2715]
+- Improve `cone` hover picking [#2715]
+- Fix exception during histogram cross-trace computation [#2724]
+- Fix handling of custom transforms that make their own data arrays [#2714]
+
+
 ## [1.38.2] -- 2018-06-04
 
 ### Fixed

@@ -23,7 +23,7 @@ var oneMonth = require('../../constants/numerical').ONEAVGMONTH;
 var getBinSpanLabelRound = require('./bin_label_vals');
 
 module.exports = function calc(gd, trace) {
-    // ignore as much processing as possible (and including in autorange) if bar is not visible
+    // ignore as much processing as possible (and including in autorange) if not visible
     if(trace.visible !== true) return;
 
     // depending on orientation, set position and size axes and data ranges
@@ -435,6 +435,7 @@ function getConnectedHistograms(gd, trace) {
     for(var i = 0; i < fullData.length; i++) {
         var tracei = fullData[i];
         if(tracei.type === 'histogram' &&
+            tracei.visible === true &&
             tracei.orientation === orientation &&
             tracei.xaxis === xid && tracei.yaxis === yid
         ) {

@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.38.2
+* plotly.js (gl3d) v1.38.3
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -26040,33 +26040,39 @@ module.exports = function(vectorfield, bounds) {
 	var minX = 1/0, maxX = -1/0;
 	var minY = 1/0, maxY = -1/0;
 	var minZ = 1/0, maxZ = -1/0;
-	var v2 = null;
+	var p2 = null;
+	var u2 = null;
 	var positionVectors = [];
-	var minSeparation = 1/0;
+	var vectorScale = 1/0;
 	for (var i = 0; i < positions.length; i++) {
-		var v1 = positions[i];
-		minX = Math.min(v1[0], minX);
-		maxX = Math.max(v1[0], maxX);
-		minY = Math.min(v1[1], minY);
-		maxY = Math.max(v1[1], maxY);
-		minZ = Math.min(v1[2], minZ);
-		maxZ = Math.max(v1[2], maxZ);
+		var p = positions[i];
+		minX = Math.min(p[0], minX);
+		maxX = Math.max(p[0], maxX);
+		minY = Math.min(p[1], minY);
+		maxY = Math.max(p[1], maxY);
+		minZ = Math.min(p[2], minZ);
+		maxZ = Math.max(p[2], maxZ);
 		var u;
 		if (meshgrid) {
-			u = sampleMeshgrid(v1, vectors, meshgrid, true);
+			u = sampleMeshgrid(p, vectors, meshgrid, true);
 		} else {
 			u = vectors[i];
 		}
 		if (V.length(u) > maxNorm) {
 			maxNorm = V.length(u);
 		}
-		if (v2) {
-			var separation = V.distance(v1, v2);
-			if (separation < minSeparation) {
-				minSeparation = separation;
-			}
+		if (i) {
+			// Find vector scale [w/ units of time] using "successive" positions
+			// (not "adjacent" with would be O(n^2)),
+			//
+			// The vector scale corresponds to the minimum "time" to travel across two
+			// two adjacent positions at the average velocity of those two adjacent positions
+			vectorScale = Math.min(vectorScale,
+				2 * V.distance(p2, p) / (V.length(u2) + V.length(u))
+			);
 		}
-		v2 = v1;
+		p2 = p;
+		u2 = u;
 		positionVectors.push(u);
 	}
 	var minV = [minX, minY, minZ];
@@ -26078,17 +26084,14 @@ module.exports = function(vectorfield, bounds) {
 	if (maxNorm === 0) {
 		maxNorm = 1;
 	}
+
 	// Inverted max norm would map vector with norm maxNorm to 1 coord space units in length
 	var invertedMaxNorm = 1 / maxNorm;
 
-	if (!isFinite(minSeparation) || isNaN(minSeparation)) {
-		minSeparation = 1.0;
+	if (!isFinite(vectorScale) || isNaN(vectorScale)) {
+		vectorScale = 1.0;
 	}
-
-	// Inverted max norm multiplied scaled by smallest found vector position distance:
-	// Maps a vector with norm maxNorm to minSeparation coord space units in length.
-	// In practice, scales maxNorm vectors so that they are just long enough to reach the adjacent vector position.
-	geo.vectorScale = invertedMaxNorm * minSeparation;
+	geo.vectorScale = vectorScale;
 
 	var nml = vec3(0,1,0);
 
@@ -27025,43 +27028,13 @@ proto.pick = function(pickData) {
 
   var cellId    = pickData.value[0] + 256*pickData.value[1] + 65536*pickData.value[2]
   var cell      = this.cells[cellId]
-  var positions = this.positions
-
-  var simplex   = new Array(cell.length)
-  for(var i=0; i<cell.length; ++i) {
-    simplex[i] = positions[cell[i]]
-  }
-
-  var data = closestPoint(
-    simplex,
-    [pickData.coord[0], this._resolution[1]-pickData.coord[1]],
-    this._model,
-    this._view,
-    this._projection,
-    this._resolution)
-
-  if(!data) {
-    return null
-  }
-
-  var weights = data[2]
-  var interpIntensity = 0.0
-  for(var i=0; i<cell.length; ++i) {
-    interpIntensity += weights[i] * this.intensity[cell[i]]
-  }
+  var pos =     this.positions[cell[1]].slice(0, 3)
 
   return {
-    position: data[1],
-    index:    cell[data[0]],
-    cell:     cell,
-    cellId:   cellId,
-    intensity:  interpIntensity,
-
-    vectorScale: this.vectorScale,
-    coneScale: this.coneScale,
-    coneOffset: this.coneOffset,
-
-    dataCoordinate: this.positions[cell[data[0]]]
+    // corresponding to input indices
+    index: Math.floor(cell[1] / 48),
+    position: pos,
+    dataCoordinate: pos
   }
 }
 
@@ -27130,9 +27103,10 @@ function createPointShader(gl) {
 }
 
 function createPickShader(gl) {
-  var shader = createShader(gl, pickShader.vertex, pickShader.fragment)
+  var shader = createShader(gl, pickShader.vertex, pickShader.fragment, null, pickShader.attributes)
   shader.attributes.position.location = 0
   shader.attributes.id.location       = 1
+  shader.attributes.vector.location   = 5
   return shader
 }
 
@@ -27302,9 +27276,9 @@ module.exports = createSimplicialMesh
 },{"./closest-point":105,"./shaders":107,"colormap":67,"gl-buffer":103,"gl-mat4/invert":124,"gl-mat4/multiply":126,"gl-shader":146,"gl-texture2d":157,"gl-vao":161,"ndarray":265,"normals":267,"simplicial-complex-contour":309,"typedarray-pool":328}],107:[function(require,module,exports){
 var glslify       = require('glslify')
 
-var triVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nfloat inverse(float m) {\n  return 1.0 / m;\n}\n\nmat2 inverse(mat2 m) {\n  return mat2(m[1][1],-m[0][1],\n             -m[1][0], m[0][0]) / (m[0][0]*m[1][1] - m[0][1]*m[1][0]);\n}\n\nmat3 inverse(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\n\nmat4 inverse(mat4 m) {\n  float\n      a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\n      a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\n      a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\n      a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\n\n      b00 = a00 * a11 - a01 * a10,\n      b01 = a00 * a12 - a02 * a10,\n      b02 = a00 * a13 - a03 * a10,\n      b03 = a01 * a12 - a02 * a11,\n      b04 = a01 * a13 - a03 * a11,\n      b05 = a02 * a13 - a03 * a12,\n      b06 = a20 * a31 - a21 * a30,\n      b07 = a20 * a32 - a22 * a30,\n      b08 = a20 * a33 - a23 * a30,\n      b09 = a21 * a32 - a22 * a31,\n      b10 = a21 * a33 - a23 * a31,\n      b11 = a22 * a33 - a23 * a32,\n\n      det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\n\n  return mat4(\n      a11 * b11 - a12 * b10 + a13 * b09,\n      a02 * b10 - a01 * b11 - a03 * b09,\n      a31 * b05 - a32 * b04 + a33 * b03,\n      a22 * b04 - a21 * b05 - a23 * b03,\n      a12 * b08 - a10 * b11 - a13 * b07,\n      a00 * b11 - a02 * b08 + a03 * b07,\n      a32 * b02 - a30 * b05 - a33 * b01,\n      a20 * b05 - a22 * b02 + a23 * b01,\n      a10 * b10 - a11 * b08 + a13 * b06,\n      a01 * b08 - a00 * b10 - a03 * b06,\n      a30 * b04 - a31 * b02 + a33 * b00,\n      a21 * b02 - a20 * b04 - a23 * b00,\n      a11 * b07 - a10 * b09 - a12 * b06,\n      a00 * b09 - a01 * b07 + a02 * b06,\n      a31 * b01 - a30 * b03 - a32 * b00,\n      a20 * b03 - a21 * b01 + a22 * b00) / det;\n}\n\nattribute vec3 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\nuniform float vectorScale;\nuniform float coneScale;\n\nuniform float coneOffset;\n\nuniform mat4 model\n           , view\n           , projection;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0)); \n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0, \n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float index, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  index = mod(index, segmentCount * 6.0);\n\n  float segment = floor(index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex == 3.0) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  // angle = 2pi * ((segment + ((segmentIndex == 1.0 || segmentIndex == 5.0) ? 1.0 : 0.0)) / segmentCount)\n  float nextAngle = float(segmentIndex == 1.0 || segmentIndex == 5.0);\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex <= 2.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, normal), 0.0);\n  normal = normalize(normal * inverse(mat3(model)));\n\n  // vec4 m_position  = model * vec4(conePosition, 1.0);\n  vec4 t_position  = view * conePosition;\n  gl_Position      = projection * t_position;\n  f_color          = color; //vec4(position.w, color.r, 0, 0);\n  f_normal         = normal;\n  f_data           = conePosition.xyz;\n  f_eyeDirection   = eyePosition   - conePosition.xyz;\n  f_lightDirection = lightPosition - conePosition.xyz;\n  f_uv             = uv;\n}"])
+var triVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nfloat inverse(float m) {\n  return 1.0 / m;\n}\n\nmat2 inverse(mat2 m) {\n  return mat2(m[1][1],-m[0][1],\n             -m[1][0], m[0][0]) / (m[0][0]*m[1][1] - m[0][1]*m[1][0]);\n}\n\nmat3 inverse(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\n\nmat4 inverse(mat4 m) {\n  float\n      a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\n      a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\n      a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\n      a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\n\n      b00 = a00 * a11 - a01 * a10,\n      b01 = a00 * a12 - a02 * a10,\n      b02 = a00 * a13 - a03 * a10,\n      b03 = a01 * a12 - a02 * a11,\n      b04 = a01 * a13 - a03 * a11,\n      b05 = a02 * a13 - a03 * a12,\n      b06 = a20 * a31 - a21 * a30,\n      b07 = a20 * a32 - a22 * a30,\n      b08 = a20 * a33 - a23 * a30,\n      b09 = a21 * a32 - a22 * a31,\n      b10 = a21 * a33 - a23 * a31,\n      b11 = a22 * a33 - a23 * a32,\n\n      det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\n\n  return mat4(\n      a11 * b11 - a12 * b10 + a13 * b09,\n      a02 * b10 - a01 * b11 - a03 * b09,\n      a31 * b05 - a32 * b04 + a33 * b03,\n      a22 * b04 - a21 * b05 - a23 * b03,\n      a12 * b08 - a10 * b11 - a13 * b07,\n      a00 * b11 - a02 * b08 + a03 * b07,\n      a32 * b02 - a30 * b05 - a33 * b01,\n      a20 * b05 - a22 * b02 + a23 * b01,\n      a10 * b10 - a11 * b08 + a13 * b06,\n      a01 * b08 - a00 * b10 - a03 * b06,\n      a30 * b04 - a31 * b02 + a33 * b00,\n      a21 * b02 - a20 * b04 - a23 * b00,\n      a11 * b07 - a10 * b09 - a12 * b06,\n      a00 * b09 - a01 * b07 + a02 * b06,\n      a31 * b01 - a30 * b03 - a32 * b00,\n      a20 * b03 - a21 * b01 + a22 * b00) / det;\n}\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float index, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  index = mod(index, segmentCount * 6.0);\n\n  float segment = floor(index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex == 3.0) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  // angle = 2pi * ((segment + ((segmentIndex == 1.0 || segmentIndex == 5.0) ? 1.0 : 0.0)) / segmentCount)\n  float nextAngle = float(segmentIndex == 1.0 || segmentIndex == 5.0);\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex <= 2.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\nuniform float vectorScale;\nuniform float coneScale;\n\nuniform float coneOffset;\n\nuniform mat4 model\n           , view\n           , projection;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal), 0.0);\n  normal = normalize(normal * inverse(mat3(model)));\n\n  // vec4 m_position  = model * vec4(conePosition, 1.0);\n  vec4 t_position  = view * conePosition;\n  gl_Position      = projection * t_position;\n  f_color          = color; //vec4(position.w, color.r, 0, 0);\n  f_normal         = normal;\n  f_data           = conePosition.xyz;\n  f_eyeDirection   = eyePosition   - conePosition.xyz;\n  f_lightDirection = lightPosition - conePosition.xyz;\n  f_uv             = uv;\n}\n"])
 var triFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\nfloat cookTorranceSpecular(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  //if(any(lessThan(f_data, clipBounds[0])) || \n  //   any(greaterThan(f_data, clipBounds[1]))) {\n  //  discard;\n  //}\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n  \n  if(!gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = cookTorranceSpecular(L, V, N, roughness, fresnel);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor =  texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}"])
-var pickVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_id        = id;\n  f_position  = position;\n}"])
+var pickVertSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float index, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  index = mod(index, segmentCount * 6.0);\n\n  float segment = floor(index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex == 3.0) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  // angle = 2pi * ((segment + ((segmentIndex == 1.0 || segmentIndex == 5.0) ? 1.0 : 0.0)) / segmentCount)\n  float nextAngle = float(segmentIndex == 1.0 || segmentIndex == 5.0);\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex <= 2.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nuniform float vectorScale;\nuniform float coneScale;\nuniform float coneOffset;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  vec3 normal;\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal), 0.0);\n  gl_Position = projection * view * conePosition;\n  f_id        = id;\n  f_position  = position.xyz;\n}\n"])
 var pickFragSrc = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if(any(lessThan(f_position, clipBounds[0])) || \n     any(greaterThan(f_position, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"])
 
 exports.meshShader = {
@@ -27322,8 +27296,9 @@ exports.pickShader = {
   vertex:   pickVertSrc,
   fragment: pickFragSrc,
   attributes: [
-    {name: 'position', type: 'vec3'},
-    {name: 'id', type: 'vec4'}
+    {name: 'position', type: 'vec4'},
+    {name: 'id', type: 'vec4'},
+    {name: 'vector', type: 'vec3'}
   ]
 }
 
@@ -71014,7 +70989,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.38.2';
+exports.version = '1.38.3';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -96105,11 +96080,29 @@ plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex) 
     return traceOut;
 };
 
+/**
+ * hasMakesDataTransform: does this trace have a transform that makes its own
+ * data, either by grabbing it from somewhere else or by creating it from input
+ * parameters? If so, we should still keep going with supplyDefaults
+ * even if the trace is invisible, which may just be because it has no data yet.
+ */
+function hasMakesDataTransform(traceIn) {
+    var transformsIn = traceIn.transforms;
+    if(Array.isArray(transformsIn) && transformsIn.length) {
+        for(var i = 0; i < transformsIn.length; i++) {
+            var _module = transformsRegistry[transformsIn[i].type];
+            if(_module && _module.makesData) return true;
+        }
+    }
+    return false;
+}
+
 plots.supplyTransformDefaults = function(traceIn, traceOut, layout) {
     // For now we only allow transforms on 1D traces, ie those that specify a _length.
     // If we were to implement 2D transforms, we'd need to have each transform
     // describe its own applicability and disable itself when it doesn't apply.
-    if(!traceOut._length) return;
+    // Also allow transforms that make their own data, but not in globalTransforms
+    if(!(traceOut._length || hasMakesDataTransform(traceIn))) return;
 
     var globalTransforms = layout._globalTransforms || [];
     var transformModules = layout._transformModules || [];
@@ -100586,7 +100579,6 @@ var attrs = {
         
         editType: 'calc',
         min: 0,
-        dflt: 1,
         
     },
 
@@ -100715,7 +100707,6 @@ module.exports = function colorbar(gd, cd) {
 
 'use strict';
 
-var createScatterPlot = require('gl-scatter3d');
 var conePlot = require('gl-cone3d');
 var createConeMesh = require('gl-cone3d').createConeMesh;
 
@@ -100726,14 +100717,13 @@ function Cone(scene, uid) {
     this.scene = scene;
     this.uid = uid;
     this.mesh = null;
-    this.pts = null;
     this.data = null;
 }
 
 var proto = Cone.prototype;
 
 proto.handlePick = function(selection) {
-    if(selection.object === this.pts) {
+    if(selection.object === this.mesh) {
         var selectIndex = selection.index = selection.data.index;
         var xx = this.data.x[selectIndex];
         var yy = this.data.y[selectIndex];
@@ -100768,7 +100758,6 @@ function zip3(x, y, z) {
 }
 
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
-var sizeMode2sizeKey = {scaled: 'coneSize', absolute: 'absoluteConeSize'};
 var anchor2coneOffset = {tip: 1, tail: 0, cm: 0.25, center: 0.5};
 var anchor2coneSpan = {tip: 1, tail: 1, cm: 0.75, center: 0.5};
 
@@ -100797,17 +100786,23 @@ function convert(scene, trace) {
 
     coneOpts.colormap = parseColorScale(trace.colorscale);
     coneOpts.vertexIntensityBounds = [trace.cmin / trace._normMax, trace.cmax / trace._normMax];
-
-    coneOpts[sizeMode2sizeKey[trace.sizemode]] = trace.sizeref;
     coneOpts.coneOffset = anchor2coneOffset[trace.anchor];
+
+    if(trace.sizemode === 'scaled') {
+        // unitless sizeref
+        coneOpts.coneSize = trace.sizeref || 0.5;
+    } else {
+        // sizeref here has unit of velocity
+        coneOpts.coneSize = trace.sizeref && trace._normMax ?
+            trace.sizeref / trace._normMax :
+            0.5;
+    }
 
     var meshData = conePlot(coneOpts);
 
-    // stash positions for gl-scatter3d 'hover' trace
-    meshData._pts = coneOpts.positions;
-
     // pass gl-mesh3d lighting attributes
-    meshData.lightPosition = [trace.lightposition.x, trace.lightposition.y, trace.lightposition.z];
+    var lp = trace.lightposition;
+    meshData.lightPosition = [lp.x, lp.y, lp.z];
     meshData.ambient = trace.lighting.ambient;
     meshData.diffuse = trace.lighting.diffuse;
     meshData.specular = trace.lighting.specular;
@@ -100816,8 +100811,7 @@ function convert(scene, trace) {
     meshData.opacity = trace.opacity;
 
     // stash autorange pad value
-    trace._pad = anchor2coneSpan[trace.anchor] * meshData.vectorScale * trace.sizeref;
-    if(trace.sizemode === 'scaled') trace._pad *= trace._normMax;
+    trace._pad = anchor2coneSpan[trace.anchor] * meshData.vectorScale * meshData.coneScale * trace._normMax;
 
     return meshData;
 }
@@ -100826,14 +100820,10 @@ proto.update = function(data) {
     this.data = data;
 
     var meshData = convert(this.scene, data);
-
     this.mesh.update(meshData);
-    this.pts.update({position: meshData._pts});
 };
 
 proto.dispose = function() {
-    this.scene.glplot.remove(this.pts);
-    this.pts.dispose();
     this.scene.glplot.remove(this.mesh);
     this.mesh.dispose();
 };
@@ -100844,21 +100834,11 @@ function createConeTrace(scene, data) {
     var meshData = convert(scene, data);
     var mesh = createConeMesh(gl, meshData);
 
-    var pts = createScatterPlot({
-        gl: gl,
-        position: meshData._pts,
-        project: false,
-        opacity: 0
-    });
-
     var cone = new Cone(scene, data.uid);
     cone.mesh = mesh;
-    cone.pts = pts;
     cone.data = data;
     mesh._trace = cone;
-    pts._trace = cone;
 
-    scene.glplot.add(pts);
     scene.glplot.add(mesh);
 
     return cone;
@@ -100866,7 +100846,7 @@ function createConeTrace(scene, data) {
 
 module.exports = createConeTrace;
 
-},{"../../lib":481,"../../lib/gl_format_color":478,"gl-cone3d":104,"gl-scatter3d":144}],590:[function(require,module,exports){
+},{"../../lib":481,"../../lib/gl_format_color":478,"gl-cone3d":104}],590:[function(require,module,exports){
 /**
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
