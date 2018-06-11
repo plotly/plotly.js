@@ -94,7 +94,9 @@ function convert(scene, trace) {
         coneOpts.coneSize = trace.sizeref || 0.5;
     } else {
         // sizeref here has unit of velocity
-        coneOpts.coneSize = (trace.sizeref / trace._normMax) || 0.5;
+        coneOpts.coneSize = trace.sizeref && trace._normMax ?
+            trace.sizeref / trace._normMax :
+            0.5;
     }
 
     var meshData = conePlot(coneOpts);

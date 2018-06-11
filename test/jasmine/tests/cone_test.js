@@ -219,6 +219,41 @@ describe('@gl Test cone interactions', function() {
         .then(done);
     });
 
+    it('should not pass zero or infinite `coneSize` to gl-cone3d', function(done) {
+        var base = {
+            type: 'cone',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 3],
+            u: [1, 0, 0],
+            v: [0, 1, 0],
+            w: [0, 0, 1]
+        };
+
+        Plotly.newPlot(gd, [
+            Lib.extendDeep({}, base),
+            Lib.extendDeep({}, base, {
+                sizemode: 'absolute'
+            }),
+            Lib.extendDeep({}, base, {
+                sizemode: 'absolute',
+                u: [0, 0, 0],
+                v: [0, 0, 0],
+                w: [0, 0, 0]
+            }),
+        ])
+        .then(function() {
+            var scene = gd._fullLayout.scene._scene;
+            var objs = scene.glplot.objects;
+
+            expect(objs[0].coneScale).toBe(0.5, 'base case');
+            expect(objs[1].coneScale).toBe(0.5, 'absolute case');
+            expect(objs[2].coneScale).toBe(0.5, 'absolute + 0-norm case');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should display hover labels', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-simple.json'));
         // only one trace on one scene
