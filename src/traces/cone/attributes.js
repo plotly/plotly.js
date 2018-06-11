@@ -125,12 +125,12 @@ var attrs = {
         description: [
             'Adjusts the cone size scaling.',
             'The size of the cones is determined by their u/v/w norm multiplied a factor and `sizeref`.',
-            'This factor (computed internally) corresponds to the minimum "time" to travel across two',
+            'This factor (computed internally) corresponds to the minimum "time" to travel across',
             'two successive x/y/z positions at the average velocity of those two successive positions',
             'All cones in a given trace use the same factor.',
             'With `sizemode` set to *scaled*, `sizeref` is unitless, its default value is *0.5*',
-            'With `sizemode` set to *absolute*, `sizeref` has units of velocity, its the default value is',
-            'half the sample\'s maximum vector norm.'
+            'With `sizemode` set to *absolute*, `sizeref` has the same units as the u/v/w vector field,',
+            'its the default value is half the sample\'s maximum vector norm.'
         ].join(' ')
     },
 
