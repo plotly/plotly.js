@@ -81,15 +81,14 @@ describe('@gl Test cone autorange:', function() {
 
     it('should add pad around cone position to make sure they fit on the scene', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-autorange.json'));
+        var rng0 = [0.103, 3.897];
 
         function makeScaleFn(s) {
             return function(v) { return v * s; };
         }
 
         Plotly.plot(gd, fig).then(function() {
-            _assertAxisRanges('base',
-                [-0.66, 4.66], [-0.66, 4.66], [-0.66, 4.66]
-            );
+            _assertAxisRanges('base', rng0, rng0, rng0);
 
             // the resulting image should be independent of what I multiply by here
             var trace = fig.data[0];
@@ -101,9 +100,7 @@ describe('@gl Test cone autorange:', function() {
             return Plotly.restyle(gd, {u: [u], v: [v], w: [w]});
         })
         .then(function() {
-            _assertAxisRanges('scaled up',
-                [-0.66, 4.66], [-0.66, 4.66], [-0.66, 4.66]
-            );
+            _assertAxisRanges('scaled up', rng0, rng0, rng0);
 
             // the resulting image should be independent of what I multiply by here
             var trace = fig.data[0];
@@ -115,12 +112,9 @@ describe('@gl Test cone autorange:', function() {
             return Plotly.restyle(gd, {u: [u], v: [v], w: [w]});
         })
         .then(function() {
-            _assertAxisRanges('scaled down',
-                [-0.66, 4.66], [-0.66, 4.66], [-0.66, 4.66]
-            );
+            _assertAxisRanges('scaled down', rng0, rng0, rng0);
 
             var trace = fig.data[0];
-
             var x = trace.x.slice();
             x.push(5);
             var y = trace.y.slice();
@@ -140,23 +134,20 @@ describe('@gl Test cone autorange:', function() {
             });
         })
         .then(function() {
-            _assertAxisRanges('after adding one cone outside range but with norm-0',
-                [-0.72, 6.72], [-0.72, 6.72], [-0.72, 6.72]
-            );
+            var rng = [0.041, 5.959];
+            _assertAxisRanges('after adding one cone outside range but with norm-0', rng, rng, rng);
 
             return Plotly.restyle(gd, 'sizeref', 10);
         })
         .then(function() {
-            _assertAxisRanges('after increasing sizeref',
-                [-15.06, 21.06], [-15.06, 21.06], [-15.06, 21.06]
-            );
+            var rng = [-15.808, 21.808];
+            _assertAxisRanges('after increasing sizeref', rng, rng, rng);
 
             return Plotly.restyle(gd, 'sizeref', 0.1);
         })
         .then(function() {
-            _assertAxisRanges('after decreasing sizeref',
-                [0.72, 5.28], [0.72, 5.28], [0.72, 5.28]
-            );
+            var rng = [0.708, 5.292];
+            _assertAxisRanges('after decreasing sizeref', rng, rng, rng);
 
             return Plotly.restyle(gd, {
                 sizemode: 'absolute',
@@ -164,9 +155,8 @@ describe('@gl Test cone autorange:', function() {
             });
         })
         .then(function() {
-            _assertAxisRanges('with sizemode absolute',
-                [0.63, 5.37], [0.63, 5.37], [0.63, 5.37]
-            );
+            var rng = [0.614, 5.386];
+            _assertAxisRanges('with sizemode absolute', rng, rng, rng);
 
             var trace = fig.data[0];
             var m = makeScaleFn(2);
@@ -179,9 +169,8 @@ describe('@gl Test cone autorange:', function() {
             });
         })
         .then(function() {
-            _assertAxisRanges('after spacing out the x/y/z coordinates',
-                [1.25, 10.75], [1.25, 10.75], [1.25, 10.75]
-            );
+            var rng = [1.229, 10.771];
+            _assertAxisRanges('after spacing out the x/y/z coordinates', rng, rng, rng);
         })
         .catch(failTest)
         .then(done);
@@ -209,7 +198,7 @@ describe('@gl Test cone interactions', function() {
             var scene = gd._fullLayout.scene._scene;
             var objs = scene.glplot.objects;
 
-            expect(objs.length).toBe(4);
+            expect(objs.length).toBe(2);
 
             return Plotly.deleteTraces(gd, [0]);
         })
@@ -217,7 +206,7 @@ describe('@gl Test cone interactions', function() {
             var scene = gd._fullLayout.scene._scene;
             var objs = scene.glplot.objects;
 
-            expect(objs.length).toBe(2);
+            expect(objs.length).toBe(1);
 
             return Plotly.deleteTraces(gd, [0]);
         })
@@ -225,6 +214,41 @@ describe('@gl Test cone interactions', function() {
             var scene = gd._fullLayout.scene;
 
             expect(scene).toBeUndefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should not pass zero or infinite `coneSize` to gl-cone3d', function(done) {
+        var base = {
+            type: 'cone',
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            z: [1, 2, 3],
+            u: [1, 0, 0],
+            v: [0, 1, 0],
+            w: [0, 0, 1]
+        };
+
+        Plotly.newPlot(gd, [
+            Lib.extendDeep({}, base),
+            Lib.extendDeep({}, base, {
+                sizemode: 'absolute'
+            }),
+            Lib.extendDeep({}, base, {
+                sizemode: 'absolute',
+                u: [0, 0, 0],
+                v: [0, 0, 0],
+                w: [0, 0, 0]
+            }),
+        ])
+        .then(function() {
+            var scene = gd._fullLayout.scene._scene;
+            var objs = scene.glplot.objects;
+
+            expect(objs[0].coneScale).toBe(0.5, 'base case');
+            expect(objs[1].coneScale).toBe(0.5, 'absolute case');
+            expect(objs[2].coneScale).toBe(0.5, 'absolute + 0-norm case');
         })
         .catch(failTest)
         .then(done);
@@ -268,7 +292,7 @@ describe('@gl Test cone interactions', function() {
 
     it('should display hover labels (multi-trace case)', function(done) {
         function _hover() {
-            mouseEvent('mouseover', 245, 230);
+            mouseEvent('mouseover', 282, 240);
             return delay(20)();
         }
 
