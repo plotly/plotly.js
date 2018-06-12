@@ -16,7 +16,10 @@ module.exports = {
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
-    colorbar: require('../cone/colorbar'),
+    colorbar: {
+        min: 'cmin',
+        max: 'cmax'
+    },
     calc: require('./calc'),
     plot: require('./convert'),
     eventData: function(out, pt) {

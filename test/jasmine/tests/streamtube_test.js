@@ -198,7 +198,7 @@ describe('@gl Test streamtube interactions', function() {
         }
 
         Plotly.plot(gd, fig).then(function() {
-            _assert('base cone', {objTypes: ['cone', 'cone']});
+            _assert('base cone', {objTypes: ['cone']});
             return Plotly.restyle(gd, 'type', 'streamtube');
         })
         .then(function() {
@@ -206,12 +206,12 @@ describe('@gl Test streamtube interactions', function() {
             return Plotly.restyle(gd, 'type', 'cone');
         })
         .then(function() {
-            _assert('back to cone', {objTypes: ['cone', 'cone']});
+            _assert('back to cone', {objTypes: ['cone']});
             return Plotly.addTraces(gd, [trace1]);
         })
         .then(function() {
             _assert('add streamtube on top of cone', {
-                objTypes: ['cone', 'cone', 'streamtube']
+                objTypes: ['cone', 'streamtube']
             });
         })
         .catch(failTest)
