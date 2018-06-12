@@ -5,7 +5,7 @@
 [![MIT License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://github.com/plotly/plotly.js/blob/master/LICENSE)
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
-plotly.js is a high-level, declarative charting library. plotly.js ships with over 20
+plotly.js is a high-level, declarative charting library. plotly.js ships with over 30
 chart types, including scientific charts, 3D graphs, statistical charts, SVG maps, financial charts,
 and more.
 
