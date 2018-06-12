@@ -10,6 +10,39 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.38.3] -- 2018-06-11
+
+### Fixed
+- Fix `cone` axis padding when under `sizemode: 'absolute'` [#2715]
+- Fix `cone` scaling on irregular grids [#2715]
+- Fix `cone` `sizemode: 'absolute'` scaling and attribute description [#2715]
+- Improve `cone` hover picking [#2715]
+- Fix exception during histogram cross-trace computation [#2724]
+- Fix handling of custom transforms that make their own data arrays [#2714]
+
+
+## [1.38.2] -- 2018-06-04
+
+### Fixed
+- Fix bar text removal (bug introduced in 1.36.0) [#2689]
+- Fix handling number `0` in hover labels and on-graph text [#2682]
+
+
+## [1.38.1] -- 2018-05-29
+
+### Fixed
+- Fix transforms on `scattergl` traces [#2677]
+- Fix `marker.line.width` scaling in `scattergl` traces [#2677]
+- Fix `[un]selected.marker.size` scaling in `scattergl` traces [#2677]
+- Create two not three WebGL contexts for scattergl/splom graphs
+  (bug introduced 1.36.0) [#2656]
+- Fix `z` updates of interpolated values on heatmap and contour traces with gaps [#2657]
+- Fix select/pan double-click behavior when relayout from one another
+  (bug introduced in 1.36.0) [#2668]
+- Fix shift selection behavior after pan/scroll
+  (bug introduced in 1.36.0) [#2676]
+
+
 ## [1.38.0] -- 2018-05-23
 
 ### Added

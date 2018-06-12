@@ -12,7 +12,7 @@ var ScatterTernary = {};
 
 ScatterTernary.attributes = require('./attributes');
 ScatterTernary.supplyDefaults = require('./defaults');
-ScatterTernary.colorbar = require('../scatter/colorbar');
+ScatterTernary.colorbar = require('../scatter/marker_colorbar');
 ScatterTernary.calc = require('./calc');
 ScatterTernary.plot = require('./plot');
 ScatterTernary.style = require('../scatter/style').style;
@@ -24,7 +24,7 @@ ScatterTernary.eventData = require('./event_data');
 ScatterTernary.moduleType = 'trace';
 ScatterTernary.name = 'scatterternary';
 ScatterTernary.basePlotModule = require('../../plots/ternary');
-ScatterTernary.categories = ['ternary', 'symbols', 'markerColorscale', 'showLegend', 'scatter-like'];
+ScatterTernary.categories = ['ternary', 'symbols', 'showLegend', 'scatter-like'];
 ScatterTernary.meta = {
     hrName: 'scatter_ternary',
     description: [

@@ -962,6 +962,72 @@ describe('@gl Test gl2d plots', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should handle transform traces properly (calcTransform case)', function(done) {
+        spyOn(ScatterGl, 'calc').and.callThrough();
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+            transforms: [{
+                type: 'filter',
+                target: 'x',
+                operation: '>',
+                value: 1
+            }]
+        }])
+        .then(function() {
+            expect(ScatterGl.calc).toHaveBeenCalledTimes(2);
+
+            var opts = gd.calcdata[0][0].t._scene.markerOptions;
+            // length === 2 before #2677
+            expect(opts.length).toBe(1);
+
+            return Plotly.restyle(gd, 'selectedpoints', [[1]]);
+        })
+        .then(function() {
+            // was === 1 before #2677
+            var scene = gd.calcdata[0][0].t._scene;
+            expect(scene.selectBatch[0]).toEqual([0]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should handle transform traces properly (default transform case)', function(done) {
+        spyOn(ScatterGl, 'calc').and.callThrough();
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            x: [1, 2, 3],
+            y: [1, 2, 1],
+            transforms: [{
+                type: 'groupby',
+                groups: ['a', 'b', 'a']
+            }]
+        }])
+        .then(function() {
+            // twice per 'expanded' trace
+            expect(ScatterGl.calc).toHaveBeenCalledTimes(4);
+
+            // 'scene' from opts0 and opts1 is linked to the same object,
+            // which has two items, one for each 'expanded' trace
+            var opts0 = gd.calcdata[0][0].t._scene.markerOptions;
+            expect(opts0.length).toBe(2);
+
+            var opts1 = gd.calcdata[1][0].t._scene.markerOptions;
+            expect(opts1.length).toBe(2);
+
+            return Plotly.restyle(gd, 'selectedpoints', [[1]]);
+        })
+        .then(function() {
+            var scene = gd.calcdata[0][0].t._scene;
+            expect(scene.selectBatch).toEqual([[], [0]]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test scattergl autorange:', function() {

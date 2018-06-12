@@ -12,7 +12,8 @@
       "size": 20,
       "line": {"width": 2, "color": "#444"},
       "color": [10, 40, 100],
-      "colorscale": "Reds"
+      "colorscale": "Reds",
+      "showscale": true
     }
   }],
   "layout": {

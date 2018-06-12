@@ -13,6 +13,7 @@ var failTest = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
 describe('legend defaults', function() {
     'use strict';
@@ -524,18 +525,32 @@ describe('legend relayout update', function() {
     afterEach(destroyGraphDiv);
 
     it('should hide and show the legend', function(done) {
-        var mockCopy = Lib.extendDeep({}, mock);
+        var mockCopy = Lib.extendDeep({}, mock, {layout: {
+            legend: {x: 1.1, xanchor: 'left'},
+            margin: {l: 50, r: 50, pad: 0},
+            width: 500
+        }});
+
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(1);
+            // check that the margins changed
+            assertPlotSize({widthLessThan: 400});
             return Plotly.relayout(gd, {showlegend: false});
         })
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(0);
+            assertPlotSize({width: 400});
             return Plotly.relayout(gd, {showlegend: true});
         })
         .then(function() {
             expect(d3.selectAll('g.legend').size()).toBe(1);
+            assertPlotSize({widthLessThan: 400});
+            return Plotly.relayout(gd, {'legend.x': 0.7});
+        })
+        .then(function() {
+            expect(d3.selectAll('g.legend').size()).toBe(1);
+            assertPlotSize({width: 400});
         })
         .catch(failTest)
         .then(done);

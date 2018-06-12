@@ -11,9 +11,7 @@
 
 
 exports.attributes = require('./attributes');
-
 exports.supplyDefaults = require('./defaults');
-
+exports.connect = require('./connect');
 exports.draw = require('./draw');
-
 exports.hasColorbar = require('./has_colorbar');

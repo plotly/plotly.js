@@ -13,7 +13,7 @@ var ScatterMapbox = {};
 
 ScatterMapbox.attributes = require('./attributes');
 ScatterMapbox.supplyDefaults = require('./defaults');
-ScatterMapbox.colorbar = require('../scatter/colorbar');
+ScatterMapbox.colorbar = require('../scatter/marker_colorbar');
 ScatterMapbox.calc = require('../scattergeo/calc');
 ScatterMapbox.plot = require('./plot');
 ScatterMapbox.hoverPoints = require('./hover');
@@ -30,7 +30,7 @@ ScatterMapbox.style = function(_, cd) {
 ScatterMapbox.moduleType = 'trace';
 ScatterMapbox.name = 'scattermapbox';
 ScatterMapbox.basePlotModule = require('../../plots/mapbox');
-ScatterMapbox.categories = ['mapbox', 'gl', 'symbols', 'markerColorscale', 'showLegend', 'scatterlike'];
+ScatterMapbox.categories = ['mapbox', 'gl', 'symbols', 'showLegend', 'scatterlike'];
 ScatterMapbox.meta = {
     hrName: 'scatter_mapbox',
     description: [

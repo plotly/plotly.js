@@ -650,7 +650,7 @@ drawing.textPointStyle = function(s, trace, gd) {
         var p = d3.select(this);
         var text = Lib.extractOption(d, trace, 'tx', 'text');
 
-        if(!text) {
+        if(!text && text !== 0) {
             p.remove();
             return;
         }

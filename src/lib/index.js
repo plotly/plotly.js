@@ -217,21 +217,24 @@ lib.simpleMap = function(array, func, x1, x2) {
     return out;
 };
 
-// random string generator
-lib.randstr = function randstr(existing, bits, base) {
-    /*
-     * Include number of bits, the base of the string you want
-     * and an optional array of existing strings to avoid.
-     */
+/**
+ * Random string generator
+ *
+ * @param {object} existing
+ *     pass in strings to avoid as keys with truthy values
+ * @param {int} bits
+ *     bits of information in the output string, default 24
+ * @param {int} base
+ *     base of string representation, default 16. Should be a power of 2.
+ */
+lib.randstr = function randstr(existing, bits, base, _recursion) {
     if(!base) base = 16;
     if(bits === undefined) bits = 24;
     if(bits <= 0) return '0';
 
-    var digits = Math.log(Math.pow(2, bits)) / Math.log(base),
-        res = '',
-        i,
-        b,
-        x;
+    var digits = Math.log(Math.pow(2, bits)) / Math.log(base);
+    var res = '';
+    var i, b, x;
 
     for(i = 2; digits === Infinity; i *= 2) {
         digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
@@ -251,9 +254,13 @@ lib.randstr = function randstr(existing, bits, base) {
     }
 
     var parsed = parseInt(res, base);
-    if((existing && (existing.indexOf(res) > -1)) ||
+    if((existing && existing[res]) ||
          (parsed !== Infinity && parsed >= Math.pow(2, bits))) {
-        return randstr(existing, bits, base);
+        if(_recursion > 10) {
+            lib.warn('randstr failed uniqueness');
+            return res;
+        }
+        return randstr(existing, bits, base, (_recursion || 0) + 1);
     }
     else return res;
 };
@@ -478,6 +485,17 @@ lib.extractOption = function(calcPt, trace, calcKey, traceKey) {
     if(!Array.isArray(traceVal)) return traceVal;
 };
 
+function makePtIndex2PtNumber(indexToPoints) {
+    var ptIndex2ptNumber = {};
+    for(var k in indexToPoints) {
+        var pts = indexToPoints[k];
+        for(var j = 0; j < pts.length; j++) {
+            ptIndex2ptNumber[pts[j]] = +k;
+        }
+    }
+    return ptIndex2ptNumber;
+}
+
 /** Tag selected calcdata items
  *
  * N.B. note that point 'index' corresponds to input data array index
@@ -498,13 +516,7 @@ lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
 
     // make pt index-to-number map object, which takes care of transformed traces
     if(indexToPoints) {
-        ptIndex2ptNumber = {};
-        for(var k in indexToPoints) {
-            var pts = indexToPoints[k];
-            for(var j = 0; j < pts.length; j++) {
-                ptIndex2ptNumber[pts[j]] = k;
-            }
-        }
+        ptIndex2ptNumber = makePtIndex2PtNumber(indexToPoints);
     }
 
     function isCdIndexValid(v) {
@@ -522,6 +534,30 @@ lib.tagSelected = function(calcTrace, trace, ptNumber2cdIndex) {
                 calcTrace[cdIndex].selected = 1;
             }
         }
+    }
+};
+
+lib.selIndices2selPoints = function(trace) {
+    var selectedpoints = trace.selectedpoints;
+    var indexToPoints = trace._indexToPoints;
+
+    if(indexToPoints) {
+        var ptIndex2ptNumber = makePtIndex2PtNumber(indexToPoints);
+        var out = [];
+
+        for(var i = 0; i < selectedpoints.length; i++) {
+            var ptIndex = selectedpoints[i];
+            if(lib.isIndex(ptIndex)) {
+                var ptNumber = ptIndex2ptNumber[ptIndex];
+                if(lib.isIndex(ptNumber)) {
+                    out.push(ptNumber);
+                }
+            }
+        }
+
+        return out;
+    } else {
+        return selectedpoints;
     }
 };
 

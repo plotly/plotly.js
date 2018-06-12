@@ -188,7 +188,8 @@ func.defaultConfig = {
             flags: [
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
-                isCI ? '--ignore-gpu-blacklist' : ''
+                isCI ? '--ignore-gpu-blacklist' : '',
+                (isBundleTest && basename(testFileGlob) === 'no_webgl') ? '--disable-webgl' : ''
             ]
         },
         _Firefox: {

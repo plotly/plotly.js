@@ -73,8 +73,7 @@ module.exports = {
     uid: {
         valType: 'string',
         role: 'info',
-        dflt: '',
-        editType: 'calc'
+        editType: 'plot'
     },
     ids: {
         valType: 'data_array',

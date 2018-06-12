@@ -192,10 +192,10 @@ function convertMarkerStyle(trace) {
         // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
         if(multiLineWidth) {
             for(i = 0; i < count; i++) {
-                borderSizes[i] = markerSizeFunc(optsIn.line.width[i]);
+                borderSizes[i] = optsIn.line.width[i] / 2;
             }
         } else {
-            s = markerSizeFunc(optsIn.line.width);
+            s = optsIn.line.width / 2;
             for(i = 0; i < count; i++) {
                 borderSizes[i] = s;
             }
@@ -219,7 +219,7 @@ function convertMarkerSelection(trace, target) {
     if(target.marker && target.marker.symbol) {
         optsOut = convertMarkerStyle(Lib.extendFlat({}, optsIn, target.marker));
     } else if(target.marker) {
-        if(target.marker.size) optsOut.sizes = target.marker.size;
+        if(target.marker.size) optsOut.sizes = target.marker.size / 2;
         if(target.marker.color) optsOut.colors = target.marker.color;
         if(target.marker.opacity !== undefined) optsOut.opacity = target.marker.opacity;
     }

@@ -13,7 +13,10 @@ var Surface = {};
 
 Surface.attributes = require('./attributes');
 Surface.supplyDefaults = require('./defaults');
-Surface.colorbar = require('./colorbar');
+Surface.colorbar = {
+    min: 'cmin',
+    max: 'cmax'
+};
 Surface.calc = require('./calc');
 Surface.plot = require('./convert');
 

@@ -1294,6 +1294,43 @@ describe('A bar plot', function() {
         .catch(fail)
         .then(done);
     });
+
+    it('should be able to add/remove text node on restyle', function(done) {
+        function _assertNumberOfBarTextNodes(cnt) {
+            var sel = d3.select(gd).select('.barlayer').selectAll('text');
+            expect(sel.size()).toBe(cnt);
+        }
+
+        Plotly.plot(gd, [{
+            type: 'bar',
+            x: ['Product A', 'Product B', 'Product C'],
+            y: [20, 14, 23],
+            text: [20, 14, 23],
+            textposition: 'auto'
+        }])
+        .then(function() {
+            _assertNumberOfBarTextNodes(3);
+            return Plotly.restyle(gd, 'textposition', 'none');
+        })
+        .then(function() {
+            _assertNumberOfBarTextNodes(0);
+            return Plotly.restyle(gd, 'textposition', 'auto');
+        })
+        .then(function() {
+            _assertNumberOfBarTextNodes(3);
+            return Plotly.restyle(gd, 'text', [[null, 0, '']]);
+        })
+        .then(function() {
+            // N.B. that '0' should be there!
+            _assertNumberOfBarTextNodes(1);
+            return Plotly.restyle(gd, 'text', 'yo!');
+        })
+        .then(function() {
+            _assertNumberOfBarTextNodes(3);
+        })
+        .catch(fail)
+        .then(done);
+    });
 });
 
 describe('bar hover', function() {

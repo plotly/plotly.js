@@ -17,7 +17,8 @@ module.exports = function plot(gd, cdparcoords) {
     var root = fullLayout._paperdiv;
     var container = fullLayout._glcontainer;
 
-    prepareRegl(gd);
+    var success = prepareRegl(gd);
+    if(!success) return;
 
     var gdDimensions = {};
     var gdDimensionsOriginalOrder = {};
