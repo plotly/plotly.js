@@ -1737,13 +1737,19 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
             };
             labelx = function(d) {
                 return d.dx + position + (labelStandoff + pad +
-                    ((Math.abs(ax.tickangle) === 90) ? d.fontSize / 2 : 0)) * flipit;
+                    ((Math.abs(ax.tickangle) === 90) ? d.fontSize / 2 : 0)) * flipit 
+                    * ((ax.ticklabelalignment === "outside") ? 1 : -1);
             };
             labelanchor = function(angle) {
                 if(isNumeric(angle) && Math.abs(angle) === 90) {
                     return 'middle';
                 }
-                return axside === 'right' ? 'start' : 'end';
+                let alignment = axside === 'right' ? 'start' : 'end';
+                if (ax.ticklabelalignment === "inside") {
+                    // flip the alignment rules if ticklabels are inside the axis
+                    alignment = axside === 'right' ? 'end' : 'start';
+                }
+                return alignment;p
             };
         }
         else if(axid === 'angular') {

@@ -33,7 +33,13 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             size: font.size,
             color: dfltFontColor
         });
-        coerce('tickangle');
+        var tickangle = coerce('tickangle');
+
+        var tickLabelAlignment = coerce('ticklabelalignment');
+        // if tickangle is not 90, set ticklabelalignment back to default "outside"
+        if (tickangle !== 90 && tickangle !== 'auto') {
+            containerOut['ticklabelalignment'] = 'outside';
+        }
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
