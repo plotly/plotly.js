@@ -1736,20 +1736,22 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
                 return d.dy + d.fontSize * MID_SHIFT - labelShift * flipit;
             };
             labelx = function(d) {
+                var alignmentFlip = (ax.ticklabelalignment === "outside") ? 1 : -1
                 return d.dx + position + (labelStandoff + pad +
                     ((Math.abs(ax.tickangle) === 90) ? d.fontSize / 2 : 0)) * flipit 
-                    * ((ax.ticklabelalignment === "outside") ? 1 : -1);
+                    * alignmentFlip;
             };
             labelanchor = function(angle) {
                 if(isNumeric(angle) && Math.abs(angle) === 90) {
                     return 'middle';
                 }
                 let alignment = axside === 'right' ? 'start' : 'end';
+
+                // flip the alignment rules if ticklabels are inside the axis
                 if (ax.ticklabelalignment === "inside") {
-                    // flip the alignment rules if ticklabels are inside the axis
                     alignment = axside === 'right' ? 'end' : 'start';
                 }
-                return alignment;p
+                return alignment;
             };
         }
         else if(axid === 'angular') {
