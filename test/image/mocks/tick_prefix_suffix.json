@@ -18,7 +18,8 @@
             "tickprefix": "*** ",
             "showtickprefix": "first",
             "ticksuffix": " €",
-            "showticksuffix": "last"
+            "showticksuffix": "last",
+            "ticklabelalignment": "inside"
         }
     }
 }
