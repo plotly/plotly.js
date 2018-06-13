@@ -34,7 +34,8 @@
                 -2.1464968152866244,
                 0.1464968152866242
             ],
-            "autorange": true
+            "autorange": true,
+            "ticklabelalignment": "inside"
         },
         "height": 450,
         "width": 1000,

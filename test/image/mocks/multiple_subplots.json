@@ -70,7 +70,8 @@
       "domain": [
         0,
         0.45
-      ]
+      ],
+      "ticklabelalignment": "inside"
     },
     "xaxis4": {
       "domain": [
@@ -97,20 +98,23 @@
         0,
         0.45
       ],
-      "anchor": "x2"
+      "anchor": "x2",
+      "ticklabelalignment": "inside"
     },
     "yaxis3": {
       "domain": [
         0.55,
         1
-      ]
+      ],
+      "ticklabelalignment": "inside"
     },
     "yaxis4": {
       "domain": [
         0.55,
         1
       ],
-      "anchor": "x4"
+      "anchor": "x4",
+      "ticklabelalignment": "inside"
     }
   }
 }

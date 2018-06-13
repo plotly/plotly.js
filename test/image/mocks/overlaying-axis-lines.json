@@ -9,8 +9,8 @@
   }],
   "layout": {
     "xaxis": {"showline": true},
-    "yaxis": {"showline": true},
+    "yaxis": {"showline": true, "ticklabelalignment": "inside"},
     "xaxis2": {"showline": true, "overlaying": "x", "side": "top"},
-    "yaxis2": {"showline": true, "overlaying": "y", "side": "right"}
+    "yaxis2": {"showline": true, "overlaying": "y", "side": "right", "ticklabelalignment": "inside"}
   }
 }

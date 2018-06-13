@@ -344,6 +344,13 @@ module.exports = {
         editType: 'ticks',
         description: 'Determines whether or not the tick labels are drawn.'
     },
+    ticklabelalignment: {
+        valType: 'string',
+        dflt: 'outside',
+        role: 'style',
+        editType: 'ticks',
+        description: 'Determines whether the tick labels will be inside the axis (and text aligned toward the axis.'
+    },
     automargin: {
         valType: 'boolean',
         dflt: false,

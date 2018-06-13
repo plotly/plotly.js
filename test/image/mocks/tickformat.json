@@ -16,7 +16,8 @@
         },
         "yaxis": {
             "type": "log",
-            "tickformat": ":^+12.3g"
+            "tickformat": ":^+12.3g",
+            "ticklabelalignment": "inside"
         }
     }
 }
