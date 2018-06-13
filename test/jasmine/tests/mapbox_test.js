@@ -674,6 +674,56 @@ describe('@noCI, mapbox plots', function() {
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('should be able to react to layer changes', function(done) {
+        function makeFigure(color) {
+            return {
+                data: [{type: 'scattermapbox'}],
+                layout: {
+                    mapbox: {
+                        layers: [{
+                            color: color,
+                            sourcetype: 'geojson',
+                            type: 'fill',
+                            source: {
+                                type: 'Feature',
+                                properties: {},
+                                geometry: {
+                                    type: 'Polygon',
+                                    coordinates: [[
+                                        [174.74475860595703, -36.86533886128865],
+                                        [174.77737426757812, -36.86533886128865],
+                                        [174.77737426757812, -36.84913134182603],
+                                        [174.74475860595703, -36.84913134182603],
+                                        [174.74475860595703, -36.86533886128865]
+                                    ]]
+                                }
+                            }
+                        }]
+                    }
+                }
+            };
+        }
+
+        function _assert(color) {
+            var mapInfo = getMapInfo(gd);
+            var layer = mapInfo.layers[mapInfo.layoutLayers[0]];
+
+            expect(mapInfo.layoutLayers.length).toBe(1, 'one layer');
+            expect(mapInfo.layoutSources.length).toBe(1, 'one layer source');
+            expect(String(layer.paint._values['fill-color'].value.value)).toBe(color, 'layer color');
+        }
+
+        Plotly.react(gd, makeFigure('blue')).then(function() {
+            _assert('rgba(0,0,255,1)');
+            return Plotly.react(gd, makeFigure('red'));
+        })
+        .then(function() {
+            _assert('rgba(255,0,0,1)');
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
     it('should be able to update the access token', function(done) {
         Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work').catch(function(err) {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual('wont-work');

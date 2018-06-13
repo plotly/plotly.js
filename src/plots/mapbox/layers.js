@@ -39,8 +39,9 @@ proto.update = function update(opts) {
         this.updateLayer(opts);
     } else if(this.needsNewSource(opts)) {
         // IMPORTANT: must delete layer before source to not cause errors
-        this.updateLayer(opts);
+        this.removeLayer();
         this.updateSource(opts);
+        this.updateLayer(opts);
     } else if(this.needsNewLayer(opts)) {
         this.updateLayer(opts);
     } else {
@@ -87,8 +88,7 @@ proto.updateLayer = function(opts) {
     var map = this.map;
     var convertedOpts = convertOpts(opts);
 
-    if(map.getLayer(this.idLayer)) map.removeLayer(this.idLayer);
-
+    this.removeLayer();
     this.layerType = opts.type;
 
     if(isVisible(opts)) {
@@ -108,6 +108,13 @@ proto.updateStyle = function(opts) {
         var convertedOpts = convertOpts(opts);
         this.mapbox.setOptions(this.idLayer, 'setLayoutProperty', convertedOpts.layout);
         this.mapbox.setOptions(this.idLayer, 'setPaintProperty', convertedOpts.paint);
+    }
+};
+
+proto.removeLayer = function() {
+    var map = this.map;
+    if(map.getLayer(this.idLayer)) {
+        map.removeLayer(this.idLayer);
     }
 };
 
