@@ -71,7 +71,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         (!e.shiftKey && !e.altKey) ||
         ((e.shiftKey || e.altKey) && !plotinfo.selection)
     ) {
-        // create new polygons, if shift mode or selecting across different subplots
+        // create new polygons, if not shift mode or selecting across different subplots
         plotinfo.selection = {};
         plotinfo.selection.polygons = dragOptions.polygons = [];
         plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
@@ -283,7 +283,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 
-                    traceSelection = searchInfo._module.selectPoints(searchInfo, testPoly);
+                    traceSelection = searchInfo._module.selectPoints(searchInfo, testPoly, shouldRetainSelection(e));
                     traceSelections.push(traceSelection);
 
                     thisSelection = fillSelectionItem(traceSelection, searchInfo);
@@ -310,8 +310,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         throttle.done(throttleID).then(function() {
             throttle.clear(throttleID);
 
-            // clear visual boundaries of selection area if displayed
-            outlines.remove();
             if(numClicks === 2) {
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
@@ -320,6 +318,9 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
                 updateSelectedState(gd, searchTraces);
                 gd.emit('plotly_deselect', null);
+
+                // clear visual boundaries of selection area if displayed
+                outlines.remove();
             }
             else {
                 // TODO What to do with the code below because we now have behavior for a single click
@@ -358,7 +359,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
 // TODO do we have to consider multiple traces?
-// TODO implement selection retention (Shift key) for lasso and box
 function selectOnClick(gd, numClicks, evt) {
     var calcData = gd.calcdata[0];
 
@@ -374,7 +374,7 @@ function selectOnClick(gd, numClicks, evt) {
             module = trace._module;
 
         // Execute selection by delegating to respective module
-        var retainSelection = evt.shiftKey,
+        var retainSelection = shouldRetainSelection(evt),
             pointSelected = isPointSelected(trace, hoverDatum.pointNumber),
             onePointSelectedOnly = isOnePointSelectedOnly(trace);
 
@@ -393,6 +393,10 @@ function selectOnClick(gd, numClicks, evt) {
 
         updateSelectedState(gd, [searchInfo], eventData);
     }
+}
+
+function shouldRetainSelection(evt) {
+    return evt.shiftKey;
 }
 
 function isPointSelected(trace, pointNumber) {

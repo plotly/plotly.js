@@ -11,7 +11,7 @@
 
 var subtypes = require('./subtypes');
 
-function selectPoints(searchInfo, polygon) {
+function selectPoints(searchInfo, polygon, retainOtherSelectModesState) {
     var cd = searchInfo.cd,
         xa = searchInfo.xaxis,
         ya = searchInfo.yaxis,
@@ -37,8 +37,13 @@ function selectPoints(searchInfo, polygon) {
             if(polygon.contains([x, y])) {
                 selection.push(_newSelectionItem(i, xa.c2d(di.x), ya.c2d(di.y)));
                 di.selected = 1;
+                di.selectedByPolygon = true;
             } else {
+                if(retainOtherSelectModesState && !di.selectedByPolygon && di.selected === 1) {
+                    continue;
+                }
                 di.selected = 0;
+                delete di.selectedByPolygon;
             }
         }
     }
