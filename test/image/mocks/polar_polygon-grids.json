@@ -84,6 +84,7 @@
     },
     "polar4": {
       "usepolygons": true,
+      "bgcolor": "#d3d3d3",
       "domain": {
         "x": [0.54, 1],
         "y": [0, 0.44]

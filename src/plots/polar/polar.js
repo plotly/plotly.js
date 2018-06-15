@@ -280,7 +280,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     yaxis.isPtWithinRange = function() { return true; };
 
     _this.clipPaths.forTraces.select('path')
-        .attr('d', pathSectorClosed(radius, sector))
+        .attr('d', pathSectorClosed(radius, sector, _this.vangles))
         .attr('transform', strTranslate(cxx, cyy));
 
     layers.frontplot
@@ -288,7 +288,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
         .call(Drawing.setClipUrl, _this._hasClipOnAxisFalse ? null : _this.clipIds.forTraces);
 
     layers.bg
-        .attr('d', pathSectorClosed(radius, sector))
+        .attr('d', pathSectorClosed(radius, sector, _this.vangles))
         .attr('transform', strTranslate(cx, cy))
         .call(Color.fill, polarLayout.bgcolor);
 
