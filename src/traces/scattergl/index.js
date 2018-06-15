@@ -13,6 +13,7 @@ var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var cluster = require('point-cluster');
 var arrayRange = require('array-range');
+var Text = require('../../../../regl-text');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -103,6 +104,7 @@ function calc(gd, trace) {
     if(opts.marker && !scene.scatter2d) scene.scatter2d = true;
     if(opts.line && !scene.line2d) scene.line2d = true;
     if((opts.errorX || opts.errorY) && !scene.error2d) scene.error2d = true;
+    if(opts.text && !scene.glText) scene.glText = true;
 
     // FIXME: organize it in a more appropriate manner, probably in sceneOptions
     // put point-cluster instance for optimized regl calc
@@ -118,6 +120,7 @@ function calc(gd, trace) {
     scene.markerOptions.push(opts.marker);
     scene.selectedOptions.push(opts.selected);
     scene.unselectedOptions.push(opts.unselected);
+    scene.textOptions.push(opts.text);
     scene.count++;
 
     // stash scene ref
@@ -131,6 +134,7 @@ function calc(gd, trace) {
     gd.firstscatter = false;
     return [{x: false, y: false, t: stash, trace: trace}];
 }
+
 
 // create scene options
 function sceneOptions(gd, subplot, trace, positions, x, y) {
@@ -161,6 +165,7 @@ function sceneOptions(gd, subplot, trace, positions, x, y) {
     return opts;
 }
 
+
 // make sure scene exists on subplot, return it
 function sceneUpdate(gd, subplot) {
     var scene = subplot._scene;
@@ -178,7 +183,8 @@ function sceneUpdate(gd, subplot) {
         selectedOptions: [],
         unselectedOptions: [],
         errorXOptions: [],
-        errorYOptions: []
+        errorYOptions: [],
+        textOptions: []
     };
 
     var initOpts = {
@@ -189,6 +195,7 @@ function sceneUpdate(gd, subplot) {
         scatter2d: false,
         error2d: false,
         line2d: false,
+        glText: false,
         select2d: null
     };
 
@@ -213,6 +220,12 @@ function sceneUpdate(gd, subplot) {
             if(scene.line2d) scene.line2d.update(opts);
             if(scene.error2d) scene.error2d.update(opts.concat(opts));
             if(scene.select2d) scene.select2d.update(opts);
+            if(scene.glText) {
+                xxx
+                // scene.glText.forEach(function (text) {
+                //     text.update(opts);
+                // })
+            }
 
             scene.draw();
         };
@@ -246,6 +259,15 @@ function sceneUpdate(gd, subplot) {
             if(scene.scatter2d && scene.select2d && scene.selectBatch) {
                 scene.select2d.draw(scene.selectBatch);
                 scene.scatter2d.draw(scene.unselectBatch);
+            }
+
+            if(scene.glText.length) {
+                scene.glText.forEach(function (items) {
+                    items.forEach(function (item) {
+                        item.update({position: [100, 100], range: [0,0,200,200], viewport: [0,0,200,200]})
+                        item.render()
+                    })
+                });
             }
 
             scene.dirty = false;
@@ -293,7 +315,13 @@ function sceneUpdate(gd, subplot) {
             if(scene.error2d) scene.error2d.destroy();
             if(scene.line2d) scene.line2d.destroy();
             if(scene.select2d) scene.select2d.destroy();
+            if(scene.glText) scene.glText.forEach(function (items) {
+                items.forEach(function (item) {
+                    item.destroy();
+                })
+            });
 
+            scene.textOptions = null;
             scene.lineOptions = null;
             scene.fillOptions = null;
             scene.markerOptions = null;
@@ -317,6 +345,7 @@ function sceneUpdate(gd, subplot) {
 
     return scene;
 }
+
 
 function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
@@ -357,8 +386,26 @@ function plot(gd, subplot, cdata) {
         if(scene.fill2d === true) {
             scene.fill2d = createLine(regl);
         }
+        if(scene.glText === true) {
+            scene.glText = [];
+            for (var i = 0; i < scene.textOptions.length; i++) {
+                var textOptions = scene.textOptions[i];
+                var items = []
+                textOptions.forEach(function (options) {
+                    items.push(new Text(regl))
+                });
+                scene.glText[i] = items
+            }
+        }
 
         // update main marker options
+        if(scene.glText) {
+            for (var i = 0; i < scene.textOptions.length; i++) {
+                scene.textOptions[i].forEach(function (textOptions, j) {
+                    scene.glText[i][j].update(textOptions)
+                })
+            }
+        }
         if(scene.line2d) {
             scene.line2d.update(scene.lineOptions);
         }
@@ -572,11 +619,19 @@ function plot(gd, subplot, cdata) {
     if(scene.select2d) {
         scene.select2d.update(vpRange);
     }
+    if(scene.glText) {
+        scene.glText.forEach(function (items, i) {
+            items.forEach(function (item) {
+                item.update(vpRange[i])
+            })
+        });
+    }
 
     scene.draw();
 
     return;
 }
+
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
@@ -816,6 +871,7 @@ function selectPoints(searchInfo, polygon) {
     return selection;
 }
 
+
 function style(gd, cds) {
     if(!cds) return;
 
@@ -830,6 +886,7 @@ function style(gd, cds) {
 
     scene.draw();
 }
+
 
 module.exports = {
     moduleType: 'trace',

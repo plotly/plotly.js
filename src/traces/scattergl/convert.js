@@ -29,6 +29,7 @@ function convertStyle(gd, trace) {
     var i;
 
     var opts = {
+        text: undefined,
         marker: undefined,
         line: undefined,
         fill: undefined,
@@ -39,6 +40,34 @@ function convertStyle(gd, trace) {
     };
 
     if(trace.visible !== true) return opts;
+
+    if(subTypes.hasText(trace)) {
+        opts.text = []
+
+        for (i = 0; i < trace.text.length; i++) {
+            var textOptions = opts.text[i] = {}
+
+            var textpos = unarr(trace.textposition, i)
+            textpos = trace.textposition[i].split(/\s+/)
+            textOptions.align = textpos[1] || 'left'
+
+            var textfont = unarr(trace.textfont, i)
+            textOptions.color = unarr(textfont.color, i)
+
+            textOptions.font = {
+                family: unarr(textfont.family, i),
+                size: unarr(textfont.size, i)
+            }
+
+            textOptions.text = unarr(trace.text, i)
+        }
+
+        // FIXME: find proper util method for this
+        function unarr(obj, i) {
+            if (Array.isArray(obj)) return obj[i]
+            return obj
+        }
+    }
 
     if(subTypes.hasMarkers(trace)) {
         opts.marker = convertMarkerStyle(trace);
