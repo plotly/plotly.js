@@ -25,6 +25,7 @@ var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select').prepSelect;
 var clearSelect = require('../cartesian/select').clearSelect;
 var setCursor = require('../../lib/setcursor');
+var polygonTester = require('../../lib/polygon').tester;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 
@@ -42,6 +43,8 @@ function Polar(gd, id) {
     this.gd = gd;
 
     this._hasClipOnAxisFalse = null;
+    this.vangles = null;
+    this.radialAxisAngle = null;
     this.traceHash = {};
     this.layers = {};
     this.clipPaths = {};
@@ -246,7 +249,9 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     });
 
     _this.doAutoRange(fullLayout, polarLayout);
+    // N.B. this sets _this.vangles
     _this.updateAngularAxis(fullLayout, polarLayout);
+    // N.B. this sets _this.radialAxisAngle
     _this.updateRadialAxis(fullLayout, polarLayout);
     _this.updateRadialAxisTitle(fullLayout, polarLayout);
 
@@ -334,7 +339,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     // set special grid path function
     ax._gridpath = function(d) {
         var r = ax.r2p(d.x);
-        return pathSector(r, sector);
+        return pathSector(r, sector, _this.vangles);
     };
 
     var newTickLayout = strTickLayout(radialLayout);
@@ -345,8 +350,15 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     Axes.doTicksSingle(gd, ax, true);
 
+    // stash 'actual' radial axis angle for drag handlers (in degrees)
+    var angle = _this.radialAxisAngle = _this.vangles ?
+        rad2deg(snapToVertexAngle(deg2rad(radialLayout.angle), _this.vangles)) :
+        radialLayout.angle;
+
+    var trans = strTranslate(cx, cy) + strRotate(-angle);
+
     updateElement(layers['radial-axis'], radialLayout.showticklabels || radialLayout.ticks, {
-        transform: strTranslate(cx, cy) + strRotate(-radialLayout.angle)
+        transform: trans
     });
 
     // move all grid paths to about circle center,
@@ -361,7 +373,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         y1: 0,
         x2: radius,
         y2: 0,
-        transform: strTranslate(cx, cy) + strRotate(-radialLayout.angle)
+        transform: trans
     })
     .attr('stroke-width', radialLayout.linewidth)
     .call(Color.stroke, radialLayout.linecolor);
@@ -376,7 +388,7 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
     var radialLayout = polarLayout.radialaxis;
     var titleClass = _this.id + 'title';
 
-    var angle = _angle !== undefined ? _angle : radialLayout.angle;
+    var angle = _angle !== undefined ? _angle : _this.radialAxisAngle;
     var angleRad = deg2rad(angle);
     var cosa = Math.cos(angleRad);
     var sina = Math.sin(angleRad);
@@ -520,8 +532,12 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     Axes.doTicksSingle(gd, ax, true);
 
+    // angle of polygon vertices in radians (null means circles)
+    // TODO what to do when ax.period > ax._categories ??
+    _this.vangles = polarLayout.usepolygons ? ax._vals.map(c2rad) : null;
+
     updateElement(layers['angular-line'].select('path'), angularLayout.showline, {
-        d: pathSectorClosed(radius, sector),
+        d: pathSectorClosed(radius, sector, _this.vangles),
         transform: strTranslate(cx, cy)
     })
     .attr('stroke-width', angularLayout.linewidth)
@@ -549,11 +565,12 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     var cxx = _this.cxx;
     var cyy = _this.cyy;
     var sector = polarLayout.sector;
+    var vangles = _this.vangles;
 
     var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', 'crosshair');
 
     d3.select(mainDrag)
-        .attr('d', pathSectorClosed(radius, sector))
+        .attr('d', pathSectorClosed(radius, sector, vangles))
         .attr('transform', strTranslate(cx, cy));
 
     var dragOpts = {
@@ -614,7 +631,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     function zoomPrep() {
         r0 = null;
         r1 = null;
-        path0 = pathSectorClosed(radius, sector);
+        path0 = pathSectorClosed(radius, sector, vangles);
         dimmed = false;
 
         var polarLayoutNow = gd._fullLayout[_this.id];
@@ -656,7 +673,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
                 a1 = [a0, a0 = a1][0]; // swap a0 and a1
             }
 
-            path1 = path0 + pathSectorClosed(r1, sector) + pathSectorClosed(r0, sector);
+            path1 = path0 + pathSectorClosed(r1, sector, vangles) + pathSectorClosed(r0, sector, vangles);
             cpath = pathCorner(r0, a0) + pathCorner(r1, a1);
         } else {
             r0 = null;
@@ -750,7 +767,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
     var cy = _this.cy;
     var radialAxis = _this.radialAxis;
     var radialLayout = polarLayout.radialaxis;
-    var angle0 = deg2rad(radialLayout.angle);
+    var angle0 = deg2rad(_this.radialAxisAngle);
     var range0 = radialAxis.range.slice();
     var drange = range0[1] - range0[0];
     var bl = constants.radialDragBoxSize;
@@ -801,7 +818,9 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         var x1 = tx + dx;
         var y1 = ty + dy;
 
-        angle1 = rad2deg(Math.atan2(cy - y1, x1 - cx));
+        angle1 = Math.atan2(cy - y1, x1 - cx);
+        if(_this.vangles) angle1 = snapToVertexAngle(angle1, _this.vangles);
+        angle1 = rad2deg(angle1);
 
         var transform = strTranslate(cx, cy) + strRotate(-angle1);
         layers['radial-axis'].attr('transform', transform);
@@ -904,6 +923,8 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
     var x0, y0;
     // angular axis angle rotation at drag start (0), move (1)
     var rot0, rot1;
+    // induced radial axis rotation (only used on polygon grids)
+    var rrot1;
     // copy of polar sector value at drag start
     var sector0;
     // angle about circle center at drag start
@@ -920,9 +941,22 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
             strTranslate(_this.xOffset2, _this.yOffset2) + strRotate([-da, cxx, cyy])
         );
 
-        _this.clipPaths.circle.select('path').attr('transform',
-            strTranslate(cxx, cyy) + strRotate(da)
-        );
+        if(_this.vangles) {
+            rrot1 = _this.radialAxisAngle + da;
+
+            var trans = strTranslate(cx, cy) + strRotate(-da);
+            var trans2 = strTranslate(cx, cy) + strRotate(-rrot1);
+
+            layers.bg.attr('transform', trans);
+            layers['radial-grid'].attr('transform', trans);
+            layers['angular-line'].select('path').attr('transform', trans);
+            layers['radial-axis'].attr('transform', trans2);
+            layers['radial-line'].select('line').attr('transform', trans2);
+        } else {
+            _this.clipPaths.forTraces.select('path').attr('transform',
+                strTranslate(cxx, cyy) + strRotate(da)
+            );
+        }
 
         // 'un-rotate' marker and text points
         scatterPoints.each(function() {
@@ -971,8 +1005,14 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
 
     function doneFn() {
         scatterTextPoints.select('text').attr('transform', null);
+
         var updateObj = {};
         updateObj[_this.id + '.angularaxis.rotation'] = rot1;
+
+        if(_this.vangles) {
+            updateObj[_this.id + '.radialaxis.angle'] = rrot1;
+        }
+
         Registry.call('relayout', gd, updateObj);
     }
 
@@ -992,6 +1032,12 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
         clearSelect(fullLayout._zoomlayer);
     };
 
+    // I don't what we should do in this case, skip we now
+    if(_this.vangles && !isFullCircle(sector)) {
+        dragOpts.prepFn = Lib.noop;
+        setCursor(d3.select(angularDrag), null);
+    }
+
     dragElement.init(dragOpts);
 };
 
@@ -1002,6 +1048,7 @@ proto.isPtWithinSector = function(d) {
         return false;
     }
 
+    var vangles = this.vangles;
     var radialAxis = this.radialAxis;
     var radialRange = radialAxis.range;
     var r = radialAxis.c2r(d.r);
@@ -1015,6 +1062,12 @@ proto.isPtWithinSector = function(d) {
         r1 = radialRange[0];
     }
 
+    if(vangles) {
+        var polygonIn = polygonTester(makePolygon(r0, sector, vangles));
+        var polygonOut = polygonTester(makePolygon(r1, sector, vangles));
+        var xy = [r * Math.cos(d.rad), r * Math.sin(d.rad)];
+        return polygonOut.contains(xy) && !polygonIn.contains(xy);
+    }
 
     return r >= r0 && r <= r1;
 };
@@ -1111,25 +1164,147 @@ function isAngleInSector(rad, sector) {
         (nextTurnDeg >= s0 && nextTurnDeg <= s1);
 }
 
-function pathSector(r, sector) {
-    if(isFullCircle(sector)) {
-        return Drawing.symbolFuncs[0](r);
+function snapToVertexAngle(a, vangles) {
+    function angleDeltaAbs(va) {
+        return Math.abs(angleDelta(a, va));
     }
 
-    var xs = r * Math.cos(deg2rad(sector[0]));
-    var ys = -r * Math.sin(deg2rad(sector[0]));
-    var xe = r * Math.cos(deg2rad(sector[1]));
-    var ye = -r * Math.sin(deg2rad(sector[1]));
-
-    var arc = Math.abs(sector[1] - sector[0]);
-    var flags = arc <= 180 ? [0, 0, 0] : [0, 1, 0];
-
-    return 'M' + [xs, ys] +
-        'A' + [r, r] + ' ' + flags + ' ' + [xe, ye];
+    var ind = findIndexOfMin(vangles, angleDeltaAbs);
+    return vangles[ind];
 }
 
-function pathSectorClosed(r, sector) {
-    return pathSector(r, sector) +
+// taken from https://stackoverflow.com/a/2007279
+function angleDelta(a, b) {
+    var d = b - a;
+    return Math.atan2(Math.sin(d), Math.cos(d));
+}
+
+function findIndexOfMin(arr, fn) {
+    fn = fn || Lib.identity;
+
+    var min = Infinity;
+    var ind;
+
+    for(var i = 0; i < arr.length; i++) {
+        var v = fn(arr[i]);
+        if(v < min) {
+            min = v;
+            ind = i;
+        }
+    }
+    return ind;
+}
+
+// find intersection of v0 <-> v1 edge with (r,s) sector radius
+// in (x,y) coordinates
+function findIntersectionXY(v0, v1, s, r) {
+    var as = Math.sin(s) / Math.cos(s);
+    var av = (Math.sin(v1) - Math.sin(v0)) / (Math.cos(v1) - Math.cos(v0));
+    var bv = r * (Math.sin(v1) - av * Math.cos(v1));
+    var x = bv / (as - av);
+    var y = as * x;
+    return [x, y];
+}
+
+function makePolygon(r, sector, vangles) {
+    var len = vangles.length;
+    var vertices, i;
+
+    function a2xy(a) {
+        return [r * Math.cos(a), r * Math.sin(a)];
+    }
+
+    function cycleIndex(i) {
+        return i < 0 ? len + i :
+            i < len ? i : i - len;
+    }
+
+    if(isFullCircle(sector)) {
+        vertices = new Array(len + 1);
+        for(i = 0; i < len; i++) {
+            vertices[i] = a2xy(vangles[i]);
+        }
+        vertices[i] = vertices[0].slice();
+    } else {
+        vertices = [];
+
+        // vangles should be always ordered, make them
+        // always turn counterclockwise here
+        var _vangles;
+        if(angleDelta(vangles[0], vangles[1]) > 0) {
+            _vangles = vangles;
+        } else {
+            _vangles = vangles.slice().reverse();
+        }
+
+        var s0 = deg2rad(sector[0]);
+        var s1 = deg2rad(sector[1]);
+
+        // find index in sector closest to sector[0],
+        // use it to find intersection of v[i0] <-> v[i0-1] edge with sector radius
+        var i0 = findIndexOfMin(_vangles, function(v) {
+            return isAngleInSector(v, sector) ? Math.abs(angleDelta(v, s0)) : Infinity;
+        });
+        var xy0 = findIntersectionXY(_vangles[i0], _vangles[cycleIndex(i0 - 1)], s0, r);
+        vertices.push(xy0);
+
+        // fill in in-sector vertices
+        var n = 0;
+        for(i = i0; n < 1000; i++, n++) {
+            var va = _vangles[cycleIndex(i)];
+            if(!isAngleInSector(va, sector)) break;
+            vertices.push(a2xy(va));
+        }
+
+        // find index in sector closest to sector[1],
+        // use it to find intersection of v[iN] <-> v[iN+1] edge with sector radius
+        var iN = findIndexOfMin(_vangles, function(v) {
+            return isAngleInSector(v, sector) ? Math.abs(angleDelta(v, s1)) : Infinity;
+        });
+        var xyN = findIntersectionXY(_vangles[iN], _vangles[cycleIndex(iN + 1)], s1, r);
+        vertices.push(xyN);
+
+        vertices.push([0, 0]);
+        vertices.push(vertices[0].slice());
+    }
+
+    return vertices;
+}
+
+function invertY(pts0) {
+    var len = pts0.length;
+    var pts1 = new Array(len);
+    for(var i = 0; i < len; i++) {
+        var pt = pts0[i];
+        pts1[i] = [pt[0], -pt[1]];
+    }
+    return pts1;
+}
+
+function pathSector(r, sector, vangles) {
+    var d;
+
+    if(vangles) {
+        d = 'M' + invertY(makePolygon(r, sector, vangles)).join('L');
+    } else if(isFullCircle(sector)) {
+        d = Drawing.symbolFuncs[0](r);
+    } else {
+        var arc = Math.abs(sector[1] - sector[0]);
+        var flags = arc <= 180 ? [0, 0, 0] : [0, 1, 0];
+        var xs = r * Math.cos(deg2rad(sector[0]));
+        var ys = -r * Math.sin(deg2rad(sector[0]));
+        var xe = r * Math.cos(deg2rad(sector[1]));
+        var ye = -r * Math.sin(deg2rad(sector[1]));
+
+        d = 'M' + [xs, ys] +
+            'A' + [r, r] + ' ' + flags + ' ' + [xe, ye];
+    }
+
+    return d;
+}
+
+function pathSectorClosed(r, sector, nside) {
+    return pathSector(r, sector, nside) +
         (isFullCircle(sector) ? '' : 'L0,0Z');
 }
 
