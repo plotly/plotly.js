@@ -207,9 +207,48 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var cxx = _this.cxx = cx - xOffset2;
     var cyy = _this.cyy = cy - yOffset2;
 
+    var mockOpts = {
+        // to get _boundingBox computation right when showticklabels is false
+        anchor: 'free',
+        position: 0,
+        // dummy truthy value to make Axes.doTicksSingle draw the grid
+        _counteraxis: true,
+        // don't use automargins routine for labels
+        automargin: false
+    };
+
+    _this.radialAxis = Lib.extendFlat({}, polarLayout.radialaxis, mockOpts, {
+        _axislayer: layers['radial-axis'],
+        _gridlayer: layers['radial-grid'],
+        // make this an 'x' axis to make positioning (especially rotation) easier
+        _id: 'x',
+        _pos: 0,
+        // convert to 'x' axis equivalent
+        side: {
+            counterclockwise: 'top',
+            clockwise: 'bottom'
+        }[polarLayout.radialaxis.side],
+        // spans length 1 radius
+        domain: [0, radius / gs.w]
+    });
+
+    _this.angularAxis = Lib.extendFlat({}, polarLayout.angularaxis, mockOpts, {
+        _axislayer: layers['angular-axis'],
+        _gridlayer: layers['angular-grid'],
+        // angular axes need *special* logic
+        _id: 'angular',
+        _pos: 0,
+        side: 'right',
+        // to get auto nticks right
+        domain: [0, Math.PI],
+        // don't pass through autorange logic
+        autorange: false
+    });
+
+    _this.doAutoRange(fullLayout, polarLayout);
+    _this.updateAngularAxis(fullLayout, polarLayout);
     _this.updateRadialAxis(fullLayout, polarLayout);
     _this.updateRadialAxisTitle(fullLayout, polarLayout);
-    _this.updateAngularAxis(fullLayout, polarLayout);
 
     var radialRange = _this.radialAxis.range;
     var rSpan = radialRange[1] - radialRange[0];
@@ -253,6 +292,17 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     _this.framework.selectAll('.crisp').classed('crisp', 0);
 };
 
+proto.doAutoRange = function(fullLayout, polarLayout) {
+    var radialLayout = polarLayout.radialaxis;
+    var ax = this.radialAxis;
+
+    setScale(ax, radialLayout, fullLayout);
+    doAutoRange(ax);
+
+    radialLayout.range = ax.range.slice();
+    radialLayout._input.range = ax.range.slice();
+};
+
 proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var _this = this;
     var gd = _this.gd;
@@ -260,42 +310,12 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var radius = _this.radius;
     var cx = _this.cx;
     var cy = _this.cy;
-    var gs = fullLayout._size;
     var radialLayout = polarLayout.radialaxis;
     var sector = polarLayout.sector;
     var a0 = wrap360(sector[0]);
+    var ax = _this.radialAxis;
 
     _this.fillViewInitialKey('radialaxis.angle', radialLayout.angle);
-
-    var ax = _this.radialAxis = Lib.extendFlat({}, radialLayout, {
-        _axislayer: layers['radial-axis'],
-        _gridlayer: layers['radial-grid'],
-
-        // make this an 'x' axis to make positioning (especially rotation) easier
-        _id: 'x',
-        _pos: 0,
-
-        // convert to 'x' axis equivalent
-        side: {counterclockwise: 'top', clockwise: 'bottom'}[radialLayout.side],
-
-        // spans length 1 radius
-        domain: [0, radius / gs.w],
-
-        // to get _boundingBox computation right when showticklabels is false
-        anchor: 'free',
-        position: 0,
-
-        // dummy truthy value to make Axes.doTicksSingle draw the grid
-        _counteraxis: true,
-
-        // don't use automargins routine for labels
-        automargin: false
-    });
-
-    setScale(ax, radialLayout, fullLayout);
-    doAutoRange(ax);
-    radialLayout.range = ax.range.slice();
-    radialLayout._input.range = ax.range.slice();
     _this.fillViewInitialKey('radialaxis.range', ax.range.slice());
 
     // rotate auto tick labels by 180 if in quadrant II and III to make them
@@ -393,34 +413,20 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var angularLayout = polarLayout.angularaxis;
     var sector = polarLayout.sector;
     var sectorInRad = sector.map(deg2rad);
+    var ax = _this.angularAxis;
 
     _this.fillViewInitialKey('angularaxis.rotation', angularLayout.rotation);
 
-    var ax = _this.angularAxis = Lib.extendFlat({}, angularLayout, {
-        _axislayer: layers['angular-axis'],
-        _gridlayer: layers['angular-grid'],
+    // wrapper around c2rad from setConvertAngular
+    // note that linear ranges are always set in degrees for Axes.doTicksSingle
+    function c2rad(d) {
+        return ax.c2rad(d.x, 'degrees');
+    }
 
-        // angular axes need *special* logic
-        _id: 'angular',
-        _pos: 0,
-        side: 'right',
-
-        // to get auto nticks right
-        domain: [0, Math.PI],
-
-        // to get _boundingBox computation right when showticklabels is false
-        anchor: 'free',
-        position: 0,
-
-        // dummy truthy value to make Axes.doTicksSingle draw the grid
-        _counteraxis: true,
-
-        // don't use automargins routine for labels
-        automargin: false,
-
-        // don't pass through autorange logic
-        autorange: false
-    });
+    // (x,y) at max radius
+    function rad2xy(rad) {
+        return [radius * Math.cos(rad), radius * Math.sin(rad)];
+    }
 
     // Set the angular range in degrees to make auto-tick computation cleaner,
     // changing rotation/direction should not affect the angular tick labels.
@@ -457,17 +463,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     }
 
     setScale(ax, angularLayout, fullLayout);
-
-    // wrapper around c2rad from setConvertAngular
-    // note that linear ranges are always set in degrees for Axes.doTicksSingle
-    function c2rad(d) {
-        return ax.c2rad(d.x, 'degrees');
-    }
-
-    // (x,y) at max radius
-    function rad2xy(rad) {
-        return [radius * Math.cos(rad), radius * Math.sin(rad)];
-    }
 
     ax._transfn = function(d) {
         var rad = c2rad(d);
