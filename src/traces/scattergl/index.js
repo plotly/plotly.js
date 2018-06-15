@@ -406,7 +406,6 @@ function plot(gd, subplot, cdata) {
                     var stash = cdata[i][0].t;
                     var position = [stash.x[j], stash.y[j]];
                     scene.glText[i][j].update({ position: position });
-                    console.log(position)
                 })
             }
         }

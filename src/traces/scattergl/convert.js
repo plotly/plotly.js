@@ -48,8 +48,20 @@ function convertStyle(gd, trace) {
             var textOptions = opts.text[i] = {}
 
             var textpos = unarr(trace.textposition, i)
-            textpos = trace.textposition[i].split(/\s+/)
-            textOptions.align = textpos[1] || 'left'
+            textpos = textpos.split(/\s+/)
+            switch (textpos[1]) {
+                case 'left':
+                    textOptions.align = 'right';
+                    break;
+                case 'right':
+                    textOptions.align = 'left';
+                    break;
+                case 'center':
+                case 'centre':
+                case 'middle':
+                default:
+                    textOptions.align = 'center';
+            }
 
             var textfont = unarr(trace.textfont, i)
             textOptions.color = unarr(textfont.color, i)
