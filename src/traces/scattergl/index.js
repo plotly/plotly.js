@@ -264,7 +264,6 @@ function sceneUpdate(gd, subplot) {
             if(scene.glText.length) {
                 scene.glText.forEach(function (items) {
                     items.forEach(function (item) {
-                        item.update({position: [100, 100], range: [0,0,200,200], viewport: [0,0,200,200]})
                         item.render()
                     })
                 });
@@ -402,7 +401,12 @@ function plot(gd, subplot, cdata) {
         if(scene.glText) {
             for (var i = 0; i < scene.textOptions.length; i++) {
                 scene.textOptions[i].forEach(function (textOptions, j) {
-                    scene.glText[i][j].update(textOptions)
+                    scene.glText[i][j].update(textOptions);
+
+                    var stash = cdata[i][0].t;
+                    var position = [stash.x[j], stash.y[j]];
+                    scene.glText[i][j].update({ position: position });
+                    console.log(position)
                 })
             }
         }
