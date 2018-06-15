@@ -1,0 +1,103 @@
+{
+  "data": [
+    {
+      "type": "scatterpolar",
+      "r": [5, 4, 2, 4, 5],
+      "theta": ["a", "b", "c", "d", "a"],
+      "fill": "toself"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [1, 2.2, 2, 1.5, 1.5, 2, 3, 1],
+      "theta": ["a", "b", "c", "d", "e", "f", "g", "a"],
+      "fill": "toself",
+      "subplot": "polar2"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [5, 4, 2, 4, 5],
+      "theta": ["a", "b", "c", "d", "a"],
+      "fill": "toself",
+      "subplot": "polar3"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [45, 90, 180, 200, 300, 15, 20, 45],
+      "theta": ["a", "b", "c", "d", "b", "f", "a", "a"],
+      "subplot": "polar4"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [5, 4, 2, 4, 5, 5],
+      "theta": ["b", "c", "d", "e", "a", "b"],
+      "fill": "toself"
+    },
+    {
+      "type": "scatterpolar",
+      "r": [500],
+      "theta": ["b"],
+      "name": "out-of-polygon (should not see it)",
+      "subplot": "polar4"
+    }
+  ],
+  "layout": {
+    "polar": {
+      "usepolygons": true,
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0.56, 1]
+      },
+      "radialaxis": {
+        "angle": 45,
+        "title": "angular period > _categories"
+      },
+      "angularaxis": {
+        "direction": "clockwise",
+        "period": 6
+      }
+    },
+    "polar2": {
+      "usepolygons": true,
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0, 0.44]
+      },
+      "angularaxis": {
+        "direction": "clockwise"
+      }
+    },
+    "polar3": {
+      "usepolygons": true,
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0.56, 1]
+      },
+      "sector": [-20, 200],
+      "radialaxis": {
+        "angle": 60,
+        "title": "snapped to 90"
+      },
+      "angularaxis": {
+        "categoryarray": ["d", "a", "c", "b"],
+        "direction": "clockwise"
+      }
+    },
+    "polar4": {
+      "usepolygons": true,
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0, 0.44]
+      },
+      "angularaxis": {
+        "direction": "clockwise"
+      },
+      "radialaxis": {
+        "range": [0, 400]
+      }
+    },
+    "width": 550,
+    "height": 550,
+    "margin": {"l": 40, "r": 40, "b": 60, "t": 20, "pad": 0},
+    "showlegend": false
+  }
+}
