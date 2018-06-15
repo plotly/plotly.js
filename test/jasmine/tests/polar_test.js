@@ -522,7 +522,7 @@ describe('Test relayout on polar subplots:', function() {
 
             var clipCnt = 0;
             d3.selectAll('clipPath').each(function() {
-                if(/polar-circle$/.test(this.id)) clipCnt++;
+                if(/polar-for-traces/.test(this.id)) clipCnt++;
             });
             expect(clipCnt).toBe(exp.clip, '# clip paths');
         }

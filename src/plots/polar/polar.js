@@ -51,10 +51,10 @@ function Polar(gd, id) {
     var fullLayout = gd._fullLayout;
     var clipIdBase = 'clip' + fullLayout._uid + id;
 
-    this.clipIds.circle = clipIdBase + '-circle';
-    this.clipPaths.circle = fullLayout._clips.append('clipPath')
-        .attr('id', this.clipIds.circle);
-    this.clipPaths.circle.append('path');
+    this.clipIds.forTraces = clipIdBase + '-for-traces';
+    this.clipPaths.forTraces = fullLayout._clips.append('clipPath')
+        .attr('id', this.clipIds.forTraces);
+    this.clipPaths.forTraces.append('path');
 
     this.framework = fullLayout._polarlayer.append('g')
         .attr('class', id);
@@ -130,7 +130,7 @@ proto.updateLayers = function(fullLayout, polarLayout) {
                     sel.append('g').classed('maplayer', true);
                     break;
                 case 'plotbg':
-                    layers.bgcircle = sel.append('path');
+                    layers.bg = sel.append('path');
                     break;
                 case 'radial-grid':
                     sel.style('fill', 'none');
@@ -235,19 +235,18 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     xaxis.isPtWithinRange = function(d) { return _this.isPtWithinSector(d); };
     yaxis.isPtWithinRange = function() { return true; };
 
-    layers.frontplot
-        .attr('transform', strTranslate(xOffset2, yOffset2))
-        .call(Drawing.setClipUrl, _this._hasClipOnAxisFalse ? null : _this.clipIds.circle);
-
-    layers.bgcircle.attr({
-        d: pathSectorClosed(radius, sector),
-        transform: strTranslate(cx, cy)
-    })
-    .call(Color.fill, polarLayout.bgcolor);
-
-    _this.clipPaths.circle.select('path')
+    _this.clipPaths.forTraces.select('path')
         .attr('d', pathSectorClosed(radius, sector))
         .attr('transform', strTranslate(cxx, cyy));
+
+    layers.frontplot
+        .attr('transform', strTranslate(xOffset2, yOffset2))
+        .call(Drawing.setClipUrl, _this._hasClipOnAxisFalse ? null : _this.clipIds.forTraces);
+
+    layers.bg
+        .attr('d', pathSectorClosed(radius, sector))
+        .attr('transform', strTranslate(cx, cy))
+        .call(Color.fill, polarLayout.bgcolor);
 
     // remove crispEdges - all the off-square angles in polar plots
     // make these counterproductive.
