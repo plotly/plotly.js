@@ -453,13 +453,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             angularLayout._categories.length;
 
         ax.range = [0, period];
-
-        ax._tickFilter = function(d) {
-            return _this.isPtWithinSector({
-                r: _this.radialAxis.range[1],
-                rad: ax.c2rad(d.x)
-            });
-        };
+        ax._tickFilter = function(d) { return isAngleInSector(c2rad(d), sector); };
     }
 
     setScale(ax, angularLayout, fullLayout);
@@ -1003,16 +997,14 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
 
 proto.isPtWithinSector = function(d) {
     var sector = this.sector;
+
+    if(!isAngleInSector(d.rad, sector)) {
+        return false;
+    }
+
     var radialAxis = this.radialAxis;
     var radialRange = radialAxis.range;
     var r = radialAxis.c2r(d.r);
-
-    var s0 = wrap360(sector[0]);
-    var s1 = wrap360(sector[1]);
-    if(s0 > s1) s1 += 360;
-
-    var deg = wrap360(rad2deg(d.rad));
-    var nextTurnDeg = deg + 360;
 
     var r0, r1;
     if(radialRange[1] >= radialRange[0]) {
@@ -1023,13 +1015,8 @@ proto.isPtWithinSector = function(d) {
         r1 = radialRange[0];
     }
 
-    return (
-        (r >= r0 && r <= r1) &&
-        (isFullCircle(sector) ||
-            (deg >= s0 && deg <= s1) ||
-            (nextTurnDeg >= s0 && nextTurnDeg <= s1)
-        )
-    );
+
+    return r >= r0 && r <= r1;
 };
 
 proto.fillViewInitialKey = function(key, val) {
@@ -1108,6 +1095,20 @@ function computeSectorBBox(sector) {
     }
 
     return [x0, y0, x1, y1];
+}
+
+function isAngleInSector(rad, sector) {
+    if(isFullCircle(sector)) return true;
+
+    var s0 = wrap360(sector[0]);
+    var s1 = wrap360(sector[1]);
+    if(s0 > s1) s1 += 360;
+
+    var deg = wrap360(rad2deg(rad));
+    var nextTurnDeg = deg + 360;
+
+    return (deg >= s0 && deg <= s1) ||
+        (nextTurnDeg >= s0 && nextTurnDeg <= s1);
 }
 
 function pathSector(r, sector) {
