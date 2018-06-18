@@ -86,11 +86,12 @@ function convert(scene, trace) {
         return Lib.simpleMap(arr, function(v) { return ax.d2l(v) * scale; });
     }
 
-    var u = toDataCoords(trace.u.slice(0, len), 'xaxis');
-    var v = toDataCoords(trace.v.slice(0, len), 'yaxis');
-    var w = toDataCoords(trace.w.slice(0, len), 'zaxis');
-
-    tubeOpts.vectors = zip3(u, v, w);
+    tubeOpts.vectors = zip3(
+        toDataCoords(trace.u, 'xaxis'),
+        toDataCoords(trace.v, 'yaxis'),
+        toDataCoords(trace.w, 'zaxis'),
+        len
+    );
 
     var valsx = distinctVals(trace.x.slice(0, len));
     var valsy = distinctVals(trace.y.slice(0, len));

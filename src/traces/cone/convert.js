@@ -69,13 +69,15 @@ function convert(scene, trace) {
     coneOpts.vectors = zip3(
         toDataCoords(trace.u, 'xaxis'),
         toDataCoords(trace.v, 'yaxis'),
-        toDataCoords(trace.w, 'zaxis')
+        toDataCoords(trace.w, 'zaxis'),
+        trace._len
     );
 
     coneOpts.positions = zip3(
         toDataCoords(trace.x, 'xaxis'),
         toDataCoords(trace.y, 'yaxis'),
-        toDataCoords(trace.z, 'zaxis')
+        toDataCoords(trace.z, 'zaxis'),
+        trace._len
     );
 
     coneOpts.colormap = parseColorScale(trace.colorscale);
