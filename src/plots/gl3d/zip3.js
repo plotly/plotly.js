@@ -8,9 +8,9 @@
 
 'use strict';
 
-module.exports = function zip3(x, y, z) {
+module.exports = function zip3(x, y, z, len) {
     var result = new Array(x.length);
-    for(var i = 0; i < x.length; i++) {
+    for(var i = 0; i < len; i++) {
         result[i] = [x[i], y[i], z[i]];
     }
     return result;

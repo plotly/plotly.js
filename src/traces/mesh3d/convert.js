@@ -16,7 +16,7 @@ var convexHull = require('convex-hull');
 
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
-var zip3 = require('../../lib/zip3');
+var zip3 = require('../../plots/gl3d/zip3');
 
 function Mesh3DTrace(scene, mesh, uid) {
     this.scene = scene;

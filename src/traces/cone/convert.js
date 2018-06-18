@@ -13,7 +13,7 @@ var createConeMesh = require('gl-cone3d').createConeMesh;
 
 var simpleMap = require('../../lib').simpleMap;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
-var zip3 = require('../../lib/zip3');
+var zip3 = require('../../plots/gl3d/zip3');
 
 function Cone(scene, uid) {
     this.scene = scene;

@@ -13,7 +13,7 @@ var createTubeMesh = tube2mesh.createTubeMesh;
 
 var Lib = require('../../lib');
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
-var zip3 = require('../../lib/zip3');
+var zip3 = require('../../plots/gl3d/zip3');
 
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
 
