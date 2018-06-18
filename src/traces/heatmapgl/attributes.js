@@ -34,9 +34,8 @@ for(var i = 0; i < commonList.length; i++) {
 
 extendFlat(
     attrs,
-    colorscaleAttrs,
-    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
-    { colorbar: colorbarAttrs }
+    colorscaleAttrs('', {cLetter: 'z', autoColorDflt: false}),
+    {colorbar: colorbarAttrs}
 );
 
 module.exports = overrideAll(attrs, 'calc', 'nested');

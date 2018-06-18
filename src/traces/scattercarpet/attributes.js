@@ -10,7 +10,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -99,12 +99,11 @@ module.exports = {
             width: scatterMarkerLineAttrs.width,
             editType: 'calc'
         },
-            colorAttributes('marker'.line)
+            colorAttributes('marker.line')
         ),
         gradient: scatterMarkerAttrs.gradient,
         editType: 'calc'
     }, colorAttributes('marker'), {
-        showscale: scatterMarkerAttrs.showscale,
         colorbar: colorbarAttrs
     }),
 

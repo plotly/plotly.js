@@ -8,16 +8,13 @@
 
 'use strict';
 
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
-var colorscales = require('../../components/colorscale/scales');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 
-var extend = require('../../lib/extend');
-var extendDeepAll = extend.extendDeepAll;
-var extendFlat = extend.extendFlat;
+var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
     domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
@@ -116,41 +113,14 @@ module.exports = {
     },
 
     line: extendFlat(
-        // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
-
-        // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
-        extendDeepAll(
-            colorAttributes('line', 'calc'),
-            {
-                colorscale: {dflt: colorscales.Viridis},
-                autocolorscale: {
-                    dflt: false,
-                    description: [
-                        'Has an effect only if line.color` is set to a numerical array.',
-                        'Determines whether the colorscale is a default palette (`autocolorscale: true`)',
-                        'or the palette determined by `line.colorscale`.',
-                        'In case `colorscale` is unspecified or `autocolorscale` is true, the default ',
-                        'palette will be chosen according to whether numbers in the `color` array are',
-                        'all positive, all negative or mixed.',
-                        'The default value is false, so that `parcoords` colorscale can default to `Viridis`.'
-                    ].join(' ')
-                }
-            }
-        ),
-
-        {
-            showscale: {
-                valType: 'boolean',
-                role: 'info',
-                dflt: false,
-                editType: 'calc',
-                description: [
-                    'Has an effect only if `line.color` is set to a numerical array.',
-                    'Determines whether or not a colorbar is displayed.'
-                ].join(' ')
-            },
+        colorAttributes('line', {
+            // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)
+            // autocolorscale therefore defaults to false too, to avoid being overridden by the  blue-white-red autocolor palette
+            colorscaleDflt: 'Viridis',
+            autoColorDflt: false,
+            editTypeOverride: 'calc'
+        }), {
             colorbar: colorbarAttrs,
             editType: 'calc'
-        }
-    )
+        })
 };

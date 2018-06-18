@@ -14,7 +14,7 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat({}, {
+module.exports = extendFlat({
     z: {
         valType: 'data_array',
         editType: 'calc',
@@ -112,7 +112,9 @@ module.exports = extendFlat({}, {
         ].join(' ')
     },
 },
-    colorscaleAttrs,
-    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
+    colorscaleAttrs('', {
+        cLetter: 'z',
+        autoColorDflt: false
+    }),
     { colorbar: colorbarAttrs }
 );

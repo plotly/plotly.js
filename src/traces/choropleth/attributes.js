@@ -13,9 +13,7 @@ var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var plotAttrs = require('../../plots/attributes');
 
-var extend = require('../../lib/extend');
-var extendFlat = extend.extendFlat;
-var extendDeepAll = extend.extendDeepAll;
+var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterGeoMarkerLineAttrs = scatterGeoAttrs.marker.line;
 
@@ -76,9 +74,10 @@ module.exports = extendFlat({
         flags: ['location', 'z', 'text', 'name']
     })
 },
-    extendDeepAll({}, colorscaleAttrs, {
-        zmax: {editType: 'calc'},
-        zmin: {editType: 'calc'}
+
+    colorscaleAttrs('', {
+        cLetter: 'z',
+        editTypeOverride: 'calc'
     }),
-    { colorbar: colorbarAttrs }
+    {colorbar: colorbarAttrs}
 );

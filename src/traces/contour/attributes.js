@@ -249,10 +249,10 @@ module.exports = extendFlat({
         editType: 'plot'
     }
 },
-    colorscaleAttrs, {
-        autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}),
-        zmin: extendFlat({}, colorscaleAttrs.zmin, {editType: 'calc'}),
-        zmax: extendFlat({}, colorscaleAttrs.zmax, {editType: 'calc'})
-    },
+    colorscaleAttrs('', {
+        cLetter: 'z',
+        autoColorDflt: false,
+        editTypeOverride: 'calc'
+    }),
     { colorbar: colorbarAttrs }
 );
