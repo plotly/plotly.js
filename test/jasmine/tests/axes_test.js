@@ -1073,26 +1073,32 @@ describe('Test axes', function() {
                 axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
+            // and not push it back to axIn (which we used to do)
+            expect(axIn.tickmode).toBeUndefined();
 
             axIn = {tickmode: 'array', tickvals: 'stuff'};
             axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
+            expect(axIn.tickmode).toBe('array');
 
             axIn = {tickmode: 'array', tickvals: [1, 2, 3]};
             axOut = {};
             mockSupplyDefaults(axIn, axOut, 'date');
             expect(axOut.tickmode).toBe('auto');
+            expect(axIn.tickmode).toBe('array');
 
             axIn = {tickvals: [1, 2, 3]};
             axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('array');
+            expect(axIn.tickmode).toBeUndefined();
 
             axIn = {dtick: 1};
             axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('linear');
+            expect(axIn.tickmode).toBeUndefined();
         });
 
         it('should set nticks iff tickmode=auto', function() {
