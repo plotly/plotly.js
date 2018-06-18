@@ -221,7 +221,6 @@ function sceneUpdate(gd, subplot) {
             if(scene.error2d) scene.error2d.update(opts.concat(opts));
             if(scene.select2d) scene.select2d.update(opts);
             if(scene.glText) {
-                xxx
                 // scene.glText.forEach(function (text) {
                 //     text.update(opts);
                 // })
@@ -401,11 +400,9 @@ function plot(gd, subplot, cdata) {
         if(scene.glText) {
             for (var i = 0; i < scene.textOptions.length; i++) {
                 scene.textOptions[i].forEach(function (textOptions, j) {
-                    scene.glText[i][j].update(textOptions);
-
                     var stash = cdata[i][0].t;
-                    var position = [stash.x[j], stash.y[j]];
-                    scene.glText[i][j].update({ position: position });
+                    textOptions.position = [stash.x[j], stash.y[j]];
+                    scene.glText[i][j].update(textOptions);
                 })
             }
         }
