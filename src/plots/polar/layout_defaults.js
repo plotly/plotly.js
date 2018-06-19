@@ -179,7 +179,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     }
 
     if(contOut.angularaxis.type === 'category') {
-        coerce('usepolygons');
+        coerce('gridshape');
     }
 }
 

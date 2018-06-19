@@ -534,7 +534,9 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     // angle of polygon vertices in radians (null means circles)
     // TODO what to do when ax.period > ax._categories ??
-    _this.vangles = polarLayout.usepolygons ? ax._vals.map(c2rad) : null;
+    _this.vangles = polarLayout.gridshape === 'linear' ?
+        ax._vals.map(c2rad) :
+        null;
 
     updateElement(layers['angular-line'].select('path'), angularLayout.showline, {
         d: pathSectorClosed(radius, sector, _this.vangles),
@@ -1303,8 +1305,8 @@ function pathSector(r, sector, vangles) {
     return d;
 }
 
-function pathSectorClosed(r, sector, nside) {
-    return pathSector(r, sector, nside) +
+function pathSectorClosed(r, sector, vangles) {
+    return pathSector(r, sector, vangles) +
         (isFullCircle(sector) ? '' : 'L0,0Z');
 }
 

@@ -42,7 +42,7 @@
   ],
   "layout": {
     "polar": {
-      "usepolygons": true,
+      "gridshape": "linear",
       "domain": {
         "x": [0, 0.46],
         "y": [0.56, 1]
@@ -57,7 +57,7 @@
       }
     },
     "polar2": {
-      "usepolygons": true,
+      "gridshape": "linear",
       "domain": {
         "x": [0, 0.46],
         "y": [0, 0.44]
@@ -67,7 +67,7 @@
       }
     },
     "polar3": {
-      "usepolygons": true,
+      "gridshape": "linear",
       "domain": {
         "x": [0.54, 1],
         "y": [0.56, 1]
@@ -83,7 +83,7 @@
       }
     },
     "polar4": {
-      "usepolygons": true,
+      "gridshape": "linear",
       "bgcolor": "#d3d3d3",
       "domain": {
         "x": [0.54, 1],

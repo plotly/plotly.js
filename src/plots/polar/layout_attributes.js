@@ -267,13 +267,15 @@ module.exports = {
     radialaxis: radialAxisAttrs,
     angularaxis: angularAxisAttrs,
 
-    usepolygons: {
-        valType: 'boolean',
+    gridshape: {
+        valType: 'enumerated',
+        values: ['circular', 'linear'],
+        dflt: 'circular',
         role: 'style',
         editType: 'plot',
-        dflt: false,
         description: [
-            '...',
+            'Determines if the radial axis grid lines and angular axis line are drawn',
+            'as *circular* sectors or as *linear* (polygon) sectors.',
             'Has an effect only when the angular axis has `type` *category*.',
             'Note that `radialaxis.angle` is snapped to the angle of the closest',
             'vertex (so that radial axis scale is the same as the data scale).'
