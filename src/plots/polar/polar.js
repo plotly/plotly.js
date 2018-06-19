@@ -906,9 +906,19 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
 
     var angularDrag = dragBox.makeDragger(layers, 'path', 'angulardrag', 'move');
     var dragOpts = {element: angularDrag, gd: gd};
+    var angularDragPath;
+
+    if(_this.vangles) {
+        // use evenodd svg rule
+        var outer = invertY(makePolygon(radius + dbs, sector, _this.vangles));
+        var inner = invertY(makePolygon(radius, sector, _this.vangles));
+        angularDragPath = 'M' + outer.reverse().join('L') + 'M' + inner.join('L');
+    } else {
+        angularDragPath = pathAnnulus(radius, radius + dbs, sector);
+    }
 
     d3.select(angularDrag)
-        .attr('d', pathAnnulus(radius, radius + dbs, sector))
+        .attr('d', angularDragPath)
         .attr('transform', strTranslate(cx, cy))
         .call(setCursor, 'move');
 
