@@ -39,7 +39,7 @@ window.timeit = function(f, n, nchunk, arg) {
 
     var first = (times[0]).toFixed(4);
     var last = (times[n - 1]).toFixed(4);
-    times.sort();
+    times.sort(function(a, b) { return a - b; });
     var min = (times[0]).toFixed(4);
     var max = (times[n - 1]).toFixed(4);
     var median = (times[Math.min(Math.ceil(n / 2), n - 1)]).toFixed(4);
