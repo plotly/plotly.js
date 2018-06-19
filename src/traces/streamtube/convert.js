@@ -65,6 +65,20 @@ function distinctVals(col) {
     return Lib.distinctVals(col).vals;
 }
 
+function getDfltStartingPositions(vec) {
+    var len = vec.length;
+    var s;
+
+    if(len > 2) {
+        s = vec.slice(1, len - 1);
+    } else if(len === 2) {
+        s = [(vec[0] + vec[1]) / 2];
+    } else {
+        s = vec;
+    }
+    return s;
+}
+
 function getBoundPads(vec) {
     var len = vec.length;
     if(len === 1) {
@@ -116,30 +130,24 @@ function convert(scene, trace) {
             toDataCoords(trace.starts.z.slice(0, slen), 'zaxis')
         );
     } else {
-        // Default starting positions: cut xz plane at min-y,
+        // Default starting positions:
+        //
+        // if len>2, cut xz plane at min-y,
         // takes all x/y/z pts on that plane except those on the edges
-        // to generate "well-defined" tubes
-        var sy0 = sceneLayout.yaxis.d2l(trace._ybnds[0]) * dataScale[1];
-        var sx, sz;
-        if(valsx.length > 2 && valsz.length > 2) {
-            sx = valsx.slice(1, valsx.length - 1);
-            sz = valsz.slice(1, valsy.length - 1);
-        } else {
-            // use all pts on 2x2 and 1x1 planes
-            sx = valsx.slice();
-            sz = valsz.slice();
-        }
-
+        // to generate "well-defined" tubes,
+        //
+        // if len=2, take position halfway between two the pts,
+        //
+        // if len=1, take that pt
+        var sy0 = meshy[0];
+        var sx = getDfltStartingPositions(meshx);
+        var sz = getDfltStartingPositions(meshz);
         var startingPositions = new Array(sx.length * sz.length);
         var m = 0;
 
         for(var i = 0; i < sx.length; i++) {
             for(var k = 0; k < sz.length; k++) {
-                startingPositions[m++] = [
-                    sceneLayout.xaxis.d2l(sx[i]) * dataScale[0],
-                    sy0,
-                    sceneLayout.zaxis.d2l(sz[k]) * dataScale[2]
-                ];
+                startingPositions[m++] = [sx[i], sy0, sz[k]];
             }
         }
         tubeOpts.startingPositions = startingPositions;

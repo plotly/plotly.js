@@ -105,6 +105,82 @@ describe('@gl Test streamtube autorange', function() {
     });
 });
 
+describe('@gl Test streamtube starting positions defaults:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function makeFigure(nx, ny, nz) {
+        var trace = {
+            type: 'streamtube',
+            x: [], y: [], z: [],
+            u: [], v: [], w: []
+        };
+
+        for(var i = 0; i < nx; i++) {
+            for(var j = 0; j < ny; j++) {
+                for(var k = 0; k < nz; k++) {
+                    trace.x.push(i);
+                    trace.y.push(j);
+                    trace.z.push(k);
+                    trace.u.push(1 + Math.sin(i));
+                    trace.v.push(Math.cos(j));
+                    trace.w.push(0.3 * Math.sin(k * 0.3));
+                }
+            }
+        }
+
+        return {data: [trace]};
+    }
+
+    function _assert(exp) {
+        var scene = gd._fullLayout.scene._scene;
+        var obj = scene.glplot.objects[0];
+        expect(exp.positionsLength).toBe(obj.positions.length, 'positions length');
+        expect(exp.cellsLength).toBe(obj.cells.length, 'cells length');
+    }
+
+    it('should cut xz at min-y and take all x/y/z pts on that plane except those on the edges', function(done) {
+        Plotly.plot(gd, makeFigure(3, 3, 3)).then(function() {
+            _assert({
+                positionsLength: 1536,
+                cellsLength: 512
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should take middle pt if mesh vector has length 2', function(done) {
+        Plotly.plot(gd, makeFigure(3, 3, 2)).then(function() {
+            _assert({
+                positionsLength: 1200,
+                cellsLength: 400
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should take pt if mesh vector has length 1', function(done) {
+        Plotly.plot(gd, makeFigure(1, 3, 2)).then(function() {
+            _assert({
+                positionsLength: 720,
+                cellsLength: 240
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
 describe('@gl Test streamtube interactions', function() {
     var gd;
 
