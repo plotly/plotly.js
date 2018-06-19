@@ -943,6 +943,8 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
     var a0;
 
     function moveFn(dx, dy) {
+        var fullLayoutNow = _this.gd._fullLayout;
+        var polarLayoutNow = fullLayoutNow[_this.id];
         var x1 = x0 + dx;
         var y1 = y0 + dy;
         var a1 = xy2a(x1, y1);
@@ -964,6 +966,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
             layers['angular-line'].select('path').attr('transform', trans);
             layers['radial-axis'].attr('transform', trans2);
             layers['radial-line'].select('line').attr('transform', trans2);
+            _this.updateRadialAxisTitle(fullLayoutNow, polarLayoutNow, rrot1);
         } else {
             _this.clipPaths.forTraces.select('path').attr('transform',
                 strTranslate(cxx, cyy) + strRotate(da)
@@ -1008,8 +1011,6 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
                 var moduleCalcData = _this.traceHash[k];
                 var moduleCalcDataVisible = Lib.filterVisible(moduleCalcData);
                 var _module = moduleCalcData[0][0].trace._module;
-                var polarLayoutNow = gd._fullLayout[_this.id];
-
                 _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
             }
         }
