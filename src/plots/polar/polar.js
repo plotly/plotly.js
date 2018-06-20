@@ -534,12 +534,22 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     // angle of polygon vertices in radians (null means circles)
     // TODO what to do when ax.period > ax._categories ??
-    _this.vangles = polarLayout.gridshape === 'linear' ?
-        ax._vals.map(c2rad) :
-        null;
+    var vangles;
+    if(polarLayout.gridshape === 'linear') {
+        vangles = ax._vals.map(c2rad);
+
+        // ax._vals should be always ordered, make them
+        // always turn counterclockwise for convenience here
+        if(angleDelta(vangles[0], vangles[1]) < 0) {
+            vangles = vangles.slice().reverse();
+        }
+    } else {
+        vangles = null;
+    }
+    _this.vangles = vangles;
 
     updateElement(layers['angular-line'].select('path'), angularLayout.showline, {
-        d: pathSectorClosed(radius, sector, _this.vangles),
+        d: pathSectorClosed(radius, sector, vangles),
         transform: strTranslate(cx, cy)
     })
     .attr('stroke-width', angularLayout.linewidth)
@@ -568,6 +578,8 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     var cyy = _this.cyy;
     var sector = polarLayout.sector;
     var vangles = _this.vangles;
+    var chw = constants.cornerHalfWidth;
+    var chl = constants.cornerLen / 2;
 
     var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', 'crosshair');
 
@@ -596,10 +608,12 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     // zoombox, corners elements
     var zb, corners;
 
+    function norm(x, y) {
+        return Math.sqrt(x * x + y * y);
+    }
+
     function xy2r(x, y) {
-        var xx = x - cxx;
-        var yy = y - cyy;
-        return Math.sqrt(xx * xx + yy * yy);
+        return norm(x - cxx, y - cyy);
     }
 
     function xy2a(x, y) {
@@ -610,13 +624,14 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         return [r * Math.cos(a), r * Math.sin(-a)];
     }
 
+    function _pathSectorClosed(r) {
+        return pathSectorClosed(r, sector, vangles);
+    }
+
     function pathCorner(r, a) {
-        var clen = constants.cornerLen;
-        var chw = constants.cornerHalfWidth;
+        if(r === 0) return _pathSectorClosed(2 * chw);
 
-        if(r === 0) return pathSectorClosed(2 * chw, sector);
-
-        var da = clen / r / 2;
+        var da = chl / r;
         var am = a - da;
         var ap = a + da;
         var rb = Math.max(0, Math.min(r, radius));
@@ -630,10 +645,38 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             'Z';
     }
 
+    // (x,y) is the pt at middle of the va0 <-> va1 edge
+    //
+    // ... we could eventually add another mode for cursor
+    // angles 'close to' enough to a particular vertex.
+    function pathCornerForPolygons(r, va0, va1) {
+        if(r === 0) return _pathSectorClosed(2 * chw);
+
+        var xy0 = ra2xy(r, va0);
+        var xy1 = ra2xy(r, va1);
+        var x = (xy0[0] + xy1[0]) / 2;
+        var y = (xy0[1] + xy1[1]) / 2;
+        var innerPts, outerPts;
+
+        if(x && y) {
+            var m = y / x;
+            var mperp = -1 / m;
+            var midPts = findXYatLength(chw, m, x, y);
+            innerPts = findXYatLength(chl, mperp, midPts[0][0], midPts[0][1]);
+            outerPts = findXYatLength(chl, mperp, midPts[1][0], midPts[1][1]);
+        } else {
+            // horizontal / vertical
+            innerPts = [[x - chl, y - chw], [x + chl, y - chw]];
+            outerPts = [[x - chl, y + chw], [x + chl, y + chw]];
+        }
+        return 'M' + innerPts.join('L') +
+            'L' + outerPts.reverse().join('L') + 'Z';
+    }
+
     function zoomPrep() {
         r0 = null;
         r1 = null;
-        path0 = pathSectorClosed(radius, sector, vangles);
+        path0 = _pathSectorClosed(radius);
         dimmed = false;
 
         var polarLayoutNow = gd._fullLayout[_this.id];
@@ -643,6 +686,13 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         zb.attr('fill-rule', 'evenodd');
         corners = dragBox.makeCorners(zoomlayer, cx, cy);
         clearSelect(zoomlayer);
+    }
+
+    function applyZoomMove(path1, cpath) {
+        zb.attr('d', path1);
+        corners.attr('d', cpath);
+        dragBox.transitionZoombox(zb, corners, dimmed, lum);
+        dimmed = true;
     }
 
     function zoomMove(dx, dy) {
@@ -675,7 +725,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
                 a1 = [a0, a0 = a1][0]; // swap a0 and a1
             }
 
-            path1 = path0 + pathSectorClosed(r1, sector, vangles) + pathSectorClosed(r0, sector, vangles);
+            path1 = path0 + _pathSectorClosed(r1) + _pathSectorClosed(r0);
             cpath = pathCorner(r0, a0) + pathCorner(r1, a1);
         } else {
             r0 = null;
@@ -684,10 +734,68 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             cpath = 'M0,0Z';
         }
 
-        zb.attr('d', path1);
-        corners.attr('d', cpath);
-        dragBox.transitionZoombox(zb, corners, dimmed, lum);
-        dimmed = true;
+        applyZoomMove(path1, cpath);
+    }
+
+    function findEnclosingVertexAngles(a) {
+        var cycleIndex = makeCycleIndexFn(vangles.length);
+        var i0 = findIndexOfMin(vangles, function(v) {
+            if(!isAngleInSector(v, sector)) return Infinity;
+            var adelta = angleDelta(v, a);
+            return adelta > 0 ? adelta : Infinity;
+        });
+        return [vangles[i0], vangles[cycleIndex(i0 + 1)]];
+    }
+
+    function findPolygonRadius(x, y, va0, va1) {
+        var xy = findIntersectionXY(va0, va1, va0, [x - cxx, cyy - y]);
+        return norm(xy[0], xy[1]);
+    }
+
+    function zoomMoveForPolygons(dx, dy) {
+        var x1 = x0 + dx;
+        var y1 = y0 + dy;
+        var a0 = xy2a(x0, y0);
+        var a1 = xy2a(x1, y1);
+        var vangles0 = findEnclosingVertexAngles(a0);
+        var vangles1 = findEnclosingVertexAngles(a1);
+        var rr0 = findPolygonRadius(x0, y0, vangles0[0], vangles0[1]);
+        var rr1 = Math.min(findPolygonRadius(x1, y1, vangles1[0], vangles1[1]), radius);
+
+        // starting or ending drag near center (outer edge),
+        // clamps radial distance at origin (at r=radius)
+        if(rr0 < OFFEDGE) rr0 = 0;
+        else if((radius - rr0) < OFFEDGE) rr0 = radius;
+        else if(rr1 < OFFEDGE) rr1 = 0;
+        else if((radius - rr1) < OFFEDGE) rr1 = radius;
+
+        var path1;
+        var cpath;
+
+        if(Math.abs(rr1 - rr0) > MINZOOM) {
+            // make sure r0 < r1,
+            // to get correct fill pattern in path1 below
+            if(rr0 < rr1) {
+                r0 = rr0;
+                r1 = rr1;
+            } else {
+                r0 = rr1;
+                r1 = rr0;
+            }
+
+            path1 = path0 + _pathSectorClosed(r1) + _pathSectorClosed(r0);
+            cpath = [
+                pathCornerForPolygons(r0, vangles1[0], vangles1[1]),
+                pathCornerForPolygons(r1, vangles1[0], vangles1[1])
+            ].join(' ');
+        } else {
+            r0 = null;
+            r1 = null;
+            path1 = path0;
+            cpath = 'M0,0Z';
+        }
+
+        applyZoomMove(path1, cpath);
     }
 
     function zoomDone() {
@@ -718,7 +826,11 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
 
         switch(dragModeNow) {
             case 'zoom':
-                dragOpts.moveFn = zoomMove;
+                if(vangles) {
+                    dragOpts.moveFn = zoomMoveForPolygons;
+                } else {
+                    dragOpts.moveFn = zoomMove;
+                }
                 dragOpts.doneFn = zoomDone;
                 zoomPrep(evt, startX, startY);
                 break;
@@ -1208,80 +1320,132 @@ function findIndexOfMin(arr, fn) {
     return ind;
 }
 
-// find intersection of v0 <-> v1 edge with (r,s) sector radius
-// in (x,y) coordinates
-function findIntersectionXY(v0, v1, s, r) {
-    var as = Math.sin(s) / Math.cos(s);
-    var av = (Math.sin(v1) - Math.sin(v0)) / (Math.cos(v1) - Math.cos(v0));
-    var bv = r * (Math.sin(v1) - av * Math.cos(v1));
-    var x = bv / (as - av);
-    var y = as * x;
-    return [x, y];
+// find intersection of 'v0' <-> 'v1' edge with a 'radial' line
+// (i.e. a line that starts from the origin at angle 'a')
+// given an (xp,yp) pair on the 'v0' <-> 'v1' line
+// (N.B. 'v0' and 'v1' are angles in radians)
+function findIntersectionXY(v0, v1, a, xpyp) {
+    var xstar, ystar;
+
+    var xp = xpyp[0];
+    var yp = xpyp[1];
+    var dsin = Math.sin(v1) - Math.sin(v0);
+    var dcos = Math.cos(v1) - Math.cos(v0);
+
+    if(dsin && dcos) {
+        // given
+        //  g(x) := v0 -> v1 line = m * x + b
+        //  h(x) := mr * x
+        // solve g(xstar) = h(xstar)
+        var m = dsin / dcos;
+        var b = yp - m * xp;
+        var mr = Math.sin(a) / Math.cos(a);
+        xstar = b / (mr - m);
+        ystar = mr * xstar;
+    } else {
+        var r;
+        if(dcos) {
+            // horizontal v0 -> v1
+            r = yp / Math.sin(v0);
+        } else {
+            // vertical v0 -> va
+            r = xp / Math.cos(v0);
+        }
+        xstar = r * Math.cos(a);
+        ystar = r * Math.sin(a);
+    }
+
+    return [xstar, ystar];
 }
 
-function makePolygon(r, sector, vangles) {
+// solves l^2 = (f(x)^2 - yp)^2 + (x - xp)^2
+// rearranged into 0 = a*x^2 + b * x + c
+//
+// where f(x) = m*x + t + yp
+// and   x01 = (-b +/- del) / (2*a)
+function findXYatLength(l, m, xp, yp) {
+    var t = -m * xp;
+    var a = m * m + 1;
+    var b = 2 * (m * t - xp);
+    var c = t * t + xp * xp - l * l;
+    var del = Math.sqrt(b * b - 4 * a * c);
+    var x0 = (-b + del) / (2 * a);
+    var x1 = (-b - del) / (2 * a);
+    return [
+        [x0, m * x0 + t + yp],
+        [x1, m * x1 + t + yp]
+    ];
+}
+
+function makeCycleIndexFn(len) {
+    return function(index) {
+        return index < 0 ? len + index :
+            index < len ? index : index - len;
+    };
+}
+
+function makeRegularPolygon(r, vangles) {
     var len = vangles.length;
-    var vertices, i;
+    var vertices = new Array(len + 1);
+    var i;
+    for(i = 0; i < len; i++) {
+        var va = vangles[i];
+        vertices[i] = [r * Math.cos(va), r * Math.sin(va)];
+    }
+    vertices[i] = vertices[0].slice();
+    return vertices;
+}
+
+function makeClippedPolygon(r, sector, vangles) {
+    var len = vangles.length;
+    var vertices = [];
+    var i, j;
 
     function a2xy(a) {
         return [r * Math.cos(a), r * Math.sin(a)];
     }
 
-    function cycleIndex(i) {
-        return i < 0 ? len + i :
-            i < len ? i : i - len;
+    function findXY(va0, va1, s) {
+        return findIntersectionXY(va0, va1, s, a2xy(va0));
     }
 
-    if(isFullCircle(sector)) {
-        vertices = new Array(len + 1);
-        for(i = 0; i < len; i++) {
-            vertices[i] = a2xy(vangles[i]);
-        }
-        vertices[i] = vertices[0].slice();
-    } else {
-        vertices = [];
+    var cycleIndex = makeCycleIndexFn(len);
+    var s0 = deg2rad(sector[0]);
+    var s1 = deg2rad(sector[1]);
 
-        // vangles should be always ordered, make them
-        // always turn counterclockwise here
-        var _vangles;
-        if(angleDelta(vangles[0], vangles[1]) > 0) {
-            _vangles = vangles;
-        } else {
-            _vangles = vangles.slice().reverse();
-        }
+    // find index in sector closest to sector[0],
+    // use it to find intersection of v[i0] <-> v[i0-1] edge with sector radius
+    var i0 = findIndexOfMin(vangles, function(v) {
+        return isAngleInSector(v, sector) ? Math.abs(angleDelta(v, s0)) : Infinity;
+    });
+    var xy0 = findXY(vangles[i0], vangles[cycleIndex(i0 - 1)], s0);
+    vertices.push(xy0);
 
-        var s0 = deg2rad(sector[0]);
-        var s1 = deg2rad(sector[1]);
-
-        // find index in sector closest to sector[0],
-        // use it to find intersection of v[i0] <-> v[i0-1] edge with sector radius
-        var i0 = findIndexOfMin(_vangles, function(v) {
-            return isAngleInSector(v, sector) ? Math.abs(angleDelta(v, s0)) : Infinity;
-        });
-        var xy0 = findIntersectionXY(_vangles[i0], _vangles[cycleIndex(i0 - 1)], s0, r);
-        vertices.push(xy0);
-
-        // fill in in-sector vertices
-        var n = 0;
-        for(i = i0; n < 1000; i++, n++) {
-            var va = _vangles[cycleIndex(i)];
-            if(!isAngleInSector(va, sector)) break;
-            vertices.push(a2xy(va));
-        }
-
-        // find index in sector closest to sector[1],
-        // use it to find intersection of v[iN] <-> v[iN+1] edge with sector radius
-        var iN = findIndexOfMin(_vangles, function(v) {
-            return isAngleInSector(v, sector) ? Math.abs(angleDelta(v, s1)) : Infinity;
-        });
-        var xyN = findIntersectionXY(_vangles[iN], _vangles[cycleIndex(iN + 1)], s1, r);
-        vertices.push(xyN);
-
-        vertices.push([0, 0]);
-        vertices.push(vertices[0].slice());
+    // fill in in-sector vertices
+    for(i = i0, j = 0; j < len; i++, j++) {
+        var va = vangles[cycleIndex(i)];
+        if(!isAngleInSector(va, sector)) break;
+        vertices.push(a2xy(va));
     }
+
+    // find index in sector closest to sector[1],
+    // use it to find intersection of v[iN] <-> v[iN+1] edge with sector radius
+    var iN = findIndexOfMin(vangles, function(v) {
+        return isAngleInSector(v, sector) ? Math.abs(angleDelta(v, s1)) : Infinity;
+    });
+    var xyN = findXY(vangles[iN], vangles[cycleIndex(iN + 1)], s1);
+    vertices.push(xyN);
+
+    vertices.push([0, 0]);
+    vertices.push(vertices[0].slice());
 
     return vertices;
+}
+
+function makePolygon(r, sector, vangles) {
+    return isFullCircle(sector) ?
+        makeRegularPolygon(r, vangles) :
+        makeClippedPolygon(r, sector, vangles);
 }
 
 function invertY(pts0) {
@@ -1317,8 +1481,9 @@ function pathSector(r, sector, vangles) {
 }
 
 function pathSectorClosed(r, sector, vangles) {
-    return pathSector(r, sector, vangles) +
-        (isFullCircle(sector) ? '' : 'L0,0Z');
+    var d = pathSector(r, sector, vangles);
+    if(isFullCircle(sector) || vangles) return d;
+    return d + 'L0,0Z';
 }
 
 // TODO recycle this routine with the ones used for pie traces.
