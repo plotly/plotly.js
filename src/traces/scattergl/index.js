@@ -13,7 +13,7 @@ var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var cluster = require('point-cluster');
 var arrayRange = require('array-range');
-var Text = require('../../../../regl-text');
+var Text = require('regl-text');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -403,8 +403,6 @@ function plot(gd, subplot, cdata) {
             for(i = 0; i < scene.textOptions.length; i++) {
                 textOptions = scene.textOptions[i];
                 for(j = 0; j < textOptions.length; j++) {
-                    var stash = cdata[i][0].t;
-                    textOptions[j].position = [stash.x[j], stash.y[j]];
                     scene.glText[i][j].update(textOptions[j]);
                 }
             }

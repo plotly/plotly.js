@@ -26,7 +26,7 @@ var constants = require('./constants');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 var TEXTOFFSETSIGN = {
-    start: 1, left: 1, end: -1, right: -1, middle: 0, bottom: 1, top: -1
+    start: 1, left: 1, end: -1, right: -1, middle: 0, center: 0, bottom: 1, top: -1
 };
 
 function convertStyle(gd, trace) {
@@ -50,6 +50,20 @@ function convertStyle(gd, trace) {
 
         for(i = 0; i < trace.text.length; i++) {
             var textOptions = opts.text[i] = {};
+
+            var textfont = unarr(trace.textfont, i);
+            var fontSize = unarr(textfont.size, i);
+            if(typeof fontSize !== 'number') {
+                continue;
+            }
+
+            textOptions.color = unarr(textfont.color, i);
+
+            textOptions.font = {
+                family: unarr(textfont.family, i),
+                size: fontSize
+            };
+
 
             var textpos = unarr(trace.textposition, i);
             textpos = textpos.split(/\s+/);
@@ -75,16 +89,6 @@ function convertStyle(gd, trace) {
                     textOptions.baseline = textpos[0];
             }
 
-            var textfont = unarr(trace.textfont, i);
-            textOptions.color = unarr(textfont.color, i);
-
-            var fontSize = unarr(textfont.size, i);
-
-            textOptions.font = {
-                family: unarr(textfont.family, i),
-                size: fontSize
-            };
-
             // corresponds to textPointPosition from component.drawing
             if(trace.marker) {
                 var hSign = TEXTOFFSETSIGN[textOptions.align];
@@ -94,6 +98,8 @@ function convertStyle(gd, trace) {
                 var yPad = - vSign * xPad - vSign * 0.5;
                 textOptions.offset = [hSign * xPad / fontSize, yPad / fontSize];
             }
+
+            textOptions.position = [unarr(trace.x, i), unarr(trace.y, i)];
 
             textOptions.text = unarr(trace.text, i);
         }
