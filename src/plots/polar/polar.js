@@ -726,7 +726,8 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             }
 
             path1 = path0 + _pathSectorClosed(r1) + _pathSectorClosed(r0);
-            cpath = pathCorner(r0, a0) + pathCorner(r1, a1);
+            // keep 'starting' angle
+            cpath = pathCorner(r0, a0) + pathCorner(r1, a0);
         } else {
             r0 = null;
             r1 = null;
@@ -784,9 +785,10 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             }
 
             path1 = path0 + _pathSectorClosed(r1) + _pathSectorClosed(r0);
+            // keep 'starting' angle here too
             cpath = [
-                pathCornerForPolygons(r0, vangles1[0], vangles1[1]),
-                pathCornerForPolygons(r1, vangles1[0], vangles1[1])
+                pathCornerForPolygons(r0, vangles0[0], vangles0[1]),
+                pathCornerForPolygons(r1, vangles0[0], vangles0[1])
             ].join(' ');
         } else {
             r0 = null;
