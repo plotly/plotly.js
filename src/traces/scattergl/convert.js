@@ -25,6 +25,10 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var constants = require('./constants');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
+var TEXTOFFSETSIGN = {
+    start: 1, left: 1, end: -1, right: -1, middle: 0, bottom: 1, top: -1
+};
+
 function convertStyle(gd, trace) {
     var i;
 
@@ -42,42 +46,56 @@ function convertStyle(gd, trace) {
     if(trace.visible !== true) return opts;
 
     if(subTypes.hasText(trace)) {
-        opts.text = []
+        opts.text = [];
 
-        for (i = 0; i < trace.text.length; i++) {
-            var textOptions = opts.text[i] = {}
+        for(i = 0; i < trace.text.length; i++) {
+            var textOptions = opts.text[i] = {};
 
-            var textpos = unarr(trace.textposition, i)
-            textpos = textpos.split(/\s+/)
-            switch (textpos[1]) {
+            var textpos = unarr(trace.textposition, i);
+            textpos = textpos.split(/\s+/);
+            switch(textpos[1]) {
                 case 'left':
                     textOptions.align = 'right';
                     break;
                 case 'right':
                     textOptions.align = 'left';
                     break;
-                case 'center':
-                case 'centre':
-                case 'middle':
                 default:
-                    textOptions.align = 'center';
+                    textOptions.align = textpos[1];
             }
 
-            var textfont = unarr(trace.textfont, i)
-            textOptions.color = unarr(textfont.color, i)
+            switch(textpos[0]) {
+                case 'top':
+                    textOptions.baseline = 'bottom';
+                    break;
+                case 'bottom':
+                    textOptions.baseline = 'top';
+                    break;
+                default:
+                    textOptions.baseline = textpos[0];
+            }
+
+            var textfont = unarr(trace.textfont, i);
+            textOptions.color = unarr(textfont.color, i);
+
+            var fontSize = unarr(textfont.size, i);
 
             textOptions.font = {
                 family: unarr(textfont.family, i),
-                size: unarr(textfont.size, i)
+                size: fontSize
+            };
+
+            // corresponds to textPointPosition from component.drawing
+            if(trace.marker) {
+                var hSign = TEXTOFFSETSIGN[textOptions.align];
+                var markerRadius = unarr(unarr(trace.marker, i).size, i) / 2;
+                var xPad = markerRadius ? markerRadius / 0.8 + 1 : 0;
+                var vSign = TEXTOFFSETSIGN[textOptions.baseline];
+                var yPad = - vSign * xPad - vSign * 0.5;
+                textOptions.offset = [hSign * xPad / fontSize, yPad / fontSize];
             }
 
-            textOptions.text = unarr(trace.text, i)
-        }
-
-        // FIXME: find proper util method for this
-        function unarr(obj, i) {
-            if (Array.isArray(obj)) return obj[i]
-            return obj
+            textOptions.text = unarr(trace.text, i);
         }
     }
 
@@ -127,6 +145,13 @@ function convertStyle(gd, trace) {
     }
 
     return opts;
+}
+
+
+// FIXME: find proper util method for this
+function unarr(obj, i) {
+    if(Array.isArray(obj)) return obj[i];
+    return obj;
 }
 
 function convertMarkerStyle(trace) {

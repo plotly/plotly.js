@@ -261,10 +261,10 @@ function sceneUpdate(gd, subplot) {
             }
 
             if(scene.glText.length) {
-                scene.glText.forEach(function (items) {
-                    items.forEach(function (item) {
-                        item.render()
-                    })
+                scene.glText.forEach(function(items) {
+                    items.forEach(function(item) {
+                        item.render();
+                    });
                 });
             }
 
@@ -313,11 +313,11 @@ function sceneUpdate(gd, subplot) {
             if(scene.error2d) scene.error2d.destroy();
             if(scene.line2d) scene.line2d.destroy();
             if(scene.select2d) scene.select2d.destroy();
-            if(scene.glText) scene.glText.forEach(function (items) {
-                items.forEach(function (item) {
+            if(scene.glText) {scene.glText.forEach(function(items) {
+                items.forEach(function(item) {
                     item.destroy();
-                })
-            });
+                });
+            });}
 
             scene.textOptions = null;
             scene.lineOptions = null;
@@ -347,6 +347,8 @@ function sceneUpdate(gd, subplot) {
 
 function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
+
+    var i, j, items, textOptions;
 
     var fullLayout = gd._fullLayout;
     var scene = cdata[0][0].t._scene;
@@ -386,24 +388,25 @@ function plot(gd, subplot, cdata) {
         }
         if(scene.glText === true) {
             scene.glText = [];
-            for (var i = 0; i < scene.textOptions.length; i++) {
-                var textOptions = scene.textOptions[i];
-                var items = []
-                textOptions.forEach(function (options) {
-                    items.push(new Text(regl))
-                });
-                scene.glText[i] = items
+            for(i = 0; i < scene.textOptions.length; i++) {
+                textOptions = scene.textOptions[i];
+                items = [];
+                for(j = 0; j < textOptions.length; j++) {
+                    items.push(new Text(regl));
+                }
+                scene.glText[i] = items;
             }
         }
 
         // update main marker options
         if(scene.glText) {
-            for (var i = 0; i < scene.textOptions.length; i++) {
-                scene.textOptions[i].forEach(function (textOptions, j) {
+            for(i = 0; i < scene.textOptions.length; i++) {
+                textOptions = scene.textOptions[i];
+                for(j = 0; j < textOptions.length; j++) {
                     var stash = cdata[i][0].t;
-                    textOptions.position = [stash.x[j], stash.y[j]];
-                    scene.glText[i][j].update(textOptions);
-                })
+                    textOptions[j].position = [stash.x[j], stash.y[j]];
+                    scene.glText[i][j].update(textOptions[j]);
+                }
             }
         }
         if(scene.line2d) {
@@ -620,10 +623,10 @@ function plot(gd, subplot, cdata) {
         scene.select2d.update(vpRange);
     }
     if(scene.glText) {
-        scene.glText.forEach(function (items, i) {
-            items.forEach(function (item) {
-                item.update(vpRange[i])
-            })
+        scene.glText.forEach(function(items, i) {
+            items.forEach(function(item) {
+                item.update(vpRange[i]);
+            });
         });
     }
 
