@@ -17,6 +17,11 @@ var padAttrs = require('../../plots/pad_attributes');
 var buttonsAttrs = {
     _isLinkedToArray: 'button',
 
+    visible: {
+        valType: 'boolean',
+        role: 'info',
+        description: 'Determines whether or not this button is visible.'
+    },
     method: {
         valType: 'enumerated',
         values: ['restyle', 'relayout', 'animate', 'update', 'skip'],

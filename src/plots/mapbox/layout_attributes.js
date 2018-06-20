@@ -91,6 +91,14 @@ module.exports = overrideAll({
     layers: {
         _isLinkedToArray: 'layer',
 
+        visible: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: true,
+            description: [
+                'Determines whether this layer is displayed'
+            ].join(' ')
+        },
         sourcetype: {
             valType: 'enumerated',
             values: ['geojson', 'vector'],

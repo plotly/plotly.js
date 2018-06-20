@@ -34,6 +34,7 @@ var Lib = require('../lib');
  *          - opts {object} (as in closure)
  *          - itemOpts {object}
  *              - itemIsNotPlainObject {boolean}
+ *              - index {integer}
  * N.B.
  *
  *  - opts is passed to handleItemDefaults so it can also store
@@ -50,9 +51,9 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
         i;
 
     for(i = 0; i < contIn.length; i++) {
-        var itemIn = contIn[i],
-            itemOut = {},
-            itemOpts = {};
+        var itemIn = contIn[i];
+        var itemOut = {};
+        var itemOpts = {index: i};
 
         if(!Lib.isPlainObject(itemIn)) {
             itemOpts.itemIsNotPlainObject = true;

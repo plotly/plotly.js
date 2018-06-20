@@ -513,6 +513,16 @@ module.exports = {
     tickformatstops: {
         _isLinkedToArray: 'tickformatstop',
 
+        visible: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: true,
+            editType: 'ticks',
+            description: [
+                'Determines whether or not this stop is used.',
+                'If `false`, this stop is ignored even within its `dtickrange`.'
+            ].join(' ')
+        },
         dtickrange: {
             valType: 'info_array',
             role: 'info',

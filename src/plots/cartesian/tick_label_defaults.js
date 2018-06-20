@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
+var handleArrayContainerDefaults = require('../array_container_defaults');
 
 module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options) {
     var showAttrDflt = getShowAttrDflt(containerIn);
@@ -37,7 +38,13 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
-            tickformatstopsDefaults(containerIn, containerOut);
+            var tickformatStops = containerIn.tickformatstops;
+            if(Array.isArray(tickformatStops) && tickformatStops.length) {
+                handleArrayContainerDefaults(containerIn, containerOut, {
+                    name: 'tickformatstops',
+                    handleItemDefaults: tickformatstopDefaults
+                });
+            }
             if(!tickFormat && axType !== 'date') {
                 coerce('showexponent', showAttrDflt);
                 coerce('exponentformat');
@@ -77,25 +84,14 @@ function getShowAttrDflt(containerIn) {
     }
 }
 
-function tickformatstopsDefaults(tickformatIn, tickformatOut) {
-    var valuesIn = tickformatIn.tickformatstops;
-    var valuesOut = tickformatOut.tickformatstops = [];
-
-    if(!Array.isArray(valuesIn)) return;
-
-    var valueIn, valueOut;
-
+function tickformatstopDefaults(valueIn, valueOut, contOut, opts, itemOpts) {
     function coerce(attr, dflt) {
         return Lib.coerce(valueIn, valueOut, layoutAttributes.tickformatstops, attr, dflt);
     }
 
-    for(var i = 0; i < valuesIn.length; i++) {
-        valueIn = valuesIn[i];
-        valueOut = {};
-
+    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
+    if(visible) {
         coerce('dtickrange');
         coerce('value');
-
-        valuesOut.push(valueOut);
     }
 }

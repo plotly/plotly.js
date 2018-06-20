@@ -18,6 +18,14 @@ var constants = require('./constants');
 var stepsAttrs = {
     _isLinkedToArray: 'step',
 
+    visible: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: [
+            'Determines whether or not this step is included in the slider.'
+        ].join(' ')
+    },
     method: {
         valType: 'enumerated',
         values: ['restyle', 'relayout', 'animate', 'update', 'skip'],

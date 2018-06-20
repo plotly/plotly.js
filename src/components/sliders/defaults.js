@@ -19,12 +19,10 @@ var stepAttrs = attributes.steps;
 
 
 module.exports = function slidersDefaults(layoutIn, layoutOut) {
-    var opts = {
+    handleArrayContainerDefaults(layoutIn, layoutOut, {
         name: name,
         handleItemDefaults: sliderDefaults
-    };
-
-    handleArrayContainerDefaults(layoutIn, layoutOut, opts);
+    });
 };
 
 function sliderDefaults(sliderIn, sliderOut, layoutOut) {
@@ -33,12 +31,27 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
         return Lib.coerce(sliderIn, sliderOut, attributes, attr, dflt);
     }
 
-    var steps = stepsDefaults(sliderIn, sliderOut);
+    var steps = handleArrayContainerDefaults(sliderIn, sliderOut, {
+        name: 'steps',
+        handleItemDefaults: stepDefaults
+    });
 
-    var visible = coerce('visible', steps.length > 0);
+    var stepCount = 0;
+    for(var i = 0; i < steps.length; i++) {
+        if(steps[i].visible) stepCount++;
+    }
+
+    var visible;
+    // If it has fewer than two options, it's not really a slider
+    if(stepCount < 2) visible = sliderOut.visible = false;
+    else visible = coerce('visible');
     if(!visible) return;
 
-    coerce('active');
+    sliderOut._stepCount = stepCount;
+    var visSteps = sliderOut._visibleSteps = Lib.filterVisible(steps);
+
+    var active = coerce('active');
+    if(!(steps[active] || {}).visible) sliderOut.active = visSteps[0]._index;
 
     coerce('x');
     coerce('y');
@@ -81,33 +94,21 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('minorticklen');
 }
 
-function stepsDefaults(sliderIn, sliderOut) {
-    var valuesIn = sliderIn.steps || [],
-        valuesOut = sliderOut.steps = [];
-
-    var valueIn, valueOut;
-
+function stepDefaults(valueIn, valueOut, sliderOut, opts, itemOpts) {
     function coerce(attr, dflt) {
         return Lib.coerce(valueIn, valueOut, stepAttrs, attr, dflt);
     }
 
-    for(var i = 0; i < valuesIn.length; i++) {
-        valueIn = valuesIn[i];
-        valueOut = {};
-
-        coerce('method');
-
-        if(!Lib.isPlainObject(valueIn) || (valueOut.method !== 'skip' && !Array.isArray(valueIn.args))) {
-            continue;
-        }
-
-        coerce('args');
-        coerce('label', 'step-' + i);
-        coerce('value', valueOut.label);
-        coerce('execute');
-
-        valuesOut.push(valueOut);
+    var visible;
+    if(itemOpts.itemIsNotPlainObject || (valueIn.method !== 'skip' && !Array.isArray(valueIn.args))) {
+        visible = valueOut.visible = false;
     }
+    else visible = coerce('visible');
+    if(!visible) return;
 
-    return valuesOut;
+    coerce('method');
+    coerce('args');
+    var label = coerce('label', 'step-' + itemOpts.index);
+    coerce('value', label);
+    coerce('execute');
 }

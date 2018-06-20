@@ -10,6 +10,12 @@
 
 
 module.exports = {
+    visible: {
+        valType: 'boolean',
+        role: 'info',
+        editType: 'plot',
+        description: 'Determines whether or not this button is visible.'
+    },
     step: {
         valType: 'enumerated',
         role: 'info',

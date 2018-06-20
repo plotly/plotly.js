@@ -12,6 +12,7 @@
 var Lib = require('../../lib');
 
 var handleSubplotDefaults = require('../subplot_defaults');
+var handleArrayContainerDefaults = require('../array_container_defaults');
 var layoutAttributes = require('./layout_attributes');
 
 
@@ -34,28 +35,22 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     coerce('bearing');
     coerce('pitch');
 
-    handleLayerDefaults(containerIn, containerOut);
+    handleArrayContainerDefaults(containerIn, containerOut, {
+        name: 'layers',
+        handleItemDefaults: handleLayerDefaults
+    });
 
     // copy ref to input container to update 'center' and 'zoom' on map move
     containerOut._input = containerIn;
 }
 
-function handleLayerDefaults(containerIn, containerOut) {
-    var layersIn = containerIn.layers || [],
-        layersOut = containerOut.layers = [];
-
-    var layerIn, layerOut;
-
+function handleLayerDefaults(layerIn, layerOut, mapboxOut, opts, itemOpts) {
     function coerce(attr, dflt) {
         return Lib.coerce(layerIn, layerOut, layoutAttributes.layers, attr, dflt);
     }
 
-    for(var i = 0; i < layersIn.length; i++) {
-        layerIn = layersIn[i];
-        layerOut = {};
-
-        if(!Lib.isPlainObject(layerIn)) continue;
-
+    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
+    if(visible) {
         var sourceType = coerce('sourcetype');
         coerce('source');
 
@@ -88,8 +83,5 @@ function handleLayerDefaults(containerIn, containerOut) {
             Lib.coerceFont(coerce, 'symbol.textfont');
             coerce('symbol.textposition');
         }
-
-        layerOut._index = i;
-        layersOut.push(layerOut);
     }
 }

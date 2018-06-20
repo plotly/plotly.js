@@ -10,6 +10,7 @@
 
 var Lib = require('../../lib');
 var Color = require('../color');
+var Template = require('../../plot_api/plot_template');
 
 var attributes = require('./attributes');
 var buttonAttrs = require('./button_attributes');
@@ -17,8 +18,8 @@ var constants = require('./constants');
 
 
 module.exports = function handleDefaults(containerIn, containerOut, layout, counterAxes, calendar) {
-    var selectorIn = containerIn.rangeselector || {},
-        selectorOut = containerOut.rangeselector = {};
+    var selectorIn = containerIn.rangeselector || {};
+    var selectorOut = Template.newContainer(containerOut, 'rangeselector');
 
     function coerce(attr, dflt) {
         return Lib.coerce(selectorIn, selectorOut, attributes, attr, dflt);
@@ -59,21 +60,23 @@ function buttonsDefaults(containerIn, containerOut, calendar) {
         buttonIn = buttonsIn[i];
         buttonOut = {};
 
-        if(!Lib.isPlainObject(buttonIn)) continue;
+        var visible = coerce('visible', Lib.isPlainObject(buttonIn));
 
-        var step = coerce('step');
-        if(step !== 'all') {
-            if(calendar && calendar !== 'gregorian' && (step === 'month' || step === 'year')) {
-                buttonOut.stepmode = 'backward';
-            }
-            else {
-                coerce('stepmode');
+        if(visible) {
+            var step = coerce('step');
+            if(step !== 'all') {
+                if(calendar && calendar !== 'gregorian' && (step === 'month' || step === 'year')) {
+                    buttonOut.stepmode = 'backward';
+                }
+                else {
+                    coerce('stepmode');
+                }
+
+                coerce('count');
             }
 
-            coerce('count');
+            coerce('label');
         }
-
-        coerce('label');
 
         buttonOut._index = i;
         buttonsOut.push(buttonOut);

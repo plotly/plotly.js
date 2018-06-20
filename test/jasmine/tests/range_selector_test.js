@@ -38,10 +38,10 @@ describe('range selector defaults:', function() {
         supply(containerIn, containerOut);
 
         expect(containerOut.rangeselector)
-            .toEqual({
+            .toEqual(jasmine.objectContaining({
                 visible: false,
                 buttons: []
-            });
+            }));
     });
 
     it('should coerce an empty button object', function() {
@@ -56,6 +56,7 @@ describe('range selector defaults:', function() {
 
         expect(containerIn.rangeselector.buttons).toEqual([{}]);
         expect(containerOut.rangeselector.buttons).toEqual([{
+            visible: true,
             step: 'month',
             stepmode: 'backward',
             count: 1,
@@ -66,13 +67,13 @@ describe('range selector defaults:', function() {
     it('should skip over non-object buttons', function() {
         var containerIn = {
             rangeselector: {
-                buttons: [{
-                    label: 'button 0'
-                }, null, {
-                    label: 'button 2'
-                }, 'remove', {
-                    label: 'button 4'
-                }]
+                buttons: [
+                    {label: 'button 0'},
+                    null,
+                    {label: 'button 2'},
+                    'remove',
+                    {label: 'button 4'}
+                ]
             }
         };
         var containerOut = {};
@@ -80,7 +81,9 @@ describe('range selector defaults:', function() {
         supply(containerIn, containerOut);
 
         expect(containerIn.rangeselector.buttons.length).toEqual(5);
-        expect(containerOut.rangeselector.buttons.length).toEqual(3);
+        expect(containerOut.rangeselector.buttons.map(function(b) {
+            return b.visible;
+        })).toEqual([true, false, true, false, true]);
     });
 
     it('should coerce all buttons present', function() {
@@ -100,8 +103,8 @@ describe('range selector defaults:', function() {
 
         expect(containerOut.rangeselector.visible).toBe(true);
         expect(containerOut.rangeselector.buttons).toEqual([
-            { step: 'year', stepmode: 'backward', count: 10, _index: 0 },
-            { step: 'month', stepmode: 'backward', count: 6, _index: 1 }
+            { visible: true, step: 'year', stepmode: 'backward', count: 10, _index: 0 },
+            { visible: true, step: 'month', stepmode: 'backward', count: 6, _index: 1 }
         ]);
     });
 
@@ -119,6 +122,7 @@ describe('range selector defaults:', function() {
         supply(containerIn, containerOut);
 
         expect(containerOut.rangeselector.buttons).toEqual([{
+            visible: true,
             step: 'all',
             label: 'full range',
             _index: 0
@@ -490,9 +494,24 @@ describe('range selector interactions:', function() {
         });
     }
 
-    it('should display the correct nodes', function() {
+    it('should display the correct nodes and can hide buttons', function(done) {
+        var allButtons = mockCopy.layout.xaxis.rangeselector.buttons.length;
         assertNodeCount('.rangeselector', 1);
-        assertNodeCount('.button', mockCopy.layout.xaxis.rangeselector.buttons.length);
+        assertNodeCount('.button', allButtons);
+
+        Plotly.relayout(gd, 'xaxis.rangeselector.buttons[2].visible', false)
+        .then(function() {
+            assertNodeCount('.rangeselector', 1);
+            assertNodeCount('.button', allButtons - 1);
+
+            return Plotly.relayout(gd, 'xaxis.rangeselector.buttons[2].visible', true);
+        })
+        .then(function() {
+            assertNodeCount('.rangeselector', 1);
+            assertNodeCount('.button', allButtons);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should be able to be removed by `relayout`', function(done) {
