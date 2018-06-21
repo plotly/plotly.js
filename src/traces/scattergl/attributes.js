@@ -38,6 +38,8 @@ var attrs = module.exports = overrideAll({
         ].join(' ')
     }),
 
+    hovertext: scatterAttrs.hovertext,
+
     textposition: scatterAttrs.textposition,
     textfont: scatterAttrs.textfont,
 

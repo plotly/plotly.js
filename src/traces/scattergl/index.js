@@ -210,8 +210,9 @@ function sceneUpdate(gd, subplot) {
 
         // apply new option to all regl components (used on drag)
         scene.update = function update(opt) {
+            var i, j;
             var opts = new Array(scene.count);
-            for(var i = 0; i < scene.count; i++) {
+            for(i = 0; i < scene.count; i++) {
                 opts[i] = opt;
             }
 
@@ -221,9 +222,11 @@ function sceneUpdate(gd, subplot) {
             if(scene.error2d) scene.error2d.update(opts.concat(opts));
             if(scene.select2d) scene.select2d.update(opts);
             if(scene.glText) {
-                // scene.glText.forEach(function (text) {
-                //     text.update(opts);
-                // })
+                for(i = 0; i < scene.glText.length; i++) {
+                    for(j = 0; j < scene.glText[i].length; j++) {
+                        scene.glText[i][j].update(opts[i]);
+                    }
+                }
             }
 
             scene.draw();
