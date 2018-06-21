@@ -6,7 +6,7 @@ var constants = require('@src/plots/polar/constants');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
@@ -52,7 +52,7 @@ describe('Test legacy polar plots logs:', function() {
                 expect(Lib.log).toHaveBeenCalledTimes(1);
                 expect(Lib.log).toHaveBeenCalledWith('Legacy polar charts are deprecated!');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -265,7 +265,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert(dflt);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -295,7 +295,7 @@ describe('Test relayout on polar subplots:', function() {
             expect(gd._fullLayout.polar.radialaxis.range)
                 .toBeCloseToArray([0, 11.225]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -321,7 +321,7 @@ describe('Test relayout on polar subplots:', function() {
             // if they're the same, the tick label position did not update
             expect(pos1).not.toBeCloseTo2DArray(pos0);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -357,7 +357,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             check(8, 'M-1.5,0h-5');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -450,7 +450,7 @@ describe('Test relayout on polar subplots:', function() {
                 '.angular-axis > path.angulartick', assertCnt
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -506,7 +506,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             assertTitle('yo2', false);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -540,7 +540,7 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert({subplot: 1, clip: 1, rtitle: 1});
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -599,7 +599,7 @@ describe('Test relayout on polar subplots:', function() {
                 sampleXY: [-25, 43]
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -794,7 +794,7 @@ describe('Test polar interactions:', function() {
                 plotly_relayout: 1
             }, 'after right click');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -885,7 +885,7 @@ describe('Test polar interactions:', function() {
             expect(eventCnts.plotly_relayout)
                 .toBe(relayoutNumber, 'no new relayout events after *not far enough* cases');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -969,7 +969,7 @@ describe('Test polar interactions:', function() {
         .then(function() {
             expect(eventCnts.plotly_relayout).toBe(8, 'total # of relayout events');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1034,7 +1034,7 @@ describe('Test polar interactions:', function() {
         .then(function() {
             expect(eventCnts.plotly_relayout).toBe(4, 'total # of relayout events');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
