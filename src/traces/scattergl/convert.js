@@ -53,9 +53,7 @@ function convertStyle(gd, trace) {
 
             var textfont = unarr(trace.textfont, i);
             var fontSize = unarr(textfont.size, i);
-            if(typeof fontSize !== 'number') {
-                continue;
-            }
+            if(!isNumeric(fontSize)) continue;
 
             textOptions.color = unarr(textfont.color, i);
 
