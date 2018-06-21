@@ -27,13 +27,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         len = labels.length;
         if(hasVals) len = Math.min(len, vals.length);
     }
-    if(!Array.isArray(labels)) {
-        if(!hasVals) {
-            // must have at least one of vals or labels
-            traceOut.visible = false;
-            return;
-        }
-
+    else if(hasVals) {
         len = vals.length;
 
         coerce('label0');
