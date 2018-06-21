@@ -13,7 +13,7 @@ var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var cluster = require('point-cluster');
 var arrayRange = require('array-range');
-var Text = require('gl-text');
+var Text = require('../../../../gl-text/index');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -215,7 +215,6 @@ function sceneUpdate(gd, subplot) {
             for(i = 0; i < scene.count; i++) {
                 opts[i] = opt;
             }
-
             if(scene.fill2d) scene.fill2d.update(opts);
             if(scene.scatter2d) scene.scatter2d.update(opts);
             if(scene.line2d) scene.line2d.update(opts);
@@ -829,7 +828,8 @@ function selectPoints(searchInfo, polygon) {
     if(!scene) return selection;
 
     var hasText = subTypes.hasText(trace);
-    var hasOnlyLines = !subTypes.hasMarkers(trace) && !hasText;
+    var hasMarkers = subTypes.hasMarkers(trace);
+    var hasOnlyLines = !hasMarkers && !hasText;
     if(trace.visible !== true || hasOnlyLines) return selection;
 
     // degenerate polygon does not enable selection
@@ -870,16 +870,20 @@ function selectPoints(searchInfo, polygon) {
             scene.unselectBatch[i] = [];
         }
         // we should turn scatter2d into unselected once we have any points selected
-        scene.scatter2d.update(scene.unselectedOptions);
+        if(hasMarkers) {
+            scene.scatter2d.update(scene.unselectedOptions);
+        }
     }
 
     // update texts selection
     if(hasText) {
-        var el, textOptions;
+        var el, textOptions, selOptions;
         if(els) {
             for(i = 0; i < els.length; i++) {
                 el = els[i];
-                textOptions = scene.selectedOptions[stash.index].textfont;
+                selOptions = scene.selectedOptions[stash.index];
+                if(!selOptions) continue;
+                textOptions = selOptions.textfont;
                 if(!textOptions) continue;
                 scene.glText[stash.index][el].update(textOptions[el]);
             }
@@ -887,7 +891,9 @@ function selectPoints(searchInfo, polygon) {
         if(unels) {
             for(i = 0; i < unels.length; i++) {
                 el = unels[i];
-                textOptions = scene.unselectedOptions[stash.index].textfont || scene.textOptions[stash.index][el];
+                selOptions = scene.unselectedOptions[stash.index];
+                if(!selOptions) continue;
+                textOptions = selOptions.textfont || scene.textOptions[stash.index][el];
                 scene.glText[stash.index][el].update(textOptions);
             }
         }
