@@ -602,6 +602,45 @@ describe('Test relayout on polar subplots:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should be able to relayout *gridshape*', function(done) {
+        var gd = createGraphDiv();
+
+        // check number of arcs ('A') or lines ('L') in svg paths
+        function _assert(msg, exp) {
+            var sp = d3.select(gd).select('g.polar');
+
+            function assertLetterCount(query) {
+                var d = sp.select(query).attr('d');
+                var re = new RegExp(exp.letter, 'g');
+                var actual = (d.match(re) || []).length;
+                expect(actual).toBe(exp.cnt, msg + ' - ' + query);
+            }
+
+            assertLetterCount('.plotbg > path');
+            assertLetterCount('.radial-grid > .x > path');
+            assertLetterCount('.angular-line > path');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatterpolar',
+            r: [1, 2, 3, 2, 3, 1],
+            theta: ['a', 'b', 'c', 'd', 'e', 'a']
+        }])
+        .then(function() {
+            _assert('base', {letter: 'A', cnt: 2});
+            return Plotly.relayout(gd, 'polar.gridshape', 'linear');
+        })
+        .then(function() {
+            _assert('relayout -> linear', {letter: 'L', cnt: 5});
+            return Plotly.relayout(gd, 'polar.gridshape', 'circular');
+        })
+        .then(function() {
+            _assert('relayout -> circular', {letter: 'A', cnt: 2});
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test polar interactions:', function() {
@@ -1037,4 +1076,143 @@ describe('Test polar interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+});
+
+describe('Test polar *gridshape linear* interactions', function() {
+    var gd;
+
+    beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should snap radial axis rotation to polygon vertex angles', function(done) {
+        var dragPos0 = [150, 25];
+        var dragPos1 = [316, 82];
+        var evtCnt = 0;
+
+        // use 'special' drag method - as we need two mousemove events
+        // to activate the radial drag mode
+        function _drag(p0, dp) {
+            var node = d3.select('.polar > .draglayer > .radialdrag').node();
+            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
+        }
+
+        function _assert(msg, angle) {
+            expect(gd._fullLayout.polar.radialaxis.angle)
+                .toBeCloseTo(angle, 1, msg + ' - angle');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatterpolar',
+            // octogons have nice angles
+            r: [1, 2, 3, 2, 3, 1, 2, 1, 2],
+            theta: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'a']
+        }], {
+            polar: {
+                gridshape: 'linear',
+                angularaxis: {direction: 'clockwise'},
+                radialaxis: {angle: 90}
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 50, t: 50, b: 50, r: 50},
+            // to avoid dragging on hover labels
+            hovermode: false
+        })
+        .then(function() {
+            gd.on('plotly_relayout', function() { evtCnt++; });
+        })
+        .then(function() { _assert('base', 90); })
+        .then(function() { return _drag(dragPos0, [100, 50]); })
+        .then(function() { _assert('rotate right', 45); })
+        .then(function() { return _drag(dragPos1, [20, 20]); })
+        .then(function() { _assert('rotate right, snapped back', 45); })
+        .then(function() { return _drag(dragPos1, [-100, -50]); })
+        .then(function() { _assert('rotate left', 90); })
+        .then(function() { expect(evtCnt).toBe(3); })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should rotate all non-symmetrical layers on angular drag', function(done) {
+        var dragCoverNode;
+        var p1;
+
+        var layersRotateFromZero = ['.plotbg > path', '.radial-grid', '.angular-line > path'];
+        var layersRotateFromRadialAxis = ['.radial-axis', '.radial-line > line'];
+
+        function _assertTransformRotate(msg, query, rot) {
+            var sp = d3.select(gd).select('g.polar');
+            var t = sp.select(query).attr('transform');
+            var rotate = (t.split('rotate(')[1] || '').split(')')[0];
+            if(rot === null) {
+                expect(rotate).toBe('', msg + ' - ' + query);
+            } else {
+                expect(Number(rotate)).toBeCloseTo(rot, 1, msg + ' - ' + query);
+            }
+        }
+
+        function _dragStart(p0, dp) {
+            var node = d3.select('.polar > .draglayer > .angulardrag').node();
+            mouseEvent('mousemove', p0[0], p0[1], {element: node});
+            mouseEvent('mousedown', p0[0], p0[1], {element: node});
+
+            var promise = drag.waitForDragCover().then(function(dcn) {
+                dragCoverNode = dcn;
+                p1 = [p0[0] + dp[0], p0[1] + dp[1]];
+                mouseEvent('mousemove', p1[0], p1[1], {element: dragCoverNode});
+            });
+            return promise;
+        }
+
+        function _assertAndDragEnd(msg, exp) {
+            layersRotateFromZero.forEach(function(q) {
+                _assertTransformRotate(msg, q, exp.fromZero);
+            });
+            layersRotateFromRadialAxis.forEach(function(q) {
+                _assertTransformRotate(msg, q, exp.fromRadialAxis);
+            });
+
+            mouseEvent('mouseup', p1[0], p1[1], {element: dragCoverNode});
+            return drag.waitForDragCoverRemoval();
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatterpolar',
+            r: [1, 2, 3, 2, 3],
+            theta: ['a', 'b', 'c', 'd', 'e']
+        }], {
+            polar: {
+                gridshape: 'linear',
+                angularaxis: {direction: 'clockwise'},
+                radialaxis: {angle: 90}
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 50, t: 50, b: 50, r: 50}
+        })
+        .then(function() {
+            layersRotateFromZero.forEach(function(q) {
+                _assertTransformRotate('base', q, null);
+            });
+            layersRotateFromRadialAxis.forEach(function(q) {
+                _assertTransformRotate('base', q, -90);
+            });
+        })
+        .then(function() { return _dragStart([150, 20], [30, 30]); })
+        .then(function() {
+            return _assertAndDragEnd('rotate clockwise', {
+                fromZero: 7.2,
+                fromRadialAxis: -82.8
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    // - test handle position an
+
 });
