@@ -46,61 +46,7 @@ function convertStyle(gd, trace) {
     if(trace.visible !== true) return opts;
 
     if(subTypes.hasText(trace)) {
-        opts.text = [];
-
-        for(i = 0; i < trace.text.length; i++) {
-            var textOptions = opts.text[i] = {};
-
-            var textfont = unarr(trace.textfont, i);
-            var fontSize = unarr(textfont.size, i);
-            if(!isNumeric(fontSize)) continue;
-
-            textOptions.color = unarr(textfont.color, i);
-
-            textOptions.font = {
-                family: unarr(textfont.family, i),
-                size: fontSize
-            };
-
-
-            var textpos = unarr(trace.textposition, i);
-            textpos = textpos.split(/\s+/);
-            switch(textpos[1]) {
-                case 'left':
-                    textOptions.align = 'right';
-                    break;
-                case 'right':
-                    textOptions.align = 'left';
-                    break;
-                default:
-                    textOptions.align = textpos[1];
-            }
-
-            switch(textpos[0]) {
-                case 'top':
-                    textOptions.baseline = 'bottom';
-                    break;
-                case 'bottom':
-                    textOptions.baseline = 'top';
-                    break;
-                default:
-                    textOptions.baseline = textpos[0];
-            }
-
-            // corresponds to textPointPosition from component.drawing
-            if(trace.marker) {
-                var hSign = TEXTOFFSETSIGN[textOptions.align];
-                var markerRadius = unarr(unarr(trace.marker, i).size, i) / 2;
-                var xPad = markerRadius ? markerRadius / 0.8 + 1 : 0;
-                var vSign = TEXTOFFSETSIGN[textOptions.baseline];
-                var yPad = - vSign * xPad - vSign * 0.5;
-                textOptions.offset = [hSign * xPad / fontSize, yPad / fontSize];
-            }
-
-            textOptions.position = [unarr(trace.x, i), unarr(trace.y, i)];
-
-            textOptions.text = unarr(trace.text, i);
-        }
+        opts.text = convertTextfont(trace, trace.textfont);
     }
 
     if(subTypes.hasMarkers(trace)) {
@@ -151,6 +97,69 @@ function convertStyle(gd, trace) {
     return opts;
 }
 
+function convertTextfont(trace, textfont) {
+    var opts = [], i;
+
+    for(i = 0; i < trace.text.length; i++) {
+        var textOptions = opts[i] = {};
+
+        textOptions.color = unarr(textfont.color, i);
+
+        var textpos = unarr(trace.textposition, i);
+        textpos = textpos.split(/\s+/);
+        switch(textpos[1]) {
+            case 'left':
+                textOptions.align = 'right';
+                break;
+            case 'right':
+                textOptions.align = 'left';
+                break;
+            default:
+                textOptions.align = textpos[1];
+        }
+
+        switch(textpos[0]) {
+            case 'top':
+                textOptions.baseline = 'bottom';
+                break;
+            case 'bottom':
+                textOptions.baseline = 'top';
+                break;
+            default:
+                textOptions.baseline = textpos[0];
+        }
+
+        textfont = unarr(textfont, i);
+
+        var fontSize = unarr(textfont.size, i);
+
+        if(!isNumeric(fontSize)) {
+            continue;
+        }
+
+        textOptions.font = {
+            family: unarr(textfont.family, i),
+            size: fontSize
+        };
+
+        // corresponds to textPointPosition from component.drawing
+        if(trace.marker) {
+            var hSign = TEXTOFFSETSIGN[textOptions.align];
+            var markerRadius = unarr(unarr(trace.marker, i).size, i) / 2;
+            var xPad = markerRadius ? markerRadius / 0.8 + 1 : 0;
+            var vSign = TEXTOFFSETSIGN[textOptions.baseline];
+            var yPad = - vSign * xPad - vSign * 0.5;
+            textOptions.offset = [hSign * xPad / fontSize, yPad / fontSize];
+        }
+
+        textOptions.position = [unarr(trace.x, i), unarr(trace.y, i)];
+
+        textOptions.text = unarr(trace.text, i);
+
+    }
+
+    return opts;
+}
 
 // FIXME: find proper util method for this
 function unarr(obj, i) {
@@ -292,6 +301,10 @@ function convertMarkerSelection(trace, target) {
         if(target.marker.size) optsOut.sizes = target.marker.size / 2;
         if(target.marker.color) optsOut.colors = target.marker.color;
         if(target.marker.opacity !== undefined) optsOut.opacity = target.marker.opacity;
+    }
+
+    if(target.textfont) {
+        optsOut.textfont = convertTextfont(trace, target.textfont);
     }
 
     return optsOut;

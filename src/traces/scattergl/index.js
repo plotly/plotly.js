@@ -316,11 +316,13 @@ function sceneUpdate(gd, subplot) {
             if(scene.error2d) scene.error2d.destroy();
             if(scene.line2d) scene.line2d.destroy();
             if(scene.select2d) scene.select2d.destroy();
-            if(scene.glText) {scene.glText.forEach(function(items) {
-                items.forEach(function(item) {
-                    item.destroy();
+            if(scene.glText) {
+                scene.glText.forEach(function(items) {
+                    items.forEach(function(item) {
+                        item.destroy();
+                    });
                 });
-            });}
+            }
 
             scene.textOptions = null;
             scene.lineOptions = null;
@@ -826,13 +828,15 @@ function selectPoints(searchInfo, polygon) {
 
     if(!scene) return selection;
 
-    var hasOnlyLines = (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace));
+    var hasText = subTypes.hasText(trace);
+    var hasOnlyLines = !subTypes.hasMarkers(trace) && !hasText;
     if(trace.visible !== true || hasOnlyLines) return selection;
 
     // degenerate polygon does not enable selection
     // filter out points by visible scatter ones
     var els = null;
     var unels = null;
+    // FIXME: clearing selection does not work here
     var i;
     if(polygon !== false && !polygon.degenerate) {
         els = [], unels = [];
@@ -867,6 +871,26 @@ function selectPoints(searchInfo, polygon) {
         }
         // we should turn scatter2d into unselected once we have any points selected
         scene.scatter2d.update(scene.unselectedOptions);
+    }
+
+    // update texts selection
+    if(hasText) {
+        var el, textOptions;
+        if(els) {
+            for(i = 0; i < els.length; i++) {
+                el = els[i];
+                textOptions = scene.selectedOptions[stash.index].textfont;
+                if(!textOptions) continue;
+                scene.glText[stash.index][el].update(textOptions[el]);
+            }
+        }
+        if(unels) {
+            for(i = 0; i < unels.length; i++) {
+                el = unels[i];
+                textOptions = scene.unselectedOptions[stash.index].textfont || scene.textOptions[stash.index][el];
+                scene.glText[stash.index][el].update(textOptions);
+            }
+        }
     }
 
     scene.selectBatch[stash.index] = els;
