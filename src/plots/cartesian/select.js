@@ -257,6 +257,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         if(dragOptions.polygons && dragOptions.polygons.length) {
             mergedPolygons = mergePolygons(dragOptions.mergedPolygons, currentPolygon, subtract);
             currentPolygon.subtract = subtract;
+            // TODO Probably isn't needed anymore
             testPoly = multipolygonTester(dragOptions.polygons.concat([currentPolygon]));
         }
         else {
@@ -291,16 +292,16 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     if(!retainSelection) module.clearSelection(searchInfo);
 
                     var currentPolygonTester = polygonTester(currentPolygon);
-                    var pointIds = module.getPointsIn(searchInfo, currentPolygonTester);
+                    var pointsInCurrentPolygon = module.getPointsIn(searchInfo, currentPolygonTester);
                     if(!subtract) {
-                        module.selectPoints(searchInfo, pointIds);
+                        module.selectPoints(searchInfo, pointsInCurrentPolygon);
                     } else {
-                        module.deselectPoints(searchInfo, pointIds);
+                        module.deselectPoints(searchInfo, pointsInCurrentPolygon);
                     }
-                    var pointsNoLongerSelected = difference(pointsInPolygon, pointIds);
+                    var pointsNoLongerSelected = difference(pointsInPolygon, pointsInCurrentPolygon);
 
                     traceSelection = module.deselectPoints(searchInfo, pointsNoLongerSelected);
-                    pointsInPolygon = pointIds;
+                    pointsInPolygon = pointsInCurrentPolygon;
 
                     traceSelections.push(traceSelection);
 
@@ -378,7 +379,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
 // TODO do we have to consider multiple traces?
-// TODO remove polygon outlines if last selected point is deselected and none get selected
 function selectOnClick(gd, numClicks, evt, outlines) {
     var calcData = gd.calcdata[0];
 
