@@ -111,7 +111,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     // find the traces to search for selection points
     var searchTraces = [];
     var throttleID = fullLayout._uid + constants.SELECTID;
-    var selection = [];
 
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
@@ -278,22 +277,31 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             throttleID,
             constants.SELECTDELAY,
             function() {
-                selection = [];
+                var selection = [],
+                    retainSelection = shouldRetainSelection(e),
+                    module,
+                    searchInfo;
 
                 // TODO What's the point of maintaining traceSelections array? Not used anywhere. Delete it.
                 var thisSelection, traceSelections = [], traceSelection;
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
+                    module = searchInfo._module;
+
+                    if(!retainSelection) module.clearSelection(searchInfo);
 
                     var currentPolygonTester = polygonTester(currentPolygon);
-                    var pointIds = searchInfo._module.getPointsIn(searchInfo, currentPolygonTester);
-                    traceSelection = searchInfo._module.selectPoints(searchInfo, pointIds);
+                    var pointIds = module.getPointsIn(searchInfo, currentPolygonTester);
+                    if(!subtract) {
+                        module.selectPoints(searchInfo, pointIds);
+                    } else {
+                        module.deselectPoints(searchInfo, pointIds);
+                    }
                     var pointsNoLongerSelected = difference(pointsInPolygon, pointIds);
 
-                    searchInfo._module.deselectPoints(searchInfo, pointsNoLongerSelected);
+                    traceSelection = module.deselectPoints(searchInfo, pointsNoLongerSelected);
                     pointsInPolygon = pointIds;
 
-                    // traceSelection = searchInfo._module.selectPoints(searchInfo, testPoly, shouldRetainSelection(e));
                     traceSelections.push(traceSelection);
 
                     thisSelection = fillSelectionItem(traceSelection, searchInfo);
@@ -370,6 +378,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
 // TODO do we have to consider multiple traces?
+// TODO a click without shift doesn't remove previous polygon outlines
 function selectOnClick(gd, numClicks, evt) {
     var calcData = gd.calcdata[0];
 
@@ -390,9 +399,7 @@ function selectOnClick(gd, numClicks, evt) {
             pointSelected = isPointSelected(trace, hoverDatum.pointNumber),
             onePointSelectedOnly = isOnePointSelectedOnly(trace);
 
-        if(!retainSelection) {
-            module.clearSelection(searchInfo);
-        }
+        if(!retainSelection) module.clearSelection(searchInfo);
 
         var shouldDeselectPoint = (pointSelected && onePointSelectedOnly) ||
           (pointSelected && !onePointSelectedOnly && retainSelection);
