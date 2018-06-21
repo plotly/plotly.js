@@ -654,8 +654,8 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
 
         var xy0 = ra2xy(r, va0);
         var xy1 = ra2xy(r, va1);
-        var x = (xy0[0] + xy1[0]) / 2;
-        var y = (xy0[1] + xy1[1]) / 2;
+        var x = clampTiny((xy0[0] + xy1[0]) / 2);
+        var y = clampTiny((xy0[1] + xy1[1]) / 2);
         var innerPts, outerPts;
 
         if(x && y) {
@@ -665,10 +665,20 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
             innerPts = findXYatLength(chl, mperp, midPts[0][0], midPts[0][1]);
             outerPts = findXYatLength(chl, mperp, midPts[1][0], midPts[1][1]);
         } else {
-            // horizontal / vertical
-            innerPts = [[x - chl, y - chw], [x + chl, y - chw]];
-            outerPts = [[x - chl, y + chw], [x + chl, y + chw]];
+            var dx, dy;
+            if(y) {
+                // horizontal handles
+                dx = chl;
+                dy = chw;
+            } else {
+                // vertical handles
+                dx = chw;
+                dy = chl;
+            }
+            innerPts = [[x - dx, y - dy], [x + dx, y - dy]];
+            outerPts = [[x - dx, y + dy], [x + dx, y + dy]];
         }
+
         return 'M' + innerPts.join('L') +
             'L' + outerPts.reverse().join('L') + 'Z';
     }
@@ -1314,8 +1324,8 @@ function findIntersectionXY(v0, v1, a, xpyp) {
 
     var xp = xpyp[0];
     var yp = xpyp[1];
-    var dsin = Math.sin(v1) - Math.sin(v0);
-    var dcos = Math.cos(v1) - Math.cos(v0);
+    var dsin = clampTiny(Math.sin(v1) - Math.sin(v0));
+    var dcos = clampTiny(Math.cos(v1) - Math.cos(v0));
 
     if(dsin && dcos) {
         // given
@@ -1530,6 +1540,10 @@ function strTranslate(x, y) {
 
 function strRotate(angle) {
     return 'rotate(' + angle + ')';
+}
+
+function clampTiny(v) {
+    return Math.abs(v) > 1e-10 ? v : 0;
 }
 
 // because Math.sign(Math.cos(Math.PI / 2)) === 1
