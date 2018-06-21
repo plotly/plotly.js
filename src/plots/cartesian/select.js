@@ -343,7 +343,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             }
             else {
                 // TODO What to do with the code below because we now have behavior for a single click
-                selectOnClick(gd, numClicks, evt);
+                selectOnClick(gd, numClicks, evt, outlines);
 
                 // TODO: remove in v2 - this was probably never intended to work as it does,
                 // but in case anyone depends on it we don't want to break it now.
@@ -378,8 +378,8 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
 // TODO do we have to consider multiple traces?
-// TODO a click without shift doesn't remove previous polygon outlines
-function selectOnClick(gd, numClicks, evt) {
+// TODO remove polygon outlines if last selected point is deselected and none get selected
+function selectOnClick(gd, numClicks, evt, outlines) {
     var calcData = gd.calcdata[0];
 
     var hoverData = gd._hoverdata;
@@ -406,6 +406,12 @@ function selectOnClick(gd, numClicks, evt) {
         var newTraceSelection = shouldDeselectPoint ?
           module.deselectPoints(searchInfo, [hoverDatum.pointNumber]) :
           module.selectPoints(searchInfo, [hoverDatum.pointNumber]);
+
+        // When not retaining or when the sole selected
+        // point gets deselected, remove outlines
+        if(!retainSelection || (pointSelected && onePointSelectedOnly)) {
+            outlines.remove();
+        }
 
         // Update selection state
         var selection = fillSelectionItem(newTraceSelection, searchInfo);
