@@ -819,6 +819,14 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         x0 = startX - bbox.left;
         y0 = startY - bbox.top;
 
+        // need to offset x/y as bbox center does not
+        // match origin for asymmetric polygons
+        if(vangles) {
+            var offset = findPolygonOffset(radius, sector, vangles);
+            x0 += offset.left;
+            y0 += offset.top;
+        }
+
         switch(dragModeNow) {
             case 'zoom':
                 if(vangles) {
@@ -1441,6 +1449,20 @@ function makePolygon(r, sector, vangles) {
     return isFullCircle(sector) ?
         makeRegularPolygon(r, vangles) :
         makeClippedPolygon(r, sector, vangles);
+}
+
+function findPolygonOffset(r, sector, vangles) {
+    var minX = Infinity;
+    var minY = Infinity;
+
+    for(var i = 0; i < vangles.length; i++) {
+        var va = vangles[i];
+        if(isAngleInSector(va, sector)) {
+            minX = Math.min(minX, r * Math.cos(va));
+            minY = Math.min(minY, -r * Math.sin(va));
+        }
+    }
+    return {top: minY + r, left: minX + r};
 }
 
 function invertY(pts0) {

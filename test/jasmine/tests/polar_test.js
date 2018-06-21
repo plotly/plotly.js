@@ -1213,6 +1213,86 @@ describe('Test polar *gridshape linear* interactions', function() {
         .then(done);
     });
 
-    // - test handle position an
+    it('should place zoombox handles at correct place on main drag', function(done) {
+        var dragCoverNode;
+        var p1;
 
+        // d attr to array of segment [x,y]
+        function path2coords(path) {
+            if(!path.size()) return [[]];
+            return path.attr('d')
+                .replace(/Z/g, '')
+                .split('M')
+                .filter(Boolean)
+                .map(function(s) {
+                    return s.split('L')
+                        .map(function(s) { return s.split(',').map(Number); });
+                })
+                .reduce(function(a, b) { return a.concat(b); });
+        }
+
+        function _dragStart(p0, dp) {
+            var node = d3.select('.polar > .draglayer > .maindrag').node();
+            mouseEvent('mousemove', p0[0], p0[1], {element: node});
+            mouseEvent('mousedown', p0[0], p0[1], {element: node});
+
+            var promise = drag.waitForDragCover().then(function(dcn) {
+                dragCoverNode = dcn;
+                p1 = [p0[0] + dp[0], p0[1] + dp[1]];
+                mouseEvent('mousemove', p1[0], p1[1], {element: dragCoverNode});
+            });
+            return promise;
+        }
+
+        function _assertAndDragEnd(msg, exp) {
+            var zl = d3.select(gd).select('g.zoomlayer');
+
+            expect(path2coords(zl.select('.zoombox')))
+                .toBeCloseTo2DArray(exp.zoombox, 2, msg + ' - zoombox');
+            expect(path2coords(zl.select('.zoombox-corners')))
+                .toBeCloseTo2DArray(exp.corners, 2, msg + ' - corners');
+
+            mouseEvent('mouseup', p1[0], p1[1], {element: dragCoverNode});
+            return drag.waitForDragCoverRemoval();
+        }
+
+        Plotly.plot(gd, [{
+            type: 'scatterpolar',
+            r: [1, 2, 3, 2, 3],
+            theta: ['a', 'b', 'c', 'd', 'e']
+        }], {
+            polar: {
+                gridshape: 'linear',
+                angularaxis: {direction: 'clockwise'}
+            },
+            width: 400,
+            height: 400,
+            margin: {l: 50, t: 50, b: 50, r: 50}
+        })
+        .then(function() { return _dragStart([170, 170], [220, 220]); })
+        .then(function() {
+            _assertAndDragEnd('drag outward toward bottom right', {
+                zoombox: [
+                    [-142.658, -46.353], [-88.167, 121.352],
+                    [88.167, 121.352], [142.658, -46.352],
+                    [0, -150], [-142.658, -46.352],
+                    [-142.658, -46.352],
+                    [-88.167, 121.352],
+                    [88.167, 121.352], [142.658, -46.352],
+                    [0, -150], [-142.658, -46.352],
+                    [-49.261, -16.005], [-30.445, 41.904],
+                    [30.44508691777904, 41.904], [49.261, -16.005],
+                    [0, -51.796], [-49.261, -16.005]
+                ],
+                corners: [
+                    [-13.342, -39.630], [-33.567, -24.935],
+                    [-35.918, -28.171], [-15.693, -42.866],
+                    [-60.040, -103.905], [-80.266, -89.210],
+                    [-82.617, -92.446], [-62.392, -107.141]
+                ]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
