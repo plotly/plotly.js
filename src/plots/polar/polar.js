@@ -688,7 +688,40 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         clearSelect(zoomlayer);
     }
 
+    // N.B. this sets scoped 'r0' and 'r1'
+    // return true if 'valid' zoom distance, false otherwise
+    function clampAndSetR0R1(rr0, rr1) {
+        rr1 = Math.min(rr1, radius);
+
+        // starting or ending drag near center (outer edge),
+        // clamps radial distance at origin (at r=radius)
+        if(rr0 < OFFEDGE) rr0 = 0;
+        else if((radius - rr0) < OFFEDGE) rr0 = radius;
+        else if(rr1 < OFFEDGE) rr1 = 0;
+        else if((radius - rr1) < OFFEDGE) rr1 = radius;
+
+        // make sure r0 < r1,
+        // to get correct fill pattern in path1 below
+        if(Math.abs(rr1 - rr0) > MINZOOM) {
+            if(rr0 < rr1) {
+                r0 = rr0;
+                r1 = rr1;
+            } else {
+                r0 = rr1;
+                r1 = rr0;
+            }
+            return true;
+        } else {
+            r0 = null;
+            r1 = null;
+            return false;
+        }
+    }
+
     function applyZoomMove(path1, cpath) {
+        path1 = path1 || path0;
+        cpath = cpath || 'M0,0Z';
+
         zb.attr('d', path1);
         corners.attr('d', cpath);
         dragBox.transitionZoombox(zb, corners, dimmed, lum);
@@ -701,40 +734,14 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         var rr0 = xy2r(x0, y0);
         var rr1 = Math.min(xy2r(x1, y1), radius);
         var a0 = xy2a(x0, y0);
-        var a1 = xy2a(x1, y1);
-
-        // starting or ending drag near center (outer edge),
-        // clamps radial distance at origin (at r=radius)
-        if(rr0 < OFFEDGE) rr0 = 0;
-        else if((radius - rr0) < OFFEDGE) rr0 = radius;
-        else if(rr1 < OFFEDGE) rr1 = 0;
-        else if((radius - rr1) < OFFEDGE) rr1 = radius;
-
         var path1;
         var cpath;
 
-        if(Math.abs(rr1 - rr0) > MINZOOM) {
-            // make sure r0 < r1,
-            // to get correct fill pattern in path1 below
-            if(rr0 < rr1) {
-                r0 = rr0;
-                r1 = rr1;
-            } else {
-                r0 = rr1;
-                r1 = rr0;
-                a1 = [a0, a0 = a1][0]; // swap a0 and a1
-            }
-
+        if(clampAndSetR0R1(rr0, rr1)) {
             path1 = path0 + _pathSectorClosed(r1) + _pathSectorClosed(r0);
             // keep 'starting' angle
             cpath = pathCorner(r0, a0) + pathCorner(r1, a0);
-        } else {
-            r0 = null;
-            r1 = null;
-            path1 = path0;
-            cpath = 'M0,0Z';
         }
-
         applyZoomMove(path1, cpath);
     }
 
@@ -762,41 +769,17 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         var vangles1 = findEnclosingVertexAngles(a1);
         var rr0 = findPolygonRadius(x0, y0, vangles0[0], vangles0[1]);
         var rr1 = Math.min(findPolygonRadius(x1, y1, vangles1[0], vangles1[1]), radius);
-
-        // starting or ending drag near center (outer edge),
-        // clamps radial distance at origin (at r=radius)
-        if(rr0 < OFFEDGE) rr0 = 0;
-        else if((radius - rr0) < OFFEDGE) rr0 = radius;
-        else if(rr1 < OFFEDGE) rr1 = 0;
-        else if((radius - rr1) < OFFEDGE) rr1 = radius;
-
         var path1;
         var cpath;
 
-        if(Math.abs(rr1 - rr0) > MINZOOM) {
-            // make sure r0 < r1,
-            // to get correct fill pattern in path1 below
-            if(rr0 < rr1) {
-                r0 = rr0;
-                r1 = rr1;
-            } else {
-                r0 = rr1;
-                r1 = rr0;
-            }
-
+        if(clampAndSetR0R1(rr0, rr1)) {
             path1 = path0 + _pathSectorClosed(r1) + _pathSectorClosed(r0);
             // keep 'starting' angle here too
             cpath = [
                 pathCornerForPolygons(r0, vangles0[0], vangles0[1]),
                 pathCornerForPolygons(r1, vangles0[0], vangles0[1])
             ].join(' ');
-        } else {
-            r0 = null;
-            r1 = null;
-            path1 = path0;
-            cpath = 'M0,0Z';
         }
-
         applyZoomMove(path1, cpath);
     }
 
