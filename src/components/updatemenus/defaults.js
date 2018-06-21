@@ -33,7 +33,10 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
         return Lib.coerce(menuIn, menuOut, attributes, attr, dflt);
     }
 
-    var buttons = buttonsDefaults(menuIn, menuOut);
+    var buttons = handleArrayContainerDefaults(menuIn, menuOut, {
+        name: 'buttons',
+        handleItemDefaults: buttonDefaults
+    });
 
     var visible = coerce('visible', buttons.length > 0);
     if(!visible) return;
@@ -62,32 +65,17 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
     coerce('borderwidth');
 }
 
-function buttonsDefaults(menuIn, menuOut) {
-    var buttonsIn = menuIn.buttons || [],
-        buttonsOut = menuOut.buttons = [];
-
-    var buttonIn, buttonOut;
-
+function buttonDefaults(buttonIn, buttonOut, selectorOut, opts, itemOpts) {
     function coerce(attr, dflt) {
         return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
     }
 
-    for(var i = 0; i < buttonsIn.length; i++) {
-        buttonIn = buttonsIn[i];
-        buttonOut = {};
-
-        var visible = coerce('visible', Lib.isPlainObject(buttonIn) &&
-            (buttonIn.method === 'skip' || Array.isArray(buttonIn.args)));
-        if(visible) {
-            coerce('method');
-            coerce('args');
-            coerce('label');
-            coerce('execute');
-        }
-
-        buttonOut._index = i;
-        buttonsOut.push(buttonOut);
+    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject &&
+        (buttonIn.method === 'skip' || Array.isArray(buttonIn.args)));
+    if(visible) {
+        coerce('method');
+        coerce('args');
+        coerce('label');
+        coerce('execute');
     }
-
-    return buttonsOut;
 }

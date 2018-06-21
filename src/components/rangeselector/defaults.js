@@ -11,6 +11,7 @@
 var Lib = require('../../lib');
 var Color = require('../color');
 var Template = require('../../plot_api/plot_template');
+var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
 var attributes = require('./attributes');
 var buttonAttrs = require('./button_attributes');
@@ -25,7 +26,11 @@ module.exports = function handleDefaults(containerIn, containerOut, layout, coun
         return Lib.coerce(selectorIn, selectorOut, attributes, attr, dflt);
     }
 
-    var buttons = buttonsDefaults(selectorIn, selectorOut, calendar);
+    var buttons = handleArrayContainerDefaults(selectorIn, selectorOut, {
+        name: 'buttons',
+        handleItemDefaults: buttonDefaults,
+        calendar: calendar
+    });
 
     var visible = coerce('visible', buttons.length > 0);
     if(!visible) return;
@@ -46,43 +51,30 @@ module.exports = function handleDefaults(containerIn, containerOut, layout, coun
     coerce('borderwidth');
 };
 
-function buttonsDefaults(containerIn, containerOut, calendar) {
-    var buttonsIn = containerIn.buttons || [],
-        buttonsOut = containerOut.buttons = [];
-
-    var buttonIn, buttonOut;
+function buttonDefaults(buttonIn, buttonOut, selectorOut, opts, itemOpts) {
+    var calendar = opts.calendar;
 
     function coerce(attr, dflt) {
         return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
     }
 
-    for(var i = 0; i < buttonsIn.length; i++) {
-        buttonIn = buttonsIn[i];
-        buttonOut = {};
+    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
 
-        var visible = coerce('visible', Lib.isPlainObject(buttonIn));
-
-        if(visible) {
-            var step = coerce('step');
-            if(step !== 'all') {
-                if(calendar && calendar !== 'gregorian' && (step === 'month' || step === 'year')) {
-                    buttonOut.stepmode = 'backward';
-                }
-                else {
-                    coerce('stepmode');
-                }
-
-                coerce('count');
+    if(visible) {
+        var step = coerce('step');
+        if(step !== 'all') {
+            if(calendar && calendar !== 'gregorian' && (step === 'month' || step === 'year')) {
+                buttonOut.stepmode = 'backward';
+            }
+            else {
+                coerce('stepmode');
             }
 
-            coerce('label');
+            coerce('count');
         }
 
-        buttonOut._index = i;
-        buttonsOut.push(buttonOut);
+        coerce('label');
     }
-
-    return buttonsOut;
 }
 
 function getPosDflt(containerOut, layout, counterAxes) {

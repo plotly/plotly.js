@@ -55,13 +55,13 @@ describe('range selector defaults:', function() {
         supply(containerIn, containerOut);
 
         expect(containerIn.rangeselector.buttons).toEqual([{}]);
-        expect(containerOut.rangeselector.buttons).toEqual([{
+        expect(containerOut.rangeselector.buttons).toEqual([jasmine.objectContaining({
             visible: true,
             step: 'month',
             stepmode: 'backward',
             count: 1,
             _index: 0
-        }]);
+        })]);
     });
 
     it('should skip over non-object buttons', function() {
@@ -103,8 +103,8 @@ describe('range selector defaults:', function() {
 
         expect(containerOut.rangeselector.visible).toBe(true);
         expect(containerOut.rangeselector.buttons).toEqual([
-            { visible: true, step: 'year', stepmode: 'backward', count: 10, _index: 0 },
-            { visible: true, step: 'month', stepmode: 'backward', count: 6, _index: 1 }
+            jasmine.objectContaining({ visible: true, step: 'year', stepmode: 'backward', count: 10, _index: 0 }),
+            jasmine.objectContaining({ visible: true, step: 'month', stepmode: 'backward', count: 6, _index: 1 })
         ]);
     });
 
@@ -121,12 +121,12 @@ describe('range selector defaults:', function() {
 
         supply(containerIn, containerOut);
 
-        expect(containerOut.rangeselector.buttons).toEqual([{
+        expect(containerOut.rangeselector.buttons).toEqual([jasmine.objectContaining({
             visible: true,
             step: 'all',
             label: 'full range',
             _index: 0
-        }]);
+        })]);
     });
 
     it('should use axis and counter axis to determine \'x\' and \'y\' defaults (case 1 y)', function() {

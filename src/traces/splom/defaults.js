@@ -9,10 +9,12 @@
 'use strict';
 
 var Lib = require('../../lib');
+var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
 var attributes = require('./attributes');
 var subTypes = require('../scatter/subtypes');
 var handleMarkerDefaults = require('../scatter/marker_defaults');
+var mergeLength = require('../parcoords/merge_length');
 var OPEN_RE = /-open/;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -20,11 +22,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var dimLength = handleDimensionsDefaults(traceIn, traceOut);
+    var dimensions = handleArrayContainerDefaults(traceIn, traceOut, {
+        name: 'dimensions',
+        handleItemDefaults: dimensionDefaults
+    });
 
     var showDiag = coerce('diagonal.visible');
     var showUpper = coerce('showupperhalf');
     var showLower = coerce('showlowerhalf');
+
+    var dimLength = mergeLength(traceOut, dimensions, 'values');
 
     if(!dimLength || (!showDiag && !showUpper && !showLower)) {
         traceOut.visible = false;
@@ -44,51 +51,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-function handleDimensionsDefaults(traceIn, traceOut) {
-    var dimensionsIn = traceIn.dimensions;
-    if(!Array.isArray(dimensionsIn)) return 0;
-
-    var dimLength = dimensionsIn.length;
-    var commonLength = 0;
-    var dimensionsOut = traceOut.dimensions = new Array(dimLength);
-    var dimIn;
-    var dimOut;
-    var i;
-
+function dimensionDefaults(dimIn, dimOut, traceOut, opts, itemOpts) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimIn, dimOut, attributes.dimensions, attr, dflt);
     }
 
-    for(i = 0; i < dimLength; i++) {
-        dimIn = dimensionsIn[i];
-        dimOut = dimensionsOut[i] = {};
+    coerce('label');
+    coerce('visible');
+    var values = coerce('values');
 
-        // coerce label even if dimensions may be `visible: false`,
-        // to fill in axis title defaults
-        coerce('label');
-
-        // wait until plot step to filter out visible false dimensions
-        var visible = coerce('visible');
-        if(!visible) continue;
-
-        var values = coerce('values');
-        if(!values || !values.length) {
-            dimOut.visible = false;
-            continue;
-        }
-
-        commonLength = Math.max(commonLength, values.length);
-        dimOut._index = i;
+    if(!(values && values.length && !itemOpts.itemIsNotPlainObject)) {
+        dimOut.visible = false;
     }
-
-    for(i = 0; i < dimLength; i++) {
-        dimOut = dimensionsOut[i];
-        if(dimOut.visible) dimOut._length = commonLength;
-    }
-
-    traceOut._length = commonLength;
-
-    return dimensionsOut.length;
 }
 
 function handleAxisDefaults(traceIn, traceOut, layout, coerce) {

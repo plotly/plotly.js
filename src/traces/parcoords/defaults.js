@@ -9,12 +9,15 @@
 'use strict';
 
 var Lib = require('../../lib');
-var attributes = require('./attributes');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
-var maxDimensionCount = require('./constants').maxDimensionCount;
 var handleDomainDefaults = require('../../plots/domain').defaults;
+var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
+
+var attributes = require('./attributes');
 var axisBrush = require('./axisbrush');
+var maxDimensionCount = require('./constants').maxDimensionCount;
+var mergeLength = require('./merge_length');
 
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var lineColor = coerce('line.color', defaultColor);
@@ -26,67 +29,39 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
             // TODO: I think it would be better to keep showing lines beyond the last line color
             // but I'm not sure what color to give these lines - probably black or white
             // depending on the background color?
-            traceOut._length = Math.min(traceOut._length, lineColor.length);
+            return lineColor.length;
         }
         else {
             traceOut.line.color = defaultColor;
         }
     }
+    return Infinity;
 }
 
-function dimensionsDefaults(traceIn, traceOut) {
-    var dimensionsIn = traceIn.dimensions || [],
-        dimensionsOut = traceOut.dimensions = [];
-
-    var dimensionIn, dimensionOut, i;
-    var commonLength = Infinity;
-
-    if(dimensionsIn.length > maxDimensionCount) {
-        Lib.log('parcoords traces support up to ' + maxDimensionCount + ' dimensions at the moment');
-        dimensionsIn.splice(maxDimensionCount);
-    }
-
+function dimensionDefaults(dimensionIn, dimensionOut, traceOut, opts, itemOpts) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
     }
 
-    for(i = 0; i < dimensionsIn.length; i++) {
-        dimensionIn = dimensionsIn[i];
-        dimensionOut = {};
-
-        if(!Lib.isPlainObject(dimensionIn)) {
-            continue;
-        }
-
-        var values = coerce('values');
-        var visible = coerce('visible');
-        if(!(values && values.length)) {
-            visible = dimensionOut.visible = false;
-        }
-
-        if(visible) {
-            coerce('label');
-            coerce('tickvals');
-            coerce('ticktext');
-            coerce('tickformat');
-            coerce('range');
-
-            coerce('multiselect');
-            var constraintRange = coerce('constraintrange');
-            if(constraintRange) {
-                dimensionOut.constraintrange = axisBrush.cleanRanges(constraintRange, dimensionOut);
-            }
-
-            commonLength = Math.min(commonLength, values.length);
-        }
-
-        dimensionOut._index = i;
-        dimensionsOut.push(dimensionOut);
+    var values = coerce('values');
+    var visible = coerce('visible');
+    if(!(values && values.length && !itemOpts.itemIsNotPlainObject)) {
+        visible = dimensionOut.visible = false;
     }
 
-    traceOut._length = commonLength;
+    if(visible) {
+        coerce('label');
+        coerce('tickvals');
+        coerce('ticktext');
+        coerce('tickformat');
+        coerce('range');
 
-    return dimensionsOut;
+        coerce('multiselect');
+        var constraintRange = coerce('constraintrange');
+        if(constraintRange) {
+            dimensionOut.constraintrange = axisBrush.cleanRanges(constraintRange, dimensionOut);
+        }
+    }
 }
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -94,9 +69,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var dimensions = dimensionsDefaults(traceIn, traceOut);
+    var dimensionsIn = traceIn.dimensions;
+    if(Array.isArray(dimensionsIn) && dimensionsIn.length > maxDimensionCount) {
+        Lib.log('parcoords traces support up to ' + maxDimensionCount + ' dimensions at the moment');
+        dimensionsIn.splice(maxDimensionCount);
+    }
 
-    handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    var dimensions = handleArrayContainerDefaults(traceIn, traceOut, {
+        name: 'dimensions',
+        handleItemDefaults: dimensionDefaults
+    });
+
+    var len = handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
     handleDomainDefaults(traceOut, layout, coerce);
 
@@ -104,12 +88,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
     }
 
-    // since we're not slicing uneven arrays anymore, stash the length in each dimension
-    // but we can't do this in dimensionsDefaults (yet?) because line.color can also
-    // truncate
-    for(var i = 0; i < dimensions.length; i++) {
-        if(dimensions[i].visible) dimensions[i]._length = traceOut._length;
-    }
+    mergeLength(traceOut, dimensions, 'values', len);
 
     // make default font size 10px (default is 12),
     // scale linearly with global font size
