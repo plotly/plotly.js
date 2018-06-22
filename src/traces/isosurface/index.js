@@ -10,7 +10,7 @@
 
 module.exports = {
     moduleType: 'trace',
-    name: 'cone',
+    name: 'isosurface',
     basePlotModule: require('../../plots/gl3d'),
     categories: ['gl3d'],
 
@@ -25,13 +25,11 @@ module.exports = {
 
     meta: {
         description: [
-            'Use cone traces to visualize vector fields.',
+            'Use isosurfaces to visualize volumetric data.',
             '',
-            'Specify a vector field using 6 1D arrays,',
+            'Specify a volume using 4 1D arrays,',
             '3 position arrays `x`, `y` and `z`',
-            'and 3 vector component arrays `u`, `v`, `w`.',
-            'The cones are drawn exactly at the positions given',
-            'by `x`, `y` and `z`.'
+            'and intensity array `u`.'
         ].join(' ')
     }
 };

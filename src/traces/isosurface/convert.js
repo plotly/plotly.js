@@ -6,6 +6,62 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+/*
+    Usage example:
+
+    var width = 64
+    var height = 64
+    var depth = 64
+
+    var xs = []
+    var ys = []
+    var zs = []
+
+    var data = new Uint16Array(width*height*depth)
+    for (var z=0; z<depth; z++)
+    for (var y=0; y<height; y++)
+    for (var x=0; x<width; x++) {
+        xs.push(x/width);
+        ys.push(y/height);
+        zs.push(z/depth);
+        var value = 1500 + 500 * (
+            Math.sin(2 * 2*Math.PI*(z/depth-0.5)) +
+            Math.cos(3 * 2*Math.PI*(x/width-0.5)) +
+            Math.sin(4 * 2*Math.PI*(y/height-0.5))
+        );
+        data[z*height*width + y*width + x] = value
+    }
+
+    Plotly.newPlot(gd, [{
+      type: 'isosurface',
+
+      x: xs,
+      y: ys,
+      z: zs,
+
+      u: data,
+
+      imin: 1600,
+      imax: 2000,
+      cmin: 1500,
+      cmax: 2000,
+
+      smoothnormals:  true,
+      isocaps: true,
+
+      singlemesh: true,
+
+      colorscale: 'Portland',
+      capscolorscale: 'Jet'
+    }], {
+      scene: {
+        xaxis: {range: [0, 1]},
+        yaxis: {range: [0, 1]},
+        zaxis: {range: [0, 1]}
+      }
+    })
+
+*/
 'use strict';
 
 var isosurfacePlot = require('gl-isosurface3d');
@@ -25,17 +81,12 @@ var proto = Isosurface.prototype;
 proto.handlePick = function(selection) {
     if(selection.object === this.mesh) {
         var selectIndex = selection.index = selection.data.index;
-        var xx = this.data.x[selectIndex];
-        var yy = this.data.y[selectIndex];
-        var zz = this.data.z[selectIndex];
-        var uu = this.data.u[selectIndex];
-        var vv = this.data.v[selectIndex];
-        var ww = this.data.w[selectIndex];
 
         selection.traceCoordinate = [
-            xx, yy, zz,
-            uu, vv, ww,
-            Math.sqrt(uu * uu + vv * vv + ww * ww)
+            selection.data.position[0],
+            selection.data.position[1],
+            selection.data.position[2],
+            selection.data.intensity
         ];
 
         var text = this.data.text;
@@ -58,8 +109,6 @@ function zip3(x, y, z) {
 }
 
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
-var anchor2coneOffset = {tip: 1, tail: 0, cm: 0.25, center: 0.5};
-var anchor2coneSpan = {tip: 1, tail: 1, cm: 0.75, center: 0.5};
 
 function convert(scene, trace) {
     var sceneLayout = scene.fullSceneLayout;
@@ -72,33 +121,54 @@ function convert(scene, trace) {
         return simpleMap(arr, function(v) { return ax.d2l(v) * scale; });
     }
 
-    isosurfaceOpts.vectors = zip3(
-        toDataCoords(trace.u, 'xaxis'),
-        toDataCoords(trace.v, 'yaxis'),
-        toDataCoords(trace.w, 'zaxis')
-    );
-
-    isosurfaceOpts.positions = zip3(
+    var points = zip3(
         toDataCoords(trace.x, 'xaxis'),
         toDataCoords(trace.y, 'yaxis'),
         toDataCoords(trace.z, 'zaxis')
     );
+    var xs = [points[0][0]];
+    var ys = [points[0][1]];
+    var zs = [points[0][2]];
 
-    isosurfaceOpts.colormap = parseColorScale(trace.colorscale);
-    isosurfaceOpts.vertexIntensityBounds = [trace.cmin / trace._normMax, trace.cmax / trace._normMax];
-    isosurfaceOpts.coneOffset = anchor2coneOffset[trace.anchor];
-
-    if(trace.sizemode === 'scaled') {
-        // unitless sizeref
-        isosurfaceOpts.coneSize = trace.sizeref || 0.5;
-    } else {
-        // sizeref here has unit of velocity
-        isosurfaceOpts.coneSize = trace.sizeref && trace._normMax ?
-            trace.sizeref / trace._normMax :
-            0.5;
+    for(var i = 1; i < points.length; i++) {
+        var p = points[i];
+        if(xs[xs.length - 1] < p[0]) {
+            xs.push(p[0]);
+        }
+        if(ys[ys.length - 1] < p[1]) {
+            ys.push(p[1]);
+        }
+        if(zs[zs.length - 1] < p[2]) {
+            zs.push(p[2]);
+        }
     }
 
-    var meshData = isosurfacePlot(isosurfaceOpts);
+    isosurfaceOpts.dimensions = [xs.length, ys.length, zs.length];
+    isosurfaceOpts.meshgrid = [
+        toDataCoords(xs, 'xaxis'),
+        toDataCoords(ys, 'yaxis'),
+        toDataCoords(zs, 'zaxis')
+    ];
+
+    // var bounds = [
+    //    isosurfaceOpts.boundmin || [xs[0], ys[0], zs[0]],
+    //    isosurfaceOpts.boundmax || [xs[xs.length - 1], ys[ys.length - 1], zs[zs.length - 1]]
+    // ];
+
+
+    isosurfaceOpts.values = trace.u;
+
+    isosurfaceOpts.colormap = parseColorScale(trace.colorscale);
+    // isosurfaceOpts.capsColormap = parseColorScale(trace.capscolorscale);
+    isosurfaceOpts.vertexIntensityBounds = [trace.cmin, trace.cmax];
+    isosurfaceOpts.isoBounds = [trace.imin, trace.imax];
+
+    isosurfaceOpts.isoCaps = trace.isocaps;
+    isosurfaceOpts.singleMesh = trace.singlemesh === undefined ? true : trace.singlemesh;
+
+    var bounds = [[0, 0, 0], isosurfaceOpts.dimensions];
+
+    var meshData = isosurfacePlot(isosurfaceOpts, bounds);
 
     // pass gl-mesh3d lighting attributes
     var lp = trace.lightposition;
@@ -109,9 +179,6 @@ function convert(scene, trace) {
     meshData.roughness = trace.lighting.roughness;
     meshData.fresnel = trace.lighting.fresnel;
     meshData.opacity = trace.opacity;
-
-    // stash autorange pad value
-    trace._pad = anchor2coneSpan[trace.anchor] * meshData.vectorScale * meshData.coneScale * trace._normMax;
 
     return meshData;
 }
@@ -132,16 +199,17 @@ function createIsosurfaceTrace(scene, data) {
     var gl = scene.glplot.gl;
 
     var meshData = convert(scene, data);
-    var mesh = isosurfacePlot.createMesh(gl, meshData);
+    var mesh = isosurfacePlot.createTriMesh(gl, meshData);
 
-    var Isosurface = new Isosurface(scene, data.uid);
-    Isosurface.mesh = mesh;
-    Isosurface.data = data;
-    mesh._trace = Isosurface;
+    var isosurface = new Isosurface(scene, data.uid);
+    isosurface.mesh = mesh;
+    isosurface.data = data;
+    isosurface.meshData = meshData;
+    mesh._trace = isosurface;
 
     scene.glplot.add(mesh);
 
-    return Isosurface;
+    return isosurface;
 }
 
 module.exports = createIsosurfaceTrace;

@@ -20,25 +20,24 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     var u = coerce('u');
-    var v = coerce('v');
-    var w = coerce('w');
 
     var x = coerce('x');
     var y = coerce('y');
     var z = coerce('z');
 
     if(
-        !u || !u.length || !v || !v.length || !w || !w.length ||
+        !u || !u.length || 
         !x || !x.length || !y || !y.length || !z || !z.length
     ) {
         traceOut.visible = false;
         return;
     }
 
-    coerce('sizeref');
-    coerce('sizemode');
-
-    coerce('anchor');
+    coerce('imin');
+    coerce('imax');
+    coerce('smoothnormals');
+    coerce('isocaps');
+    // coerce('singlemesh');
 
     coerce('lighting.ambient');
     coerce('lighting.diffuse');
