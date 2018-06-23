@@ -114,7 +114,7 @@ function getSequence(src) {
     return xs;
 }
 
-function convert(scene, trace) {
+function convert(gl, scene, trace) {
     var sceneLayout = scene.fullSceneLayout;
     var dataScale = scene.dataScale;
     var volumeOpts = {};
@@ -153,7 +153,7 @@ function convert(scene, trace) {
 
     var bounds = [[0, 0, 0], volumeOpts.dimensions];
 
-    var meshData = volumePlot(volumeOpts, bounds);
+    var meshData = volumePlot(gl, volumeOpts, bounds);
 
     // pass gl-mesh3d lighting attributes
     var lp = trace.lightposition;
@@ -183,13 +183,11 @@ proto.dispose = function() {
 function createvolumeTrace(scene, data) {
     var gl = scene.glplot.gl;
 
-    var meshData = convert(scene, data);
-    var mesh = volumePlot.createTriMesh(gl, meshData);
+    var mesh = convert(gl, scene, data);
 
     var volume = new Volume(scene, data.uid);
     volume.mesh = mesh;
     volume.data = data;
-    volume.meshData = meshData;
     mesh._trace = volume;
 
     scene.glplot.add(mesh);
