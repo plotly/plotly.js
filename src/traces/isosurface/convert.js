@@ -110,6 +110,22 @@ function zip3(x, y, z) {
 
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
 
+function getSequence(src) {
+    var xs = [src[0]];
+    for(var i = 1, last = xs[0]; i < src.length; i++) {
+        var p = src[i];
+        if(p >= last) {
+            if(p > last) {
+                xs.push(p);
+            }
+            last = p;
+        } else {
+            break;
+        }
+    }
+    return xs;
+}
+
 function convert(scene, trace) {
     var sceneLayout = scene.fullSceneLayout;
     var dataScale = scene.dataScale;
@@ -121,27 +137,9 @@ function convert(scene, trace) {
         return simpleMap(arr, function(v) { return ax.d2l(v) * scale; });
     }
 
-    var points = zip3(
-        toDataCoords(trace.x, 'xaxis'),
-        toDataCoords(trace.y, 'yaxis'),
-        toDataCoords(trace.z, 'zaxis')
-    );
-    var xs = [points[0][0]];
-    var ys = [points[0][1]];
-    var zs = [points[0][2]];
-
-    for(var i = 1; i < points.length; i++) {
-        var p = points[i];
-        if(xs[xs.length - 1] < p[0]) {
-            xs.push(p[0]);
-        }
-        if(ys[ys.length - 1] < p[1]) {
-            ys.push(p[1]);
-        }
-        if(zs[zs.length - 1] < p[2]) {
-            zs.push(p[2]);
-        }
-    }
+    var xs = getSequence(trace.x);
+    var ys = getSequence(trace.y);
+    var zs = getSequence(trace.z);
 
     isosurfaceOpts.dimensions = [xs.length, ys.length, zs.length];
     isosurfaceOpts.meshgrid = [
