@@ -9,27 +9,32 @@
 /*
     Usage example:
 
-    var width = 64
-    var height = 64
-    var depth = 64
+    var width = 128
+    var height = 128
+    var depth = 128
 
     var xs = []
     var ys = []
     var zs = []
 
-    var data = new Uint16Array(width*height*depth)
+    var data = []
     for (var z=0; z<depth; z++)
     for (var y=0; y<height; y++)
     for (var x=0; x<width; x++) {
         xs.push(x/width);
         ys.push(y/height);
         zs.push(z/depth);
-        var value = 1500 + 500 * (
+        var value = Math.pow(Math.abs((10000 + (0.5+Math.random())*500 * (
             Math.sin(2 * 2*Math.PI*(z/depth-0.5)) +
-            Math.cos(3 * 2*Math.PI*(x/width-0.5)) +
-            Math.sin(4 * 2*Math.PI*(y/height-0.5))
-        );
+            Math.cos(3 * 2*Math.PI*(x*x/(width*width)-0.5)) +
+            Math.sin(4 * 2*Math.PI*(y*z/(height*depth)-0.5))
+        )) * Math.pow(z/depth,1/3) * (1-Math.sqrt(x*x / width*width + y*y / height*height)) % 500000)/1e6, 2);
         data[z*height*width + y*width + x] = value
+    }
+
+    var opacityscale = []
+    for (var i=0; i<256; i++) {
+        opacityscale[i] = Math.pow(i/256, 1.2)
     }
 
     Plotly.newPlot(gd, [{
@@ -41,15 +46,15 @@
 
       u: data,
 
-      imin: 0,
-      imax: 3000,
-      cmin: 1500,
-      cmax: 4000,
+      cmin: 0.05,
+      cmax: 0.22,
 
-      opacity: 0.1,
+      imin: 0.05,
+      imax: 0.25,
 
-      colorscale: 'Portland',
-      opacityscale: alphascale
+      opacity: 0.05,
+
+      colorscale: 'Portland', opacityscale: opacityscale
     }], {
       scene: {
         xaxis: {range: [0, 1]},
@@ -57,7 +62,6 @@
         zaxis: {range: [0, 1]}
       }
     })
-
 */
 'use strict';
 
@@ -183,8 +187,14 @@ function convert(gl, scene, trace) {
 proto.update = function(data) {
     this.data = data;
 
-    var meshData = convert(this.scene, data);
-    this.mesh.update(meshData);
+    this.dispose();
+
+    var gl = this.scene.glplot.gl;
+    var mesh = convert(gl, this.scene, data);
+    this.mesh = mesh;
+    this.mesh._trace = this;
+
+    this.scene.glplot.add(mesh);
 };
 
 proto.dispose = function() {
