@@ -26,7 +26,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var z = coerce('z');
 
     if(
-        !u || !u.length || 
+        !u || !u.length ||
         !x || !x.length || !y || !y.length || !z || !z.length
     ) {
         traceOut.visible = false;

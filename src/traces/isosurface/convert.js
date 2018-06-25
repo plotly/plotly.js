@@ -100,14 +100,6 @@ proto.handlePick = function(selection) {
     }
 };
 
-function zip3(x, y, z) {
-    var result = new Array(x.length);
-    for(var i = 0; i < x.length; i++) {
-        result[i] = [x[i], y[i], z[i]];
-    }
-    return result;
-}
-
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
 
 function getSequence(src) {
