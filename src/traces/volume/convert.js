@@ -46,7 +46,7 @@
       cmin: 1500,
       cmax: 2000,
 
-      isocaps: true,
+      opacity: 1,
 
       colorscale: 'Portland'
     }], {
@@ -146,26 +146,30 @@ function convert(gl, scene, trace) {
 
     volumeOpts.colormap = parseColorScale(trace.colorscale);
 
-    volumeOpts.vertexIntensityBounds = [trace.cmin, trace.cmax];
+    volumeOpts.intensityBounds = [trace.cmin, trace.cmax];
     volumeOpts.isoBounds = [trace.imin, trace.imax];
 
-    volumeOpts.isoCaps = trace.isocaps;
+    volumeOpts.opacity = trace.opacity === undefined ? 1 : trace.opacity;
 
     var bounds = [[0, 0, 0], volumeOpts.dimensions];
 
-    var meshData = volumePlot(gl, volumeOpts, bounds);
+    var volume = volumePlot(gl, volumeOpts, bounds);
 
     // pass gl-mesh3d lighting attributes
     var lp = trace.lightposition;
-    meshData.lightPosition = [lp.x, lp.y, lp.z];
-    meshData.ambient = trace.lighting.ambient;
-    meshData.diffuse = trace.lighting.diffuse;
-    meshData.specular = trace.lighting.specular;
-    meshData.roughness = trace.lighting.roughness;
-    meshData.fresnel = trace.lighting.fresnel;
-    meshData.opacity = trace.opacity;
+    for(var i = 0; i < volume.meshes.length; i++) {
+        var meshData = volume.meshes[i];
+        meshData.lightPosition = [lp.x, lp.y, lp.z];
+        meshData.ambient = trace.lighting.ambient;
+        meshData.diffuse = trace.lighting.diffuse;
+        meshData.specular = trace.lighting.specular;
+        meshData.roughness = trace.lighting.roughness;
+        meshData.fresnel = trace.lighting.fresnel;
+        meshData.opacity = trace.opacity;
 
-    return meshData;
+    }
+
+    return volume;
 }
 
 proto.update = function(data) {
@@ -189,6 +193,8 @@ function createvolumeTrace(scene, data) {
     volume.mesh = mesh;
     volume.data = data;
     mesh._trace = volume;
+    mesh.isOpaque = function() { return true; };
+    mesh.isTransparent = function() { return false; };
 
     scene.glplot.add(mesh);
 

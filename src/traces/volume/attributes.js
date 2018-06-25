@@ -22,7 +22,7 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the x coordinates of the isosurface'
+            'Sets the x coordinates of the volume'
         ].join(' ')
     },
     y: {
@@ -30,7 +30,7 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the y coordinates of the isosurface'
+            'Sets the y coordinates of the volume'
         ].join(' ')
     },
     z: {
@@ -38,44 +38,32 @@ var attrs = {
         role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
-            'Sets the z coordinates of the isosurface'
+            'Sets the z coordinates of the volume'
         ].join(' ')
     },
 
     u: {
         valType: 'data_array',
         editType: 'calc',
-        description: 'Sets the intensity values of the isosurface.'
+        description: 'Sets the intensity values of the volume.'
     },
 
     imin: {
         valType: 'number',
         editType: 'calc',
-        description: 'Sets the minimum iso bound of the isosurface.'
+        description: 'Sets the minimum intensity bound of the volume.'
     },
 
     imax: {
         valType: 'number',
         editType: 'calc',
-        description: 'Sets the maximum iso bound of the isosurface.'
+        description: 'Sets the maximum intensity bound of the volume.'
     },
 
-    smoothnormals: {
-        valType: 'boolean',
+    opacity: {
+        valType: 'number',
         editType: 'calc',
-        description: ''
-    },
-
-    singlemesh: {
-        valType: 'boolean',
-        editType: 'calc',
-        description: ''
-    },
-
-    isocaps: {
-        valType: 'boolean',
-        editType: 'calc',
-        description: ''
+        description: 'Sets the opacity of the volume.'
     },
 
     boundmin: {
@@ -97,7 +85,7 @@ var attrs = {
         arrayOk: true,
         editType: 'calc',
         description: [
-            'Sets the text elements associated with the isosurface points.',
+            'Sets the text elements associated with the volume points.',
             'If trace `hoverinfo` contains a *text* flag and *hovertext* is not set,',
             'these elements will be seen in the hover labels.'
         ].join(' ')
