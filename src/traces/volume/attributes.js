@@ -44,8 +44,15 @@ var attrs = {
 
     u: {
         valType: 'data_array',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the intensity values of the volume.'
+    },
+
+    opacityscale: {
+        valType: 'data_array',
+        editType: 'calc',
+        description: 'Sets the opacity scale of the volume, which opacity to use for which intensity. Array of 256 values in 0..1 range.'
     },
 
     imin: {

@@ -41,14 +41,15 @@
 
       u: data,
 
-      imin: 1600,
-      imax: 2000,
+      imin: 0,
+      imax: 3000,
       cmin: 1500,
-      cmax: 2000,
+      cmax: 4000,
 
-      opacity: 0.5,
+      opacity: 0.1,
 
-      colorscale: 'Portland'
+      colorscale: 'Portland',
+      opacityscale: alphascale
     }], {
       scene: {
         xaxis: {range: [0, 1]},
@@ -146,8 +147,12 @@ function convert(gl, scene, trace) {
 
     volumeOpts.colormap = parseColorScale(trace.colorscale);
 
-    volumeOpts.intensityBounds = [trace.cmin, trace.cmax];
-    volumeOpts.isoBounds = [
+    if(trace.opacityscale) {
+        volumeOpts.alphamap = trace.opacityscale;
+    }
+
+    volumeOpts.isoBounds = [trace.cmin, trace.cmax];
+    volumeOpts.intensityBounds = [
         trace.imin === undefined ? trace.cmin : trace.imin,
         trace.imax === undefined ? trace.cmax : trace.imax
     ];

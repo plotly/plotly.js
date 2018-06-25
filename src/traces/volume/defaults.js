@@ -36,6 +36,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('imin');
     coerce('imax');
     coerce('opacity');
+    coerce('opacityscale');
 
     coerce('boundmin');
     coerce('boundmax');
