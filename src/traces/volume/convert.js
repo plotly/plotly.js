@@ -46,7 +46,7 @@
       cmin: 1500,
       cmax: 2000,
 
-      opacity: 1,
+      opacity: 0.5,
 
       colorscale: 'Portland'
     }], {
@@ -147,7 +147,10 @@ function convert(gl, scene, trace) {
     volumeOpts.colormap = parseColorScale(trace.colorscale);
 
     volumeOpts.intensityBounds = [trace.cmin, trace.cmax];
-    volumeOpts.isoBounds = [trace.imin, trace.imax];
+    volumeOpts.isoBounds = [
+        trace.imin === undefined ? trace.cmin : trace.imin,
+        trace.imax === undefined ? trace.cmax : trace.imax
+    ];
 
     volumeOpts.opacity = trace.opacity === undefined ? 1 : trace.opacity;
 
@@ -193,8 +196,6 @@ function createvolumeTrace(scene, data) {
     volume.mesh = mesh;
     volume.data = data;
     mesh._trace = volume;
-    mesh.isOpaque = function() { return true; };
-    mesh.isTransparent = function() { return false; };
 
     scene.glplot.add(mesh);
 
