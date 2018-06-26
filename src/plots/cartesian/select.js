@@ -409,7 +409,8 @@ function selectOnClick(gd, numClicks, evt, outlines) {
 
         // When not retaining or when the sole selected
         // point gets deselected, remove outlines
-        if(!retainSelection || (pointSelected && onePointSelectedOnly)) {
+        if(outlines &&
+          (!retainSelection || (pointSelected && onePointSelectedOnly))) {
             outlines.remove();
         }
 
