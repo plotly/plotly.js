@@ -758,7 +758,6 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     function findEnclosingVertexAngles(a) {
         var cycleIndex = makeCycleIndexFn(vangles.length);
         var i0 = findIndexOfMin(vangles, function(v) {
-            if(!isAngleInSector(v, sector)) return Infinity;
             var adelta = angleDelta(v, a);
             return adelta > 0 ? adelta : Infinity;
         });
@@ -823,8 +822,8 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         // match origin for asymmetric polygons
         if(vangles) {
             var offset = findPolygonOffset(radius, sector, vangles);
-            x0 += offset.left;
-            y0 += offset.top;
+            x0 += cxx + offset[0];
+            y0 += cyy + offset[1];
         }
 
         switch(dragModeNow) {
@@ -1323,7 +1322,7 @@ function findIndexOfMin(arr, fn) {
     return ind;
 }
 
-// find intersection of 'v0' <-> 'v1' edge with a 'radial' line
+// find intersection of 'v0' <-> 'v1' edge with a ray at angle 'a'
 // (i.e. a line that starts from the origin at angle 'a')
 // given an (xp,yp) pair on the 'v0' <-> 'v1' line
 // (N.B. 'v0' and 'v1' are angles in radians)
@@ -1334,28 +1333,40 @@ function findIntersectionXY(v0, v1, a, xpyp) {
     var yp = xpyp[1];
     var dsin = clampTiny(Math.sin(v1) - Math.sin(v0));
     var dcos = clampTiny(Math.cos(v1) - Math.cos(v0));
+    var tanA = Math.tan(a);
+    var cotanA = clampTiny(1 / tanA);
+    var m = dsin / dcos;
+    var b = yp - m * xp;
 
-    if(dsin && dcos) {
-        // given
-        //  g(x) := v0 -> v1 line = m * x + b
-        //  h(x) := mr * x
-        // solve g(xstar) = h(xstar)
-        var m = dsin / dcos;
-        var b = yp - m * xp;
-        var mr = Math.sin(a) / Math.cos(a);
-        xstar = b / (mr - m);
-        ystar = mr * xstar;
-    } else {
-        var r;
-        if(dcos) {
+    if(cotanA) {
+        if(dsin && dcos) {
+            // given
+            //  g(x) := v0 -> v1 line = m*x + b
+            //  h(x) := ray at angle 'a' = m*x = tanA*x
+            // solve g(xstar) = h(xstar)
+            xstar = b / (tanA - m);
+            ystar = tanA * xstar;
+        } else if(dcos) {
             // horizontal v0 -> v1
-            r = yp / Math.sin(v0);
+            xstar = yp * cotanA;
+            ystar = yp;
         } else {
-            // vertical v0 -> va
-            r = xp / Math.cos(v0);
+            // vertical v0 -> v1
+            xstar = xp;
+            ystar = xp * tanA;
         }
-        xstar = r * Math.cos(a);
-        ystar = r * Math.sin(a);
+    } else {
+        // vertical ray
+        if(dsin && dcos) {
+            xstar = 0;
+            ystar = b;
+        } else if(dcos) {
+            xstar = 0;
+            ystar = yp;
+        } else {
+            // does this case exists?
+            xstar = ystar = NaN;
+        }
     }
 
     return [xstar, ystar];
@@ -1365,7 +1376,7 @@ function findIntersectionXY(v0, v1, a, xpyp) {
 // rearranged into 0 = a*x^2 + b * x + c
 //
 // where f(x) = m*x + t + yp
-// and   x01 = (-b +/- del) / (2*a)
+// and   (x0, x1) = (-b +/- del) / (2*a)
 function findXYatLength(l, m, xp, yp) {
     var t = -m * xp;
     var a = m * m + 1;
@@ -1454,15 +1465,14 @@ function makePolygon(r, sector, vangles) {
 function findPolygonOffset(r, sector, vangles) {
     var minX = Infinity;
     var minY = Infinity;
+    var vertices = makePolygon(r, sector, vangles);
 
-    for(var i = 0; i < vangles.length; i++) {
-        var va = vangles[i];
-        if(isAngleInSector(va, sector)) {
-            minX = Math.min(minX, r * Math.cos(va));
-            minY = Math.min(minY, -r * Math.sin(va));
-        }
+    for(var i = 0; i < vertices.length; i++) {
+        var v = vertices[i];
+        minX = Math.min(minX, v[0]);
+        minY = Math.min(minY, -v[1]);
     }
-    return {top: minY + r, left: minX + r};
+    return [minX, minY];
 }
 
 function invertY(pts0) {
@@ -1564,6 +1574,7 @@ function strRotate(angle) {
     return 'rotate(' + angle + ')';
 }
 
+// to more easily catch 'almost zero' numbers in if-else blocks
 function clampTiny(v) {
     return Math.abs(v) > 1e-10 ? v : 0;
 }
