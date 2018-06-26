@@ -1138,6 +1138,8 @@ describe('Test polar *gridshape linear* interactions', function() {
     });
 
     it('should rotate all non-symmetrical layers on angular drag', function(done) {
+        var evtCnt = 0;
+        var evtData = {};
         var dragCoverNode;
         var p1;
 
@@ -1195,6 +1197,12 @@ describe('Test polar *gridshape linear* interactions', function() {
             margin: {l: 50, t: 50, b: 50, r: 50}
         })
         .then(function() {
+            gd.on('plotly_relayout', function(d) {
+                evtCnt++;
+                evtData = d;
+            });
+        })
+        .then(function() {
             layersRotateFromZero.forEach(function(q) {
                 _assertTransformRotate('base', q, null);
             });
@@ -1208,6 +1216,14 @@ describe('Test polar *gridshape linear* interactions', function() {
                 fromZero: 7.2,
                 fromRadialAxis: -82.8
             });
+        })
+        .then(function() {
+            expect(evtCnt).toBe(1, '# of plotly_relayout calls');
+            expect(evtData['polar.angularaxis.rotation'])
+                .toBeCloseTo(82.8, 1, 'polar.angularaxis.rotation event data');
+            // have to rotate radial axis too here, to ensure it remains 'on scale'
+            expect(evtData['polar.radialaxis.angle'])
+                .toBeCloseTo(82.8, 1, 'polar.radialaxis.angle event data');
         })
         .catch(failTest)
         .then(done);
