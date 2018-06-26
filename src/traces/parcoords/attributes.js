@@ -18,6 +18,7 @@ var domainAttrs = require('../../plots/domain').attributes;
 var extend = require('../../lib/extend');
 var extendDeepAll = extend.extendDeepAll;
 var extendFlat = extend.extendFlat;
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 module.exports = {
     domain: domainAttrs({name: 'parcoords', trace: true, editType: 'calc'}),
@@ -35,8 +36,7 @@ module.exports = {
         description: 'Sets the font for the `dimension` range values.'
     }),
 
-    dimensions: {
-        _isLinkedToArray: 'dimension',
+    dimensions: templatedArray('dimension', {
         label: {
             valType: 'string',
             role: 'info',
@@ -113,7 +113,7 @@ module.exports = {
         },
         editType: 'calc',
         description: 'The dimensions (variables) of the parallel coordinates chart. 2..60 dimensions are supported.'
-    },
+    }),
 
     line: extendFlat(
         // the default autocolorscale isn't quite usable for parcoords due to context ambiguity around 0 (grey, off-white)

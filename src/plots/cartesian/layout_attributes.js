@@ -12,6 +12,7 @@ var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 var constants = require('./constants');
 
@@ -510,9 +511,7 @@ module.exports = {
             '*%H~%M~%S.%2f* would display *09~15~23.46*'
         ].join(' ')
     },
-    tickformatstops: {
-        _isLinkedToArray: 'tickformatstop',
-
+    tickformatstops: templatedArray('tickformatstop', {
         visible: {
             valType: 'boolean',
             role: 'info',
@@ -547,7 +546,7 @@ module.exports = {
             ].join(' ')
         },
         editType: 'ticks'
-    },
+    }),
     hoverformat: {
         valType: 'string',
         dflt: '',

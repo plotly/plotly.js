@@ -14,7 +14,6 @@ var Template = require('../../plot_api/plot_template');
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
 var attributes = require('./attributes');
-var buttonAttrs = require('./button_attributes');
 var constants = require('./constants');
 
 
@@ -55,7 +54,7 @@ function buttonDefaults(buttonIn, buttonOut, selectorOut, opts) {
     var calendar = opts.calendar;
 
     function coerce(attr, dflt) {
-        return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
+        return Lib.coerce(buttonIn, buttonOut, attributes.buttons, attr, dflt);
     }
 
     var visible = coerce('visible');

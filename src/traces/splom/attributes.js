@@ -10,6 +10,7 @@
 
 var scatterGlAttrs = require('../scattergl/attributes');
 var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 function makeAxesValObject(axLetter) {
     return {
@@ -32,9 +33,7 @@ function makeAxesValObject(axLetter) {
 }
 
 module.exports = {
-    dimensions: {
-        _isLinkedToArray: 'dimension',
-
+    dimensions: templatedArray('dimension', {
         visible: {
             valType: 'boolean',
             role: 'info',
@@ -66,7 +65,7 @@ module.exports = {
         // maybe more axis defaulting option e.g. `showgrid: false`
 
         editType: 'calc+clearAxisTypes'
-    },
+    }),
 
     // mode: {}, (only 'markers' for now)
 

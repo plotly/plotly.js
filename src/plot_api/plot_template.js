@@ -12,7 +12,56 @@
 var Lib = require('../lib');
 var plotAttributes = require('../plots/attributes');
 
-var TEMPLATEITEMNAME = exports.TEMPLATEITEMNAME = 'templateitemname';
+var TEMPLATEITEMNAME = 'templateitemname';
+
+var templateAttrs = {
+    name: {
+        valType: 'string',
+        role: 'style',
+        editType: 'none',
+        description: [
+            'When used in a template, named items are created in the output figure',
+            'in addition to any items the figure already has in this array.',
+            'You can modify these items in the output figure by making your own',
+            'item with `templateitemname` matching this `name`',
+            'alongside your modifications (including `visible: false` to hide it).',
+            'Has no effect outside of a template.'
+        ].join(' ')
+    }
+};
+templateAttrs[TEMPLATEITEMNAME] = {
+    valType: 'string',
+    role: 'info',
+    editType: 'calc',
+    description: [
+        'Used to refer to a named item in this array in the template. Named',
+        'items from the template will be created even without a matching item',
+        'in the input figure, but you can modify one by making an item with',
+        '`templateitemname` matching its `name`, alongside your',
+        'modifications (including `visible: false` to hide it).',
+        'If there is no template or no matching item, this item will be',
+        'hidden unless you explicitly show it with `visible: true`.'
+    ].join(' ')
+};
+
+/**
+ * templatedArray: decorate an attributes object with templating (and array)
+ * properties.
+ *
+ * @param {string} name: the singular form of the array name. Sets
+ *     `_isLinkedToArray` to this, so the schema knows to treat this as an array.
+ * @param {object} attrs: the item attributes. Since all callers are expected
+ *     to be constructing this object on the spot, we mutate it here for
+ *     performance, rather than extending a new object with it.
+ *
+ * @returns {object}: the decorated `attrs` object
+ */
+exports.templatedArray = function(name, attrs) {
+    attrs._isLinkedToArray = name;
+    attrs.name = templateAttrs.name;
+    attrs[TEMPLATEITEMNAME] = templateAttrs[TEMPLATEITEMNAME];
+    return attrs;
+};
 
 /**
  * traceTemplater: logic for matching traces to trace templates

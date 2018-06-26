@@ -13,10 +13,9 @@ var colorAttrs = require('../color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var padAttrs = require('../../plots/pad_attributes');
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
-var buttonsAttrs = {
-    _isLinkedToArray: 'button',
-
+var buttonsAttrs = templatedArray('button', {
     visible: {
         valType: 'boolean',
         role: 'info',
@@ -67,10 +66,9 @@ var buttonsAttrs = {
             'specification of `method` and `args`.'
         ].join(' ')
     }
-};
+});
 
-module.exports = overrideAll({
-    _isLinkedToArray: 'updatemenu',
+module.exports = overrideAll(templatedArray('updatemenu', {
     _arrayAttrRegexps: [/^updatemenus\[(0|[1-9][0-9]+)\]\.buttons/],
 
     visible: {
@@ -191,4 +189,4 @@ module.exports = overrideAll({
         editType: 'arraydraw',
         description: 'Sets the width (in px) of the border enclosing the update menu.'
     }
-}, 'arraydraw', 'from-root');
+}), 'arraydraw', 'from-root');
