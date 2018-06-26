@@ -47,12 +47,6 @@ function _newSelectionItem(pointNumber, xInData, yInData) {
     };
 }
 
-function _clearSelection(calcData) {
-    for(var i = 0; i < calcData.length; i++) {
-        calcData[i].selected = 0;
-    }
-}
-
 exports.getPointsIn = function(searchInfo, polygon) {
     var pointsIn = [];
 
@@ -78,14 +72,21 @@ exports.getPointsIn = function(searchInfo, polygon) {
     return pointsIn;
 };
 
-exports.selectPoints = function(searchInfo, pointIds) {
-    return _togglePointSelectedState(searchInfo, pointIds, true);
-};
-
-exports.deselectPoints = function(searchInfo, pointIds) {
-    return _togglePointSelectedState(searchInfo, pointIds, false);
-};
-
-exports.clearSelection = function(searchInfo) {
-    _clearSelection(searchInfo.cd);
+/**
+ * Update the selected flag of the given points. Omitting which points
+ * to modify will update all points of the passed trace.
+ *
+ * @param searchInfo - info about trace to modify
+ * @param {boolean} selected - are these points to be selected (true) or deselected (false)
+ * @param {integer[]} pointsIds - the points to modify - omit to modify all points
+ *        in the trace. i.e. clearSelection is toggleSelection(searchInfo, false).
+ */
+exports.toggleSelected = function(searchInfo, selected, pointsIds) {
+    if(!Array.isArray(pointsIds)) {
+        pointsIds = [];
+        for(var i = 0; i < searchInfo.cd.length; i++) {
+            pointsIds.push(i);
+        }
+    }
+    return _togglePointSelectedState(searchInfo, pointsIds, selected);
 };

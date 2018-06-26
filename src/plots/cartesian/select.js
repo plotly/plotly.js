@@ -116,7 +116,8 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
 
-        if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
+        if(trace.visible !== true || !trace._module ||
+          !trace._module.toggleSelected || !trace._module.getPointsIn) continue;
 
         if(dragOptions.subplot) {
             if(
@@ -289,18 +290,15 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     searchInfo = searchTraces[i];
                     module = searchInfo._module;
 
-                    if(!retainSelection) module.clearSelection(searchInfo);
+                    if(!retainSelection) module.toggleSelected(searchInfo, false);
 
                     var currentPolygonTester = polygonTester(currentPolygon);
                     var pointsInCurrentPolygon = module.getPointsIn(searchInfo, currentPolygonTester);
-                    if(!subtract) {
-                        module.selectPoints(searchInfo, pointsInCurrentPolygon);
-                    } else {
-                        module.deselectPoints(searchInfo, pointsInCurrentPolygon);
-                    }
+                    module.toggleSelected(searchInfo, !subtract, pointsInCurrentPolygon);
+
                     var pointsNoLongerSelected = difference(pointsInPolygon, pointsInCurrentPolygon);
 
-                    traceSelection = module.deselectPoints(searchInfo, pointsNoLongerSelected);
+                    traceSelection = module.toggleSelected(searchInfo, false, pointsNoLongerSelected);
                     pointsInPolygon = pointsInCurrentPolygon;
 
                     traceSelections.push(traceSelection);
@@ -332,8 +330,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             if(numClicks === 2) {
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
-                    // searchInfo._module.selectPoints(searchInfo, false);
-                    searchInfo._module.clearSelection(searchInfo);
+                    searchInfo._module.toggleSelected(searchInfo, false);
                 }
 
                 updateSelectedState(gd, searchTraces);
@@ -399,13 +396,12 @@ function selectOnClick(gd, numClicks, evt, outlines) {
             pointSelected = isPointSelected(trace, hoverDatum.pointNumber),
             onePointSelectedOnly = isOnePointSelectedOnly(trace);
 
-        if(!retainSelection) module.clearSelection(searchInfo);
+        if(!retainSelection) module.toggleSelected(searchInfo, false);
 
         var shouldDeselectPoint = (pointSelected && onePointSelectedOnly) ||
           (pointSelected && !onePointSelectedOnly && retainSelection);
-        var newTraceSelection = shouldDeselectPoint ?
-          module.deselectPoints(searchInfo, [hoverDatum.pointNumber]) :
-          module.selectPoints(searchInfo, [hoverDatum.pointNumber]);
+        var newTraceSelection =
+          module.toggleSelected(searchInfo, !shouldDeselectPoint, [hoverDatum.pointNumber]);
 
         // When not retaining or when the sole selected
         // point gets deselected, remove outlines

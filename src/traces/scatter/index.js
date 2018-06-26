@@ -28,9 +28,7 @@ Scatter.style = require('./style').style;
 Scatter.styleOnSelect = require('./style').styleOnSelect;
 Scatter.hoverPoints = require('./hover');
 Scatter.getPointsIn = require('./select').getPointsIn;
-Scatter.selectPoints = require('./select').selectPoints;
-Scatter.deselectPoints = require('./select').deselectPoints;
-Scatter.clearSelection = require('./select').clearSelection;
+Scatter.toggleSelected = require('./select').toggleSelected;
 Scatter.animatable = true;
 
 Scatter.moduleType = 'trace';
