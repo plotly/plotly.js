@@ -7,7 +7,7 @@ var getNodeCoords = require('./get_node_coords');
  * optionally specify an edge ('n', 'se', 'w' etc)
  * to grab it by an edge or corner (otherwise the middle is used)
  */
-module.exports = function(node, dx, dy, edge, x0, y0, nsteps) {
+function drag(node, dx, dy, edge, x0, y0, nsteps) {
     nsteps = nsteps || 1;
 
     var coords = getNodeCoords(node, edge);
@@ -32,7 +32,7 @@ module.exports = function(node, dx, dy, edge, x0, y0, nsteps) {
     });
 
     return promise;
-};
+}
 
 function waitForDragCover() {
     return new Promise(function(resolve) {
@@ -75,3 +75,7 @@ function waitForDragCoverRemoval() {
         }, interval);
     });
 }
+
+module.exports = drag;
+drag.waitForDragCover = waitForDragCover;
+drag.waitForDragCoverRemoval = waitForDragCoverRemoval;

@@ -177,6 +177,10 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         axOut._input = axIn;
     }
+
+    if(contOut.angularaxis.type === 'category') {
+        coerce('gridshape');
+    }
 }
 
 function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
