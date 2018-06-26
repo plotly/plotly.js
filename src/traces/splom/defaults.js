@@ -51,18 +51,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-function dimensionDefaults(dimIn, dimOut, traceOut, opts, itemOpts) {
+function dimensionDefaults(dimIn, dimOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimIn, dimOut, attributes.dimensions, attr, dflt);
     }
 
     coerce('label');
-    coerce('visible');
     var values = coerce('values');
 
-    if(!(values && values.length && !itemOpts.itemIsNotPlainObject)) {
-        dimOut.visible = false;
-    }
+    if(!(values && values.length)) dimOut.visible = false;
+    else coerce('visible');
 }
 
 function handleAxisDefaults(traceIn, traceOut, layout, coerce) {

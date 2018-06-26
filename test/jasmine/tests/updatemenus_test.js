@@ -51,8 +51,6 @@ describe('update menus defaults', function() {
         layoutOut.updatemenus.forEach(function(item, i) {
             expect(item).toEqual(jasmine.objectContaining({
                 visible: false,
-                buttons: [],
-                _input: {},
                 _index: i
             }));
         });

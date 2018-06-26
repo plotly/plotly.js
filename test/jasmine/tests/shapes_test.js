@@ -79,7 +79,6 @@ describe('Test shapes defaults:', function() {
         out.forEach(function(item, i) {
             expect(item).toEqual(jasmine.objectContaining({
                 visible: false,
-                _input: {},
                 _index: i
             }));
         });

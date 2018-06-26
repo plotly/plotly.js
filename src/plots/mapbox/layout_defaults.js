@@ -44,12 +44,12 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     containerOut._input = containerIn;
 }
 
-function handleLayerDefaults(layerIn, layerOut, mapboxOut, opts, itemOpts) {
+function handleLayerDefaults(layerIn, layerOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(layerIn, layerOut, layoutAttributes.layers, attr, dflt);
     }
 
-    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
+    var visible = coerce('visible');
     if(visible) {
         var sourceType = coerce('sourcetype');
         coerce('source');

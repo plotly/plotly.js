@@ -33,32 +33,32 @@ module.exports = function handleDefaults(containerIn, containerOut, layout, coun
     });
 
     var visible = coerce('visible', buttons.length > 0);
-    if(!visible) return;
+    if(visible) {
+        var posDflt = getPosDflt(containerOut, layout, counterAxes);
+        coerce('x', posDflt[0]);
+        coerce('y', posDflt[1]);
+        Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 
-    var posDflt = getPosDflt(containerOut, layout, counterAxes);
-    coerce('x', posDflt[0]);
-    coerce('y', posDflt[1]);
-    Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
+        coerce('xanchor');
+        coerce('yanchor');
 
-    coerce('xanchor');
-    coerce('yanchor');
+        Lib.coerceFont(coerce, 'font', layout.font);
 
-    Lib.coerceFont(coerce, 'font', layout.font);
-
-    var bgColor = coerce('bgcolor');
-    coerce('activecolor', Color.contrast(bgColor, constants.lightAmount, constants.darkAmount));
-    coerce('bordercolor');
-    coerce('borderwidth');
+        var bgColor = coerce('bgcolor');
+        coerce('activecolor', Color.contrast(bgColor, constants.lightAmount, constants.darkAmount));
+        coerce('bordercolor');
+        coerce('borderwidth');
+    }
 };
 
-function buttonDefaults(buttonIn, buttonOut, selectorOut, opts, itemOpts) {
+function buttonDefaults(buttonIn, buttonOut, selectorOut, opts) {
     var calendar = opts.calendar;
 
     function coerce(attr, dflt) {
         return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
     }
 
-    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
+    var visible = coerce('visible');
 
     if(visible) {
         var step = coerce('step');

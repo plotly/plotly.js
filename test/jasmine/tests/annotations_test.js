@@ -57,9 +57,7 @@ describe('Test annotations', function() {
             out.forEach(function(item, i) {
                 expect(item).toEqual(jasmine.objectContaining({
                     visible: false,
-                    _input: {},
-                    _index: i,
-                    clicktoshow: false
+                    _index: i
                 }));
             });
         });

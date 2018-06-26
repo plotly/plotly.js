@@ -24,14 +24,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     });
 };
 
-function handleShapeDefaults(shapeIn, shapeOut, fullLayout, opts, itemOpts) {
+function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     function coerce(attr, dflt) {
         return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
     }
 
-    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
+    var visible = coerce('visible');
 
-    if(!visible) return shapeOut;
+    if(!visible) return;
 
     coerce('layer');
     coerce('opacity');
@@ -119,6 +119,4 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout, opts, itemOpts) {
     else {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
     }
-
-    return shapeOut;
 }

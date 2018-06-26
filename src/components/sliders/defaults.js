@@ -100,15 +100,16 @@ function stepDefaults(valueIn, valueOut, sliderOut, opts, itemOpts) {
     }
 
     var visible;
-    if(itemOpts.itemIsNotPlainObject || (valueIn.method !== 'skip' && !Array.isArray(valueIn.args))) {
+    if(valueIn.method !== 'skip' && !Array.isArray(valueIn.args)) {
         visible = valueOut.visible = false;
     }
     else visible = coerce('visible');
-    if(!visible) return;
 
-    coerce('method');
-    coerce('args');
-    var label = coerce('label', 'step-' + itemOpts.index);
-    coerce('value', label);
-    coerce('execute');
+    if(visible) {
+        coerce('method');
+        coerce('args');
+        var label = coerce('label', 'step-' + itemOpts.index);
+        coerce('value', label);
+        coerce('execute');
+    }
 }

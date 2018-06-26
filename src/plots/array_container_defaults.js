@@ -34,7 +34,6 @@ var Template = require('../plot_api/plot_template');
  *          - parentObj {object} (as in closure)
  *          - opts {object} (as in closure)
  *          - itemOpts {object}
- *              - itemIsNotPlainObject {boolean}
  *              - index {integer}
  * N.B.
  *
@@ -57,13 +56,15 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
         var itemOpts = {};
 
         if(!Lib.isPlainObject(itemIn)) {
-            itemOpts.itemIsNotPlainObject = true;
-            itemIn = {};
+            itemOut = templater.newItem({});
+            itemOut.visible = false;
         }
-        itemOut = templater.newItem(itemIn);
+        else {
+            itemOut = templater.newItem(itemIn);
 
-        if(itemOut.visible !== false) {
-            opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
+            if(itemOut.visible !== false) {
+                opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
+            }
         }
 
         itemOut._input = itemIn;

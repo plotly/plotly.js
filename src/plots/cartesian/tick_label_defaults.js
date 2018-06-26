@@ -84,12 +84,12 @@ function getShowAttrDflt(containerIn) {
     }
 }
 
-function tickformatstopDefaults(valueIn, valueOut, contOut, opts, itemOpts) {
+function tickformatstopDefaults(valueIn, valueOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(valueIn, valueOut, layoutAttributes.tickformatstops, attr, dflt);
     }
 
-    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
+    var visible = coerce('visible');
     if(visible) {
         coerce('dtickrange');
         coerce('value');

@@ -38,14 +38,14 @@ function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     return Infinity;
 }
 
-function dimensionDefaults(dimensionIn, dimensionOut, traceOut, opts, itemOpts) {
+function dimensionDefaults(dimensionIn, dimensionOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
     }
 
     var values = coerce('values');
     var visible = coerce('visible');
-    if(!(values && values.length && !itemOpts.itemIsNotPlainObject)) {
+    if(!(values && values.length)) {
         visible = dimensionOut.visible = false;
     }
 

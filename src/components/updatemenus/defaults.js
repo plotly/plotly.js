@@ -65,12 +65,12 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
     coerce('borderwidth');
 }
 
-function buttonDefaults(buttonIn, buttonOut, selectorOut, opts, itemOpts) {
+function buttonDefaults(buttonIn, buttonOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
     }
 
-    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject &&
+    var visible = coerce('visible',
         (buttonIn.method === 'skip' || Array.isArray(buttonIn.args)));
     if(visible) {
         coerce('method');
