@@ -756,12 +756,12 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     }
 
     function findEnclosingVertexAngles(a) {
-        var cycleIndex = makeCycleIndexFn(vangles.length);
         var i0 = findIndexOfMin(vangles, function(v) {
             var adelta = angleDelta(v, a);
             return adelta > 0 ? adelta : Infinity;
         });
-        return [vangles[i0], vangles[cycleIndex(i0 + 1)]];
+        var i1 = Lib.mod(i0 + 1, vangles.length);
+        return [vangles[i0], vangles[i1]];
     }
 
     function findPolygonRadius(x, y, va0, va1) {
@@ -1391,13 +1391,6 @@ function findXYatLength(l, m, xp, yp) {
     ];
 }
 
-function makeCycleIndexFn(len) {
-    return function(index) {
-        return index < 0 ? len + index :
-            index < len ? index : index - len;
-    };
-}
-
 function makeRegularPolygon(r, vangles) {
     var len = vangles.length;
     var vertices = new Array(len + 1);
@@ -1423,7 +1416,10 @@ function makeClippedPolygon(r, sector, vangles) {
         return findIntersectionXY(va0, va1, s, a2xy(va0));
     }
 
-    var cycleIndex = makeCycleIndexFn(len);
+    function cycleIndex(ind) {
+        return Lib.mod(ind, len);
+    }
+
     var s0 = deg2rad(sector[0]);
     var s1 = deg2rad(sector[1]);
 
