@@ -278,7 +278,8 @@ module.exports = {
             'as *circular* sectors or as *linear* (polygon) sectors.',
             'Has an effect only when the angular axis has `type` *category*.',
             'Note that `radialaxis.angle` is snapped to the angle of the closest',
-            'vertex (so that radial axis scale is the same as the data scale).'
+            'vertex when `gridshape` is *circular*',
+            '(so that radial axis scale is the same as the data scale).'
         ].join(' ')
     },
 
