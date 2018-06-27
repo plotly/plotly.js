@@ -13,7 +13,7 @@ var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var cluster = require('point-cluster');
 var arrayRange = require('array-range');
-var Text = require('gl-text');
+var Text = require('../../../../gl-text/index');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -861,24 +861,40 @@ function selectPoints(searchInfo, polygon) {
 
     // update texts selection
     if(hasText) {
-        var el, textOptions, selOptions;
+        var textOptions = {};
         if(els) {
-            for(i = 0; i < els.length; i++) {
-                el = els[i];
-                selOptions = scene.selectedOptions[stash.index];
-                if(!selOptions) continue;
-                textOptions = selOptions.textfont;
-                if(!textOptions) continue;
-                // scene.glText[stash.index][el].update(textOptions[el]);
-            }
+            applyTextoption(textOptions, els, scene.selectedOptions[stash.index]);
         }
         if(unels) {
-            for(i = 0; i < unels.length; i++) {
-                el = unels[i];
-                selOptions = scene.unselectedOptions[stash.index];
-                if(!selOptions) continue;
-                textOptions = selOptions.textfont || scene.textOptions[stash.index][el];
-                // scene.glText[stash.index][el].update(textOptions);
+            applyTextoption(textOptions, unels, scene.unselectedOptions[stash.index]);
+        }
+
+        scene.glText[stash.index].update(textOptions);
+    }
+
+    function applyTextoption(textOptions, els, selOptions) {
+        if(!selOptions) return;
+        for(var i = 0; i < els.length; i++) {
+            var el = els[i];
+            if(selOptions.textfont) {
+                if(selOptions.textfont.color) {
+                    if(!textOptions.color) textOptions.color = [];
+                    textOptions.color[el] = selOptions.textfont.color;
+                }
+                if(selOptions.textfont.family || selOptions.textfont.size) {
+                    if(!textOptions.font) textOptions.font = [];
+                    textOptions.font[el] = {};
+                    if(selOptions.textfont.family) {
+                        textOptions.font[el].family = selOptions.textfont.family;
+                    }
+                    if(selOptions.textfont.size) {
+                        textOptions.font[el].size = selOptions.textfont.size;
+                    }
+                }
+            }
+            if('opacity' in selOptions) {
+                if(!textOptions.opacity) textOptions.opacity = [];
+                textOptions.opacity[el] = selOptions.opacity;
             }
         }
     }
