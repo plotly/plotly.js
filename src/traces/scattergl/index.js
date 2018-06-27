@@ -13,7 +13,7 @@ var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var cluster = require('point-cluster');
 var arrayRange = require('array-range');
-var Text = require('../../../../gl-text/index');
+var Text = require('gl-text');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -210,7 +210,7 @@ function sceneUpdate(gd, subplot) {
 
         // apply new option to all regl components (used on drag)
         scene.update = function update(opt) {
-            var i, j;
+            var i;
             var opts = new Array(scene.count);
             for(i = 0; i < scene.count; i++) {
                 opts[i] = opt;
@@ -222,9 +222,7 @@ function sceneUpdate(gd, subplot) {
             if(scene.select2d) scene.select2d.update(opts);
             if(scene.glText) {
                 for(i = 0; i < scene.glText.length; i++) {
-                    for(j = 0; j < scene.glText[i].length; j++) {
-                        scene.glText[i][j].update(opts[i]);
-                    }
+                    scene.glText[i].update(opts[i]);
                 }
             }
 
@@ -263,10 +261,8 @@ function sceneUpdate(gd, subplot) {
             }
 
             if(scene.glText.length) {
-                scene.glText.forEach(function(items) {
-                    items.forEach(function(item) {
-                        item.render();
-                    });
+                scene.glText.forEach(function(text) {
+                    text.render();
                 });
             }
 
@@ -316,10 +312,8 @@ function sceneUpdate(gd, subplot) {
             if(scene.line2d) scene.line2d.destroy();
             if(scene.select2d) scene.select2d.destroy();
             if(scene.glText) {
-                scene.glText.forEach(function(items) {
-                    items.forEach(function(item) {
-                        item.destroy();
-                    });
+                scene.glText.forEach(function(text) {
+                    text.destroy();
                 });
             }
 
@@ -352,7 +346,7 @@ function sceneUpdate(gd, subplot) {
 function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
-    var i, j, items, textOptions;
+    var i;
 
     var fullLayout = gd._fullLayout;
     var scene = cdata[0][0].t._scene;
@@ -393,22 +387,14 @@ function plot(gd, subplot, cdata) {
         if(scene.glText === true) {
             scene.glText = [];
             for(i = 0; i < scene.textOptions.length; i++) {
-                textOptions = scene.textOptions[i];
-                items = [];
-                for(j = 0; j < textOptions.length; j++) {
-                    items.push(new Text(regl));
-                }
-                scene.glText[i] = items;
+                scene.glText[i] = new Text(regl);
             }
         }
 
         // update main marker options
         if(scene.glText) {
             for(i = 0; i < scene.textOptions.length; i++) {
-                textOptions = scene.textOptions[i];
-                for(j = 0; j < textOptions.length; j++) {
-                    scene.glText[i][j].update(textOptions[j]);
-                }
+                scene.glText[i].update(scene.textOptions[i]);
             }
         }
         if(scene.line2d) {
@@ -625,10 +611,8 @@ function plot(gd, subplot, cdata) {
         scene.select2d.update(vpRange);
     }
     if(scene.glText) {
-        scene.glText.forEach(function(items, i) {
-            items.forEach(function(item) {
-                item.update(vpRange[i]);
-            });
+        scene.glText.forEach(function(text, i) {
+            text.update(vpRange[i]);
         });
     }
 
@@ -885,7 +869,7 @@ function selectPoints(searchInfo, polygon) {
                 if(!selOptions) continue;
                 textOptions = selOptions.textfont;
                 if(!textOptions) continue;
-                scene.glText[stash.index][el].update(textOptions[el]);
+                // scene.glText[stash.index][el].update(textOptions[el]);
             }
         }
         if(unels) {
@@ -894,7 +878,7 @@ function selectPoints(searchInfo, polygon) {
                 selOptions = scene.unselectedOptions[stash.index];
                 if(!selOptions) continue;
                 textOptions = selOptions.textfont || scene.textOptions[stash.index][el];
-                scene.glText[stash.index][el].update(textOptions);
+                // scene.glText[stash.index][el].update(textOptions);
             }
         }
     }

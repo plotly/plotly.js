@@ -98,74 +98,137 @@ function convertStyle(gd, trace) {
 }
 
 function convertTextfont(trace, textfont) {
-    var opts = [], i;
+    var textOptions = {}, i;
 
-    for(i = 0; i < trace.text.length; i++) {
-        var textOptions = opts[i] = {};
+    textOptions.color = textfont.color;
 
-        textOptions.color = unarr(textfont.color, i);
+    textOptions.align = [];
+    textOptions.baseline = [];
 
-        var textpos = unarr(trace.textposition, i);
-        textpos = textpos.split(/\s+/);
+    var textposition = Array.isArray(trace.textposition) ? trace.textposition : [trace.textposition];
+
+    for(i = 0.0; i < textposition.length; i++) {
+        var textpos = textposition[i].split(/\s+/);
+
         switch(textpos[1]) {
             case 'left':
-                textOptions.align = 'right';
+                textOptions.align.push('right');
                 break;
             case 'right':
-                textOptions.align = 'left';
+                textOptions.align.push('left');
                 break;
             default:
-                textOptions.align = textpos[1];
+                textOptions.align.push(textpos[1]);
         }
 
         switch(textpos[0]) {
             case 'top':
-                textOptions.baseline = 'bottom';
+                textOptions.baseline.push('bottom');
                 break;
             case 'bottom':
-                textOptions.baseline = 'top';
+                textOptions.baseline.push('top');
                 break;
             default:
-                textOptions.baseline = textpos[0];
+                textOptions.baseline.push(textpos[0]);
         }
-
-        textfont = unarr(textfont, i);
-
-        var fontSize = unarr(textfont.size, i);
-
-        if(!isNumeric(fontSize)) {
-            continue;
-        }
-
-        textOptions.font = {
-            family: unarr(textfont.family, i),
-            size: fontSize
-        };
-
-        // corresponds to textPointPosition from component.drawing
-        if(trace.marker) {
-            var hSign = TEXTOFFSETSIGN[textOptions.align];
-            var markerRadius = unarr(unarr(trace.marker, i).size, i) / 2;
-            var xPad = markerRadius ? markerRadius / 0.8 + 1 : 0;
-            var vSign = TEXTOFFSETSIGN[textOptions.baseline];
-            var yPad = - vSign * xPad - vSign * 0.5;
-            textOptions.offset = [hSign * xPad / fontSize, yPad / fontSize];
-        }
-
-        textOptions.position = [unarr(trace.x, i), unarr(trace.y, i)];
-
-        textOptions.text = unarr(trace.text, i);
-
     }
 
-    return opts;
+    // [{family, color, size}, {family, color, size}, ...] →
+    // {family: [], color: [], size: []}
+    if(Array.isArray(textfont)) {
+        textOptions.font = [];
+        textOptions.color = [];
+        for(i = 0; i < textfont.length; i++) {
+            textOptions.font.push({
+                family: textfont[i].family,
+                size: textfont[i].size
+            });
+            textOptions.color.push(textfont[i].color);
+        }
+    }
+    else {
+        // if any textfont param is array - make render a batch
+        if(Array.isArray(textfont.family) || Array.isArray(textfont.size)) {
+            textOptions.font = Array(Math.max(
+                textfont.family && textfont.family.length || 1,
+                textfont.size && textfont.size.length || 1
+            ));
+
+            for(i = 0; i < textOptions.font.length; i++) {
+                textOptions.font[i] = {
+                    family: textfont.family[i] || textfont.family,
+                    size: textfont.size[i] || textfont.size
+                };
+            }
+        }
+        // if both are single values, make render fast single-value
+        else {
+            textOptions.font = {
+                family: textfont.family,
+                size: textfont.size
+            };
+        }
+        textOptions.color = textfont.color;
+    }
+
+    // corresponds to textPointPosition from component.drawing
+    if(trace.marker) {
+        var sizes = [];
+        if(Array.isArray(trace.marker.size)) {
+            for(i = 0; i < trace.marker.size.length; i++) {
+                sizes.push(trace.marker.size[i]);
+            }
+        }
+        else if(Array.isArray(trace.marker)) {
+            for(i = 0; i < trace.marker.length; i++) {
+                sizes.push(trace.marker[i].size);
+            }
+        }
+        else {
+            sizes.push(trace.marker.size);
+        }
+
+        textOptions.offset = [];
+        for(i = 0; i < Math.max(trace.x.length, trace.y.length); i++) {
+            var size = sizes.length > 1 ? sizes[i] : sizes[0];
+            var markerRadius = size / 2;
+            var fontSize = Array.isArray(textOptions.font) ? textOptions.font[i].size : textOptions.font.size;
+            var align = Array.isArray(textOptions.align) ? textOptions.align[i] : textOptions.align;
+            var baseline = Array.isArray(textOptions.baseline) ? textOptions.baseline[i] : textOptions.baseline;
+            var hSign = TEXTOFFSETSIGN[align];
+            var vSign = TEXTOFFSETSIGN[baseline];
+            var xPad = markerRadius ? markerRadius / 0.8 + 1 : 0;
+            var yPad = - vSign * xPad - vSign * 0.5;
+
+            textOptions.offset.push(
+                [hSign * xPad / fontSize, yPad / fontSize]
+            );
+        }
+    }
+
+    textOptions.position = [];
+    for(i = 0; i < trace.x.length; i++) {
+        textOptions.position.push(trace.x[i], trace.y[i]);
+    }
+    textOptions.text = trace.text;
+
+    // filter out bad font sizes
+    if(Array.isArray(textOptions.font)) {
+        for(i = 0; i < textOptions.font.length; i++) {
+            if(!isNumeric(textOptions.font[i].size)) {
+                textOptions.font[i].size = 0;
+            }
+        }
+    }
+    else {
+        if(!isNumeric(textOptions.font.size)) {
+            textOptions.font.size = 0;
+        }
+    }
+
+    return textOptions;
 }
 
-// FIXME: find proper util method for this
-function unarr(obj, i) {
-    if(Array.isArray(obj)) return obj[i];
-    return obj;
-}
 
 function convertMarkerStyle(trace) {
     var count = trace._length;
