@@ -345,6 +345,7 @@ plots.supplyDefaults = function(gd, opts) {
 
         if(!newLayout.width) newFullLayout.width = oldWidth;
         if(!newLayout.height) newFullLayout.height = oldHeight;
+        plots.sanitizeMargins(newFullLayout);
     }
     else {
 
@@ -357,7 +358,7 @@ plots.supplyDefaults = function(gd, opts) {
             initialAutoSize = missingWidthOrHeight && (autosize || autosizable);
 
         if(initialAutoSize) plots.plotAutoSize(gd, newLayout, newFullLayout);
-        else if(missingWidthOrHeight) plots.sanitizeMargins(gd);
+        else if(missingWidthOrHeight) plots.sanitizeMargins(newFullLayout);
 
         // for backwards-compatibility with Plotly v1.x.x
         if(!autosize && missingWidthOrHeight) {

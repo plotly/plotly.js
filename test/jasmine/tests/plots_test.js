@@ -289,74 +289,100 @@ describe('Test Plots', function() {
         });
     });
 
-    describe('Plots.resize', function() {
+    describe('Plots.resize:', function() {
         var gd;
 
-        beforeAll(function(done) {
-            gd = createGraphDiv();
+        describe('on graph div DOM style changes', function() {
+            beforeAll(function(done) {
+                gd = createGraphDiv();
 
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }])
-                .then(function() {
-                    gd.style.width = '400px';
-                    gd.style.height = '400px';
+                Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }])
+                    .then(function() {
+                        gd.style.width = '400px';
+                        gd.style.height = '400px';
 
-                    return Plotly.Plots.resize(gd);
-                })
+                        return Plotly.Plots.resize(gd);
+                    })
+                    .then(done);
+            });
+
+            afterAll(destroyGraphDiv);
+
+            it('should resize the plot clip', function() {
+                var uid = gd._fullLayout._uid;
+
+                var plotClip = document.getElementById('clip' + uid + 'xyplot'),
+                    clipRect = plotClip.children[0],
+                    clipWidth = +clipRect.getAttribute('width'),
+                    clipHeight = +clipRect.getAttribute('height');
+
+                expect(clipWidth).toBe(240);
+                expect(clipHeight).toBe(220);
+            });
+
+            it('should resize the main svgs', function() {
+                var mainSvgs = document.getElementsByClassName('main-svg');
+                expect(mainSvgs.length).toBe(2);
+
+                for(var i = 0; i < mainSvgs.length; i++) {
+                    var svg = mainSvgs[i],
+                        svgWidth = +svg.getAttribute('width'),
+                        svgHeight = +svg.getAttribute('height');
+
+                    expect(svgWidth).toBe(400);
+                    expect(svgHeight).toBe(400);
+                }
+            });
+
+            it('should update the axis scales', function() {
+                var mainSvgs = document.getElementsByClassName('main-svg');
+                expect(mainSvgs.length).toBe(2);
+
+                var fullLayout = gd._fullLayout,
+                    plotinfo = fullLayout._plots.xy;
+
+                expect(fullLayout.xaxis._length).toEqual(240);
+                expect(fullLayout.yaxis._length).toEqual(220);
+
+                expect(plotinfo.xaxis._length).toEqual(240);
+                expect(plotinfo.yaxis._length).toEqual(220);
+            });
+
+            it('should allow resizing by plot ID', function(done) {
+                var mainSvgs = document.getElementsByClassName('main-svg');
+                expect(mainSvgs.length).toBe(2);
+
+                expect(typeof gd.id).toBe('string');
+                expect(gd.id).toBeTruthy();
+
+                Plotly.Plots.resize(gd.id)
+                .catch(failTest)
                 .then(done);
+            });
         });
 
-        afterAll(destroyGraphDiv);
+        describe('on styled graph div', function() {
+            afterEach(destroyGraphDiv);
 
-        it('should resize the plot clip', function() {
-            var uid = gd._fullLayout._uid;
+            it('should sanitize margins', function(done) {
+                gd = createGraphDiv();
+                gd.style.width = '150px';
+                gd.style.height = '150px';
 
-            var plotClip = document.getElementById('clip' + uid + 'xyplot'),
-                clipRect = plotClip.children[0],
-                clipWidth = +clipRect.getAttribute('width'),
-                clipHeight = +clipRect.getAttribute('height');
+                function _assert(exp) {
+                    var margin = gd._fullLayout.margin || {};
+                    for(var k in exp) {
+                        expect(margin[k]).toBe(exp[k], ' - margin.' + k);
+                    }
+                }
 
-            expect(clipWidth).toBe(240);
-            expect(clipHeight).toBe(220);
-        });
-
-        it('should resize the main svgs', function() {
-            var mainSvgs = document.getElementsByClassName('main-svg');
-            expect(mainSvgs.length).toBe(2);
-
-            for(var i = 0; i < mainSvgs.length; i++) {
-                var svg = mainSvgs[i],
-                    svgWidth = +svg.getAttribute('width'),
-                    svgHeight = +svg.getAttribute('height');
-
-                expect(svgWidth).toBe(400);
-                expect(svgHeight).toBe(400);
-            }
-        });
-
-        it('should update the axis scales', function() {
-            var mainSvgs = document.getElementsByClassName('main-svg');
-            expect(mainSvgs.length).toBe(2);
-
-            var fullLayout = gd._fullLayout,
-                plotinfo = fullLayout._plots.xy;
-
-            expect(fullLayout.xaxis._length).toEqual(240);
-            expect(fullLayout.yaxis._length).toEqual(220);
-
-            expect(plotinfo.xaxis._length).toEqual(240);
-            expect(plotinfo.yaxis._length).toEqual(220);
-        });
-
-        it('should allow resizing by plot ID', function(done) {
-            var mainSvgs = document.getElementsByClassName('main-svg');
-            expect(mainSvgs.length).toBe(2);
-
-            expect(typeof gd.id).toBe('string');
-            expect(gd.id).toBeTruthy();
-
-            Plotly.Plots.resize(gd.id)
-            .catch(failTest)
-            .then(done);
+                Plotly.plot(gd, [], {})
+                    .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
+                    .then(function() { return Plotly.Plots.resize(gd); })
+                    .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
+                    .catch(failTest)
+                    .then(done);
+            });
         });
     });
 
