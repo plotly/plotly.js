@@ -214,7 +214,11 @@ function positionPlayWithData(gd, container) {
 plots.sendDataToCloud = function(gd) {
     gd.emit('plotly_beforeexport');
 
-    var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
+    var baseUrl = (
+        (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) ||
+        (gd.framework.getConfig().plotlyServerUrl) ||
+        'https://plot.ly'
+    );
 
     var hiddenformDiv = d3.select(gd)
         .append('div')
