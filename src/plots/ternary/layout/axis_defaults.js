@@ -25,7 +25,7 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
     var dfltColor = coerce('color');
     // if axis.color was provided, use it for fonts too; otherwise,
     // inherit from global font color in case that was provided.
-    var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : options.font.color;
+    var dfltFontColor = (dfltColor !== layoutAttributes.color.dflt) ? dfltColor : options.font.color;
 
     var axName = containerOut._name,
         letterUpper = axName.charAt(0).toUpperCase(),

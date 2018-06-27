@@ -27,7 +27,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
         var font = options.font || {};
         // as with titlefont.color, inherit axis.color only if one was
         // explicitly provided
-        var dfltFontColor = (containerOut.color === containerIn.color) ?
+        var dfltFontColor = (containerOut.color !== layoutAttributes.color.dflt) ?
             containerOut.color : font.color;
         Lib.coerceFont(coerce, 'tickfont', {
             family: font.family,
