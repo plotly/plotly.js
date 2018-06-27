@@ -862,11 +862,16 @@ function selectPoints(searchInfo, polygon) {
     // update texts selection
     if(hasText) {
         var textOptions = {};
-        if(els) {
-            applyTextoption(textOptions, els, scene.selectedOptions[stash.index]);
+        if (els && unels) {
+            if(els) {
+                applyTextoption(textOptions, els, scene.selectedOptions[stash.index]);
+            }
+            if(unels) {
+                applyTextoption(textOptions, unels, scene.unselectedOptions[stash.index]);
+            }
         }
-        if(unels) {
-            applyTextoption(textOptions, unels, scene.unselectedOptions[stash.index]);
+        else {
+            // TODO: reset unselected style properly
         }
 
         scene.glText[stash.index].update(textOptions);
