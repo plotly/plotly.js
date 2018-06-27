@@ -13,7 +13,7 @@ var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var cluster = require('point-cluster');
 var arrayRange = require('array-range');
-var Text = require('gl-text');
+var Text = require('../../../../gl-text/index');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -862,7 +862,7 @@ function selectPoints(searchInfo, polygon) {
     // update texts selection
     if(hasText) {
         var textOptions = {};
-        if (els && unels) {
+        if(els && unels) {
             if(els) {
                 applyTextoption(textOptions, els, scene.selectedOptions[stash.index]);
             }

@@ -193,13 +193,12 @@ function convertTextfont(trace, textfont) {
             var size = sizes.length > 1 ? sizes[i] : sizes[0];
             var markerRadius = size / 2;
             var fontSize = Array.isArray(textOptions.font) ? textOptions.font[i].size : textOptions.font.size;
-            var align = Array.isArray(textOptions.align) ? textOptions.align[i] : textOptions.align;
-            var baseline = Array.isArray(textOptions.baseline) ? textOptions.baseline[i] : textOptions.baseline;
+            var align = Array.isArray(textOptions.align) ? textOptions.align.length > 1 ? textOptions.align[i] : textOptions.align[0] : textOptions.align;
+            var baseline = Array.isArray(textOptions.baseline) ? textOptions.baseline.length > 1 ? textOptions.baseline[i] : textOptions.baseline[0] : textOptions.baseline;
             var hSign = TEXTOFFSETSIGN[align];
             var vSign = TEXTOFFSETSIGN[baseline];
             var xPad = markerRadius ? markerRadius / 0.8 + 1 : 0;
             var yPad = - vSign * xPad - vSign * 0.5;
-
             textOptions.offset.push(
                 [hSign * xPad / fontSize, yPad / fontSize]
             );
