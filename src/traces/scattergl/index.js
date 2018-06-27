@@ -13,7 +13,7 @@ var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var cluster = require('point-cluster');
 var arrayRange = require('array-range');
-var Text = require('gl-text');
+var Text = require('../../../../gl-text/index');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -861,17 +861,21 @@ function selectPoints(searchInfo, polygon) {
 
     // update texts selection
     if(hasText) {
-        var textOptions = {};
+        var textOptions = Lib.extendFlat({}, scene.textOptions[stash.index]);
         if(els && unels) {
             if(els) {
                 applyTextoption(textOptions, els, scene.selectedOptions[stash.index]);
             }
             if(unels) {
                 applyTextoption(textOptions, unels, scene.unselectedOptions[stash.index]);
+                if(!scene.unselectedOptions[stash.index].opacity) {
+                    applyTextoption(textOptions, unels, {opacity: 1});
+                }
             }
         }
         else {
-            // TODO: reset unselected style properly
+            applyTextoption(textOptions, unels, { opacity: 1 });
+            applyTextoption(textOptions, unels, scene.textOptions[stash.index]);
         }
 
         scene.glText[stash.index].update(textOptions);
@@ -883,12 +887,11 @@ function selectPoints(searchInfo, polygon) {
             var el = els[i];
             if(selOptions.textfont) {
                 if(selOptions.textfont.color) {
-                    if(!textOptions.color) textOptions.color = [];
+                    textOptions.color = toArray(textOptions.color);
                     textOptions.color[el] = selOptions.textfont.color;
                 }
                 if(selOptions.textfont.family || selOptions.textfont.size) {
-                    if(!textOptions.font) textOptions.font = [];
-                    textOptions.font[el] = {};
+                    textOptions.font = toArray(textOptions.font, {});
                     if(selOptions.textfont.family) {
                         textOptions.font[el].family = selOptions.textfont.family;
                     }
@@ -898,10 +901,21 @@ function selectPoints(searchInfo, polygon) {
                 }
             }
             if('opacity' in selOptions) {
-                if(!textOptions.opacity) textOptions.opacity = [];
+                textOptions.opacity = toArray(textOptions.opacity, 1);
                 textOptions.opacity[el] = selOptions.opacity;
             }
         }
+    }
+
+    function toArray(value, dflt) {
+        if(!Array.isArray(value)) {
+            var v = value;
+            value = Array(stash.count);
+            for(var j = 0; j < stash.count; j++) {
+                value[j] = v !== null ? v : dflt;
+            }
+        }
+        return value;
     }
 
     scene.selectBatch[stash.index] = els;
