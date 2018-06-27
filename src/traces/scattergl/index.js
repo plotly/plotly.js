@@ -13,7 +13,7 @@ var createLine = require('regl-line2d');
 var createError = require('regl-error2d');
 var cluster = require('point-cluster');
 var arrayRange = require('array-range');
-var Text = require('../../../../gl-text/index');
+var Text = require('gl-text');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
