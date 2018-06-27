@@ -474,9 +474,13 @@ describe('config argument', function() {
 
     describe('plotlyServerUrl:', function() {
         var gd;
+        var form;
 
         beforeEach(function() {
             gd = createGraphDiv();
+            spyOn(HTMLFormElement.prototype, 'submit').and.callFake(function() {
+                form = this;
+            });
         });
 
         afterEach(destroyGraphDiv);
@@ -485,6 +489,10 @@ describe('config argument', function() {
             Plotly.plot(gd, [], {})
             .then(function() {
                 expect(gd._context.plotlyServerUrl).toBe('https://plot.ly');
+
+                Plotly.Plots.sendDataToCloud(gd);
+                expect(form.action).toBe('https://plot.ly/external');
+                expect(form.method).toBe('post');
             })
             .catch(failTest)
             .then(done);
@@ -494,9 +502,31 @@ describe('config argument', function() {
             Plotly.plot(gd, [], {}, {plotlyServerUrl: 'dummy'})
             .then(function() {
                 expect(gd._context.plotlyServerUrl).toBe('dummy');
+
+                Plotly.Plots.sendDataToCloud(gd);
+                expect(form.action).toContain('/dummy/external');
+                expect(form.method).toBe('post');
             })
             .catch(failTest)
             .then(done);
+        });
+
+        it('has lesser priotiy then window env', function(done) {
+            window.PLOTLYENV = {BASE_URL: 'yo'};
+
+            Plotly.plot(gd, [], {}, {plotlyServerUrl: 'dummy'})
+            .then(function() {
+                expect(gd._context.plotlyServerUrl).toBe('dummy');
+
+                Plotly.Plots.sendDataToCloud(gd);
+                expect(form.action).toContain('/yo/external');
+                expect(form.method).toBe('post');
+            })
+            .catch(failTest)
+            .then(function() {
+                delete window.PLOTLY_ENV;
+                done();
+            });
         });
     });
 });
