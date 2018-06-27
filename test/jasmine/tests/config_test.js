@@ -472,7 +472,7 @@ describe('config argument', function() {
         });
     });
 
-    describe('plotlyServerUrl:', function() {
+    describe('plotlyServerURL:', function() {
         var gd;
         var form;
 
@@ -488,7 +488,7 @@ describe('config argument', function() {
         it('should default to plotly cloud', function(done) {
             Plotly.plot(gd, [], {})
             .then(function() {
-                expect(gd._context.plotlyServerUrl).toBe('https://plot.ly');
+                expect(gd._context.plotlyServerURL).toBe('https://plot.ly');
 
                 Plotly.Plots.sendDataToCloud(gd);
                 expect(form.action).toBe('https://plot.ly/external');
@@ -499,9 +499,9 @@ describe('config argument', function() {
         });
 
         it('can be set to other base urls', function(done) {
-            Plotly.plot(gd, [], {}, {plotlyServerUrl: 'dummy'})
+            Plotly.plot(gd, [], {}, {plotlyServerURL: 'dummy'})
             .then(function() {
-                expect(gd._context.plotlyServerUrl).toBe('dummy');
+                expect(gd._context.plotlyServerURL).toBe('dummy');
 
                 Plotly.Plots.sendDataToCloud(gd);
                 expect(form.action).toContain('/dummy/external');
@@ -514,9 +514,9 @@ describe('config argument', function() {
         it('has lesser priotiy then window env', function(done) {
             window.PLOTLYENV = {BASE_URL: 'yo'};
 
-            Plotly.plot(gd, [], {}, {plotlyServerUrl: 'dummy'})
+            Plotly.plot(gd, [], {}, {plotlyServerURL: 'dummy'})
             .then(function() {
-                expect(gd._context.plotlyServerUrl).toBe('dummy');
+                expect(gd._context.plotlyServerURL).toBe('dummy');
 
                 Plotly.Plots.sendDataToCloud(gd);
                 expect(form.action).toContain('/yo/external');
