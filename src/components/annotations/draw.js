@@ -20,6 +20,8 @@ var Fx = require('../fx');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../dragelement');
+var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
+
 var drawArrowHead = require('./draw_arrow_head');
 
 // Annotations are stored in gd.layout.annotations, an array of objects
@@ -84,16 +86,20 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     var gs = gd._fullLayout._size;
     var edits = gd._context.edits;
 
-    var className;
-    var annbase;
+    var className, containerStr;
 
     if(subplotId) {
         className = 'annotation-' + subplotId;
-        annbase = subplotId + '.annotations[' + index + ']';
+        containerStr = subplotId + '.annotations';
     } else {
         className = 'annotation';
-        annbase = 'annotations[' + index + ']';
+        containerStr = 'annotations';
     }
+
+    var editHelpers = arrayEditor(gd.layout, containerStr, options);
+    var modifyBase = editHelpers.modifyBase;
+    var modifyItem = editHelpers.modifyItem;
+    var getUpdateObj = editHelpers.getUpdateObj;
 
     // remove the existing annotation if there is one
     fullLayout._infolayer
@@ -542,9 +548,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     .call(Color.stroke, 'rgba(0,0,0,0)')
                     .call(Color.fill, 'rgba(0,0,0,0)');
 
-                var update,
-                    annx0,
-                    anny0;
+                var annx0, anny0;
 
                 // dragger for the arrow & head: translates the whole thing
                 // (head/tail/text) all together
@@ -556,12 +560,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
                         annx0 = pos.x;
                         anny0 = pos.y;
-                        update = {};
                         if(xa && xa.autorange) {
-                            update[xa._name + '.autorange'] = true;
+                            modifyBase(xa._name + '.autorange', true);
                         }
                         if(ya && ya.autorange) {
-                            update[ya._name + '.autorange'] = true;
+                            modifyBase(ya._name + '.autorange', true);
                         }
                     },
                     moveFn: function(dx, dy) {
@@ -570,19 +573,19 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                             ycenter = annxy0[1] + dy;
                         annTextGroupInner.call(Drawing.setTranslate, xcenter, ycenter);
 
-                        update[annbase + '.x'] = xa ?
+                        modifyItem('x', xa ?
                             xa.p2r(xa.r2p(options.x) + dx) :
-                            (options.x + (dx / gs.w));
-                        update[annbase + '.y'] = ya ?
+                            (options.x + (dx / gs.w)));
+                        modifyItem('y', ya ?
                             ya.p2r(ya.r2p(options.y) + dy) :
-                            (options.y - (dy / gs.h));
+                            (options.y - (dy / gs.h)));
 
                         if(options.axref === options.xref) {
-                            update[annbase + '.ax'] = xa.p2r(xa.r2p(options.ax) + dx);
+                            modifyItem('ax', xa.p2r(xa.r2p(options.ax) + dx));
                         }
 
                         if(options.ayref === options.yref) {
-                            update[annbase + '.ay'] = ya.p2r(ya.r2p(options.ay) + dy);
+                            modifyItem('ay', ya.p2r(ya.r2p(options.ay) + dy));
                         }
 
                         arrowGroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
@@ -592,7 +595,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         });
                     },
                     doneFn: function() {
-                        Registry.call('relayout', gd, update);
+                        Registry.call('relayout', gd, getUpdateObj());
                         var notesBox = document.querySelector('.js-notes-box-panel');
                         if(notesBox) notesBox.redraw(notesBox.selectedObj);
                     }
@@ -604,8 +607,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
         // user dragging the annotation (text, not arrow)
         if(editTextPosition) {
-            var update,
-                baseTextTransform;
+            var baseTextTransform;
 
             // dragger for the textbox: if there's an arrow, just drag the
             // textbox and tail, leave the head untouched
@@ -614,52 +616,54 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 gd: gd,
                 prepFn: function() {
                     baseTextTransform = annTextGroup.attr('transform');
-                    update = {};
                 },
                 moveFn: function(dx, dy) {
                     var csr = 'pointer';
                     if(options.showarrow) {
                         if(options.axref === options.xref) {
-                            update[annbase + '.ax'] = xa.p2r(xa.r2p(options.ax) + dx);
+                            modifyItem('ax', xa.p2r(xa.r2p(options.ax) + dx));
                         } else {
-                            update[annbase + '.ax'] = options.ax + dx;
+                            modifyItem('ax', options.ax + dx);
                         }
 
                         if(options.ayref === options.yref) {
-                            update[annbase + '.ay'] = ya.p2r(ya.r2p(options.ay) + dy);
+                            modifyItem('ay', ya.p2r(ya.r2p(options.ay) + dy));
                         } else {
-                            update[annbase + '.ay'] = options.ay + dy;
+                            modifyItem('ay', options.ay + dy);
                         }
 
                         drawArrow(dx, dy);
                     }
                     else if(!subplotId) {
+                        var xUpdate, yUpdate;
                         if(xa) {
-                            update[annbase + '.x'] = xa.p2r(xa.r2p(options.x) + dx);
+                            xUpdate = xa.p2r(xa.r2p(options.x) + dx);
 
                         } else {
                             var widthFraction = options._xsize / gs.w,
                                 xLeft = options.x + (options._xshift - options.xshift) / gs.w -
                                     widthFraction / 2;
 
-                            update[annbase + '.x'] = dragElement.align(xLeft + dx / gs.w,
+                            xUpdate = dragElement.align(xLeft + dx / gs.w,
                                 widthFraction, 0, 1, options.xanchor);
                         }
 
                         if(ya) {
-                            update[annbase + '.y'] = ya.p2r(ya.r2p(options.y) + dy);
+                            yUpdate = ya.p2r(ya.r2p(options.y) + dy);
                         } else {
                             var heightFraction = options._ysize / gs.h,
                                 yBottom = options.y - (options._yshift + options.yshift) / gs.h -
                                     heightFraction / 2;
 
-                            update[annbase + '.y'] = dragElement.align(yBottom - dy / gs.h,
+                            yUpdate = dragElement.align(yBottom - dy / gs.h,
                                 heightFraction, 0, 1, options.yanchor);
                         }
+                        modifyItem('x', xUpdate);
+                        modifyItem('y', yUpdate);
                         if(!xa || !ya) {
                             csr = dragElement.getCursor(
-                                xa ? 0.5 : update[annbase + '.x'],
-                                ya ? 0.5 : update[annbase + '.y'],
+                                xa ? 0.5 : xUpdate,
+                                ya ? 0.5 : yUpdate,
                                 options.xanchor, options.yanchor
                             );
                         }
@@ -674,7 +678,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 },
                 doneFn: function() {
                     setCursor(annTextGroupInner);
-                    Registry.call('relayout', gd, update);
+                    Registry.call('relayout', gd, getUpdateObj());
                     var notesBox = document.querySelector('.js-notes-box-panel');
                     if(notesBox) notesBox.redraw(notesBox.selectedObj);
                 }
@@ -689,17 +693,16 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                 options.text = _text;
                 this.call(textLayout);
 
-                var update = {};
-                update[annbase + '.text'] = options.text;
+                modifyItem('text', _text);
 
                 if(xa && xa.autorange) {
-                    update[xa._name + '.autorange'] = true;
+                    modifyBase(xa._name + '.autorange', true);
                 }
                 if(ya && ya.autorange) {
-                    update[ya._name + '.autorange'] = true;
+                    modifyBase(ya._name + '.autorange', true);
                 }
 
-                Registry.call('relayout', gd, update);
+                Registry.call('relayout', gd, getUpdateObj());
             });
     }
     else annText.call(textLayout);

@@ -14,6 +14,7 @@ var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var Color = require('../color');
 var Drawing = require('../drawing');
+var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 
 var dragElement = require('../dragelement');
 var setCursor = require('../../lib/setcursor');
@@ -65,12 +66,11 @@ function drawOne(gd, index) {
         .selectAll('.shapelayer [data-index="' + index + '"]')
         .remove();
 
-    var optionsIn = (gd.layout.shapes || [])[index],
-        options = gd._fullLayout.shapes[index];
+    var options = gd._fullLayout.shapes[index];
 
     // this shape is gone - quit now after deleting it
     // TODO: use d3 idioms instead of deleting and redrawing every time
-    if(!optionsIn || options.visible === false) return;
+    if(!options._input || options.visible === false) return;
 
     if(options.layer !== 'below') {
         drawShape(gd._fullLayout._shapeUpperLayer);
@@ -127,18 +127,20 @@ function setClipPath(shapePath, gd, shapeOptions) {
 }
 
 function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
-    var MINWIDTH = 10,
-        MINHEIGHT = 10;
+    var MINWIDTH = 10;
+    var MINHEIGHT = 10;
 
-    var xPixelSized = shapeOptions.xsizemode === 'pixel',
-        yPixelSized = shapeOptions.ysizemode === 'pixel',
-        isLine = shapeOptions.type === 'line',
-        isPath = shapeOptions.type === 'path';
+    var xPixelSized = shapeOptions.xsizemode === 'pixel';
+    var yPixelSized = shapeOptions.ysizemode === 'pixel';
+    var isLine = shapeOptions.type === 'line';
+    var isPath = shapeOptions.type === 'path';
 
-    var update;
-    var x0, y0, x1, y1, xAnchor, yAnchor, astrX0, astrY0, astrX1, astrY1, astrXAnchor, astrYAnchor;
-    var n0, s0, w0, e0, astrN, astrS, astrW, astrE, optN, optS, optW, optE;
-    var pathIn, astrPath;
+    var editHelpers = arrayEditor(gd.layout, 'shapes', shapeOptions);
+    var modifyItem = editHelpers.modifyItem;
+
+    var x0, y0, x1, y1, xAnchor, yAnchor;
+    var n0, s0, w0, e0, optN, optS, optW, optE;
+    var pathIn;
 
     // setup conversion functions
     var xa = Axes.getFromId(gd, shapeOptions.xref),
@@ -246,54 +248,50 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
 
     function startDrag(evt) {
         // setup update strings and initial values
-        var astr = 'shapes[' + index + ']';
-
         if(xPixelSized) {
             xAnchor = x2p(shapeOptions.xanchor);
-            astrXAnchor = astr + '.xanchor';
         }
         if(yPixelSized) {
             yAnchor = y2p(shapeOptions.yanchor);
-            astrYAnchor = astr + '.yanchor';
         }
 
         if(shapeOptions.type === 'path') {
             pathIn = shapeOptions.path;
-            astrPath = astr + '.path';
         }
         else {
             x0 = xPixelSized ? shapeOptions.x0 : x2p(shapeOptions.x0);
             y0 = yPixelSized ? shapeOptions.y0 : y2p(shapeOptions.y0);
             x1 = xPixelSized ? shapeOptions.x1 : x2p(shapeOptions.x1);
             y1 = yPixelSized ? shapeOptions.y1 : y2p(shapeOptions.y1);
-
-            astrX0 = astr + '.x0';
-            astrY0 = astr + '.y0';
-            astrX1 = astr + '.x1';
-            astrY1 = astr + '.y1';
         }
 
         if(x0 < x1) {
-            w0 = x0; astrW = astr + '.x0'; optW = 'x0';
-            e0 = x1; astrE = astr + '.x1'; optE = 'x1';
+            w0 = x0;
+            optW = 'x0';
+            e0 = x1;
+            optE = 'x1';
         }
         else {
-            w0 = x1; astrW = astr + '.x1'; optW = 'x1';
-            e0 = x0; astrE = astr + '.x0'; optE = 'x0';
+            w0 = x1;
+            optW = 'x1';
+            e0 = x0;
+            optE = 'x0';
         }
 
         // For fixed size shapes take opposing direction of y-axis into account.
         // Hint: For data sized shapes this is done by the y2p function.
         if((!yPixelSized && y0 < y1) || (yPixelSized && y0 > y1)) {
-            n0 = y0; astrN = astr + '.y0'; optN = 'y0';
-            s0 = y1; astrS = astr + '.y1'; optS = 'y1';
+            n0 = y0;
+            optN = 'y0';
+            s0 = y1;
+            optS = 'y1';
         }
         else {
-            n0 = y1; astrN = astr + '.y1'; optN = 'y1';
-            s0 = y0; astrS = astr + '.y0'; optS = 'y0';
+            n0 = y1;
+            optN = 'y1';
+            s0 = y0;
+            optS = 'y0';
         }
-
-        update = {};
 
         // setup dragMode and the corresponding handler
         updateDragMode(evt);
@@ -308,7 +306,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
 
         // Don't rely on clipPath being activated during re-layout
         setClipPath(shapePath, gd, shapeOptions);
-        Registry.call('relayout', gd, update);
+        Registry.call('relayout', gd, editHelpers.getUpdateObj());
     }
 
     function abortDrag() {
@@ -322,35 +320,34 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
                 moveY = noOp;
 
             if(xPixelSized) {
-                update[astrXAnchor] = shapeOptions.xanchor = p2x(xAnchor + dx);
+                modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
             } else {
                 moveX = function moveX(x) { return p2x(x2p(x) + dx); };
                 if(xa && xa.type === 'date') moveX = helpers.encodeDate(moveX);
             }
 
             if(yPixelSized) {
-                update[astrYAnchor] = shapeOptions.yanchor = p2y(yAnchor + dy);
+                modifyItem('yanchor', shapeOptions.yanchor = p2y(yAnchor + dy));
             } else {
                 moveY = function moveY(y) { return p2y(y2p(y) + dy); };
                 if(ya && ya.type === 'date') moveY = helpers.encodeDate(moveY);
             }
 
-            shapeOptions.path = movePath(pathIn, moveX, moveY);
-            update[astrPath] = shapeOptions.path;
+            modifyItem('path', shapeOptions.path = movePath(pathIn, moveX, moveY));
         }
         else {
             if(xPixelSized) {
-                update[astrXAnchor] = shapeOptions.xanchor = p2x(xAnchor + dx);
+                modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
             } else {
-                update[astrX0] = shapeOptions.x0 = p2x(x0 + dx);
-                update[astrX1] = shapeOptions.x1 = p2x(x1 + dx);
+                modifyItem('x0', shapeOptions.x0 = p2x(x0 + dx));
+                modifyItem('x1', shapeOptions.x1 = p2x(x1 + dx));
             }
 
             if(yPixelSized) {
-                update[astrYAnchor] = shapeOptions.yanchor = p2y(yAnchor + dy);
+                modifyItem('yanchor', shapeOptions.yanchor = p2y(yAnchor + dy));
             } else {
-                update[astrY0] = shapeOptions.y0 = p2y(y0 + dy);
-                update[astrY1] = shapeOptions.y1 = p2y(y1 + dy);
+                modifyItem('y0', shapeOptions.y0 = p2y(y0 + dy));
+                modifyItem('y1', shapeOptions.y1 = p2y(y1 + dy));
             }
         }
 
@@ -366,33 +363,32 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
                 moveY = noOp;
 
             if(xPixelSized) {
-                update[astrXAnchor] = shapeOptions.xanchor = p2x(xAnchor + dx);
+                modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
             } else {
                 moveX = function moveX(x) { return p2x(x2p(x) + dx); };
                 if(xa && xa.type === 'date') moveX = helpers.encodeDate(moveX);
             }
 
             if(yPixelSized) {
-                update[astrYAnchor] = shapeOptions.yanchor = p2y(yAnchor + dy);
+                modifyItem('yanchor', shapeOptions.yanchor = p2y(yAnchor + dy));
             } else {
                 moveY = function moveY(y) { return p2y(y2p(y) + dy); };
                 if(ya && ya.type === 'date') moveY = helpers.encodeDate(moveY);
             }
 
-            shapeOptions.path = movePath(pathIn, moveX, moveY);
-            update[astrPath] = shapeOptions.path;
+            modifyItem('path', shapeOptions.path = movePath(pathIn, moveX, moveY));
         }
         else if(isLine) {
             if(dragMode === 'resize-over-start-point') {
                 var newX0 = x0 + dx;
                 var newY0 = yPixelSized ? y0 - dy : y0 + dy;
-                update[astrX0] = shapeOptions.x0 = xPixelSized ? newX0 : p2x(newX0);
-                update[astrY0] = shapeOptions.y0 = yPixelSized ? newY0 : p2y(newY0);
+                modifyItem('x0', shapeOptions.x0 = xPixelSized ? newX0 : p2x(newX0));
+                modifyItem('y0', shapeOptions.y0 = yPixelSized ? newY0 : p2y(newY0));
             } else if(dragMode === 'resize-over-end-point') {
                 var newX1 = x1 + dx;
                 var newY1 = yPixelSized ? y1 - dy : y1 + dy;
-                update[astrX1] = shapeOptions.x1 = xPixelSized ? newX1 : p2x(newX1);
-                update[astrY1] = shapeOptions.y1 = yPixelSized ? newY1 : p2y(newY1);
+                modifyItem('x1', shapeOptions.x1 = xPixelSized ? newX1 : p2x(newX1));
+                modifyItem('y1', shapeOptions.y1 = yPixelSized ? newY1 : p2y(newY1));
             }
         }
         else {
@@ -410,12 +406,12 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer) {
             // opposing direction of the y-axis of fixed size shapes.
             if((!yPixelSized && newS - newN > MINHEIGHT) ||
               (yPixelSized && newN - newS > MINHEIGHT)) {
-                update[astrN] = shapeOptions[optN] = yPixelSized ? newN : p2y(newN);
-                update[astrS] = shapeOptions[optS] = yPixelSized ? newS : p2y(newS);
+                modifyItem(optN, shapeOptions[optN] = yPixelSized ? newN : p2y(newN));
+                modifyItem(optS, shapeOptions[optS] = yPixelSized ? newS : p2y(newS));
             }
             if(newE - newW > MINWIDTH) {
-                update[astrW] = shapeOptions[optW] = xPixelSized ? newW : p2x(newW);
-                update[astrE] = shapeOptions[optE] = xPixelSized ? newE : p2x(newE);
+                modifyItem(optW, shapeOptions[optW] = xPixelSized ? newW : p2x(newW));
+                modifyItem(optE, shapeOptions[optE] = xPixelSized ? newE : p2x(newE));
             }
         }
 

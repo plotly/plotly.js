@@ -61,14 +61,13 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
         }
         else {
             itemOut = templater.newItem(itemIn);
-
-            if(itemOut.visible !== false) {
-                opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
-            }
         }
 
-        itemOut._input = itemIn;
         itemOut._index = i;
+
+        if(itemOut.visible !== false) {
+            opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
+        }
 
         contOut.push(itemOut);
     }
@@ -76,10 +75,8 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
     var defaultItems = templater.defaultItems();
     for(i = 0; i < defaultItems.length; i++) {
         itemOut = defaultItems[i];
-        opts.handleItemDefaults({}, itemOut, parentObjOut, opts, {});
-        // TODO: we don't have an _input here - need special handling for edits,
-        // is that all _input is used for?
         itemOut._index = contOut.length;
+        opts.handleItemDefaults({}, itemOut, parentObjOut, opts, {});
         contOut.push(itemOut);
     }
 

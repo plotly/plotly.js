@@ -164,7 +164,7 @@ exports.arrayTemplater = function(container, name) {
         templateItems = [];
     }
 
-    var usedIndices = {};
+    var usedNames = {};
 
     function newItem(itemIn) {
         // include name and templateitemname in the output object for ALL
@@ -172,11 +172,11 @@ exports.arrayTemplater = function(container, name) {
         // name and templateitemname, if you're using one template to make
         // another template. templateitemname would be the name in the original
         // template, and name is the new "subclassed" item name.
-        var out = {name: itemIn.name};
+        var out = {name: itemIn.name, _input: itemIn};
         var templateItemName = out[TEMPLATEITEMNAME] = itemIn[TEMPLATEITEMNAME];
 
         // no itemname: use the default template
-        if(!templateItemName) {
+        if(!validItemName(templateItemName)) {
             out._template = defaultsTemplate;
             return out;
         }
@@ -189,7 +189,7 @@ exports.arrayTemplater = function(container, name) {
                 // Note: it's OK to use a template item more than once
                 // but using it at least once will stop it from generating
                 // a default item at the end.
-                usedIndices[i] = 1;
+                usedNames[templateItemName] = 1;
                 out._template = templateItem;
                 return out;
             }
@@ -206,11 +206,19 @@ exports.arrayTemplater = function(container, name) {
     function defaultItems() {
         var out = [];
         for(var i = 0; i < templateItems.length; i++) {
-            if(!usedIndices[i]) {
-                var templateItem = templateItems[i];
-                var outi = {_template: templateItem, name: templateItem.name};
+            var templateItem = templateItems[i];
+            var name = templateItem.name;
+            // only allow named items to be added as defaults,
+            // and only allow each name once
+            if(validItemName(name) && !usedNames[name]) {
+                var outi = {
+                    _template: templateItem,
+                    name: name,
+                    _input: {_templateitemname: name}
+                };
                 outi[TEMPLATEITEMNAME] = templateItem[TEMPLATEITEMNAME];
                 out.push(outi);
+                usedNames[name] = 1;
             }
         }
         return out;
@@ -222,6 +230,10 @@ exports.arrayTemplater = function(container, name) {
     };
 };
 
+function validItemName(name) {
+    return name && typeof name === 'string';
+}
+
 function arrayDefaultKey(name) {
     var lastChar = name.length - 1;
     if(name.charAt(lastChar) !== 's') {
@@ -230,3 +242,82 @@ function arrayDefaultKey(name) {
     return name.substr(0, name.length - 1) + 'defaults';
 }
 exports.arrayDefaultKey = arrayDefaultKey;
+
+/**
+ * arrayEditor: helper for editing array items that may have come from
+ *     template defaults (in which case they will not exist in the input yet)
+ *
+ * @param {object} parentIn: the input container (eg gd.layout)
+ * @param {string} containerStr: the attribute string for the container inside
+ *     `parentIn`.
+ * @param {object} itemOut: the _full* item (eg gd._fullLayout.annotations[0])
+ *     that we'll be editing. Assumed to have been created by `arrayTemplater`.
+ *
+ * @returns {object}: {modifyBase, modifyItem, getUpdateObj, applyUpdate}, all functions:
+ *     modifyBase(attr, value): Add an update that's *not* related to the item.
+ *         `attr` is the full attribute string.
+ *     modifyItem(attr, value): Add an update to the item. `attr` is just the
+ *         portion of the attribute string inside the item.
+ *     getUpdateObj(): Get the final constructed update object, to use in
+ *         `restyle` or `relayout`. Also resets the update object in case this
+ *         update was canceled.
+ *     applyUpdate(attr, value): optionally add an update `attr: value`,
+ *         then apply it to `parent` which should be the parent of `containerIn`,
+ *         ie the object to which `containerStr` is the attribute string.
+ */
+exports.arrayEditor = function(parentIn, containerStr, itemOut) {
+    var lengthIn = (Lib.nestedProperty(parentIn, containerStr).get() || []).length;
+    var index = itemOut._index;
+    // Check that we are indeed off the end of this container.
+    // Otherwise a devious user could put a key `_templateitemname` in their
+    // own input and break lots of things.
+    var templateItemName = (index >= lengthIn) && (itemOut._input || {})._templateitemname;
+    if(templateItemName) index = lengthIn;
+    var itemStr = containerStr + '[' + index + ']';
+
+    var update;
+    function resetUpdate() {
+        update = {};
+        if(templateItemName) {
+            update[itemStr] = {};
+            update[itemStr][TEMPLATEITEMNAME] = templateItemName;
+        }
+    }
+    resetUpdate();
+
+    function modifyBase(attr, value) {
+        update[attr] = value;
+    }
+
+    function modifyItem(attr, value) {
+        if(templateItemName) {
+            // we're making a new object: edit that object
+            Lib.nestedProperty(update[itemStr], attr).set(value);
+        }
+        else {
+            // we're editing an existing object: include *just* the edit
+            update[itemStr + '.' + attr] = value;
+        }
+    }
+
+    function getUpdateObj() {
+        var updateOut = update;
+        resetUpdate();
+        return updateOut;
+    }
+
+    function applyUpdate(attr, value) {
+        if(attr) modifyItem(attr, value);
+        var updateToApply = getUpdateObj();
+        for(var key in updateToApply) {
+            Lib.nestedProperty(parentIn, key).set(updateToApply[key]);
+        }
+    }
+
+    return {
+        modifyBase: modifyBase,
+        modifyItem: modifyItem,
+        getUpdateObj: getUpdateObj,
+        applyUpdate: applyUpdate
+    };
+};

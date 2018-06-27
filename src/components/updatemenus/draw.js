@@ -17,6 +17,7 @@ var Drawing = require('../drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var anchorUtils = require('../legend/anchor_utils');
+var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 
 var LINE_SPACING = require('../../constants/alignment').LINE_SPACING;
 
@@ -155,7 +156,11 @@ function isActive(gButton, menuOpts) {
 
 function setActive(gd, menuOpts, buttonOpts, gHeader, gButton, scrollBox, buttonIndex, isSilentUpdate) {
     // update 'active' attribute in menuOpts
-    menuOpts._input.active = menuOpts.active = buttonIndex;
+    menuOpts.active = buttonIndex;
+
+    // due to templating, it's possible this slider doesn't even exist yet
+    arrayEditor(gd.layout, constants.name, menuOpts)
+        .applyUpdate('active', buttonIndex);
 
     if(menuOpts.type === 'buttons') {
         drawButtons(gd, gHeader, null, null, menuOpts);

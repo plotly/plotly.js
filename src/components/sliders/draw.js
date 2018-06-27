@@ -16,6 +16,7 @@ var Drawing = require('../drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var anchorUtils = require('../legend/anchor_utils');
+var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 
 var constants = require('./constants');
 var alignmentConstants = require('../../constants/alignment');
@@ -413,7 +414,11 @@ function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransiti
 
 function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition) {
     var previousActive = sliderOpts.active;
-    sliderOpts._input.active = sliderOpts.active = index;
+    sliderOpts.active = index;
+
+    // due to templating, it's possible this slider doesn't even exist yet
+    arrayEditor(gd.layout, constants.name, sliderOpts)
+        .applyUpdate('active', index);
 
     var step = sliderOpts.steps[sliderOpts.active];
 
