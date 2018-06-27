@@ -470,7 +470,33 @@ describe('config argument', function() {
             var editBox = document.getElementsByClassName('plugin-editable editable')[0];
             expect(editBox).toBeUndefined();
         });
+    });
 
+    describe('plotlyServerUrl:', function() {
+        var gd;
 
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should default to plotly cloud', function(done) {
+            Plotly.plot(gd, [], {})
+            .then(function() {
+                expect(gd._context.plotlyServerUrl).toBe('https://plot.ly');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can be set to other base urls', function(done) {
+            Plotly.plot(gd, [], {}, {plotlyServerUrl: 'dummy'})
+            .then(function() {
+                expect(gd._context.plotlyServerUrl).toBe('dummy');
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 });
