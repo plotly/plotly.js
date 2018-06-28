@@ -27,10 +27,7 @@ var calcColorscales = require('../scatter/colorscale_calc');
 var linkTraces = require('../scatter/link_traces');
 var getTraceColor = require('../scatter/get_trace_color');
 var fillHoverText = require('../scatter/fill_hover_text');
-
-var convertStyle = require('./convert').convertStyle;
-var convertLinePositions = require('./convert').convertLinePositions;
-var convertErrorBarPositions = require('./convert').convertErrorBarPositions;
+var convert = require('./convert');
 
 var BADNUM = require('../../constants/numerical').BADNUM;
 var TOO_MANY_POINTS = require('./constants').TOO_MANY_POINTS;
@@ -138,7 +135,7 @@ function calc(gd, trace) {
 
 // create scene options
 function sceneOptions(gd, subplot, trace, positions, x, y) {
-    var opts = convertStyle(gd, trace);
+    var opts = convert.style(gd, trace);
 
     if(opts.marker) {
         opts.marker.positions = positions;
@@ -147,12 +144,12 @@ function sceneOptions(gd, subplot, trace, positions, x, y) {
     if(opts.line && positions.length > 1) {
         Lib.extendFlat(
             opts.line,
-            convertLinePositions(gd, trace, positions)
+            convert.linePositions(gd, trace, positions)
         );
     }
 
     if(opts.errorX || opts.errorY) {
-        var errors = convertErrorBarPositions(gd, trace, positions, x, y);
+        var errors = convert.errorBarPositions(gd, trace, positions, x, y);
 
         if(opts.errorX) {
             Lib.extendFlat(opts.errorX, errors.x);
@@ -568,10 +565,9 @@ function plot(gd, subplot, cdata) {
             stash.xpx = stash.ypx = null;
         }
 
-        return trace.visible ? {
-            viewport: viewport,
-            range: range
-        } : null;
+        return trace.visible ?
+            {viewport: viewport, range: range} :
+            null;
     });
 
     if(selectMode) {
