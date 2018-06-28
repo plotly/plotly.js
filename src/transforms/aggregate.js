@@ -299,8 +299,6 @@ function getAggregateFunction(opts, conversions) {
             return first;
         case 'last':
             return last;
-        case 'change':
-            return change;
 
         case 'sum':
             // This will produce output in all cases even though it's nonsensical
@@ -350,17 +348,24 @@ function getAggregateFunction(opts, conversions) {
             };
 
         case 'range':
-                return function(array, indices) {
-                    var min = Infinity;
-                    var max = -Infinity;
-                    for(var i = 0; i < indices.length; i++) {
-                        var vi = d2c(array[indices[i]]);
-                        if(vi !== BADNUM) {
-                            min = Math.min(min, vi);
-                            max = Math.max(max, vi);
-                        };
+            return function(array, indices) {
+                var min = Infinity;
+                var max = -Infinity;
+                for(var i = 0; i < indices.length; i++) {
+                    var vi = d2c(array[indices[i]]);
+                    if(vi !== BADNUM) {
+                        min = Math.min(min, vi);
+                        max = Math.max(max, vi);
                     }
-                    return (max === -Infinity || min === Infinity) ? BADNUM : c2d(max - min);
+                }
+                return (max === -Infinity || min === Infinity) ? BADNUM : c2d(max - min);
+            };
+
+        case 'change':
+            return function(array, indices) {
+                var first = d2c(array[indices[0]]);
+                var last = d2c(array[indices[indices.length - 1]]);
+                return (first === BADNUM || last === BADNUM) ? BADNUM : c2d(last - first);
             };
 
         case 'median':
@@ -458,8 +463,4 @@ function first(array, indices) {
 
 function last(array, indices) {
     return array[indices[indices.length - 1]];
-}
-
-function change(array, indices) {
-    return last(array, indices) - first(array, indices);
 }
