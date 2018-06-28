@@ -1396,7 +1396,7 @@ axes.getTickFormat = function(ax) {
             case 'linear': {
                 for(i = 0; i < ax.tickformatstops.length; i++) {
                     stopi = ax.tickformatstops[i];
-                    if(stopi.visible && isProperStop(ax.dtick, stopi.dtickrange, convertToMs)) {
+                    if(stopi.enabled && isProperStop(ax.dtick, stopi.dtickrange, convertToMs)) {
                         tickstop = stopi;
                         break;
                     }
@@ -1406,7 +1406,7 @@ axes.getTickFormat = function(ax) {
             case 'log': {
                 for(i = 0; i < ax.tickformatstops.length; i++) {
                     stopi = ax.tickformatstops[i];
-                    if(stopi.visible && isProperLogStop(ax.dtick, stopi.dtickrange)) {
+                    if(stopi.enabled && isProperLogStop(ax.dtick, stopi.dtickrange)) {
                         tickstop = stopi;
                         break;
                     }

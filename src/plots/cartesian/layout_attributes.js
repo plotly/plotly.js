@@ -512,7 +512,7 @@ module.exports = {
         ].join(' ')
     },
     tickformatstops: templatedArray('tickformatstop', {
-        visible: {
+        enabled: {
             valType: 'boolean',
             role: 'info',
             dflt: true,

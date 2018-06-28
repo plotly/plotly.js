@@ -42,6 +42,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             if(Array.isArray(tickformatStops) && tickformatStops.length) {
                 handleArrayContainerDefaults(containerIn, containerOut, {
                     name: 'tickformatstops',
+                    inclusionAttr: 'enabled',
                     handleItemDefaults: tickformatstopDefaults
                 });
             }
@@ -89,8 +90,8 @@ function tickformatstopDefaults(valueIn, valueOut) {
         return Lib.coerce(valueIn, valueOut, layoutAttributes.tickformatstops, attr, dflt);
     }
 
-    var visible = coerce('visible');
-    if(visible) {
+    var enabled = coerce('enabled');
+    if(enabled) {
         coerce('dtickrange');
         coerce('value');
     }

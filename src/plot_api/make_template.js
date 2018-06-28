@@ -130,6 +130,8 @@ function mergeTemplates(oldTemplate, newTemplate) {
                 mergeTemplates(oldVal, newVal);
             }
             else if(Array.isArray(newVal) && Array.isArray(oldVal)) {
+                // Note: omitted `inclusionAttr` from arrayTemplater here,
+                // it's irrelevant as we only want the resulting `_template`.
                 var templater = Template.arrayTemplater({_template: oldTemplate}, key);
                 for(j = 0; j < newVal.length; j++) {
                     var item = newVal[j];

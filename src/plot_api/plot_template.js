@@ -24,7 +24,8 @@ var templateAttrs = {
             'in addition to any items the figure already has in this array.',
             'You can modify these items in the output figure by making your own',
             'item with `templateitemname` matching this `name`',
-            'alongside your modifications (including `visible: false` to hide it).',
+            'alongside your modifications (including `visible: false` or',
+            '`enabled: false` to hide it).',
             'Has no effect outside of a template.'
         ].join(' ')
     }
@@ -37,8 +38,8 @@ templateAttrs[TEMPLATEITEMNAME] = {
         'Used to refer to a named item in this array in the template. Named',
         'items from the template will be created even without a matching item',
         'in the input figure, but you can modify one by making an item with',
-        '`templateitemname` matching its `name`, alongside your',
-        'modifications (including `visible: false` to hide it).',
+        '`templateitemname` matching its `name`, alongside your modifications',
+        '(including `visible: false` or `enabled: false` to hide it).',
         'If there is no template or no matching item, this item will be',
         'hidden unless you explicitly show it with `visible: true`.'
     ].join(' ')
@@ -148,6 +149,8 @@ exports.newContainer = function(container, name, baseName) {
  * @param {string} name: the name of the array to template (ie 'annotations')
  *     will be used to find default ('annotationdefaults' object) and specific
  *     ('annotations' array) template specs.
+ * @param {string} inclusionAttr: the attribute determining this item's
+ *     inclusion in the output, usually 'visible' or 'enabled'
  *
  * @returns {object}: {newItem, defaultItems}, both functions:
  *     newItem(itemIn): create an output item, bare except for the correct
@@ -156,7 +159,7 @@ exports.newContainer = function(container, name, baseName) {
  *         specific template items that have not already beeen included,
  *         also as bare output items ready for supplyDefaults.
  */
-exports.arrayTemplater = function(container, name) {
+exports.arrayTemplater = function(container, name, inclusionAttr) {
     var template = container._template;
     var defaultsTemplate = template && template[arrayDefaultKey(name)];
     var templateItems = template && template[name];
@@ -199,7 +202,7 @@ exports.arrayTemplater = function(container, name) {
         // to only be modifications it's most likely broken. Hide it unless
         // it's explicitly marked visible - in which case it gets NO template,
         // not even the default.
-        out.visible = itemIn.visible || false;
+        out[inclusionAttr] = itemIn[inclusionAttr] || false;
         return out;
     }
 

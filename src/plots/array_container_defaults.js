@@ -25,6 +25,9 @@ var Template = require('../plot_api/plot_template');
  *  options object:
  *   - name {string}
  *      name of the key linking the container in question
+ *   - inclusionAttr {string}
+ *      name of the item attribute for inclusion/exclusion. Default is 'visible'.
+ *      Since inclusion is true, use eg 'enabled' instead of 'disabled'.
  *   - handleItemDefaults {function}
  *      defaults method to be called on each item in the array container in question
  *
@@ -43,12 +46,13 @@ var Template = require('../plot_api/plot_template');
  */
 module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut, opts) {
     var name = opts.name;
+    var inclusionAttr = opts.inclusionAttr || 'visible';
 
     var previousContOut = parentObjOut[name];
 
     var contIn = Lib.isArrayOrTypedArray(parentObjIn[name]) ? parentObjIn[name] : [];
     var contOut = parentObjOut[name] = [];
-    var templater = Template.arrayTemplater(parentObjOut, name);
+    var templater = Template.arrayTemplater(parentObjOut, name, inclusionAttr);
     var i, itemOut;
 
     for(i = 0; i < contIn.length; i++) {
@@ -57,7 +61,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
 
         if(!Lib.isPlainObject(itemIn)) {
             itemOut = templater.newItem({});
-            itemOut.visible = false;
+            itemOut[inclusionAttr] = false;
         }
         else {
             itemOut = templater.newItem(itemIn);
@@ -65,7 +69,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
 
         itemOut._index = i;
 
-        if(itemOut.visible !== false) {
+        if(itemOut[inclusionAttr] !== false) {
             opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
         }
 
