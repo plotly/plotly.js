@@ -68,7 +68,7 @@ var attrs = exports.attributes = {
         },
         func: {
             valType: 'enumerated',
-            values: ['count', 'sum', 'avg', 'median', 'mode', 'rms', 'stddev', 'min', 'max', 'first', 'last'],
+            values: ['count', 'sum', 'avg', 'median', 'mode', 'rms', 'stddev', 'min', 'max', 'first', 'last', 'change'],
             dflt: 'first',
             role: 'info',
             editType: 'calc',
@@ -86,7 +86,8 @@ var attrs = exports.attributes = {
                 'for example a sum of dates or average of categories.',
                 '*median* will return the average of the two central values if there is',
                 'an even count. *mode* will return the first value to reach the maximum',
-                'count, in case of a tie.'
+                'count, in case of a tie.',
+                '*change* will return the difference between the first and last linked value.'
             ].join(' ')
         },
         funcmode: {
@@ -297,6 +298,8 @@ function getAggregateFunction(opts, conversions) {
             return first;
         case 'last':
             return last;
+        case 'change':
+            return change;
 
         case 'sum':
             // This will produce output in all cases even though it's nonsensical
@@ -440,4 +443,8 @@ function first(array, indices) {
 
 function last(array, indices) {
     return array[indices[indices.length - 1]];
+}
+
+function change(array, indices) {
+    return last(array, indices) - first(array, indices);
 }
