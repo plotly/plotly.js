@@ -484,7 +484,7 @@ plots.supplyDefaults = function(gd, opts) {
 plots.supplyDefaultsUpdateCalc = function(oldCalcdata, newFullData) {
     for(var i = 0; i < newFullData.length; i++) {
         var newTrace = newFullData[i];
-        var cd0 = oldCalcdata && oldCalcdata[i] && !oldCalcdata[i][0];
+        var cd0 = oldCalcdata && oldCalcdata[i] && oldCalcdata[i][0];
         if(cd0 && cd0.trace) {
             var oldTrace = cd0.trace;
             if(oldTrace._hasCalcTransform) {
