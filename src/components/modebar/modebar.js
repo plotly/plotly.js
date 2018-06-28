@@ -155,7 +155,13 @@ proto.createButton = function(config) {
     button.setAttribute('data-toggle', config.toggle || false);
     if(config.toggle) d3.select(button).classed('active', true);
 
-    button.appendChild(this.createIcon(config.icon || Icons.question, config.name));
+    var icon = config.icon;
+    if(typeof icon === 'function') {
+        button.appendChild(icon());
+    }
+    else {
+        button.appendChild(this.createIcon(icon || Icons.question, config.name));
+    }
     button.setAttribute('data-gravity', config.gravity || 'n');
 
     return button;
@@ -169,7 +175,9 @@ proto.createButton = function(config) {
  * @Return {HTMLelement}
  */
 proto.createIcon = function(thisIcon, name) {
-    var iconHeight = thisIcon.ascent - thisIcon.descent,
+    var iconHeight = thisIcon.height !== undefined ?
+            thisIcon.height :
+            thisIcon.ascent - thisIcon.descent,
         svgNS = 'http://www.w3.org/2000/svg',
         icon = document.createElementNS(svgNS, 'svg'),
         path = document.createElementNS(svgNS, 'path');
@@ -178,12 +186,19 @@ proto.createIcon = function(thisIcon, name) {
     icon.setAttribute('width', (thisIcon.width / iconHeight) + 'em');
     icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
 
-    var transform = name === 'toggleSpikelines' ?
-        'matrix(1.5 0 0 -1.5 0 ' + thisIcon.ascent + ')' :
-        'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')';
-
     path.setAttribute('d', thisIcon.path);
-    path.setAttribute('transform', transform);
+
+    if(thisIcon.transform) {
+        path.setAttribute('transform', thisIcon.transform);
+    }
+    else if(thisIcon.ascent) {
+        // Legacy icon transform calculation
+        var transform = name === 'toggleSpikelines' ?
+            'matrix(1.5 0 0 -1.5 0 ' + thisIcon.ascent + ')' :
+            'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')';
+        path.setAttribute('transform', transform);
+    }
+
     icon.appendChild(path);
 
     return icon;
