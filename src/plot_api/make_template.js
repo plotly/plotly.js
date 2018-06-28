@@ -159,7 +159,6 @@ function walkStyleKeys(parent, templateOut, getAttributeInfo, path) {
             continue;
         }
 
-        // TODO: special array handling wrt. defaults, named items
         if(!attr.valType && isPlainObject(child)) {
             walkStyleKeys(child, templateOut, getAttributeInfo, nextPath);
         }
