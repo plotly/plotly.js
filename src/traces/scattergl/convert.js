@@ -35,12 +35,12 @@ function convertStyle(gd, trace) {
     var opts = {
         text: undefined,
         marker: undefined,
+        markerSel: undefined,
+        markerUnsel: undefined,
         line: undefined,
         fill: undefined,
         errorX: undefined,
         errorY: undefined,
-        selected: undefined,
-        unselected: undefined
     };
 
     if(trace.visible !== true) return opts;
@@ -51,14 +51,14 @@ function convertStyle(gd, trace) {
 
     if(subTypes.hasMarkers(trace)) {
         opts.marker = convertMarkerStyle(trace);
-        opts.selected = convertMarkerSelection(trace, trace.selected);
-        opts.unselected = convertMarkerSelection(trace, trace.unselected);
+        opts.markerSel = convertMarkerSelection(trace, trace.selected);
+        opts.markerUnsel = convertMarkerSelection(trace, trace.unselected);
 
         if(!trace.unselected && Array.isArray(trace.marker.opacity)) {
             var mo = trace.marker.opacity;
-            opts.unselected.opacity = new Array(mo.length);
+            opts.markerUnsel.opacity = new Array(mo.length);
             for(i = 0; i < mo.length; i++) {
-                opts.unselected.opacity[i] = DESELECTDIM * mo[i];
+                opts.markerUnsel.opacity[i] = DESELECTDIM * mo[i];
             }
         }
     }
@@ -360,13 +360,30 @@ function convertMarkerSelection(trace, target) {
     if(target.marker && target.marker.symbol) {
         optsOut = convertMarkerStyle(Lib.extendFlat({}, optsIn, target.marker));
     } else if(target.marker) {
-        if(target.marker.size) optsOut.sizes = target.marker.size / 2;
+        if(target.marker.size) optsOut.size = target.marker.size / 2;
         if(target.marker.color) optsOut.colors = target.marker.color;
         if(target.marker.opacity !== undefined) optsOut.opacity = target.marker.opacity;
     }
 
+    return optsOut;
+}
+
+function convertTextSelection(trace, target) {
+    var optsOut = {};
+
+    if(!target) return optsOut;
+
     if(target.textfont) {
-        optsOut.textfont = convertTextfont(trace, target.textfont);
+        var optsIn = {
+            opacity: 1,
+            text: trace.text,
+            textposition: trace.textposition,
+            textfont: trace.textfont
+        };
+        if(target.textfont) {
+            Lib.extendFlat({}, optsIn.textfont, target.textfont);
+        }
+        optsOut = convertTextStyle(optsIn);
     }
 
     return optsOut;

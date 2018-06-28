@@ -115,8 +115,8 @@ function calc(gd, trace) {
     scene.errorYOptions.push(opts.errorY);
     scene.fillOptions.push(opts.fill);
     scene.markerOptions.push(opts.marker);
-    scene.selectedOptions.push(opts.selected);
-    scene.unselectedOptions.push(opts.unselected);
+    scene.markerSelectedOptions.push(opts.markerSel);
+    scene.markerUnselectedOptions.push(opts.markerUnsel);
     scene.textOptions.push(opts.text);
     scene.count++;
 
@@ -177,8 +177,8 @@ function sceneUpdate(gd, subplot) {
         lineOptions: [],
         fillOptions: [],
         markerOptions: [],
-        selectedOptions: [],
-        unselectedOptions: [],
+        markerSelectedOptions: [],
+        markerUnselectedOptions: [],
         errorXOptions: [],
         errorYOptions: [],
         textOptions: []
@@ -318,8 +318,8 @@ function sceneUpdate(gd, subplot) {
             scene.lineOptions = null;
             scene.fillOptions = null;
             scene.markerOptions = null;
-            scene.selectedOptions = null;
-            scene.unselectedOptions = null;
+            scene.markerSelectedOptions = null;
+            scene.markerUnselectedOptions = null;
             scene.errorXOptions = null;
             scene.errorYOptions = null;
             scene.selectBatch = null;
@@ -579,14 +579,14 @@ function plot(gd, subplot, cdata) {
 
         if(scene.scatter2d && scene.selectBatch && scene.selectBatch.length) {
             // update only traces with selection
-            scene.scatter2d.update(scene.unselectedOptions.map(function(opts, i) {
+            scene.scatter2d.update(scene.markerUnselectedOptions.map(function(opts, i) {
                 return scene.selectBatch[i] ? opts : null;
             }));
         }
 
         if(scene.select2d) {
             scene.select2d.update(scene.markerOptions);
-            scene.select2d.update(scene.selectedOptions);
+            scene.select2d.update(scene.markerSelectedOptions);
         }
     }
 
@@ -851,7 +851,7 @@ function selectPoints(searchInfo, polygon) {
         }
         // we should turn scatter2d into unselected once we have any points selected
         if(hasMarkers) {
-            scene.scatter2d.update(scene.unselectedOptions);
+            scene.scatter2d.update(scene.markerUnselectedOptions);
         }
     }
 
