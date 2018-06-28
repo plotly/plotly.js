@@ -19,6 +19,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var prepareRegl = require('../../lib/prepare_regl');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
+var Color = require('../../components/color');
 
 var subTypes = require('../scatter/subtypes');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
@@ -31,6 +32,7 @@ var convert = require('./convert');
 
 var BADNUM = require('../../constants/numerical').BADNUM;
 var TOO_MANY_POINTS = require('./constants').TOO_MANY_POINTS;
+var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
 function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
@@ -118,6 +120,8 @@ function calc(gd, trace) {
     scene.markerSelectedOptions.push(opts.markerSel);
     scene.markerUnselectedOptions.push(opts.markerUnsel);
     scene.textOptions.push(opts.text);
+    scene.textSelectedOptions.push(opts.textSel);
+    scene.textUnselectedOptions.push(opts.textUnsel);
     scene.count++;
 
     // stash scene ref
@@ -159,6 +163,24 @@ function sceneOptions(gd, subplot, trace, positions, x, y) {
         }
     }
 
+    if(opts.text) {
+        Lib.extendFlat(
+            opts.text,
+            {positions: positions},
+            convert.textPosition(gd, trace, opts.text, opts.marker)
+        );
+        Lib.extendFlat(
+            opts.textSel,
+            {positions: positions},
+            convert.textPosition(gd, trace, opts.text, opts.markerSel)
+        );
+        Lib.extendFlat(
+            opts.textUnsel,
+            {positions: positions},
+            convert.textPosition(gd, trace, opts.text, opts.markerUnsel)
+        );
+    }
+
     return opts;
 }
 
@@ -181,7 +203,9 @@ function sceneUpdate(gd, subplot) {
         markerUnselectedOptions: [],
         errorXOptions: [],
         errorYOptions: [],
-        textOptions: []
+        textOptions: [],
+        textSelectedOptions: [],
+        textUnselectedOptions: []
     };
 
     var initOpts = {
@@ -314,7 +338,6 @@ function sceneUpdate(gd, subplot) {
                 });
             }
 
-            scene.textOptions = null;
             scene.lineOptions = null;
             scene.fillOptions = null;
             scene.markerOptions = null;
@@ -322,6 +345,10 @@ function sceneUpdate(gd, subplot) {
             scene.markerUnselectedOptions = null;
             scene.errorXOptions = null;
             scene.errorYOptions = null;
+            scene.textOptions = null;
+            scene.textSelectedOptions = null;
+            scene.textUnselectedOptions = null;
+
             scene.selectBatch = null;
             scene.unselectBatch = null;
 
@@ -855,63 +882,29 @@ function selectPoints(searchInfo, polygon) {
         }
     }
 
-    // update texts selection
+    // update text options
     if(hasText) {
-        var textOptions = Lib.extendFlat({}, scene.textOptions[stash.index]);
+        var baseOpts = scene.textOptions[stash.index];
+        var selOpts = scene.textSelectedOptions[stash.index] || {};
+        var unselOpts = scene.textUnselectedOptions[stash.index] || {};
+        var opts = Lib.extendFlat({}, baseOpts);
+
         if(els && unels) {
-            if(els) {
-                applyTextoption(textOptions, els, scene.selectedOptions[stash.index]);
+            var stc = selOpts.color;
+            var utc = unselOpts.color;
+            var base = baseOpts.color;
+            opts.color = new Array(stash.count);
+
+            for(i = 0; i < els.length; i++) {
+                opts.color[els[i]] = stc || base;
             }
-            if(unels) {
-                applyTextoption(textOptions, unels, scene.unselectedOptions[stash.index]);
-                if(!scene.unselectedOptions[stash.index].opacity) {
-                    applyTextoption(textOptions, unels, {opacity: 1});
-                }
+            for(i = 0; i < unels.length; i++) {
+                opts.color[unels[i]] = utc ? utc :
+                    stc ? base : Color.addOpacity(base, DESELECTDIM);
             }
-        }
-        else {
-            applyTextoption(textOptions, unels, { opacity: 1 });
-            applyTextoption(textOptions, unels, scene.textOptions[stash.index]);
         }
 
-        scene.glText[stash.index].update(textOptions);
-    }
-
-    function applyTextoption(textOptions, els, selOptions) {
-        if(!selOptions) return;
-        for(var i = 0; i < els.length; i++) {
-            var el = els[i];
-            if(selOptions.textfont) {
-                if(selOptions.textfont.color) {
-                    textOptions.color = toArray(textOptions.color);
-                    textOptions.color[el] = selOptions.textfont.color;
-                }
-                if(selOptions.textfont.family || selOptions.textfont.size) {
-                    textOptions.font = toArray(textOptions.font, {});
-                    if(selOptions.textfont.family) {
-                        textOptions.font[el].family = selOptions.textfont.family;
-                    }
-                    if(selOptions.textfont.size) {
-                        textOptions.font[el].size = selOptions.textfont.size;
-                    }
-                }
-            }
-            if('opacity' in selOptions) {
-                textOptions.opacity = toArray(textOptions.opacity, 1);
-                textOptions.opacity[el] = selOptions.opacity;
-            }
-        }
-    }
-
-    function toArray(value, dflt) {
-        if(!Array.isArray(value)) {
-            var v = value;
-            value = Array(stash.count);
-            for(var j = 0; j < stash.count; j++) {
-                value[j] = v !== null ? v : dflt;
-            }
-        }
-        return value;
+        scene.glText[stash.index].update(opts);
     }
 
     scene.selectBatch[stash.index] = els;
