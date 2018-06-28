@@ -66,7 +66,7 @@ function drawOne(gd, index) {
         .selectAll('.shapelayer [data-index="' + index + '"]')
         .remove();
 
-    var options = gd._fullLayout.shapes[index];
+    var options = gd._fullLayout.shapes[index] || {};
 
     // this shape is gone - quit now after deleting it
     // TODO: use d3 idioms instead of deleting and redrawing every time

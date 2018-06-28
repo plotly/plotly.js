@@ -94,7 +94,7 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('minorticklen');
 }
 
-function stepDefaults(valueIn, valueOut, sliderOut, opts, itemOpts) {
+function stepDefaults(valueIn, valueOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(valueIn, valueOut, stepAttrs, attr, dflt);
     }
@@ -108,7 +108,7 @@ function stepDefaults(valueIn, valueOut, sliderOut, opts, itemOpts) {
     if(visible) {
         coerce('method');
         coerce('args');
-        var label = coerce('label', 'step-' + itemOpts.index);
+        var label = coerce('label', 'step-' + valueOut._index);
         coerce('value', label);
         coerce('execute');
     }

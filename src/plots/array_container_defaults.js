@@ -36,8 +36,6 @@ var Template = require('../plot_api/plot_template');
  *          - itemOut {object} item in full layout
  *          - parentObj {object} (as in closure)
  *          - opts {object} (as in closure)
- *          - itemOpts {object}
- *              - index {integer}
  * N.B.
  *
  *  - opts is passed to handleItemDefaults so it can also store
@@ -57,7 +55,6 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
 
     for(i = 0; i < contIn.length; i++) {
         var itemIn = contIn[i];
-        var itemOpts = {};
 
         if(!Lib.isPlainObject(itemIn)) {
             itemOut = templater.newItem({});
@@ -70,7 +67,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
         itemOut._index = i;
 
         if(itemOut[inclusionAttr] !== false) {
-            opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts, itemOpts);
+            opts.handleItemDefaults(itemIn, itemOut, parentObjOut, opts);
         }
 
         contOut.push(itemOut);
