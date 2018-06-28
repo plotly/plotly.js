@@ -191,7 +191,7 @@ proto.createIcon = function(thisIcon, name) {
     if(thisIcon.transform) {
         path.setAttribute('transform', thisIcon.transform);
     }
-    else if(thisIcon.ascent) {
+    else if(thisIcon.ascent !== undefined) {
         // Legacy icon transform calculation
         var transform = name === 'toggleSpikelines' ?
             'matrix(1.5 0 0 -1.5 0 ' + thisIcon.ascent + ')' :
