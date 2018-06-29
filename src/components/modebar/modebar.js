@@ -10,6 +10,7 @@
 'use strict';
 
 var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Icons = require('../../../build/ploticon');
@@ -175,8 +176,8 @@ proto.createButton = function(config) {
  * @Return {HTMLelement}
  */
 proto.createIcon = function(thisIcon, name) {
-    var iconHeight = thisIcon.height !== undefined ?
-            thisIcon.height :
+    var iconHeight = isNumeric(thisIcon.height) ?
+            Number(thisIcon.height) :
             thisIcon.ascent - thisIcon.descent,
         svgNS = 'http://www.w3.org/2000/svg',
         icon = document.createElementNS(svgNS, 'svg'),
