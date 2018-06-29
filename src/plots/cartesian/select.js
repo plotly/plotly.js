@@ -14,6 +14,7 @@ var polybool = require('polybooljs');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
 var Fx = require('../../components/fx');
+var Axes = require('./axes');
 
 var difference = require('../../lib/set_operations').difference;
 var polygon = require('../../lib/polygon');
@@ -285,8 +286,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     searchInfo,
                     i;
 
-                // TODO What's the point of maintaining traceSelections array? Not used anywhere. Delete it.
-                var thisSelection, traceSelections = [], traceSelection;
+                var thisSelection, traceSelection;
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
                     module = searchInfo._module;
@@ -301,8 +301,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
                     traceSelection = module.toggleSelected(searchInfo, false, pointsNoLongerSelected);
                     pointsInPolygon[i] = pointsInCurrentPolygon;
-
-                    traceSelections.push(traceSelection);
 
                     thisSelection = fillSelectionItem(traceSelection, searchInfo);
 
@@ -376,47 +374,103 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // Missing features
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
-// TODO do we have to consider multiple traces?
-// TODO Only execute selectOnClick functionality if the trace of hoverData supports it
+// TODO Only execute selectOnClick functionality if the trace of hoverData implements selection interface
+// TODO Why not use forEach to iterate arrays?
 function selectOnClick(gd, numClicks, evt, outlines) {
-    var calcData = gd.calcdata[0];
-
     var hoverData = gd._hoverdata;
+    var isHoverDataSet = hoverData && Array.isArray(hoverData);
+    var retainSelection = shouldRetainSelection(evt);
+    var searchTraces;
+    var searchInfo;
+    var trace;
+    var multiPtsSelected;
+    var clickedPts;
+    var clickedPt;
+    var shouldSelect;
+    var traceSelection;
+    var allSelectionItems;
+    var eventData;
+    var i;
+    var j;
 
-    var isHoverDataSet = hoverData && hoverData.length > 0;
-    var isSingleClick = numClicks === 1;
-    var selectPreconditionsMet = isHoverDataSet && isSingleClick;
+    if(isHoverDataSet && numClicks === 1) {
+        allSelectionItems = [];
 
-    if(selectPreconditionsMet) {
-        var trace = calcData[0].trace,
-            hoverDatum = hoverData[0],
-            module = trace._module,
-            searchInfo = _createSearchInfo(module, calcData, hoverDatum.xaxis, hoverDatum.yaxis);
+        searchTraces = determineSearchTraces(gd);
+        multiPtsSelected = areMultiplePointsSelected(searchTraces);
 
-        // Execute selection by delegating to respective module
-        var retainSelection = shouldRetainSelection(evt),
-            pointSelected = isPointSelected(trace, hoverDatum.pointNumber),
-            onePointSelectedOnly = isOnePointSelectedOnly(trace);
+        // TODO Use forEach
+        for(i = 0; i < searchTraces.length; i++) {
+            searchInfo = searchTraces[i];
+            trace = searchInfo.cd[0].trace;
 
-        if(!retainSelection) module.toggleSelected(searchInfo, false);
+            // Start new selection if needed
+            if(!retainSelection) {
+                searchInfo._module.toggleSelected(searchInfo, false);
+                if(outlines) outlines.remove();
+            }
 
-        var shouldDeselectPoint = (pointSelected && onePointSelectedOnly) ||
-          (pointSelected && !onePointSelectedOnly && retainSelection);
-        var newTraceSelection =
-          module.toggleSelected(searchInfo, !shouldDeselectPoint, [hoverDatum.pointNumber]);
+            // Determine clicked points,
+            // call selection modification functions of the trace's module
+            // and collect the resulting set of selected points
+            clickedPts = clickedPtsFor(searchInfo, hoverData);
+            if(clickedPts.length > 0) {
+                // TODO Use forEach
+                for(j = 0; j < clickedPts.length; j++) {
+                    clickedPt = clickedPts[j];
+                    var ptSelected = isPointSelected(trace, clickedPt);
+                    shouldSelect = !ptSelected || (ptSelected && multiPtsSelected && !retainSelection);
+                    traceSelection = searchInfo._module.toggleSelected(searchInfo, shouldSelect, [clickedPt]);
+                }
+            } else {
+                // If current trace has no pts clicked, we at least call toggleSelected
+                // with an empty array to obtain currently selected points for this trace.
+                traceSelection = searchInfo._module.toggleSelected(searchInfo, true, []);
+            }
 
-        // When not retaining or when the sole selected
-        // point gets deselected, remove outlines
-        if(outlines &&
-          (!retainSelection || (pointSelected && onePointSelectedOnly))) {
-            outlines.remove();
+            // Merge this trace's selection with the other ones
+            // to prepare the grand selection state update
+            allSelectionItems = allSelectionItems.concat(fillSelectionItem(traceSelection, searchInfo));
         }
 
-        // Update selection state
-        var selection = fillSelectionItem(newTraceSelection, searchInfo);
-        var eventData = {points: selection};
+        // Grand selection state update needs to be done once for the entire plot
+        eventData = {points: allSelectionItems};
+        updateSelectedState(gd, searchTraces, eventData);
 
-        updateSelectedState(gd, [searchInfo], eventData);
+        // Remove outlines if no point is selected anymore
+        if(allSelectionItems.length === 0 && outlines) outlines.remove();
+    }
+
+    function clickedPtsFor(searchInfo, hoverData) {
+        var clickedPts = [];
+
+        for(var i = 0; i < hoverData.length; i++) {
+            var hoverDatum = hoverData[i];
+            if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
+                clickedPts.push(hoverDatum.pointNumber);
+            }
+        }
+
+        return clickedPts;
+    }
+
+    // TODO DRY
+    function determineSearchTraces(gd) {
+        var searchTraces = [];
+
+        for(var i = 0; i < gd.calcdata.length; i++) {
+            var calcDataItem = gd.calcdata[i];
+            var trace = calcDataItem[0].trace;
+            // TODO Check if trace is selectable
+            var module = trace._module;
+            var searchInfo = _createSearchInfo(module, calcDataItem,
+              Axes.getFromTrace(gd, trace, 'x'),
+              Axes.getFromTrace(gd, trace, 'y'));
+
+            searchTraces.push(searchInfo);
+        }
+
+        return searchTraces;
     }
 }
 
@@ -429,9 +483,18 @@ function isPointSelected(trace, pointNumber) {
     return trace.selectedpoints.indexOf(pointNumber) > -1;
 }
 
-function isOnePointSelectedOnly(trace) {
-    if(!trace.selectedpoints && !Array.isArray(trace.selectedpoints)) return false;
-    return trace.selectedpoints.length === 1;
+function areMultiplePointsSelected(searchTraces) {
+    var ptsSelected = 0;
+    for(var i = 0; i < searchTraces.length; i++) {
+        var trace = searchTraces[i].cd[0].trace;
+        if(Array.isArray(trace.selectedpoints)) {
+            ptsSelected += trace.selectedpoints.length;
+        }
+
+        if(ptsSelected > 1) return true;
+    }
+
+    return ptsSelected > 1;
 }
 
 // TODO Consider using in other places around here as well

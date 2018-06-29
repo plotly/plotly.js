@@ -76,10 +76,12 @@ exports.getPointsIn = function(searchInfo, polygon) {
  * Update the selected flag of the given points. Omitting which points
  * to modify will update all points of the passed trace.
  *
- * @param searchInfo - info about trace to modify
+ * @param {object} searchInfo - info about trace to modify
  * @param {boolean} selected - are these points to be selected (true) or deselected (false)
  * @param {integer[]} pointIds - the points to modify - omit to modify all points
  *        in the trace. i.e. clearSelection is toggleSelection(searchInfo, false).
+ *
+ * @return {object[]} an array of all points selected after modification
  */
 exports.toggleSelected = function(searchInfo, selected, pointIds) {
     if(!Array.isArray(pointIds)) {
