@@ -68,7 +68,7 @@ var attrs = exports.attributes = {
         },
         func: {
             valType: 'enumerated',
-            values: ['count', 'sum', 'avg', 'median', 'mode', 'rms', 'stddev', 'min', 'max', 'first', 'last'],
+            values: ['count', 'sum', 'avg', 'median', 'mode', 'rms', 'stddev', 'min', 'max', 'first', 'last', 'change', 'range'],
             dflt: 'first',
             role: 'info',
             editType: 'calc',
@@ -86,7 +86,9 @@ var attrs = exports.attributes = {
                 'for example a sum of dates or average of categories.',
                 '*median* will return the average of the two central values if there is',
                 'an even count. *mode* will return the first value to reach the maximum',
-                'count, in case of a tie.'
+                'count, in case of a tie.',
+                '*change* will return the difference between the first and last linked values.',
+                '*range* will return the difference between the min and max linked values.'
             ].join(' ')
         },
         funcmode: {
@@ -343,6 +345,27 @@ function getAggregateFunction(opts, conversions) {
                     if(vi !== BADNUM) out = Math.max(out, vi);
                 }
                 return (out === -Infinity) ? BADNUM : c2d(out);
+            };
+
+        case 'range':
+            return function(array, indices) {
+                var min = Infinity;
+                var max = -Infinity;
+                for(var i = 0; i < indices.length; i++) {
+                    var vi = d2c(array[indices[i]]);
+                    if(vi !== BADNUM) {
+                        min = Math.min(min, vi);
+                        max = Math.max(max, vi);
+                    }
+                }
+                return (max === -Infinity || min === Infinity) ? BADNUM : c2d(max - min);
+            };
+
+        case 'change':
+            return function(array, indices) {
+                var first = d2c(array[indices[0]]);
+                var last = d2c(array[indices[indices.length - 1]]);
+                return (first === BADNUM || last === BADNUM) ? BADNUM : c2d(last - first);
             };
 
         case 'median':
