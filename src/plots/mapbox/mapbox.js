@@ -193,6 +193,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     map.on('zoomstart', unhover);
 
     map.on('dblclick', function() {
+        gd.emit('plotly_doubleclick', null);
+
         var viewInitial = self.viewInitial;
 
         map.setCenter(convertCenter(viewInitial.center));
@@ -207,7 +209,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         opts._input.bearing = opts.bearing = viewNow.bearing;
         opts._input.pitch = opts.pitch = viewNow.pitch;
 
-        gd.emit('plotly_doubleclick', null);
+        emitRelayoutFromView(viewNow);
     });
 
     function emitRelayoutFromView(view) {
