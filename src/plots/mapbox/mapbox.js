@@ -152,9 +152,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         // duplicate 'plotly_relayout' events.
 
         if(eventData.originalEvent || wheeling) {
-            var update = {};
-            update[self.id] = Lib.extendFlat({}, view);
-            gd.emit('plotly_relayout', update);
+            emitRelayoutFromView(view);
         }
         wheeling = false;
     });
@@ -211,6 +209,15 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
         gd.emit('plotly_doubleclick', null);
     });
+
+    function emitRelayoutFromView(view) {
+        var id = self.id;
+        var evtData = {};
+        for(var k in view) {
+            evtData[id + '.' + k] = view[k];
+        }
+        gd.emit('plotly_relayout', evtData);
+    }
 
     // define clear select on map creation, to keep one ref per map,
     // so that map.on / map.off in updateFx works as expected

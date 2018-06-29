@@ -896,10 +896,9 @@ describe('@noCI, mapbox plots', function() {
             expect(layout.zoom).toBeCloseTo(zoom);
 
             if(opts && opts.withUpdateData) {
-                var mapboxUpdate = updateData.mapbox;
 
-                expect([mapboxUpdate.center.lon, mapboxUpdate.center.lat]).toBeCloseToArray(center);
-                expect(mapboxUpdate.zoom).toBeCloseTo(zoom);
+            expect([evtData['mapbox.center'].lon, evtData['mapbox.center'].lat]).toBeCloseToArray(center);
+            expect(evtData['mapbox.zoom']).toBeCloseTo(zoom);
             }
         }
 
