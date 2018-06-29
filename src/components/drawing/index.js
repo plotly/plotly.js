@@ -373,9 +373,14 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         lineColor = markerLine.outliercolor;
         fillColor = marker.outliercolor;
     } else {
-        lineWidth = (d.mlw + 1 || markerLine.width + 1 ||
+        var markerLineWidth = (markerLine || {}).width;
+
+        lineWidth = (
+            d.mlw + 1 ||
+            markerLineWidth + 1 ||
             // TODO: we need the latter for legends... can we get rid of it?
-            (d.trace ? d.trace.marker.line.width : 0) + 1) - 1;
+            (d.trace ? (d.trace.marker.line || {}).width : 0) + 1
+        ) - 1 || 0;
 
         if('mlc' in d) lineColor = d.mlcc = fns.lineScale(d.mlc);
         // weird case: array wasn't long enough to apply to every point
@@ -591,16 +596,19 @@ drawing.selectedPointStyle = function(s, trace) {
 };
 
 drawing.tryColorscale = function(marker, prefix) {
-    var cont = prefix ? Lib.nestedProperty(marker, prefix).get() : marker,
-        scl = cont.colorscale,
-        colorArray = cont.color;
+    var cont = prefix ? Lib.nestedProperty(marker, prefix).get() : marker;
 
-    if(scl && Lib.isArrayOrTypedArray(colorArray)) {
-        return Colorscale.makeColorScaleFunc(
-            Colorscale.extractScale(scl, cont.cmin, cont.cmax)
-        );
+    if(cont) {
+        var scl = cont.colorscale;
+        var colorArray = cont.color;
+
+        if(scl && Lib.isArrayOrTypedArray(colorArray)) {
+            return Colorscale.makeColorScaleFunc(
+                Colorscale.extractScale(scl, cont.cmin, cont.cmax)
+            );
+        }
     }
-    else return Lib.identity;
+    return Lib.identity;
 };
 
 var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1};
