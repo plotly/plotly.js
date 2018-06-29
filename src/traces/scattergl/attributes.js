@@ -37,7 +37,6 @@ var attrs = module.exports = overrideAll({
             'this trace\'s (x,y) coordinates.'
         ].join(' ')
     }),
-
     hovertext: scatterAttrs.hovertext,
 
     textposition: scatterAttrs.textposition,

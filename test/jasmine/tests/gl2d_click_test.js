@@ -318,6 +318,33 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
+    it('should show correct label for scattergl when hovertext is set', function(done) {
+        var _mock = Lib.extendDeep({}, mock1);
+        _mock.data[0].hovertext = 'text';
+        _mock.data[0].hovertext = 'HoVeRtExT';
+        _mock.layout.hovermode = 'closest';
+
+        var run = makeRunner([634, 321], {
+            x: 15.772,
+            y: 0.387,
+            label: ['(15.772, 0.387)\nHoVeRtExT', null],
+            curveNumber: 0,
+            pointNumber: 33,
+            bgcolor: 'rgb(0, 0, 238)',
+            bordercolor: 'rgb(255, 255, 255)',
+            fontSize: 13,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(255, 255, 255)'
+        }, {
+            msg: 'scattergl with hovertext'
+        });
+
+        Plotly.plot(gd, _mock)
+        .then(run)
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should output correct event data for pointcloud', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
