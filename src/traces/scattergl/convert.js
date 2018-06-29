@@ -322,10 +322,10 @@ function convertTextSelection(trace, target) {
             opacity: 1,
             text: trace.text,
             textposition: trace.textposition,
-            textfont: trace.textfont
+            textfont: Lib.extendFlat({}, trace.textfont)
         };
         if(target.textfont) {
-            Lib.extendFlat({}, optsIn.textfont, target.textfont);
+            Lib.extendFlat(optsIn.textfont, target.textfont);
         }
         optsOut = convertTextStyle(optsIn);
     }

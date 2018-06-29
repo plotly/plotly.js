@@ -615,6 +615,14 @@ function plot(gd, subplot, cdata) {
             scene.select2d.update(scene.markerOptions);
             scene.select2d.update(scene.markerSelectedOptions);
         }
+
+        if(scene.glText) {
+            cdata.forEach(function(cdscatter) {
+                if(cdscatter && cdscatter[0] && cdscatter[0].trace) {
+                    styleTextSelection(cdscatter);
+                }
+            });
+        }
     }
 
     // upload viewport/range data to GPU
@@ -882,37 +890,16 @@ function selectPoints(searchInfo, polygon) {
         }
     }
 
-    // update text options
-    if(hasText) {
-        var baseOpts = scene.textOptions[stash.index];
-        var selOpts = scene.textSelectedOptions[stash.index] || {};
-        var unselOpts = scene.textUnselectedOptions[stash.index] || {};
-        var opts = Lib.extendFlat({}, baseOpts);
-
-        if(els && unels) {
-            var stc = selOpts.color;
-            var utc = unselOpts.color;
-            var base = baseOpts.color;
-            opts.color = new Array(stash.count);
-
-            for(i = 0; i < els.length; i++) {
-                opts.color[els[i]] = stc || base;
-            }
-            for(i = 0; i < unels.length; i++) {
-                opts.color[unels[i]] = utc ? utc :
-                    stc ? base : Color.addOpacity(base, DESELECTDIM);
-            }
-        }
-
-        scene.glText[stash.index].update(opts);
-    }
-
     scene.selectBatch[stash.index] = els;
     scene.unselectBatch[stash.index] = unels;
 
+    // update text options
+    if(hasText) {
+        styleTextSelection(cd);
+    }
+
     return selection;
 }
-
 
 function style(gd, cds) {
     if(!cds) return;
@@ -929,6 +916,36 @@ function style(gd, cds) {
     scene.draw();
 }
 
+function styleTextSelection(cd) {
+    var cd0 = cd[0];
+    var stash = cd0.t;
+    var scene = stash._scene;
+    var index = stash.index;
+    var els = scene.selectBatch[index];
+    var unels = scene.unselectBatch[index];
+    var baseOpts = scene.textOptions[index];
+    var selOpts = scene.textSelectedOptions[index] || {};
+    var unselOpts = scene.textUnselectedOptions[index] || {};
+    var opts = Lib.extendFlat({}, baseOpts);
+    var i;
+
+    if(els && unels) {
+        var stc = selOpts.color;
+        var utc = unselOpts.color;
+        var base = baseOpts.color;
+        opts.color = new Array(stash.count);
+
+        for(i = 0; i < els.length; i++) {
+            opts.color[els[i]] = stc || base;
+        }
+        for(i = 0; i < unels.length; i++) {
+            opts.color[unels[i]] = utc ? utc :
+                stc ? base : Color.addOpacity(base, DESELECTDIM);
+        }
+    }
+
+    scene.glText[index].update(opts);
+}
 
 module.exports = {
     moduleType: 'trace',
