@@ -738,4 +738,61 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should work on gl text charts', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_basic.json'));
+        fig.layout.dragmode = 'select';
+        fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
+        fig.layout.height = 500;
+        fig.layout.width = 500;
+        gd = createGraphDiv();
+
+        function _assertGlTextOpts(msg, exp) {
+            var scene = gd.calcdata[0][0].t._scene;
+            scene.glText.forEach(function(opts, i) {
+                expect(Array.from(opts.color))
+                    .toBeCloseToArray(exp.rgba[i], 2, 'item ' + i + ' - ' + msg);
+            });
+        }
+
+        Plotly.plot(gd, fig)
+        .then(delay(100))
+        .then(function() {
+            _assertGlTextOpts('base', {
+                rgba: [
+                    [68, 68, 68, 255],
+                    [68, 68, 68, 255],
+                    [68, 68, 68, 255]
+                ]
+            });
+        })
+        .then(function() { return select([[100, 100], [250, 250]]); })
+        .then(function(eventData) {
+            assertEventData(eventData, {
+                points: [{x: 1, y: 2}]
+            });
+            _assertGlTextOpts('after selection', {
+                rgba: [
+                    [
+                        68, 68, 68, 51,
+                        68, 68, 68, 51,
+                        68, 68, 68, 51,
+                    ],
+                    [
+                        68, 68, 68, 51,
+                        // this is the selected pt!
+                        68, 68, 68, 255,
+                        68, 68, 68, 51
+                    ],
+                    [
+                        68, 68, 68, 51,
+                        68, 68, 68, 51,
+                        68, 68, 68, 51
+                    ]
+                ]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
