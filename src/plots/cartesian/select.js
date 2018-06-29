@@ -14,7 +14,6 @@ var polybool = require('polybooljs');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
 var Fx = require('../../components/fx');
-var Axes = require('./axes');
 
 var difference = require('../../lib/set_operations').difference;
 var polygon = require('../../lib/polygon');
@@ -47,14 +46,12 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var path0 = 'M' + x0 + ',' + y0;
     var pw = dragOptions.xaxes[0]._length;
     var ph = dragOptions.yaxes[0]._length;
-    var xAxisIds = dragOptions.xaxes.map(getAxId);
-    var yAxisIds = dragOptions.yaxes.map(getAxId);
     var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
     var subtract = e.altKey;
 
     var filterPoly, testPoly, mergedPolygons, currentPolygon;
     var pointsInPolygon = [];
-    var i, cd, trace, searchInfo, eventData;
+    var i, searchInfo, eventData;
 
     var selectingOnSameSubplot = (
         fullLayout._lastSelectedSubplot &&
@@ -109,52 +106,10 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         .attr('d', 'M0,0Z');
 
 
-    // find the traces to search for selection points
-    var searchTraces = [];
     var throttleID = fullLayout._uid + constants.SELECTID;
 
-    for(i = 0; i < gd.calcdata.length; i++) {
-        cd = gd.calcdata[i];
-        trace = cd[0].trace;
-
-        if(trace.visible !== true || !trace._module ||
-          !trace._module.toggleSelected || !trace._module.getPointsIn) continue;
-
-        if(dragOptions.subplot) {
-            if(
-                trace.subplot === dragOptions.subplot ||
-                trace.geo === dragOptions.subplot
-            ) {
-                searchTraces.push({
-                    _module: trace._module,
-                    cd: cd,
-                    xaxis: dragOptions.xaxes[0],
-                    yaxis: dragOptions.yaxes[0]
-                });
-            }
-        } else if(
-            trace.type === 'splom' &&
-            // FIXME: make sure we don't have more than single axis for splom
-            trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
-        ) {
-            searchTraces.push({
-                _module: trace._module,
-                cd: cd,
-                xaxis: dragOptions.xaxes[0],
-                yaxis: dragOptions.yaxes[0]
-            });
-        } else {
-            if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
-            if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
-
-            searchTraces.push({
-                _module: trace._module,
-                cd: cd,
-                xaxis: getFromId(gd, trace.xaxis),
-                yaxis: getFromId(gd, trace.yaxis)
-            });
-        }
-    }
+    // find the traces to search for selection points
+    var searchTraces = determineSearchTraces(gd, dragOptions.xaxes, dragOptions.yaxes);
 
     function axValue(ax) {
         var index = (ax._id.charAt(0) === 'y') ? 1 : 0;
@@ -340,7 +295,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             }
             else {
                 // TODO What to do with the code below because we now have behavior for a single click
-                selectOnClick(gd, numClicks, evt, outlines);
+                selectOnClick(gd, numClicks, evt, dragOptions.xaxes, dragOptions.yaxes, outlines);
 
                 // TODO: remove in v2 - this was probably never intended to work as it does,
                 // but in case anyone depends on it we don't want to break it now.
@@ -376,7 +331,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // TODO handle clearing selection when no point is clicked (based on hoverData)
 // TODO Only execute selectOnClick functionality if the trace of hoverData implements selection interface
 // TODO Why not use forEach to iterate arrays?
-function selectOnClick(gd, numClicks, evt, outlines) {
+function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
     var hoverData = gd._hoverdata;
     var isHoverDataSet = hoverData && Array.isArray(hoverData);
     var retainSelection = shouldRetainSelection(evt);
@@ -396,7 +351,7 @@ function selectOnClick(gd, numClicks, evt, outlines) {
     if(isHoverDataSet && numClicks === 1) {
         allSelectionItems = [];
 
-        searchTraces = determineSearchTraces(gd);
+        searchTraces = determineSearchTraces(gd, xAxes, yAxes);
         multiPtsSelected = areMultiplePointsSelected(searchTraces);
 
         // TODO Use forEach
@@ -453,25 +408,62 @@ function selectOnClick(gd, numClicks, evt, outlines) {
 
         return clickedPts;
     }
+}
 
-    // TODO DRY
-    function determineSearchTraces(gd) {
-        var searchTraces = [];
+function determineSearchTraces(gd, xAxes, yAxes) {
+    var searchTraces = [];
+    var xAxisIds = xAxes.map(getAxId);
+    var yAxisIds = yAxes.map(getAxId);
+    var cd;
+    var trace;
+    var i;
 
-        for(var i = 0; i < gd.calcdata.length; i++) {
-            var calcDataItem = gd.calcdata[i];
-            var trace = calcDataItem[0].trace;
-            // TODO Check if trace is selectable
-            var module = trace._module;
-            var searchInfo = _createSearchInfo(module, calcDataItem,
-              Axes.getFromTrace(gd, trace, 'x'),
-              Axes.getFromTrace(gd, trace, 'y'));
+    for(i = 0; i < gd.calcdata.length; i++) {
+        cd = gd.calcdata[i];
+        trace = cd[0].trace;
 
-            searchTraces.push(searchInfo);
+        if(trace.visible !== true || !trace._module ||
+          !trace._module.toggleSelected || !trace._module.getPointsIn) continue;
+
+        // TODO is dragOptions.subplot is ever set? If not, delete.
+        // if(dragOptions.subplot) {
+        //     if(
+        //       trace.subplot === dragOptions.subplot ||
+        //       trace.geo === dragOptions.subplot
+        //     ) {
+        //         searchTraces.push({
+        //             _module: trace._module,
+        //             cd: cd,
+        //             xaxis: xAxes[0],
+        //             yaxis: yAxes[0]
+        //         });
+        //     }
+        // } else if(
+        if(
+          trace.type === 'splom' &&
+          // FIXME: make sure we don't have more than single axis for splom
+          trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
+        ) {
+            searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
+        } else {
+            if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
+            if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
+
+            searchTraces.push(createSearchInfo(trace._module, cd,
+              getFromId(gd, trace.xaxis), getFromId(gd, trace.yaxis)));
         }
-
-        return searchTraces;
     }
+
+    return searchTraces;
+}
+
+function createSearchInfo(module, calcData, xaxis, yaxis) {
+    return {
+        _module: module,
+        cd: calcData,
+        xaxis: xaxis,
+        yaxis: yaxis
+    };
 }
 
 function shouldRetainSelection(evt) {
@@ -495,16 +487,6 @@ function areMultiplePointsSelected(searchTraces) {
     }
 
     return ptsSelected > 1;
-}
-
-// TODO Consider using in other places around here as well
-function _createSearchInfo(module, calcData, xaxis, yaxis) {
-    return {
-        _module: module,
-        cd: calcData,
-        xaxis: xaxis,
-        yaxis: yaxis
-    };
 }
 
 /**
