@@ -273,15 +273,18 @@ function sceneUpdate(gd, subplot) {
                     // traces in no-selection mode
                     scene.scatter2d.draw(i);
                 }
-                if(scene.glText[i] && scene.textOptions[i]) {
-                    scene.glText[i].render();
-                }
             }
 
             // draw traces in selection mode
             if(scene.scatter2d && scene.select2d && scene.selectBatch) {
                 scene.select2d.draw(scene.selectBatch);
                 scene.scatter2d.draw(scene.unselectBatch);
+            }
+
+            for(i = 0; i < scene.count; i++) {
+                if(scene.glText[i] && scene.textOptions[i]) {
+                    scene.glText[i].render();
+                }
             }
 
             scene.dirty = false;
@@ -301,24 +304,13 @@ function sceneUpdate(gd, subplot) {
                 (height - vpSize.t) - (1 - yaxis.domain[1]) * vpSize.h
             ];
 
-            var gl, regl;
-
             if(scene.select2d) {
-                regl = scene.select2d.regl;
-                gl = regl._gl;
-                gl.enable(gl.SCISSOR_TEST);
-                gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
-                gl.clearColor(0, 0, 0, 0);
-                gl.clear(gl.COLOR_BUFFER_BIT);
+                clearViewport(scene.select2d, vp);
             }
-
             if(scene.scatter2d) {
-                regl = scene.scatter2d.regl;
-                gl = regl._gl;
-                gl.enable(gl.SCISSOR_TEST);
-                gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
-                gl.clearColor(0, 0, 0, 0);
-                gl.clear(gl.COLOR_BUFFER_BIT);
+                clearViewport(scene.scatter2d, vp);
+            } else if(scene.glText) {
+                clearViewport(scene.glText[0], vp);
             }
         };
 
@@ -361,6 +353,13 @@ function sceneUpdate(gd, subplot) {
     return scene;
 }
 
+function clearViewport(comp, vp) {
+    var gl = comp.regl._gl;
+    gl.enable(gl.SCISSOR_TEST);
+    gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
+    gl.clearColor(0, 0, 0, 0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+}
 
 function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
