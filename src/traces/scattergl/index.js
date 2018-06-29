@@ -242,7 +242,7 @@ function sceneUpdate(gd, subplot) {
             if(scene.error2d) scene.error2d.update(opts.concat(opts));
             if(scene.select2d) scene.select2d.update(opts);
             if(scene.glText) {
-                for(i = 0; i < scene.glText.length; i++) {
+                for(i = 0; i < scene.count; i++) {
                     scene.glText[i].update(opts[i]);
                 }
             }
@@ -273,18 +273,15 @@ function sceneUpdate(gd, subplot) {
                     // traces in no-selection mode
                     scene.scatter2d.draw(i);
                 }
+                if(scene.glText[i] && scene.textOptions[i]) {
+                    scene.glText[i].render();
+                }
             }
 
             // draw traces in selection mode
             if(scene.scatter2d && scene.select2d && scene.selectBatch) {
                 scene.select2d.draw(scene.selectBatch);
                 scene.scatter2d.draw(scene.unselectBatch);
-            }
-
-            if(scene.glText.length) {
-                scene.glText.forEach(function(text) {
-                    text.render();
-                });
             }
 
             scene.dirty = false;
@@ -333,9 +330,7 @@ function sceneUpdate(gd, subplot) {
             if(scene.line2d) scene.line2d.destroy();
             if(scene.select2d) scene.select2d.destroy();
             if(scene.glText) {
-                scene.glText.forEach(function(text) {
-                    text.destroy();
-                });
+                scene.glText.forEach(function(text) { text.destroy(); });
             }
 
             scene.lineOptions = null;
@@ -409,15 +404,15 @@ function plot(gd, subplot, cdata) {
             scene.fill2d = createLine(regl);
         }
         if(scene.glText === true) {
-            scene.glText = [];
-            for(i = 0; i < scene.textOptions.length; i++) {
+            scene.glText = new Array(scene.count);
+            for(i = 0; i < scene.count; i++) {
                 scene.glText[i] = new Text(regl);
             }
         }
 
         // update main marker options
         if(scene.glText) {
-            for(i = 0; i < scene.textOptions.length; i++) {
+            for(i = 0; i < scene.count; i++) {
                 scene.glText[i].update(scene.textOptions[i]);
             }
         }
