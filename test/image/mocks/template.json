@@ -13,7 +13,7 @@
         "yaxis2": {"anchor": "x2", "title": "y2"},
         "annotations": [
             {"text": "Hi!", "x": 0, "y": 3.5},
-            {"templateitemname": "watermark", "font": {"size": 120}},
+            {"templateitemname": "watermark", "font": {"size": 120}, "name": "new watermark"},
             {"templateitemname": "watermark", "font": {"size": 110}},
             {"templateitemname": "watermark", "font": {"size": 100}},
             {"templateitemname": "nope", "text": "Buh-bye"}

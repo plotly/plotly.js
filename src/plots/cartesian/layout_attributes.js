@@ -61,6 +61,11 @@ module.exports = {
         dflt: '-',
         role: 'info',
         editType: 'calc',
+        // we forget when an axis has been autotyped, just writing the auto
+        // value back to the input - so it doesn't make sense to template this.
+        // TODO: should we prohibit this in `coerce` as well, or honor it if
+        // someone enters it explicitly?
+        _noTemplating: true,
         description: [
             'Sets the axis type.',
             'By default, plotly attempts to determined the axis type',

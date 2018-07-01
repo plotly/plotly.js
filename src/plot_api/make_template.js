@@ -12,8 +12,10 @@
 var Lib = require('../lib');
 var isPlainObject = Lib.isPlainObject;
 var PlotSchema = require('./plot_schema');
+var Plots = require('../plots/plots');
 var plotAttributes = require('../plots/attributes');
 var Template = require('./plot_template');
+var dfltConfig = require('./plot_config');
 
 /**
  * Plotly.makeTemplate: create a template off an existing figure to reuse
@@ -29,8 +31,13 @@ var Template = require('./plot_template');
  *     `layout.template` in another figure.
  */
 module.exports = function makeTemplate(figure) {
+    figure = Lib.extendDeep({_context: dfltConfig}, figure);
+    Plots.supplyDefaults(figure);
     var data = figure.data || [];
     var layout = figure.layout || {};
+    // copy over a few items to help follow the schema
+    layout._basePlotModules = figure._fullLayout._basePlotModules;
+    layout._modules = figure._fullLayout._modules;
 
     var template = {
         data: {},
@@ -75,6 +82,7 @@ module.exports = function makeTemplate(figure) {
      * since valid options can be context-dependent. It could be solved with
      * a *list* of values, but that would be huge complexity for little gain.
      */
+    delete template.layout.template;
     var oldTemplate = layout.template;
     if(isPlainObject(oldTemplate)) {
         var oldLayoutTemplate = oldTemplate.layout;
@@ -93,9 +101,9 @@ module.exports = function makeTemplate(figure) {
                     typeLen = typeTemplates.length;
                     oldTypeLen = oldTypeTemplates.length;
                     for(i = 0; i < typeLen; i++) {
-                        mergeTemplates(oldTypeTemplates[i % typeLen], typeTemplates[i]);
+                        mergeTemplates(oldTypeTemplates[i % oldTypeLen], typeTemplates[i]);
                     }
-                    for(; i < oldTypeLen; i++) {
+                    for(i = typeLen; i < oldTypeLen; i++) {
                         typeTemplates.push(Lib.extendDeep({}, oldTypeTemplates[i]));
                     }
                 }
@@ -121,38 +129,72 @@ function mergeTemplates(oldTemplate, newTemplate) {
     var oldKeys = Object.keys(oldTemplate).sort();
     var i, j;
 
+    function mergeOne(oldVal, newVal, key) {
+        if(isPlainObject(newVal) && isPlainObject(oldVal)) {
+            mergeTemplates(oldVal, newVal);
+        }
+        else if(Array.isArray(newVal) && Array.isArray(oldVal)) {
+            // Note: omitted `inclusionAttr` from arrayTemplater here,
+            // it's irrelevant as we only want the resulting `_template`.
+            var templater = Template.arrayTemplater({_template: oldTemplate}, key);
+            for(j = 0; j < newVal.length; j++) {
+                var item = newVal[j];
+                var oldItem = templater.newItem(item)._template;
+                if(oldItem) mergeTemplates(oldItem, item);
+            }
+            var defaultItems = templater.defaultItems();
+            for(j = 0; j < defaultItems.length; j++) newVal.push(defaultItems[j]._template);
+
+            // templateitemname only applies to receiving plots
+            for(j = 0; j < newVal.length; j++) delete newVal[j].templateitemname;
+        }
+    }
+
     for(i = 0; i < oldKeys.length; i++) {
         var key = oldKeys[i];
         var oldVal = oldTemplate[key];
         if(key in newTemplate) {
-            var newVal = newTemplate[key];
-            if(isPlainObject(newVal) && isPlainObject(oldVal)) {
-                mergeTemplates(oldVal, newVal);
-            }
-            else if(Array.isArray(newVal) && Array.isArray(oldVal)) {
-                // Note: omitted `inclusionAttr` from arrayTemplater here,
-                // it's irrelevant as we only want the resulting `_template`.
-                var templater = Template.arrayTemplater({_template: oldTemplate}, key);
-                for(j = 0; j < newVal.length; j++) {
-                    var item = newVal[j];
-                    var oldItem = templater.newItem(item)._template;
-                    if(oldItem) mergeTemplates(oldItem, item);
-                }
-                var defaultItems = templater.defaultItems();
-                for(j = 0; j < defaultItems.length; j++) newVal.push(defaultItems[j]);
-            }
+            mergeOne(oldVal, newTemplate[key], key);
         }
         else newTemplate[key] = oldVal;
+
+        // if this is a base key from the old template (eg xaxis), look for
+        // extended keys (eg xaxis2) in the new template to merge into
+        if(getBaseKey(key) === key) {
+            for(var key2 in newTemplate) {
+                var baseKey2 = getBaseKey(key2);
+                if(key2 !== baseKey2 && baseKey2 === key && !(key2 in oldTemplate)) {
+                    mergeOne(oldVal, newTemplate[key2], key);
+                }
+            }
+        }
     }
 }
 
-function walkStyleKeys(parent, templateOut, getAttributeInfo, path) {
+function getBaseKey(key) {
+    return key.replace(/[0-9]+$/, '');
+}
+
+function walkStyleKeys(parent, templateOut, getAttributeInfo, path, basePath) {
+    var pathAttr = basePath && getAttributeInfo(basePath);
     for(var key in parent) {
         var child = parent[key];
         var nextPath = getNextPath(parent, key, path);
-        var attr = getAttributeInfo(nextPath);
+        var nextBasePath = getNextPath(parent, key, basePath);
+        var attr = getAttributeInfo(nextBasePath);
+        if(!attr) {
+            var baseKey = getBaseKey(key);
+            if(baseKey !== key) {
+                nextBasePath = getNextPath(parent, baseKey, basePath);
+                attr = getAttributeInfo(nextBasePath);
+            }
+        }
 
-        if(!attr ||
+        // we'll get an attr if path starts with a valid part, then has an
+        // invalid ending. Make sure we got all the way to the end.
+        if(pathAttr && (pathAttr === attr)) continue;
+
+        if(!attr || attr._noTemplating ||
             attr.valType === 'data_array' ||
             (attr.arrayOk && Array.isArray(child))
         ) {
@@ -160,29 +202,47 @@ function walkStyleKeys(parent, templateOut, getAttributeInfo, path) {
         }
 
         if(!attr.valType && isPlainObject(child)) {
-            walkStyleKeys(child, templateOut, getAttributeInfo, nextPath);
+            walkStyleKeys(child, templateOut, getAttributeInfo, nextPath, nextBasePath);
         }
         else if(attr._isLinkedToArray && Array.isArray(child)) {
             var dfltDone = false;
             var namedIndex = 0;
+            var usedNames = {};
             for(var i = 0; i < child.length; i++) {
                 var item = child[i];
                 if(isPlainObject(item)) {
-                    if(item.name) {
-                        walkStyleKeys(item, templateOut, getAttributeInfo,
-                            getNextPath(child, namedIndex, nextPath));
-                        namedIndex++;
+                    var name = item.name;
+                    if(name) {
+                        if(!usedNames[name]) {
+                            // named array items: allow all attributes except data arrays
+                            walkStyleKeys(item, templateOut, getAttributeInfo,
+                                getNextPath(child, namedIndex, nextPath),
+                                getNextPath(child, namedIndex, nextBasePath));
+                            namedIndex++;
+                            usedNames[name] = 1;
+                        }
                     }
                     else if(!dfltDone) {
                         var dfltKey = Template.arrayDefaultKey(key);
-                        walkStyleKeys(item, templateOut, getAttributeInfo,
-                            getNextPath(parent, dfltKey, path));
+                        var dfltPath = getNextPath(parent, dfltKey, path);
+
+                        // getAttributeInfo will fail if we try to use dfltKey directly.
+                        // Instead put this item into the next array element, then
+                        // pull it out and move it to dfltKey.
+                        var pathInArray = getNextPath(child, namedIndex, nextPath);
+                        walkStyleKeys(item, templateOut, getAttributeInfo, pathInArray,
+                            getNextPath(child, namedIndex, nextBasePath));
+                        var itemPropInArray = Lib.nestedProperty(templateOut, pathInArray);
+                        var dfltProp = Lib.nestedProperty(templateOut, dfltPath);
+                        dfltProp.set(itemPropInArray.get());
+                        itemPropInArray.set(null);
+
                         dfltDone = true;
                     }
                 }
             }
         }
-        else if(attr.role === 'style') {
+        else {
             var templateProp = Lib.nestedProperty(templateOut, nextPath);
             templateProp.set(child);
         }
