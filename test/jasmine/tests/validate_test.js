@@ -531,4 +531,12 @@ describe('Plotly.validate', function() {
 
         expect(out).toBeUndefined();
     });
+
+    it('should accept attributes that really end in a number', function() {
+        // and not try to strip that number off!
+        // eg x0, x1 in shapes
+        var shapeMock = require('@mocks/shapes.json');
+        var out = Plotly.validate(shapeMock.data, shapeMock.layout);
+        expect(out).toBeUndefined();
+    });
 });

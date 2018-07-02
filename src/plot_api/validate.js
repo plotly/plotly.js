@@ -38,7 +38,7 @@ var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
  *  - {string} msg
  *      error message (shown in console in logger config argument is enable)
  */
-module.exports = function valiate(data, layout) {
+module.exports = function validate(data, layout) {
     var schema = PlotSchema.get();
     var errorList = [];
     var gd = {_context: Lib.extendFlat({}, dfltConfig)};
@@ -397,6 +397,8 @@ function isInSchema(schema, key) {
 }
 
 function getNestedSchema(schema, key) {
+    if(key in schema) return schema[key];
+
     var parts = splitKey(key);
 
     return schema[parts.keyMinusId];
