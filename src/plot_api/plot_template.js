@@ -203,6 +203,8 @@ exports.arrayTemplater = function(container, name, inclusionAttr) {
         // it's explicitly marked visible - in which case it gets NO template,
         // not even the default.
         out[inclusionAttr] = itemIn[inclusionAttr] || false;
+        // special falsy value we can look for in validateTemplate
+        out._template = false;
         return out;
     }
 

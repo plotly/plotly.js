@@ -235,3 +235,106 @@ describe('template interactions', function() {
         .then(done);
     });
 });
+
+describe('validateTemplate', function() {
+
+    function checkValidate(mock, expected, countToCheck) {
+        var template = mock.layout.template;
+        var mockNoTemplate = Lib.extendDeep({}, mock);
+        delete mockNoTemplate.layout.template;
+
+        var out1 = Plotly.validateTemplate(mock);
+        var out2 = Plotly.validateTemplate(mockNoTemplate, template);
+        expect(out2).toEqual(out1);
+        if(expected) {
+            expect(countToCheck ? out1.slice(0, countToCheck) : out1)
+                .toEqual(expected);
+        }
+        else {
+            expect(out1).toBeUndefined();
+        }
+    }
+
+    var cleanMock = Lib.extendDeep({}, templateMock);
+    cleanMock.layout.annotations.pop();
+    cleanMock.data.pop();
+    cleanMock.data.splice(1, 1);
+    cleanMock.layout.template.data.bar.pop();
+
+    it('returns undefined when the template matches precisely', function() {
+        checkValidate(cleanMock);
+    });
+
+    it('catches all classes of regular issue', function() {
+        var messyMock = Lib.extendDeep({}, templateMock);
+        messyMock.data.push({type: 'box', x0: 1, y: [1, 2, 3]});
+        messyMock.layout.template.layout.geo = {projection: {type: 'orthographic'}};
+        messyMock.layout.template.layout.xaxis3 = {nticks: 50};
+        messyMock.layout.template.data.violin = [{fillcolor: '#000'}];
+
+        checkValidate(messyMock, [{
+            code: 'unused',
+            path: 'layout.geo',
+            msg: 'The template item at layout.geo was not used in constructing the plot.'
+        }, {
+            code: 'unused',
+            path: 'layout.xaxis3',
+            msg: 'The template item at layout.xaxis3 was not used in constructing the plot.'
+        }, {
+            code: 'missing',
+            index: 5,
+            traceType: 'box',
+            msg: 'There are no templates for trace 5, of type box.'
+        }, {
+            code: 'reused',
+            traceType: 'scatter',
+            templateCount: 2,
+            dataCount: 4,
+            msg: 'Some of the templates of type scatter were used more than once.' +
+                ' The template has 2 traces, the data has 4 of this type.'
+        }, {
+            code: 'unused',
+            traceType: 'bar',
+            templateCount: 2,
+            dataCount: 1,
+            msg: 'Some of the templates of type bar were not used.' +
+                ' The template has 2 traces, the data only has 1 of this type.'
+        }, {
+            code: 'unused',
+            traceType: 'violin',
+            templateCount: 1,
+            dataCount: 0,
+            msg: 'The template has 1 traces of type violin' +
+                ' but there are none in the data.'
+        }, {
+            code: 'missing',
+            path: 'layout.annotations[4]',
+            templateitemname: 'nope',
+            msg: 'There are no templates for item layout.annotations[4] with name nope'
+        }]);
+    });
+
+    it('catches missing template.data', function() {
+        var noDataMock = Lib.extendDeep({}, cleanMock);
+        delete noDataMock.layout.template.data;
+
+        checkValidate(noDataMock, [{
+            code: 'data',
+            msg: 'The template has no key data.'
+        }],
+        // check only the first error - we don't care about the specifics
+        // uncovered after we already know there's no template.data
+        1);
+    });
+
+    it('catches missing template.data', function() {
+        var noLayoutMock = Lib.extendDeep({}, cleanMock);
+        delete noLayoutMock.layout.template.layout;
+
+        checkValidate(noLayoutMock, [{
+            code: 'layout',
+            msg: 'The template has no key layout.'
+        }], 1);
+    });
+
+});

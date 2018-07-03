@@ -30,7 +30,7 @@ var dfltConfig = require('./plot_config');
  * @returns {object} template: the extracted template - can then be used as
  *     `layout.template` in another figure.
  */
-module.exports = function makeTemplate(figure) {
+exports.makeTemplate = function(figure) {
     figure = Lib.extendDeep({_context: dfltConfig}, figure);
     Plots.supplyDefaults(figure);
     var data = figure.data || [];
@@ -268,4 +268,188 @@ function getNextPath(parent, key, path) {
     else nextPath = path + '.' + key;
 
     return nextPath;
+}
+
+/**
+ * validateTemplate: Test for consistency between the given figure and
+ * a template, either already included in the figure or given separately.
+ * Note that not every issue we identify here is necessarily a problem,
+ * it depends on what you're using the template for.
+ *
+ * @param {object|DOM element} figure: the plot, with {data, layout} members,
+ *     to test the template against
+ * @param {Optional(object)} template: the template, with its own {data, layout},
+ *     to test. If omitted, we will look for a template already attached as the
+ *     plot's `layout.template` attribute.
+ *
+ * @returns {array} array of error objects each containing:
+ *  - {string} code
+ *      error code ('missing', 'unused', 'reused', 'noLayout', 'noData')
+ *  - {string} msg
+ *      a full readable description of the issue.
+ */
+exports.validateTemplate = function(figureIn, template) {
+    var figure = Lib.extendDeep({}, {
+        _context: dfltConfig,
+        data: figureIn.data,
+        layout: figureIn.layout
+    });
+    var layout = figure.layout || {};
+    if(!isPlainObject(template)) template = layout.template || {};
+    var layoutTemplate = template.layout;
+    var dataTemplate = template.data;
+    var errorList = [];
+
+    figure.layout = layout;
+    figure.layout.template = template;
+    Plots.supplyDefaults(figure);
+
+    var fullLayout = figure._fullLayout;
+    var fullData = figure._fullData;
+
+    if(!isPlainObject(layoutTemplate)) {
+        errorList.push({code: 'layout'});
+    }
+    else {
+        // TODO: any need to look deeper than the first level of layout?
+        // I don't think so, that gets all the subplot types which should be
+        // sufficient.
+        for(var key in layoutTemplate) {
+            if(key.indexOf('defaults') === -1 && isPlainObject(layoutTemplate[key]) &&
+                !hasMatchingKey(fullLayout, key)
+            ) {
+                errorList.push({code: 'unused', path: 'layout.' + key});
+            }
+        }
+    }
+
+    if(!isPlainObject(dataTemplate)) {
+        errorList.push({code: 'data'});
+    }
+    else {
+        var typeCount = {};
+        var traceType;
+        for(var i = 0; i < fullData.length; i++) {
+            var fullTrace = fullData[i];
+            traceType = fullTrace.type;
+            typeCount[traceType] = (typeCount[traceType] || 0) + 1;
+            if(!fullTrace._fullInput._template) {
+                // this takes care of the case of traceType in the data but not
+                // the template
+                errorList.push({
+                    code: 'missing',
+                    index: fullTrace._fullInput.index,
+                    traceType: traceType
+                });
+            }
+        }
+        for(traceType in dataTemplate) {
+            var templateCount = dataTemplate[traceType].length;
+            var dataCount = typeCount[traceType] || 0;
+            if(templateCount > dataCount) {
+                errorList.push({
+                    code: 'unused',
+                    traceType: traceType,
+                    templateCount: templateCount,
+                    dataCount: dataCount
+                });
+            }
+            else if(dataCount > templateCount) {
+                errorList.push({
+                    code: 'reused',
+                    traceType: traceType,
+                    templateCount: templateCount,
+                    dataCount: dataCount
+                });
+            }
+        }
+    }
+
+    // _template: false is when someone tried to modify an array item
+    // but there was no template with matching name
+    function crawlForMissingTemplates(obj, path) {
+        for(var key in obj) {
+            if(key.charAt(0) === '_') continue;
+            var val = obj[key];
+            var nextPath = getNextPath(obj, key, path);
+            if(isPlainObject(val)) {
+                if(Array.isArray(obj) && val._template === false && val.templateitemname) {
+                    errorList.push({
+                        code: 'missing',
+                        path: nextPath,
+                        templateitemname: val.templateitemname
+                    });
+                }
+                crawlForMissingTemplates(val, nextPath);
+            }
+            else if(Array.isArray(val) && hasPlainObject(val)) {
+                crawlForMissingTemplates(val, nextPath);
+            }
+        }
+    }
+    crawlForMissingTemplates({data: fullData, layout: fullLayout}, '');
+
+    if(errorList.length) return errorList.map(format);
+};
+
+function hasPlainObject(arr) {
+    for(var i = 0; i < arr.length; i++) {
+        if(isPlainObject(arr[i])) return true;
+    }
+}
+
+function hasMatchingKey(obj, key) {
+    if(key in obj) return true;
+    if(getBaseKey(key) !== key) return false;
+    for(var key2 in obj) {
+        if(getBaseKey(key2) === key) return true;
+    }
+}
+
+function format(opts) {
+    var msg;
+    switch(opts.code) {
+        case 'data':
+            msg = 'The template has no key data.';
+            break;
+        case 'layout':
+            msg = 'The template has no key layout.';
+            break;
+        case 'missing':
+            if(opts.path) {
+                msg = 'There are no templates for item ' + opts.path +
+                    ' with name ' + opts.templateitemname;
+            }
+            else {
+                msg = 'There are no templates for trace ' + opts.index +
+                    ', of type ' + opts.traceType + '.';
+            }
+            break;
+        case 'unused':
+            if(opts.path) {
+                msg = 'The template item at ' + opts.path +
+                    ' was not used in constructing the plot.';
+            }
+            else if(opts.dataCount) {
+                msg = 'Some of the templates of type ' + opts.traceType +
+                    ' were not used. The template has ' + opts.templateCount +
+                    ' traces, the data only has ' + opts.dataCount +
+                    ' of this type.';
+            }
+            else {
+                msg = 'The template has ' + opts.templateCount +
+                    ' traces of type ' + opts.traceType +
+                    ' but there are none in the data.';
+            }
+            break;
+        case 'reused':
+            msg = 'Some of the templates of type ' + opts.traceType +
+                ' were used more than once. The template has ' +
+                opts.templateCount + ' traces, the data has ' +
+                opts.dataCount + ' of this type.';
+            break;
+    }
+    opts.msg = msg;
+
+    return opts;
 }
