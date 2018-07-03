@@ -387,8 +387,12 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
         }
 
         // Grand selection state update needs to be done once for the entire plot
-        eventData = {points: allSelectionItems};
-        updateSelectedState(gd, searchTraces, eventData);
+        if(clearEntireSelection) {
+            updateSelectedState(gd, searchTraces);
+        } else {
+            eventData = {points: allSelectionItems};
+            updateSelectedState(gd, searchTraces, eventData);
+        }
     }
 
     function clickedPtsFor(searchInfo, hoverData) {
@@ -524,11 +528,7 @@ function isPointSelected(trace, point) {
 function updateSelectedState(gd, searchTraces, eventData) {
     var i, j, searchInfo, trace;
 
-    // TODO previously eventData without a point would still set a selection
-    // and all points would appear as non-selected. Moving to another drag mode like
-    // zoom would leave this state. Discuss if the new behavior is better.
-    var selectionNonEmpty = eventData && eventData.points && eventData.points.length > 0;
-    if(selectionNonEmpty) {
+    if(eventData) {
         // var pts = eventData.points || []; TODO remove eventually
         var pts = eventData.points;
 
