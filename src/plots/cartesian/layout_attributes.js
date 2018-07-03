@@ -63,8 +63,8 @@ module.exports = {
         editType: 'calc',
         // we forget when an axis has been autotyped, just writing the auto
         // value back to the input - so it doesn't make sense to template this.
-        // TODO: should we prohibit this in `coerce` as well, or honor it if
-        // someone enters it explicitly?
+        // Note: we do NOT prohibit this in `coerce`, so if someone enters a
+        // type in the template explicitly it will be honored as the default.
         _noTemplating: true,
         description: [
             'Sets the axis type.',
