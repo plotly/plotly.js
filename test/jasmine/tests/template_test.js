@@ -268,9 +268,20 @@ describe('validateTemplate', function() {
         messyMock.data.push({type: 'box', x0: 1, y: [1, 2, 3]});
         messyMock.layout.template.layout.geo = {projection: {type: 'orthographic'}};
         messyMock.layout.template.layout.xaxis3 = {nticks: 50};
+        messyMock.layout.template.layout.xaxis.rangeslider = {yaxis3: {rangemode: 'fixed'}};
+        messyMock.layout.xaxis = {rangeslider: {}};
+        messyMock.layout.template.layout.xaxis2.rangeslider = {bgcolor: '#CCC'};
         messyMock.layout.template.data.violin = [{fillcolor: '#000'}];
 
         checkValidate(messyMock, [{
+            code: 'unused',
+            path: 'layout.xaxis.rangeslider.yaxis3',
+            msg: 'The template item at layout.xaxis.rangeslider.yaxis3 was not used in constructing the plot.'
+        }, {
+            code: 'unused',
+            path: 'layout.xaxis2.rangeslider',
+            msg: 'The template item at layout.xaxis2.rangeslider was not used in constructing the plot.'
+        }, {
             code: 'unused',
             path: 'layout.geo',
             msg: 'The template item at layout.geo was not used in constructing the plot.'

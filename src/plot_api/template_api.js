@@ -307,20 +307,45 @@ exports.validateTemplate = function(figureIn, template) {
     var fullLayout = figure._fullLayout;
     var fullData = figure._fullData;
 
+    var layoutPaths = {};
+    function crawlLayoutForContainers(obj, paths) {
+        for(var key in obj) {
+            if(key.charAt(0) !== '_' && isPlainObject(obj[key])) {
+                var baseKey = getBaseKey(key);
+                var nextPaths = [];
+                var i;
+                for(i = 0; i < paths.length; i++) {
+                    nextPaths.push(getNextPath(obj, key, paths[i]));
+                    if(baseKey !== key) nextPaths.push(getNextPath(obj, baseKey, paths[i]));
+                }
+                for(i = 0; i < nextPaths.length; i++) {
+                    layoutPaths[nextPaths[i]] = 1;
+                }
+                crawlLayoutForContainers(obj[key], nextPaths);
+            }
+        }
+    }
+
+    function crawlLayoutTemplateForContainers(obj, path) {
+        for(var key in obj) {
+            if(key.indexOf('defaults') === -1 && isPlainObject(obj[key])) {
+                var nextPath = getNextPath(obj, key, path);
+                if(layoutPaths[nextPath]) {
+                    crawlLayoutTemplateForContainers(obj[key], nextPath);
+                }
+                else {
+                    errorList.push({code: 'unused', path: nextPath});
+                }
+            }
+        }
+    }
+
     if(!isPlainObject(layoutTemplate)) {
         errorList.push({code: 'layout'});
     }
     else {
-        // TODO: any need to look deeper than the first level of layout?
-        // I don't think so, that gets all the subplot types which should be
-        // sufficient.
-        for(var key in layoutTemplate) {
-            if(key.indexOf('defaults') === -1 && isPlainObject(layoutTemplate[key]) &&
-                !hasMatchingKey(fullLayout, key)
-            ) {
-                errorList.push({code: 'unused', path: 'layout.' + key});
-            }
-        }
+        crawlLayoutForContainers(fullLayout, ['layout']);
+        crawlLayoutTemplateForContainers(layoutTemplate, 'layout');
     }
 
     if(!isPlainObject(dataTemplate)) {
