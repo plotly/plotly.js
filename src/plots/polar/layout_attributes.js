@@ -148,6 +148,7 @@ var angularAxisAttrs = {
         dflt: '-',
         role: 'info',
         editType: 'calc',
+        _noTemplating: true,
         description: [
             'Sets the angular axis type.',
             'If *linear*, set `thetaunit` to determine the unit in which axis value are shown.',
