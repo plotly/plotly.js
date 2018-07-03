@@ -887,11 +887,11 @@ describe('@noCI, mapbox plots', function() {
     it('should respond drag / scroll / double-click interactions', function(done) {
         var relayoutCnt = 0;
         var doubleClickCnt = 0;
-        var updateData;
+        var evtData;
 
-        gd.on('plotly_relayout', function(eventData) {
+        gd.on('plotly_relayout', function(d) {
             relayoutCnt++;
-            updateData = eventData;
+            evtData = d;
         });
 
         gd.on('plotly_doubleclick', function() {
@@ -906,43 +906,46 @@ describe('@noCI, mapbox plots', function() {
             });
         }
 
-        function assertLayout(center, zoom, opts) {
-            var mapInfo = getMapInfo(gd),
-                layout = gd.layout.mapbox;
+        function _assertLayout(center, zoom) {
+            var mapInfo = getMapInfo(gd);
+            var layout = gd.layout.mapbox;
 
             expect([mapInfo.center.lng, mapInfo.center.lat]).toBeCloseToArray(center);
             expect(mapInfo.zoom).toBeCloseTo(zoom);
 
             expect([layout.center.lon, layout.center.lat]).toBeCloseToArray(center);
             expect(layout.zoom).toBeCloseTo(zoom);
-
-            if(opts && opts.withUpdateData) {
-                var mapboxUpdate = updateData.mapbox;
-
-                expect([mapboxUpdate.center.lon, mapboxUpdate.center.lat]).toBeCloseToArray(center);
-                expect(mapboxUpdate.zoom).toBeCloseTo(zoom);
-            }
         }
 
-        assertLayout([-4.710, 19.475], 1.234);
+        function _assert(center, zoom) {
+            _assertLayout(center, zoom);
+
+            expect([evtData['mapbox.center'].lon, evtData['mapbox.center'].lat]).toBeCloseToArray(center);
+            expect(evtData['mapbox.zoom']).toBeCloseTo(zoom);
+        }
+
+        _assertLayout([-4.710, 19.475], 1.234);
 
         var p1 = [pointPos[0] + 50, pointPos[1] - 20];
 
         _drag(pointPos, p1, function() {
-            expect(relayoutCnt).toEqual(1);
-            assertLayout([-19.651, 13.751], 1.234, {withUpdateData: true});
+            expect(relayoutCnt).toBe(1, 'relayout cnt');
+            expect(doubleClickCnt).toBe(0, 'double click cnt');
+            _assert([-19.651, 13.751], 1.234);
 
             return _doubleClick(p1);
         })
         .then(function() {
+            expect(relayoutCnt).toBe(2, 'relayout cnt');
             expect(doubleClickCnt).toBe(1, 'double click cnt');
-            assertLayout([-4.710, 19.475], 1.234);
+            _assert([-4.710, 19.475], 1.234);
 
             return _scroll(pointPos);
         })
         .then(function() {
+            expect(relayoutCnt).toBe(3, 'relayout cnt');
+            expect(doubleClickCnt).toBe(1, 'double click cnt');
             expect(getMapInfo(gd).zoom).toBeGreaterThan(1.234);
-            expect(relayoutCnt).toBe(2);
         })
         .catch(failTest)
         .then(done);
