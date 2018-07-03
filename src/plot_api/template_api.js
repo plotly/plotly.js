@@ -423,14 +423,6 @@ function hasPlainObject(arr) {
     }
 }
 
-function hasMatchingKey(obj, key) {
-    if(key in obj) return true;
-    if(getBaseKey(key) !== key) return false;
-    for(var key2 in obj) {
-        if(getBaseKey(key2) === key) return true;
-    }
-}
-
 function format(opts) {
     var msg;
     switch(opts.code) {
