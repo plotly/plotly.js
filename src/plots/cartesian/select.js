@@ -336,7 +336,7 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
     var searchTraces;
     var searchInfo;
     var trace;
-    var multiPtsSelected;
+    var clearEntireSelection;
     var clickedPts;
     var clickedPt;
     var shouldSelect;
@@ -350,7 +350,7 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
         allSelectionItems = [];
 
         searchTraces = determineSearchTraces(gd, xAxes, yAxes);
-        multiPtsSelected = areMultiplePointsSelected(searchTraces);
+        clearEntireSelection = entireSelectionToBeCleared(searchTraces, hoverData);
 
         for(i = 0; i < searchTraces.length; i++) {
             searchInfo = searchTraces[i];
@@ -370,8 +370,8 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
                 for(j = 0; j < clickedPts.length; j++) {
                     clickedPt = clickedPts[j];
                     var ptSelected = isPointSelected(trace, clickedPt);
-                    shouldSelect = !ptSelected || (ptSelected && multiPtsSelected && !retainSelection);
-                    traceSelection = searchInfo._module.toggleSelected(searchInfo, shouldSelect, [clickedPt]);
+                    shouldSelect = !ptSelected || (ptSelected && !clearEntireSelection && !retainSelection);
+                    traceSelection = searchInfo._module.toggleSelected(searchInfo, shouldSelect, [clickedPt.pointNumber]);
                 }
             } else {
                 // If current trace has no pts clicked, we at least call toggleSelected
@@ -384,6 +384,7 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
             allSelectionItems = allSelectionItems.concat(fillSelectionItem(traceSelection, searchInfo));
         }
 
+        // TODO Use the clearEntireSelection flag now
         // Hack to achieve regl traces to set selectBatch to null in case no point is selected anymore
         // TODO check in advance if a click clear the entire selection, because in this
         // case just call toggleSelected(searchInfo, false) on all traces and be done. The `shouldSelect` above might
@@ -408,7 +409,16 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
         for(var i = 0; i < hoverData.length; i++) {
             var hoverDatum = hoverData[i];
             if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
-                clickedPts.push(hoverDatum.pointNumber);
+                if(hoverDatum.pointNumber !== undefined) {
+                    clickedPts.push({
+                        pointNumber: hoverDatum.pointNumber
+                    });
+                } else if(hoverDatum.binNumber !== undefined) {
+                    clickedPts.push({
+                        pointNumber: hoverDatum.binNumber,
+                        pointNumbers: hoverDatum.pointNumbers
+                    });
+                }
             }
         }
 
@@ -476,23 +486,40 @@ function shouldRetainSelection(evt) {
     return evt.shiftKey;
 }
 
-function isPointSelected(trace, pointNumber) {
-    if(!trace.selectedpoints && !Array.isArray(trace.selectedpoints)) return false;
-    return trace.selectedpoints.indexOf(pointNumber) > -1;
+// TODO Clean up
+function entireSelectionToBeCleared(searchTraces, hoverData) {
+    var somePointsSelected = false;
+    for(var i = 0; i < searchTraces.length; i++) {
+        var searchInfo = searchTraces[i];
+        var trace = searchInfo.cd[0].trace;
+        if(trace.selectedpoints && trace.selectedpoints.length > 0) {
+            somePointsSelected = true;
+            var selectedPtsCopy = trace.selectedpoints.slice();
+
+            for(var j = 0; j < hoverData.length; j++) {
+                var hoverDatum = hoverData[j];
+                if(hoverDatum.fullData._expandedIndex === trace._expandedIndex) {
+                    selectedPtsCopy = difference(selectedPtsCopy, hoverDatum.pointNumbers || [hoverDatum.pointNumber]);
+                }
+            }
+
+            if(selectedPtsCopy.length > 0) {
+                return false;
+            }
+        }
+    }
+    return somePointsSelected ? true : false;
 }
 
-function areMultiplePointsSelected(searchTraces) {
-    var ptsSelected = 0;
-    for(var i = 0; i < searchTraces.length; i++) {
-        var trace = searchTraces[i].cd[0].trace;
-        if(Array.isArray(trace.selectedpoints)) {
-            ptsSelected += trace.selectedpoints.length;
+function isPointSelected(trace, point) {
+    if(!trace.selectedpoints && !Array.isArray(trace.selectedpoints)) return false;
+    if(point.pointNumbers) {
+        for(var i = 0; i < point.pointNumbers.length; i++) {
+            if(trace.selectedpoints.indexOf(point.pointNumbers[i]) < 0) return false;
         }
-
-        if(ptsSelected > 1) return true;
+        return true;
     }
-
-    return ptsSelected > 1;
+    return trace.selectedpoints.indexOf(point.pointNumber) > -1;
 }
 
 /**
