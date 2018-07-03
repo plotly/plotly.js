@@ -329,8 +329,6 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // Missing features
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
-// TODO Only execute selectOnClick functionality if the trace of hoverData implements selection interface
-// TODO Why not use forEach to iterate arrays?
 function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
     var hoverData = gd._hoverdata;
     var isHoverDataSet = hoverData && Array.isArray(hoverData);
@@ -354,7 +352,6 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
         searchTraces = determineSearchTraces(gd, xAxes, yAxes);
         multiPtsSelected = areMultiplePointsSelected(searchTraces);
 
-        // TODO Use forEach
         for(i = 0; i < searchTraces.length; i++) {
             searchInfo = searchTraces[i];
             trace = searchInfo.cd[0].trace;
@@ -370,7 +367,6 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
             // and collect the resulting set of selected points
             clickedPts = clickedPtsFor(searchInfo, hoverData);
             if(clickedPts.length > 0) {
-                // TODO Use forEach
                 for(j = 0; j < clickedPts.length; j++) {
                     clickedPt = clickedPts[j];
                     var ptSelected = isPointSelected(trace, clickedPt);
@@ -386,6 +382,16 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
             // Merge this trace's selection with the other ones
             // to prepare the grand selection state update
             allSelectionItems = allSelectionItems.concat(fillSelectionItem(traceSelection, searchInfo));
+        }
+
+        // Hack to achieve regl traces to set selectBatch to null in case no point is selected anymore
+        // TODO check in advance if a click clear the entire selection, because in this
+        // case just call toggleSelected(searchInfo, false) on all traces and be done. The `shouldSelect` above might
+        // become obsolete.
+        if(allSelectionItems.length === 0) {
+            for(i = 0; i < searchTraces.length; i++) {
+                searchTraces[i]._module.toggleSelected(searchTraces[i], false);
+            }
         }
 
         // Grand selection state update needs to be done once for the entire plot
