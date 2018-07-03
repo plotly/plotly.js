@@ -318,6 +318,33 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
+    it('should show correct label for scattergl when hovertext is set', function(done) {
+        var _mock = Lib.extendDeep({}, mock1);
+        _mock.data[0].hovertext = 'text';
+        _mock.data[0].hovertext = 'HoVeRtExT';
+        _mock.layout.hovermode = 'closest';
+
+        var run = makeRunner([634, 321], {
+            x: 15.772,
+            y: 0.387,
+            label: ['(15.772, 0.387)\nHoVeRtExT', null],
+            curveNumber: 0,
+            pointNumber: 33,
+            bgcolor: 'rgb(0, 0, 238)',
+            bordercolor: 'rgb(255, 255, 255)',
+            fontSize: 13,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(255, 255, 255)'
+        }, {
+            msg: 'scattergl with hovertext'
+        });
+
+        Plotly.plot(gd, _mock)
+        .then(run)
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should output correct event data for pointcloud', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
@@ -705,6 +732,63 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
                 points: [
                     { x: 3, y: 4 },
                     { x: 2, y: 4 }
+                ]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work on gl text charts', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_basic.json'));
+        fig.layout.dragmode = 'select';
+        fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
+        fig.layout.height = 500;
+        fig.layout.width = 500;
+        gd = createGraphDiv();
+
+        function _assertGlTextOpts(msg, exp) {
+            var scene = gd.calcdata[0][0].t._scene;
+            scene.glText.forEach(function(opts, i) {
+                expect(Array.from(opts.color))
+                    .toBeCloseToArray(exp.rgba[i], 2, 'item ' + i + ' - ' + msg);
+            });
+        }
+
+        Plotly.plot(gd, fig)
+        .then(delay(100))
+        .then(function() {
+            _assertGlTextOpts('base', {
+                rgba: [
+                    [68, 68, 68, 255],
+                    [68, 68, 68, 255],
+                    [68, 68, 68, 255]
+                ]
+            });
+        })
+        .then(function() { return select([[100, 100], [250, 250]]); })
+        .then(function(eventData) {
+            assertEventData(eventData, {
+                points: [{x: 1, y: 2}]
+            });
+            _assertGlTextOpts('after selection', {
+                rgba: [
+                    [
+                        68, 68, 68, 51,
+                        68, 68, 68, 51,
+                        68, 68, 68, 51,
+                    ],
+                    [
+                        68, 68, 68, 51,
+                        // this is the selected pt!
+                        68, 68, 68, 255,
+                        68, 68, 68, 51
+                    ],
+                    [
+                        68, 68, 68, 51,
+                        68, 68, 68, 51,
+                        68, 68, 68, 51
+                    ]
                 ]
             });
         })

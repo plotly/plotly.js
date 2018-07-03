@@ -36,6 +36,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
 
     coerce('text');
+    coerce('hovertext');
     coerce('mode', defaultMode);
 
     if(subTypes.hasLines(traceOut)) {

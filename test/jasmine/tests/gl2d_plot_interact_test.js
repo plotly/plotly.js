@@ -389,7 +389,9 @@ describe('@gl Test gl2d plots', function() {
         Plotly.newPlot(gd, [{
             // a trace with all regl2d objects
             type: 'scattergl',
+            mode: 'lines+markers+text',
             y: [1, 2, 1],
+            text: ['a', 'b', 'c'],
             error_x: {value: 10},
             error_y: {value: 10},
             fill: 'tozeroy'
@@ -404,6 +406,7 @@ describe('@gl Test gl2d plots', function() {
             spyOn(scene.line2d, 'draw');
             spyOn(scene.error2d, 'draw');
             spyOn(scene.scatter2d, 'draw');
+            spyOn(scene.glText[0], 'render');
 
             return Plotly.restyle(gd, 'visible', 'legendonly', [0]);
         })
@@ -412,6 +415,7 @@ describe('@gl Test gl2d plots', function() {
             expect(scene.fill2d.draw).toHaveBeenCalledTimes(0);
             expect(scene.line2d.draw).toHaveBeenCalledTimes(0);
             expect(scene.error2d.draw).toHaveBeenCalledTimes(0);
+            expect(scene.glText[0].render).toHaveBeenCalledTimes(0);
             expect(scene.scatter2d.draw).toHaveBeenCalledTimes(1);
 
             return Plotly.restyle(gd, 'visible', true, [0]);
@@ -421,6 +425,7 @@ describe('@gl Test gl2d plots', function() {
             expect(scene.fill2d.draw).toHaveBeenCalledTimes(1);
             expect(scene.line2d.draw).toHaveBeenCalledTimes(1);
             expect(scene.error2d.draw).toHaveBeenCalledTimes(2, 'twice for x AND y');
+            expect(scene.glText[0].render).toHaveBeenCalledTimes(1);
             expect(scene.scatter2d.draw).toHaveBeenCalledTimes(3, 'both traces have markers');
         })
         .catch(failTest)

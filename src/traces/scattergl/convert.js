@@ -33,32 +33,36 @@ function convertStyle(gd, trace) {
     var i;
 
     var opts = {
-        text: undefined,
         marker: undefined,
+        markerSel: undefined,
+        markerUnsel: undefined,
         line: undefined,
         fill: undefined,
         errorX: undefined,
         errorY: undefined,
-        selected: undefined,
-        unselected: undefined
+        text: undefined,
+        textSel: undefined,
+        textUnsel: undefined
     };
 
     if(trace.visible !== true) return opts;
 
     if(subTypes.hasText(trace)) {
-        opts.text = convertTextfont(trace, trace.textfont);
+        opts.text = convertTextStyle(trace);
+        opts.textSel = convertTextSelection(trace, trace.selected);
+        opts.textUnsel = convertTextSelection(trace, trace.unselected);
     }
 
     if(subTypes.hasMarkers(trace)) {
         opts.marker = convertMarkerStyle(trace);
-        opts.selected = convertMarkerSelection(trace, trace.selected);
-        opts.unselected = convertMarkerSelection(trace, trace.unselected);
+        opts.markerSel = convertMarkerSelection(trace, trace.selected);
+        opts.markerUnsel = convertMarkerSelection(trace, trace.unselected);
 
         if(!trace.unselected && Array.isArray(trace.marker.opacity)) {
             var mo = trace.marker.opacity;
-            opts.unselected.opacity = new Array(mo.length);
+            opts.markerUnsel.opacity = new Array(mo.length);
             for(i = 0; i < mo.length; i++) {
-                opts.unselected.opacity[i] = DESELECTDIM * mo[i];
+                opts.markerUnsel.opacity[i] = DESELECTDIM * mo[i];
             }
         }
     }
@@ -97,135 +101,75 @@ function convertStyle(gd, trace) {
     return opts;
 }
 
-function convertTextfont(trace, textfont) {
-    var textOptions = {}, i;
+function convertTextStyle(trace) {
+    var count = trace._length;
+    var textfontIn = trace.textfont;
+    var textpositionIn = trace.textposition;
+    var textPos = Array.isArray(textpositionIn) ? textpositionIn : [textpositionIn];
+    var tfc = textfontIn.color;
+    var tfs = textfontIn.size;
+    var tff = textfontIn.family;
+    var optsOut = {};
+    var i;
 
-    textOptions.color = textfont.color;
+    optsOut.text = trace.text;
+    optsOut.opacity = trace.opacity;
+    optsOut.font = {};
+    optsOut.align = [];
+    optsOut.baseline = [];
 
-    textOptions.align = [];
-    textOptions.baseline = [];
+    for(i = 0; i < textPos.length; i++) {
+        var tp = textPos[i].split(/\s+/);
 
-    var textposition = Array.isArray(trace.textposition) ? trace.textposition : [trace.textposition];
-
-    for(i = 0.0; i < textposition.length; i++) {
-        var textpos = textposition[i].split(/\s+/);
-
-        switch(textpos[1]) {
+        switch(tp[1]) {
             case 'left':
-                textOptions.align.push('right');
+                optsOut.align.push('right');
                 break;
             case 'right':
-                textOptions.align.push('left');
+                optsOut.align.push('left');
                 break;
             default:
-                textOptions.align.push(textpos[1]);
+                optsOut.align.push(tp[1]);
         }
-
-        switch(textpos[0]) {
+        switch(tp[0]) {
             case 'top':
-                textOptions.baseline.push('bottom');
+                optsOut.baseline.push('bottom');
                 break;
             case 'bottom':
-                textOptions.baseline.push('top');
+                optsOut.baseline.push('top');
                 break;
             default:
-                textOptions.baseline.push(textpos[0]);
+                optsOut.baseline.push(tp[0]);
         }
     }
 
-    // [{family, color, size}, {family, color, size}, ...] →
-    // {family: [], color: [], size: []}
-    if(Array.isArray(textfont)) {
-        textOptions.font = [];
-        textOptions.color = [];
-        for(i = 0; i < textfont.length; i++) {
-            textOptions.font.push({
-                family: textfont[i].family,
-                size: textfont[i].size
-            });
-            textOptions.color.push(textfont[i].color);
+    if(Array.isArray(tfc)) {
+        optsOut.color = new Array(count);
+        for(i = 0; i < count; i++) {
+            optsOut.color[i] = tfc[i];
         }
+    } else {
+        optsOut.color = tfc;
     }
-    else {
+
+    if(Array.isArray(tfs) || Array.isArray(tff)) {
         // if any textfont param is array - make render a batch
-        if(Array.isArray(textfont.family) || Array.isArray(textfont.size)) {
-            textOptions.font = Array(Math.max(
-                textfont.family && textfont.family.length || 1,
-                textfont.size && textfont.size.length || 1
-            ));
+        optsOut.font = new Array(count);
+        for(i = 0; i < count; i++) {
+            var fonti = optsOut.font[i] = {};
 
-            for(i = 0; i < textOptions.font.length; i++) {
-                textOptions.font[i] = {
-                    family: textfont.family[i] || textfont.family,
-                    size: textfont.size[i] || textfont.size
-                };
-            }
+            fonti.size = Array.isArray(tfs) ?
+                (isNumeric(tfs[i]) ? tfs[i] : 0) :
+                tfs;
+
+            fonti.family = Array.isArray(tff) ? tff[i] : tff;
         }
+    } else {
         // if both are single values, make render fast single-value
-        else {
-            textOptions.font = {
-                family: textfont.family,
-                size: textfont.size
-            };
-        }
-        textOptions.color = textfont.color;
+        optsOut.font = {size: tfs, family: tff};
     }
 
-    // corresponds to textPointPosition from component.drawing
-    if(trace.marker) {
-        var sizes = [];
-        if(Array.isArray(trace.marker.size)) {
-            for(i = 0; i < trace.marker.size.length; i++) {
-                sizes.push(trace.marker.size[i]);
-            }
-        }
-        else if(Array.isArray(trace.marker)) {
-            for(i = 0; i < trace.marker.length; i++) {
-                sizes.push(trace.marker[i].size);
-            }
-        }
-        else {
-            sizes.push(trace.marker.size);
-        }
-
-        textOptions.offset = [];
-        for(i = 0; i < Math.max(trace.x.length, trace.y.length); i++) {
-            var size = sizes.length > 1 ? sizes[i] : sizes[0];
-            var markerRadius = size / 2;
-            var fontSize = Array.isArray(textOptions.font) ? textOptions.font[i].size : textOptions.font.size;
-            var align = Array.isArray(textOptions.align) ? textOptions.align.length > 1 ? textOptions.align[i] : textOptions.align[0] : textOptions.align;
-            var baseline = Array.isArray(textOptions.baseline) ? textOptions.baseline.length > 1 ? textOptions.baseline[i] : textOptions.baseline[0] : textOptions.baseline;
-            var hSign = TEXTOFFSETSIGN[align];
-            var vSign = TEXTOFFSETSIGN[baseline];
-            var xPad = markerRadius ? markerRadius / 0.8 + 1 : 0;
-            var yPad = - vSign * xPad - vSign * 0.5;
-            textOptions.offset.push(
-                [hSign * xPad / fontSize, yPad / fontSize]
-            );
-        }
-    }
-
-    textOptions.position = [];
-    for(i = 0; i < trace.x.length; i++) {
-        textOptions.position.push(trace.x[i], trace.y[i]);
-    }
-    textOptions.text = trace.text;
-
-    // filter out bad font sizes
-    if(Array.isArray(textOptions.font)) {
-        for(i = 0; i < textOptions.font.length; i++) {
-            if(!isNumeric(textOptions.font[i].size)) {
-                textOptions.font[i].size = 0;
-            }
-        }
-    }
-    else {
-        if(!isNumeric(textOptions.font.size)) {
-            textOptions.font.size = 0;
-        }
-    }
-
-    return textOptions;
+    return optsOut;
 }
 
 
@@ -360,13 +304,30 @@ function convertMarkerSelection(trace, target) {
     if(target.marker && target.marker.symbol) {
         optsOut = convertMarkerStyle(Lib.extendFlat({}, optsIn, target.marker));
     } else if(target.marker) {
-        if(target.marker.size) optsOut.sizes = target.marker.size / 2;
+        if(target.marker.size) optsOut.size = target.marker.size / 2;
         if(target.marker.color) optsOut.colors = target.marker.color;
         if(target.marker.opacity !== undefined) optsOut.opacity = target.marker.opacity;
     }
 
+    return optsOut;
+}
+
+function convertTextSelection(trace, target) {
+    var optsOut = {};
+
+    if(!target) return optsOut;
+
     if(target.textfont) {
-        optsOut.textfont = convertTextfont(trace, target.textfont);
+        var optsIn = {
+            opacity: 1,
+            text: trace.text,
+            textposition: trace.textposition,
+            textfont: Lib.extendFlat({}, trace.textfont)
+        };
+        if(target.textfont) {
+            Lib.extendFlat(optsIn.textfont, target.textfont);
+        }
+        optsOut = convertTextStyle(optsIn);
     }
 
     return optsOut;
@@ -564,10 +525,47 @@ function convertErrorBarPositions(gd, trace, positions, x, y) {
     return out;
 }
 
+function convertTextPosition(gd, trace, textOpts, markerOpts) {
+    var count = trace._length;
+    var out = {};
+    var i;
+
+    // corresponds to textPointPosition from component.drawing
+    if(subTypes.hasMarkers(trace)) {
+        var fontOpts = textOpts.font;
+        var align = textOpts.align;
+        var baseline = textOpts.baseline;
+        out.offset = new Array(count);
+
+        for(i = 0; i < count; i++) {
+            var ms = markerOpts.sizes ? markerOpts.sizes[i] : markerOpts.size;
+            var fs = Array.isArray(fontOpts) ? fontOpts[i].size : fontOpts.size;
+
+            var a = Array.isArray(align) ?
+                (align.length > 1 ? align[i] : align[0]) :
+                align;
+            var b = Array.isArray(baseline) ?
+                (baseline.length > 1 ? baseline[i] : baseline[0]) :
+                baseline;
+
+            var hSign = TEXTOFFSETSIGN[a];
+            var vSign = TEXTOFFSETSIGN[b];
+            var xPad = ms ? ms / 0.8 + 1 : 0;
+            var yPad = -vSign * xPad - vSign * 0.5;
+            out.offset[i] = [hSign * xPad / fs, yPad / fs];
+        }
+    }
+
+    return out;
+}
+
 module.exports = {
-    convertStyle: convertStyle,
-    convertMarkerStyle: convertMarkerStyle,
-    convertMarkerSelection: convertMarkerSelection,
-    convertLinePositions: convertLinePositions,
-    convertErrorBarPositions: convertErrorBarPositions
+    style: convertStyle,
+
+    markerStyle: convertMarkerStyle,
+    markerSelection: convertMarkerSelection,
+
+    linePositions: convertLinePositions,
+    errorBarPositions: convertErrorBarPositions,
+    textPosition: convertTextPosition
 };
