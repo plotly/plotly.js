@@ -12,10 +12,9 @@ var annAttrs = require('../annotations/attributes');
 var scatterLineAttrs = require('../../traces/scatter/attributes').line;
 var dash = require('../drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
-module.exports = {
-    _isLinkedToArray: 'shape',
-
+module.exports = templatedArray('shape', {
     visible: {
         valType: 'boolean',
         role: 'info',
@@ -240,4 +239,4 @@ module.exports = {
         ].join(' ')
     },
     editType: 'arraydraw'
-};
+});

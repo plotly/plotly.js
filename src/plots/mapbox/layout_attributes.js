@@ -15,6 +15,7 @@ var domainAttrs = require('../domain').attributes;
 var fontAttrs = require('../font_attributes');
 var textposition = require('../../traces/scatter/attributes').textposition;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 var fontAttr = fontAttrs({
     description: [
@@ -88,9 +89,15 @@ module.exports = overrideAll({
         ].join(' ')
     },
 
-    layers: {
-        _isLinkedToArray: 'layer',
-
+    layers: templatedArray('layer', {
+        visible: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: true,
+            description: [
+                'Determines whether this layer is displayed'
+            ].join(' ')
+        },
         sourcetype: {
             valType: 'enumerated',
             values: ['geojson', 'vector'],
@@ -236,5 +243,5 @@ module.exports = overrideAll({
             textfont: fontAttr,
             textposition: Lib.extendFlat({}, textposition, { arrayOk: false })
         }
-    }
+    })
 }, 'plot', 'from-root');

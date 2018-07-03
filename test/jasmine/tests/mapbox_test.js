@@ -93,10 +93,17 @@ describe('mapbox defaults', function() {
         };
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutOut.mapbox.layers[0].sourcetype).toEqual('geojson');
-        expect(layoutOut.mapbox.layers[0]._index).toEqual(0);
-        expect(layoutOut.mapbox.layers[1].sourcetype).toEqual('geojson');
-        expect(layoutOut.mapbox.layers[1]._index).toEqual(3);
+        expect(layoutOut.mapbox.layers).toEqual([jasmine.objectContaining({
+            sourcetype: 'geojson',
+            _index: 0
+        }), jasmine.objectContaining({
+            visible: false
+        }), jasmine.objectContaining({
+            visible: false
+        }), jasmine.objectContaining({
+            sourcetype: 'geojson',
+            _index: 3
+        })]);
     });
 
     it('should coerce \'sourcelayer\' only for *vector* \'sourcetype\'', function() {
@@ -566,7 +573,7 @@ describe('@noCI, mapbox plots', function() {
         }
 
         function getLayerLength(gd) {
-            return (gd.layout.mapbox.layers || []).length;
+            return Lib.filterVisible(gd._fullLayout.mapbox.layers || []).length;
         }
 
         function assertLayerStyle(gd, expectations, index) {
@@ -600,6 +607,20 @@ describe('@noCI, mapbox plots', function() {
 
             // add a new layer at the beginning
             return Plotly.relayout(gd, 'mapbox.layers[1]', layer1);
+        })
+        .then(function() {
+            expect(getLayerLength(gd)).toEqual(2);
+            expect(countVisibleLayers(gd)).toEqual(2);
+
+            // hide a layer
+            return Plotly.relayout(gd, 'mapbox.layers[0].visible', false);
+        })
+        .then(function() {
+            expect(getLayerLength(gd)).toEqual(1);
+            expect(countVisibleLayers(gd)).toEqual(1);
+
+            // re-show it
+            return Plotly.relayout(gd, 'mapbox.layers[0].visible', true);
         })
         .then(function() {
             expect(getLayerLength(gd)).toEqual(2);

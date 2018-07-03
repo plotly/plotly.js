@@ -10,6 +10,8 @@
 'use strict';
 
 var Lib = require('../../lib');
+var Template = require('../../plot_api/plot_template');
+
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
@@ -18,7 +20,7 @@ var attributes = require('./attributes');
 
 
 module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
-    var colorbarOut = containerOut.colorbar = {},
+    var colorbarOut = Template.newContainer(containerOut, 'colorbar'),
         colorbarIn = containerIn.colorbar || {};
 
     function coerce(attr, dflt) {

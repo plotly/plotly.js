@@ -31,7 +31,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -54,7 +54,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -80,7 +80,7 @@ describe('filter transforms defaults:', function() {
             }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms[0].target).toEqual('x');
         expect(traceOut.transforms[1].target).toEqual('x');

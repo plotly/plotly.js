@@ -50,7 +50,7 @@ module.exports = function draw(gd) {
             selectorLayout = axisLayout.rangeselector;
 
         var buttons = selector.selectAll('g.button')
-            .data(selectorLayout.buttons);
+            .data(Lib.filterVisible(selectorLayout.buttons));
 
         buttons.enter().append('g')
             .classed('button', true);

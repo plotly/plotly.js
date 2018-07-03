@@ -98,25 +98,25 @@ describe('sliders defaults', function() {
         supply(layoutIn, layoutOut);
 
         expect(layoutOut.sliders[0].steps.length).toEqual(3);
-        expect(layoutOut.sliders[0].steps).toEqual([{
+        expect(layoutOut.sliders[0].steps).toEqual([jasmine.objectContaining({
             method: 'relayout',
             label: 'Label #1',
             value: 'label-1',
             execute: true,
             args: []
-        }, {
+        }), jasmine.objectContaining({
             method: 'update',
             label: 'Label #2',
             value: 'Label #2',
             execute: true,
             args: []
-        }, {
+        }), jasmine.objectContaining({
             method: 'animate',
             label: 'step-2',
             value: 'lacks-label',
             execute: true,
             args: []
-        }]);
+        })]);
     });
 
     it('should skip over non-object steps', function() {
@@ -133,14 +133,17 @@ describe('sliders defaults', function() {
 
         supply(layoutIn, layoutOut);
 
-        expect(layoutOut.sliders[0].steps.length).toEqual(1);
-        expect(layoutOut.sliders[0].steps[0]).toEqual({
+        expect(layoutOut.sliders[0].steps).toEqual([jasmine.objectContaining({
+            visible: false
+        }), jasmine.objectContaining({
             method: 'relayout',
             args: ['title', 'Hello World'],
             label: 'step-1',
             value: 'step-1',
             execute: true
-        });
+        }), jasmine.objectContaining({
+            visible: false
+        })]);
     });
 
     it('should skip over steps with non-array \'args\' field', function() {
@@ -158,14 +161,19 @@ describe('sliders defaults', function() {
 
         supply(layoutIn, layoutOut);
 
-        expect(layoutOut.sliders[0].steps.length).toEqual(1);
-        expect(layoutOut.sliders[0].steps[0]).toEqual({
+        expect(layoutOut.sliders[0].steps).toEqual([jasmine.objectContaining({
+            visible: false
+        }), jasmine.objectContaining({
             method: 'relayout',
             args: ['title', 'Hello World'],
             label: 'step-1',
             value: 'step-1',
             execute: true
-        });
+        }), jasmine.objectContaining({
+            visible: false
+        }), jasmine.objectContaining({
+            visible: false
+        })]);
     });
 
     it('allows the `skip` method', function() {
@@ -180,19 +188,18 @@ describe('sliders defaults', function() {
 
         supply(layoutIn, layoutOut);
 
-        expect(layoutOut.sliders[0].steps.length).toEqual(2);
-        expect(layoutOut.sliders[0].steps[0]).toEqual({
+        expect(layoutOut.sliders[0].steps).toEqual([jasmine.objectContaining({
             method: 'skip',
             label: 'step-0',
             value: 'step-0',
             execute: true,
-        }, {
+        }), jasmine.objectContaining({
             method: 'skip',
             args: ['title', 'Hello World'],
             label: 'step-1',
             value: 'step-1',
             execute: true,
-        });
+        })]);
     });
 
 
@@ -402,6 +409,58 @@ describe('sliders interactions', function() {
             assertNodeCount('.' + constants.groupClassName, 2);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('only draws visible steps', function(done) {
+        function gripXFrac() {
+            var grip = document.querySelector('.' + constants.gripRectClass);
+            var transform = grip.attributes.transform.value;
+            var gripX = +(transform.split('(')[1].split(',')[0]);
+            var rail = document.querySelector('.' + constants.railRectClass);
+            var railWidth = +rail.attributes.width.value;
+            var railRX = +rail.attributes.rx.value;
+            return gripX / (railWidth - 2 * railRX);
+        }
+        function assertSlider(ticks, labels, gripx, active) {
+            assertNodeCount('.' + constants.groupClassName, 1);
+            assertNodeCount('.' + constants.tickRectClass, ticks);
+            assertNodeCount('.' + constants.labelGroupClass, labels);
+            expect(gripXFrac()).toBeWithin(gripx, 0.01);
+            expect(gd._fullLayout.sliders[1].active).toBe(active);
+        }
+        Plotly.relayout(gd, {'sliders[0].visible': false, 'sliders[1].active': 5})
+        .then(function() {
+            assertSlider(15, 8, 5 / 14, 5);
+
+            // hide two before the grip - grip moves left
+            return Plotly.relayout(gd, {
+                'sliders[1].steps[0].visible': false,
+                'sliders[1].steps[1].visible': false
+            });
+        })
+        .then(function() {
+            assertSlider(13, 7, 3 / 12, 5);
+
+            // hide two after the grip - grip moves right, but not as far as
+            // the initial position since there are more steps to the right
+            return Plotly.relayout(gd, {
+                'sliders[1].steps[12].visible': false,
+                'sliders[1].steps[13].visible': false
+            });
+        })
+        .then(function() {
+            assertSlider(11, 6, 3 / 10, 5);
+
+            // hide the active step - grip moves to 0, and first visible step is active
+            return Plotly.relayout(gd, {
+                'sliders[1].steps[5].visible': false
+            });
+        })
+        .then(function() {
+            assertSlider(10, 5, 0, 2);
         })
         .catch(failTest)
         .then(done);

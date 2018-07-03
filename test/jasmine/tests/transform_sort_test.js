@@ -17,7 +17,7 @@ describe('Test sort transform defaults:', function() {
             _modules: [],
             _basePlotModules: []
         });
-        return Plots.supplyTraceDefaults(trace, 0, layout);
+        return Plots.supplyTraceDefaults(trace, {type: trace.type || 'scatter'}, 0, layout);
     }
 
     it('should coerce all attributes', function() {

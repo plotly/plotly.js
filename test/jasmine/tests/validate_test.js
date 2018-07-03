@@ -282,19 +282,24 @@ describe('Plotly.validate', function() {
             'In layout, key shapes[0].opacity is set to an invalid value (none)'
         );
         assertErrorContent(
-            out[8], 'schema', 'layout', null,
-            ['updatemenus', 2, 'buttons', 1, 'title'], 'updatemenus[2].buttons[1].title',
-            'In layout, key updatemenus[2].buttons[1].title is not part of the schema'
+            out[8], 'invisible', 'layout', null,
+            ['updatemenus', 2, 'buttons', 0], 'updatemenus[2].buttons[0]',
+            'In layout, item updatemenus[2].buttons[0] got defaulted to be not visible'
         );
         assertErrorContent(
-            out[9], 'unused', 'layout', null,
-            ['updatemenus', 2, 'buttons', 0], 'updatemenus[2].buttons[0]',
-            'In layout, key updatemenus[2].buttons[0] did not get coerced'
+            out[9], 'schema', 'layout', null,
+            ['updatemenus', 2, 'buttons', 1, 'title'], 'updatemenus[2].buttons[1].title',
+            'In layout, key updatemenus[2].buttons[1].title is not part of the schema'
         );
         assertErrorContent(
             out[10], 'object', 'layout', null,
             ['updatemenus', 2, 'buttons', 2], 'updatemenus[2].buttons[2]',
             'In layout, key updatemenus[2].buttons[2] must be linked to an object container'
+        );
+        assertErrorContent(
+            out[11], 'object', 'layout', null,
+            ['updatemenus', 1], 'updatemenus[1]',
+            'In layout, key updatemenus[1] must be linked to an object container'
         );
     });
 
@@ -524,6 +529,14 @@ describe('Plotly.validate', function() {
             yaxis3: {}
         });
 
+        expect(out).toBeUndefined();
+    });
+
+    it('should accept attributes that really end in a number', function() {
+        // and not try to strip that number off!
+        // eg x0, x1 in shapes
+        var shapeMock = require('@mocks/shapes.json');
+        var out = Plotly.validate(shapeMock.data, shapeMock.layout);
         expect(out).toBeUndefined();
     });
 });

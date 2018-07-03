@@ -11,11 +11,10 @@
 var ARROWPATHS = require('./arrow_paths');
 var fontAttrs = require('../../plots/font_attributes');
 var cartesianConstants = require('../../plots/cartesian/constants');
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 
-module.exports = {
-    _isLinkedToArray: 'annotation',
-
+module.exports = templatedArray('annotation', {
     visible: {
         valType: 'boolean',
         role: 'info',
@@ -543,4 +542,4 @@ module.exports = {
             ].join(' ')
         }
     }
-};
+});
