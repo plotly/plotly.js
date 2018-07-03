@@ -325,7 +325,7 @@ describe('validateTemplate', function() {
         1);
     });
 
-    it('catches missing template.data', function() {
+    it('catches missing template.layout', function() {
         var noLayoutMock = Lib.extendDeep({}, cleanMock);
         delete noLayoutMock.layout.template.layout;
 
