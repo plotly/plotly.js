@@ -356,10 +356,12 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
             searchInfo = searchTraces[i];
             trace = searchInfo.cd[0].trace;
 
-            // Start new selection if needed
-            if(!retainSelection) {
+            // Clear old selection if needed
+            if(!retainSelection || clearEntireSelection) {
                 searchInfo._module.toggleSelected(searchInfo, false);
                 if(outlines) outlines.remove();
+
+                if(clearEntireSelection) continue;
             }
 
             // Determine clicked points,
@@ -384,23 +386,9 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
             allSelectionItems = allSelectionItems.concat(fillSelectionItem(traceSelection, searchInfo));
         }
 
-        // TODO Use the clearEntireSelection flag now
-        // Hack to achieve regl traces to set selectBatch to null in case no point is selected anymore
-        // TODO check in advance if a click clear the entire selection, because in this
-        // case just call toggleSelected(searchInfo, false) on all traces and be done. The `shouldSelect` above might
-        // become obsolete.
-        if(allSelectionItems.length === 0) {
-            for(i = 0; i < searchTraces.length; i++) {
-                searchTraces[i]._module.toggleSelected(searchTraces[i], false);
-            }
-        }
-
         // Grand selection state update needs to be done once for the entire plot
         eventData = {points: allSelectionItems};
         updateSelectedState(gd, searchTraces, eventData);
-
-        // Remove outlines if no point is selected anymore
-        if(allSelectionItems.length === 0 && outlines) outlines.remove();
     }
 
     function clickedPtsFor(searchInfo, hoverData) {
