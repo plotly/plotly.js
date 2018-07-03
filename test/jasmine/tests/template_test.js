@@ -170,10 +170,8 @@ describe('template interactions', function() {
 
             if(schooly) {
                 var schoolItem = gd.layout.annotations[layoutCount - 1];
-                expect(schoolItem).toEqual(jasmine.objectContaining({
-                    templateitemname: 'warning2',
-                    x: 1
-                }));
+                expect(schoolItem.templateitemname).toBe('warning2');
+                expect(schoolItem.x).toBeWithin(1, 0.001);
                 expect(schoolItem.y).toBeWithin(schooly, 0.001);
             }
 
@@ -208,11 +206,11 @@ describe('template interactions', function() {
 
             if(recty0) {
                 var rectItem = gd.layout.shapes[layoutCount - 1];
-                expect(rectItem).toEqual(jasmine.objectContaining({
-                    templateitemname: 'outline',
-                    x0: -0.15, x1: 1.2, y1: 1.1
-                }));
+                expect(rectItem.templateitemname).toBe('outline');
+                expect(rectItem.x0).toBeWithin(-0.15, 0.001);
                 expect(rectItem.y0).toBeWithin(recty0, 0.001);
+                expect(rectItem.x1).toBeWithin(1.2, 0.001);
+                expect(rectItem.y1).toBeWithin(1.1, 0.001);
             }
 
             return rectElement;
