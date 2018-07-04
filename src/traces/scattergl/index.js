@@ -930,9 +930,10 @@ function styleTextSelection(cd) {
         var hasArrayBase = Array.isArray(base);
         opts.color = new Array(stash.count);
 
+
         for(i = 0; i < els.length; i++) {
             j = els[i];
-            opts.color[j] = stc || hasArrayBase ? base[j] : base;
+            opts.color[j] = stc || (hasArrayBase ? base[j] : base);
         }
         for(i = 0; i < unels.length; i++) {
             j = unels[i];

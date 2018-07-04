@@ -792,6 +792,32 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
                 ]
             });
         })
+        .then(function() {
+            return Plotly.restyle(gd, 'selected.textfont.color', 'red');
+        })
+        .then(function() { return select([[100, 100], [250, 250]]); })
+        .then(function() {
+            _assertGlTextOpts('after selection - with set selected.textfont.color', {
+                rgba: [
+                    [
+                        68, 68, 68, 255,
+                        68, 68, 68, 255,
+                        68, 68, 68, 255,
+                    ],
+                    [
+                        68, 68, 68, 255,
+                        // this is the selected pt!
+                        255, 0, 0, 255,
+                        68, 68, 68, 255
+                    ],
+                    [
+                        68, 68, 68, 255,
+                        68, 68, 68, 255,
+                        68, 68, 68, 255
+                    ]
+                ]
+            });
+        })
         .catch(failTest)
         .then(done);
     });
@@ -847,6 +873,27 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
                         // this is the selected pt!
                         211, 211, 210, 255,
                         237, 97, 0, 51
+                    ]
+                ]
+            });
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'selected.textfont.color', 'red');
+        })
+        .then(function() { return select([[100, 10], [250, 100]]); })
+        .then(function() {
+            _assertGlTextOpts('after selection - with set selected.textfont.color', {
+                rgba: [
+                    [
+                        255, 0, 0, 255,
+                        0, 0, 255, 255,
+                        0, 128, 0, 255
+                    ],
+                    [
+                        0, 0, 0, 255,
+                        // this is the selected pt!
+                        255, 0, 0, 255,
+                        237, 97, 0, 255
                     ]
                 ]
             });
