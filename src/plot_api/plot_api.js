@@ -152,7 +152,6 @@ exports.plot = function(gd, data, layout, config) {
     Plots.supplyDefaults(gd);
 
     var fullLayout = gd._fullLayout;
-
     var hasCartesian = fullLayout._has('cartesian');
 
     // Legacy polar plots
@@ -375,10 +374,14 @@ exports.plot = function(gd, data, layout, config) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function() {
-        gd.emit('plotly_afterplot');
+        emitAfterPlot(gd);
         return gd;
     });
 };
+
+function emitAfterPlot(gd) {
+    gd.emit('plotly_afterplot');
+}
 
 exports.setPlotConfig = function setPlotConfig(obj) {
     return Lib.extendFlat(defaultConfig, obj);
@@ -1327,6 +1330,8 @@ exports.restyle = function restyle(gd, astr, val, _traces) {
 
         if(flags.style) seq.push(subroutines.doTraceStyle);
         if(flags.colorbars) seq.push(subroutines.doColorBars);
+
+        seq.push(emitAfterPlot);
     }
 
     seq.push(Plots.rehover);
@@ -1704,6 +1709,8 @@ exports.relayout = function relayout(gd, astr, val) {
         if(flags.ticks) seq.push(subroutines.doTicksRelayout);
         if(flags.modebar) seq.push(subroutines.doModeBar);
         if(flags.camera) seq.push(subroutines.doCamera);
+
+        seq.push(emitAfterPlot);
     }
 
     seq.push(Plots.rehover);
@@ -2191,6 +2198,8 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
         if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
         if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
         if(relayoutFlags.camera) seq.push(subroutines.doCamera);
+
+        seq.push(emitAfterPlot);
     }
 
     seq.push(Plots.rehover);
@@ -2348,6 +2357,7 @@ exports.react = function(gd, data, layout, config) {
             if(relayoutFlags.ticks) seq.push(subroutines.doTicksRelayout);
             if(relayoutFlags.modebar) seq.push(subroutines.doModeBar);
             if(relayoutFlags.camera) seq.push(subroutines.doCamera);
+            seq.push(emitAfterPlot);
         }
 
         seq.push(Plots.rehover);
