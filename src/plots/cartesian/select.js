@@ -397,10 +397,15 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
 
     function clickedPtsFor(searchInfo, hoverData) {
         var clickedPts = [];
+        var hoverDatum;
 
-        for(var i = 0; i < hoverData.length; i++) {
-            var hoverDatum = hoverData[i];
+        if(hoverData.length > 0) {
+            hoverDatum = hoverData[0];
             if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
+                // TODO hoverDatum not having a pointNumber but a binNumber seems to be an oddity of histogram only
+                // Not deleting .pointNumber in histogram/event_data.js would simplify code here and in addition
+                // would not break the hover event structure officially
+                // documented at https://plot.ly/javascript/hover-events/
                 if(hoverDatum.pointNumber !== undefined) {
                     clickedPts.push({
                         pointNumber: hoverDatum.pointNumber
