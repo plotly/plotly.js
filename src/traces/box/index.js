@@ -20,7 +20,8 @@ Box.plot = require('./plot').plot;
 Box.style = require('./style').style;
 Box.styleOnSelect = require('./style').styleOnSelect;
 Box.hoverPoints = require('./hover').hoverPoints;
-Box.selectPoints = require('./select');
+Box.getPointsIn = require('./select').getPointsIn;
+Box.toggleSelected = require('./select').toggleSelected;
 
 Box.moduleType = 'trace';
 Box.name = 'box';
