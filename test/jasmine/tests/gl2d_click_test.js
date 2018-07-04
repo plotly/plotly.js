@@ -795,4 +795,63 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should work on gl text charts with array textfont.color', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_arrays.json'));
+        fig.layout.dragmode = 'select';
+        fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
+        fig.layout.height = 500;
+        fig.layout.width = 500;
+        gd = createGraphDiv();
+
+        function _assertGlTextOpts(msg, exp) {
+            var scene = gd.calcdata[0][0].t._scene;
+            scene.glText.forEach(function(opts, i) {
+                expect(Array.from(opts.color))
+                    .toBeCloseToArray(exp.rgba[i], 2, 'item ' + i + ' - ' + msg);
+            });
+        }
+
+        Plotly.plot(gd, fig)
+        .then(delay(100))
+        .then(function() {
+            _assertGlTextOpts('base', {
+                rgba: [
+                    [
+                        255, 0, 0, 255,
+                        0, 0, 255, 255,
+                        0, 128, 0, 255
+                    ],
+                    [
+                        0, 0, 0, 255,
+                        211, 211, 210, 255,
+                        237, 97, 0, 255
+                    ]
+                ]
+            });
+        })
+        .then(function() { return select([[100, 10], [250, 100]]); })
+        .then(function(eventData) {
+            assertEventData(eventData, {
+                points: [{x: 1, y: 2}]
+            });
+            _assertGlTextOpts('after selection', {
+                rgba: [
+                    [
+                        255, 0, 0, 51,
+                        0, 0, 255, 51,
+                        0, 128, 0, 51
+                    ],
+                    [
+                        0, 0, 0, 51,
+                        // this is the selected pt!
+                        211, 211, 210, 255,
+                        237, 97, 0, 51
+                    ]
+                ]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

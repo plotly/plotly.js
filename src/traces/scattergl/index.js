@@ -921,20 +921,24 @@ function styleTextSelection(cd) {
     var selOpts = scene.textSelectedOptions[index] || {};
     var unselOpts = scene.textUnselectedOptions[index] || {};
     var opts = Lib.extendFlat({}, baseOpts);
-    var i;
+    var i, j;
 
     if(els && unels) {
         var stc = selOpts.color;
         var utc = unselOpts.color;
         var base = baseOpts.color;
+        var hasArrayBase = Array.isArray(base);
         opts.color = new Array(stash.count);
 
         for(i = 0; i < els.length; i++) {
-            opts.color[els[i]] = stc || base;
+            j = els[i];
+            opts.color[j] = stc || hasArrayBase ? base[j] : base;
         }
         for(i = 0; i < unels.length; i++) {
-            opts.color[unels[i]] = utc ? utc :
-                stc ? base : Color.addOpacity(base, DESELECTDIM);
+            j = unels[i];
+            var basej = hasArrayBase ? base[j] : base;
+            opts.color[j] = utc ? utc :
+                stc ? basej : Color.addOpacity(basej, DESELECTDIM);
         }
     }
 
