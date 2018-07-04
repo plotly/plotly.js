@@ -380,7 +380,13 @@ exports.plot = function(gd, data, layout, config) {
 };
 
 function emitAfterPlot(gd) {
-    gd.emit('plotly_afterplot');
+    var fullLayout = gd._fullLayout;
+
+    if(fullLayout._redrawFromAutoMarginCount) {
+        fullLayout._redrawFromAutoMarginCount--;
+    } else {
+        gd.emit('plotly_afterplot');
+    }
 }
 
 exports.setPlotConfig = function setPlotConfig(obj) {
