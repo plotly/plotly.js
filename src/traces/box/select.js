@@ -79,40 +79,17 @@ exports.toggleSelected = function(searchInfo, selected, pointIds) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
-    var pointId;
     var pt;
-    var ptPos;
     var i;
     var j;
-
-    if(!modifyAll) {
-        // console.log(pointIds);
-    }
-
-    // Mutate state
-    // if(!modifyAll) {
-    //     for(i = 0; i < pointIds.length; i++) {
-    //         pointId = pointIds[i];
-    //         for(j = 0; j < cd.length; j++) {
-    //             ptPos = cd[j].pts.indexOf(pointId);
-    //             if(ptPos > -1) {
-    //                 pt = cd[j].pts[ptPos];
-    //                 pt.selected = selected ? 1 : 0;
-    //             }
-    //         }
-    //     }
-    // }
-
 
     for(i = 0; i < cd.length; i++) {
         for(j = 0; j < (cd[i].pts || []).length; j++) {
             pt = cd[i].pts[j];
 
             if(modifyAll) pt.selected = selected ? 1 : 0;
-            else {
-                if(pointIds.indexOf(pt.i) > -1) {
-                    pt.selected = selected ? 1 : 0;
-                }
+            else if(pointIds.indexOf(pt.i) > -1) {
+                pt.selected = selected ? 1 : 0;
             }
 
             if(pt.selected) {
