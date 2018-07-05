@@ -10,6 +10,56 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.39.0] -- 2018-07-05
+
+### Added
+- Add distributed npm packages for the main plotly.js bundle and all our partial
+  bundles for easy installation and bundling [#2670]
+- Add template machinery along with helpers methods `Plotly.makeTemplate` and
+  `Plotly.validateTemplate` [#2764]
+- Add 3D `streamtube` traces [#2658]
+- Add support for on-graph text in `scattergl` traces [#2737, #2783]
+- Add `gridshape` attribute to polar subplots with values `'circular'` (the
+  default) and `'linear'` (to draw polygon grids) [#2739]
+- Add `'range'` and `'change'` `aggregate` transform functions [#2764]
+- Add `visible` attribute to `rangeselector` and `updatemenu` buttons,  slider
+  steps and `mapbox` layout layers as well as `tickformatstops` items [#2761]
+- Add support for colorbar linked to `marker.color` values for `splom`,
+  `scatterpolar` and `scatterpolargl` traces [#2681]
+- Revamp icon settings in custom mode bar buttons, allowing users to specify
+  their own dimensions and SVG transforms [#2762]
+- Add `plotlyServerURL` config option [#2760]
+- Added no-WebGL warnings for graphs with `scattergl`, `scatterpolargl`, `splom`
+  and `parcoords` traces [#2697]
+
+### Changed
+- `plotly_afterplot` is now emitted after all edit types [#2773]
+- Trace `uid` is no longer mutated into user trace objects [#2681]
+- No longer add `marker.line` in `scattermapbox` fullData [#2766]
+- Use `regl@1.3.6` [#2694]
+- Use `mapbox-gl@0.45.0` [#2709]
+
+### Fixed
+- Fix `Plotly.react`'s handling of changing auto-margins [#2681]
+- Make plotting/updating WebGL-based traces fail gracefully when WebGL isn't
+  supported [#2697]
+- Fix mapbox layout layer updates [#2734]
+- Fix mapbox event inconsistencies [#2766]
+- Correctly emit `plotly_relayout` at end of scroll on mapbox subplots [#2709]
+- Fix `scatter3d` scalar `hovertext` handling [#2698]
+- Fix line decimation for segments crossing the viewport [#2705]
+- Fix `surface` trace contours when first level has length zero [#2712]
+- Fix `contour(x|y|z).highlight` partial settings [#2712]
+- Fix old date timezone precision in Chrome 67+ [#2747]
+- Fix `Plotly.validate` for attribute with trailing numbers (e.g. `x0`, `y1`) [#2761]
+- Fix x-only zoom moves when `xaxis.fixedrange: true`[#2776]
+- Fix colorbar edits for `parcoords` and `histogram` traces [#2681]
+- Fix bandwidth for single-value violins [#2775]
+- Sanitize `margin` after 'autosize' relayouts [#2758]
+- Make `Plots.resize` work when `layout` attribute is gone from graph div [#2710]
+- Fix `colorscale` attribute descriptions [#2658]
+
+
 ## [1.38.3] -- 2018-06-11
 
 ### Fixed
