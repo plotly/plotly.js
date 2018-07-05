@@ -239,6 +239,25 @@ describe('Test violin calc:', function() {
         expect(fullLayout._violinScaleGroupStats.one.maxWidth).toBeCloseTo(0.055);
         expect(fullLayout._violinScaleGroupStats.one.maxCount).toBe(8);
     });
+
+    it('handle multi-box / single-value case', function() {
+        _calc({
+            x: [1, 2, 3, 4, 5, 6],
+            y: [1, 2, 3, 4, 5, 6]
+        });
+
+        expect(cd.length).toBe(6, '# of violins');
+        expect(cd.every(function(d) { return d.bandwidth; })).toBe(true, 'bandwidth');
+    });
+
+    it('handle multi-value / single-but-unique-value case', function() {
+        _calc({
+            y: [1, 1, 1, 1, 1]
+        });
+
+        expect(cd.length).toBe(1, '# of violins');
+        expect(cd[0].bandwidth).toBe(1, 'bandwidth');
+    });
 });
 
 describe('Test violin hover:', function() {
