@@ -395,6 +395,26 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
         }
     }
 
+    /**
+     * Function to determine the clicked points for the given searchInfo (trace)
+     * based on the passed hoverData.
+     *
+     * Function assumes the following about hoverData:
+     * - when hoverData has more than one element (e.g. box trace),
+     *   if a point is hovered upon, the clicked point is the first
+     *   element in the array. It is assumed that fx/hover.js and satellite
+     *   modules are doing that correctly.
+     * - at the moment only one point at a time is considered to be selected
+     *   upon one click.
+     *
+     * Function also encapsulates special knowledge about the slight
+     * inconsistencies in what hoverData can look like for different
+     * trace types. As hoverData will become more homogeneous, this
+     * logic will become cleaner.
+     *
+     * See https://github.com/plotly/plotly.js/issues/1852 for the
+     * respective discussion.
+     */
     function clickedPtsFor(searchInfo, hoverData) {
         var clickedPts = [];
         var hoverDatum;
@@ -402,9 +422,12 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
         if(hoverData.length > 0) {
             hoverDatum = hoverData[0];
             if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
+                // Special case for box (and violin)
+                if(hoverDatum.hoverOnBox === true) return clickedPts;
+
                 // TODO hoverDatum not having a pointNumber but a binNumber seems to be an oddity of histogram only
                 // Not deleting .pointNumber in histogram/event_data.js would simplify code here and in addition
-                // would not break the hover event structure officially
+                // would not break the hover event structure
                 // documented at https://plot.ly/javascript/hover-events/
                 if(hoverDatum.pointNumber !== undefined) {
                     clickedPts.push({
