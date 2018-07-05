@@ -1,5 +1,6 @@
 var fs = require('fs');
 var exec = require('child_process').exec;
+var falafel = require('falafel');
 
 exports.execCmd = function(cmd, cb, errorCb) {
     cb = cb ? cb : function() {};
@@ -65,4 +66,42 @@ exports.touch = function(filePath) {
 
 exports.throwOnError = function(err) {
     if(err) throw err;
+};
+
+exports.findModuleList = function(pathToIndex) {
+    var code = fs.readFileSync(pathToIndex, 'utf-8');
+    // In v1.x, all partial bundles include the 'scatter' module
+    var moduleList = ['scatter'];
+
+    falafel(code, function(node) {
+        if(
+            node.type === 'Literal' &&
+            node.parent &&
+            node.parent.type === 'CallExpression' &&
+            node.parent.callee &&
+            node.parent.callee.type === 'Identifier' &&
+            node.parent.callee.name === 'require' &&
+            node.parent.parent &&
+            node.parent.parent.type === 'ArrayExpression'
+        ) {
+            var moduleName = node.value.replace('./', '');
+            moduleList.push(moduleName);
+        }
+    });
+
+    return moduleList;
+};
+
+exports.formatEnumeration = function(list) {
+    var len = list.length;
+
+    return list.map(function(l, i) {
+        var ending;
+
+        if(i === len - 2) ending = ' and';
+        else if(i < len - 1) ending = ',';
+        else ending = '';
+
+        return '`' + l + '`' + ending;
+    }).join(' ');
 };

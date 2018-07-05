@@ -46,7 +46,8 @@
     "baseline": "node tasks/baseline.js",
     "preversion": "check-node-version --node 8 --npm 5 && npm-link-check && npm ls --prod",
     "version": "npm run build && git add -A dist src build",
-    "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\""
+    "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
+    "postpublish": "node tasks/sync_package.js"
   },
   "browserify": {
     "transform": [
