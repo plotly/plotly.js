@@ -73,18 +73,9 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
         // always split the distance to the closest box
         t.wHover = t.dPos * (group ? groupFraction / numBoxes : 1);
 
-        // boxes and whiskers
         plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, t);
-
-        // draw points, if desired
-        if(trace.boxpoints) {
-            plotPoints(sel, {x: xa, y: ya}, trace, t);
-        }
-
-        // draw mean (and stdev diamond) if desired
-        if(trace.boxmean) {
-            plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, t);
-        }
+        plotPoints(sel, {x: xa, y: ya}, trace, t);
+        plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, t);
     });
 }
 
@@ -109,7 +100,14 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    var paths = sel.selectAll('path.box').data(Lib.identity);
+    var fn;
+    if(trace.type === 'box' ||
+        (trace.type === 'violin' && (trace.box || {}).visible)
+    ) {
+        fn = Lib.identity;
+    }
+
+    var paths = sel.selectAll('path.box').data(fn || []);
 
     paths.enter().append('path')
         .style('vector-effect', 'non-scaling-stroke')
@@ -187,16 +185,18 @@ function plotPoints(sel, axes, trace, t) {
     // repeatable pseudo-random number generator
     Lib.seedPseudoRandom();
 
-    var gPoints = sel.selectAll('g.points')
-        // since box plot points get an extra level of nesting, each
-        // box needs the trace styling info
-        .data(function(d) {
-            d.forEach(function(v) {
-                v.t = t;
-                v.trace = trace;
-            });
-            return d;
+    // since box plot points get an extra level of nesting, each
+    // box needs the trace styling info
+    var fn = function(d) {
+        d.forEach(function(v) {
+            v.t = t;
+            v.trace = trace;
         });
+        return d;
+    };
+
+    var gPoints = sel.selectAll('g.points')
+        .data(mode ? fn : []);
 
     gPoints.enter().append('g')
         .attr('class', 'points');
@@ -306,7 +306,14 @@ function plotBoxMean(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    var paths = sel.selectAll('path.mean').data(Lib.identity);
+    var fn;
+    if(trace.type === 'box' && trace.boxmean ||
+        (trace.type === 'violin' && (trace.box || {}).visible && (trace.meanline || {}).visible)
+    ) {
+        fn = Lib.identity;
+    }
+
+    var paths = sel.selectAll('path.mean').data(fn || []);
 
     paths.enter().append('path')
         .attr('class', 'mean')

@@ -35,11 +35,17 @@ module.exports = function style(gd, cd) {
             .call(Color.stroke, boxLine.color)
             .call(Color.fill, box.fillcolor);
 
+        var meanLineStyle = {
+            'stroke-width': meanLineWidth + 'px',
+            'stroke-dasharray': (2 * meanLineWidth) + 'px,' + meanLineWidth + 'px'
+        };
+
         sel.selectAll('path.mean')
-            .style({
-                'stroke-width': meanLineWidth + 'px',
-                'stroke-dasharray': (2 * meanLineWidth) + 'px,' + meanLineWidth + 'px'
-            })
+            .style(meanLineStyle)
+            .call(Color.stroke, meanline.color);
+
+        sel.selectAll('path.meanline')
+            .style(meanLineStyle)
             .call(Color.stroke, meanline.color);
 
         stylePoints(sel, trace, gd);
