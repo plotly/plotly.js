@@ -611,7 +611,9 @@ drawing.tryColorscale = function(marker, prefix) {
     return Lib.identity;
 };
 
-var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1};
+var TEXTOFFSETSIGN = {
+    start: 1, end: -1, middle: 0, bottom: 1, top: -1
+};
 
 function textPointPosition(s, textPosition, fontSize, markerRadius) {
     var group = d3.select(s.node().parentNode);
@@ -631,7 +633,7 @@ function textPointPosition(s, textPosition, fontSize, markerRadius) {
     var numLines = (svgTextUtils.lineCount(s) - 1) * LINE_SPACING + 1;
     var dx = TEXTOFFSETSIGN[h] * r;
     var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
-            (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
+        (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
 
     // fix the overall text group position
     s.attr('text-anchor', h);

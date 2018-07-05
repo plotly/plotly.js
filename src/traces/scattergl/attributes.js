@@ -37,9 +37,14 @@ var attrs = module.exports = overrideAll({
             'this trace\'s (x,y) coordinates.'
         ].join(' ')
     }),
+    hovertext: scatterAttrs.hovertext,
+
+    textposition: scatterAttrs.textposition,
+    textfont: scatterAttrs.textfont,
+
     mode: {
         valType: 'flaglist',
-        flags: ['lines', 'markers'],
+        flags: ['lines', 'markers', 'text'],
         extras: ['none'],
         role: 'info',
         description: [
@@ -77,10 +82,12 @@ var attrs = module.exports = overrideAll({
     hoveron: scatterAttrs.hoveron,
 
     selected: {
-        marker: scatterAttrs.selected.marker
+        marker: scatterAttrs.selected.marker,
+        textfont: scatterAttrs.selected.textfont
     },
     unselected: {
-        marker: scatterAttrs.unselected.marker
+        marker: scatterAttrs.unselected.marker,
+        textfont: scatterAttrs.unselected.textfont
     },
 
     opacity: plotAttrs.opacity

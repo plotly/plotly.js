@@ -87,7 +87,10 @@ function updateHeadersInSrcFiles() {
     });
 
     function isCorrect(header) {
-        return (header.value === licenseStr);
+        return (
+            header.value.replace(/\s+$/gm, '') ===
+            licenseStr.replace(/\s+$/gm, '')
+        );
     }
 
     function hasWrongDate(header) {
