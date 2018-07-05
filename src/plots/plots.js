@@ -1788,8 +1788,15 @@ plots.doAutoMargin = function(gd) {
     gs.h = Math.round(fullLayout.height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
-    if(!fullLayout._replotting && oldmargins !== '{}' &&
-            oldmargins !== JSON.stringify(fullLayout._size)) {
+    if(!fullLayout._replotting &&
+        oldmargins !== '{}' &&
+        oldmargins !== JSON.stringify(fullLayout._size)
+    ) {
+        if('_redrawFromAutoMarginCount' in fullLayout) {
+            fullLayout._redrawFromAutoMarginCount++;
+        } else {
+            fullLayout._redrawFromAutoMarginCount = 1;
+        }
         return Registry.call('plot', gd);
     }
 };

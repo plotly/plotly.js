@@ -539,6 +539,7 @@ describe('Test plot api', function() {
 
             supplyAllDefaults(gd);
             Plots.doCalcdata(gd);
+            gd.emit = function() {};
             return gd;
         }
 
@@ -699,6 +700,7 @@ describe('Test plot api', function() {
             gd.calcdata = gd._fullData.map(function(trace) {
                 return [{x: 1, y: 1, trace: trace}];
             });
+            gd.emit = function() {};
         }
 
         it('calls Scatter.arraysToCalcdata and Plots.style on scatter styling', function() {
@@ -2566,10 +2568,13 @@ describe('Test plot api', function() {
         ];
 
         var gd;
-        var plotCalls;
+        var afterPlotCnt;
 
         beforeEach(function() {
             gd = createGraphDiv();
+
+            spyOn(plotApi, 'plot').and.callThrough();
+            spyOn(Registry, 'call').and.callThrough();
 
             mockedMethods.forEach(function(m) {
                 spyOn(subroutines, m).and.callThrough();
@@ -2584,13 +2589,14 @@ describe('Test plot api', function() {
         afterEach(destroyGraphDiv);
 
         function countPlots() {
-            plotCalls = 0;
-
-            gd.on('plotly_afterplot', function() { plotCalls++; });
+            plotApi.plot.calls.reset();
             subroutines.layoutStyles.calls.reset();
             annotations.draw.calls.reset();
             annotations.drawOne.calls.reset();
             images.draw.calls.reset();
+
+            afterPlotCnt = 0;
+            gd.on('plotly_afterplot', function() { afterPlotCnt++; });
         }
 
         function countCalls(counts) {
@@ -2602,8 +2608,14 @@ describe('Test plot api', function() {
                 subroutines[m].calls.reset();
             });
 
-            expect(plotCalls).toBe(counts.plot || 0, 'calls to Plotly.plot');
-            plotCalls = 0;
+            // calls to Plotly.plot via plot_api.js or Registry.call('plot')
+            var plotCalls = plotApi.plot.calls.count() +
+                Registry.call.calls.all()
+                    .filter(function(d) { return d.args[0] === 'plot'; })
+                    .length;
+            expect(plotCalls).toBe(counts.plot || 0, 'Plotly.plot calls');
+            plotApi.plot.calls.reset();
+            Registry.call.calls.reset();
 
             // only consider annotation and image draw calls if we *don't* do a full plot.
             if(!counts.plot) {
@@ -2614,6 +2626,9 @@ describe('Test plot api', function() {
             annotations.draw.calls.reset();
             annotations.drawOne.calls.reset();
             images.draw.calls.reset();
+
+            expect(afterPlotCnt).toBe(1, 'plotly_afterplot should be called only once per edit');
+            afterPlotCnt = 0;
         }
 
         it('can add / remove traces', function(done) {
@@ -2654,6 +2669,7 @@ describe('Test plot api', function() {
             .then(function() {
                 // didn't pick it up, as we modified in place!!!
                 expect(d3.selectAll('.point').size()).toBe(3);
+                countCalls({plot: 0});
 
                 data[0].y = [1, 2, 3, 4, 5];
                 return Plotly.react(gd, data, layout);
@@ -2661,7 +2677,6 @@ describe('Test plot api', function() {
             .then(function() {
                 // new object, we picked it up!
                 expect(d3.selectAll('.point').size()).toBe(5);
-
                 countCalls({plot: 1});
             })
             .catch(failTest)
@@ -2683,6 +2698,7 @@ describe('Test plot api', function() {
             .then(function() {
                 // didn't pick it up, as we didn't modify datarevision
                 expect(d3.selectAll('.point').size()).toBe(3);
+                countCalls({plot: 0});
 
                 data[0].y.push(5);
                 layout.datarevision = 'bananas';
@@ -2869,7 +2885,7 @@ describe('Test plot api', function() {
                     sizex: 1,
                     sizey: 1
                 }];
-                Plotly.react(gd, data, layout);
+                return Plotly.react(gd, data, layout);
             })
             .then(function() {
                 countCalls({imageDraw: 1});
@@ -2883,7 +2899,7 @@ describe('Test plot api', function() {
 
                 layout.images[0].y = 0.8;
                 layout.images[0].sizey = 0.4;
-                Plotly.react(gd, data, layout);
+                return Plotly.react(gd, data, layout);
             })
             .then(function() {
                 countCalls({imageDraw: 1});

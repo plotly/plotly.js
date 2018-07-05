@@ -28,7 +28,7 @@ var cleanAxisConstraints = axisConstraints.clean;
 var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
 
 exports.layoutStyles = function(gd) {
-    return Lib.syncOrAsync([Plots.doAutoMargin, exports.lsInner], gd);
+    return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
 };
 
 function overlappingDomain(xDomain, yDomain, domains) {
@@ -46,7 +46,7 @@ function overlappingDomain(xDomain, yDomain, domains) {
     return false;
 }
 
-exports.lsInner = function(gd) {
+function lsInner(gd) {
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
     var pad = gs.p;
@@ -327,7 +327,7 @@ exports.lsInner = function(gd) {
     ModeBar.manage(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
-};
+}
 
 function findMainSubplot(ax, fullLayout) {
     var subplotList = fullLayout._subplots;
