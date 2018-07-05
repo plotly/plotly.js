@@ -136,6 +136,143 @@ describe('ModeBar', function() {
             ]]);
             expect(checkBtnAttr(modeBar, 0, 'data-title')).toEqual('0');
         });
+
+        describe('creates a custom button', function() {
+            function getIconSvg(modeBar) {
+                if(!modeBar || !modeBar.buttonElements || !modeBar.buttonElements.length > 0) {
+                    return undefined;
+                }
+                var button = modeBar.buttonElements[0];
+                return d3.select(button).select('svg');
+            }
+
+            it('with a Plotly icon', function() {
+                var modeBar = createModeBar(getMockGraphInfo(), [[
+                    {
+                        name: 'some button',
+                        click: noop,
+                        icon: Plotly.Icons.home
+                    }
+                ]]);
+
+                var svg = getIconSvg(modeBar);
+                expect(svg).toBeDefined();
+                var path = svg.select('path');
+                expect(path.attr('d')).toBeDefined();
+                expect(path.attr('transform')).toBeDefined();
+            });
+
+            it('with a custom icon', function() {
+                var modeBar = createModeBar(getMockGraphInfo(), [[
+                    {
+                        name: 'some button',
+                        click: noop,
+                        icon: {
+                            width: 1000,
+                            height: 1000,
+                            path: 'M0,-150 L1000,-150 L500,850 L0,-150 Z',
+                            transform: 'matrix(1 0 0 -1 0 850)',
+                        }
+                    }
+                ]]);
+
+                var svg = getIconSvg(modeBar);
+                expect(svg).toBeDefined();
+                expect(svg.attr('viewBox')).toBe('0 0 1000 1000');
+                var path = svg.select('path');
+                expect(path.attr('d')).toBeDefined();
+                expect(path.attr('transform')).toEqual('matrix(1 0 0 -1 0 850)');
+            });
+
+            it('with a custom icon with no transform', function() {
+                var modeBar = createModeBar(getMockGraphInfo(), [[
+                    {
+                        name: 'some button',
+                        click: noop,
+                        icon: {
+                            width: 1000,
+                            height: 1000,
+                            path: 'M500,0 L1000,1000 L0,1000 L500,0 Z',
+                        }
+                    }
+                ]]);
+
+                var svg = getIconSvg(modeBar);
+                expect(svg).toBeDefined();
+                expect(svg.attr('viewBox')).toBe('0 0 1000 1000');
+                var path = svg.select('path');
+                expect(path.attr('d')).toBeDefined();
+                expect(path.attr('transform')).toBeNull();
+            });
+
+            it('with a custom icon created by a function', function() {
+                var modeBar = createModeBar(getMockGraphInfo(), [[
+                    {
+                        name: 'some button',
+                        click: noop,
+                        icon: function() {
+                            var xmlns = 'http://www.w3.org/2000/svg';
+                            var icon = document.createElementNS(xmlns, 'svg');
+                            icon.setAttribute('viewBox', '0 0 1000 1000');
+                            icon.setAttribute('height', '1em');
+                            icon.setAttribute('width', '1em');
+                            icon.setAttribute('class', 'custom-svg');
+                            var path = document.createElementNS(xmlns, 'path');
+                            path.setAttribute('d', 'M500,0 L1000,1000 L0,1000 L500,0 Z');
+                            icon.appendChild(path);
+                            return icon;
+                        }
+                    }
+                ]]);
+
+                var svg = getIconSvg(modeBar);
+                expect(svg).toBeDefined();
+                expect(svg.attr('viewBox')).toBe('0 0 1000 1000');
+                expect(svg.attr('class')).toBe('custom-svg');
+                var path = svg.select('path');
+                expect(path.attr('d')).toBeDefined();
+                expect(path.attr('transform')).toBeNull();
+            });
+
+            it('with a legacy icon config', function() {
+                var modeBar = createModeBar(getMockGraphInfo(), [[
+                    {
+                        name: 'some button',
+                        click: noop,
+                        icon: {
+                            width: 1000,
+                            path: 'M0,-150 L1000,-150 L500,850 L0,-150 Z',
+                            ascent: 850,
+                            descent: -150
+                        }
+                    }
+                ]]);
+
+                var svg = getIconSvg(modeBar);
+                expect(svg).toBeDefined();
+                expect(svg.attr('viewBox')).toBe('0 0 1000 1000');
+                var path = svg.select('path');
+                expect(path.attr('d')).toBeDefined();
+                expect(path.attr('transform')).toEqual('matrix(1 0 0 -1 0 850)');
+            });
+
+            it('with the spikeline icon', function() {
+                var modeBar = createModeBar(getMockGraphInfo(), [[
+                    {
+                        name: 'some button',
+                        click: noop,
+                        icon: Plotly.Icons.spikeline
+                    }
+                ]]);
+
+                var svg = getIconSvg(modeBar);
+                expect(svg).toBeDefined();
+                expect(svg.attr('viewBox')).toBe('0 0 1000 1000');
+                var path = svg.select('path');
+                expect(path.attr('d')).toBeDefined();
+                expect(path.attr('transform')).toEqual('matrix(1.5 0 0 -1.5 0 850)');
+            });
+        });
     });
 
     describe('modeBar.removeAllButtons', function() {
