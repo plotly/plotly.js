@@ -16,7 +16,8 @@ module.exports = {
         role: 'info',
         values: [],     // listed dynamically
         dflt: 'scatter',
-        editType: 'calc+clearAxisTypes'
+        editType: 'calc+clearAxisTypes',
+        _noTemplating: true // we handle this at a higher level
     },
     visible: {
         valType: 'enumerated',

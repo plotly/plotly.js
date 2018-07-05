@@ -39,8 +39,9 @@ proto.update = function update(opts) {
         this.updateLayer(opts);
     } else if(this.needsNewSource(opts)) {
         // IMPORTANT: must delete layer before source to not cause errors
-        this.updateLayer(opts);
+        this.removeLayer();
         this.updateSource(opts);
+        this.updateLayer(opts);
     } else if(this.needsNewLayer(opts)) {
         this.updateLayer(opts);
     } else {
@@ -87,8 +88,7 @@ proto.updateLayer = function(opts) {
     var map = this.map;
     var convertedOpts = convertOpts(opts);
 
-    if(map.getLayer(this.idLayer)) map.removeLayer(this.idLayer);
-
+    this.removeLayer();
     this.layerType = opts.type;
 
     if(isVisible(opts)) {
@@ -111,6 +111,13 @@ proto.updateStyle = function(opts) {
     }
 };
 
+proto.removeLayer = function() {
+    var map = this.map;
+    if(map.getLayer(this.idLayer)) {
+        map.removeLayer(this.idLayer);
+    }
+};
+
 proto.dispose = function dispose() {
     var map = this.map;
     map.removeLayer(this.idLayer);
@@ -120,7 +127,7 @@ proto.dispose = function dispose() {
 function isVisible(opts) {
     var source = opts.source;
 
-    return (
+    return opts.visible && (
         Lib.isPlainObject(source) ||
         (typeof source === 'string' && source.length > 0)
     );

@@ -13,11 +13,18 @@ var padAttrs = require('../../plots/pad_attributes');
 var extendDeepAll = require('../../lib/extend').extendDeepAll;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var animationAttrs = require('../../plots/animation_attributes');
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var constants = require('./constants');
 
-var stepsAttrs = {
-    _isLinkedToArray: 'step',
-
+var stepsAttrs = templatedArray('step', {
+    visible: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: [
+            'Determines whether or not this step is included in the slider.'
+        ].join(' ')
+    },
     method: {
         valType: 'enumerated',
         values: ['restyle', 'relayout', 'animate', 'update', 'skip'],
@@ -70,11 +77,9 @@ var stepsAttrs = {
             'specification of `method` and `args`.'
         ].join(' ')
     }
-};
+});
 
-module.exports = overrideAll({
-    _isLinkedToArray: 'slider',
-
+module.exports = overrideAll(templatedArray('slider', {
     visible: {
         valType: 'boolean',
         role: 'info',
@@ -285,4 +290,4 @@ module.exports = overrideAll({
         role: 'style',
         description: 'Sets the length in pixels of minor step tick marks'
     }
-}, 'arraydraw', 'from-root');
+}), 'arraydraw', 'from-root');

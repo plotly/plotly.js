@@ -11,10 +11,9 @@
 
 var annAtts = require('../annotations/attributes');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
-module.exports = overrideAll({
-    _isLinkedToArray: 'annotation',
-
+module.exports = overrideAll(templatedArray('annotation', {
     visible: annAtts.visible,
     x: {
         valType: 'any',
@@ -94,4 +93,4 @@ module.exports = overrideAll({
     // xref: 'x'
     // yref: 'y
     // zref: 'z'
-}, 'calc', 'from-root');
+}), 'calc', 'from-root');

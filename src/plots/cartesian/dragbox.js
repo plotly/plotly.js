@@ -331,10 +331,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // look for small drags in one direction or the other,
         // and only drag the other axis
         else if(!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
-            if(dx < MINDRAG) {
+            if(dx < MINDRAG || !xActive) {
                 noZoom();
-            }
-            else {
+            } else {
                 box.t = 0;
                 box.b = ph;
                 zoomMode = 'x';

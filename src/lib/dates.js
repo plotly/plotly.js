@@ -138,7 +138,16 @@ exports.dateTime2ms = function(s, calendar) {
     if(exports.isJSDate(s)) {
         // Convert to the UTC milliseconds that give the same
         // hours as this date has in the local timezone
-        s = Number(s) - s.getTimezoneOffset() * ONEMIN;
+        var tzOffset = s.getTimezoneOffset() * ONEMIN;
+        var offsetTweak = (s.getUTCMinutes() - s.getMinutes()) * ONEMIN +
+            (s.getUTCSeconds() - s.getSeconds()) * ONESEC +
+            (s.getUTCMilliseconds() - s.getMilliseconds());
+
+        if(offsetTweak) {
+            var comb = 3 * ONEMIN;
+            tzOffset = tzOffset - comb / 2 + mod(offsetTweak - tzOffset + comb / 2, comb);
+        }
+        s = Number(s) - tzOffset;
         if(s >= MIN_MS && s <= MAX_MS) return s;
         return BADNUM;
     }

@@ -21,6 +21,10 @@ module.exports = {
     // no interactivity, for export or image generation
     staticPlot: false,
 
+    // base URL for the 'Edit in Chart Studio' (aka sendDataToCloud) mode bar button
+    // and the showLink/sendData on-graph link
+    plotlyServerURL: 'https://plot.ly',
+
     /*
      * we can edit titles, move annotations, etc - sets all pieces of `edits`
      * unless a separate `edits` config item overrides individual parts

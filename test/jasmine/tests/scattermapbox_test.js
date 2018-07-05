@@ -110,6 +110,17 @@ describe('scattermapbox defaults', function() {
         expect(fullTrace.marker.color).toEqual(['red', 'green', 'blue']);
         expect(fullTrace.marker.size).toEqual([10, 20, 30]);
     });
+
+    it('should not fill *marker.line* in fullData while is not available', function() {
+        var fullTrace = _supply({
+            mode: 'markers',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30]
+        });
+
+        expect(fullTrace.marker).toBeDefined();
+        expect(fullTrace.marker.line).toBeUndefined();
+    });
 });
 
 describe('scattermapbox convert', function() {

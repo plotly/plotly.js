@@ -9,8 +9,9 @@ var Drawing = require('@src/components/drawing');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var TRANSITION_DELAY = 100;
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var getBBox = require('../assets/get_bbox');
+var delay = require('../assets/delay');
 
 describe('update menus defaults', function() {
     'use strict';
@@ -45,14 +46,13 @@ describe('update menus defaults', function() {
         supply(layoutIn, layoutOut);
 
         expect(layoutIn.updatemenus).toEqual(updatemenus);
+        expect(layoutOut.updatemenus.length).toEqual(layoutIn.updatemenus.length);
 
         layoutOut.updatemenus.forEach(function(item, i) {
-            expect(item).toEqual({
+            expect(item).toEqual(jasmine.objectContaining({
                 visible: false,
-                buttons: [],
-                _input: {},
                 _index: i
-            });
+            }));
         });
     });
 
@@ -93,7 +93,7 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[2].active).toBeUndefined();
     });
 
-    it('should skip over non-object buttons', function() {
+    it('should set non-object buttons visible: false', function() {
         layoutIn.updatemenus = [{
             buttons: [
                 null,
@@ -107,17 +107,23 @@ describe('update menus defaults', function() {
 
         supply(layoutIn, layoutOut);
 
-        expect(layoutOut.updatemenus[0].buttons.length).toEqual(1);
-        expect(layoutOut.updatemenus[0].buttons[0]).toEqual({
-            method: 'relayout',
-            args: ['title', 'Hello World'],
-            execute: true,
-            label: '',
-            _index: 1
+        expect(layoutOut.updatemenus[0].buttons.length).toEqual(3);
+        [0, 2].forEach(function(i) {
+            expect(layoutOut.updatemenus[0].buttons[i]).toEqual(
+                jasmine.objectContaining({visible: false}));
         });
+        expect(layoutOut.updatemenus[0].buttons[1]).toEqual(
+            jasmine.objectContaining({
+                visible: true,
+                method: 'relayout',
+                args: ['title', 'Hello World'],
+                execute: true,
+                label: '',
+                _index: 1
+            }));
     });
 
-    it('should skip over buttons with array \'args\' field', function() {
+    it('should skip over buttons without array \'args\' field', function() {
         layoutIn.updatemenus = [{
             buttons: [{
                 method: 'restyle',
@@ -132,17 +138,23 @@ describe('update menus defaults', function() {
 
         supply(layoutIn, layoutOut);
 
-        expect(layoutOut.updatemenus[0].buttons.length).toEqual(1);
-        expect(layoutOut.updatemenus[0].buttons[0]).toEqual({
-            method: 'relayout',
-            args: ['title', 'Hello World'],
-            execute: true,
-            label: '',
-            _index: 1
+        expect(layoutOut.updatemenus[0].buttons.length).toEqual(4);
+        [0, 2, 3].forEach(function(i) {
+            expect(layoutOut.updatemenus[0].buttons[i]).toEqual(
+                jasmine.objectContaining({visible: false}));
         });
+        expect(layoutOut.updatemenus[0].buttons[1]).toEqual(
+            jasmine.objectContaining({
+                visible: true,
+                method: 'relayout',
+                args: ['title', 'Hello World'],
+                execute: true,
+                label: '',
+                _index: 1
+            }));
     });
 
-    it('allow the `skip` method', function() {
+    it('allows the `skip` method with no args', function() {
         layoutIn.updatemenus = [{
             buttons: [{
                 method: 'skip',
@@ -155,18 +167,21 @@ describe('update menus defaults', function() {
         supply(layoutIn, layoutOut);
 
         expect(layoutOut.updatemenus[0].buttons.length).toEqual(2);
-        expect(layoutOut.updatemenus[0].buttons[0]).toEqual({
+        expect(layoutOut.updatemenus[0].buttons[0]).toEqual(jasmine.objectContaining({
+            visible: true,
             method: 'skip',
             label: '',
             execute: true,
             _index: 0
-        }, {
+        }));
+        expect(layoutOut.updatemenus[0].buttons[1]).toEqual(jasmine.objectContaining({
+            visible: true,
             method: 'skip',
             args: ['title', 'Hello World'],
             label: '',
             execute: true,
             _index: 1
-        });
+        }));
     });
 
     it('should keep ref to input update menu container', function() {
@@ -264,7 +279,9 @@ describe('update menus buttons', function() {
         buttonMenus = allMenus.filter(function(opts) { return opts.type === 'buttons'; });
         dropdownMenus = allMenus.filter(function(opts) { return opts.type !== 'buttons'; });
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        .catch(failTest)
+        .then(done);
     });
 
     afterEach(function() {
@@ -272,7 +289,7 @@ describe('update menus buttons', function() {
         destroyGraphDiv();
     });
 
-    it('creates button menus', function(done) {
+    it('creates button menus', function() {
         assertNodeCount('.' + constants.containerClassName, 1);
 
         // 12 menus, but button menus don't have headers, so there are only six headers:
@@ -283,8 +300,6 @@ describe('update menus buttons', function() {
         buttonMenus.forEach(function(menu) { buttonCount += menu.buttons.length; });
 
         assertNodeCount('.' + constants.buttonClassName, buttonCount);
-
-        done();
     });
 
     function assertNodeCount(query, cnt) {
@@ -306,7 +321,9 @@ describe('update menus initialization', function() {
                     {method: 'restyle', args: [], label: 'second'},
                 ]
             }]
-        }).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     afterEach(function() {
@@ -335,7 +352,9 @@ describe('update menus interactions', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.updatemenus[1].x = 1;
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+        .catch(failTest)
+        .then(done);
     });
 
     afterEach(function() {
@@ -419,6 +438,7 @@ describe('update menus interactions', function() {
             assertPushMargins([false, false, false]);
 
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -446,8 +466,29 @@ describe('update menus interactions', function() {
             return click(header0);
         }).then(function() {
             assertMenus([3, 0]);
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('can set buttons visible or hidden', function(done) {
+        assertMenus([0, 0]);
+        click(selectHeader(1))
+        .then(function() {
+            assertMenus([0, 4]);
+            return Plotly.relayout(gd, {'updatemenus[1].buttons[1].visible': false});
+        })
+        .then(delay(4 * TRANSITION_DELAY))
+        .then(function() {
+            assertMenus([0, 3]);
+            return Plotly.relayout(gd, {'updatemenus[1].buttons[1].visible': true});
+        })
+        .then(delay(4 * TRANSITION_DELAY))
+        .then(function() {
+            assertMenus([0, 4]);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should execute the API command when execute = true', function(done) {
@@ -458,7 +499,9 @@ describe('update menus interactions', function() {
         }).then(function() {
             // Has been changed:
             expect(gd.data[0].line.color).toEqual('green');
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should not execute the API command when execute = false', function(done) {
@@ -473,7 +516,9 @@ describe('update menus interactions', function() {
         }).then(function() {
             // Is unchanged:
             expect(gd.data[0].line.color).toEqual('blue');
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should emit an event on button click', function(done) {
@@ -498,7 +543,9 @@ describe('update menus interactions', function() {
             expect(clickCnt).toEqual(2);
             expect(data.length).toEqual(2);
             expect(data[1].active).toEqual(1);
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should still emit the event if method = skip', function(done) {
@@ -518,14 +565,16 @@ describe('update menus interactions', function() {
             'updatemenus[1].buttons[2].method': 'skip',
             'updatemenus[1].buttons[3].method': 'skip',
         }).then(function() {
-            click(selectHeader(0)).then(function() {
-                expect(clickCnt).toEqual(0);
+            return click(selectHeader(0));
+        }).then(function() {
+            expect(clickCnt).toEqual(0);
 
-                return click(selectButton(2));
-            }).then(function() {
-                expect(clickCnt).toEqual(1);
-            }).catch(fail).then(done);
-        });
+            return click(selectButton(2));
+        }).then(function() {
+            expect(clickCnt).toEqual(1);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should apply update on button click', function(done) {
@@ -548,9 +597,9 @@ describe('update menus interactions', function() {
             return click(selectButton(0));
         }).then(function() {
             assertActive(gd, [0, 0]);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should update correctly on failed binding comparisons', function(done) {
@@ -596,6 +645,7 @@ describe('update menus interactions', function() {
         .then(function() {
             assertActive(gd, [1]);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -629,9 +679,9 @@ describe('update menus interactions', function() {
             assertItemColor(button, activeColor);
             mouseEvent('mouseout', button);
             assertItemColor(button, activeColor);
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('should relayout', function(done) {
@@ -684,9 +734,9 @@ describe('update menus interactions', function() {
         }).then(function() {
             assertItemColor(selectHeader(0), 'rgb(0, 0, 0)');
             assertItemColor(selectHeader(1), 'rgb(0, 0, 0)');
-
-            done();
-        });
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('applies padding on all sides', function(done) {
@@ -717,7 +767,9 @@ describe('update menus interactions', function() {
 
             expect(xy1[0] - xy2[0]).toEqual(xpad);
             expect(xy1[1] - xy2[1]).toEqual(ypad);
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('applies y padding on relayout', function(done) {
@@ -740,7 +792,9 @@ describe('update menus interactions', function() {
             x2 = parseInt(firstMenu.attr('transform').match(/translate\(([^,]*).*/)[1]);
 
             expect(x1 - x2).toBeCloseTo(padShift, 1);
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     function assertNodeCount(query, cnt) {
@@ -880,7 +934,7 @@ describe('update menus interaction with other components:', function() {
             expect(menuLayer.selectAll('.updatemenu-container').size()).toBe(1);
             expect(infoLayer.node().nextSibling).toBe(menuLayer.node());
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -990,7 +1044,9 @@ describe('update menus interaction with scrollbox:', function() {
             menuLeft = menus[2];
             menuRight = menus[3];
             menuUp = menus[4];
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     afterEach(function() {

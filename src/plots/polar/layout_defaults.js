@@ -49,6 +49,10 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         }
 
         var axIn = contIn[axName];
+        // Note: does not need template propagation, since coerceAxis is still
+        // based on the subplot-wide coerce function. Though it may be more
+        // efficient to make a new coerce function, then we *would* need to
+        // propagate the template.
         var axOut = contOut[axName] = {};
         axOut._id = axOut._name = axName;
 
@@ -176,6 +180,10 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         if(axType !== 'category') coerceAxis('hoverformat');
 
         axOut._input = axIn;
+    }
+
+    if(contOut.angularaxis.type === 'category') {
+        coerce('gridshape');
     }
 }
 

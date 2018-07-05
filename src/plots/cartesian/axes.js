@@ -1389,14 +1389,15 @@ axes.getTickFormat = function(ax) {
         return (isLeftDtickNull || isDtickInRangeLeft) && (isRightDtickNull || isDtickInRangeRight);
     }
 
-    var tickstop;
+    var tickstop, stopi;
     if(ax.tickformatstops && ax.tickformatstops.length > 0) {
         switch(ax.type) {
             case 'date':
             case 'linear': {
                 for(i = 0; i < ax.tickformatstops.length; i++) {
-                    if(isProperStop(ax.dtick, ax.tickformatstops[i].dtickrange, convertToMs)) {
-                        tickstop = ax.tickformatstops[i];
+                    stopi = ax.tickformatstops[i];
+                    if(stopi.enabled && isProperStop(ax.dtick, stopi.dtickrange, convertToMs)) {
+                        tickstop = stopi;
                         break;
                     }
                 }
@@ -1404,8 +1405,9 @@ axes.getTickFormat = function(ax) {
             }
             case 'log': {
                 for(i = 0; i < ax.tickformatstops.length; i++) {
-                    if(isProperLogStop(ax.dtick, ax.tickformatstops[i].dtickrange)) {
-                        tickstop = ax.tickformatstops[i];
+                    stopi = ax.tickformatstops[i];
+                    if(stopi.enabled && isProperLogStop(ax.dtick, stopi.dtickrange)) {
+                        tickstop = stopi;
                         break;
                     }
                 }

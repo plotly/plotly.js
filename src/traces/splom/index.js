@@ -20,8 +20,8 @@ var subTypes = require('../scatter/subtypes');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 var calcAxisExpansion = require('../scatter/calc').calcAxisExpansion;
 var calcColorscales = require('../scatter/colorscale_calc');
-var convertMarkerSelection = require('../scattergl/convert').convertMarkerSelection;
-var convertMarkerStyle = require('../scattergl/convert').convertMarkerStyle;
+var convertMarkerSelection = require('../scattergl/convert').markerSelection;
+var convertMarkerStyle = require('../scattergl/convert').markerStyle;
 var calcHover = require('../scattergl').calcHover;
 
 var BADNUM = require('../../constants/numerical').BADNUM;

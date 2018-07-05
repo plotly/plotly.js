@@ -83,6 +83,9 @@ function silvermanRule(len, ssd, iqr) {
 function calcBandwidth(trace, cdi, vals) {
     var span = cdi.max - cdi.min;
 
+    // plot single-value violin with bandwidth of 1
+    if(!span) return 1;
+
     // Limit how small the bandwidth can be.
     //
     // Silverman's rule of thumb can be "very" small

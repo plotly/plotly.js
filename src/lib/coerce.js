@@ -343,12 +343,12 @@ exports.valObjectMeta = {
                         return false;
                     }
                     for(var j = 0; j < v[i].length; j++) {
-                        if(!exports.validate(v[i][j], arrayItems ? items[i][j] : items)) {
+                        if(!validate(v[i][j], arrayItems ? items[i][j] : items)) {
                             return false;
                         }
                     }
                 }
-                else if(!exports.validate(v[i], arrayItems ? items[i] : items)) return false;
+                else if(!validate(v[i], arrayItems ? items[i] : items)) return false;
             }
 
             return true;
@@ -369,10 +369,17 @@ exports.valObjectMeta = {
  *      as a convenience, returns the value it finally set
  */
 exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
-    var opts = nestedProperty(attributes, attribute).get(),
-        propIn = nestedProperty(containerIn, attribute),
-        propOut = nestedProperty(containerOut, attribute),
-        v = propIn.get();
+    var opts = nestedProperty(attributes, attribute).get();
+    var propIn = nestedProperty(containerIn, attribute);
+    var propOut = nestedProperty(containerOut, attribute);
+    var v = propIn.get();
+
+    var template = containerOut._template;
+    if(v === undefined && template) {
+        v = nestedProperty(template, attribute).get();
+        // already used the template value, so short-circuit the second check
+        template = 0;
+    }
 
     if(dflt === undefined) dflt = opts.dflt;
 
@@ -387,9 +394,18 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
         return v;
     }
 
-    exports.valObjectMeta[opts.valType].coerceFunction(v, propOut, dflt, opts);
+    var coerceFunction = exports.valObjectMeta[opts.valType].coerceFunction;
+    coerceFunction(v, propOut, dflt, opts);
 
-    return propOut.get();
+    var out = propOut.get();
+    // in case v was provided but invalid, try the template again so it still
+    // overrides the regular default
+    if(template && out === dflt && !validate(v, opts)) {
+        v = nestedProperty(template, attribute).get();
+        coerceFunction(v, propOut, dflt, opts);
+        out = propOut.get();
+    }
+    return out;
 };
 
 /**
@@ -486,7 +502,7 @@ exports.coerceSelectionMarkerOpacity = function(traceOut, coerce) {
     coerce('unselected.marker.opacity', usmoDflt);
 };
 
-exports.validate = function(value, opts) {
+function validate(value, opts) {
     var valObjectDef = exports.valObjectMeta[opts.valType];
 
     if(opts.arrayOk && isArrayOrTypedArray(value)) return true;
@@ -503,4 +519,5 @@ exports.validate = function(value, opts) {
 
     valObjectDef.coerceFunction(value, propMock, failed, opts);
     return out !== failed;
-};
+}
+exports.validate = validate;
