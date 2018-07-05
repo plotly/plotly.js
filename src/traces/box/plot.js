@@ -102,6 +102,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
 
     var fn;
     if(trace.type === 'box' ||
+        trace.type === 'candlestick' ||
         (trace.type === 'violin' && (trace.box || {}).visible)
     ) {
         fn = Lib.identity;
