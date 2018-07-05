@@ -292,6 +292,9 @@ function plotBoxMean(sel, axes, trace, t) {
     var bPos = t.bPos;
     var bPosPxOffset = t.bPosPxOffset || 0;
 
+    // to support violin mean lines
+    var mode = trace.boxmean || (trace.meanline || {}).visible;
+
     // to support for one-sided box
     var bdPos0;
     var bdPos1;
@@ -325,14 +328,14 @@ function plotBoxMean(sel, axes, trace, t) {
         if(trace.orientation === 'h') {
             d3.select(this).attr('d',
                 'M' + m + ',' + pos0 + 'V' + pos1 +
-                (trace.boxmean === 'sd' ?
+                (mode === 'sd' ?
                     'm0,0L' + sl + ',' + posc + 'L' + m + ',' + pos0 + 'L' + sh + ',' + posc + 'Z' :
                     '')
             );
         } else {
             d3.select(this).attr('d',
                 'M' + pos0 + ',' + m + 'H' + pos1 +
-                (trace.boxmean === 'sd' ?
+                (mode === 'sd' ?
                     'm0,0L' + posc + ',' + sl + 'L' + pos0 + ',' + m + 'L' + posc + ',' + sh + 'Z' :
                     '')
             );
