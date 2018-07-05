@@ -272,30 +272,6 @@ describe('ModeBar', function() {
                 expect(path.attr('d')).toBeDefined();
                 expect(path.attr('transform')).toEqual('matrix(1.5 0 0 -1.5 0 850)');
             });
-
-            it('with the legacy spikelines button config', function() {
-                var modeBar = createModeBar(getMockGraphInfo(), [[
-                    {
-                        name: 'toggleSpikelines',
-                        attr: '_cartesianSpikesEnabled',
-                        val: 'on',
-                        click: noop,
-                        icon: {
-                            width: 1000,
-                            path: 'M512 409c0-57-46-104-103-104-57 0-104 47-104 104 0 57 47 103 104 103 57 0 103-46 103-103z m-327-39l92 0 0 92-92 0z m-185 0l92 0 0 92-92 0z m370-186l92 0 0 93-92 0z m0-184l92 0 0 92-92 0z',
-                            ascent: 850,
-                            descent: -150
-                        }
-                    }
-                ]]);
-
-                var svg = getIconSvg(modeBar);
-                expect(svg).toBeDefined();
-                expect(svg.attr('viewBox')).toBe('0 0 1000 1000');
-                var path = svg.select('path');
-                expect(path.attr('d')).toBeDefined();
-                expect(path.attr('transform')).toEqual('matrix(1.5 0 0 -1.5 0 850)');
-            });
         });
     });
 

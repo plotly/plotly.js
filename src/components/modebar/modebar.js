@@ -161,7 +161,7 @@ proto.createButton = function(config) {
         button.appendChild(icon());
     }
     else {
-        button.appendChild(this.createIcon(icon || Icons.question, config.name));
+        button.appendChild(this.createIcon(icon || Icons.question));
     }
     button.setAttribute('data-gravity', config.gravity || 'n');
 
@@ -175,7 +175,7 @@ proto.createButton = function(config) {
  * @Param {string} thisIcon.path
  * @Return {HTMLelement}
  */
-proto.createIcon = function(thisIcon, name) {
+proto.createIcon = function(thisIcon) {
     var iconHeight = isNumeric(thisIcon.height) ?
             Number(thisIcon.height) :
             thisIcon.ascent - thisIcon.descent,
@@ -194,10 +194,7 @@ proto.createIcon = function(thisIcon, name) {
     }
     else if(thisIcon.ascent !== undefined) {
         // Legacy icon transform calculation
-        var transform = name === 'toggleSpikelines' ?
-            'matrix(1.5 0 0 -1.5 0 ' + thisIcon.ascent + ')' :
-            'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')';
-        path.setAttribute('transform', transform);
+        path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')');
     }
 
     icon.appendChild(path);
