@@ -14,7 +14,10 @@ module.exports = function calc(gd, trace) {
     var u = trace.u;
     var v = trace.v;
     var w = trace.w;
-    var len = Math.min(u.length, v.length, w.length);
+    var len = Math.min(
+        trace.x.length, trace.y.length, trace.z.length,
+        u.length, v.length, w.length
+    );
     var normMax = -Infinity;
     var normMin = Infinity;
 
@@ -28,6 +31,7 @@ module.exports = function calc(gd, trace) {
         normMin = Math.min(normMin, norm);
     }
 
+    trace._len = len;
     trace._normMax = normMax;
 
     colorscaleCalc(trace, [normMin, normMax], '', 'c');

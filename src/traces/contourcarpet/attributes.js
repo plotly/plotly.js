@@ -19,7 +19,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line;
 
-module.exports = extendFlat({}, {
+module.exports = extendFlat({
     carpet: {
         valType: 'string',
         role: 'info',
@@ -92,7 +92,10 @@ module.exports = extendFlat({}, {
         editType: 'plot'
     }
 },
-    colorscaleAttrs,
-    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
+
+    colorscaleAttrs('', {
+        cLetter: 'z',
+        autoColorDflt: false
+    }),
     { colorbar: colorbarAttrs }
 );
