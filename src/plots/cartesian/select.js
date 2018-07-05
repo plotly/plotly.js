@@ -329,9 +329,9 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // Missing features
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
+// TODO remove console.log statements
 function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
     var hoverData = gd._hoverdata;
-    var isHoverDataSet = hoverData && Array.isArray(hoverData);
     var retainSelection = shouldRetainSelection(evt);
     var searchTraces;
     var searchInfo;
@@ -346,7 +346,7 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
     var i;
     var j;
 
-    if(isHoverDataSet && numClicks === 1) {
+    if(numClicks === 1 && isHoverDataSet(hoverData)) {
         allSelectionItems = [];
 
         searchTraces = determineSearchTraces(gd, xAxes, yAxes);
@@ -387,12 +387,19 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
         }
 
         // Grand selection state update needs to be done once for the entire plot
+        // console.log('allSelItems '  + allSelectionItems.map(asi => asi.pointNumber));
         if(clearEntireSelection) {
             updateSelectedState(gd, searchTraces);
         } else {
             eventData = {points: allSelectionItems};
             updateSelectedState(gd, searchTraces, eventData);
         }
+    }
+
+    function isHoverDataSet(hoverData) {
+        return hoverData &&
+          Array.isArray(hoverData) &&
+          hoverData[0].hoverOnBox !== true;
     }
 
     /**
