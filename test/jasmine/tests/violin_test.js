@@ -7,7 +7,7 @@ var Violin = require('@src/traces/violin');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -434,7 +434,7 @@ describe('Test violin hover:', function() {
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(fail).then(done);
+            run(specs).catch(failTest).then(done);
         });
     });
 
@@ -466,7 +466,7 @@ describe('Test violin hover:', function() {
                 mouseEvent('mousemove', 250, 250);
                 assertViolinHoverLine([299.35, 250, 200.65, 250]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -477,7 +477,7 @@ describe('Test violin hover:', function() {
                 mouseEvent('mousemove', 300, 250);
                 assertViolinHoverLine([299.35, 250, 250, 250]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -488,7 +488,7 @@ describe('Test violin hover:', function() {
                 mouseEvent('mousemove', 200, 250);
                 assertViolinHoverLine([200.65, 250, 250, 250]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
