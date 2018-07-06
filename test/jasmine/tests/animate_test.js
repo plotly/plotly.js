@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var Registry = require('@src/registry');
 var Plots = Plotly.Plots;
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -835,5 +836,44 @@ describe('animating scatter traces', function() {
         }).then(function() {
             expect(gd.calcdata[0][0].y).toEqual(3);
         }).catch(failTest).then(done);
+    });
+
+    it('should animate axis ranges using the less number of steps', function(done) {
+        Plotly.plot(gd, [{
+            y: [1, 2, 1]
+        }, {
+            type: 'bar',
+            y: [2, 1, 2]
+        }])
+        .then(function() {
+            spyOn(gd._fullData[0]._module.basePlotModule, 'transitionAxes').and.callThrough();
+            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
+            spyOn(gd._fullData[1]._module, 'plot').and.callThrough();
+            spyOn(Registry, 'call').and.callThrough();
+
+            return Plotly.animate('graph', {
+                layout: {
+                    xaxis: {range: [0.45, 0.55]},
+                    yaxis: {range: [0.45, 0.55]}
+                }
+            }, {
+                transition: {duration: 500},
+                frame: {redraw: false}
+            });
+        })
+        .then(function() {
+            // the only redraw should occur during Cartesian.transitionAxes,
+            // where Registry.call('relayout') is called leading to a _module.plot call
+            expect(gd._fullData[0]._module.basePlotModule.transitionAxes).toHaveBeenCalledTimes(1);
+            expect(gd._fullData[0]._module.plot).toHaveBeenCalledTimes(1);
+            expect(gd._fullData[1]._module.plot).toHaveBeenCalledTimes(1);
+            expect(Registry.call).toHaveBeenCalledTimes(1);
+
+            var calls = Registry.call.calls.all();
+            expect(calls.length).toBe(1, 'just one Registry.call call');
+            expect(calls[0].args[0]).toBe('relayout', 'called Registry.call with');
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

@@ -2333,6 +2333,9 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
             if(hasAxisTransition) {
                 traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
                 traceTransitionOpts.duration = 0;
+                // This means do not transition traces,
+                // this happens on layout-only (e.g. axis range) animations
+                transitionedTraces = null;
             } else {
                 traceTransitionOpts = transitionOpts;
             }
