@@ -3,6 +3,7 @@ var Lib = require('@src/lib');
 var Registry = require('@src/registry');
 var Plots = Plotly.Plots;
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -862,6 +863,11 @@ describe('animating scatter traces', function() {
             });
         })
         .then(function() {
+            // sanity-check that scatter points and bars are still there
+            var gd3 = d3.select(gd);
+            expect(gd3.select('.scatterlayer').selectAll('.point').size()).toBe(3, '# of pts on graph');
+            expect(gd3.select('.barlayer').selectAll('.point').size()).toBe(3, '# of bars on graph');
+
             // the only redraw should occur during Cartesian.transitionAxes,
             // where Registry.call('relayout') is called leading to a _module.plot call
             expect(gd._fullData[0]._module.basePlotModule.transitionAxes).toHaveBeenCalledTimes(1);
