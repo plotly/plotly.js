@@ -2202,7 +2202,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
             // There's nothing to do if this module is not defined:
             if(!module) continue;
 
-            // Don't register the trace as transitioned if it doens't know what to do.
+            // Don't register the trace as transitioned if it doesn't know what to do.
             // If it *is* registered, it will receive a callback that it's responsible
             // for calling in order to register the transition as having completed.
             if(module.animatable) {

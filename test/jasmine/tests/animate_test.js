@@ -93,7 +93,7 @@ describe('Test animate API', function() {
         //
         // This means that you should not expect `.animate` to actually
         // modify the plot in any way in the tests below. For tests
-        // involvingnon-faked transitions, see the bottom of this file.
+        // involving non-faked transitions, see the bottom of this file.
         // ------------------------------------------------------------
 
         spyOn(Plots, 'transition').and.callFake(function() {
