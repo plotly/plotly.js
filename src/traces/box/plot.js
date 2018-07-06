@@ -100,15 +100,10 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    var fn;
-    if(trace.type === 'box' ||
-        trace.type === 'candlestick' ||
-        (trace.type === 'violin' && (trace.box || {}).visible)
-    ) {
-        fn = Lib.identity;
-    }
-
-    var paths = sel.selectAll('path.box').data(fn || []);
+    var paths = sel.selectAll('path.box').data((
+        trace.type !== 'violin' ||
+        trace.box
+    ) ? Lib.identity : []);
 
     paths.enter().append('path')
         .style('vector-effect', 'non-scaling-stroke')
@@ -307,14 +302,10 @@ function plotBoxMean(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    var fn;
-    if(trace.type === 'box' && trace.boxmean ||
-        (trace.type === 'violin' && (trace.box || {}).visible && (trace.meanline || {}).visible)
-    ) {
-        fn = Lib.identity;
-    }
-
-    var paths = sel.selectAll('path.mean').data(fn || []);
+    var paths = sel.selectAll('path.mean').data((
+        (trace.type === 'box' && trace.boxmean) ||
+        (trace.type === 'violin' && trace.box && trace.meanline)
+    ) ? Lib.identity : []);
 
     paths.enter().append('path')
         .attr('class', 'mean')
