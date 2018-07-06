@@ -7,7 +7,7 @@ var Violin = require('@src/traces/violin');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -434,7 +434,7 @@ describe('Test violin hover:', function() {
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(fail).then(done);
+            run(specs).catch(failTest).then(done);
         });
     });
 
@@ -466,7 +466,7 @@ describe('Test violin hover:', function() {
                 mouseEvent('mousemove', 250, 250);
                 assertViolinHoverLine([299.35, 250, 200.65, 250]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -477,7 +477,7 @@ describe('Test violin hover:', function() {
                 mouseEvent('mousemove', 300, 250);
                 assertViolinHoverLine([299.35, 250, 250, 250]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -488,8 +488,66 @@ describe('Test violin hover:', function() {
                 mouseEvent('mousemove', 200, 250);
                 assertViolinHoverLine([200.65, 250, 250, 250]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
+    });
+});
+
+describe('Test violin restyle:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should be able to add/remove innner parts', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/violin_old-faithful.json'));
+        // start with just 1 violin
+        delete fig.data[0].meanline;
+        delete fig.data[0].points;
+
+        function _assertOne(msg, exp, trace3, k, query) {
+            expect(trace3.selectAll(query).size())
+                .toBe(exp[k] || 0, k + ' - ' + msg);
+        }
+
+        function _assert(msg, exp) {
+            var trace3 = d3.select(gd).select('.violinlayer > .trace');
+            _assertOne(msg, exp, trace3, 'violinCnt', 'path.violin');
+            _assertOne(msg, exp, trace3, 'boxCnt', 'path.box');
+            _assertOne(msg, exp, trace3, 'meanlineInBoxCnt', 'path.mean');
+            _assertOne(msg, exp, trace3, 'meanlineOutOfBoxCnt', 'path.meanline');
+            _assertOne(msg, exp, trace3, 'ptsCnt', 'path.point');
+        }
+
+        Plotly.plot(gd, fig)
+        .then(function() {
+            _assert('base', {violinCnt: 1});
+        })
+        .then(function() { return Plotly.restyle(gd, 'box.visible', true); })
+        .then(function() {
+            _assert('with inner box', {violinCnt: 1, boxCnt: 1});
+        })
+        .then(function() { return Plotly.restyle(gd, 'meanline.visible', true); })
+        .then(function() {
+            _assert('with inner box & meanline', {violinCnt: 1, boxCnt: 1, meanlineInBoxCnt: 1});
+        })
+        .then(function() { return Plotly.restyle(gd, 'box.visible', false); })
+        .then(function() {
+            _assert('with meanline', {violinCnt: 1, meanlineOutOfBoxCnt: 1});
+        })
+        .then(function() { return Plotly.restyle(gd, 'points', 'all'); })
+        .then(function() {
+            _assert('with meanline & pts', {violinCnt: 1, meanlineOutOfBoxCnt: 1, ptsCnt: 272});
+        })
+        .then(function() { return Plotly.restyle(gd, 'meanline.visible', false); })
+        .then(function() {
+            _assert('with pts', {violinCnt: 1, ptsCnt: 272});
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

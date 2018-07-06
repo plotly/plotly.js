@@ -69,8 +69,6 @@ module.exports = function plot(gd, plotinfo, cd, violinLayer) {
         var hasBothSides = trace.side === 'both';
         var hasPositiveSide = hasBothSides || trace.side === 'positive';
         var hasNegativeSide = hasBothSides || trace.side === 'negative';
-        var hasBox = trace.box && trace.box.visible;
-        var hasMeanLine = trace.meanline && trace.meanline.visible;
         var groupStats = fullLayout._violinScaleGroupStats[trace.scalegroup];
 
         var violins = sel.selectAll('path.violin').data(Lib.identity);
@@ -149,66 +147,61 @@ module.exports = function plot(gd, plotinfo, cd, violinLayer) {
             d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
         });
 
-        if(hasBox) {
-            var boxWidth = trace.box.width;
-            var boxLineWidth = trace.box.line.width;
-            var bdPosScaled;
-            var bPosPxOffset;
+        var boxAttrs = trace.box || {};
+        var boxWidth = boxAttrs.width;
+        var boxLineWidth = (boxAttrs.line || {}).width;
+        var bdPosScaled;
+        var bPosPxOffset;
 
-            if(hasBothSides) {
-                bdPosScaled = bdPos * boxWidth;
-                bPosPxOffset = 0;
-            } else if(hasPositiveSide) {
-                bdPosScaled = [0, bdPos * boxWidth / 2];
-                bPosPxOffset = -boxLineWidth;
-            } else {
-                bdPosScaled = [bdPos * boxWidth / 2, 0];
-                bPosPxOffset = boxLineWidth;
-            }
-
-            boxPlot.plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, {
-                bPos: bPos,
-                bdPos: bdPosScaled,
-                bPosPxOffset: bPosPxOffset
-            });
-
-            // if both box and meanline are visible, show mean line inside box
-            if(hasMeanLine) {
-                boxPlot.plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, {
-                    bPos: bPos,
-                    bdPos: bdPosScaled,
-                    bPosPxOffset: bPosPxOffset
-                });
-            }
-        }
-        else {
-            if(hasMeanLine) {
-                var meanPaths = sel.selectAll('path.mean').data(Lib.identity);
-
-                meanPaths.enter().append('path')
-                    .attr('class', 'mean')
-                    .style({
-                        fill: 'none',
-                        'vector-effect': 'non-scaling-stroke'
-                    });
-
-                meanPaths.exit().remove();
-
-                meanPaths.each(function(d) {
-                    var v = valAxis.c2p(d.mean, true);
-                    var p = helpers.getPositionOnKdePath(d, trace, v);
-
-                    d3.select(this).attr('d',
-                        trace.orientation === 'h' ?
-                            'M' + v + ',' + p[0] + 'V' + p[1] :
-                            'M' + p[0] + ',' + v + 'H' + p[1]
-                    );
-                });
-            }
+        if(hasBothSides) {
+            bdPosScaled = bdPos * boxWidth;
+            bPosPxOffset = 0;
+        } else if(hasPositiveSide) {
+            bdPosScaled = [0, bdPos * boxWidth / 2];
+            bPosPxOffset = -boxLineWidth;
+        } else {
+            bdPosScaled = [bdPos * boxWidth / 2, 0];
+            bPosPxOffset = boxLineWidth;
         }
 
-        if(trace.points) {
-            boxPlot.plotPoints(sel, {x: xa, y: ya}, trace, t);
+        // inner box
+        boxPlot.plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, {
+            bPos: bPos,
+            bdPos: bdPosScaled,
+            bPosPxOffset: bPosPxOffset
+        });
+
+        // meanline insider box
+        boxPlot.plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, {
+            bPos: bPos,
+            bdPos: bdPosScaled,
+            bPosPxOffset: bPosPxOffset
+        });
+
+        var fn;
+        if(!(trace.box || {}).visible && (trace.meanline || {}).visible) {
+            fn = Lib.identity;
         }
+
+        // N.B. use different class name than boxPlot.plotBoxMean,
+        // to avoid selectAll conflict
+        var meanPaths = sel.selectAll('path.meanline').data(fn || []);
+        meanPaths.enter().append('path')
+            .attr('class', 'meanline')
+            .style('fill', 'none')
+            .style('vector-effect', 'non-scaling-stroke');
+        meanPaths.exit().remove();
+        meanPaths.each(function(d) {
+            var v = valAxis.c2p(d.mean, true);
+            var p = helpers.getPositionOnKdePath(d, trace, v);
+
+            d3.select(this).attr('d',
+                trace.orientation === 'h' ?
+                    'M' + v + ',' + p[0] + 'V' + p[1] :
+                    'M' + p[0] + ',' + v + 'H' + p[1]
+            );
+        });
+
+        boxPlot.plotPoints(sel, {x: xa, y: ya}, trace, t);
     });
 };
