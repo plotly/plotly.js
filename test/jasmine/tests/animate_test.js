@@ -840,6 +840,24 @@ describe('animating scatter traces', function() {
     });
 
     it('should animate axis ranges using the less number of steps', function(done) {
+        // sanity-check that scatter points and bars are still there
+        function _assertNodeCnt() {
+            var gd3 = d3.select(gd);
+            expect(gd3.select('.scatterlayer').selectAll('.point').size())
+                .toBe(3, '# of pts on graph');
+            expect(gd3.select('.barlayer').selectAll('.point').size())
+                .toBe(3, '# of bars on graph');
+        }
+
+        // assert what Cartesian.transitionAxes does
+        function getSubplotTranslate() {
+            var sp = d3.select(gd).select('.subplot.xy > .plot');
+            return sp.attr('transform')
+                .split('translate(')[1].split(')')[0]
+                .split(',')
+                .map(Number);
+        }
+
         Plotly.plot(gd, [{
             y: [1, 2, 1]
         }, {
@@ -847,12 +865,16 @@ describe('animating scatter traces', function() {
             y: [2, 1, 2]
         }])
         .then(function() {
+            var t = getSubplotTranslate();
+            expect(t[0]).toBe(80, 'subplot translate[0]');
+            expect(t[1]).toBe(100, 'subplot translate[1]');
+
             spyOn(gd._fullData[0]._module.basePlotModule, 'transitionAxes').and.callThrough();
             spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
             spyOn(gd._fullData[1]._module, 'plot').and.callThrough();
             spyOn(Registry, 'call').and.callThrough();
 
-            return Plotly.animate('graph', {
+            var promise = Plotly.animate('graph', {
                 layout: {
                     xaxis: {range: [0.45, 0.55]},
                     yaxis: {range: [0.45, 0.55]}
@@ -861,12 +883,21 @@ describe('animating scatter traces', function() {
                 transition: {duration: 500},
                 frame: {redraw: false}
             });
+
+            setTimeout(function() {
+                _assertNodeCnt();
+                var t = getSubplotTranslate();
+                expect(t[0]).toBeLessThan(80, 'subplot translate[0]');
+                expect(t[1]).toBeLessThan(100, 'subplot translate[1]');
+            }, 100);
+
+            return promise;
         })
         .then(function() {
-            // sanity-check that scatter points and bars are still there
-            var gd3 = d3.select(gd);
-            expect(gd3.select('.scatterlayer').selectAll('.point').size()).toBe(3, '# of pts on graph');
-            expect(gd3.select('.barlayer').selectAll('.point').size()).toBe(3, '# of bars on graph');
+            _assertNodeCnt();
+            var t = getSubplotTranslate();
+            expect(t[0]).toBe(80, 'subplot translate[0]');
+            expect(t[1]).toBe(100, 'subplot translate[1]');
 
             // the only redraw should occur during Cartesian.transitionAxes,
             // where Registry.call('relayout') is called leading to a _module.plot call
