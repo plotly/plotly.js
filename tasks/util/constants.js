@@ -84,19 +84,6 @@ module.exports = {
     testContainerUrl: 'http://localhost:9010/',
     testContainerHome: '/var/www/streambed/image_server/plotly.js',
 
-    uglifyOptions: {
-        mangle: true,
-        // the compress flag break mapbox-gl,
-        // TODO find a way to only skip compression on mapbox-gl files
-        compress: false,
-        output: {
-            beautify: false,
-            ascii_only: true
-        },
-
-        sourceMap: false
-    },
-
     licenseDist: [
         '/**',
         '* plotly.js v' + pkg.version,

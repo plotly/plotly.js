@@ -4,8 +4,6 @@ var path = require('path');
 var minify = require('minify-stream');
 var intoStream = require('into-stream');
 
-var constants = require('./constants');
-
 var prefix = 'Plotly.register(';
 var suffix = ');';
 
@@ -25,8 +23,19 @@ module.exports = function wrap_locale(pathToInput, pathToOutput) {
 
         var rawOut = prefix + data.substr(moduleStart, moduleEnd - moduleStart) + suffix;
 
+        var uglifyOptions = {
+            ecma: 5,
+            mangle: true,
+            compress: true,
+            output: {
+                beautify: false,
+                ascii_only: true
+            },
+            sourceMap: false
+        };
+
         intoStream(rawOut)
-            .pipe(minify(constants.uglifyOptions))
+            .pipe(minify(uglifyOptions))
             .pipe(fs.createWriteStream(pathToOutput))
             .on('finish', function() {
                 logger(pathToOutput);
