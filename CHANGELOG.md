@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.39.1] -- 2018-07-09
+
+### Fixed
+- Fix mapbox subplots in our minified bundles (bug introduced in 1.39.0) [#2789]
+- Fix box and violin traces inner parts removal (bug introduced in 1.37.0) [#2785]
+
+
 ## [1.39.0] -- 2018-07-05
 
 ### Added
