@@ -4,6 +4,7 @@ var path = require('path');
 var browserify = require('browserify');
 var minify = require('minify-stream');
 
+var constants = require('./constants');
 var compressAttributes = require('./compress_attributes');
 var strictD3 = require('./strict_d3');
 
@@ -58,26 +59,8 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     });
 
     if(pathToMinBundle) {
-        var uglifyOptions = {
-            ecma: 5,
-            mangle: true,
-            compress: true,
-            output: {
-                beautify: false,
-                ascii_only: true
-            },
-            sourceMap: false
-        };
-
-        // need this to make mapbox-gl work in minified bundles
-        // see https://github.com/plotly/plotly.js/issues/2787
-        var fname = path.basename(pathToMinBundle);
-        if(fname === 'plotly.min.js' || fname === 'plotly-mapbox.min.js') {
-            uglifyOptions.compress = {typeofs: false};
-        }
-
         bundleStream
-            .pipe(minify(uglifyOptions))
+            .pipe(minify(constants.uglifyOptions))
             .pipe(fs.createWriteStream(pathToMinBundle))
             .on('finish', function() {
                 logger(pathToMinBundle);
