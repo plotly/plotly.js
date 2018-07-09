@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.39.0
+* plotly.js (cartesian) v1.39.1
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -33245,7 +33245,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.39.0';
+exports.version = '1.39.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -65707,18 +65707,9 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
         // always split the distance to the closest box
         t.wHover = t.dPos * (group ? groupFraction / numBoxes : 1);
 
-        // boxes and whiskers
         plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, t);
-
-        // draw points, if desired
-        if(trace.boxpoints) {
-            plotPoints(sel, {x: xa, y: ya}, trace, t);
-        }
-
-        // draw mean (and stdev diamond) if desired
-        if(trace.boxmean) {
-            plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, t);
-        }
+        plotPoints(sel, {x: xa, y: ya}, trace, t);
+        plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, t);
     });
 }
 
@@ -65743,7 +65734,10 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    var paths = sel.selectAll('path.box').data(Lib.identity);
+    var paths = sel.selectAll('path.box').data((
+        trace.type !== 'violin' ||
+        trace.box
+    ) ? Lib.identity : []);
 
     paths.enter().append('path')
         .style('vector-effect', 'non-scaling-stroke')
@@ -65821,16 +65815,18 @@ function plotPoints(sel, axes, trace, t) {
     // repeatable pseudo-random number generator
     Lib.seedPseudoRandom();
 
-    var gPoints = sel.selectAll('g.points')
-        // since box plot points get an extra level of nesting, each
-        // box needs the trace styling info
-        .data(function(d) {
-            d.forEach(function(v) {
-                v.t = t;
-                v.trace = trace;
-            });
-            return d;
+    // since box plot points get an extra level of nesting, each
+    // box needs the trace styling info
+    var fn = function(d) {
+        d.forEach(function(v) {
+            v.t = t;
+            v.trace = trace;
         });
+        return d;
+    };
+
+    var gPoints = sel.selectAll('g.points')
+        .data(mode ? fn : []);
 
     gPoints.enter().append('g')
         .attr('class', 'points');
@@ -65926,6 +65922,9 @@ function plotBoxMean(sel, axes, trace, t) {
     var bPos = t.bPos;
     var bPosPxOffset = t.bPosPxOffset || 0;
 
+    // to support violin mean lines
+    var mode = trace.boxmean || (trace.meanline || {}).visible;
+
     // to support for one-sided box
     var bdPos0;
     var bdPos1;
@@ -65937,7 +65936,10 @@ function plotBoxMean(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    var paths = sel.selectAll('path.mean').data(Lib.identity);
+    var paths = sel.selectAll('path.mean').data((
+        (trace.type === 'box' && trace.boxmean) ||
+        (trace.type === 'violin' && trace.box && trace.meanline)
+    ) ? Lib.identity : []);
 
     paths.enter().append('path')
         .attr('class', 'mean')
@@ -65959,14 +65961,14 @@ function plotBoxMean(sel, axes, trace, t) {
         if(trace.orientation === 'h') {
             d3.select(this).attr('d',
                 'M' + m + ',' + pos0 + 'V' + pos1 +
-                (trace.boxmean === 'sd' ?
+                (mode === 'sd' ?
                     'm0,0L' + sl + ',' + posc + 'L' + m + ',' + pos0 + 'L' + sh + ',' + posc + 'Z' :
                     '')
             );
         } else {
             d3.select(this).attr('d',
                 'M' + pos0 + ',' + m + 'H' + pos1 +
-                (trace.boxmean === 'sd' ?
+                (mode === 'sd' ?
                     'm0,0L' + posc + ',' + sl + 'L' + pos0 + ',' + m + 'L' + posc + ',' + sh + 'Z' :
                     '')
             );
@@ -77123,8 +77125,6 @@ module.exports = function plot(gd, plotinfo, cd, violinLayer) {
         var hasBothSides = trace.side === 'both';
         var hasPositiveSide = hasBothSides || trace.side === 'positive';
         var hasNegativeSide = hasBothSides || trace.side === 'negative';
-        var hasBox = trace.box && trace.box.visible;
-        var hasMeanLine = trace.meanline && trace.meanline.visible;
         var groupStats = fullLayout._violinScaleGroupStats[trace.scalegroup];
 
         var violins = sel.selectAll('path.violin').data(Lib.identity);
@@ -77203,67 +77203,62 @@ module.exports = function plot(gd, plotinfo, cd, violinLayer) {
             d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
         });
 
-        if(hasBox) {
-            var boxWidth = trace.box.width;
-            var boxLineWidth = trace.box.line.width;
-            var bdPosScaled;
-            var bPosPxOffset;
+        var boxAttrs = trace.box || {};
+        var boxWidth = boxAttrs.width;
+        var boxLineWidth = (boxAttrs.line || {}).width;
+        var bdPosScaled;
+        var bPosPxOffset;
 
-            if(hasBothSides) {
-                bdPosScaled = bdPos * boxWidth;
-                bPosPxOffset = 0;
-            } else if(hasPositiveSide) {
-                bdPosScaled = [0, bdPos * boxWidth / 2];
-                bPosPxOffset = -boxLineWidth;
-            } else {
-                bdPosScaled = [bdPos * boxWidth / 2, 0];
-                bPosPxOffset = boxLineWidth;
-            }
-
-            boxPlot.plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, {
-                bPos: bPos,
-                bdPos: bdPosScaled,
-                bPosPxOffset: bPosPxOffset
-            });
-
-            // if both box and meanline are visible, show mean line inside box
-            if(hasMeanLine) {
-                boxPlot.plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, {
-                    bPos: bPos,
-                    bdPos: bdPosScaled,
-                    bPosPxOffset: bPosPxOffset
-                });
-            }
-        }
-        else {
-            if(hasMeanLine) {
-                var meanPaths = sel.selectAll('path.mean').data(Lib.identity);
-
-                meanPaths.enter().append('path')
-                    .attr('class', 'mean')
-                    .style({
-                        fill: 'none',
-                        'vector-effect': 'non-scaling-stroke'
-                    });
-
-                meanPaths.exit().remove();
-
-                meanPaths.each(function(d) {
-                    var v = valAxis.c2p(d.mean, true);
-                    var p = helpers.getPositionOnKdePath(d, trace, v);
-
-                    d3.select(this).attr('d',
-                        trace.orientation === 'h' ?
-                            'M' + v + ',' + p[0] + 'V' + p[1] :
-                            'M' + p[0] + ',' + v + 'H' + p[1]
-                    );
-                });
-            }
+        if(hasBothSides) {
+            bdPosScaled = bdPos * boxWidth;
+            bPosPxOffset = 0;
+        } else if(hasPositiveSide) {
+            bdPosScaled = [0, bdPos * boxWidth / 2];
+            bPosPxOffset = -boxLineWidth;
+        } else {
+            bdPosScaled = [bdPos * boxWidth / 2, 0];
+            bPosPxOffset = boxLineWidth;
         }
 
-        if(trace.points) {
-            boxPlot.plotPoints(sel, {x: xa, y: ya}, trace, t);
+        // inner box
+        boxPlot.plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, {
+            bPos: bPos,
+            bdPos: bdPosScaled,
+            bPosPxOffset: bPosPxOffset
+        });
+
+        // meanline insider box
+        boxPlot.plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, {
+            bPos: bPos,
+            bdPos: bdPosScaled,
+            bPosPxOffset: bPosPxOffset
+        });
+
+        var fn;
+        if(!(trace.box || {}).visible && (trace.meanline || {}).visible) {
+            fn = Lib.identity;
         }
+
+        // N.B. use different class name than boxPlot.plotBoxMean,
+        // to avoid selectAll conflict
+        var meanPaths = sel.selectAll('path.meanline').data(fn || []);
+        meanPaths.enter().append('path')
+            .attr('class', 'meanline')
+            .style('fill', 'none')
+            .style('vector-effect', 'non-scaling-stroke');
+        meanPaths.exit().remove();
+        meanPaths.each(function(d) {
+            var v = valAxis.c2p(d.mean, true);
+            var p = helpers.getPositionOnKdePath(d, trace, v);
+
+            d3.select(this).attr('d',
+                trace.orientation === 'h' ?
+                    'M' + v + ',' + p[0] + 'V' + p[1] :
+                    'M' + p[0] + ',' + v + 'H' + p[1]
+            );
+        });
+
+        boxPlot.plotPoints(sel, {x: xa, y: ya}, trace, t);
     });
 };
 
@@ -77355,11 +77350,17 @@ module.exports = function style(gd, cd) {
             .call(Color.stroke, boxLine.color)
             .call(Color.fill, box.fillcolor);
 
+        var meanLineStyle = {
+            'stroke-width': meanLineWidth + 'px',
+            'stroke-dasharray': (2 * meanLineWidth) + 'px,' + meanLineWidth + 'px'
+        };
+
         sel.selectAll('path.mean')
-            .style({
-                'stroke-width': meanLineWidth + 'px',
-                'stroke-dasharray': (2 * meanLineWidth) + 'px,' + meanLineWidth + 'px'
-            })
+            .style(meanLineStyle)
+            .call(Color.stroke, meanline.color);
+
+        sel.selectAll('path.meanline')
+            .style(meanLineStyle)
             .call(Color.stroke, meanline.color);
 
         stylePoints(sel, trace, gd);

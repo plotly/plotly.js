@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.39.0
+* plotly.js (gl3d) v1.39.1
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -72624,7 +72624,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.39.0';
+exports.version = '1.39.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
