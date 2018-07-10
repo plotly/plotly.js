@@ -10,57 +10,56 @@
 
 var Lib = require('../../lib');
 var Color = require('../color');
+var Template = require('../../plot_api/plot_template');
+var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
 var attributes = require('./attributes');
-var buttonAttrs = require('./button_attributes');
 var constants = require('./constants');
 
 
 module.exports = function handleDefaults(containerIn, containerOut, layout, counterAxes, calendar) {
-    var selectorIn = containerIn.rangeselector || {},
-        selectorOut = containerOut.rangeselector = {};
+    var selectorIn = containerIn.rangeselector || {};
+    var selectorOut = Template.newContainer(containerOut, 'rangeselector');
 
     function coerce(attr, dflt) {
         return Lib.coerce(selectorIn, selectorOut, attributes, attr, dflt);
     }
 
-    var buttons = buttonsDefaults(selectorIn, selectorOut, calendar);
+    var buttons = handleArrayContainerDefaults(selectorIn, selectorOut, {
+        name: 'buttons',
+        handleItemDefaults: buttonDefaults,
+        calendar: calendar
+    });
 
     var visible = coerce('visible', buttons.length > 0);
-    if(!visible) return;
+    if(visible) {
+        var posDflt = getPosDflt(containerOut, layout, counterAxes);
+        coerce('x', posDflt[0]);
+        coerce('y', posDflt[1]);
+        Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 
-    var posDflt = getPosDflt(containerOut, layout, counterAxes);
-    coerce('x', posDflt[0]);
-    coerce('y', posDflt[1]);
-    Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
+        coerce('xanchor');
+        coerce('yanchor');
 
-    coerce('xanchor');
-    coerce('yanchor');
+        Lib.coerceFont(coerce, 'font', layout.font);
 
-    Lib.coerceFont(coerce, 'font', layout.font);
-
-    var bgColor = coerce('bgcolor');
-    coerce('activecolor', Color.contrast(bgColor, constants.lightAmount, constants.darkAmount));
-    coerce('bordercolor');
-    coerce('borderwidth');
+        var bgColor = coerce('bgcolor');
+        coerce('activecolor', Color.contrast(bgColor, constants.lightAmount, constants.darkAmount));
+        coerce('bordercolor');
+        coerce('borderwidth');
+    }
 };
 
-function buttonsDefaults(containerIn, containerOut, calendar) {
-    var buttonsIn = containerIn.buttons || [],
-        buttonsOut = containerOut.buttons = [];
-
-    var buttonIn, buttonOut;
+function buttonDefaults(buttonIn, buttonOut, selectorOut, opts) {
+    var calendar = opts.calendar;
 
     function coerce(attr, dflt) {
-        return Lib.coerce(buttonIn, buttonOut, buttonAttrs, attr, dflt);
+        return Lib.coerce(buttonIn, buttonOut, attributes.buttons, attr, dflt);
     }
 
-    for(var i = 0; i < buttonsIn.length; i++) {
-        buttonIn = buttonsIn[i];
-        buttonOut = {};
+    var visible = coerce('visible');
 
-        if(!Lib.isPlainObject(buttonIn)) continue;
-
+    if(visible) {
         var step = coerce('step');
         if(step !== 'all') {
             if(calendar && calendar !== 'gregorian' && (step === 'month' || step === 'year')) {
@@ -74,12 +73,7 @@ function buttonsDefaults(containerIn, containerOut, calendar) {
         }
 
         coerce('label');
-
-        buttonOut._index = i;
-        buttonsOut.push(buttonOut);
     }
-
-    return buttonsOut;
 }
 
 function getPosDflt(containerOut, layout, counterAxes) {

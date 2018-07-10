@@ -13,6 +13,7 @@ var createConeMesh = require('gl-cone3d').createConeMesh;
 
 var simpleMap = require('../../lib').simpleMap;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
+var zip3 = require('../../plots/gl3d/zip3');
 
 function Cone(scene, uid) {
     this.scene = scene;
@@ -50,14 +51,6 @@ proto.handlePick = function(selection) {
     }
 };
 
-function zip3(x, y, z) {
-    var result = new Array(x.length);
-    for(var i = 0; i < x.length; i++) {
-        result[i] = [x[i], y[i], z[i]];
-    }
-    return result;
-}
-
 var axisName2scaleIndex = {xaxis: 0, yaxis: 1, zaxis: 2};
 var anchor2coneOffset = {tip: 1, tail: 0, cm: 0.25, center: 0.5};
 var anchor2coneSpan = {tip: 1, tail: 1, cm: 0.75, center: 0.5};
@@ -76,13 +69,15 @@ function convert(scene, trace) {
     coneOpts.vectors = zip3(
         toDataCoords(trace.u, 'xaxis'),
         toDataCoords(trace.v, 'yaxis'),
-        toDataCoords(trace.w, 'zaxis')
+        toDataCoords(trace.w, 'zaxis'),
+        trace._len
     );
 
     coneOpts.positions = zip3(
         toDataCoords(trace.x, 'xaxis'),
         toDataCoords(trace.y, 'yaxis'),
-        toDataCoords(trace.z, 'zaxis')
+        toDataCoords(trace.z, 'zaxis'),
+        trace._len
     );
 
     coneOpts.colormap = parseColorScale(trace.colorscale);

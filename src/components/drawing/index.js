@@ -373,9 +373,14 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         lineColor = markerLine.outliercolor;
         fillColor = marker.outliercolor;
     } else {
-        lineWidth = (d.mlw + 1 || markerLine.width + 1 ||
+        var markerLineWidth = (markerLine || {}).width;
+
+        lineWidth = (
+            d.mlw + 1 ||
+            markerLineWidth + 1 ||
             // TODO: we need the latter for legends... can we get rid of it?
-            (d.trace ? d.trace.marker.line.width : 0) + 1) - 1;
+            (d.trace ? (d.trace.marker.line || {}).width : 0) + 1
+        ) - 1 || 0;
 
         if('mlc' in d) lineColor = d.mlcc = fns.lineScale(d.mlc);
         // weird case: array wasn't long enough to apply to every point
@@ -591,19 +596,24 @@ drawing.selectedPointStyle = function(s, trace) {
 };
 
 drawing.tryColorscale = function(marker, prefix) {
-    var cont = prefix ? Lib.nestedProperty(marker, prefix).get() : marker,
-        scl = cont.colorscale,
-        colorArray = cont.color;
+    var cont = prefix ? Lib.nestedProperty(marker, prefix).get() : marker;
 
-    if(scl && Lib.isArrayOrTypedArray(colorArray)) {
-        return Colorscale.makeColorScaleFunc(
-            Colorscale.extractScale(scl, cont.cmin, cont.cmax)
-        );
+    if(cont) {
+        var scl = cont.colorscale;
+        var colorArray = cont.color;
+
+        if(scl && Lib.isArrayOrTypedArray(colorArray)) {
+            return Colorscale.makeColorScaleFunc(
+                Colorscale.extractScale(scl, cont.cmin, cont.cmax)
+            );
+        }
     }
-    else return Lib.identity;
+    return Lib.identity;
 };
 
-var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1};
+var TEXTOFFSETSIGN = {
+    start: 1, end: -1, middle: 0, bottom: 1, top: -1
+};
 
 function textPointPosition(s, textPosition, fontSize, markerRadius) {
     var group = d3.select(s.node().parentNode);
@@ -623,7 +633,7 @@ function textPointPosition(s, textPosition, fontSize, markerRadius) {
     var numLines = (svgTextUtils.lineCount(s) - 1) * LINE_SPACING + 1;
     var dx = TEXTOFFSETSIGN[h] * r;
     var dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
-            (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
+        (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
 
     // fix the overall text group position
     s.attr('text-anchor', h);

@@ -93,10 +93,17 @@ describe('mapbox defaults', function() {
         };
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        expect(layoutOut.mapbox.layers[0].sourcetype).toEqual('geojson');
-        expect(layoutOut.mapbox.layers[0]._index).toEqual(0);
-        expect(layoutOut.mapbox.layers[1].sourcetype).toEqual('geojson');
-        expect(layoutOut.mapbox.layers[1]._index).toEqual(3);
+        expect(layoutOut.mapbox.layers).toEqual([jasmine.objectContaining({
+            sourcetype: 'geojson',
+            _index: 0
+        }), jasmine.objectContaining({
+            visible: false
+        }), jasmine.objectContaining({
+            visible: false
+        }), jasmine.objectContaining({
+            sourcetype: 'geojson',
+            _index: 3
+        })]);
     });
 
     it('should coerce \'sourcelayer\' only for *vector* \'sourcetype\'', function() {
@@ -566,7 +573,7 @@ describe('@noCI, mapbox plots', function() {
         }
 
         function getLayerLength(gd) {
-            return (gd.layout.mapbox.layers || []).length;
+            return Lib.filterVisible(gd._fullLayout.mapbox.layers || []).length;
         }
 
         function assertLayerStyle(gd, expectations, index) {
@@ -600,6 +607,20 @@ describe('@noCI, mapbox plots', function() {
 
             // add a new layer at the beginning
             return Plotly.relayout(gd, 'mapbox.layers[1]', layer1);
+        })
+        .then(function() {
+            expect(getLayerLength(gd)).toEqual(2);
+            expect(countVisibleLayers(gd)).toEqual(2);
+
+            // hide a layer
+            return Plotly.relayout(gd, 'mapbox.layers[0].visible', false);
+        })
+        .then(function() {
+            expect(getLayerLength(gd)).toEqual(1);
+            expect(countVisibleLayers(gd)).toEqual(1);
+
+            // re-show it
+            return Plotly.relayout(gd, 'mapbox.layers[0].visible', true);
         })
         .then(function() {
             expect(getLayerLength(gd)).toEqual(2);
@@ -866,11 +887,11 @@ describe('@noCI, mapbox plots', function() {
     it('should respond drag / scroll / double-click interactions', function(done) {
         var relayoutCnt = 0;
         var doubleClickCnt = 0;
-        var updateData;
+        var evtData;
 
-        gd.on('plotly_relayout', function(eventData) {
+        gd.on('plotly_relayout', function(d) {
             relayoutCnt++;
-            updateData = eventData;
+            evtData = d;
         });
 
         gd.on('plotly_doubleclick', function() {
@@ -885,43 +906,46 @@ describe('@noCI, mapbox plots', function() {
             });
         }
 
-        function assertLayout(center, zoom, opts) {
-            var mapInfo = getMapInfo(gd),
-                layout = gd.layout.mapbox;
+        function _assertLayout(center, zoom) {
+            var mapInfo = getMapInfo(gd);
+            var layout = gd.layout.mapbox;
 
             expect([mapInfo.center.lng, mapInfo.center.lat]).toBeCloseToArray(center);
             expect(mapInfo.zoom).toBeCloseTo(zoom);
 
             expect([layout.center.lon, layout.center.lat]).toBeCloseToArray(center);
             expect(layout.zoom).toBeCloseTo(zoom);
-
-            if(opts && opts.withUpdateData) {
-                var mapboxUpdate = updateData.mapbox;
-
-                expect([mapboxUpdate.center.lon, mapboxUpdate.center.lat]).toBeCloseToArray(center);
-                expect(mapboxUpdate.zoom).toBeCloseTo(zoom);
-            }
         }
 
-        assertLayout([-4.710, 19.475], 1.234);
+        function _assert(center, zoom) {
+            _assertLayout(center, zoom);
+
+            expect([evtData['mapbox.center'].lon, evtData['mapbox.center'].lat]).toBeCloseToArray(center);
+            expect(evtData['mapbox.zoom']).toBeCloseTo(zoom);
+        }
+
+        _assertLayout([-4.710, 19.475], 1.234);
 
         var p1 = [pointPos[0] + 50, pointPos[1] - 20];
 
         _drag(pointPos, p1, function() {
-            expect(relayoutCnt).toEqual(1);
-            assertLayout([-19.651, 13.751], 1.234, {withUpdateData: true});
+            expect(relayoutCnt).toBe(1, 'relayout cnt');
+            expect(doubleClickCnt).toBe(0, 'double click cnt');
+            _assert([-19.651, 13.751], 1.234);
 
             return _doubleClick(p1);
         })
         .then(function() {
+            expect(relayoutCnt).toBe(2, 'relayout cnt');
             expect(doubleClickCnt).toBe(1, 'double click cnt');
-            assertLayout([-4.710, 19.475], 1.234);
+            _assert([-4.710, 19.475], 1.234);
 
             return _scroll(pointPos);
         })
         .then(function() {
+            expect(relayoutCnt).toBe(3, 'relayout cnt');
+            expect(doubleClickCnt).toBe(1, 'double click cnt');
             expect(getMapInfo(gd).zoom).toBeGreaterThan(1.234);
-            expect(relayoutCnt).toBe(2);
         })
         .catch(failTest)
         .then(done);

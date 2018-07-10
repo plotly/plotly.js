@@ -10,7 +10,7 @@
 
 var plotAttrs = require('../../plots/attributes');
 var scatterAttrs = require('../scatter/attributes');
-var colorAttrs = require('../../components/colorscale/color_attributes');
+var colorAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
@@ -37,9 +37,14 @@ var attrs = module.exports = overrideAll({
             'this trace\'s (x,y) coordinates.'
         ].join(' ')
     }),
+    hovertext: scatterAttrs.hovertext,
+
+    textposition: scatterAttrs.textposition,
+    textfont: scatterAttrs.textfont,
+
     mode: {
         valType: 'flaglist',
-        flags: ['lines', 'markers'],
+        flags: ['lines', 'markers', 'text'],
         extras: ['none'],
         role: 'info',
         description: [
@@ -64,7 +69,6 @@ var attrs = module.exports = overrideAll({
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
         opacity: scatterMarkerAttrs.opacity,
-        showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,
         line: extendFlat({}, colorAttrs('marker.line'), {
             width: scatterMarkerLineAttrs.width
@@ -77,10 +81,12 @@ var attrs = module.exports = overrideAll({
     hoveron: scatterAttrs.hoveron,
 
     selected: {
-        marker: scatterAttrs.selected.marker
+        marker: scatterAttrs.selected.marker,
+        textfont: scatterAttrs.selected.textfont
     },
     unselected: {
-        marker: scatterAttrs.unselected.marker
+        marker: scatterAttrs.unselected.marker,
+        textfont: scatterAttrs.unselected.textfont
     },
 
     opacity: plotAttrs.opacity

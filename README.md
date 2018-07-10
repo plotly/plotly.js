@@ -32,28 +32,16 @@ and more.
 
 ## Quick start options
 
-#### Download the latest release
-[Latest Release on Github](https://github.com/plotly/plotly.js/releases/)
-
-and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
-
-#### Clone the repo
+### Install with npm
 
 ```bash
-git clone https://github.com/plotly/plotly.js.git
+npm install plotly.js-dist
 ```
 
-and use the plotly.js `dist` file(s).
+and import plotly.js as `import Plotly from 'plotly.js-dist';` or `var Plotly = require('plotly.js-dist');`.
 
-#### Install with `npm`
+### Use the plotly.js CDN hosted by Fastly
 
-```bash
-npm install plotly.js
-```
-
-and require plotly.js using CommonJS as `var Plotly = require('plotly.js');` or use the plotly.js `dist` file(s).
-
-#### Use the plotly.js CDN hosted by Fastly
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -62,18 +50,27 @@ and require plotly.js using CommonJS as `var Plotly = require('plotly.js');` or 
 <script src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
 
 <!-- OR an un-minified version is also available -->
-<script src="https://cdn.plot.ly/plotly-latest.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.js" charset="utf-8"></script>
 ```
 
 and use the `Plotly` object in the window scope.
 
-##### Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
+### Download the latest release
+
+[Latest Release on Github](https://github.com/plotly/plotly.js/releases/)
+
+and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
+
+#### Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
+
 
 ## Modules
 
-Starting in `v1.15.0`, plotly.js also ships with several _partial_ bundles (more info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md#partial-bundles)).
+Starting in `v1.15.0`, plotly.js ships with several _partial_ bundles (more info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md#partial-bundles)).
 
-If you would like to manually pick which plotly.js modules to include, you can create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*:
+Starting in `v1.39.0`, plotly.js publishes _distributed_ npm packages with no dependencies. For example, run `npm install plotly.js-geo-dist` and add `import Plotly from 'plotly.js-geo-dist';` to your code to start using the plotly.js geo package.
+
+If none of the distributed npm packages meet your needs, and you would like to manually pick which plotly.js modules to include, you'll first need to run `npm install plotly.js` and then create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*. For example, in CommonJS:
 
 ```javascript
 // in custom-plotly.js

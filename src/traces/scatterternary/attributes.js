@@ -10,7 +10,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 
@@ -133,7 +133,6 @@ module.exports = {
         gradient: scatterMarkerAttrs.gradient,
         editType: 'calc'
     }, colorAttributes('marker'), {
-        showscale: scatterMarkerAttrs.showscale,
         colorbar: colorbarAttrs
     }),
 

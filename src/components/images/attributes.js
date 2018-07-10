@@ -9,11 +9,10 @@
 'use strict';
 
 var cartesianConstants = require('../../plots/cartesian/constants');
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 
-module.exports = {
-    _isLinkedToArray: 'image',
-
+module.exports = templatedArray('image', {
     visible: {
         valType: 'boolean',
         role: 'info',
@@ -178,4 +177,4 @@ module.exports = {
         ].join(' ')
     },
     editType: 'arraydraw'
-};
+});

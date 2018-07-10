@@ -16,6 +16,9 @@
       "marker": {
         "color": "blue",
         "size": 20
+      },
+      "textfont": {
+        "color": "red"
       }
     },
     "unselected": {

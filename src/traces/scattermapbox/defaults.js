@@ -41,11 +41,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true});
 
         // array marker.size and marker.color are only supported with circles
-
         var marker = traceOut.marker;
-        // we need  mock marker.line object to make legends happy
-        marker.line = {width: 0};
-
         if(marker.symbol !== 'circle') {
             if(Lib.isArrayOrTypedArray(marker.size)) marker.size = marker.size[0];
             if(Lib.isArrayOrTypedArray(marker.color)) marker.color = marker.color[0];

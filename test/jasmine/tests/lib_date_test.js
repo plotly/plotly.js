@@ -24,6 +24,29 @@ describe('dates', function() {
         nowPlus29 = thisYear + 29,
         nowPlus29_2 = nowPlus29 % 100;
 
+    function tweakedTZOffset(d) {
+        var tzOffset = d.getTimezoneOffset() * 60000;
+        var offsetTweak = (d.getUTCMinutes() - d.getMinutes()) * 60000 +
+            (d.getUTCSeconds() - d.getSeconds()) * 1000 +
+            (d.getUTCMilliseconds() - d.getMilliseconds());
+
+        if(offsetTweak) {
+            var comb = 3 * 60000;
+            var tzOffset2 = tzOffset - comb / 2 + Lib.mod(offsetTweak - tzOffset + comb / 2, comb);
+            // this tweak logic just copies what's in dateTime2ms to account for
+            // Chrome's new handling of dates before there were timezones, see
+            // https://github.com/plotly/plotly.js/issues/2743
+            // This logic has been validated manually using:
+            // Plotly.newPlot(gd,[{x:[new Date(1600,0,1),new Date(1600,0,1,0,1)],y:[1,2]}])
+            // here just check that it's only happening for years before 1884,
+            // and only adjusting the result less than a minute.
+            expect(d.getFullYear()).toBeLessThan(1884);
+            expect(Math.abs(tzOffset2 - tzOffset)).toBeLessThan(60000);
+            return tzOffset2;
+        }
+        return tzOffset;
+    }
+
     describe('dateTime2ms', function() {
         it('should accept valid date strings', function() {
             var tzOffset;
@@ -62,9 +85,9 @@ describe('dates', function() {
             ].forEach(function(v) {
                 // just for sub-millisecond precision tests, use timezoneoffset
                 // from the previous date object
-                if(v[1].getTimezoneOffset) tzOffset = v[1].getTimezoneOffset();
+                if(v[1].getTimezoneOffset) tzOffset = tweakedTZOffset(v[1]);
 
-                var expected = +v[1] - (tzOffset * 60000);
+                var expected = +v[1] - tzOffset;
                 expect(Lib.dateTime2ms(v[0])).toBe(expected, v[0]);
 
                 // ISO-8601: all the same stuff with t or T as the separator
@@ -108,7 +131,7 @@ describe('dates', function() {
                 d1c,
                 new Date(2015, 8, 7, 23, 34, 45, 567)
             ].forEach(function(v) {
-                expect(Lib.dateTime2ms(v)).toBe(+v - v.getTimezoneOffset() * 60000);
+                expect(Lib.dateTime2ms(v)).toBe(+v - tweakedTZOffset(v), v.toString());
             });
         });
 

@@ -25,31 +25,44 @@ var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var constants = require('./constants');
 var DESELECTDIM = require('../../constants/interactions').DESELECTDIM;
 
+var TEXTOFFSETSIGN = {
+    start: 1, left: 1, end: -1, right: -1, middle: 0, center: 0, bottom: 1, top: -1
+};
+
 function convertStyle(gd, trace) {
     var i;
 
     var opts = {
         marker: undefined,
+        markerSel: undefined,
+        markerUnsel: undefined,
         line: undefined,
         fill: undefined,
         errorX: undefined,
         errorY: undefined,
-        selected: undefined,
-        unselected: undefined
+        text: undefined,
+        textSel: undefined,
+        textUnsel: undefined
     };
 
     if(trace.visible !== true) return opts;
 
+    if(subTypes.hasText(trace)) {
+        opts.text = convertTextStyle(trace);
+        opts.textSel = convertTextSelection(trace, trace.selected);
+        opts.textUnsel = convertTextSelection(trace, trace.unselected);
+    }
+
     if(subTypes.hasMarkers(trace)) {
         opts.marker = convertMarkerStyle(trace);
-        opts.selected = convertMarkerSelection(trace, trace.selected);
-        opts.unselected = convertMarkerSelection(trace, trace.unselected);
+        opts.markerSel = convertMarkerSelection(trace, trace.selected);
+        opts.markerUnsel = convertMarkerSelection(trace, trace.unselected);
 
         if(!trace.unselected && Array.isArray(trace.marker.opacity)) {
             var mo = trace.marker.opacity;
-            opts.unselected.opacity = new Array(mo.length);
+            opts.markerUnsel.opacity = new Array(mo.length);
             for(i = 0; i < mo.length; i++) {
-                opts.unselected.opacity[i] = DESELECTDIM * mo[i];
+                opts.markerUnsel.opacity[i] = DESELECTDIM * mo[i];
             }
         }
     }
@@ -87,6 +100,78 @@ function convertStyle(gd, trace) {
 
     return opts;
 }
+
+function convertTextStyle(trace) {
+    var count = trace._length;
+    var textfontIn = trace.textfont;
+    var textpositionIn = trace.textposition;
+    var textPos = Array.isArray(textpositionIn) ? textpositionIn : [textpositionIn];
+    var tfc = textfontIn.color;
+    var tfs = textfontIn.size;
+    var tff = textfontIn.family;
+    var optsOut = {};
+    var i;
+
+    optsOut.text = trace.text;
+    optsOut.opacity = trace.opacity;
+    optsOut.font = {};
+    optsOut.align = [];
+    optsOut.baseline = [];
+
+    for(i = 0; i < textPos.length; i++) {
+        var tp = textPos[i].split(/\s+/);
+
+        switch(tp[1]) {
+            case 'left':
+                optsOut.align.push('right');
+                break;
+            case 'right':
+                optsOut.align.push('left');
+                break;
+            default:
+                optsOut.align.push(tp[1]);
+        }
+        switch(tp[0]) {
+            case 'top':
+                optsOut.baseline.push('bottom');
+                break;
+            case 'bottom':
+                optsOut.baseline.push('top');
+                break;
+            default:
+                optsOut.baseline.push(tp[0]);
+        }
+    }
+
+    if(Array.isArray(tfc)) {
+        optsOut.color = new Array(count);
+        for(i = 0; i < count; i++) {
+            optsOut.color[i] = tfc[i];
+        }
+    } else {
+        optsOut.color = tfc;
+    }
+
+    if(Array.isArray(tfs) || Array.isArray(tff)) {
+        // if any textfont param is array - make render a batch
+        optsOut.font = new Array(count);
+        for(i = 0; i < count; i++) {
+            var fonti = optsOut.font[i] = {};
+
+            fonti.size = Array.isArray(tfs) ?
+                (isNumeric(tfs[i]) ? tfs[i] : 0) :
+                tfs;
+
+            fonti.family = Array.isArray(tff) ? tff[i] : tff;
+        }
+    } else {
+        // if both are single values, make render fast single-value
+        optsOut.font = {size: tfs, family: tff};
+    }
+
+    return optsOut;
+}
+
 
 function convertMarkerStyle(trace) {
     var count = trace._length;
@@ -219,9 +304,30 @@ function convertMarkerSelection(trace, target) {
     if(target.marker && target.marker.symbol) {
         optsOut = convertMarkerStyle(Lib.extendFlat({}, optsIn, target.marker));
     } else if(target.marker) {
-        if(target.marker.size) optsOut.sizes = target.marker.size / 2;
+        if(target.marker.size) optsOut.size = target.marker.size / 2;
         if(target.marker.color) optsOut.colors = target.marker.color;
         if(target.marker.opacity !== undefined) optsOut.opacity = target.marker.opacity;
+    }
+
+    return optsOut;
+}
+
+function convertTextSelection(trace, target) {
+    var optsOut = {};
+
+    if(!target) return optsOut;
+
+    if(target.textfont) {
+        var optsIn = {
+            opacity: 1,
+            text: trace.text,
+            textposition: trace.textposition,
+            textfont: Lib.extendFlat({}, trace.textfont)
+        };
+        if(target.textfont) {
+            Lib.extendFlat(optsIn.textfont, target.textfont);
+        }
+        optsOut = convertTextStyle(optsIn);
     }
 
     return optsOut;
@@ -419,10 +525,47 @@ function convertErrorBarPositions(gd, trace, positions, x, y) {
     return out;
 }
 
+function convertTextPosition(gd, trace, textOpts, markerOpts) {
+    var count = trace._length;
+    var out = {};
+    var i;
+
+    // corresponds to textPointPosition from component.drawing
+    if(subTypes.hasMarkers(trace)) {
+        var fontOpts = textOpts.font;
+        var align = textOpts.align;
+        var baseline = textOpts.baseline;
+        out.offset = new Array(count);
+
+        for(i = 0; i < count; i++) {
+            var ms = markerOpts.sizes ? markerOpts.sizes[i] : markerOpts.size;
+            var fs = Array.isArray(fontOpts) ? fontOpts[i].size : fontOpts.size;
+
+            var a = Array.isArray(align) ?
+                (align.length > 1 ? align[i] : align[0]) :
+                align;
+            var b = Array.isArray(baseline) ?
+                (baseline.length > 1 ? baseline[i] : baseline[0]) :
+                baseline;
+
+            var hSign = TEXTOFFSETSIGN[a];
+            var vSign = TEXTOFFSETSIGN[b];
+            var xPad = ms ? ms / 0.8 + 1 : 0;
+            var yPad = -vSign * xPad - vSign * 0.5;
+            out.offset[i] = [hSign * xPad / fs, yPad / fs];
+        }
+    }
+
+    return out;
+}
+
 module.exports = {
-    convertStyle: convertStyle,
-    convertMarkerStyle: convertMarkerStyle,
-    convertMarkerSelection: convertMarkerSelection,
-    convertLinePositions: convertLinePositions,
-    convertErrorBarPositions: convertErrorBarPositions
+    style: convertStyle,
+
+    markerStyle: convertMarkerStyle,
+    markerSelection: convertMarkerSelection,
+
+    linePositions: convertLinePositions,
+    errorBarPositions: convertErrorBarPositions,
+    textPosition: convertTextPosition
 };

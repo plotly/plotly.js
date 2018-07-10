@@ -8,7 +8,7 @@
 
 'use strict';
 
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;
@@ -322,16 +322,6 @@ module.exports = {
             ].join(' ')
         },
 
-        showscale: {
-            valType: 'boolean',
-            role: 'info',
-            dflt: false,
-            editType: 'calc',
-            description: [
-                'Has an effect only if `marker.color` is set to a numerical array.',
-                'Determines whether or not a colorbar is displayed.'
-            ].join(' ')
-        },
         colorbar: colorbarAttrs,
 
         line: extendFlat({

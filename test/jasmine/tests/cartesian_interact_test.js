@@ -587,6 +587,73 @@ describe('axis zoom/pan and main plot zoom', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should draw correct zoomboxes corners', function(done) {
+        var dragCoverNode;
+        var p1;
+
+        function _dragStart(p0, dp) {
+            var node = getDragger('xy', 'nsew');
+            mouseEvent('mousemove', p0[0], p0[1], {element: node});
+            mouseEvent('mousedown', p0[0], p0[1], {element: node});
+
+            var promise = drag.waitForDragCover().then(function(dcn) {
+                dragCoverNode = dcn;
+                p1 = [p0[0] + dp[0], p0[1] + dp[1]];
+                mouseEvent('mousemove', p1[0], p1[1], {element: dragCoverNode});
+            });
+            return promise;
+        }
+
+        function _assertAndDragEnd(msg, exp) {
+            var zl = d3.select(gd).select('g.zoomlayer');
+            var d = zl.select('.zoombox-corners').attr('d');
+
+            if(exp.cornerCnt) {
+                var actual = (d.match(/Z/g) || []).length;
+                expect(actual).toBe(exp.cornerCnt, 'zoombox corner cnt: ' + msg);
+            } else {
+                expect(d).toBe('M0,0Z', 'no zoombox corners: ' + msg);
+            }
+
+            mouseEvent('mouseup', p1[0], p1[1], {element: dragCoverNode});
+            return drag.waitForDragCoverRemoval();
+        }
+
+        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        .then(function() { return _dragStart([170, 170], [30, 30]); })
+        .then(function() {
+            return _assertAndDragEnd('full-x full-y', {cornerCnt: 4});
+        })
+        .then(function() { return _dragStart([170, 170], [5, 30]); })
+        .then(function() {
+            return _assertAndDragEnd('full-y', {cornerCnt: 2});
+        })
+        .then(function() { return _dragStart([170, 170], [30, 2]); })
+        .then(function() {
+            return _assertAndDragEnd('full-x', {cornerCnt: 2});
+        })
+        .then(function() { return Plotly.relayout(gd, 'xaxis.fixedrange', true); })
+        .then(function() { return _dragStart([170, 170], [30, 30]); })
+        .then(function() {
+            return _assertAndDragEnd('full-x full-y w/ fixed xaxis', {cornerCnt: 2});
+        })
+        .then(function() { return _dragStart([170, 170], [30, 5]); })
+        .then(function() {
+            return _assertAndDragEnd('full-x w/ fixed xaxis', {cornerCnt: 0});
+        })
+        .then(function() { return Plotly.relayout(gd, {'xaxis.fixedrange': false, 'yaxis.fixedrange': true}); })
+        .then(function() { return _dragStart([170, 170], [30, 30]); })
+        .then(function() {
+            return _assertAndDragEnd('full-x full-y w/ fixed yaxis', {cornerCnt: 2});
+        })
+        .then(function() { return _dragStart([170, 170], [5, 30]); })
+        .then(function() {
+            return _assertAndDragEnd('full-y w/ fixed yaxis', {cornerCnt: 0});
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Event data:', function() {

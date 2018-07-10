@@ -15,7 +15,7 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat({},
+module.exports = extendFlat(
     {
         x: histogramAttrs.x,
         y: histogramAttrs.y,
@@ -48,7 +48,9 @@ module.exports = extendFlat({},
         zsmooth: heatmapAttrs.zsmooth,
         zhoverformat: heatmapAttrs.zhoverformat
     },
-    colorscaleAttrs,
-    { autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false}) },
+    colorscaleAttrs('', {
+        cLetter: 'z',
+        autoColorDflt: false
+    }),
     { colorbar: colorbarAttrs }
 );

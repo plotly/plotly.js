@@ -10,6 +10,7 @@
 'use strict';
 
 var Color = require('../../../components/color');
+var Template = require('../../../plot_api/plot_template');
 
 var handleSubplotDefaults = require('../../subplot_defaults');
 var layoutAttributes = require('./layout_attributes');
@@ -39,7 +40,8 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
     for(var j = 0; j < axesNames.length; j++) {
         axName = axesNames[j];
         containerIn = ternaryLayoutIn[axName] || {};
-        containerOut = ternaryLayoutOut[axName] = {_name: axName, type: 'linear'};
+        containerOut = Template.newContainer(ternaryLayoutOut, axName);
+        containerOut._name = axName;
 
         handleAxisDefaults(containerIn, containerOut, options);
     }

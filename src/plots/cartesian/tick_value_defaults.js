@@ -15,18 +15,19 @@ var ONEDAY = require('../../constants/numerical').ONEDAY;
 
 
 module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType) {
-    var tickmodeDefault = 'auto';
+    var tickmode;
 
     if(containerIn.tickmode === 'array' &&
             (axType === 'log' || axType === 'date')) {
-        containerIn.tickmode = 'auto';
+        tickmode = containerOut.tickmode = 'auto';
     }
-
-    if(Array.isArray(containerIn.tickvals)) tickmodeDefault = 'array';
-    else if(containerIn.dtick) {
-        tickmodeDefault = 'linear';
+    else {
+        var tickmodeDefault =
+            Array.isArray(containerIn.tickvals) ? 'array' :
+            containerIn.dtick ? 'linear' :
+            'auto';
+        tickmode = coerce('tickmode', tickmodeDefault);
     }
-    var tickmode = coerce('tickmode', tickmodeDefault);
 
     if(tickmode === 'auto') coerce('nticks');
     else if(tickmode === 'linear') {

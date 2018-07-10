@@ -22,7 +22,7 @@ module.exports = function handleDefaults(sceneLayoutIn, sceneLayoutOut, opts) {
     });
 };
 
-function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
+function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
     function coerce(attr, dflt) {
         return Lib.coerce(annIn, annOut, attributes, attr, dflt);
     }
@@ -38,8 +38,8 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
     }
 
 
-    var visible = coerce('visible', !itemOpts.itemIsNotPlainObject);
-    if(!visible) return annOut;
+    var visible = coerce('visible');
+    if(!visible) return;
 
     handleAnnotationCommonDefaults(annIn, annOut, opts.fullLayout, coerce);
 
@@ -71,6 +71,4 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts, itemOpts) {
         // if you have one part of arrow length you should have both
         Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
     }
-
-    return annOut;
 }

@@ -18,6 +18,7 @@ var handleXYDefaults = require('../scatter/xy_defaults');
 var handleMarkerDefaults = require('../scatter/marker_defaults');
 var handleLineDefaults = require('../scatter/line_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
+var handleTextDefaults = require('../scatter/text_defaults');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -32,9 +33,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.visible = false;
         return;
     }
+    var defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
 
     coerce('text');
-    coerce('mode', len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines');
+    coerce('hovertext');
+    coerce('mode', defaultMode);
 
     if(subTypes.hasLines(traceOut)) {
         coerce('connectgaps');
@@ -47,6 +50,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
         coerce('marker.line.width', isOpen || isBubble ? 1 : 0);
         dfltHoverOn.push('points');
+    }
+
+    if(subTypes.hasText(traceOut)) {
+        handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
     coerce('fill');

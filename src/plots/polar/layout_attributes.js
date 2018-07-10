@@ -122,11 +122,6 @@ var radialAxisAttrs = {
     // span: {},
     // hole: 1
 
-    // maybe should add a boolean to enable square grid lines
-    // and square axis lines
-    // (most common in radar-like charts)
-    // e.g. squareline/squaregrid or showline/showgrid: 'square' (on-top of true)
-
     editType: 'calc'
 };
 
@@ -153,6 +148,7 @@ var angularAxisAttrs = {
         dflt: '-',
         role: 'info',
         editType: 'calc',
+        _noTemplating: true,
         description: [
             'Sets the angular axis type.',
             'If *linear*, set `thetaunit` to determine the unit in which axis value are shown.',
@@ -271,6 +267,22 @@ module.exports = {
 
     radialaxis: radialAxisAttrs,
     angularaxis: angularAxisAttrs,
+
+    gridshape: {
+        valType: 'enumerated',
+        values: ['circular', 'linear'],
+        dflt: 'circular',
+        role: 'style',
+        editType: 'plot',
+        description: [
+            'Determines if the radial axis grid lines and angular axis line are drawn',
+            'as *circular* sectors or as *linear* (polygon) sectors.',
+            'Has an effect only when the angular axis has `type` *category*.',
+            'Note that `radialaxis.angle` is snapped to the angle of the closest',
+            'vertex when `gridshape` is *circular*',
+            '(so that radial axis scale is the same as the data scale).'
+        ].join(' ')
+    },
 
     // TODO maybe?
     // annotations:

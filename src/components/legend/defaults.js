@@ -11,6 +11,7 @@
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var Template = require('../../plot_api/plot_template');
 
 var attributes = require('./attributes');
 var basePlotLayoutAttributes = require('../../plots/layout_attributes');
@@ -19,7 +20,6 @@ var helpers = require('./helpers');
 
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var containerIn = layoutIn.legend || {};
-    var containerOut = {};
 
     var visibleTraces = 0;
     var defaultOrder = 'normal';
@@ -47,16 +47,16 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         }
     }
 
-    function coerce(attr, dflt) {
-        return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
-    }
-
     var showLegend = Lib.coerce(layoutIn, layoutOut,
         basePlotLayoutAttributes, 'showlegend', visibleTraces > 1);
 
     if(showLegend === false) return;
 
-    layoutOut.legend = containerOut;
+    var containerOut = Template.newContainer(layoutOut, 'legend');
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
+    }
 
     coerce('bgcolor', layoutOut.paper_bgcolor);
     coerce('bordercolor');

@@ -51,7 +51,6 @@ tasks.push(function(cb) {
         standalone: 'Plotly',
         debug: DEV,
         compressAttrs: true,
-        packFlat: true,
         pathToMinBundle: constants.pathToPlotlyDistMin
     }, cb);
 });
@@ -68,7 +67,6 @@ tasks.push(function(cb) {
     _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
         standalone: 'Plotly',
         debug: DEV,
-        packFlat: true
     }, function() {
         makeSchema(constants.pathToPlotlyDistWithMeta, constants.pathToSchema)();
         cb();
@@ -82,7 +80,6 @@ constants.partialBundlePaths.forEach(function(pathObj) {
             standalone: 'Plotly',
             debug: DEV,
             compressAttrs: true,
-            packFlat: true,
             pathToMinBundle: pathObj.distMin
         }, cb);
     });

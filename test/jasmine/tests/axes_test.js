@@ -1073,26 +1073,32 @@ describe('Test axes', function() {
                 axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
+            // and not push it back to axIn (which we used to do)
+            expect(axIn.tickmode).toBeUndefined();
 
             axIn = {tickmode: 'array', tickvals: 'stuff'};
             axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
+            expect(axIn.tickmode).toBe('array');
 
             axIn = {tickmode: 'array', tickvals: [1, 2, 3]};
             axOut = {};
             mockSupplyDefaults(axIn, axOut, 'date');
             expect(axOut.tickmode).toBe('auto');
+            expect(axIn.tickmode).toBe('array');
 
             axIn = {tickvals: [1, 2, 3]};
             axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('array');
+            expect(axIn.tickmode).toBeUndefined();
 
             axIn = {dtick: 1};
             axOut = {};
             mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('linear');
+            expect(axIn.tickmode).toBeUndefined();
         });
 
         it('should set nticks iff tickmode=auto', function() {
@@ -2814,14 +2820,17 @@ describe('Test Axes.getTickformat', function() {
     it('get proper tickformatstop for linear axis', function() {
         var lineartickformatstops = [
             {
+                enabled: true,
                 dtickrange: [null, 1],
                 value: '.f2',
             },
             {
+                enabled: true,
                 dtickrange: [1, 100],
                 value: '.f1',
             },
             {
+                enabled: true,
                 dtickrange: [100, null],
                 value: 'g',
             }
@@ -2848,6 +2857,19 @@ describe('Test Axes.getTickformat', function() {
             tickformatstops: lineartickformatstops,
             dtick: 99999
         })).toEqual(lineartickformatstops[2].value);
+
+        // a stop is ignored if it's set invisible, but the others are used
+        lineartickformatstops[1].enabled = false;
+        expect(Axes.getTickFormat({
+            type: 'linear',
+            tickformatstops: lineartickformatstops,
+            dtick: 99
+        })).toBeUndefined();
+        expect(Axes.getTickFormat({
+            type: 'linear',
+            tickformatstops: lineartickformatstops,
+            dtick: 99999
+        })).toEqual(lineartickformatstops[2].value);
     });
 
     it('get proper tickformatstop for date axis', function() {
@@ -2861,34 +2883,42 @@ describe('Test Axes.getTickformat', function() {
         var YEAR = 'M12'; // or 365.25 * DAY;
         var datetickformatstops = [
             {
+                enabled: true,
                 dtickrange: [null, SECOND],
                 value: '%H:%M:%S.%L ms' // millisecond
             },
             {
+                enabled: true,
                 dtickrange: [SECOND, MINUTE],
                 value: '%H:%M:%S s' // second
             },
             {
+                enabled: true,
                 dtickrange: [MINUTE, HOUR],
                 value: '%H:%M m' // minute
             },
             {
+                enabled: true,
                 dtickrange: [HOUR, DAY],
                 value: '%H:%M h' // hour
             },
             {
+                enabled: true,
                 dtickrange: [DAY, WEEK],
                 value: '%e. %b d' // day
             },
             {
+                enabled: true,
                 dtickrange: [WEEK, MONTH],
                 value: '%e. %b w' // week
             },
             {
+                enabled: true,
                 dtickrange: [MONTH, YEAR],
                 value: '%b \'%y M' // month
             },
             {
+                enabled: true,
                 dtickrange: [YEAR, null],
                 value: '%Y Y' // year
             }
@@ -2939,18 +2969,22 @@ describe('Test Axes.getTickformat', function() {
     it('get proper tickformatstop for log axis', function() {
         var logtickformatstops = [
             {
+                enabled: true,
                 dtickrange: [null, 'L0.01'],
                 value: '.f3',
             },
             {
+                enabled: true,
                 dtickrange: ['L0.01', 'L1'],
                 value: '.f2',
             },
             {
+                enabled: true,
                 dtickrange: ['D1', 'D2'],
                 value: '.f1',
             },
             {
+                enabled: true,
                 dtickrange: [1, null],
                 value: 'g'
             }
@@ -3084,7 +3118,7 @@ describe('Test tickformatstops:', function() {
             promise = promise.then(function() {
                 return Plotly.relayout(gd, {'xaxis.tickformatstops': v});
             }).then(function() {
-                expect(gd._fullLayout.xaxis.tickformatstops).toEqual([]);
+                expect(gd._fullLayout.xaxis.tickformatstops).toBeUndefined();
             });
         });
 

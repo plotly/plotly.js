@@ -86,13 +86,14 @@ module.exports = {
 
     uglifyOptions: {
         mangle: true,
-        compress: {
-            warnings: false
-        },
+        // the compress flag break mapbox-gl,
+        // TODO find a way to only skip compression on mapbox-gl files
+        compress: false,
         output: {
             beautify: false,
             ascii_only: true
         },
+
         sourceMap: false
     },
 
