@@ -3,6 +3,9 @@
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
 var mockLists = require('../assets/mock_lists');
 
+// only needed for mapbox subplots
+var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
+
 describe('Test plotly.min.js', function() {
     'use strict';
 
@@ -20,6 +23,6 @@ describe('Test plotly.min.js', function() {
     mockLists.all.forEach(function(mockSpec) {
         it('can plot "' + mockSpec[0] + '"', function(done) {
             Plotly.newPlot(gd, mockSpec[1]).catch(fail).then(done);
-        });
+        }, LONG_TIMEOUT_INTERVAL);
     });
 });
