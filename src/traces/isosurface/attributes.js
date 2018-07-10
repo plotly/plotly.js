@@ -8,7 +8,6 @@
 
 'use strict';
 
-var colorAttrs = require('../../components/colorscale/color_attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var mesh3dAttrs = require('../mesh3d/attributes');
@@ -42,19 +41,19 @@ var attrs = {
         ].join(' ')
     },
 
-    u: {
+    value: {
         valType: 'data_array',
         editType: 'calc',
         description: 'Sets the intensity values of the isosurface.'
     },
 
-    imin: {
+    isomin: {
         valType: 'number',
         editType: 'calc',
         description: 'Sets the minimum iso bound of the isosurface.'
     },
 
-    imax: {
+    isomax: {
         valType: 'number',
         editType: 'calc',
         description: 'Sets the maximum iso bound of the isosurface.'
@@ -104,14 +103,15 @@ var attrs = {
     }
 };
 
-extendFlat(attrs, colorAttrs('', 'calc', true), {
-    showscale: colorscaleAttrs.showscale,
+extendFlat(attrs, colorscaleAttrs('', {
+    colorAttr: 'value',
+    showScaleDflt: true,
+    editTypeOverride: 'calc'
+}), {
     colorbar: colorbarAttrs
 });
-delete attrs.color;
 
 var fromMesh3d = ['opacity', 'lightposition', 'lighting'];
-
 fromMesh3d.forEach(function(k) {
     attrs[k] = mesh3dAttrs[k];
 });

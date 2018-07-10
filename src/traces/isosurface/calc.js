@@ -11,20 +11,18 @@
 var colorscaleCalc = require('../../components/colorscale/calc');
 
 module.exports = function calc(gd, trace) {
-    var u = trace.u;
-    var len = u.length;
-    var normMax = -Infinity;
-    var normMin = Infinity;
+    var value = trace.value;
+    var len = value.length;
+    var vMax = -Infinity;
+    var vMin = Infinity;
 
     for(var i = 0; i < len; i++) {
-        var uu = u[i];
-        var norm = uu;
-
-        normMax = Math.max(normMax, norm);
-        normMin = Math.min(normMin, norm);
+        var v = value[i];
+        vMax = Math.max(vMax, v);
+        vMin = Math.min(vMin, v);
     }
 
-    trace._normMax = normMax;
+    trace._vMax = vMax;
 
-    colorscaleCalc(trace, [normMin, normMax], '', 'c');
+    colorscaleCalc(trace, [vMin, vMax], '', 'c');
 };

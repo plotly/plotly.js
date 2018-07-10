@@ -19,22 +19,22 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var u = coerce('u');
+    var value = coerce('value');
 
     var x = coerce('x');
     var y = coerce('y');
     var z = coerce('z');
 
     if(
-        !u || !u.length ||
+        !value || !value.length ||
         !x || !x.length || !y || !y.length || !z || !z.length
     ) {
         traceOut.visible = false;
         return;
     }
 
-    coerce('imin');
-    coerce('imax');
+    coerce('isomin');
+    coerce('isomax');
     coerce('smoothnormals');
     coerce('isocaps');
     // coerce('singlemesh');

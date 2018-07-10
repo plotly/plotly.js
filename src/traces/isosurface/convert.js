@@ -39,10 +39,10 @@
       y: ys,
       z: zs,
 
-      u: data,
+      value: data,
 
-      imin: 1600,
-      imax: 2000,
+      isomin: 1600,
+      isomax: 2000,
       cmin: 1500,
       cmax: 2000,
 
@@ -146,12 +146,12 @@ function convert(scene, trace) {
     // ];
 
 
-    isosurfaceOpts.values = trace.u;
+    isosurfaceOpts.values = trace.value;
 
     isosurfaceOpts.colormap = parseColorScale(trace.colorscale);
     // isosurfaceOpts.capsColormap = parseColorScale(trace.capscolorscale);
     isosurfaceOpts.vertexIntensityBounds = [trace.cmin, trace.cmax];
-    isosurfaceOpts.isoBounds = [trace.imin, trace.imax];
+    isosurfaceOpts.isoBounds = [trace.isomin, trace.isomax];
 
     isosurfaceOpts.isoCaps = trace.isocaps;
     isosurfaceOpts.singleMesh = trace.singlemesh === undefined ? true : trace.singlemesh;
