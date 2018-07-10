@@ -188,7 +188,6 @@ function sceneOptions(gd, subplot, trace, positions, x, y) {
 // make sure scene exists on subplot, return it
 function sceneUpdate(gd, subplot) {
     var scene = subplot._scene;
-    var fullLayout = gd._fullLayout;
 
     var resetOpts = {
         // number of traces in subplot, since scene:subplot → 1:1
@@ -290,8 +289,8 @@ function sceneUpdate(gd, subplot) {
             scene.dirty = false;
         };
 
-        // make sure canvas is clear
         scene.clear = function clear() {
+            var fullLayout = gd._fullLayout;
             var vpSize = fullLayout._size;
             var width = fullLayout.width;
             var height = fullLayout.height;

@@ -17,6 +17,7 @@ var click = require('../assets/timed_click');
 var hover = require('../assets/hover');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
+var readPixel = require('../assets/read_pixel');
 
 // contourgl is not part of the dist plotly.js bundle initially
 Plotly.register([
@@ -897,6 +898,65 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
                     ]
                 ]
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work after a width/height relayout', function(done) {
+        gd = createGraphDiv();
+
+        var w = 500;
+        var h = 500;
+        var w2 = 800;
+        var h2 = 600;
+        var pad = 20;
+
+        function _read(query) {
+            var canvas = gd.querySelector(query);
+            return readPixel(canvas, 0, 0, gd.layout.width, gd.layout.height)
+                .reduce(function(acc, v) { return acc + v; }, 0);
+        }
+
+        function readContext() { return _read('.gl-canvas-context'); }
+
+        function readFocus() { return _read('.gl-canvas-focus'); }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            mode: 'markers',
+            y: [2, 1, 2]
+        }], {
+            dragmode: 'select',
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            width: w, height: h
+        })
+        .then(delay(100))
+        .then(function() {
+            expect(readContext()).toBeGreaterThan(1e4, 'base context');
+            expect(readFocus()).toBe(0, 'base focus');
+        })
+        .then(function() { return select([[pad, pad], [w - pad, h - pad]]); })
+        .then(function() {
+            expect(readContext()).toBe(0, 'select context');
+            expect(readFocus()).toBeGreaterThan(1e4, 'select focus');
+        })
+        .then(function() {
+            return Plotly.update(gd,
+                {selectedpoints: null},
+                {width: w2, height: h2}
+            );
+        })
+        .then(function() {
+            expect(readContext()).toBeGreaterThan(1e4, 'update context');
+            expect(readFocus()).toBe(0, 'update focus');
+        })
+        .then(function() { return select([[pad, pad], [w2 - pad, h2 - pad]]); })
+        .then(function() {
+            // make sure full w2/h2 context canvas is cleared!
+            // from https://github.com/plotly/plotly.js/issues/2731<Paste>
+            expect(readContext()).toBe(0, 'update+select context');
+            expect(readFocus()).toBeGreaterThan(1e4, 'update+select focus');
         })
         .catch(failTest)
         .then(done);
