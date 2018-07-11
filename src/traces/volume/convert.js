@@ -44,7 +44,7 @@
       y: ys,
       z: zs,
 
-      u: data,
+      value: data,
 
       cmin: 0.05,
       cmax: 0.22,
@@ -147,7 +147,7 @@ function convert(gl, scene, trace) {
     // ];
 
 
-    volumeOpts.values = trace.u;
+    volumeOpts.values = trace.value;
 
     volumeOpts.colormap = parseColorScale(trace.colorscale);
 
