@@ -45,7 +45,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     }
 
     var b = browserify(pathToIndex, browserifyOpts);
-    var pending = opts.pathToMinBundle ? 2 : 1;
+    var pending = pathToMinBundle ? 2 : 1;
 
     function done() {
         if(cb && --pending === 0) cb(null);
@@ -58,7 +58,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
         }
     });
 
-    if(opts.pathToMinBundle) {
+    if(pathToMinBundle) {
         bundleStream
             .pipe(minify(constants.uglifyOptions))
             .pipe(fs.createWriteStream(pathToMinBundle))

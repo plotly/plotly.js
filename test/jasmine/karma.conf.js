@@ -255,6 +255,10 @@ if(isFullSuite) {
             ];
             delete func.defaultConfig.preprocessors[pathToCustomMatchers];
             break;
+        case 'minified_bundle':
+            func.defaultConfig.files.push(constants.pathToPlotlyDistMin);
+            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+            break;
         case 'ie9':
             // load ie9_mock.js before plotly.js+test bundle
             // to catch reference errors that could occur

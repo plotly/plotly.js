@@ -20,6 +20,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
+var mockLists = require('../assets/mock_lists');
 
 describe('Test plot api', function() {
     'use strict';
@@ -3230,63 +3231,6 @@ describe('Test plot api', function() {
             .then(done);
         });
 
-        var svgMockList = [
-            ['1', require('@mocks/1.json')],
-            ['4', require('@mocks/4.json')],
-            ['5', require('@mocks/5.json')],
-            ['10', require('@mocks/10.json')],
-            ['11', require('@mocks/11.json')],
-            ['17', require('@mocks/17.json')],
-            ['21', require('@mocks/21.json')],
-            ['22', require('@mocks/22.json')],
-            ['airfoil', require('@mocks/airfoil.json')],
-            ['annotations-autorange', require('@mocks/annotations-autorange.json')],
-            ['axes_enumerated_ticks', require('@mocks/axes_enumerated_ticks.json')],
-            ['axes_visible-false', require('@mocks/axes_visible-false.json')],
-            ['bar_and_histogram', require('@mocks/bar_and_histogram.json')],
-            ['basic_error_bar', require('@mocks/basic_error_bar.json')],
-            ['binding', require('@mocks/binding.json')],
-            ['cheater_smooth', require('@mocks/cheater_smooth.json')],
-            ['finance_style', require('@mocks/finance_style.json')],
-            ['geo_first', require('@mocks/geo_first.json')],
-            ['layout_image', require('@mocks/layout_image.json')],
-            ['layout-colorway', require('@mocks/layout-colorway.json')],
-            ['polar_categories', require('@mocks/polar_categories.json')],
-            ['polar_direction', require('@mocks/polar_direction.json')],
-            ['range_selector_style', require('@mocks/range_selector_style.json')],
-            ['range_slider_multiple', require('@mocks/range_slider_multiple.json')],
-            ['sankey_energy', require('@mocks/sankey_energy.json')],
-            ['scattercarpet', require('@mocks/scattercarpet.json')],
-            ['shapes', require('@mocks/shapes.json')],
-            ['splom_iris', require('@mocks/splom_iris.json')],
-            ['table_wrapped_birds', require('@mocks/table_wrapped_birds.json')],
-            ['ternary_fill', require('@mocks/ternary_fill.json')],
-            ['text_chart_arrays', require('@mocks/text_chart_arrays.json')],
-            ['transforms', require('@mocks/transforms.json')],
-            ['updatemenus', require('@mocks/updatemenus.json')],
-            ['violin_side-by-side', require('@mocks/violin_side-by-side.json')],
-            ['world-cals', require('@mocks/world-cals.json')],
-            ['typed arrays', {
-                data: [{
-                    x: new Float32Array([1, 2, 3]),
-                    y: new Float32Array([1, 2, 1])
-                }]
-            }]
-        ];
-
-        var glMockList = [
-            ['gl2d_heatmapgl', require('@mocks/gl2d_heatmapgl.json')],
-            ['gl2d_line_dash', require('@mocks/gl2d_line_dash.json')],
-            ['gl2d_parcoords_2', require('@mocks/gl2d_parcoords_2.json')],
-            ['gl2d_pointcloud-basic', require('@mocks/gl2d_pointcloud-basic.json')],
-            ['gl3d_annotations', require('@mocks/gl3d_annotations.json')],
-            ['gl3d_set-ranges', require('@mocks/gl3d_set-ranges.json')],
-            ['gl3d_world-cals', require('@mocks/gl3d_world-cals.json')],
-            ['gl3d_cone-autorange', require('@mocks/gl3d_cone-autorange.json')],
-            ['gl3d_streamtube-simple', require('@mocks/gl3d_streamtube-simple.json')],
-            ['glpolar_style', require('@mocks/glpolar_style.json')],
-        ];
-
         // make sure we've included every trace type in this suite
         var typesTested = {};
         var itemType;
@@ -3385,24 +3329,25 @@ describe('Test plot api', function() {
             .then(done);
         }
 
-        svgMockList.forEach(function(mockSpec) {
+        mockLists.svg.forEach(function(mockSpec) {
             it('can redraw "' + mockSpec[0] + '" with no changes as a noop (svg mocks)', function(done) {
                 _runReactMock(mockSpec, done);
             });
         });
 
-        glMockList.forEach(function(mockSpec) {
+        mockLists.gl.forEach(function(mockSpec) {
             it('can redraw "' + mockSpec[0] + '" with no changes as a noop (gl mocks)', function(done) {
                 _runReactMock(mockSpec, done);
             });
         });
 
-        it('@noCI can redraw scattermapbox with no changes as a noop', function(done) {
-            Plotly.setPlotConfig({
-                mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        mockLists.mapbox.forEach(function(mockSpec) {
+            it('@noCI can redraw "' + mockSpec[0] + '" with no changes as a noop (mapbpox mocks)', function(done) {
+                Plotly.setPlotConfig({
+                    mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+                });
+                _runReactMock(mockSpec, done);
             });
-
-            _runReactMock(['scattermapbox', require('@mocks/mapbox_bubbles-text.json')], done);
         });
 
         // since CI breaks up gl/svg types, and drops scattermapbox, this test won't work there
