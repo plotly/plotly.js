@@ -9,7 +9,7 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 
@@ -36,7 +36,6 @@ var marker = extendFlat({
     line: markerLine,
     editType: 'calc'
 }, colorAttributes('marker'), {
-    showscale: scatterMarkerAttrs.showscale,
     colorbar: colorbarAttrs,
     opacity: {
         valType: 'number',

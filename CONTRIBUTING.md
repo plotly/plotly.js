@@ -208,7 +208,7 @@ This will produce the following plot, and say you want to simulate a selection p
 - All tasks can be run using [`npm run-script`](https://docs.npmjs.com/cli/run-script)
 - Tests are `test/`, they are partitioned into `image` and `jasmine` tests
 - Test dashboard and image viewer code is in `devtools/`
-- Non-distributed, built files are in `build/` (most files in here are git-ignored, the css and font built files are exceptions)
+- Built files are in `build/` (most files in here are git-ignored, the css and font built files are exceptions)
 
 
 ## Coding style

@@ -8,7 +8,6 @@
 
 'use strict';
 
-var colorAttrs = require('../../components/colorscale/color_attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var colorbarAttrs = require('../../components/colorbar/attributes');
 var surfaceAtts = require('../surface/attributes');
@@ -16,7 +15,7 @@ var baseAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat(colorAttrs('', 'calc', false), {
+module.exports = extendFlat({
     x: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
@@ -166,8 +165,16 @@ module.exports = extendFlat(colorAttrs('', 'calc', false), {
             'Overrides *color* and *vertexcolor*.'
         ].join(' ')
     },
+},
 
-    // Opacity
+colorscaleAttrs('', {
+    colorAttr: '`intensity`',
+    showScaleDflt: true,
+    editTypeOverride: 'calc'
+}), {
+
+    colorbar: colorbarAttrs,
+
     opacity: surfaceAtts.opacity,
 
     // Flat shaded mode
@@ -192,9 +199,6 @@ module.exports = extendFlat(colorAttrs('', 'calc', false), {
         width: surfaceAtts.contours.x.width,
         editType: 'calc'
     },
-
-    showscale: colorscaleAttrs.showscale,
-    colorbar: colorbarAttrs,
 
     lightposition: {
         x: extendFlat({}, surfaceAtts.lightposition.x, {dflt: 1e5}),

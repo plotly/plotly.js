@@ -41,7 +41,7 @@ describe('general transforms:', function() {
             transforms: [{}]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{}]);
     });
@@ -52,7 +52,7 @@ describe('general transforms:', function() {
             transforms: [{}]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toBeUndefined();
     });
@@ -63,7 +63,7 @@ describe('general transforms:', function() {
             transforms: [{ type: 'filter' }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -82,7 +82,7 @@ describe('general transforms:', function() {
             transforms: [{ type: 'invalid' }]
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, fullLayout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, fullLayout);
 
         expect(traceOut.y).toBe(traceIn.y);
     });
@@ -108,7 +108,7 @@ describe('general transforms:', function() {
             _basePlotModules: []
         };
 
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, {type: 'scatter'}, 0, layout);
 
         expect(traceOut.transforms[0]).toEqual(jasmine.objectContaining({
             type: 'filter',

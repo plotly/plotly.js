@@ -12,6 +12,7 @@ var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
+var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
 var constants = require('./constants');
 
@@ -60,6 +61,11 @@ module.exports = {
         dflt: '-',
         role: 'info',
         editType: 'calc',
+        // we forget when an axis has been autotyped, just writing the auto
+        // value back to the input - so it doesn't make sense to template this.
+        // Note: we do NOT prohibit this in `coerce`, so if someone enters a
+        // type in the template explicitly it will be honored as the default.
+        _noTemplating: true,
         description: [
             'Sets the axis type.',
             'By default, plotly attempts to determined the axis type',
@@ -510,9 +516,17 @@ module.exports = {
             '*%H~%M~%S.%2f* would display *09~15~23.46*'
         ].join(' ')
     },
-    tickformatstops: {
-        _isLinkedToArray: 'tickformatstop',
-
+    tickformatstops: templatedArray('tickformatstop', {
+        enabled: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: true,
+            editType: 'ticks',
+            description: [
+                'Determines whether or not this stop is used.',
+                'If `false`, this stop is ignored even within its `dtickrange`.'
+            ].join(' ')
+        },
         dtickrange: {
             valType: 'info_array',
             role: 'info',
@@ -537,7 +551,7 @@ module.exports = {
             ].join(' ')
         },
         editType: 'ticks'
-    },
+    }),
     hoverformat: {
         valType: 'string',
         dflt: '',

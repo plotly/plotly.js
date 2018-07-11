@@ -9,7 +9,7 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
 var baseAttrs = require('../../plots/attributes');
 var DASHES = require('../../constants/gl3d_dashes');
 
@@ -116,15 +116,6 @@ var attrs = module.exports = overrideAll({
             dflt: 'solid',
             role: 'style',
             description: 'Sets the dash style of the lines.'
-        },
-        showscale: {
-            valType: 'boolean',
-            role: 'info',
-            dflt: false,
-            description: [
-                'Has an effect only if `line.color` is set to a numerical array.',
-                'Determines whether or not a colorbar is displayed.'
-            ].join(' ')
         }
     },
         colorAttributes('line')
@@ -153,7 +144,6 @@ var attrs = module.exports = overrideAll({
                 'to an rgba color and use its alpha channel.'
             ].join(' ')
         }),
-        showscale: scatterMarkerAttrs.showscale,
         colorbar: scatterMarkerAttrs.colorbar,
 
         line: extendFlat({

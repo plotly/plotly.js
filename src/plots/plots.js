@@ -14,6 +14,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
+var Template = require('../plot_api/plot_template');
 var Lib = require('../lib');
 var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
@@ -89,8 +90,8 @@ plots.resize = function(gd) {
         if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
 
         gd._redrawTimer = setTimeout(function() {
-            // return if there is nothing to resize
-            if(gd.layout.width && gd.layout.height) {
+            // return if there is nothing to resize or is hidden
+            if(!gd.layout || (gd.layout.width && gd.layout.height) || isHidden(gd)) {
                 resolve(gd);
                 return;
             }
@@ -214,7 +215,7 @@ function positionPlayWithData(gd, container) {
 plots.sendDataToCloud = function(gd) {
     gd.emit('plotly_beforeexport');
 
-    var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
+    var baseUrl = (window.PLOTLYENV || {}).BASE_URL || gd._context.plotlyServerURL;
 
     var hiddenformDiv = d3.select(gd)
         .append('div')
@@ -345,6 +346,7 @@ plots.supplyDefaults = function(gd, opts) {
 
         if(!newLayout.width) newFullLayout.width = oldWidth;
         if(!newLayout.height) newFullLayout.height = oldHeight;
+        plots.sanitizeMargins(newFullLayout);
     }
     else {
 
@@ -357,7 +359,7 @@ plots.supplyDefaults = function(gd, opts) {
             initialAutoSize = missingWidthOrHeight && (autosize || autosizable);
 
         if(initialAutoSize) plots.plotAutoSize(gd, newLayout, newFullLayout);
-        else if(missingWidthOrHeight) plots.sanitizeMargins(gd);
+        else if(missingWidthOrHeight) plots.sanitizeMargins(newFullLayout);
 
         // for backwards-compatibility with Plotly v1.x.x
         if(!autosize && missingWidthOrHeight) {
@@ -927,12 +929,17 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
     var carpetIndex = {};
     var carpetDependents = [];
+    var dataTemplate = (layout.template || {}).data || {};
+    var templater = Template.traceTemplater(dataTemplate);
 
     for(i = 0; i < dataIn.length; i++) {
         trace = dataIn[i];
-        fullTrace = plots.supplyTraceDefaults(trace, colorCnt, fullLayout, i,
-            // reuse uid we may have pulled out of oldFullData
-            fullLayout._traceUids[i]);
+
+        // reuse uid we may have pulled out of oldFullData
+        // Note: templater supplies trace type
+        fullTrace = templater.newTrace(trace);
+        fullTrace.uid = fullLayout._traceUids[i];
+        plots.supplyTraceDefaults(trace, fullTrace, colorCnt, fullLayout, i);
 
         fullTrace.uid = fullLayout._traceUids[i];
 
@@ -945,12 +952,16 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
 
             for(var j = 0; j < expandedTraces.length; j++) {
                 var expandedTrace = expandedTraces[j];
-                var fullExpandedTrace = plots.supplyTraceDefaults(
-                    expandedTrace, cnt, fullLayout, i,
+
+                // No further templating during transforms.
+                var fullExpandedTrace = {
+                    _template: fullTrace._template,
+                    type: fullTrace.type,
                     // set uid using parent uid and expanded index
                     // to promote consistency between update calls
-                    fullTrace.uid + j
-                );
+                    uid: fullTrace.uid + j
+                };
+                plots.supplyTraceDefaults(expandedTrace, fullExpandedTrace, cnt, fullLayout, i);
 
                 // relink private (i.e. underscore) keys expanded trace to full expanded trace so
                 // that transform supply-default methods can set _ keys for future use.
@@ -1080,9 +1091,8 @@ plots.supplyFrameDefaults = function(frameIn) {
     return frameOut;
 };
 
-plots.supplyTraceDefaults = function(traceIn, colorIndex, layout, traceInIndex, uid) {
+plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, traceInIndex) {
     var colorway = layout.colorway || Color.defaults;
-    var traceOut = {uid: uid};
     var defaultColor = colorway[colorIndex % colorway.length];
 
     var i;
@@ -1265,6 +1275,13 @@ function applyTransforms(fullTrace, fullData, layout, fullLayout) {
 plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     function coerce(attr, dflt) {
         return Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
+    }
+
+    var template = layoutIn.template;
+    if(Lib.isPlainObject(template)) {
+        layoutOut.template = template;
+        layoutOut._template = template.layout;
+        layoutOut._dataTemplate = template.data;
     }
 
     var globalFont = Lib.coerceFont(coerce, 'font');
@@ -1771,8 +1788,15 @@ plots.doAutoMargin = function(gd) {
     gs.h = Math.round(fullLayout.height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
-    if(!fullLayout._replotting && oldmargins !== '{}' &&
-            oldmargins !== JSON.stringify(fullLayout._size)) {
+    if(!fullLayout._replotting &&
+        oldmargins !== '{}' &&
+        oldmargins !== JSON.stringify(fullLayout._size)
+    ) {
+        if('_redrawFromAutoMarginCount' in fullLayout) {
+            fullLayout._redrawFromAutoMarginCount++;
+        } else {
+            fullLayout._redrawFromAutoMarginCount = 1;
+        }
         return Registry.call('plot', gd);
     }
 };

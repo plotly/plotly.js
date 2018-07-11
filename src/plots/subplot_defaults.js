@@ -10,6 +10,7 @@
 'use strict';
 
 var Lib = require('../lib');
+var Template = require('../plot_api/plot_template');
 var handleDomainDefaults = require('./domain').defaults;
 
 
@@ -49,6 +50,8 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
     var ids = layoutOut._subplots[subplotType];
     var idsLength = ids.length;
 
+    var baseId = idsLength && ids[0].replace(/\d+$/, '');
+
     var subplotLayoutIn, subplotLayoutOut;
 
     function coerce(attr, dflt) {
@@ -62,7 +65,7 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
         if(layoutIn[id]) subplotLayoutIn = layoutIn[id];
         else subplotLayoutIn = layoutIn[id] = {};
 
-        layoutOut[id] = subplotLayoutOut = {};
+        subplotLayoutOut = Template.newContainer(layoutOut, id, baseId);
 
         var dfltDomains = {};
         dfltDomains[partition] = [i / idsLength, (i + 1) / idsLength];

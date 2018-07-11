@@ -16,6 +16,7 @@ var Drawing = require('../drawing');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var anchorUtils = require('../legend/anchor_utils');
+var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 
 var constants = require('./constants');
 var alignmentConstants = require('../../constants/alignment');
@@ -74,14 +75,11 @@ module.exports = function draw(gd) {
     }
 
     sliderGroups.each(function(sliderOpts) {
-        // If it has fewer than two options, it's not really a slider:
-        if(sliderOpts.steps.length < 2) return;
-
         var gSlider = d3.select(this);
 
         computeLabelSteps(sliderOpts);
 
-        Plots.manageCommandObserver(gd, sliderOpts, sliderOpts.steps, function(data) {
+        Plots.manageCommandObserver(gd, sliderOpts, sliderOpts._visibleSteps, function(data) {
             // NB: Same as below. This is *not* always the same as sliderOpts since
             // if a new set of steps comes in, the reference in this callback would
             // be invalid. We need to refetch it from the slider group, which is
@@ -111,7 +109,7 @@ function makeSliderData(fullLayout, gd) {
 
     for(var i = 0; i < contOpts.length; i++) {
         var item = contOpts[i];
-        if(!item.visible || !item.steps.length) continue;
+        if(!item.visible) continue;
         item._gd = gd;
         sliderData.push(item);
     }
@@ -127,7 +125,7 @@ function keyFunction(opts) {
 // Compute the dimensions (mutates sliderOpts):
 function findDimensions(gd, sliderOpts) {
     var sliderLabels = Drawing.tester.selectAll('g.' + constants.labelGroupClass)
-        .data(sliderOpts.steps);
+        .data(sliderOpts._visibleSteps);
 
     sliderLabels.enter().append('g')
         .classed(constants.labelGroupClass, true);
@@ -176,7 +174,7 @@ function findDimensions(gd, sliderOpts) {
     dims.inputAreaLength = Math.round(dims.outerLength - sliderOpts.pad.l - sliderOpts.pad.r);
 
     var textableInputLength = dims.inputAreaLength - 2 * constants.stepInset;
-    var availableSpacePerLabel = textableInputLength / (sliderOpts.steps.length - 1);
+    var availableSpacePerLabel = textableInputLength / (sliderOpts._stepCount - 1);
     var computedSpacePerLabel = maxLabelWidth + constants.labelPadding;
     dims.labelStride = Math.max(1, Math.ceil(computedSpacePerLabel / availableSpacePerLabel));
     dims.labelHeight = labelHeight;
@@ -260,8 +258,8 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
     // the *current* slider step is removed. The drawing functions will error out
     // when they fail to find it, so the fix for now is that it will just draw the
     // slider in the first position but will not execute the command.
-    if(sliderOpts.active >= sliderOpts.steps.length) {
-        sliderOpts.active = 0;
+    if(!((sliderOpts.steps[sliderOpts.active] || {}).visible)) {
+        sliderOpts.active = sliderOpts._visibleSteps[0]._index;
     }
 
     // These are carefully ordered for proper z-ordering:
@@ -278,7 +276,7 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
     // Position the rectangle:
     Drawing.setTranslate(sliderGroup, dims.lx + sliderOpts.pad.l, dims.ly + sliderOpts.pad.t);
 
-    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1), false);
+    sliderGroup.call(setGripPosition, sliderOpts, false);
     sliderGroup.call(drawCurrentValue, sliderOpts);
 
 }
@@ -406,20 +404,25 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
 }
 
 function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransition) {
-    var quantizedPosition = Math.round(normalizedPosition * (sliderOpts.steps.length - 1));
+    var quantizedPosition = Math.round(normalizedPosition * (sliderOpts._stepCount - 1));
+    var quantizedIndex = sliderOpts._visibleSteps[quantizedPosition]._index;
 
-    if(quantizedPosition !== sliderOpts.active) {
-        setActive(gd, sliderGroup, sliderOpts, quantizedPosition, true, doTransition);
+    if(quantizedIndex !== sliderOpts.active) {
+        setActive(gd, sliderGroup, sliderOpts, quantizedIndex, true, doTransition);
     }
 }
 
 function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition) {
     var previousActive = sliderOpts.active;
-    sliderOpts._input.active = sliderOpts.active = index;
+    sliderOpts.active = index;
+
+    // due to templating, it's possible this slider doesn't even exist yet
+    arrayEditor(gd.layout, constants.name, sliderOpts)
+        .applyUpdate('active', index);
 
     var step = sliderOpts.steps[sliderOpts.active];
 
-    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1), doTransition);
+    sliderGroup.call(setGripPosition, sliderOpts, doTransition);
     sliderGroup.call(drawCurrentValue, sliderOpts);
 
     gd.emit('plotly_sliderchange', {
@@ -502,7 +505,7 @@ function attachGripEvents(item, gd, sliderGroup) {
 
 function drawTicks(sliderGroup, sliderOpts) {
     var tick = sliderGroup.selectAll('rect.' + constants.tickRectClass)
-        .data(sliderOpts.steps);
+        .data(sliderOpts._visibleSteps);
     var dims = sliderOpts._dims;
 
     tick.enter().append('rect')
@@ -524,7 +527,7 @@ function drawTicks(sliderGroup, sliderOpts) {
             .call(Color.fill, isMajor ? sliderOpts.tickcolor : sliderOpts.tickcolor);
 
         Drawing.setTranslate(item,
-            normalizedValueToPosition(sliderOpts, i / (sliderOpts.steps.length - 1)) - 0.5 * sliderOpts.tickwidth,
+            normalizedValueToPosition(sliderOpts, i / (sliderOpts._stepCount - 1)) - 0.5 * sliderOpts.tickwidth,
             (isMajor ? constants.tickOffset : constants.minorTickOffset) + dims.currentValueTotalHeight
         );
     });
@@ -534,21 +537,28 @@ function drawTicks(sliderGroup, sliderOpts) {
 function computeLabelSteps(sliderOpts) {
     var dims = sliderOpts._dims;
     dims.labelSteps = [];
-    var i0 = 0;
-    var nsteps = sliderOpts.steps.length;
+    var nsteps = sliderOpts._stepCount;
 
-    for(var i = i0; i < nsteps; i += dims.labelStride) {
+    for(var i = 0; i < nsteps; i += dims.labelStride) {
         dims.labelSteps.push({
             fraction: i / (nsteps - 1),
-            step: sliderOpts.steps[i]
+            step: sliderOpts._visibleSteps[i]
         });
     }
 }
 
-function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
+function setGripPosition(sliderGroup, sliderOpts, doTransition) {
     var grip = sliderGroup.select('rect.' + constants.gripRectClass);
 
-    var x = normalizedValueToPosition(sliderOpts, position);
+    var quantizedIndex = 0;
+    for(var i = 0; i < sliderOpts._stepCount; i++) {
+        if(sliderOpts._visibleSteps[i]._index === sliderOpts.active) {
+            quantizedIndex = i;
+            break;
+        }
+    }
+
+    var x = normalizedValueToPosition(sliderOpts, quantizedIndex / (sliderOpts._stepCount - 1));
 
     // If this is true, then *this component* is already invoking its own command
     // and has triggered its own animation.

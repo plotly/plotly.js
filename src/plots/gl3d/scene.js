@@ -88,24 +88,27 @@ function render(scene) {
 
         var tx;
 
-        if(trace.type === 'cone') {
-            var coneTx = [];
+        if(trace.type === 'cone' || trace.type === 'streamtube') {
+            var vectorTx = [];
             if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
-                coneTx.push('u: ' + formatter('xaxis', selection.traceCoordinate[3]));
+                vectorTx.push('u: ' + formatter('xaxis', selection.traceCoordinate[3]));
             }
             if(isHoverinfoAll || hoverinfoParts.indexOf('v') !== -1) {
-                coneTx.push('v: ' + formatter('yaxis', selection.traceCoordinate[4]));
+                vectorTx.push('v: ' + formatter('yaxis', selection.traceCoordinate[4]));
             }
             if(isHoverinfoAll || hoverinfoParts.indexOf('w') !== -1) {
-                coneTx.push('w: ' + formatter('zaxis', selection.traceCoordinate[5]));
+                vectorTx.push('w: ' + formatter('zaxis', selection.traceCoordinate[5]));
             }
             if(isHoverinfoAll || hoverinfoParts.indexOf('norm') !== -1) {
-                coneTx.push('norm: ' + selection.traceCoordinate[6].toPrecision(3));
+                vectorTx.push('norm: ' + selection.traceCoordinate[6].toPrecision(3));
+            }
+            if(trace.type === 'streamtube' && (isHoverinfoAll || hoverinfoParts.indexOf('divergence') !== -1)) {
+                vectorTx.push('divergence: ' + selection.traceCoordinate[7].toPrecision(3));
             }
             if(selection.textLabel) {
-                coneTx.push(selection.textLabel);
+                vectorTx.push(selection.textLabel);
             }
-            tx = coneTx.join('<br>');
+            tx = vectorTx.join('<br>');
         } else {
             tx = selection.textLabel;
         }
@@ -130,6 +133,7 @@ function render(scene) {
             });
         }
 
+        // TODO not sure if streamtube x/y/z should be emitted as x/y/z
         var pointData = {
             x: selection.traceCoordinate[0],
             y: selection.traceCoordinate[1],
@@ -139,6 +143,10 @@ function render(scene) {
             curveNumber: trace.index,
             pointNumber: ptNumber
         };
+
+        if(trace._module.eventData) {
+            pointData = trace._module.eventData(pointData, selection, trace, {}, ptNumber);
+        }
 
         Fx.appendArrayPointValue(pointData, trace, ptNumber);
 
@@ -448,7 +456,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
         }
         trace = this.traces[data.uid];
         if(trace) {
-            trace.update(data);
+            if(trace.data.type === data.type) {
+                trace.update(data);
+            } else {
+                trace.dispose();
+                trace = data._module.plot(this, data);
+                this.traces[data.uid] = trace;
+            }
         } else {
             trace = data._module.plot(this, data);
             this.traces[data.uid] = trace;

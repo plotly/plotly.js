@@ -12,6 +12,7 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
+var Template = require('../../plot_api/plot_template');
 var basePlotLayoutAttributes = require('../layout_attributes');
 
 var layoutAttributes = require('./layout_attributes');
@@ -117,17 +118,17 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // first pass creates the containers, determines types, and handles most of the settings
     for(i = 0; i < axNames.length; i++) {
         axName = axNames[i];
+        axLetter = axName.charAt(0);
 
         if(!Lib.isPlainObject(layoutIn[axName])) {
             layoutIn[axName] = {};
         }
 
         axLayoutIn = layoutIn[axName];
-        axLayoutOut = layoutOut[axName] = {};
+        axLayoutOut = Template.newContainer(layoutOut, axName, axLetter + 'axis');
 
         handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, fullData, axName);
 
-        axLetter = axName.charAt(0);
         var overlayableAxes = getOverlayableAxes(axLetter, axName);
 
         var defaultOptions = {

@@ -117,7 +117,7 @@ function plot(container, subplot, cdata) {
 
         // bring positions to selected/unselected options
         if(subTypes.hasMarkers(trace)) {
-            options.selected.positions = options.unselected.positions = options.marker.positions;
+            options.markerSel.positions = options.markerUnsel.positions = options.marker.positions;
         }
 
         // save scene options batch
@@ -126,8 +126,8 @@ function plot(container, subplot, cdata) {
         scene.errorYOptions.push(options.errorY);
         scene.fillOptions.push(options.fill);
         scene.markerOptions.push(options.marker);
-        scene.selectedOptions.push(options.selected);
-        scene.unselectedOptions.push(options.unselected);
+        scene.markerSelectedOptions.push(options.markerSel);
+        scene.markerUnselectedOptions.push(options.markerUnsel);
         scene.count = cdata.length;
 
         // stash scene ref

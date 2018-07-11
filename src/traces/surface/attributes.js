@@ -98,7 +98,7 @@ function makeContourAttr(axLetter) {
     };
 }
 
-var attrs = module.exports = overrideAll({
+var attrs = module.exports = overrideAll(extendFlat({
     z: {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
@@ -131,15 +131,14 @@ var attrs = module.exports = overrideAll({
             'used for setting a color scale independent of `z`.'
         ].join(' ')
     },
+},
 
-    cauto: colorscaleAttrs.zauto,
-    cmin: colorscaleAttrs.zmin,
-    cmax: colorscaleAttrs.zmax,
-    colorscale: colorscaleAttrs.colorscale,
-    autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale,
-        {dflt: false}),
-    reversescale: colorscaleAttrs.reversescale,
-    showscale: colorscaleAttrs.showscale,
+colorscaleAttrs('', {
+    colorAttr: 'z or surfacecolor',
+    showScaleDflt: true,
+    autoColorDflt: false,
+    editTypeOverride: 'calc'
+}), {
     colorbar: colorbarAttrs,
 
     contours: {
@@ -254,6 +253,6 @@ var attrs = module.exports = overrideAll({
     },
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
-}, 'calc', 'nested');
+}), 'calc', 'nested');
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';

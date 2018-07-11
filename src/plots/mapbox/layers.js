@@ -127,7 +127,7 @@ proto.dispose = function dispose() {
 function isVisible(opts) {
     var source = opts.source;
 
-    return (
+    return opts.visible && (
         Lib.isPlainObject(source) ||
         (typeof source === 'string' && source.length > 0)
     );

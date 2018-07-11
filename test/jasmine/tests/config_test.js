@@ -470,7 +470,63 @@ describe('config argument', function() {
             var editBox = document.getElementsByClassName('plugin-editable editable')[0];
             expect(editBox).toBeUndefined();
         });
+    });
 
+    describe('plotlyServerURL:', function() {
+        var gd;
+        var form;
 
+        beforeEach(function() {
+            gd = createGraphDiv();
+            spyOn(HTMLFormElement.prototype, 'submit').and.callFake(function() {
+                form = this;
+            });
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should default to plotly cloud', function(done) {
+            Plotly.plot(gd, [], {})
+            .then(function() {
+                expect(gd._context.plotlyServerURL).toBe('https://plot.ly');
+
+                Plotly.Plots.sendDataToCloud(gd);
+                expect(form.action).toBe('https://plot.ly/external');
+                expect(form.method).toBe('post');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('can be set to other base urls', function(done) {
+            Plotly.plot(gd, [], {}, {plotlyServerURL: 'dummy'})
+            .then(function() {
+                expect(gd._context.plotlyServerURL).toBe('dummy');
+
+                Plotly.Plots.sendDataToCloud(gd);
+                expect(form.action).toContain('/dummy/external');
+                expect(form.method).toBe('post');
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('has lesser priotiy then window env', function(done) {
+            window.PLOTLYENV = {BASE_URL: 'yo'};
+
+            Plotly.plot(gd, [], {}, {plotlyServerURL: 'dummy'})
+            .then(function() {
+                expect(gd._context.plotlyServerURL).toBe('dummy');
+
+                Plotly.Plots.sendDataToCloud(gd);
+                expect(form.action).toContain('/yo/external');
+                expect(form.method).toBe('post');
+            })
+            .catch(failTest)
+            .then(function() {
+                delete window.PLOTLY_ENV;
+                done();
+            });
+        });
     });
 });

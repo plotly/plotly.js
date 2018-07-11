@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.38.3",
+  "version": "1.39.1",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -46,7 +46,8 @@
     "baseline": "node tasks/baseline.js",
     "preversion": "check-node-version --node 8 --npm 5 && npm-link-check && npm ls --prod",
     "version": "npm run build && git add -A dist src build",
-    "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\""
+    "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
+    "postpublish": "node tasks/sync_packages.js"
   },
   "browserify": {
     "transform": [
@@ -83,6 +84,8 @@
     "gl-select-box": "^1.0.2",
     "gl-spikes2d": "^1.0.1",
     "gl-surface3d": "^1.3.5",
+    "gl-streamtube3d": "^1.0.0",
+    "@etpinard/gl-text": "^1.1.6",
     "gl-volume3d": "https://github.com/gl-vis/gl-volume3d.git",
     "glslify": "^6.1.1",
     "has-hover": "^1.0.1",

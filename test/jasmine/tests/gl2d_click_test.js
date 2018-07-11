@@ -17,6 +17,7 @@ var click = require('../assets/timed_click');
 var hover = require('../assets/hover');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
+var readPixel = require('../assets/read_pixel');
 
 // contourgl is not part of the dist plotly.js bundle initially
 Plotly.register([
@@ -310,6 +311,33 @@ describe('@gl @flaky Test hover and click interactions', function() {
             noHoverLabel: true
         }, {
             msg: 'scattergl with hoverinfo'
+        });
+
+        Plotly.plot(gd, _mock)
+        .then(run)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should show correct label for scattergl when hovertext is set', function(done) {
+        var _mock = Lib.extendDeep({}, mock1);
+        _mock.data[0].hovertext = 'text';
+        _mock.data[0].hovertext = 'HoVeRtExT';
+        _mock.layout.hovermode = 'closest';
+
+        var run = makeRunner([634, 321], {
+            x: 15.772,
+            y: 0.387,
+            label: ['(15.772, 0.387)\nHoVeRtExT', null],
+            curveNumber: 0,
+            pointNumber: 33,
+            bgcolor: 'rgb(0, 0, 238)',
+            bordercolor: 'rgb(255, 255, 255)',
+            fontSize: 13,
+            fontFamily: 'Arial',
+            fontColor: 'rgb(255, 255, 255)'
+        }, {
+            msg: 'scattergl with hovertext'
         });
 
         Plotly.plot(gd, _mock)
@@ -707,6 +735,228 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
                     { x: 2, y: 4 }
                 ]
             });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work on gl text charts', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_basic.json'));
+        fig.layout.dragmode = 'select';
+        fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
+        fig.layout.height = 500;
+        fig.layout.width = 500;
+        gd = createGraphDiv();
+
+        function _assertGlTextOpts(msg, exp) {
+            var scene = gd.calcdata[0][0].t._scene;
+            scene.glText.forEach(function(opts, i) {
+                expect(Array.from(opts.color))
+                    .toBeCloseToArray(exp.rgba[i], 2, 'item ' + i + ' - ' + msg);
+            });
+        }
+
+        Plotly.plot(gd, fig)
+        .then(delay(100))
+        .then(function() {
+            _assertGlTextOpts('base', {
+                rgba: [
+                    [68, 68, 68, 255],
+                    [68, 68, 68, 255],
+                    [68, 68, 68, 255]
+                ]
+            });
+        })
+        .then(function() { return select([[100, 100], [250, 250]]); })
+        .then(function(eventData) {
+            assertEventData(eventData, {
+                points: [{x: 1, y: 2}]
+            });
+            _assertGlTextOpts('after selection', {
+                rgba: [
+                    [
+                        68, 68, 68, 51,
+                        68, 68, 68, 51,
+                        68, 68, 68, 51,
+                    ],
+                    [
+                        68, 68, 68, 51,
+                        // this is the selected pt!
+                        68, 68, 68, 255,
+                        68, 68, 68, 51
+                    ],
+                    [
+                        68, 68, 68, 51,
+                        68, 68, 68, 51,
+                        68, 68, 68, 51
+                    ]
+                ]
+            });
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'selected.textfont.color', 'red');
+        })
+        .then(function() { return select([[100, 100], [250, 250]]); })
+        .then(function() {
+            _assertGlTextOpts('after selection - with set selected.textfont.color', {
+                rgba: [
+                    [
+                        68, 68, 68, 255,
+                        68, 68, 68, 255,
+                        68, 68, 68, 255,
+                    ],
+                    [
+                        68, 68, 68, 255,
+                        // this is the selected pt!
+                        255, 0, 0, 255,
+                        68, 68, 68, 255
+                    ],
+                    [
+                        68, 68, 68, 255,
+                        68, 68, 68, 255,
+                        68, 68, 68, 255
+                    ]
+                ]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work on gl text charts with array textfont.color', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_arrays.json'));
+        fig.layout.dragmode = 'select';
+        fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
+        fig.layout.height = 500;
+        fig.layout.width = 500;
+        gd = createGraphDiv();
+
+        function _assertGlTextOpts(msg, exp) {
+            var scene = gd.calcdata[0][0].t._scene;
+            scene.glText.forEach(function(opts, i) {
+                expect(Array.from(opts.color))
+                    .toBeCloseToArray(exp.rgba[i], 2, 'item ' + i + ' - ' + msg);
+            });
+        }
+
+        Plotly.plot(gd, fig)
+        .then(delay(100))
+        .then(function() {
+            _assertGlTextOpts('base', {
+                rgba: [
+                    [
+                        255, 0, 0, 255,
+                        0, 0, 255, 255,
+                        0, 128, 0, 255
+                    ],
+                    [
+                        0, 0, 0, 255,
+                        211, 211, 210, 255,
+                        237, 97, 0, 255
+                    ]
+                ]
+            });
+        })
+        .then(function() { return select([[100, 10], [250, 100]]); })
+        .then(function(eventData) {
+            assertEventData(eventData, {
+                points: [{x: 1, y: 2}]
+            });
+            _assertGlTextOpts('after selection', {
+                rgba: [
+                    [
+                        255, 0, 0, 51,
+                        0, 0, 255, 51,
+                        0, 128, 0, 51
+                    ],
+                    [
+                        0, 0, 0, 51,
+                        // this is the selected pt!
+                        211, 211, 210, 255,
+                        237, 97, 0, 51
+                    ]
+                ]
+            });
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'selected.textfont.color', 'red');
+        })
+        .then(function() { return select([[100, 10], [250, 100]]); })
+        .then(function() {
+            _assertGlTextOpts('after selection - with set selected.textfont.color', {
+                rgba: [
+                    [
+                        255, 0, 0, 255,
+                        0, 0, 255, 255,
+                        0, 128, 0, 255
+                    ],
+                    [
+                        0, 0, 0, 255,
+                        // this is the selected pt!
+                        255, 0, 0, 255,
+                        237, 97, 0, 255
+                    ]
+                ]
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should work after a width/height relayout', function(done) {
+        gd = createGraphDiv();
+
+        var w = 500;
+        var h = 500;
+        var w2 = 800;
+        var h2 = 600;
+        var pad = 20;
+
+        function _read(query) {
+            var canvas = gd.querySelector(query);
+            return readPixel(canvas, 0, 0, gd.layout.width, gd.layout.height)
+                .reduce(function(acc, v) { return acc + v; }, 0);
+        }
+
+        function readContext() { return _read('.gl-canvas-context'); }
+
+        function readFocus() { return _read('.gl-canvas-focus'); }
+
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            mode: 'markers',
+            y: [2, 1, 2]
+        }], {
+            dragmode: 'select',
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            width: w, height: h
+        })
+        .then(delay(100))
+        .then(function() {
+            expect(readContext()).toBeGreaterThan(1e4, 'base context');
+            expect(readFocus()).toBe(0, 'base focus');
+        })
+        .then(function() { return select([[pad, pad], [w - pad, h - pad]]); })
+        .then(function() {
+            expect(readContext()).toBe(0, 'select context');
+            expect(readFocus()).toBeGreaterThan(1e4, 'select focus');
+        })
+        .then(function() {
+            return Plotly.update(gd,
+                {selectedpoints: null},
+                {width: w2, height: h2}
+            );
+        })
+        .then(function() {
+            expect(readContext()).toBeGreaterThan(1e4, 'update context');
+            expect(readFocus()).toBe(0, 'update focus');
+        })
+        .then(function() { return select([[pad, pad], [w2 - pad, h2 - pad]]); })
+        .then(function() {
+            // make sure full w2/h2 context canvas is cleared!
+            // from https://github.com/plotly/plotly.js/issues/2731<Paste>
+            expect(readContext()).toBe(0, 'update+select context');
+            expect(readFocus()).toBeGreaterThan(1e4, 'update+select focus');
         })
         .catch(failTest)
         .then(done);

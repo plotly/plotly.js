@@ -15,6 +15,7 @@ describe('aggregate', function() {
         Plotly.newPlot(gd, [{
             x: [1, 2, 3, 4, 'fail'],
             y: [1.1, 2.2, 3.3, 'nope', 5.5],
+            customdata: [4, 'nope', 3, 2, 1],
             marker: {
                 size: ['2001-01-01', 0.2, 0.1, 0.4, 0.5],
                 color: [2, 4, '', 10, 8],
@@ -34,6 +35,7 @@ describe('aggregate', function() {
                     {target: 'x', func: 'sum'},
                     // non-numerics will not count toward numerator or denominator for avg
                     {target: 'y', func: 'avg'},
+                    {target: 'customdata', func: 'change'},
                     {target: 'marker.size', func: 'min'},
                     {target: 'marker.color', func: 'max'},
                     // marker.opacity doesn't have an entry, but it will default to first
@@ -54,6 +56,7 @@ describe('aggregate', function() {
 
         expect(traceOut.x).toEqual([8, 2]);
         expect(traceOut.y).toBeCloseToArray([3.3, 2.2], 5);
+        expect(traceOut.customdata).toEqual([-3, undefined]);
         expect(traceOut.marker.size).toEqual([0.1, 0.2]);
         expect(traceOut.marker.color).toEqual([10, 4]);
         expect(traceOut.marker.opacity).toEqual([0.6, 'boo']);
@@ -221,15 +224,17 @@ describe('aggregate', function() {
         expect(inverseMapping).toEqual({0: [0, 1, 4], 1: [2, 3]});
     });
 
-    it('handles median, mode, rms, & stddev for numeric data', function() {
+    it('handles median, mode, rms, stddev, change & range for numeric data', function() {
         // again, nothing is going to barf with non-numeric data, but sometimes it
         // won't make much sense.
 
         Plotly.newPlot(gd, [{
             x: [1, 1, 2, 2, 1],
             y: [1, 2, 3, 4, 5],
+            customdata: [5, 4, 3, 2, 1],
             marker: {
                 size: [1, 2, 3, 4, 5],
+                opacity: [0.6, 0.5, 0.2, 0.8, 1.0],
                 line: {width: [1, 1, 2, 2, 1]},
                 color: [1, 1, 2, 2, 1]
             },
@@ -239,7 +244,9 @@ describe('aggregate', function() {
                 aggregations: [
                     {target: 'x', func: 'mode'},
                     {target: 'y', func: 'median'},
+                    {target: 'customdata', func: 'change'},
                     {target: 'marker.size', func: 'rms'},
+                    {target: 'marker.opacity', func: 'range'},
                     {target: 'marker.line.width', func: 'stddev', funcmode: 'population'},
                     {target: 'marker.color', func: 'stddev'}
                 ]
@@ -252,7 +259,9 @@ describe('aggregate', function() {
         // but 2 gets to that count first
         expect(traceOut.x).toEqual([2, 1]);
         expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
+        expect(traceOut.customdata).toEqual([-4, 0]);
         expect(traceOut.marker.size).toBeCloseToArray([Math.sqrt(51 / 4), 2], 5);
+        expect(traceOut.marker.opacity).toEqual([0.8, 0]);
         expect(traceOut.marker.line.width).toBeCloseToArray([0.5, 0], 5);
         expect(traceOut.marker.color).toBeCloseToArray([Math.sqrt(1 / 3), 0], 5);
     });

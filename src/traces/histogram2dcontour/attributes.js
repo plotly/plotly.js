@@ -36,9 +36,9 @@ module.exports = extendFlat({
     line: contourAttrs.line,
     zhoverformat: histogram2dAttrs.zhoverformat
 },
-    colorscaleAttrs, {
-        zmin: extendFlat({}, colorscaleAttrs.zmin, {editType: 'calc'}),
-        zmax: extendFlat({}, colorscaleAttrs.zmax, {editType: 'calc'})
-    },
+    colorscaleAttrs('', {
+        cLetter: 'z',
+        editTypeOverride: 'calc'
+    }),
     { colorbar: colorbarAttrs }
 );

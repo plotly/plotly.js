@@ -73,18 +73,9 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
         // always split the distance to the closest box
         t.wHover = t.dPos * (group ? groupFraction / numBoxes : 1);
 
-        // boxes and whiskers
         plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, t);
-
-        // draw points, if desired
-        if(trace.boxpoints) {
-            plotPoints(sel, {x: xa, y: ya}, trace, t);
-        }
-
-        // draw mean (and stdev diamond) if desired
-        if(trace.boxmean) {
-            plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, t);
-        }
+        plotPoints(sel, {x: xa, y: ya}, trace, t);
+        plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, t);
     });
 }
 
@@ -109,7 +100,10 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    var paths = sel.selectAll('path.box').data(Lib.identity);
+    var paths = sel.selectAll('path.box').data((
+        trace.type !== 'violin' ||
+        trace.box
+    ) ? Lib.identity : []);
 
     paths.enter().append('path')
         .style('vector-effect', 'non-scaling-stroke')
@@ -187,16 +181,18 @@ function plotPoints(sel, axes, trace, t) {
     // repeatable pseudo-random number generator
     Lib.seedPseudoRandom();
 
-    var gPoints = sel.selectAll('g.points')
-        // since box plot points get an extra level of nesting, each
-        // box needs the trace styling info
-        .data(function(d) {
-            d.forEach(function(v) {
-                v.t = t;
-                v.trace = trace;
-            });
-            return d;
+    // since box plot points get an extra level of nesting, each
+    // box needs the trace styling info
+    var fn = function(d) {
+        d.forEach(function(v) {
+            v.t = t;
+            v.trace = trace;
         });
+        return d;
+    };
+
+    var gPoints = sel.selectAll('g.points')
+        .data(mode ? fn : []);
 
     gPoints.enter().append('g')
         .attr('class', 'points');
@@ -292,6 +288,9 @@ function plotBoxMean(sel, axes, trace, t) {
     var bPos = t.bPos;
     var bPosPxOffset = t.bPosPxOffset || 0;
 
+    // to support violin mean lines
+    var mode = trace.boxmean || (trace.meanline || {}).visible;
+
     // to support for one-sided box
     var bdPos0;
     var bdPos1;
@@ -303,7 +302,10 @@ function plotBoxMean(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    var paths = sel.selectAll('path.mean').data(Lib.identity);
+    var paths = sel.selectAll('path.mean').data((
+        (trace.type === 'box' && trace.boxmean) ||
+        (trace.type === 'violin' && trace.box && trace.meanline)
+    ) ? Lib.identity : []);
 
     paths.enter().append('path')
         .attr('class', 'mean')
@@ -325,14 +327,14 @@ function plotBoxMean(sel, axes, trace, t) {
         if(trace.orientation === 'h') {
             d3.select(this).attr('d',
                 'M' + m + ',' + pos0 + 'V' + pos1 +
-                (trace.boxmean === 'sd' ?
+                (mode === 'sd' ?
                     'm0,0L' + sl + ',' + posc + 'L' + m + ',' + pos0 + 'L' + sh + ',' + posc + 'Z' :
                     '')
             );
         } else {
             d3.select(this).attr('d',
                 'M' + pos0 + ',' + m + 'H' + pos1 +
-                (trace.boxmean === 'sd' ?
+                (mode === 'sd' ?
                     'm0,0L' + posc + ',' + sl + 'L' + pos0 + ',' + m + 'L' + posc + ',' + sh + 'Z' :
                     '')
             );
