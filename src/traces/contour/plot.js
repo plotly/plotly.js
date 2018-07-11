@@ -408,7 +408,8 @@ exports.labelFormatter = function(contours, colorbar, fullLayout) {
             formatAxis = {
                 type: 'linear',
                 _id: 'ycontour',
-                showexponent: 'all'
+                showexponent: 'all',
+                exponentformat: 'B'
             };
 
             if(contours.type === 'constraint') {
