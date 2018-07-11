@@ -2514,6 +2514,8 @@ plots.doCalcdata = function(gd, traces) {
 
         if(trace.visible === true) {
 
+            // clear existing ref in case it got relinked
+            delete trace._indexToPoints;
             // keep ref of index-to-points map object of the *last* enabled transform,
             // this index-to-points map object is required to determine the calcdata indices
             // that correspond to input indices (e.g. from 'selectedpoints')
