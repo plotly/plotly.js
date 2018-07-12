@@ -1941,4 +1941,22 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should guard againt undefined projection.invert result in some projections', function(done) {
+        // e.g. aitoff
+        var fig = Lib.extendDeep({}, require('@mocks/geo_aitoff-sinusoidal.json'));
+        fig.layout.dragmode = 'pan';
+        delete fig.layout.geo2;
+        fig.data = [fig.data[0]];
+        fig.layout.width = 700;
+        fig.layout.height = 500;
+
+        plot(fig)
+        .then(function() { return scroll([131, 159], [-200, 200]); })
+        .then(function() {
+            // scrolling outside subplot frame should log errors,
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

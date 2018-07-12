@@ -114,9 +114,14 @@ function zoomNonClipped(geo, projection) {
     function position(x) { return projection.invert(x); }
 
     function outside(x) {
-        var pt = projection(position(x));
-        return (Math.abs(pt[0] - x[0]) > INSIDETOLORANCEPXS ||
-                Math.abs(pt[1] - x[1]) > INSIDETOLORANCEPXS);
+        var pos = position(x);
+        if(!pos) return true;
+
+        var pt = projection(pos);
+        return (
+            Math.abs(pt[0] - x[0]) > INSIDETOLORANCEPXS ||
+            Math.abs(pt[1] - x[1]) > INSIDETOLORANCEPXS
+        );
     }
 
     function handleZoomstart() {
