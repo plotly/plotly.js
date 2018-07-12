@@ -10,7 +10,7 @@ var topojsonUtils = require('@src/lib/topojson_utils');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
@@ -1068,7 +1068,7 @@ describe('Test geo interactions', function() {
             mouseEvent('mousemove', 350, 250);
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1109,7 +1109,7 @@ describe('Test geo interactions', function() {
                 }, 100);
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1138,7 +1138,7 @@ describe('Test geo interactions', function() {
             check([px, 163], 0);
             check([px, 360], 1);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1198,7 +1198,7 @@ describe('Test geo interactions', function() {
                 'Invalid geo settings, relayout\'ing to default view.'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1249,7 +1249,7 @@ describe('Test geo interactions', function() {
         .then(function() {
             check([-150, -89], 1, 'spot in Antarctica that requires *stitching*');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1518,7 +1518,7 @@ describe('Test geo base layers', function() {
                 ['bg', 'coastlines', 'frame', 'backplot', 'frontplot']
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1686,7 +1686,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                 [90, 0], [350, 260], [0, 0], 101.9
             ], 'dblclick');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1775,7 +1775,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                 [75, -45], 160
             ], 'dblclick');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1858,7 +1858,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                 [247, 260], [0, 57.5], 292.2
             ], 'dblclick');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1938,7 +1938,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                 [416, 309], 738.5
             ], 'dblclick');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
