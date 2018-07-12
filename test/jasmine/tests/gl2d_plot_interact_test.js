@@ -1033,6 +1033,40 @@ describe('@gl Test gl2d plots', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should clear canvases on *replot* edits', function(done) {
+        Plotly.plot(gd, [{
+            type: 'scattergl',
+            y: [1, 2, 1]
+        }, {
+            type: 'scattergl',
+            y: [2, 1, 2]
+        }])
+        .then(function() {
+            expect(gd._fullLayout._glcanvas).toBeDefined();
+            expect(gd._fullLayout._glcanvas.size()).toBe(3);
+
+            expect(gd._fullLayout._glcanvas.data()[0].regl).toBeDefined();
+            expect(gd._fullLayout._glcanvas.data()[1].regl).toBeDefined();
+            // this is canvas is for parcoords only
+            expect(gd._fullLayout._glcanvas.data()[2].regl).toBeUndefined();
+
+            spyOn(gd._fullLayout._glcanvas.data()[0].regl, 'clear').and.callThrough();
+            spyOn(gd._fullLayout._glcanvas.data()[1].regl, 'clear').and.callThrough();
+
+            return Plotly.update(gd,
+                {visible: [false]},
+                {'xaxis.title': 'Tsdads', 'yaxis.ditck': 0.2},
+                [0]
+            );
+        })
+        .then(function() {
+            expect(gd._fullLayout._glcanvas.data()[0].regl.clear).toHaveBeenCalledTimes(1);
+            expect(gd._fullLayout._glcanvas.data()[1].regl.clear).toHaveBeenCalledTimes(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test scattergl autorange:', function() {
