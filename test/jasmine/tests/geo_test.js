@@ -1955,6 +1955,8 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         .then(function() { return scroll([131, 159], [-200, 200]); })
         .then(function() {
             // scrolling outside subplot frame should log errors,
+            // nor emit events
+            expect(eventData).toBeUndefined();
         })
         .catch(failTest)
         .then(done);

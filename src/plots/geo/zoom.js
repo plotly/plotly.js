@@ -109,7 +109,7 @@ function zoomNonClipped(geo, projection) {
     var INSIDETOLORANCEPXS = 2;
 
     var mouse0, rotate0, translate0, lastRotate, zoomPoint,
-        mouse1, rotate1, point1;
+        mouse1, rotate1, point1, didZoom;
 
     function position(x) { return projection.invert(x); }
 
@@ -157,12 +157,13 @@ function zoomNonClipped(geo, projection) {
             lastRotate = rotate1;
         }
 
+        didZoom = true;
         geo.render();
     }
 
     function handleZoomend() {
         d3.select(this).style(zoomendStyle);
-        sync(geo, projection, syncCb);
+        if(didZoom) sync(geo, projection, syncCb);
     }
 
     function syncCb(set) {
