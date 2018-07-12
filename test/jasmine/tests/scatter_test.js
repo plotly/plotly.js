@@ -345,6 +345,12 @@ describe('Test scatter', function() {
         });
 
         it('should not collapse straight lines if simplify is false', function() {
+            var ptsIn = [[0, 0], [5, 10], [13, 26], [15, 30], [15, 30], [15, 30], [15, 30]];
+            var ptsOut = callLinePoints(ptsIn, {simplify: false});
+            expect(ptsOut).toEqual([ptsIn]);
+        });
+
+        it('should not collapse duplicate end points if simplify is false', function() {
             var ptsIn = [[0, 0], [5, 10], [13, 26], [15, 30], [22, 16], [28, 4], [30, 0]];
             var ptsOut = callLinePoints(ptsIn, {simplify: false});
             expect(ptsOut).toEqual([ptsIn]);
