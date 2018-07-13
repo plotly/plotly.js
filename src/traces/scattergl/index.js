@@ -616,6 +616,12 @@ function plot(gd, subplot, cdata) {
                 }
             });
         }
+    } else {
+        if(scene.scatter2d) {
+            // reset scatter2d opts to base opts,
+            // thus unsetting markerUnselectedOptions from selection
+            scene.scatter2d.update(scene.markerOptions);
+        }
     }
 
     // upload viewport/range data to GPU
