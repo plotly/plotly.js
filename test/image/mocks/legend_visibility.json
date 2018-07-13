@@ -53,6 +53,17 @@
       "xaxis": "x2",
       "yaxis": "y3",
       "y": [1, 4, 6, 7, 7, 8, 8, 8, 9]
+    },
+    {
+      "name": "marker A",
+      "mode": "markers",
+      "visible": "legendonly",
+      "y": [1, 4, 6, 3, 2, 8, 8, 8, 4],
+      "yaxis": "y2",
+      "marker": {
+        "size": 15,
+        "symbol": ["square", "square", "square", "square", "square", "square", "square", "square", "square"]
+      }
     }
   ],
   "layout": {
