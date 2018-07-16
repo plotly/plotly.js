@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.39.1
+* plotly.js (mapbox) v1.39.2
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -9,7 +9,7 @@
 
 var Lib = require('../src/lib');
 var rules = {
-    "X,X div": "font-family:'Open Sans', verdana, arial, sans-serif;margin:0;padding:0;",
+    "X,X div": "direction:ltr;font-family:'Open Sans', verdana, arial, sans-serif;margin:0;padding:0;",
     "X input,X button": "font-family:'Open Sans', verdana, arial, sans-serif;",
     "X input:focus,X button:focus": "outline:none;",
     "X a": "text-decoration:none;",
@@ -25937,21 +25937,21 @@ module.exports = function style(s, gd) {
     }
 
     function stylePoints(d) {
-        var d0 = d[0],
-            trace = d0.trace,
-            showMarkers = subTypes.hasMarkers(trace),
-            showText = subTypes.hasText(trace),
-            showLines = subTypes.hasLines(trace);
-
+        var d0 = d[0];
+        var trace = d0.trace;
+        var showMarkers = subTypes.hasMarkers(trace);
+        var showText = subTypes.hasText(trace);
+        var showLines = subTypes.hasLines(trace);
         var dMod, tMod;
 
         // 'scatter3d' and 'scattergeo' don't use gd.calcdata yet;
         // use d0.trace to infer arrayOk attributes
 
         function boundVal(attrIn, arrayToValFn, bounds) {
-            var valIn = Lib.nestedProperty(trace, attrIn).get(),
-                valToBound = (Array.isArray(valIn) && arrayToValFn) ?
-                    arrayToValFn(valIn) : valIn;
+            var valIn = Lib.nestedProperty(trace, attrIn).get();
+            var valToBound = (Array.isArray(valIn) && arrayToValFn) ?
+                arrayToValFn(valIn) :
+                valIn;
 
             if(bounds) {
                 if(valToBound < bounds[0]) return bounds[0];
@@ -25969,6 +25969,7 @@ module.exports = function style(s, gd) {
 
             if(showMarkers) {
                 dEdit.mc = boundVal('marker.color', pickFirst);
+                dEdit.mx = boundVal('marker.symbol', pickFirst);
                 dEdit.mo = boundVal('marker.opacity', Lib.mean, [0.2, 1]);
                 dEdit.ms = boundVal('marker.size', Lib.mean, [2, 16]);
                 dEdit.mlc = boundVal('marker.line.color', pickFirst);
@@ -33124,7 +33125,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.39.1';
+exports.version = '1.39.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -40290,29 +40291,7 @@ exports.plot = function(gd, data, layout, config) {
             return;
         }
 
-        var subplots = fullLayout._subplots.cartesian;
-        var modules = fullLayout._modules;
-        var setPositionsArray = [];
-
-        // position and range calculations for traces that
-        // depend on each other ie bars (stacked or grouped)
-        // and boxes (grouped) push each other out of the way
-
-        var subplotInfo, i, j;
-
-        for(j = 0; j < modules.length; j++) {
-            Lib.pushUnique(setPositionsArray, modules[j].setPositions);
-        }
-
-        if(setPositionsArray.length) {
-            for(i = 0; i < subplots.length; i++) {
-                subplotInfo = fullLayout._plots[subplots[i]];
-
-                for(j = 0; j < setPositionsArray.length; j++) {
-                    setPositionsArray[j](gd, subplotInfo);
-                }
-            }
-        }
+        Plots.doSetPositions(gd);
 
         // calc and autorange for errorbars
         Registry.getComponentMethod('errorbars', 'calc')(gd);
@@ -43262,9 +43241,6 @@ function makePlotFramework(gd) {
 
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
-
-    // That is initialized in drawFramework if there are `gl` traces
-    fullLayout._glcanvas = null;
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 
@@ -51775,15 +51751,32 @@ exports.finalizeSubplots = function(layoutIn, layoutOut) {
     }
 };
 
+/**
+ * Cartesian.plot
+ *
+ * @param {DOM div | object} gd
+ * @param {array | null} (optional) traces
+ *  array of traces indices to plot
+ *  if undefined, plots all cartesian traces,
+ *  if null, plots no traces
+ * @param {object} (optional) transitionOpts
+ *  transition option object
+ * @param {function} (optional) makeOnCompleteCallback
+ *  transition make callback function from Plots.transition
+ */
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var subplots = fullLayout._subplots.cartesian;
     var calcdata = gd.calcdata;
     var i;
 
-    // If traces is not provided, then it's a complete replot and missing
-    // traces are removed
-    if(!Array.isArray(traces)) {
+    if(traces === null) {
+        // this means no updates required, must return here
+        // so that plotOne doesn't remove the trace layers
+        return;
+    } else if(!Array.isArray(traces)) {
+        // If traces is not provided, then it's a complete replot and missing
+        // traces are removed
         traces = [];
         for(i = 0; i < calcdata.length; i++) traces.push(i);
     }
@@ -59380,7 +59373,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
             // There's nothing to do if this module is not defined:
             if(!module) continue;
 
-            // Don't register the trace as transitioned if it doens't know what to do.
+            // Don't register the trace as transitioned if it doesn't know what to do.
             // If it *is* registered, it will receive a callback that it's responsible
             // for calling in order to register the transition as having completed.
             if(module.animatable) {
@@ -59416,9 +59409,8 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         delete gd.calcdata;
 
         plots.supplyDefaults(gd);
-
         plots.doCalcdata(gd);
-
+        plots.doSetPositions(gd);
         Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
@@ -59443,7 +59435,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
     var aborted = false;
 
     function executeTransitions() {
-
         gd.emit('plotly_transitioning', []);
 
         return new Promise(function(resolve) {
@@ -59511,6 +59502,9 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
             if(hasAxisTransition) {
                 traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
                 traceTransitionOpts.duration = 0;
+                // This means do not transition traces,
+                // this happens on layout-only (e.g. axis range) animations
+                transitionedTraces = null;
             } else {
                 traceTransitionOpts = transitionOpts;
             }
@@ -59692,6 +59686,8 @@ plots.doCalcdata = function(gd, traces) {
 
         if(trace.visible === true) {
 
+            // clear existing ref in case it got relinked
+            delete trace._indexToPoints;
             // keep ref of index-to-points map object of the *last* enabled transform,
             // this index-to-points map object is required to determine the calcdata indices
             // that correspond to input indices (e.g. from 'selectedpoints')
@@ -59738,6 +59734,30 @@ function clearAxesCalc(axList) {
         axList[i].clearCalc();
     }
 }
+
+plots.doSetPositions = function(gd) {
+    var fullLayout = gd._fullLayout;
+    var subplots = fullLayout._subplots.cartesian;
+    var modules = fullLayout._modules;
+    var methods = [];
+    var i, j;
+
+    // position and range calculations for traces that
+    // depend on each other ie bars (stacked or grouped)
+    // and boxes (grouped) push each other out of the way
+
+    for(j = 0; j < modules.length; j++) {
+        Lib.pushUnique(methods, modules[j].setPositions);
+    }
+    if(!methods.length) return;
+
+    for(i = 0; i < subplots.length; i++) {
+        var subplotInfo = fullLayout._plots[subplots[i]];
+        for(j = 0; j < methods.length; j++) {
+            methods[j](gd, subplotInfo);
+        }
+    }
+};
 
 plots.rehover = function(gd) {
     if(gd._fullLayout._rehover) {
@@ -64053,7 +64073,6 @@ var constants = require('./constants');
 module.exports = function linePoints(d, opts) {
     var xa = opts.xaxis;
     var ya = opts.yaxis;
-    var simplify = opts.simplify;
     var connectGaps = opts.connectGaps;
     var baseTolerance = opts.baseTolerance;
     var shape = opts.shape;
@@ -64087,10 +64106,6 @@ module.exports = function linePoints(d, opts) {
 
     // deviation variables are (signed) pixel distances normal to the cluster vector
     var clusterMinDeviation, clusterMaxDeviation, thisDeviation;
-
-    if(!simplify) {
-        baseTolerance = minTolerance = -1;
-    }
 
     // turn one calcdata point into pixel coordinates
     function getPt(index) {
@@ -64391,7 +64406,7 @@ module.exports = function linePoints(d, opts) {
             // can't decimate if nonlinear line shape
             // TODO: we *could* decimate [hv]{2,3} shapes if we restricted clusters to horz or vert again
             // but spline would be verrry awkward to decimate
-            if(!linear) {
+            if(!linear || !opts.simplify) {
                 addPt(clusterHighPt);
                 continue;
             }
