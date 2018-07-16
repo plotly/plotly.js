@@ -16,25 +16,11 @@ var draw = require('./draw').draw;
 
 
 module.exports = function calcAutorange(gd) {
-    var fullLayout = gd._fullLayout,
-        annotationList = Lib.filterVisible(fullLayout.annotations);
+    var fullLayout = gd._fullLayout;
+    var annotationList = Lib.filterVisible(fullLayout.annotations);
 
-    if(!annotationList.length || !gd._fullData.length) return;
-
-    var annotationAxes = {};
-    annotationList.forEach(function(ann) {
-        annotationAxes[ann.xref] = 1;
-        annotationAxes[ann.yref] = 1;
-    });
-
-    for(var axId in annotationAxes) {
-        var ax = Axes.getFromId(gd, axId);
-        if(ax && ax.autorange) {
-            return Lib.syncOrAsync([
-                draw,
-                annAutorange
-            ], gd);
-        }
+    if(annotationList.length && gd._fullData.length) {
+        return Lib.syncOrAsync([draw, annAutorange], gd);
     }
 };
 
@@ -46,14 +32,14 @@ function annAutorange(gd) {
     // use the arrow and the text bg rectangle,
     // as the whole anno may include hidden text in its bbox
     Lib.filterVisible(fullLayout.annotations).forEach(function(ann) {
-        var xa = Axes.getFromId(gd, ann.xref),
-            ya = Axes.getFromId(gd, ann.yref),
-            headSize = 3 * ann.arrowsize * ann.arrowwidth || 0,
-            startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
+        var xa = Axes.getFromId(gd, ann.xref);
+        var ya = Axes.getFromId(gd, ann.yref);
+        var headSize = 3 * ann.arrowsize * ann.arrowwidth || 0;
+        var startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
 
         var headPlus, headMinus, startHeadPlus, startHeadMinus;
 
-        if(xa && xa.autorange) {
+        if(xa) {
             headPlus = headSize + ann.xshift;
             headMinus = headSize - ann.xshift;
             startHeadPlus = startHeadSize + ann.xshift;
@@ -81,7 +67,7 @@ function annAutorange(gd) {
             }
         }
 
-        if(ya && ya.autorange) {
+        if(ya) {
             headPlus = headSize - ann.yshift;
             headMinus = headSize + ann.yshift;
             startHeadPlus = startHeadSize - ann.yshift;

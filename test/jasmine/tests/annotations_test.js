@@ -737,6 +737,43 @@ describe('annotations autorange', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should propagate axis autorange changes when axis ranges are set', function(done) {
+        function _assert(msg, xrng, yrng) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 1, msg + ' xrng');
+            expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 1, msg + ' yrng');
+        }
+
+        Plotly.plot(gd, [{y: [1, 2]}], {
+            xaxis: {range: [0, 2]},
+            yaxis: {range: [0, 2]},
+            annotations: [{
+                text: 'a',
+                x: 3, y: 3
+            }]
+        })
+        .then(function() {
+            _assert('set rng / small tx', [0, 2], [0, 2]);
+            return Plotly.relayout(gd, 'annotations[0].text', 'loooooooooooooooooooooooong');
+        })
+        .then(function() {
+            _assert('set rng / big tx', [0, 2], [0, 2]);
+            return Plotly.relayout(gd, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        })
+        .then(function() {
+            _assert('auto rng / big tx', [-0.22, 3.57], [0.84, 3.365]);
+            return Plotly.relayout(gd, 'annotations[0].text', 'a');
+        })
+        .then(function() {
+            _assert('auto rng / small tx', [-0.18, 3.035], [0.84, 3.365]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('annotation clicktoshow', function() {
