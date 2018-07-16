@@ -10,6 +10,21 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.39.2] -- 2018-07-16
+
+### Fixed
+- Fix scattergl selection after resize relayouts [#2801]
+- Fix scattergl layout replot edits [#2793]
+- Fix cartesian axis range animations (bug introduced in 1.37.0) [#2788]
+- Fix contour labels that require thousands suffixes [#2806]
+- Fix 'legendonly' legend items link to array `marker.symbol` [#2816]
+- Fix handling of duplicate points under `line.simplify` [#2814]
+- Fix transform removal via `Plotly.react` [#2805]
+- Fix out-of-subplot scroll zoom on some geo projection types [#2811]
+- Fix hover label in RTL pages [#2790]
+- Reduce minified bundle back to their 1.39.0 sizes [#2792]
+
+
 ## [1.39.1] -- 2018-07-09
 
 ### Fixed
