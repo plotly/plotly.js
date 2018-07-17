@@ -8,7 +8,7 @@ var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
@@ -561,7 +561,7 @@ describe('end-to-end scatter tests', function() {
                 expect(d3.select(this).classed('plotly-customdata')).toBe(false);
             });
 
-        }).catch(fail).then(done);
+        }).catch(failTest).then(done);
     });
 
     it('adds "textpoint" class to scatter text points', function(done) {
@@ -572,7 +572,7 @@ describe('end-to-end scatter tests', function() {
             text: ['a', 'b', 'c']
         }]).then(function() {
             expect(Plotly.d3.selectAll('.textpoint').size()).toBe(3);
-        }).catch(fail).then(done);
+        }).catch(failTest).then(done);
     });
 
     it('should remove all point and text nodes on blank data', function(done) {
@@ -625,7 +625,7 @@ describe('end-to-end scatter tests', function() {
             assertNodeCnt(3, 3);
             assertText(['A', 'B', 'C']);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -683,7 +683,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'clementine']
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -727,7 +727,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'clementine']
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -763,7 +763,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'dragon fruit']
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -785,7 +785,7 @@ describe('end-to-end scatter tests', function() {
             );
         }).then(function() {
             expect(fill()).toEqual('rgb(0, 0, 255)');
-        }).catch(fail).then(done);
+        }).catch(failTest).then(done);
     });
 
     it('clears fills tonext when either trace is emptied out', function(done) {
@@ -828,7 +828,7 @@ describe('end-to-end scatter tests', function() {
         .then(function() {
             checkFill(false, 'null out both traces');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -875,7 +875,7 @@ describe('end-to-end scatter tests', function() {
                 [40, 30, 20]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -944,7 +944,7 @@ describe('scatter hoverPoints', function() {
             expect(pts[1].text).toEqual('banana', 'hover text');
             expect(pts[2].text).toEqual('orange', 'hover text');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1073,7 +1073,7 @@ describe('Test Scatter.style', function() {
                 'selected pt 1 w/ set unselected.marker.opacity'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1160,7 +1160,7 @@ describe('Test Scatter.style', function() {
                 'selected pts 0-2 w/ set selected.marker.color'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1204,7 +1204,7 @@ describe('Test Scatter.style', function() {
                 'selected pt 0 w/ set unselected.marker.size'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1287,7 +1287,7 @@ describe('Test Scatter.style', function() {
                 'selected pts 0-2 w/ set selected.textfont.color'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1433,7 +1433,7 @@ describe('Test scatter *clipnaxis*:', function() {
                 [true, 1]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
