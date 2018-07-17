@@ -282,7 +282,8 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 var selection = [],
                     retainSelection = shouldRetainSelection(e),
                     module,
-                    searchInfo;
+                    searchInfo,
+                    i;
 
                 // TODO What's the point of maintaining traceSelections array? Not used anywhere. Delete it.
                 var thisSelection, traceSelections = [], traceSelection;
@@ -296,10 +297,10 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     var pointsInCurrentPolygon = module.getPointsIn(searchInfo, currentPolygonTester);
                     module.toggleSelected(searchInfo, !subtract, pointsInCurrentPolygon);
 
-                    var pointsNoLongerSelected = difference(pointsInPolygon, pointsInCurrentPolygon);
+                    var pointsNoLongerSelected = difference(pointsInPolygon[i], pointsInCurrentPolygon);
 
                     traceSelection = module.toggleSelected(searchInfo, false, pointsNoLongerSelected);
-                    pointsInPolygon = pointsInCurrentPolygon;
+                    pointsInPolygon[i] = pointsInCurrentPolygon;
 
                     traceSelections.push(traceSelection);
 
@@ -376,6 +377,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
 // TODO do we have to consider multiple traces?
+// TODO Only execute selectOnClick functionality if the trace of hoverData supports it
 function selectOnClick(gd, numClicks, evt, outlines) {
     var calcData = gd.calcdata[0];
 
