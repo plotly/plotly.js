@@ -78,7 +78,7 @@ module.exports = {
         values: [true, false, 'reversed'],
         dflt: true,
         role: 'info',
-        editType: 'plot',
+        editType: 'axrange',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         description: [
             'Determines whether or not the range of this axis is',

@@ -891,7 +891,7 @@ describe('end-to-end scatter tests', function() {
         expect(schema.traces.scatter.attributes.marker.size.editType)
             .toBe('calc', 'marker.size editType');
         expect(schema.layout.layoutAttributes.xaxis.autorange.editType)
-            .toBe('plot', 'ax autorange editType');
+            .toBe('axrange', 'ax autorange editType');
 
         Plotly.plot(gd, [{ y: [1, 2, 1] }])
         .then(function() {
