@@ -878,6 +878,50 @@ describe('end-to-end scatter tests', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should update axis range accordingly on marker.size edits', function(done) {
+        function _assert(msg, xrng, yrng) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
+            expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
+        }
+
+        // edit types are important to this test
+        var schema = Plotly.PlotSchema.get();
+        expect(schema.traces.scatter.attributes.marker.size.editType)
+            .toBe('calc', 'marker.size editType');
+        expect(schema.layout.layoutAttributes.xaxis.autorange.editType)
+            .toBe('plot', 'ax autorange editType');
+
+        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        .then(function() {
+            _assert('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
+            return Plotly.relayout(gd, {
+                'xaxis.range': [0, 2],
+                'yaxis.range': [0, 2]
+            });
+        })
+        .then(function() {
+            _assert('set rng / base marker.size', [0, 2], [0, 2]);
+            return Plotly.restyle(gd, 'marker.size', 50);
+        })
+        .then(function() {
+            _assert('set rng / big marker.size', [0, 2], [0, 2]);
+            return Plotly.relayout(gd, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        })
+        .then(function() {
+            _assert('auto rng / big marker.size', [-0.28, 2.28], [0.75, 2.25]);
+            return Plotly.restyle(gd, 'marker.size', null);
+        })
+        .then(function() {
+            _assert('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('scatter hoverPoints', function() {

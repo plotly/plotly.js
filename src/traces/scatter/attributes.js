@@ -273,7 +273,7 @@ module.exports = {
             dflt: 6,
             arrayOk: true,
             role: 'style',
-            editType: 'calcIfAutorange',
+            editType: 'calc',
             description: 'Sets the marker size (in px).'
         },
         maxdisplayed: {
