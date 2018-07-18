@@ -1874,18 +1874,6 @@ describe('Test axes', function() {
             expect(ax._min).toEqual([{val: 2, pad: 0, extrapad: false}]);
             expect(ax._max).toEqual([{val: 5, pad: 0, extrapad: false}]);
         });
-
-        it('should consider range slider `autorange`', function() {
-            ax = getDefaultAx();
-            data = [2, 5];
-
-            ax.autorange = false;
-            ax._rangesliderAutorange = true;
-
-            expand(ax, data, {});
-            expect(ax._min).toEqual([{val: 2, pad: 0, extrapad: false}]);
-            expect(ax._max).toEqual([{val: 5, pad: 0, extrapad: false}]);
-        });
     });
 
     describe('calcTicks and tickText', function() {
