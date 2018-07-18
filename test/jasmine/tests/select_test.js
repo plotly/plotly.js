@@ -259,7 +259,7 @@ describe('@flaky Test select box and lasso in general:', function() {
             })
             .then(function() {
                 // sub selection
-                drag([[219, 143], [219, 183]], {altKey: true});
+                drag([[219, 143], [219, 183]], {shiftKey: true, altKey: true});
             }).then(function() {
                 assertEventData(selectingData.points, [{
                     curveNumber: 0,
