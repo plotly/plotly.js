@@ -8,45 +8,6 @@
 
 'use strict';
 
-// TODO Remove eventually
-function selectPoints(searchInfo, polygon) {
-    var cd = searchInfo.cd;
-    var xa = searchInfo.xaxis;
-    var ya = searchInfo.yaxis;
-    var selection = [];
-    var i, j;
-
-    if(polygon === false) {
-        for(i = 0; i < cd.length; i++) {
-            for(j = 0; j < (cd[i].pts || []).length; j++) {
-                // clear selection
-                cd[i].pts[j].selected = 0;
-            }
-        }
-    } else {
-        for(i = 0; i < cd.length; i++) {
-            for(j = 0; j < (cd[i].pts || []).length; j++) {
-                var pt = cd[i].pts[j];
-                var x = xa.c2p(pt.x);
-                var y = ya.c2p(pt.y);
-
-                if(polygon.contains([x, y])) {
-                    selection.push({
-                        pointNumber: pt.i,
-                        x: xa.c2d(pt.x),
-                        y: ya.c2d(pt.y)
-                    });
-                    pt.selected = 1;
-                } else {
-                    pt.selected = 0;
-                }
-            }
-        }
-    }
-
-    return selection;
-}
-
 exports.getPointsIn = function(searchInfo, polygon) {
     var pointsIn = [];
     var cd = searchInfo.cd;
