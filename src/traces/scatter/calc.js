@@ -96,7 +96,7 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
         yOptions.padded = false;
     }
 
-    // N.B. asymmetric splom traces call this with undefined xa or ya
+    // N.B. asymmetric splom traces call this with blank {} xa or ya
     if(xa._id) Axes.expand(xa, x, xOptions);
     if(ya._id) Axes.expand(ya, y, yOptions);
 }
