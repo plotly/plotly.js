@@ -27,7 +27,6 @@ var MINSELECT = constants.MINSELECT;
 
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
-var multipolygonTester = polygon.multitester;
 
 function getAxId(ax) { return ax._id; }
 
@@ -49,7 +48,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
     var subtract = e.altKey;
 
-    var filterPoly, testPoly, mergedPolygons, currentPolygon;
+    var filterPoly, mergedPolygons, currentPolygon;
     var pointsInPolygon = [];
     var i, searchInfo, eventData;
 
@@ -214,12 +213,9 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         if(dragOptions.polygons && dragOptions.polygons.length) {
             mergedPolygons = mergePolygons(dragOptions.mergedPolygons, currentPolygon, subtract);
             currentPolygon.subtract = subtract;
-            // TODO Probably isn't needed anymore
-            testPoly = multipolygonTester(dragOptions.polygons.concat([currentPolygon]));
         }
         else {
             mergedPolygons = [currentPolygon];
-            testPoly = polygonTester(currentPolygon);
         }
 
         // draw selection
