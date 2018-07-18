@@ -635,6 +635,7 @@ describe('@flaky Test select box and lasso in general:', function() {
         fig.layout.xaxis.range = [2, 8];
         fig.layout.yaxis.autorange = false;
         fig.layout.yaxis.range = [0, 3];
+        fig.layout.hovermode = 'closest';
 
         function _assert(msg, exp) {
             expect(gd.layout.xaxis.range)
