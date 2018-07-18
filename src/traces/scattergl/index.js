@@ -823,77 +823,6 @@ function calcHover(pointData, x, y, trace) {
     return pointData;
 }
 
-// TODO Remove eventually
-function selectPoints(searchInfo, polygon) {
-    var cd = searchInfo.cd;
-    var selection = [];
-    var trace = cd[0].trace;
-    var stash = cd[0].t;
-    var x = stash.x;
-    var y = stash.y;
-    var scene = stash._scene;
-
-    if(!scene) return selection;
-
-    var hasText = subTypes.hasText(trace);
-    var hasMarkers = subTypes.hasMarkers(trace);
-    var hasOnlyLines = !hasMarkers && !hasText;
-    if(trace.visible !== true || hasOnlyLines) return selection;
-
-    // degenerate polygon does not enable selection
-    // filter out points by visible scatter ones
-    var els = null;
-    var unels = null;
-    // FIXME: clearing selection does not work here
-    var i;
-    if(polygon !== false && !polygon.degenerate) {
-        els = [], unels = [];
-        for(i = 0; i < stash.count; i++) {
-            if(polygon.contains([stash.xpx[i], stash.ypx[i]])) {
-                els.push(i);
-                selection.push({
-                    pointNumber: i,
-                    x: x[i],
-                    y: y[i]
-                });
-            }
-            else {
-                unels.push(i);
-            }
-        }
-    } else {
-        unels = arrayRange(stash.count);
-    }
-
-    // make sure selectBatch is created
-    if(!scene.selectBatch) {
-        scene.selectBatch = [];
-        scene.unselectBatch = [];
-    }
-
-    if(!scene.selectBatch[stash.index]) {
-        // enter every trace select mode
-        for(i = 0; i < scene.count; i++) {
-            scene.selectBatch[i] = [];
-            scene.unselectBatch[i] = [];
-        }
-        // we should turn scatter2d into unselected once we have any points selected
-        if(hasMarkers) {
-            scene.scatter2d.update(scene.markerUnselectedOptions);
-        }
-    }
-
-    scene.selectBatch[stash.index] = els;
-    scene.unselectBatch[stash.index] = unels;
-
-    // update text options
-    if(hasText) {
-        styleTextSelection(cd);
-    }
-
-    return selection;
-}
-
 function getPointsIn(searchInfo, polygon) {
     var pointsIn = [];
 
@@ -905,7 +834,9 @@ function getPointsIn(searchInfo, polygon) {
 
     if(!scene) return [];
 
-    var hasOnlyLines = (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace));
+    var hasText = subTypes.hasText(trace);
+    var hasMarkers = subTypes.hasMarkers(trace);
+    var hasOnlyLines = !hasMarkers && !hasText;
     if(trace.visible !== true || hasOnlyLines) return [];
 
     if(polygon !== false && !polygon.degenerate) {
@@ -925,6 +856,9 @@ function toggleSelected(searchInfo, selected, pointIds) {
     var calcData = searchInfo.cd;
     var stash = calcData[0].t;
     var scene = stash._scene;
+    var trace = calcData[0].trace;
+    var hasText = subTypes.hasText(trace);
+    var hasMarkers = subTypes.hasMarkers(trace);
     var oldEls;
     var oldUnels;
     var newEls;
@@ -936,7 +870,7 @@ function toggleSelected(searchInfo, selected, pointIds) {
     }
 
     // Mutate state
-    coerceSelectBatches(scene, stash);
+    coerceSelectBatches(scene, stash, hasMarkers);
     oldEls = scene.selectBatch[stash.index];
     oldUnels = scene.unselectBatch[stash.index];
 
@@ -960,6 +894,10 @@ function toggleSelected(searchInfo, selected, pointIds) {
         });
     }
 
+    if(hasText) {
+        styleTextSelection(calcData);
+    }
+
     // TODO remove eventually
     // console.log('els  : ' + JSON.stringify(scene.selectBatch[stash.index]));
     // console.log('unels: ' + JSON.stringify(scene.unselectBatch[stash.index]));
@@ -967,7 +905,7 @@ function toggleSelected(searchInfo, selected, pointIds) {
     return selection;
 }
 
-function coerceSelectBatches(scene, stash) {
+function coerceSelectBatches(scene, stash, hasMarkers) {
     var i;
 
     if(!scene.selectBatch) {
@@ -984,9 +922,10 @@ function coerceSelectBatches(scene, stash) {
 
         scene.unselectBatch[stash.index] = arrayRange(stash.count);
 
-        // TODO what does that do?
         // we should turn scatter2d into unselected once we have any points selected
-        scene.scatter2d.update(scene.markerUnselectedOptions);
+        if(hasMarkers) {
+            scene.scatter2d.update(scene.markerUnselectedOptions);
+        }
     }
 }
 
@@ -1010,8 +949,8 @@ function styleTextSelection(cd) {
     var stash = cd0.t;
     var scene = stash._scene;
     var index = stash.index;
-    var els = scene.selectBatch[index];
-    var unels = scene.unselectBatch[index];
+    var els = scene.selectBatch ? scene.selectBatch[index] : null;
+    var unels = scene.unselectBatch ? scene.unselectBatch[index] : null;
     var baseOpts = scene.textOptions[index];
     var selOpts = scene.textSelectedOptions[index] || {};
     var unselOpts = scene.textUnselectedOptions[index] || {};
