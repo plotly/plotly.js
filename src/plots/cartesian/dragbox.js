@@ -160,7 +160,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 // to pan (or to zoom if it already is pan) on shift
                 if(e.shiftKey) {
                     if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+                    else if(!isBoxOrLassoSelect(dragModeNow)) dragModeNow = 'pan';
                 }
                 else if(e.ctrlKey) {
                     dragModeNow = 'pan';
@@ -173,8 +173,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
         else dragOptions.minDrag = undefined;
 
-        // TODO Maybe rename into isBoxOrLassoSelect
-        if(isSelectOrLasso(dragModeNow)) {
+        if(isBoxOrLassoSelect(dragModeNow)) {
             dragOptions.xaxes = xaxes;
             dragOptions.yaxes = yaxes;
             // this attaches moveFn, clickFn, doneFn on dragOptions
@@ -182,7 +181,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             prepSelect(e, startX, startY, dragOptions, dragModeNow);
         } else {
             dragOptions.clickFn = clickFn;
-            // TODO Is this good? prepFn will always clear and reset the selection when not in lasso or select mode, but now we've a select mode on click, a selectOnClick behavior so to speak
             clearAndResetSelect();
 
             if(!allFixedRanges) {
@@ -217,9 +215,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(numClicks === 2 && !singleEnd) doubleClick();
 
         if(isMainDrag) {
-            var clickHandler = obtainClickHandler();
-            // TODO not sure a uniform interface of click handlers applies, probably better be explicit
-            clickHandler(gd, numClicks, evt, xaxes, yaxes);
+            handleClickInMainDrag(gd, numClicks, evt, xaxes, yaxes, plotinfo.id);
         }
         // Allow manual editing of range bounds through an input field
         // TODO consider extracting that to a method for clarity
@@ -629,18 +625,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         redrawObjs(gd._fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
     }
 
-    function obtainClickHandler() {
-        // TODO differentiate based on `clickmode` attr here
-        // Thought: we may end up returning thin wrapping functions that
-        // call the real functions based on the `clickmode` attr
-
-        // FIXME Dummy code to satisfy ESLint
-        var clickMode = 'select';
-        if(clickMode === 'select') {
-            return selectOnClick;
-        } else {
-            return Fx.click;
-        }
+    function handleClickInMainDrag(gd, numClicks, evt, xaxes, yaxes, subplot) {
+        // TODO differentiate based on `clickmode` attr here as soon as it is available
+        selectOnClick(gd, numClicks, evt, xaxes, yaxes);
+        Fx.click(gd, evt, subplot);
     }
 
     function doubleClick() {
@@ -1036,7 +1024,7 @@ function showDoubleClickNotifier(gd) {
     }
 }
 
-function isSelectOrLasso(dragmode) {
+function isBoxOrLassoSelect(dragmode) {
     return dragmode === 'lasso' || dragmode === 'select';
 }
 
