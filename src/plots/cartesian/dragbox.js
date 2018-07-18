@@ -634,8 +634,13 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // Thought: we may end up returning thin wrapping functions that
         // call the real functions based on the `clickmode` attr
 
-        // return Fx.click;
-        return selectOnClick;
+        // FIXME Dummy code to satisfy ESLint
+        var clickMode = 'select';
+        if(clickMode === 'select') {
+            return selectOnClick;
+        } else {
+            return Fx.click;
+        }
     }
 
     function doubleClick() {
