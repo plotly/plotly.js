@@ -24,7 +24,7 @@ module.exports = {
         values: [true, false, 'legendonly'],
         role: 'info',
         dflt: true,
-        editType: 'calc',
+        editType: 'plot',
         description: [
             'Determines whether or not this trace is visible.',
             'If *legendonly*, the trace is not drawn,',
