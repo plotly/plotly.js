@@ -14,6 +14,7 @@ var drawModule = require('./draw');
 module.exports = {
     moduleType: 'component',
     name: 'shapes',
+    isDrawable: true,
 
     layoutAttributes: require('./attributes'),
     supplyLayoutDefaults: require('./defaults'),

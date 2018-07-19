@@ -72,20 +72,20 @@ exports.apiMethodRegistry = {};
  *
  */
 exports.register = function register(_modules) {
-    if(!_modules) {
+    if (!_modules) {
         throw new Error('No argument passed to Plotly.register.');
-    } else if(_modules && !Array.isArray(_modules)) {
+    } else if (_modules && !Array.isArray(_modules)) {
         _modules = [_modules];
     }
 
-    for(var i = 0; i < _modules.length; i++) {
+    for (var i = 0; i < _modules.length; i++) {
         var newModule = _modules[i];
 
-        if(!newModule) {
+        if (!newModule) {
             throw new Error('Invalid module was attempted to be registered!');
         }
 
-        switch(newModule.moduleType) {
+        switch (newModule.moduleType) {
             case 'trace':
                 registerTraceModule(newModule);
                 break;
@@ -108,6 +108,19 @@ exports.register = function register(_modules) {
     }
 };
 
+exports.getModules = function (type, isDrawable) {
+    var selected = [];
+
+    for (var componentName in exports.componentsRegistry) {
+        var component = exports.componentsRegistry[componentName];
+        if( component.moduleType === type && component.isDrawable && component.isDrawable == isDrawable){
+            selected.push(component);
+        }
+    }
+
+    return selected;
+}
+
 /**
  * Get registered module using trace object or trace type
  *
@@ -116,9 +129,9 @@ exports.register = function register(_modules) {
  * @return {object}
  *  module object corresponding to trace type
  */
-exports.getModule = function(trace) {
+exports.getModule = function (trace) {
     var _module = exports.modules[getTraceType(trace)];
-    if(!_module) return false;
+    if (!_module) return false;
     return _module._module;
 };
 
@@ -131,16 +144,16 @@ exports.getModule = function(trace) {
  *  category in question
  * @return {boolean}
  */
-exports.traceIs = function(traceType, category) {
+exports.traceIs = function (traceType, category) {
     traceType = getTraceType(traceType);
 
     // old plot.ly workspace hack, nothing to see here
-    if(traceType === 'various') return false;
+    if (traceType === 'various') return false;
 
     var _module = exports.modules[traceType];
 
-    if(!_module) {
-        if(traceType && traceType !== 'area') {
+    if (!_module) {
+        if (traceType && traceType !== 'area') {
             Loggers.log('Unrecognized trace type ' + traceType + '.');
         }
 
@@ -161,11 +174,11 @@ exports.traceIs = function(traceType, category) {
  * @return {array}
  *  array of matching indices. If none found, returns []
  */
-exports.getTransformIndices = function(data, type) {
+exports.getTransformIndices = function (data, type) {
     var indices = [];
     var transforms = data.transforms || [];
-    for(var i = 0; i < transforms.length; i++) {
-        if(transforms[i].type === type) {
+    for (var i = 0; i < transforms.length; i++) {
+        if (transforms[i].type === type) {
             indices.push(i);
         }
     }
@@ -181,10 +194,10 @@ exports.getTransformIndices = function(data, type) {
  *  type of trace to test
  * @return {boolean}
  */
-exports.hasTransform = function(data, type) {
+exports.hasTransform = function (data, type) {
     var transforms = data.transforms || [];
-    for(var i = 0; i < transforms.length; i++) {
-        if(transforms[i].type === type) {
+    for (var i = 0; i < transforms.length; i++) {
+        if (transforms[i].type === type) {
             return true;
         }
     }
@@ -201,10 +214,10 @@ exports.hasTransform = function(data, type) {
  *  name of component module method
  * @return {function}
  */
-exports.getComponentMethod = function(name, method) {
+exports.getComponentMethod = function (name, method) {
     var _module = exports.componentsRegistry[name];
 
-    if(!_module) return noop;
+    if (!_module) return noop;
     return _module[method] || noop;
 };
 
@@ -215,7 +228,7 @@ exports.getComponentMethod = function(name, method) {
  * @param {...array} args : arguments passed to api method
  * @return {any} : returns api method output
  */
-exports.call = function() {
+exports.call = function () {
     var name = arguments[0];
     var args = [].slice.call(arguments, 1);
     return exports.apiMethodRegistry[name].apply(null, args);
@@ -226,17 +239,17 @@ function registerTraceModule(_module) {
     var categoriesIn = _module.categories;
     var meta = _module.meta;
 
-    if(exports.modules[thisType]) {
+    if (exports.modules[thisType]) {
         Loggers.log('Type ' + thisType + ' already registered');
         return;
     }
 
-    if(!exports.subplotsRegistry[_module.basePlotModule.name]) {
+    if (!exports.subplotsRegistry[_module.basePlotModule.name]) {
         registerSubplot(_module.basePlotModule);
     }
 
     var categoryObj = {};
-    for(var i = 0; i < categoriesIn.length; i++) {
+    for (var i = 0; i < categoriesIn.length; i++) {
         categoryObj[categoriesIn[i]] = true;
         exports.allCategories[categoriesIn[i]] = true;
     }
@@ -246,13 +259,13 @@ function registerTraceModule(_module) {
         categories: categoryObj
     };
 
-    if(meta && Object.keys(meta).length) {
+    if (meta && Object.keys(meta).length) {
         exports.modules[thisType].meta = meta;
     }
 
     exports.allTypes.push(thisType);
 
-    for(var componentName in exports.componentsRegistry) {
+    for (var componentName in exports.componentsRegistry) {
         mergeComponentAttrsToTrace(componentName, thisType);
     }
 
@@ -261,7 +274,7 @@ function registerTraceModule(_module) {
      * but don't merge them into the base schema as it would confuse the docs
      * (at least after https://github.com/plotly/documentation/issues/202 gets done!)
      */
-    if(_module.layoutAttributes) {
+    if (_module.layoutAttributes) {
         extendFlat(exports.traceLayoutAttributes, _module.layoutAttributes);
     }
 }
@@ -269,7 +282,7 @@ function registerTraceModule(_module) {
 function registerSubplot(_module) {
     var plotType = _module.name;
 
-    if(exports.subplotsRegistry[plotType]) {
+    if (exports.subplotsRegistry[plotType]) {
         Loggers.log('Plot type ' + plotType + ' already registered.');
         return;
     }
@@ -282,45 +295,45 @@ function registerSubplot(_module) {
     // not sure what's best for the 'cartesian' type at this point
     exports.subplotsRegistry[plotType] = _module;
 
-    for(var componentName in exports.componentsRegistry) {
+    for (var componentName in exports.componentsRegistry) {
         mergeComponentAttrsToSubplot(componentName, _module.name);
     }
 }
 
 function registerComponentModule(_module) {
-    if(typeof _module.name !== 'string') {
+    if (typeof _module.name !== 'string') {
         throw new Error('Component module *name* must be a string.');
     }
 
     var name = _module.name;
     exports.componentsRegistry[name] = _module;
 
-    if(_module.layoutAttributes) {
-        if(_module.layoutAttributes._isLinkedToArray) {
+    if (_module.layoutAttributes) {
+        if (_module.layoutAttributes._isLinkedToArray) {
             pushUnique(exports.layoutArrayContainers, name);
         }
         findArrayRegexps(_module);
     }
 
-    for(var traceType in exports.modules) {
+    for (var traceType in exports.modules) {
         mergeComponentAttrsToTrace(name, traceType);
     }
 
-    for(var subplotName in exports.subplotsRegistry) {
+    for (var subplotName in exports.subplotsRegistry) {
         mergeComponentAttrsToSubplot(name, subplotName);
     }
 
-    for(var transformType in exports.transformsRegistry) {
+    for (var transformType in exports.transformsRegistry) {
         mergeComponentAttrsToTransform(name, transformType);
     }
 
-    if(_module.schema && _module.schema.layout) {
+    if (_module.schema && _module.schema.layout) {
         extendDeepAll(baseLayoutAttributes, _module.schema.layout);
     }
 }
 
 function registerTransformModule(_module) {
-    if(typeof _module.name !== 'string') {
+    if (typeof _module.name !== 'string') {
         throw new Error('Transform module *name* must be a string.');
     }
 
@@ -328,26 +341,26 @@ function registerTransformModule(_module) {
     var hasTransform = typeof _module.transform === 'function';
     var hasCalcTransform = typeof _module.calcTransform === 'function';
 
-    if(!hasTransform && !hasCalcTransform) {
+    if (!hasTransform && !hasCalcTransform) {
         throw new Error(prefix + ' is missing a *transform* or *calcTransform* method.');
     }
-    if(hasTransform && hasCalcTransform) {
+    if (hasTransform && hasCalcTransform) {
         Loggers.log([
             prefix + ' has both a *transform* and *calcTransform* methods.',
             'Please note that all *transform* methods are executed',
             'before all *calcTransform* methods.'
         ].join(' '));
     }
-    if(!isPlainObject(_module.attributes)) {
+    if (!isPlainObject(_module.attributes)) {
         Loggers.log(prefix + ' registered without an *attributes* object.');
     }
-    if(typeof _module.supplyDefaults !== 'function') {
+    if (typeof _module.supplyDefaults !== 'function') {
         Loggers.log(prefix + ' registered without a *supplyDefaults* method.');
     }
 
     exports.transformsRegistry[_module.name] = _module;
 
-    for(var componentName in exports.componentsRegistry) {
+    for (var componentName in exports.componentsRegistry) {
         mergeComponentAttrsToTransform(componentName, _module.name);
     }
 }
@@ -364,7 +377,7 @@ function registerLocale(_module) {
     var locales = exports.localeRegistry;
 
     var localeObj = locales[locale];
-    if(!localeObj) locales[locale] = localeObj = {};
+    if (!localeObj) locales[locale] = localeObj = {};
 
     // Should we use this dict for the base locale?
     // In case we're overwriting a previous dict for this locale, check
@@ -372,27 +385,27 @@ function registerLocale(_module) {
     // overwriting, locales[locale] is undefined so this just checks if
     // baseLocale already had a dict or not.
     // Same logic for dateFormats
-    if(baseLocale !== locale) {
+    if (baseLocale !== locale) {
         var baseLocaleObj = locales[baseLocale];
-        if(!baseLocaleObj) locales[baseLocale] = baseLocaleObj = {};
+        if (!baseLocaleObj) locales[baseLocale] = baseLocaleObj = {};
 
-        if(hasDict && baseLocaleObj.dictionary === localeObj.dictionary) {
+        if (hasDict && baseLocaleObj.dictionary === localeObj.dictionary) {
             baseLocaleObj.dictionary = newDict;
         }
-        if(hasFormat && baseLocaleObj.format === localeObj.format) {
+        if (hasFormat && baseLocaleObj.format === localeObj.format) {
             baseLocaleObj.format = newFormat;
         }
     }
 
-    if(hasDict) localeObj.dictionary = newDict;
-    if(hasFormat) localeObj.format = newFormat;
+    if (hasDict) localeObj.dictionary = newDict;
+    if (hasFormat) localeObj.format = newFormat;
 }
 
 function findArrayRegexps(_module) {
-    if(_module.layoutAttributes) {
+    if (_module.layoutAttributes) {
         var arrayAttrRegexps = _module.layoutAttributes._arrayAttrRegexps;
-        if(arrayAttrRegexps) {
-            for(var i = 0; i < arrayAttrRegexps.length; i++) {
+        if (arrayAttrRegexps) {
+            for (var i = 0; i < arrayAttrRegexps.length; i++) {
                 pushUnique(exports.layoutArrayRegexes, arrayAttrRegexps[i]);
             }
         }
@@ -401,40 +414,40 @@ function findArrayRegexps(_module) {
 
 function mergeComponentAttrsToTrace(componentName, traceType) {
     var componentSchema = exports.componentsRegistry[componentName].schema;
-    if(!componentSchema || !componentSchema.traces) return;
+    if (!componentSchema || !componentSchema.traces) return;
 
     var traceAttrs = componentSchema.traces[traceType];
-    if(traceAttrs) {
+    if (traceAttrs) {
         extendDeepAll(exports.modules[traceType]._module.attributes, traceAttrs);
     }
 }
 
 function mergeComponentAttrsToTransform(componentName, transformType) {
     var componentSchema = exports.componentsRegistry[componentName].schema;
-    if(!componentSchema || !componentSchema.transforms) return;
+    if (!componentSchema || !componentSchema.transforms) return;
 
     var transformAttrs = componentSchema.transforms[transformType];
-    if(transformAttrs) {
+    if (transformAttrs) {
         extendDeepAll(exports.transformsRegistry[transformType].attributes, transformAttrs);
     }
 }
 
 function mergeComponentAttrsToSubplot(componentName, subplotName) {
     var componentSchema = exports.componentsRegistry[componentName].schema;
-    if(!componentSchema || !componentSchema.subplots) return;
+    if (!componentSchema || !componentSchema.subplots) return;
 
     var subplotModule = exports.subplotsRegistry[subplotName];
     var subplotAttrs = subplotModule.layoutAttributes;
     var subplotAttr = subplotModule.attr === 'subplot' ? subplotModule.name : subplotModule.attr;
-    if(Array.isArray(subplotAttr)) subplotAttr = subplotAttr[0];
+    if (Array.isArray(subplotAttr)) subplotAttr = subplotAttr[0];
 
     var componentLayoutAttrs = componentSchema.subplots[subplotAttr];
-    if(subplotAttrs && componentLayoutAttrs) {
+    if (subplotAttrs && componentLayoutAttrs) {
         extendDeepAll(subplotAttrs, componentLayoutAttrs);
     }
 }
 
 function getTraceType(traceType) {
-    if(typeof traceType === 'object') traceType = traceType.type;
+    if (typeof traceType === 'object') traceType = traceType.type;
     return traceType;
 }
