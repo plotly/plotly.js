@@ -16,7 +16,7 @@ module.exports = {
     moduleType: 'component',
     name: 'annotations',
     isDrawable: true,
-    
+
     layoutAttributes: require('./attributes'),
     supplyLayoutDefaults: require('./defaults'),
     includeBasePlot: require('../../plots/cartesian/include_components')('annotations'),

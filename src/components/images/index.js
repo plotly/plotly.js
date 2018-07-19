@@ -12,7 +12,7 @@ module.exports = {
     moduleType: 'component',
     name: 'images',
     isDrawable: true,
-    
+
     layoutAttributes: require('./attributes'),
     supplyLayoutDefaults: require('./defaults'),
     includeBasePlot: require('../../plots/cartesian/include_components')('images'),
