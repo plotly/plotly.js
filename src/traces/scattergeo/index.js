@@ -20,7 +20,8 @@ ScatterGeo.style = require('./style');
 ScatterGeo.styleOnSelect = require('../scatter/style').styleOnSelect;
 ScatterGeo.hoverPoints = require('./hover');
 ScatterGeo.eventData = require('./event_data');
-ScatterGeo.selectPoints = require('./select');
+ScatterGeo.getPointsIn = require('./select').getPointsIn;
+ScatterGeo.toggleSelected = require('./select').toggleSelected;
 
 ScatterGeo.moduleType = 'trace';
 ScatterGeo.name = 'scattergeo';
