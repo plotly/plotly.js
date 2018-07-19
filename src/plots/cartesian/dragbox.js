@@ -616,7 +616,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // use the finer-grained 'drawOne' method instead
 
         var componentsNeedingRedraw = Registry.getModules('component', true);
-        componentsNeedingRedraw.forEach(function(item){
+        componentsNeedingRedraw.forEach(function(item) {
             // only issue here is that we cam't short circuit images
             redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'drawOne'));
         });

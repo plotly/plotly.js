@@ -109,7 +109,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         }
 
         var componentsNeedingRedraw = Registry.getModules('component', true);
-        componentsNeedingRedraw.forEach(function(item){
+        componentsNeedingRedraw.forEach(function(item) {
             // only issue here is that we cam't short circuit images
             redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'drawOne'));
         });
@@ -145,7 +145,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
         }
 
         var componentsNeedingRedraw = Registry.getModules('component', true);
-        componentsNeedingRedraw.forEach(function(item){
+        componentsNeedingRedraw.forEach(function(item) {
             // only issue here is that we cam't short circuit images
             redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'drawOne'));
         });
