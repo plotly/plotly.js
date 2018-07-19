@@ -113,7 +113,7 @@ exports.getModules = function (type, isDrawable) {
 
     for (var componentName in exports.componentsRegistry) {
         var component = exports.componentsRegistry[componentName];
-        if( component.moduleType === type && component.isDrawable && component.isDrawable == isDrawable){
+        if (component.moduleType === type && component.isDrawable && component.isDrawable == isDrawable) {
             selected.push(component);
         }
     }
