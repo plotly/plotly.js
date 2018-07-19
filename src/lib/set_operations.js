@@ -9,25 +9,33 @@
 'use strict';
 
 
-/*
+/**
  * Computes the set difference of two arrays.
  *
  * @param {array} a
  * @param {array} b
- * @returns all elements of a that are not in b.
+ * @returns out all elements of a that are not in b.
  *      If a is not an array, an empty array is returned.
  *      If b is not an array, a is returned.
  */
 function difference(a, b) {
-    if(!Array.isArray(a)) {
-        return [];
+    if(!Array.isArray(a)) return [];
+    if(!Array.isArray(b)) return a;
+
+    var hash = {};
+    var out = [];
+    var i;
+
+    for(i = 0; i < b.length; i++) {
+        hash[b[i]] = 1;
     }
-    if(!Array.isArray(b)) {
-        return a;
+
+    for(i = 0; i < a.length; i++) {
+        var ai = a[i];
+        if(!hash[ai]) out.push(ai);
     }
-    return a.filter(function(e) {
-        return b.indexOf(e) < 0;
-    });
+
+    return out;
 }
 
 module.exports = {
