@@ -1151,6 +1151,18 @@ describe('@flaky Test select box and lasso per trace:', function() {
         var assertRanges = makeAssertRanges('geo');
         var assertLassoPoints = makeAssertLassoPoints('geo');
 
+        function assertNodeOpacity(exp) {
+            var traces = d3.select(gd).selectAll('.scatterlayer > .trace');
+            expect(traces.size()).toBe(Object.keys(exp).length, 'correct # of trace <g>');
+
+            traces.each(function(_, i) {
+                d3.select(this).selectAll('path.point').each(function(_, j) {
+                    expect(Number(this.style.opacity))
+                        .toBe(exp[i][j], 'node opacity - trace ' + i + ' pt ' + j);
+                });
+            });
+        }
+
         var fig = {
             data: [{
                 type: 'scattergeo',
@@ -1177,6 +1189,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 function() {
                     assertPoints([[10, 10], [20, 20], [-10, 10], [-20, 20]]);
                     assertSelectedPoints({0: [0, 1], 1: [0, 1]});
+                    assertNodeOpacity({0: [1, 1, 0.2], 1: [1, 1, 0.2]});
                     assertRanges([[-28.13, 61.88], [28.13, -50.64]]);
                 },
                 null, BOXEVENTS, 'scattergeo select'
@@ -1191,6 +1204,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 function() {
                     assertPoints([[-10, 10], [-20, 20], [-30, 30]]);
                     assertSelectedPoints({0: [], 1: [0, 1, 2]});
+                    assertNodeOpacity({0: [0.2, 0.2, 0.2], 1: [1, 1, 1]});
                     assertLassoPoints([
                         [-56.25, 61.88], [-56.24, 5.63], [0, 5.63], [0, 61.88], [-56.25, 61.88]
                     ]);
