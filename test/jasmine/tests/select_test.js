@@ -895,9 +895,9 @@ describe('@flaky Test select box and lasso per trace:', function() {
                 keys.forEach(function(k, j) {
                     var msgFull = msg + 'selected pt ' + i + ' - ' + k + ' val';
 
-                    if(typeof e[j] === 'number') {
+                    if(typeof p[k] === 'number' && typeof e[j] === 'number') {
                         expect(p[k]).toBeCloseTo(e[j], 1, msgFull);
-                    } else if(Array.isArray(e[j])) {
+                    } else if(Array.isArray(p[k]) && Array.isArray(e[j])) {
                         expect(p[k]).toBeCloseToArray(e[j], 1, msgFull);
                     } else {
                         expect(p[k]).toBe(e[j], msgFull);
@@ -1166,8 +1166,8 @@ describe('@flaky Test select box and lasso per trace:', function() {
         var fig = {
             data: [{
                 type: 'scattergeo',
-                lon: [10, 20, 30],
-                lat: [10, 20, 30]
+                lon: [10, 20, 30, null],
+                lat: [10, 20, 30, null]
             }, {
                 type: 'scattergeo',
                 lon: [-10, -20, -30],
@@ -1210,6 +1210,25 @@ describe('@flaky Test select box and lasso per trace:', function() {
                     ]);
                 },
                 null, LASSOEVENTS, 'scattergeo lasso'
+            );
+        })
+        .then(function() {
+            // some projection types can't handle BADNUM during c2p,
+            // make they are skipped here
+            return Plotly.relayout(gd, 'geo.projection.type', 'robinson');
+        })
+        .then(function() {
+            return _run(
+                [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
+                function() {
+                    assertPoints([[-10, 10], [-20, 20], [-30, 30]]);
+                    assertSelectedPoints({0: [], 1: [0, 1, 2]});
+                    assertNodeOpacity({0: [0.2, 0.2, 0.2], 1: [1, 1, 1]});
+                    assertLassoPoints([
+                        [-67.40, 55.07], [-56.33, 4.968], [0, 4.968], [0, 55.07], [-67.40, 55.07]
+                    ]);
+                },
+                null, LASSOEVENTS, 'scattergeo lasso (on robinson projection)'
             );
         })
         .then(function() {
