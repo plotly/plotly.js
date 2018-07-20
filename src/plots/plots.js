@@ -757,6 +757,8 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
 };
 
 plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var i, j;
+
     var oldSubplots = oldFullLayout._plots || {};
     var newSubplots = newFullLayout._plots = {};
     var newSubplotList = newFullLayout._subplots;
@@ -768,32 +770,22 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
     var ids = newSubplotList.cartesian.concat(newSubplotList.gl2d || []);
 
-    var i, j, id, ax;
-
     for(i = 0; i < ids.length; i++) {
-        id = ids[i];
+        var id = ids[i];
         var oldSubplot = oldSubplots[id];
         var xaxis = axisIDs.getFromId(mockGd, id, 'x');
         var yaxis = axisIDs.getFromId(mockGd, id, 'y');
         var plotinfo;
 
+        // link or create subplot object
         if(oldSubplot) {
             plotinfo = newSubplots[id] = oldSubplot;
-
-            if(plotinfo.xaxis.layer !== xaxis.layer) {
-                plotinfo.xlines.attr('d', null);
-                plotinfo.xaxislayer.selectAll('*').remove();
-            }
-
-            if(plotinfo.yaxis.layer !== yaxis.layer) {
-                plotinfo.ylines.attr('d', null);
-                plotinfo.yaxislayer.selectAll('*').remove();
-            }
         } else {
             plotinfo = newSubplots[id] = {};
             plotinfo.id = id;
         }
 
+        // update x and y axis layout object refs
         plotinfo.xaxis = xaxis;
         plotinfo.yaxis = yaxis;
 
@@ -821,7 +813,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     // anchored axes to the axes they're anchored to
     var axList = axisIDs.list(mockGd, null, true);
     for(i = 0; i < axList.length; i++) {
-        ax = axList[i];
+        var ax = axList[i];
         var mainAx = null;
 
         if(ax.overlaying) {
