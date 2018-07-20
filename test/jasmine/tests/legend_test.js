@@ -1029,7 +1029,7 @@ describe('legend interaction', function() {
         });
     });
 
-    describe('@flaky visible toggle', function() {
+    describe('visible toggle', function() {
         var gd;
 
         beforeEach(function() {
@@ -1048,8 +1048,10 @@ describe('legend interaction', function() {
         function clickAt(p) {
             return function() {
                 return new Promise(function(resolve) {
-                    mouseEvent('mousedown', p[0], p[1]);
-                    mouseEvent('mouseup', p[0], p[1]);
+                    var el = d3.select('g.legend').node();
+                    var opts = {element: el};
+                    mouseEvent('mousedown', p[0], p[1], opts);
+                    mouseEvent('mouseup', p[0], p[1], opts);
                     setTimeout(resolve, DBLCLICKDELAY + 20);
                 });
             };
