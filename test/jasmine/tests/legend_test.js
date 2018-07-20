@@ -1029,7 +1029,7 @@ describe('legend interaction', function() {
         });
     });
 
-    describe('visible toggle', function() {
+    describe('@flaky visible toggle', function() {
         var gd;
 
         beforeEach(function() {
