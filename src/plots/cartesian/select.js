@@ -462,8 +462,7 @@ function determineSearchTraces(gd, xAxes, yAxes) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
 
-        if(trace.visible !== true || !trace._module ||
-          !trace._module.toggleSelected || !trace._module.getPointsIn) continue;
+        if(trace.visible !== true || !trace._module || !trace._module.selectable) continue;
 
         // TODO is dragOptions.subplot is ever set? If not, delete.
         // if(dragOptions.subplot) {

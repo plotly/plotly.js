@@ -193,7 +193,7 @@ function isSelectable(fullData) {
 
         var trace = fullData[i];
 
-        if(!trace._module || !trace._module.getPointsIn || !trace._module.toggleSelected) continue;
+        if(!trace._module || !trace._module.selectable) continue;
 
         if(Registry.traceIs(trace, 'scatter-like')) {
             if(scatterSubTypes.hasMarkers(trace) || scatterSubTypes.hasText(trace)) {
