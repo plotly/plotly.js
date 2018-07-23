@@ -54,6 +54,7 @@ function plot(container, subplot, cdata) {
 
     var scene = ScatterGl.sceneUpdate(container, subplot);
     scene.clear();
+    scene.visibleBatch = [];
 
     cdata.forEach(function(cdscatter, traceIndex) {
         if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
@@ -63,6 +64,8 @@ function plot(container, subplot, cdata) {
         var rArray = stash.r;
         var thetaArray = stash.theta;
         var i, r, rr, theta, rad;
+
+        scene.uid2batchIndex[trace.uid] = traceIndex;
 
         var subRArray = rArray.slice();
         var subThetaArray = thetaArray.slice();
