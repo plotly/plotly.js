@@ -18,8 +18,8 @@ module.exports = {
     supplyLayoutDefaults: require('./defaults'),
     includeBasePlot: require('../../plots/cartesian/include_components')('images'),
 
-    draw: drawModule.draw,
-    updateOnPan: drawModule.draw,
+    draw: drawModule,
+    updateOnPan: drawModule,
 
     convertCoords: require('./convert_coords')
 };
