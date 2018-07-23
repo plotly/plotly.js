@@ -341,12 +341,13 @@ module.exports = function draw(gd) {
                 }
             },
             clickFn: function(numClicks, e) {
-                var clickedTrace =
-                    fullLayout._infolayer.selectAll('g.traces').filter(function() {
-                        var bbox = this.getBoundingClientRect();
-                        return (e.clientX >= bbox.left && e.clientX <= bbox.right &&
-                            e.clientY >= bbox.top && e.clientY <= bbox.bottom);
-                    });
+                var clickedTrace = fullLayout._infolayer.selectAll('g.traces').filter(function() {
+                    var bbox = this.getBoundingClientRect();
+                    return (
+                        e.clientX >= bbox.left && e.clientX <= bbox.right &&
+                        e.clientY >= bbox.top && e.clientY <= bbox.bottom
+                    );
+                });
                 if(clickedTrace.size() > 0) {
                     clickOrDoubleClick(gd, legend, clickedTrace, numClicks, e);
                 }
@@ -672,14 +673,19 @@ function computeLegendDimensions(gd, groups, traces) {
     opts._width = Math.ceil(opts._width);
     opts._height = Math.ceil(opts._height);
 
+    var isEditable = (
+        gd._context.edits.legendText ||
+        gd._context.edits.legendPosition
+    );
+
     traces.each(function(d) {
-        var legendItem = d[0],
-            bg = d3.select(this).select('.legendtoggle');
+        var legendItem = d[0];
+        var bg = d3.select(this).select('.legendtoggle');
 
         Drawing.setRect(bg,
             0,
             -legendItem.height / 2,
-            (gd._context.edits.legendText ? 0 : opts._width) + extraWidth,
+            (isEditable ? 0 : opts._width) + extraWidth,
             legendItem.height
         );
     });

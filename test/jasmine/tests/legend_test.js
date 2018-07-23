@@ -10,6 +10,7 @@ var anchorUtils = require('@src/components/legend/anchor_utils');
 
 var d3 = require('d3');
 var failTest = require('../assets/fail_test');
+var mouseEvent = require('../assets/mouse_event');
 var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -929,6 +930,7 @@ describe('legend interaction', function() {
 
     describe('editable mode interactions', function() {
         var gd;
+
         var mock = {
             data: [{
                 x: [1, 2, 3],
@@ -1024,6 +1026,81 @@ describe('legend interaction', function() {
                 ]);
                 assertLabels(['boo~~~', '1 (trace 1)', 'hoo        ', '           ', '4 (trace 1)']);
             }).catch(failTest).then(done);
+        });
+    });
+
+    describe('visible toggle', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        var data = [
+            {y: [1, 2, 1]},
+            {y: [2, 1, 2]},
+            {y: [2, 3, 4]}
+        ];
+
+        // we need to click on the drag cover to truly test this,
+        function clickAt(p) {
+            return function() {
+                return new Promise(function(resolve) {
+                    var el = d3.select('g.legend').node();
+                    var opts = {element: el};
+                    mouseEvent('mousedown', p[0], p[1], opts);
+                    mouseEvent('mouseup', p[0], p[1], opts);
+                    setTimeout(resolve, DBLCLICKDELAY + 20);
+                });
+            };
+        }
+
+        function assertVisible(expectation) {
+            return function() {
+                var actual = gd._fullData.map(function(t) { return t.visible; });
+                expect(actual).toEqual(expectation);
+            };
+        }
+
+        var specs = [{
+            orientation: 'h',
+            edits: {legendPosition: true},
+            clickPos: [[118, 469], [212, 469], [295, 469]]
+        }, {
+            orientation: 'h',
+            edits: {legendPosition: true, legendText: true},
+            clickPos: [[118, 469], [212, 469], [295, 469]]
+        }, {
+            orientation: 'v',
+            edits: {legendPosition: true},
+            clickPos: [[430, 114], [430, 131], [430, 153]]
+        }, {
+            orientation: 'v',
+            edits: {legendPosition: true, legendText: true},
+            clickPos: [[430, 114], [430, 131], [430, 153]]
+        }];
+
+        specs.forEach(function(s) {
+            var msg = s.orientation + ' - ' + JSON.stringify(s.edits);
+
+            it('should find correct bounding box (case ' + msg + ')', function(done) {
+                Plotly.plot(gd,
+                    Lib.extendDeep([], data),
+                    {legend: {orientation: s.orientation}, width: 500, height: 500},
+                    {edits: s.edits}
+                )
+                .then(assertVisible([true, true, true]))
+                .then(clickAt(s.clickPos[0]))
+                .then(assertVisible(['legendonly', true, true]))
+                .then(clickAt(s.clickPos[1]))
+                .then(assertVisible(['legendonly', 'legendonly', true]))
+                .then(clickAt(s.clickPos[2]))
+                .then(assertVisible(['legendonly', 'legendonly', 'legendonly']))
+                .catch(failTest)
+                .then(done);
+            });
         });
     });
 
