@@ -457,7 +457,7 @@ describe('@gl Test splom interactions:', function() {
             subplots.each(function(d, i) {
                 var actual = this.children.length;
                 var expected = typeof exp.innerSubplotNodeCnt === 'function' ?
-                    exp.innerSubplotNodeCnt(d, i) :
+                    exp.innerSubplotNodeCnt(d[0], i) :
                     exp.innerSubplotNodeCnt;
                 if(actual !== expected) {
                     failedSubplots.push([d, actual, 'vs', expected].join(' '));

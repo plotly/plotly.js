@@ -659,6 +659,88 @@ describe('subplot creation / deletion:', function() {
         .then(done);
     });
 
+    it('should clear obsolete content out of axis layers when changing overlaying configuation', function(done) {
+        function data() {
+            return [
+                {x: [1, 2], y: [1, 2]},
+                {x: [1, 2], y: [1, 2], xaxis: 'x2', yaxis: 'y2'}
+            ];
+        }
+
+        function fig0() {
+            return {
+                data: data(),
+                layout: {
+                    xaxis2: {side: 'top', overlaying: 'x'},
+                    yaxis2: {side: 'right', overlaying: 'y'}
+                }
+            };
+        }
+
+        function fig1() {
+            return {
+                data: data(),
+                layout: {
+                    xaxis2: {side: 'top', domain: [0.37, 1]},
+                    yaxis2: {side: 'right', overlaying: 'y'}
+                }
+            };
+        }
+
+        function getParentClassName(query, level) {
+            level = level || 1;
+            var cl = gd.querySelector('g.cartesianlayer');
+            var node = cl.querySelector(query);
+            while(level--) node = node.parentNode;
+            return node.getAttribute('class');
+        }
+
+        function _assert(msg, exp) {
+            expect(getParentClassName('.xtick'))
+                .toBe(exp.xtickParent, 'xitck parent - ' + msg);
+            expect(getParentClassName('.x2tick'))
+                .toBe(exp.x2tickParent, 'x2tick parent - ' + msg);
+            expect(getParentClassName('.trace' + gd._fullData[0].uid, 2))
+                .toBe(exp.trace0Parent, 'data[0] parent - ' + msg);
+            expect(getParentClassName('.trace' + gd._fullData[1].uid, 2))
+                .toBe(exp.trace1Parent, 'data[1] parent - ' + msg);
+        }
+
+        Plotly.react(gd, fig0())
+        .then(function() {
+            _assert('x2/y2 both overlays', {
+                xtickParent: 'xaxislayer-above',
+                x2tickParent: 'x2y2-x',
+                trace0Parent: 'plot',
+                trace1Parent: 'x2y2'
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, fig1());
+        })
+        .then(function() {
+            _assert('x2 free / y2 overlaid', {
+                xtickParent: 'xaxislayer-above',
+                x2tickParent: 'xaxislayer-above',
+                trace0Parent: 'plot',
+                trace1Parent: 'plot'
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, fig0());
+        })
+        .then(function() {
+            _assert('back to x2/y2 both overlays', {
+                xtickParent: 'xaxislayer-above',
+                x2tickParent: 'x2y2-x',
+                trace0Parent: 'plot',
+                trace1Parent: 'x2y2'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('clear axis ticks, labels and title when relayout an axis to `*visible:false*', function(done) {
         function _assert(xaxis, yaxis) {
             var g = d3.select('.subplot.xy');
