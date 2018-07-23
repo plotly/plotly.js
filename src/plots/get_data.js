@@ -69,6 +69,7 @@ exports.getModuleCalcData = function(calcdata, arg1) {
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
+        // N.B. 'legendonly' traces do not make it pass here
         if(trace.visible !== true) continue;
 
         // group calcdata trace not by 'module' (as the name of this function
