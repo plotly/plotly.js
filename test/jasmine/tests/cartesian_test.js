@@ -194,14 +194,17 @@ describe('restyle', function() {
             })
             .then(function() {
                 expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
+                expect(gd._fullLayout._plots.x2y2._scene.visibleBatch).toEqual([0]);
                 return Plotly.restyle(gd, {visible: 'legendonly'}, 1);
             })
             .then(function() {
-                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(false);
+                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
+                expect(gd._fullLayout._plots.x2y2._scene.visibleBatch).toEqual([]);
                 return Plotly.restyle(gd, {visible: true}, 1);
             })
             .then(function() {
                 expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
+                expect(gd._fullLayout._plots.x2y2._scene.visibleBatch).toEqual([0]);
             })
             .catch(failTest)
             .then(done);
