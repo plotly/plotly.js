@@ -108,12 +108,11 @@ exports.register = function register(_modules) {
     }
 };
 
-exports.getModules = function(type, isDrawable) {
+exports.getUpdateOnPanComponents = function() {
     var selected = [];
-
     for(var componentName in exports.componentsRegistry) {
         var component = exports.componentsRegistry[componentName];
-        if(component.moduleType === type && component.isDrawable && component.isDrawable === isDrawable) {
+        if(component.updateOnPan) {
             selected.push(component);
         }
     }

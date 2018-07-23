@@ -14,7 +14,6 @@ var drawModule = require('./draw');
 module.exports = {
     moduleType: 'component',
     name: 'shapes',
-    isDrawable: true,
 
     layoutAttributes: require('./attributes'),
     supplyLayoutDefaults: require('./defaults'),
@@ -22,5 +21,6 @@ module.exports = {
 
     calcAutorange: require('./calc_autorange'),
     draw: drawModule.draw,
-    drawOne: drawModule.drawOne
+    drawOne: drawModule.drawOne,
+    updateOnPan: drawModule.drawOne
 };

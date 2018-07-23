@@ -108,10 +108,9 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             }
         }
 
-        var componentsNeedingRedraw = Registry.getModules('component', true);
+        var componentsNeedingRedraw = Registry.getUpdateOnPanComponents();
         componentsNeedingRedraw.forEach(function(item) {
-            // only issue here is that we cam't short circuit images
-            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'drawOne'));
+            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'drawOne'), item.updateOnPanShortCircuit);
         });
     }
 
@@ -144,10 +143,9 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             }
         }
 
-        var componentsNeedingRedraw = Registry.getModules('component', true);
+        var componentsNeedingRedraw = Registry.getUpdateOnPanComponents();
         componentsNeedingRedraw.forEach(function(item) {
-            // only issue here is that we cam't short circuit images
-            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'drawOne'));
+            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'updateOnPan'), item.updateOnPanShortCircuit);
         });
     }
 
