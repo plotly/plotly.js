@@ -617,7 +617,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         var componentsNeedingRedraw = Registry.getUpdateOnPanComponents();
         componentsNeedingRedraw.forEach(function(item) {
-            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'updateOnPan'));
+            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'updateOnPan'), item.updateOnPanShortCircuit);
         });
     }
 

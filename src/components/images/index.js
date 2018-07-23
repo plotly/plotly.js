@@ -20,6 +20,7 @@ module.exports = {
 
     draw: drawModule,
     updateOnPan: drawModule,
+    updateOnPanShortCircuit: true,
 
     convertCoords: require('./convert_coords')
 };

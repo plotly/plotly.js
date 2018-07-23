@@ -110,7 +110,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
 
         var componentsNeedingRedraw = Registry.getUpdateOnPanComponents();
         componentsNeedingRedraw.forEach(function(item) {
-            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'drawOne'));
+            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'updateOnPan'), item.updateOnPanShortCircuit);
         });
     }
 
@@ -145,7 +145,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
 
         var componentsNeedingRedraw = Registry.getUpdateOnPanComponents();
         componentsNeedingRedraw.forEach(function(item) {
-            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'updateOnPan'));
+            redrawObjs(gd._fullLayout[item.name] || [], Registry.getComponentMethod(item.name, 'updateOnPan'), item.updateOnPanShortCircuit);
         });
     }
 
