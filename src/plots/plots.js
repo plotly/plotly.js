@@ -277,6 +277,9 @@ var extraFormatKeys = [
  * gd._fullLayout._modules
  *   is a list of all the trace modules required to draw the plot.
  *
+ * gd._fullLayout._visibleModules
+ *   subset of _modules, a list of modules corresponding to visible:true traces.
+ *
  * gd._fullLayout._basePlotModules
  *   is a list of all the plot modules required to draw the plot.
  *
@@ -378,6 +381,7 @@ plots.supplyDefaults = function(gd, opts) {
 
     // clear the lists of trace and baseplot modules, and subplots
     newFullLayout._modules = [];
+    newFullLayout._visibleModules = [];
     newFullLayout._basePlotModules = [];
     var subplots = newFullLayout._subplots = emptySubplotLists();
 
@@ -420,7 +424,7 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
 
     // special cases that introduce interactions between traces
-    var _modules = newFullLayout._modules;
+    var _modules = newFullLayout._visibleModules;
     for(i = 0; i < _modules.length; i++) {
         var _module = _modules[i];
         if(_module.cleanData) _module.cleanData(newFullData);
@@ -898,6 +902,7 @@ plots.clearExpandedTraceDefaultColors = function(trace) {
 
 plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var modules = fullLayout._modules;
+    var visibleModules = fullLayout._visibleModules;
     var basePlotModules = fullLayout._basePlotModules;
     var cnt = 0;
     var colorCnt = 0;
@@ -913,8 +918,8 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         if(!_module) return;
 
         Lib.pushUnique(modules, _module);
+        if(fullTrace.visible === true) Lib.pushUnique(visibleModules, _module);
         Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
-
         cnt++;
 
         // TODO: do we really want color not to increment for explicitly invisible traces?
@@ -1475,7 +1480,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
     }
 
     // trace module layout defaults
-    var modules = layoutOut._modules;
+    var modules = layoutOut._visibleModules;
     for(i = 0; i < modules.length; i++) {
         _module = modules[i];
 
@@ -1579,7 +1584,7 @@ plots.purge = function(gd) {
 };
 
 plots.style = function(gd) {
-    var _modules = gd._fullLayout._modules;
+    var _modules = gd._fullLayout._visibleModules;
     var styleModules = [];
     var i;
 
@@ -2567,7 +2572,7 @@ function clearAxesCalc(axList) {
 plots.doSetPositions = function(gd) {
     var fullLayout = gd._fullLayout;
     var subplots = fullLayout._subplots.cartesian;
-    var modules = fullLayout._modules;
+    var modules = fullLayout._visibleModules;
     var methods = [];
     var i, j;
 
