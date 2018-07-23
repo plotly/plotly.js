@@ -572,6 +572,10 @@ function plot(gd, subplot, cdata) {
             }
 
             // precalculate px coords since we are not going to pan during select
+            // TODO, could do better here e.g.
+            // - spin that in a webworker
+            // - compute selection from polygons in data coordinates
+            //   (maybe just for linear axes)
             var xpx = stash.xpx = new Array(stash.count);
             var ypx = stash.ypx = new Array(stash.count);
             for(j = 0; j < stash.count; j++) {
@@ -614,6 +618,7 @@ function plot(gd, subplot, cdata) {
     // provide viewport and range
     var vpRange0 = {
         viewport: getViewport(fullLayout, xaxis, yaxis),
+        // TODO do we need those fallbacks?
         range: [
             (xaxis._rl || xaxis.range)[0],
             (yaxis._rl || yaxis.range)[0],
