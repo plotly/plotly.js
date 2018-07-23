@@ -579,6 +579,35 @@ describe('@gl Test splom interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should toggle trace correctly', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
+
+        function _assert(msg, exp) {
+            for(var i = 0; i < 3; i++) {
+                expect(Boolean(gd.calcdata[i][0].t._scene))
+                    .toBe(Boolean(exp[i]), msg + ' - trace ' + i);
+            }
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            _assert('base', [1, 1, 1]);
+            return Plotly.restyle(gd, 'visible', 'legendonly', [0, 2]);
+        })
+        .then(function() {
+            _assert('0-2 legendonly', [0, 1, 0]);
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            _assert('all gone', [0, 0, 0]);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            _assert('all back', [1, 1, 1]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('@gl Test splom hover:', function() {
