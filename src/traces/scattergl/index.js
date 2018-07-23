@@ -131,6 +131,7 @@ function calc(gd, trace) {
     stash.positions = positions;
     stash.count = count;
 
+    scene.uid2batchIndex[trace.uid] = stash.index;
     scene.count++;
 
     gd.firstscatter = false;
@@ -195,6 +196,8 @@ function sceneUpdate(gd, subplot) {
         count: 0,
         // whether scene requires init hook in plot call (dirty plot call)
         dirty: true,
+        // trace uid to batch index
+        uid2batchIndex: {},
         // last used options
         lineOptions: [],
         fillOptions: [],
@@ -209,6 +212,7 @@ function sceneUpdate(gd, subplot) {
     };
 
     var initOpts = {
+        visibleBatch: null,
         selectBatch: null,
         unselectBatch: null,
         // regl- component stubs, initialized in dirty plot call
@@ -249,38 +253,47 @@ function sceneUpdate(gd, subplot) {
 
         // draw traces in proper order
         scene.draw = function draw() {
-            var i;
-            for(i = 0; i < scene.count; i++) {
-                if(scene.fill2d && scene.fillOptions[i]) {
-                    // must do all fills first
-                    scene.fill2d.draw(i);
+            var visibleBatch = scene.visibleBatch;
+            var selectBatch = scene.selectBatch;
+            var unselectBatch = scene.unselectBatch;
+            var i, b;
+
+            // must do all fills first
+            for(i = 0; i < visibleBatch.length; i++) {
+                b = visibleBatch[i];
+                if(scene.fill2d && scene.fillOptions[b]) {
+                    scene.fill2d.draw(b);
                 }
             }
-            for(i = 0; i < scene.count; i++) {
-                if(scene.line2d && scene.lineOptions[i]) {
-                    scene.line2d.draw(i);
+
+            // traces in no-selection mode
+            for(i = 0; i < visibleBatch.length; i++) {
+                b = visibleBatch[i];
+                if(scene.line2d && scene.lineOptions[b]) {
+                    scene.line2d.draw(b);
                 }
-                if(scene.error2d && scene.errorXOptions[i]) {
-                    scene.error2d.draw(i);
+                if(scene.error2d && scene.errorXOptions[b]) {
+                    scene.error2d.draw(b);
                 }
-                if(scene.error2d && scene.errorYOptions[i]) {
-                    scene.error2d.draw(i + scene.count);
+                if(scene.error2d && scene.errorYOptions[b]) {
+                    scene.error2d.draw(b + scene.count);
                 }
-                if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
-                    // traces in no-selection mode
-                    scene.scatter2d.draw(i);
+                if(scene.scatter2d && scene.markerOptions[b] && (!selectBatch || !selectBatch[b])) {
+                    scene.scatter2d.draw(b);
                 }
             }
 
             // draw traces in selection mode
-            if(scene.scatter2d && scene.select2d && scene.selectBatch) {
-                scene.select2d.draw(scene.selectBatch);
-                scene.scatter2d.draw(scene.unselectBatch);
+            if(scene.scatter2d && scene.select2d && selectBatch) {
+                scene.select2d.draw(selectBatch);
+                scene.scatter2d.draw(unselectBatch);
             }
 
-            for(i = 0; i < scene.count; i++) {
-                if(scene.glText[i] && scene.textOptions[i]) {
-                    scene.glText[i].render();
+            // draw text, including selected/unselected items
+            for(i = 0; i < visibleBatch.length; i++) {
+                b = visibleBatch[i];
+                if(scene.glText[b] && scene.textOptions[b]) {
+                    scene.glText[b].render();
                 }
             }
 
@@ -371,13 +384,12 @@ function plot(gd, subplot, cdata) {
     var i, j;
 
     var fullLayout = gd._fullLayout;
-    var scene = cdata[0][0].t._scene;
+    var scene = subplot._scene;
     var xaxis = subplot.xaxis;
     var yaxis = subplot.yaxis;
 
     // we may have more subplots than initialized data due to Axes.getSubplots method
     if(!scene) return;
-
 
     var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
     if(!success) {
@@ -520,6 +532,7 @@ function plot(gd, subplot, cdata) {
     }
 
     // form batch arrays, and check for selected points
+    scene.visibleBatch = [];
     scene.selectBatch = null;
     scene.unselectBatch = null;
     var dragmode = fullLayout.dragmode;
@@ -533,6 +546,7 @@ function plot(gd, subplot, cdata) {
         var x = stash.x;
         var y = stash.y;
 
+        scene.visibleBatch.push(batchIndex);
 
         if(trace.selectedpoints || selectMode) {
             if(!selectMode) selectMode = true;
@@ -544,17 +558,17 @@ function plot(gd, subplot, cdata) {
 
             // regenerate scene batch, if traces number changed during selection
             if(trace.selectedpoints) {
-                var selPts = scene.selectBatch[id] = Lib.selIndices2selPoints(trace);
+                var selPts = scene.selectBatch[batchIndex] = Lib.selIndices2selPoints(trace);
 
                 var selDict = {};
-                for(i = 0; i < selPts.length; i++) {
-                    selDict[selPts[i]] = 1;
+                for(j = 0; j < selPts.length; j++) {
+                    selDict[selPts[j]] = 1;
                 }
                 var unselPts = [];
-                for(i = 0; i < stash.count; i++) {
-                    if(!selDict[i]) unselPts.push(i);
+                for(j = 0; j < stash.count; j++) {
+                    if(!selDict[j]) unselPts.push(j);
                 }
-                scene.unselectBatch[id] = unselPts;
+                scene.unselectBatch[batchIndex] = unselPts;
             }
 
             // precalculate px coords since we are not going to pan during select
