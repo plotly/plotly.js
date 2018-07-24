@@ -2602,7 +2602,7 @@ function doCrossTraceCalc(gd) {
                     fullLayout[sp];
 
                 for(j = 0; j < methods.length; j++) {
-                    methods[j](gd, spInfo);
+                    methods[j](gd, spInfo, sp);
                 }
             }
         }

@@ -13,6 +13,7 @@ var polygonTester = require('../../lib/polygon').tester;
 
 var findIndexOfMin = Lib.findIndexOfMin;
 var isAngleInsideSector = Lib.isAngleInsideSector;
+var angleDelta = Lib.angleDelta;
 var angleDist = Lib.angleDist;
 var deg2rad = Lib.deg2rad;
 
@@ -198,6 +199,22 @@ function findPolygonOffset(r, sector, vangles) {
     return [minX, minY];
 }
 
+/* find vertex angles (in 'vangles') the enclose angle 'a'
+ *
+ * @param {number} a : angle in *radians*
+ * @param {array} vangles : angles of polygon vertices in *radians*
+ * @return {2-item array}
+ */
+function findEnclosingVertexAngles(a, vangles) {
+    var minFn = function(v) {
+        var adelta = angleDelta(v, a);
+        return adelta > 0 ? adelta : Infinity;
+    };
+    var i0 = findIndexOfMin(vangles, minFn);
+    var i1 = Lib.mod(i0 + 1, vangles.length);
+    return [vangles[i0], vangles[i1]];
+}
+
 // to more easily catch 'almost zero' numbers in if-else blocks
 function clampTiny(v) {
     return Math.abs(v) > 1e-10 ? v : 0;
@@ -265,6 +282,7 @@ function pathPolygonAnnulus(r0, r1, sector, vangles, cx, cy) {
 module.exports = {
     isPtInsidePolygon: isPtInsidePolygon,
     findPolygonOffset: findPolygonOffset,
+    findEnclosingVertexAngles: findEnclosingVertexAngles,
     findIntersectionXY: findIntersectionXY,
     findXYatLength: findXYatLength,
     clampTiny: clampTiny,

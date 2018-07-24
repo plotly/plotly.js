@@ -128,6 +128,8 @@ proto.updateLayers = function(fullLayout, polarLayout) {
             switch(d) {
                 case 'frontplot':
                     sel.append('g').classed('scatterlayer', true);
+                    // TODO add option to place in 'backplot' layer??
+                    sel.append('g').classed('barlayer', true);
                     break;
                 case 'backplot':
                     sel.append('g').classed('maplayer', true);
@@ -617,6 +619,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     var vangles = _this.vangles;
     var clampTiny = helpers.clampTiny;
     var findXYatLength = helpers.findXYatLength;
+    var findEnclosingVertexAngles = helpers.findEnclosingVertexAngles;
     var chw = constants.cornerHalfWidth;
     var chl = constants.cornerLen / 2;
 
@@ -790,15 +793,6 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         applyZoomMove(path1, cpath);
     }
 
-    function findEnclosingVertexAngles(a) {
-        var i0 = Lib.findIndexOfMin(vangles, function(v) {
-            var adelta = Lib.angleDelta(v, a);
-            return adelta > 0 ? adelta : Infinity;
-        });
-        var i1 = Lib.mod(i0 + 1, vangles.length);
-        return [vangles[i0], vangles[i1]];
-    }
-
     function findPolygonRadius(x, y, va0, va1) {
         var xy = helpers.findIntersectionXY(va0, va1, va0, [x - cxx, cyy - y]);
         return norm(xy[0], xy[1]);
@@ -809,8 +803,8 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         var y1 = y0 + dy;
         var a0 = xy2a(x0, y0);
         var a1 = xy2a(x1, y1);
-        var vangles0 = findEnclosingVertexAngles(a0);
-        var vangles1 = findEnclosingVertexAngles(a1);
+        var vangles0 = findEnclosingVertexAngles(a0, vangles);
+        var vangles1 = findEnclosingVertexAngles(a1, vangles);
         var rr0 = findPolygonRadius(x0, y0, vangles0[0], vangles0[1]);
         var rr1 = Math.min(findPolygonRadius(x1, y1, vangles1[0], vangles1[1]), radius);
         var path1;

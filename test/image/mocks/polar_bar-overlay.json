@@ -1,0 +1,18 @@
+{
+  "data": [{
+    "type": "barpolar",
+    "r": [1, 2, 3],
+    "theta": [90, 180, 360],
+    "opacity": 0.7
+  }, {
+    "type": "barpolar",
+    "r": [1, 2, 3],
+    "theta": [180, 90, 360],
+    "opacity": 0.7
+  }],
+  "layout": {
+    "polar": {"barmode": "overlay" },
+    "width": 500,
+    "height": 500
+  }
+}

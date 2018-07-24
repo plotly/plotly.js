@@ -53,7 +53,7 @@ module.exports = function setConvert(ax, polarLayout, fullLayout) {
     switch(ax._id) {
         case 'x':
         case 'radialaxis':
-            setConvertRadial(ax);
+            setConvertRadial(ax, polarLayout);
             break;
         case 'angularaxis':
             setConvertAngular(ax, polarLayout);
@@ -61,7 +61,7 @@ module.exports = function setConvert(ax, polarLayout, fullLayout) {
     }
 };
 
-function setConvertRadial(ax) {
+function setConvertRadial(ax, polarLayout) {
     ax.setGeometry = function() {
         var rng = ax.range;
 
@@ -77,6 +77,13 @@ function setConvertRadial(ax) {
         ax.g2c = function(v) {
             return ax.r2c(v + rng[0]);
         };
+
+        // TODO might need to r2l these range values?
+        var m = polarLayout._subplot.radius / (rng[1] - rng[0]);
+
+        ax.g2p = function(v) { return v * m; };
+
+        ax.c2p = function(v) { return ax.g2p(ax.c2g(v)); };
     };
 }
 
