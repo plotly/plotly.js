@@ -90,7 +90,7 @@ module.exports = function style(s, gd) {
         var showLines = subTypes.hasLines(trace);
         var dMod, tMod;
 
-        // 'scatter3d' and 'scattergeo' don't use gd.calcdata yet;
+        // 'scatter3d' don't use gd.calcdata,
         // use d0.trace to infer arrayOk attributes
 
         function boundVal(attrIn, arrayToValFn, bounds) {
