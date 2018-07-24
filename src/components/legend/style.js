@@ -117,7 +117,6 @@ module.exports = function style(s, gd) {
                 dEdit.mc = boundVal('marker.color', pickFirst);
                 dEdit.mx = boundVal('marker.symbol', pickFirst);
                 dEdit.mo = boundVal('marker.opacity', Lib.mean, [0.2, 1]);
-                dEdit.ms = boundVal('marker.size', Lib.mean, [2, 16]);
                 dEdit.mlc = boundVal('marker.line.color', pickFirst);
                 dEdit.mlw = boundVal('marker.line.width', Lib.mean, [0, 5]);
                 tEdit.marker = {
@@ -125,6 +124,10 @@ module.exports = function style(s, gd) {
                     sizemin: 1,
                     sizemode: 'diameter'
                 };
+
+                var ms = boundVal('marker.size', Lib.mean, [2, 16]);
+                dEdit.ms = ms;
+                tEdit.marker.size = ms;
             }
 
             if(showLines) {
