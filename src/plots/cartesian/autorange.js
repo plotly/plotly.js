@@ -13,6 +13,8 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var FP_SAFE = require('../../constants/numerical').FP_SAFE;
 
+var Registry = require('../../registry');
+
 module.exports = {
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
@@ -178,30 +180,58 @@ function makePadFn(ax) {
     return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
-function concatExtremes(gd, ax, k) {
+function concatExtremes(gd, ax, ext) {
     var i;
     var out = [];
 
     var fullData = gd._fullData;
-    var attr = ax._id.charAt(0) + 'axis';
 
     // should be general enough for 3d, polar etc.
 
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
+        var extremes = trace._extremes;
 
-        if(trace.visible === true && (
-            trace[attr] === ax._id
-        )) {
-            out = out.concat(trace._extremes[attr][k]);
+        if(trace.visible === true) {
+            if(Registry.traceIs(trace, 'cartesian')) {
+                var axId = ax._id;
+                if(extremes[axId]) {
+                    out = out.concat(extremes[axId][ext]);
+                }
+            } else if(Registry.traceIs(trace, 'polar')) {
+                if(trace.subplot === ax._subplot) {
+                    out = out.concat(extremes[ax._name][ext]);
+                }
+            }
         }
     }
 
-    // - annotation
-    // - shapes
-    // - annotation3d
-    // - errorbars?
+    var fullLayout = gd._fullLayout;
+    var annotations = fullLayout.annotations;
+    var shapes = fullLayout.shapes;
 
+    if(Array.isArray(annotations)) {
+        out = out.concat(concatComponentExtremes(annotations, ax, ext));
+    }
+    if(Array.isArray(shapes)) {
+        out = out.concat(concatComponentExtremes(shapes, ax, ext));
+    }
+
+    return out;
+}
+
+function concatComponentExtremes(items, ax, ext) {
+    var out = [];
+    var axId = ax._id;
+    var letter = axId.charAt(0);
+
+    for(var i = 0; i < items.length; i++) {
+        var d = items[i];
+        var extremes = d._extremes;
+        if(d.visible && d[letter + 'ref'] === axId && extremes[axId]) {
+            out = out.concat(extremes[axId][ext]);
+        }
+    }
     return out;
 }
 
