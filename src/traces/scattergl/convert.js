@@ -15,7 +15,6 @@ var rgba = require('color-normalize');
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
-var Axes = require('../../plots/cartesian/axes');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
 
 var formatColor = require('../../lib/gl_format_color').formatColor;
@@ -511,11 +510,10 @@ function convertErrorBarPositions(gd, trace, positions, x, y) {
                 }
             }
 
-            Axes.expand(ax, [minShoe, maxHat], {padded: true});
-
             out[axLetter] = {
                 positions: positions,
-                errors: errors
+                errors: errors,
+                _bnds: [minShoe, maxHat]
             };
         }
     }
