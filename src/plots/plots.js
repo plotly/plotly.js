@@ -2455,10 +2455,14 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
-    // find array attributes in trace
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
+
+        // find array attributes in trace
         trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
+
+        // keep track of trace extremes (for autorange) in here
+        trace._extremes = {};
     }
 
     // add polar axes to axis list
