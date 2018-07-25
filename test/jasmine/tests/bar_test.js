@@ -652,8 +652,8 @@ describe('Bar.setPositions', function() {
 
         var xa = gd._fullLayout.xaxis,
             ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(xa)).toBeCloseToArray([-5, 14], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-3.33, 3.33], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-5, 14], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-3.33, 3.33], undefined, '(ya.range)');
     });
 
     it('should expand size axis (overlay case)', function() {
@@ -679,8 +679,8 @@ describe('Bar.setPositions', function() {
 
         var xa = gd._fullLayout.xaxis,
             ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-11.11, 11.11], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-11.11, 11.11], undefined, '(ya.range)');
     });
 
     it('should expand size axis (relative case)', function() {
@@ -702,8 +702,8 @@ describe('Bar.setPositions', function() {
 
         var xa = gd._fullLayout.xaxis,
             ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-4.44, 4.44], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-4.44, 4.44], undefined, '(ya.range)');
     });
 
     it('should expand size axis (barnorm case)', function() {
@@ -725,8 +725,8 @@ describe('Bar.setPositions', function() {
 
         var xa = gd._fullLayout.xaxis,
             ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
     });
 
     it('should include explicit base in size axis range', function() {
@@ -739,7 +739,7 @@ describe('Bar.setPositions', function() {
             });
 
             var ya = gd._fullLayout.yaxis;
-            expect(Axes.getAutoRange(ya)).toBeCloseToArray([-2.5, 7.5]);
+            expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-2.5, 7.5]);
         });
     });
 
@@ -753,7 +753,7 @@ describe('Bar.setPositions', function() {
             });
 
             var ya = gd._fullLayout.yaxis;
-            expect(Axes.getAutoRange(ya)).toEqual(['2016-12-31', '2017-01-20']);
+            expect(Axes.getAutoRange(gd, ya)).toEqual(['2016-12-31', '2017-01-20']);
         });
     });
 
@@ -767,7 +767,7 @@ describe('Bar.setPositions', function() {
         });
 
         var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-0.572, 10.873], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-0.572, 10.873], undefined, '(ya.range)');
     });
 
     it('works with log axes (stacked bars)', function() {
@@ -780,7 +780,7 @@ describe('Bar.setPositions', function() {
         });
 
         var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-0.582, 11.059], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-0.582, 11.059], undefined, '(ya.range)');
     });
 
     it('works with log axes (normalized bars)', function() {
@@ -795,7 +795,7 @@ describe('Bar.setPositions', function() {
         });
 
         var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([1.496, 2.027], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([1.496, 2.027], undefined, '(ya.range)');
     });
 });
 

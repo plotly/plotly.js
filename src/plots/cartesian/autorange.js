@@ -6,13 +6,14 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var FP_SAFE = require('../../constants/numerical').FP_SAFE;
+
+var Registry = require('../../registry');
 
 module.exports = {
     getAutoRange: getAutoRange,
@@ -22,48 +23,63 @@ module.exports = {
     findExtremes: findExtremes
 };
 
-// Find the autorange for this axis
-//
-// assumes ax._min and ax._max have already been set by calling axes.expand
-// using calcdata from all traces. These are arrays of objects:
-// {
-//    val: calcdata value,
-//    pad: extra pixels beyond this value,
-//    extrapad: bool, does this point want 5% extra padding
-// }
-//
-// Returns an array of [min, max]. These are calcdata for log and category axes
-// and data for linear and date axes.
-//
-// TODO: we want to change log to data as well, but it's hard to do this
-// maintaining backward compatibility. category will always have to use calcdata
-// though, because otherwise values between categories (or outside all categories)
-// would be impossible.
-function getAutoRange(ax) {
+/**
+ * getAutoRange
+ *
+ * Collects all _extremes values corresponding to a given axis
+ * and computes its auto range.
+ *
+ * getAutoRange uses return values from findExtremes where:
+ *
+ * {
+ *    val: calcdata value,
+ *    pad: extra pixels beyond this value,
+ *    extrapad: bool, does this point want 5% extra padding
+ * }
+ *
+ * @param {object} gd:
+ *   graph div object with filled in fullData and fullLayout,
+ * @param {object} ax:
+ *   full axis object
+ * @return {array}
+ *   an array of [min, max]. These are calcdata for log and category axes
+ *   and data for linear and date axes.
+ *
+ * TODO: we want to change log to data as well, but it's hard to do this
+ * maintaining backward compatibility. category will always have to use calcdata
+ * though, because otherwise values between categories (or outside all categories)
+ * would be impossible.
+ */
+function getAutoRange(gd, ax) {
+    var i, j;
     var newRange = [];
-    var minmin = ax._min[0].val;
-    var maxmax = ax._max[0].val;
-    var mbest = 0;
-    var axReverse = false;
 
     var getPad = makePadFn(ax);
+    var minArray = concatExtremes(gd, ax, 'min');
+    var maxArray = concatExtremes(gd, ax, 'max');
 
-    var i, j, minpt, maxpt, minbest, maxbest, dp, dv;
+    if(minArray.length === 0 || maxArray.length === 0) {
+        return Lib.simpleMap(ax.range, ax.r2l);
+    }
 
-    for(i = 1; i < ax._min.length; i++) {
+    var minmin = minArray[0].val;
+    var maxmax = maxArray[0].val;
+
+    for(i = 1; i < minArray.length; i++) {
         if(minmin !== maxmax) break;
-        minmin = Math.min(minmin, ax._min[i].val);
+        minmin = Math.min(minmin, minArray[i].val);
     }
-    for(i = 1; i < ax._max.length; i++) {
+    for(i = 1; i < maxArray.length; i++) {
         if(minmin !== maxmax) break;
-        maxmax = Math.max(maxmax, ax._max[i].val);
+        maxmax = Math.max(maxmax, maxArray[i].val);
     }
+
+    var axReverse = false;
 
     if(ax.range) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         axReverse = rng[1] < rng[0];
     }
-
     // one-time setting to easily reverse the axis
     // when plotting from code
     if(ax.autorange === 'reversed') {
@@ -71,10 +87,13 @@ function getAutoRange(ax) {
         ax.autorange = true;
     }
 
-    for(i = 0; i < ax._min.length; i++) {
-        minpt = ax._min[i];
-        for(j = 0; j < ax._max.length; j++) {
-            maxpt = ax._max[j];
+    var mbest = 0;
+    var minpt, maxpt, minbest, maxbest, dp, dv;
+
+    for(i = 0; i < minArray.length; i++) {
+        minpt = minArray[i];
+        for(j = 0; j < maxArray.length; j++) {
+            maxpt = maxArray[j];
             dv = maxpt.val - minpt.val;
             dp = ax._length - getPad(minpt) - getPad(maxpt);
             if(dv > 0 && dp > 0 && dv / dp > mbest) {
@@ -90,11 +109,9 @@ function getAutoRange(ax) {
         var upper = minmin + 1;
         if(ax.rangemode === 'tozero') {
             newRange = minmin < 0 ? [lower, 0] : [0, upper];
-        }
-        else if(ax.rangemode === 'nonnegative') {
+        } else if(ax.rangemode === 'nonnegative') {
             newRange = [Math.max(0, lower), Math.max(0, upper)];
-        }
-        else {
+        } else {
             newRange = [lower, upper];
         }
     }
@@ -134,11 +151,9 @@ function getAutoRange(ax) {
         if(ax.rangemode === 'tozero') {
             if(newRange[0] < 0) {
                 newRange = [newRange[0], 0];
-            }
-            else if(newRange[0] > 0) {
+            } else if(newRange[0] > 0) {
                 newRange = [0, newRange[0]];
-            }
-            else {
+            } else {
                 newRange = [0, 1];
             }
         }
@@ -174,15 +189,68 @@ function makePadFn(ax) {
     return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
-function doAutoRange(ax) {
+function concatExtremes(gd, ax, ext) {
+    var i;
+    var out = [];
+
+    var fullData = gd._fullData;
+
+    // should be general enough for 3d, polar etc.
+
+    for(i = 0; i < fullData.length; i++) {
+        var trace = fullData[i];
+        var extremes = trace._extremes;
+
+        if(trace.visible === true) {
+            if(Registry.traceIs(trace, 'cartesian')) {
+                var axId = ax._id;
+                if(extremes[axId]) {
+                    out = out.concat(extremes[axId][ext]);
+                }
+            } else if(Registry.traceIs(trace, 'polar')) {
+                if(trace.subplot === ax._subplot) {
+                    out = out.concat(extremes[ax._name][ext]);
+                }
+            }
+        }
+    }
+
+    var fullLayout = gd._fullLayout;
+    var annotations = fullLayout.annotations;
+    var shapes = fullLayout.shapes;
+
+    if(Array.isArray(annotations)) {
+        out = out.concat(concatComponentExtremes(annotations, ax, ext));
+    }
+    if(Array.isArray(shapes)) {
+        out = out.concat(concatComponentExtremes(shapes, ax, ext));
+    }
+
+    return out;
+}
+
+function concatComponentExtremes(items, ax, ext) {
+    var out = [];
+    var axId = ax._id;
+    var letter = axId.charAt(0);
+
+    for(var i = 0; i < items.length; i++) {
+        var d = items[i];
+        var extremes = d._extremes;
+        if(d.visible && d[letter + 'ref'] === axId && extremes[axId]) {
+            out = out.concat(extremes[axId][ext]);
+        }
+    }
+    return out;
+}
+
+function doAutoRange(gd, ax) {
     if(!ax._length) ax.setScale();
 
-    // TODO do we really need this?
-    var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
     var axIn;
 
-    if(ax.autorange && hasDeps) {
-        ax.range = getAutoRange(ax);
+    if(ax.autorange) {
+        ax.range = getAutoRange(gd, ax);
 
         ax._r = ax.range.slice();
         ax._rl = Lib.simpleMap(ax._r, ax.r2l);

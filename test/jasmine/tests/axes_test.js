@@ -1421,234 +1421,208 @@ describe('Test axes', function() {
 
     describe('getAutoRange', function() {
         var getAutoRange = Axes.getAutoRange;
-        var ax;
+        var gd, ax;
 
-        it('returns reasonable range without explicit rangemode or autorange', function() {
-            ax = {
-                _min: [
-                    // add in an extrapad to verify that it gets used on _min
-                    // with a _length of 100, extrapad increases pad by 5
-                    {val: 1, pad: 15, extrapad: true},
-                    {val: 3, pad: 0},
-                    {val: 2, pad: 10}
-                ],
-                _max: [
-                    {val: 6, pad: 10},
-                    {val: 7, pad: 0},
-                    {val: 5, pad: 20},
-                ],
+        function mockGd(min, max) {
+            return {
+                _fullData: [{
+                    type: 'scatter',
+                    visible: true,
+                    xaxis: 'x',
+                    _extremes: {
+                        x: {min: min, max: max}
+                    }
+                }],
+                _fullLayout: {}
+            };
+        }
+
+        function mockAx() {
+            return {
+                _id: 'x',
                 type: 'linear',
                 _length: 100
             };
+        }
 
-            expect(getAutoRange(ax)).toEqual([-0.5, 7]);
+        it('returns reasonable range without explicit rangemode or autorange', function() {
+            gd = mockGd([
+                // add in an extrapad to verify that it gets used on _min
+                // with a _length of 100, extrapad increases pad by 5
+                {val: 1, pad: 15, extrapad: true},
+                {val: 3, pad: 0},
+                {val: 2, pad: 10}
+            ], [
+                {val: 6, pad: 10},
+                {val: 7, pad: 0},
+                {val: 5, pad: 20}
+            ]);
+            ax = mockAx();
+
+            expect(getAutoRange(gd, ax)).toEqual([-0.5, 7]);
         });
 
         it('reverses axes', function() {
-            ax = {
-                _min: [
-                    {val: 1, pad: 20},
-                    {val: 3, pad: 0},
-                    {val: 2, pad: 10}
-                ],
-                _max: [
-                    {val: 6, pad: 10},
-                    {val: 7, pad: 0},
-                    {val: 5, pad: 20},
-                ],
-                type: 'linear',
-                autorange: 'reversed',
-                rangemode: 'normal',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: 1, pad: 20},
+                {val: 3, pad: 0},
+                {val: 2, pad: 10}
+            ], [
+                {val: 6, pad: 10},
+                {val: 7, pad: 0},
+                {val: 5, pad: 20}
+            ]);
+            ax = mockAx();
+            ax.autorange = 'reversed';
+            ax.rangemode = 'normarl';
 
-            expect(getAutoRange(ax)).toEqual([7, -0.5]);
+            expect(getAutoRange(gd, ax)).toEqual([7, -0.5]);
         });
 
         it('expands empty range', function() {
-            ax = {
-                _min: [
-                    {val: 2, pad: 0}
-                ],
-                _max: [
-                    {val: 2, pad: 0}
-                ],
-                type: 'linear',
-                rangemode: 'normal',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: 2, pad: 0}
+            ], [
+                {val: 2, pad: 0}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'normal';
 
-            expect(getAutoRange(ax)).toEqual([1, 3]);
+            expect(getAutoRange(gd, ax)).toEqual([1, 3]);
         });
 
         it('returns a lower bound of 0 on rangemode tozero with positive points', function() {
-            ax = {
-                _min: [
-                    {val: 1, pad: 20},
-                    {val: 3, pad: 0},
-                    {val: 2, pad: 10}
-                ],
-                _max: [
-                    {val: 6, pad: 10},
-                    {val: 7, pad: 0},
-                    {val: 5, pad: 20},
-                ],
-                type: 'linear',
-                rangemode: 'tozero',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: 1, pad: 20},
+                {val: 3, pad: 0},
+                {val: 2, pad: 10}
+            ], [
+                {val: 6, pad: 10},
+                {val: 7, pad: 0},
+                {val: 5, pad: 20}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'tozero';
 
-            expect(getAutoRange(ax)).toEqual([0, 7]);
+            expect(getAutoRange(gd, ax)).toEqual([0, 7]);
         });
 
         it('returns an upper bound of 0 on rangemode tozero with negative points', function() {
-            ax = {
-                _min: [
-                    {val: -10, pad: 20},
-                    {val: -8, pad: 0},
-                    {val: -9, pad: 10}
-                ],
-                _max: [
-                    {val: -5, pad: 20},
-                    {val: -4, pad: 0},
-                    {val: -6, pad: 10},
-                ],
-                type: 'linear',
-                rangemode: 'tozero',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: -10, pad: 20},
+                {val: -8, pad: 0},
+                {val: -9, pad: 10}
+            ], [
+                {val: -5, pad: 20},
+                {val: -4, pad: 0},
+                {val: -6, pad: 10},
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'tozero';
 
-            expect(getAutoRange(ax)).toEqual([-12.5, 0]);
+            expect(getAutoRange(gd, ax)).toEqual([-12.5, 0]);
         });
 
         it('returns a positive and negative range on rangemode tozero with positive and negative points', function() {
-            ax = {
-                _min: [
-                    {val: -10, pad: 20},
-                    {val: -8, pad: 0},
-                    {val: -9, pad: 10}
-                ],
-                _max: [
-                    {val: 6, pad: 10},
-                    {val: 7, pad: 0},
-                    {val: 5, pad: 20},
-                ],
-                type: 'linear',
-                rangemode: 'tozero',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: -10, pad: 20},
+                {val: -8, pad: 0},
+                {val: -9, pad: 10}
+            ], [
+                {val: 6, pad: 10},
+                {val: 7, pad: 0},
+                {val: 5, pad: 20}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'tozero';
 
-            expect(getAutoRange(ax)).toEqual([-15, 10]);
+            expect(getAutoRange(gd, ax)).toEqual([-15, 10]);
         });
 
         it('reverses range after applying rangemode tozero', function() {
-            ax = {
-                _min: [
-                    {val: 1, pad: 20},
-                    {val: 3, pad: 0},
-                    {val: 2, pad: 10}
-                ],
-                _max: [
-                    // add in an extrapad to verify that it gets used on _max
-                    {val: 6, pad: 15, extrapad: true},
-                    {val: 7, pad: 0},
-                    {val: 5, pad: 10},
-                ],
-                type: 'linear',
-                autorange: 'reversed',
-                rangemode: 'tozero',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: 1, pad: 20},
+                {val: 3, pad: 0},
+                {val: 2, pad: 10}
+            ], [
+                // add in an extrapad to verify that it gets used on _max
+                {val: 6, pad: 15, extrapad: true},
+                {val: 7, pad: 0},
+                {val: 5, pad: 10}
+            ]);
+            ax = mockAx();
+            ax.autorange = 'reversed';
+            ax.rangemode = 'tozero';
 
-            expect(getAutoRange(ax)).toEqual([7.5, 0]);
+            expect(getAutoRange(gd, ax)).toEqual([7.5, 0]);
         });
 
         it('expands empty positive range to something including 0 with rangemode tozero', function() {
-            ax = {
-                _min: [
-                    {val: 5, pad: 0}
-                ],
-                _max: [
-                    {val: 5, pad: 0}
-                ],
-                type: 'linear',
-                rangemode: 'tozero',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: 5, pad: 0}
+            ], [
+                {val: 5, pad: 0}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'tozero';
 
-            expect(getAutoRange(ax)).toEqual([0, 6]);
+            expect(getAutoRange(gd, ax)).toEqual([0, 6]);
         });
 
         it('expands empty negative range to something including 0 with rangemode tozero', function() {
-            ax = {
-                _min: [
-                    {val: -5, pad: 0}
-                ],
-                _max: [
-                    {val: -5, pad: 0}
-                ],
-                type: 'linear',
-                rangemode: 'tozero',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: -5, pad: 0}
+            ], [
+                {val: -5, pad: 0}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'tozero';
 
-            expect(getAutoRange(ax)).toEqual([-6, 0]);
+            expect(getAutoRange(gd, ax)).toEqual([-6, 0]);
         });
 
         it('never returns a negative range when rangemode nonnegative is set with positive and negative points', function() {
-            ax = {
-                _min: [
-                    {val: -10, pad: 20},
-                    {val: -8, pad: 0},
-                    {val: -9, pad: 10}
-                ],
-                _max: [
-                    {val: 6, pad: 20},
-                    {val: 7, pad: 0},
-                    {val: 5, pad: 10},
-                ],
-                type: 'linear',
-                rangemode: 'nonnegative',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: -10, pad: 20},
+                {val: -8, pad: 0},
+                {val: -9, pad: 10}
+            ], [
+                {val: 6, pad: 20},
+                {val: 7, pad: 0},
+                {val: 5, pad: 10}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'nonnegative';
 
-            expect(getAutoRange(ax)).toEqual([0, 7.5]);
+            expect(getAutoRange(gd, ax)).toEqual([0, 7.5]);
         });
 
         it('never returns a negative range when rangemode nonnegative is set with only negative points', function() {
-            ax = {
-                _min: [
-                    {val: -10, pad: 20},
-                    {val: -8, pad: 0},
-                    {val: -9, pad: 10}
-                ],
-                _max: [
-                    {val: -5, pad: 20},
-                    {val: -4, pad: 0},
-                    {val: -6, pad: 10},
-                ],
-                type: 'linear',
-                rangemode: 'nonnegative',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: -10, pad: 20},
+                {val: -8, pad: 0},
+                {val: -9, pad: 10}
+            ], [
+                {val: -5, pad: 20},
+                {val: -4, pad: 0},
+                {val: -6, pad: 10}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'nonnegative';
 
-            expect(getAutoRange(ax)).toEqual([0, 1]);
+            expect(getAutoRange(gd, ax)).toEqual([0, 1]);
         });
 
         it('expands empty range to something nonnegative with rangemode nonnegative', function() {
-            ax = {
-                _min: [
-                    {val: -5, pad: 0}
-                ],
-                _max: [
-                    {val: -5, pad: 0}
-                ],
-                type: 'linear',
-                rangemode: 'nonnegative',
-                _length: 100
-            };
+            gd = mockGd([
+                {val: -5, pad: 0}
+            ], [
+                {val: -5, pad: 0}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'nonnegative';
 
-            expect(getAutoRange(ax)).toEqual([0, 1]);
+            expect(getAutoRange(gd, ax)).toEqual([0, 1]);
         });
     });
 
