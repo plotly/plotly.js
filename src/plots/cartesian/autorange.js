@@ -18,7 +18,8 @@ module.exports = {
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
-    expand: expand
+    expand: expand,
+    findExtremes: findExtremes
 };
 
 // Find the autorange for this axis
@@ -362,6 +363,178 @@ function expand(ax, data, options) {
     var iMax = Math.min(6, len);
     for(i = 0; i < iMax; i++) addItem(i);
     for(i = len - 1; i >= iMax; i--) addItem(i);
+}
+
+/**
+ * findExtremes
+ *
+ * Find min/max extremes of an array of coordinates on a given axis.
+ *
+ * Note that findExtremes is called during `calc`, when we don't yet know the axis
+ * length; all the inputs should be based solely on the trace data, nothing
+ * about the axis layout.
+ *
+ * Note that `ppad` and `vpad` as well as their asymmetric variants refer to
+ * the before and after padding of the passed `data` array, not to the whole axis.
+ *
+ * @param {object} ax: full axis object
+ *   relies on
+ *   - ax.type
+ *   - ax._m (just its sign)
+ *   - ax.d2l
+ * @param {array} data:
+ *  array of numbers (i.e. already run though ax.d2c)
+ * @param {object} options:
+ *  available keys are:
+ *      vpad: (number or number array) pad values (data value +-vpad)
+ *      ppad: (number or number array) pad pixels (pixel location +-ppad)
+ *      ppadplus, ppadminus, vpadplus, vpadminus:
+ *          separate padding for each side, overrides symmetric
+ *      padded: (boolean) add 5% padding to both ends
+ *          (unless one end is overridden by tozero)
+ *      tozero: (boolean) make sure to include zero if axis is linear,
+ *          and make it a tight bound if possible
+ *
+ * @return {object}
+ *  - min {array of objects}
+ *  - max {array of objects}
+ *  each object item has fields:
+ *    - val {number}
+ *    - pad {number}
+ *    - extrappad {number}
+ */
+function findExtremes(ax, data, options) {
+    if(!options) options = {};
+    if(!ax._m) ax.setScale();
+
+    var minArray = [];
+    var maxArray = [];
+
+    var len = data.length;
+    var extrapad = options.padded || false;
+    var tozero = options.tozero && (ax.type === 'linear' || ax.type === '-');
+    var isLog = (ax.type === 'log');
+
+    var i, j, k, v, di, dmin, dmax, ppadiplus, ppadiminus, includeThis, vmin, vmax;
+
+    var hasArrayOption = false;
+
+    function makePadAccessor(item) {
+        if(Array.isArray(item)) {
+            hasArrayOption = true;
+            return function(i) { return Math.max(Number(item[i]||0), 0); };
+        }
+        else {
+            var v = Math.max(Number(item||0), 0);
+            return function() { return v; };
+        }
+    }
+
+    var ppadplus = makePadAccessor((ax._m > 0 ?
+        options.ppadplus : options.ppadminus) || options.ppad || 0);
+    var ppadminus = makePadAccessor((ax._m > 0 ?
+        options.ppadminus : options.ppadplus) || options.ppad || 0);
+    var vpadplus = makePadAccessor(options.vpadplus || options.vpad);
+    var vpadminus = makePadAccessor(options.vpadminus || options.vpad);
+
+    if(!hasArrayOption) {
+        // with no arrays other than `data` we don't need to consider
+        // every point, only the extreme data points
+        vmin = Infinity;
+        vmax = -Infinity;
+
+        if(isLog) {
+            for(i = 0; i < len; i++) {
+                v = data[i];
+                // data is not linearized yet so we still have to filter out negative logs
+                if(v < vmin && v > 0) vmin = v;
+                if(v > vmax && v < FP_SAFE) vmax = v;
+            }
+        } else {
+            for(i = 0; i < len; i++) {
+                v = data[i];
+                if(v < vmin && v > -FP_SAFE) vmin = v;
+                if(v > vmax && v < FP_SAFE) vmax = v;
+            }
+        }
+
+        data = [vmin, vmax];
+        len = 2;
+    }
+
+    function addItem(i) {
+        di = data[i];
+        if(!isNumeric(di)) return;
+        ppadiplus = ppadplus(i);
+        ppadiminus = ppadminus(i);
+        vmin = di - vpadminus(i);
+        vmax = di + vpadplus(i);
+        // special case for log axes: if vpad makes this object span
+        // more than an order of mag, clip it to one order. This is so
+        // we don't have non-positive errors or absurdly large lower
+        // range due to rounding errors
+        if(isLog && vmin < vmax / 10) vmin = vmax / 10;
+
+        dmin = ax.c2l(vmin);
+        dmax = ax.c2l(vmax);
+
+        if(tozero) {
+            dmin = Math.min(0, dmin);
+            dmax = Math.max(0, dmax);
+        }
+
+        for(k = 0; k < 2; k++) {
+            var newVal = k ? dmax : dmin;
+            if(goodNumber(newVal)) {
+                var extremes = k ? maxArray : minArray;
+                var newPad = k ? ppadiplus : ppadiminus;
+                var atLeastAsExtreme = k ? greaterOrEqual : lessOrEqual;
+
+                includeThis = true;
+                /*
+                 * Take items v from ax._min/_max and compare them to the presently active point:
+                 * - Since we don't yet know the relationship between pixels and values
+                 *   (that's what we're trying to figure out!) AND we don't yet know how
+                 *   many pixels `extrapad` represents (it's going to be 5% of the length,
+                 *   but we don't want to have to redo _min and _max just because length changed)
+                 *   two point must satisfy three criteria simultaneously for one to supersede the other:
+                 *   - at least as extreme a `val`
+                 *   - at least as big a `pad`
+                 *   - an unpadded point cannot supersede a padded point, but any other combination can
+                 *
+                 * - If the item supersedes the new point, set includethis false
+                 * - If the new pt supersedes the item, delete it from ax._min/_max
+                 */
+                for(j = 0; j < extremes.length && includeThis; j++) {
+                    v = extremes[j];
+                    if(atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
+                        includeThis = false;
+                        break;
+                    } else if(atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
+                        extremes.splice(j, 1);
+                        j--;
+                    }
+                }
+                if(includeThis) {
+                    var clipAtZero = (tozero && newVal === 0);
+                    extremes.push({
+                        val: newVal,
+                        pad: clipAtZero ? 0 : newPad,
+                        extrapad: clipAtZero ? false : extrapad
+                    });
+                }
+            }
+        }
+    }
+
+    // For efficiency covering monotonic or near-monotonic data,
+    // check a few points at both ends first and then sweep
+    // through the middle
+    var iMax = Math.min(6, len);
+    for(i = 0; i < iMax; i++) addItem(i);
+    for(i = len - 1; i >= iMax; i--) addItem(i);
+
+    return {min: minArray, max: maxArray};
 }
 
 // In order to stop overflow errors, don't consider points
