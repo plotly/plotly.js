@@ -258,11 +258,7 @@ function doAutoRange(gd, ax) {
         var axeRangeOpts = ax._anchorAxis.rangeslider[ax._name];
         if(axeRangeOpts) {
             if(axeRangeOpts.rangemode === 'auto') {
-                if(hasDeps) {
-                    axeRangeOpts.range = getAutoRange(ax);
-                } else {
-                    axeRangeOpts.range = ax._rangeInitial ? ax._rangeInitial.slice() : ax.range.slice();
-                }
+                axeRangeOpts.range = getAutoRange(gd, ax);
             }
         }
         axIn = ax._anchorAxis._input;
