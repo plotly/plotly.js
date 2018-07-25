@@ -20,7 +20,8 @@ module.exports = {
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
     expand: expand,
-    findExtremes: findExtremes
+    findExtremes: findExtremes,
+    concatExtremes: concatExtremes
 };
 
 /**
