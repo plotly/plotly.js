@@ -36,13 +36,7 @@ function calc(container, trace) {
     stash.r = rArray;
     stash.theta = thetaArray;
 
-    Axes.expand(radialAxis, rArray, {tozero: true});
-
-    if(angularAxis.type !== 'linear') {
-        angularAxis.autorange = true;
-        Axes.expand(angularAxis, thetaArray);
-        delete angularAxis.autorange;
-    }
+    trace._extremes.radialaxis = Axes.findExtremes(radialAxis, rArray, {tozero: true});
 
     return [{x: false, y: false, t: stash, trace: trace}];
 }

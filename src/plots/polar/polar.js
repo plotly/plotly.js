@@ -300,9 +300,10 @@ proto.updateLayout = function(fullLayout, polarLayout) {
 proto.doAutoRange = function(fullLayout, polarLayout) {
     var radialLayout = polarLayout.radialaxis;
     var ax = this.radialAxis;
+    ax._subplot = this.id;
 
     setScale(ax, radialLayout, fullLayout);
-    doAutoRange(ax);
+    doAutoRange(this.gd, ax);
 
     radialLayout.range = ax.range.slice();
     radialLayout._input.range = ax.range.slice();
@@ -1207,12 +1208,6 @@ proto.fillViewInitialKey = function(key, val) {
 
 function setScale(ax, axLayout, fullLayout) {
     Axes.setConvert(ax, fullLayout);
-
-    // _min and _max are filled in during Axes.expand
-    // and cleared during Axes.setConvert
-    ax._min = axLayout._min;
-    ax._max = axLayout._max;
-
     ax.setScale();
 }
 
