@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.39.2
+* plotly.js (gl3d) v1.39.3
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -64522,12 +64522,13 @@ module.exports = function draw(gd) {
                 }
             },
             clickFn: function(numClicks, e) {
-                var clickedTrace =
-                    fullLayout._infolayer.selectAll('g.traces').filter(function() {
-                        var bbox = this.getBoundingClientRect();
-                        return (e.clientX >= bbox.left && e.clientX <= bbox.right &&
-                            e.clientY >= bbox.top && e.clientY <= bbox.bottom);
-                    });
+                var clickedTrace = fullLayout._infolayer.selectAll('g.traces').filter(function() {
+                    var bbox = this.getBoundingClientRect();
+                    return (
+                        e.clientX >= bbox.left && e.clientX <= bbox.right &&
+                        e.clientY >= bbox.top && e.clientY <= bbox.bottom
+                    );
+                });
                 if(clickedTrace.size() > 0) {
                     clickOrDoubleClick(gd, legend, clickedTrace, numClicks, e);
                 }
@@ -64853,14 +64854,19 @@ function computeLegendDimensions(gd, groups, traces) {
     opts._width = Math.ceil(opts._width);
     opts._height = Math.ceil(opts._height);
 
+    var isEditable = (
+        gd._context.edits.legendText ||
+        gd._context.edits.legendPosition
+    );
+
     traces.each(function(d) {
-        var legendItem = d[0],
-            bg = d3.select(this).select('.legendtoggle');
+        var legendItem = d[0];
+        var bg = d3.select(this).select('.legendtoggle');
 
         Drawing.setRect(bg,
             0,
             -legendItem.height / 2,
-            (gd._context.edits.legendText ? 0 : opts._width) + extraWidth,
+            (isEditable ? 0 : opts._width) + extraWidth,
             legendItem.height
         );
     });
@@ -72625,7 +72631,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.39.2';
+exports.version = '1.39.3';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -84281,7 +84287,8 @@ function lsInner(gd) {
     // to put them
     var lowerBackgroundIDs = [];
     var lowerDomains = [];
-    subplotSelection.each(function(subplot) {
+    subplotSelection.each(function(d) {
+        var subplot = d[0];
         var plotinfo = fullLayout._plots[subplot];
 
         if(plotinfo.mainplot) {
@@ -84324,7 +84331,8 @@ function lsInner(gd) {
         fullLayout._plots[subplot].bg = d3.select(this);
     });
 
-    subplotSelection.each(function(subplot) {
+    subplotSelection.each(function(d) {
+        var subplot = d[0];
         var plotinfo = fullLayout._plots[subplot];
         var xa = plotinfo.xaxis;
         var ya = plotinfo.yaxis;
@@ -88110,7 +88118,8 @@ axes.makeClipPaths = function(gd) {
     });
 };
 
-/** Main multi-axis drawing routine!
+/**
+ * Main multi-axis drawing routine!
  *
  * @param {DOM element} gd : graph div
  * @param {string or array of strings} arg : polymorphic argument
@@ -88135,8 +88144,9 @@ axes.doTicks = function(gd, arg, skipTitle) {
     var fullLayout = gd._fullLayout;
 
     if(arg === 'redraw') {
-        fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
-            var plotinfo = fullLayout._plots[subplot];
+        fullLayout._paper.selectAll('g.subplot').each(function(d) {
+            var id = d[0];
+            var plotinfo = fullLayout._plots[id];
             var xa = plotinfo.xaxis;
             var ya = plotinfo.yaxis;
 
@@ -88166,14 +88176,15 @@ axes.doTicks = function(gd, arg, skipTitle) {
     }));
 };
 
-/** Per axis drawing routine!
+/**
+ * Per-axis drawing routine!
  *
  * This routine draws axis ticks and much more (... grids, labels, title etc.)
  * Supports multiple argument signatures.
  * N.B. this thing is async in general (because of MathJax rendering)
  *
  * @param {DOM element} gd : graph div
- * @param {string or array of strings} arg : polymorphic argument
+ * @param {string or object} arg : polymorphic argument
  * @param {boolean} skipTitle : optional flag to skip axis title draw/update
  * @return {promise}
  *
@@ -91059,7 +91070,7 @@ exports.initInteractions = function initInteractions(gd) {
         return;
     }
 
-    if(!fullLayout._has('cartesian') && !fullLayout._has('gl2d') && !fullLayout._has('splom')) return;
+    if(!fullLayout._has('cartesian') && !fullLayout._has('splom')) return;
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a, b) {
         // sort overlays last, then by x axis number, then y axis number
@@ -91632,37 +91643,27 @@ exports.drawFramework = function(gd) {
     var subplotData = makeSubplotData(gd);
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
-        .data(subplotData, Lib.identity);
+        .data(subplotData, String);
 
     subplotLayers.enter().append('g')
-        .attr('class', function(name) { return 'subplot ' + name; });
+        .attr('class', function(d) { return 'subplot ' + d[0]; });
 
     subplotLayers.order();
 
     subplotLayers.exit()
         .call(purgeSubplotLayers, fullLayout);
 
-    subplotLayers.each(function(name) {
-        var plotinfo = fullLayout._plots[name];
+    subplotLayers.each(function(d) {
+        var id = d[0];
+        var plotinfo = fullLayout._plots[id];
 
-        // keep ref to plot group
         plotinfo.plotgroup = d3.select(this);
-
-        // initialize list of overlay subplots
-        plotinfo.overlays = [];
-
         makeSubplotLayer(gd, plotinfo);
-
-        // fill in list of overlay subplots
-        if(plotinfo.mainplot) {
-            var mainplot = fullLayout._plots[plotinfo.mainplot];
-            mainplot.overlays.push(plotinfo);
-        }
 
         // make separate drag layers for each subplot,
         // but append them to paper rather than the plot groups,
         // so they end up on top of the rest
-        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', name);
+        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
     });
 };
 
@@ -91674,27 +91675,49 @@ exports.rangePlot = function(gd, plotinfo, cdSubplot) {
 
 function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotData = [];
-    var overlays = [];
+    var ids = fullLayout._subplots.cartesian;
+    var len = ids.length;
+    var subplotData = new Array(len);
+    var i, j, id, plotinfo, xa, ya;
 
-    for(var k in fullLayout._plots) {
-        var plotinfo = fullLayout._plots[k];
-        var xa2 = plotinfo.xaxis._mainAxis;
-        var ya2 = plotinfo.yaxis._mainAxis;
+    for(i = 0; i < len; i++) {
+        id = ids[i];
+        plotinfo = fullLayout._plots[id];
+        xa = plotinfo.xaxis;
+        ya = plotinfo.yaxis;
+
+        var xa2 = xa._mainAxis;
+        var ya2 = ya._mainAxis;
         var mainplot = xa2._id + ya2._id;
+        var mainplotinfo = fullLayout._plots[mainplot];
+        plotinfo.overlays = [];
 
-        if(mainplot !== k && fullLayout._plots[mainplot]) {
+        if(mainplot !== id && mainplotinfo) {
+            // link 'main plot' ref in overlaying plotinfo
             plotinfo.mainplot = mainplot;
-            plotinfo.mainplotinfo = fullLayout._plots[mainplot];
-            overlays.push(k);
+            plotinfo.mainplotinfo = mainplotinfo;
+            // fill in list of overlaying subplots in 'main plot'
+            mainplotinfo.overlays.push(plotinfo);
         } else {
-            subplotData.push(k);
             plotinfo.mainplot = undefined;
+            plotinfo.mainPlotinfo = undefined;
         }
     }
 
-    // main subplots before overlays
-    subplotData = subplotData.concat(overlays);
+    // use info about axis layer and overlaying pattern
+    // to clean what need to be cleaned up in exit selection
+    for(i = 0; i < len; i++) {
+        id = ids[i];
+        plotinfo = fullLayout._plots[id];
+        xa = plotinfo.xaxis;
+        ya = plotinfo.yaxis;
+
+        var d = [id, xa.layer, ya.layer, xa.overlaying || '', ya.overlaying || ''];
+        for(j = 0; j < plotinfo.overlays.length; j++) {
+            d.push(plotinfo.overlays[j].id);
+        }
+        subplotData[i] = d;
+    }
 
     return subplotData;
 }
@@ -91791,7 +91814,9 @@ function makeSubplotLayer(gd, plotinfo) {
     if(!hasOnlyLargeSploms) {
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
-        plotinfo.gridlayer.selectAll('g').sort(axisIds.idSort);
+        plotinfo.gridlayer.selectAll('g')
+            .map(function(d) { return d[0]; })
+            .sort(axisIds.idSort);
     }
 
     plotinfo.xlines
@@ -91808,13 +91833,13 @@ function purgeSubplotLayers(layers, fullLayout) {
 
     var overlayIdsToRemove = {};
 
-    layers.each(function(subplotId) {
+    layers.each(function(d) {
+        var id = d[0];
         var plotgroup = d3.select(this);
 
         plotgroup.remove();
-        removeSubplotExtras(subplotId, fullLayout);
-
-        overlayIdsToRemove[subplotId] = true;
+        removeSubplotExtras(id, fullLayout);
+        overlayIdsToRemove[id] = true;
 
         // do not remove individual axis <clipPath>s here
         // as other subplots may need them
@@ -98284,6 +98309,8 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
 };
 
 plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var i, j;
+
     var oldSubplots = oldFullLayout._plots || {};
     var newSubplots = newFullLayout._plots = {};
     var newSubplotList = newFullLayout._subplots;
@@ -98295,32 +98322,22 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
     var ids = newSubplotList.cartesian.concat(newSubplotList.gl2d || []);
 
-    var i, j, id, ax;
-
     for(i = 0; i < ids.length; i++) {
-        id = ids[i];
+        var id = ids[i];
         var oldSubplot = oldSubplots[id];
         var xaxis = axisIDs.getFromId(mockGd, id, 'x');
         var yaxis = axisIDs.getFromId(mockGd, id, 'y');
         var plotinfo;
 
+        // link or create subplot object
         if(oldSubplot) {
             plotinfo = newSubplots[id] = oldSubplot;
-
-            if(plotinfo.xaxis.layer !== xaxis.layer) {
-                plotinfo.xlines.attr('d', null);
-                plotinfo.xaxislayer.selectAll('*').remove();
-            }
-
-            if(plotinfo.yaxis.layer !== yaxis.layer) {
-                plotinfo.ylines.attr('d', null);
-                plotinfo.yaxislayer.selectAll('*').remove();
-            }
         } else {
             plotinfo = newSubplots[id] = {};
             plotinfo.id = id;
         }
 
+        // update x and y axis layout object refs
         plotinfo.xaxis = xaxis;
         plotinfo.yaxis = yaxis;
 
@@ -98348,7 +98365,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
     // anchored axes to the axes they're anchored to
     var axList = axisIDs.list(mockGd, null, true);
     for(i = 0; i < axList.length; i++) {
-        ax = axList[i];
+        var ax = axList[i];
         var mainAx = null;
 
         if(ax.overlaying) {
