@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -24,6 +23,7 @@ module.exports = {
 
 // Find the autorange for this axis
 //
+// TODO update!!
 // assumes ax._min and ax._max have already been set by calling axes.expand
 // using calcdata from all traces. These are arrays of objects:
 // {
@@ -39,31 +39,36 @@ module.exports = {
 // maintaining backward compatibility. category will always have to use calcdata
 // though, because otherwise values between categories (or outside all categories)
 // would be impossible.
-function getAutoRange(ax) {
+function getAutoRange(gd, ax) {
+    var i, j;
     var newRange = [];
-    var minmin = ax._min[0].val;
-    var maxmax = ax._max[0].val;
-    var mbest = 0;
-    var axReverse = false;
 
     var getPad = makePadFn(ax);
+    var minArray = concatExtremes(gd, ax, 'min');
+    var maxArray = concatExtremes(gd, ax, 'max');
 
-    var i, j, minpt, maxpt, minbest, maxbest, dp, dv;
+    if(minArray.length === 0 || maxArray.length === 0) {
+        return Lib.simpleMap(ax.range, ax.r2l);
+    }
 
-    for(i = 1; i < ax._min.length; i++) {
+    var minmin = minArray[0].val;
+    var maxmax = maxArray[0].val;
+
+    for(i = 1; i < minArray.length; i++) {
         if(minmin !== maxmax) break;
-        minmin = Math.min(minmin, ax._min[i].val);
+        minmin = Math.min(minmin, minArray[i].val);
     }
-    for(i = 1; i < ax._max.length; i++) {
+    for(i = 1; i < maxArray.length; i++) {
         if(minmin !== maxmax) break;
-        maxmax = Math.max(maxmax, ax._max[i].val);
+        maxmax = Math.max(maxmax, maxArray[i].val);
     }
+
+    var axReverse = false;
 
     if(ax.range) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         axReverse = rng[1] < rng[0];
     }
-
     // one-time setting to easily reverse the axis
     // when plotting from code
     if(ax.autorange === 'reversed') {
@@ -71,10 +76,13 @@ function getAutoRange(ax) {
         ax.autorange = true;
     }
 
-    for(i = 0; i < ax._min.length; i++) {
-        minpt = ax._min[i];
-        for(j = 0; j < ax._max.length; j++) {
-            maxpt = ax._max[j];
+    var mbest = 0;
+    var minpt, maxpt, minbest, maxbest, dp, dv;
+
+    for(i = 0; i < minArray.length; i++) {
+        minpt = minArray[i];
+        for(j = 0; j < maxArray.length; j++) {
+            maxpt = maxArray[j];
             dv = maxpt.val - minpt.val;
             dp = ax._length - getPad(minpt) - getPad(maxpt);
             if(dv > 0 && dp > 0 && dv / dp > mbest) {
@@ -90,11 +98,9 @@ function getAutoRange(ax) {
         var upper = minmin + 1;
         if(ax.rangemode === 'tozero') {
             newRange = minmin < 0 ? [lower, 0] : [0, upper];
-        }
-        else if(ax.rangemode === 'nonnegative') {
+        } else if(ax.rangemode === 'nonnegative') {
             newRange = [Math.max(0, lower), Math.max(0, upper)];
-        }
-        else {
+        } else {
             newRange = [lower, upper];
         }
     }
@@ -134,11 +140,9 @@ function getAutoRange(ax) {
         if(ax.rangemode === 'tozero') {
             if(newRange[0] < 0) {
                 newRange = [newRange[0], 0];
-            }
-            else if(newRange[0] > 0) {
+            } else if(newRange[0] > 0) {
                 newRange = [0, newRange[0]];
-            }
-            else {
+            } else {
                 newRange = [0, 1];
             }
         }
@@ -174,15 +178,40 @@ function makePadFn(ax) {
     return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
-function doAutoRange(ax) {
+function concatExtremes(gd, ax, k) {
+    var i;
+    var out = [];
+
+    var fullData = gd._fullData;
+    var attr = ax._id.charAt(0) + 'axis';
+
+    // should be general enough for 3d, polar etc.
+
+    for(i = 0; i < fullData.length; i++) {
+        var trace = fullData[i];
+
+        if(trace.visible === true && (
+            trace[attr] === ax._id
+        )) {
+            out = out.concat(trace._extremes[attr][k]);
+        }
+    }
+
+    // - annotation
+    // - shapes
+    // - annotation3d
+    // - errorbars?
+
+    return out;
+}
+
+function doAutoRange(gd, ax) {
     if(!ax._length) ax.setScale();
 
-    // TODO do we really need this?
-    var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
     var axIn;
 
-    if(ax.autorange && hasDeps) {
-        ax.range = getAutoRange(ax);
+    if(ax.autorange) {
+        ax.range = getAutoRange(gd, ax);
 
         ax._r = ax.range.slice();
         ax._rl = Lib.simpleMap(ax._r, ax.r2l);

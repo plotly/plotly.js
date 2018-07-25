@@ -29,7 +29,7 @@ module.exports = function calcAutorange(gd) {
 
         if(opts && opts.visible && opts.autorange && ax._min.length && ax._max.length) {
             opts._input.autorange = true;
-            opts._input.range = opts.range = getAutoRange(ax);
+            opts._input.range = opts.range = getAutoRange(gd, ax);
         }
     }
 };
