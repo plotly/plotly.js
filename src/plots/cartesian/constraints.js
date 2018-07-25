@@ -12,6 +12,7 @@
 var id2name = require('./axis_ids').id2name;
 var scaleZoom = require('./scale_zoom');
 var makePadFn = require('./autorange').makePadFn;
+var concatExtremes = require('./autorange').concatExtremes;
 
 var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 
@@ -112,7 +113,7 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         factor *= rangeShrunk;
                     }
 
-                    if(ax.autorange && ax._min.length && ax._max.length) {
+                    if(ax.autorange) {
                         /*
                          * range & factor may need to change because range was
                          * calculated for the larger scaling, so some pixel
@@ -143,15 +144,17 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         var newVal;
                         var k;
 
-                        for(k = 0; k < ax._min.length; k++) {
-                            newVal = ax._min[k].val - getPad(ax._min[k]) / m;
+                        var minArray = concatExtremes(gd, ax, 'min');
+                        for(k = 0; k < minArray.length; k++) {
+                            newVal = minArray[k].val - getPad(minArray[k]) / m;
                             if(newVal > outerMin && newVal < rangeMin) {
                                 rangeMin = newVal;
                             }
                         }
 
-                        for(k = 0; k < ax._max.length; k++) {
-                            newVal = ax._max[k].val + getPad(ax._max[k]) / m;
+                        var maxArray = concatExtremes(gd, ax, 'max');
+                        for(k = 0; k < maxArray.length; k++) {
+                            newVal = maxArray[k].val + getPad(maxArray[k]) / m;
                             if(newVal < outerMax && newVal > rangeMax) {
                                 rangeMax = newVal;
                             }
