@@ -455,7 +455,8 @@ function updatePositionAxis(gd, pa, sieve, allowMinDtick) {
         }
     }
 
-    Axes.expand(pa, [pMin, pMax], {padded: false});
+    var extremes = Axes.findExtremes(pa, [pMin, pMax], {padded: false});
+    putExtremes(calcTraces, pa, extremes);
 }
 
 function expandRange(range, newValue) {
@@ -489,7 +490,8 @@ function setBaseAndTop(gd, sa, sieve) {
         }
     }
 
-    Axes.expand(sa, sRange, {tozero: true, padded: true});
+    var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: true});
+    putExtremes(traces, sa, extremes);
 }
 
 
@@ -527,7 +529,10 @@ function stackBars(gd, sa, sieve) {
     }
 
     // if barnorm is set, let normalizeBars update the axis range
-    if(!barnorm) Axes.expand(sa, sRange, {tozero: true, padded: true});
+    if(!barnorm) {
+        var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: true});
+        putExtremes(traces, sa, extremes);
+    }
 }
 
 
@@ -592,12 +597,19 @@ function normalizeBars(gd, sa, sieve) {
     }
 
     // update range of size axis
-    Axes.expand(sa, sRange, {tozero: true, padded: padded});
+    var extremes = Axes.findExtremes(sa, sRange, {tozero: true, padded: padded});
+    putExtremes(traces, sa, extremes);
 }
 
 
 function getAxisLetter(ax) {
     return ax._id.charAt(0);
+}
+
+function putExtremes(cd, ax, extremes) {
+    for(var i = 0; i < cd.length; i++) {
+        cd[i][0].trace._extremes[ax._id] = extremes;
+    }
 }
 
 // find the full position span of bars at each position
