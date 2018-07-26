@@ -2510,10 +2510,18 @@ describe('Test axes', function() {
             });
 
             it('- date case', function() {
+                var msLocal = new Date(2000, 0, 1).getTime();
+                var msUTC = 946684800000;
                 var out = _makeCalcdata({
-                    x: ['2000-01-01', NaN, null, new Date(2000, 0, 1).getTime()],
+                    x: ['2000-01-01', NaN, null, msLocal],
                 }, 'x', 'date');
-                expect(out).toEqual([946684800000, BADNUM, BADNUM, 946684800000]);
+                expect(out).toEqual([msUTC, BADNUM, BADNUM, msUTC]);
+
+                // fractional milliseconds - should round to 0.1 msec
+                var out2 = _makeCalcdata({
+                    x: [msLocal, msLocal + 0.04, msLocal + 0.06, msLocal + 0.5, msLocal + 0.94, msLocal + 0.96, msLocal + 1]
+                }, 'x', 'date');
+                expect(out2).toEqual([msUTC, msUTC, msUTC + 0.1, msUTC + 0.5, msUTC + 0.9, msUTC + 1, msUTC + 1]);
             });
 
             it('- category case', function() {
