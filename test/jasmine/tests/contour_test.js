@@ -186,6 +186,7 @@ describe('contour calc', function() {
 
         supplyAllDefaults(gd);
         var fullTrace = gd._fullData[0];
+        fullTrace._extremes = {};
 
         var out = Contour.calc(gd, fullTrace)[0];
         out.trace = fullTrace;

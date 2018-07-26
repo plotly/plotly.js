@@ -1652,15 +1652,12 @@ describe('Test axes', function() {
         });
     });
 
-    describe('expand', function() {
-        var expand = Axes.expand;
-        var ax, data, options;
+    describe('findExtremes', function() {
+        var findExtremes = Axes.findExtremes;
+        var ax, data, options, out;
 
-        // Axes.expand modifies ax, so this provides a simple
-        // way of getting a new clean copy each time.
         function getDefaultAx() {
             return {
-                autorange: true,
                 c2l: Number,
                 type: 'linear',
                 _m: 1
@@ -1671,55 +1668,42 @@ describe('Test axes', function() {
             ax = getDefaultAx();
             data = [1, 4, 7, 2];
 
-            expand(ax, data);
-
-            expect(ax._min).toEqual([{val: 1, pad: 0, extrapad: false}]);
-            expect(ax._max).toEqual([{val: 7, pad: 0, extrapad: false}]);
+            out = findExtremes(ax, data);
+            expect(out.min).toEqual([{val: 1, pad: 0, extrapad: false}]);
+            expect(out.max).toEqual([{val: 7, pad: 0, extrapad: false}]);
         });
 
         it('calls ax.setScale if necessary', function() {
-            ax = {
-                autorange: true,
-                c2l: Number,
-                type: 'linear',
-                setScale: function() {}
-            };
+            ax = getDefaultAx();
+            delete ax._m;
+            ax.setScale = function() {};
             spyOn(ax, 'setScale');
 
-            expand(ax, [1]);
-
+            findExtremes(ax, [1]);
             expect(ax.setScale).toHaveBeenCalled();
         });
 
         it('handles symmetric pads as numbers', function() {
             ax = getDefaultAx();
             data = [1, 4, 2, 7];
-            options = {
-                vpad: 2,
-                ppad: 10
-            };
+            options = {vpad: 2, ppad: 10};
 
-            expand(ax, data, options);
-
-            expect(ax._min).toEqual([{val: -1, pad: 10, extrapad: false}]);
-            expect(ax._max).toEqual([{val: 9, pad: 10, extrapad: false}]);
+            out = findExtremes(ax, data, options);
+            expect(out.min).toEqual([{val: -1, pad: 10, extrapad: false}]);
+            expect(out.max).toEqual([{val: 9, pad: 10, extrapad: false}]);
         });
 
         it('handles symmetric pads as number arrays', function() {
             ax = getDefaultAx();
             data = [1, 4, 2, 7];
-            options = {
-                vpad: [1, 10, 6, 3],
-                ppad: [0, 15, 20, 10]
-            };
+            options = {vpad: [1, 10, 6, 3], ppad: [0, 15, 20, 10]};
 
-            expand(ax, data, options);
-
-            expect(ax._min).toEqual([
+            out = findExtremes(ax, data, options);
+            expect(out.min).toEqual([
                 {val: -6, pad: 15, extrapad: false},
                 {val: -4, pad: 20, extrapad: false}
             ]);
-            expect(ax._max).toEqual([
+            expect(out.max).toEqual([
                 {val: 14, pad: 15, extrapad: false},
                 {val: 8, pad: 20, extrapad: false}
             ]);
@@ -1735,10 +1719,9 @@ describe('Test axes', function() {
                 ppadplus: 20
             };
 
-            expand(ax, data, options);
-
-            expect(ax._min).toEqual([{val: -4, pad: 10, extrapad: false}]);
-            expect(ax._max).toEqual([{val: 11, pad: 20, extrapad: false}]);
+            out = findExtremes(ax, data, options);
+            expect(out.min).toEqual([{val: -4, pad: 10, extrapad: false}]);
+            expect(out.max).toEqual([{val: 11, pad: 20, extrapad: false}]);
         });
 
         it('handles separate pads as number arrays', function() {
@@ -1751,13 +1734,12 @@ describe('Test axes', function() {
                 ppadplus: [0, 0, 40, 20]
             };
 
-            expand(ax, data, options);
-
-            expect(ax._min).toEqual([
+            out = findExtremes(ax, data, options);
+            expect(out.min).toEqual([
                 {val: 1, pad: 30, extrapad: false},
                 {val: -3, pad: 10, extrapad: false}
             ]);
-            expect(ax._max).toEqual([
+            expect(out.max).toEqual([
                 {val: 9, pad: 0, extrapad: false},
                 {val: 3, pad: 40, extrapad: false},
                 {val: 8, pad: 20, extrapad: false}
@@ -1776,70 +1758,49 @@ describe('Test axes', function() {
                 ppadplus: 40
             };
 
-            expand(ax, data, options);
-
-            expect(ax._min).toEqual([{val: -1, pad: 20, extrapad: false}]);
-            expect(ax._max).toEqual([{val: 9, pad: 40, extrapad: false}]);
+            out = findExtremes(ax, data, options);
+            expect(out.min).toEqual([{val: -1, pad: 20, extrapad: false}]);
+            expect(out.max).toEqual([{val: 9, pad: 40, extrapad: false}]);
         });
 
         it('adds 5% padding if specified by flag', function() {
             ax = getDefaultAx();
             data = [1, 5];
-            options = {
-                vpad: 1,
-                ppad: 10,
-                padded: true
-            };
+            options = {vpad: 1, ppad: 10, padded: true};
 
-            expand(ax, data, options);
-
-            expect(ax._min).toEqual([{val: 0, pad: 10, extrapad: true}]);
-            expect(ax._max).toEqual([{val: 6, pad: 10, extrapad: true}]);
+            out = findExtremes(ax, data, options);
+            expect(out.min).toEqual([{val: 0, pad: 10, extrapad: true}]);
+            expect(out.max).toEqual([{val: 6, pad: 10, extrapad: true}]);
         });
 
         it('has lower bound zero with all positive data if tozero is sset', function() {
             ax = getDefaultAx();
             data = [2, 5];
-            options = {
-                vpad: 1,
-                ppad: 10,
-                tozero: true
-            };
+            options = {vpad: 1, ppad: 10, tozero: true};
 
-            expand(ax, data, options);
-
-            expect(ax._min).toEqual([{val: 0, pad: 0, extrapad: false}]);
-            expect(ax._max).toEqual([{val: 6, pad: 10, extrapad: false}]);
+            out = findExtremes(ax, data, options);
+            expect(out.min).toEqual([{val: 0, pad: 0, extrapad: false}]);
+            expect(out.max).toEqual([{val: 6, pad: 10, extrapad: false}]);
         });
 
         it('has upper bound zero with all negative data if tozero is set', function() {
             ax = getDefaultAx();
             data = [-7, -4];
-            options = {
-                vpad: 1,
-                ppad: 10,
-                tozero: true
-            };
+            options = {vpad: 1, ppad: 10, tozero: true};
 
-            expand(ax, data, options);
-
-            expect(ax._min).toEqual([{val: -8, pad: 10, extrapad: false}]);
-            expect(ax._max).toEqual([{val: 0, pad: 0, extrapad: false}]);
+            out = findExtremes(ax, data, options);
+            expect(out.min).toEqual([{val: -8, pad: 10, extrapad: false}]);
+            expect(out.max).toEqual([{val: 0, pad: 0, extrapad: false}]);
         });
 
         it('sets neither bound to zero with positive and negative data if tozero is set', function() {
             ax = getDefaultAx();
             data = [-7, 4];
-            options = {
-                vpad: 1,
-                ppad: 10,
-                tozero: true
-            };
+            options = {vpad: 1, ppad: 10, tozero: true};
 
-            expand(ax, data, options);
-
-            expect(ax._min).toEqual([{val: -8, pad: 10, extrapad: false}]);
-            expect(ax._max).toEqual([{val: 5, pad: 10, extrapad: false}]);
+            out = findExtremes(ax, data, options);
+            expect(out.min).toEqual([{val: -8, pad: 10, extrapad: false}]);
+            expect(out.max).toEqual([{val: 5, pad: 10, extrapad: false}]);
         });
 
         it('overrides padded with tozero', function() {
@@ -1852,27 +1813,25 @@ describe('Test axes', function() {
                 padded: true
             };
 
-            expand(ax, data, options);
-
-            expect(ax._min).toEqual([{val: 0, pad: 0, extrapad: false}]);
-            expect(ax._max).toEqual([{val: 6, pad: 10, extrapad: true}]);
+            out = findExtremes(ax, data, options);
+            expect(out.min).toEqual([{val: 0, pad: 0, extrapad: false}]);
+            expect(out.max).toEqual([{val: 6, pad: 10, extrapad: true}]);
         });
 
         it('should fail if no data is given', function() {
             ax = getDefaultAx();
-            expect(function() { expand(ax); }).toThrow();
+            expect(function() { findExtremes(ax); }).toThrow();
         });
 
         it('should return even if `autorange` is false', function() {
             ax = getDefaultAx();
-            data = [2, 5];
-
             ax.autorange = false;
             ax.rangeslider = { autorange: false };
+            data = [2, 5];
 
-            expand(ax, data, {});
-            expect(ax._min).toEqual([{val: 2, pad: 0, extrapad: false}]);
-            expect(ax._max).toEqual([{val: 5, pad: 0, extrapad: false}]);
+            out = findExtremes(ax, data, {});
+            expect(out.min).toEqual([{val: 2, pad: 0, extrapad: false}]);
+            expect(out.max).toEqual([{val: 5, pad: 0, extrapad: false}]);
         });
     });
 
