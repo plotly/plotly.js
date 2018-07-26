@@ -9,7 +9,7 @@ var Axes = require('@src/plots/cartesian/axes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -897,7 +897,7 @@ describe('A bar plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -930,7 +930,7 @@ describe('A bar plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -961,7 +961,7 @@ describe('A bar plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -995,7 +995,7 @@ describe('A bar plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1144,7 +1144,7 @@ describe('A bar plot', function() {
             assertTextIsInsidePath(text20, path20); // inside
             assertTextIsInsidePath(text30, path30); // inside
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1225,7 +1225,7 @@ describe('A bar plot', function() {
             assertTextFont(textNodes[1], expected.outsidetextfont, 1);
             assertTextFont(textNodes[2], expected.insidetextfont, 2);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1291,7 +1291,7 @@ describe('A bar plot', function() {
 
             checkBarsMatch(['bottom', 'width'], 'final');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1328,7 +1328,7 @@ describe('A bar plot', function() {
         .then(function() {
             _assertNumberOfBarTextNodes(3);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1384,7 +1384,7 @@ describe('bar hover', function() {
             var mock = Lib.extendDeep({}, require('@mocks/11.json'));
 
             Plotly.plot(gd, mock.data, mock.layout)
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1410,7 +1410,7 @@ describe('bar hover', function() {
             var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_group_norm.json'));
 
             Plotly.plot(gd, mock.data, mock.layout)
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1476,7 +1476,7 @@ describe('bar hover', function() {
                 var out = _hover(gd, -0.25, 0.5, 'closest');
                 expect(out.text).toEqual('apple', 'hover text');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -1526,7 +1526,7 @@ describe('bar hover', function() {
                     expect(out).toBe(false, hoverSpec);
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1564,7 +1564,7 @@ describe('bar hover', function() {
                 expect(out.style).toEqual([1, 'red', 200, 1]);
                 assertPos(out.pos, [222, 280, 168, 168]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1594,7 +1594,7 @@ describe('bar hover', function() {
                 out = _hover(gd, 10, 2, 'closest');
                 assertPos(out.pos, [145, 155, 15, 15]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -1699,7 +1699,7 @@ describe('bar hover', function() {
                 [true, 3]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
