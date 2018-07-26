@@ -46,10 +46,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var boxLineColor = coerce2('box.line.color', lineColor);
     var boxLineWidth = coerce2('box.line.width', lineWidth);
     var boxVisible = coerce('box.visible', Boolean(boxWidth || boxFillColor || boxLineColor || boxLineWidth));
-    if(!boxVisible) delete traceOut.box;
+    if(!boxVisible) traceOut.box = {visible: false};
 
     var meanLineColor = coerce2('meanline.color', lineColor);
     var meanLineWidth = coerce2('meanline.width', lineWidth);
     var meanLineVisible = coerce('meanline.visible', Boolean(meanLineColor || meanLineWidth));
-    if(!meanLineVisible) delete traceOut.meanline;
+    if(!meanLineVisible) traceOut.meanline = {visible: false};
 };
