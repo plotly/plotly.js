@@ -23,24 +23,33 @@ module.exports = {
     concatExtremes: concatExtremes
 };
 
-// Find the autorange for this axis
-//
-// TODO update!!
-// assumes ax._min and ax._max have already been set by calling axes.expand
-// using calcdata from all traces. These are arrays of objects:
-// {
-//    val: calcdata value,
-//    pad: extra pixels beyond this value,
-//    extrapad: bool, does this point want 5% extra padding
-// }
-//
-// Returns an array of [min, max]. These are calcdata for log and category axes
-// and data for linear and date axes.
-//
-// TODO: we want to change log to data as well, but it's hard to do this
-// maintaining backward compatibility. category will always have to use calcdata
-// though, because otherwise values between categories (or outside all categories)
-// would be impossible.
+/**
+ * getAutoRange
+ *
+ * Collects all _extremes values corresponding to a given axis
+ * and computes its auto range.
+ *
+ * getAutoRange uses return values from findExtremes where:
+ *
+ * {
+ *    val: calcdata value,
+ *    pad: extra pixels beyond this value,
+ *    extrapad: bool, does this point want 5% extra padding
+ * }
+ *
+ * @param {object} gd:
+ *   graph div object with filled in fullData and fullLayout,
+ * @param {object} ax:
+ *   full axis object
+ * @return {array}
+ *   an array of [min, max]. These are calcdata for log and category axes
+ *   and data for linear and date axes.
+ *
+ * TODO: we want to change log to data as well, but it's hard to do this
+ * maintaining backward compatibility. category will always have to use calcdata
+ * though, because otherwise values between categories (or outside all categories)
+ * would be impossible.
+ */
 function getAutoRange(gd, ax) {
     var i, j;
     var newRange = [];
