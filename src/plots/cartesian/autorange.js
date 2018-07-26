@@ -187,14 +187,12 @@ function concatExtremes(gd, ax, ext) {
 
     var fullData = gd._fullData;
 
-    // should be general enough for 3d, polar etc.
-
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
         var extremes = trace._extremes;
 
         if(trace.visible === true) {
-            if(Registry.traceIs(trace, 'cartesian')) {
+            if(Registry.traceIs(trace, 'cartesian') || Registry.traceIs(trace, 'gl2d')) {
                 var axId = ax._id;
                 if(extremes[axId]) {
                     out = out.concat(extremes[axId][ext]);

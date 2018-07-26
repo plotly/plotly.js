@@ -441,7 +441,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
         ax = this[AXES[i]];
         ax._length = options.viewBox[i + 2] - options.viewBox[i];
 
-        doAutoRange(ax);
+        doAutoRange(this.graphDiv, ax);
         ax.setScale();
     }
 
