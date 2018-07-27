@@ -36,7 +36,7 @@ function calc(container, trace) {
     stash.r = rArray;
     stash.theta = thetaArray;
 
-    trace._extremes.radialaxis = Axes.findExtremes(radialAxis, rArray, {tozero: true});
+    trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {tozero: true});
 
     return [{x: false, y: false, t: stash, trace: trace}];
 }

@@ -300,7 +300,6 @@ proto.updateLayout = function(fullLayout, polarLayout) {
 proto.doAutoRange = function(fullLayout, polarLayout) {
     var radialLayout = polarLayout.radialaxis;
     var ax = this.radialAxis;
-    ax._subplot = this.id;
 
     setScale(ax, radialLayout, fullLayout);
     doAutoRange(this.gd, ax);

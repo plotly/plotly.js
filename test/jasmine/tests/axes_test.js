@@ -1441,7 +1441,8 @@ describe('Test axes', function() {
             return {
                 _id: 'x',
                 type: 'linear',
-                _length: 100
+                _length: 100,
+                _traceIndices: [0]
             };
         }
 

@@ -13,8 +13,6 @@ var isNumeric = require('fast-isnumeric');
 var Lib = require('../../lib');
 var FP_SAFE = require('../../constants/numerical').FP_SAFE;
 
-var Registry = require('../../registry');
-
 module.exports = {
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
@@ -31,16 +29,17 @@ module.exports = {
  *
  * getAutoRange uses return values from findExtremes where:
  *
- * {
- *    val: calcdata value,
- *    pad: extra pixels beyond this value,
- *    extrapad: bool, does this point want 5% extra padding
- * }
- *
  * @param {object} gd:
- *   graph div object with filled in fullData and fullLayout,
+ *   graph div object with filled-in fullData and fullLayout, in particular
+ *   with filled-in '_extremes' containers:
+ *   {
+ *      val: calcdata value,
+ *      pad: extra pixels beyond this value,
+ *      extrapad: bool, does this point want 5% extra padding
+ *   }
  * @param {object} ax:
- *   full axis object
+ *   full axis object, in particular with filled-in '_traceIndices'
+ *   and '_annIndices' / '_shapeIndices' if applicable
  * @return {array}
  *   an array of [min, max]. These are calcdata for log and category axes
  *   and data for linear and date axes.
@@ -55,8 +54,9 @@ function getAutoRange(gd, ax) {
     var newRange = [];
 
     var getPad = makePadFn(ax);
-    var minArray = concatExtremes(gd, ax, 'min');
-    var maxArray = concatExtremes(gd, ax, 'max');
+    var extremes = concatExtremes(gd, ax);
+    var minArray = extremes.min;
+    var maxArray = extremes.max;
 
     if(minArray.length === 0 || maxArray.length === 0) {
         return Lib.simpleMap(ax.range, ax.r2l);
@@ -189,57 +189,31 @@ function makePadFn(ax) {
     return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
-function concatExtremes(gd, ax, ext) {
-    var i;
-    var out = [];
-
+function concatExtremes(gd, ax) {
+    var axId = ax._id;
     var fullData = gd._fullData;
+    var fullLayout = gd._fullLayout;
+    var minArray = [];
+    var maxArray = [];
 
-    for(i = 0; i < fullData.length; i++) {
-        var trace = fullData[i];
-        var extremes = trace._extremes;
-
-        if(trace.visible === true) {
-            if(Registry.traceIs(trace, 'cartesian') || Registry.traceIs(trace, 'gl2d')) {
-                var axId = ax._id;
-                if(extremes[axId]) {
-                    out = out.concat(extremes[axId][ext]);
-                }
-            } else if(Registry.traceIs(trace, 'polar')) {
-                if(trace.subplot === ax._subplot) {
-                    out = out.concat(extremes[ax._name][ext]);
-                }
+    function _concat(cont, indices) {
+        for(var i = 0; i < indices.length; i++) {
+            var item = cont[indices[i]];
+            var extremes = item._extremes[axId];
+            if(item.visible === true && extremes) {
+                minArray = minArray.concat(extremes.min);
+                maxArray = maxArray.concat(extremes.max);
             }
         }
     }
 
-    var fullLayout = gd._fullLayout;
-    var annotations = fullLayout.annotations;
-    var shapes = fullLayout.shapes;
+    _concat(fullData, ax._traceIndices);
+    _concat(fullLayout.annotations || [], ax._annIndices || []);
+    _concat(fullLayout.shapes || [], ax._shapeIndices || []);
 
-    if(Array.isArray(annotations)) {
-        out = out.concat(concatComponentExtremes(annotations, ax, ext));
-    }
-    if(Array.isArray(shapes)) {
-        out = out.concat(concatComponentExtremes(shapes, ax, ext));
-    }
+    // TODO collapse more!
 
-    return out;
-}
-
-function concatComponentExtremes(items, ax, ext) {
-    var out = [];
-    var axId = ax._id;
-    var letter = axId.charAt(0);
-
-    for(var i = 0; i < items.length; i++) {
-        var d = items[i];
-        var extremes = d._extremes;
-        if(d.visible && d[letter + 'ref'] === axId && extremes[axId]) {
-            out = out.concat(extremes[axId][ext]);
-        }
-    }
-    return out;
+    return {min: minArray, max: maxArray};
 }
 
 function doAutoRange(gd, ax) {
