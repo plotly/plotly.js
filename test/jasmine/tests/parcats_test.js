@@ -1,20 +1,24 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
-var click = require('../assets/click');
-var getClientPosition = require('../assets/get_client_position');
 var mouseEvent = require('../assets/mouse_event');
 var delay = require('../assets/delay');
 
-var customAssertions = require('../assets/custom_assertions');
-var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
-var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
-
 var CALLBACK_DELAY = 500;
+
+// Testing constants
+// =================
+var basic_mock = Lib.extendDeep({}, require('@mocks/parcats_basic.json'));
+var margin = basic_mock.layout.margin;
+var domain = basic_mock.data[0].domain;
+
+var categoryLabelPad = 40,
+    dimWidth = 16,
+    catSpacing = 8,
+    dimDx = (256 - 2 * categoryLabelPad - dimWidth) / 2;
 
 // Validation helpers
 // ==================
@@ -23,7 +27,7 @@ function checkDimensionCalc(gd, dimInd, dimProps) {
     var calcdata = gd.calcdata[0][0];
     var dimension = calcdata.dimensions[dimInd];
     for(var dimProp in dimProps) {
-        if (dimProps.hasOwnProperty(dimProp)) {
+        if(dimProps.hasOwnProperty(dimProp)) {
             expect(dimension[dimProp]).toEqual(dimProps[dimProp]);
         }
     }
@@ -35,7 +39,7 @@ function checkCategoryCalc(gd, dimInd, catInd, catProps) {
     var dimension = calcdata.dimensions[dimInd];
     var category = dimension.categories[catInd];
     for(var catProp in catProps) {
-        if (catProps.hasOwnProperty(catProp)) {
+        if(catProps.hasOwnProperty(catProp)) {
             expect(category[catProp]).toEqual(catProps[catProp]);
         }
     }
@@ -65,14 +69,14 @@ function checkParcatsModelView(gd) {
     expect(parcatsViewModel.dimensions[1].x).toEqual(categoryLabelPad + dimDx);
     expect(parcatsViewModel.dimensions[1].y).toEqual(0);
 
-    expect(parcatsViewModel.dimensions[2].x).toEqual(categoryLabelPad + 2*dimDx);
+    expect(parcatsViewModel.dimensions[2].x).toEqual(categoryLabelPad + 2 * dimDx);
     expect(parcatsViewModel.dimensions[2].y).toEqual(0);
 
     // Check location of categories
     /** @param {Array.<CategoryViewModel>} categories */
     function checkCategoryPositions(categories) {
         var nextY = (3 - categories.length) * catSpacing / 2;
-        for (var c=0; c<categories.length; c++) {
+        for(var c = 0; c < categories.length; c++) {
             expect(categories[c].y).toEqual(nextY);
             nextY += categories[c].height + catSpacing;
         }
@@ -132,30 +136,21 @@ function checkParcatsSvg(gd) {
 
             // Compute expected text properties based on
             // whether this is the right-most dimension
-            var expectedTextAnchor = isRightDim? 'start': 'end',
-                expectedX = isRightDim? catWidth + 5: -5,
+            var expectedTextAnchor = isRightDim ? 'start' : 'end',
+                expectedX = isRightDim ? catWidth + 5 : -5,
                 expectedY = catHeight / 2;
 
             expect(catLabel.attr('text-anchor')).toEqual(expectedTextAnchor);
             expect(catLabel.attr('x')).toEqual(expectedX.toString());
             expect(catLabel.attr('y')).toEqual(expectedY.toString());
-        })
-    })
+        });
+    });
 }
 
 function makeTranslate(x, y) {
-    return "translate(" + x + ', ' + y + ')';
+    return 'translate(' + x + ', ' + y + ')';
 }
-// Testing constants
-// =================
-var basic_mock = Lib.extendDeep({}, require('@mocks/parcats_basic.json'));
-var margin = basic_mock.layout.margin;
-var domain = basic_mock.data[0].domain;
 
-var categoryLabelPad = 40,
-    dimWidth = 16,
-    catSpacing = 8,
-    dimDx = (256 - 2*categoryLabelPad - dimWidth) / 2;
 
 // Test cases
 // ==========
@@ -192,7 +187,7 @@ describe('Basic parcats trace', function() {
     });
 
     it('should compute initial model properly', function(done) {
-       Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basic_mock)
             .then(function() {
 
                 // Var check calc data
@@ -272,27 +267,22 @@ describe('Basic parcats trace', function() {
     });
 
     it('should compute initial data properly', function(done) {
-       Plotly.newPlot(gd, mock)
+        Plotly.newPlot(gd, mock)
             .then(function() {
 
                 // Var check calc data
                 var gd_traceData = gd.data[0];
 
                 // Check that trace data matches input
-                expect(gd_traceData).toEqual(mock.data[0])
+                expect(gd_traceData).toEqual(mock.data[0]);
             })
             .catch(failTest)
             .then(done);
     });
 
     it('should compute initial fullData properly', function(done) {
-       Plotly.newPlot(gd, basic_mock)
+        Plotly.newPlot(gd, basic_mock)
             .then(function() {
-
-                // Var check calc data
-
-                var traceFullData = gd._fullData[0];
-
                 // TODO: check that defaults are inferred properly
             })
             .catch(failTest)
@@ -312,11 +302,11 @@ describe('Basic parcats trace', function() {
 
     it('should compute initial svg properly', function(done) {
         Plotly.newPlot(gd, basic_mock)
-            .then(function () {
+            .then(function() {
                 checkParcatsSvg(gd);
             })
             .catch(failTest)
-            .then(done)
+            .then(done);
     });
 });
 
@@ -330,7 +320,7 @@ describe('Dimension reordered parcats trace', function() {
 
     // Fixtures
     // --------
-    beforeEach(function () {
+    beforeEach(function() {
         gd = createGraphDiv();
         mock = Lib.extendDeep({}, require('@mocks/parcats_reordered.json'));
     });
@@ -340,7 +330,7 @@ describe('Dimension reordered parcats trace', function() {
     // Tests
     // -----
     it('should compute initial model properly', function(done) {
-       Plotly.newPlot(gd, mock)
+        Plotly.newPlot(gd, mock)
             .then(function() {
 
                 // Var check calc data
@@ -490,11 +480,11 @@ describe('Dimension reordered parcats trace', function() {
 
     it('should compute initial svg properly', function(done) {
         Plotly.newPlot(gd, mock)
-            .then(function () {
+            .then(function() {
                 checkParcatsSvg(gd);
             })
             .catch(failTest)
-            .then(done)
+            .then(done);
     });
 });
 
@@ -509,7 +499,7 @@ describe('Drag to reordered dimensions and categories', function() {
 
     // Fixtures
     // --------
-    beforeEach(function () {
+    beforeEach(function() {
         gd = createGraphDiv();
         mock = Lib.extendDeep({}, require('@mocks/parcats_basic.json'));
     });
@@ -517,7 +507,7 @@ describe('Drag to reordered dimensions and categories', function() {
     afterEach(destroyGraphDiv);
 
     it('It should support dragging dimension label to reorder dimensions', function(done) {
-       Plotly.newPlot(gd, mock)
+        Plotly.newPlot(gd, mock)
             .then(function() {
 
                 restyleCallback = jasmine.createSpy('restyleCallback');
@@ -577,7 +567,7 @@ describe('Drag to reordered dimensions and categories', function() {
                 checkDimensionCalc(gd, 0,
                     {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
                 checkDimensionCalc(gd, 1,
-                    {dimensionInd: 1, displayInd: 1, dragX: dragDimStartX + dimDx/2, dimensionLabel: 'Two', count: 9});
+                    {dimensionInd: 1, displayInd: 1, dragX: dragDimStartX + dimDx / 2, dimensionLabel: 'Two', count: 9});
                 checkDimensionCalc(gd, 2,
                     {dimensionInd: 2, displayInd: 2, dragX: null, dimensionLabel: 'Three', count: 9});
 
@@ -610,8 +600,8 @@ describe('Drag to reordered dimensions and categories', function() {
                 expect(restyleCallback).toHaveBeenCalledTimes(1);
                 expect(restyleCallback).toHaveBeenCalledWith([
                     {'dimensions[0].displayInd': 0,
-                     'dimensions[1].displayInd': 2,
-                     'dimensions[2].displayInd': 1},
+                        'dimensions[1].displayInd': 2,
+                        'dimensions[2].displayInd': 1},
                     [0]]);
 
                 restyleCallback.calls.reset();
@@ -622,7 +612,7 @@ describe('Drag to reordered dimensions and categories', function() {
 
     it('It should support dragging category to reorder categories and dimensions', function(done) {
         Plotly.newPlot(gd, mock)
-            .then(function () {
+            .then(function() {
 
                 restyleCallback = jasmine.createSpy('restyleCallback');
                 gd.on('plotly_restyle', restyleCallback);
@@ -635,10 +625,6 @@ describe('Drag to reordered dimensions and categories', function() {
                 // Start mouse in the middle of the lowest category
                 // second dimensions (dimension display index 1)
                 var dragDimStartX = parcatsViewModel.dimensions[1].x;
-                var dragCatStartY = parcatsViewModel.dimensions[1].categories[2].y;
-
-                // var mouseStartY = parcatsViewModel.y + 190,
-                //     mouseStartX = parcatsViewModel.x + dragDimStartX + dimWidth / 2;
 
                 var mouseStartY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y,
                     mouseStartX = parcatsViewModel.x + dragDimStartX + dimWidth / 2;
@@ -683,7 +669,7 @@ describe('Drag to reordered dimensions and categories', function() {
                 checkDimensionCalc(gd, 0,
                     {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
                 checkDimensionCalc(gd, 1,
-                    {dimensionInd: 1, displayInd: 1, dragX: dragDimStartX + dimDx/2, dimensionLabel: 'Two', count: 9});
+                    {dimensionInd: 1, displayInd: 1, dragX: dragDimStartX + dimDx / 2, dimensionLabel: 'Two', count: 9});
                 checkDimensionCalc(gd, 2,
                     {dimensionInd: 2, displayInd: 2, dragX: null, dimensionLabel: 'Three', count: 9});
 
@@ -749,16 +735,16 @@ describe('Drag to reordered dimensions and categories', function() {
                 expect(restyleCallback).toHaveBeenCalledTimes(1);
                 expect(restyleCallback).toHaveBeenCalledWith([
                     {'dimensions[0].displayInd': 0,
-                     'dimensions[1].displayInd': 2,
-                     'dimensions[2].displayInd': 1,
-                     'dimensions[1].catDisplayInds': [[ 1, 2, 0 ]]},
+                        'dimensions[1].displayInd': 2,
+                        'dimensions[2].displayInd': 1,
+                        'dimensions[1].catDisplayInds': [[ 1, 2, 0 ]]},
                     [0]]);
 
                 restyleCallback.calls.reset();
             })
             .catch(failTest)
             .then(done);
-    })
+    });
 });
 
 // To Test
@@ -785,4 +771,3 @@ describe('Drag to reordered dimensions and categories', function() {
 // ### Test visible
 
 // ### Test colorscale with numeric colors
-

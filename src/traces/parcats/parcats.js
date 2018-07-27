@@ -8,7 +8,6 @@
 
 'use strict';
 
-// var c = require('./constants');
 var d3 = require('d3');
 var Plotly = require('../../plot_api/plot_api');
 var Fx = require('../../components/fx');
@@ -18,8 +17,6 @@ var tinycolor = require('tinycolor2');
 function performPlot(parcatsModels, graphDiv, layout, svg) {
 
     var viewModels = parcatsModels.map(createParcatsViewModel.bind(0, graphDiv, layout));
-
-    console.log(['viewModels', viewModels]);
 
     // Get (potentially empty) parcatslayer selection with bound data to single element array
     var layerSelection = svg.selectAll('g.parcatslayer').data([null]);
@@ -42,7 +39,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
 
     // Update properties for each trace
     traceSelection
-        .attr('transform', function (d) {
+        .attr('transform', function(d) {
             return 'translate(' + d.x + ', ' + d.y + ')';
         });
 
@@ -58,14 +55,14 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // Get paths selection
     var pathSelection = pathsSelection
         .selectAll('path.path')
-        .data(function (d) {
-            return d.paths
+        .data(function(d) {
+            return d.paths;
         }, key);
 
     // Update existing path colors
     pathSelection
         .attr('fill', function(d) {
-            return d.model.color
+            return d.model.color;
         });
 
     // Create paths
@@ -75,7 +72,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('class', 'path')
         .attr('stroke-opacity', 0)
         .attr('fill', function(d) {
-            return d.model.color
+            return d.model.color;
         })
         .attr('fill-opacity', 0);
 
@@ -83,12 +80,12 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
 
     // Set path geometry
     pathSelection
-        .attr('d', function (d) {
-            return d.svgD
+        .attr('d', function(d) {
+            return d.svgD;
         });
 
     // sort paths
-    if (!pathSelectionEnter.empty()) {
+    if(!pathSelectionEnter.empty()) {
         // Only sort paths if there has been a change.
         // Otherwise paths are already sorted or a hover operation may be in progress
         pathSelection.sort(compareRawColor);
@@ -113,8 +110,8 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // Get dimension selection
     var dimensionSelection = dimensionsSelection
         .selectAll('g.dimension')
-        .data(function (d) {
-            return d.dimensions
+        .data(function(d) {
+            return d.dimensions;
         }, key);
 
     // Create dimension groups
@@ -123,7 +120,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('class', 'dimension');
 
     // Update dimension group transforms
-    dimensionSelection.attr('transform', function (d) {
+    dimensionSelection.attr('transform', function(d) {
         return 'translate(' + d.x + ', 0)';
     });
 
@@ -133,7 +130,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // Get category selection
     var categorySelection = dimensionSelection
         .selectAll('g.category')
-        .data(function (d) {
+        .data(function(d) {
             return d.categories;
         }, key);
 
@@ -145,8 +142,8 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
 
     // Update category transforms
     categorySelection
-        .attr('transform', function (d) {
-            return 'translate(0, ' + d.y + ')'
+        .attr('transform', function(d) {
+            return 'translate(0, ' + d.y + ')';
         });
 
 
@@ -160,10 +157,10 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // Update rectangle
     categorySelection.select('rect.catrect')
         .attr('fill', 'none')
-        .attr('width', function (d) {
+        .attr('width', function(d) {
             return d.width;
         })
-        .attr('height', function (d) {
+        .attr('height', function(d) {
             return d.height;
         });
 
@@ -174,17 +171,17 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .selectAll('rect.bandrect')
         .data(
             /** @param {CategoryViewModel} catViewModel*/
-            function (catViewModel) {
+            function(catViewModel) {
                 return catViewModel.bands;
             }, key);
 
     // Raise all update bands to the top so that fading enter/exit bands will be behind
-    bandSelection.each(function() {Lib.raiseToTop(this)});
+    bandSelection.each(function() {Lib.raiseToTop(this);});
 
     // Update band color
     bandSelection
         .attr('fill', function(d) {
-            return d.color
+            return d.color;
         });
 
     var bandsSelectionEnter = bandSelection.enter()
@@ -193,21 +190,21 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('cursor', 'move')
         .attr('stroke-opacity', 0)
         .attr('fill', function(d) {
-            return d.color
+            return d.color;
         })
         .attr('fill-opacity', 0);
 
     bandSelection
-        .attr('fill', function (d) {
+        .attr('fill', function(d) {
             return d.color;
         })
-        .attr('width', function (d) {
+        .attr('width', function(d) {
             return d.width;
         })
-        .attr('height', function (d) {
+        .attr('height', function(d) {
             return d.height;
         })
-        .attr('y', function (d) {
+        .attr('y', function(d) {
             return d.y;
         });
 
@@ -224,13 +221,13 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // Update category label
     categorySelection.select('text.catlabel')
         .attr('text-anchor',
-            function (d) {
-                if (catInRightDim(d)) {
+            function(d) {
+                if(catInRightDim(d)) {
                     // Place label to the right of category
                     return 'start';
                 } else {
                     // Place label to the left of category
-                    return  'end';
+                    return 'end';
                 }
             })
         .attr('alignment-baseline', 'middle')
@@ -243,8 +240,8 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('font-size', 10)
         .style('fill', 'rgb(0, 0, 0)')
         .attr('x',
-            function (d) {
-                if (catInRightDim(d)) {
+            function(d) {
+                if(catInRightDim(d)) {
                     // Place label to the right of category
                     return d.width + 5;
                 } else {
@@ -252,10 +249,10 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
                     return -5;
                 }
             })
-        .attr('y', function (d) {
+        .attr('y', function(d) {
             return d.height / 2;
         })
-        .text(function (d) {
+        .text(function(d) {
             return d.model.categoryLabel;
         });
 
@@ -270,16 +267,16 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('alignment-baseline', 'baseline')
         .attr('cursor', 'ew-resize')
         .attr('font-size', 14)
-        .attr('x', function (d) {
+        .attr('x', function(d) {
             return d.width / 2;
         })
         .attr('y', -5)
-        .text(function (d, i) {
-            if (i === 0) {
+        .text(function(d, i) {
+            if(i === 0) {
                 // Add dimension label above topmost category
                 return d.parcatsViewModel.model.dimensions[d.model.dimensionInd].dimensionLabel;
             } else {
-                return null
+                return null;
             }
         });
 
@@ -287,8 +284,8 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // categorySelection.select('rect.catrect')
     categorySelection.selectAll('rect.bandrect')
         .on('mouseover', mouseoverCategoryBand)
-        .on('mouseout', function (d) {
-            mouseoutCategory(d.parcatsViewModel)
+        .on('mouseout', function(d) {
+            mouseoutCategory(d.parcatsViewModel);
         });
 
     // Remove unused categories
@@ -296,19 +293,19 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
 
     // Setup drag
     dimensionSelection.call(d3.behavior.drag()
-        .origin(function (d) {
-            return {x: d.x, y: 0}
+        .origin(function(d) {
+            return {x: d.x, y: 0};
         })
-        .on("dragstart", dragDimensionStart)
-        .on("drag", dragDimension)
-        .on("dragend", dragDimensionEnd));
+        .on('dragstart', dragDimensionStart)
+        .on('drag', dragDimension)
+        .on('dragend', dragDimensionEnd));
 
 
     // Save off selections to view models
-    traceSelection.each(function (d) {
+    traceSelection.each(function(d) {
         d.traceSelection = d3.select(this);
         d.pathSelection = d3.select(this).selectAll('g.paths').selectAll('path.path');
-        d.dimensionSelection = d3.select(this).selectAll('g.dimensions').selectAll('g.dimension')
+        d.dimensionSelection = d3.select(this).selectAll('g.dimensions').selectAll('g.dimension');
     });
 
     // Remove any orphan traces
@@ -324,7 +321,6 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
  * @param {Layout} layout
  */
 module.exports = function(graphDiv, svg, parcatsModels, layout) {
-    console.log(['parcats', parcatsModels, layout]);
     performPlot(parcatsModels, graphDiv, layout, svg);
 };
 
@@ -338,23 +334,23 @@ function key(d) {
 
  /** True if a category view model is in the right-most display dimension
   * @param {CategoryViewModel} d */
- function catInRightDim(d) {
-     var numDims = d.parcatsViewModel.dimensions.length,
-         leftDimInd = d.parcatsViewModel.dimensions[numDims - 1].model.dimensionInd;
-     return d.model.dimensionInd === leftDimInd;
- }
+function catInRightDim(d) {
+    var numDims = d.parcatsViewModel.dimensions.length,
+        leftDimInd = d.parcatsViewModel.dimensions[numDims - 1].model.dimensionInd;
+    return d.model.dimensionInd === leftDimInd;
+}
 
 /**
  * @param {PathViewModel} a
  * @param {PathViewModel} b
  */
 function compareRawColor(a, b) {
-    if (a.model.rawColor > b.model.rawColor) {
-        return 1
-    } else if (a.model.rawColor < b.model.rawColor){
-        return -1
+    if(a.model.rawColor > b.model.rawColor) {
+        return 1;
+    } else if(a.model.rawColor < b.model.rawColor) {
+        return -1;
     } else {
-        return 0
+        return 0;
     }
 }
 
@@ -364,10 +360,10 @@ function compareRawColor(a, b) {
  */
 function mouseoverPath(d) {
 
-    if (!d.parcatsViewModel.dragDimension) {
+    if(!d.parcatsViewModel.dragDimension) {
         // We're not currently dragging
 
-        if (d.parcatsViewModel.hovermode !== 'none') {
+        if(d.parcatsViewModel.hovermode !== 'none') {
 
             // Raise path to top
             Lib.raiseToTop(this);
@@ -379,7 +375,7 @@ function mouseoverPath(d) {
             d.parcatsViewModel.graphDiv.emit('plotly_hover', {points: points, event: d3.event});
 
             // Handle tooltip
-            if (d.parcatsViewModel.tooltip) {
+            if(d.parcatsViewModel.tooltip) {
 
                 // Mouse
                 var hoverX = d3.mouse(this)[0];
@@ -395,13 +391,13 @@ function mouseoverPath(d) {
                     pathCenterY,
                     dimInd;
 
-                for (dimInd = 0; dimInd < (d.leftXs.length - 1); dimInd++) {
-                    if (d.leftXs[dimInd] + d.dimWidths[dimInd] - 2 <= hoverX && hoverX <= d.leftXs[dimInd + 1] + 2) {
+                for(dimInd = 0; dimInd < (d.leftXs.length - 1); dimInd++) {
+                    if(d.leftXs[dimInd] + d.dimWidths[dimInd] - 2 <= hoverX && hoverX <= d.leftXs[dimInd + 1] + 2) {
                         var leftDim = d.parcatsViewModel.dimensions[dimInd];
                         var rightDim = d.parcatsViewModel.dimensions[dimInd + 1];
                         pathCenterX = (leftDim.x + leftDim.width + rightDim.x) / 2;
                         pathCenterY = (d.topYs[dimInd] + d.topYs[dimInd + 1] + d.height) / 2;
-                        break
+                        break;
                     }
                 }
 
@@ -411,7 +407,7 @@ function mouseoverPath(d) {
 
                 var textColor = tinycolor.mostReadable(d.model.color, ['black', 'white']);
 
-                var tooltip = Fx.customHovers({
+                Fx.customHovers({
                     x: hoverCenterX - rootBBox.left + graphDivBBox.left,
                     y: hoverCenterY - rootBBox.top + graphDivBBox.top,
                     text: [
@@ -440,7 +436,7 @@ function mouseoverPath(d) {
  * @param {PathViewModel} d
  */
 function mouseoutPath(d) {
-    if (!d.parcatsViewModel.dragDimension) {
+    if(!d.parcatsViewModel.dragDimension) {
         // We're not currently dragging
         stylePathsNoHover(d3.select(this));
 
@@ -462,12 +458,12 @@ function buildPointsArrayForPath(d) {
     var points = [];
     var curveNumber = getTraceIndex(d.parcatsViewModel);
 
-    for (var i = 0; i < d.model.valueInds.length; i++) {
+    for(var i = 0; i < d.model.valueInds.length; i++) {
         var pointNumber = d.model.valueInds[i];
         points.push({
             curveNumber: curveNumber,
             pointNumber: pointNumber
-        })
+        });
     }
     return points;
 }
@@ -477,7 +473,7 @@ function buildPointsArrayForPath(d) {
  * @param {PathViewModel} d
  */
 function clickPath(d) {
-    if (d.parcatsViewModel.hovermode !== 'none') {
+    if(d.parcatsViewModel.hovermode !== 'none') {
         var points = buildPointsArrayForPath(d);
         d.parcatsViewModel.graphDiv.emit('plotly_click', {points: points, event: d3.event});
     }
@@ -486,7 +482,7 @@ function clickPath(d) {
 function stylePathsNoHover(pathSelection) {
     pathSelection
         .attr('fill', function(d) {
-            return d.model.color
+            return d.model.color;
         })
         .attr('fill-opacity', 0.6)
         .attr('stroke', 'lightgray')
@@ -521,7 +517,7 @@ function styleCategoriesNoHover(categorySelection) {
 function styleBandsHover(bandsSelection) {
     bandsSelection
         .attr('stroke', 'black')
-        .attr('stroke-width', 1.5)
+        .attr('stroke-width', 1.5);
 }
 
 function styleBandsNoHover(bandsSelection) {
@@ -548,7 +544,7 @@ function selectPathsThroughCategoryBandColor(catBandViewModel) {
             function(pathViewModel) {
                 return pathViewModel.model.categoryInds[dimInd] === catInd &&
                     pathViewModel.model.color === catBandViewModel.color;
-            })
+            });
 }
 
 
@@ -568,7 +564,7 @@ function styleForCategoryHovermode(bandElement) {
     bandSel.each(function(bvm) {
         var paths = selectPathsThroughCategoryBandColor(bvm);
         stylePathsHover(paths);
-        paths.each(function(d) {
+        paths.each(function() {
             // Raise path to top
             Lib.raiseToTop(this);
         });
@@ -590,7 +586,7 @@ function styleForColorHovermode(bandElement) {
     var bandViewModel = d3.select(bandElement).datum();
     var catPaths = selectPathsThroughCategoryBandColor(bandViewModel);
     stylePathsHover(catPaths);
-    catPaths.each(function(d) {
+    catPaths.each(function() {
         // Raise path to top
         Lib.raiseToTop(this);
     });
@@ -598,11 +594,11 @@ function styleForColorHovermode(bandElement) {
     // Style category for drag
     d3.select(bandElement.parentNode)
         .selectAll('rect.bandrect')
-        .filter(function(b) {return b.color === bandViewModel.color})
-        .each(function(b) {
+        .filter(function(b) {return b.color === bandViewModel.color;})
+        .each(function() {
             Lib.raiseToTop(this);
             styleBandsHover(d3.select(this));
-        })
+        });
 }
 
 
@@ -626,7 +622,7 @@ function emitPointsEventCategoryHovermode(bandElement, eventName, event) {
         paths.each(function(pathViewModel) {
             // Extend points array
             Array.prototype.push.apply(points, buildPointsArrayForPath(pathViewModel));
-        })
+        });
     });
 
     gd.emit(eventName, {points: points, event: event});
@@ -679,7 +675,7 @@ function createTooltipForCategoryHovermode(rootBBox, bandElement) {
     var hoverCenterX,
         tooltipIdealAlign;
 
-    if (parcatsViewModel.dimensions.length > 1 &&
+    if(parcatsViewModel.dimensions.length > 1 &&
         dimensionModel.displayInd === parcatsViewModel.dimensions.length - 1) {
 
         // right most dimension
@@ -738,7 +734,7 @@ function createTooltipForColorHovermode(rootBBox, bandElement) {
 
     var hoverCenterX,
         tooltipIdealAlign;
-    if (parcatsViewModel.dimensions.length > 1 &&
+    if(parcatsViewModel.dimensions.length > 1 &&
         dimensionModel.displayInd === parcatsViewModel.dimensions.length - 1) {
         // right most dimension
         hoverCenterX = bandBoundingBox.left;
@@ -756,9 +752,9 @@ function createTooltipForColorHovermode(rootBBox, bandElement) {
 
     var bandColorCount = 0;
     bandViewModel.categoryViewModel.bands.forEach(function(b) {
-       if (b.color === bandViewModel.color) {
-           bandColorCount += b.count;
-       }
+        if(b.color === bandViewModel.color) {
+            bandColorCount += b.count;
+        }
     });
 
     var catCount = catViewModel.model.count;
@@ -767,7 +763,7 @@ function createTooltipForColorHovermode(rootBBox, bandElement) {
     parcatsViewModel.pathSelection.each(
         /** @param {PathViewModel} pathViewModel */
         function(pathViewModel) {
-            if (pathViewModel.model.color === bandViewModel.color) {
+            if(pathViewModel.model.color === bandViewModel.color) {
                 colorCount += pathViewModel.model.count;
             }
         });
@@ -778,11 +774,11 @@ function createTooltipForColorHovermode(rootBBox, bandElement) {
     var pColorAndCatValue = (bandColorCount / totalCount).toFixed(3);
     var pColorAndCatRow = pColorAndCatLable + pColorAndCatValue;
 
-    var pCatGivenColorLabel = 'P(' +  catLabel + ' | color): ';
+    var pCatGivenColorLabel = 'P(' + catLabel + ' | color): ';
     var pCatGivenColorValue = (bandColorCount / colorCount).toFixed(3);
     var pCatGivenColorRow = pCatGivenColorLabel + pCatGivenColorValue;
 
-    var pColorGivenCatLabel = 'P(color | ' +  catLabel + '): ';
+    var pColorGivenCatLabel = 'P(color | ' + catLabel + '): ';
     var pColorGivenCatValue = (bandColorCount / catCount).toFixed(3);
     var pColorGivenCatRow = pColorGivenCatLabel + pColorGivenCatValue;
 
@@ -804,7 +800,7 @@ function createTooltipForColorHovermode(rootBBox, bandElement) {
         fontColor: textColor,
         fontSize: 10,
         idealAlign: tooltipIdealAlign
-    }
+    };
 }
 
 /**
@@ -812,12 +808,12 @@ function createTooltipForColorHovermode(rootBBox, bandElement) {
  * @param {CategoryBandViewModel} bandViewModel
  */
 function mouseoverCategoryBand(bandViewModel) {
-    if (!bandViewModel.parcatsViewModel.dragDimension) {
+    if(!bandViewModel.parcatsViewModel.dragDimension) {
         // We're not currently dragging
 
         // Mouse
         var mouseY = d3.mouse(this)[1];
-        if (mouseY < -1) {
+        if(mouseY < -1) {
             // Hover is above above the category rectangle (probably the dimension title text)
             return;
         }
@@ -832,25 +828,25 @@ function mouseoverCategoryBand(bandViewModel) {
         var bandElement = this;
 
         // Handle style and events
-        if (hovermode === 'category') {
+        if(hovermode === 'category') {
             styleForCategoryHovermode(bandElement);
             emitPointsEventCategoryHovermode(bandElement, 'plotly_hover', d3.event);
-        } else if (hovermode === 'color') {
+        } else if(hovermode === 'color') {
             styleForColorHovermode(bandElement);
             emitPointsEventColorHovermode(bandElement, 'plotly_hover', d3.event);
         }
 
         // Handle tooltip
         var hoverTooltip;
-        if (showTooltip) {
-            if (hovermode === 'category') {
+        if(showTooltip) {
+            if(hovermode === 'category') {
                 hoverTooltip = createTooltipForCategoryHovermode(rootBBox, bandElement);
-            } else if (hovermode === 'color') {
+            } else if(hovermode === 'color') {
                 hoverTooltip = createTooltipForColorHovermode(rootBBox, bandElement);
             }
         }
 
-        if (hoverTooltip) {
+        if(hoverTooltip) {
             Fx.loneHover(hoverTooltip, {
                 container: fullLayout._hoverlayer.node(),
                 outerContainer: fullLayout._paper.node(),
@@ -866,7 +862,7 @@ function mouseoverCategoryBand(bandViewModel) {
  */
 function mouseoutCategory(parcatsViewModel) {
 
-    if (!parcatsViewModel.dragDimension) {
+    if(!parcatsViewModel.dragDimension) {
         // We're not dragging anything
 
         // Reset unhovered styles
@@ -891,7 +887,7 @@ function dragDimensionStart(d) {
 
     // Save off initial drag indexes for dimension
     d.dragDimensionDisplayInd = d.model.displayInd;
-    d.initialDragDimensionDisplayInds = d.parcatsViewModel.model.dimensions.map(function(d) {return d.displayInd});
+    d.initialDragDimensionDisplayInds = d.parcatsViewModel.model.dimensions.map(function(d) {return d.displayInd;});
     d.dragHasMoved = false;
 
     // Check for category hit
@@ -901,18 +897,18 @@ function dragDimensionStart(d) {
         .select('rect.catrect')
         .each(
             /** @param {CategoryViewModel} catViewModel */
-            function (catViewModel) {
+            function(catViewModel) {
                 var catMouseX = d3.mouse(this)[0];
                 var catMouseY = d3.mouse(this)[1];
 
 
-                if (-2 <= catMouseX && catMouseX <= catViewModel.width + 2 &&
+                if(-2 <= catMouseX && catMouseX <= catViewModel.width + 2 &&
                     -2 <= catMouseY && catMouseY <= catViewModel.height + 2) {
 
                     // Save off initial drag indexes for categories
                     d.dragCategoryDisplayInd = catViewModel.model.displayInd;
-                    d.initialDragCategoryDisplayInds = d.model.categories.map(function (c) {
-                        return c.displayInd
+                    d.initialDragCategoryDisplayInds = d.model.categories.map(function(c) {
+                        return c.displayInd;
                     });
 
                     // Initialize categories dragY to be the current y position
@@ -926,10 +922,10 @@ function dragDimensionStart(d) {
                         .selectAll('rect.bandrect')
                         /** @param {CategoryBandViewModel} bandViewModel */
                         .each(function(bandViewModel) {
-                            if (bandViewModel.y < catMouseY && catMouseY <= bandViewModel.y + bandViewModel.height) {
+                            if(bandViewModel.y < catMouseY && catMouseY <= bandViewModel.y + bandViewModel.height) {
                                 d.potentialClickBand = this;
                             }
-                        })
+                        });
                 }
             });
 
@@ -947,8 +943,8 @@ function dragDimensionStart(d) {
 function dragDimension(d) {
     d.dragHasMoved = true;
 
-    if (d.dragDimensionDisplayInd === null) {
-        return
+    if(d.dragDimensionDisplayInd === null) {
+        return;
     }
 
     var dragDimInd = d.dragDimensionDisplayInd,
@@ -959,7 +955,7 @@ function dragDimension(d) {
         .dimensions[dragDimInd];
 
     // Update category
-    if (d.dragCategoryDisplayInd !== null) {
+    if(d.dragCategoryDisplayInd !== null) {
 
         var dragCategory = dragDimension.categories[d.dragCategoryDisplayInd];
 
@@ -975,9 +971,9 @@ function dragDimension(d) {
         var catBelow = dimCategoryViews[catDisplayInd + 1];
 
         // Check for overlap above
-        if (catAbove !== undefined) {
+        if(catAbove !== undefined) {
 
-            if (categoryY < (catAbove.y + catAbove.height/2.0)) {
+            if(categoryY < (catAbove.y + catAbove.height / 2.0)) {
 
                 // Swap display inds
                 dragCategory.model.displayInd = catAbove.model.displayInd;
@@ -985,9 +981,9 @@ function dragDimension(d) {
             }
         }
 
-        if (catBelow !== undefined) {
+        if(catBelow !== undefined) {
 
-            if ((categoryY + dragCategory.height) > (catBelow.y + catBelow.height/2.0)) {
+            if((categoryY + dragCategory.height) > (catBelow.y + catBelow.height / 2.0)) {
 
                 // Swap display inds
                 dragCategory.model.displayInd = catBelow.model.displayInd;
@@ -1006,8 +1002,8 @@ function dragDimension(d) {
     var prevDimension = d.parcatsViewModel.dimensions[prevDimInd];
     var nextDimension = d.parcatsViewModel.dimensions[nextDimInd];
 
-    if (prevDimension !== undefined) {
-        if (dragDimension.model.dragX < (prevDimension.x + prevDimension.width)) {
+    if(prevDimension !== undefined) {
+        if(dragDimension.model.dragX < (prevDimension.x + prevDimension.width)) {
 
             // Swap display inds
             dragDimension.model.displayInd = prevDimension.model.displayInd;
@@ -1015,8 +1011,8 @@ function dragDimension(d) {
         }
     }
 
-    if (nextDimension !== undefined) {
-        if ((dragDimension.model.dragX + dragDimension.width) > nextDimension.x) {
+    if(nextDimension !== undefined) {
+        if((dragDimension.model.dragX + dragDimension.width) > nextDimension.x) {
 
             // Swap display inds
             dragDimension.model.displayInd = nextDimension.model.displayInd;
@@ -1043,8 +1039,8 @@ function dragDimension(d) {
  */
 function dragDimensionEnd(d) {
 
-    if (d.dragDimensionDisplayInd === null) {
-        return
+    if(d.dragDimensionDisplayInd === null) {
+        return;
     }
 
     d3.select(this).selectAll('text').attr('font-weight', 'normal');
@@ -1055,39 +1051,39 @@ function dragDimensionEnd(d) {
     var traceInd = getTraceIndex(d.parcatsViewModel);
 
     // ### Handle dimension reordering ###
-    var finalDragDimensionDisplayInds = d.parcatsViewModel.model.dimensions.map(function(d) {return d.displayInd});
+    var finalDragDimensionDisplayInds = d.parcatsViewModel.model.dimensions.map(function(d) {return d.displayInd;});
     var anyDimsReordered = d.initialDragDimensionDisplayInds.some(function(initDimDisplay, dimInd) {
-        return initDimDisplay !== finalDragDimensionDisplayInds[dimInd]
+        return initDimDisplay !== finalDragDimensionDisplayInds[dimInd];
     });
 
-    if (anyDimsReordered) {
+    if(anyDimsReordered) {
         finalDragDimensionDisplayInds.forEach(function(finalDimDisplay, dimInd) {
             restyleData['dimensions[' + dimInd + '].displayInd'] = finalDimDisplay;
-        })
+        });
     }
 
     // ### Handle category reordering ###
     var anyCatsReordered = false;
-    if (d.dragCategoryDisplayInd !== null) {
-        var finalDragCategoryDisplayInds = d.model.categories.map(function (c) {
-            return c.displayInd
+    if(d.dragCategoryDisplayInd !== null) {
+        var finalDragCategoryDisplayInds = d.model.categories.map(function(c) {
+            return c.displayInd;
         });
 
-        anyCatsReordered = d.initialDragCategoryDisplayInds.some(function (initCatDisplay, catInd) {
+        anyCatsReordered = d.initialDragCategoryDisplayInds.some(function(initCatDisplay, catInd) {
             return initCatDisplay !== finalDragCategoryDisplayInds[catInd];
         });
 
-        if (anyCatsReordered) {
+        if(anyCatsReordered) {
             restyleData['dimensions[' + d.model.dimensionInd + '].catDisplayInds'] = [finalDragCategoryDisplayInds];
         }
     }
 
     // Handle potential click event
     // ----------------------------
-    if (!d.dragHasMoved && d.potentialClickBand) {
-        if (d.parcatsViewModel.hovermode === 'color') {
+    if(!d.dragHasMoved && d.potentialClickBand) {
+        if(d.parcatsViewModel.hovermode === 'color') {
             emitPointsEventColorHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
-        } else if (d.parcatsViewModel.hovermode === 'category') {
+        } else if(d.parcatsViewModel.hovermode === 'category') {
             emitPointsEventCategoryHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
         }
     }
@@ -1095,7 +1091,7 @@ function dragDimensionEnd(d) {
     // Nullify drag states
     // -------------------
     d.model.dragX = null;
-    if (d.dragCategoryDisplayInd !== null) {
+    if(d.dragCategoryDisplayInd !== null) {
         var dragCategory = d.parcatsViewModel
             .dimensions[d.dragDimensionDisplayInd]
             .categories[d.dragCategoryDisplayInd];
@@ -1125,11 +1121,9 @@ function dragDimensionEnd(d) {
             updateSvgCategories(d.parcatsViewModel, true);
             updateSvgPaths(d.parcatsViewModel, true);
         })
-        .each("end", function() {
-            if (anyDimsReordered || anyCatsReordered) {
+        .each('end', function() {
+            if(anyDimsReordered || anyCatsReordered) {
                 // Perform restyle if the order of categories or dimensions changed
-                console.log('Do Plotly.restyle!');
-                console.log([d.parcatsViewModel.graphDiv, restyleData, [traceInd]]);
                 Plotly.restyle(d.parcatsViewModel.graphDiv, restyleData, [traceInd]);
             }
         });
@@ -1142,8 +1136,8 @@ function dragDimensionEnd(d) {
 function getTraceIndex(parcatsViewModel) {
     var traceInd;
     var allTraces = parcatsViewModel.graphDiv._fullData;
-    for (var i=0; i < allTraces.length; i++) {
-        if (parcatsViewModel.key === allTraces[i].uid) {
+    for(var i = 0; i < allTraces.length; i++) {
+        if(parcatsViewModel.key === allTraces[i].uid) {
             traceInd = i;
             break;
         }
@@ -1157,22 +1151,22 @@ function getTraceIndex(parcatsViewModel) {
  */
 function updateSvgPaths(parcatsViewModel, hasTransition) {
 
-    if (hasTransition === undefined) {
+    if(hasTransition === undefined) {
         hasTransition = false;
     }
 
     function transition(selection) {
-        return hasTransition? selection.transition(): selection
+        return hasTransition ? selection.transition() : selection;
     }
 
     // Update binding
     parcatsViewModel.pathSelection.data(function(d) {
-        return d.paths
+        return d.paths;
     }, key);
 
     // Update paths
     transition(parcatsViewModel.pathSelection).attr('d', function(d) {
-        return d.svgD
+        return d.svgD;
     });
 }
 
@@ -1182,12 +1176,12 @@ function updateSvgPaths(parcatsViewModel, hasTransition) {
  */
 function updateSvgCategories(parcatsViewModel, hasTransition) {
 
-    if (hasTransition === undefined) {
+    if(hasTransition === undefined) {
         hasTransition = false;
     }
 
     function transition(selection) {
-        return hasTransition? selection.transition(): selection
+        return hasTransition ? selection.transition() : selection;
     }
 
     // Update binding
@@ -1197,7 +1191,7 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
 
     var categorySelection = parcatsViewModel.dimensionSelection
         .selectAll('g.category')
-        .data(function(d){return d.categories;}, key);
+        .data(function(d) {return d.categories;}, key);
 
     // Update dimension position
     transition(parcatsViewModel.dimensionSelection)
@@ -1208,7 +1202,7 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
     // Update category position
     transition(categorySelection)
         .attr('transform', function(d) {
-            return 'translate(0, ' + d.y + ')'
+            return 'translate(0, ' + d.y + ')';
         });
 
     var dimLabelSelection = categorySelection.select('.dimlabel');
@@ -1217,11 +1211,11 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
     // Only the top-most display category should have the dimension label
     dimLabelSelection
         .text(function(d, i) {
-            if (i === 0) {
+            if(i === 0) {
                 // Add dimension label above topmost category
                 return d.parcatsViewModel.model.dimensions[d.model.dimensionInd].dimensionLabel;
             } else {
-                return null
+                return null;
             }
         });
 
@@ -1231,18 +1225,18 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
     var catLabelSelection = categorySelection.select('.catlabel');
     catLabelSelection
         .attr('text-anchor',
-            function (d) {
-                if (catInRightDim(d)) {
+            function(d) {
+                if(catInRightDim(d)) {
                     // Place label to the right of category
                     return 'start';
                 } else {
                     // Place label to the left of category
-                    return  'end';
+                    return 'end';
                 }
             })
         .attr('x',
-            function (d) {
-                if (catInRightDim(d)) {
+            function(d) {
+                if(catInRightDim(d)) {
                     // Place label to the right of category
                     return d.width + 5;
                 } else {
@@ -1257,7 +1251,7 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
         .selectAll('rect.bandrect')
         .data(
             /** @param {CategoryViewModel} catViewModel*/
-            function (catViewModel) {
+            function(catViewModel) {
                 return catViewModel.bands;
             }, key);
 
@@ -1267,31 +1261,31 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
         .attr('cursor', 'move')
         .attr('stroke-opacity', 0)
         .attr('fill', function(d) {
-            return d.color
+            return d.color;
         })
         .attr('fill-opacity', 0);
 
     bandSelection
-        .attr('fill', function (d) {
+        .attr('fill', function(d) {
             return d.color;
         })
-        .attr('width', function (d) {
+        .attr('width', function(d) {
             return d.width;
         })
-        .attr('height', function (d) {
+        .attr('height', function(d) {
             return d.height;
         })
-        .attr('y', function (d) {
+        .attr('y', function(d) {
             return d.y;
         });
 
     styleBandsNoHover(bandsSelectionEnter);
 
     // Raise bands to the top
-    bandSelection.each(function() {Lib.raiseToTop(this)});
+    bandSelection.each(function() {Lib.raiseToTop(this);});
 
     // Remove unused bands
-    bandSelection.exit().remove()
+    bandSelection.exit().remove();
 }
 
 /**
@@ -1318,13 +1312,13 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
         figureHeight = layout.height,
         traceWidth = Math.floor(figureWidth * (domain.x[1] - domain.x[0])),
         traceHeight = Math.floor(figureHeight * (domain.y[1] - domain.y[0])),
-        traceX = domain.x[0] * figureWidth + margin['l'],
-        traceY = layout.height - domain.y[1] * layout.height + margin['t'];
+        traceX = domain.x[0] * figureWidth + margin.l,
+        traceY = layout.height - domain.y[1] * layout.height + margin.t;
 
     // Handle path shape
     // -----------------
     var pathShape;
-    if (trace.marker && trace.marker.shape){
+    if(trace.marker && trace.marker.shape) {
         pathShape = trace.marker.shape;
     } else {
         pathShape = 'curved';
@@ -1355,14 +1349,14 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
     };
 
     // Update dimension view models if we have at least 1 dimension
-    if (parcatsModel.dimensions) {
+    if(parcatsModel.dimensions) {
         updateDimensionViewModels(parcatsViewModel);
 
         // Update path view models if we have at least 2 dimensions
         updatePathViewModels(parcatsViewModel);
     }
     // Inside a categories view model
-    return parcatsViewModel
+    return parcatsViewModel;
 }
 
 /**
@@ -1387,7 +1381,7 @@ function buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, curvature) 
         refInterpolator,
         d;
 
-    for (d = 0; d < dimWidths.length - 1; d++) {
+    for(d = 0; d < dimWidths.length - 1; d++) {
         refInterpolator = d3.interpolateNumber(dimWidths[d] + leftXPositions[d], leftXPositions[d + 1]);
         xRefPoints1.push(refInterpolator(curvature));
         xRefPoints2.push(refInterpolator(1 - curvature));
@@ -1400,12 +1394,12 @@ function buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, curvature) 
     svgD += 'l' + dimWidths[0] + ',0 ';
 
     // Horizontal line to right edge
-    for (d = 1; d < dimWidths.length; d++) {
+    for(d = 1; d < dimWidths.length; d++) {
 
         // Curve to left edge of category
-        svgD += 'C' + xRefPoints1[d-1] + ',' + pathYs[d-1]
-              + ' ' + xRefPoints2[d-1] + ',' + pathYs[d]
-              + ' ' + leftXPositions[d] + ',' + pathYs[d];
+        svgD += 'C' + xRefPoints1[d - 1] + ',' + pathYs[d - 1] +
+              ' ' + xRefPoints2[d - 1] + ',' + pathYs[d] +
+              ' ' + leftXPositions[d] + ',' + pathYs[d];
 
         // svgD += 'L' + leftXPositions[d] + ',' + pathYs[d];
 
@@ -1419,12 +1413,12 @@ function buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, curvature) 
     // Line to left edge of right-most category
     svgD += 'l -' + dimWidths[dimWidths.length - 1] + ',0 ';
 
-    for (d = dimWidths.length - 2; d >= 0; d--) {
+    for(d = dimWidths.length - 2; d >= 0; d--) {
 
         // Curve to right edge of category
-        svgD += 'C' + xRefPoints2[d] + ',' + (pathYs[d+1] + pathHeight)
-             + ' ' + xRefPoints1[d] + ',' + (pathYs[d] + pathHeight)
-             + ' ' + (leftXPositions[d] + dimWidths[d]) + ',' + (pathYs[d] + pathHeight);
+        svgD += 'C' + xRefPoints2[d] + ',' + (pathYs[d + 1] + pathHeight) +
+             ' ' + xRefPoints1[d] + ',' + (pathYs[d] + pathHeight) +
+             ' ' + (leftXPositions[d] + dimWidths[d]) + ',' + (pathYs[d] + pathHeight);
 
         // svgD += 'L' + (leftXPositions[d] + dimWidths[d]) + ',' + (pathYs[d] + pathHeight);
 
@@ -1451,45 +1445,45 @@ function updatePathViewModels(parcatsViewModel) {
     var dimensionViewModels = parcatsViewModel.dimensions;
     var parcatsModel = parcatsViewModel.model;
     var nextYPositions = dimensionViewModels.map(
-        function (d) {
+        function(d) {
             return d.categories.map(
-                function (c) {
-                    return c.y
-                })
+                function(c) {
+                    return c.y;
+                });
         });
 
     // Array from category index to category display index for each true dimension index
     var catToDisplayIndPerDim = parcatsViewModel.model.dimensions.map(
-        function (d) {
-            return d.categories.map(function(c) {return c.displayInd})
+        function(d) {
+            return d.categories.map(function(c) {return c.displayInd;});
         });
 
     // Array from true dimension index to dimension display index
-    var dimToDisplayInd = parcatsViewModel.model.dimensions.map(function(d) {return d.displayInd});
-    var displayToDimInd = parcatsViewModel.dimensions.map(function(d) {return d.model.dimensionInd});
+    var dimToDisplayInd = parcatsViewModel.model.dimensions.map(function(d) {return d.displayInd;});
+    var displayToDimInd = parcatsViewModel.dimensions.map(function(d) {return d.model.dimensionInd;});
 
     // Array of the x position of the left edge of the rectangles for each dimension
     var leftXPositions = dimensionViewModels.map(
-        function (d) {
-            return d.x
+        function(d) {
+            return d.x;
         });
 
     // Compute dimension widths
-    var dimWidths = dimensionViewModels.map(function(d) {return d.width});
+    var dimWidths = dimensionViewModels.map(function(d) {return d.width;});
 
     // Build sorted Array of PathModel objects
     var pathModels = [];
-    for (var p in parcatsModel.paths) {
-        if (parcatsModel.paths.hasOwnProperty(p)) {
-            pathModels.push(parcatsModel.paths[p])
+    for(var p in parcatsModel.paths) {
+        if(parcatsModel.paths.hasOwnProperty(p)) {
+            pathModels.push(parcatsModel.paths[p]);
         }
     }
 
     // Compute category display inds to use for sorting paths
     function pathDisplayCategoryInds(pathModel) {
-        var dimensionInds = pathModel.categoryInds.map(function(catInd, dimInd){return catToDisplayIndPerDim[dimInd][catInd]});
+        var dimensionInds = pathModel.categoryInds.map(function(catInd, dimInd) {return catToDisplayIndPerDim[dimInd][catInd];});
         var displayInds = displayToDimInd.map(function(dimInd) {
-            return dimensionInds[dimInd]
+            return dimensionInds[dimInd];
         });
         return displayInds;
     }
@@ -1502,7 +1496,7 @@ function updatePathViewModels(parcatsViewModel) {
         var sortArray2 = pathDisplayCategoryInds(v2);
 
         // Handle path sort order
-        if (parcatsViewModel.sortpaths === 'backward') {
+        if(parcatsViewModel.sortpaths === 'backward') {
             sortArray1.reverse();
             sortArray2.reverse();
         }
@@ -1512,17 +1506,17 @@ function updatePathViewModels(parcatsViewModel) {
         sortArray2.push(v2.valueInds[0]);
 
         // Handle color bundling
-        if (parcatsViewModel.bundlecolors) {
+        if(parcatsViewModel.bundlecolors) {
             // Prepend sort array with the raw color value
             sortArray1.unshift(v1.rawColor);
             sortArray2.unshift(v2.rawColor);
         }
 
         // colors equal, sort by display categories
-        if (sortArray1 < sortArray2) {
+        if(sortArray1 < sortArray2) {
             return -1;
         }
-        if (sortArray1 > sortArray2) {
+        if(sortArray1 > sortArray2) {
             return 1;
         }
 
@@ -1534,15 +1528,15 @@ function updatePathViewModels(parcatsViewModel) {
         totalCount = dimensionViewModels[0].model.count,
         totalHeight = dimensionViewModels[0].categories
             .map(function(c) {
-                return c.height}).reduce(
-                    function(v1, v2) {return v1+v2});
+                return c.height;}).reduce(
+                    function(v1, v2) {return v1 + v2;});
 
 
-    for(var pathNumber=0; pathNumber < pathModels.length; pathNumber++) {
+    for(var pathNumber = 0; pathNumber < pathModels.length; pathNumber++) {
         var pathModel = pathModels[pathNumber];
 
         var pathHeight;
-        if (totalCount > 0) {
+        if(totalCount > 0) {
             pathHeight = totalHeight * (pathModel.count / totalCount);
         } else {
             pathHeight = 0;
@@ -1550,7 +1544,7 @@ function updatePathViewModels(parcatsViewModel) {
 
         // Build path y coords
         var pathYs = new Array(nextYPositions.length);
-        for (var d=0; d < pathModel.categoryInds.length; d++) {
+        for(var d = 0; d < pathModel.categoryInds.length; d++) {
             var catInd = pathModel.categoryInds[d];
             var catDisplayInd = catToDisplayIndPerDim[d][catInd];
             var dimDisplayInd = dimToDisplayInd[d];
@@ -1562,11 +1556,11 @@ function updatePathViewModels(parcatsViewModel) {
             // Update category color information
             var catViewModle = parcatsViewModel.dimensions[dimDisplayInd].categories[catDisplayInd];
             var numBands = catViewModle.bands.length;
-            var lastCatBand = catViewModle.bands[numBands-1];
+            var lastCatBand = catViewModle.bands[numBands - 1];
 
-            if (lastCatBand === undefined || pathModel.rawColor !== lastCatBand.rawColor) {
+            if(lastCatBand === undefined || pathModel.rawColor !== lastCatBand.rawColor) {
                 // Create a new band
-                var bandY = lastCatBand === undefined? 0: lastCatBand.y + lastCatBand.height;
+                var bandY = lastCatBand === undefined ? 0 : lastCatBand.y + lastCatBand.height;
                 catViewModle.bands.push({
                     key: bandY,
                     color: pathModel.color,
@@ -1580,7 +1574,7 @@ function updatePathViewModels(parcatsViewModel) {
                 });
             } else {
                 // Extend current band
-                var currentBand = catViewModle.bands[numBands-1];
+                var currentBand = catViewModle.bands[numBands - 1];
                 currentBand.height += pathHeight;
                 currentBand.count += pathModel.count;
             }
@@ -1588,7 +1582,7 @@ function updatePathViewModels(parcatsViewModel) {
 
         // build svg path
         var svgD;
-        if (parcatsViewModel.pathShape === 'curved') {
+        if(parcatsViewModel.pathShape === 'curved') {
             svgD = buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, 0.5);
         } else {
             svgD = buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, 0);
@@ -1603,10 +1597,10 @@ function updatePathViewModels(parcatsViewModel) {
             dimWidths: dimWidths,
             svgD: svgD,
             parcatsViewModel: parcatsViewModel
-        }
+        };
     }
 
-    parcatsViewModel['paths'] = pathViewModels;
+    parcatsViewModel.paths = pathViewModels;
 
  // * @property key
  // *  Unique key for this model
@@ -1627,22 +1621,22 @@ function updatePathViewModels(parcatsViewModel) {
 function updateDimensionViewModels(parcatsViewModel) {
 
     // Compute dimension ordering
-    var dimensionsIndInfo = parcatsViewModel.model.dimensions.map(function(d, i) {
-        return {displayInd: d.displayInd, dimensionInd: d.dimensionInd}
+    var dimensionsIndInfo = parcatsViewModel.model.dimensions.map(function(d) {
+        return {displayInd: d.displayInd, dimensionInd: d.dimensionInd};
     });
 
     dimensionsIndInfo.sort(function(a, b) {
-        return a.displayInd - b.displayInd
+        return a.displayInd - b.displayInd;
     });
 
     var dimensions = [];
-    for (var displayInd in dimensionsIndInfo) {
+    for(var displayInd in dimensionsIndInfo) {
         var dimensionInd = dimensionsIndInfo[displayInd].dimensionInd;
         var dimModel = parcatsViewModel.model.dimensions[dimensionInd];
         dimensions.push(createDimensionViewModel(parcatsViewModel, dimModel));
     }
 
-    parcatsViewModel['dimensions'] = dimensions;
+    parcatsViewModel.dimensions = dimensions;
 }
 
 /**
@@ -1666,13 +1660,13 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
         dimX0,
         dimX;
 
-    if (numDimensions > 1) {
-        dimDx = (parcatsViewModel.width - 2*categoryLabelPad - dimWidth) / (numDimensions - 1);
+    if(numDimensions > 1) {
+        dimDx = (parcatsViewModel.width - 2 * categoryLabelPad - dimWidth) / (numDimensions - 1);
     } else {
-        dimDx = 0
+        dimDx = 0;
     }
     dimX0 = categoryLabelPad;
-    dimX = dimX0 + dimDx*displayInd;
+    dimX = dimX0 + dimDx * displayInd;
 
     // Compute categories
     var categories = [],
@@ -1691,19 +1685,19 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
     var nextCatY = (maxCats - numCats) * catSpacing / 2.0;
 
     // Compute category ordering
-    var categoryIndInfo = dimensionModel.categories.map(function(c, i) {
-        return {displayInd: c.displayInd, categoryInd: c.categoryInd}
+    var categoryIndInfo = dimensionModel.categories.map(function(c) {
+        return {displayInd: c.displayInd, categoryInd: c.categoryInd};
     });
 
     categoryIndInfo.sort(function(a, b) {
-        return a.displayInd - b.displayInd
+        return a.displayInd - b.displayInd;
     });
 
-    for (catDisplayInd = 0; catDisplayInd < numCats; catDisplayInd++) {
+    for(catDisplayInd = 0; catDisplayInd < numCats; catDisplayInd++) {
         catInd = categoryIndInfo[catDisplayInd].categoryInd;
         nextCatModel = dimensionModel.categories[catInd];
 
-        if (totalCount > 0) {
+        if(totalCount > 0) {
             nextCatHeight = (nextCatModel.count / totalCount) * totalHeight;
         } else {
             nextCatHeight = 0;
@@ -1714,18 +1708,18 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
             model: nextCatModel,
             width: dimWidth,
             height: nextCatHeight,
-            y: nextCatModel.dragY !== null? nextCatModel.dragY: nextCatY,
+            y: nextCatModel.dragY !== null ? nextCatModel.dragY : nextCatY,
             bands: [],
             parcatsViewModel: parcatsViewModel
         };
 
         nextCatY = nextCatY + nextCatHeight + catSpacing;
-        categories.push(nextCat)
+        categories.push(nextCat);
     }
 
     return {
         key: dimensionModel.dimensionInd,
-        x: dimensionModel.dragX !== null? dimensionModel.dragX: dimX,
+        x: dimensionModel.dragX !== null ? dimensionModel.dragX : dimX,
         y: 0,
         width: dimWidth,
         model: dimensionModel,
@@ -1737,7 +1731,7 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
         initialDragCategoryDisplayInds: null,
         dragHasMoved: null,
         potentialClickBand: null
-    }
+    };
 }
 
 // JSDoc typedefs

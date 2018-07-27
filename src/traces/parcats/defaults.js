@@ -11,15 +11,13 @@
 var Lib = require('../../lib');
 var attributes = require('./attributes');
 var parcatConstants = require('./constants');
-var hasColorscale = require('../../components/colorscale/has_colorscale');
-var colorscaleDefaults = require('../../components/colorscale/defaults');
 var colorbarDefaults = require('../../components/colorbar/defaults');
 
 function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
     coerce('marker.color', defaultColor);
 
-    if (traceIn.marker) {
+    if(traceIn.marker) {
         coerce('marker.cmin');
         coerce('marker.cmax');
         coerce('marker.cauto');
@@ -55,7 +53,7 @@ function dimensionsDefaults(traceIn, traceOut) {
         }
 
         // Dimension level
-        var values = coerce('values');
+        coerce('values');
         coerce('label');
         coerce('displayInd', i);
 
@@ -97,13 +95,12 @@ function dimensionsDefaults(traceIn, traceOut) {
 }
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    console.log(traceIn);
 
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var dimensions = dimensionsDefaults(traceIn, traceOut);
+    dimensionsDefaults(traceIn, traceOut);
 
     coerce('domain.x');
     coerce('domain.y');
@@ -115,6 +112,4 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('bundlecolors');
     coerce('sortpaths');
     coerce('counts');
-
-    console.log(['dimensionsDefaults', traceIn, traceOut]);
 };

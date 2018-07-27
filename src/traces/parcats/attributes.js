@@ -8,7 +8,6 @@
 
 'use strict';
 
-var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var colorAttributes = require('../../components/colorscale/attributes');
 
@@ -17,8 +16,8 @@ var scatterMarkerAttrs = scatterAttrs.marker;
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var marker = extendFlat({
-        editType: 'calc'
-    }, colorAttributes('marker', {editType: 'calc'}),
+    editType: 'calc'
+}, colorAttributes('marker', {editType: 'calc'}),
     {
         showscale: scatterMarkerAttrs.showscale,
         colorbar: colorbarAttrs,
@@ -169,15 +168,15 @@ module.exports = {
 
     marker: marker,
     counts: {
-            valType: 'number',
-            min: 0,
-            dflt: 1,
-            arrayOk: true,
-            role: 'info',
-            editType: 'calc',
-            description: [
-                'The number of observations represented by each state. Defaults to 1 so that each state represents ' +
+        valType: 'number',
+        min: 0,
+        dflt: 1,
+        arrayOk: true,
+        role: 'info',
+        editType: 'calc',
+        description: [
+            'The number of observations represented by each state. Defaults to 1 so that each state represents ' +
                 'one observation'
-            ]
+        ]
     }
 };

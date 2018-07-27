@@ -156,7 +156,7 @@ exports.loneHover = function loneHover(hoverItem, opts) {
 // TODO: replace loneHover?
 exports.customHovers = function customHovers(hoverItems, opts) {
 
-    if (!Array.isArray(hoverItems)) {
+    if(!Array.isArray(hoverItems)) {
         hoverItems = [hoverItems];
     }
 
@@ -210,11 +210,11 @@ exports.customHovers = function customHovers(hoverItems, opts) {
     var tooltipSpacing = 5;
     var lastBottomY = 0;
     hoverLabel
-        .sort(function(a, b) {return a.y0 - b.y0})
+        .sort(function(a, b) {return a.y0 - b.y0;})
         .each(function(d) {
             var topY = d.y0 - d.by / 2;
 
-            if ((topY - tooltipSpacing) < lastBottomY ) {
+            if((topY - tooltipSpacing) < lastBottomY) {
                 d.offset = (lastBottomY - topY) + tooltipSpacing;
             } else {
                 d.offset = 0;

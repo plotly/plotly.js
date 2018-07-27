@@ -32,18 +32,16 @@ module.exports = function calc(gd, trace) {
 
     // Process inputs
     // --------------
-    if (trace.dimensions.length === 0) {
+    if(trace.dimensions.length === 0) {
         // No dimensions specified. Nothing to compute
-        return []
+        return [];
     }
-
-    console.log(['calc', trace, gd.data, gd._fullData]);
 
     // Compute unique information
     // --------------------------
     // UniqueInfo per dimension
     var uniqueInfoDims = trace.dimensions.map(function(dim) {
-        return getUniqueInfo(dim.values, dim.catValues)
+        return getUniqueInfo(dim.values, dim.catValues);
     });
 
     // Number of values and counts
@@ -55,7 +53,7 @@ module.exports = function calc(gd, trace) {
     var counts,
         count,
         totalCount;
-    if (Lib.isArrayOrTypedArray(trace.counts)) {
+    if(Lib.isArrayOrTypedArray(trace.counts)) {
         counts = trace.counts;
     } else {
         counts = [trace.counts];
@@ -77,7 +75,7 @@ module.exports = function calc(gd, trace) {
     var markerColorscale;
 
     // Process colorscale
-    if (marker) {
+    if(marker) {
         if(hasColorscale(trace, 'marker')) {
             colorscaleCalc(trace, trace.marker.color, 'marker', 'c');
         }
@@ -89,9 +87,9 @@ module.exports = function calc(gd, trace) {
     // Build color generation function
     function getMarkerColorInfo(index) {
         var value;
-        if (!marker) {
+        if(!marker) {
             value = parcatConstants.defaultColor;
-        } else if (Array.isArray(marker.color)) {
+        } else if(Array.isArray(marker.color)) {
             value = marker.color[index % marker.color.length];
         } else {
             value = marker.color;
@@ -99,8 +97,6 @@ module.exports = function calc(gd, trace) {
 
         return {color: markerColorscale(value), rawColor: value};
     }
-
-    console.log(markerColorscale);
 
     // Build/Validate category labels/order
     // ------------------------------------
@@ -121,7 +117,7 @@ module.exports = function calc(gd, trace) {
     //   a) Set catValues to unique catValues
     //   b) Set carorder to 0 to catValues.length
     //
-    //uniqueInfoDims[0].uniqueValues
+    // uniqueInfoDims[0].uniqueValues
 
     // Category order logic
     // 1)
@@ -132,16 +128,18 @@ module.exports = function calc(gd, trace) {
     var pathModels = {};
 
     // Category inds array for each dimension
-    var categoryIndsDims = uniqueInfoDims.map(function(di) {return di.inds});
+    var categoryIndsDims = uniqueInfoDims.map(function(di) {return di.inds;});
 
     // Initialize total count
     totalCount = 0;
+    var valueInd;
+    var d;
 
-    for (var valueInd=0; valueInd < numValues; valueInd++) {
+    for(valueInd = 0; valueInd < numValues; valueInd++) {
 
         // Category inds for this input value across dimensions
         var categoryIndsPath = [];
-        for (var d=0; d < categoryIndsDims.length; d++) {
+        for(d = 0; d < categoryIndsDims.length; d++) {
             categoryIndsPath.push(categoryIndsDims[d][valueInd]);
         }
 
@@ -149,7 +147,7 @@ module.exports = function calc(gd, trace) {
         count = counts[valueInd % counts.length];
 
         // Update total count
-        totalCount+= count;
+        totalCount += count;
 
         // Path color
         var pathColorInfo = getMarkerColorInfo(valueInd);
@@ -158,7 +156,7 @@ module.exports = function calc(gd, trace) {
         var pathKey = categoryIndsPath + '-' + pathColorInfo.rawColor;
 
         // Create / Update PathModel
-        if (pathModels[pathKey] === undefined) {
+        if(pathModels[pathKey] === undefined) {
             pathModels[pathKey] = createPathModel(categoryIndsPath,
                 pathColorInfo.color,
                 pathColorInfo.rawColor);
@@ -175,16 +173,16 @@ module.exports = function calc(gd, trace) {
     });
 
 
-    for (valueInd=0; valueInd < numValues; valueInd++) {
+    for(valueInd = 0; valueInd < numValues; valueInd++) {
 
         count = counts[valueInd % counts.length];
 
-        for (d=0; d < dimensionModels.length; d++) {
+        for(d = 0; d < dimensionModels.length; d++) {
             var catInd = uniqueInfoDims[d].inds[valueInd];
             var cats = dimensionModels[d].categories;
 
 
-            if (cats[catInd] === undefined) {
+            if(cats[catInd] === undefined) {
                 var catLabel = trace.dimensions[d].catLabels[catInd];
                 var displayInd = trace.dimensions[d].catDisplayInds[catInd];
 
@@ -198,17 +196,6 @@ module.exports = function calc(gd, trace) {
     // Compute unique
     return wrap(createParcatsModel(dimensionModels, pathModels, totalCount));
 };
-
-
-// Utilities
-// =========
-function getValue(arrayOrScalar, index) {
-    var value;
-    if(!Array.isArray(arrayOrScalar)) value = arrayOrScalar;
-    else if(index < arrayOrScalar.length) value = arrayOrScalar[index];
-    return value;
-}
-
 
 // Models
 // ======
@@ -239,9 +226,9 @@ function getValue(arrayOrScalar, index) {
  */
 function createParcatsModel(dimensions, paths, count) {
     var maxCats = dimensions
-        .map(function(d) {return d.categories.length})
-        .reduce(function(v1, v2) {return Math.max(v1, v2)});
-    return {dimensions: dimensions, paths: paths, trace: undefined, maxCats: maxCats, count: count}
+        .map(function(d) {return d.categories.length;})
+        .reduce(function(v1, v2) {return Math.max(v1, v2);});
+    return {dimensions: dimensions, paths: paths, trace: undefined, maxCats: maxCats, count: count};
 }
 
 // Dimension Model
@@ -281,7 +268,7 @@ function createDimensionModel(dimensionInd, displayInd, dimensionLabel, count) {
         count: count,
         categories: [],
         dragX: null
-    }
+    };
 }
 
 // Category Model
@@ -324,7 +311,7 @@ function createCategoryModel(dimensionInd, categoryInd, displayInd, categoryLabe
         valueInds: [],
         count: 0,
         dragY: null
-    }
+    };
 }
 
 /**
@@ -337,7 +324,7 @@ function createCategoryModel(dimensionInd, categoryInd, displayInd, categoryLabe
  */
 function updateCategoryModel(categoryModel, valueInd, count) {
     categoryModel.valueInds.push(valueInd);
-    categoryModel.count+= count;
+    categoryModel.count += count;
 }
 
 
@@ -375,7 +362,7 @@ function createPathModel(categoryInds, color, rawColor) {
         rawColor: rawColor,
         valueInds: [],
         count: 0
-    }
+    };
 }
 
 /**
@@ -388,7 +375,7 @@ function createPathModel(categoryInds, color, rawColor) {
  */
 function updatePathModel(pathModel, valueInd, count) {
     pathModel.valueInds.push(valueInd);
-    pathModel.count+= count;
+    pathModel.count += count;
 }
 
 // Unique calculations
@@ -423,11 +410,11 @@ function updatePathModel(pathModel, valueInd, count) {
 function getUniqueInfo(values, uniqueValues) {
 
     // Initialize uniqueValues if not specified
-    if (uniqueValues === undefined || uniqueValues === null) {
+    if(uniqueValues === undefined || uniqueValues === null) {
         uniqueValues = [];
     } else {
         // Shallow copy so append below doesn't alter input array
-        uniqueValues = uniqueValues.map(function(e){return e});
+        uniqueValues = uniqueValues.map(function(e) {return e;});
     }
 
     // Initialize Variables
@@ -456,17 +443,17 @@ function getUniqueInfo(values, uniqueValues) {
             uniqueValueCounts[item]++;
             itemInd = uniqueValueInds[item];
         }
-        inds.push(itemInd)
+        inds.push(itemInd);
     }
 
     // Build UniqueInfo
-    var uniqueCounts = uniqueValues.map(function (v) { return uniqueValueCounts[v] });
+    var uniqueCounts = uniqueValues.map(function(v) { return uniqueValueCounts[v]; });
 
     return {
         uniqueValues: uniqueValues,
         uniqueCounts: uniqueCounts,
         inds: inds
-    }
+    };
 }
 
 
@@ -477,11 +464,11 @@ function getUniqueInfo(values, uniqueValues) {
  * @param {Object} trace
  */
 function validateDimensionDisplayInds(trace) {
-    var displayInds = trace.dimensions.map(function(dim) {return dim.displayInd});
-    if (!isRangePermutation(displayInds)) {
-        trace.dimensions.forEach(function (dim, i){
+    var displayInds = trace.dimensions.map(function(dim) {return dim.displayInd;});
+    if(!isRangePermutation(displayInds)) {
+        trace.dimensions.forEach(function(dim, i) {
             dim.displayInd = i;
-        })
+        });
     }
 }
 
@@ -500,21 +487,21 @@ function validateCategoryProperties(dim, uniqueInfoDim) {
     dim.catValues = uniqueDimVals;
 
     // Handle catDisplayInds
-    if (dim.catDisplayInds.length !== uniqueDimVals.length || !isRangePermutation(dim.catDisplayInds)) {
-        dim.catDisplayInds = uniqueDimVals.map(function(v, i) {return i});
+    if(dim.catDisplayInds.length !== uniqueDimVals.length || !isRangePermutation(dim.catDisplayInds)) {
+        dim.catDisplayInds = uniqueDimVals.map(function(v, i) {return i;});
     }
 
     // Handle catLabels
-    if (dim.catLabels === null || dim.catLabels === undefined) {
+    if(dim.catLabels === null || dim.catLabels === undefined) {
         dim.catLabels = [];
     } else {
         // Shallow copy to avoid modifying input array
-        dim.catLabels = dim.catLabels.map(function(v) {return v});
+        dim.catLabels = dim.catLabels.map(function(v) {return v;});
     }
 
     // Extend catLabels with elements from uniqueInfoDim.uniqueValues
-    for (var i=dim.catLabels.length; i < uniqueInfoDim.uniqueValues.length; i++) {
-        dim.catLabels.push(uniqueInfoDim.uniqueValues[i])
+    for(var i = dim.catLabels.length; i < uniqueInfoDim.uniqueValues.length; i++) {
+        dim.catLabels.push(uniqueInfoDim.uniqueValues[i]);
     }
 }
 
@@ -526,14 +513,14 @@ function validateCategoryProperties(dim, uniqueInfoDim) {
 function isRangePermutation(inds) {
     var indsSpecified = new Array(inds.length);
 
-    for (var i=0; i < inds.length; i++) {
+    for(var i = 0; i < inds.length; i++) {
         // Check for out of bounds
-        if (inds[i] < 0 || inds[i] >= inds.length) {
+        if(inds[i] < 0 || inds[i] >= inds.length) {
             return false;
         }
 
         // Check for collisions with already specified index
-        if (indsSpecified[inds[i]] !== undefined) {
+        if(indsSpecified[inds[i]] !== undefined) {
             return false;
         }
 
@@ -541,35 +528,5 @@ function isRangePermutation(inds) {
     }
 
     // Nothing out of bounds and no collisions. We have a permutation
-    return true
-}
-
-/**
- * Determine whether two arrays are permutations of each other
- * This is accomplished by sorting both arrays lexicographically and checking element equality
- * @param {Array} a1
- * @param {Array} a2
- */
-function arePermutations(a1, a2) {
-
-    // Check for equal length
-    if (a1 === null || a2 === null || a1.length !== a2.length) {
-        return false
-    } else {
-        var a1_sorted = a1.map(function(v){return v});
-        a1_sorted.sort();
-
-        var a2_sorted = a2.map(function(v){return v});
-        a2_sorted.sort();
-
-        for(var i=0; i < a1_sorted.length; i++) {
-            if (a1_sorted[i] !== a2_sorted[i]) {
-                // Elements not equal
-                return false;
-            }
-        }
-
-        // Same number of elemenets and all elements equal
-        return true;
-    }
+    return true;
 }
