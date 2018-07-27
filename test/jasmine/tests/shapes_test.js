@@ -86,10 +86,10 @@ describe('Test shapes defaults:', function() {
 
     it('should provide the right defaults on all axis types', function() {
         var fullLayout = {
-            xaxis: {type: 'linear', range: [0, 20]},
-            yaxis: {type: 'log', range: [1, 5]},
-            xaxis2: {type: 'date', range: ['2006-06-05', '2006-06-09']},
-            yaxis2: {type: 'category', range: [-0.5, 7.5]},
+            xaxis: {type: 'linear', range: [0, 20], _shapeIndices: []},
+            yaxis: {type: 'log', range: [1, 5], _shapeIndices: []},
+            xaxis2: {type: 'date', range: ['2006-06-05', '2006-06-09'], _shapeIndices: []},
+            yaxis2: {type: 'category', range: [-0.5, 7.5], _shapeIndices: []},
             _subplots: {xaxis: ['x', 'x2'], yaxis: ['y', 'y2']}
         };
 

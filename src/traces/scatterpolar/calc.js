@@ -48,7 +48,7 @@ module.exports = function calc(gd, trace) {
     }
 
     var ppad = calcMarkerSize(trace, len);
-    trace._extremes.radialaxis = Axes.findExtremes(radialAxis, rArray, {ppad: ppad});
+    trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {ppad: ppad});
 
     calcColorscale(trace);
     arraysToCalcdata(cd, trace);

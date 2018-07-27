@@ -141,10 +141,12 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         updateDomain(ax, factor);
                         ax.setScale();
                         var m = Math.abs(ax._m);
+                        var extremes = concatExtremes(gd, ax);
+                        var minArray = extremes.min;
+                        var maxArray = extremes.max;
                         var newVal;
                         var k;
 
-                        var minArray = concatExtremes(gd, ax, 'min');
                         for(k = 0; k < minArray.length; k++) {
                             newVal = minArray[k].val - getPad(minArray[k]) / m;
                             if(newVal > outerMin && newVal < rangeMin) {
@@ -152,7 +154,6 @@ exports.enforce = function enforceAxisConstraints(gd) {
                             }
                         }
 
-                        var maxArray = concatExtremes(gd, ax, 'max');
                         for(k = 0; k < maxArray.length; k++) {
                             newVal = maxArray[k].val + getPad(maxArray[k]) / m;
                             if(newVal < outerMax && newVal > rangeMax) {
