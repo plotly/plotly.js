@@ -65,6 +65,8 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
         included,
         i, calcTrace, fullTrace;
 
+    initBase(gd, pa, sa, calcTraces);
+
     if(overlay) {
         setGroupPositionsInOverlayMode(gd, pa, sa, calcTraces);
     }
@@ -108,6 +110,45 @@ function setGroupPositions(gd, pa, sa, calcTraces) {
     }
 
     collectExtents(calcTraces, pa);
+}
+
+function initBase(gd, pa, sa, calcTraces) {
+    var i, j;
+
+    for(i = 0; i < calcTraces.length; i++) {
+        var cd = calcTraces[i];
+        var trace = cd[0].trace;
+        var base = trace.base;
+        var b;
+
+        // not sure if it really makes sense to have dates for bar size data...
+        // ideally if we want to make gantt charts or something we'd treat
+        // the actual size (trace.x or y) as time delta but base as absolute
+        // time. But included here for completeness.
+        var scalendar = trace.orientation === 'h' ? trace.xcalendar : trace.ycalendar;
+
+        if(isArrayOrTypedArray(base)) {
+            for(j = 0; j < Math.min(base.length, cd.length); j++) {
+                b = sa.d2c(base[j], 0, scalendar);
+                if(isNumeric(b)) {
+                    cd[j].b = +b;
+                    cd[j].hasB = 1;
+                }
+                else cd[j].b = 0;
+            }
+            for(; j < cd.length; j++) {
+                cd[j].b = 0;
+            }
+        } else {
+            b = sa.d2c(base, 0, scalendar);
+            var hasBase = isNumeric(b);
+            b = hasBase ? b : 0;
+            for(j = 0; j < cd.length; j++) {
+                cd[j].b = b;
+                if(hasBase) cd[j].hasB = 1;
+            }
+        }
+    }
 }
 
 

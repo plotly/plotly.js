@@ -1331,22 +1331,34 @@ describe('A bar plot', function() {
         .catch(failTest)
         .then(done);
     });
+});
 
-    it('should update axis range according to visible edits', function(done) {
+describe('bar visibility toggling:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _assert(msg, xrng, yrng, calls) {
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
+        expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
+
+        var setPositions = gd._fullData[0]._module.setPositions;
+        expect(setPositions).toHaveBeenCalledTimes(calls);
+        setPositions.calls.reset();
+    }
+
+    it('should have the correct edit type', function() {
         var schema = Plotly.PlotSchema.get();
         expect(schema.traces.bar.attributes.visible.editType)
             .toBe('plot', 'visible editType');
+    });
 
-        function _assert(msg, xrng, yrng, calls) {
-            var fullLayout = gd._fullLayout;
-            expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
-            expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
-
-            var setPositions = gd._fullData[0]._module.setPositions;
-            expect(setPositions).toHaveBeenCalledTimes(calls);
-            setPositions.calls.reset();
-        }
-
+    it('should update axis range according to visible edits (group case)', function(done) {
         Plotly.plot(gd, [
             {type: 'bar', x: [1, 2, 3], y: [1, 2, 1]},
             {type: 'bar', x: [1, 2, 3], y: [-1, -2, -1]}
@@ -1371,6 +1383,36 @@ describe('A bar plot', function() {
         })
         .then(function() {
             _assert('back to both visible', [0.5, 3.5], [-2.222, 2.222], 1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update axis range according to visible edits (stack case)', function(done) {
+        Plotly.plot(gd, [
+            {type: 'bar', x: [1, 2, 3], y: [1, 2, 1]},
+            {type: 'bar', x: [1, 2, 3], y: [2, 3, 2]}
+        ], {barmode: 'stack'})
+        .then(function() {
+            spyOn(gd._fullData[0]._module, 'setPositions').and.callThrough();
+
+            _assert('base', [0.5, 3.5], [0, 5.263], 0);
+            return Plotly.restyle(gd, 'visible', false, [1]);
+        })
+        .then(function() {
+            _assert('visible [true,false]', [0.5, 3.5], [0, 2.105], 1);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            _assert('both invisible', [0.5, 3.5], [0, 2.105], 0);
+            return Plotly.restyle(gd, 'visible', true, [1]);
+        })
+        .then(function() {
+            _assert('visible [false,true]', [0.5, 3.5], [0, 3.157], 1);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            _assert('back to both visible', [0.5, 3.5], [0, 5.263], 1);
         })
         .catch(failTest)
         .then(done);
