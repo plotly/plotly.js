@@ -16,22 +16,17 @@ var draw = require('./draw').draw;
 
 
 module.exports = function calcAutorange(gd) {
-    var fullLayout = gd._fullLayout;
-    var annotationList = Lib.filterVisible(fullLayout.annotations);
-
-    if(annotationList.length && gd._fullData.length) {
+    if(gd._fullLayout.annotations.length && gd._fullData.length) {
         return Lib.syncOrAsync([draw, annAutorange], gd);
     }
 };
 
 function annAutorange(gd) {
-    var fullLayout = gd._fullLayout;
-
     // find the bounding boxes for each of these annotations'
     // relative to their anchor points
     // use the arrow and the text bg rectangle,
     // as the whole anno may include hidden text in its bbox
-    Lib.filterVisible(fullLayout.annotations).forEach(function(ann) {
+    gd._fullLayout.annotations.forEach(function(ann) {
         var xa = Axes.getFromId(gd, ann.xref);
         var ya = Axes.getFromId(gd, ann.yref);
 

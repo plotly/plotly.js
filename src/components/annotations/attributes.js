@@ -19,7 +19,7 @@ module.exports = templatedArray('annotation', {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'calc+arraydraw',
+        editType: 'plot+arraydraw',
         description: [
             'Determines whether or not this annotation is visible.'
         ].join(' ')

@@ -17,8 +17,8 @@ var helpers = require('./helpers');
 
 
 module.exports = function calcAutorange(gd) {
-    var fullLayout = gd._fullLayout,
-        shapeList = Lib.filterVisible(fullLayout.shapes);
+    var fullLayout = gd._fullLayout;
+    var shapeList = fullLayout.shapes;
 
     if(!shapeList.length || !gd._fullData.length) return;
 
