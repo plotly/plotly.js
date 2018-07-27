@@ -10,7 +10,7 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
-var colorAttributes = require('../../components/colorscale/color_attributes');
+var colorAttributes = require('../../components/colorscale/attributes');
 
 var scatterAttrs = require('../scatter/attributes');
 var scatterMarkerAttrs = scatterAttrs.marker;
@@ -18,7 +18,7 @@ var colorbarAttrs = require('../../components/colorbar/attributes');
 
 var marker = extendFlat({
         editType: 'calc'
-    }, colorAttributes('marker', 'calc'),
+    }, colorAttributes('marker', {editType: 'calc'}),
     {
         showscale: scatterMarkerAttrs.showscale,
         colorbar: colorbarAttrs,
