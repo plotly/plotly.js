@@ -102,7 +102,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
 
     var paths = sel.selectAll('path.box').data((
         trace.type !== 'violin' ||
-        (trace.box || {}).visible
+        trace.box.visible
     ) ? Lib.identity : []);
 
     paths.enter().append('path')
@@ -304,7 +304,7 @@ function plotBoxMean(sel, axes, trace, t) {
 
     var paths = sel.selectAll('path.mean').data((
         (trace.type === 'box' && trace.boxmean) ||
-        (trace.type === 'violin' && (trace.box || {}).visible && (trace.meanline || {}).visible)
+        (trace.type === 'violin' && trace.box.visible && trace.meanline.visible)
     ) ? Lib.identity : []);
 
     paths.enter().append('path')
