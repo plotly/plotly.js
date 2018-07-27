@@ -42,37 +42,21 @@ function annAutorange(gd) {
 }
 
 function calcAxisExpansion(ann, ax) {
-    var headSize = 3 * ann.arrowsize * ann.arrowwidth || 0;
-    var startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
-
     var axId = ax._id;
     var letter = axId.charAt(0);
     var pos = ann[letter];
     var apos = ann['a' + letter];
     var ref = ann[letter + 'ref'];
     var aref = ann['a' + letter + 'ref'];
-    var shift = ann[letter + 'shift'];
     var padplus = ann['_' + letter + 'padplus'];
     var padminus = ann['_' + letter + 'padminus'];
-
-    var headPlus, headMinus;
-    var startHeadPlus, startHeadMinus;
-
-    switch(letter) {
-        case 'x':
-            headPlus = headSize + shift;
-            headMinus = headSize - shift;
-            startHeadPlus = startHeadSize + shift;
-            startHeadMinus = startHeadSize - shift;
-            break;
-        case 'y':
-            headPlus = headSize - shift;
-            headMinus = headSize + shift;
-            startHeadPlus = startHeadSize - shift;
-            startHeadMinus = startHeadSize + shift;
-            break;
-    }
-
+    var shift = {x: 1, y: -1}[letter] * ann[letter + 'shift'];
+    var headSize = 3 * ann.arrowsize * ann.arrowwidth || 0;
+    var headPlus = headSize + shift;
+    var headMinus = headSize - shift;
+    var startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
+    var startHeadPlus = startHeadSize + shift;
+    var startHeadMinus = startHeadSize - shift;
     var extremes;
 
     if(aref === ref) {

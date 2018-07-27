@@ -2458,7 +2458,6 @@ plots.doCalcdata = function(gd, traces) {
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
 
-        // find array attributes in trace
         trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
 
         // keep track of trace extremes (for autorange) in here
