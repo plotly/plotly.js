@@ -429,11 +429,11 @@ function makeSubplotData(gd) {
     }
 
     // put 'regular' subplot data before 'overlaying'
+    var subplotIds = regulars.concat(overlays);
     var subplotData = new Array(len);
-    var list = regulars.concat(overlays);
 
     for(i = 0; i < len; i++) {
-        id = list[i];
+        id = subplotIds[i];
         plotinfo = fullLayout._plots[id];
         xa = plotinfo.xaxis;
         ya = plotinfo.yaxis;
