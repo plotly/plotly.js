@@ -195,14 +195,21 @@ function concatExtremes(gd, ax) {
     var fullLayout = gd._fullLayout;
     var minArray = [];
     var maxArray = [];
+    var i, j, d;
 
     function _concat(cont, indices) {
-        for(var i = 0; i < indices.length; i++) {
+        for(i = 0; i < indices.length; i++) {
             var item = cont[indices[i]];
             var extremes = (item._extremes || {})[axId];
             if(item.visible === true && extremes) {
-                minArray = minArray.concat(extremes.min);
-                maxArray = maxArray.concat(extremes.max);
+                for(j = 0; j < extremes.min.length; j++) {
+                    d = extremes.min[j];
+                    collapseMinArray(minArray, d.val, d.pad, {extrapad: d.extrapad});
+                }
+                for(j = 0; j < extremes.max.length; j++) {
+                    d = extremes.max[j];
+                    collapseMaxArray(maxArray, d.val, d.pad, {extrapad: d.extrapad});
+                }
             }
         }
     }
@@ -210,8 +217,6 @@ function concatExtremes(gd, ax) {
     _concat(fullData, ax._traceIndices);
     _concat(fullLayout.annotations || [], ax._annIndices || []);
     _concat(fullLayout.shapes || [], ax._shapeIndices || []);
-
-    // TODO collapse more!
 
     return {min: minArray, max: maxArray};
 }
@@ -295,11 +300,9 @@ function findExtremes(ax, data, options) {
     var len = data.length;
     var extrapad = options.padded || false;
     var tozero = options.tozero && (ax.type === 'linear' || ax.type === '-');
-    var isLog = (ax.type === 'log');
-
-    var i, j, k, v, di, dmin, dmax, ppadiplus, ppadiminus, includeThis, vmin, vmax;
-
+    var isLog = ax.type === 'log';
     var hasArrayOption = false;
+    var i, v, di, dmin, dmax, ppadiplus, ppadiminus, vmin, vmax;
 
     function makePadAccessor(item) {
         if(Array.isArray(item)) {
@@ -344,6 +347,8 @@ function findExtremes(ax, data, options) {
         len = 2;
     }
 
+    var collapseOpts = {tozero: tozero, extrapad: extrapad};
+
     function addItem(i) {
         di = data[i];
         if(!isNumeric(di)) return;
@@ -364,48 +369,11 @@ function findExtremes(ax, data, options) {
             dmin = Math.min(0, dmin);
             dmax = Math.max(0, dmax);
         }
-
-        for(k = 0; k < 2; k++) {
-            var newVal = k ? dmax : dmin;
-            if(goodNumber(newVal)) {
-                var extremes = k ? maxArray : minArray;
-                var newPad = k ? ppadiplus : ppadiminus;
-                var atLeastAsExtreme = k ? greaterOrEqual : lessOrEqual;
-
-                includeThis = true;
-                /*
-                 * Take items v from ax._min/_max and compare them to the presently active point:
-                 * - Since we don't yet know the relationship between pixels and values
-                 *   (that's what we're trying to figure out!) AND we don't yet know how
-                 *   many pixels `extrapad` represents (it's going to be 5% of the length,
-                 *   but we don't want to have to redo _min and _max just because length changed)
-                 *   two point must satisfy three criteria simultaneously for one to supersede the other:
-                 *   - at least as extreme a `val`
-                 *   - at least as big a `pad`
-                 *   - an unpadded point cannot supersede a padded point, but any other combination can
-                 *
-                 * - If the item supersedes the new point, set includethis false
-                 * - If the new pt supersedes the item, delete it from ax._min/_max
-                 */
-                for(j = 0; j < extremes.length && includeThis; j++) {
-                    v = extremes[j];
-                    if(atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
-                        includeThis = false;
-                        break;
-                    } else if(atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
-                        extremes.splice(j, 1);
-                        j--;
-                    }
-                }
-                if(includeThis) {
-                    var clipAtZero = (tozero && newVal === 0);
-                    extremes.push({
-                        val: newVal,
-                        pad: clipAtZero ? 0 : newPad,
-                        extrapad: clipAtZero ? false : extrapad
-                    });
-                }
-            }
+        if(goodNumber(dmin)) {
+            collapseMinArray(minArray, dmin, ppadiminus, collapseOpts);
+        }
+        if(goodNumber(dmax)) {
+            collapseMaxArray(maxArray, dmax, ppadiplus, collapseOpts);
         }
     }
 
@@ -417,6 +385,76 @@ function findExtremes(ax, data, options) {
     for(i = len - 1; i >= iMax; i--) addItem(i);
 
     return {min: minArray, max: maxArray};
+}
+
+function collapseMinArray(array, newVal, newPad, opts) {
+    collapseArray(array, newVal, newPad, opts, lessOrEqual);
+}
+
+function collapseMaxArray(array, newVal, newPad, opts) {
+    collapseArray(array, newVal, newPad, opts, greaterOrEqual);
+}
+
+/**
+ * collapseArray
+ *
+ * Take items v from 'array' compare them to 'newVal', 'newPad'
+ *
+ * @param {array} array:
+ *  current set of min or max extremes
+ * @param {number} newVal:
+ *  new value to compare against
+ * @param {number} newPad:
+ *  pad value associated with 'newVal'
+ * @param {object} opts:
+ *  - tozero {boolean}
+ *  - extrapad {number}
+ * @param {function} atLeastAsExtreme:
+ *  comparison function, use
+ *  - lessOrEqual for min 'array' and
+ *  - greaterOrEqual for max 'array'
+ *
+ * In practice, 'array' is either
+ *  - 'extremes[ax._id].min' or
+ *  - 'extremes[ax._id].max
+ *  found in traces and layout items that affect autorange.
+ *
+ * Since we don't yet know the relationship between pixels and values
+ * (that's what we're trying to figure out!) AND we don't yet know how
+ * many pixels `extrapad` represents (it's going to be 5% of the length,
+ * but we don't want to have to redo calc just because length changed)
+ * two point must satisfy three criteria simultaneously for one to supersede the other:
+ *  - at least as extreme a `val`
+ *  - at least as big a `pad`
+ *  - an unpadded point cannot supersede a padded point, but any other combination can
+ *
+ * Then:
+ * - If the item supersedes the new point, set includeThis false
+ * - If the new pt supersedes the item, delete it from 'array'
+ */
+function collapseArray(array, newVal, newPad, opts, atLeastAsExtreme) {
+    var tozero = opts.tozero;
+    var extrapad = opts.extrapad;
+    var includeThis = true;
+
+    for(var j = 0; j < array.length && includeThis; j++) {
+        var v = array[j];
+        if(atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
+            includeThis = false;
+            break;
+        } else if(atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
+            array.splice(j, 1);
+            j--;
+        }
+    }
+    if(includeThis) {
+        var clipAtZero = (tozero && newVal === 0);
+        array.push({
+            val: newVal,
+            pad: clipAtZero ? 0 : newPad,
+            extrapad: clipAtZero ? false : extrapad
+        });
+    }
 }
 
 // In order to stop overflow errors, don't consider points
