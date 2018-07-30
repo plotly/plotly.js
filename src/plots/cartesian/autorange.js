@@ -199,7 +199,7 @@ function concatExtremes(gd, ax) {
     function _concat(cont, indices) {
         for(var i = 0; i < indices.length; i++) {
             var item = cont[indices[i]];
-            var extremes = item._extremes[axId];
+            var extremes = (item._extremes || {})[axId];
             if(item.visible === true && extremes) {
                 minArray = minArray.concat(extremes.min);
                 maxArray = maxArray.concat(extremes.max);
