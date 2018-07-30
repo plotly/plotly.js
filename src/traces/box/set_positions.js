@@ -86,12 +86,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
     // check for forced minimum dtick
     Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
 
-    // set the width of all boxes
-    for(i = 0; i < boxList.length; i++) {
-        calcTrace = calcdata[boxList[i]];
-        calcTrace[0].t.dPos = dPos;
-    }
-
     var gap = fullLayout[traceType + 'gap'];
     var groupgap = fullLayout[traceType + 'groupgap'];
     var padfactor = (1 - gap) * (1 - groupgap) * dPos / fullLayout[numKey];
@@ -99,10 +93,19 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
     // autoscale the x axis - including space for points if they're off the side
     // TODO: this will overdo it if the outermost boxes don't have
     // their points as far out as the other boxes
-    Axes.expand(posAxis, boxdv.vals, {
+    var extremes = Axes.findExtremes(posAxis, boxdv.vals, {
         vpadminus: dPos + pad[0] * padfactor,
         vpadplus: dPos + pad[1] * padfactor
     });
+
+    for(i = 0; i < boxList.length; i++) {
+        calcTrace = calcdata[boxList[i]];
+        // set the width of all boxes
+        calcTrace[0].t.dPos = dPos;
+        // link extremes to all boxes
+        calcTrace[0].trace._extremes[posAxis._id] = extremes;
+    }
+
 }
 
 module.exports = {

@@ -35,6 +35,9 @@ module.exports = function calc(gd, trace) {
         };
     }
 
+    var spanMin = Infinity;
+    var spanMax = -Infinity;
+
     for(var i = 0; i < cd.length; i++) {
         var cdi = cd[i];
         var vals = cdi.pts.map(helpers.extractVal);
@@ -62,9 +65,14 @@ module.exports = function calc(gd, trace) {
             cdi.density[k] = {v: v, t: t};
         }
 
-        Axes.expand(valAxis, span, {padded: true});
         groupStats.maxCount = Math.max(groupStats.maxCount, vals.length);
+
+        spanMin = Math.min(spanMin, span[0]);
+        spanMax = Math.max(spanMax, span[1]);
     }
+
+    var extremes = Axes.findExtremes(valAxis, [spanMin, spanMax], {padded: true});
+    trace._extremes[valAxis._id] = extremes;
 
     cd[0].t.labels.kde = Lib._(gd, 'kde:');
 

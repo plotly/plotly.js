@@ -19,6 +19,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var prepareRegl = require('../../lib/prepare_regl');
 var AxisIDs = require('../../plots/cartesian/axis_ids');
+var findExtremes = require('../../plots/cartesian/autorange').findExtremes;
 var Color = require('../../components/color');
 
 var subTypes = require('../scatter/subtypes');
@@ -85,11 +86,9 @@ function calc(gd, trace) {
     var opts = sceneOptions(gd, subplot, trace, positions, x, y);
     var scene = sceneUpdate(gd, subplot);
 
-    // Re-use SVG scatter axis expansion routine except
-    // for graph with very large number of points where it
-    // performs poorly.
-    // In big data case, fake Axes.expand outputs with data bounds,
-    // and an average size for array marker.size inputs.
+    // Reuse SVG scatter axis expansion routine.
+    // For graphs with very large number of points and array marker.size,
+    // use average marker size instead to speed things up.
     var ppad;
     if(count < TOO_MANY_POINTS) {
         ppad = calcMarkerSize(trace, count);
@@ -97,6 +96,8 @@ function calc(gd, trace) {
         ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
     }
     calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
+    if(opts.errorX) expandForErrorBars(trace, xa, opts.errorX);
+    if(opts.errorY) expandForErrorBars(trace, ya, opts.errorY);
 
     // set flags to create scene renderers
     if(opts.fill && !scene.fill2d) scene.fill2d = true;
@@ -138,6 +139,12 @@ function calc(gd, trace) {
     return [{x: false, y: false, t: stash, trace: trace}];
 }
 
+function expandForErrorBars(trace, ax, opts) {
+    var extremes = trace._extremes[ax._id];
+    var errExt = findExtremes(ax, opts._bnds, {padded: true});
+    extremes.min = extremes.min.concat(errExt.min);
+    extremes.max = extremes.max.concat(errExt.max);
+}
 
 // create scene options
 function sceneOptions(gd, subplot, trace, positions, x, y) {

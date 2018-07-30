@@ -288,6 +288,7 @@ exports.plot = function(gd, data, layout, config) {
 
     function positionAndAutorange() {
         if(!recalc) {
+            Plots.doSetPositions(gd);
             doAutoRangeAndConstraints();
             return;
         }

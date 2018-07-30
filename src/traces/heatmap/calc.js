@@ -124,8 +124,8 @@ module.exports = function calc(gd, trace) {
 
     // handled in gl2d convert step
     if(!isGL2D) {
-        Axes.expand(xa, xArray);
-        Axes.expand(ya, yArray);
+        trace._extremes[xa._id] = Axes.findExtremes(xa, xArray);
+        trace._extremes[ya._id] = Axes.findExtremes(ya, yArray);
     }
 
     var cd0 = {
