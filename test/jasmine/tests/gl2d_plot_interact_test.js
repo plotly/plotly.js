@@ -27,7 +27,10 @@ describe('@gl Test removal of gl contexts', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
 
     it('Plots.cleanPlot should remove gl context from the graph div of a gl2d plot', function(done) {
         Plotly.plot(gd, [{
@@ -41,6 +44,7 @@ describe('@gl Test removal of gl contexts', function() {
 
             expect(!!gd._fullLayout._plots.xy._scene).toBe(false);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -83,6 +87,7 @@ describe('@gl Test removal of gl contexts', function() {
                 firstCanvas !== secondCanvas && firstGlContext.isContextLost()
             );
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -118,6 +123,7 @@ describe('@gl Test gl plot side effects', function() {
             var rangeSlider = document.getElementsByClassName('range-slider')[0];
             expect(rangeSlider).not.toBeDefined();
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -160,6 +166,7 @@ describe('@gl Test gl plot side effects', function() {
 
             return Plotly.purge(gd);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -184,6 +191,7 @@ describe('@gl Test gl plot side effects', function() {
         .then(function() {
             expect(d3.selectAll('canvas').size()).toEqual(0);
         })
+        .catch(failTest)
         .then(done);
     });
 
