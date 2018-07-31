@@ -27,7 +27,10 @@ describe('Test removal of gl contexts', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
 
     it('@gl Plots.cleanPlot should remove gl context from the graph div of a gl2d plot', function(done) {
         Plotly.plot(gd, [{
@@ -41,6 +44,7 @@ describe('Test removal of gl contexts', function() {
 
             expect(!!gd._fullLayout._plots.xy._scene).toBe(false);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -83,6 +87,7 @@ describe('Test removal of gl contexts', function() {
                 firstCanvas !== secondCanvas && firstGlContext.isContextLost()
             );
         })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -94,9 +99,10 @@ describe('Test gl plot side effects', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(function() {
+    afterEach(function(done) {
         Plotly.purge(gd);
         destroyGraphDiv();
+        setTimeout(done, 1000);
     });
 
     it('@gl should not draw the rangeslider', function(done) {
@@ -118,6 +124,7 @@ describe('Test gl plot side effects', function() {
             var rangeSlider = document.getElementsByClassName('range-slider')[0];
             expect(rangeSlider).not.toBeDefined();
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -160,11 +167,12 @@ describe('Test gl plot side effects', function() {
 
             return Plotly.purge(gd);
         })
+        .catch(failTest)
         .then(done);
     });
 
     it('@gl should be able to switch trace type', function(done) {
-        Plotly.newPlot(gd, [{
+        Plotly.plot(gd, [{
             type: 'parcoords',
             x: [1, 2, 3],
             y: [2, 1, 2],
@@ -184,6 +192,7 @@ describe('Test gl plot side effects', function() {
         .then(function() {
             expect(d3.selectAll('canvas').size()).toEqual(0);
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -197,7 +206,7 @@ describe('Test gl plot side effects', function() {
         .then(function() {
             expect(gd.querySelector('.gl-canvas-context').width).toBe(600);
 
-            Plotly.relayout(gd, {width: 300});
+            return Plotly.relayout(gd, {width: 300});
         })
         .then(function() {
             expect(gd.querySelector('.gl-canvas-context').width).toBe(300);
@@ -216,9 +225,10 @@ describe('Test gl2d plots', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(function() {
+    afterEach(function(done) {
         Plotly.purge(gd);
         destroyGraphDiv();
+        setTimeout(done, 1000);
     });
 
     function mouseTo(p0, p1) {
