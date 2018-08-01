@@ -55,7 +55,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         // propagate the template.
         var axOut = contOut[axName] = {};
         axOut._id = axOut._name = axName;
-        axOut._traceIndices = subplotData.map(function(t) { return t.index; });
+        axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 
         var dataAttr = constants.axisName2dataArray[axName];
         var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr);
