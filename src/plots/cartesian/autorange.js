@@ -27,7 +27,7 @@ module.exports = {
  * Collects all _extremes values corresponding to a given axis
  * and computes its auto range.
  *
- * getAutoRange uses return values from findExtremes where:
+ * Note that getAutoRange uses return values from findExtremes.
  *
  * @param {object} gd:
  *   graph div object with filled-in fullData and fullLayout, in particular
@@ -398,7 +398,7 @@ function collapseMaxArray(array, newVal, newPad, opts) {
 /**
  * collapseArray
  *
- * Take items v from 'array' compare them to 'newVal', 'newPad'
+ * Takes items from 'array' and compares them to 'newVal', 'newPad'.
  *
  * @param {array} array:
  *  current set of min or max extremes
