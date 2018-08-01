@@ -48,7 +48,7 @@ describe('@gl Test removal of gl contexts', function() {
         .then(done);
     });
 
-    it('Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
+    it('@noCI Plotly.newPlot should remove gl context from the graph div of a gl2d plot', function(done) {
         var firstGlplotObject, firstGlContext, firstCanvas;
 
         Plotly.plot(gd, [{
