@@ -238,7 +238,7 @@ function sceneUpdate(gd, subplot) {
 
         // apply new option to all regl components (used on drag)
         scene.update = function update(opt) {
-            var opts = repeat(opt, scene.count);
+            var opts = Lib.repeat(opt, scene.count);
 
             if(scene.fill2d) scene.fill2d.update(opts);
             if(scene.scatter2d) scene.scatter2d.update(opts);
@@ -364,14 +364,6 @@ function clearViewport(comp, vp) {
     gl.scissor(vp[0], vp[1], vp[2] - vp[0], vp[3] - vp[1]);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
-}
-
-function repeat(opt, cnt) {
-    var opts = new Array(cnt);
-    for(var i = 0; i < cnt; i++) {
-        opts[i] = opt;
-    }
-    return opts;
 }
 
 function plot(gd, subplot, cdata) {
@@ -619,7 +611,7 @@ function plot(gd, subplot, cdata) {
             (yaxis._rl || yaxis.range)[1]
         ]
     };
-    var vpRange = repeat(vpRange0, scene.count);
+    var vpRange = Lib.repeat(vpRange0, scene.count);
 
     // upload viewport/range data to GPU
     if(scene.fill2d) {
