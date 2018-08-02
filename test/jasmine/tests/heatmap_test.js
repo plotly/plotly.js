@@ -301,6 +301,8 @@ describe('heatmap calc', function() {
         var fullTrace = gd._fullData[0];
         var fullLayout = gd._fullLayout;
 
+        fullTrace._extremes = {};
+
         var out = Heatmap.calc(gd, fullTrace)[0];
         out._xcategories = fullLayout.xaxis._categories;
         out._ycategories = fullLayout.yaxis._categories;

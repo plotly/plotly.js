@@ -95,8 +95,10 @@ proto.update = function(fullTrace, calcTrace) {
 
     this.heatmap.update(this.options);
 
-    Axes.expand(this.scene.xaxis, calcPt.x);
-    Axes.expand(this.scene.yaxis, calcPt.y);
+    var xa = this.scene.xaxis;
+    var ya = this.scene.yaxis;
+    fullTrace._extremes[xa._id] = Axes.findExtremes(xa, calcPt.x);
+    fullTrace._extremes[ya._id] = Axes.findExtremes(ya, calcPt.y);
 };
 
 proto.dispose = function() {

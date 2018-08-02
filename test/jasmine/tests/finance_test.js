@@ -931,6 +931,58 @@ describe('finance charts updates:', function() {
         .then(done);
     });
 
+    it('should be able to update ohlc tickwidth', function(done) {
+        var trace0 = Lib.extendDeep({}, mock0, {type: 'ohlc'});
+
+        function _assert(msg, exp) {
+            var tickLen = gd.calcdata[0][0].t.tickLen;
+            expect(tickLen)
+                .toBe(exp.tickLen, 'tickLen val in calcdata - ' + msg);
+            var pathd = d3.select(gd).select('.ohlc > path').attr('d');
+            expect(pathd)
+                .toBe(exp.pathd, 'path d attr - ' + msg);
+        }
+
+        Plotly.plot(gd, [trace0], {
+            xaxis: { rangeslider: {visible: false} }
+        })
+        .then(function() {
+            _assert('auto rng / base tickwidth', {
+                tickLen: 0.3,
+                pathd: 'M13.5,137.63H33.75M33.75,75.04V206.53M54,80.3H33.75'
+            });
+            return Plotly.restyle(gd, 'tickwidth', 0);
+        })
+        .then(function() {
+            _assert('auto rng / no tickwidth', {
+                tickLen: 0,
+                pathd: 'M33.75,137.63H33.75M33.75,75.04V206.53M33.75,80.3H33.75'
+            });
+
+            return Plotly.update(gd, {
+                tickwidth: null
+            }, {
+                'xaxis.range': [0, 8],
+                'yaxis.range': [30, 36]
+            });
+        })
+        .then(function() {
+            _assert('set rng / base tickwidth', {
+                tickLen: 0.3,
+                pathd: 'M-20.25,134.55H0M0,81V193.5M20.25,85.5H0'
+            });
+            return Plotly.restyle(gd, 'tickwidth', 0);
+        })
+        .then(function() {
+            _assert('set rng / no tickwidth', {
+                tickLen: 0,
+                pathd: 'M0,134.55H0M0,81V193.5M0,85.5H0'
+            });
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
 });
 
 describe('finance charts *special* handlers:', function() {

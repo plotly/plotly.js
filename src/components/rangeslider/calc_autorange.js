@@ -21,15 +21,12 @@ module.exports = function calcAutorange(gd) {
     // this step in subsequent draw calls.
 
     for(var i = 0; i < axes.length; i++) {
-        var ax = axes[i],
-            opts = ax[constants.name];
+        var ax = axes[i];
+        var opts = ax[constants.name];
 
-        // Don't try calling getAutoRange if _min and _max are filled in.
-        // This happens on updates where the calc step is skipped.
-
-        if(opts && opts.visible && opts.autorange && ax._min.length && ax._max.length) {
+        if(opts && opts.visible && opts.autorange) {
             opts._input.autorange = true;
-            opts._input.range = opts.range = getAutoRange(ax);
+            opts._input.range = opts.range = getAutoRange(gd, ax);
         }
     }
 };

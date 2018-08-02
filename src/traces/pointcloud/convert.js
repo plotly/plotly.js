@@ -11,7 +11,7 @@
 var createPointCloudRenderer = require('gl-pointcloud2d');
 
 var str2RGBArray = require('../../lib/str2rgbarray');
-var expandAxis = require('../../plots/cartesian/autorange').expand;
+var findExtremes = require('../../plots/cartesian/autorange').findExtremes;
 var getTraceColor = require('../scatter/get_trace_color');
 
 function Pointcloud(scene, uid) {
@@ -195,14 +195,11 @@ proto.updateFast = function(options) {
     this.pointcloud.update(this.pointcloudOptions);
 
     // add item for autorange routine
-    this.expandAxesFast(bounds, markerSizeMax / 2); // avoid axis reexpand just because of the adaptive point size
-};
-
-proto.expandAxesFast = function(bounds, markerSize) {
-    var pad = markerSize || 0.5;
-
-    expandAxis(this.scene.xaxis, [bounds[0], bounds[2]], {ppad: pad});
-    expandAxis(this.scene.yaxis, [bounds[1], bounds[3]], {ppad: pad});
+    var xa = this.scene.xaxis;
+    var ya = this.scene.yaxis;
+    var pad = markerSizeMax / 2 || 0.5;
+    options._extremes[xa._id] = findExtremes(xa, [bounds[0], bounds[2]], {ppad: pad});
+    options._extremes[ya._id] = findExtremes(ya, [bounds[1], bounds[3]], {ppad: pad});
 };
 
 proto.dispose = function() {

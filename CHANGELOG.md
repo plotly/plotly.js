@@ -10,6 +10,15 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.39.4] -- 2018-08-02
+
+### Fixed
+- Fix tenths of milliseconds handling in old numeric date data
+  (bug introduced in 1.21.0) [#2847]
+- Fix `yaxis` overlaying `yaxis2` layouts
+  (bug introduced in 1.39.3) [#2857]
+
+
 ## [1.39.3] -- 2018-07-25
 
 ### Fixed

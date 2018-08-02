@@ -16,25 +16,11 @@ var draw = require('./draw').draw;
 
 
 module.exports = function calcAutorange(gd) {
-    var fullLayout = gd._fullLayout,
-        annotationList = Lib.filterVisible(fullLayout.annotations);
+    var fullLayout = gd._fullLayout;
+    var annotationList = Lib.filterVisible(fullLayout.annotations);
 
-    if(!annotationList.length || !gd._fullData.length) return;
-
-    var annotationAxes = {};
-    annotationList.forEach(function(ann) {
-        annotationAxes[ann.xref] = 1;
-        annotationAxes[ann.yref] = 1;
-    });
-
-    for(var axId in annotationAxes) {
-        var ax = Axes.getFromId(gd, axId);
-        if(ax && ax.autorange) {
-            return Lib.syncOrAsync([
-                draw,
-                annAutorange
-            ], gd);
-        }
+    if(annotationList.length && gd._fullData.length) {
+        return Lib.syncOrAsync([draw, annAutorange], gd);
     }
 };
 
@@ -46,65 +32,56 @@ function annAutorange(gd) {
     // use the arrow and the text bg rectangle,
     // as the whole anno may include hidden text in its bbox
     Lib.filterVisible(fullLayout.annotations).forEach(function(ann) {
-        var xa = Axes.getFromId(gd, ann.xref),
-            ya = Axes.getFromId(gd, ann.yref),
-            headSize = 3 * ann.arrowsize * ann.arrowwidth || 0,
-            startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
+        var xa = Axes.getFromId(gd, ann.xref);
+        var ya = Axes.getFromId(gd, ann.yref);
 
-        var headPlus, headMinus, startHeadPlus, startHeadMinus;
-
-        if(xa && xa.autorange) {
-            headPlus = headSize + ann.xshift;
-            headMinus = headSize - ann.xshift;
-            startHeadPlus = startHeadSize + ann.xshift;
-            startHeadMinus = startHeadSize - ann.xshift;
-
-            if(ann.axref === ann.xref) {
-                // expand for the arrowhead (padded by arrowhead)
-                Axes.expand(xa, [xa.r2c(ann.x)], {
-                    ppadplus: headPlus,
-                    ppadminus: headMinus
-                });
-                // again for the textbox (padded by textbox)
-                Axes.expand(xa, [xa.r2c(ann.ax)], {
-                    ppadplus: Math.max(ann._xpadplus, startHeadPlus),
-                    ppadminus: Math.max(ann._xpadminus, startHeadMinus)
-                });
-            }
-            else {
-                startHeadPlus = ann.ax ? startHeadPlus + ann.ax : startHeadPlus;
-                startHeadMinus = ann.ax ? startHeadMinus - ann.ax : startHeadMinus;
-                Axes.expand(xa, [xa.r2c(ann.x)], {
-                    ppadplus: Math.max(ann._xpadplus, headPlus, startHeadPlus),
-                    ppadminus: Math.max(ann._xpadminus, headMinus, startHeadMinus)
-                });
-            }
-        }
-
-        if(ya && ya.autorange) {
-            headPlus = headSize - ann.yshift;
-            headMinus = headSize + ann.yshift;
-            startHeadPlus = startHeadSize - ann.yshift;
-            startHeadMinus = startHeadSize + ann.yshift;
-
-            if(ann.ayref === ann.yref) {
-                Axes.expand(ya, [ya.r2c(ann.y)], {
-                    ppadplus: headPlus,
-                    ppadminus: headMinus
-                });
-                Axes.expand(ya, [ya.r2c(ann.ay)], {
-                    ppadplus: Math.max(ann._ypadplus, startHeadPlus),
-                    ppadminus: Math.max(ann._ypadminus, startHeadMinus)
-                });
-            }
-            else {
-                startHeadPlus = ann.ay ? startHeadPlus + ann.ay : startHeadPlus;
-                startHeadMinus = ann.ay ? startHeadMinus - ann.ay : startHeadMinus;
-                Axes.expand(ya, [ya.r2c(ann.y)], {
-                    ppadplus: Math.max(ann._ypadplus, headPlus, startHeadPlus),
-                    ppadminus: Math.max(ann._ypadminus, headMinus, startHeadMinus)
-                });
-            }
-        }
+        ann._extremes = {};
+        if(xa) calcAxisExpansion(ann, xa);
+        if(ya) calcAxisExpansion(ann, ya);
     });
+}
+
+function calcAxisExpansion(ann, ax) {
+    var axId = ax._id;
+    var letter = axId.charAt(0);
+    var pos = ann[letter];
+    var apos = ann['a' + letter];
+    var ref = ann[letter + 'ref'];
+    var aref = ann['a' + letter + 'ref'];
+    var padplus = ann['_' + letter + 'padplus'];
+    var padminus = ann['_' + letter + 'padminus'];
+    var shift = {x: 1, y: -1}[letter] * ann[letter + 'shift'];
+    var headSize = 3 * ann.arrowsize * ann.arrowwidth || 0;
+    var headPlus = headSize + shift;
+    var headMinus = headSize - shift;
+    var startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
+    var startHeadPlus = startHeadSize + shift;
+    var startHeadMinus = startHeadSize - shift;
+    var extremes;
+
+    if(aref === ref) {
+        // expand for the arrowhead (padded by arrowhead)
+        var extremeArrowHead = Axes.findExtremes(ax, [ax.r2c(pos)], {
+            ppadplus: headPlus,
+            ppadminus: headMinus
+        });
+        // again for the textbox (padded by textbox)
+        var extremeText = Axes.findExtremes(ax, [ax.r2c(apos)], {
+            ppadplus: Math.max(padplus, startHeadPlus),
+            ppadminus: Math.max(padminus, startHeadMinus)
+        });
+        extremes = {
+            min: [extremeArrowHead.min[0], extremeText.min[0]],
+            max: [extremeArrowHead.max[0], extremeText.max[0]]
+        };
+    } else {
+        startHeadPlus = apos ? startHeadPlus + apos : startHeadPlus;
+        startHeadMinus = apos ? startHeadMinus - apos : startHeadMinus;
+        extremes = Axes.findExtremes(ax, [ax.r2c(pos)], {
+            ppadplus: Math.max(padplus, headPlus, startHeadPlus),
+            ppadminus: Math.max(padminus, headMinus, startHeadMinus)
+        });
+    }
+
+    ann._extremes[axId] = extremes;
 }
