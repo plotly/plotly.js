@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.39.3
+* plotly.js (mapbox) v1.39.4
 * Copyright 2012-2018, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -33131,7 +33131,7 @@ exports.svgAttrs = {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.39.3';
+exports.version = '1.39.4';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -52032,8 +52032,11 @@ function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout;
     var ids = fullLayout._subplots.cartesian;
     var len = ids.length;
-    var subplotData = new Array(len);
     var i, j, id, plotinfo, xa, ya;
+
+    // split 'regular' and 'overlaying' subplots
+    var regulars = [];
+    var overlays = [];
 
     for(i = 0; i < len; i++) {
         id = ids[i];
@@ -52048,25 +52051,35 @@ function makeSubplotData(gd) {
         plotinfo.overlays = [];
 
         if(mainplot !== id && mainplotinfo) {
-            // link 'main plot' ref in overlaying plotinfo
             plotinfo.mainplot = mainplot;
             plotinfo.mainplotinfo = mainplotinfo;
-            // fill in list of overlaying subplots in 'main plot'
-            mainplotinfo.overlays.push(plotinfo);
+            overlays.push(id);
         } else {
             plotinfo.mainplot = undefined;
             plotinfo.mainPlotinfo = undefined;
+            regulars.push(id);
         }
     }
 
-    // use info about axis layer and overlaying pattern
-    // to clean what need to be cleaned up in exit selection
+    // fill in list of overlaying subplots in 'main plot'
+    for(i = 0; i < overlays.length; i++) {
+        id = overlays[i];
+        plotinfo = fullLayout._plots[id];
+        plotinfo.mainplotinfo.overlays.push(plotinfo);
+    }
+
+    // put 'regular' subplot data before 'overlaying'
+    var subplotIds = regulars.concat(overlays);
+    var subplotData = new Array(len);
+
     for(i = 0; i < len; i++) {
-        id = ids[i];
+        id = subplotIds[i];
         plotinfo = fullLayout._plots[id];
         xa = plotinfo.xaxis;
         ya = plotinfo.yaxis;
 
+        // use info about axis layer and overlaying pattern
+        // to clean what need to be cleaned up in exit selection
         var d = [id, xa.layer, ya.layer, xa.overlaying || '', ya.overlaying || ''];
         for(j = 0; j < plotinfo.overlays.length; j++) {
             d.push(plotinfo.overlays[j].id);
@@ -53757,7 +53770,14 @@ module.exports = function setConvert(ax, fullLayout) {
         // as (local) ms if that fails.
         var ms = dateTime2ms(v, calendar || ax.calendar);
         if(ms === BADNUM) {
-            if(isNumeric(v)) ms = dateTime2ms(new Date(+v));
+            if(isNumeric(v)) {
+                v = +v;
+                // keep track of tenths of ms, that `new Date` will drop
+                // same logic as in Lib.ms2DateTime
+                var msecTenths = Math.floor(Lib.mod(v + 0.05, 1) * 10);
+                var msRounded = Math.round(v - msecTenths / 10);
+                ms = dateTime2ms(new Date(msRounded)) + msecTenths / 10;
+            }
             else return BADNUM;
         }
         return ms;
