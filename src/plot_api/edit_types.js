@@ -15,13 +15,11 @@ var isPlainObject = Lib.isPlainObject;
 var traceOpts = {
     valType: 'flaglist',
     extras: ['none'],
-    flags: ['calc', 'calcIfAutorange', 'clearAxisTypes', 'plot', 'style', 'colorbars'],
+    flags: ['calc', 'clearAxisTypes', 'plot', 'style', 'colorbars'],
     description: [
         'trace attributes should include an `editType` string matching this flaglist.',
         '*calc* is the most extensive: a full `Plotly.plot` starting by clearing `gd.calcdata`',
         'to force it to be regenerated',
-        '*calcIfAutorange* does a full `Plotly.plot`, but only clears and redoes `gd.calcdata`',
-        'if there is at least one autoranged axis.',
         '*clearAxisTypes* resets the types of the axes this trace is on, because new data could',
         'cause the automatic axis type detection to change. Log type will not be cleared, as that',
         'is never automatically chosen so must have been user-specified.',
@@ -35,15 +33,13 @@ var layoutOpts = {
     valType: 'flaglist',
     extras: ['none'],
     flags: [
-        'calc', 'calcIfAutorange', 'plot', 'legend', 'ticks', 'axrange',
+        'calc', 'plot', 'legend', 'ticks', 'axrange',
         'layoutstyle', 'modebar', 'camera', 'arraydraw'
     ],
     description: [
         'layout attributes should include an `editType` string matching this flaglist.',
         '*calc* is the most extensive: a full `Plotly.plot` starting by clearing `gd.calcdata`',
         'to force it to be regenerated',
-        '*calcIfAutorange* does a full `Plotly.plot`, but only clears and redoes `gd.calcdata`',
-        'if there is at least one autoranged axis.',
         '*plot* calls `Plotly.plot` but without first clearing `gd.calcdata`.',
         '*legend* only redraws the legend.',
         '*ticks* only redraws axis ticks, labels, and gridlines.',
@@ -60,7 +56,7 @@ var layoutOpts = {
 // that shouldn't be used in attributes, to deal with certain
 // combinations and conditionals efficiently
 var traceEditTypeFlags = traceOpts.flags.slice()
-    .concat(['clearCalc', 'fullReplot']);
+    .concat(['fullReplot']);
 
 var layoutEditTypeFlags = layoutOpts.flags.slice()
     .concat('layoutReplot');

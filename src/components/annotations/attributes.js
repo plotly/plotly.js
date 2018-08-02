@@ -19,7 +19,7 @@ module.exports = templatedArray('annotation', {
         valType: 'boolean',
         role: 'info',
         dflt: true,
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Determines whether or not this annotation is visible.'
         ].join(' ')
@@ -28,7 +28,7 @@ module.exports = templatedArray('annotation', {
     text: {
         valType: 'string',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the text associated with this annotation.',
             'Plotly uses a subset of HTML tags to do things like',
@@ -41,14 +41,14 @@ module.exports = templatedArray('annotation', {
         valType: 'angle',
         dflt: 0,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the angle at which the `text` is drawn',
             'with respect to the horizontal.'
         ].join(' ')
     },
     font: fontAttrs({
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         colorEditType: 'arraydraw',
         description: 'Sets the annotation text font.'
     }),
@@ -57,7 +57,7 @@ module.exports = templatedArray('annotation', {
         min: 1,
         dflt: null,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets an explicit width for the text box. null (default) lets the',
             'text set the box width. Wider text will be clipped.',
@@ -69,7 +69,7 @@ module.exports = templatedArray('annotation', {
         min: 1,
         dflt: null,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets an explicit height for the text box. null (default) lets the',
             'text set the box height. Taller text will be clipped.'
@@ -130,7 +130,7 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 1,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the padding (in px) between the `text`',
             'and the enclosing border.'
@@ -141,7 +141,7 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 1,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the width (in px) of the border enclosing',
             'the annotation `text`.'
@@ -152,7 +152,7 @@ module.exports = templatedArray('annotation', {
         valType: 'boolean',
         dflt: true,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Determines whether or not the annotation is drawn with an arrow.',
             'If *true*, `text` is placed near the arrow\'s tail.',
@@ -197,7 +197,7 @@ module.exports = templatedArray('annotation', {
         min: 0.3,
         dflt: 1,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the size of the end annotation arrow head, relative to `arrowwidth`.',
             'A value of 1 (default) gives a head about 3x as wide as the line.'
@@ -208,7 +208,7 @@ module.exports = templatedArray('annotation', {
         min: 0.3,
         dflt: 1,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the size of the start annotation arrow head, relative to `arrowwidth`.',
             'A value of 1 (default) gives a head about 3x as wide as the line.'
@@ -218,7 +218,7 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         min: 0.1,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: 'Sets the width (in px) of annotation arrow line.'
     },
     standoff: {
@@ -226,7 +226,7 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 0,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets a distance, in pixels, to move the end arrowhead away from the',
             'position it is pointing at, for example to point at the edge of',
@@ -240,7 +240,7 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 0,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets a distance, in pixels, to move the start arrowhead away from the',
             'position it is pointing at, for example to point at the edge of',
@@ -252,7 +252,7 @@ module.exports = templatedArray('annotation', {
     ax: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the x component of the arrow tail about the arrow head.',
             'If `axref` is `pixel`, a positive (negative) ',
@@ -265,7 +265,7 @@ module.exports = templatedArray('annotation', {
     ay: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the y component of the arrow tail about the arrow head.',
             'If `ayref` is `pixel`, a positive (negative) ',
@@ -332,7 +332,7 @@ module.exports = templatedArray('annotation', {
     x: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the annotation\'s x position.',
             'If the axis `type` is *log*, then you must take the',
@@ -350,7 +350,7 @@ module.exports = templatedArray('annotation', {
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'auto',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the text box\'s horizontal position anchor',
             'This anchor binds the `x` position to the *left*, *center*',
@@ -369,7 +369,7 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         dflt: 0,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Shifts the position of the whole annotation and arrow to the',
             'right (positive) or left (negative) by this many pixels.'
@@ -395,7 +395,7 @@ module.exports = templatedArray('annotation', {
     y: {
         valType: 'any',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the annotation\'s y position.',
             'If the axis `type` is *log*, then you must take the',
@@ -413,7 +413,7 @@ module.exports = templatedArray('annotation', {
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto',
         role: 'info',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Sets the text box\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',
@@ -432,7 +432,7 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         dflt: 0,
         role: 'style',
-        editType: 'calcIfAutorange+arraydraw',
+        editType: 'calc+arraydraw',
         description: [
             'Shifts the position of the whole annotation and arrow up',
             '(positive) or down (negative) by this many pixels.'

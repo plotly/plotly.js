@@ -1858,32 +1858,17 @@ describe('Test axes', function() {
             expect(ax._max).toEqual([{val: 6, pad: 10, extrapad: true}]);
         });
 
-        it('should return early if no data is given', function() {
+        it('should fail if no data is given', function() {
             ax = getDefaultAx();
-
-            expand(ax);
-            expect(ax._min).toBeUndefined();
-            expect(ax._max).toBeUndefined();
+            expect(function() { expand(ax); }).toThrow();
         });
 
-        it('should return early if `autorange` is falsy', function() {
+        it('should return even if `autorange` is false', function() {
             ax = getDefaultAx();
             data = [2, 5];
 
             ax.autorange = false;
             ax.rangeslider = { autorange: false };
-
-            expand(ax, data, {});
-            expect(ax._min).toBeUndefined();
-            expect(ax._max).toBeUndefined();
-        });
-
-        it('should consider range slider `autorange`', function() {
-            ax = getDefaultAx();
-            data = [2, 5];
-
-            ax.autorange = false;
-            ax._rangesliderAutorange = true;
 
             expand(ax, data, {});
             expect(ax._min).toEqual([{val: 2, pad: 0, extrapad: false}]);
