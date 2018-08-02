@@ -879,15 +879,16 @@ describe('end-to-end scatter tests', function() {
         .then(done);
     });
 
-    it('should update axis range accordingly on marker.size edits', function(done) {
-        function _assert(msg, xrng, yrng) {
-            var fullLayout = gd._fullLayout;
-            expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
-            expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
-        }
+    function assertAxisRanges(msg, xrng, yrng) {
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
+        expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
+    }
 
+    var schema = Plotly.PlotSchema.get();
+
+    it('should update axis range accordingly on marker.size edits', function(done) {
         // edit types are important to this test
-        var schema = Plotly.PlotSchema.get();
         expect(schema.traces.scatter.attributes.marker.size.editType)
             .toBe('calc', 'marker.size editType');
         expect(schema.layout.layoutAttributes.xaxis.autorange.editType)
@@ -895,29 +896,82 @@ describe('end-to-end scatter tests', function() {
 
         Plotly.plot(gd, [{ y: [1, 2, 1] }])
         .then(function() {
-            _assert('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
+            assertAxisRanges('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
             return Plotly.relayout(gd, {
                 'xaxis.range': [0, 2],
                 'yaxis.range': [0, 2]
             });
         })
         .then(function() {
-            _assert('set rng / base marker.size', [0, 2], [0, 2]);
+            assertAxisRanges('set rng / base marker.size', [0, 2], [0, 2]);
             return Plotly.restyle(gd, 'marker.size', 50);
         })
         .then(function() {
-            _assert('set rng / big marker.size', [0, 2], [0, 2]);
+            assertAxisRanges('set rng / big marker.size', [0, 2], [0, 2]);
             return Plotly.relayout(gd, {
                 'xaxis.autorange': true,
                 'yaxis.autorange': true
             });
         })
         .then(function() {
-            _assert('auto rng / big marker.size', [-0.28, 2.28], [0.75, 2.25]);
+            assertAxisRanges('auto rng / big marker.size', [-0.28, 2.28], [0.75, 2.25]);
             return Plotly.restyle(gd, 'marker.size', null);
         })
         .then(function() {
-            _assert('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
+            assertAxisRanges('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update axis range according to visible edits', function(done) {
+        Plotly.plot(gd, [
+            {x: [1, 2, 3], y: [1, 2, 1]},
+            {x: [4, 5, 6], y: [-1, -2, -1]}
+        ])
+        .then(function() {
+            assertAxisRanges('both visible', [0.676, 6.323], [-2.29, 2.29]);
+            return Plotly.restyle(gd, 'visible', false, [1]);
+        })
+        .then(function() {
+            assertAxisRanges('visible [true,false]', [0.87, 3.128], [0.926, 2.07]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            assertAxisRanges('both invisible', [0.87, 3.128], [0.926, 2.07]);
+            return Plotly.restyle(gd, 'visible', true, [1]);
+        })
+        .then(function() {
+            assertAxisRanges('visible [false,true]', [3.871, 6.128], [-2.07, -0.926]);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            assertAxisRanges('back to both visible', [0.676, 6.323], [-2.29, 2.29]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to start from visible:false', function(done) {
+        function _assert(msg, cnt) {
+            var layer = d3.select(gd).select('g.scatterlayer');
+            expect(layer.selectAll('.point').size()).toBe(cnt, msg + '- scatter pts cnt');
+        }
+
+        Plotly.plot(gd, [{
+            visible: false,
+            y: [1, 2, 1]
+        }])
+        .then(function() {
+            _assert('visible:false', 0);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            _assert('visible:true', 3);
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            _assert('back to visible:false', 0);
         })
         .catch(failTest)
         .then(done);
