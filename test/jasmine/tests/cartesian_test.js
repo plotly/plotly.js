@@ -197,7 +197,7 @@ describe('restyle', function() {
                 return Plotly.restyle(gd, {visible: 'legendonly'}, 1);
             })
             .then(function() {
-                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(false);
+                expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
                 return Plotly.restyle(gd, {visible: true}, 1);
             })
             .then(function() {

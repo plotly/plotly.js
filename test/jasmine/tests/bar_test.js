@@ -9,7 +9,7 @@ var Axes = require('@src/plots/cartesian/axes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -652,8 +652,8 @@ describe('Bar.setPositions', function() {
 
         var xa = gd._fullLayout.xaxis,
             ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(xa)).toBeCloseToArray([-5, 14], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-3.33, 3.33], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-5, 14], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-3.33, 3.33], undefined, '(ya.range)');
     });
 
     it('should expand size axis (overlay case)', function() {
@@ -679,8 +679,8 @@ describe('Bar.setPositions', function() {
 
         var xa = gd._fullLayout.xaxis,
             ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-11.11, 11.11], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-11.11, 11.11], undefined, '(ya.range)');
     });
 
     it('should expand size axis (relative case)', function() {
@@ -702,8 +702,8 @@ describe('Bar.setPositions', function() {
 
         var xa = gd._fullLayout.xaxis,
             ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-4.44, 4.44], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-4.44, 4.44], undefined, '(ya.range)');
     });
 
     it('should expand size axis (barnorm case)', function() {
@@ -725,8 +725,8 @@ describe('Bar.setPositions', function() {
 
         var xa = gd._fullLayout.xaxis,
             ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, xa)).toBeCloseToArray([-0.5, 2.5], undefined, '(xa.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-1.11, 1.11], undefined, '(ya.range)');
     });
 
     it('should include explicit base in size axis range', function() {
@@ -739,7 +739,7 @@ describe('Bar.setPositions', function() {
             });
 
             var ya = gd._fullLayout.yaxis;
-            expect(Axes.getAutoRange(ya)).toBeCloseToArray([-2.5, 7.5]);
+            expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-2.5, 7.5]);
         });
     });
 
@@ -753,7 +753,7 @@ describe('Bar.setPositions', function() {
             });
 
             var ya = gd._fullLayout.yaxis;
-            expect(Axes.getAutoRange(ya)).toEqual(['2016-12-31', '2017-01-20']);
+            expect(Axes.getAutoRange(gd, ya)).toEqual(['2016-12-31', '2017-01-20']);
         });
     });
 
@@ -767,7 +767,7 @@ describe('Bar.setPositions', function() {
         });
 
         var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-0.572, 10.873], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-0.572, 10.873], undefined, '(ya.range)');
     });
 
     it('works with log axes (stacked bars)', function() {
@@ -780,7 +780,7 @@ describe('Bar.setPositions', function() {
         });
 
         var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([-0.582, 11.059], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([-0.582, 11.059], undefined, '(ya.range)');
     });
 
     it('works with log axes (normalized bars)', function() {
@@ -795,7 +795,7 @@ describe('Bar.setPositions', function() {
         });
 
         var ya = gd._fullLayout.yaxis;
-        expect(Axes.getAutoRange(ya)).toBeCloseToArray([1.496, 2.027], undefined, '(ya.range)');
+        expect(Axes.getAutoRange(gd, ya)).toBeCloseToArray([1.496, 2.027], undefined, '(ya.range)');
     });
 });
 
@@ -897,7 +897,7 @@ describe('A bar plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -930,7 +930,7 @@ describe('A bar plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -961,7 +961,7 @@ describe('A bar plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -995,7 +995,7 @@ describe('A bar plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1144,7 +1144,7 @@ describe('A bar plot', function() {
             assertTextIsInsidePath(text20, path20); // inside
             assertTextIsInsidePath(text30, path30); // inside
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1225,7 +1225,7 @@ describe('A bar plot', function() {
             assertTextFont(textNodes[1], expected.outsidetextfont, 1);
             assertTextFont(textNodes[2], expected.insidetextfont, 2);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1291,7 +1291,7 @@ describe('A bar plot', function() {
 
             checkBarsMatch(['bottom', 'width'], 'final');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1328,7 +1328,87 @@ describe('A bar plot', function() {
         .then(function() {
             _assertNumberOfBarTextNodes(3);
         })
-        .catch(fail)
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('bar visibility toggling:', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _assert(msg, xrng, yrng, calls) {
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
+        expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
+
+        var setPositions = gd._fullData[0]._module.setPositions;
+        expect(setPositions).toHaveBeenCalledTimes(calls);
+        setPositions.calls.reset();
+    }
+
+    it('should update axis range according to visible edits (group case)', function(done) {
+        Plotly.plot(gd, [
+            {type: 'bar', x: [1, 2, 3], y: [1, 2, 1]},
+            {type: 'bar', x: [1, 2, 3], y: [-1, -2, -1]}
+        ])
+        .then(function() {
+            spyOn(gd._fullData[0]._module, 'setPositions').and.callThrough();
+
+            _assert('base', [0.5, 3.5], [-2.222, 2.222], 0);
+            return Plotly.restyle(gd, 'visible', false, [1]);
+        })
+        .then(function() {
+            _assert('visible [true,false]', [0.5, 3.5], [0, 2.105], 1);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            _assert('both invisible', [0.5, 3.5], [0, 2.105], 0);
+            return Plotly.restyle(gd, 'visible', true, [1]);
+        })
+        .then(function() {
+            _assert('visible [false,true]', [0.5, 3.5], [-2.105, 0], 1);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            _assert('back to both visible', [0.5, 3.5], [-2.222, 2.222], 1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update axis range according to visible edits (stack case)', function(done) {
+        Plotly.plot(gd, [
+            {type: 'bar', x: [1, 2, 3], y: [1, 2, 1]},
+            {type: 'bar', x: [1, 2, 3], y: [2, 3, 2]}
+        ], {barmode: 'stack'})
+        .then(function() {
+            spyOn(gd._fullData[0]._module, 'setPositions').and.callThrough();
+
+            _assert('base', [0.5, 3.5], [0, 5.263], 0);
+            return Plotly.restyle(gd, 'visible', false, [1]);
+        })
+        .then(function() {
+            _assert('visible [true,false]', [0.5, 3.5], [0, 2.105], 1);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            _assert('both invisible', [0.5, 3.5], [0, 2.105], 0);
+            return Plotly.restyle(gd, 'visible', true, [1]);
+        })
+        .then(function() {
+            _assert('visible [false,true]', [0.5, 3.5], [0, 3.157], 1);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            _assert('back to both visible', [0.5, 3.5], [0, 5.263], 1);
+        })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1384,7 +1464,7 @@ describe('bar hover', function() {
             var mock = Lib.extendDeep({}, require('@mocks/11.json'));
 
             Plotly.plot(gd, mock.data, mock.layout)
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1410,7 +1490,7 @@ describe('bar hover', function() {
             var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_group_norm.json'));
 
             Plotly.plot(gd, mock.data, mock.layout)
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1476,7 +1556,7 @@ describe('bar hover', function() {
                 var out = _hover(gd, -0.25, 0.5, 'closest');
                 expect(out.text).toEqual('apple', 'hover text');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -1526,7 +1606,7 @@ describe('bar hover', function() {
                     expect(out).toBe(false, hoverSpec);
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1564,7 +1644,7 @@ describe('bar hover', function() {
                 expect(out.style).toEqual([1, 'red', 200, 1]);
                 assertPos(out.pos, [222, 280, 168, 168]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -1594,7 +1674,7 @@ describe('bar hover', function() {
                 out = _hover(gd, 10, 2, 'closest');
                 assertPos(out.pos, [145, 155, 15, 15]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -1699,7 +1779,7 @@ describe('bar hover', function() {
                 [true, 3]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

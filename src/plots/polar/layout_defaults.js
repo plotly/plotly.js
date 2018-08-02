@@ -55,6 +55,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         // propagate the template.
         var axOut = contOut[axName] = {};
         axOut._id = axOut._name = axName;
+        axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
 
         var dataAttr = constants.axisName2dataArray[axName];
         var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr);
@@ -80,11 +81,11 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         // Furthermore, angular axes don't have a set range.
         //
         // Mocked domains and ranges are set by the polar subplot instances,
-        // but Axes.expand uses the sign of _m to determine which padding value
+        // but Axes.findExtremes uses the sign of _m to determine which padding value
         // to use.
         //
-        // By setting, _m to 1 here, we make Axes.expand think that range[1] > range[0],
-        // and vice-versa for `autorange: 'reversed'` below.
+        // By setting, _m to 1 here, we make Axes.findExtremes think that
+        // range[1] > range[0], and vice-versa for `autorange: 'reversed'` below.
         axOut._m = 1;
 
         switch(axName) {

@@ -27,7 +27,13 @@ describe('Test annotations', function() {
             layoutOut._has = Plots._hasPlotType.bind(layoutOut);
             layoutOut._subplots = {xaxis: ['x', 'x2'], yaxis: ['y', 'y2']};
             ['xaxis', 'yaxis', 'xaxis2', 'yaxis2'].forEach(function(axName) {
-                if(!layoutOut[axName]) layoutOut[axName] = {type: 'linear', range: [0, 1]};
+                if(!layoutOut[axName]) {
+                    layoutOut[axName] = {
+                        type: 'linear',
+                        range: [0, 1],
+                        _annIndices: []
+                    };
+                }
                 Axes.setConvert(layoutOut[axName]);
             });
 
@@ -90,7 +96,11 @@ describe('Test annotations', function() {
             };
 
             var layoutOut = {
-                xaxis: { type: 'date', range: ['2000-01-01', '2016-01-01'] }
+                xaxis: {
+                    type: 'date',
+                    range: ['2000-01-01', '2016-01-01'],
+                    _annIndices: []
+                }
             };
 
             _supply(layoutIn, layoutOut);
@@ -128,10 +138,10 @@ describe('Test annotations', function() {
             };
 
             var layoutOut = {
-                xaxis: {type: 'linear', range: [0, 1]},
-                yaxis: {type: 'date', range: ['2000-01-01', '2018-01-01']},
-                xaxis2: {type: 'log', range: [1, 2]},
-                yaxis2: {type: 'category', range: [0, 1]}
+                xaxis: {type: 'linear', range: [0, 1], _annIndices: []},
+                yaxis: {type: 'date', range: ['2000-01-01', '2018-01-01'], _annIndices: []},
+                xaxis2: {type: 'log', range: [1, 2], _annIndices: []},
+                yaxis2: {type: 'category', range: [0, 1], _annIndices: []}
             };
 
             _supply(layoutIn, layoutOut);

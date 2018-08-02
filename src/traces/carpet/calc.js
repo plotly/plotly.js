@@ -82,8 +82,8 @@ module.exports = function calc(gd, trace) {
     xrange = [xc - dx * grow, xc + dx * grow];
     yrange = [yc - dy * grow, yc + dy * grow];
 
-    Axes.expand(xa, xrange, {padded: true});
-    Axes.expand(ya, yrange, {padded: true});
+    trace._extremes[xa._id] = Axes.findExtremes(xa, xrange, {padded: true});
+    trace._extremes[ya._id] = Axes.findExtremes(ya, yrange, {padded: true});
 
     // Enumerate the gridlines, both major and minor, and store them on the trace
     // object:
