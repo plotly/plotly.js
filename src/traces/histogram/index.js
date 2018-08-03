@@ -12,7 +12,7 @@
 /**
  * Histogram has its own attribute, defaults and calc steps,
  * but uses bar's plot to display
- * and bar's crossTraceCalc (formally known as setPositions) for stacking and grouping
+ * and bar's crossTraceCalc (formerly known as setPositions) for stacking and grouping
  */
 
 /**

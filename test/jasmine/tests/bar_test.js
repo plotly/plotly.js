@@ -171,7 +171,7 @@ describe('Bar.supplyDefaults', function() {
     });
 });
 
-describe('bar calc / crossTraceCalc (formally known as setPositions)', function() {
+describe('bar calc / crossTraceCalc (formerly known as setPositions)', function() {
     'use strict';
 
     it('should fill in calc pt fields (stack case)', function() {
@@ -337,7 +337,7 @@ describe('Bar.calc', function() {
     });
 });
 
-describe('Bar.crossTraceCalc (formally known as setPositions)', function() {
+describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
     'use strict';
 
     it('should guard against invalid offset items', function() {
