@@ -13,7 +13,7 @@ var Lib = require('../../lib');
 
 var orientations = ['v', 'h'];
 
-function setPositions(gd, plotinfo) {
+function crossTraceCalc(gd, plotinfo) {
     var calcdata = gd.calcdata;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
@@ -109,6 +109,6 @@ function setPositionOffset(traceType, gd, boxList, posAxis, pad) {
 }
 
 module.exports = {
-    setPositions: setPositions,
+    crossTraceCalc: crossTraceCalc,
     setPositionOffset: setPositionOffset
 };

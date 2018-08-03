@@ -380,7 +380,7 @@ describe('finance charts calc', function() {
         supplyAllDefaults(gd);
         Plots.doCalcdata(gd);
         gd.calcdata.forEach(function(cd) {
-            // fill in some stuff that happens during setPositions or plot
+            // fill in some stuff that happens during crossTraceCalc or plot
             if(cd[0].trace.type === 'candlestick') {
                 var diff = cd[1].pos - cd[0].pos;
                 cd[0].t.wHover = diff / 2;

@@ -171,7 +171,7 @@ describe('Bar.supplyDefaults', function() {
     });
 });
 
-describe('bar calc / setPositions', function() {
+describe('bar calc / crossTraceCalc (formerly known as setPositions)', function() {
     'use strict';
 
     it('should fill in calc pt fields (stack case)', function() {
@@ -337,7 +337,7 @@ describe('Bar.calc', function() {
     });
 });
 
-describe('Bar.setPositions', function() {
+describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
     'use strict';
 
     it('should guard against invalid offset items', function() {
@@ -1347,9 +1347,9 @@ describe('bar visibility toggling:', function() {
         expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
         expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
 
-        var setPositions = gd._fullData[0]._module.setPositions;
-        expect(setPositions).toHaveBeenCalledTimes(calls);
-        setPositions.calls.reset();
+        var crossTraceCalc = gd._fullData[0]._module.crossTraceCalc;
+        expect(crossTraceCalc).toHaveBeenCalledTimes(calls);
+        crossTraceCalc.calls.reset();
     }
 
     it('should update axis range according to visible edits (group case)', function(done) {
@@ -1358,7 +1358,7 @@ describe('bar visibility toggling:', function() {
             {type: 'bar', x: [1, 2, 3], y: [-1, -2, -1]}
         ])
         .then(function() {
-            spyOn(gd._fullData[0]._module, 'setPositions').and.callThrough();
+            spyOn(gd._fullData[0]._module, 'crossTraceCalc').and.callThrough();
 
             _assert('base', [0.5, 3.5], [-2.222, 2.222], 0);
             return Plotly.restyle(gd, 'visible', false, [1]);
@@ -1388,7 +1388,7 @@ describe('bar visibility toggling:', function() {
             {type: 'bar', x: [1, 2, 3], y: [2, 3, 2]}
         ], {barmode: 'stack'})
         .then(function() {
-            spyOn(gd._fullData[0]._module, 'setPositions').and.callThrough();
+            spyOn(gd._fullData[0]._module, 'crossTraceCalc').and.callThrough();
 
             _assert('base', [0.5, 3.5], [0, 5.263], 0);
             return Plotly.restyle(gd, 'visible', false, [1]);
@@ -1806,8 +1806,8 @@ function mockBarPlot(dataWithoutTraceType, layout) {
         yaxis: gd._fullLayout.yaxis
     };
 
-    // call Bar.setPositions
-    Bar.setPositions(gd, plotinfo);
+    // call Bar.crossTraceCalc
+    Bar.crossTraceCalc(gd, plotinfo);
 
     return gd;
 }

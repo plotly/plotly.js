@@ -292,7 +292,7 @@ exports.plot = function(gd, data, layout, config) {
             return;
         }
 
-        Plots.doSetPositions(gd);
+        Plots.doCrossTraceCalc(gd);
 
         // calc and autorange for errorbars
         Registry.getComponentMethod('errorbars', 'calc')(gd);
@@ -329,9 +329,13 @@ exports.plot = function(gd, data, layout, config) {
         marginPushers,
         marginPushersAgain
     ];
+
     if(hasCartesian) seq.push(positionAndAutorange);
+    else seq.push(Plots.doCrossTraceCalc);
+
     seq.push(subroutines.layoutStyles);
     if(hasCartesian) seq.push(drawAxes);
+
     seq.push(
         subroutines.drawData,
         subroutines.finalDraw,

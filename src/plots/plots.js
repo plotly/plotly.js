@@ -2236,7 +2236,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         plots.supplyDefaults(gd);
         plots.doCalcdata(gd);
-        plots.doSetPositions(gd);
+        plots.doCrossTraceCalc(gd);
         Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
@@ -2564,26 +2564,42 @@ function clearAxesCalc(axList) {
     }
 }
 
-plots.doSetPositions = function(gd) {
+plots.doCrossTraceCalc = function(gd) {
     var fullLayout = gd._fullLayout;
-    var subplots = fullLayout._subplots.cartesian;
     var modules = fullLayout._visibleModules;
-    var methods = [];
-    var i, j;
+    var hash = {};
+    var i, j, k;
 
     // position and range calculations for traces that
     // depend on each other ie bars (stacked or grouped)
     // and boxes (grouped) push each other out of the way
 
     for(j = 0; j < modules.length; j++) {
-        Lib.pushUnique(methods, modules[j].setPositions);
+        var _module = modules[j];
+        var fn = _module.crossTraceCalc;
+        if(fn) {
+            var spType = _module.basePlotModule.name;
+            if(hash[spType]) {
+                Lib.pushUnique(hash[spType], fn);
+            } else {
+                hash[spType] = [fn];
+            }
+        }
     }
-    if(!methods.length) return;
 
-    for(i = 0; i < subplots.length; i++) {
-        var subplotInfo = fullLayout._plots[subplots[i]];
-        for(j = 0; j < methods.length; j++) {
-            methods[j](gd, subplotInfo);
+    for(k in hash) {
+        var methods = hash[k];
+        var subplots = fullLayout._subplots[k];
+
+        for(i = 0; i < subplots.length; i++) {
+            var sp = subplots[i];
+            var spInfo = k === 'cartesian' ?
+                fullLayout._plots[sp] :
+                fullLayout[sp];
+
+            for(j = 0; j < methods.length; j++) {
+                methods[j](gd, spInfo);
+            }
         }
     }
 };
