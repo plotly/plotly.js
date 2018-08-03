@@ -2576,7 +2576,7 @@ plots.doSetPositions = function(gd) {
 
     for(j = 0; j < modules.length; j++) {
         var _module = modules[j];
-        var fn = _module.setPositions;
+        var fn = _module.crossTraceCalc;
         if(fn) {
             var spType = _module.basePlotModule.name;
             if(hash[spType]) {

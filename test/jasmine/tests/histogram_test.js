@@ -237,7 +237,7 @@ describe('Test histogram', function() {
             var d73 = Date.UTC(1973, 0, 1);
             expect(out).toEqual([
                 // full calcdata has x and y too (and t in the first one),
-                // but those come later from setPositions.
+                // but those come later from crossTraceCalc.
                 {i: 0, b: 0, p: d70, s: 2, pts: [0, 1], p0: d70, p1: d70},
                 {i: 1, b: 0, p: d71, s: 1, pts: [2], p0: d71, p1: d71},
                 {i: 2, b: 0, p: d72, s: 0, pts: [], p0: d72, p1: d72},

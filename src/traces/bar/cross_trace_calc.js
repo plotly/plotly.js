@@ -24,7 +24,7 @@ var Sieve = require('./sieve.js');
  * now doing this one subplot at a time
  */
 
-module.exports = function setPositions(gd, plotinfo) {
+module.exports = function crossTraceCalc(gd, plotinfo) {
     var xa = plotinfo.xaxis,
         ya = plotinfo.yaxis;
 
