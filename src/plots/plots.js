@@ -2435,8 +2435,6 @@ plots.doCalcdata = function(gd, traces) {
 
     // for sharing colors across pies (and for legend)
     fullLayout._piecolormap = {};
-    fullLayout._piecolorway = null;
-    fullLayout._piedefaultcolorcount = 0;
 
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:
@@ -2505,6 +2503,8 @@ plots.doCalcdata = function(gd, traces) {
     // clear stuff that should recomputed in 'regular' loop
     if(hasCalcTransform) clearAxesCalc(axList);
 
+    var calcInteractionsFuncs = [];
+
     function calci(i, isContainer) {
         trace = fullData[i];
         _module = trace._module;
@@ -2530,6 +2530,12 @@ plots.doCalcdata = function(gd, traces) {
 
             if(_module && _module.calc) {
                 cd = _module.calc(gd, trace);
+
+                // Some modules need to update traces' calcdata after
+                // *all* traces have been through calc - so later traces can
+                // impact earlier traces.
+                var calcInteractions = _module.calcInteractions;
+                if(calcInteractions) Lib.pushUnique(calcInteractionsFuncs, calcInteractions);
             }
         }
 
@@ -2554,6 +2560,8 @@ plots.doCalcdata = function(gd, traces) {
     // contained traces (eg contourcarpet)
     for(i = 0; i < fullData.length; i++) calci(i, true);
     for(i = 0; i < fullData.length; i++) calci(i, false);
+
+    for(i = 0; i < calcInteractionsFuncs.length; i++) calcInteractionsFuncs[i](gd, calcdata);
 
     Registry.getComponentMethod('fx', 'calc')(gd);
 };
