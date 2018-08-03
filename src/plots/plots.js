@@ -2236,7 +2236,7 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         plots.supplyDefaults(gd);
         plots.doCalcdata(gd);
-        plots.doSetPositions(gd);
+        plots.doCrossTraceCalc(gd);
         Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
@@ -2564,7 +2564,7 @@ function clearAxesCalc(axList) {
     }
 }
 
-plots.doSetPositions = function(gd) {
+plots.doCrossTraceCalc = function(gd) {
     var fullLayout = gd._fullLayout;
     var modules = fullLayout._visibleModules;
     var hash = {};
