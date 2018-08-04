@@ -2236,8 +2236,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         plots.supplyDefaults(gd);
         plots.doCalcdata(gd);
-        plots.doCrossTraceCalc(gd);
-        Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
     }
@@ -2503,8 +2501,6 @@ plots.doCalcdata = function(gd, traces) {
     // clear stuff that should recomputed in 'regular' loop
     if(hasCalcTransform) clearAxesCalc(axList);
 
-    var calcInteractionsFuncs = [];
-
     function calci(i, isContainer) {
         trace = fullData[i];
         _module = trace._module;
@@ -2530,12 +2526,6 @@ plots.doCalcdata = function(gd, traces) {
 
             if(_module && _module.calc) {
                 cd = _module.calc(gd, trace);
-
-                // Some modules need to update traces' calcdata after
-                // *all* traces have been through calc - so later traces can
-                // impact earlier traces.
-                var calcInteractions = _module.calcInteractions;
-                if(calcInteractions) Lib.pushUnique(calcInteractionsFuncs, calcInteractions);
             }
         }
 
@@ -2561,9 +2551,10 @@ plots.doCalcdata = function(gd, traces) {
     for(i = 0; i < fullData.length; i++) calci(i, true);
     for(i = 0; i < fullData.length; i++) calci(i, false);
 
-    for(i = 0; i < calcInteractionsFuncs.length; i++) calcInteractionsFuncs[i](gd, calcdata);
+    plots.doCrossTraceCalc(gd);
 
     Registry.getComponentMethod('fx', 'calc')(gd);
+    Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
 function clearAxesCalc(axList) {
@@ -2599,14 +2590,21 @@ plots.doCrossTraceCalc = function(gd) {
         var methods = hash[k];
         var subplots = fullLayout._subplots[k];
 
-        for(i = 0; i < subplots.length; i++) {
-            var sp = subplots[i];
-            var spInfo = k === 'cartesian' ?
-                fullLayout._plots[sp] :
-                fullLayout[sp];
+        if(Array.isArray(subplots)) {
+            for(i = 0; i < subplots.length; i++) {
+                var sp = subplots[i];
+                var spInfo = k === 'cartesian' ?
+                    fullLayout._plots[sp] :
+                    fullLayout[sp];
 
+                for(j = 0; j < methods.length; j++) {
+                    methods[j](gd, spInfo);
+                }
+            }
+        }
+        else {
             for(j = 0; j < methods.length; j++) {
-                methods[j](gd, spInfo);
+                methods[j](gd);
             }
         }
     }

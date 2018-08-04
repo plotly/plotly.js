@@ -775,7 +775,7 @@ describe('annotations autorange', function() {
             });
         })
         .then(function() {
-            _assert('auto rng / big tx', [-0.22, 3.57], [0.84, 3.365]);
+            _assert('auto rng / big tx', [-0.22, 3.59], [0.84, 3.365]);
             return Plotly.relayout(gd, 'annotations[0].text', 'a');
         })
         .then(function() {

@@ -17,7 +17,7 @@ Pie.layoutAttributes = require('./layout_attributes');
 
 var calcModule = require('./calc');
 Pie.calc = calcModule.calc;
-Pie.calcInteractions = calcModule.calcInteractions;
+Pie.crossTraceCalc = calcModule.crossTraceCalc;
 
 Pie.plot = require('./plot');
 Pie.style = require('./style');

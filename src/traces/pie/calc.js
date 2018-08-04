@@ -130,8 +130,9 @@ exports.calc = function calc(gd, trace) {
  * This is done after sorting, so we pick defaults
  * in the order slices will be displayed
  */
-exports.calcInteractions = function(gd, calcdata) {
+exports.crossTraceCalc = function(gd) {
     var fullLayout = gd._fullLayout;
+    var calcdata = gd.calcdata;
     var pieColorWay = fullLayout.piecolorway;
     var colorMap = fullLayout._piecolormap;
 
