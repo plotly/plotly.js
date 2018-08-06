@@ -2236,8 +2236,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         plots.supplyDefaults(gd);
         plots.doCalcdata(gd);
-        plots.doCrossTraceCalc(gd);
-        Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
     }
@@ -2435,8 +2433,6 @@ plots.doCalcdata = function(gd, traces) {
 
     // for sharing colors across pies (and for legend)
     fullLayout._piecolormap = {};
-    fullLayout._piecolorway = null;
-    fullLayout._piedefaultcolorcount = 0;
 
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:
@@ -2555,7 +2551,10 @@ plots.doCalcdata = function(gd, traces) {
     for(i = 0; i < fullData.length; i++) calci(i, true);
     for(i = 0; i < fullData.length; i++) calci(i, false);
 
+    doCrossTraceCalc(gd);
+
     Registry.getComponentMethod('fx', 'calc')(gd);
+    Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
 function clearAxesCalc(axList) {
@@ -2564,7 +2563,7 @@ function clearAxesCalc(axList) {
     }
 }
 
-plots.doCrossTraceCalc = function(gd) {
+function doCrossTraceCalc(gd) {
     var fullLayout = gd._fullLayout;
     var modules = fullLayout._visibleModules;
     var hash = {};
@@ -2591,18 +2590,25 @@ plots.doCrossTraceCalc = function(gd) {
         var methods = hash[k];
         var subplots = fullLayout._subplots[k];
 
-        for(i = 0; i < subplots.length; i++) {
-            var sp = subplots[i];
-            var spInfo = k === 'cartesian' ?
-                fullLayout._plots[sp] :
-                fullLayout[sp];
+        if(Array.isArray(subplots)) {
+            for(i = 0; i < subplots.length; i++) {
+                var sp = subplots[i];
+                var spInfo = k === 'cartesian' ?
+                    fullLayout._plots[sp] :
+                    fullLayout[sp];
 
+                for(j = 0; j < methods.length; j++) {
+                    methods[j](gd, spInfo);
+                }
+            }
+        }
+        else {
             for(j = 0; j < methods.length; j++) {
-                methods[j](gd, spInfo);
+                methods[j](gd);
             }
         }
     }
-};
+}
 
 plots.rehover = function(gd) {
     if(gd._fullLayout._rehover) {

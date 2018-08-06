@@ -292,11 +292,6 @@ exports.plot = function(gd, data, layout, config) {
             return;
         }
 
-        Plots.doCrossTraceCalc(gd);
-
-        // calc and autorange for errorbars
-        Registry.getComponentMethod('errorbars', 'calc')(gd);
-
         // TODO: autosize extra for text markers and images
         // see https://github.com/plotly/plotly.js/issues/1111
         return Lib.syncOrAsync([
@@ -331,7 +326,6 @@ exports.plot = function(gd, data, layout, config) {
     ];
 
     if(hasCartesian) seq.push(positionAndAutorange);
-    else seq.push(Plots.doCrossTraceCalc);
 
     seq.push(subroutines.layoutStyles);
     if(hasCartesian) seq.push(drawAxes);

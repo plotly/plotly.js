@@ -1801,14 +1801,6 @@ function mockBarPlot(dataWithoutTraceType, layout) {
     supplyAllDefaults(gd);
     Plots.doCalcdata(gd);
 
-    var plotinfo = {
-        xaxis: gd._fullLayout.xaxis,
-        yaxis: gd._fullLayout.yaxis
-    };
-
-    // call Bar.crossTraceCalc
-    Bar.crossTraceCalc(gd, plotinfo);
-
     return gd;
 }
 
