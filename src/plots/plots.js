@@ -2551,7 +2551,7 @@ plots.doCalcdata = function(gd, traces) {
     for(i = 0; i < fullData.length; i++) calci(i, true);
     for(i = 0; i < fullData.length; i++) calci(i, false);
 
-    plots.doCrossTraceCalc(gd);
+    doCrossTraceCalc(gd);
 
     Registry.getComponentMethod('fx', 'calc')(gd);
     Registry.getComponentMethod('errorbars', 'calc')(gd);
@@ -2563,7 +2563,7 @@ function clearAxesCalc(axList) {
     }
 }
 
-plots.doCrossTraceCalc = function(gd) {
+function doCrossTraceCalc(gd) {
     var fullLayout = gd._fullLayout;
     var modules = fullLayout._visibleModules;
     var hash = {};
@@ -2608,7 +2608,7 @@ plots.doCrossTraceCalc = function(gd) {
             }
         }
     }
-};
+}
 
 plots.rehover = function(gd) {
     if(gd._fullLayout._rehover) {
