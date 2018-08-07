@@ -407,7 +407,7 @@ function mouseoverPath(d) {
 
                 var textColor = tinycolor.mostReadable(d.model.color, ['black', 'white']);
 
-                Fx.customHovers({
+                Fx.loneHover({
                     x: hoverCenterX - rootBBox.left + graphDivBBox.left,
                     y: hoverCenterY - rootBBox.top + graphDivBBox.top,
                     text: [
