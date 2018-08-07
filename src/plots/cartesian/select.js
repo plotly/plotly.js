@@ -283,10 +283,10 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                     searchInfo._module.toggleSelected(searchInfo, false);
                 }
 
-                updateSelectedState(gd, searchTraces);
-
                 // clear visual boundaries of selection area if displayed
                 outlines.remove();
+
+                updateSelectedState(gd, searchTraces);
 
                 gd.emit('plotly_deselect', null);
             }
