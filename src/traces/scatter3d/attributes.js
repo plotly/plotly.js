@@ -21,6 +21,20 @@ var scatterLineAttrs = scatterAttrs.line;
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
+var lineAttrs = extendFlat({
+    width: scatterLineAttrs.width,
+    dash: {
+        valType: 'enumerated',
+        values: Object.keys(DASHES),
+        dflt: 'solid',
+        role: 'style',
+        description: 'Sets the dash style of the lines.'
+    }
+}, colorAttributes('line'));
+// not yet implemented
+delete lineAttrs.showscale;
+delete lineAttrs.colorbar;
+
 function makeProjectionAttr(axLetter) {
     return {
         show: {
@@ -107,19 +121,10 @@ var attrs = module.exports = overrideAll({
         y: makeProjectionAttr('y'),
         z: makeProjectionAttr('z')
     },
+
     connectgaps: scatterAttrs.connectgaps,
-    line: extendFlat({
-        width: scatterLineAttrs.width,
-        dash: {
-            valType: 'enumerated',
-            values: Object.keys(DASHES),
-            dflt: 'solid',
-            role: 'style',
-            description: 'Sets the dash style of the lines.'
-        }
-    },
-        colorAttributes('line')
-    ),
+    line: lineAttrs,
+
     marker: extendFlat({  // Parity with scatter.js?
         symbol: {
             valType: 'enumerated',

@@ -52,11 +52,13 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     // ... until Scatter.colorbar can handle marker line colorbars
     if(prefix === 'marker.line.') return;
 
-    // handle both the trace case where the dflt is listed in attributes and
-    // the marker case where the dflt is determined by hasColorbar
-    var showScaleDftl;
-    if(prefix) showScaleDftl = hasColorbar(containerIn);
-    var showScale = coerce(prefix + 'showscale', showScaleDftl);
+    if(!opts.noScale) {
+        // handle both the trace case where the dflt is listed in attributes and
+        // the marker case where the dflt is determined by hasColorbar
+        var showScaleDftl;
+        if(prefix) showScaleDftl = hasColorbar(containerIn);
 
-    if(showScale) colorbarDefaults(containerIn, containerOut, layout);
+        var showScale = coerce(prefix + 'showscale', showScaleDftl);
+        if(showScale) colorbarDefaults(containerIn, containerOut, layout);
+    }
 };
