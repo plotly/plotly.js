@@ -15,16 +15,16 @@ var colorbarDefaults = require('../../components/colorbar/defaults');
 
 function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
-    coerce('marker.color', defaultColor);
+    coerce('line.color', defaultColor);
 
-    if(traceIn.marker) {
-        coerce('marker.cmin');
-        coerce('marker.cmax');
-        coerce('marker.cauto');
-        coerce('marker.colorscale');
-        coerce('marker.showscale');
-        coerce('marker.shape');
-        colorbarDefaults(traceIn.marker, traceOut.marker, layout);
+    if(traceIn.line) {
+        coerce('line.cmin');
+        coerce('line.cmax');
+        coerce('line.cauto');
+        coerce('line.colorscale');
+        coerce('line.showscale');
+        coerce('line.shape');
+        colorbarDefaults(traceIn.line, traceOut.line, layout);
     }
 }
 
@@ -64,7 +64,7 @@ function dimensionsDefaults(traceIn, traceOut) {
 
         // Pass through catValues, catorder, and catlabels (validated in calc since this is where unique info is available)
 
-        // pass through marker (color, line)
+        // pass through line (color)
         // Pass through font
 
         commonLength = Math.min(commonLength, dimensionOut.values.length);

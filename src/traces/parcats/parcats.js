@@ -1318,10 +1318,10 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
     // Handle path shape
     // -----------------
     var pathShape;
-    if(trace.marker && trace.marker.shape) {
-        pathShape = trace.marker.shape;
+    if(trace.line && trace.line.shape) {
+        pathShape = trace.line.shape;
     } else {
-        pathShape = 'curved';
+        pathShape = 'linear';
     }
 
     // Initialize parcatsViewModel
@@ -1582,7 +1582,7 @@ function updatePathViewModels(parcatsViewModel) {
 
         // build svg path
         var svgD;
-        if(parcatsViewModel.pathShape === 'curved') {
+        if(parcatsViewModel.pathShape === 'hspline') {
             svgD = buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, 0.5);
         } else {
             svgD = buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, 0);
@@ -1791,7 +1791,7 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
  *  If 'forward' then sort paths based on dimensions from left to right. If 'backward' sort based on dimensions
  *  from right to left
  * @property {String} pathShape
- *  The shape of the paths. Either 'straight' or 'curved'.
+ *  The shape of the paths. Either 'linear' or 'hspline'.
  * @property {DimensionViewModel|null} dragDimension
  *  Dimension currently being dragged. Null if no drag in progress
  * @property {Margin} margin

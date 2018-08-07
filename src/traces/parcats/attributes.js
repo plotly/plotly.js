@@ -12,19 +12,19 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var colorAttributes = require('../../components/colorscale/attributes');
 
 var scatterAttrs = require('../scatter/attributes');
-var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterLineAttrs = scatterAttrs.line;
 var colorbarAttrs = require('../../components/colorbar/attributes');
 
-var marker = extendFlat({
+var line = extendFlat({
     editType: 'calc'
-}, colorAttributes('marker', {editType: 'calc'}),
+}, colorAttributes('line', {editType: 'calc'}),
     {
-        showscale: scatterMarkerAttrs.showscale,
+        showscale: scatterLineAttrs.showscale,
         colorbar: colorbarAttrs,
         shape: {
             valType: 'enumerated',
-            values: ['straight', 'curved'],
-            dflt: 'curved',
+            values: ['linear', 'hspline'],
+            dflt: 'linear',
             role: 'info',
             editType: 'plot',
             description: 'Sets the shape of the paths'},
@@ -166,7 +166,7 @@ module.exports = {
         description: 'The dimensions (variables) of the parallel categories diagram.'
     },
 
-    marker: marker,
+    line: line,
     counts: {
         valType: 'number',
         min: 0,

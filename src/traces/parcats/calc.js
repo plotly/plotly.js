@@ -71,15 +71,15 @@ module.exports = function calc(gd, trace) {
 
     // Handle path colors
     // ------------------
-    var marker = trace.marker;
+    var line = trace.line;
     var markerColorscale;
 
     // Process colorscale
-    if(marker) {
-        if(hasColorscale(trace, 'marker')) {
-            colorscaleCalc(trace, trace.marker.color, 'marker', 'c');
+    if(line) {
+        if(hasColorscale(trace, 'line')) {
+            colorscaleCalc(trace, trace.line.color, 'line', 'c');
         }
-        markerColorscale = Drawing.tryColorscale(marker);
+        markerColorscale = Drawing.tryColorscale(line);
     } else {
         markerColorscale = Lib.identity;
     }
@@ -87,12 +87,12 @@ module.exports = function calc(gd, trace) {
     // Build color generation function
     function getMarkerColorInfo(index) {
         var value;
-        if(!marker) {
+        if(!line) {
             value = parcatConstants.defaultColor;
-        } else if(Array.isArray(marker.color)) {
-            value = marker.color[index % marker.color.length];
+        } else if(Array.isArray(line.color)) {
+            value = line.color[index % line.color.length];
         } else {
-            value = marker.color;
+            value = line.color;
         }
 
         return {color: markerColorscale(value), rawColor: value};
