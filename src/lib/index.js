@@ -154,6 +154,21 @@ lib.noop = require('./noop');
 lib.identity = require('./identity');
 
 /**
+ * create an array of length 'cnt' filled with 'v' at all indices
+ *
+ * @param {any} v
+ * @param {number} cnt
+ * @return {array}
+ */
+lib.repeat = function(v, cnt) {
+    var out = new Array(cnt);
+    for(var i = 0; i < cnt; i++) {
+        out[i] = v;
+    }
+    return out;
+};
+
+/**
  * swap x and y of the same attribute in container cont
  * specify attr with a ? in place of x/y
  * you can also swap other things than x/y by providing part1 and part2

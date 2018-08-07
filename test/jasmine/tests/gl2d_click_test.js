@@ -593,17 +593,19 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
 
     function drag(path) {
         var len = path.length;
+        var el = d3.select(gd).select('rect.nsewdrag').node();
+        var opts = {element: el};
 
         Lib.clearThrottle();
-        mouseEvent('mousemove', path[0][0], path[0][1]);
-        mouseEvent('mousedown', path[0][0], path[0][1]);
+        mouseEvent('mousemove', path[0][0], path[0][1], opts);
+        mouseEvent('mousedown', path[0][0], path[0][1], opts);
 
         path.slice(1, len).forEach(function(pt) {
             Lib.clearThrottle();
-            mouseEvent('mousemove', pt[0], pt[1]);
+            mouseEvent('mousemove', pt[0], pt[1], opts);
         });
 
-        mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
+        mouseEvent('mouseup', path[len - 1][0], path[len - 1][1], opts);
     }
 
     function select(path) {

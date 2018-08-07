@@ -10,6 +10,24 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.39.4] -- 2018-08-02
+
+### Fixed
+- Fix tenths of milliseconds handling in old numeric date data
+  (bug introduced in 1.21.0) [#2847]
+- Fix `yaxis` overlaying `yaxis2` layouts
+  (bug introduced in 1.39.3) [#2857]
+
+
+## [1.39.3] -- 2018-07-25
+
+### Fixed
+- Fix overlaying subplot configuration relayouts [#2831]
+- Fix trace toggling from position-editable horizontal legends [#2829]
+- Fix `[un]selected.marker.opacity` settings on `scattergeo` traces [#2827]
+- Fix selections on some Robinson projections [#2827]
+
+
 ## [1.39.2] -- 2018-07-16
 
 ### Fixed

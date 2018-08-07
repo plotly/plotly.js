@@ -399,4 +399,40 @@ describe('Test box restyle:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('should update axis range accordingly on calc edits', function(done) {
+        function _assert(msg, xrng, yrng) {
+            var fullLayout = gd._fullLayout;
+            expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
+            expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
+        }
+
+        Plotly.plot(gd, [{
+            type: 'box',
+            y: [0, 1, 1, 1, 1, 2, 2, 3, 5, 6, 10]
+        }], {
+            xaxis: {range: [-0.5, 0.5]},
+            yaxis: {range: [-0.5, 10.5]}
+        })
+        .then(function() {
+            _assert('auto rng / no boxpoints', [-0.5, 0.5], [-0.5, 10.5]);
+            return Plotly.restyle(gd, 'boxpoints', 'all');
+        })
+        .then(function() {
+            _assert('set rng / all boxpoints', [-0.5, 0.5], [-0.5, 10.5]);
+            return Plotly.relayout(gd, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        })
+        .then(function() {
+            _assert('auto rng / all boxpoints', [-0.695, 0.5], [-0.555, 10.555]);
+            return Plotly.restyle(gd, 'boxpoints', false);
+        })
+        .then(function() {
+            _assert('auto rng / no boxpoints', [-0.5, 0.5], [-0.555, 10.555]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });

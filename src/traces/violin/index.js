@@ -14,7 +14,7 @@ module.exports = {
     supplyDefaults: require('./defaults'),
     supplyLayoutDefaults: require('./layout_defaults'),
     calc: require('./calc'),
-    setPositions: require('./set_positions'),
+    crossTraceCalc: require('./cross_trace_calc'),
     plot: require('./plot'),
     style: require('./style'),
     styleOnSelect: require('../scatter/style').styleOnSelect,

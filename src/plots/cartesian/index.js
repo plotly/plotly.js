@@ -216,7 +216,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             var className = (_module.layerName || name + 'layer');
             var plotMethod = _module.plot;
 
-            // plot all traces of this type on this subplot at once
+            // plot all visible traces of this type on this subplot at once
             cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
             cdModule = cdModuleAndOthers[0];
             // don't need to search the found traces again - in fact we need to NOT
@@ -358,37 +358,27 @@ exports.drawFramework = function(gd) {
     var subplotData = makeSubplotData(gd);
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
-        .data(subplotData, Lib.identity);
+        .data(subplotData, String);
 
     subplotLayers.enter().append('g')
-        .attr('class', function(name) { return 'subplot ' + name; });
+        .attr('class', function(d) { return 'subplot ' + d[0]; });
 
     subplotLayers.order();
 
     subplotLayers.exit()
         .call(purgeSubplotLayers, fullLayout);
 
-    subplotLayers.each(function(name) {
-        var plotinfo = fullLayout._plots[name];
+    subplotLayers.each(function(d) {
+        var id = d[0];
+        var plotinfo = fullLayout._plots[id];
 
-        // keep ref to plot group
         plotinfo.plotgroup = d3.select(this);
-
-        // initialize list of overlay subplots
-        plotinfo.overlays = [];
-
         makeSubplotLayer(gd, plotinfo);
-
-        // fill in list of overlay subplots
-        if(plotinfo.mainplot) {
-            var mainplot = fullLayout._plots[plotinfo.mainplot];
-            mainplot.overlays.push(plotinfo);
-        }
 
         // make separate drag layers for each subplot,
         // but append them to paper rather than the plot groups,
         // so they end up on top of the rest
-        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', name);
+        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
     });
 };
 
@@ -400,27 +390,62 @@ exports.rangePlot = function(gd, plotinfo, cdSubplot) {
 
 function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout;
-    var subplotData = [];
+    var ids = fullLayout._subplots.cartesian;
+    var len = ids.length;
+    var i, j, id, plotinfo, xa, ya;
+
+    // split 'regular' and 'overlaying' subplots
+    var regulars = [];
     var overlays = [];
 
-    for(var k in fullLayout._plots) {
-        var plotinfo = fullLayout._plots[k];
-        var xa2 = plotinfo.xaxis._mainAxis;
-        var ya2 = plotinfo.yaxis._mainAxis;
-        var mainplot = xa2._id + ya2._id;
+    for(i = 0; i < len; i++) {
+        id = ids[i];
+        plotinfo = fullLayout._plots[id];
+        xa = plotinfo.xaxis;
+        ya = plotinfo.yaxis;
 
-        if(mainplot !== k && fullLayout._plots[mainplot]) {
+        var xa2 = xa._mainAxis;
+        var ya2 = ya._mainAxis;
+        var mainplot = xa2._id + ya2._id;
+        var mainplotinfo = fullLayout._plots[mainplot];
+        plotinfo.overlays = [];
+
+        if(mainplot !== id && mainplotinfo) {
             plotinfo.mainplot = mainplot;
-            plotinfo.mainplotinfo = fullLayout._plots[mainplot];
-            overlays.push(k);
+            plotinfo.mainplotinfo = mainplotinfo;
+            overlays.push(id);
         } else {
-            subplotData.push(k);
             plotinfo.mainplot = undefined;
+            plotinfo.mainPlotinfo = undefined;
+            regulars.push(id);
         }
     }
 
-    // main subplots before overlays
-    subplotData = subplotData.concat(overlays);
+    // fill in list of overlaying subplots in 'main plot'
+    for(i = 0; i < overlays.length; i++) {
+        id = overlays[i];
+        plotinfo = fullLayout._plots[id];
+        plotinfo.mainplotinfo.overlays.push(plotinfo);
+    }
+
+    // put 'regular' subplot data before 'overlaying'
+    var subplotIds = regulars.concat(overlays);
+    var subplotData = new Array(len);
+
+    for(i = 0; i < len; i++) {
+        id = subplotIds[i];
+        plotinfo = fullLayout._plots[id];
+        xa = plotinfo.xaxis;
+        ya = plotinfo.yaxis;
+
+        // use info about axis layer and overlaying pattern
+        // to clean what need to be cleaned up in exit selection
+        var d = [id, xa.layer, ya.layer, xa.overlaying || '', ya.overlaying || ''];
+        for(j = 0; j < plotinfo.overlays.length; j++) {
+            d.push(plotinfo.overlays[j].id);
+        }
+        subplotData[i] = d;
+    }
 
     return subplotData;
 }
@@ -517,7 +542,9 @@ function makeSubplotLayer(gd, plotinfo) {
     if(!hasOnlyLargeSploms) {
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
-        plotinfo.gridlayer.selectAll('g').sort(axisIds.idSort);
+        plotinfo.gridlayer.selectAll('g')
+            .map(function(d) { return d[0]; })
+            .sort(axisIds.idSort);
     }
 
     plotinfo.xlines
@@ -534,13 +561,13 @@ function purgeSubplotLayers(layers, fullLayout) {
 
     var overlayIdsToRemove = {};
 
-    layers.each(function(subplotId) {
+    layers.each(function(d) {
+        var id = d[0];
         var plotgroup = d3.select(this);
 
         plotgroup.remove();
-        removeSubplotExtras(subplotId, fullLayout);
-
-        overlayIdsToRemove[subplotId] = true;
+        removeSubplotExtras(id, fullLayout);
+        overlayIdsToRemove[id] = true;
 
         // do not remove individual axis <clipPath>s here
         // as other subplots may need them

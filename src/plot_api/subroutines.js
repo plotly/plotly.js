@@ -118,7 +118,8 @@ function lsInner(gd) {
     // to put them
     var lowerBackgroundIDs = [];
     var lowerDomains = [];
-    subplotSelection.each(function(subplot) {
+    subplotSelection.each(function(d) {
+        var subplot = d[0];
         var plotinfo = fullLayout._plots[subplot];
 
         if(plotinfo.mainplot) {
@@ -161,7 +162,8 @@ function lsInner(gd) {
         fullLayout._plots[subplot].bg = d3.select(this);
     });
 
-    subplotSelection.each(function(subplot) {
+    subplotSelection.each(function(d) {
+        var subplot = d[0];
         var plotinfo = fullLayout._plots[subplot];
         var xa = plotinfo.xaxis;
         var ya = plotinfo.yaxis;
@@ -576,7 +578,7 @@ exports.doAutoRangeAndConstraints = function(gd) {
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
         cleanAxisConstraints(gd, ax);
-        doAutoRange(ax);
+        doAutoRange(gd, ax);
     }
 
     enforceAxisConstraints(gd);

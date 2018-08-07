@@ -9,6 +9,7 @@
 'use strict';
 
 var subtypes = require('../scatter/subtypes');
+var BADNUM = require('../../constants/numerical').BADNUM;
 var arrayRange = require('array-range');
 
 exports.getPointsIn = function(searchInfo, polygon) {
@@ -29,6 +30,10 @@ exports.getPointsIn = function(searchInfo, polygon) {
     for(i = 0; i < cd.length; i++) {
         di = cd[i];
         lonlat = di.lonlat;
+
+        // some projection types can't handle BADNUMs
+        if(lonlat[0] === BADNUM) continue;
+
         x = xa.c2p(lonlat);
         y = ya.c2p(lonlat);
 

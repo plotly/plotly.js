@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -18,51 +17,69 @@ module.exports = {
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
-    expand: expand
+    findExtremes: findExtremes,
+    concatExtremes: concatExtremes
 };
 
-// Find the autorange for this axis
-//
-// assumes ax._min and ax._max have already been set by calling axes.expand
-// using calcdata from all traces. These are arrays of objects:
-// {
-//    val: calcdata value,
-//    pad: extra pixels beyond this value,
-//    extrapad: bool, does this point want 5% extra padding
-// }
-//
-// Returns an array of [min, max]. These are calcdata for log and category axes
-// and data for linear and date axes.
-//
-// TODO: we want to change log to data as well, but it's hard to do this
-// maintaining backward compatibility. category will always have to use calcdata
-// though, because otherwise values between categories (or outside all categories)
-// would be impossible.
-function getAutoRange(ax) {
+/**
+ * getAutoRange
+ *
+ * Collects all _extremes values corresponding to a given axis
+ * and computes its auto range.
+ *
+ * Note that getAutoRange uses return values from findExtremes.
+ *
+ * @param {object} gd:
+ *   graph div object with filled-in fullData and fullLayout, in particular
+ *   with filled-in '_extremes' containers:
+ *   {
+ *      val: calcdata value,
+ *      pad: extra pixels beyond this value,
+ *      extrapad: bool, does this point want 5% extra padding
+ *   }
+ * @param {object} ax:
+ *   full axis object, in particular with filled-in '_traceIndices'
+ *   and '_annIndices' / '_shapeIndices' if applicable
+ * @return {array}
+ *   an array of [min, max]. These are calcdata for log and category axes
+ *   and data for linear and date axes.
+ *
+ * TODO: we want to change log to data as well, but it's hard to do this
+ * maintaining backward compatibility. category will always have to use calcdata
+ * though, because otherwise values between categories (or outside all categories)
+ * would be impossible.
+ */
+function getAutoRange(gd, ax) {
+    var i, j;
     var newRange = [];
-    var minmin = ax._min[0].val;
-    var maxmax = ax._max[0].val;
-    var mbest = 0;
-    var axReverse = false;
 
     var getPad = makePadFn(ax);
+    var extremes = concatExtremes(gd, ax);
+    var minArray = extremes.min;
+    var maxArray = extremes.max;
 
-    var i, j, minpt, maxpt, minbest, maxbest, dp, dv;
+    if(minArray.length === 0 || maxArray.length === 0) {
+        return Lib.simpleMap(ax.range, ax.r2l);
+    }
 
-    for(i = 1; i < ax._min.length; i++) {
+    var minmin = minArray[0].val;
+    var maxmax = maxArray[0].val;
+
+    for(i = 1; i < minArray.length; i++) {
         if(minmin !== maxmax) break;
-        minmin = Math.min(minmin, ax._min[i].val);
+        minmin = Math.min(minmin, minArray[i].val);
     }
-    for(i = 1; i < ax._max.length; i++) {
+    for(i = 1; i < maxArray.length; i++) {
         if(minmin !== maxmax) break;
-        maxmax = Math.max(maxmax, ax._max[i].val);
+        maxmax = Math.max(maxmax, maxArray[i].val);
     }
+
+    var axReverse = false;
 
     if(ax.range) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         axReverse = rng[1] < rng[0];
     }
-
     // one-time setting to easily reverse the axis
     // when plotting from code
     if(ax.autorange === 'reversed') {
@@ -70,10 +87,13 @@ function getAutoRange(ax) {
         ax.autorange = true;
     }
 
-    for(i = 0; i < ax._min.length; i++) {
-        minpt = ax._min[i];
-        for(j = 0; j < ax._max.length; j++) {
-            maxpt = ax._max[j];
+    var mbest = 0;
+    var minpt, maxpt, minbest, maxbest, dp, dv;
+
+    for(i = 0; i < minArray.length; i++) {
+        minpt = minArray[i];
+        for(j = 0; j < maxArray.length; j++) {
+            maxpt = maxArray[j];
             dv = maxpt.val - minpt.val;
             dp = ax._length - getPad(minpt) - getPad(maxpt);
             if(dv > 0 && dp > 0 && dv / dp > mbest) {
@@ -89,11 +109,9 @@ function getAutoRange(ax) {
         var upper = minmin + 1;
         if(ax.rangemode === 'tozero') {
             newRange = minmin < 0 ? [lower, 0] : [0, upper];
-        }
-        else if(ax.rangemode === 'nonnegative') {
+        } else if(ax.rangemode === 'nonnegative') {
             newRange = [Math.max(0, lower), Math.max(0, upper)];
-        }
-        else {
+        } else {
             newRange = [lower, upper];
         }
     }
@@ -133,11 +151,9 @@ function getAutoRange(ax) {
         if(ax.rangemode === 'tozero') {
             if(newRange[0] < 0) {
                 newRange = [newRange[0], 0];
-            }
-            else if(newRange[0] > 0) {
+            } else if(newRange[0] > 0) {
                 newRange = [0, newRange[0]];
-            }
-            else {
+            } else {
                 newRange = [0, 1];
             }
         }
@@ -173,15 +189,45 @@ function makePadFn(ax) {
     return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
-function doAutoRange(ax) {
+function concatExtremes(gd, ax) {
+    var axId = ax._id;
+    var fullData = gd._fullData;
+    var fullLayout = gd._fullLayout;
+    var minArray = [];
+    var maxArray = [];
+    var i, j, d;
+
+    function _concat(cont, indices) {
+        for(i = 0; i < indices.length; i++) {
+            var item = cont[indices[i]];
+            var extremes = (item._extremes || {})[axId];
+            if(item.visible === true && extremes) {
+                for(j = 0; j < extremes.min.length; j++) {
+                    d = extremes.min[j];
+                    collapseMinArray(minArray, d.val, d.pad, {extrapad: d.extrapad});
+                }
+                for(j = 0; j < extremes.max.length; j++) {
+                    d = extremes.max[j];
+                    collapseMaxArray(maxArray, d.val, d.pad, {extrapad: d.extrapad});
+                }
+            }
+        }
+    }
+
+    _concat(fullData, ax._traceIndices);
+    _concat(fullLayout.annotations || [], ax._annIndices || []);
+    _concat(fullLayout.shapes || [], ax._shapeIndices || []);
+
+    return {min: minArray, max: maxArray};
+}
+
+function doAutoRange(gd, ax) {
     if(!ax._length) ax.setScale();
 
-    // TODO do we really need this?
-    var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
     var axIn;
 
-    if(ax.autorange && hasDeps) {
-        ax.range = getAutoRange(ax);
+    if(ax.autorange) {
+        ax.range = getAutoRange(gd, ax);
 
         ax._r = ax.range.slice();
         ax._rl = Lib.simpleMap(ax._r, ax.r2l);
@@ -198,11 +244,7 @@ function doAutoRange(ax) {
         var axeRangeOpts = ax._anchorAxis.rangeslider[ax._name];
         if(axeRangeOpts) {
             if(axeRangeOpts.rangemode === 'auto') {
-                if(hasDeps) {
-                    axeRangeOpts.range = getAutoRange(ax);
-                } else {
-                    axeRangeOpts.range = ax._rangeInitial ? ax._rangeInitial.slice() : ax.range.slice();
-                }
+                axeRangeOpts.range = getAutoRange(gd, ax);
             }
         }
         axIn = ax._anchorAxis._input;
@@ -210,22 +252,27 @@ function doAutoRange(ax) {
     }
 }
 
-function needsAutorange(ax) {
-    return ax.autorange || ax._rangesliderAutorange;
-}
-
-/*
- * expand: if autoranging, include new data in the outer limits for this axis.
- * Note that `expand` is called during `calc`, when we don't yet know the axis
+/**
+ * findExtremes
+ *
+ * Find min/max extremes of an array of coordinates on a given axis.
+ *
+ * Note that findExtremes is called during `calc`, when we don't yet know the axis
  * length; all the inputs should be based solely on the trace data, nothing
  * about the axis layout.
+ *
  * Note that `ppad` and `vpad` as well as their asymmetric variants refer to
  * the before and after padding of the passed `data` array, not to the whole axis.
  *
- * @param {object} ax: the axis being expanded. The result will be more entries
- *      in ax._min and ax._max if necessary to include the new data
- * @param {array} data: an array of numbers (ie already run through ax.d2c)
- * @param {object} options: available keys are:
+ * @param {object} ax: full axis object
+ *   relies on
+ *   - ax.type
+ *   - ax._m (just its sign)
+ *   - ax.d2l
+ * @param {array} data:
+ *  array of numbers (i.e. already run though ax.d2c)
+ * @param {object} options:
+ *  available keys are:
  *      vpad: (number or number array) pad values (data value +-vpad)
  *      ppad: (number or number array) pad pixels (pixel location +-ppad)
  *      ppadplus, ppadminus, vpadplus, vpadminus:
@@ -234,23 +281,28 @@ function needsAutorange(ax) {
  *          (unless one end is overridden by tozero)
  *      tozero: (boolean) make sure to include zero if axis is linear,
  *          and make it a tight bound if possible
+ *
+ * @return {object}
+ *  - min {array of objects}
+ *  - max {array of objects}
+ *  each object item has fields:
+ *    - val {number}
+ *    - pad {number}
+ *    - extrappad {number}
  */
-function expand(ax, data, options) {
-    if(!needsAutorange(ax) || !data) return;
-
-    if(!ax._min) ax._min = [];
-    if(!ax._max) ax._max = [];
+function findExtremes(ax, data, options) {
     if(!options) options = {};
     if(!ax._m) ax.setScale();
+
+    var minArray = [];
+    var maxArray = [];
 
     var len = data.length;
     var extrapad = options.padded || false;
     var tozero = options.tozero && (ax.type === 'linear' || ax.type === '-');
-    var isLog = (ax.type === 'log');
-
-    var i, j, k, v, di, dmin, dmax, ppadiplus, ppadiminus, includeThis, vmin, vmax;
-
+    var isLog = ax.type === 'log';
     var hasArrayOption = false;
+    var i, v, di, dmin, dmax, ppadiplus, ppadiminus, vmin, vmax;
 
     function makePadAccessor(item) {
         if(Array.isArray(item)) {
@@ -283,8 +335,7 @@ function expand(ax, data, options) {
                 if(v < vmin && v > 0) vmin = v;
                 if(v > vmax && v < FP_SAFE) vmax = v;
             }
-        }
-        else {
+        } else {
             for(i = 0; i < len; i++) {
                 v = data[i];
                 if(v < vmin && v > -FP_SAFE) vmin = v;
@@ -295,6 +346,8 @@ function expand(ax, data, options) {
         data = [vmin, vmax];
         len = 2;
     }
+
+    var collapseOpts = {tozero: tozero, extrapad: extrapad};
 
     function addItem(i) {
         di = data[i];
@@ -316,49 +369,11 @@ function expand(ax, data, options) {
             dmin = Math.min(0, dmin);
             dmax = Math.max(0, dmax);
         }
-
-        for(k = 0; k < 2; k++) {
-            var newVal = k ? dmax : dmin;
-            if(goodNumber(newVal)) {
-                var extremes = k ? ax._max : ax._min;
-                var newPad = k ? ppadiplus : ppadiminus;
-                var atLeastAsExtreme = k ? greaterOrEqual : lessOrEqual;
-
-                includeThis = true;
-                /*
-                 * Take items v from ax._min/_max and compare them to the presently active point:
-                 * - Since we don't yet know the relationship between pixels and values
-                 *   (that's what we're trying to figure out!) AND we don't yet know how
-                 *   many pixels `extrapad` represents (it's going to be 5% of the length,
-                 *   but we don't want to have to redo _min and _max just because length changed)
-                 *   two point must satisfy three criteria simultaneously for one to supersede the other:
-                 *   - at least as extreme a `val`
-                 *   - at least as big a `pad`
-                 *   - an unpadded point cannot supersede a padded point, but any other combination can
-                 *
-                 * - If the item supersedes the new point, set includethis false
-                 * - If the new pt supersedes the item, delete it from ax._min/_max
-                 */
-                for(j = 0; j < extremes.length && includeThis; j++) {
-                    v = extremes[j];
-                    if(atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
-                        includeThis = false;
-                        break;
-                    }
-                    else if(atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
-                        extremes.splice(j, 1);
-                        j--;
-                    }
-                }
-                if(includeThis) {
-                    var clipAtZero = (tozero && newVal === 0);
-                    extremes.push({
-                        val: newVal,
-                        pad: clipAtZero ? 0 : newPad,
-                        extrapad: clipAtZero ? false : extrapad
-                    });
-                }
-            }
+        if(goodNumber(dmin)) {
+            collapseMinArray(minArray, dmin, ppadiminus, collapseOpts);
+        }
+        if(goodNumber(dmax)) {
+            collapseMaxArray(maxArray, dmax, ppadiplus, collapseOpts);
         }
     }
 
@@ -368,6 +383,78 @@ function expand(ax, data, options) {
     var iMax = Math.min(6, len);
     for(i = 0; i < iMax; i++) addItem(i);
     for(i = len - 1; i >= iMax; i--) addItem(i);
+
+    return {min: minArray, max: maxArray};
+}
+
+function collapseMinArray(array, newVal, newPad, opts) {
+    collapseArray(array, newVal, newPad, opts, lessOrEqual);
+}
+
+function collapseMaxArray(array, newVal, newPad, opts) {
+    collapseArray(array, newVal, newPad, opts, greaterOrEqual);
+}
+
+/**
+ * collapseArray
+ *
+ * Takes items from 'array' and compares them to 'newVal', 'newPad'.
+ *
+ * @param {array} array:
+ *  current set of min or max extremes
+ * @param {number} newVal:
+ *  new value to compare against
+ * @param {number} newPad:
+ *  pad value associated with 'newVal'
+ * @param {object} opts:
+ *  - tozero {boolean}
+ *  - extrapad {number}
+ * @param {function} atLeastAsExtreme:
+ *  comparison function, use
+ *  - lessOrEqual for min 'array' and
+ *  - greaterOrEqual for max 'array'
+ *
+ * In practice, 'array' is either
+ *  - 'extremes[ax._id].min' or
+ *  - 'extremes[ax._id].max
+ *  found in traces and layout items that affect autorange.
+ *
+ * Since we don't yet know the relationship between pixels and values
+ * (that's what we're trying to figure out!) AND we don't yet know how
+ * many pixels `extrapad` represents (it's going to be 5% of the length,
+ * but we don't want to have to redo calc just because length changed)
+ * two point must satisfy three criteria simultaneously for one to supersede the other:
+ *  - at least as extreme a `val`
+ *  - at least as big a `pad`
+ *  - an unpadded point cannot supersede a padded point, but any other combination can
+ *
+ * Then:
+ * - If the item supersedes the new point, set includeThis false
+ * - If the new pt supersedes the item, delete it from 'array'
+ */
+function collapseArray(array, newVal, newPad, opts, atLeastAsExtreme) {
+    var tozero = opts.tozero;
+    var extrapad = opts.extrapad;
+    var includeThis = true;
+
+    for(var j = 0; j < array.length && includeThis; j++) {
+        var v = array[j];
+        if(atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
+            includeThis = false;
+            break;
+        } else if(atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
+            array.splice(j, 1);
+            j--;
+        }
+    }
+    if(includeThis) {
+        var clipAtZero = (tozero && newVal === 0);
+        array.push({
+            val: newVal,
+            pad: clipAtZero ? 0 : newPad,
+            extrapad: clipAtZero ? false : extrapad
+        });
+    }
 }
 
 // In order to stop overflow errors, don't consider points

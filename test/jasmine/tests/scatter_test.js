@@ -8,7 +8,7 @@ var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
@@ -561,7 +561,7 @@ describe('end-to-end scatter tests', function() {
                 expect(d3.select(this).classed('plotly-customdata')).toBe(false);
             });
 
-        }).catch(fail).then(done);
+        }).catch(failTest).then(done);
     });
 
     it('adds "textpoint" class to scatter text points', function(done) {
@@ -572,7 +572,7 @@ describe('end-to-end scatter tests', function() {
             text: ['a', 'b', 'c']
         }]).then(function() {
             expect(Plotly.d3.selectAll('.textpoint').size()).toBe(3);
-        }).catch(fail).then(done);
+        }).catch(failTest).then(done);
     });
 
     it('should remove all point and text nodes on blank data', function(done) {
@@ -625,7 +625,7 @@ describe('end-to-end scatter tests', function() {
             assertNodeCnt(3, 3);
             assertText(['A', 'B', 'C']);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -683,7 +683,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'clementine']
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -727,7 +727,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'clementine']
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -763,7 +763,7 @@ describe('end-to-end scatter tests', function() {
                 ['apple', 'banana', 'dragon fruit']
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -785,7 +785,7 @@ describe('end-to-end scatter tests', function() {
             );
         }).then(function() {
             expect(fill()).toEqual('rgb(0, 0, 255)');
-        }).catch(fail).then(done);
+        }).catch(failTest).then(done);
     });
 
     it('clears fills tonext when either trace is emptied out', function(done) {
@@ -828,7 +828,7 @@ describe('end-to-end scatter tests', function() {
         .then(function() {
             checkFill(false, 'null out both traces');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -875,7 +875,105 @@ describe('end-to-end scatter tests', function() {
                 [40, 30, 20]
             );
         })
-        .catch(fail)
+        .catch(failTest)
+        .then(done);
+    });
+
+    function assertAxisRanges(msg, xrng, yrng) {
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.range).toBeCloseToArray(xrng, 2, msg + ' xrng');
+        expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
+    }
+
+    var schema = Plotly.PlotSchema.get();
+
+    it('should update axis range accordingly on marker.size edits', function(done) {
+        // edit types are important to this test
+        expect(schema.traces.scatter.attributes.marker.size.editType)
+            .toBe('calc', 'marker.size editType');
+        expect(schema.layout.layoutAttributes.xaxis.autorange.editType)
+            .toBe('axrange', 'ax autorange editType');
+
+        Plotly.plot(gd, [{ y: [1, 2, 1] }])
+        .then(function() {
+            assertAxisRanges('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
+            return Plotly.relayout(gd, {
+                'xaxis.range': [0, 2],
+                'yaxis.range': [0, 2]
+            });
+        })
+        .then(function() {
+            assertAxisRanges('set rng / base marker.size', [0, 2], [0, 2]);
+            return Plotly.restyle(gd, 'marker.size', 50);
+        })
+        .then(function() {
+            assertAxisRanges('set rng / big marker.size', [0, 2], [0, 2]);
+            return Plotly.relayout(gd, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        })
+        .then(function() {
+            assertAxisRanges('auto rng / big marker.size', [-0.28, 2.28], [0.75, 2.25]);
+            return Plotly.restyle(gd, 'marker.size', null);
+        })
+        .then(function() {
+            assertAxisRanges('auto rng / base marker.size', [-0.13, 2.13], [0.93, 2.07]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should update axis range according to visible edits', function(done) {
+        Plotly.plot(gd, [
+            {x: [1, 2, 3], y: [1, 2, 1]},
+            {x: [4, 5, 6], y: [-1, -2, -1]}
+        ])
+        .then(function() {
+            assertAxisRanges('both visible', [0.676, 6.323], [-2.29, 2.29]);
+            return Plotly.restyle(gd, 'visible', false, [1]);
+        })
+        .then(function() {
+            assertAxisRanges('visible [true,false]', [0.87, 3.128], [0.926, 2.07]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            assertAxisRanges('both invisible', [0.87, 3.128], [0.926, 2.07]);
+            return Plotly.restyle(gd, 'visible', true, [1]);
+        })
+        .then(function() {
+            assertAxisRanges('visible [false,true]', [3.871, 6.128], [-2.07, -0.926]);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            assertAxisRanges('back to both visible', [0.676, 6.323], [-2.29, 2.29]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should be able to start from visible:false', function(done) {
+        function _assert(msg, cnt) {
+            var layer = d3.select(gd).select('g.scatterlayer');
+            expect(layer.selectAll('.point').size()).toBe(cnt, msg + '- scatter pts cnt');
+        }
+
+        Plotly.plot(gd, [{
+            visible: false,
+            y: [1, 2, 1]
+        }])
+        .then(function() {
+            _assert('visible:false', 0);
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            _assert('visible:true', 3);
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            _assert('back to visible:false', 0);
+        })
+        .catch(failTest)
         .then(done);
     });
 });
@@ -944,7 +1042,7 @@ describe('scatter hoverPoints', function() {
             expect(pts[1].text).toEqual('banana', 'hover text');
             expect(pts[2].text).toEqual('orange', 'hover text');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1073,7 +1171,7 @@ describe('Test Scatter.style', function() {
                 'selected pt 1 w/ set unselected.marker.opacity'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1160,7 +1258,7 @@ describe('Test Scatter.style', function() {
                 'selected pts 0-2 w/ set selected.marker.color'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1204,7 +1302,7 @@ describe('Test Scatter.style', function() {
                 'selected pt 0 w/ set unselected.marker.size'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1287,7 +1385,7 @@ describe('Test Scatter.style', function() {
                 'selected pts 0-2 w/ set selected.textfont.color'
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1433,7 +1531,7 @@ describe('Test scatter *clipnaxis*:', function() {
                 [true, 1]
             );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

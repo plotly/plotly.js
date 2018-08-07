@@ -358,27 +358,38 @@ describe('@gl Test gl2d plots', function() {
         var _mock = Lib.extendDeep({}, mock);
         _mock.data[0].line.width = 5;
 
+        function assertDrawCall(msg, exp) {
+            var draw = gd._fullLayout._plots.xy._scene.scatter2d.draw;
+            expect(draw).toHaveBeenCalledTimes(exp, msg);
+            draw.calls.reset();
+        }
+
         Plotly.plot(gd, _mock)
         .then(delay(30))
         .then(function() {
+            spyOn(gd._fullLayout._plots.xy._scene.scatter2d, 'draw');
             return Plotly.restyle(gd, 'visible', 'legendonly');
         })
         .then(function() {
-            expect(gd.querySelector('.gl-canvas-context')).toBe(null);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).toBe(0);
+            assertDrawCall('legendonly', 0);
 
             return Plotly.restyle(gd, 'visible', true);
         })
         .then(function() {
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
+            assertDrawCall('back to visible', 1);
 
             return Plotly.restyle(gd, 'visible', false);
         })
         .then(function() {
-            expect(gd.querySelector('.gl-canvas-context')).toBe(null);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).toBe(0);
+            assertDrawCall('visible false', 0);
 
             return Plotly.restyle(gd, 'visible', true);
         })
         .then(function() {
+            assertDrawCall('back up', 1);
             expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
         })
         .catch(failTest)

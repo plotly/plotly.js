@@ -77,8 +77,8 @@ module.exports = {
         valType: 'enumerated',
         values: [true, false, 'reversed'],
         dflt: true,
-        role: 'style',
-        editType: 'calc',
+        role: 'info',
+        editType: 'axrange',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         description: [
             'Determines whether or not the range of this axis is',
@@ -91,7 +91,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
         dflt: 'normal',
-        role: 'style',
+        role: 'info',
         editType: 'plot',
         description: [
             'If *normal*, the range is computed in relation to the extrema',
