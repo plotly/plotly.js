@@ -522,7 +522,9 @@ function plot(gd, subplot, cdata) {
     scene.selectBatch = null;
     scene.unselectBatch = null;
     var dragmode = fullLayout.dragmode;
-    var selectMode = dragmode === 'lasso' || dragmode === 'select';
+    // TODO get that from layout as soon as clickmode attribute has been added
+    var clickmode = 'select';
+    var selectMode = (dragmode === 'lasso' || dragmode === 'select' || clickmode === 'select');
 
     for(i = 0; i < cdata.length; i++) {
         var cd0 = cdata[i][0];
@@ -571,31 +573,32 @@ function plot(gd, subplot, cdata) {
         }
     }
 
+    if(selectMode) {
+        // create select2d
+        if(!scene.select2d) {
+            // create scatter instance by cloning scatter2d
+            scene.select2d = createScatter(fullLayout._glcanvas.data()[1].regl);
+        }
 
-    // create select2d
-    if(!scene.select2d) {
-        // create scatter instance by cloning scatter2d
-        scene.select2d = createScatter(fullLayout._glcanvas.data()[1].regl);
-    }
+        if(scene.scatter2d && scene.selectBatch && scene.selectBatch.length) {
+            // update only traces with selection
+            scene.scatter2d.update(scene.markerUnselectedOptions.map(function(opts, i) {
+                return scene.selectBatch[i] ? opts : null;
+            }));
+        }
 
-    if(scene.scatter2d && scene.selectBatch && scene.selectBatch.length) {
-        // update only traces with selection
-        scene.scatter2d.update(scene.markerUnselectedOptions.map(function(opts, i) {
-            return scene.selectBatch[i] ? opts : null;
-        }));
-    }
+        if(scene.select2d) {
+            scene.select2d.update(scene.markerOptions);
+            scene.select2d.update(scene.markerSelectedOptions);
+        }
 
-    if(scene.select2d) {
-        scene.select2d.update(scene.markerOptions);
-        scene.select2d.update(scene.markerSelectedOptions);
-    }
-
-    if(scene.glText) {
-        cdata.forEach(function(cdscatter) {
-            if(cdscatter && cdscatter[0] && cdscatter[0].trace) {
-                styleTextSelection(cdscatter);
-            }
-        });
+        if(scene.glText) {
+            cdata.forEach(function(cdscatter) {
+                if(cdscatter && cdscatter[0] && cdscatter[0].trace) {
+                    styleTextSelection(cdscatter);
+                }
+            });
+        }
     }
 
     // provide viewport and range
