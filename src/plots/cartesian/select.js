@@ -108,7 +108,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var throttleID = fullLayout._uid + constants.SELECTID;
 
     // find the traces to search for selection points
-    var searchTraces = determineSearchTraces(gd, dragOptions.xaxes, dragOptions.yaxes);
+    var searchTraces = determineSearchTraces(gd, dragOptions.xaxes, dragOptions.yaxes, dragOptions.subplot);
 
     function axValue(ax) {
         var index = (ax._id.charAt(0) === 'y') ? 1 : 0;
@@ -292,7 +292,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             }
             else {
                 // TODO What to do with the code below because we now have behavior for a single click
-                selectOnClick(gd, numClicks, evt, dragOptions.xaxes, dragOptions.yaxes, outlines);
+                selectOnClick(gd, numClicks, evt, dragOptions.xaxes, dragOptions.yaxes, outlines, dragOptions.subplot);
 
                 // TODO: remove in v2 - this was probably never intended to work as it does,
                 // but in case anyone depends on it we don't want to break it now.
@@ -327,7 +327,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 // ----------------
 // TODO handle clearing selection when no point is clicked (based on hoverData)
 // TODO remove console.log statements
-function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
+function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines, subplot) {
     var hoverData = gd._hoverdata;
     var retainSelection = shouldRetainSelection(evt);
     var searchTraces;
@@ -346,7 +346,7 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
     if(numClicks === 1 && isHoverDataSet(hoverData)) {
         allSelectionItems = [];
 
-        searchTraces = determineSearchTraces(gd, xAxes, yAxes);
+        searchTraces = determineSearchTraces(gd, xAxes, yAxes, subplot);
         clearEntireSelection = entireSelectionToBeCleared(searchTraces, hoverData);
 
         for(i = 0; i < searchTraces.length; i++) {
@@ -450,7 +450,7 @@ function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines) {
     }
 }
 
-function determineSearchTraces(gd, xAxes, yAxes) {
+function determineSearchTraces(gd, xAxes, yAxes, subplot) {
     var searchTraces = [];
     var xAxisIds = xAxes.map(getAxId);
     var yAxisIds = yAxes.map(getAxId);
@@ -464,21 +464,9 @@ function determineSearchTraces(gd, xAxes, yAxes) {
 
         if(trace.visible !== true || !trace._module || !trace._module.selectable) continue;
 
-        // TODO is dragOptions.subplot is ever set? If not, delete.
-        // if(dragOptions.subplot) {
-        //     if(
-        //       trace.subplot === dragOptions.subplot ||
-        //       trace.geo === dragOptions.subplot
-        //     ) {
-        //         searchTraces.push({
-        //             _module: trace._module,
-        //             cd: cd,
-        //             xaxis: xAxes[0],
-        //             yaxis: yAxes[0]
-        //         });
-        //     }
-        // } else if(
-        if(
+        if(subplot && (trace.subplot === subplot || trace.geo === subplot)) {
+            searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
+        } else if(
           trace.type === 'splom' &&
           // FIXME: make sure we don't have more than single axis for splom
           trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
