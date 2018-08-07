@@ -155,8 +155,12 @@ var attrs = module.exports = overrideAll({
         colorAttributes('marker')
     ),
 
-    textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
-    textfont: scatterAttrs.textfont,
+    textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center', arrayOk: false}),
+    textfont: {
+        color: scatterAttrs.textfont.color,
+        size: scatterAttrs.textfont.size,
+        family: extendFlat({}, scatterAttrs.textfont.family, {arrayOk: false})
+    },
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
 }, 'calc', 'nested');
