@@ -169,7 +169,7 @@ module.exports = function calc(gd, trace) {
 
     // Array of DimensionModel objects
     var dimensionModels = trace.dimensions.map(function(di, i) {
-        return createDimensionModel(i, di.displayInd, di.label, totalCount);
+        return createDimensionModel(i, di.displayindex, di.label, totalCount);
     });
 
 
@@ -464,10 +464,10 @@ function getUniqueInfo(values, uniqueValues) {
  * @param {Object} trace
  */
 function validateDimensionDisplayInds(trace) {
-    var displayInds = trace.dimensions.map(function(dim) {return dim.displayInd;});
+    var displayInds = trace.dimensions.map(function(dim) {return dim.displayindex;});
     if(!isRangePermutation(displayInds)) {
         trace.dimensions.forEach(function(dim, i) {
-            dim.displayInd = i;
+            dim.displayindex = i;
         });
     }
 }

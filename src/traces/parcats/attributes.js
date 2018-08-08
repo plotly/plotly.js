@@ -123,7 +123,7 @@ module.exports = {
                 'will be truncated). Each value must an element of `catValues`.'
             ].join(' ')
         },
-        displayInd: {
+        displayindex: {
             valType: 'integer',
             role: 'info',
             editType: 'calc',

@@ -1058,7 +1058,7 @@ function dragDimensionEnd(d) {
 
     if(anyDimsReordered) {
         finalDragDimensionDisplayInds.forEach(function(finalDimDisplay, dimInd) {
-            restyleData['dimensions[' + dimInd + '].displayInd'] = finalDimDisplay;
+            restyleData['dimensions[' + dimInd + '].displayindex'] = finalDimDisplay;
         });
     }
 

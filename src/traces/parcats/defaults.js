@@ -56,7 +56,7 @@ function dimensionsDefaults(traceIn, traceOut) {
         // Dimension level
         coerce('values');
         coerce('label');
-        coerce('displayInd', i);
+        coerce('displayindex', i);
 
         // Category level
         coerce('catDisplayInds');
