@@ -15,6 +15,7 @@ var Fx = require('../../components/fx');
 var Lib = require('../../lib');
 var dragElement = require('../../components/dragelement');
 var prepSelect = require('../cartesian/select').prepSelect;
+var selectOnClick = require('../cartesian/select').selectOnClick;
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var createMapboxLayer = require('./layers');
@@ -176,15 +177,6 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         Fx.hover(gd, evt, self.id);
     });
 
-    map.on('click', function(evt) {
-        // TODO: this does not support right-click. If we want to support it, we
-        // would likely need to change mapbox to use dragElement instead of straight
-        // mapbox event binding. Or perhaps better, make a simple wrapper with the
-        // right mousedown, mousemove, and mouseup handlers just for a left/right click
-        // pie would use this too.
-        Fx.click(gd, evt.originalEvent);
-    });
-
     function unhover() {
         Fx.loneUnhover(fullLayout._toppaper);
     }
@@ -221,10 +213,16 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         gd.emit('plotly_relayout', evtData);
     }
 
-    // define clear select on map creation, to keep one ref per map,
+    // define event handlers on map creation, to keep one ref per map,
     // so that map.on / map.off in updateFx works as expected
     self.clearSelect = function() {
         gd._fullLayout._zoomlayer.selectAll('.select-outline').remove();
+    };
+
+    self.onClickInPan = function(evt) {
+        // TODO Add condition evaluating clickmode attr when it has been introduced
+        selectOnClick(gd, 1, evt.originalEvent, [self.xaxis], [self.yaxis], undefined, self.id);
+        Fx.click(gd, evt.originalEvent);
     };
 };
 
@@ -404,10 +402,19 @@ proto.updateFx = function(fullLayout) {
         };
 
         dragElement.init(dragOptions);
+
+        map.off('click', self.onClickInPan);
     } else {
         map.dragPan.enable();
         map.off('zoomstart', self.clearSelect);
         self.div.onmousedown = null;
+
+        // TODO: this does not support right-click. If we want to support it, we
+        // would likely need to change mapbox to use dragElement instead of straight
+        // mapbox event binding. Or perhaps better, make a simple wrapper with the
+        // right mousedown, mousemove, and mouseup handlers just for a left/right click
+        // pie would use this too.
+        map.on('click', self.onClickInPan);
     }
 };
 
