@@ -10,7 +10,7 @@
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var colorAttributes = require('../../components/colorscale/attributes');
-
+var domainAttrs = require('../../plots/domain').attributes;
 var scatterAttrs = require('../scatter/attributes');
 var scatterLineAttrs = scatterAttrs.line;
 var colorbarAttrs = require('../../components/colorbar/attributes');
@@ -31,37 +31,7 @@ var line = extendFlat({
     });
 
 module.exports = {
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'calc'},
-                {valType: 'number', min: 0, max: 1, editType: 'calc'}
-            ],
-            dflt: [0, 1],
-            editType: 'calc',
-            description: [
-                'Sets the horizontal domain of this `parcats` trace',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1, editType: 'calc'},
-                {valType: 'number', min: 0, max: 1, editType: 'calc'}
-            ],
-            dflt: [0, 1],
-            editType: 'calc',
-            description: [
-                'Sets the vertical domain of this `parcats` trace',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        editType: 'calc'
-    },
+    domain: domainAttrs({name: 'parcats', trace: true, editType: 'calc'}),
 
     tooltip: {
         valType: 'boolean',

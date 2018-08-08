@@ -12,6 +12,7 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var parcatConstants = require('./constants');
 var colorbarDefaults = require('../../components/colorbar/defaults');
+var handleDomainDefaults = require('../../plots/domain').defaults;
 
 function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
@@ -102,8 +103,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     dimensionsDefaults(traceIn, traceOut);
 
-    coerce('domain.x');
-    coerce('domain.y');
+    handleDomainDefaults(traceOut, layout, coerce);
 
     markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
