@@ -523,7 +523,7 @@ function plot(gd, subplot, cdata) {
     scene.unselectBatch = null;
     var dragmode = fullLayout.dragmode;
     // TODO get that from layout as soon as clickmode attribute has been added
-    var clickmode = 'select';
+    var clickmode = 'click';
     var selectMode = (dragmode === 'lasso' || dragmode === 'select' || clickmode === 'select');
 
     for(i = 0; i < cdata.length; i++) {
