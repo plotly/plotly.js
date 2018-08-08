@@ -388,6 +388,7 @@ proto.updateFx = function(fullLayout) {
             element: self.div,
             gd: gd,
             plotinfo: {
+                id: self.id,
                 xaxis: self.xaxis,
                 yaxis: self.yaxis,
                 fillRangeItems: fillRangeItems
