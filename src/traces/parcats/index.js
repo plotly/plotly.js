@@ -14,7 +14,11 @@ Parcats.attributes = require('./attributes');
 Parcats.supplyDefaults = require('./defaults');
 Parcats.calc = require('./calc');
 Parcats.plot = require('./plot');
-Parcats.colorbar = require('./colorbar');
+Parcats.colorbar = {
+    container: 'line',
+    min: 'cmin',
+    max: 'cmax'
+};
 
 Parcats.moduleType = 'trace';
 Parcats.name = 'parcats';
