@@ -341,7 +341,8 @@
       "line": {
         "color": "black"
       },
-      "type": "scatter"
+      "type": "scatter",
+      "showlegend": false
     }
   ]
 }

@@ -83,13 +83,23 @@ module.exports = function style(s, gd) {
             }
         }
 
+        // with fill and no markers or text, move the line and fill up a bit
+        // so it's more centered
+        var markersOrText = subTypes.hasMarkers(trace) || subTypes.hasText(trace);
+        var anyFill = showFill || showGradientFill;
+        var anyLine = showLine || showGradientLine;
+        var pathStart = (markersOrText || !anyFill) ? 'M5,0' :
+            // with a line leave it slightly below center, to leave room for the
+            // line thickness and because the line is usually more prominent
+            anyLine ? 'M5,-2' : 'M5,-3';
+
         var this3 = d3.select(this);
 
         var fill = this3.select('.legendfill').selectAll('path')
             .data(showFill || showGradientFill ? [d] : []);
         fill.enter().append('path').classed('js-fill', true);
         fill.exit().remove();
-        fill.attr('d', 'M5,0h30v6h-30z')
+        fill.attr('d', pathStart + 'h30v6h-30z')
             .call(showFill ? Drawing.fillGroupStyle : fillGradient);
 
         var line = this3.select('.legendlines').selectAll('path')
@@ -103,7 +113,7 @@ module.exports = function style(s, gd) {
         // though there *is* no vertical variation in this case.
         // so add an invisibly small angle to the line
         // This issue (and workaround) exist across (Mac) Chrome, FF, and Safari
-        line.attr('d', showGradientLine ? 'M5,0l30,0.0001' : 'M5,0h30')
+        line.attr('d', pathStart + (showGradientLine ? 'l30,0.0001' : 'h30'))
             .call(showLine ? Drawing.lineGroupStyle : lineGradient);
 
         function fillGradient(s) {
