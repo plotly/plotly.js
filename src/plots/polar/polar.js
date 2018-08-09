@@ -17,6 +17,7 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Plots = require('../plots');
 var setConvertCartesian = require('../cartesian/set_convert');
+var setConvertPolar = require('./set_convert');
 var doAutoRange = require('../cartesian/autorange').doAutoRange;
 var doTicksSingle = require('../cartesian/axes').doTicksSingle;
 var dragBox = require('../cartesian/dragbox');
@@ -29,15 +30,14 @@ var setCursor = require('../../lib/setcursor');
 var polygonTester = require('../../lib/polygon').tester;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
+var constants = require('./constants');
 
 var _ = Lib._;
 var deg2rad = Lib.deg2rad;
 var rad2deg = Lib.rad2deg;
 var wrap360 = Lib.wrap360;
 var wrap180 = Lib.wrap180;
-
-var setConvertAngular = require('./helpers').setConvertAngular;
-var constants = require('./constants');
+var isFullCircle = Lib.isFullCircle;
 
 function Polar(gd, id) {
     this.id = id;
@@ -161,6 +161,9 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var layers = _this.layers;
     var gs = fullLayout._size;
 
+    // axis attributes
+    var radialLayout = polarLayout.radialaxis;
+    var angularLayout = polarLayout.angularaxis;
     // layout domains
     var xDomain = polarLayout.domain.x;
     var yDomain = polarLayout.domain.y;
@@ -211,37 +214,25 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var cxx = _this.cxx = cx - xOffset2;
     var cyy = _this.cyy = cy - yOffset2;
 
-    var mockOpts = {
-        // to get _boundingBox computation right when showticklabels is false
-        anchor: 'free',
-        position: 0,
-        // dummy truthy value to make Axes.doTicksSingle draw the grid
-        _counteraxis: true,
-        // don't use automargins routine for labels
-        automargin: false
-    };
-
-    _this.radialAxis = Lib.extendFlat({}, polarLayout.radialaxis, mockOpts, {
+    _this.radialAxis = _this.mockAxis(fullLayout, polarLayout, radialLayout, {
         _axislayer: layers['radial-axis'],
         _gridlayer: layers['radial-grid'],
         // make this an 'x' axis to make positioning (especially rotation) easier
         _id: 'x',
-        _pos: 0,
         // convert to 'x' axis equivalent
         side: {
             counterclockwise: 'top',
             clockwise: 'bottom'
-        }[polarLayout.radialaxis.side],
+        }[radialLayout.side],
         // spans length 1 radius
         domain: [0, radius / gs.w]
     });
 
-    _this.angularAxis = Lib.extendFlat({}, polarLayout.angularaxis, mockOpts, {
+    _this.angularAxis = _this.mockAxis(fullLayout, polarLayout, angularLayout, {
         _axislayer: layers['angular-axis'],
         _gridlayer: layers['angular-grid'],
         // angular axes need *special* logic
         _id: 'angular',
-        _pos: 0,
         side: 'right',
         // to get auto nticks right
         domain: [0, Math.PI],
@@ -298,6 +289,23 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     _this.framework.selectAll('.crisp').classed('crisp', 0);
 };
 
+proto.mockAxis = function(fullLayout, polarLayout, axLayout, opts) {
+    var commonOpts = {
+        // to get _boundingBox computation right when showticklabels is false
+        anchor: 'free',
+        position: 0,
+        _pos: 0,
+        // dummy truthy value to make doTicksSingle draw the grid
+        _counteraxis: true,
+        // don't use automargins routine for labels
+        automargin: false
+    };
+
+    var ax = Lib.extendFlat(commonOpts, axLayout, opts);
+    setConvertPolar(ax, polarLayout, fullLayout);
+    return ax;
+};
+
 proto.doAutoRange = function(fullLayout, polarLayout) {
     var gd = this.gd;
     var radialAxis = this.radialAxis;
@@ -325,6 +333,8 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     _this.fillViewInitialKey('radialaxis.angle', radialLayout.angle);
     _this.fillViewInitialKey('radialaxis.range', ax.range.slice());
+
+    ax.setGeometry();
 
     // rotate auto tick labels by 180 if in quadrant II and III to make them
     // readable from left-to-right
@@ -428,52 +438,35 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var cy = _this.cy;
     var angularLayout = polarLayout.angularaxis;
     var sector = polarLayout.sector;
-    var sectorInRad = sector.map(deg2rad);
     var ax = _this.angularAxis;
 
     _this.fillViewInitialKey('angularaxis.rotation', angularLayout.rotation);
 
-    // wrapper around c2rad from setConvertAngular
-    // note that linear ranges are always set in degrees for Axes.doTicksSingle
-    function c2rad(d) {
-        return ax.c2rad(d.x, 'degrees');
-    }
+    ax.setGeometry();
+
+    // 't'ick to 'g'eometric radians is used all over the place here
+    var t2g = function(d) { return ax.t2g(d.x); };
 
     // (x,y) at max radius
     function rad2xy(rad) {
         return [radius * Math.cos(rad), radius * Math.sin(rad)];
     }
 
-    // Set the angular range in degrees to make auto-tick computation cleaner,
-    // changing rotation/direction should not affect the angular tick labels.
-    if(ax.type === 'linear') {
-        if(isFullCircle(sector)) {
-            ax.range = sector.slice();
-        } else {
-            ax.range = sectorInRad.map(ax.unTransformRad).map(rad2deg);
-        }
-
-        // run rad2deg on tick0 and ditck for thetaunit: 'radians' axes
-        if(ax.thetaunit === 'radians') {
-            ax.tick0 = rad2deg(ax.tick0);
-            ax.dtick = rad2deg(ax.dtick);
-        }
-
+    // run rad2deg on tick0 and ditck for thetaunit: 'radians' axes
+    if(ax.type === 'linear' && ax.thetaunit === 'radians') {
+        ax.tick0 = rad2deg(ax.tick0);
+        ax.dtick = rad2deg(ax.dtick);
     }
+
     // Use tickval filter for category axes instead of tweaking
     // the range w.r.t sector, so that sectors that cross 360 can
     // show all their ticks.
-    else if(ax.type === 'category') {
-        var period = angularLayout.period ?
-            Math.max(angularLayout.period, angularLayout._categories.length) :
-            angularLayout._categories.length;
-
-        ax.range = [0, period];
-        ax._tickFilter = function(d) { return isAngleInSector(c2rad(d), sector); };
+    if(ax.type === 'category') {
+        ax._tickFilter = function(d) { return isAngleInSector(t2g(d), sector); };
     }
 
     ax._transfn = function(d) {
-        var rad = c2rad(d);
+        var rad = t2g(d);
         var xy = rad2xy(rad);
         var out = strTranslate(cx + xy[0], cy - xy[1]);
 
@@ -487,7 +480,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     };
 
     ax._gridpath = function(d) {
-        var rad = c2rad(d);
+        var rad = t2g(d);
         var xy = rad2xy(rad);
         return 'M0,0L' + (-xy[0]) + ',' + xy[1];
     };
@@ -495,7 +488,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var offset4fontsize = (angularLayout.ticks !== 'outside' ? 0.7 : 0.5);
 
     ax._labelx = function(d) {
-        var rad = c2rad(d);
+        var rad = t2g(d);
         var labelStandoff = ax._labelStandoff;
         var pad = ax._pad;
 
@@ -508,7 +501,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     };
 
     ax._labely = function(d) {
-        var rad = c2rad(d);
+        var rad = t2g(d);
         var labelStandoff = ax._labelStandoff;
         var labelShift = ax._labelShift;
         var pad = ax._pad;
@@ -520,7 +513,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     };
 
     ax._labelanchor = function(angle, d) {
-        var rad = c2rad(d);
+        var rad = t2g(d);
         return signSin(rad) === 0 ?
             (signCos(rad) > 0 ? 'start' : 'end') :
             'middle';
@@ -535,11 +528,11 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     ax.setScale();
     doTicksSingle(gd, ax, true);
 
-    // angle of polygon vertices in radians (null means circles)
+    // angle of polygon vertices in geometric radians (null means circles)
     // TODO what to do when ax.period > ax._categories ??
     var vangles;
     if(polarLayout.gridshape === 'linear') {
-        vangles = ax._vals.map(c2rad);
+        vangles = ax._vals.map(t2g);
 
         // ax._vals should be always ordered, make them
         // always turn counterclockwise for convenience here
@@ -1014,6 +1007,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
     var gd = _this.gd;
     var layers = _this.layers;
     var radius = _this.radius;
+    var angularAxis = _this.angularAxis;
     var cx = _this.cx;
     var cy = _this.cy;
     var cxx = _this.cxx;
@@ -1054,8 +1048,6 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
     var rot0, rot1;
     // induced radial axis rotation (only used on polygon grids)
     var rrot1;
-    // copy of polar sector value at drag start
-    var sector0;
     // angle about circle center at drag start
     var a0;
 
@@ -1104,22 +1096,14 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
             sel.attr('transform', strRotate([da, tx.attr('x'), tx.attr('y')]) + strTranslate(xy.x, xy.y));
         });
 
-        var angularAxis = _this.angularAxis;
+        // update rotation -> range -> _m,_b
         angularAxis.rotation = wrap180(rot1);
+        angularAxis.setGeometry();
+        angularAxis.setScale();
 
-        if(angularAxis.type === 'linear' && !isFullCircle(sector)) {
-            angularAxis.range = sector0
-                .map(deg2rad)
-                .map(angularAxis.unTransformRad)
-                .map(rad2deg);
-        }
-
-        setConvertAngular(angularAxis);
         doTicksSingle(gd, angularAxis, true);
 
         if(_this._hasClipOnAxisFalse && !isFullCircle(sector)) {
-            // mutate sector to trick isPtWithinSector
-            _this.sector = [sector0[0] - da, sector0[1] - da];
             scatterTraces.call(Drawing.hideOutsideRangePoints, _this);
         }
 
@@ -1148,7 +1132,6 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
 
     dragOpts.prepFn = function(evt, startX, startY) {
         var polarLayoutNow = fullLayout[_this.id];
-        sector0 = polarLayoutNow.sector.slice();
         rot0 = polarLayoutNow.angularaxis.rotation;
 
         var bbox = angularDrag.getBoundingClientRect();
@@ -1173,8 +1156,9 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
 
 proto.isPtWithinSector = function(d) {
     var sector = this.sector;
+    var thetag = this.angularAxis.c2g(d.theta);
 
-    if(!isAngleInSector(d.rad, sector)) {
+    if(!isAngleInSector(thetag, sector)) {
         return false;
     }
 
@@ -1195,7 +1179,7 @@ proto.isPtWithinSector = function(d) {
     if(vangles) {
         var polygonIn = polygonTester(makePolygon(r0, sector, vangles));
         var polygonOut = polygonTester(makePolygon(r1, sector, vangles));
-        var xy = [r * Math.cos(d.rad), r * Math.sin(d.rad)];
+        var xy = [r * Math.cos(thetag), r * Math.sin(thetag)];
         return polygonOut.contains(xy) && !polygonIn.contains(xy);
     }
 
@@ -1539,10 +1523,6 @@ function pathAnnulus(r0, r1, sector) {
     }
 }
 
-function isFullCircle(sector) {
-    var arc = Math.abs(sector[1] - sector[0]);
-    return arc === 360;
-}
 
 function updateElement(sel, showAttr, attrs) {
     if(showAttr) {
