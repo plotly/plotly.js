@@ -306,14 +306,14 @@ describe('Test relayout on polar subplots:', function() {
         var pos1 = [];
 
         Plotly.plot(gd, fig).then(function() {
-            d3.selectAll('.angulartick> text').each(function() {
+            d3.selectAll('.angularaxistick > text').each(function() {
                 var tx = d3.select(this);
                 pos0.push([tx.attr('x'), tx.attr('y')]);
             });
             return Plotly.relayout(gd, 'polar.angularaxis.rotation', 90);
         })
         .then(function() {
-            d3.selectAll('.angulartick> text').each(function() {
+            d3.selectAll('.angularaxistick > text').each(function() {
                 var tx = d3.select(this);
                 pos1.push([tx.attr('x'), tx.attr('y')]);
             });
@@ -330,7 +330,7 @@ describe('Test relayout on polar subplots:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
         function check(cnt, expected) {
-            var ticks = d3.selectAll('path.angulartick');
+            var ticks = d3.selectAll('path.angularaxistick');
 
             expect(ticks.size()).toBe(cnt, '# of ticks');
             ticks.each(function() {
@@ -433,21 +433,21 @@ describe('Test relayout on polar subplots:', function() {
             return toggle(
                 'polar.angularaxis.showgrid',
                 [true, false], [8, 0],
-                '.angular-grid > .angular > path', assertCnt
+                '.angular-grid > .angularaxis > path', assertCnt
             );
         })
         .then(function() {
             return toggle(
                 'polar.angularaxis.showticklabels',
                 [true, false], [8, 0],
-                '.angular-axis > .angulartick > text', assertCnt
+                '.angular-axis > .angularaxistick > text', assertCnt
             );
         })
         .then(function() {
             return toggle(
                 'polar.angularaxis.ticks',
                 ['outside', ''], [8, 0],
-                '.angular-axis > path.angulartick', assertCnt
+                '.angular-axis > path.angularaxistick', assertCnt
             );
         })
         .catch(failTest)
@@ -558,7 +558,7 @@ describe('Test relayout on polar subplots:', function() {
             expect(gd._fullLayout.polar._subplot.angularAxis.range)
                 .toBeCloseToArray([0, exp.period], 2, 'range in mocked angular axis - ' + msg);
 
-            expect(d3.selectAll('path.angulartick').size())
+            expect(d3.selectAll('path.angularaxistick').size())
                 .toBe(exp.nTicks, '# of visible angular ticks - ' + msg);
 
             expect([gd.calcdata[0][5].x, gd.calcdata[0][5].y])

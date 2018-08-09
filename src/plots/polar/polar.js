@@ -142,7 +142,7 @@ proto.updateLayers = function(fullLayout, polarLayout) {
                     break;
                 case 'angular-grid':
                     sel.style('fill', 'none');
-                    sel.append('g').classed('angular', 1);
+                    sel.append('g').classed('angularaxis', 1);
                     break;
                 case 'radial-line':
                     sel.append('line').style('fill', 'none');
@@ -257,8 +257,6 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     _this.angularAxis = _this.mockAxis(fullLayout, polarLayout, angularLayout, {
         _axislayer: layers['angular-axis'],
         _gridlayer: layers['angular-grid'],
-        // angular axes need *special* logic
-        _id: 'angular',
         side: 'right',
         // to get auto nticks right
         domain: [0, Math.PI],
@@ -547,7 +545,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     var newTickLayout = strTickLayout(angularLayout);
     if(_this.angularTickLayout !== newTickLayout) {
-        layers['angular-axis'].selectAll('.angulartick').remove();
+        layers['angular-axis'].selectAll('.' + ax._id + 'tick').remove();
         _this.angularTickLayout = newTickLayout;
     }
 

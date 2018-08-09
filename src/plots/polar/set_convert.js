@@ -57,7 +57,6 @@ module.exports = function setConvert(ax, polarLayout, fullLayout) {
         case 'radialaxis':
             setConvertRadial(ax);
             break;
-        case 'angular':
         case 'angularaxis':
             setConvertAngular(ax, polarLayout);
             break;
