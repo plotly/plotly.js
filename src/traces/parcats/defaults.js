@@ -9,85 +9,55 @@
 'use strict';
 
 var Lib = require('../../lib');
-var attributes = require('./attributes');
-var parcatConstants = require('./constants');
-var colorbarDefaults = require('../../components/colorbar/defaults');
+var hasColorscale = require('../../components/colorscale/has_colorscale');
+var colorscaleDefaults = require('../../components/colorscale/defaults');
 var handleDomainDefaults = require('../../plots/domain').defaults;
+var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
-function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
+var attributes = require('./attributes');
+var mergeLength = require('../parcoords/merge_length');
 
-    coerce('line.color', defaultColor);
+function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
     if(traceIn.line) {
-        coerce('line.cmin');
-        coerce('line.cmax');
-        coerce('line.cauto');
-        coerce('line.colorscale');
-        coerce('line.showscale');
         coerce('line.shape');
-        colorbarDefaults(traceIn.line, traceOut.line, layout);
     }
+
+    var lineColor = coerce('line.color', defaultColor);
+    if(hasColorscale(traceIn, 'line') && Lib.isArrayOrTypedArray(lineColor)) {
+        if(lineColor.length) {
+            coerce('line.colorscale');
+            colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
+            return lineColor.length;
+        }
+        else {
+            traceOut.line.color = defaultColor;
+        }
+    }
+    return Infinity;
 }
 
-function dimensionsDefaults(traceIn, traceOut) {
-    var dimensionsIn = traceIn.dimensions || [],
-        dimensionsOut = traceOut.dimensions = [];
-
-    var dimensionIn, dimensionOut, i;
-    var commonLength = Infinity;
-
+function dimensionDefaults(dimensionIn, dimensionOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
     }
 
-    for(i = 0; i < dimensionsIn.length; i++) {
-        dimensionIn = dimensionsIn[i];
-        dimensionOut = {};
+    var values = coerce('values');
+    var visible = coerce('visible');
+    if(!(values && values.length)) {
+        visible = dimensionOut.visible = false;
+    }
 
-        if(!Lib.isPlainObject(dimensionIn)) {
-            continue;
-        }
-
+    if(visible) {
         // Dimension level
-        coerce('values');
         coerce('label');
-        coerce('displayindex', i);
+        coerce('displayindex', dimensionOut._index);
 
         // Category level
         coerce('catDisplayInds');
         coerce('catValues');
         coerce('catLabels');
-
-        // Pass through catValues, catorder, and catlabels (validated in calc since this is where unique info is available)
-
-        // pass through line (color)
-        // Pass through font
-
-        commonLength = Math.min(commonLength, dimensionOut.values.length);
-
-        // dimensionOut._index = i;
-        dimensionsOut.push(dimensionOut);
     }
-
-    if(isFinite(commonLength)) {
-        for(i = 0; i < dimensionsOut.length; i++) {
-            dimensionOut = dimensionsOut[i];
-            if(dimensionOut.values.length > commonLength) {
-                dimensionOut.values = dimensionOut.values.slice(0, commonLength);
-            }
-        }
-    }
-
-    // handle dimension order
-    // If specified for all dimensions and no collisions or holes keep, otherwise discard
-
-    // Pass through value colors
-    // Pass through opacity
-
-    // Pass through dimension font
-    // Pass through category font
-
-    return dimensionsOut;
 }
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -96,11 +66,20 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    dimensionsDefaults(traceIn, traceOut);
+    var dimensions = handleArrayContainerDefaults(traceIn, traceOut, {
+        name: 'dimensions',
+        handleItemDefaults: dimensionDefaults
+    });
+
+    var len = handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
     handleDomainDefaults(traceOut, layout, coerce);
 
-    markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    if(!Array.isArray(dimensions) || !dimensions.length) {
+        traceOut.visible = false;
+    }
+
+    mergeLength(traceOut, dimensions, 'values', len);
 
     coerce('hovermode');
     coerce('tooltip');

@@ -133,7 +133,14 @@ module.exports = {
             ].join(' ')
         },
         editType: 'calc',
-        description: 'The dimensions (variables) of the parallel categories diagram.'
+        description: 'The dimensions (variables) of the parallel categories diagram.',
+        visible: {
+            valType: 'boolean',
+            dflt: true,
+            role: 'info',
+            editType: 'calc',
+            description: 'Shows the dimension when set to `true` (the default). Hides the dimension for `false`.'
+        },
     },
 
     line: line,
