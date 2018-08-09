@@ -27,6 +27,10 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout,
     }
 
     if(coloring !== 'none') {
+        // plots/plots always coerces showlegend to true, but in this case
+        // we default to false and (by default) show a colorbar instead
+        if(traceIn.showlegend !== true) traceOut.showlegend = false;
+
         colorscaleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
         );

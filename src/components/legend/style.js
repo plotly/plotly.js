@@ -61,25 +61,67 @@ module.exports = function style(s, gd) {
         var showFill = trace.visible && trace.fill && trace.fill !== 'none';
         var showLine = subTypes.hasLines(trace);
         var contours = trace.contours;
+        var showGradientLine = false;
+        var showGradientFill = false;
 
-        if(contours && contours.type === 'constraint') {
-            showLine = contours.showlines;
-            showFill = contours._operation !== '=';
+        if(contours) {
+            var coloring = contours.coloring;
+
+            if(coloring === 'lines') {
+                showGradientLine = true;
+            }
+            else {
+                showLine = coloring === 'none' || contours.showlines;
+            }
+
+            if(contours.type === 'constraint') {
+                showFill = contours._operation !== '=';
+            }
+            else if(coloring === 'fill' || coloring === 'heatmap') {
+                showGradientFill = true;
+            }
         }
 
-        var fill = d3.select(this).select('.legendfill').selectAll('path')
-            .data(showFill ? [d] : []);
+        var this3 = d3.select(this);
+
+        var fill = this3.select('.legendfill').selectAll('path')
+            .data(showFill || showGradientFill ? [d] : []);
         fill.enter().append('path').classed('js-fill', true);
         fill.exit().remove();
         fill.attr('d', 'M5,0h30v6h-30z')
-            .call(Drawing.fillGroupStyle);
+            .call(showFill ? Drawing.fillGroupStyle : fillGradient);
 
-        var line = d3.select(this).select('.legendlines').selectAll('path')
-            .data(showLine ? [d] : []);
-        line.enter().append('path').classed('js-line', true)
-            .attr('d', 'M5,0h30');
+        var line = this3.select('.legendlines').selectAll('path')
+            .data(showLine || showGradientLine ? [d] : []);
+        line.enter().append('path').classed('js-line', true);
         line.exit().remove();
-        line.call(Drawing.lineGroupStyle);
+
+        // this is ugly... but you can't apply a gradient to a perfectly
+        // horizontal or vertical line. Presumably because then
+        // the system doesn't know how to scale vertical variation, even
+        // though there *is* no vertical variation in this case.
+        // so add an invisibly small angle to the line
+        // This issue (and workaround) exist across (Mac) Chrome, FF, and Safari
+        line.attr('d', showGradientLine ? 'M5,0l30,0.0001' : 'M5,0h30')
+            .call(showLine ? Drawing.lineGroupStyle : lineGradient);
+
+        function fillGradient(s) {
+            if(s.size()) {
+                var gradientID = 'legendfill-' + trace.uid;
+                Drawing.gradient(s, gd, gradientID, 'horizontalreversed',
+                    trace.colorscale, 'fill');
+            }
+        }
+
+        function lineGradient(s) {
+            if(s.size()) {
+                var gradientID = 'legendline-' + trace.uid;
+                Drawing.lineGroupStyle(s);
+                Drawing.gradient(s, gd, gradientID, 'horizontalreversed',
+                    trace.colorscale, 'stroke');
+            }
+        }
+
     }
 
     function stylePoints(d) {
