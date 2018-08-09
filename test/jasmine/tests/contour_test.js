@@ -1,3 +1,5 @@
+var d3 = require('d3');
+
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
@@ -414,12 +416,12 @@ describe('contour plotting and editing', function() {
 
         function _assert(exp) {
             var msg = ' index in <g.contourlayer> (call #' + cnt + ')';
-            var contourLayer = gd.querySelector('.xy > .plot > .contourlayer');
+            var contourPlot = gd.querySelector('.xy > .plot > .contourlayer > .contour');
             var hmIndex = -1;
             var contoursIndex = -1;
 
-            for(var i in contourLayer.children) {
-                var child = contourLayer.children[i];
+            for(var i in contourPlot.children) {
+                var child = contourPlot.children[i];
                 if(child.querySelector) {
                     if(child.querySelector('.hm')) hmIndex = +i;
                     else if(child.querySelector('.contourlevel')) contoursIndex = +i;
@@ -439,21 +441,21 @@ describe('contour plotting and editing', function() {
         .then(function() {
             _assert({
                 hmIndex: 0,
-                contoursIndex: 1
+                contoursIndex: 3
             });
             return Plotly.restyle(gd, 'contours.coloring', 'lines');
         })
         .then(function() {
             _assert({
                 hmIndex: -1,
-                contoursIndex: 1
+                contoursIndex: 3
             });
             return Plotly.restyle(gd, 'contours.coloring', 'heatmap');
         })
         .then(function() {
             _assert({
                 hmIndex: 0,
-                contoursIndex: 1
+                contoursIndex: 3
             });
         })
         .catch(fail)
@@ -497,6 +499,36 @@ describe('contour plotting and editing', function() {
         .then(function() {
             expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2.5]]);
             expect(gd.calcdata[0][0].zmask).toEqual([[1, 1], [0, 1], [1, 0]]);
+        })
+        .catch(fail)
+        .then(done);
+    });
+
+    it('keeps the correct ordering after hide and show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.contour').each(function(d) { out.push(d.trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'contour',
+            z: [[1, 2], [3, 4]]
+        }, {
+            type: 'contour',
+            z: [[2, 1], [4, 3]],
+            contours: {coloring: 'lines'}
+        }])
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1]);
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
         })
         .catch(fail)
         .then(done);

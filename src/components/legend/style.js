@@ -71,7 +71,8 @@ module.exports = function style(s, gd) {
                 showGradientLine = true;
             }
             else {
-                showLine = coloring === 'none' || contours.showlines;
+                showLine = coloring === 'none' || coloring === 'heatmap' ||
+                    contours.showlines;
             }
 
             if(contours.type === 'constraint') {

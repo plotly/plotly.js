@@ -27,6 +27,24 @@
       "z": [[3, 2, 1], [6, 5, 4], [9, 8, 7]],
       "line": {"color": "#f88"},
       "name": "constraint"
+  }, {
+      "type": "contour",
+      "contours": {"coloring": "heatmap"},
+      "z": [[1, 2], [3, 4]],
+      "showscale": false,
+      "showlegend": true,
+      "y": [2, 3],
+      "name": "heatmap 1"
+  }, {
+      "type": "contour",
+      "contours": {"coloring": "heatmap"},
+      "z": [[1, 2], [3, 4]],
+      "showscale": false,
+      "showlegend": true,
+      "colorscale": "Viridis",
+      "x": [1, 2],
+      "y": [2, 3],
+      "name": "heatmap 2"
   }],
   "layout":{
     "autosize":false,

@@ -16,7 +16,6 @@ var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Axes = require('../../plots/cartesian/axes');
 var setConvert = require('../../plots/cartesian/set_convert');
-var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 var heatmapPlot = require('../heatmap/plot');
 var makeCrossings = require('./make_crossings');
@@ -28,32 +27,35 @@ var constants = require('./constants');
 var costConstants = constants.LABELOPTIMIZER;
 
 exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
-    var uidLookup = getUidsFromCalcData(cdcontours);
+    var contours = contourLayer.selectAll('g.contour')
+        .data(
+            cdcontours.map(function(d) { return d[0]; }),
+            function(cd) { return cd.trace.uid; }
+        );
 
-    contourLayer.selectAll('g.contour').each(function(d) {
-        if(!uidLookup[d.trace.uid]) {
-            d3.select(this).remove();
-        }
-    });
+    contours.exit().remove();
 
-    for(var i = 0; i < cdcontours.length; i++) {
-        plotOne(gd, plotinfo, cdcontours[i], contourLayer);
-    }
+    contours.enter().append('g')
+        .classed('contour', true);
+
+    contours.each(function(cd) {
+        plotOne(gd, plotinfo, cd, d3.select(this));
+    })
+    .order();
 };
 
-function plotOne(gd, plotinfo, cd, contourLayer) {
-    var trace = cd[0].trace;
-    var x = cd[0].x;
-    var y = cd[0].y;
+function plotOne(gd, plotinfo, cd, plotGroup) {
+    var trace = cd.trace;
+    var x = cd.x;
+    var y = cd.y;
     var contours = trace.contours;
-    var id = 'contour' + trace.uid;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
-    var pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
+    var pathinfo = emptyPathinfo(contours, plotinfo, cd);
 
     // use a heatmap to fill - draw it behind the lines
-    var heatmapColoringLayer = Lib.ensureSingle(contourLayer, 'g', 'heatmapcoloring');
+    var heatmapColoringLayer = Lib.ensureSingle(plotGroup, 'g', 'heatmapcoloring');
     var cdheatmaps = [];
     if(contours.coloring === 'heatmap') {
         if(trace.zauto && (trace.autocontour === false)) {
@@ -62,7 +64,7 @@ function plotOne(gd, plotinfo, cd, contourLayer) {
             trace._input.zmax = trace.zmax =
                 trace.zmin + pathinfo.length * contours.size;
         }
-        cdheatmaps = [cd];
+        cdheatmaps = [[cd]];
     }
     heatmapPlot(gd, plotinfo, cdheatmaps, heatmapColoringLayer);
 
@@ -87,11 +89,10 @@ function plotOne(gd, plotinfo, cd, contourLayer) {
     }
 
     // draw everything
-    var plotGroup = exports.makeContourGroup(contourLayer, cd, id);
     makeBackground(plotGroup, perimeter, contours);
     makeFills(plotGroup, fillPathinfo, perimeter, contours);
-    makeLinesAndLabels(plotGroup, pathinfo, gd, cd[0], contours, perimeter);
-    clipGaps(plotGroup, plotinfo, fullLayout._clips, cd[0], perimeter);
+    makeLinesAndLabels(plotGroup, pathinfo, gd, cd, contours, perimeter);
+    clipGaps(plotGroup, plotinfo, fullLayout._clips, cd, perimeter);
 }
 
 exports.makeContourGroup = function(layer, cd, id) {
