@@ -156,6 +156,32 @@ proto.updateLayers = function(fullLayout, polarLayout) {
     join.order();
 };
 
+/* Polar subplots juggle with 6 'axis objects' (!), these are:
+ *
+ * - polarLayout.radialaxis (aka radialLayout in this file):
+ * - polarLayout.angularaxis (aka angularLayout in this file):
+ *   used for data -> calcdata conversions (aka d2c) during the calc step
+ *
+ * - this.radialAxis
+ *   extends polarLayout.radialaxis, adds mocked 'domain' and
+ *   few other keys in order to reuse Cartesian doAutoRange and doTicksSingle,
+ *   used for calcdata -> geometric conversions (aka c2g) during the plot step
+ *   + setGeometry setups ax.c2g for given ax.range
+ *   + setScale setups ax._m,ax._b for given ax.range
+ *
+ * - this.angularAxis
+ *   extends polarLayout.angularaxis, adds mocked 'range' and 'domain' and
+ *   a few other keys in order to reuse Cartesian doTicksSingle,
+ *   used for calcdata -> geometric conversions (aka c2g) during the plot step
+ *   + setGeometry setups ax.c2g given ax.rotation, ax.direction & ax._categories,
+ *                 and mocks ax.range
+ *   + setScale setups ax._m,ax._b with that mocked ax.range
+ *
+ * - this.xaxis
+ * - this.yaxis
+ *   setup so that polar traces can reuse plot methods of Cartesian traces
+ *   which mostly rely on 2pixel methods (e.g ax.c2p)
+ */
 proto.updateLayout = function(fullLayout, polarLayout) {
     var _this = this;
     var layers = _this.layers;
