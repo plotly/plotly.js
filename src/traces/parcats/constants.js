@@ -10,7 +10,6 @@
 
 
 module.exports = {
-    maxDimensionCount: 12,
     defaultColor: 'lightgray',
     cn: {
         className: 'parcats'

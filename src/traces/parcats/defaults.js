@@ -36,11 +36,6 @@ function dimensionsDefaults(traceIn, traceOut) {
     var dimensionIn, dimensionOut, i;
     var commonLength = Infinity;
 
-    if(dimensionsIn.length > parcatConstants.maxDimensionCount) {
-        Lib.log('parcats traces support up to ' + parcatConstants.maxDimensionCount + ' dimensions at the moment');
-        dimensionsIn.splice(parcatConstants.maxDimensionCount);
-    }
-
     function coerce(attr, dflt) {
         return Lib.coerce(dimensionIn, dimensionOut, attributes.dimensions, attr, dflt);
     }
