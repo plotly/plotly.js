@@ -16,10 +16,11 @@ var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Plots = require('../plots');
-var Axes = require('../cartesian/axes');
+var setConvertCartesian = require('../cartesian/set_convert');
 var doAutoRange = require('../cartesian/autorange').doAutoRange;
-var dragElement = require('../../components/dragelement');
+var doTicksSingle = require('../cartesian/axes').doTicksSingle;
 var dragBox = require('../cartesian/dragbox');
+var dragElement = require('../../components/dragelement');
 var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select').prepSelect;
@@ -63,7 +64,7 @@ function Polar(gd, id) {
         .attr('class', id);
 
     // unfortunately, we have to keep track of some axis tick settings
-    // so that we don't have to call Axes.doTicksSingle with its special redraw flag
+    // so that we don't have to call doTicksSingle with its special redraw flag
     this.radialTickLayout = null;
     this.angularTickLayout = null;
 }
@@ -264,7 +265,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
         range: [sectorBBox[0] * rSpan, sectorBBox[2] * rSpan],
         domain: xDomain2
     };
-    Axes.setConvert(xaxis, fullLayout);
+    setConvertCartesian(xaxis, fullLayout);
     xaxis.setScale();
 
     var yaxis = _this.yaxis = {
@@ -273,7 +274,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
         range: [sectorBBox[1] * rSpan, sectorBBox[3] * rSpan],
         domain: yDomain2
     };
-    Axes.setConvert(yaxis, fullLayout);
+    setConvertCartesian(yaxis, fullLayout);
     yaxis.setScale();
 
     xaxis.isPtWithinRange = function(d) { return _this.isPtWithinSector(d); };
@@ -298,14 +299,16 @@ proto.updateLayout = function(fullLayout, polarLayout) {
 };
 
 proto.doAutoRange = function(fullLayout, polarLayout) {
+    var gd = this.gd;
+    var radialAxis = this.radialAxis;
     var radialLayout = polarLayout.radialaxis;
-    var ax = this.radialAxis;
 
-    setScale(ax, radialLayout, fullLayout);
-    doAutoRange(this.gd, ax);
+    radialAxis.setScale();
+    doAutoRange(gd, radialAxis);
 
-    radialLayout.range = ax.range.slice();
-    radialLayout._input.range = ax.range.slice();
+    var rng = radialAxis.range;
+    radialLayout.range = rng.slice();
+    radialLayout._input.range = rng.slice();
 };
 
 proto.updateRadialAxis = function(fullLayout, polarLayout) {
@@ -348,7 +351,8 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         _this.radialTickLayout = newTickLayout;
     }
 
-    Axes.doTicksSingle(gd, ax, true);
+    ax.setScale();
+    doTicksSingle(gd, ax, true);
 
     // stash 'actual' radial axis angle for drag handlers (in degrees)
     var angle = _this.radialAxisAngle = _this.vangles ?
@@ -468,8 +472,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         ax._tickFilter = function(d) { return isAngleInSector(c2rad(d), sector); };
     }
 
-    setScale(ax, angularLayout, fullLayout);
-
     ax._transfn = function(d) {
         var rad = c2rad(d);
         var xy = rad2xy(rad);
@@ -530,7 +532,8 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         _this.angularTickLayout = newTickLayout;
     }
 
-    Axes.doTicksSingle(gd, ax, true);
+    ax.setScale();
+    doTicksSingle(gd, ax, true);
 
     // angle of polygon vertices in radians (null means circles)
     // TODO what to do when ax.period > ax._categories ??
@@ -956,7 +959,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         if((drange > 0) !== (rprime > range0[0])) return;
         rng1 = radialAxis.range[1] = rprime;
 
-        Axes.doTicksSingle(gd, _this.radialAxis, true);
+        doTicksSingle(gd, _this.radialAxis, true);
         layers['radial-grid']
             .attr('transform', strTranslate(cx, cy))
             .selectAll('path').attr('transform', null);
@@ -1112,7 +1115,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
         }
 
         setConvertAngular(angularAxis);
-        Axes.doTicksSingle(gd, angularAxis, true);
+        doTicksSingle(gd, angularAxis, true);
 
         if(_this._hasClipOnAxisFalse && !isFullCircle(sector)) {
             // mutate sector to trick isPtWithinSector
@@ -1204,11 +1207,6 @@ proto.fillViewInitialKey = function(key, val) {
         this.viewInitial[key] = val;
     }
 };
-
-function setScale(ax, axLayout, fullLayout) {
-    Axes.setConvert(ax, fullLayout);
-    ax.setScale();
-}
 
 function strTickLayout(axLayout) {
     var out = axLayout.ticks + String(axLayout.ticklen) + String(axLayout.showticklabels);
