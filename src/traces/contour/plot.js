@@ -27,6 +27,10 @@ var constants = require('./constants');
 var costConstants = constants.LABELOPTIMIZER;
 
 exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
+    plotWrapper(gd, plotinfo, cdcontours, contourLayer, plotOne);
+};
+
+function plotWrapper(gd, plotinfo, cdcontours, contourLayer, plotOneFn) {
     var contours = contourLayer.selectAll('g.contour')
         .data(
             cdcontours.map(function(d) { return d[0]; }),
@@ -39,10 +43,11 @@ exports.plot = function plot(gd, plotinfo, cdcontours, contourLayer) {
         .classed('contour', true);
 
     contours.each(function(cd) {
-        plotOne(gd, plotinfo, cd, d3.select(this));
+        plotOneFn(gd, plotinfo, cd, d3.select(this));
     })
     .order();
-};
+}
+exports.plotWrapper = plotWrapper;
 
 function plotOne(gd, plotinfo, cd, plotGroup) {
     var trace = cd.trace;
@@ -94,20 +99,6 @@ function plotOne(gd, plotinfo, cd, plotGroup) {
     makeLinesAndLabels(plotGroup, pathinfo, gd, cd, contours, perimeter);
     clipGaps(plotGroup, plotinfo, fullLayout._clips, cd, perimeter);
 }
-
-exports.makeContourGroup = function(layer, cd, id) {
-    var plotgroup = layer
-        .selectAll('g.contour.' + id)
-        .data(cd);
-
-    plotgroup.enter().append('g')
-        .classed('contour', true)
-        .classed(id, true);
-
-    plotgroup.exit().remove();
-
-    return plotgroup;
-};
 
 function makeBackground(plotgroup, perimeter, contours) {
     var bggroup = Lib.ensureSingle(plotgroup, 'g', 'contourbg');

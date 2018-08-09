@@ -646,3 +646,52 @@ describe('scattercarpet hover labels', function() {
         .then(done);
     });
 });
+
+describe('contourcarpet plotting & editing', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+    afterEach(destroyGraphDiv);
+
+    it('keeps the correct ordering after hide and show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.contour').each(function(d) { out.push(d.trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'carpet',
+            a: [1, 1, 1, 3, 3, 3, 5, 5, 5],
+            b: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+            y: [1, 2, 3, 2, 3, 4, 3, 4, 5],
+            cheaterslope: 2
+        }, {
+            type: 'contourcarpet',
+            a: [1, 1, 1, 3, 3, 3, 5, 5, 5],
+            b: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+            z: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        }, {
+            type: 'contourcarpet',
+            a: [1, 1, 1, 3, 3, 3, 5, 5, 5],
+            b: [1, 2, 3, 1, 2, 3, 1, 2, 3],
+            z: [1, 4, 7, 2, 5, 8, 3, 6, 9],
+            contours: {coloring: 'lines'}
+        }])
+        .then(function() {
+            expect(getIndices()).toEqual([1, 2]);
+            return Plotly.restyle(gd, 'visible', false, [1]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([2]);
+            return Plotly.restyle(gd, 'visible', true, [1]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1, 2]);
+        })
+        .catch(fail)
+        .then(done);
+    });
+});
