@@ -15,6 +15,10 @@ module.exports = {
     mode: scatterPolarAttrs.mode,
     r: scatterPolarAttrs.r,
     theta: scatterPolarAttrs.theta,
+    r0: scatterPolarAttrs.r0,
+    dr: scatterPolarAttrs.dr,
+    theta0: scatterPolarAttrs.theta0,
+    dtheta: scatterPolarAttrs.dtheta,
     thetaunit: scatterPolarAttrs.thetaunit,
 
     text: scatterPolarAttrs.text,

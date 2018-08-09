@@ -28,6 +28,10 @@ describe('Test scatterpolar trace defaults:', function() {
         expect(traceOut.r).toEqual([1, 2, 3, 4, 5]);
         expect(traceOut.theta).toEqual([1, 2, 3]);
         expect(traceOut._length).toBe(3);
+        expect(traceOut.r0).toBeUndefined();
+        expect(traceOut.dr).toBeUndefined();
+        expect(traceOut.theta0).toBeUndefined();
+        expect(traceOut.dtheta).toBeUndefined();
     });
 
     it('should not truncate *theta* when longer than *r*', function() {
@@ -40,6 +44,39 @@ describe('Test scatterpolar trace defaults:', function() {
         expect(traceOut.r).toEqual([1, 2, 3]);
         expect(traceOut.theta).toEqual([1, 2, 3, 4, 5]);
         expect(traceOut._length).toBe(3);
+        expect(traceOut.r0).toBeUndefined();
+        expect(traceOut.dr).toBeUndefined();
+        expect(traceOut.theta0).toBeUndefined();
+        expect(traceOut.dtheta).toBeUndefined();
+    });
+
+    it('should coerce *theta0* and *dtheta* when *theta* is not set', function() {
+        _supply({
+            r: [1, 2, 3]
+        });
+
+        expect(traceOut.r).toEqual([1, 2, 3]);
+        expect(traceOut.theta).toBeUndefined();
+        expect(traceOut._length).toBe(3);
+        expect(traceOut.r0).toBeUndefined();
+        expect(traceOut.dr).toBeUndefined();
+        expect(traceOut.theta0).toBe(0);
+        // its default value is computed later
+        expect(traceOut.dtheta).toBeUndefined();
+    });
+
+    it('should coerce *r0* and *dr* when *r* is not set', function() {
+        _supply({
+            theta: [1, 2, 3, 4, 5]
+        });
+
+        expect(traceOut.r).toBeUndefined();
+        expect(traceOut.theta).toEqual([1, 2, 3, 4, 5]);
+        expect(traceOut._length).toBe(5);
+        expect(traceOut.r0).toBe(0);
+        expect(traceOut.dr).toBe(1);
+        expect(traceOut.theta0).toBeUndefined();
+        expect(traceOut.dtheta).toBeUndefined();
     });
 });
 

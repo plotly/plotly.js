@@ -11,6 +11,7 @@
 var Lib = require('../../lib');
 
 var subTypes = require('../scatter/subtypes');
+var handleRThetaDefaults = require('../scatterpolar/defaults').handleRThetaDefaults;
 var handleMarkerDefaults = require('../scatter/marker_defaults');
 var handleLineDefaults = require('../scatter/line_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
@@ -23,16 +24,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var r = coerce('r');
-    var theta = coerce('theta');
-    var len = (r && theta) ? Math.min(r.length, theta.length) : 0;
-
+    var len = handleRThetaDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
     }
-
-    traceOut._length = len;
 
     coerce('thetaunit');
     coerce('mode', len < PTS_LINESONLY ? 'lines+markers' : 'lines');

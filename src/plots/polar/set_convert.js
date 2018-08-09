@@ -122,7 +122,18 @@ function setConvertAngular(ax, polarLayout) {
             for(i = 0; i < len; i++) {
                 arrayOut[i] = _d2c(arrayIn[i]);
             }
+        } else {
+            var coord0 = coord + '0';
+            var dcoord = 'd' + coord;
+            var v0 = (coord0 in trace) ? _d2c(trace[coord0]) : 0;
+            var dv = (trace[dcoord]) ? _d2c(trace[dcoord]) : (ax.period || 2 * Math.PI) / len;
+
+            arrayOut = new Array(len);
+            for(i = 0; i < len; i++) {
+                arrayOut[i] = v0 + i * dv;
+            }
         }
+
         return arrayOut;
     };
 
