@@ -1,3 +1,9 @@
+/**
+* plotly.js (mapbox) v1.39.4
+* Copyright 2012-2018, Plotly, Inc.
+* All rights reserved.
+* Licensed under the MIT license
+*/
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Plotly = f()}})(function(){var define,module,exports;return (function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 'use strict';
 
@@ -14564,25 +14570,25 @@ module.exports = templatedArray('annotation', {
         valType: 'boolean',
         
         dflt: true,
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
 
     text: {
         valType: 'string',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     textangle: {
         valType: 'angle',
         dflt: 0,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     font: fontAttrs({
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         colorEditType: 'arraydraw',
         
     }),
@@ -14591,7 +14597,7 @@ module.exports = templatedArray('annotation', {
         min: 1,
         dflt: null,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     height: {
@@ -14599,7 +14605,7 @@ module.exports = templatedArray('annotation', {
         min: 1,
         dflt: null,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     opacity: {
@@ -14646,7 +14652,7 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 1,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     borderwidth: {
@@ -14654,7 +14660,7 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 1,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     // arrow
@@ -14662,7 +14668,7 @@ module.exports = templatedArray('annotation', {
         valType: 'boolean',
         dflt: true,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     arrowcolor: {
@@ -14703,7 +14709,7 @@ module.exports = templatedArray('annotation', {
         min: 0.3,
         dflt: 1,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     startarrowsize: {
@@ -14711,14 +14717,14 @@ module.exports = templatedArray('annotation', {
         min: 0.3,
         dflt: 1,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     arrowwidth: {
         valType: 'number',
         min: 0.1,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     standoff: {
@@ -14726,7 +14732,7 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 0,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     startstandoff: {
@@ -14734,19 +14740,19 @@ module.exports = templatedArray('annotation', {
         min: 0,
         dflt: 0,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     ax: {
         valType: 'any',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     ay: {
         valType: 'any',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     axref: {
@@ -14785,7 +14791,7 @@ module.exports = templatedArray('annotation', {
     x: {
         valType: 'any',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     xanchor: {
@@ -14793,14 +14799,14 @@ module.exports = templatedArray('annotation', {
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'auto',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     xshift: {
         valType: 'number',
         dflt: 0,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     yref: {
@@ -14816,7 +14822,7 @@ module.exports = templatedArray('annotation', {
     y: {
         valType: 'any',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     yanchor: {
@@ -14824,14 +14830,14 @@ module.exports = templatedArray('annotation', {
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     yshift: {
         valType: 'number',
         dflt: 0,
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     clicktoshow: {
@@ -14916,11 +14922,25 @@ var draw = require('./draw').draw;
 
 
 module.exports = function calcAutorange(gd) {
-    var fullLayout = gd._fullLayout;
-    var annotationList = Lib.filterVisible(fullLayout.annotations);
+    var fullLayout = gd._fullLayout,
+        annotationList = Lib.filterVisible(fullLayout.annotations);
 
-    if(annotationList.length && gd._fullData.length) {
-        return Lib.syncOrAsync([draw, annAutorange], gd);
+    if(!annotationList.length || !gd._fullData.length) return;
+
+    var annotationAxes = {};
+    annotationList.forEach(function(ann) {
+        annotationAxes[ann.xref] = 1;
+        annotationAxes[ann.yref] = 1;
+    });
+
+    for(var axId in annotationAxes) {
+        var ax = Axes.getFromId(gd, axId);
+        if(ax && ax.autorange) {
+            return Lib.syncOrAsync([
+                draw,
+                annAutorange
+            ], gd);
+        }
     }
 };
 
@@ -14932,58 +14952,67 @@ function annAutorange(gd) {
     // use the arrow and the text bg rectangle,
     // as the whole anno may include hidden text in its bbox
     Lib.filterVisible(fullLayout.annotations).forEach(function(ann) {
-        var xa = Axes.getFromId(gd, ann.xref);
-        var ya = Axes.getFromId(gd, ann.yref);
+        var xa = Axes.getFromId(gd, ann.xref),
+            ya = Axes.getFromId(gd, ann.yref),
+            headSize = 3 * ann.arrowsize * ann.arrowwidth || 0,
+            startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
 
-        ann._extremes = {};
-        if(xa) calcAxisExpansion(ann, xa);
-        if(ya) calcAxisExpansion(ann, ya);
+        var headPlus, headMinus, startHeadPlus, startHeadMinus;
+
+        if(xa && xa.autorange) {
+            headPlus = headSize + ann.xshift;
+            headMinus = headSize - ann.xshift;
+            startHeadPlus = startHeadSize + ann.xshift;
+            startHeadMinus = startHeadSize - ann.xshift;
+
+            if(ann.axref === ann.xref) {
+                // expand for the arrowhead (padded by arrowhead)
+                Axes.expand(xa, [xa.r2c(ann.x)], {
+                    ppadplus: headPlus,
+                    ppadminus: headMinus
+                });
+                // again for the textbox (padded by textbox)
+                Axes.expand(xa, [xa.r2c(ann.ax)], {
+                    ppadplus: Math.max(ann._xpadplus, startHeadPlus),
+                    ppadminus: Math.max(ann._xpadminus, startHeadMinus)
+                });
+            }
+            else {
+                startHeadPlus = ann.ax ? startHeadPlus + ann.ax : startHeadPlus;
+                startHeadMinus = ann.ax ? startHeadMinus - ann.ax : startHeadMinus;
+                Axes.expand(xa, [xa.r2c(ann.x)], {
+                    ppadplus: Math.max(ann._xpadplus, headPlus, startHeadPlus),
+                    ppadminus: Math.max(ann._xpadminus, headMinus, startHeadMinus)
+                });
+            }
+        }
+
+        if(ya && ya.autorange) {
+            headPlus = headSize - ann.yshift;
+            headMinus = headSize + ann.yshift;
+            startHeadPlus = startHeadSize - ann.yshift;
+            startHeadMinus = startHeadSize + ann.yshift;
+
+            if(ann.ayref === ann.yref) {
+                Axes.expand(ya, [ya.r2c(ann.y)], {
+                    ppadplus: headPlus,
+                    ppadminus: headMinus
+                });
+                Axes.expand(ya, [ya.r2c(ann.ay)], {
+                    ppadplus: Math.max(ann._ypadplus, startHeadPlus),
+                    ppadminus: Math.max(ann._ypadminus, startHeadMinus)
+                });
+            }
+            else {
+                startHeadPlus = ann.ay ? startHeadPlus + ann.ay : startHeadPlus;
+                startHeadMinus = ann.ay ? startHeadMinus - ann.ay : startHeadMinus;
+                Axes.expand(ya, [ya.r2c(ann.y)], {
+                    ppadplus: Math.max(ann._ypadplus, headPlus, startHeadPlus),
+                    ppadminus: Math.max(ann._ypadminus, headMinus, startHeadMinus)
+                });
+            }
+        }
     });
-}
-
-function calcAxisExpansion(ann, ax) {
-    var axId = ax._id;
-    var letter = axId.charAt(0);
-    var pos = ann[letter];
-    var apos = ann['a' + letter];
-    var ref = ann[letter + 'ref'];
-    var aref = ann['a' + letter + 'ref'];
-    var padplus = ann['_' + letter + 'padplus'];
-    var padminus = ann['_' + letter + 'padminus'];
-    var shift = {x: 1, y: -1}[letter] * ann[letter + 'shift'];
-    var headSize = 3 * ann.arrowsize * ann.arrowwidth || 0;
-    var headPlus = headSize + shift;
-    var headMinus = headSize - shift;
-    var startHeadSize = 3 * ann.startarrowsize * ann.arrowwidth || 0;
-    var startHeadPlus = startHeadSize + shift;
-    var startHeadMinus = startHeadSize - shift;
-    var extremes;
-
-    if(aref === ref) {
-        // expand for the arrowhead (padded by arrowhead)
-        var extremeArrowHead = Axes.findExtremes(ax, [ax.r2c(pos)], {
-            ppadplus: headPlus,
-            ppadminus: headMinus
-        });
-        // again for the textbox (padded by textbox)
-        var extremeText = Axes.findExtremes(ax, [ax.r2c(apos)], {
-            ppadplus: Math.max(padplus, startHeadPlus),
-            ppadminus: Math.max(padminus, startHeadMinus)
-        });
-        extremes = {
-            min: [extremeArrowHead.min[0], extremeText.min[0]],
-            max: [extremeArrowHead.max[0], extremeText.max[0]]
-        };
-    } else {
-        startHeadPlus = apos ? startHeadPlus + apos : startHeadPlus;
-        startHeadMinus = apos ? startHeadMinus - apos : startHeadMinus;
-        extremes = Axes.findExtremes(ax, [ax.r2c(pos)], {
-            ppadplus: Math.max(padplus, headPlus, startHeadPlus),
-            ppadminus: Math.max(padminus, headMinus, startHeadMinus)
-        });
-    }
-
-    ann._extremes[axId] = extremes;
 }
 
 },{"../../lib":161,"../../plots/cartesian/axes":205,"./draw":33}],29:[function(require,module,exports){
@@ -15319,11 +15348,6 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
         // xref, yref
         var axRef = Axes.coerceRef(annIn, annOut, gdMock, axLetter, '', 'paper');
 
-        if(axRef !== 'paper') {
-            var ax = Axes.getFromId(gdMock, axRef);
-            ax._annIndices.push(annOut._index);
-        }
-
         // x, y
         Axes.coercePosition(annOut, gdMock, coerce, axRef, axLetter, 0.5);
 
@@ -15627,6 +15651,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         var outerWidth = Math.round(annWidth + 2 * borderfull);
         var outerHeight = Math.round(annHeight + 2 * borderfull);
 
+
+        // save size in the annotation object for use by autoscale
+        options._w = annWidth;
+        options._h = annHeight;
+
         function shiftFraction(v, anchor) {
             if(anchor === 'auto') {
                 if(v < 1 / 3) anchor = 'left';
@@ -15672,17 +15701,25 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
              * otherwise the text anchor point
              */
             if(ax) {
-                // check if annotation is off screen, to bypass DOM manipulations
+                /*
+                 * hide the annotation if it's pointing outside the visible plot
+                 * as long as the axis isn't autoranged - then we need to draw it
+                 * anyway to get its bounding box. When we're dragging, an axis can
+                 * still look autoranged even though it won't be when the drag finishes.
+                 */
                 var posFraction = ax.r2fraction(options[axLetter]);
-                if(posFraction < 0 || posFraction > 1) {
+                if((gd._dragging || !ax.autorange) && (posFraction < 0 || posFraction > 1)) {
                     if(tailRef === axRef) {
                         posFraction = ax.r2fraction(options['a' + axLetter]);
                         if(posFraction < 0 || posFraction > 1) {
                             annotationIsOffscreen = true;
                         }
-                    } else {
+                    }
+                    else {
                         annotationIsOffscreen = true;
                     }
+
+                    if(annotationIsOffscreen) continue;
                 }
                 basePx = ax._offset + ax.r2p(options[axLetter]);
                 autoAlignFraction = 0.5;
@@ -15766,9 +15803,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             options['_' + axLetter + 'shift'] = textShift;
         }
 
-        // We have everything we need for calcAutorange at this point,
-        // we can safely exit - unless we're currently dragging the plot
-        if(!gd._dragging && annotationIsOffscreen) {
+        if(annotationIsOffscreen) {
             annTextGroupInner.remove();
             return;
         }
@@ -18150,9 +18185,9 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
 
     // handles both the trace case (autocolorscale is false by default) and
     // the marker and marker.line case (autocolorscale is true by default)
-    var autoColorscaleDflt;
-    if(sclIn !== undefined) autoColorscaleDflt = !isValidScale(sclIn);
-    coerce(prefix + 'autocolorscale', autoColorscaleDflt);
+    var autoColorscaleDftl;
+    if(sclIn !== undefined) autoColorscaleDftl = !isValidScale(sclIn);
+    coerce(prefix + 'autocolorscale', autoColorscaleDftl);
     var sclOut = coerce(prefix + 'colorscale');
 
     // reversescale is handled at the containerOut level
@@ -18162,15 +18197,13 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     // ... until Scatter.colorbar can handle marker line colorbars
     if(prefix === 'marker.line.') return;
 
-    if(!opts.noScale) {
-        // handles both the trace case where the dflt is listed in attributes and
-        // the marker case where the dflt is determined by hasColorbar
-        var showScaleDflt;
-        if(prefix) showScaleDflt = hasColorbar(containerIn);
+    // handle both the trace case where the dflt is listed in attributes and
+    // the marker case where the dflt is determined by hasColorbar
+    var showScaleDftl;
+    if(prefix) showScaleDftl = hasColorbar(containerIn);
+    var showScale = coerce(prefix + 'showscale', showScaleDftl);
 
-        var showScale = coerce(prefix + 'showscale', showScaleDflt);
-        if(showScale) colorbarDefaults(containerIn, containerOut, layout);
-    }
+    if(showScale) colorbarDefaults(containerIn, containerOut, layout);
 };
 
 },{"../../lib":161,"../colorbar/defaults":46,"../colorbar/has_colorbar":48,"./flip_scale":54,"./is_valid_scale":58,"fast-isnumeric":9}],53:[function(require,module,exports){
@@ -20845,15 +20878,16 @@ module.exports = function calc(gd) {
     var calcdata = gd.calcdata;
 
     for(var i = 0; i < calcdata.length; i++) {
-        var calcTrace = calcdata[i];
-        var trace = calcTrace[0].trace;
+        var calcTrace = calcdata[i],
+            trace = calcTrace[0].trace;
 
-        if(trace.visible === true && Registry.traceIs(trace, 'errorBarsOK')) {
-            var xa = Axes.getFromId(gd, trace.xaxis);
-            var ya = Axes.getFromId(gd, trace.yaxis);
-            calcOneAxis(calcTrace, trace, xa, 'x');
-            calcOneAxis(calcTrace, trace, ya, 'y');
-        }
+        if(!Registry.traceIs(trace, 'errorBarsOK')) continue;
+
+        var xa = Axes.getFromId(gd, trace.xaxis),
+            ya = Axes.getFromId(gd, trace.yaxis);
+
+        calcOneAxis(calcTrace, trace, xa, 'x');
+        calcOneAxis(calcTrace, trace, ya, 'y');
     }
 };
 
@@ -20880,10 +20914,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
         }
     }
 
-    var extremes = Axes.findExtremes(axis, vals, {padded: true});
-    var axId = axis._id;
-    trace._extremes[axId].min = trace._extremes[axId].min.concat(extremes.min);
-    trace._extremes[axId].max = trace._extremes[axId].max.concat(extremes.max);
+    Axes.expand(axis, vals, {padded: true});
 }
 
 },{"../../plots/cartesian/axes":205,"../../registry":253,"./compute_error":71,"fast-isnumeric":9}],71:[function(require,module,exports){
@@ -25919,7 +25950,7 @@ module.exports = function style(s, gd) {
         var showLines = subTypes.hasLines(trace);
         var dMod, tMod;
 
-        // 'scatter3d' don't use gd.calcdata,
+        // 'scatter3d' and 'scattergeo' don't use gd.calcdata yet;
         // use d0.trace to infer arrayOk attributes
 
         function boundVal(attrIn, arrayToValFn, bounds) {
@@ -25946,6 +25977,7 @@ module.exports = function style(s, gd) {
                 dEdit.mc = boundVal('marker.color', pickFirst);
                 dEdit.mx = boundVal('marker.symbol', pickFirst);
                 dEdit.mo = boundVal('marker.opacity', Lib.mean, [0.2, 1]);
+                dEdit.ms = boundVal('marker.size', Lib.mean, [2, 16]);
                 dEdit.mlc = boundVal('marker.line.color', pickFirst);
                 dEdit.mlw = boundVal('marker.line.width', Lib.mean, [0, 5]);
                 tEdit.marker = {
@@ -25953,10 +25985,6 @@ module.exports = function style(s, gd) {
                     sizemin: 1,
                     sizemode: 'diameter'
                 };
-
-                var ms = boundVal('marker.size', Lib.mean, [2, 16]);
-                dEdit.ms = ms;
-                tEdit.marker.size = ms;
             }
 
             if(showLines) {
@@ -28017,12 +28045,15 @@ module.exports = function calcAutorange(gd) {
     // this step in subsequent draw calls.
 
     for(var i = 0; i < axes.length; i++) {
-        var ax = axes[i];
-        var opts = ax[constants.name];
+        var ax = axes[i],
+            opts = ax[constants.name];
 
-        if(opts && opts.visible && opts.autorange) {
+        // Don't try calling getAutoRange if _min and _max are filled in.
+        // This happens on updates where the calc step is skipped.
+
+        if(opts && opts.visible && opts.autorange && ax._min.length && ax._max.length) {
             opts._input.autorange = true;
-            opts._input.range = opts.range = getAutoRange(gd, ax);
+            opts._input.range = opts.range = getAutoRange(ax);
         }
     }
 };
@@ -28132,7 +28163,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     coerce('borderwidth');
     coerce('thickness');
 
-    coerce('autorange', !axOut.isValidRange(containerIn.range));
+    axOut._rangesliderAutorange = coerce('autorange', !axOut.isValidRange(containerIn.range));
     coerce('range');
 
     var subplots = layoutOut._subplots;
@@ -28162,6 +28193,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
             if(rangeMode !== 'match') {
                 coerceRange('range', yAxOut.range.slice());
             }
+            yAxOut._rangesliderAutorange = (rangeMode === 'auto');
         }
     }
 
@@ -28864,7 +28896,7 @@ module.exports = templatedArray('shape', {
         valType: 'boolean',
         
         dflt: true,
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
 
@@ -28872,7 +28904,7 @@ module.exports = templatedArray('shape', {
         valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
 
@@ -28893,25 +28925,25 @@ module.exports = templatedArray('shape', {
         values: ['scaled', 'pixel'],
         dflt: 'scaled',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     xanchor: {
         valType: 'any',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     x0: {
         valType: 'any',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     x1: {
         valType: 'any',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
 
@@ -28923,32 +28955,32 @@ module.exports = templatedArray('shape', {
         values: ['scaled', 'pixel'],
         dflt: 'scaled',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     yanchor: {
         valType: 'any',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     y0: {
         valType: 'any',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
     y1: {
         valType: 'any',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
 
     path: {
         valType: 'string',
         
-        editType: 'calc+arraydraw',
+        editType: 'calcIfAutorange+arraydraw',
         
     },
 
@@ -28963,10 +28995,10 @@ module.exports = templatedArray('shape', {
     },
     line: {
         color: extendFlat({}, scatterLineAttrs.color, {editType: 'arraydraw'}),
-        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calc+arraydraw'}),
+        width: extendFlat({}, scatterLineAttrs.width, {editType: 'calcIfAutorange+arraydraw'}),
         dash: extendFlat({}, dash, {editType: 'arraydraw'}),
         
-        editType: 'calc+arraydraw'
+        editType: 'calcIfAutorange+arraydraw'
     },
     fillcolor: {
         valType: 'color',
@@ -29005,7 +29037,6 @@ module.exports = function calcAutorange(gd) {
 
     for(var i = 0; i < shapeList.length; i++) {
         var shape = shapeList[i];
-        shape._extremes = {};
 
         var ax, bounds;
 
@@ -29015,9 +29046,8 @@ module.exports = function calcAutorange(gd) {
             ax = Axes.getFromId(gd, shape.xref);
 
             bounds = shapeBounds(ax, vx0, vx1, shape.path, constants.paramIsX);
-            if(bounds) {
-                shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcXPaddingOptions(shape));
-            }
+
+            if(bounds) Axes.expand(ax, bounds, calcXPaddingOptions(shape));
         }
 
         if(shape.yref !== 'paper') {
@@ -29026,9 +29056,7 @@ module.exports = function calcAutorange(gd) {
             ax = Axes.getFromId(gd, shape.yref);
 
             bounds = shapeBounds(ax, vy0, vy1, shape.path, constants.paramIsY);
-            if(bounds) {
-                shape._extremes[ax._id] = Axes.findExtremes(ax, bounds, calcYPaddingOptions(shape));
-            }
+            if(bounds) Axes.expand(ax, bounds, calcYPaddingOptions(shape));
         }
     }
 };
@@ -29224,7 +29252,6 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
         if(axRef !== 'paper') {
             ax = Axes.getFromId(gdMock, axRef);
-            ax._shapeIndices.push(shapeOut._index);
             r2pos = helpers.rangeToShapePosition(ax);
             pos2r = helpers.shapePositionToRange(ax);
         }
@@ -35356,21 +35383,6 @@ lib.noop = require('./noop');
 lib.identity = require('./identity');
 
 /**
- * create an array of length 'cnt' filled with 'v' at all indices
- *
- * @param {any} v
- * @param {number} cnt
- * @return {array}
- */
-lib.repeat = function(v, cnt) {
-    var out = new Array(cnt);
-    for(var i = 0; i < cnt; i++) {
-        out[i] = v;
-    }
-    return out;
-};
-
-/**
  * swap x and y of the same attribute in container cont
  * specify attr with a ? in place of x/y
  * you can also swap other things than x/y by providing part1 and part2
@@ -36139,7 +36151,7 @@ lib.numSeparate = function(value, separators, separatethousands) {
         x2 = x.length > 1 ? decimalSep + x[1] : '';
 
     // Years are ignored for thousands separators
-    if(thouSep && (x.length > 1 /*&& x1.length > 4*/ && separatethousands)) {  //iMAGO numFormat separatethousands
+    if(thouSep && (x.length > 1 || x1.length > 4 || separatethousands)) {
         while(thousandsRe.test(x1)) {
             x1 = x1.replace(thousandsRe, '$1' + thouSep + '$2');
         }
@@ -39031,7 +39043,7 @@ var isPlainObject = Lib.isPlainObject;
 var traceOpts = {
     valType: 'flaglist',
     extras: ['none'],
-    flags: ['calc', 'clearAxisTypes', 'plot', 'style', 'colorbars'],
+    flags: ['calc', 'calcIfAutorange', 'clearAxisTypes', 'plot', 'style', 'colorbars'],
     
 };
 
@@ -39039,7 +39051,7 @@ var layoutOpts = {
     valType: 'flaglist',
     extras: ['none'],
     flags: [
-        'calc', 'plot', 'legend', 'ticks', 'axrange',
+        'calc', 'calcIfAutorange', 'plot', 'legend', 'ticks', 'axrange',
         'layoutstyle', 'modebar', 'camera', 'arraydraw'
     ],
     
@@ -39049,7 +39061,7 @@ var layoutOpts = {
 // that shouldn't be used in attributes, to deal with certain
 // combinations and conditionals efficiently
 var traceEditTypeFlags = traceOpts.flags.slice()
-    .concat(['fullReplot']);
+    .concat(['clearCalc', 'fullReplot']);
 
 var layoutEditTypeFlags = layoutOpts.flags.slice()
     .concat('layoutReplot');
@@ -40285,6 +40297,11 @@ exports.plot = function(gd, data, layout, config) {
             return;
         }
 
+        Plots.doSetPositions(gd);
+
+        // calc and autorange for errorbars
+        Registry.getComponentMethod('errorbars', 'calc')(gd);
+
         // TODO: autosize extra for text markers and images
         // see https://github.com/plotly/plotly.js/issues/1111
         return Lib.syncOrAsync([
@@ -40317,12 +40334,9 @@ exports.plot = function(gd, data, layout, config) {
         marginPushers,
         marginPushersAgain
     ];
-
     if(hasCartesian) seq.push(positionAndAutorange);
-
     seq.push(subroutines.layoutStyles);
     if(hasCartesian) seq.push(drawAxes);
-
     seq.push(
         subroutines.drawData,
         subroutines.finalDraw,
@@ -41290,7 +41304,7 @@ exports.restyle = function restyle(gd, astr, val, _traces) {
     var flags = specs.flags;
 
     // clear calcdata and/or axis types if required so they get regenerated
-    if(flags.calc) gd.calcdata = undefined;
+    if(flags.clearCalc) gd.calcdata = undefined;
     if(flags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, {});
 
     // fill in redraw sequence
@@ -41588,7 +41602,21 @@ function _restyle(gd, aobj, traces) {
         }
     }
 
-    if(flags.calc || flags.plot) {
+    // do we need to force a recalc?
+    var autorangeOn = false;
+    var axList = Axes.list(gd);
+    for(i = 0; i < axList.length; i++) {
+        if(axList[i].autorange) {
+            autorangeOn = true;
+            break;
+        }
+    }
+
+    // combine a few flags together;
+    if(flags.calc || (flags.calcIfAutorange && autorangeOn)) {
+        flags.clearCalc = true;
+    }
+    if(flags.calc || flags.plot || flags.calcIfAutorange) {
         flags.fullReplot = true;
     }
 
@@ -41699,7 +41727,6 @@ function addAxRangeSequence(seq, rangesAltered) {
         subroutines.doTicksRelayout;
 
     seq.push(
-        subroutines.doAutoRangeAndConstraints,
         doTicks,
         subroutines.drawData,
         subroutines.finalDraw
@@ -41934,21 +41961,37 @@ function _relayout(gd, aobj) {
             var propStr = containerArrayMatch.property;
             var componentArray = Lib.nestedProperty(layout, arrayStr);
             var obji = (componentArray || [])[i] || {};
-            var updateValObject = valObject || {editType: 'calc'};
+            var objToAutorange = obji;
 
-            if(propStr === '') {
+            var updateValObject = valObject || {editType: 'calc'};
+            var checkForAutorange = updateValObject.editType.indexOf('calcIfAutorange') !== -1;
+
+            if(i === '') {
+                // replacing the entire array - too many possibilities, just recalc
+                if(checkForAutorange) flags.calc = true;
+                else editTypes.update(flags, updateValObject);
+                checkForAutorange = false; // clear this, we're already doing a recalc
+            }
+            else if(propStr === '') {
                 // special handling of undoit if we're adding or removing an element
                 // ie 'annotations[2]' which can be {...} (add) or null (remove)
+                objToAutorange = vi;
                 if(manageArrays.isAddVal(vi)) {
                     undoit[ai] = null;
-                } else if(manageArrays.isRemoveVal(vi)) {
-                    undoit[ai] = obji;
-                } else {
-                    Lib.warn('unrecognized full object value', aobj);
                 }
+                else if(manageArrays.isRemoveVal(vi)) {
+                    undoit[ai] = obji;
+                    objToAutorange = obji;
+                }
+                else Lib.warn('unrecognized full object value', aobj);
             }
 
-            editTypes.update(flags, updateValObject);
+            if(checkForAutorange && (refAutorange(gd, objToAutorange, 'x') || refAutorange(gd, objToAutorange, 'y'))) {
+                flags.calc = true;
+            }
+            else {
+                editTypes.update(flags, updateValObject);
+            }
 
             // prepare the edits object we'll send to applyContainerArrayChanges
             if(!arrayEdits[arrayStr]) arrayEdits[arrayStr] = {};
@@ -42050,6 +42093,25 @@ function updateAutosize(gd) {
     return (fullLayout.width !== oldWidth) || (fullLayout.height !== oldHeight);
 }
 
+// for editing annotations or shapes - is it on autoscaled axes?
+function refAutorange(gd, obj, axLetter) {
+    if(!Lib.isPlainObject(obj)) return false;
+    var axRef = obj[axLetter + 'ref'] || axLetter,
+        ax = Axes.getFromId(gd, axRef);
+
+    if(!ax && axRef.charAt(0) === axLetter) {
+        // fall back on the primary axis in case we've referenced a
+        // nonexistent axis (as we do above if axRef is missing).
+        // This assumes the object defaults to data referenced, which
+        // is the case for shapes and annotations but not for images.
+        // The only thing this is used for is to determine whether to
+        // do a full `recalc`, so the only ill effect of this error is
+        // to waste some time.
+        ax = Axes.getFromId(gd, axLetter);
+    }
+    return (ax || {}).autorange;
+}
+
 /**
  * update: update trace and layout attributes of an existing plot
  *
@@ -42088,7 +42150,7 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
     var relayoutFlags = relayoutSpecs.flags;
 
     // clear calcdata and/or axis types if required
-    if(restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;
+    if(restyleFlags.clearCalc || relayoutFlags.calc) gd.calcdata = undefined;
     if(restyleFlags.clearAxisTypes) helpers.clearAxisTypes(gd, traces, layoutUpdate);
 
     // fill in redraw sequence
@@ -42335,10 +42397,14 @@ function diffData(gd, oldFullData, newFullData, immutable) {
         if(seenUIDs[trace.uid]) continue;
         seenUIDs[trace.uid] = 1;
 
+        diffOpts.autoranged = trace.xaxis ? (
+            Axes.getFromId(gd, trace.xaxis).autorange ||
+            Axes.getFromId(gd, trace.yaxis).autorange
+        ) : false;
         getDiffFlags(oldFullData[i]._fullInput, trace, [], diffOpts);
     }
 
-    if(flags.calc || flags.plot) {
+    if(flags.calc || flags.plot || flags.calcIfAutorange) {
         flags.fullReplot = true;
     }
 
@@ -42377,9 +42443,17 @@ function getDiffFlags(oldContainer, newContainer, outerparts, opts) {
     var immutable = opts.immutable;
     var inArray = opts.inArray;
     var arrayIndex = opts.arrayIndex;
+    var gd = opts.gd;
+    var autoranged = opts.autoranged;
 
     function changed() {
         var editType = valObject.editType;
+        if(editType.indexOf('calcIfAutorange') !== -1 && (autoranged || (autoranged === undefined && (
+            refAutorange(gd, newContainer, 'x') || refAutorange(gd, newContainer, 'y')
+        )))) {
+            flags.calc = true;
+            return;
+        }
         if(inArray && editType.indexOf('arraydraw') !== -1) {
             Lib.pushUnique(flags.arrays[inArray], arrayIndex);
             return;
@@ -45028,7 +45102,7 @@ exports.doAutoRangeAndConstraints = function(gd) {
     for(var i = 0; i < axList.length; i++) {
         var ax = axList[i];
         cleanAxisConstraints(gd, ax);
-        doAutoRange(gd, ax);
+        doAutoRange(ax);
     }
 
     enforceAxisConstraints(gd);
@@ -46523,6 +46597,7 @@ module.exports = {
 * LICENSE file in the root directory of this source tree.
 */
 
+
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -46534,69 +46609,51 @@ module.exports = {
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
-    findExtremes: findExtremes,
-    concatExtremes: concatExtremes
+    expand: expand
 };
 
-/**
- * getAutoRange
- *
- * Collects all _extremes values corresponding to a given axis
- * and computes its auto range.
- *
- * Note that getAutoRange uses return values from findExtremes.
- *
- * @param {object} gd:
- *   graph div object with filled-in fullData and fullLayout, in particular
- *   with filled-in '_extremes' containers:
- *   {
- *      val: calcdata value,
- *      pad: extra pixels beyond this value,
- *      extrapad: bool, does this point want 5% extra padding
- *   }
- * @param {object} ax:
- *   full axis object, in particular with filled-in '_traceIndices'
- *   and '_annIndices' / '_shapeIndices' if applicable
- * @return {array}
- *   an array of [min, max]. These are calcdata for log and category axes
- *   and data for linear and date axes.
- *
- * TODO: we want to change log to data as well, but it's hard to do this
- * maintaining backward compatibility. category will always have to use calcdata
- * though, because otherwise values between categories (or outside all categories)
- * would be impossible.
- */
-function getAutoRange(gd, ax) {
-    var i, j;
+// Find the autorange for this axis
+//
+// assumes ax._min and ax._max have already been set by calling axes.expand
+// using calcdata from all traces. These are arrays of objects:
+// {
+//    val: calcdata value,
+//    pad: extra pixels beyond this value,
+//    extrapad: bool, does this point want 5% extra padding
+// }
+//
+// Returns an array of [min, max]. These are calcdata for log and category axes
+// and data for linear and date axes.
+//
+// TODO: we want to change log to data as well, but it's hard to do this
+// maintaining backward compatibility. category will always have to use calcdata
+// though, because otherwise values between categories (or outside all categories)
+// would be impossible.
+function getAutoRange(ax) {
     var newRange = [];
+    var minmin = ax._min[0].val;
+    var maxmax = ax._max[0].val;
+    var mbest = 0;
+    var axReverse = false;
 
     var getPad = makePadFn(ax);
-    var extremes = concatExtremes(gd, ax);
-    var minArray = extremes.min;
-    var maxArray = extremes.max;
 
-    if(minArray.length === 0 || maxArray.length === 0) {
-        return Lib.simpleMap(ax.range, ax.r2l);
-    }
+    var i, j, minpt, maxpt, minbest, maxbest, dp, dv;
 
-    var minmin = minArray[0].val;
-    var maxmax = maxArray[0].val;
-
-    for(i = 1; i < minArray.length; i++) {
+    for(i = 1; i < ax._min.length; i++) {
         if(minmin !== maxmax) break;
-        minmin = Math.min(minmin, minArray[i].val);
+        minmin = Math.min(minmin, ax._min[i].val);
     }
-    for(i = 1; i < maxArray.length; i++) {
+    for(i = 1; i < ax._max.length; i++) {
         if(minmin !== maxmax) break;
-        maxmax = Math.max(maxmax, maxArray[i].val);
+        maxmax = Math.max(maxmax, ax._max[i].val);
     }
-
-    var axReverse = false;
 
     if(ax.range) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         axReverse = rng[1] < rng[0];
     }
+
     // one-time setting to easily reverse the axis
     // when plotting from code
     if(ax.autorange === 'reversed') {
@@ -46604,13 +46661,10 @@ function getAutoRange(gd, ax) {
         ax.autorange = true;
     }
 
-    var mbest = 0;
-    var minpt, maxpt, minbest, maxbest, dp, dv;
-
-    for(i = 0; i < minArray.length; i++) {
-        minpt = minArray[i];
-        for(j = 0; j < maxArray.length; j++) {
-            maxpt = maxArray[j];
+    for(i = 0; i < ax._min.length; i++) {
+        minpt = ax._min[i];
+        for(j = 0; j < ax._max.length; j++) {
+            maxpt = ax._max[j];
             dv = maxpt.val - minpt.val;
             dp = ax._length - getPad(minpt) - getPad(maxpt);
             if(dv > 0 && dp > 0 && dv / dp > mbest) {
@@ -46626,9 +46680,11 @@ function getAutoRange(gd, ax) {
         var upper = minmin + 1;
         if(ax.rangemode === 'tozero') {
             newRange = minmin < 0 ? [lower, 0] : [0, upper];
-        } else if(ax.rangemode === 'nonnegative') {
+        }
+        else if(ax.rangemode === 'nonnegative') {
             newRange = [Math.max(0, lower), Math.max(0, upper)];
-        } else {
+        }
+        else {
             newRange = [lower, upper];
         }
     }
@@ -46668,9 +46724,11 @@ function getAutoRange(gd, ax) {
         if(ax.rangemode === 'tozero') {
             if(newRange[0] < 0) {
                 newRange = [newRange[0], 0];
-            } else if(newRange[0] > 0) {
+            }
+            else if(newRange[0] > 0) {
                 newRange = [0, newRange[0]];
-            } else {
+            }
+            else {
                 newRange = [0, 1];
             }
         }
@@ -46706,45 +46764,15 @@ function makePadFn(ax) {
     return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
 }
 
-function concatExtremes(gd, ax) {
-    var axId = ax._id;
-    var fullData = gd._fullData;
-    var fullLayout = gd._fullLayout;
-    var minArray = [];
-    var maxArray = [];
-    var i, j, d;
-
-    function _concat(cont, indices) {
-        for(i = 0; i < indices.length; i++) {
-            var item = cont[indices[i]];
-            var extremes = (item._extremes || {})[axId];
-            if(item.visible === true && extremes) {
-                for(j = 0; j < extremes.min.length; j++) {
-                    d = extremes.min[j];
-                    collapseMinArray(minArray, d.val, d.pad, {extrapad: d.extrapad});
-                }
-                for(j = 0; j < extremes.max.length; j++) {
-                    d = extremes.max[j];
-                    collapseMaxArray(maxArray, d.val, d.pad, {extrapad: d.extrapad});
-                }
-            }
-        }
-    }
-
-    _concat(fullData, ax._traceIndices);
-    _concat(fullLayout.annotations || [], ax._annIndices || []);
-    _concat(fullLayout.shapes || [], ax._shapeIndices || []);
-
-    return {min: minArray, max: maxArray};
-}
-
-function doAutoRange(gd, ax) {
+function doAutoRange(ax) {
     if(!ax._length) ax.setScale();
 
+    // TODO do we really need this?
+    var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
     var axIn;
 
-    if(ax.autorange) {
-        ax.range = getAutoRange(gd, ax);
+    if(ax.autorange && hasDeps) {
+        ax.range = getAutoRange(ax);
 
         ax._r = ax.range.slice();
         ax._rl = Lib.simpleMap(ax._r, ax.r2l);
@@ -46761,7 +46789,11 @@ function doAutoRange(gd, ax) {
         var axeRangeOpts = ax._anchorAxis.rangeslider[ax._name];
         if(axeRangeOpts) {
             if(axeRangeOpts.rangemode === 'auto') {
-                axeRangeOpts.range = getAutoRange(gd, ax);
+                if(hasDeps) {
+                    axeRangeOpts.range = getAutoRange(ax);
+                } else {
+                    axeRangeOpts.range = ax._rangeInitial ? ax._rangeInitial.slice() : ax.range.slice();
+                }
             }
         }
         axIn = ax._anchorAxis._input;
@@ -46769,27 +46801,22 @@ function doAutoRange(gd, ax) {
     }
 }
 
-/**
- * findExtremes
- *
- * Find min/max extremes of an array of coordinates on a given axis.
- *
- * Note that findExtremes is called during `calc`, when we don't yet know the axis
+function needsAutorange(ax) {
+    return ax.autorange || ax._rangesliderAutorange;
+}
+
+/*
+ * expand: if autoranging, include new data in the outer limits for this axis.
+ * Note that `expand` is called during `calc`, when we don't yet know the axis
  * length; all the inputs should be based solely on the trace data, nothing
  * about the axis layout.
- *
  * Note that `ppad` and `vpad` as well as their asymmetric variants refer to
  * the before and after padding of the passed `data` array, not to the whole axis.
  *
- * @param {object} ax: full axis object
- *   relies on
- *   - ax.type
- *   - ax._m (just its sign)
- *   - ax.d2l
- * @param {array} data:
- *  array of numbers (i.e. already run though ax.d2c)
- * @param {object} options:
- *  available keys are:
+ * @param {object} ax: the axis being expanded. The result will be more entries
+ *      in ax._min and ax._max if necessary to include the new data
+ * @param {array} data: an array of numbers (ie already run through ax.d2c)
+ * @param {object} options: available keys are:
  *      vpad: (number or number array) pad values (data value +-vpad)
  *      ppad: (number or number array) pad pixels (pixel location +-ppad)
  *      ppadplus, ppadminus, vpadplus, vpadminus:
@@ -46798,28 +46825,23 @@ function doAutoRange(gd, ax) {
  *          (unless one end is overridden by tozero)
  *      tozero: (boolean) make sure to include zero if axis is linear,
  *          and make it a tight bound if possible
- *
- * @return {object}
- *  - min {array of objects}
- *  - max {array of objects}
- *  each object item has fields:
- *    - val {number}
- *    - pad {number}
- *    - extrappad {number}
  */
-function findExtremes(ax, data, options) {
+function expand(ax, data, options) {
+    if(!needsAutorange(ax) || !data) return;
+
+    if(!ax._min) ax._min = [];
+    if(!ax._max) ax._max = [];
     if(!options) options = {};
     if(!ax._m) ax.setScale();
-
-    var minArray = [];
-    var maxArray = [];
 
     var len = data.length;
     var extrapad = options.padded || false;
     var tozero = options.tozero && (ax.type === 'linear' || ax.type === '-');
-    var isLog = ax.type === 'log';
+    var isLog = (ax.type === 'log');
+
+    var i, j, k, v, di, dmin, dmax, ppadiplus, ppadiminus, includeThis, vmin, vmax;
+
     var hasArrayOption = false;
-    var i, v, di, dmin, dmax, ppadiplus, ppadiminus, vmin, vmax;
 
     function makePadAccessor(item) {
         if(Array.isArray(item)) {
@@ -46852,7 +46874,8 @@ function findExtremes(ax, data, options) {
                 if(v < vmin && v > 0) vmin = v;
                 if(v > vmax && v < FP_SAFE) vmax = v;
             }
-        } else {
+        }
+        else {
             for(i = 0; i < len; i++) {
                 v = data[i];
                 if(v < vmin && v > -FP_SAFE) vmin = v;
@@ -46863,8 +46886,6 @@ function findExtremes(ax, data, options) {
         data = [vmin, vmax];
         len = 2;
     }
-
-    var collapseOpts = {tozero: tozero, extrapad: extrapad};
 
     function addItem(i) {
         di = data[i];
@@ -46886,11 +46907,49 @@ function findExtremes(ax, data, options) {
             dmin = Math.min(0, dmin);
             dmax = Math.max(0, dmax);
         }
-        if(goodNumber(dmin)) {
-            collapseMinArray(minArray, dmin, ppadiminus, collapseOpts);
-        }
-        if(goodNumber(dmax)) {
-            collapseMaxArray(maxArray, dmax, ppadiplus, collapseOpts);
+
+        for(k = 0; k < 2; k++) {
+            var newVal = k ? dmax : dmin;
+            if(goodNumber(newVal)) {
+                var extremes = k ? ax._max : ax._min;
+                var newPad = k ? ppadiplus : ppadiminus;
+                var atLeastAsExtreme = k ? greaterOrEqual : lessOrEqual;
+
+                includeThis = true;
+                /*
+                 * Take items v from ax._min/_max and compare them to the presently active point:
+                 * - Since we don't yet know the relationship between pixels and values
+                 *   (that's what we're trying to figure out!) AND we don't yet know how
+                 *   many pixels `extrapad` represents (it's going to be 5% of the length,
+                 *   but we don't want to have to redo _min and _max just because length changed)
+                 *   two point must satisfy three criteria simultaneously for one to supersede the other:
+                 *   - at least as extreme a `val`
+                 *   - at least as big a `pad`
+                 *   - an unpadded point cannot supersede a padded point, but any other combination can
+                 *
+                 * - If the item supersedes the new point, set includethis false
+                 * - If the new pt supersedes the item, delete it from ax._min/_max
+                 */
+                for(j = 0; j < extremes.length && includeThis; j++) {
+                    v = extremes[j];
+                    if(atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
+                        includeThis = false;
+                        break;
+                    }
+                    else if(atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
+                        extremes.splice(j, 1);
+                        j--;
+                    }
+                }
+                if(includeThis) {
+                    var clipAtZero = (tozero && newVal === 0);
+                    extremes.push({
+                        val: newVal,
+                        pad: clipAtZero ? 0 : newPad,
+                        extrapad: clipAtZero ? false : extrapad
+                    });
+                }
+            }
         }
     }
 
@@ -46900,78 +46959,6 @@ function findExtremes(ax, data, options) {
     var iMax = Math.min(6, len);
     for(i = 0; i < iMax; i++) addItem(i);
     for(i = len - 1; i >= iMax; i--) addItem(i);
-
-    return {min: minArray, max: maxArray};
-}
-
-function collapseMinArray(array, newVal, newPad, opts) {
-    collapseArray(array, newVal, newPad, opts, lessOrEqual);
-}
-
-function collapseMaxArray(array, newVal, newPad, opts) {
-    collapseArray(array, newVal, newPad, opts, greaterOrEqual);
-}
-
-/**
- * collapseArray
- *
- * Takes items from 'array' and compares them to 'newVal', 'newPad'.
- *
- * @param {array} array:
- *  current set of min or max extremes
- * @param {number} newVal:
- *  new value to compare against
- * @param {number} newPad:
- *  pad value associated with 'newVal'
- * @param {object} opts:
- *  - tozero {boolean}
- *  - extrapad {number}
- * @param {function} atLeastAsExtreme:
- *  comparison function, use
- *  - lessOrEqual for min 'array' and
- *  - greaterOrEqual for max 'array'
- *
- * In practice, 'array' is either
- *  - 'extremes[ax._id].min' or
- *  - 'extremes[ax._id].max
- *  found in traces and layout items that affect autorange.
- *
- * Since we don't yet know the relationship between pixels and values
- * (that's what we're trying to figure out!) AND we don't yet know how
- * many pixels `extrapad` represents (it's going to be 5% of the length,
- * but we don't want to have to redo calc just because length changed)
- * two point must satisfy three criteria simultaneously for one to supersede the other:
- *  - at least as extreme a `val`
- *  - at least as big a `pad`
- *  - an unpadded point cannot supersede a padded point, but any other combination can
- *
- * Then:
- * - If the item supersedes the new point, set includeThis false
- * - If the new pt supersedes the item, delete it from 'array'
- */
-function collapseArray(array, newVal, newPad, opts, atLeastAsExtreme) {
-    var tozero = opts.tozero;
-    var extrapad = opts.extrapad;
-    var includeThis = true;
-
-    for(var j = 0; j < array.length && includeThis; j++) {
-        var v = array[j];
-        if(atLeastAsExtreme(v.val, newVal) && v.pad >= newPad && (v.extrapad || !extrapad)) {
-            includeThis = false;
-            break;
-        } else if(atLeastAsExtreme(newVal, v.val) && v.pad <= newPad && (extrapad || !v.extrapad)) {
-            array.splice(j, 1);
-            j--;
-        }
-    }
-    if(includeThis) {
-        var clipAtZero = (tozero && newVal === 0);
-        array.push({
-            val: newVal,
-            pad: clipAtZero ? 0 : newPad,
-            extrapad: clipAtZero ? false : extrapad
-        });
-    }
 }
 
 // In order to stop overflow errors, don't consider points
@@ -47034,8 +47021,8 @@ axes.getFromId = axisIds.getFromId;
 axes.getFromTrace = axisIds.getFromTrace;
 
 var autorange = require('./autorange');
+axes.expand = autorange.expand;
 axes.getAutoRange = autorange.getAutoRange;
-axes.findExtremes = autorange.findExtremes;
 
 /*
  * find the list of possible axes to reference with an xref or yref attribute
@@ -49538,6 +49525,13 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     setConvert(containerOut, layoutOut);
 
     var autoRange = coerce('autorange', !containerOut.isValidRange(containerIn.range));
+
+    // both x and y axes may need autorange done just for the range slider's purposes
+    // the logic is complicated to figure this out later, particularly for y axes since
+    // the settings can be spread out in the x axes... so instead we'll collect them
+    // during supplyDefaults
+    containerOut._rangesliderAutorange = false;
+
     if(autoRange) coerce('rangemode');
 
     coerce('range');
@@ -50045,7 +50039,6 @@ function updateConstraintGroups(constraintGroups, thisGroup, thisID, scaleanchor
 var id2name = require('./axis_ids').id2name;
 var scaleZoom = require('./scale_zoom');
 var makePadFn = require('./autorange').makePadFn;
-var concatExtremes = require('./autorange').concatExtremes;
 
 var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 
@@ -50146,7 +50139,7 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         factor *= rangeShrunk;
                     }
 
-                    if(ax.autorange) {
+                    if(ax.autorange && ax._min.length && ax._max.length) {
                         /*
                          * range & factor may need to change because range was
                          * calculated for the larger scaling, so some pixel
@@ -50174,21 +50167,18 @@ exports.enforce = function enforceAxisConstraints(gd) {
                         updateDomain(ax, factor);
                         ax.setScale();
                         var m = Math.abs(ax._m);
-                        var extremes = concatExtremes(gd, ax);
-                        var minArray = extremes.min;
-                        var maxArray = extremes.max;
                         var newVal;
                         var k;
 
-                        for(k = 0; k < minArray.length; k++) {
-                            newVal = minArray[k].val - getPad(minArray[k]) / m;
+                        for(k = 0; k < ax._min.length; k++) {
+                            newVal = ax._min[k].val - getPad(ax._min[k]) / m;
                             if(newVal > outerMin && newVal < rangeMin) {
                                 rangeMin = newVal;
                             }
                         }
 
-                        for(k = 0; k < maxArray.length; k++) {
-                            newVal = maxArray[k].val + getPad(maxArray[k]) / m;
+                        for(k = 0; k < ax._max.length; k++) {
+                            newVal = ax._max[k].val + getPad(ax._max[k]) / m;
                             if(newVal < outerMax && newVal > rangeMax) {
                                 rangeMax = newVal;
                             }
@@ -51866,7 +51856,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             var className = (_module.layerName || name + 'layer');
             var plotMethod = _module.plot;
 
-            // plot all visible traces of this type on this subplot at once
+            // plot all traces of this type on this subplot at once
             cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
             cdModule = cdModuleAndOthers[0];
             // don't need to search the found traces again - in fact we need to NOT
@@ -52336,7 +52326,7 @@ module.exports = {
         values: [true, false, 'reversed'],
         dflt: true,
         
-        editType: 'axrange',
+        editType: 'calc',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         
     },
@@ -52808,6 +52798,7 @@ module.exports = {
 
 'use strict';
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Template = require('../../plot_api/plot_template');
@@ -52818,57 +52809,31 @@ var handleTypeDefaults = require('./type_defaults');
 var handleAxisDefaults = require('./axis_defaults');
 var handleConstraintDefaults = require('./constraint_defaults');
 var handlePositionDefaults = require('./position_defaults');
-
 var axisIds = require('./axis_ids');
-var id2name = axisIds.id2name;
-var name2id = axisIds.name2id;
 
-var Registry = require('../../registry');
-var traceIs = Registry.traceIs;
-var getComponentMethod = Registry.getComponentMethod;
-
-function appendList(cont, k, item) {
-    if(Array.isArray(cont[k])) cont[k].push(item);
-    else cont[k] = [item];
-}
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    var ax2traces = {};
     var xaCheater = {};
     var xaNonCheater = {};
     var outerTicks = {};
     var noGrids = {};
-    var i, j;
+    var i;
 
     // look for axes in the data
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
-        if(!traceIs(trace, 'cartesian') && !traceIs(trace, 'gl2d')) continue;
 
-        var xaName;
-        if(trace.xaxis) {
-            xaName = id2name(trace.xaxis);
-            appendList(ax2traces, xaName, trace);
-        } else if(trace.xaxes) {
-            for(j = 0; j < trace.xaxes.length; j++) {
-                appendList(ax2traces, id2name(trace.xaxes[j]), trace);
-            }
+        if(!Registry.traceIs(trace, 'cartesian') && !Registry.traceIs(trace, 'gl2d')) {
+            continue;
         }
 
-        var yaName;
-        if(trace.yaxis) {
-            yaName = id2name(trace.yaxis);
-            appendList(ax2traces, yaName, trace);
-        } else if(trace.yaxes) {
-            for(j = 0; j < trace.yaxes.length; j++) {
-                appendList(ax2traces, id2name(trace.yaxes[j]), trace);
-            }
-        }
+        var xaName = axisIds.id2name(trace.xaxis);
+        var yaName = axisIds.id2name(trace.yaxis);
 
         // Two things trigger axis visibility:
         // 1. is not carpet
         // 2. carpet that's not cheater
-        if(!traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
+        if(!Registry.traceIs(trace, 'carpet') || (trace.type === 'carpet' && !trace._cheater)) {
             if(xaName) xaNonCheater[xaName] = 1;
         }
 
@@ -52881,22 +52846,22 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
 
         // check for default formatting tweaks
-        if(traceIs(trace, '2dMap')) {
-            outerTicks[xaName] = 1;
-            outerTicks[yaName] = 1;
+        if(Registry.traceIs(trace, '2dMap')) {
+            outerTicks[xaName] = true;
+            outerTicks[yaName] = true;
         }
 
-        if(traceIs(trace, 'oriented')) {
+        if(Registry.traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation === 'h' ? yaName : xaName;
-            noGrids[positionAxis] = 1;
+            noGrids[positionAxis] = true;
         }
     }
 
     var subplots = layoutOut._subplots;
     var xIds = subplots.xaxis;
     var yIds = subplots.yaxis;
-    var xNames = Lib.simpleMap(xIds, id2name);
-    var yNames = Lib.simpleMap(yIds, id2name);
+    var xNames = Lib.simpleMap(xIds, axisIds.id2name);
+    var yNames = Lib.simpleMap(yIds, axisIds.id2name);
     var axNames = xNames.concat(yNames);
 
     // plot_bgcolor only makes sense if there's a (2D) plot!
@@ -52932,7 +52897,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             var axName2 = list[j];
 
             if(axName2 !== axName && !(layoutIn[axName2] || {}).overlaying) {
-                out.push(name2id(axName2));
+                out.push(axisIds.name2id(axName2));
             }
         }
 
@@ -52951,12 +52916,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = Template.newContainer(layoutOut, axName, axLetter + 'axis');
 
-        var traces = ax2traces[axName] || [];
-        axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
-        axLayoutOut._annIndices = [];
-        axLayoutOut._shapeIndices = [];
-
-        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, traces, axName);
+        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, fullData, axName);
 
         var overlayableAxes = getOverlayableAxes(axLetter, axName);
 
@@ -52965,7 +52925,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             font: layoutOut.font,
             outerTicks: outerTicks[axName],
             showGrid: !noGrids[axName],
-            data: traces,
+            data: fullData,
             bgColor: bgColor,
             calendar: layoutOut.calendar,
             automargin: true,
@@ -53002,8 +52962,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     // quick second pass for range slider and selector defaults
-    var rangeSliderDefaults = getComponentMethod('rangeslider', 'handleDefaults');
-    var rangeSelectorDefaults = getComponentMethod('rangeselector', 'handleDefaults');
+    var rangeSliderDefaults = Registry.getComponentMethod('rangeslider', 'handleDefaults');
+    var rangeSelectorDefaults = Registry.getComponentMethod('rangeselector', 'handleDefaults');
 
     for(i = 0; i < xNames.length; i++) {
         axName = xNames[i];
@@ -53030,7 +52990,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutIn = layoutIn[axName];
         axLayoutOut = layoutOut[axName];
 
-        var anchoredAxis = layoutOut[id2name(axLayoutOut.anchor)];
+        var anchoredAxis = layoutOut[axisIds.id2name(axLayoutOut.anchor)];
 
         var fixedRangeDflt = (
             anchoredAxis &&
@@ -53770,7 +53730,8 @@ function fromLog(v) {
  * Creates/updates these conversion functions, and a few more utilities
  * like cleanRange, and makeCalcdata
  *
- * also clears the autotick constraints ._minDtick, ._forceTick0
+ * also clears the autorange bounds ._min and ._max
+ * and the autotick constraints ._minDtick, ._forceTick0
  */
 module.exports = function setConvert(ax, fullLayout) {
     fullLayout = fullLayout || {};
@@ -54184,6 +54145,15 @@ module.exports = function setConvert(ax, fullLayout) {
     };
 
     ax.clearCalc = function() {
+        // for autoranging: arrays of objects:
+        // {
+        //     val: axis value,
+        //     pad: pixel padding,
+        //     extrapad: boolean, should this val get 5% additional padding
+        // }
+        ax._min = [];
+        ax._max = [];
+
         // initialize the category list, if there is one, so we start over
         // to be filled in later by ax.d2c
         ax._categories = (ax._initialCategories || []).slice();
@@ -54872,7 +54842,7 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
 
         if(trace.type === 'splom' &&
                 trace._length > 0 &&
-                (trace['_' + axLetter + 'axes'] || {})[id]
+                trace['_' + axLetter + 'axes'][id]
         ) {
             return trace;
         }
@@ -55621,7 +55591,6 @@ exports.getModuleCalcData = function(calcdata, arg1) {
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         var trace = cd[0].trace;
-        // N.B. 'legendonly' traces do not make it past here
         if(trace.visible !== true) continue;
 
         // group calcdata trace not by 'module' (as the name of this function
@@ -57524,9 +57493,6 @@ var extraFormatKeys = [
  * gd._fullLayout._modules
  *   is a list of all the trace modules required to draw the plot.
  *
- * gd._fullLayout._visibleModules
- *   subset of _modules, a list of modules corresponding to visible:true traces.
- *
  * gd._fullLayout._basePlotModules
  *   is a list of all the plot modules required to draw the plot.
  *
@@ -57628,7 +57594,6 @@ plots.supplyDefaults = function(gd, opts) {
 
     // clear the lists of trace and baseplot modules, and subplots
     newFullLayout._modules = [];
-    newFullLayout._visibleModules = [];
     newFullLayout._basePlotModules = [];
     var subplots = newFullLayout._subplots = emptySubplotLists();
 
@@ -57671,7 +57636,7 @@ plots.supplyDefaults = function(gd, opts) {
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
 
     // special cases that introduce interactions between traces
-    var _modules = newFullLayout._visibleModules;
+    var _modules = newFullLayout._modules;
     for(i = 0; i < _modules.length; i++) {
         var _module = _modules[i];
         if(_module.cleanData) _module.cleanData(newFullData);
@@ -57947,7 +57912,7 @@ plots._hasPlotType = function(category) {
         if(basePlotModules[i].name === category) return true;
     }
 
-    // check trace modules (including non-visible:true)
+    // check trace modules
     var modules = this._modules || [];
     for(i = 0; i < modules.length; i++) {
         var name = modules[i].name;
@@ -58141,7 +58106,6 @@ plots.clearExpandedTraceDefaultColors = function(trace) {
 
 plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
     var modules = fullLayout._modules;
-    var visibleModules = fullLayout._visibleModules;
     var basePlotModules = fullLayout._basePlotModules;
     var cnt = 0;
     var colorCnt = 0;
@@ -58156,9 +58120,9 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         var _module = fullTrace._module;
         if(!_module) return;
 
-        Lib.pushUnique(modules, _module);
-        if(fullTrace.visible === true) Lib.pushUnique(visibleModules, _module);
+        if(fullTrace.visible === true) Lib.pushUnique(modules, _module);
         Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
+
         cnt++;
 
         // TODO: do we really want color not to increment for explicitly invisible traces?
@@ -58719,7 +58683,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData, trans
     }
 
     // trace module layout defaults
-    var modules = layoutOut._visibleModules;
+    var modules = layoutOut._modules;
     for(i = 0; i < modules.length; i++) {
         _module = modules[i];
 
@@ -58823,7 +58787,7 @@ plots.purge = function(gd) {
 };
 
 plots.style = function(gd) {
-    var _modules = gd._fullLayout._visibleModules;
+    var _modules = gd._fullLayout._modules;
     var styleModules = [];
     var i;
 
@@ -59483,6 +59447,8 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
 
         plots.supplyDefaults(gd);
         plots.doCalcdata(gd);
+        plots.doSetPositions(gd);
+        Registry.getComponentMethod('errorbars', 'calc')(gd);
 
         return Promise.resolve();
     }
@@ -59680,6 +59646,8 @@ plots.doCalcdata = function(gd, traces) {
 
     // for sharing colors across pies (and for legend)
     fullLayout._piecolormap = {};
+    fullLayout._piecolorway = null;
+    fullLayout._piedefaultcolorcount = 0;
 
     // If traces were specified and this trace was not included,
     // then transfer it over from the old calcdata:
@@ -59690,13 +59658,10 @@ plots.doCalcdata = function(gd, traces) {
         }
     }
 
+    // find array attributes in trace
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
-
         trace._arrayAttrs = PlotSchema.findArrayAttributes(trace);
-
-        // keep track of trace extremes (for autorange) in here
-        trace._extremes = {};
     }
 
     // add polar axes to axis list
@@ -59798,10 +59763,7 @@ plots.doCalcdata = function(gd, traces) {
     for(i = 0; i < fullData.length; i++) calci(i, true);
     for(i = 0; i < fullData.length; i++) calci(i, false);
 
-    doCrossTraceCalc(gd);
-
     Registry.getComponentMethod('fx', 'calc')(gd);
-    Registry.getComponentMethod('errorbars', 'calc')(gd);
 };
 
 function clearAxesCalc(axList) {
@@ -59810,52 +59772,29 @@ function clearAxesCalc(axList) {
     }
 }
 
-function doCrossTraceCalc(gd) {
+plots.doSetPositions = function(gd) {
     var fullLayout = gd._fullLayout;
-    var modules = fullLayout._visibleModules;
-    var hash = {};
-    var i, j, k;
+    var subplots = fullLayout._subplots.cartesian;
+    var modules = fullLayout._modules;
+    var methods = [];
+    var i, j;
 
     // position and range calculations for traces that
     // depend on each other ie bars (stacked or grouped)
     // and boxes (grouped) push each other out of the way
 
     for(j = 0; j < modules.length; j++) {
-        var _module = modules[j];
-        var fn = _module.crossTraceCalc;
-        if(fn) {
-            var spType = _module.basePlotModule.name;
-            if(hash[spType]) {
-                Lib.pushUnique(hash[spType], fn);
-            } else {
-                hash[spType] = [fn];
-            }
+        Lib.pushUnique(methods, modules[j].setPositions);
+    }
+    if(!methods.length) return;
+
+    for(i = 0; i < subplots.length; i++) {
+        var subplotInfo = fullLayout._plots[subplots[i]];
+        for(j = 0; j < methods.length; j++) {
+            methods[j](gd, subplotInfo);
         }
     }
-
-    for(k in hash) {
-        var methods = hash[k];
-        var subplots = fullLayout._subplots[k];
-
-        if(Array.isArray(subplots)) {
-            for(i = 0; i < subplots.length; i++) {
-                var sp = subplots[i];
-                var spInfo = k === 'cartesian' ?
-                    fullLayout._plots[sp] :
-                    fullLayout[sp];
-
-                for(j = 0; j < methods.length; j++) {
-                    methods[j](gd, spInfo);
-                }
-            }
-        }
-        else {
-            for(j = 0; j < methods.length; j++) {
-                methods[j](gd);
-            }
-        }
-    }
-}
+};
 
 plots.rehover = function(gd) {
     if(gd._fullLayout._rehover) {
@@ -63235,7 +63174,7 @@ module.exports = {
             dflt: 6,
             arrayOk: true,
             
-            editType: 'calc',
+            editType: 'calcIfAutorange',
             
         },
         maxdisplayed: {
@@ -63512,9 +63451,8 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
         yOptions.padded = false;
     }
 
-    // N.B. asymmetric splom traces call this with blank {} xa or ya
-    if(xa._id) trace._extremes[xa._id] = Axes.findExtremes(xa, x, xOptions);
-    if(ya._id) trace._extremes[ya._id] = Axes.findExtremes(ya, y, yOptions);
+    Axes.expand(xa, x, xOptions);
+    Axes.expand(ya, y, yOptions);
 }
 
 function calcMarkerSize(trace, serieslen) {
@@ -64139,8 +64077,9 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     coerce('line.color', defaultColor);
 
     if(hasColorscale(traceIn, 'line')) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c', noScale: true});
-    } else {
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'});
+    }
+    else {
         var lineColorDflt = (isArrayOrTypedArray(markerColor) ? false : markerColor) || defaultColor;
         coerce('line.color', lineColorDflt);
     }

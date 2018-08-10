@@ -53,16 +53,6 @@ module.exports = overrideAll({
             'is necessary from the value.'
         ].join(' ')
     },
-    //iMAGO added separatethousands
-    separatethousands: {
-        valType: 'boolean',
-        dflt: false,
-        role: 'style',
-        editType: 'calc',
-        description: [
-            'If "true", even 4-digit integers are separated'
-        ].join(' ')
-    },
 
     arrangement: {
         valType: 'enumerated',

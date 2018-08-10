@@ -934,7 +934,7 @@ lib.numSeparate = function(value, separators, separatethousands) {
         x2 = x.length > 1 ? decimalSep + x[1] : '';
 
     // Years are ignored for thousands separators
-    if(thouSep && (x.length > 1 /*&& x1.length > 4*/ && separatethousands)) {  //iMAGO numFormat separatethousands
+    if(thouSep && (x.length > 1 || x1.length > 4 || separatethousands)) {
         while(thousandsRe.test(x1)) {
             x1 = x1.replace(thousandsRe, '$1' + thouSep + '$2');
         }
