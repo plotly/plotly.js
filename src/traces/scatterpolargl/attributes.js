@@ -34,7 +34,7 @@ module.exports = {
     fillcolor: scatterGlAttrs.fillcolor,
 
     hoverinfo: scatterPolarAttrs.hoverinfo,
-    hoveron: scatterPolarAttrs.hoveron,
+    // no hoveron
 
     selected: scatterPolarAttrs.selected,
     unselected: scatterPolarAttrs.unselected

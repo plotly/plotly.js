@@ -39,22 +39,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('connectgaps');
     }
 
-    var dfltHoverOn = [];
-
     if(subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-        dfltHoverOn.push('points');
     }
 
     coerce('fill');
     if(traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
-
-    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
-        dfltHoverOn.push('fills');
-    }
-    coerce('hoveron', dfltHoverOn.join('+') || 'points');
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
