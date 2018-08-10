@@ -51,6 +51,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('orientation');
     coerce('valueformat');
     coerce('valuesuffix');
+    coerce('separatethousands');
     coerce('arrangement');
 
     Lib.coerceFont(coerce, 'textfont', Lib.extendFlat({}, layout.font));
