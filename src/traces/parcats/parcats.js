@@ -1058,7 +1058,8 @@ function dragDimensionEnd(d) {
 
     if(anyDimsReordered) {
         finalDragDimensionDisplayInds.forEach(function(finalDimDisplay, dimInd) {
-            restyleData['dimensions[' + dimInd + '].displayindex'] = finalDimDisplay;
+            var containerInd = d.parcatsViewModel.model.dimensions[dimInd].containerInd;
+            restyleData['dimensions[' + containerInd + '].displayindex'] = finalDimDisplay;
         });
     }
 
@@ -1074,7 +1075,7 @@ function dragDimensionEnd(d) {
         });
 
         if(anyCatsReordered) {
-            restyleData['dimensions[' + d.model.dimensionInd + '].catDisplayInds'] = [finalDragCategoryDisplayInds];
+            restyleData['dimensions[' + d.model.containerInd + '].catDisplayInds'] = [finalDragCategoryDisplayInds];
         }
     }
 

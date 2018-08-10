@@ -18,6 +18,9 @@ var parcatConstants = require('./constants');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 
+
+function visible(dimension) { return !('visible' in dimension) || dimension.visible; }
+
 // Exports
 // =======
 /**
@@ -32,21 +35,17 @@ module.exports = function calc(gd, trace) {
 
     // Process inputs
     // --------------
-    if(trace.dimensions.length === 0) {
-        // No dimensions specified. Nothing to compute
+    if(trace.dimensions.filter(visible).length === 0) {
+        // No visible dimensions specified. Nothing to compute
         return [];
     }
 
     // Compute unique information
     // --------------------------
     // UniqueInfo per dimension
-    var uniqueInfoDims = trace.dimensions.map(function(dim) {
+    var uniqueInfoDims = trace.dimensions.filter(visible).map(function(dim) {
         return getUniqueInfo(dim.values, dim.catValues);
     });
-
-    // Number of values and counts
-    // ---------------------------
-    var numValues = trace.dimensions[0].values.length;
 
     // Process counts
     // --------------
@@ -65,7 +64,7 @@ module.exports = function calc(gd, trace) {
 
     // Validate category display order
     // -------------------------------
-    trace.dimensions.forEach(function(dim, dimInd) {
+    trace.dimensions.filter(visible).forEach(function(dim, dimInd) {
         validateCategoryProperties(dim, uniqueInfoDims[dimInd]);
     });
 
@@ -122,6 +121,10 @@ module.exports = function calc(gd, trace) {
     // Category order logic
     // 1)
 
+    // Number of values and counts
+    // ---------------------------
+    var numValues = trace.dimensions.filter(visible)[0].values.length;
+
     // Build path info
     // ---------------
     // Mapping from category inds to PathModel objects
@@ -168,8 +171,8 @@ module.exports = function calc(gd, trace) {
     // ---------------------
 
     // Array of DimensionModel objects
-    var dimensionModels = trace.dimensions.map(function(di, i) {
-        return createDimensionModel(i, di.displayindex, di.label, totalCount);
+    var dimensionModels = trace.dimensions.filter(visible).map(function(di, i) {
+        return createDimensionModel(i, di._index, di.displayindex, di.label, totalCount);
     });
 
 
@@ -178,13 +181,13 @@ module.exports = function calc(gd, trace) {
         count = counts[valueInd % counts.length];
 
         for(d = 0; d < dimensionModels.length; d++) {
+            var containerInd = dimensionModels[d].containerInd;
             var catInd = uniqueInfoDims[d].inds[valueInd];
             var cats = dimensionModels[d].categories;
 
-
             if(cats[catInd] === undefined) {
-                var catLabel = trace.dimensions[d].catLabels[catInd];
-                var displayInd = trace.dimensions[d].catDisplayInds[catInd];
+                var catLabel = trace.dimensions[containerInd].catLabels[catInd];
+                var displayInd = trace.dimensions[containerInd].catDisplayInds[catInd];
 
                 cats[catInd] = createCategoryModel(d, catInd, displayInd, catLabel);
             }
@@ -226,6 +229,7 @@ module.exports = function calc(gd, trace) {
  */
 function createParcatsModel(dimensions, paths, count) {
     var maxCats = dimensions
+        .filter(visible)
         .map(function(d) {return d.categories.length;})
         .reduce(function(v1, v2) {return Math.max(v1, v2);});
     return {dimensions: dimensions, paths: paths, trace: undefined, maxCats: maxCats, count: count};
@@ -238,7 +242,10 @@ function createParcatsModel(dimensions, paths, count) {
  *  Object containing calculated information about a single dimension
  *
  * @property {Number} dimensionInd
- *  The index of this dimension
+ *  The index of this dimension among the *visible* dimensions
+ * @property {Number} containerInd
+ *  The index of this dimension in the original dimensions container,
+ *  irrespective of dimension visibility
  * @property {Number} displayInd
  *  The display index of this dimension (where 0 is the left most dimension)
  * @property {String} dimensionLabel
@@ -253,16 +260,17 @@ function createParcatsModel(dimensions, paths, count) {
 /**
  * Create and new DimensionModel object with an empty categories array
  * @param {Number} dimensionInd
+ * @param {Number} containerInd
  * @param {Number} displayInd
- *  The display index of this dimension (where 0 is the left most dimension)
  * @param {String} dimensionLabel
  * @param {Number} count
  *  Total number of input values
  * @return {DimensionModel}
  */
-function createDimensionModel(dimensionInd, displayInd, dimensionLabel, count) {
+function createDimensionModel(dimensionInd, containerInd, displayInd, dimensionLabel, count) {
     return {
         dimensionInd: dimensionInd,
+        containerInd: containerInd,
         displayInd: displayInd,
         dimensionLabel: dimensionLabel,
         count: count,
@@ -464,9 +472,9 @@ function getUniqueInfo(values, uniqueValues) {
  * @param {Object} trace
  */
 function validateDimensionDisplayInds(trace) {
-    var displayInds = trace.dimensions.map(function(dim) {return dim.displayindex;});
+    var displayInds = trace.dimensions.filter(visible).map(function(dim) {return dim.displayindex;});
     if(!isRangePermutation(displayInds)) {
-        trace.dimensions.forEach(function(dim, i) {
+        trace.dimensions.filter(visible).forEach(function(dim, i) {
             dim.displayindex = i;
         });
     }
