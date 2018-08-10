@@ -400,7 +400,7 @@ describe('Dimension reordered parcats trace', function() {
     it('should recover from bad display order specification', function(done) {
 
         // Define bad display indexes [0, 2, 0]
-        mock.data[0].dimensions[2].displayInd = 0;
+        mock.data[0].dimensions[2].displayindex = 0;
 
         //  catDisplayInds for dimension 1 as [0, 2, 0]
         mock.data[0].dimensions[1].catDisplayInds[0] = 0;
@@ -599,9 +599,9 @@ describe('Drag to reordered dimensions and categories', function() {
                 // -------------------------------------------
                 expect(restyleCallback).toHaveBeenCalledTimes(1);
                 expect(restyleCallback).toHaveBeenCalledWith([
-                    {'dimensions[0].displayInd': 0,
-                        'dimensions[1].displayInd': 2,
-                        'dimensions[2].displayInd': 1},
+                    {'dimensions[0].displayindex': 0,
+                        'dimensions[1].displayindex': 2,
+                        'dimensions[2].displayindex': 1},
                     [0]]);
 
                 restyleCallback.calls.reset();
@@ -734,9 +734,9 @@ describe('Drag to reordered dimensions and categories', function() {
                 // -------------------------------------------
                 expect(restyleCallback).toHaveBeenCalledTimes(1);
                 expect(restyleCallback).toHaveBeenCalledWith([
-                    {'dimensions[0].displayInd': 0,
-                        'dimensions[1].displayInd': 2,
-                        'dimensions[2].displayInd': 1,
+                    {'dimensions[0].displayindex': 0,
+                        'dimensions[1].displayindex': 2,
+                        'dimensions[2].displayindex': 1,
                         'dimensions[1].catDisplayInds': [[ 1, 2, 0 ]]},
                     [0]]);
 
