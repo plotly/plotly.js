@@ -1,0 +1,59 @@
+{
+  "data": [
+    {
+      "type": "scattergeo",
+      "mode": "lines",
+      "lon": [
+        -50,
+        -50,
+        null,
+        "50",
+        "50"
+      ],
+      "lat": [
+        10,
+        50,
+        null,
+        "10",
+        "50"
+      ],
+      "line": {
+        "width": 2
+      },
+      "name": "connectgaps false"
+    },
+    {
+      "type": "scattergeo",
+      "mode": "lines",
+      "lon": [
+        -50,
+        -50,
+        null,
+        "50",
+        "50"
+      ],
+      "lat": [
+        -10,
+        -50,
+        null,
+        "-10",
+        "-50"
+      ],
+      "line": {
+        "width": 5
+      },
+      "connectgaps": true,
+      "name": "connectgaps true"
+    }
+  ],
+  "layout": {
+    "geo": {
+      "projection": {
+        "type": "eckert4"
+      }
+    },
+    "height": 450,
+    "width": 1100,
+    "autosize": true
+  }
+}

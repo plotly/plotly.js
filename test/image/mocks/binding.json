@@ -1,0 +1,110 @@
+{
+  "data": [
+    {
+      "x": [0, 1, 2],
+      "y": [0.5, 1, 2.5]
+    }
+  ],
+  "layout": {
+    "sliders": [{
+      "active": 0,
+      "steps": [{
+        "label": "red",
+        "method": "restyle",
+        "args": [{"marker.color": "red"}]
+      }, {
+        "label": "orange",
+        "method": "restyle",
+        "args": [{"marker.color": "orange"}]
+      }, {
+        "label": "yellow",
+        "method": "restyle",
+        "args": [{"marker.color": "yellow"}]
+      }, {
+        "label": "green",
+        "method": "restyle",
+        "args": [{"marker.color": "green"}]
+      }, {
+        "label": "blue",
+        "method": "restyle",
+        "args": [{"marker.color": "blue"}]
+      }, {
+        "label": "purple",
+        "method": "restyle",
+        "args": [{"marker.color": "purple"}]
+      }],
+      "visible": true,
+      "x": 0,
+      "len": 1.0,
+      "xanchor": "left",
+      "y": 0,
+      "yanchor": "top",
+      "currentvalue": {
+        "visible": false
+      },
+
+      "transition": {
+        "duration": 150,
+        "easing": "cubic-in-out"
+      },
+
+      "pad": {
+        "r": 20,
+        "t": 40
+      },
+
+      "font": {}
+    }],
+    "updatemenus": [{
+      "active": 0,
+      "type": "buttons",
+      "buttons": [{
+        "label": "red",
+        "method": "restyle",
+        "args": [{"marker.color": "red"}]
+      }, {
+        "label": "orange",
+        "method": "restyle",
+        "args": [{"marker.color": "orange"}]
+      }, {
+        "label": "yellow",
+        "method": "restyle",
+        "args": [{"marker.color": "yellow"}]
+      }, {
+        "label": "green",
+        "method": "restyle",
+        "args": [{"marker.color": "green"}]
+      }, {
+        "label": "blue",
+        "method": "restyle",
+        "args": [{"marker.color": "blue"}]
+      }, {
+        "label": "purple",
+        "method": "restyle",
+        "args": [{"marker.color": "purple"}]
+      }],
+      "visible": true,
+      "direction": "right",
+      "x": 0,
+      "xanchor": "left",
+      "y": 1.05,
+      "yanchor": "bottom",
+      "pad": {
+        "l": 20,
+        "t": 20
+      }
+    }],
+    "xaxis": {
+      "range": [0, 2],
+      "autorange": true
+    },
+    "yaxis": {
+      "type": "linear",
+      "range": [0, 3],
+      "autorange": true
+    },
+    "height": 450,
+    "width": 1100,
+    "autosize": true
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "data": [{
+    "type": "scatterpolar",
+    "mode": "markers+lines+text",
+    "r": [1, 2, 3],
+    "theta": [0, 45, 180],
+    "text": ["A0", "B0", "C0"],
+    "hovertext": ["hover A0", "hover B0", "hover C0"],
+    "line": {"shape": "spline"},
+    "marker": {"symbol": "square", "size": 15},
+    "textfont": {
+      "color": ["red", "green", "blue"],
+      "size": 20
+    },
+    "textposition": ["top left", "bottom right", "bottom right"]
+  }, {
+    "type": "scatterpolar",
+    "mode": "markers+lines+text",
+    "r": [1, 2, 3],
+    "theta": [-0, -45, -180],
+    "text": ["A1", "B1", "C1"],
+    "hovertext": ["hover A1", "hover B1", "hover C1"],
+    "line": {"shape": "spline"},
+    "marker": {
+        "symbol": "square",
+        "size": 15,
+        "color": [-1, 1, 2],
+        "showscale": true
+    },
+    "textfont": {
+      "color": "green",
+      "size": [20, 15, 10]
+    },
+    "textposition": "top left",
+    "subplot": "polar2"
+  }],
+
+  "layout": {
+    "showlegend": false,
+    "polar": {
+      "domain": {
+        "x": [0, 0.44]
+      },
+      "radialaxis": {
+        "showgrid": false,
+        "title": "1st subplot",
+        "titlefont": {
+          "size": 20,
+          "color": "blue"
+        },
+        "angle": -45
+      }
+    },
+    "polar2": {
+      "domain": {
+        "x": [0.56, 1]
+      },
+      "radialaxis": {
+        "range": [0, 4.7],
+        "showgrid": false,
+        "title": "2nd subplot",
+        "titlefont": {
+          "size": 10,
+          "color": "orange"
+        },
+        "angle": 45
+      }
+    }
+  }
+}

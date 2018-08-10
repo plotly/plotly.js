@@ -1,0 +1,52 @@
+{
+    "data": [
+        {
+            "x": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "y": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "z": [
+                5,
+                1,
+                4,
+                2,
+                3
+            ],
+            "marker": {
+                "color": [
+                    2,
+                    2,
+                    3,
+                    4,
+                    10
+                ],
+                "size": [
+                    10,
+                    20,
+                    30,
+                    40,
+                    50
+                ],
+                "colorscale": "Greens",
+                "colorbar": {
+                    "title": "WOW"
+                }
+            },
+            "type": "scatter3d",
+            "mode": "markers"
+        }
+    ],
+    "layout": {
+        "title": "scatter3d + colorbar = <3"
+    }
+}

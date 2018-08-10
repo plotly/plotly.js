@@ -1,0 +1,41 @@
+{
+    "data": [{
+        "x": [1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8, 8, 9, 9, 10],
+        "type": "histogram",
+        "cumulative": {"enabled": true},
+        "xbins": {"start": 0.5, "end": 10.5, "size": 1},
+        "marker": {"color": "blue", "line": {"width": 2, "color": "#000"}},
+        "name": "A"
+    },
+    {
+        "x": [3, 3, 4, 5, 6, 7, 7],
+        "type": "histogram",
+        "cumulative": {"enabled": true, "currentbin": "exclude"},
+        "xbins": {"start": 0.5, "end": 10.5, "size": 1},
+        "marker": {"color": "red", "line": {"width": 2, "color": "#000"}},
+        "name": "B"
+    },
+    {
+        "x": [1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 7, 7, 7, 8, 8, 9, 9, 10],
+        "type": "box",
+        "orientation": "h",
+        "yaxis": "y2",
+        "line": {"color": "blue"},
+        "showlegend": false
+    },
+    {
+        "x": [3, 3, 4, 5, 6, 7, 7],
+        "type": "box",
+        "orientation": "h",
+        "yaxis": "y2",
+        "line": {"color": "red"},
+        "showlegend": false
+    }],
+    "layout": {
+        "yaxis": {"domain": [0, 0.8]},
+        "yaxis2": {"domain": [0.8, 1], "showline": false, "showticklabels": false},
+        "height": 300,
+        "width": 400,
+        "barmode": "stack"
+    }
+}

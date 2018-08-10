@@ -1,0 +1,46 @@
+{
+   "data":[
+      {
+         "x":[
+            "Jan 11",
+            "Jan 10",
+            "Jan 9",
+            "Jan 8",
+            "Jan 7",
+            "Jan 6",
+            "Jan 5",
+            "Jan 4",
+            "Jan 3",
+            "Jan 2",
+            "Jan 1",
+            "Dec 31"
+         ],
+         "y":[
+            8,
+            7,
+            6,
+            5,
+            4,
+            3,
+            2,
+            1,
+            0,
+            1,
+            2,
+            3
+         ],
+         "type":"scatter"
+      }
+   ],
+   "layout":{
+      "xaxis":{
+         "ticks":"outside",
+         "tickcolor":"#000"
+      },
+      "yaxis":{
+         "ticks":"outside",
+         "tickcolor":"#000",
+         "gridwidth":0.1
+      }
+   }
+}

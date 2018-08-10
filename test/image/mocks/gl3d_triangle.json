@@ -1,0 +1,27 @@
+{
+  "data": [
+    {
+      "type":"mesh3d",
+      "y":[0, 1, 2],
+      "x":[1, 2, 0],
+      "z":[2, 0, 1],
+      "i":[0],
+      "j":[1],
+      "k":[2]
+    }],
+  "layout": {
+    "title": "Triangle mesh",
+    "scene": {
+      "annotations": [{
+        "x": 2,
+        "y": 1,
+        "z": 0,
+        "ax": -50,
+        "ay": -300,
+        "text": "<span style=\"color:red;\">IMPORTANT</span>"
+      }]
+    },
+    "width": 600,
+    "height": 500
+  }
+}

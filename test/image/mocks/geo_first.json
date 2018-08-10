@@ -1,0 +1,21 @@
+{
+    "data": [
+        {
+            "type": "scattergeo",
+            "lon": [0, -75, 20],
+            "lat": [0, 45],
+            "marker": {"size": [20, 30]}
+        },
+        {
+            "type": "choropleth",
+            "locations": ["USA", "CAN", "RUS"],
+            "z": [0, 5, 10],
+            "autocolorscale": true
+        }
+    ],
+    "layout": {
+        "showframe": true,
+        "width": 600,
+        "height": 440
+    }
+}

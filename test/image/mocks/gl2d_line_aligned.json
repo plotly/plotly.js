@@ -1,0 +1,56 @@
+{
+    "data": [
+        {
+            "x" : [ 20, 20 ],
+            "y" : [ 40, 30 ],
+            "type" : "scattergl",
+            "mode" : "lines+markers",
+            "name" : "Same X-points scattergl"
+        },
+
+        {
+            "x" : [ 21, 21 ],
+            "y" : [ 40, 30 ],
+            "type" : "scatter",
+            "mode" : "lines+markers",
+            "name" : "Same X-points scatter"
+        },
+
+        {
+            "x" : [ 25, 30 ],
+            "y" : [ 25, 30 ],
+            "type" : "scattergl",
+            "mode" : "lines+markers",
+            "name" : "All Different scattergl"
+        },
+
+        {
+            "x" : [ 25, 30 ],
+            "y" : [ 30, 35 ],
+            "type" : "scatter",
+            "mode" : "lines+markers",
+            "name" : "All Different scatter"
+        },
+
+        {
+            "x" : [ 15, 20 ],
+            "y" : [ 23, 23 ],
+            "type" : "scattergl",
+            "mode" : "lines+markers",
+            "name" : "Same Y-points scattergl"
+        },
+
+        {
+            "x" : [ 15, 20 ],
+            "y" : [ 25, 25 ],
+            "type" : "scatter",
+            "mode" : "lines+markers",
+            "name" : "Same Y-points scatter"
+        }
+    ],
+    "layout": {
+        "showlegend": false,
+        "width": 800,
+        "height": 500
+    }
+}

@@ -1,0 +1,210 @@
+{
+    "data": [
+        {
+            "x": [
+                0, 
+                0.3571429, 
+                0.7142857, 
+                1.071429, 
+                1.428571, 
+                1.785714, 
+                2.142857, 
+                2.5, 
+                2.857143, 
+                3.214286, 
+                3.571429, 
+                3.928571, 
+                4.285714, 
+                4.642857, 
+                5
+            ], 
+            "y": [
+                0.869693, 
+                1.088434, 
+                0.758308, 
+                1.849319, 
+                1.728616, 
+                0.9908515, 
+                1.519909, 
+                1.083975, 
+                0.3153477, 
+                0.04181056, 
+                -0.3400965, 
+                -0.1003989, 
+                -0.6768811, 
+                -0.8555722, 
+                -0.4287511
+            ], 
+            "name": "trace 0", 
+            "type": "scatter"
+        }, 
+        {
+            "x": [
+                0, 
+                1, 
+                2, 
+                3, 
+                4, 
+                5
+            ], 
+            "y": [
+                1, 
+                0.5, 
+                0.7, 
+                -1.2, 
+                0.3, 
+                0.4
+            ], 
+            "name": "trace 1", 
+            "type": "bar"
+        }
+    ], 
+    "layout": {
+        "title": "Click to enter Plot title", 
+        "titlefont": {
+            "color": "", 
+            "family": "", 
+            "size": 0
+        }, 
+        "font": {
+            "family": "'Open sans', verdana, arial, sans-serif", 
+            "size": 12, 
+            "color": "#444"
+        }, 
+        "showlegend": true, 
+        "autosize": true, 
+        "width": 1152, 
+        "height": 481, 
+        "xaxis": {
+            "title": "Click to enter X axis title", 
+            "titlefont": {
+                "color": "", 
+                "family": "", 
+                "size": 0
+            }, 
+            "range": [
+                -0.5, 
+                5.5
+            ], 
+            "domain": [
+                0, 
+                1
+            ], 
+            "type": "linear", 
+            "rangemode": "normal", 
+            "showgrid": false, 
+            "zeroline": false, 
+            "showline": false, 
+            "autotick": true, 
+            "nticks": 0, 
+            "ticks": "", 
+            "showticklabels": true, 
+            "tick0": 0, 
+            "dtick": 1, 
+            "ticklen": 5, 
+            "tickwidth": 1, 
+            "tickcolor": "#444", 
+            "tickangle": "auto", 
+            "tickfont": {
+                "family": "", 
+                "size": 0, 
+                "color": ""
+            }, 
+            "exponentformat": "B", 
+            "showexponent": "all", 
+            "gridcolor": "#eee", 
+            "gridwidth": 1, 
+            "zerolinecolor": "#444", 
+            "zerolinewidth": 1, 
+            "linecolor": "#444", 
+            "linewidth": 1, 
+            "anchor": "y", 
+            "position": 0, 
+            "mirror": false, 
+            "overlaying": false, 
+            "autorange": true
+        }, 
+        "yaxis": {
+            "title": "Click to enter Y axis title", 
+            "titlefont": {
+                "color": "", 
+                "family": "", 
+                "size": 0
+            }, 
+            "range": [
+                -1.3694066111111112, 
+                2.018725611111111
+            ], 
+            "domain": [
+                0, 
+                1
+            ], 
+            "type": "linear", 
+            "rangemode": "normal", 
+            "showgrid": true, 
+            "zeroline": true, 
+            "showline": false, 
+            "autotick": true, 
+            "nticks": 0, 
+            "ticks": "", 
+            "showticklabels": true, 
+            "tick0": 0, 
+            "dtick": 0.5, 
+            "ticklen": 5, 
+            "tickwidth": 1, 
+            "tickcolor": "#444", 
+            "tickangle": "auto", 
+            "tickfont": {
+                "family": "", 
+                "size": 0, 
+                "color": ""
+            }, 
+            "exponentformat": "B", 
+            "showexponent": "all", 
+            "gridcolor": "#eee", 
+            "gridwidth": 1, 
+            "zerolinecolor": "#444", 
+            "zerolinewidth": 1, 
+            "linecolor": "#444", 
+            "linewidth": 1, 
+            "anchor": "x", 
+            "position": 0, 
+            "mirror": false, 
+            "overlaying": false, 
+            "autorange": true
+        }, 
+        "legend": {
+            "x": 1.02, 
+            "y": 1, 
+            "traceorder": "normal", 
+            "font": {
+                "family": "", 
+                "size": 0, 
+                "color": ""
+            }, 
+            "bgcolor": "#fff", 
+            "bordercolor": "#444", 
+            "borderwidth": 0, 
+            "xanchor": "left", 
+            "yanchor": "top"
+        }, 
+        "margin": {
+            "l": 80, 
+            "r": 80, 
+            "b": 80, 
+            "t": 100, 
+            "pad": 0, 
+            "autoexpand": true
+        }, 
+        "paper_bgcolor": "#fff", 
+        "plot_bgcolor": "#fff", 
+        "hovermode": "x", 
+        "dragmode": "zoom", 
+        "barmode": "group", 
+        "bargap": 0.2, 
+        "bargroupgap": 0, 
+        "boxmode": "overlay", 
+        "separators": ".,", 
+        "hidesources": false
+    }
+}

@@ -1,0 +1,22 @@
+{
+    "data": [
+        {
+            "x": ["2005-01","2005-02","2005-03","2005-04","2005-05","2005-06","2005-07"],
+            "y": [1e5,1e5,2e6,2e6,2e6,3e7,3e7]
+        }
+    ],
+    "layout": {
+        "title": "tickformat",
+        "xaxis": {
+            "tickformat": "%b %y",
+            "tickprefix": "~~ ",
+            "showtickprefix": "first",
+            "ticksuffix": " !!",
+            "showticksuffix": "last"
+        },
+        "yaxis": {
+            "type": "log",
+            "tickformat": ":^+12.3g"
+        }
+    }
+}

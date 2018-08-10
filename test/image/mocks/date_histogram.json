@@ -1,0 +1,31 @@
+{
+    "data": [
+        {
+            "x": [
+                "2012-01-01 00:00:00",
+                "2012-02-01 00:00:00",
+                "2012-01-01 00:00:00",
+                "2012-01-01 00:00:00",
+                "2012-03-01 00:00:00",
+                "2012-02-01 00:00:00"
+            ],
+            "autobinx": true,
+            "nbinsx": 3,
+            "showlegend": false,
+            "type": "histogram"
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "height": 400,
+        "xaxis": {
+            "title": "month"
+        },
+        "yaxis": {
+            "title": "count",
+            "gridcolor": "rgb(255,255,255)"
+        },
+        "plot_bgcolor": "rgb(229,229,229)",
+        "bargap": 0.2
+    }
+}

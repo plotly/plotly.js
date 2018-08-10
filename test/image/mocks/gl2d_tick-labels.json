@@ -1,0 +1,22 @@
+{
+    "data": [
+        {
+          "x": [0, 1, 2],
+          "y": ["long long long string", "long long long string 2", "long long longstring 3"],
+          "mode": "markers",
+          "type": "scattergl"
+        }
+    ],
+    "layout": {
+        "width": 600,
+        "height": 500,
+        "xaxis": {
+            "ticklen": 2,
+            "linecolor": "#d3d3d3", "mirror": true, "zeroline": false
+        },
+        "yaxis": {
+            "ticklen": 2,
+            "linecolor": "#d3d3d3", "mirror": true, "zeroline": false
+        }
+    }
+}

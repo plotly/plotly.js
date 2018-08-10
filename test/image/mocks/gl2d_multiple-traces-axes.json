@@ -1,0 +1,45 @@
+{
+    "data": [
+        {
+            "x": [
+                0,
+                1,
+                2
+            ],
+            "y": [
+                0,
+                1,
+                2
+            ],
+            "mode": "lines+markers",
+            "type": "scattergl"
+        },
+        {
+            "x": [
+                0,
+                1,
+                2
+            ],
+            "y": [
+                2,
+                1,
+                0
+            ],
+            "mode": "lines+markers",
+            "type": "scattergl",
+            "yaxis": "y2"
+        }
+    ],
+    "layout": {
+        "width": 700,
+        "height": 500,
+        "showlegend": false,
+        "yaxis": {
+            "side": "left"
+        },
+        "yaxis2": {
+            "side": "right",
+            "overlaying": "y"
+        }
+    }
+}

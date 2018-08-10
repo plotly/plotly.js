@@ -1,0 +1,13 @@
+{
+  "data": [
+    { "x": [1,1,1,1,1,2,2,2,3,3], "type": "histogram" },
+    { "x": [1,2,3], "y":[-1,-2,-3], "type": "bar" },
+    { "x": [1,2,3], "y":[-1,-2,-3], "type": "bar", "yaxis":"y2" },
+    { "x": [1,1,1,1,1,2,2,2,3,3], "type": "histogram", "yaxis":"y2" }
+  ],
+  "layout": {
+    "yaxis": { "domain": [0,0.49] },
+    "yaxis2": { "domain": [0.51, 1] },
+    "showlegend": false
+  }
+}

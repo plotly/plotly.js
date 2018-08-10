@@ -1,0 +1,36 @@
+{
+  "data":  [{
+    "type": "scatter3d",
+    "x": [1],
+    "y": [1],
+    "z": [1],
+    "marker": {
+      "color": "blue"
+    },
+    "scene": "scene1"
+  },{
+    "type": "scatter3d",
+    "x": [2],
+    "y": [2],
+    "z": [2],
+    "marker": {
+      "color": "red"
+    },
+    "scene": "scene2"
+  }],
+  "layout": {
+    "title": "scene should be the same as scene1",
+    "scene1": {
+      "domain": {
+        "x": [0, 0.5],
+        "y": [0, 0.5]
+      }
+    },
+    "scene2": {
+      "domain": {
+        "x": [0.5, 1],
+        "y": [0.5, 1]
+      }
+    }
+  }
+}

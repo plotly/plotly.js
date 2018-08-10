@@ -1,0 +1,20 @@
+{
+  "data": [
+    {
+      "x": [
+        1,
+        2
+      ],
+      "y": [
+        1,
+        2
+      ],
+      "type": "scatter"
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "autorange": "reversed"
+    }
+  }
+}

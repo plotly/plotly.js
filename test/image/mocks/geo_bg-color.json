@@ -1,0 +1,86 @@
+{
+    "data": [
+        {
+            "type": "scattergeo",
+            "mode": "markers",
+            "name": "mah trace",
+            "lon": [
+                0,
+                -75,
+                100
+            ],
+            "lat": [
+                0,
+                45,
+                -30
+            ],
+            "marker": {
+                "size": 20,
+                "gradient": {
+                    "type": "radial",
+                    "color": "rgba(31,119,180,0.5)"
+                }
+            }
+        },
+        {
+            "type": "scattergeo",
+            "lon": [
+                -75,
+                10,
+                160
+            ],
+            "lat": [
+                45,
+                50,
+                60
+            ],
+            "geo": "geo2",
+            "marker": {
+                "size": 20,
+                "gradient": {
+                    "type": "vertical",
+                    "color": ["#000", "#fff", "#888"]
+                }
+            }
+        }
+    ],
+    "layout": {
+        "title": "COLOURED GEOS",
+        "geo": {
+            "projection": {
+                "type": "mercator"
+            },
+            "domain": {
+                "x": [
+                    0,
+                    0.45
+                ],
+                "y": [
+                    0,
+                    1
+                ]
+            },
+            "bgcolor": "rgba(0, 0, 255, 0.4)"
+        },
+        "geo2": {
+            "projection": {
+                "type": "mercator"
+            },
+            "domain": {
+                "x": [
+                    0.55,
+                    1
+                ],
+                "y": [
+                    0,
+                    1
+                ]
+            },
+            "bgcolor": "rgba(255, 0, 0, 0.4)"
+        },
+        "height": 450,
+        "width": 1000,
+        "autosize": true,
+        "showlegend": true
+    }
+}

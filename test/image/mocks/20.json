@@ -1,0 +1,296 @@
+{
+    "data": [
+        {
+            "x": [
+                1,
+                2,
+                3
+            ],
+            "y": [
+                4,
+                5,
+                6
+            ],
+            "name": "yaxis1 data",
+            "type": "scatter"
+        },
+        {
+            "x": [
+                2,
+                3,
+                4
+            ],
+            "y": [
+                40,
+                50,
+                60
+            ],
+            "name": "yaxis2 data",
+            "yaxis": "y2",
+            "type": "scatter"
+        },
+        {
+            "x": [
+                3,
+                4,
+                5
+            ],
+            "y": [
+                400,
+                500,
+                600
+            ],
+            "name": "yaxis3 data",
+            "yaxis": "y3",
+            "type": "scatter"
+        },
+        {
+            "x": [
+                4,
+                5,
+                6
+            ],
+            "y": [
+                40000,
+                50000,
+                60000
+            ],
+            "name": "yaxis4 data",
+            "yaxis": "y4",
+            "type": "scatter"
+        },
+        {
+            "x": [
+                5,
+                6,
+                7
+            ],
+            "y": [
+                400000,
+                500000,
+                600000
+            ],
+            "name": "yaxis5 data",
+            "yaxis": "y5",
+            "type": "scatter"
+        },
+        {
+            "x": [
+                6,
+                7,
+                8
+            ],
+            "y": [
+                4000000,
+                5000000,
+                6000000
+            ],
+            "name": "yaxis6 data",
+            "yaxis": "y6",
+            "type": "scatter"
+        },
+        {
+            "x": [1, 2, 3],
+            "y": [1, 2, 3],
+            "xaxis": "x2",
+            "yaxis": "y7",
+            "name": "x2y7"
+        },
+        {
+            "x": [2, 3, 4],
+            "y": [2, 3, 1],
+            "xaxis": "x3",
+            "yaxis": "y8",
+            "name": "x3y8"
+        },
+        {
+            "x": [3, 4, 5],
+            "y": [3, 1, 2],
+            "xaxis": "x4",
+            "yaxis": "y9",
+            "name": "x4y9"
+        }
+    ],
+    "layout": {
+        "title": "multiple axes example",
+        "xaxis": {
+            "domain": [
+                0.3,
+                0.7
+            ],
+            "showline": true,
+            "ticks": "outside",
+            "mirror": true,
+            "linecolor": "rgba(0,0,0,0.5)",
+            "linewidth": 10
+        },
+        "yaxis": {
+            "domain": [0.5, 1],
+            "title": "yaxis title",
+            "titlefont": {
+                "color": "#1f77b4"
+            },
+            "showline": true,
+            "ticks": "outside",
+            "tickcolor": "#1f77b4",
+            "tickfont": {
+                "color": "#1f77b4"
+            },
+            "linecolor": "rgba(31,119,180,0.5)",
+            "linewidth": 20
+        },
+        "legend": {
+            "x": 1,
+            "y": 0,
+            "bordercolor": "#000",
+            "borderwidth": 1
+        },
+        "yaxis2": {
+            "title": "yaxis2 title",
+            "titlefont": {
+                "color": "#ff7f0e"
+            },
+            "showline": true,
+            "ticks": "outside",
+            "tickcolor": "#ff7f0e",
+            "tickfont": {
+                "color": "#ff7f0e"
+            },
+            "linecolor": "rgba(255,127,14,0.4)",
+            "linewidth": 6,
+            "anchor": "free",
+            "position": 0.15,
+            "overlaying": "y"
+        },
+        "yaxis3": {
+            "title": "yaxis3 title",
+            "titlefont": {
+                "color": "#2ca02c"
+            },
+            "showline": true,
+            "ticks": "outside",
+            "tickcolor": "#2ca02c",
+            "tickfont": {
+                "color": "#2ca02c"
+            },
+            "linecolor": "rgba(44,160,44,0.5)",
+            "anchor": "free",
+            "position": 0,
+            "overlaying": "y"
+        },
+        "yaxis4": {
+            "title": "yaxis4 title",
+            "titlefont": {
+                "color": "#d62728"
+            },
+            "showline": true,
+            "ticks": "outside",
+            "tickcolor": "#d62728",
+            "tickfont": {
+                "color": "#d62728"
+            },
+            "showexponent": "last",
+            "linecolor": "rgba(214,39,40,0.5)",
+            "linewidth": 15,
+            "side": "right",
+            "overlaying": "y"
+        },
+        "yaxis5": {
+            "title": "yaxis5 title",
+            "titlefont": {
+                "color": "#9467bd"
+            },
+            "showline": true,
+            "ticks": "outside",
+            "tickcolor": "#9467bd",
+            "tickfont": {
+                "color": "#9467bd"
+            },
+            "exponentformat": "power",
+            "showexponent": "first",
+            "linecolor": "rgba(148,103,189,0.5)",
+            "linewidth": 5,
+            "anchor": "free",
+            "side": "right",
+            "position": 0.85,
+            "overlaying": "y"
+        },
+        "yaxis6": {
+            "title": "yaxis6 title",
+            "titlefont": {
+                "color": "#8c564b"
+            },
+            "showline": true,
+            "ticks": "outside",
+            "tickcolor": "#8c564b",
+            "tickfont": {
+                "color": "#8c564b"
+            },
+            "exponentformat": "SI",
+            "linecolor": "rgba(140,86,75,0.5)",
+            "anchor": "free",
+            "side": "right",
+            "position": 1,
+            "overlaying": "y"
+        },
+        "xaxis2": {
+            "title": "xaxis2 title",
+            "domain": [0.2, 0.8],
+            "anchor": "y7",
+            "color": "rgba(100,100,0,0.6)",
+            "showline": true,
+            "ticks": "outside",
+            "linewidth": 3
+        },
+        "xaxis3": {
+            "title": "xaxis3 title",
+            "overlaying": "x2",
+            "anchor": "y7",
+            "color": "rgba(100,0,100,0.6)",
+            "showline": true,
+            "ticks": "outside",
+            "linewidth": 6,
+            "side": "top"
+        },
+        "xaxis4": {
+            "title": "xaxis4 title",
+            "overlaying": "x2",
+            "color": "rgba(0,0,0,0.6)",
+            "showline": true,
+            "ticks": "outside",
+            "position": 0,
+            "anchor": "free"
+        },
+        "yaxis7": {
+            "title": "yaxis7 title",
+            "domain": [0.15, 0.3],
+            "color": "rgba(0,0,0,0.6)",
+            "anchor": "x2",
+            "showline": true,
+            "ticks": "outside",
+            "linewidth": 4
+        },
+        "yaxis8": {
+            "title": "yaxis8 title",
+            "overlaying": "y7",
+            "color": "rgba(0,0,0,0.6)",
+            "anchor": "x2",
+            "side": "right",
+            "showline": true,
+            "ticks": "outside",
+            "linewidth": 8
+        },
+        "yaxis9": {
+            "title": "yaxis9 title",
+            "overlaying": "y7",
+            "color": "rgba(0,0,0,0.6)",
+            "anchor": "free",
+            "position": 0,
+            "showline": true,
+            "ticks": "outside"
+        },
+        "width": 750,
+        "height": 600,
+        "margin": {"r": 200, "l": 50, "t": 50, "b": 50, "pad": 5}
+    }
+}

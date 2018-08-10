@@ -1,0 +1,75 @@
+{
+    "data": [
+        {
+            "type": "bar",
+            "y": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "marker": {
+                "color": [
+                    0.4,
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "cmin": 0,
+                "cmax": 7,
+                "colorscale": [
+                    [
+                        0,
+                        "rgb(5, 10, 172)"
+                    ],
+                    [
+                        0.35,
+                        "rgb(106, 137, 247)"
+                    ],
+                    [
+                        0.5,
+                        "rgb(190,190,190)"
+                    ],
+                    [
+                        0.6,
+                        "rgb(220, 170, 132)"
+                    ],
+                    [
+                        0.7,
+                        "rgb(230, 145, 90)"
+                    ],
+                    [
+                        1,
+                        "rgb(178, 10, 28)"
+                    ]
+                ],
+                "showscale": true
+            }
+        }
+    ],
+    "layout": {
+        "title": "bars + colorbar = <3",
+        "xaxis": {
+            "type": "linear",
+            "range": [
+                -0.5,
+                4.5
+            ],
+            "autorange": true
+        },
+        "yaxis": {
+            "type": "linear",
+            "range": [
+                0,
+                5.2631578947368425
+            ],
+            "autorange": true
+        },
+        "height": 598,
+        "width": 1080,
+        "autosize": true,
+        "showlegend": false
+    }
+}
