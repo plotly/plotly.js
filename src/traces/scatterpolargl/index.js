@@ -95,6 +95,7 @@ function plot(container, subplot, cdata) {
         if(options.marker && !scene.scatter2d) scene.scatter2d = true;
         if(options.line && !scene.line2d) scene.line2d = true;
         if((options.errorX || options.errorY) && !scene.error2d) scene.error2d = true;
+        if(options.text && !scene.glText) scene.glText = true;
 
         stash.tree = cluster(positions);
 
@@ -116,6 +117,9 @@ function plot(container, subplot, cdata) {
         scene.markerOptions.push(options.marker);
         scene.markerSelectedOptions.push(options.markerSel);
         scene.markerUnselectedOptions.push(options.markerUnsel);
+        scene.textOptions.push(options.text);
+        scene.textSelectedOptions.push(options.textSel);
+        scene.textUnselectedOptions.push(options.textUnsel);
         scene.count = cdata.length;
 
         // stash scene ref

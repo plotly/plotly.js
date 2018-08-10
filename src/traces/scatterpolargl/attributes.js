@@ -22,7 +22,7 @@ module.exports = {
     thetaunit: scatterPolarAttrs.thetaunit,
 
     text: scatterPolarAttrs.text,
-    // no hovertext
+    hovertext: scatterPolarAttrs.hovertext,
 
     line: scatterGlAttrs.line,
     connectgaps: scatterGlAttrs.connectgaps,
@@ -32,6 +32,9 @@ module.exports = {
 
     fill: scatterGlAttrs.fill,
     fillcolor: scatterGlAttrs.fillcolor,
+
+    textposition: scatterGlAttrs.textposition,
+    textfont: scatterGlAttrs.textfont,
 
     hoverinfo: scatterPolarAttrs.hoverinfo,
     // no hoveron
