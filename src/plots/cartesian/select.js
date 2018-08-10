@@ -264,13 +264,8 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         }
 
         // draw selection
-        var paths = [];
-        for(i = 0; i < mergedPolygons.length; i++) {
-            var ppts = mergedPolygons[i];
-            paths.push(ppts.join('L') + 'L' + ppts[0]);
-        }
-        outlines
-            .attr('d', 'M' + paths.join('M') + 'Z');
+        drawSelection(mergedPolygons, outlines);
+
 
         throttle.throttle(
             throttleID,
@@ -320,6 +315,65 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 gd.emit('plotly_deselect', null);
             }
             else {
+
+
+
+                var hoverData = gd._hoverdata;
+                var selection = [];
+                var traceSelection;
+                var thisTracesSelection;
+                var pointSelected;
+                var subtract;
+
+                if(isHoverDataSet(hoverData)) {
+                    var clickedPtInfo = extractClickedPtInfo(hoverData, searchTraces);
+
+                    // TODO perf: call potentially costly operation (see impl comment) only when needed
+                    pointSelected = isPointSelected(clickedPtInfo.searchInfo.cd[0].trace,
+                      clickedPtInfo.pointNumber);
+
+                    if(pointSelected && isOnlyOnePointSelected(searchTraces)) {
+                        // TODO DRY see doubleClick handling above
+                        outlines.remove();
+                        for(i = 0; i < searchTraces.length; i++) {
+                            searchInfo = searchTraces[i];
+                            searchInfo._module.selectPoints(searchInfo, false);
+                        }
+
+                        updateSelectedState(gd, searchTraces);
+                        gd.emit('plotly_deselect', null);
+                    } else {
+                        subtract = evt.shiftKey && pointSelected;
+                        currentPolygon = createPtNumTester(clickedPtInfo.pointNumber,
+                          clickedPtInfo.searchInfo.cd[0].trace._expandedIndex, subtract);
+
+                        var concatenatedPolygons = dragOptions.polygons.concat([currentPolygon]);
+                        testPoly = multipolygonTester(concatenatedPolygons);
+
+                        for(i = 0; i < searchTraces.length; i++) {
+                            traceSelection = searchTraces[i]._module.selectPoints(searchTraces[i], testPoly);
+                            thisTracesSelection = fillSelectionItem(traceSelection, searchTraces[i]);
+
+                            if(selection.length) {
+                                for(var j = 0; j < thisTracesSelection.length; j++) {
+                                    selection.push(thisTracesSelection[j]);
+                                }
+                            }
+                            else selection = thisTracesSelection;
+                        }
+
+                        eventData = {points: selection};
+                        updateSelectedState(gd, searchTraces, eventData);
+
+                        if(currentPolygon && dragOptions.polygons) {
+                            dragOptions.polygons.push(currentPolygon);
+                        }
+                    }
+
+                }
+
+                drawSelection(dragOptions.mergedPolygons, outlines);
+
                 // TODO: remove in v2 - this was probably never intended to work as it does,
                 // but in case anyone depends on it we don't want to break it now.
                 gd.emit('plotly_selected', undefined);
@@ -347,6 +401,126 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             }
         });
     };
+}
+
+function drawSelection(polygons, outlines) {
+    var paths = [];
+    var i;
+    var d;
+
+    for(i = 0; i < polygons.length; i++) {
+        var ppts = polygons[i];
+        paths.push(ppts.join('L') + 'L' + ppts[0]);
+    }
+
+    d = polygons.length > 0 ?
+      'M' + paths.join('M') + 'Z' :
+      ''; // TODO empty d attribute works in Chrome, but is it valid / can we rely on it?
+    outlines.attr('d', d);
+}
+
+function isHoverDataSet(hoverData) {
+    return hoverData &&
+      Array.isArray(hoverData) &&
+      hoverData[0].hoverOnBox !== true;
+}
+
+function extractClickedPtInfo(hoverData, searchTraces) {
+    var hoverDatum = hoverData[0];
+    var pointNumber = -1;
+    var pointNumbers = [];
+    var searchInfo;
+    var i;
+
+    for(i = 0; i < searchTraces.length; i++) {
+        searchInfo = searchTraces[i];
+        if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
+
+            // Special case for box (and violin)
+            if(hoverDatum.hoverOnBox === true) {
+                break;
+            }
+
+            // TODO hoverDatum not having a pointNumber but a binNumber seems to be an oddity of histogram only
+            // Not deleting .pointNumber in histogram/event_data.js would simplify code here and in addition
+            // would not break the hover event structure
+            // documented at https://plot.ly/javascript/hover-events/
+            if(hoverDatum.pointNumber !== undefined) {
+                pointNumber = hoverDatum.pointNumber;
+            } else if(hoverDatum.binNumber !== undefined) {
+                pointNumber = hoverDatum.binNumber;
+                pointNumbers = hoverDatum.pointNumbers;
+            }
+
+            break;
+        }
+    }
+
+    return {
+        pointNumber: pointNumber,
+        pointNumbers: pointNumbers,
+        searchInfo: searchInfo
+    };
+}
+
+// TODO What about passing a searchInfo instead of wantedExpandedTraceIndex?
+function createPtNumTester(wantedPointNumber, wantedExpandedTraceIndex, subtract) {
+    return {
+        xmin: 0,
+        xmax: 0,
+        ymin: 0,
+        ymax: 0,
+        pts: [],
+        // TODO Consider making signature of contains more lean
+        contains: function(pt, omitFirstEdge, pointNumber, expandedTraceIndex) {
+            return expandedTraceIndex === wantedExpandedTraceIndex && pointNumber === wantedPointNumber;
+        },
+        isRect: false,
+        degenerate: false,
+        subtract: subtract
+    };
+}
+
+function isPointSelected(trace, pointNumber) {
+    // TODO improve perf
+    // Primarily we need this function to determine if a click adds or subtracts from a selection.
+    //
+    // IME best user experience would be
+    // - that Shift+Click an unselected points adds to selection
+    // - and Shift+Click a selected point subtracts from selection.
+    //
+    // Several options:
+    // 1. Avoid problem at all by binding subtract-selection-by-click operation to Shift+Alt-Click.
+    //    Slightly less intuitive. A lot of programs deselect an already selected element when you
+    //    Shift+Click it.
+    // 2. Delegate decision to the traces module through an additional
+    //    isSelected(searchInfo, pointNumber) function. Traces like scatter or bar have
+    //    a selected flag attached to each calcData element, thus access to that information
+    //    would be fast. However, scattergl only maintains selectBatch and unselectBatch arrays.
+    //    So simply searching through those arrays in scattegl would be slow. Just imagine
+    //    a user selecting all data points with one lasso polygon. So scattergl would require some
+    //    work.
+    return trace.selectedpoints ? trace.selectedpoints.indexOf(pointNumber) > -1 : false;
+}
+
+function isOnlyOnePointSelected(searchTraces) {
+    var len = 0;
+    var searchInfo;
+    var trace;
+    var i;
+
+    for(i = 0; i < searchTraces.length; i++) {
+        searchInfo = searchTraces[i];
+        trace = searchInfo.cd[0].trace;
+        if(trace.selectedpoints) {
+            if(trace.selectedpoints.length > 1) return false;
+
+            len += trace.selectedpoints.length;
+            if(len > 1) return false;
+        }
+    }
+
+    return len === 1;
 }
 
 function updateSelectedState(gd, searchTraces, eventData) {

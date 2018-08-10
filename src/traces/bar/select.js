@@ -24,7 +24,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
         for(i = 0; i < cd.length; i++) {
             var di = cd[i];
 
-            if(polygon.contains(di.ct)) {
+            if(polygon.contains(di.ct, false, i, searchInfo.cd[0].trace._expandedIndex)) {
                 selection.push({
                     pointNumber: i,
                     x: xa.c2d(di.x),
