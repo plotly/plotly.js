@@ -302,6 +302,8 @@ function sceneUpdate(gd, subplot) {
             }
             if(scene.scatter2d) {
                 clearViewport(scene.scatter2d, vp);
+            } else if(scene.line2d) {
+                clearViewport(scene.line2d, vp);
             } else if(scene.glText) {
                 clearViewport(scene.glText[0], vp);
             }

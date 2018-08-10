@@ -994,6 +994,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
             var _module = moduleCalcData[0][0].trace._module;
             var polarLayoutNow = gd._fullLayout[_this.id];
 
+            if(_this._scene) _this._scene.clear();
             _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
 
             if(!Registry.traceIs(k, 'gl')) {
@@ -1136,6 +1137,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
                 var moduleCalcData = _this.traceHash[k];
                 var moduleCalcDataVisible = Lib.filterVisible(moduleCalcData);
                 var _module = moduleCalcData[0][0].trace._module;
+                if(_this._scene) _this._scene.clear();
                 _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
             }
         }

@@ -1076,6 +1076,92 @@ describe('Test polar interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    describe('@gl should update scene during drag interactions on radial and angular drag area', function() {
+        var objs = ['scatter2d', 'line2d'];
+        var scene, gl, nTraces;
+
+        function _dragRadial() {
+            var node = d3.select('.polar > .draglayer > .radialdrag').node();
+            var p0 = [375, 200];
+            var dp = [-50, 0];
+            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
+        }
+
+        function _dragAngular() {
+            var node = d3.select('.polar > .draglayer > .angulardrag').node();
+            var p0 = [350, 150];
+            var dp = [-20, 20];
+            return drag(node, dp[0], dp[1], null, p0[0], p0[1]);
+        }
+
+        // once on drag, once on mouseup relayout
+        function _assert() {
+            expect(gl.clear).toHaveBeenCalledTimes(2);
+            gl.clear.calls.reset();
+
+            objs.forEach(function(o) {
+                if(scene[o]) {
+                    expect(scene[o].draw).toHaveBeenCalledTimes(2 * nTraces);
+                    scene[o].draw.calls.reset();
+                }
+            });
+        }
+
+        var specs = [{
+            desc: 'scatter marker case',
+            // mode: 'markers' by default
+        }, {
+            desc: 'line case',
+            // start with lines to lock down fix for #2888
+            patch: function(fig) {
+                fig.data.forEach(function(trace) { trace.mode = 'lines'; });
+            }
+        }, {
+            desc: 'line & markers case',
+            patch: function(fig) {
+                fig.data.forEach(function(trace) { trace.mode = 'markers+lines'; });
+            }
+        }];
+
+        specs.forEach(function(s) {
+            it('- ' + s.desc, function(done) {
+                var fig = Lib.extendDeep({}, require('@mocks/glpolar_scatter.json'));
+                scene = null;
+                gl = null;
+
+                fig.layout.hovermode = false;
+                fig.layout.width = 400;
+                fig.layout.height = 400;
+                fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
+
+                if(s.patch) s.patch(fig);
+                nTraces = fig.data.length;
+
+                Plotly.newPlot(gd, fig).then(function() {
+                    scene = gd._fullLayout.polar._subplot._scene;
+
+                    objs.forEach(function(o) {
+                        if(scene[o]) {
+                            spyOn(scene[o], 'draw').and.callThrough();
+                            if(!gl) {
+                                // all objects have the same _gl ref,
+                                // spy on it just once
+                                gl = scene[o].regl._gl;
+                                spyOn(gl, 'clear').and.callThrough();
+                            }
+                        }
+                    });
+                })
+                .then(function() { return _dragRadial(); })
+                .then(_assert)
+                .then(function() { return _dragAngular(); })
+                .then(_assert)
+                .catch(failTest)
+                .then(done);
+            });
+        });
+    });
 });
 
 describe('Test polar *gridshape linear* interactions', function() {

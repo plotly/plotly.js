@@ -46,7 +46,6 @@ function plot(container, subplot, cdata) {
     var angularAxis = subplot.angularAxis;
 
     var scene = ScatterGl.sceneUpdate(container, subplot);
-    scene.clear();
 
     cdata.forEach(function(cdscatter, traceIndex) {
         if(!cdscatter || !cdscatter[0] || !cdscatter[0].trace) return;
