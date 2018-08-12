@@ -118,6 +118,32 @@ function getSequence(src) {
     return xs;
 }
 
+// This should find the bounding box min
+// edge index so that `value` lies at the edge or outside
+// the range starting from xs[edge index].
+// That is, xs[edge index] >= value.
+function findMinIndex(xs, value) {
+    for(var i = 0; i < xs.length; i++) {
+        if(xs[i] >= value) {
+            return i;
+        }
+    }
+    return xs.length;
+}
+
+// This should find the bounding box max
+// edge index so that `value` lies at the edge or outside
+// the range ending at xs[edge index].
+// That is, xs[edge index] <= value.
+function findMaxIndex(xs, value) {
+    for(var i = xs.length-1; i >= 0; i--) {
+        if(xs[i] <= value) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 function convert(scene, trace) {
     var sceneLayout = scene.fullSceneLayout;
     var dataScale = scene.dataScale;
@@ -140,11 +166,6 @@ function convert(scene, trace) {
         toDataCoords(zs, 'zaxis')
     ];
 
-    // var bounds = [
-    //    isosurfaceOpts.boundmin || [xs[0], ys[0], zs[0]],
-    //    isosurfaceOpts.boundmax || [xs[xs.length - 1], ys[ys.length - 1], zs[zs.length - 1]]
-    // ];
-
 
     isosurfaceOpts.values = trace.value;
 
@@ -156,7 +177,26 @@ function convert(scene, trace) {
     isosurfaceOpts.isoCaps = trace.isocaps;
     isosurfaceOpts.singleMesh = trace.singlemesh === undefined ? true : trace.singlemesh;
 
-    var bounds = [[0, 0, 0], isosurfaceOpts.dimensions];
+    var bounds = [[0, 0, 0], isosurfaceOpts.dimensions.slice()];
+
+    if(trace.xmin !== undefined) {
+        bounds[0][0] = findMinIndex(xs, trace.xmin);
+    }
+    if(trace.ymin !== undefined) {
+        bounds[0][1] = findMinIndex(ys, trace.ymin);
+    }
+    if(trace.zmin !== undefined) {
+        bounds[0][2] = findMinIndex(zs, trace.zmin);
+    }
+    if(trace.xmax !== undefined) {
+        bounds[1][0] = findMaxIndex(xs, trace.xmax);
+    }
+    if(trace.ymax !== undefined) {
+        bounds[1][1] = findMaxIndex(ys, trace.ymax);
+    }
+    if(trace.zmax !== undefined) {
+        bounds[1][2] = findMaxIndex(zs, trace.zmax);
+    }
 
     var meshData = isosurfacePlot(isosurfaceOpts, bounds);
 

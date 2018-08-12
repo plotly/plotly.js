@@ -59,6 +59,42 @@ var attrs = {
         description: 'Sets the maximum iso bound of the isosurface.'
     },
 
+    xmin: {
+        valType: 'number',
+        editType: 'calc',
+        description: 'Sets the minimum x bound of the isosurface.'
+    },
+
+    xmax: {
+        valType: 'number',
+        editType: 'calc',
+        description: 'Sets the maximum x bound of the isosurface.'
+    },
+
+    ymin: {
+        valType: 'number',
+        editType: 'calc',
+        description: 'Sets the minimum y bound of the isosurface.'
+    },
+
+    ymax: {
+        valType: 'number',
+        editType: 'calc',
+        description: 'Sets the maximum y bound of the isosurface.'
+    },
+
+    zmin: {
+        valType: 'number',
+        editType: 'calc',
+        description: 'Sets the minimum z bound of the isosurface.'
+    },
+
+    zmax: {
+        valType: 'number',
+        editType: 'calc',
+        description: 'Sets the maximum z bound of the isosurface.'
+    },
+
     smoothnormals: {
         valType: 'boolean',
         editType: 'calc',
@@ -73,18 +109,6 @@ var attrs = {
 
     isocaps: {
         valType: 'boolean',
-        editType: 'calc',
-        description: ''
-    },
-
-    boundmin: {
-        valType: 'data_array',
-        editType: 'calc',
-        description: ''
-    },
-
-    boundmax: {
-        valType: 'data_array',
         editType: 'calc',
         description: ''
     },

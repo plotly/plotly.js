@@ -39,6 +39,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('isocaps');
     // coerce('singlemesh');
 
+    coerce('xmin');
+    coerce('ymin');
+    coerce('zmin');
+
+    coerce('xmax');
+    coerce('ymax');
+    coerce('zmax');
+
     coerce('lighting.ambient');
     coerce('lighting.diffuse');
     coerce('lighting.specular');
