@@ -300,13 +300,9 @@ function sceneUpdate(gd, subplot) {
             if(scene.select2d) {
                 clearViewport(scene.select2d, vp);
             }
-            if(scene.scatter2d) {
-                clearViewport(scene.scatter2d, vp);
-            } else if(scene.line2d) {
-                clearViewport(scene.line2d, vp);
-            } else if(scene.glText) {
-                clearViewport(scene.glText[0], vp);
-            }
+
+            var anyComponent = scene.scatter2d || scene.line2d || (scene.glText || [])[0];
+            if(anyComponent) clearViewport(anyComponent, vp);
         };
 
         // remove scene resources
