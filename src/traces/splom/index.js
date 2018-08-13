@@ -36,19 +36,39 @@ function calc(gd, trace) {
     // only differ here for log axes, pass ldata to createMatrix as 'data'
     var cdata = opts.cdata = [];
     var ldata = opts.data = [];
-    var i, k, dim;
+    var i, k, dim, xa, ya;
+
+    function makeCalcdata(ax, dim) {
+        // call makeCalcdata with fake input
+        var ccol = ax.makeCalcdata({
+            v: dim.values,
+            vcalendar: trace.calendar
+        }, 'v');
+
+        for(var i = 0; i < ccol.length; i++) {
+            ccol[i] = ccol[i] === BADNUM ? NaN : ccol[i];
+        }
+        cdata.push(ccol);
+        ldata.push(ax.type === 'log' ? Lib.simpleMap(ccol, ax.c2l) : ccol);
+    }
 
     for(i = 0; i < dimensions.length; i++) {
         dim = dimensions[i];
 
         if(dim.visible) {
-            var axId = trace._diag[i][0] || trace._diag[i][1];
-            var ax = AxisIDs.getFromId(gd, axId);
-            if(ax) {
-                var ccol = makeCalcdata(ax, trace, dim);
-                var lcol = ax.type === 'log' ? Lib.simpleMap(ccol, ax.c2l) : ccol;
-                cdata.push(ccol);
-                ldata.push(lcol);
+            xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+            ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+
+            if(xa) {
+                makeCalcdata(xa, dim);
+                if(ya && ya.type === 'category') {
+                    ya._categories = xa._categories.slice();
+                }
+            } else if(ya) {
+                makeCalcdata(ya, dim);
+                if(xa && xa.type === 'category') {
+                    xa._categories = ya._categories.slice();
+                }
             }
         }
     }
@@ -63,8 +83,8 @@ function calc(gd, trace) {
         dim = dimensions[i];
 
         if(dim.visible) {
-            var xa = AxisIDs.getFromId(gd, trace._diag[i][0]) || {};
-            var ya = AxisIDs.getFromId(gd, trace._diag[i][1]) || {};
+            xa = AxisIDs.getFromId(gd, trace._diag[i][0]) || {};
+            ya = AxisIDs.getFromId(gd, trace._diag[i][1]) || {};
 
             // Reuse SVG scatter axis expansion routine.
             // For graphs with very large number of points and array marker.size,
@@ -89,20 +109,6 @@ function calc(gd, trace) {
     scene.unselectedOptions = convertMarkerSelection(trace, trace.unselected);
 
     return [{x: false, y: false, t: stash, trace: trace}];
-}
-
-function makeCalcdata(ax, trace, dim) {
-    // call makeCalcdata with fake input
-    var ccol = ax.makeCalcdata({
-        v: dim.values,
-        vcalendar: trace.calendar
-    }, 'v');
-
-    for(var i = 0; i < ccol.length; i++) {
-        ccol[i] = ccol[i] === BADNUM ? NaN : ccol[i];
-    }
-
-    return ccol;
 }
 
 function sceneUpdate(gd, stash) {
