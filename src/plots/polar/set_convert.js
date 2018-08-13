@@ -143,37 +143,40 @@ function setConvertAngular(ax, polarLayout) {
         var dir = {clockwise: -1, counterclockwise: 1}[ax.direction];
         var rot = deg2rad(ax.rotation);
 
-        ax.rad2g = function(v) { return dir * v + rot; };
-        ax.g2rad = function(v) { return (v - rot) / dir; };
+        var rad2g = function(v) { return dir * v + rot; };
+        var g2rad = function(v) { return (v - rot) / dir; };
+
+        var rad2c, c2rad;
+        var rad2t, t2rad;
 
         switch(axType) {
             case 'linear':
-                ax.c2rad = ax.rad2c = Lib.identity;
-                ax.t2rad = deg2rad;
-                ax.rad2r = rad2deg;
+                c2rad = rad2c = Lib.identity;
+                t2rad = deg2rad;
+                rad2t = rad2deg;
 
                 // Set the angular range in degrees to make auto-tick computation cleaner,
                 // changing rotation/direction should not affect the angular tick value.
                 ax.range = isFullCircle(sector) ?
                     sector.slice() :
-                    sector.map(deg2rad).map(ax.g2rad).map(rad2deg);
+                    sector.map(deg2rad).map(g2rad).map(rad2deg);
                 break;
 
             case 'category':
                 var catLen = ax._categories.length;
-                var _period = ax._period = ax.period ? Math.max(ax.period, catLen) : catLen;
+                var _period = ax.period ? Math.max(ax.period, catLen) : catLen;
 
-                ax.c2rad = ax.t2rad = function(v) { return v * 2 * Math.PI / _period; };
-                ax.rad2c = ax.rad2t = function(v) { return v * _period / Math.PI / 2; };
+                c2rad = t2rad = function(v) { return v * 2 * Math.PI / _period; };
+                rad2c = rad2t = function(v) { return v * _period / Math.PI / 2; };
 
                 ax.range = [0, _period];
                 break;
         }
 
-        ax.c2g = function(v) { return ax.rad2g(ax.c2rad(v)); };
-        ax.g2c = function(v) { return ax.rad2c(ax.g2rad(v)); };
+        ax.c2g = function(v) { return rad2g(c2rad(v)); };
+        ax.g2c = function(v) { return rad2c(g2rad(v)); };
 
-        ax.t2g = function(v) { return ax.rad2g(ax.t2rad(v)); };
-        ax.g2t = function(v) { return ax.rad2t(ax.g2rad(v)); };
+        ax.t2g = function(v) { return rad2g(t2rad(v)); };
+        ax.g2t = function(v) { return rad2t(g2rad(v)); };
     };
 }
