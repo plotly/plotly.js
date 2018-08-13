@@ -1143,9 +1143,9 @@ describe('Test polar interactions:', function() {
                 fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
 
                 if(s.patch) s.patch(fig);
-                nTraces = fig.data.reduce(function(acc, trace) {
-                    return (trace.type === 'scatterpolargl') ? ++acc : acc;
-                }, 0);
+                nTraces = fig.data
+                    .filter(function(trace) { return trace.type === 'scatterpolargl'; })
+                    .length;
 
                 Plotly.newPlot(gd, fig).then(function() {
                     scene = gd._fullLayout.polar._subplot._scene;
