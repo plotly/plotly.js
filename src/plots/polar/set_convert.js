@@ -33,19 +33,17 @@ var isFullCircle = Lib.isFullCircle;
  * - 'g' for geometric coordinates and
  * - 't' for angular ticks
  *
- * Radial axis coordinate systems flow:
- * - d2c (in calc) just like for cartesian axes
- * - c2g (in plot) translates calcdata about `radialaxis.range[0]`
+ * Radial axis coordinate systems:
+ * - d, c and l: same as for cartesian axes
+ * - g: like calcdata but translated about `radialaxis.range[0]`
  *
- * Angular axis coordinate systems flow:
- * + for linear axes:
- *   - d2c (in calc) angles -> 'data' radians
- *   - c2g (in plot) 'data' -> 'geometric' radians (fn of ax rotation & direction)
- *   - t2g (in updateAngularAxis) 'tick' value (in degrees) -> 'geometric' radians
- * + for category axes:
- *   - d2c (in calc) just like for cartesian axes
- *   - c2g (in plot) category indices -> 'geometric' radians
- *   - t2g (in updateAngularAxis) 'tick' value (as category indices) -> 'geometric' radians
+ * Angular axis coordinate systems:
+ * - d: data, in whatever form it's provided
+ * - c: calcdata, turned into radians (for linear axes)
+ *      or category indices (category axes)
+ * - t: tick calcdata, just like 'c' but in degrees for linear axes
+ * - g: geometric calcdata, radians coordinates that take into account
+ *      axis rotation and direction
  *
  * Then, 'g'eometric data is ready to be converted to (x,y).
  */
