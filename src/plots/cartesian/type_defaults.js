@@ -89,9 +89,10 @@ function setAutoType(ax, data) {
     }
     else if(d0.type === 'splom') {
         var dimensions = d0.dimensions;
+        var diag = d0._diag;
         for(i = 0; i < dimensions.length; i++) {
             var dim = dimensions[i];
-            if(dim.visible) {
+            if(dim.visible && (diag[i][0] === id || diag[i][1] === id)) {
                 ax.type = autoType(dim.values, calendar);
                 break;
             }

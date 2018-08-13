@@ -352,8 +352,10 @@ describe('Test splom trace defaults:', function() {
         });
 
         var fullLayout = gd._fullLayout;
-        expect(fullLayout.xaxis.type).toBe('date');
-        expect(fullLayout.yaxis.type).toBe('date');
+        expect(fullLayout.xaxis.type).toBe('linear', 'fallbacks to linear for visible:false traces');
+        expect(fullLayout.yaxis.type).toBe('linear', 'fallbacks to linear for visible:false traces');
+        expect(fullLayout.xaxis2.type).toBe('date');
+        expect(fullLayout.yaxis2.type).toBe('date');
     });
 });
 
