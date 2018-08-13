@@ -988,18 +988,17 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
         _this.xaxis.setScale();
         _this.yaxis.setScale();
 
-        for(var k in _this.traceHash) {
-            var moduleCalcData = _this.traceHash[k];
+        if(_this._scene) _this._scene.clear();
+
+        for(var traceType in _this.traceHash) {
+            var moduleCalcData = _this.traceHash[traceType];
             var moduleCalcDataVisible = Lib.filterVisible(moduleCalcData);
             var _module = moduleCalcData[0][0].trace._module;
             var polarLayoutNow = gd._fullLayout[_this.id];
-            var isGL = Registry.traceIs(k, 'gl');
-
-            if(isGL && _this._scene) _this._scene.clear();
 
             _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
 
-            if(!isGL) {
+            if(!Registry.traceIs(traceType, 'gl')) {
                 for(var i = 0; i < moduleCalcDataVisible.length; i++) {
                     _module.style(gd, moduleCalcDataVisible[i]);
                 }
@@ -1134,12 +1133,13 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
             scatterTraces.call(Drawing.hideOutsideRangePoints, _this);
         }
 
-        for(var k in _this.traceHash) {
-            if(Registry.traceIs(k, 'gl')) {
-                var moduleCalcData = _this.traceHash[k];
+        if(_this._scene) _this._scene.clear();
+
+        for(var traceType in _this.traceHash) {
+            if(Registry.traceIs(traceType, 'gl')) {
+                var moduleCalcData = _this.traceHash[traceType];
                 var moduleCalcDataVisible = Lib.filterVisible(moduleCalcData);
                 var _module = moduleCalcData[0][0].trace._module;
-                if(_this._scene) _this._scene.clear();
                 _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
             }
         }
