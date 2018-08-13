@@ -1122,6 +1122,13 @@ describe('Test polar interactions:', function() {
             patch: function(fig) {
                 fig.data.forEach(function(trace) { trace.mode = 'markers+lines'; });
             }
+        }, {
+            desc: 'gl and non-gl on same subplot case',
+            patch: function(fig) {
+                fig.data.forEach(function(trace, i) {
+                    trace.type = (i % 2) ? 'scatterpolar' : 'scatterpolargl';
+                });
+            }
         }];
 
         specs.forEach(function(s) {
@@ -1136,7 +1143,9 @@ describe('Test polar interactions:', function() {
                 fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
 
                 if(s.patch) s.patch(fig);
-                nTraces = fig.data.length;
+                nTraces = fig.data.reduce(function(acc, trace) {
+                    return (trace.type === 'scatterpolargl') ? ++acc : acc;
+                }, 0);
 
                 Plotly.newPlot(gd, fig).then(function() {
                     scene = gd._fullLayout.polar._subplot._scene;

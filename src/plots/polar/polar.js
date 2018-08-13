@@ -993,11 +993,13 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
             var moduleCalcDataVisible = Lib.filterVisible(moduleCalcData);
             var _module = moduleCalcData[0][0].trace._module;
             var polarLayoutNow = gd._fullLayout[_this.id];
+            var isGL = Registry.traceIs(k, 'gl');
 
-            if(_this._scene) _this._scene.clear();
+            if(isGL && _this._scene) _this._scene.clear();
+
             _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
 
-            if(!Registry.traceIs(k, 'gl')) {
+            if(!isGL) {
                 for(var i = 0; i < moduleCalcDataVisible.length; i++) {
                     _module.style(gd, moduleCalcDataVisible[i]);
                 }
