@@ -386,6 +386,7 @@ describe('Test splom trace calc step:', function() {
         var cd = gd.calcdata[0][0];
 
         expect(cd.t._scene.matrixOptions.data).toBeCloseTo2DArray([[2, 1, 2]]);
+        expect(cd.t.visibleDims).toEqual([1]);
     });
 });
 
