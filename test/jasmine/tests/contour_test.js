@@ -11,7 +11,9 @@ var colorScales = require('@src/components/colorscale/scales');
 var failTest = require('../assets/fail_test');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var checkTicks = require('../assets/custom_assertions').checkTicks;
+var customAssertions = require('../assets/custom_assertions');
+var checkTicks = customAssertions.checkTicks;
+var assertNodeOrder = customAssertions.assertNodeOrder;
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 
@@ -412,25 +414,12 @@ describe('contour plotting and editing', function() {
     });
 
     it('should always draw heatmap coloring layer below contour lines', function(done) {
-        var cnt = 0;
-
-        function _assert(exp) {
-            var msg = ' index in <g.contourlayer> (call #' + cnt + ')';
-            var contourPlot = gd.querySelector('.xy > .plot > .contourlayer > .contour');
-            var hmIndex = -1;
-            var contoursIndex = -1;
-
-            for(var i in contourPlot.children) {
-                var child = contourPlot.children[i];
-                if(child.querySelector) {
-                    if(child.querySelector('.hm')) hmIndex = +i;
-                    else if(child.querySelector('.contourlevel')) contoursIndex = +i;
-                }
-            }
-
-            expect(hmIndex).toBe(exp.hmIndex, 'heatmap' + msg);
-            expect(contoursIndex).toBe(exp.contoursIndex, 'contours' + msg);
-            cnt++;
+        function _assertNoHeatmap(msg) {
+            msg = ' (' + msg + ')';
+            // all we care about here *really* is that there are contour levels
+            // *somewhere* on the plot, and there is no heatmap anywhere.
+            expect(gd.querySelector('.hm')).toBe(null, 'heatmap exists' + msg);
+            expect(gd.querySelector('.contourlevel')).not.toBe(null, 'missing contours' + msg);
         }
 
         Plotly.newPlot(gd, [{
@@ -439,24 +428,15 @@ describe('contour plotting and editing', function() {
             contours: {coloring: 'heatmap'}
         }])
         .then(function() {
-            _assert({
-                hmIndex: 0,
-                contoursIndex: 3
-            });
+            assertNodeOrder('.hm', '.contourlevel', 'initial heatmap coloring');
             return Plotly.restyle(gd, 'contours.coloring', 'lines');
         })
         .then(function() {
-            _assert({
-                hmIndex: -1,
-                contoursIndex: 3
-            });
+            _assertNoHeatmap('line coloring');
             return Plotly.restyle(gd, 'contours.coloring', 'heatmap');
         })
         .then(function() {
-            _assert({
-                hmIndex: 0,
-                contoursIndex: 3
-            });
+            assertNodeOrder('.hm', '.contourlevel', 'back to heatmap coloring');
         })
         .catch(failTest)
         .then(done);
