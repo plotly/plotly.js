@@ -9,7 +9,7 @@ var smoothFill = require('@src/traces/carpet/smooth_fill_array');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
@@ -463,7 +463,7 @@ describe('Test carpet interactions:', function() {
             expect(countCarpets()).toEqual(0);
             expect(countContourTraces()).toEqual(0);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -494,7 +494,7 @@ describe('Test carpet interactions:', function() {
             expect(countCarpets()).toEqual(0);
             expect(countContourTraces()).toEqual(0);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -508,7 +508,7 @@ describe('Test carpet interactions:', function() {
         .then(function() {
             return Plotly.relayout(gd, 'yaxis.range', [7, 8]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -534,7 +534,7 @@ describe('Test carpet interactions:', function() {
         .then(function() {
             _assert(3);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -592,7 +592,7 @@ describe('scattercarpet array attributes', function() {
                 expect(pt.mlc).toBe(mlc[i]);
             }
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -691,7 +691,7 @@ describe('contourcarpet plotting & editing', function() {
         .then(function() {
             expect(getIndices()).toEqual([1, 2]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

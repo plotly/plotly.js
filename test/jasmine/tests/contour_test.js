@@ -8,7 +8,7 @@ var Contour = require('@src/traces/contour');
 var makeColorMap = require('@src/traces/contour/make_color_map');
 var colorScales = require('@src/components/colorscale/scales');
 
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var checkTicks = require('../assets/custom_assertions').checkTicks;
@@ -388,7 +388,7 @@ describe('contour plotting and editing', function() {
             checkTicks('y', ['Jan 102016', 'Jan 24', 'Feb 7', 'Feb 21'], 'date y #2');
             expect(gd._fullLayout.yaxis.type).toBe('date');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -407,7 +407,7 @@ describe('contour plotting and editing', function() {
         .then(function() {
             expect(gd.querySelector('.contourlabels text').textContent).toBe('0.41');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -458,7 +458,7 @@ describe('contour plotting and editing', function() {
                 contoursIndex: 3
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -500,7 +500,7 @@ describe('contour plotting and editing', function() {
             expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2.5]]);
             expect(gd.calcdata[0][0].zmask).toEqual([[1, 1], [0, 1], [1, 0]]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -530,7 +530,7 @@ describe('contour plotting and editing', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
