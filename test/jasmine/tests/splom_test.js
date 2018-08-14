@@ -359,6 +359,36 @@ describe('Test splom trace defaults:', function() {
     });
 });
 
+describe('Test splom trace calc step:', function() {
+    var gd;
+
+    function _calc(opts, layout) {
+        gd = {};
+
+        gd.data = [Lib.extendFlat({type: 'splom'}, opts || {})];
+        gd.layout = layout || {};
+        supplyAllDefaults(gd);
+        Plots.doCalcdata(gd);
+    }
+
+    it('should skip dimensions with conflicting axis types', function() {
+        _calc({
+            dimensions: [{
+                values: [1, 2, 3]
+            }, {
+                values: [2, 1, 2]
+            }]
+        }, {
+            xaxis: {type: 'category'},
+            yaxis: {type: 'linear'}
+        });
+
+        var cd = gd.calcdata[0][0];
+
+        expect(cd.t._scene.matrixOptions.data).toBeCloseTo2DArray([[2, 1, 2]]);
+    });
+});
+
 describe('@gl Test splom interactions:', function() {
     var gd;
 

@@ -59,16 +59,17 @@ function calc(gd, trace) {
             xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
             ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
 
+            // if corresponding x & y axes don't have matching types, skip dim
+            if(xa && ya && xa.type !== ya.type) continue;
+
             if(xa) {
                 makeCalcdata(xa, dim);
                 if(ya && ya.type === 'category') {
                     ya._categories = xa._categories.slice();
                 }
-            } else if(ya) {
+            } else {
+                // should not make it here, if both xa and ya undefined
                 makeCalcdata(ya, dim);
-                if(xa && xa.type === 'category') {
-                    xa._categories = ya._categories.slice();
-                }
             }
         }
     }
