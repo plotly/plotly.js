@@ -301,7 +301,8 @@ function sceneUpdate(gd, subplot) {
                 clearViewport(scene.select2d, vp);
             }
 
-            var anyComponent = scene.scatter2d || scene.line2d || (scene.glText || [])[0];
+            var anyComponent = scene.scatter2d || scene.line2d ||
+                (scene.glText || [])[0] || scene.fill2d || scene.error2d;
             if(anyComponent) clearViewport(anyComponent, vp);
         };
 
