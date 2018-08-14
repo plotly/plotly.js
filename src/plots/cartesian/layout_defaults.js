@@ -157,7 +157,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutOut._annIndices = [];
         axLayoutOut._shapeIndices = [];
 
-        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, traces, axName);
+        // set up some private properties
+        axLayoutOut._name = axName;
+        var id = axLayoutOut._id = name2id(axName);
 
         var overlayableAxes = getOverlayableAxes(axLetter, axName);
 
@@ -173,6 +175,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             cheateronly: axLetter === 'x' && xaCheater[axName] && !xaNonCheater[axName]
         };
 
+        handleTypeDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions, layoutOut);
 
         var spikecolor = coerce2('spikecolor'),
