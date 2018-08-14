@@ -13,7 +13,7 @@
       "z":[[1, 2, 3], [4, 5, 6], [7, 8, 9]],
       "showscale": false,
       "showlegend": true,
-      "line": {"width": 2},
+      "line": {"width": 2, "dash": "dot"},
       "name": "lines"
   }, {
       "type": "contour",
@@ -30,21 +30,24 @@
   }, {
       "type": "contour",
       "contours": {"coloring": "heatmap"},
+      "line": {"width": 3, "color": "#cf0", "dash": "dashdot"},
       "z": [[1, 2], [3, 4]],
       "showscale": false,
       "showlegend": true,
       "y": [2, 3],
-      "name": "heatmap 1"
+      "name": "heatmap"
   }, {
-      "type": "contour",
+      "type": "histogram2dcontour",
       "contours": {"coloring": "heatmap"},
-      "z": [[1, 2], [3, 4]],
+      "xbins": {"start": 0.5, "end": 2.5, "size": 1},
+      "ybins": {"start": 1.5, "end": 3.5, "size": 1},
+      "line": {"color": "#f00", "dash": "dot"},
       "showscale": false,
       "showlegend": true,
       "colorscale": "Viridis",
-      "x": [1, 2],
-      "y": [2, 3],
-      "name": "heatmap 2"
+      "x": [1.1, 1.1, 1.1, 1.8, 1.8, 1.1, 1.8, 1.8, 1.8, 1.8],
+      "y": [2.2, 2.8, 2.8, 2.2, 2.2, 2.8, 2.8, 2.8, 2.8, 2.8],
+      "name": "histogram"
   }],
   "layout":{
     "autosize":false,
