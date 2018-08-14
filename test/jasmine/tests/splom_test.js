@@ -357,6 +357,42 @@ describe('Test splom trace defaults:', function() {
         expect(fullLayout.xaxis2.type).toBe('date');
         expect(fullLayout.yaxis2.type).toBe('date');
     });
+
+    it('axis type in layout takes precedence over dimensions setting', function() {
+        _supply({
+            dimensions: [
+                {values: [1, 2, 1], axis: {type: 'category'}},
+                {values: [2, 1, 3]}
+            ]
+        }, {
+            xaxis: {type: 'linear'},
+            yaxis: {type: 'linear'},
+            xaxis2: {type: 'category'},
+            yaxis2: {type: 'category'}
+        });
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.type).toBe('linear');
+        expect(fullLayout.yaxis.type).toBe('linear');
+        expect(fullLayout.xaxis2.type).toBe('category');
+        expect(fullLayout.yaxis2.type).toBe('category');
+    });
+
+    it('axis type setting should be skipped when dimension is not visible', function() {
+        _supply({
+            dimensions: [
+                {visible: false, values: [1, 2, 1], axis: {type: 'category'}},
+                {values: [-1, 2, 3], axis: {type: 'category'}},
+            ]
+        }, {
+        });
+
+        var fullLayout = gd._fullLayout;
+        expect(fullLayout.xaxis.type).toBe('linear');
+        expect(fullLayout.yaxis.type).toBe('linear');
+        expect(fullLayout.xaxis2.type).toBe('category');
+        expect(fullLayout.yaxis2.type).toBe('category');
+    });
 });
 
 describe('Test splom trace calc step:', function() {

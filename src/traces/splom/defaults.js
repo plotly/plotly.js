@@ -61,6 +61,8 @@ function dimensionDefaults(dimIn, dimOut) {
 
     if(!(values && values.length)) dimOut.visible = false;
     else coerce('visible');
+
+    coerce('axis.type');
 }
 
 function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
@@ -148,7 +150,13 @@ function fillAxisStash(layout, axId, dim) {
     var stash = layout._splomAxes[axLetter];
 
     if(!(axId in stash)) {
-        stash[axId] = (dim || {}).label || '';
+        var s = stash[axId] = {};
+        if(dim) {
+            s.label = dim.label || '';
+            if(dim.visible && dim.axis) {
+                s.type = dim.axis.type;
+            }
+        }
     }
 }
 

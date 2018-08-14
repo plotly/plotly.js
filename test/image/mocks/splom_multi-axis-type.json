@@ -16,11 +16,13 @@
         },
         {
           "label": "bool",
-          "values": [false, true, true, true, false, true, false, false, false, true]
+          "values": [false, true, true, true, false, true, false, false, false, true],
+          "axis": {"type": "category"}
         },
         {
           "label": "0/1",
-          "values": [0, 1, 1, 1, 1, 1, 0, 0, 0, 0]
+          "values": [0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
+          "axis": {"type": "category"}
         },
         {
           "label": "string",
@@ -31,15 +33,6 @@
   ],
   "layout": {
     "hovermode": "closest",
-    "margin": {
-      "b": 80,
-      "l": 80,
-      "r": 30,
-      "t": 30
-    },
-    "yaxis2": {"type": "category"},
-    "yaxis3": {"type": "category"},
-    "xaxis3": {"type": "category"},
-    "xaxis4": {"type": "category"}
+    "margin": {"b": 80, "l": 80, "r": 30, "t": 30}
   }
 }
