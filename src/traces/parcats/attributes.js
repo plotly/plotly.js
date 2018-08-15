@@ -45,6 +45,18 @@ module.exports = {
         editType: 'plot',
         description: 'Sets the hover mode of the parcats diagram'
     },
+    arrangement: {
+        valType: 'enumerated',
+        values: ['perpendicular', 'freeform', 'fixed'],
+        dflt: 'perpendicular',
+        role: 'style',
+        editType: 'plot',
+        description: [
+            'If value is `perpendicular`, the categories can only move along a line perpendicular to the paths.',
+            'If value is `freeform`, the categories can freely move on the plane.',
+            'If value is `fixed`, the categories and dimensions are stationary.'
+        ].join(' ')
+    },
     bundlecolors: {
         valType: 'boolean',
         dflt: true,

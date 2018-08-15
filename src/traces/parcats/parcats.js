@@ -187,7 +187,6 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     var bandsSelectionEnter = bandSelection.enter()
         .append('rect')
         .attr('class', 'bandrect')
-        .attr('cursor', 'move')
         .attr('stroke-opacity', 0)
         .attr('fill', function(d) {
             return d.color;
@@ -206,6 +205,17 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         })
         .attr('y', function(d) {
             return d.y;
+        })
+        .attr('cursor',
+            /** @param {CategoryBandViewModel} bandModel*/
+            function(bandModel) {
+                if (bandModel.parcatsViewModel.arrangement === 'fixed') {
+                    return 'default'
+                } else if (bandModel.parcatsViewModel.arrangement === 'perpendicular') {
+                    return 'ns-resize'
+                } else {
+                    return 'move'
+            }
         });
 
     styleBandsNoHover(bandsSelectionEnter);
@@ -265,7 +275,15 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     categorySelection.select('text.dimlabel')
         .attr('text-anchor', 'middle')
         .attr('alignment-baseline', 'baseline')
-        .attr('cursor', 'ew-resize')
+        .attr('cursor',
+             /** @param {CategoryViewModel} catModel*/
+            function(catModel) {
+                if (catModel.parcatsViewModel.arrangement === 'fixed') {
+                    return 'default';
+                } else {
+                    return 'ew-resize'
+                }
+            })
         .attr('font-size', 14)
         .attr('x', function(d) {
             return d.width / 2;
@@ -906,6 +924,11 @@ function mouseoutCategory(parcatsViewModel) {
  */
 function dragDimensionStart(d) {
 
+    // Check if dragging is supported
+    if (d.parcatsViewModel.arrangement === 'fixed') {
+        return
+    }
+
     // Save off initial drag indexes for dimension
     d.dragDimensionDisplayInd = d.model.displayInd;
     d.initialDragDimensionDisplayInds = d.parcatsViewModel.model.dimensions.map(function(d) {return d.displayInd;});
@@ -962,6 +985,12 @@ function dragDimensionStart(d) {
  * @param {DimensionViewModel} d
  */
 function dragDimension(d) {
+
+    // Check if dragging is supported
+    if (d.parcatsViewModel.arrangement === 'fixed') {
+        return
+    }
+
     d.dragHasMoved = true;
 
     if(d.dragDimensionDisplayInd === null) {
@@ -1017,32 +1046,34 @@ function dragDimension(d) {
     }
 
     // Update dimension position
-    dragDimension.model.dragX = d3.event.x;
+    if (d.dragCategoryDisplayInd === null || d.parcatsViewModel.arrangement === 'freeform') {
+        dragDimension.model.dragX = d3.event.x;
 
-    // Check for dimension swaps
-    var prevDimension = d.parcatsViewModel.dimensions[prevDimInd];
-    var nextDimension = d.parcatsViewModel.dimensions[nextDimInd];
+        // Check for dimension swaps
+        var prevDimension = d.parcatsViewModel.dimensions[prevDimInd];
+        var nextDimension = d.parcatsViewModel.dimensions[nextDimInd];
 
-    if(prevDimension !== undefined) {
-        if(dragDimension.model.dragX < (prevDimension.x + prevDimension.width)) {
+        if (prevDimension !== undefined) {
+            if (dragDimension.model.dragX < (prevDimension.x + prevDimension.width)) {
 
-            // Swap display inds
-            dragDimension.model.displayInd = prevDimension.model.displayInd;
-            prevDimension.model.displayInd = dragDimInd;
+                // Swap display inds
+                dragDimension.model.displayInd = prevDimension.model.displayInd;
+                prevDimension.model.displayInd = dragDimInd;
+            }
         }
-    }
 
-    if(nextDimension !== undefined) {
-        if((dragDimension.model.dragX + dragDimension.width) > nextDimension.x) {
+        if (nextDimension !== undefined) {
+            if ((dragDimension.model.dragX + dragDimension.width) > nextDimension.x) {
 
-            // Swap display inds
-            dragDimension.model.displayInd = nextDimension.model.displayInd;
-            nextDimension.model.displayInd = d.dragDimensionDisplayInd;
+                // Swap display inds
+                dragDimension.model.displayInd = nextDimension.model.displayInd;
+                nextDimension.model.displayInd = d.dragDimensionDisplayInd;
+            }
         }
-    }
 
-    // Update drag display index
-    d.dragDimensionDisplayInd = dragDimension.model.displayInd;
+        // Update drag display index
+        d.dragDimensionDisplayInd = dragDimension.model.displayInd;
+    }
 
     // Update view models
     updateDimensionViewModels(d.parcatsViewModel);
@@ -1059,6 +1090,11 @@ function dragDimension(d) {
  * @param {DimensionViewModel} d
  */
 function dragDimensionEnd(d) {
+
+    // Check if dragging is supported
+    if (d.parcatsViewModel.arrangement === 'fixed') {
+        return
+    }
 
     if(d.dragDimensionDisplayInd === null) {
         return;
@@ -1366,6 +1402,7 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
         height: traceHeight,
         hovermode: trace.hovermode,
         hoverinfoItems: hoverinfoItems,
+        arrangement: trace.arrangement,
         bundlecolors: trace.bundlecolors,
         sortpaths: trace.sortpaths,
         pathShape: pathShape,
@@ -1816,6 +1853,8 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
  *  Hover mode. One of: 'none', 'category', or 'color'
  * @property {Array.<String>} hoverinfoItems
  *  Info to display on hover. Array with a combination of 'counts' and/or 'probabilities', or 'none', or 'skip'
+ * @property {String} arrangement
+ *  Category arrangement. One of: 'perpendicular', 'freeform', or 'fixed'
  * @property {Boolean} bundlecolors
  *  Whether paths should be sorted so that like colors are bundled together as they pass through categories
  * @property {String} sortpaths

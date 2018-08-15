@@ -501,7 +501,7 @@ describe('Drag to reordered dimensions and categories', function() {
     // --------
     beforeEach(function() {
         gd = createGraphDiv();
-        mock = Lib.extendDeep({}, require('@mocks/parcats_basic.json'));
+        mock = Lib.extendDeep({}, require('@mocks/parcats_basic_freeform.json'));
     });
 
     afterEach(destroyGraphDiv);
