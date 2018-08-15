@@ -9,6 +9,7 @@
 'use strict';
 
 var extendFlat = require('../../lib/extend').extendFlat;
+var plotAttrs = require('../../plots/attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var scatterAttrs = require('../scatter/attributes');
@@ -32,18 +33,13 @@ var line = extendFlat({
 
 module.exports = {
     domain: domainAttrs({name: 'parcats', trace: true, editType: 'calc'}),
-
-    tooltip: {
-        valType: 'boolean',
-        dflt: true,
-        role: 'info',
-        editType: 'plot',
-        description: 'Shows a tooltip when hover mode is `category` or `color`.'
-    },
-
+    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
+        flags: ['count', 'probability'],
+        editType: 'plot'
+    }),
     hovermode: {
         valType: 'enumerated',
-        values: ['none', 'category', 'color'],
+        values: ['category', 'color'],
         dflt: 'category',
         role: 'info',
         editType: 'plot',

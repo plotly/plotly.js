@@ -363,7 +363,8 @@ function mouseoverPath(d) {
     if(!d.parcatsViewModel.dragDimension) {
         // We're not currently dragging
 
-        if(d.parcatsViewModel.hovermode !== 'none') {
+        if(d.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
+            // hoverinfo is not skip, so we at least style the paths and emit interaction events
 
             // Raise path to top
             Lib.raiseToTop(this);
@@ -374,13 +375,14 @@ function mouseoverPath(d) {
             var points = buildPointsArrayForPath(d);
             d.parcatsViewModel.graphDiv.emit('plotly_hover', {points: points, event: d3.event});
 
-            // Handle tooltip
-            if(d.parcatsViewModel.tooltip) {
+            // Handle hover label
+            if(d.parcatsViewModel.hoverinfoItems.indexOf('none') === -1) {
+                // hoverinfo is a combination of 'count' and 'probability'
 
                 // Mouse
                 var hoverX = d3.mouse(this)[0];
 
-                // Tooltip
+                // Label
                 var gd = d.parcatsViewModel.graphDiv;
                 var fullLayout = gd._fullLayout;
                 var rootBBox = fullLayout._paperdiv.node().getBoundingClientRect();
@@ -407,14 +409,21 @@ function mouseoverPath(d) {
 
                 var textColor = tinycolor.mostReadable(d.model.color, ['black', 'white']);
 
+                // Build hover text
+                var hovertextParts = [];
+                if (d.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
+                    hovertextParts.push(['Count:', d.model.count].join(' '));
+                }
+                if (d.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
+                    hovertextParts.push(['P:', (d.model.count / d.parcatsViewModel.model.count).toFixed(3)].join(' '));
+                }
+
+                var hovertext = hovertextParts.join('<br>');
+
                 Fx.loneHover({
                     x: hoverCenterX - rootBBox.left + graphDivBBox.left,
                     y: hoverCenterY - rootBBox.top + graphDivBBox.top,
-                    text: [
-                        ['Count:', d.model.count].join(' '),
-                        ['P:', (d.model.count / d.parcatsViewModel.model.count).toFixed(3)].join(' ')
-                    ].join('<br>'),
-
+                    text: hovertext,
                     color: d.model.color,
                     borderColor: 'black',
                     fontFamily: 'Monaco, "Courier New", monospace',
@@ -440,7 +449,7 @@ function mouseoutPath(d) {
         // We're not currently dragging
         stylePathsNoHover(d3.select(this));
 
-        // Remove tooltip
+        // Remove and hover label
         Fx.loneUnhover(d.parcatsViewModel.graphDiv._fullLayout._hoverlayer.node());
 
         // Restore path order
@@ -651,7 +660,7 @@ function emitPointsEventColorHovermode(bandElement, eventName, event) {
 }
 
 /**
- * Create tooltip for a band element's category (for use when hovermode === 'category')
+ * Create hover label for a band element's category (for use when hovermode === 'category')
  *
  * @param {ClientRect} rootBBox
  *  Client bounding box for root of figure
@@ -659,8 +668,8 @@ function emitPointsEventColorHovermode(bandElement, eventName, event) {
  *  HTML element for band
  *
  */
-function createTooltipForCategoryHovermode(rootBBox, bandElement) {
-    // Build tooltips
+function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
+    // Selections
     var rectSelection = d3.select(bandElement.parentNode).select('rect.catrect');
     var rectBoundingBox = rectSelection.node().getBoundingClientRect();
 
@@ -673,44 +682,47 @@ function createTooltipForCategoryHovermode(rootBBox, bandElement) {
     // Positions
     var hoverCenterY = rectBoundingBox.top + rectBoundingBox.height / 2;
     var hoverCenterX,
-        tooltipIdealAlign;
+        hoverLabelIdealAlign;
 
     if(parcatsViewModel.dimensions.length > 1 &&
         dimensionModel.displayInd === parcatsViewModel.dimensions.length - 1) {
 
         // right most dimension
         hoverCenterX = rectBoundingBox.left;
-        tooltipIdealAlign = 'left';
+        hoverLabelIdealAlign = 'left';
     } else {
         hoverCenterX = rectBoundingBox.left + rectBoundingBox.width;
-        tooltipIdealAlign = 'right';
+        hoverLabelIdealAlign = 'right';
     }
 
-    var countStr = ['Count:', catViewModel.model.count].join(' ');
-    var pStr = ['P(' + catViewModel.model.categoryLabel + '):',
-        (catViewModel.model.count / catViewModel.parcatsViewModel.model.count).toFixed(3)].join(' ');
+    // Hover label text
+    var hoverinfoParts = [];
+    if (catViewModel.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
+        hoverinfoParts.push(['Count:', catViewModel.model.count].join(' '))
+    }
+    if (catViewModel.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
+        hoverinfoParts.push([
+            'P(' + catViewModel.model.categoryLabel + '):',
+            (catViewModel.model.count / catViewModel.parcatsViewModel.model.count).toFixed(3)].join(' '))
+    }
 
+    var hovertext = hoverinfoParts.join('<br>');
     return {
         x: hoverCenterX - rootBBox.left,
         y: hoverCenterY - rootBBox.top,
-        // name: 'NAME',
-        text: [
-            countStr,
-            pStr
-        ].join('<br>'),
-
+        text: hovertext,
         color: 'lightgray',
         borderColor: 'black',
         fontFamily: 'Monaco, "Courier New", monospace',
         fontSize: 12,
         fontColor: 'black',
-        idealAlign: tooltipIdealAlign
+        idealAlign: hoverLabelIdealAlign
     };
 }
 
 
 /**
- * Create tooltip for a band element's category (for use when hovermode === 'category')
+ * Create hover label for a band element's category (for use when hovermode === 'category')
  *
  * @param {ClientRect} rootBBox
  *  Client bounding box for root of figure
@@ -718,7 +730,7 @@ function createTooltipForCategoryHovermode(rootBBox, bandElement) {
  *  HTML element for band
  *
  */
-function createTooltipForColorHovermode(rootBBox, bandElement) {
+function createHoverLabelForColorHovermode(rootBBox, bandElement) {
 
     var bandBoundingBox = bandElement.getBoundingClientRect();
 
@@ -733,15 +745,15 @@ function createTooltipForColorHovermode(rootBBox, bandElement) {
     var hoverCenterY = bandBoundingBox.y + bandBoundingBox.height / 2;
 
     var hoverCenterX,
-        tooltipIdealAlign;
+        hoverLabelIdealAlign;
     if(parcatsViewModel.dimensions.length > 1 &&
         dimensionModel.displayInd === parcatsViewModel.dimensions.length - 1) {
         // right most dimension
         hoverCenterX = bandBoundingBox.left;
-        tooltipIdealAlign = 'left';
+        hoverLabelIdealAlign = 'left';
     } else {
         hoverCenterX = bandBoundingBox.left + bandBoundingBox.width;
-        tooltipIdealAlign = 'right';
+        hoverLabelIdealAlign = 'right';
     }
 
     // Labels
@@ -768,19 +780,29 @@ function createTooltipForColorHovermode(rootBBox, bandElement) {
             }
         });
 
-    // Create talbe to align probability terms
-    var countStr = ['Count:', bandColorCount].join(' ');
-    var pColorAndCatLable = 'P(color ∩ ' + catLabel + '): ';
-    var pColorAndCatValue = (bandColorCount / totalCount).toFixed(3);
-    var pColorAndCatRow = pColorAndCatLable + pColorAndCatValue;
+    // Hover label text
+    var hoverinfoParts = [];
+    if (catViewModel.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
+        hoverinfoParts.push(['Count:', bandColorCount].join(' '))
+    }
+    if (catViewModel.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
+        var pColorAndCatLable = 'P(color ∩ ' + catLabel + '): ';
+        var pColorAndCatValue = (bandColorCount / totalCount).toFixed(3);
+        var pColorAndCatRow = pColorAndCatLable + pColorAndCatValue;
+        hoverinfoParts.push(pColorAndCatRow);
 
-    var pCatGivenColorLabel = 'P(' + catLabel + ' | color): ';
-    var pCatGivenColorValue = (bandColorCount / colorCount).toFixed(3);
-    var pCatGivenColorRow = pCatGivenColorLabel + pCatGivenColorValue;
+        var pCatGivenColorLabel = 'P(' + catLabel + ' | color): ';
+        var pCatGivenColorValue = (bandColorCount / colorCount).toFixed(3);
+        var pCatGivenColorRow = pCatGivenColorLabel + pCatGivenColorValue;
+        hoverinfoParts.push(pCatGivenColorRow);
 
-    var pColorGivenCatLabel = 'P(color | ' + catLabel + '): ';
-    var pColorGivenCatValue = (bandColorCount / catCount).toFixed(3);
-    var pColorGivenCatRow = pColorGivenCatLabel + pColorGivenCatValue;
+        var pColorGivenCatLabel = 'P(color | ' + catLabel + '): ';
+        var pColorGivenCatValue = (bandColorCount / catCount).toFixed(3);
+        var pColorGivenCatRow = pColorGivenCatLabel + pColorGivenCatValue;
+        hoverinfoParts.push(pColorGivenCatRow);
+    }
+
+    var hovertext = hoverinfoParts.join('<br>');
 
     // Compute text color
     var textColor = tinycolor.mostReadable(bandViewModel.color, ['black', 'white']);
@@ -789,17 +811,13 @@ function createTooltipForColorHovermode(rootBBox, bandElement) {
         x: hoverCenterX - rootBBox.left,
         y: hoverCenterY - rootBBox.top,
         // name: 'NAME',
-        text: [
-            countStr,
-            pColorAndCatRow, pCatGivenColorRow, pColorGivenCatRow
-        ].join('<br>'),
-
+        text: hovertext,
         color: bandViewModel.color,
         borderColor: 'black',
         fontFamily: 'Monaco, "Courier New", monospace',
         fontColor: textColor,
         fontSize: 10,
-        idealAlign: tooltipIdealAlign
+        idealAlign: hoverLabelIdealAlign
     };
 }
 
@@ -811,47 +829,50 @@ function mouseoverCategoryBand(bandViewModel) {
     if(!bandViewModel.parcatsViewModel.dragDimension) {
         // We're not currently dragging
 
-        // Mouse
-        var mouseY = d3.mouse(this)[1];
-        if(mouseY < -1) {
-            // Hover is above above the category rectangle (probably the dimension title text)
-            return;
-        }
+        if(bandViewModel.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
+            // hoverinfo is not skip, so we at least style the bands and emit interaction events
 
-        var gd = bandViewModel.parcatsViewModel.graphDiv;
-        var fullLayout = gd._fullLayout;
-        var rootBBox = fullLayout._paperdiv.node().getBoundingClientRect();
-        var hovermode = bandViewModel.parcatsViewModel.hovermode;
-        var showTooltip = bandViewModel.parcatsViewModel.tooltip;
-
-        /** @type {HTMLElement} */
-        var bandElement = this;
-
-        // Handle style and events
-        if(hovermode === 'category') {
-            styleForCategoryHovermode(bandElement);
-            emitPointsEventCategoryHovermode(bandElement, 'plotly_hover', d3.event);
-        } else if(hovermode === 'color') {
-            styleForColorHovermode(bandElement);
-            emitPointsEventColorHovermode(bandElement, 'plotly_hover', d3.event);
-        }
-
-        // Handle tooltip
-        var hoverTooltip;
-        if(showTooltip) {
-            if(hovermode === 'category') {
-                hoverTooltip = createTooltipForCategoryHovermode(rootBBox, bandElement);
-            } else if(hovermode === 'color') {
-                hoverTooltip = createTooltipForColorHovermode(rootBBox, bandElement);
+            // Mouse
+            var mouseY = d3.mouse(this)[1];
+            if (mouseY < -1) {
+                // Hover is above above the category rectangle (probably the dimension title text)
+                return;
             }
-        }
 
-        if(hoverTooltip) {
-            Fx.loneHover(hoverTooltip, {
-                container: fullLayout._hoverlayer.node(),
-                outerContainer: fullLayout._paper.node(),
-                gd: gd
-            });
+            var gd = bandViewModel.parcatsViewModel.graphDiv;
+            var fullLayout = gd._fullLayout;
+            var rootBBox = fullLayout._paperdiv.node().getBoundingClientRect();
+            var hovermode = bandViewModel.parcatsViewModel.hovermode;
+
+            /** @type {HTMLElement} */
+            var bandElement = this;
+
+            // Handle style and events
+            if (hovermode === 'category') {
+                styleForCategoryHovermode(bandElement);
+                emitPointsEventCategoryHovermode(bandElement, 'plotly_hover', d3.event);
+            } else if (hovermode === 'color') {
+                styleForColorHovermode(bandElement);
+                emitPointsEventColorHovermode(bandElement, 'plotly_hover', d3.event);
+            }
+
+            // Handle hover label
+            if(bandViewModel.parcatsViewModel.hoverinfoItems.indexOf('none') === -1) {
+                var hoverItem;
+                if (hovermode === 'category') {
+                    hoverItem = createHoverLabelForCategoryHovermode(rootBBox, bandElement);
+                } else if (hovermode === 'color') {
+                    hoverItem = createHoverLabelForColorHovermode(rootBBox, bandElement);
+                }
+
+                if (hoverItem) {
+                    Fx.loneHover(hoverItem, {
+                        container: fullLayout._hoverlayer.node(),
+                        outerContainer: fullLayout._paper.node(),
+                        gd: gd
+                    });
+                }
+            }
         }
     }
 }
@@ -870,7 +891,7 @@ function mouseoutCategory(parcatsViewModel) {
         styleCategoriesNoHover(parcatsViewModel.dimensionSelection.selectAll('g.category'));
         styleBandsNoHover(parcatsViewModel.dimensionSelection.selectAll('g.category').selectAll('rect.bandrect'));
 
-        // Remove tooltip
+        // Remove hover label
         Fx.loneUnhover(parcatsViewModel.graphDiv._fullLayout._hoverlayer.node());
 
         // Restore path order
@@ -932,7 +953,7 @@ function dragDimensionStart(d) {
     // Update toplevel drag dimension
     d.parcatsViewModel.dragDimension = d;
 
-    // Remove any tooltip if any
+    // Remove hover label if any
     Fx.loneUnhover(d.parcatsViewModel.graphDiv._fullLayout._hoverlayer.node());
 }
 
@@ -1325,8 +1346,17 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
         pathShape = 'linear';
     }
 
-    // Initialize parcatsViewModel
-    //   paths and dimensions are missing at this point
+    // Handle hover info
+    // -----------------
+    var hoverinfoItems;
+    if (trace.hoverinfo === 'all') {
+        hoverinfoItems = ['count', 'probability'];
+    } else {
+        hoverinfoItems = trace.hoverinfo.split('+');
+    }
+
+    // Construct parcatsViewModel
+    // --------------------------
     var parcatsViewModel = {
         key: trace.uid,
         model: parcatsModel,
@@ -1335,7 +1365,7 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
         width: traceWidth,
         height: traceHeight,
         hovermode: trace.hovermode,
-        tooltip: trace.tooltip,
+        hoverinfoItems: hoverinfoItems,
         bundlecolors: trace.bundlecolors,
         sortpaths: trace.sortpaths,
         pathShape: pathShape,
@@ -1784,8 +1814,8 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
  *  Y position of this trace with respect to the Figure (pixels)
  * @property {String} hovermode
  *  Hover mode. One of: 'none', 'category', or 'color'
- * @property {Boolean} tooltip
- *  Whether to display a tooltip for the 'category' or 'color' hovermodes (has no effect if 'hovermode' is 'none')
+ * @property {Array.<String>} hoverinfoItems
+ *  Info to display on hover. Array with a combination of 'counts' and/or 'probabilities', or 'none', or 'skip'
  * @property {Boolean} bundlecolors
  *  Whether paths should be sorted so that like colors are bundled together as they pass through categories
  * @property {String} sortpaths

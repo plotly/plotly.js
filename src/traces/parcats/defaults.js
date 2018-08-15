@@ -82,7 +82,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     mergeLength(traceOut, dimensions, 'values', len);
 
     coerce('hovermode');
-    coerce('tooltip');
     coerce('bundlecolors');
     coerce('sortpaths');
     coerce('counts');
