@@ -567,7 +567,6 @@
         },
         "height": 450,
         "width": 1100,
-        "autosize": true,
-        "showlegend": false
+        "autosize": true
     }
 }
