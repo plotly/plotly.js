@@ -61,6 +61,8 @@ function dimensionDefaults(dimIn, dimOut) {
 
     if(!(values && values.length)) dimOut.visible = false;
     else coerce('visible');
+
+    coerce('axis.type');
 }
 
 function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
@@ -113,14 +115,14 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
 
     for(i = 0; i < dimLength; i++) {
         var dim = dimensions[i];
-        var xa = xaxes[i + xShift];
-        var ya = yaxes[i + yShift];
+        var xaId = xaxes[i + xShift];
+        var yaId = yaxes[i + yShift];
 
-        fillAxisStash(layout, xa, dim);
-        fillAxisStash(layout, ya, dim);
+        fillAxisStash(layout, xaId, dim);
+        fillAxisStash(layout, yaId, dim);
 
         // note that some the entries here may be undefined
-        diag[i] = [xa, ya];
+        diag[i] = [xaId, yaId];
     }
 
     // when lower half is omitted, override grid default
@@ -148,7 +150,13 @@ function fillAxisStash(layout, axId, dim) {
     var stash = layout._splomAxes[axLetter];
 
     if(!(axId in stash)) {
-        stash[axId] = (dim || {}).label || '';
+        var s = stash[axId] = {};
+        if(dim) {
+            s.label = dim.label || '';
+            if(dim.visible && dim.axis) {
+                s.type = dim.axis.type;
+            }
+        }
     }
 }
 
