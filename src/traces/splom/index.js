@@ -62,7 +62,10 @@ function calc(gd, trace) {
             ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
 
             // if corresponding x & y axes don't have matching types, skip dim
-            if(xa && ya && xa.type !== ya.type) continue;
+            if(xa && ya && xa.type !== ya.type) {
+                Lib.log('Skipping splom dimension ' + i + ' with conflicting axis types');
+                continue;
+            }
 
             if(xa) {
                 makeCalcdata(xa, dim);

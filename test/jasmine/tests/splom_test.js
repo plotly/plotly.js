@@ -409,6 +409,8 @@ describe('Test splom trace calc step:', function() {
     }
 
     it('should skip dimensions with conflicting axis types', function() {
+        spyOn(Lib, 'log').and.callThrough();
+
         _calc({
             dimensions: [{
                 values: [1, 2, 3]
@@ -424,6 +426,8 @@ describe('Test splom trace calc step:', function() {
 
         expect(cd.t._scene.matrixOptions.data).toBeCloseTo2DArray([[2, 1, 2]]);
         expect(cd.t.visibleDims).toEqual([1]);
+        expect(Lib.log).toHaveBeenCalledTimes(1);
+        expect(Lib.log).toHaveBeenCalledWith('Skipping splom dimension 0 with conflicting axis types');
     });
 });
 
