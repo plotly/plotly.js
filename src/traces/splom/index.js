@@ -47,8 +47,8 @@ function calc(gd, trace) {
             vcalendar: trace.calendar
         }, 'v');
 
-        for(var i = 0; i < ccol.length; i++) {
-            ccol[i] = ccol[i] === BADNUM ? NaN : ccol[i];
+        for(var j = 0; j < ccol.length; j++) {
+            ccol[j] = ccol[j] === BADNUM ? NaN : ccol[j];
         }
         cdata.push(ccol);
         ldata.push(ax.type === 'log' ? Lib.simpleMap(ccol, ax.c2l) : ccol);
