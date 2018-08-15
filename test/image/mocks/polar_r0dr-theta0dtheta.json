@@ -1,0 +1,77 @@
+{
+  "data": [{
+    "type": "scatterpolar",
+    "name": "missing θ",
+    "r": [1, 2, 3]
+  }, {
+    "type": "scatterpolar",
+    "name": "missing r",
+    "theta": [0, -90, -220]
+  }, {
+    "type": "scatterpolar",
+    "name": "set r0/dr",
+    "r0": 5,
+    "dr": -1,
+    "theta": [0, -90, -190]
+  }, {
+    "type": "scatterpolar",
+    "name": "set θ<sub>0</sub>/dθ",
+    "r": [1, 2, 3],
+    "theta0": 1,
+    "dtheta": 2,
+    "thetaunit": "radians"
+  },
+
+  {
+    "type": "scatterpolargl",
+    "name": "[gl] missing θ",
+    "subplot": "polar2",
+    "marker": {"color": "#1f77b4"},
+    "r": [1, 2, 3]
+  }, {
+    "type": "scatterpolargl",
+    "name": "[gl] missing r",
+    "subplot": "polar2",
+    "marker": {"color": "#ff7f0e"},
+    "theta": [0, -90, -220]
+  }, {
+    "type": "scatterpolargl",
+    "name": "[gl] set r0/dr",
+    "subplot": "polar2",
+    "marker": {"color": "#2ca02c"},
+    "r0": 5,
+    "dr": -1,
+    "theta": [0, -90, -190]
+  }, {
+    "type": "scatterpolargl",
+    "name": "[gl] set θ<sub>0</sub>/dθ",
+    "subplot": "polar2",
+    "marker": {"color": "#d62728"},
+    "r": [1, 2, 3],
+    "theta0": 1,
+    "dtheta": 2,
+    "thetaunit": "radians"
+  }],
+  "layout": {
+    "width": 500,
+    "height": 800,
+    "margin": {"l": 200, "t": 20, "b": 20},
+    "legend": {
+      "x": -0.2,
+      "xanchor": "right",
+      "y": 0.5
+    },
+    "polar": {
+      "domain": {
+        "x": [0, 1],
+        "y": [0.5, 1]
+      }
+    },
+    "polar2": {
+      "domain": {
+        "x": [0, 1],
+        "y": [0, 0.5]
+      }
+    }
+  }
+}

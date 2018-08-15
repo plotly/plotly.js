@@ -19,10 +19,9 @@ var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
 var handleCategoryOrderDefaults = require('../cartesian/category_order_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
 var autoType = require('../cartesian/axis_autotype');
-var setConvert = require('../cartesian/set_convert');
 
-var setConvertAngular = require('./helpers').setConvertAngular;
 var layoutAttributes = require('./layout_attributes');
+var setConvert = require('./set_convert');
 var constants = require('./constants');
 var axisNames = constants.axisNames;
 
@@ -66,7 +65,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         });
 
         var visible = coerceAxis('visible');
-        setConvert(axOut, layoutOut);
+        setConvert(axOut, contOut, layoutOut);
 
         var dfltColor;
         var dfltFontColor;
@@ -140,8 +139,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
                 var direction = coerceAxis('direction');
                 coerceAxis('rotation', {counterclockwise: 0, clockwise: 90}[direction]);
-
-                setConvertAngular(axOut);
                 break;
         }
 
@@ -201,7 +198,7 @@ function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr) {
             }
         }
 
-        if(trace) {
+        if(trace && trace[dataAttr]) {
             axOut.type = autoType(trace[dataAttr], 'gregorian');
         }
 

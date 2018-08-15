@@ -78,7 +78,7 @@ var attrs = module.exports = overrideAll({
     fill: scatterAttrs.fill,
     fillcolor: scatterAttrs.fillcolor,
 
-    hoveron: scatterAttrs.hoveron,
+    // no hoveron
 
     selected: {
         marker: scatterAttrs.selected.marker,

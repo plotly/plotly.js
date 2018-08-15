@@ -554,7 +554,7 @@ axes.calcTicks = function calcTicks(ax) {
 
     // If same angle over a full circle, the last tick vals is a duplicate.
     // TODO must do something similar for angular date axes.
-    if(ax._id === 'angular' && Math.abs(rng[1] - rng[0]) === 360) {
+    if(isAngular(ax) && Math.abs(rng[1] - rng[0]) === 360) {
         vals.pop();
     }
 
@@ -722,7 +722,7 @@ axes.autoTicks = function(ax, roughDTick) {
         ax.tick0 = 0;
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
-    else if(ax._id === 'angular') {
+    else if(isAngular(ax)) {
         ax.tick0 = 0;
         base = 1;
         ax.dtick = roundDTick(roughDTick, base, roundAngles);
@@ -958,7 +958,7 @@ axes.tickText = function(ax, x, hover) {
     if(ax.type === 'date') formatDate(ax, out, hover, extraPrecision);
     else if(ax.type === 'log') formatLog(ax, out, hover, extraPrecision, hideexp);
     else if(ax.type === 'category') formatCategory(ax, out);
-    else if(ax._id === 'angular') formatAngle(ax, out, hover, extraPrecision, hideexp);
+    else if(isAngular(ax)) formatAngle(ax, out, hover, extraPrecision, hideexp);
     else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
     // add prefix and suffix
@@ -1646,7 +1646,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
             else return 'M' + shift + ',0h' + len;
         };
     }
-    else if(axid === 'angular') {
+    else if(isAngular(ax)) {
         sides = ['left', 'right'];
         transfn = ax._transfn;
         tickpathfn = function(shift, len) {
@@ -1682,7 +1682,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
     var valsClipped = vals.filter(clipEnds);
 
     // don't clip angular values
-    if(ax._id === 'angular') {
+    if(isAngular(ax)) {
         valsClipped = vals;
     }
 
@@ -1751,7 +1751,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
                 return axside === 'right' ? 'start' : 'end';
             };
         }
-        else if(axid === 'angular') {
+        else if(isAngular(ax)) {
             ax._labelShift = labelShift;
             ax._labelStandoff = labelStandoff;
             ax._pad = pad;
@@ -1798,7 +1798,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
             maxFontSize = Math.max(maxFontSize, d.fontSize);
         });
 
-        if(axid === 'angular') {
+        if(isAngular(ax)) {
             tickLabels.each(function(d) {
                 d3.select(this).select('text')
                     .call(svgTextUtils.positionText, labelx(d), labely(d));
@@ -2424,4 +2424,8 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
     for(i = 0; i < yFullAxes.length; i++) {
         np(layout, yFullAxes[i]._name + '.' + key).set(xVal);
     }
+}
+
+function isAngular(ax) {
+    return ax._id === 'angularaxis';
 }

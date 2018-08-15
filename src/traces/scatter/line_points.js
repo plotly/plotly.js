@@ -59,7 +59,7 @@ module.exports = function linePoints(d, opts) {
         if(!di) return false;
         var x = xa.c2p(di.x);
         var y = ya.c2p(di.y);
-        if(x === BADNUM || y === BADNUM) return di.intoCenter || false;
+        if(x === BADNUM || y === BADNUM) return false;
         return [x, y];
     }
 
