@@ -122,6 +122,7 @@
     "browserify-transform-tools": "^1.7.0",
     "check-node-version": "^3.2.0",
     "deep-equal": "^1.0.1",
+    "derequire": "^2.0.6",
     "ecstatic": "^3.2.0",
     "eslint": "^4.19.1",
     "falafel": "^2.0.0",

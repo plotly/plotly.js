@@ -3,6 +3,8 @@ var path = require('path');
 
 var browserify = require('browserify');
 var minify = require('minify-stream');
+var derequire = require('derequire');
+var through = require('through2');
 
 var constants = require('./constants');
 var compressAttributes = require('./compress_attributes');
@@ -60,6 +62,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     if(pathToMinBundle) {
         bundleStream
+            .pipe(applyDerequire())
             .pipe(minify(constants.uglifyOptions))
             .pipe(fs.createWriteStream(pathToMinBundle))
             .on('finish', function() {
@@ -69,6 +72,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     }
 
     bundleStream
+        .pipe(applyDerequire())
         .pipe(fs.createWriteStream(pathToBundle))
         .on('finish', function() {
             logger(pathToBundle);
@@ -79,4 +83,15 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 function logger(pathToOutput) {
     var log = 'ok ' + path.basename(pathToOutput);
     console.log(log);
+}
+
+function applyDerequire() {
+    var buf = '';
+    return through(function(chunk, enc, next) {
+        buf += chunk.toString();
+        next();
+    }, function(done) {
+        this.push(derequire(buf));
+        done();
+    });
 }
