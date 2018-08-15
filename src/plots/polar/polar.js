@@ -997,12 +997,6 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
             var polarLayoutNow = gd._fullLayout[_this.id];
 
             _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
-
-            if(!Registry.traceIs(traceType, 'gl')) {
-                for(var i = 0; i < moduleCalcDataVisible.length; i++) {
-                    _module.style(gd, moduleCalcDataVisible[i]);
-                }
-            }
         }
     }
 
