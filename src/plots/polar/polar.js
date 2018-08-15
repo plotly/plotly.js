@@ -271,29 +271,15 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     _this.updateRadialAxis(fullLayout, polarLayout);
     _this.updateRadialAxisTitle(fullLayout, polarLayout);
 
-    var radialRange = _this.radialAxis.range;
-    var rSpan = radialRange[1] - radialRange[0];
-
-    var xaxis = _this.xaxis = {
-        type: 'linear',
+    _this.xaxis = _this.mockCartesianAxis(fullLayout, polarLayout, {
         _id: 'x',
-        range: [sectorBBox[0] * rSpan, sectorBBox[2] * rSpan],
         domain: xDomain2
-    };
-    setConvertCartesian(xaxis, fullLayout);
-    xaxis.setScale();
+    });
 
-    var yaxis = _this.yaxis = {
-        type: 'linear',
+    _this.yaxis = _this.mockCartesianAxis(fullLayout, polarLayout, {
         _id: 'y',
-        range: [sectorBBox[1] * rSpan, sectorBBox[3] * rSpan],
         domain: yDomain2
-    };
-    setConvertCartesian(yaxis, fullLayout);
-    yaxis.setScale();
-
-    xaxis.isPtWithinRange = function(d) { return _this.isPtWithinSector(d); };
-    yaxis.isPtWithinRange = function() { return true; };
+    });
 
     _this.clipPaths.forTraces.select('path')
         .attr('d', pathSectorClosed(radius, sector, _this.vangles))
@@ -327,6 +313,35 @@ proto.mockAxis = function(fullLayout, polarLayout, axLayout, opts) {
 
     var ax = Lib.extendFlat(commonOpts, axLayout, opts);
     setConvertPolar(ax, polarLayout, fullLayout);
+    return ax;
+};
+
+proto.mockCartesianAxis = function(fullLayout, polarLayout, opts) {
+    var _this = this;
+    var axId = opts._id;
+
+    var ax = Lib.extendFlat({type: 'linear'}, opts);
+    setConvertCartesian(ax, fullLayout);
+
+    var bboxIndices = {
+        x: [0, 2],
+        y: [1, 3]
+    };
+
+    ax.setRange = function() {
+        var sectorBBox = _this.sectorBBox;
+        var radialRange = _this.radialAxis.range;
+        var rSpan = radialRange[1] - radialRange[0];
+        var ind = bboxIndices[axId];
+        ax.range = [sectorBBox[ind[0]] * rSpan, sectorBBox[ind[1]] * rSpan];
+    };
+
+    ax.isPtWithinRange = axId === 'x' ?
+        function(d) { return _this.isPtWithinSector(d); } :
+        function() { return true; };
+
+    ax.setRange();
+    ax.setScale();
     return ax;
 };
 
@@ -974,19 +989,21 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
 
         // make sure new range[1] does not change the range[0] -> range[1] sign
         if((drange > 0) !== (rprime > range0[0])) return;
-        rng1 = radialAxis.range[1] = rprime;
 
-        doTicksSingle(gd, _this.radialAxis, true);
+        // update radial range -> update c2g -> update _m,_b
+        rng1 = radialAxis.range[1] = rprime;
+        radialAxis.setGeometry();
+        radialAxis.setScale();
+
+        _this.xaxis.setRange();
+        _this.xaxis.setScale();
+        _this.yaxis.setRange();
+        _this.yaxis.setScale();
+
+        doTicksSingle(gd, radialAxis, true);
         layers['radial-grid']
             .attr('transform', strTranslate(cx, cy))
             .selectAll('path').attr('transform', null);
-
-        var rSpan = rng1 - range0[0];
-        var sectorBBox = _this.sectorBBox;
-        _this.xaxis.range = [sectorBBox[0] * rSpan, sectorBBox[2] * rSpan];
-        _this.yaxis.range = [sectorBBox[1] * rSpan, sectorBBox[3] * rSpan];
-        _this.xaxis.setScale();
-        _this.yaxis.setScale();
 
         if(_this._scene) _this._scene.clear();
 
@@ -995,7 +1012,6 @@ proto.updateRadialDrag = function(fullLayout, polarLayout) {
             var moduleCalcDataVisible = Lib.filterVisible(moduleCalcData);
             var _module = moduleCalcData[0][0].trace._module;
             var polarLayoutNow = gd._fullLayout[_this.id];
-
             _module.plot(gd, _this, moduleCalcDataVisible, polarLayoutNow);
         }
     }
