@@ -33,12 +33,81 @@ describe('legend defaults', function() {
         };
     });
 
+    function allShown(fullData) {
+        return fullData.map(function(trace) {
+            return Lib.extendDeep({
+                visible: true,
+                showlegend: true,
+                _dfltShowLegend: true,
+                _input: {}
+            }, trace);
+        });
+    }
+
+    it('hides by default if there is only one legend item by default', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {type: 'scatter', visible: false}, // ignored
+            {type: 'contour', _dfltShowLegend: false, showlegend: false} // hidden by default
+        ]);
+
+        supplyLayoutDefaults({}, layoutOut, fullData);
+        expect(layoutOut.showlegend).toBe(false);
+    });
+
+    it('shows if there are two legend items by default but only one is shown', function() {
+        fullData = allShown([
+            {type: 'scatter'},
+            {type: 'scatter', showlegend: false} // not shown but still triggers legend
+        ]);
+
+        supplyLayoutDefaults({}, layoutOut, fullData);
+        expect(layoutOut.showlegend).toBe(true);
+    });
+
+    it('hides if no items are actually shown', function() {
+        fullData = allShown([
+            {type: 'scatter', showlegend: false},
+            {type: 'scatter', showlegend: false}
+        ]);
+
+        supplyLayoutDefaults({}, layoutOut, fullData);
+        expect(layoutOut.showlegend).toBe(false);
+    });
+
+    it('shows with one visible pie', function() {
+        fullData = allShown([
+            {type: 'pie'}
+        ]);
+
+        supplyLayoutDefaults({}, layoutOut, fullData);
+        expect(layoutOut.showlegend).toBe(true);
+    });
+
+    it('does not show with a hidden pie', function() {
+        fullData = allShown([
+            {type: 'pie', showlegend: false}
+        ]);
+
+        supplyLayoutDefaults({}, layoutOut, fullData);
+        expect(layoutOut.showlegend).toBe(false);
+    });
+
+    it('shows if even a default hidden single item is explicitly shown', function() {
+        fullData = allShown([
+            {type: 'contour', _dfltShowLegend: false, _input: {showlegend: true}}
+        ]);
+
+        supplyLayoutDefaults({}, layoutOut, fullData);
+        expect(layoutOut.showlegend).toBe(true);
+    });
+
     it('should default traceorder to reversed for stack bar charts', function() {
-        fullData = [
-            { type: 'bar' },
-            { type: 'bar' },
-            { type: 'scatter' }
-        ];
+        fullData = allShown([
+            {type: 'bar', visible: 'legendonly'},
+            {type: 'bar', visible: 'legendonly'},
+            {type: 'scatter'}
+        ]);
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('normal');
@@ -50,20 +119,20 @@ describe('legend defaults', function() {
     });
 
     it('should default traceorder to reversed for filled tonext scatter charts', function() {
-        fullData = [
-            { type: 'scatter' },
-            { type: 'scatter', fill: 'tonexty' }
-        ];
+        fullData = allShown([
+            {type: 'scatter'},
+            {type: 'scatter', fill: 'tonexty'}
+        ]);
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('reversed');
     });
 
     it('should default traceorder to grouped when a group is present', function() {
-        fullData = [
-            { type: 'scatter', legendgroup: 'group' },
-            { type: 'scatter'}
-        ];
+        fullData = allShown([
+            {type: 'scatter', legendgroup: 'group'},
+            {type: 'scatter'}
+        ]);
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('grouped');
@@ -72,6 +141,27 @@ describe('legend defaults', function() {
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         expect(layoutOut.legend.traceorder).toEqual('grouped+reversed');
+    });
+
+    it('does not consider invisible traces for traceorder default', function() {
+        fullData = allShown([
+            {type: 'bar', visible: false},
+            {type: 'bar', visible: false},
+            {type: 'scatter'}
+        ]);
+
+        layoutOut.barmode = 'stack';
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
+
+        fullData = allShown([
+            {type: 'scatter', legendgroup: 'group', visible: false},
+            {type: 'scatter'}
+        ]);
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.legend.traceorder).toEqual('normal');
     });
 
     it('should default orientation to vertical', function() {
@@ -381,24 +471,6 @@ describe('legend getLegendData', function() {
 
 describe('legend helpers:', function() {
     'use strict';
-
-    describe('legendGetsTraces', function() {
-        var legendGetsTrace = helpers.legendGetsTrace;
-
-        it('should return true when trace is visible and supports legend', function() {
-            expect(legendGetsTrace({ visible: true, showlegend: true })).toBe(true);
-            expect(legendGetsTrace({ visible: false, showlegend: true })).toBe(false);
-            expect(legendGetsTrace({ visible: 'legendonly', showlegend: true })).toBe(true);
-
-            expect(legendGetsTrace({ visible: true, showlegend: false })).toBe(true);
-            expect(legendGetsTrace({ visible: false, showlegend: false })).toBe(false);
-            expect(legendGetsTrace({ visible: 'legendonly', showlegend: false })).toBe(true);
-
-            expect(legendGetsTrace({ visible: true })).toBe(false);
-            expect(legendGetsTrace({ visible: false })).toBe(false);
-            expect(legendGetsTrace({ visible: 'legendonly' })).toBe(false);
-        });
-    });
 
     describe('isGrouped', function() {
         var isGrouped = helpers.isGrouped;

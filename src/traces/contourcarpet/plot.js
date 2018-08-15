@@ -13,7 +13,6 @@ var map1dArray = require('../carpet/map_1d_array');
 var makepath = require('../carpet/makepath');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
-var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');
@@ -27,35 +26,23 @@ var lookupCarpet = require('../carpet/lookup_carpetid');
 var closeBoundaries = require('../contour/close_boundaries');
 
 module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
-    var uidLookup = getUidsFromCalcData(cdcontours);
-
-    contourcarpetLayer.selectAll('g.contour').each(function(d) {
-        if(!uidLookup[d.trace.uid]) {
-            d3.select(this).remove();
-        }
-    });
-
-    for(var i = 0; i < cdcontours.length; i++) {
-        plotOne(gd, plotinfo, cdcontours[i], contourcarpetLayer);
-    }
+    contourPlot.plotWrapper(gd, plotinfo, cdcontours, contourcarpetLayer, plotOne);
 };
 
-function plotOne(gd, plotinfo, cd, contourcarpetLayer) {
-    var trace = cd[0].trace;
+function plotOne(gd, plotinfo, cd, plotGroup) {
+    var trace = cd.trace;
 
     var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
     var carpetcd = gd.calcdata[carpet.index][0];
 
     if(!carpet.visible || carpet.visible === 'legendonly') return;
 
-    var a = cd[0].a;
-    var b = cd[0].b;
+    var a = cd.a;
+    var b = cd.b;
     var contours = trace.contours;
-    var uid = trace.uid;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var id = 'contour' + uid;
-    var pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
+    var pathinfo = emptyPathinfo(contours, plotinfo, cd);
     var isConstraint = contours.type === 'constraint';
     var operation = contours._operation;
     var coloring = isConstraint ? (operation === '=' ? 'lines' : 'fill') : contours.coloring;
@@ -98,7 +85,6 @@ function plotOne(gd, plotinfo, cd, contourcarpetLayer) {
     mapPathinfo(pathinfo, ab2p);
 
     // draw everything
-    var plotGroup = contourPlot.makeContourGroup(contourcarpetLayer, cd, id);
 
     // Compute the boundary path
     var seg, xp, yp, i;
@@ -124,7 +110,7 @@ function plotOne(gd, plotinfo, cd, contourcarpetLayer) {
     makeFills(trace, plotGroup, xa, ya, fillPathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath);
 
     // Draw contour lines:
-    makeLinesAndLabels(plotGroup, pathinfo, gd, cd[0], contours, plotinfo, carpet);
+    makeLinesAndLabels(plotGroup, pathinfo, gd, cd, contours, plotinfo, carpet);
 
     // Clip the boundary of the plot
     Drawing.setClipUrl(plotGroup, carpet._clipPathId);
