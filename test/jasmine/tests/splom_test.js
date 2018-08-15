@@ -10,6 +10,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
+var doubleClick = require('../assets/double_click');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
@@ -918,7 +919,7 @@ describe('@gl Test splom select:', function() {
     }
 
     it('should emit correct event data and draw selection outlines', function(done) {
-        var fig = require('@mocks/splom_0.json');
+        var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
         fig.layout = {
             dragmode: 'select',
             width: 400,
@@ -1035,6 +1036,107 @@ describe('@gl Test splom select:', function() {
             expect(cnt).toBe(2);
             expect(splomCnt).toBe(1, 'splom redraw before scattergl');
             expect(scatterGlCnt).toBe(2, 'scattergl redraw after splom');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should behave correctly during select->dblclick->pan scenarios', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
+        fig.layout = {
+            width: 400,
+            height: 400,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            grid: {xgap: 0, ygap: 0}
+        };
+
+        var scene;
+
+        function _assert(msg, exp) {
+            expect(scene.matrix.update).toHaveBeenCalledTimes(exp.updateCnt, 'update cnt');
+            expect(scene.matrix.draw).toHaveBeenCalledTimes(exp.drawCnt, 'draw cnt');
+
+            expect(scene.matrix.traces.length).toBe(exp.matrixTraces, '# of regl-splom traces');
+            expect(scene.selectBatch).toEqual(exp.selectBatch, 'selectBatch');
+            expect(scene.unselectBatch).toEqual(exp.unselectBatch, 'unselectBatch');
+
+            scene.matrix.update.calls.reset();
+            scene.matrix.draw.calls.reset();
+        }
+
+        Plotly.plot(gd, fig).then(function() {
+            scene = gd.calcdata[0][0].t._scene;
+            spyOn(scene.matrix, 'update').and.callThrough();
+            spyOn(scene.matrix, 'draw').and.callThrough();
+        })
+        .then(function() {
+            _assert('base', {
+                updateCnt: 0,
+                drawCnt: 0,
+                matrixTraces: 1,
+                selectBatch: null,
+                unselectBatch: null
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'dragmode', 'select'); })
+        .then(function() {
+            _assert('under dragmode:select', {
+                updateCnt: 3,     // updates positions, viewport and style in 3 calls
+                drawCnt: 1,       // results in a 'plot' edit
+                matrixTraces: 2,
+                selectBatch: [],
+                unselectBatch: []
+            });
+        })
+        .then(function() { return _select([[5, 5], [100, 100]]); })
+        .then(function() {
+            _assert('after selection', {
+                updateCnt: 0,
+                drawCnt: 1,
+                matrixTraces: 2,
+                selectBatch: [1],
+                unselectBatch: [0, 2]
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
+        .then(function() {
+            _assert('under dragmode:pan with active selection', {
+                updateCnt: 0,
+                drawCnt: 0,      // nothing here, this is a 'modebar' edit
+                matrixTraces: 2,
+                selectBatch: [1],
+                unselectBatch: [0, 2]
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'dragmode', 'select'); })
+        .then(function() {
+            _assert('back dragmode:select', {
+                updateCnt: 3,
+                drawCnt: 1,       // a 'plot' edit (again)
+                matrixTraces: 2,
+                selectBatch: [1],
+                unselectBatch: [0, 2]
+            });
+        })
+        .then(function() { return doubleClick(100, 100); })
+        .then(function() {
+            _assert('after dblclick clearing selection', {
+                updateCnt: 0,
+                drawCnt: 1,
+                matrixTraces: 2,
+                selectBatch: null,
+                unselectBatch: []
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
+        .then(function() {
+            _assert('under dragmode:pan with NO active selection', {
+                updateCnt: 1,       // to clear off 1 matrixTrace
+                drawCnt: 0,
+                matrixTraces: 1,    // N.B. back to '1' here
+                selectBatch: null,
+                unselectBatch: []
+            });
         })
         .catch(failTest)
         .then(done);

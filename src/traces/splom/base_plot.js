@@ -227,6 +227,30 @@ function clean(newFullData, newFullLayout, oldFullData, oldFullLayout, oldCalcda
     Cartesian.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
 }
 
+function updateFx(gd) {
+    Cartesian.updateFx(gd);
+
+    var fullLayout = gd._fullLayout;
+    var dragmode = fullLayout.dragmode;
+
+    // unset selection styles when coming out of a selection mode
+    if(dragmode === 'zoom' || dragmode === 'pan') {
+        var cd = gd.calcdata;
+
+        for(var i = 0; i < cd.length; i++) {
+            var cd0 = cd[i][0];
+            var trace = cd0.trace;
+
+            if(trace.type === 'splom') {
+                var scene = cd0.t._scene;
+                if(scene.selectBatch === null) {
+                    scene.matrix.update(scene.matrixOptions, null);
+                }
+            }
+        }
+    }
+}
+
 module.exports = {
     name: SPLOM,
     attr: Cartesian.attr,
@@ -237,6 +261,6 @@ module.exports = {
     plot: plot,
     drag: drag,
     clean: clean,
-    updateFx: Cartesian.updateFx,
+    updateFx: updateFx,
     toSVG: Cartesian.toSVG
 };
