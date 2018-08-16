@@ -692,6 +692,9 @@ axes.autoTicks = function(ax, roughDTick) {
             base = getBase(10);
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
+        // ensure we don't try to make ticks below our minimum precision
+        // see https://github.com/plotly/plotly.js/issues/2892
+        if(ax.dtick < 0.1) ax.dtick = 0.1;
     }
     else if(ax.type === 'log') {
         ax.tick0 = 0;
