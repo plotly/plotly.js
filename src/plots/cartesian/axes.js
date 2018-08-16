@@ -503,6 +503,10 @@ axes.prepTicks = function(ax) {
         ax.tick0 = (ax.type === 'date') ? '2000-01-01' : 0;
     }
 
+    // ensure we don't try to make ticks below our minimum precision
+    // see https://github.com/plotly/plotly.js/issues/2892
+    if(ax.type === 'date' && ax.dtick < 0.1) ax.dtick = 0.1;
+
     // now figure out rounding of tick values
     autoTickRound(ax);
 };
@@ -785,6 +789,11 @@ function autoTickRound(ax) {
             // of all possible ticks - so take the max. length of tick0 and the next one
             var tick1len = ax.l2r(tick0ms + dtick).replace(/^-/, '').length;
             ax._tickround = Math.max(tick0len, tick1len) - 20;
+
+            // We shouldn't get here... but in case there's a situation I'm
+            // not thinking of where tick0str and tick1str are identical or
+            // something, fall back on maximum precision
+            if(ax._tickround < 0) ax._tickround = 4;
         }
     }
     else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {

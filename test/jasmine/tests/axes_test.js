@@ -2057,6 +2057,33 @@ describe('Test axes', function() {
             expect(textOut).toEqual(expectedText);
         });
 
+        it('never gives date dtick < 100 microseconds (autotick case)', function() {
+            var ax = {
+                type: 'date',
+                tickmode: 'auto',
+                nticks: '100',
+                range: ['2017-02-08 05:21:18.145', '2017-02-08 05:21:18.1451']
+            };
+
+            var textOut = mockCalc(ax);
+            var expectedText = ['05:21:18.145<br>Feb 8, 2017', '05:21:18.1451'];
+            expect(textOut).toEqual(expectedText);
+        });
+
+        it('never gives date dtick < 100 microseconds (explicit tick case)', function() {
+            var ax = {
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 0.01,
+                range: ['2017-02-08 05:21:18.145', '2017-02-08 05:21:18.1451']
+            };
+
+            var textOut = mockCalc(ax);
+            var expectedText = ['05:21:18.145<br>Feb 8, 2017', '05:21:18.1451'];
+            expect(textOut).toEqual(expectedText);
+        });
+
         it('should handle edge cases with dates and tickvals', function() {
             var ax = {
                 type: 'date',
