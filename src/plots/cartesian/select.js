@@ -415,7 +415,7 @@ function drawSelection(polygons, outlines) {
 
     d = polygons.length > 0 ?
       'M' + paths.join('M') + 'Z' :
-      ''; // TODO empty d attribute works in Chrome, but is it valid / can we rely on it?
+      'M0,0Z';
     outlines.attr('d', d);
 }
 
