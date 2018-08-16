@@ -254,7 +254,7 @@ describe('Plotly.Snapshot', function() {
         describe('should handle quoted style properties', function() {
             function checkURL(actual, msg) {
                 // which is enough tot check that toSVG did its job right
-                expect((actual || '').substr(0, 6)).toBe('url(\"#', msg);
+                expect((actual || '').substr(0, 5)).toBe('url(#', msg);
             }
 
             it('- marker-gradient case', function(done) {
@@ -277,7 +277,7 @@ describe('Plotly.Snapshot', function() {
                     });
 
                     d3.selectAll('.point,.scatterpts').each(function() {
-                        checkURL(this.style.fill);
+                        checkURL(d3.select(this).attr('fill'));
                     });
 
                     return Plotly.Snapshot.toSVG(gd);
@@ -297,12 +297,12 @@ describe('Plotly.Snapshot', function() {
                     expect(pointElements.length).toEqual(3);
 
                     for(i = 0; i < pointElements.length; i++) {
-                        checkURL(pointElements[i].style.fill);
+                        checkURL(pointElements[i].getAttribute('fill'));
                     }
 
                     var legendPointElements = svgDOM.getElementsByClassName('scatterpts');
                     expect(legendPointElements.length).toEqual(1);
-                    checkURL(legendPointElements[0].style.fill);
+                    checkURL(legendPointElements[0].getAttribute('fill'));
                 })
                 .catch(failTest)
                 .then(done);
@@ -319,11 +319,12 @@ describe('Plotly.Snapshot', function() {
 
                     var fillItems = svgDOM.getElementsByClassName('legendfill');
                     for(var i = 0; i < fillItemIndices.length; i++) {
-                        checkURL(fillItems[fillItemIndices[i]].firstChild.style.fill, 'fill gradient ' + i);
+                        var path = fillItems[fillItemIndices[i]].firstChild;
+                        checkURL(path.getAttribute('fill'), 'fill gradient ' + i);
                     }
 
                     var lineItems = svgDOM.getElementsByClassName('legendlines');
-                    checkURL(lineItems[1].firstChild.style.stroke, 'stroke gradient');
+                    checkURL(lineItems[1].firstChild.getAttribute('stroke'), 'stroke gradient');
                 })
                 .catch(failTest)
                 .then(done);
@@ -340,7 +341,7 @@ describe('Plotly.Snapshot', function() {
                     var fillItems = svgDOM.getElementsByClassName('cbfill');
                     expect(fillItems.length).toBe(1, '# of colorbars');
                     for(var i = 0; i < fillItems.length; i++) {
-                        checkURL(fillItems[i].style.fill, 'fill gradient ' + i);
+                        checkURL(fillItems[i].getAttribute('fill'), 'fill gradient ' + i);
                     }
                 })
                 .catch(failTest)
