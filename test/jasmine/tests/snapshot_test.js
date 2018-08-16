@@ -3,7 +3,7 @@ var Plotly = require('@lib/index');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 var subplotMock = require('../../image/mocks/multiple_subplots.json');
 var annotationMock = require('../../image/mocks/annotations.json');
@@ -297,7 +297,7 @@ describe('Plotly.Snapshot', function() {
                 expect(legendPointElements.length).toEqual(1);
                 expect(legendPointElements[0].style.fill.substr(0, 6)).toEqual('url(\"#');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -317,7 +317,7 @@ describe('Plotly.Snapshot', function() {
                 expect(el.getAttribute('height')).toBe('1000', 'height');
                 expect(el.getAttribute('viewBox')).toBe('0 0 300 400', 'viewbox');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
