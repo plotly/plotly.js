@@ -19,7 +19,11 @@ var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
 var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 var wrap180 = require('./angles').wrap180;
-var isArrayOrTypedArray = require('./is_array').isArrayOrTypedArray;
+var isArray = require('./is_array');
+var isArrayOrTypedArray = isArray.isArrayOrTypedArray;
+var isTypedArray = isArray.isTypedArray;
+var isPrimitiveTypedArrayRepr = isArray.isPrimitiveTypedArrayRepr;
+var b64 = require('base64-arraybuffer');
 
 exports.valObjectMeta = {
     data_array: {
@@ -33,8 +37,18 @@ exports.valObjectMeta = {
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
             // TODO maybe `v: {type: 'float32', vals: [/* ... */]}` also
-            if(isArrayOrTypedArray(v)) propOut.set(v);
-            else if(dflt !== undefined) propOut.set(dflt);
+            if(isArrayOrTypedArray(v)) {
+                propOut.set(v);
+            } else if(isPrimitiveTypedArrayRepr(v)) {
+                var coercedV = primitiveTypedArrayReprToTypedArray(v);
+                if(coercedV === undefined && dflt !== undefined) {
+                    propOut.set(dflt);
+                } else {
+                    propOut.set(coercedV);
+                }
+            } else if(dflt !== undefined) {
+                propOut.set(dflt);
+            }
         }
     },
     enumerated: {
@@ -392,6 +406,10 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
     if(opts.arrayOk && isArrayOrTypedArray(v)) {
         propOut.set(v);
         return v;
+    } else if(opts.arrayOk && isPrimitiveTypedArrayRepr(v)) {
+        var coercedV = primitiveTypedArrayReprToTypedArray(v);
+        propOut.set(coercedV);
+        return coercedV;
     }
 
     var coerceFunction = exports.valObjectMeta[opts.valType].coerceFunction;
@@ -521,3 +539,48 @@ function validate(value, opts) {
     return out !== failed;
 }
 exports.validate = validate;
+
+var dtypeStringToTypedarrayType = {
+    int8: Int8Array,
+    int16: Int16Array,
+    int32: Int32Array,
+    uint8: Uint8Array,
+    uint16: Uint16Array,
+    uint32: Uint32Array,
+    float32: Float32Array,
+    float64: Float64Array
+};
+
+/**
+ * Convert a primitive TypedArray representation object into a TypedArray
+ * @param {object} v: Object with `dtype` and `data` properties that
+ * represens a TypedArray.
+ *
+ * @returns {TypedArray}
+ */
+function primitiveTypedArrayReprToTypedArray(v) {
+    // v has dtype and data properties
+
+    // Get TypedArray constructor type
+    var TypeArrayType = dtypeStringToTypedarrayType[v.dtype];
+
+    // Process data
+    var coercedV;
+    var data = v.data;
+    if(data instanceof ArrayBuffer) {
+        // data is an ArrayBuffer
+        coercedV = new TypeArrayType(data);
+    } else if(data.constructor === DataView) {
+        // data has a buffer property, where the buffer is an ArrayBuffer
+        coercedV = new TypeArrayType(data.buffer);
+    } else if(Array.isArray(data)) {
+        // data is a primitive array
+        coercedV = new TypeArrayType(data);
+    } else if(typeof data === 'string' ||
+        data instanceof String) {
+        // data is a base64 encoded string
+        var buffer = b64.decode(data);
+        coercedV = new TypeArrayType(buffer);
+    }
+    return coercedV;
+}

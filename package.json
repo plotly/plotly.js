@@ -59,6 +59,7 @@
     "@plotly/d3-sankey": "^0.5.0",
     "alpha-shape": "^1.0.0",
     "array-range": "^1.0.1",
+    "base64-arraybuffer": "^0.1.5",
     "canvas-fit": "^1.5.0",
     "color-normalize": "^1.0.3",
     "color-rgba": "^2.0.0",

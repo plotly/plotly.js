@@ -38,8 +38,15 @@ function isArray1D(a) {
     return !isArrayOrTypedArray(a[0]);
 }
 
+function isPrimitiveTypedArrayRepr(a) {
+    return (a !== undefined && a !== null &&
+        typeof a === 'object' &&
+        a.hasOwnProperty('dtype') && a.hasOwnProperty('data'));
+}
+
 module.exports = {
     isTypedArray: isTypedArray,
     isArrayOrTypedArray: isArrayOrTypedArray,
-    isArray1D: isArray1D
+    isArray1D: isArray1D,
+    isPrimitiveTypedArrayRepr: isPrimitiveTypedArrayRepr
 };
