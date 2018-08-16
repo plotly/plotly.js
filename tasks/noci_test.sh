@@ -1,12 +1,25 @@
 #! /bin/bash
+#
+# Run tests that aren't ran on CI (yet)
+#
+# to run all no-ci tests
+# $ (plotly.js) ./tasks/noci_test.sh
+#
+# to run jasmine no-ci tests
+# $ (plotly.js) ./tasks/noci_test.sh jasmine
+
+# to run image no-ci tests
+# $ (plotly.js) ./tasks/noci_test.sh image
+#
+# -----------------------------------------------
 
 EXIT_STATE=0
 root=$(dirname $0)/..
 
-# tests that aren't run on CI (yet)
-
 # jasmine specs with @noCI tag
-npm run test-jasmine -- --tags=noCI,noCIdep --nowatch || EXIT_STATE=$?
+test_jasmine () {
+    npm run test-jasmine -- --tags=noCI,noCIdep --nowatch || EXIT_STATE=$?
+}
 
 # mapbox image tests take too much resources on CI
 #
@@ -15,12 +28,27 @@ npm run test-jasmine -- --tags=noCI,noCIdep --nowatch || EXIT_STATE=$?
 # 'old' image server
 #
 # cone traces don't render correctly in the imagetest container
-$root/../orca/bin/orca.js graph \
-    $root/test/image/mocks/mapbox_* \
-    $root/test/image/mocks/gl3d_cone* \
-    --plotly $root/build/plotly.js \
-    --mapbox-access-token "pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ" \
-    --output-dir $root/test/image/baselines/ \
-    --verbose
+test_image () {
+    $root/../orca/bin/orca.js graph \
+        $root/test/image/mocks/mapbox_* \
+        $root/test/image/mocks/gl3d_cone* \
+        --plotly $root/build/plotly.js \
+        --mapbox-access-token "pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ" \
+        --output-dir $root/test/image/baselines/ \
+        --verbose || EXIT_STATE=$?
+}
+
+case $1 in
+    jasmine)
+        test_jasmine
+        ;;
+    image)
+        test_image
+        ;;
+    *)
+        test_jasmine
+        test_image
+        ;;
+esac
 
 exit $EXIT_STATE
