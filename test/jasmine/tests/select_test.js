@@ -143,6 +143,7 @@ describe('@flaky Test select box and lasso in general:', function() {
     describe('select events', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'select';
+        mockCopy.layout.hovermode = 'closest';
         mockCopy.data[0].ids = mockCopy.data[0].x
             .map(function(v) { return 'id-' + v; });
         mockCopy.data[0].customdata = mockCopy.data[0].y
@@ -293,6 +294,7 @@ describe('@flaky Test select box and lasso in general:', function() {
     describe('lasso events', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'lasso';
+        mockCopy.layout.hovermode = 'closest';
         addInvisible(mockCopy);
 
         var gd;
@@ -635,6 +637,7 @@ describe('@flaky Test select box and lasso in general:', function() {
         fig.layout.xaxis.range = [2, 8];
         fig.layout.yaxis.autorange = false;
         fig.layout.yaxis.range = [0, 3];
+        fig.layout.hovermode = 'closest';
 
         function _assert(msg, exp) {
             expect(gd.layout.xaxis.range)
@@ -1801,6 +1804,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
             textposition: 'outside'
         }], {
             dragmode: 'select',
+            hovermode: 'closest',
             showlegend: false,
             width: 400,
             height: 400,
@@ -1813,7 +1817,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
                     assertSelectedPoints({0: [0], 1: [0]});
                     assertFillOpacity([1, 0.2, 0.2, 1, 0.2, 0.2]);
                 },
-                null, BOXEVENTS, 'selecting first scatter/bar text nodes'
+                [10, 10], BOXEVENTS, 'selecting first scatter/bar text nodes'
             );
         })
         .then(function() {

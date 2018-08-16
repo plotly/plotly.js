@@ -313,11 +313,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
                 updateSelectedState(gd, searchTraces);
                 gd.emit('plotly_deselect', null);
-            }
-            else {
-
-
-
+            } else {
                 var hoverData = gd._hoverdata;
                 var selection = [];
                 var traceSelection;
