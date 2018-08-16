@@ -14,6 +14,7 @@ var colorscaleDefaults = require('../../components/colorscale/defaults');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
+var handleCategoryOrderDefaults = require('../../plots/cartesian/category_order_defaults');
 var attributes = require('./attributes');
 var mergeLength = require('../parcoords/merge_length');
 
@@ -54,9 +55,12 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
         coerce('displayindex', dimensionOut._index);
 
         // Category level
-        coerce('catDisplayInds');
-        coerce('catValues');
-        coerce('catLabels');
+        // TODO: Make categoryorder and categoryarray consistent
+        // If valid array, set order to 'array'
+        // If order is 'array' but array is invalid set order to 'trace'
+        coerce('categoryorder');
+        coerce('categoryarray');
+        coerce('categorylabels');
     }
 }
 

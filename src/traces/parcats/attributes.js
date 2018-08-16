@@ -93,31 +93,43 @@ module.exports = {
             editType: 'calc',
             description: 'The shown name of the dimension.'
         },
-        catDisplayInds: {
-            valType: 'data_array',
+        categoryorder: {
+            valType: 'enumerated',
+            values: [
+                'trace', 'category ascending', 'category descending', 'array'
+            ],
+            dflt: 'trace',
             role: 'info',
             editType: 'calc',
-            dflt: [],
             description: [
-                ''
+                'Specifies the ordering logic for the categories in the dimension.',
+                'By default, plotly uses *trace*, which specifies the order that is present in the data supplied.',
+                'Set `categoryorder` to *category ascending* or *category descending* if order should be determined by',
+                'the alphanumerical order of the category names.',
+                'Set `categoryorder` to *array* to derive the ordering from the attribute `categoryarray`. If a category',
+                'is not found in the `categoryarray` array, the sorting behavior for that attribute will be identical to',
+                'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.'
             ].join(' ')
         },
-        catValues: {
+        categoryarray: {
             valType: 'data_array',
             role: 'info',
             editType: 'calc',
-            dflt: [],
             description: [
-                ''
+                'Sets the order in which categories in this dimension appear.',
+                'Only has an effect if `categoryorder` is set to *array*.',
+                'Used with `categoryorder`.'
             ].join(' ')
         },
-        catLabels: {
+        categorylabels: {
             valType: 'data_array',
             role: 'info',
             editType: 'calc',
-            dflt: [],
             description: [
-                ''
+                'Sets alternative labels for the categories in this dimension.',
+                'Only has an effect if `categoryorder` is set to *array*.',
+                'Should be an array the same length as `categoryarray`',
+                'Used with `categoryorder`.'
             ].join(' ')
         },
         values: {

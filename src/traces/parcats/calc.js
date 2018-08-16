@@ -14,7 +14,7 @@ var wrap = require('../../lib/gup').wrap;
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleCalc = require('../../components/colorscale/calc');
 var parcatConstants = require('./constants');
-
+var filterUnique = require('../../lib/filter_unique.js');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 
@@ -44,7 +44,22 @@ module.exports = function calc(gd, trace) {
     // --------------------------
     // UniqueInfo per dimension
     var uniqueInfoDims = trace.dimensions.filter(visible).map(function(dim) {
-        return getUniqueInfo(dim.values, dim.catValues);
+        var categoryValues;
+        if (dim.categoryorder === 'trace') {
+            // Use order of first occurrence in trace
+            categoryValues = null;
+        } else if (dim.categoryorder === 'array') {
+            // Use categories specified in `categoryarray` first, then add extra to the end in trace order
+            categoryValues = dim.categoryarray;
+        } else {
+            // Get all categories up front so we can order them
+            // Should we check for numbers as sort numerically?
+            categoryValues = filterUnique(dim.values).sort();
+            if (dim.categoryorder === 'category descending') {
+                categoryValues = categoryValues.reverse();
+            }
+        }
+        return getUniqueInfo(dim.values, categoryValues);
     });
 
     // Process counts
@@ -96,30 +111,6 @@ module.exports = function calc(gd, trace) {
 
         return {color: markerColorscale(value), rawColor: value};
     }
-
-    // Build/Validate category labels/order
-    // ------------------------------------
-    // properties: catValues, catorder, catlabels
-    //
-    // 1) if catValues and catorder are specified
-    //   a) cat order must be the same length with no collisions or holes, otherwise it is discarded
-    //   b) Additional categories in data that are not specified are appended to catValues, and next indexes are
-    //      appended to catorder
-    //   c) catValues updated in data/_fullData
-    // 2) if catorder but not catValues is specified
-    //   a) catorder must be same length as inferred catValues with no collisions or holes
-    //      otherwise it is discarded and set to 0 to catValues.length
-    // 3) if catValues but not catorder is specified
-    //   a) Append unspecified values to catValues
-    //   b) set carorder to 0 to catValues.length
-    // 4) if neither are specified
-    //   a) Set catValues to unique catValues
-    //   b) Set carorder to 0 to catValues.length
-    //
-    // uniqueInfoDims[0].uniqueValues
-
-    // Category order logic
-    // 1)
 
     // Number of values and counts
     // ---------------------------
@@ -186,10 +177,8 @@ module.exports = function calc(gd, trace) {
             var cats = dimensionModels[d].categories;
 
             if(cats[catInd] === undefined) {
-                var catLabel = trace.dimensions[containerInd].catLabels[catInd];
-                var displayInd = trace.dimensions[containerInd].catDisplayInds[catInd];
-
-                cats[catInd] = createCategoryModel(d, catInd, displayInd, catLabel);
+                var catLabel = trace.dimensions[containerInd].categorylabels[catInd];
+                cats[catInd] = createCategoryModel(d, catInd, catLabel);
             }
 
             updateCategoryModel(cats[catInd], valueInd, count);
@@ -289,8 +278,6 @@ function createDimensionModel(dimensionInd, containerInd, displayInd, dimensionL
  *  The index of this categories dimension
  * @property {Number} categoryInd
  *  The index of this category
- * @property {Number} displayInd
- *  The display index of this category (where 0 is the topmost category)
  * @property {String} categoryLabel
  *  The name of this category
  * @property {Array} valueInds
@@ -314,7 +301,6 @@ function createCategoryModel(dimensionInd, categoryInd, displayInd, categoryLabe
     return {
         dimensionInd: dimensionInd,
         categoryInd: categoryInd,
-        displayInd: displayInd,
         categoryLabel: categoryLabel,
         valueInds: [],
         count: 0,
@@ -489,27 +475,21 @@ function validateDimensionDisplayInds(trace) {
  * @param {UniqueInfo} uniqueInfoDim
  */
 function validateCategoryProperties(dim, uniqueInfoDim) {
-    var uniqueDimVals = uniqueInfoDim.uniqueValues;
 
-    // Update catValues
-    dim.catValues = uniqueDimVals;
+    // Update categoryarray
+    dim.categoryarray = uniqueInfoDim.uniqueValues;
 
-    // Handle catDisplayInds
-    if(dim.catDisplayInds.length !== uniqueDimVals.length || !isRangePermutation(dim.catDisplayInds)) {
-        dim.catDisplayInds = uniqueDimVals.map(function(v, i) {return i;});
-    }
-
-    // Handle catLabels
-    if(dim.catLabels === null || dim.catLabels === undefined) {
-        dim.catLabels = [];
+    // Handle categorylabels
+    if(dim.categorylabels === null || dim.categorylabels === undefined) {
+        dim.categorylabels = [];
     } else {
         // Shallow copy to avoid modifying input array
-        dim.catLabels = dim.catLabels.map(function(v) {return v;});
+        dim.categorylabels = dim.categorylabels.slice();
     }
 
-    // Extend catLabels with elements from uniqueInfoDim.uniqueValues
-    for(var i = dim.catLabels.length; i < uniqueInfoDim.uniqueValues.length; i++) {
-        dim.catLabels.push(uniqueInfoDim.uniqueValues[i]);
+    // Extend categorylabels with elements from uniqueInfoDim.uniqueValues
+    for(var i = dim.categorylabels.length; i < uniqueInfoDim.uniqueValues.length; i++) {
+        dim.categorylabels.push(uniqueInfoDim.uniqueValues[i]);
     }
 }
 

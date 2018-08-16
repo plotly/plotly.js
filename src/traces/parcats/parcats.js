@@ -1014,11 +1014,11 @@ function dragDimension(d) {
         var categoryY = dragCategory.model.dragY;
 
         // Check for category drag swaps
-        var catDisplayInd = dragCategory.model.displayInd;
+        var categoryInd = dragCategory.model.categoryInd;
         var dimCategoryViews = dragDimension.categories;
 
-        var catAbove = dimCategoryViews[catDisplayInd - 1];
-        var catBelow = dimCategoryViews[catDisplayInd + 1];
+        var catAbove = dimCategoryViews[categoryInd - 1];
+        var catBelow = dimCategoryViews[categoryInd + 1];
 
         // Check for overlap above
         if(catAbove !== undefined) {
@@ -1027,7 +1027,7 @@ function dragDimension(d) {
 
                 // Swap display inds
                 dragCategory.model.displayInd = catAbove.model.displayInd;
-                catAbove.model.displayInd = catDisplayInd;
+                catAbove.model.displayInd = categoryInd;
             }
         }
 
@@ -1037,7 +1037,7 @@ function dragDimension(d) {
 
                 // Swap display inds
                 dragCategory.model.displayInd = catBelow.model.displayInd;
-                catBelow.model.displayInd = catDisplayInd;
+                catBelow.model.displayInd = categoryInd;
             }
         }
 
@@ -1121,20 +1121,20 @@ function dragDimensionEnd(d) {
     }
 
     // ### Handle category reordering ###
-    var anyCatsReordered = false;
-    if(d.dragCategoryDisplayInd !== null) {
-        var finalDragCategoryDisplayInds = d.model.categories.map(function(c) {
-            return c.displayInd;
-        });
-
-        anyCatsReordered = d.initialDragCategoryDisplayInds.some(function(initCatDisplay, catInd) {
-            return initCatDisplay !== finalDragCategoryDisplayInds[catInd];
-        });
-
-        if(anyCatsReordered) {
-            restyleData['dimensions[' + d.model.containerInd + '].catDisplayInds'] = [finalDragCategoryDisplayInds];
-        }
-    }
+    // var anyCatsReordered = false;
+    // if(d.dragCategoryDisplayInd !== null) {
+        // var finalDragCategoryDisplayInds = d.model.categories.map(function(c) {
+        //     return c.displayInd;
+        // });
+        //
+        // anyCatsReordered = d.initialDragCategoryDisplayInds.some(function(initCatDisplay, catInd) {
+        //     return initCatDisplay !== finalDragCategoryDisplayInds[catInd];
+        // });
+        //
+        // if(anyCatsReordered) {
+        //     restyleData['dimensions[' + d.model.containerInd + '].catDisplayInds'] = [finalDragCategoryDisplayInds];
+        // }
+    // }
 
     // Handle potential click event
     // ----------------------------
@@ -1520,12 +1520,6 @@ function updatePathViewModels(parcatsViewModel) {
                 });
         });
 
-    // Array from category index to category display index for each true dimension index
-    var catToDisplayIndPerDim = parcatsViewModel.model.dimensions.map(
-        function(d) {
-            return d.categories.map(function(c) {return c.displayInd;});
-        });
-
     // Array from true dimension index to dimension display index
     var dimToDisplayInd = parcatsViewModel.model.dimensions.map(function(d) {return d.displayInd;});
     var displayToDimInd = parcatsViewModel.dimensions.map(function(d) {return d.model.dimensionInd;});
@@ -1547,21 +1541,12 @@ function updatePathViewModels(parcatsViewModel) {
         }
     }
 
-    // Compute category display inds to use for sorting paths
-    function pathDisplayCategoryInds(pathModel) {
-        var dimensionInds = pathModel.categoryInds.map(function(catInd, dimInd) {return catToDisplayIndPerDim[dimInd][catInd];});
-        var displayInds = displayToDimInd.map(function(dimInd) {
-            return dimensionInds[dimInd];
-        });
-        return displayInds;
-    }
-
     // Sort in ascending order by display index array
     pathModels.sort(function(v1, v2) {
 
         // Build display inds for each path
-        var sortArray1 = pathDisplayCategoryInds(v1);
-        var sortArray2 = pathDisplayCategoryInds(v2);
+        var sortArray1 = v1.categoryInds;
+        var sortArray2 = v2.categoryInds;
 
         // Handle path sort order
         if(parcatsViewModel.sortpaths === 'backward') {
@@ -1614,15 +1599,14 @@ function updatePathViewModels(parcatsViewModel) {
         var pathYs = new Array(nextYPositions.length);
         for(var d = 0; d < pathModel.categoryInds.length; d++) {
             var catInd = pathModel.categoryInds[d];
-            var catDisplayInd = catToDisplayIndPerDim[d][catInd];
             var dimDisplayInd = dimToDisplayInd[d];
 
             // Update next y position
-            pathYs[dimDisplayInd] = nextYPositions[dimDisplayInd][catDisplayInd];
-            nextYPositions[dimDisplayInd][catDisplayInd] += pathHeight;
+            pathYs[dimDisplayInd] = nextYPositions[dimDisplayInd][catInd];
+            nextYPositions[dimDisplayInd][catInd] += pathHeight;
 
             // Update category color information
-            var catViewModle = parcatsViewModel.dimensions[dimDisplayInd].categories[catDisplayInd];
+            var catViewModle = parcatsViewModel.dimensions[dimDisplayInd].categories[catInd];
             var numBands = catViewModle.bands.length;
             var lastCatBand = catViewModle.bands[numBands - 1];
 
@@ -1746,23 +1730,14 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
         nextCatHeight,
         nextCatModel,
         nextCat,
-        catInd,
-        catDisplayInd;
+        catInd;
 
     // Compute starting Y offset
     var nextCatY = (maxCats - numCats) * catSpacing / 2.0;
 
     // Compute category ordering
-    var categoryIndInfo = dimensionModel.categories.map(function(c) {
-        return {displayInd: c.displayInd, categoryInd: c.categoryInd};
-    });
+    for(catInd = 0; catInd < numCats; catInd++) {
 
-    categoryIndInfo.sort(function(a, b) {
-        return a.displayInd - b.displayInd;
-    });
-
-    for(catDisplayInd = 0; catDisplayInd < numCats; catDisplayInd++) {
-        catInd = categoryIndInfo[catDisplayInd].categoryInd;
         nextCatModel = dimensionModel.categories[catInd];
 
         if(totalCount > 0) {
