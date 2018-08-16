@@ -17,37 +17,34 @@ var orientText = require('./orient_text');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Lib = require('../../lib');
 var alignmentConstants = require('../../constants/alignment');
-var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
-    var uidLookup = getUidsFromCalcData(cdcarpet);
+    var carpets = carpetLayer.selectAll('g.trace')
+        .data(
+            cdcarpet.map(function(d) { return d[0]; }),
+            function(cd) { return cd.trace.uid; }
+        );
 
-    carpetLayer.selectAll('g.trace').each(function() {
-        var classString = d3.select(this).attr('class');
-        var oldUid = classString.split('carpet')[1].split(/\s/)[0];
+    carpets.exit().remove();
 
-        if(!uidLookup[oldUid]) {
-            d3.select(this).remove();
-        }
-    });
+    carpets.enter().append('g')
+        .classed('trace', true);
 
-    for(var i = 0; i < cdcarpet.length; i++) {
-        plotOne(gd, plotinfo, cdcarpet[i], carpetLayer);
-    }
+    carpets.each(function(cd) {
+        plotOne(gd, plotinfo, cd, d3.select(this));
+    }).order();
 };
 
-function plotOne(gd, plotinfo, cd, carpetLayer) {
-    var t = cd[0];
-    var trace = cd[0].trace,
-        xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        aax = trace.aaxis,
-        bax = trace.baxis,
-        fullLayout = gd._fullLayout;
+function plotOne(gd, plotinfo, cd, axisLayer) {
+    var trace = cd.trace;
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+    var aax = trace.aaxis;
+    var bax = trace.baxis;
+    var fullLayout = gd._fullLayout;
 
     var clipLayer = fullLayout._clips;
 
-    var axisLayer = Lib.ensureSingle(carpetLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
     var minorLayer = Lib.ensureSingle(axisLayer, 'g', 'minorlayer');
     var majorLayer = Lib.ensureSingle(axisLayer, 'g', 'majorlayer');
     var boundaryLayer = Lib.ensureSingle(axisLayer, 'g', 'boundarylayer');
@@ -65,12 +62,12 @@ function plotOne(gd, plotinfo, cd, carpetLayer) {
     drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
     drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
 
-    var labelOrientationA = drawAxisLabels(gd, xa, ya, trace, t, labelLayer, aax._labels, 'a-label');
-    var labelOrientationB = drawAxisLabels(gd, xa, ya, trace, t, labelLayer, bax._labels, 'b-label');
+    var labelOrientationA = drawAxisLabels(gd, xa, ya, trace, cd, labelLayer, aax._labels, 'a-label');
+    var labelOrientationB = drawAxisLabels(gd, xa, ya, trace, cd, labelLayer, bax._labels, 'b-label');
 
-    drawAxisTitles(gd, labelLayer, trace, t, xa, ya, labelOrientationA, labelOrientationB);
+    drawAxisTitles(gd, labelLayer, trace, cd, xa, ya, labelOrientationA, labelOrientationB);
 
-    drawClipPath(trace, t, clipLayer, xa, ya);
+    drawClipPath(trace, cd, clipLayer, xa, ya);
 }
 
 function drawClipPath(trace, t, layer, xaxis, yaxis) {

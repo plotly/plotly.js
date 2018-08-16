@@ -537,6 +537,39 @@ describe('Test carpet interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('preserves order of carpets on the same subplot after hide/show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.carpetlayer .trace').each(function(d) { out.push(d.trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'carpet',
+            a: [1, 2, 3],
+            b: [1, 2, 3],
+            y: [[0, 0.8, 2], [1.2, 2, 3.2], [2, 2.8, 4]]
+        }, {
+            type: 'carpet',
+            a: [1, 2, 3],
+            b: [1, 2, 3],
+            y: [[10, 10.8, 12], [11.2, 12, 13.2], [12, 12.8, 14]]
+        }])
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1]);
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('scattercarpet array attributes', function() {
