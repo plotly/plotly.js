@@ -334,11 +334,7 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
             });
         });
 
-    // Set url to gradient definition as an 'attribute', so that
-    // we don't have to fiddle with quotes inside of quotes in Snapshot.toSVG.
-    // Clear corresponding 'style' setting to avoid potential conflicts.
-    sel.attr(prop, 'url(#' + fullID + ')')
-        .style(prop, null)
+    sel.style(prop, 'url(#' + fullID + ')')
         .style(prop + '-opacity', null);
 };
 
