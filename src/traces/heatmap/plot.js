@@ -16,38 +16,36 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Colorscale = require('../../components/colorscale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 var maxRowLength = require('./max_row_length');
 
 module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
-    var uidLookup = getUidsFromCalcData(cdheatmaps);
+    var heatmaps = heatmapLayer.selectAll('g.hm')
+        .data(
+            cdheatmaps.map(function(d) { return d[0]; }),
+            function(cd) { return cd.trace.uid; }
+        );
 
-    heatmapLayer.selectAll('.hm > image').each(function(d) {
-        var oldTrace = d.trace || {};
+    heatmaps.exit().remove();
 
-        if(!uidLookup[oldTrace.uid]) {
-            d3.select(this.parentNode).remove();
-        }
-    });
+    heatmaps.enter().append('g')
+        .classed('hm', true);
 
-    for(var i = 0; i < cdheatmaps.length; i++) {
-        plotOne(gd, plotinfo, cdheatmaps[i], heatmapLayer);
-    }
+    heatmaps.each(function(cd) {
+        plotOne(gd, plotinfo, cd, d3.select(this));
+    }).order();
 };
 
-function plotOne(gd, plotinfo, cd, heatmapLayer) {
-    var cd0 = cd[0];
-    var trace = cd0.trace;
+function plotOne(gd, plotinfo, cd, plotGroup) {
+    var trace = cd.trace;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var id = 'hm' + trace.uid;
 
-    var z = cd0.z;
-    var x = cd0.x;
-    var y = cd0.y;
-    var xc = cd0.xCenter;
-    var yc = cd0.yCenter;
+    var z = cd.z;
+    var x = cd.x;
+    var y = cd.y;
+    var xc = cd.xCenter;
+    var yc = cd.yCenter;
     var isContour = Registry.traceIs(trace, 'contour');
     var zsmooth = isContour ? 'best' : trace.zsmooth;
 
@@ -111,8 +109,8 @@ function plotOne(gd, plotinfo, cd, heatmapLayer) {
     if(isContour) {
         xc = x;
         yc = y;
-        x = cd0.xfill;
-        y = cd0.yfill;
+        x = cd.xfill;
+        y = cd.yfill;
     }
 
     // make an image that goes at most half a screen off either side, to keep
@@ -135,16 +133,11 @@ function plotOne(gd, plotinfo, cd, heatmapLayer) {
     // if image is entirely off-screen, don't even draw it
     var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
 
-    var plotgroup = heatmapLayer.selectAll('g.hm.' + id)
-        .data(isOffScreen ? [] : [0]);
-
-    plotgroup.enter().append('g')
-        .classed('hm', true)
-        .classed(id, true);
-
-    plotgroup.exit().remove();
-
-    if(isOffScreen) return;
+    if(isOffScreen) {
+        var noImage = plotGroup.selectAll('image').data([]);
+        noImage.exit().remove();
+        return;
+    }
 
     // generate image data
 
@@ -362,8 +355,8 @@ function plotOne(gd, plotinfo, cd, heatmapLayer) {
     gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
     gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-    var image3 = plotgroup.selectAll('image')
-        .data(cd);
+    var image3 = plotGroup.selectAll('image')
+        .data([cd]);
 
     image3.enter().append('svg:image').attr({
         xmlns: xmlnsNamespaces.svg,
@@ -377,8 +370,6 @@ function plotOne(gd, plotinfo, cd, heatmapLayer) {
         y: top,
         'xlink:href': canvas.toDataURL('image/png')
     });
-
-    image3.exit().remove();
 }
 
 // get interpolated bin value. Returns {bin0:closest bin, frac:fractional dist to next, bin1:next bin}
