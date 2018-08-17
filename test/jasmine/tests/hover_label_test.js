@@ -243,6 +243,9 @@ describe('hover info', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
         mockCopy.data[0].hoverinfo = 'y';
+        // we do support superscripts in hover, but it's annoying to write
+        // out all the tspan stuff here.
+        mockCopy.layout.yaxis.exponentformat = 'e';
 
         beforeEach(function(done) {
             for(var i = 0; i < mockCopy.data[0].y.length; i++) {
