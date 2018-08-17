@@ -129,7 +129,7 @@
     "fs-extra": "^2.0.0",
     "fuse.js": "^3.2.0",
     "glob": "^7.0.0",
-    "gzip-size": "^4.1.0",
+    "gzip-size": "^5.0.0",
     "image-size": "^0.6.2",
     "into-stream": "^3.1.0",
     "jasmine-core": "^2.99.1",
