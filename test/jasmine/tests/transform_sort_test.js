@@ -5,7 +5,7 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -291,7 +291,7 @@ describe('Test sort transform interactions:', function() {
         .then(function() {
             _assertFirst('M10,0A10,10 0 1');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -383,7 +383,7 @@ describe('Test sort transform interactions:', function() {
         .then(function(eventData) {
             assertPt(eventData, 1, 1, 5, 'G');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -420,7 +420,7 @@ describe('Test sort transform interactions:', function() {
         .then(function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['A', 'B', 'C']);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
