@@ -30,7 +30,8 @@ module.exports = function plot(gd, geo, calcData) {
         }
     }
 
-    var gTraces = Lib.makeTraceGroups(geo.layers.frontplot, calcData, 'trace scattergeo');
+    var scatterLayer = geo.layers.frontplot.select('.scatterlayer');
+    var gTraces = Lib.makeTraceGroups(scatterLayer, calcData, 'trace scattergeo');
 
     // TODO find a way to order the inner nodes on update
     gTraces.selectAll('*').remove();
