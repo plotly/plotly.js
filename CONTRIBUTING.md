@@ -35,7 +35,7 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 
 - git
 - [node.js](https://nodejs.org/en/). We recommend using node.js v8.x, but all
-  versions starting from v4 should work.  Upgrading and managing node versions
+  versions starting from v6 should work.  Upgrading and managing node versions
   can be easily done using [`nvm`](https://github.com/creationix/nvm) or its
   Windows alternatives.
 - [`npm`](https://www.npmjs.com/) v5.x and up (which ships by default with
