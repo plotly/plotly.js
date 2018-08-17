@@ -21,7 +21,6 @@ var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 var wrap180 = require('./angles').wrap180;
 var isArray = require('./is_array');
 var isArrayOrTypedArray = isArray.isArrayOrTypedArray;
-var isTypedArray = isArray.isTypedArray;
 var isPrimitiveTypedArrayRepr = isArray.isPrimitiveTypedArrayRepr;
 var b64 = require('base64-arraybuffer');
 
@@ -545,6 +544,7 @@ var dtypeStringToTypedarrayType = {
     int16: Int16Array,
     int32: Int32Array,
     uint8: Uint8Array,
+    uint8_clamped: Uint8ClampedArray,
     uint16: Uint16Array,
     uint32: Uint32Array,
     float32: Float32Array,
@@ -566,20 +566,20 @@ function primitiveTypedArrayReprToTypedArray(v) {
 
     // Process data
     var coercedV;
-    var data = v.data;
-    if(data instanceof ArrayBuffer) {
-        // data is an ArrayBuffer
-        coercedV = new TypeArrayType(data);
-    } else if(data.constructor === DataView) {
-        // data has a buffer property, where the buffer is an ArrayBuffer
-        coercedV = new TypeArrayType(data.buffer);
-    } else if(Array.isArray(data)) {
-        // data is a primitive array
-        coercedV = new TypeArrayType(data);
-    } else if(typeof data === 'string' ||
-        data instanceof String) {
-        // data is a base64 encoded string
-        var buffer = b64.decode(data);
+    var value = v.value;
+    if(value instanceof ArrayBuffer) {
+        // value is an ArrayBuffer
+        coercedV = new TypeArrayType(value);
+    } else if(value.constructor === DataView) {
+        // value has a buffer property, where the buffer is an ArrayBuffer
+        coercedV = new TypeArrayType(value.buffer);
+    } else if(Array.isArray(value)) {
+        // value is a primitive array
+        coercedV = new TypeArrayType(value);
+    } else if(typeof value === 'string' ||
+        value instanceof String) {
+        // value is a base64 encoded string
+        var buffer = b64.decode(value);
         coercedV = new TypeArrayType(buffer);
     }
     return coercedV;

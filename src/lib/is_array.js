@@ -5,6 +5,7 @@
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
+var Lib = require('../lib');
 
 'use strict';
 
@@ -39,9 +40,8 @@ function isArray1D(a) {
 }
 
 function isPrimitiveTypedArrayRepr(a) {
-    return (a !== undefined && a !== null &&
-        typeof a === 'object' &&
-        a.hasOwnProperty('dtype') && a.hasOwnProperty('data'));
+    return (Lib.isPlainObject(a) &&
+        a.hasOwnProperty('dtype') && a.hasOwnProperty('value'));
 }
 
 module.exports = {

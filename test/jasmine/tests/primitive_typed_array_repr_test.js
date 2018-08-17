@@ -1,12 +1,12 @@
 var Lib = require('@src/lib');
 var supplyDefaults = require('../assets/supply_defaults');
-var isTypedArray = require('../../../src/lib/is_array').isTypedArray;
 var b64 = require('base64-arraybuffer');
 var mock1 = require('@mocks/typed_array_repr_scatter.json');
 
 var typedArraySpecs = [
     ['int8', new Int8Array([-128, -34, 1, 127])],
     ['uint8', new Uint8Array([0, 1, 127, 255])],
+    ['uint8_clamped', new Uint8ClampedArray([0, 1, 127, 255])],
     ['int16', new Int16Array([-32768, -123, 345, 32767])],
     ['uint16', new Uint16Array([0, 345, 32767, 65535])],
     ['int32', new Int32Array([-2147483648, -123, 345, 32767, 2147483647])],
@@ -21,13 +21,13 @@ describe('Test TypedArray representations', function() {
     describe('ArrayBuffer', function() {
         it('should accept representation as ArrayBuffer', function() {
             typedArraySpecs.forEach(function(arraySpec) {
-                // Build data and confirm its type
-                var data = arraySpec[1].buffer;
-                expect(data.constructor).toEqual(ArrayBuffer);
+                // Build value and confirm its type
+                var value = arraySpec[1].buffer;
+                expect(value.constructor).toEqual(ArrayBuffer);
 
                 var repr = {
                     dtype: arraySpec[0],
-                    data: data
+                    value: value
                 };
                 var gd = {
                     data: [{
@@ -46,13 +46,13 @@ describe('Test TypedArray representations', function() {
     describe('Array', function() {
         it('should accept representation as Array', function() {
             typedArraySpecs.forEach(function(arraySpec) {
-                // Build data and confirm its type
-                var data = Array.prototype.slice.call(arraySpec[1]);
-                expect(Array.isArray(data)).toEqual(true);
+                // Build value and confirm its type
+                var value = Array.prototype.slice.call(arraySpec[1]);
+                expect(Array.isArray(value)).toEqual(true);
 
                 var repr = {
                     dtype: arraySpec[0],
-                    data: data
+                    value: value
                 };
                 var gd = {
                     data: [{
@@ -71,13 +71,13 @@ describe('Test TypedArray representations', function() {
     describe('DataView', function() {
         it('should accept representation as DataView', function() {
             typedArraySpecs.forEach(function(arraySpec) {
-                // Build data and confirm its type
-                var data = new DataView(arraySpec[1].buffer);
-                expect(data.constructor).toEqual(DataView);
+                // Build value and confirm its type
+                var value = new DataView(arraySpec[1].buffer);
+                expect(value.constructor).toEqual(DataView);
 
                 var repr = {
                     dtype: arraySpec[0],
-                    data: data
+                    value: value
                 };
                 var gd = {
                     data: [{
@@ -96,13 +96,13 @@ describe('Test TypedArray representations', function() {
     describe('base64', function() {
         it('should accept representation as base 64 string', function() {
             typedArraySpecs.forEach(function(arraySpec) {
-                // Build data and confirm its type
-                var data = b64.encode(arraySpec[1].buffer);
-                expect(typeof data).toEqual('string');
+                // Build value and confirm its type
+                var value = b64.encode(arraySpec[1].buffer);
+                expect(typeof value).toEqual('string');
 
                 var repr = {
                     dtype: arraySpec[0],
-                    data: data
+                    value: value
                 };
                 var gd = {
                     data: [{
@@ -127,21 +127,21 @@ describe('Test TypedArray representations', function() {
             // data_array property
             expect(gd.data[0].x).toEqual({
                 'dtype': 'float64',
-                'data': [3, 2, 1]});
+                'value': [3, 2, 1]});
             expect(gd._fullData[0].x).toEqual(new Float64Array([3, 2, 1]));
 
             // Check y
             // data_array property
             expect(gd.data[0].y).toEqual({
                 'dtype': 'float32',
-                'data': 'AABAQAAAAEAAAIA/'});
+                'value': 'AABAQAAAAEAAAIA/'});
             expect(gd._fullData[0].y).toEqual(new Float32Array([3, 2, 1]));
 
             // Check marker.color
             // This is an arrayOk property not a data_array property
             expect(gd.data[0].marker.color).toEqual({
                 'dtype': 'uint16',
-                'data': 'AwACAAEA'});
+                'value': 'AwACAAEA'});
             expect(gd._fullData[0].marker.color).toEqual(new Uint16Array([3, 2, 1]));
         });
     });

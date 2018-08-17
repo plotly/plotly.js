@@ -1,12 +1,12 @@
 {
   "data": [{
     "type": "scatter",
-    "x":  {"dtype": "float64", "data": [3, 2, 1]},
-    "y":  {"dtype": "float32", "data": "AABAQAAAAEAAAIA/"},
+    "x":  {"dtype": "float64", "value": [3, 2, 1]},
+    "y":  {"dtype": "float32", "value": "AABAQAAAAEAAAIA/"},
     "marker": {
       "color": {
         "dtype": "uint16",
-        "data": "AwACAAEA",
+        "value": "AwACAAEA",
       },
     }
   }]
