@@ -8,6 +8,7 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var failTest = require('../assets/fail_test');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -175,7 +176,7 @@ describe('Test choropleth hover:', function() {
     });
 });
 
-describe('choropleth bad data', function() {
+describe('choropleth drawing', function() {
     var gd;
 
     beforeEach(function() {
@@ -196,7 +197,38 @@ describe('choropleth bad data', function() {
             // only utopia logs - others are silently ignored
             expect(Lib.log).toHaveBeenCalledTimes(1);
         })
-        .catch(fail)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('preserves order after hide/show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.choropleth').each(function(d) { out.push(d[0].trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'choropleth',
+            locations: ['CAN', 'USA'],
+            z: [1, 2]
+        }, {
+            type: 'choropleth',
+            locations: ['CAN', 'USA'],
+            z: [2, 1]
+        }])
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1]);
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+        })
+        .catch(failTest)
         .then(done);
     });
 });

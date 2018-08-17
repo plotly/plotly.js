@@ -342,7 +342,7 @@ describe('Test scattergeo hover', function() {
     });
 });
 
-describe('scattergeo bad data', function() {
+describe('scattergeo drawing', function() {
     var gd;
 
     beforeEach(function() {
@@ -361,6 +361,32 @@ describe('scattergeo bad data', function() {
         .then(function() {
             // only utopia logs - others are silently ignored
             expect(Lib.log).toHaveBeenCalledTimes(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('preserves order after hide/show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.scattergeo').each(function(d) { out.push(d[0].trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [
+            {type: 'scattergeo', lon: [10, 20], lat: [10, 20]},
+            {type: 'scattergeo', lon: [10, 20], lat: [10, 20]}
+        ])
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1]);
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
         })
         .catch(failTest)
         .then(done);
