@@ -636,8 +636,6 @@ function clipGaps(plotGroup, plotinfo, clips, cd0, perimeter) {
     else clipId = null;
 
     plotGroup.call(Drawing.setClipUrl, clipId);
-    plotinfo.plot.selectAll('.hm' + cd0.trace.uid)
-        .call(Drawing.setClipUrl, clipId);
 }
 
 function makeClipMask(cd0) {
