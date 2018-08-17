@@ -9,43 +9,31 @@
 
 'use strict';
 
-var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Colorscale = require('../../components/colorscale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var makeTraceGroups = require('../../plots/cartesian/make_trace_groups');
 
 var maxRowLength = require('./max_row_length');
 
 module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
-    var heatmaps = heatmapLayer.selectAll('g.hm')
-        .data(
-            cdheatmaps.map(function(d) { return d[0]; }),
-            function(cd) { return cd.trace.uid; }
-        );
-
-    heatmaps.exit().remove();
-
-    heatmaps.enter().append('g')
-        .classed('hm', true);
-
-    heatmaps.each(function(cd) {
-        plotOne(gd, plotinfo, cd, d3.select(this));
-    }).order();
+    makeTraceGroups(gd, plotinfo, cdheatmaps, heatmapLayer, 'hm', plotOne);
 };
 
 function plotOne(gd, plotinfo, cd, plotGroup) {
-    var trace = cd.trace;
+    var cd0 = cd[0];
+    var trace = cd0.trace;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var z = cd.z;
-    var x = cd.x;
-    var y = cd.y;
-    var xc = cd.xCenter;
-    var yc = cd.yCenter;
+    var z = cd0.z;
+    var x = cd0.x;
+    var y = cd0.y;
+    var xc = cd0.xCenter;
+    var yc = cd0.yCenter;
     var isContour = Registry.traceIs(trace, 'contour');
     var zsmooth = isContour ? 'best' : trace.zsmooth;
 
@@ -109,8 +97,8 @@ function plotOne(gd, plotinfo, cd, plotGroup) {
     if(isContour) {
         xc = x;
         yc = y;
-        x = cd.xfill;
-        y = cd.yfill;
+        x = cd0.xfill;
+        y = cd0.yfill;
     }
 
     // make an image that goes at most half a screen off either side, to keep
@@ -356,7 +344,7 @@ function plotOne(gd, plotinfo, cd, plotGroup) {
     gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
     var image3 = plotGroup.selectAll('image')
-        .data([cd]);
+        .data(cd);
 
     image3.enter().append('svg:image').attr({
         xmlns: xmlnsNamespaces.svg,

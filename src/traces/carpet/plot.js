@@ -17,26 +17,15 @@ var orientText = require('./orient_text');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Lib = require('../../lib');
 var alignmentConstants = require('../../constants/alignment');
+var makeTraceGroups = require('../../plots/cartesian/make_trace_groups');
 
 module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
-    var carpets = carpetLayer.selectAll('g.trace')
-        .data(
-            cdcarpet.map(function(d) { return d[0]; }),
-            function(cd) { return cd.trace.uid; }
-        );
-
-    carpets.exit().remove();
-
-    carpets.enter().append('g')
-        .classed('trace', true);
-
-    carpets.each(function(cd) {
-        plotOne(gd, plotinfo, cd, d3.select(this));
-    }).order();
+    makeTraceGroups(gd, plotinfo, cdcarpet, carpetLayer, 'trace', plotOne);
 };
 
 function plotOne(gd, plotinfo, cd, axisLayer) {
-    var trace = cd.trace;
+    var cd0 = cd[0];
+    var trace = cd0.trace;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
     var aax = trace.aaxis;
@@ -62,12 +51,12 @@ function plotOne(gd, plotinfo, cd, axisLayer) {
     drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
     drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
 
-    var labelOrientationA = drawAxisLabels(gd, xa, ya, trace, cd, labelLayer, aax._labels, 'a-label');
-    var labelOrientationB = drawAxisLabels(gd, xa, ya, trace, cd, labelLayer, bax._labels, 'b-label');
+    var labelOrientationA = drawAxisLabels(gd, xa, ya, trace, cd0, labelLayer, aax._labels, 'a-label');
+    var labelOrientationB = drawAxisLabels(gd, xa, ya, trace, cd0, labelLayer, bax._labels, 'b-label');
 
-    drawAxisTitles(gd, labelLayer, trace, cd, xa, ya, labelOrientationA, labelOrientationB);
+    drawAxisTitles(gd, labelLayer, trace, cd0, xa, ya, labelOrientationA, labelOrientationB);
 
-    drawClipPath(trace, cd, clipLayer, xa, ya);
+    drawClipPath(trace, cd0, clipLayer, xa, ya);
 }
 
 function drawClipPath(trace, t, layer, xaxis, yaxis) {

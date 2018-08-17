@@ -12,71 +12,62 @@ var d3 = require('d3');
 
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
+var makeTraceGroups = require('../../plots/cartesian/make_trace_groups');
 
 // constants for dynamic jitter (ie less jitter for sparser points)
 var JITTERCOUNT = 5; // points either side of this to include
 var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
 function plot(gd, plotinfo, cdbox, boxLayer) {
+    makeTraceGroups(gd, plotinfo, cdbox, boxLayer, 'trace boxes', plotOne);
+}
+
+function plotOne(gd, plotinfo, cd, plotGroup) {
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
+    var cd0 = cd[0];
+    var t = cd0.t;
+    var trace = cd0.trace;
+    if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
+    var numBoxes = fullLayout._numBoxes;
 
-    var boxtraces = boxLayer.selectAll('g.trace.boxes')
-        .data(cdbox, function(d) { return d[0].trace.uid; });
+    var groupFraction = (1 - fullLayout.boxgap);
 
-    boxtraces.enter().append('g')
-        .attr('class', 'trace boxes');
+    var group = (fullLayout.boxmode === 'group' && numBoxes > 1);
+    // box half width
+    var bdPos = t.dPos * groupFraction * (1 - fullLayout.boxgroupgap) / (group ? numBoxes : 1);
+    // box center offset
+    var bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numBoxes) * groupFraction : 0;
+    // whisker width
+    var wdPos = bdPos * trace.whiskerwidth;
 
-    boxtraces.exit().remove();
+    if(trace.visible !== true || t.empty) {
+        plotGroup.remove();
+        return;
+    }
 
-    boxtraces.order();
+    var posAxis, valAxis;
 
-    boxtraces.each(function(d) {
-        var cd0 = d[0];
-        var t = cd0.t;
-        var trace = cd0.trace;
-        var sel = d3.select(this);
-        if(!plotinfo.isRangePlot) cd0.node3 = sel;
-        var numBoxes = fullLayout._numBoxes;
+    if(trace.orientation === 'h') {
+        posAxis = ya;
+        valAxis = xa;
+    } else {
+        posAxis = xa;
+        valAxis = ya;
+    }
 
-        var groupFraction = (1 - fullLayout.boxgap);
+    // save the box size and box position for use by hover
+    t.bPos = bPos;
+    t.bdPos = bdPos;
+    t.wdPos = wdPos;
+    // half-width within which to accept hover for this box
+    // always split the distance to the closest box
+    t.wHover = t.dPos * (group ? groupFraction / numBoxes : 1);
 
-        var group = (fullLayout.boxmode === 'group' && numBoxes > 1);
-        // box half width
-        var bdPos = t.dPos * groupFraction * (1 - fullLayout.boxgroupgap) / (group ? numBoxes : 1);
-        // box center offset
-        var bPos = group ? 2 * t.dPos * (-0.5 + (t.num + 0.5) / numBoxes) * groupFraction : 0;
-        // whisker width
-        var wdPos = bdPos * trace.whiskerwidth;
-
-        if(trace.visible !== true || t.empty) {
-            sel.remove();
-            return;
-        }
-
-        var posAxis, valAxis;
-
-        if(trace.orientation === 'h') {
-            posAxis = ya;
-            valAxis = xa;
-        } else {
-            posAxis = xa;
-            valAxis = ya;
-        }
-
-        // save the box size and box position for use by hover
-        t.bPos = bPos;
-        t.bdPos = bdPos;
-        t.wdPos = wdPos;
-        // half-width within which to accept hover for this box
-        // always split the distance to the closest box
-        t.wHover = t.dPos * (group ? groupFraction / numBoxes : 1);
-
-        plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, t);
-        plotPoints(sel, {x: xa, y: ya}, trace, t);
-        plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, t);
-    });
+    plotBoxAndWhiskers(plotGroup, {pos: posAxis, val: valAxis}, trace, t);
+    plotPoints(plotGroup, {x: xa, y: ya}, trace, t);
+    plotBoxMean(plotGroup, {pos: posAxis, val: valAxis}, trace, t);
 }
 
 function plotBoxAndWhiskers(sel, axes, trace, t) {

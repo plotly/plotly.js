@@ -13,6 +13,7 @@ var map1dArray = require('../carpet/map_1d_array');
 var makepath = require('../carpet/makepath');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
+var makeTraceGroups = require('../../plots/cartesian/make_trace_groups');
 
 var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');
@@ -26,23 +27,24 @@ var lookupCarpet = require('../carpet/lookup_carpetid');
 var closeBoundaries = require('../contour/close_boundaries');
 
 module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
-    contourPlot.plotWrapper(gd, plotinfo, cdcontours, contourcarpetLayer, plotOne);
+    makeTraceGroups(gd, plotinfo, cdcontours, contourcarpetLayer, 'contour', plotOne);
 };
 
 function plotOne(gd, plotinfo, cd, plotGroup) {
-    var trace = cd.trace;
+    var cd0 = cd[0];
+    var trace = cd0.trace;
 
     var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
     var carpetcd = gd.calcdata[carpet.index][0];
 
     if(!carpet.visible || carpet.visible === 'legendonly') return;
 
-    var a = cd.a;
-    var b = cd.b;
+    var a = cd0.a;
+    var b = cd0.b;
     var contours = trace.contours;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var pathinfo = emptyPathinfo(contours, plotinfo, cd);
+    var pathinfo = emptyPathinfo(contours, plotinfo, cd0);
     var isConstraint = contours.type === 'constraint';
     var operation = contours._operation;
     var coloring = isConstraint ? (operation === '=' ? 'lines' : 'fill') : contours.coloring;
@@ -110,7 +112,7 @@ function plotOne(gd, plotinfo, cd, plotGroup) {
     makeFills(trace, plotGroup, xa, ya, fillPathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath);
 
     // Draw contour lines:
-    makeLinesAndLabels(plotGroup, pathinfo, gd, cd, contours, plotinfo, carpet);
+    makeLinesAndLabels(plotGroup, pathinfo, gd, cd0, contours, plotinfo, carpet);
 
     // Clip the boundary of the plot
     Drawing.setClipUrl(plotGroup, carpet._clipPathId);
