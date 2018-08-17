@@ -7,7 +7,7 @@ var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var touchEvent = require('../assets/touch_event');
 var selectButton = require('../assets/modebar_button');
@@ -213,7 +213,7 @@ describe('@gl Test gl3d plots', function() {
         .then(function() {
             assertHoverText(null, null, '100k');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -388,7 +388,7 @@ describe('@gl Test gl3d plots', function() {
         .then(function() {
             assertHoverText(null, null, null, 'yo!');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -817,7 +817,7 @@ describe('@gl Test gl3d drag and wheel interactions', function() {
         .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(3);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -908,7 +908,7 @@ describe('@gl Test gl3d drag and wheel interactions', function() {
         .then(function() {
             expect(relayoutCallback).toHaveBeenCalledTimes(2);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -956,7 +956,7 @@ describe('@gl Test gl3d relayout calls', function() {
         .then(function() {
             assertMargins(0, 0, 0, 0);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -974,7 +974,7 @@ describe('@gl Test gl3d relayout calls', function() {
                 zaxis: {}
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
@@ -1063,7 +1063,7 @@ describe('@gl Test gl3d annotations', function() {
         .then(function() {
             assertAnnotationsXY([[262, 199], [257, 135], [325, 233]], 'base 0');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1096,7 +1096,7 @@ describe('@gl Test gl3d annotations', function() {
         .then(function() {
             assertAnnotationText(['0', '1', '2', '3', '4', '5', '6'], 'back to base after zaxis range relayout');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1146,7 +1146,7 @@ describe('@gl Test gl3d annotations', function() {
         .then(function() {
             assertAnnotationText(['new!'], 'after add new (2)');
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1199,7 +1199,7 @@ describe('@gl Test gl3d annotations', function() {
             assertAnnotationCntPerScene('scene', 1);
             assertAnnotationCntPerScene('scene2', 2);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1233,7 +1233,7 @@ describe('@gl Test gl3d annotations', function() {
         .then(function() {
             assertSceneAxisRanges([0.9375, 3.0625], [0.9375, 3.0625], [0.7187, 10.2813]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1302,7 +1302,7 @@ describe('@gl Test gl3d annotations', function() {
                 'scene.annotations[0].ay': -80
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -1352,7 +1352,7 @@ describe('@gl Test gl3d annotations', function() {
                 dispatch('click');
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

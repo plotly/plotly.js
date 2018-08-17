@@ -8,7 +8,7 @@ var Sankey = require('@src/traces/sankey');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 var supplyAllDefaults = require('../assets/supply_defaults');
@@ -455,7 +455,7 @@ describe('sankey tests', function() {
                     ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 20, 'Roboto', 'rgb(0, 0, 0)']
                 );
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -479,7 +479,7 @@ describe('sankey tests', function() {
                         ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                     );
                 })
-                .catch(fail)
+                .catch(failTest)
                 .then(done);
         });
     });
@@ -588,7 +588,7 @@ describe('sankey tests', function() {
                     value: 46.477
                 });
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });

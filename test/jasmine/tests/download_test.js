@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var textchartMock = require('@mocks/text_chart_arrays.json');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 var Lib = require('@src/lib');
 
@@ -106,7 +106,7 @@ describe('Plotly.downloadImage', function() {
                 reader.readAsText(savedBlob);
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     }, LONG_TIMEOUT_INTERVAL);
 });

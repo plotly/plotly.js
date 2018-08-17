@@ -6,7 +6,7 @@ var calc = require('@src/traces/histogram2d/calc');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('Test histogram2d', function() {
@@ -178,7 +178,7 @@ describe('Test histogram2d', function() {
             .then(function() {
                 return Plotly.relayout(gd, 'xaxis.range', [0, 2]);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
