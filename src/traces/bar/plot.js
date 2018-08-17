@@ -35,30 +35,20 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
     var ya = plotinfo.yaxis;
     var fullLayout = gd._fullLayout;
 
-    var bartraces = barLayer.selectAll('g.trace.bars')
-        .data(cdbar, function(d) { return d[0].trace.uid; });
-
-    bartraces.enter().append('g')
-        .attr('class', 'trace bars')
-        .append('g')
-        .attr('class', 'points');
-
-    bartraces.exit().remove();
-
-    bartraces.order();
-
-    bartraces.each(function(d) {
-        var cd0 = d[0];
+    var bartraces = Lib.makeTraceGroups(barLayer, cdbar, 'trace bars').each(function(cd) {
+        var plotGroup = d3.select(this);
+        var cd0 = cd[0];
         var t = cd0.t;
         var trace = cd0.trace;
-        var sel = d3.select(this);
 
-        if(!plotinfo.isRangePlot) cd0.node3 = sel;
+        if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
         var poffset = t.poffset;
         var poffsetIsArray = Array.isArray(poffset);
 
-        var bars = sel.select('g.points').selectAll('g.point').data(Lib.identity);
+        var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
+
+        var bars = pointGroup.selectAll('g.point').data(Lib.identity);
 
         bars.enter().append('g')
             .classed('point', true);
@@ -147,17 +137,17 @@ module.exports = function plot(gd, plotinfo, cdbar, barLayer) {
                     'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z')
                 .call(Drawing.setClipUrl, plotinfo.layerClipId);
 
-            appendBarText(gd, bar, d, i, x0, x1, y0, y1);
+            appendBarText(gd, bar, cd, i, x0, x1, y0, y1);
 
             if(plotinfo.layerClipId) {
-                Drawing.hideOutsideRangePoint(d[i], bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
+                Drawing.hideOutsideRangePoint(di, bar.select('text'), xa, ya, trace.xcalendar, trace.ycalendar);
             }
         });
 
         // lastly, clip points groups of `cliponaxis !== false` traces
         // on `plotinfo._hasClipOnAxisFalse === true` subplots
-        var hasClipOnAxisFalse = d[0].trace.cliponaxis === false;
-        Drawing.setClipUrl(sel, hasClipOnAxisFalse ? null : plotinfo.layerClipId);
+        var hasClipOnAxisFalse = cd0.trace.cliponaxis === false;
+        Drawing.setClipUrl(plotGroup, hasClipOnAxisFalse ? null : plotinfo.layerClipId);
     });
 
     // error bars are on the top

@@ -78,7 +78,7 @@ module.exports = {
         max: 1,
         dflt: 0.5,
         role: 'style',
-        editType: 'calcIfAutorange',
+        editType: 'calc',
         description: [
             'Sets the width of the whiskers relative to',
             'the box\' width.',
@@ -88,7 +88,7 @@ module.exports = {
     notched: {
         valType: 'boolean',
         role: 'style',
-        editType: 'calcIfAutorange',
+        editType: 'calc',
         description: [
             'Determines whether or not notches should be drawn.'
         ].join(' ')
@@ -99,7 +99,7 @@ module.exports = {
         max: 0.5,
         dflt: 0.25,
         role: 'style',
-        editType: 'calcIfAutorange',
+        editType: 'calc',
         description: [
             'Sets the width of the notches relative to',
             'the box\' width.',
@@ -111,7 +111,7 @@ module.exports = {
         values: ['all', 'outliers', 'suspectedoutliers', false],
         dflt: 'outliers',
         role: 'style',
-        editType: 'calcIfAutorange',
+        editType: 'calc',
         description: [
             'If *outliers*, only the sample points lying outside the whiskers',
             'are shown',
@@ -127,7 +127,7 @@ module.exports = {
         values: [true, 'sd', false],
         dflt: false,
         role: 'style',
-        editType: 'calcIfAutorange',
+        editType: 'calc',
         description: [
             'If *true*, the mean of the box(es)\' underlying distribution is',
             'drawn as a dashed line inside the box(es).',
@@ -139,7 +139,7 @@ module.exports = {
         min: 0,
         max: 1,
         role: 'style',
-        editType: 'calcIfAutorange',
+        editType: 'calc',
         description: [
             'Sets the amount of jitter in the sample points drawn.',
             'If *0*, the sample points align along the distribution axis.',
@@ -152,7 +152,7 @@ module.exports = {
         min: -2,
         max: 2,
         role: 'style',
-        editType: 'calcIfAutorange',
+        editType: 'calc',
         description: [
             'Sets the position of the sample points in relation to the box(es).',
             'If *0*, the sample points are places over the center of the box(es).',
@@ -184,7 +184,7 @@ module.exports = {
         opacity: extendFlat({}, scatterMarkerAttrs.opacity,
             {arrayOk: false, dflt: 1, editType: 'style'}),
         size: extendFlat({}, scatterMarkerAttrs.size,
-            {arrayOk: false, editType: 'calcIfAutorange'}),
+            {arrayOk: false, editType: 'calc'}),
         color: extendFlat({}, scatterMarkerAttrs.color,
             {arrayOk: false, editType: 'style'}),
         line: {

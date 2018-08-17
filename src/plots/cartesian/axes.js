@@ -48,8 +48,8 @@ axes.getFromId = axisIds.getFromId;
 axes.getFromTrace = axisIds.getFromTrace;
 
 var autorange = require('./autorange');
-axes.expand = autorange.expand;
 axes.getAutoRange = autorange.getAutoRange;
+axes.findExtremes = autorange.findExtremes;
 
 /*
  * find the list of possible axes to reference with an xref or yref attribute
@@ -503,6 +503,10 @@ axes.prepTicks = function(ax) {
         ax.tick0 = (ax.type === 'date') ? '2000-01-01' : 0;
     }
 
+    // ensure we don't try to make ticks below our minimum precision
+    // see https://github.com/plotly/plotly.js/issues/2892
+    if(ax.type === 'date' && ax.dtick < 0.1) ax.dtick = 0.1;
+
     // now figure out rounding of tick values
     autoTickRound(ax);
 };
@@ -554,7 +558,7 @@ axes.calcTicks = function calcTicks(ax) {
 
     // If same angle over a full circle, the last tick vals is a duplicate.
     // TODO must do something similar for angular date axes.
-    if(ax._id === 'angular' && Math.abs(rng[1] - rng[0]) === 360) {
+    if(isAngular(ax) && Math.abs(rng[1] - rng[0]) === 360) {
         vals.pop();
     }
 
@@ -722,7 +726,7 @@ axes.autoTicks = function(ax, roughDTick) {
         ax.tick0 = 0;
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
-    else if(ax._id === 'angular') {
+    else if(isAngular(ax)) {
         ax.tick0 = 0;
         base = 1;
         ax.dtick = roundDTick(roughDTick, base, roundAngles);
@@ -785,6 +789,11 @@ function autoTickRound(ax) {
             // of all possible ticks - so take the max. length of tick0 and the next one
             var tick1len = ax.l2r(tick0ms + dtick).replace(/^-/, '').length;
             ax._tickround = Math.max(tick0len, tick1len) - 20;
+
+            // We shouldn't get here... but in case there's a situation I'm
+            // not thinking of where tick0str and tick1str are identical or
+            // something, fall back on maximum precision
+            if(ax._tickround < 0) ax._tickround = 4;
         }
     }
     else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
@@ -958,7 +967,7 @@ axes.tickText = function(ax, x, hover) {
     if(ax.type === 'date') formatDate(ax, out, hover, extraPrecision);
     else if(ax.type === 'log') formatLog(ax, out, hover, extraPrecision, hideexp);
     else if(ax.type === 'category') formatCategory(ax, out);
-    else if(ax._id === 'angular') formatAngle(ax, out, hover, extraPrecision, hideexp);
+    else if(isAngular(ax)) formatAngle(ax, out, hover, extraPrecision, hideexp);
     else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
     // add prefix and suffix
@@ -1646,7 +1655,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
             else return 'M' + shift + ',0h' + len;
         };
     }
-    else if(axid === 'angular') {
+    else if(isAngular(ax)) {
         sides = ['left', 'right'];
         transfn = ax._transfn;
         tickpathfn = function(shift, len) {
@@ -1682,7 +1691,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
     var valsClipped = vals.filter(clipEnds);
 
     // don't clip angular values
-    if(ax._id === 'angular') {
+    if(isAngular(ax)) {
         valsClipped = vals;
     }
 
@@ -1751,7 +1760,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
                 return axside === 'right' ? 'start' : 'end';
             };
         }
-        else if(axid === 'angular') {
+        else if(isAngular(ax)) {
             ax._labelShift = labelShift;
             ax._labelStandoff = labelStandoff;
             ax._pad = pad;
@@ -1798,7 +1807,7 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
             maxFontSize = Math.max(maxFontSize, d.fontSize);
         });
 
-        if(axid === 'angular') {
+        if(isAngular(ax)) {
             tickLabels.each(function(d) {
                 d3.select(this).select('text')
                     .call(svgTextUtils.positionText, labelx(d), labely(d));
@@ -2424,4 +2433,8 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes, dfltTitle) {
     for(i = 0; i < yFullAxes.length; i++) {
         np(layout, yFullAxes[i]._name + '.' + key).set(xVal);
     }
+}
+
+function isAngular(ax) {
+    return ax._id === 'angularaxis';
 }

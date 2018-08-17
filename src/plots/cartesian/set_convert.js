@@ -52,8 +52,7 @@ function fromLog(v) {
  * Creates/updates these conversion functions, and a few more utilities
  * like cleanRange, and makeCalcdata
  *
- * also clears the autorange bounds ._min and ._max
- * and the autotick constraints ._minDtick, ._forceTick0
+ * also clears the autotick constraints ._minDtick, ._forceTick0
  */
 module.exports = function setConvert(ax, fullLayout) {
     fullLayout = fullLayout || {};
@@ -467,15 +466,6 @@ module.exports = function setConvert(ax, fullLayout) {
     };
 
     ax.clearCalc = function() {
-        // for autoranging: arrays of objects:
-        // {
-        //     val: axis value,
-        //     pad: pixel padding,
-        //     extrapad: boolean, should this val get 5% additional padding
-        // }
-        ax._min = [];
-        ax._max = [];
-
         // initialize the category list, if there is one, so we start over
         // to be filled in later by ax.d2c
         ax._categories = (ax._initialCategories || []).slice();

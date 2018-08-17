@@ -15,24 +15,19 @@ var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var helpers = require('./helpers');
 
-module.exports = function calc(gd, trace) {
+exports.calc = function calc(gd, trace) {
     var vals = trace.values;
     var hasVals = isArrayOrTypedArray(vals) && vals.length;
     var labels = trace.labels;
     var colors = trace.marker.colors || [];
     var cd = [];
     var fullLayout = gd._fullLayout;
-    var colorWay = fullLayout.colorway;
     var colorMap = fullLayout._piecolormap;
     var allThisTraceLabels = {};
     var vTotal = 0;
     var hiddenLabels = fullLayout.hiddenlabels || [];
 
     var i, v, label, hidden, pt;
-
-    if(!fullLayout._piecolorway && colorWay !== Color.defaults) {
-        fullLayout._piecolorway = generateDefaultColors(colorWay);
-    }
 
     if(trace.dlabel) {
         labels = new Array(vals.length);
@@ -79,7 +74,7 @@ module.exports = function calc(gd, trace) {
             cd.push({
                 v: v,
                 label: label,
-                color: pullColor(colors[i]),
+                color: pullColor(colors[i], label),
                 i: i,
                 pts: [i],
                 hidden: hidden
@@ -98,29 +93,6 @@ module.exports = function calc(gd, trace) {
     }
 
     if(trace.sort) cd.sort(function(a, b) { return b.v - a.v; });
-
-    /**
-     * now go back and fill in colors we're still missing
-     * this is done after sorting, so we pick defaults
-     * in the order slices will be displayed
-     */
-
-    for(i = 0; i < cd.length; i++) {
-        pt = cd[i];
-        if(pt.color === false) {
-            // have we seen this label and assigned a color to it in a previous trace?
-            if(colorMap[pt.label]) {
-                pt.color = colorMap[pt.label];
-            }
-            else {
-                colorMap[pt.label] = pt.color = nextDefaultColor(
-                    fullLayout._piedefaultcolorcount,
-                    fullLayout._piecolorway
-                );
-                fullLayout._piedefaultcolorcount++;
-            }
-        }
-    }
 
     // include the sum of all values in the first point
     if(cd[0]) cd[0].vTotal = vTotal;
@@ -151,34 +123,66 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
+/*
+ * `calc` filled in (and collated) explicit colors.
+ * Now we need to propagate these explicit colors to other traces,
+ * and fill in default colors.
+ * This is done after sorting, so we pick defaults
+ * in the order slices will be displayed
+ */
+exports.crossTraceCalc = function(gd) {
+    var fullLayout = gd._fullLayout;
+    var calcdata = gd.calcdata;
+    var pieColorWay = fullLayout.piecolorway;
+    var colorMap = fullLayout._piecolormap;
+
+    if(fullLayout.extendpiecolors) {
+        pieColorWay = generateExtendedColors(pieColorWay);
+    }
+    var dfltColorCount = 0;
+
+    var i, j, cd, pt;
+    for(i = 0; i < calcdata.length; i++) {
+        cd = calcdata[i];
+        if(cd[0].trace.type !== 'pie') continue;
+
+        for(j = 0; j < cd.length; j++) {
+            pt = cd[j];
+            if(pt.color === false) {
+                // have we seen this label and assigned a color to it in a previous trace?
+                if(colorMap[pt.label]) {
+                    pt.color = colorMap[pt.label];
+                }
+                else {
+                    colorMap[pt.label] = pt.color = pieColorWay[dfltColorCount % pieColorWay.length];
+                    dfltColorCount++;
+                }
+            }
+        }
+    }
+};
+
 /**
  * pick a default color from the main default set, augmented by
  * itself lighter then darker before repeating
  */
-var pieDefaultColors;
+var extendedColorWays = {};
 
-function nextDefaultColor(index, pieColorWay) {
-    if(!pieDefaultColors) {
-        // generate this default set on demand (but then it gets saved in the module)
-        var mainDefaults = Color.defaults;
-        pieDefaultColors = generateDefaultColors(mainDefaults);
-    }
-
-    var pieColors = pieColorWay || pieDefaultColors;
-    return pieColors[index % pieColors.length];
-}
-
-function generateDefaultColors(colorList) {
+function generateExtendedColors(colorList) {
     var i;
+    var colorString = JSON.stringify(colorList);
+    var pieColors = extendedColorWays[colorString];
+    if(!pieColors) {
+        pieColors = colorList.slice();
 
-    var pieColors = colorList.slice();
+        for(i = 0; i < colorList.length; i++) {
+            pieColors.push(tinycolor(colorList[i]).lighten(20).toHexString());
+        }
 
-    for(i = 0; i < colorList.length; i++) {
-        pieColors.push(tinycolor(colorList[i]).lighten(20).toHexString());
-    }
-
-    for(i = 0; i < colorList.length; i++) {
-        pieColors.push(tinycolor(colorList[i]).darken(20).toHexString());
+        for(i = 0; i < colorList.length; i++) {
+            pieColors.push(tinycolor(colorList[i]).darken(20).toHexString());
+        }
+        extendedColorWays[colorString] = pieColors;
     }
 
     return pieColors;

@@ -16,6 +16,7 @@ var assertStyle = customAssertions.assertStyle;
 var mockFullLayout = {
     _subplots: {cartesian: ['xy'], xaxis: ['x'], yaxis: ['y']},
     _modules: [],
+    _visibleModules: [],
     _basePlotModules: [],
     _has: function() {},
     _dfltTitle: {x: 'xxx', y: 'yyy'},

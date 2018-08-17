@@ -110,7 +110,7 @@ module.exports = {
         max: 0.5,
         dflt: 0.3,
         role: 'style',
-        editType: 'calcIfAutorange',
+        editType: 'calc',
         description: [
             'Sets the width of the open/close tick marks',
             'relative to the *x* minimal interval.'

@@ -58,6 +58,23 @@ module.exports = {
             description: 'Sets the dimension values to be plotted.'
         },
 
+        axis: {
+            type: {
+                valType: 'enumerated',
+                values: ['linear', 'log', 'date', 'category'],
+                role: 'info',
+                editType: 'calc+clearAxisTypes',
+                description: [
+                    'Sets the axis type for this dimension\'s generated',
+                    'x and y axes.',
+                    'Note that the axis `type` values set in layout take',
+                    'precedence over this attribute.'
+                ].join(' ')
+            },
+
+            editType: 'calc+clearAxisTypes'
+        },
+
         // TODO should add an attribute to pin down x only vars and y only vars
         // like https://seaborn.pydata.org/generated/seaborn.pairplot.html
         // x_vars and y_vars

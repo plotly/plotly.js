@@ -6,32 +6,24 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Registry = require('../../registry');
 var autoType = require('./axis_autotype');
-var name2id = require('./axis_ids').name2id;
 
 /*
  *  data: the plot data to use in choosing auto type
  *  name: axis object name (ie 'xaxis') if one should be stored
  */
-module.exports = function handleTypeDefaults(containerIn, containerOut, coerce, data, name) {
-    // set up some private properties
-    if(name) {
-        containerOut._name = name;
-        containerOut._id = name2id(name);
-    }
+module.exports = function handleTypeDefaults(containerIn, containerOut, coerce, options) {
+    var axType = coerce('type', (options.splomStash || {}).type);
 
-    var axType = coerce('type');
     if(axType === '-') {
-        setAutoType(containerOut, data);
+        setAutoType(containerOut, options.data);
 
         if(containerOut.type === '-') {
             containerOut.type = 'linear';
-        }
-        else {
+        } else {
             // copy autoType back to input axis
             // note that if this object didn't exist
             // in the input layout, we have to put it in
@@ -89,9 +81,10 @@ function setAutoType(ax, data) {
     }
     else if(d0.type === 'splom') {
         var dimensions = d0.dimensions;
+        var diag = d0._diag;
         for(i = 0; i < dimensions.length; i++) {
             var dim = dimensions[i];
-            if(dim.visible) {
+            if(dim.visible && (diag[i][0] === id || diag[i][1] === id)) {
                 ax.type = autoType(dim.values, calendar);
                 break;
             }
@@ -108,7 +101,7 @@ function getFirstNonEmptyTrace(data, id, axLetter) {
 
         if(trace.type === 'splom' &&
                 trace._length > 0 &&
-                trace['_' + axLetter + 'axes'][id]
+                (trace['_' + axLetter + 'axes'] || {})[id]
         ) {
             return trace;
         }

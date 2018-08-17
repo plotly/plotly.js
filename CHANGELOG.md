@@ -10,6 +10,62 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.40.0] -- 2018-08-16
+
+### Added
+- Allow `contour`, `contourcarpet` and `histogram2dcontour` to have
+  corresponding legend items using `showlegend` [#2891, #2914]
+- Add `scatterpolar` and `scatterpolargl` attributes `r0`, `dr`, `theta0` and
+  `dtheta` [#2895]
+- Add layout attributes `piecolorway` and `extendpiecolors`
+  for more control over `pie` colors [#2870]
+- Add splom attribute `dimensions[i].axis.type` to easily override axis type
+  in splom-generated axes [#2899]
+- Add support for on-graph text in `scatterpolargl` traces [#2895]
+
+### Changed
+- Use `derequire` browserify plugin to make bundling distributed npm package
+  with browserify possible [#2905]
+- Speed up cartesian axis autorange edits (and thus double-click interactions) [#2823]
+- Do not clear WebGL context when `scattergl` graph has no `visible:true`
+  traces, which speeds up e.g. legend interactions [#2860]
+- Compute data extremes per trace, which improves performance in some cases [#2860]
+- Use `<linearGradient>` to render filled colorbars [#2910, #2914]
+- Rename trace module `setPositions` methods `crossTraceCalc` [#2868]
+- Use `regl@1.3.7` [#2863]
+
+### Fixed
+- Fix scalar `marker.size` bounds in legend items [#2840]
+- Fix positioning of legend symbols for traces with fills [#2891]
+- Fix `scattergl` select -> double-click -> pan behavior [#2815]
+- Fix `scattergl` marker for IE11 [#2863]
+- Fix inheritance of explicit `pie` colors by later traces [#2870]
+- Fix layer ordering on graphs with multiple `contour` traces with heatmap
+  coloring [#2891]
+- Fix layer ordering on `visible` toggling for `contour`-like traces [#2891]
+- Fix cases where colorbars would be drawn over its bounds [#2910]
+- Fix `tickwidth` edits on `ohlc` traces [#2823]
+- Fix labels on splom-generated axes with categorical data [#2899]
+- Fix handling of splom dimensions on axes of conflicting types [#2899]
+- Fix `splom` trace `visible` edits [#2860]
+- Fix `splom` select -> double-click -> pan behavior [#2899]
+- Fix `scatterpolargl` behavior during angular and radial drag interactions [#2888]
+- Fix handling of auto date ticks below our 100 microseconds limit [#2912]
+- Fix `scatter3d` attributes which had incorrectly labeled `textposition`
+  and `textfont.family` as `arrayOk` and contained unimplemented `line.showscale`
+  and `line.colorbar` [#2879]
+- Fix `scattergl` and `scatterpolargl` attribute declarations for `hoveron` [#2895]
+
+
+## [1.39.4] -- 2018-08-02
+
+### Fixed
+- Fix tenths of milliseconds handling in old numeric date data
+  (bug introduced in 1.21.0) [#2847]
+- Fix `yaxis` overlaying `yaxis2` layouts
+  (bug introduced in 1.39.3) [#2857]
+
+
 ## [1.39.3] -- 2018-07-25
 
 ### Fixed

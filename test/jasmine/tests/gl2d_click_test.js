@@ -14,6 +14,7 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 // from the mousemove events and then simulate
 // a click event on mouseup
 var click = require('../assets/timed_click');
+var doubleClick = require('../assets/double_click');
 var hover = require('../assets/hover');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
@@ -959,6 +960,176 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
             // from https://github.com/plotly/plotly.js/issues/2731<Paste>
             expect(readContext()).toBe(0, 'update+select context');
             expect(readFocus()).toBeGreaterThan(1e4, 'update+select focus');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should behave correctly during select+doubleclick+pan scenarios', function(done) {
+        gd = createGraphDiv();
+
+        // See https://github.com/plotly/plotly.js/issues/2767
+
+        function grabScene() {
+            return gd.calcdata[0][0].t._scene;
+        }
+
+        function _assert(msg, exp) {
+            var scene = grabScene();
+            var scatter2d = scene.scatter2d;
+
+            expect((scene.markerOptions || [])[0].opacity)
+                .toBe(1, 'marker.opacity - ' + msg);
+            expect((scene.markerSelectedOptions || [])[0].opacity)
+                .toBe(1, 'selected.marker.opacity - ' + msg);
+            expect((scene.markerUnselectedOptions || [])[0].opacity)
+                .toBe(0.2, 'unselected.marker.opacity - ' + msg);
+
+            expect(scene.selectBatch).toEqual(exp.selectBatch);
+            expect(scene.unselectBatch).toEqual(exp.unselectBatch);
+
+            var updateCalls = scatter2d.update.calls.all();
+            var drawCalls = scatter2d.draw.calls.all();
+
+            expect(updateCalls.length).toBe(
+                exp.updateArgs.length,
+                'scatter2d.update has been called the correct number of times - ' + msg
+            );
+            updateCalls.forEach(function(d, i) {
+                d.args.forEach(function(arg, j) {
+                    if('range' in arg[0]) {
+                        // no need to assert range value in detail
+                        expect(exp.updateArgs[i][j]).toBe(
+                            'range',
+                            'scatter.update range update - ' + msg
+                        );
+                    } else {
+                        expect(arg).toBe(
+                            exp.updateArgs[i][j],
+                            'scatter.update call' + i + ' arg' + j + ' - ' + msg
+                        );
+                    }
+                });
+            });
+
+            expect(drawCalls.length).toBe(
+                exp.drawArgs.length,
+                'scatter2d.draw has been called the correct number of times - ' + msg
+            );
+            drawCalls.forEach(function(d, i) {
+                d.args.forEach(function(arg, j) {
+                    expect(arg).toBe(
+                        exp.drawArgs[i][j],
+                        'scatter.draw call' + i + ' arg' + j + ' - ' + msg
+                    );
+                });
+            });
+
+            scene.scatter2d.update.calls.reset();
+            scene.scatter2d.draw.calls.reset();
+        }
+
+        var unselectBatchOld;
+
+        Plotly.newPlot('graph', [{
+            type: 'scattergl',
+            mode: 'markers',
+            y: [1, 2, 1],
+            marker: {size: 30}
+        }], {
+            dragmode: 'select',
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            width: 500,
+            height: 500
+        })
+        .then(delay(100))
+        .then(function() {
+            var scene = grabScene();
+            spyOn(scene.scatter2d, 'update').and.callThrough();
+            spyOn(scene.scatter2d, 'draw').and.callThrough();
+        })
+        .then(function() {
+            _assert('base', {
+                selectBatch: [],
+                unselectBatch: [],
+                updateArgs: [],
+                drawArgs: []
+            });
+        })
+        .then(function() { return select([[20, 20], [480, 250]]); })
+        .then(function() {
+            var scene = grabScene();
+            _assert('after select', {
+                selectBatch: [[1]],
+                unselectBatch: [[0, 2]],
+                updateArgs: [
+                    // N.B. scatter2d now draws unselected options
+                    [scene.markerUnselectedOptions],
+                ],
+                drawArgs: [
+                    [scene.unselectBatch]
+                ]
+            });
+        })
+        .then(function() { return doubleClick(250, 250); })
+        .then(function() {
+            var scene = grabScene();
+            _assert('after doubleclick', {
+                selectBatch: [null],
+                unselectBatch: [[0, 1, 2]],
+                updateArgs: [],
+                drawArgs: [
+                    // call in no-selection loop (can we get rid of this?)
+                    [0],
+                    // call with unselectBatch
+                    [scene.unselectBatch]
+                ]
+            });
+        })
+        .then(function() { return Plotly.relayout(gd, 'dragmode', 'pan'); })
+        .then(function() {
+            _assert('after relayout to *pan*', {
+                selectBatch: [null],
+                unselectBatch: [[0, 1, 2]],
+                // nothing to do when relayouting to 'pan'
+                updateArgs: [],
+                drawArgs: []
+            });
+
+            // keep ref for next _assert()
+            var scene = grabScene();
+            unselectBatchOld = scene.unselectBatch;
+        })
+        .then(function() { return drag([[200, 200], [250, 250]]); })
+        .then(function() {
+            var scene = grabScene();
+            _assert('after pan', {
+                selectBatch: null,
+                unselectBatch: null,
+                // drag triggers:
+                // - 2 scene.update() calls, which each invoke
+                //   + 1 scatter2d.update (updating viewport)
+                //   + 2 scatter2d.draw (same as after double-click)
+                //
+                // replot on mouseup triggers:
+                // - 1 scatter2d.update updating viewport
+                // - 1 scatter2d.update resetting markerOptions
+                // - 1 (full) scene.draw()
+                updateArgs: [
+                    ['range'],
+                    ['range'],
+                    // N.B. bring scatter2d back to 'base' marker options
+                    [scene.markerOptions],
+                    ['range']
+                ],
+                drawArgs: [
+                    [0],
+                    [unselectBatchOld],
+                    [0],
+                    [unselectBatchOld],
+                    [0]
+                ]
+            });
         })
         .catch(failTest)
         .then(done);

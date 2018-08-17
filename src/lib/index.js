@@ -87,6 +87,7 @@ lib.deg2rad = anglesModule.deg2rad;
 lib.rad2deg = anglesModule.rad2deg;
 lib.wrap360 = anglesModule.wrap360;
 lib.wrap180 = anglesModule.wrap180;
+lib.isFullCircle = anglesModule.isFullCircle;
 
 var geom2dModule = require('./geometry2d');
 lib.segmentsIntersect = geom2dModule.segmentsIntersect;
@@ -116,6 +117,8 @@ lib.throttleDone = throttleModule.done;
 lib.clearThrottle = throttleModule.clear;
 
 lib.getGraphDiv = require('./get_graph_div');
+
+lib.makeTraceGroups = require('./make_trace_groups');
 
 lib._ = require('./localize');
 
@@ -149,6 +152,21 @@ lib.isIndex = function(v, len) {
 
 lib.noop = require('./noop');
 lib.identity = require('./identity');
+
+/**
+ * create an array of length 'cnt' filled with 'v' at all indices
+ *
+ * @param {any} v
+ * @param {number} cnt
+ * @return {array}
+ */
+lib.repeat = function(v, cnt) {
+    var out = new Array(cnt);
+    for(var i = 0; i < cnt; i++) {
+        out[i] = v;
+    }
+    return out;
+};
 
 /**
  * swap x and y of the same attribute in container cont

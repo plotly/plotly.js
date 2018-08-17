@@ -216,7 +216,7 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
             var className = (_module.layerName || name + 'layer');
             var plotMethod = _module.plot;
 
-            // plot all traces of this type on this subplot at once
+            // plot all visible traces of this type on this subplot at once
             cdModuleAndOthers = getModuleCalcData(cdSubplot, plotMethod);
             cdModule = cdModuleAndOthers[0];
             // don't need to search the found traces again - in fact we need to NOT
@@ -392,8 +392,11 @@ function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout;
     var ids = fullLayout._subplots.cartesian;
     var len = ids.length;
-    var subplotData = new Array(len);
     var i, j, id, plotinfo, xa, ya;
+
+    // split 'regular' and 'overlaying' subplots
+    var regulars = [];
+    var overlays = [];
 
     for(i = 0; i < len; i++) {
         id = ids[i];
@@ -408,25 +411,35 @@ function makeSubplotData(gd) {
         plotinfo.overlays = [];
 
         if(mainplot !== id && mainplotinfo) {
-            // link 'main plot' ref in overlaying plotinfo
             plotinfo.mainplot = mainplot;
             plotinfo.mainplotinfo = mainplotinfo;
-            // fill in list of overlaying subplots in 'main plot'
-            mainplotinfo.overlays.push(plotinfo);
+            overlays.push(id);
         } else {
             plotinfo.mainplot = undefined;
             plotinfo.mainPlotinfo = undefined;
+            regulars.push(id);
         }
     }
 
-    // use info about axis layer and overlaying pattern
-    // to clean what need to be cleaned up in exit selection
+    // fill in list of overlaying subplots in 'main plot'
+    for(i = 0; i < overlays.length; i++) {
+        id = overlays[i];
+        plotinfo = fullLayout._plots[id];
+        plotinfo.mainplotinfo.overlays.push(plotinfo);
+    }
+
+    // put 'regular' subplot data before 'overlaying'
+    var subplotIds = regulars.concat(overlays);
+    var subplotData = new Array(len);
+
     for(i = 0; i < len; i++) {
-        id = ids[i];
+        id = subplotIds[i];
         plotinfo = fullLayout._plots[id];
         xa = plotinfo.xaxis;
         ya = plotinfo.yaxis;
 
+        // use info about axis layer and overlaying pattern
+        // to clean what need to be cleaned up in exit selection
         var d = [id, xa.layer, ya.layer, xa.overlaying || '', ya.overlaying || ''];
         for(j = 0; j < plotinfo.overlays.length; j++) {
             d.push(plotinfo.overlays[j].id);

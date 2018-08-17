@@ -634,7 +634,7 @@ describe('Test plot api', function() {
         });
 
         it('should trigger minimal sequence for cartesian axis range updates', function() {
-            var seq = ['doTicksRelayout', 'drawData', 'finalDraw'];
+            var seq = ['doAutoRangeAndConstraints', 'doTicksRelayout', 'drawData', 'finalDraw'];
 
             function _assert(msg) {
                 expect(gd.calcdata).toBeDefined();
@@ -650,7 +650,10 @@ describe('Test plot api', function() {
                 ['relayout', ['xaxis.range[0]', 0]],
                 ['relayout', ['xaxis.range[1]', 3]],
                 ['relayout', ['xaxis.range', [-1, 5]]],
-                ['update', [{}, {'xaxis.range': [-1, 10]}]]
+                ['update', [{}, {'xaxis.range': [-1, 10]}]],
+
+                ['relayout', ['xaxis.autorange', true]],
+                ['update', [{}, {'xaxis.autorange': true}]]
             ];
 
             specs.forEach(function(s) {

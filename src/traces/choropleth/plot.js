@@ -22,18 +22,8 @@ module.exports = function plot(gd, geo, calcData) {
         calcGeoJSON(calcData[i], geo.topojson);
     }
 
-    function keyFunc(d) { return d[0].trace.uid; }
-
-    var gTraces = geo.layers.backplot.select('.choroplethlayer')
-        .selectAll('g.trace.choropleth')
-        .data(calcData, keyFunc);
-
-    gTraces.enter().append('g')
-        .attr('class', 'trace choropleth');
-
-    gTraces.exit().remove();
-
-    gTraces.each(function(calcTrace) {
+    var choroplethLayer = geo.layers.backplot.select('.choroplethlayer');
+    Lib.makeTraceGroups(choroplethLayer, calcData, 'trace choropleth').each(function(calcTrace) {
         var sel = calcTrace[0].node3 = d3.select(this);
 
         var paths = sel.selectAll('path.choroplethlocation')

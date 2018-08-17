@@ -96,8 +96,9 @@ function calcAxisExpansion(gd, trace, xa, ya, x, y, ppad) {
         yOptions.padded = false;
     }
 
-    Axes.expand(xa, x, xOptions);
-    Axes.expand(ya, y, yOptions);
+    // N.B. asymmetric splom traces call this with blank {} xa or ya
+    if(xa._id) trace._extremes[xa._id] = Axes.findExtremes(xa, x, xOptions);
+    if(ya._id) trace._extremes[ya._id] = Axes.findExtremes(ya, y, yOptions);
 }
 
 function calcMarkerSize(trace, serieslen) {

@@ -21,28 +21,16 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
+    var numBoxes = fullLayout._numBoxes;
+    var groupFraction = (1 - fullLayout.boxgap);
+    var group = (fullLayout.boxmode === 'group' && numBoxes > 1);
 
-    var boxtraces = boxLayer.selectAll('g.trace.boxes')
-        .data(cdbox, function(d) { return d[0].trace.uid; });
-
-    boxtraces.enter().append('g')
-        .attr('class', 'trace boxes');
-
-    boxtraces.exit().remove();
-
-    boxtraces.order();
-
-    boxtraces.each(function(d) {
-        var cd0 = d[0];
+    Lib.makeTraceGroups(boxLayer, cdbox, 'trace boxes').each(function(cd) {
+        var plotGroup = d3.select(this);
+        var cd0 = cd[0];
         var t = cd0.t;
         var trace = cd0.trace;
-        var sel = d3.select(this);
-        if(!plotinfo.isRangePlot) cd0.node3 = sel;
-        var numBoxes = fullLayout._numBoxes;
-
-        var groupFraction = (1 - fullLayout.boxgap);
-
-        var group = (fullLayout.boxmode === 'group' && numBoxes > 1);
+        if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
         // box half width
         var bdPos = t.dPos * groupFraction * (1 - fullLayout.boxgroupgap) / (group ? numBoxes : 1);
         // box center offset
@@ -51,7 +39,7 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
         var wdPos = bdPos * trace.whiskerwidth;
 
         if(trace.visible !== true || t.empty) {
-            sel.remove();
+            plotGroup.remove();
             return;
         }
 
@@ -73,9 +61,9 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
         // always split the distance to the closest box
         t.wHover = t.dPos * (group ? groupFraction / numBoxes : 1);
 
-        plotBoxAndWhiskers(sel, {pos: posAxis, val: valAxis}, trace, t);
-        plotPoints(sel, {x: xa, y: ya}, trace, t);
-        plotBoxMean(sel, {pos: posAxis, val: valAxis}, trace, t);
+        plotBoxAndWhiskers(plotGroup, {pos: posAxis, val: valAxis}, trace, t);
+        plotPoints(plotGroup, {x: xa, y: ya}, trace, t);
+        plotBoxMean(plotGroup, {pos: posAxis, val: valAxis}, trace, t);
     });
 }
 

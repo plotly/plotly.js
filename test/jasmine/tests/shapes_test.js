@@ -86,10 +86,10 @@ describe('Test shapes defaults:', function() {
 
     it('should provide the right defaults on all axis types', function() {
         var fullLayout = {
-            xaxis: {type: 'linear', range: [0, 20]},
-            yaxis: {type: 'log', range: [1, 5]},
-            xaxis2: {type: 'date', range: ['2006-06-05', '2006-06-09']},
-            yaxis2: {type: 'category', range: [-0.5, 7.5]},
+            xaxis: {type: 'linear', range: [0, 20], _shapeIndices: []},
+            yaxis: {type: 'log', range: [1, 5], _shapeIndices: []},
+            xaxis2: {type: 'date', range: ['2006-06-05', '2006-06-09'], _shapeIndices: []},
+            yaxis2: {type: 'category', range: [-0.5, 7.5], _shapeIndices: []},
             _subplots: {xaxis: ['x', 'x2'], yaxis: ['y', 'y2']}
         };
 
@@ -529,11 +529,16 @@ describe('shapes edge cases', function() {
 });
 
 describe('shapes autosize', function() {
-    'use strict';
-
     var gd;
 
     afterEach(destroyGraphDiv);
+
+    function assertRanges(msg, x, y) {
+        var fullLayout = gd._fullLayout;
+        var PREC = 1;
+        expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, msg + ' - xaxis');
+        expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, msg + ' - yaxis');
+    }
 
     it('should adapt to relayout calls', function(done) {
         gd = createGraphDiv();
@@ -557,31 +562,55 @@ describe('shapes autosize', function() {
             }
         };
 
-        function assertRanges(x, y) {
-            var fullLayout = gd._fullLayout;
-            var PREC = 1;
-
-            expect(fullLayout.xaxis.range).toBeCloseToArray(x, PREC, '- xaxis');
-            expect(fullLayout.yaxis.range).toBeCloseToArray(y, PREC, '- yaxis');
-        }
-
         Plotly.plot(gd, mock).then(function() {
-            assertRanges([0, 2], [0, 2]);
-
+            assertRanges('base', [0, 2], [0, 2]);
             return Plotly.relayout(gd, { 'shapes[1].visible': false });
         })
         .then(function() {
-            assertRanges([0, 1], [0, 1]);
+            assertRanges('shapes[1] not visible', [0, 1], [0, 1]);
 
             return Plotly.relayout(gd, { 'shapes[1].visible': true });
         })
         .then(function() {
-            assertRanges([0, 2], [0, 2]);
+            assertRanges('back to base', [0, 2], [0, 2]);
 
             return Plotly.relayout(gd, { 'shapes[0].x1': 3 });
         })
         .then(function() {
-            assertRanges([0, 3], [0, 2]);
+            assertRanges('stretched shapes[0]', [0, 3], [0, 2]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('should propagate axis autorange changes when axis ranges are set', function(done) {
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, [{y: [1, 2]}], {
+            xaxis: {range: [0, 2]},
+            yaxis: {range: [0, 2]},
+            shapes: [{
+                x0: 2, y0: 2,
+                x1: 3, y1: 3
+            }]
+        })
+        .then(function() {
+            assertRanges('set rng / narrow shape', [0, 2], [0, 2]);
+            return Plotly.relayout(gd, 'shapes[0].x1', 10);
+        })
+        .then(function() {
+            assertRanges('set rng / large shape', [0, 2], [0, 2]);
+            return Plotly.relayout(gd, {
+                'xaxis.autorange': true,
+                'yaxis.autorange': true
+            });
+        })
+        .then(function() {
+            assertRanges('auto rng / large shape', [-0.61, 10], [0.86, 3]);
+            return Plotly.relayout(gd, 'shapes[0].x1', 3);
+        })
+        .then(function() {
+            assertRanges('auto rng / small shape', [-0.18, 3], [0.86, 3]);
         })
         .catch(failTest)
         .then(done);

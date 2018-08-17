@@ -93,37 +93,47 @@ describe('Test colorbar:', function() {
             .then(done);
         });
 
-        // let heatmap stand in for all traces with trace.{showscale, colorbar}
-        // also test impliedEdits for colorbars at the trace root
-        it('can show and hide heatmap colorbars and sizes correctly with automargin', function(done) {
-            function assertCB(msg, present, expandedMarginR, expandedMarginT, cbTop, cbHeight) {
-                var colorbars = d3.select(gd).selectAll('.colorbar');
-                expect(colorbars.size()).toBe(present ? 1 : 0);
+        function assertCB(msg, present, opts) {
+            var expandedMarginR = opts.expandedMarginR;
+            var expandedMarginT = opts.expandedMarginT;
+            var cbTop = opts.top;
+            var cbHeight = opts.height;
+            var multiFill = opts.multiFill;
+            var colorbars = d3.select(gd).selectAll('.colorbar');
+            expect(colorbars.size()).toBe(present ? 1 : 0);
 
-                var cbbg = colorbars.selectAll('.colorbar .cbbg');
+            // check that the displayed object has the right size,
+            // not just that fullLayout._size changed
+            var plotSizeTest = {};
+            if(expandedMarginR) plotSizeTest.widthLessThan = 400;
+            else plotSizeTest.width = 400;
 
-                // check that the displayed object has the right size,
-                // not just that fullLayout._size changed
-                var plotSizeTest = {};
-                if(expandedMarginR) plotSizeTest.widthLessThan = 400;
-                else plotSizeTest.width = 400;
+            if(expandedMarginT) plotSizeTest.heightLessThan = 400;
+            else plotSizeTest.height = 400;
 
-                if(expandedMarginT) plotSizeTest.heightLessThan = 400;
-                else plotSizeTest.height = 400;
+            assertPlotSize(plotSizeTest);
 
-                assertPlotSize(plotSizeTest);
+            if(present) {
+                var cbbg = colorbars.selectAll('.cbbg');
+                var cbfills = colorbars.selectAll('.cbfill');
 
-                if(present) {
-                    if(!cbHeight) cbHeight = 400;
-                    var bgHeight = +cbbg.attr('height');
-                    if(expandedMarginT) expect(bgHeight).toBeLessThan(cbHeight - 2);
-                    else expect(bgHeight).toBeWithin(cbHeight, 2);
+                expect(cbfills.size()).negateIf(multiFill).toBe(1);
 
+                if(!cbHeight) cbHeight = 400;
+                var bgHeight = +cbbg.attr('height');
+                if(expandedMarginT) expect(bgHeight).toBeLessThan(cbHeight - 2);
+                else expect(bgHeight).toBeWithin(cbHeight, 2);
+
+                if(cbTop !== undefined) {
                     var topShift = cbbg.node().getBoundingClientRect().top - gd.getBoundingClientRect().top;
                     expect(topShift).toBeWithin(cbTop, 2);
                 }
             }
+        }
 
+        // let heatmap stand in for all traces with trace.{showscale, colorbar}
+        // also test impliedEdits for colorbars at the trace root
+        it('can show and hide heatmap colorbars and sizes correctly with automargin', function(done) {
             var thickPx, lenFrac;
 
             Plotly.newPlot(gd, [{
@@ -135,22 +145,22 @@ describe('Test colorbar:', function() {
                 margin: {l: 50, r: 50, t: 50, b: 50}
             })
             .then(function() {
-                assertCB('initial', true, true, false, 50);
+                assertCB('initial', true, {expandedMarginR: true, expandedMarginT: false, top: 50});
 
                 return Plotly.restyle(gd, {showscale: false});
             })
             .then(function() {
-                assertCB('hidden', false, false, false);
+                assertCB('hidden', false, {expandedMarginR: false, expandedMarginT: false});
 
                 return Plotly.restyle(gd, {showscale: true, 'colorbar.y': 0.8});
             })
             .then(function() {
-                assertCB('up high', true, true, true, 12);
+                assertCB('up high', true, {expandedMarginR: true, expandedMarginT: true, top: 12});
 
                 return Plotly.restyle(gd, {'colorbar.y': 0.7});
             })
             .then(function() {
-                assertCB('a little lower', true, true, true, 12);
+                assertCB('a little lower', true, {expandedMarginR: true, expandedMarginT: true, top: 12});
 
                 return Plotly.restyle(gd, {
                     'colorbar.x': 0.7,
@@ -160,7 +170,7 @@ describe('Test colorbar:', function() {
                 });
             })
             .then(function() {
-                assertCB('mid-plot', true, false, false, 150, 200);
+                assertCB('mid-plot', true, {expandedMarginR: false, expandedMarginT: false, top: 150, height: 200});
 
                 thickPx = gd._fullData[0].colorbar.thickness;
                 lenFrac = gd._fullData[0].colorbar.len;
@@ -177,7 +187,7 @@ describe('Test colorbar:', function() {
                 expect(gd._fullData[0].colorbar.len)
                     .toBeCloseTo(lenFrac * 400, 3);
 
-                assertCB('changed size modes', true, true, false, 150, 200);
+                assertCB('changed size modes', true, {expandedMarginR: true, expandedMarginT: false, top: 150, height: 200});
             })
             .catch(failTest)
             .then(done);
@@ -185,13 +195,6 @@ describe('Test colorbar:', function() {
 
         // scatter has trace.marker.{showscale, colorbar}
         it('can show and hide scatter colorbars', function(done) {
-            function assertCB(present, expandedMargin) {
-                var colorbars = d3.select(gd).selectAll('.colorbar');
-                expect(colorbars.size()).toBe(present ? 1 : 0);
-
-                assertPlotSize(expandedMargin ? {widthLessThan: 400} : {width: 400});
-            }
-
             Plotly.newPlot(gd, [{
                 y: [1, 2, 3],
                 marker: {color: [1, 2, 3], showscale: true}
@@ -201,36 +204,29 @@ describe('Test colorbar:', function() {
                 margin: {l: 50, r: 50, t: 50, b: 50}
             })
             .then(function() {
-                assertCB(true, true);
+                assertCB('initial', true, {expandedMarginR: true});
 
                 return Plotly.restyle(gd, {'marker.showscale': false});
             })
             .then(function() {
-                assertCB(false, false);
+                assertCB('hidden', false, {expandedMarginR: false});
 
                 return Plotly.restyle(gd, {'marker.showscale': true, 'marker.colorbar.x': 0.7});
             })
             .then(function() {
-                assertCB(true, false);
+                assertCB('mid-plot', true, {expandedMarginR: false});
 
                 return Plotly.restyle(gd, {'marker.colorbar.x': 1.1});
             })
             .then(function() {
-                assertCB(true, true);
+                assertCB('far right', true, {expandedMarginR: true});
             })
             .catch(failTest)
             .then(done);
         });
 
         // histogram colorbars could not be edited before
-        it('can show and hide scatter colorbars', function(done) {
-            function assertCB(present, expandedMargin) {
-                var colorbars = d3.select(gd).selectAll('.colorbar');
-                expect(colorbars.size()).toBe(present ? 1 : 0);
-
-                assertPlotSize(expandedMargin ? {widthLessThan: 400} : {width: 400});
-            }
-
+        it('can show and hide histogram colorbars', function(done) {
             Plotly.newPlot(gd, [{
                 type: 'histogram',
                 x: [0, 1, 1, 2, 2, 2, 3, 3, 4],
@@ -242,22 +238,53 @@ describe('Test colorbar:', function() {
                 margin: {l: 50, r: 50, t: 50, b: 50}
             })
             .then(function() {
-                assertCB(true, true);
+                assertCB('initial', true, {expandedMarginR: true});
 
                 return Plotly.restyle(gd, {'marker.showscale': false});
             })
             .then(function() {
-                assertCB(false, false);
+                assertCB('hidden', false, {expandedMarginR: false});
 
                 return Plotly.restyle(gd, {'marker.showscale': true, 'marker.colorbar.x': 0.7});
             })
             .then(function() {
-                assertCB(true, false);
+                assertCB('mid-plot', true, {expandedMarginR: false});
 
                 return Plotly.restyle(gd, {'marker.colorbar.x': 1.1});
             })
             .then(function() {
-                assertCB(true, true);
+                assertCB('far right', true, {expandedMarginR: true});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('creates multiple fills for contour colorbars', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'contour',
+                z: [[1, 10], [100, 1000]]
+            }], {
+                height: 500,
+                width: 500,
+                margin: {l: 50, r: 50, t: 50, b: 50}
+            })
+            .then(function() {
+                assertCB('initial', true, {expandedMarginR: true, expandedMarginT: false, top: 50, multiFill: true});
+
+                return Plotly.restyle(gd, {showscale: false});
+            })
+            .then(function() {
+                assertCB('hidden', false, {expandedMarginR: false, expandedMarginT: false});
+
+                return Plotly.restyle(gd, {showscale: true, 'colorbar.y': 0.8});
+            })
+            .then(function() {
+                assertCB('up high', true, {expandedMarginR: true, expandedMarginT: true, top: 12, multiFill: true});
+
+                return Plotly.restyle(gd, {'contours.coloring': 'heatmap'});
+            })
+            .then(function() {
+                assertCB('up high', true, {expandedMarginR: true, expandedMarginT: true, top: 12, multiFill: false});
             })
             .catch(failTest)
             .then(done);
@@ -266,7 +293,7 @@ describe('Test colorbar:', function() {
         // parcoords has trace.marker.{showscale, colorbar}
         // also tests impliedEdits for colorbars in containers
         it('can show and hide parcoords colorbars', function(done) {
-            function assertCB(present, expandedMargin) {
+            function assertParcoordsCB(present, expandedMargin) {
                 var colorbars = d3.select(gd).selectAll('.colorbar');
                 expect(colorbars.size()).toBe(present ? 1 : 0);
 
@@ -275,6 +302,9 @@ describe('Test colorbar:', function() {
                 var transform = yAxes[0][1].getAttribute('transform');
                 if(expandedMargin) expect(transform).not.toBe('translate(400, 0)');
                 else expect(transform).toBe('translate(400, 0)');
+
+                var cbfills = colorbars.selectAll('.cbfill');
+                expect(cbfills.size()).toBe(present ? 1 : 0);
             }
 
             var thickPx, lenFrac;
@@ -289,12 +319,12 @@ describe('Test colorbar:', function() {
                 margin: {l: 50, r: 50, t: 50, b: 50}
             })
             .then(function() {
-                assertCB(true, true);
+                assertParcoordsCB(true, true);
 
                 return Plotly.restyle(gd, {'line.showscale': false});
             })
             .then(function() {
-                assertCB(false, false);
+                assertParcoordsCB(false, false);
 
                 return Plotly.restyle(gd, {
                     'line.showscale': true,
@@ -302,7 +332,7 @@ describe('Test colorbar:', function() {
                 });
             })
             .then(function() {
-                assertCB(true, false);
+                assertParcoordsCB(true, false);
 
                 thickPx = gd._fullData[0].line.colorbar.thickness;
                 lenFrac = gd._fullData[0].line.colorbar.len;
@@ -319,7 +349,7 @@ describe('Test colorbar:', function() {
                 expect(gd._fullData[0].line.colorbar.len)
                     .toBeCloseTo(lenFrac * 400, 3);
 
-                assertCB(true, true);
+                assertParcoordsCB(true, true);
             })
             .catch(failTest)
             .then(done);

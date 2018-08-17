@@ -24,23 +24,16 @@ module.exports = function plot(gd, cdpie) {
 
     scalePies(cdpie, fullLayout._size);
 
-    var pieGroups = fullLayout._pielayer.selectAll('g.trace').data(cdpie);
-
-    pieGroups.enter().append('g')
-        .attr({
-            'stroke-linejoin': 'round', // TODO: miter might look better but can sometimes cause problems
-                                        // maybe miter with a small-ish stroke-miterlimit?
-            'class': 'trace'
-        });
-    pieGroups.exit().remove();
-    pieGroups.order();
-
-    pieGroups.each(function(cd) {
+    var pieGroups = Lib.makeTraceGroups(fullLayout._pielayer, cdpie, 'trace').each(function(cd) {
         var pieGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
 
         setCoords(cd);
+
+        // TODO: miter might look better but can sometimes cause problems
+        // maybe miter with a small-ish stroke-miterlimit?
+        pieGroup.attr('stroke-linejoin', 'round');
 
         pieGroup.each(function() {
             var slices = d3.select(this).selectAll('g.slice').data(cd);

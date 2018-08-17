@@ -29,10 +29,6 @@ module.exports = function calc(gd, trace) {
     var len = trace._length;
     var cd = new Array(len);
 
-    function c2rad(v) {
-        return angularAxis.c2rad(v, trace.thetaunit);
-    }
-
     for(var i = 0; i < len; i++) {
         var r = rArray[i];
         var theta = thetaArray[i];
@@ -41,14 +37,13 @@ module.exports = function calc(gd, trace) {
         if(isNumeric(r) && isNumeric(theta)) {
             cdi.r = r;
             cdi.theta = theta;
-            cdi.rad = c2rad(theta);
         } else {
             cdi.r = BADNUM;
         }
     }
 
     var ppad = calcMarkerSize(trace, len);
-    Axes.expand(radialAxis, rArray, {ppad: ppad});
+    trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {ppad: ppad});
 
     calcColorscale(trace);
     arraysToCalcdata(cd, trace);
