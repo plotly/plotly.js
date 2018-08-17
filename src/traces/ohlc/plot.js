@@ -8,46 +8,47 @@
 
 'use strict';
 
+var d3 = require('d3');
+
 var Lib = require('../../lib');
-var makeTraceGroups = require('../../plots/cartesian/make_trace_groups');
 
 module.exports = function plot(gd, plotinfo, cdOHLC, ohlcLayer) {
-    makeTraceGroups(gd, plotinfo, cdOHLC, ohlcLayer, 'trace ohlc', plotOne);
-};
-
-function plotOne(gd, plotinfo, cd, plotGroup) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var cd0 = cd[0];
-    var t = cd0.t;
-    var trace = cd0.trace;
-    if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
-    if(trace.visible !== true || t.empty) {
-        plotGroup.remove();
-        return;
-    }
+    Lib.makeTraceGroups(ohlcLayer, cdOHLC, 'trace ohlc').each(function(cd) {
+        var plotGroup = d3.select(this);
+        var cd0 = cd[0];
+        var t = cd0.t;
+        var trace = cd0.trace;
+        if(!plotinfo.isRangePlot) cd0.node3 = plotGroup;
 
-    var tickLen = t.tickLen;
+        if(trace.visible !== true || t.empty) {
+            plotGroup.remove();
+            return;
+        }
 
-    var paths = plotGroup.selectAll('path').data(Lib.identity);
+        var tickLen = t.tickLen;
 
-    paths.enter().append('path');
+        var paths = plotGroup.selectAll('path').data(Lib.identity);
 
-    paths.exit().remove();
+        paths.enter().append('path');
 
-    paths.attr('d', function(d) {
-        var x = xa.c2p(d.pos, true);
-        var xo = xa.c2p(d.pos - tickLen, true);
-        var xc = xa.c2p(d.pos + tickLen, true);
+        paths.exit().remove();
 
-        var yo = ya.c2p(d.o, true);
-        var yh = ya.c2p(d.h, true);
-        var yl = ya.c2p(d.l, true);
-        var yc = ya.c2p(d.c, true);
+        paths.attr('d', function(d) {
+            var x = xa.c2p(d.pos, true);
+            var xo = xa.c2p(d.pos - tickLen, true);
+            var xc = xa.c2p(d.pos + tickLen, true);
 
-        return 'M' + xo + ',' + yo + 'H' + x +
-            'M' + x + ',' + yh + 'V' + yl +
-            'M' + xc + ',' + yc + 'H' + x;
+            var yo = ya.c2p(d.o, true);
+            var yh = ya.c2p(d.h, true);
+            var yl = ya.c2p(d.l, true);
+            var yc = ya.c2p(d.c, true);
+
+            return 'M' + xo + ',' + yo + 'H' + x +
+                'M' + x + ',' + yh + 'V' + yl +
+                'M' + xc + ',' + yc + 'H' + x;
+        });
     });
-}
+};

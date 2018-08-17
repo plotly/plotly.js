@@ -13,7 +13,6 @@ var map1dArray = require('../carpet/map_1d_array');
 var makepath = require('../carpet/makepath');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
-var makeTraceGroups = require('../../plots/cartesian/make_trace_groups');
 
 var makeCrossings = require('../contour/make_crossings');
 var findAllPaths = require('../contour/find_all_paths');
@@ -27,96 +26,96 @@ var lookupCarpet = require('../carpet/lookup_carpetid');
 var closeBoundaries = require('../contour/close_boundaries');
 
 module.exports = function plot(gd, plotinfo, cdcontours, contourcarpetLayer) {
-    makeTraceGroups(gd, plotinfo, cdcontours, contourcarpetLayer, 'contour', plotOne);
-};
-
-function plotOne(gd, plotinfo, cd, plotGroup) {
-    var cd0 = cd[0];
-    var trace = cd0.trace;
-
-    var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
-    var carpetcd = gd.calcdata[carpet.index][0];
-
-    if(!carpet.visible || carpet.visible === 'legendonly') return;
-
-    var a = cd0.a;
-    var b = cd0.b;
-    var contours = trace.contours;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var pathinfo = emptyPathinfo(contours, plotinfo, cd0);
-    var isConstraint = contours.type === 'constraint';
-    var operation = contours._operation;
-    var coloring = isConstraint ? (operation === '=' ? 'lines' : 'fill') : contours.coloring;
 
-    // Map [a, b] (data) --> [i, j] (pixels)
-    function ab2p(ab) {
-        var pt = carpet.ab2xy(ab[0], ab[1], true);
-        return [xa.c2p(pt[0]), ya.c2p(pt[1])];
-    }
+    Lib.makeTraceGroups(contourcarpetLayer, cdcontours, 'contour').each(function(cd) {
+        var plotGroup = d3.select(this);
+        var cd0 = cd[0];
+        var trace = cd0.trace;
 
-    // Define the perimeter in a/b coordinates:
-    var perimeter = [
-        [a[0], b[b.length - 1]],
-        [a[a.length - 1], b[b.length - 1]],
-        [a[a.length - 1], b[0]],
-        [a[0], b[0]]
-    ];
+        var carpet = trace._carpetTrace = lookupCarpet(gd, trace);
+        var carpetcd = gd.calcdata[carpet.index][0];
 
-    // Extract the contour levels:
-    makeCrossings(pathinfo);
-    var atol = (a[a.length - 1] - a[0]) * 1e-8;
-    var btol = (b[b.length - 1] - b[0]) * 1e-8;
-    findAllPaths(pathinfo, atol, btol);
+        if(!carpet.visible || carpet.visible === 'legendonly') return;
 
-    // Constraints might need to be draw inverted, which is not something contours
-    // handle by default since they're assumed fully opaque so that they can be
-    // drawn overlapping. This function flips the paths as necessary so that they're
-    // drawn correctly.
-    //
-    // TODO: Perhaps this should be generalized and *all* paths should be drawn as
-    // closed regions so that translucent contour levels would be valid.
-    // See: https://github.com/plotly/plotly.js/issues/1356
-    var fillPathinfo = pathinfo;
-    if(contours.type === 'constraint') {
-        fillPathinfo = convertToConstraints(pathinfo, operation);
-        closeBoundaries(fillPathinfo, operation, perimeter, trace);
-    }
+        var a = cd0.a;
+        var b = cd0.b;
+        var contours = trace.contours;
+        var pathinfo = emptyPathinfo(contours, plotinfo, cd0);
+        var isConstraint = contours.type === 'constraint';
+        var operation = contours._operation;
+        var coloring = isConstraint ? (operation === '=' ? 'lines' : 'fill') : contours.coloring;
 
-    // Map the paths in a/b coordinates to pixel coordinates:
-    mapPathinfo(pathinfo, ab2p);
+        // Map [a, b] (data) --> [i, j] (pixels)
+        function ab2p(ab) {
+            var pt = carpet.ab2xy(ab[0], ab[1], true);
+            return [xa.c2p(pt[0]), ya.c2p(pt[1])];
+        }
 
-    // draw everything
+        // Define the perimeter in a/b coordinates:
+        var perimeter = [
+            [a[0], b[b.length - 1]],
+            [a[a.length - 1], b[b.length - 1]],
+            [a[a.length - 1], b[0]],
+            [a[0], b[0]]
+        ];
 
-    // Compute the boundary path
-    var seg, xp, yp, i;
-    var segs = [];
-    for(i = carpetcd.clipsegments.length - 1; i >= 0; i--) {
-        seg = carpetcd.clipsegments[i];
-        xp = map1dArray([], seg.x, xa.c2p);
-        yp = map1dArray([], seg.y, ya.c2p);
-        xp.reverse();
-        yp.reverse();
-        segs.push(makepath(xp, yp, seg.bicubic));
-    }
+        // Extract the contour levels:
+        makeCrossings(pathinfo);
+        var atol = (a[a.length - 1] - a[0]) * 1e-8;
+        var btol = (b[b.length - 1] - b[0]) * 1e-8;
+        findAllPaths(pathinfo, atol, btol);
 
-    var boundaryPath = 'M' + segs.join('L') + 'Z';
+        // Constraints might need to be draw inverted, which is not something contours
+        // handle by default since they're assumed fully opaque so that they can be
+        // drawn overlapping. This function flips the paths as necessary so that they're
+        // drawn correctly.
+        //
+        // TODO: Perhaps this should be generalized and *all* paths should be drawn as
+        // closed regions so that translucent contour levels would be valid.
+        // See: https://github.com/plotly/plotly.js/issues/1356
+        var fillPathinfo = pathinfo;
+        if(contours.type === 'constraint') {
+            fillPathinfo = convertToConstraints(pathinfo, operation);
+            closeBoundaries(fillPathinfo, operation, perimeter, trace);
+        }
 
-    // Draw the baseline background fill that fills in the space behind any other
-    // contour levels:
-    makeBackground(plotGroup, carpetcd.clipsegments, xa, ya, isConstraint, coloring);
+        // Map the paths in a/b coordinates to pixel coordinates:
+        mapPathinfo(pathinfo, ab2p);
 
-    // Draw the specific contour fills. As a simplification, they're assumed to be
-    // fully opaque so that it's easy to draw them simply overlapping. The alternative
-    // would be to flip adjacent paths and draw closed paths for each level instead.
-    makeFills(trace, plotGroup, xa, ya, fillPathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath);
+        // draw everything
 
-    // Draw contour lines:
-    makeLinesAndLabels(plotGroup, pathinfo, gd, cd0, contours, plotinfo, carpet);
+        // Compute the boundary path
+        var seg, xp, yp, i;
+        var segs = [];
+        for(i = carpetcd.clipsegments.length - 1; i >= 0; i--) {
+            seg = carpetcd.clipsegments[i];
+            xp = map1dArray([], seg.x, xa.c2p);
+            yp = map1dArray([], seg.y, ya.c2p);
+            xp.reverse();
+            yp.reverse();
+            segs.push(makepath(xp, yp, seg.bicubic));
+        }
 
-    // Clip the boundary of the plot
-    Drawing.setClipUrl(plotGroup, carpet._clipPathId);
-}
+        var boundaryPath = 'M' + segs.join('L') + 'Z';
+
+        // Draw the baseline background fill that fills in the space behind any other
+        // contour levels:
+        makeBackground(plotGroup, carpetcd.clipsegments, xa, ya, isConstraint, coloring);
+
+        // Draw the specific contour fills. As a simplification, they're assumed to be
+        // fully opaque so that it's easy to draw them simply overlapping. The alternative
+        // would be to flip adjacent paths and draw closed paths for each level instead.
+        makeFills(trace, plotGroup, xa, ya, fillPathinfo, perimeter, ab2p, carpet, carpetcd, coloring, boundaryPath);
+
+        // Draw contour lines:
+        makeLinesAndLabels(plotGroup, pathinfo, gd, cd0, contours, plotinfo, carpet);
+
+        // Clip the boundary of the plot
+        Drawing.setClipUrl(plotGroup, carpet._clipPathId);
+    });
+};
 
 function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, plotinfo, carpet) {
     var lineContainer = Lib.ensureSingle(plotgroup, 'g', 'contourlines');
