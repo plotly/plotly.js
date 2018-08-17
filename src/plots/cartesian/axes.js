@@ -1079,9 +1079,10 @@ function formatDate(ax, out, hover, extraPrecision) {
 }
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
-    var dtick = ax.dtick,
-        x = out.x,
-        tickformat = ax.tickformat;
+    var dtick = ax.dtick;
+    var x = out.x;
+    var tickformat = ax.tickformat;
+    var dtChar0 = typeof dtick === 'string' && dtick.charAt(0);
 
     if(hideexp === 'never') {
         // If this is a hover label, then we must *never* hide the exponent
@@ -1093,21 +1094,24 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         hideexp = '';
     }
 
-    if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0) !== 'L')) dtick = 'L3';
+    if(extraPrecision && (dtChar0 !== 'L')) dtick = 'L3';
 
-    if(tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
+    if(tickformat || (dtChar0 === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
-    else if(isNumeric(dtick) || ((dtick.charAt(0) === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
+    else if(isNumeric(dtick) || ((dtChar0 === 'D') && (Lib.mod(x + 0.01, 1) < 0.1))) {
         var p = Math.round(x);
-        if(['e', 'E', 'power'].indexOf(ax.exponentformat) !== -1 ||
-                (isSIFormat(ax.exponentformat) && beyondSI(p))) {
+        var absP = Math.abs(p);
+        var exponentFormat = ax.exponentformat;
+        if(exponentFormat === 'power' || (isSIFormat(exponentFormat) && beyondSI(p))) {
             if(p === 0) out.text = 1;
             else if(p === 1) out.text = '10';
-            else if(p > 1) out.text = '10<sup>' + p + '</sup>';
-            else out.text = '10<sup>' + MINUS_SIGN + -p + '</sup>';
+            out.text = '10<sup>' + (p > 1 ? '' : MINUS_SIGN) + absP + '</sup>';
 
             out.fontSize *= 1.25;
+        }
+        else if((exponentFormat === 'e' || exponentFormat === 'E') && absP > 2) {
+            out.text = '1' + exponentFormat + (p > 0 ? '+' : MINUS_SIGN) + absP;
         }
         else {
             out.text = numFormat(Math.pow(10, x), ax, '', 'fakehover');
@@ -1116,7 +1120,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
             }
         }
     }
-    else if(dtick.charAt(0) === 'D') {
+    else if(dtChar0 === 'D') {
         out.text = String(Math.round(Math.pow(10, Lib.mod(x, 1))));
         out.fontSize *= 0.75;
     }
@@ -1332,11 +1336,8 @@ function numFormat(v, ax, fmtoverride, hover) {
         else if(exponentFormat !== 'power') signedExponent = '+' + exponent;
         else signedExponent = String(exponent);
 
-        if(exponentFormat === 'e') {
-            v += 'e' + signedExponent;
-        }
-        else if(exponentFormat === 'E') {
-            v += 'E' + signedExponent;
+        if(exponentFormat === 'e' || exponentFormat === 'E') {
+            v += exponentFormat + signedExponent;
         }
         else if(exponentFormat === 'power') {
             v += '×10<sup>' + signedExponent + '</sup>';
