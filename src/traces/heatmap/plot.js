@@ -16,370 +16,349 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Colorscale = require('../../components/colorscale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 var maxRowLength = require('./max_row_length');
 
 module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
-    var uidLookup = getUidsFromCalcData(cdheatmaps);
-
-    heatmapLayer.selectAll('.hm > image').each(function(d) {
-        var oldTrace = d.trace || {};
-
-        if(!uidLookup[oldTrace.uid]) {
-            d3.select(this.parentNode).remove();
-        }
-    });
-
-    for(var i = 0; i < cdheatmaps.length; i++) {
-        plotOne(gd, plotinfo, cdheatmaps[i], heatmapLayer);
-    }
-};
-
-function plotOne(gd, plotinfo, cd, heatmapLayer) {
-    var cd0 = cd[0];
-    var trace = cd0.trace;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
-    var id = 'hm' + trace.uid;
 
-    var z = cd0.z;
-    var x = cd0.x;
-    var y = cd0.y;
-    var xc = cd0.xCenter;
-    var yc = cd0.yCenter;
-    var isContour = Registry.traceIs(trace, 'contour');
-    var zsmooth = isContour ? 'best' : trace.zsmooth;
+    Lib.makeTraceGroups(heatmapLayer, cdheatmaps, 'hm').each(function(cd) {
+        var plotGroup = d3.select(this);
+        var cd0 = cd[0];
+        var trace = cd0.trace;
 
-    // get z dims
-    var m = z.length;
-    var n = maxRowLength(z);
-    var xrev = false;
-    var yrev = false;
+        var z = cd0.z;
+        var x = cd0.x;
+        var y = cd0.y;
+        var xc = cd0.xCenter;
+        var yc = cd0.yCenter;
+        var isContour = Registry.traceIs(trace, 'contour');
+        var zsmooth = isContour ? 'best' : trace.zsmooth;
 
-    var left, right, temp, top, bottom, i;
+        // get z dims
+        var m = z.length;
+        var n = maxRowLength(z);
+        var xrev = false;
+        var yrev = false;
 
-    // TODO: if there are multiple overlapping categorical heatmaps,
-    // or if we allow category sorting, then the categories may not be
-    // sequential... may need to reorder and/or expand z
+        var left, right, temp, top, bottom, i;
 
-    // Get edges of png in pixels (xa.c2p() maps axes coordinates to pixel coordinates)
-    // figure out if either axis is reversed (y is usually reversed, in pixel coords)
-    // also clip the image to maximum 50% outside the visible plot area
-    // bigger image lets you pan more naturally, but slows performance.
-    // TODO: use low-resolution images outside the visible plot for panning
-    // these while loops find the first and last brick bounds that are defined
-    // (in case of log of a negative)
-    i = 0;
-    while(left === undefined && i < x.length - 1) {
-        left = xa.c2p(x[i]);
-        i++;
-    }
-    i = x.length - 1;
-    while(right === undefined && i > 0) {
-        right = xa.c2p(x[i]);
-        i--;
-    }
+        // TODO: if there are multiple overlapping categorical heatmaps,
+        // or if we allow category sorting, then the categories may not be
+        // sequential... may need to reorder and/or expand z
 
-    if(right < left) {
-        temp = right;
-        right = left;
-        left = temp;
-        xrev = true;
-    }
-
-    i = 0;
-    while(top === undefined && i < y.length - 1) {
-        top = ya.c2p(y[i]);
-        i++;
-    }
-    i = y.length - 1;
-    while(bottom === undefined && i > 0) {
-        bottom = ya.c2p(y[i]);
-        i--;
-    }
-
-    if(bottom < top) {
-        temp = top;
-        top = bottom;
-        bottom = temp;
-        yrev = true;
-    }
-
-    // for contours with heatmap fill, we generate the boundaries based on
-    // brick centers but then use the brick edges for drawing the bricks
-    if(isContour) {
-        xc = x;
-        yc = y;
-        x = cd0.xfill;
-        y = cd0.yfill;
-    }
-
-    // make an image that goes at most half a screen off either side, to keep
-    // time reasonable when you zoom in. if zsmooth is true/fast, don't worry
-    // about this, because zooming doesn't increase number of pixels
-    // if zsmooth is best, don't include anything off screen because it takes too long
-    if(zsmooth !== 'fast') {
-        var extra = zsmooth === 'best' ? 0 : 0.5;
-        left = Math.max(-extra * xa._length, left);
-        right = Math.min((1 + extra) * xa._length, right);
-        top = Math.max(-extra * ya._length, top);
-        bottom = Math.min((1 + extra) * ya._length, bottom);
-    }
-
-    var imageWidth = Math.round(right - left),
-        imageHeight = Math.round(bottom - top);
-
-    // setup image nodes
-
-    // if image is entirely off-screen, don't even draw it
-    var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
-
-    var plotgroup = heatmapLayer.selectAll('g.hm.' + id)
-        .data(isOffScreen ? [] : [0]);
-
-    plotgroup.enter().append('g')
-        .classed('hm', true)
-        .classed(id, true);
-
-    plotgroup.exit().remove();
-
-    if(isOffScreen) return;
-
-    // generate image data
-
-    var canvasW, canvasH;
-    if(zsmooth === 'fast') {
-        canvasW = n;
-        canvasH = m;
-    } else {
-        canvasW = imageWidth;
-        canvasH = imageHeight;
-    }
-
-    var canvas = document.createElement('canvas');
-    canvas.width = canvasW;
-    canvas.height = canvasH;
-    var context = canvas.getContext('2d');
-
-    var sclFunc = Colorscale.makeColorScaleFunc(
-        Colorscale.extractScale(
-            trace.colorscale,
-            trace.zmin,
-            trace.zmax
-        ),
-        { noNumericCheck: true, returnArray: true }
-    );
-
-    // map brick boundaries to image pixels
-    var xpx,
-        ypx;
-    if(zsmooth === 'fast') {
-        xpx = xrev ?
-            function(index) { return n - 1 - index; } :
-            Lib.identity;
-        ypx = yrev ?
-            function(index) { return m - 1 - index; } :
-            Lib.identity;
-    }
-    else {
-        xpx = function(index) {
-            return Lib.constrain(Math.round(xa.c2p(x[index]) - left),
-                0, imageWidth);
-        };
-        ypx = function(index) {
-            return Lib.constrain(Math.round(ya.c2p(y[index]) - top),
-                0, imageHeight);
-        };
-    }
-
-    // build the pixel map brick-by-brick
-    // cruise through z-matrix row-by-row
-    // build a brick at each z-matrix value
-    var yi = ypx(0);
-    var yb = [yi, yi];
-    var xbi = xrev ? 0 : 1;
-    var ybi = yrev ? 0 : 1;
-    // for collecting an average luminosity of the heatmap
-    var pixcount = 0;
-    var rcount = 0;
-    var gcount = 0;
-    var bcount = 0;
-
-    var xb, j, xi, v, row, c;
-
-    function setColor(v, pixsize) {
-        if(v !== undefined) {
-            var c = sclFunc(v);
-            c[0] = Math.round(c[0]);
-            c[1] = Math.round(c[1]);
-            c[2] = Math.round(c[2]);
-
-            pixcount += pixsize;
-            rcount += c[0] * pixsize;
-            gcount += c[1] * pixsize;
-            bcount += c[2] * pixsize;
-            return c;
+        // Get edges of png in pixels (xa.c2p() maps axes coordinates to pixel coordinates)
+        // figure out if either axis is reversed (y is usually reversed, in pixel coords)
+        // also clip the image to maximum 50% outside the visible plot area
+        // bigger image lets you pan more naturally, but slows performance.
+        // TODO: use low-resolution images outside the visible plot for panning
+        // these while loops find the first and last brick bounds that are defined
+        // (in case of log of a negative)
+        i = 0;
+        while(left === undefined && i < x.length - 1) {
+            left = xa.c2p(x[i]);
+            i++;
         }
-        return [0, 0, 0, 0];
-    }
-
-    function interpColor(r0, r1, xinterp, yinterp) {
-        var z00 = r0[xinterp.bin0];
-        if(z00 === undefined) return setColor(undefined, 1);
-
-        var z01 = r0[xinterp.bin1],
-            z10 = r1[xinterp.bin0],
-            z11 = r1[xinterp.bin1],
-            dx = (z01 - z00) || 0,
-            dy = (z10 - z00) || 0,
-            dxy;
-
-        // the bilinear interpolation term needs different calculations
-        // for all the different permutations of missing data
-        // among the neighbors of the main point, to ensure
-        // continuity across brick boundaries.
-        if(z01 === undefined) {
-            if(z11 === undefined) dxy = 0;
-            else if(z10 === undefined) dxy = 2 * (z11 - z00);
-            else dxy = (2 * z11 - z10 - z00) * 2 / 3;
-        }
-        else if(z11 === undefined) {
-            if(z10 === undefined) dxy = 0;
-            else dxy = (2 * z00 - z01 - z10) * 2 / 3;
-        }
-        else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2 / 3;
-        else dxy = (z11 + z00 - z01 - z10);
-
-        return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
-    }
-
-    if(zsmooth) { // best or fast, works fastest with imageData
-        var pxIndex = 0,
-            pixels;
-
-        try {
-            pixels = new Uint8Array(imageWidth * imageHeight * 4);
-        }
-        catch(e) {
-            pixels = new Array(imageWidth * imageHeight * 4);
+        i = x.length - 1;
+        while(right === undefined && i > 0) {
+            right = xa.c2p(x[i]);
+            i--;
         }
 
-        if(zsmooth === 'best') {
-            var xForPx = xc || x;
-            var yForPx = yc || y;
-            var xPixArray = new Array(xForPx.length);
-            var yPixArray = new Array(yForPx.length);
-            var xinterpArray = new Array(imageWidth);
-            var findInterpX = xc ? findInterpFromCenters : findInterp;
-            var findInterpY = yc ? findInterpFromCenters : findInterp;
-            var yinterp, r0, r1;
+        if(right < left) {
+            temp = right;
+            right = left;
+            left = temp;
+            xrev = true;
+        }
 
-            // first make arrays of x and y pixel locations of brick boundaries
-            for(i = 0; i < xForPx.length; i++) xPixArray[i] = Math.round(xa.c2p(xForPx[i]) - left);
-            for(i = 0; i < yForPx.length; i++) yPixArray[i] = Math.round(ya.c2p(yForPx[i]) - top);
+        i = 0;
+        while(top === undefined && i < y.length - 1) {
+            top = ya.c2p(y[i]);
+            i++;
+        }
+        i = y.length - 1;
+        while(bottom === undefined && i > 0) {
+            bottom = ya.c2p(y[i]);
+            i--;
+        }
 
-            // then make arrays of interpolations
-            // (bin0=closest, bin1=next, frac=fractional dist.)
-            for(i = 0; i < imageWidth; i++) xinterpArray[i] = findInterpX(i, xPixArray);
+        if(bottom < top) {
+            temp = top;
+            top = bottom;
+            bottom = temp;
+            yrev = true;
+        }
 
-            // now do the interpolations and fill the png
-            for(j = 0; j < imageHeight; j++) {
-                yinterp = findInterpY(j, yPixArray);
-                r0 = z[yinterp.bin0];
-                r1 = z[yinterp.bin1];
-                for(i = 0; i < imageWidth; i++, pxIndex += 4) {
-                    c = interpColor(r0, r1, xinterpArray[i], yinterp);
-                    putColor(pixels, pxIndex, c);
+        // for contours with heatmap fill, we generate the boundaries based on
+        // brick centers but then use the brick edges for drawing the bricks
+        if(isContour) {
+            xc = x;
+            yc = y;
+            x = cd0.xfill;
+            y = cd0.yfill;
+        }
+
+        // make an image that goes at most half a screen off either side, to keep
+        // time reasonable when you zoom in. if zsmooth is true/fast, don't worry
+        // about this, because zooming doesn't increase number of pixels
+        // if zsmooth is best, don't include anything off screen because it takes too long
+        if(zsmooth !== 'fast') {
+            var extra = zsmooth === 'best' ? 0 : 0.5;
+            left = Math.max(-extra * xa._length, left);
+            right = Math.min((1 + extra) * xa._length, right);
+            top = Math.max(-extra * ya._length, top);
+            bottom = Math.min((1 + extra) * ya._length, bottom);
+        }
+
+        var imageWidth = Math.round(right - left),
+            imageHeight = Math.round(bottom - top);
+
+        // setup image nodes
+
+        // if image is entirely off-screen, don't even draw it
+        var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
+
+        if(isOffScreen) {
+            var noImage = plotGroup.selectAll('image').data([]);
+            noImage.exit().remove();
+            return;
+        }
+
+        // generate image data
+
+        var canvasW, canvasH;
+        if(zsmooth === 'fast') {
+            canvasW = n;
+            canvasH = m;
+        } else {
+            canvasW = imageWidth;
+            canvasH = imageHeight;
+        }
+
+        var canvas = document.createElement('canvas');
+        canvas.width = canvasW;
+        canvas.height = canvasH;
+        var context = canvas.getContext('2d');
+
+        var sclFunc = Colorscale.makeColorScaleFunc(
+            Colorscale.extractScale(
+                trace.colorscale,
+                trace.zmin,
+                trace.zmax
+            ),
+            { noNumericCheck: true, returnArray: true }
+        );
+
+        // map brick boundaries to image pixels
+        var xpx,
+            ypx;
+        if(zsmooth === 'fast') {
+            xpx = xrev ?
+                function(index) { return n - 1 - index; } :
+                Lib.identity;
+            ypx = yrev ?
+                function(index) { return m - 1 - index; } :
+                Lib.identity;
+        }
+        else {
+            xpx = function(index) {
+                return Lib.constrain(Math.round(xa.c2p(x[index]) - left),
+                    0, imageWidth);
+            };
+            ypx = function(index) {
+                return Lib.constrain(Math.round(ya.c2p(y[index]) - top),
+                    0, imageHeight);
+            };
+        }
+
+        // build the pixel map brick-by-brick
+        // cruise through z-matrix row-by-row
+        // build a brick at each z-matrix value
+        var yi = ypx(0);
+        var yb = [yi, yi];
+        var xbi = xrev ? 0 : 1;
+        var ybi = yrev ? 0 : 1;
+        // for collecting an average luminosity of the heatmap
+        var pixcount = 0;
+        var rcount = 0;
+        var gcount = 0;
+        var bcount = 0;
+
+        var xb, j, xi, v, row, c;
+
+        function setColor(v, pixsize) {
+            if(v !== undefined) {
+                var c = sclFunc(v);
+                c[0] = Math.round(c[0]);
+                c[1] = Math.round(c[1]);
+                c[2] = Math.round(c[2]);
+
+                pixcount += pixsize;
+                rcount += c[0] * pixsize;
+                gcount += c[1] * pixsize;
+                bcount += c[2] * pixsize;
+                return c;
+            }
+            return [0, 0, 0, 0];
+        }
+
+        function interpColor(r0, r1, xinterp, yinterp) {
+            var z00 = r0[xinterp.bin0];
+            if(z00 === undefined) return setColor(undefined, 1);
+
+            var z01 = r0[xinterp.bin1],
+                z10 = r1[xinterp.bin0],
+                z11 = r1[xinterp.bin1],
+                dx = (z01 - z00) || 0,
+                dy = (z10 - z00) || 0,
+                dxy;
+
+            // the bilinear interpolation term needs different calculations
+            // for all the different permutations of missing data
+            // among the neighbors of the main point, to ensure
+            // continuity across brick boundaries.
+            if(z01 === undefined) {
+                if(z11 === undefined) dxy = 0;
+                else if(z10 === undefined) dxy = 2 * (z11 - z00);
+                else dxy = (2 * z11 - z10 - z00) * 2 / 3;
+            }
+            else if(z11 === undefined) {
+                if(z10 === undefined) dxy = 0;
+                else dxy = (2 * z00 - z01 - z10) * 2 / 3;
+            }
+            else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2 / 3;
+            else dxy = (z11 + z00 - z01 - z10);
+
+            return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
+        }
+
+        if(zsmooth) { // best or fast, works fastest with imageData
+            var pxIndex = 0,
+                pixels;
+
+            try {
+                pixels = new Uint8Array(imageWidth * imageHeight * 4);
+            }
+            catch(e) {
+                pixels = new Array(imageWidth * imageHeight * 4);
+            }
+
+            if(zsmooth === 'best') {
+                var xForPx = xc || x;
+                var yForPx = yc || y;
+                var xPixArray = new Array(xForPx.length);
+                var yPixArray = new Array(yForPx.length);
+                var xinterpArray = new Array(imageWidth);
+                var findInterpX = xc ? findInterpFromCenters : findInterp;
+                var findInterpY = yc ? findInterpFromCenters : findInterp;
+                var yinterp, r0, r1;
+
+                // first make arrays of x and y pixel locations of brick boundaries
+                for(i = 0; i < xForPx.length; i++) xPixArray[i] = Math.round(xa.c2p(xForPx[i]) - left);
+                for(i = 0; i < yForPx.length; i++) yPixArray[i] = Math.round(ya.c2p(yForPx[i]) - top);
+
+                // then make arrays of interpolations
+                // (bin0=closest, bin1=next, frac=fractional dist.)
+                for(i = 0; i < imageWidth; i++) xinterpArray[i] = findInterpX(i, xPixArray);
+
+                // now do the interpolations and fill the png
+                for(j = 0; j < imageHeight; j++) {
+                    yinterp = findInterpY(j, yPixArray);
+                    r0 = z[yinterp.bin0];
+                    r1 = z[yinterp.bin1];
+                    for(i = 0; i < imageWidth; i++, pxIndex += 4) {
+                        c = interpColor(r0, r1, xinterpArray[i], yinterp);
+                        putColor(pixels, pxIndex, c);
+                    }
                 }
             }
-        }
-        else { // zsmooth = fast
+            else { // zsmooth = fast
+                for(j = 0; j < m; j++) {
+                    row = z[j];
+                    yb = ypx(j);
+                    for(i = 0; i < imageWidth; i++) {
+                        c = setColor(row[i], 1);
+                        pxIndex = (yb * imageWidth + xpx(i)) * 4;
+                        putColor(pixels, pxIndex, c);
+                    }
+                }
+            }
+
+            var imageData = context.createImageData(imageWidth, imageHeight);
+            try {
+                imageData.data.set(pixels);
+            }
+            catch(e) {
+                var pxArray = imageData.data,
+                    dlen = pxArray.length;
+                for(j = 0; j < dlen; j ++) {
+                    pxArray[j] = pixels[j];
+                }
+            }
+
+            context.putImageData(imageData, 0, 0);
+        } else { // zsmooth = false -> filling potentially large bricks works fastest with fillRect
+
+            // gaps do not need to be exact integers, but if they *are* we will get
+            // cleaner edges by rounding at least one edge
+            var xGap = trace.xgap;
+            var yGap = trace.ygap;
+            var xGapLeft = Math.floor(xGap / 2);
+            var yGapTop = Math.floor(yGap / 2);
+
             for(j = 0; j < m; j++) {
                 row = z[j];
-                yb = ypx(j);
-                for(i = 0; i < imageWidth; i++) {
-                    c = setColor(row[i], 1);
-                    pxIndex = (yb * imageWidth + xpx(i)) * 4;
-                    putColor(pixels, pxIndex, c);
-                }
-            }
-        }
-
-        var imageData = context.createImageData(imageWidth, imageHeight);
-        try {
-            imageData.data.set(pixels);
-        }
-        catch(e) {
-            var pxArray = imageData.data,
-                dlen = pxArray.length;
-            for(j = 0; j < dlen; j ++) {
-                pxArray[j] = pixels[j];
-            }
-        }
-
-        context.putImageData(imageData, 0, 0);
-    } else { // zsmooth = false -> filling potentially large bricks works fastest with fillRect
-
-        // gaps do not need to be exact integers, but if they *are* we will get
-        // cleaner edges by rounding at least one edge
-        var xGap = trace.xgap;
-        var yGap = trace.ygap;
-        var xGapLeft = Math.floor(xGap / 2);
-        var yGapTop = Math.floor(yGap / 2);
-
-        for(j = 0; j < m; j++) {
-            row = z[j];
-            yb.reverse();
-            yb[ybi] = ypx(j + 1);
-            if(yb[0] === yb[1] || yb[0] === undefined || yb[1] === undefined) {
-                continue;
-            }
-            xi = xpx(0);
-            xb = [xi, xi];
-            for(i = 0; i < n; i++) {
-                // build one color brick!
-                xb.reverse();
-                xb[xbi] = xpx(i + 1);
-                if(xb[0] === xb[1] || xb[0] === undefined || xb[1] === undefined) {
+                yb.reverse();
+                yb[ybi] = ypx(j + 1);
+                if(yb[0] === yb[1] || yb[0] === undefined || yb[1] === undefined) {
                     continue;
                 }
-                v = row[i];
-                c = setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
-                context.fillStyle = 'rgba(' + c.join(',') + ')';
+                xi = xpx(0);
+                xb = [xi, xi];
+                for(i = 0; i < n; i++) {
+                    // build one color brick!
+                    xb.reverse();
+                    xb[xbi] = xpx(i + 1);
+                    if(xb[0] === xb[1] || xb[0] === undefined || xb[1] === undefined) {
+                        continue;
+                    }
+                    v = row[i];
+                    c = setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
+                    context.fillStyle = 'rgba(' + c.join(',') + ')';
 
-                context.fillRect(xb[0] + xGapLeft, yb[0] + yGapTop,
-                    xb[1] - xb[0] - xGap, yb[1] - yb[0] - yGap);
+                    context.fillRect(xb[0] + xGapLeft, yb[0] + yGapTop,
+                        xb[1] - xb[0] - xGap, yb[1] - yb[0] - yGap);
+                }
             }
         }
-    }
 
-    rcount = Math.round(rcount / pixcount);
-    gcount = Math.round(gcount / pixcount);
-    bcount = Math.round(bcount / pixcount);
-    var avgColor = tinycolor('rgb(' + rcount + ',' + gcount + ',' + bcount + ')');
+        rcount = Math.round(rcount / pixcount);
+        gcount = Math.round(gcount / pixcount);
+        bcount = Math.round(bcount / pixcount);
+        var avgColor = tinycolor('rgb(' + rcount + ',' + gcount + ',' + bcount + ')');
 
-    gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
-    gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
+        gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
+        gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-    var image3 = plotgroup.selectAll('image')
-        .data(cd);
+        var image3 = plotGroup.selectAll('image')
+            .data(cd);
 
-    image3.enter().append('svg:image').attr({
-        xmlns: xmlnsNamespaces.svg,
-        preserveAspectRatio: 'none'
+        image3.enter().append('svg:image').attr({
+            xmlns: xmlnsNamespaces.svg,
+            preserveAspectRatio: 'none'
+        });
+
+        image3.attr({
+            height: imageHeight,
+            width: imageWidth,
+            x: left,
+            y: top,
+            'xlink:href': canvas.toDataURL('image/png')
+        });
     });
-
-    image3.attr({
-        height: imageHeight,
-        width: imageWidth,
-        x: left,
-        y: top,
-        'xlink:href': canvas.toDataURL('image/png')
-    });
-
-    image3.exit().remove();
-}
+};
 
 // get interpolated bin value. Returns {bin0:closest bin, frac:fractional dist to next, bin1:next bin}
 function findInterp(pixel, pixArray) {
