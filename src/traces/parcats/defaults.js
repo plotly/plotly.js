@@ -55,12 +55,26 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
         coerce('displayindex', dimensionOut._index);
 
         // Category level
-        // TODO: Make categoryorder and categoryarray consistent
-        // If valid array, set order to 'array'
-        // If order is 'array' but array is invalid set order to 'trace'
-        coerce('categoryorder');
-        coerce('categoryarray');
-        coerce('categorylabels');
+        var arrayIn = dimensionIn.categoryarray;
+        var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
+
+        var orderDefault;
+        if(isValidArray) orderDefault = 'array';
+        var order = coerce('categoryorder', orderDefault);
+
+        // coerce 'categoryarray' only in array order case
+        if(order === 'array') {
+            coerce('categoryarray');
+            coerce('categorylabels');
+        } else {
+            delete dimensionIn.categoryarray;
+            delete dimensionIn.categorylabels;
+        }
+
+        // cannot set 'categoryorder' to 'array' with an invalid 'categoryarray'
+        if(!isValidArray && order === 'array') {
+            dimensionOut.categoryorder = 'trace';
+        }
     }
 }
 

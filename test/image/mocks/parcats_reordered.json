@@ -5,7 +5,7 @@
       "dimensions": [
         {"label": "One", "values": [1, 1, 2, 1, 2, 1, 1, 2, 1], "displayindex": 0},
         {"label": "Two", "values": ["A", "B", "A", "B", "C", "C", "A", "B", "C"], "displayindex": 2,
-          "catDisplayInds": [1, 2, 0], "CatValues": ["A", "B", "C"]},
+          "categoryarray": ["B", "A", "C"]},
         {"label": "Three", "values": [11, 11, 11, 11, 11, 11, 11, 11, 11], "displayindex": 1}]}
   ],
   "layout": {

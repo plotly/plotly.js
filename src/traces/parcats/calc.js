@@ -177,8 +177,9 @@ module.exports = function calc(gd, trace) {
             var cats = dimensionModels[d].categories;
 
             if(cats[catInd] === undefined) {
+                var catValue = trace.dimensions[containerInd].categoryarray[catInd];
                 var catLabel = trace.dimensions[containerInd].categorylabels[catInd];
-                cats[catInd] = createCategoryModel(d, catInd, catLabel);
+                cats[catInd] = createCategoryModel(d, catInd, catValue, catLabel);
             }
 
             updateCategoryModel(cats[catInd], valueInd, count);
@@ -278,8 +279,11 @@ function createDimensionModel(dimensionInd, containerInd, displayInd, dimensionL
  *  The index of this categories dimension
  * @property {Number} categoryInd
  *  The index of this category
+ * @property {Number} displayInd
+ *  The display index of this category (where 0 is the topmost category)
  * @property {String} categoryLabel
  *  The name of this category
+ * @property categoryValue: Raw value of the category
  * @property {Array} valueInds
  *  Array of indices (into the original value array) of all samples in this category
  * @property {Number} count
@@ -292,15 +296,17 @@ function createDimensionModel(dimensionInd, containerInd, displayInd, dimensionL
  * Create and return a new CategoryModel object
  * @param {Number} dimensionInd
  * @param {Number} categoryInd
- * @param {Number} displayInd
  *  The display index of this category (where 0 is the topmost category)
+ * @param {String} categoryValue
  * @param {String} categoryLabel
  * @return {CategoryModel}
  */
-function createCategoryModel(dimensionInd, categoryInd, displayInd, categoryLabel) {
+function createCategoryModel(dimensionInd, categoryInd, categoryValue, categoryLabel) {
     return {
         dimensionInd: dimensionInd,
         categoryInd: categoryInd,
+        categoryValue: categoryValue,
+        displayInd: categoryInd,
         categoryLabel: categoryLabel,
         valueInds: [],
         count: 0,
