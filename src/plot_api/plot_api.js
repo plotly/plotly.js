@@ -13,6 +13,7 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 var hasHover = require('has-hover');
+var b64 = require('base64-arraybuffer');
 
 var Lib = require('../lib');
 var Events = require('../lib/events');
@@ -2154,6 +2155,82 @@ exports.update = function update(gd, traceUpdate, layoutUpdate, _traces) {
 
         return gd;
     });
+};
+
+/**
+ * Convert a primitive TypedArray representation object into a TypedArray
+ * @param {object} v: Object with `dtype` and `data` properties that
+ * represens a TypedArray.
+ *
+ * @returns {TypedArray}
+ */
+var dtypeStringToTypedarrayType = {
+    int8: Int8Array,
+    int16: Int16Array,
+    int32: Int32Array,
+    uint8: Uint8Array,
+    uint8_clamped: Uint8ClampedArray,
+    uint16: Uint16Array,
+    uint32: Uint32Array,
+    float32: Float32Array,
+    float64: Float64Array
+};
+
+function primitiveTypedArrayReprToTypedArray(v) {
+    // v has dtype and data properties
+
+    // Get TypedArray constructor type
+    var TypeArrayType = dtypeStringToTypedarrayType[v.dtype];
+
+    // Process data
+    var coercedV;
+    var value = v.value;
+    if(value instanceof ArrayBuffer) {
+        // value is an ArrayBuffer
+        coercedV = new TypeArrayType(value);
+    } else if(value.constructor === DataView) {
+        // value has a buffer property, where the buffer is an ArrayBuffer
+        coercedV = new TypeArrayType(value.buffer);
+    } else if(Array.isArray(value)) {
+        // value is a primitive array
+        coercedV = new TypeArrayType(value);
+    } else if(typeof value === 'string' ||
+        value instanceof String) {
+        // value is a base64 encoded string
+        var buffer = b64.decode(value);
+        coercedV = new TypeArrayType(buffer);
+    }
+    return coercedV;
+}
+
+function performImport(v) {
+    if(Lib.isPrimitiveTypedArrayRepr(v)) {
+        return primitiveTypedArrayReprToTypedArray(v);
+    } else if(Lib.isTypedArray(v)) {
+        return v;
+    } else if(Array.isArray(v)) {
+        return v.map(performImport);
+    } else if(Lib.isPlainObject(v)) {
+        var result = {};
+        for(var k in v) {
+            if(v.hasOwnProperty(k)) {
+                result[k] = performImport(v[k]);
+            }
+        }
+        return result;
+    } else {
+        return v;
+    }
+}
+
+/**
+ * Plotly.import:
+ * Import an object or array into... TODO
+ * @param v
+ * @returns {object}
+ */
+exports.import = function(v) {
+    return performImport(v);
 };
 
 /**

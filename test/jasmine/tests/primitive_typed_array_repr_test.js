@@ -1,3 +1,4 @@
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var supplyDefaults = require('../assets/supply_defaults');
 var b64 = require('base64-arraybuffer');
@@ -29,16 +30,15 @@ describe('Test TypedArray representations', function() {
                     dtype: arraySpec[0],
                     value: value
                 };
-                var gd = {
+                var raw = {
                     data: [{
                         y: repr
                     }],
                 };
 
-                supplyDefaults(gd);
+                var gd = Plotly.import(raw);
 
-                expect(gd.data[0].y).toEqual(repr);
-                expect(gd._fullData[0].y).toEqual(arraySpec[1]);
+                expect(gd.data[0].y).toEqual(arraySpec[1]);
             });
         });
     });
@@ -54,16 +54,15 @@ describe('Test TypedArray representations', function() {
                     dtype: arraySpec[0],
                     value: value
                 };
-                var gd = {
+                var raw = {
                     data: [{
                         y: repr
                     }],
                 };
 
-                supplyDefaults(gd);
+                var gd = Plotly.import(raw);
 
-                expect(gd.data[0].y).toEqual(repr);
-                expect(gd._fullData[0].y).toEqual(arraySpec[1]);
+                expect(gd.data[0].y).toEqual(arraySpec[1]);
             });
         });
     });
@@ -79,16 +78,15 @@ describe('Test TypedArray representations', function() {
                     dtype: arraySpec[0],
                     value: value
                 };
-                var gd = {
+                var raw = {
                     data: [{
                         y: repr
                     }],
                 };
 
-                supplyDefaults(gd);
+                var gd = Plotly.import(raw);
 
-                expect(gd.data[0].y).toEqual(repr);
-                expect(gd._fullData[0].y).toEqual(arraySpec[1]);
+                expect(gd.data[0].y).toEqual(arraySpec[1]);
             });
         });
     });
@@ -104,45 +102,42 @@ describe('Test TypedArray representations', function() {
                     dtype: arraySpec[0],
                     value: value
                 };
-                var gd = {
+                var raw = {
                     data: [{
                         y: repr
                     }],
                 };
 
-                supplyDefaults(gd);
-                expect(gd.data[0].y).toEqual(repr);
-                expect(gd._fullData[0].y).toEqual(arraySpec[1]);
+                var gd = Plotly.import(raw);
+                expect(gd.data[0].y).toEqual(arraySpec[1]);
             });
         });
     });
 
     describe('mock', function() {
-        it('should accept representation as base 64 and Array in Mock', function() {
+        it('should import representation as base 64 and Array in Mock', function() {
 
-            var gd = Lib.extendDeep({}, mock1);
-            supplyDefaults(gd);
-
+            var gd = Plotly.import(mock1);
             // Check x
             // data_array property
-            expect(gd.data[0].x).toEqual({
+            expect(mock1.data[0].x).toEqual({
                 'dtype': 'float64',
                 'value': [3, 2, 1]});
-            expect(gd._fullData[0].x).toEqual(new Float64Array([3, 2, 1]));
+            expect(gd.data[0].x).toEqual(new Float64Array([3, 2, 1]));
 
             // Check y
             // data_array property
-            expect(gd.data[0].y).toEqual({
+            expect(mock1.data[0].y).toEqual({
                 'dtype': 'float32',
                 'value': 'AABAQAAAAEAAAIA/'});
-            expect(gd._fullData[0].y).toEqual(new Float32Array([3, 2, 1]));
+            expect(gd.data[0].y).toEqual(new Float32Array([3, 2, 1]));
 
             // Check marker.color
             // This is an arrayOk property not a data_array property
-            expect(gd.data[0].marker.color).toEqual({
+            expect(mock1.data[0].marker.color).toEqual({
                 'dtype': 'uint16',
                 'value': 'AwACAAEA'});
-            expect(gd._fullData[0].marker.color).toEqual(new Uint16Array([3, 2, 1]));
+            expect(gd.data[0].marker.color).toEqual(new Uint16Array([3, 2, 1]));
         });
     });
 });
