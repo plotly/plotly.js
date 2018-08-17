@@ -12,7 +12,7 @@ var mouseEvent = require('../assets/mouse_event');
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 describe('Test scattergeo defaults', function() {
@@ -252,7 +252,7 @@ describe('Test scattergeo hover', function() {
             lat: [10, 20, 30],
             text: ['A', 'B', 'C']
         }])
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -287,7 +287,7 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'hoverinfo', 'lon+lat+text+name').then(function() {
             check([381, 221], ['(10°, 10°)\nA', 'trace 0']);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -295,7 +295,7 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'text', 'text').then(function() {
             check([381, 221], ['(10°, 10°)\ntext', null]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -303,7 +303,7 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'hovertext', 'hovertext').then(function() {
             check([381, 221], ['(10°, 10°)\nhovertext', null]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -311,7 +311,7 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'hovertext', ['Apple', 'Banana', 'Orange']).then(function() {
             check([381, 221], ['(10°, 10°)\nApple', null]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -329,7 +329,7 @@ describe('Test scattergeo hover', function() {
                 fontFamily: 'Arial'
             });
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 
@@ -337,12 +337,12 @@ describe('Test scattergeo hover', function() {
         Plotly.restyle(gd, 'hoverinfo', [['lon', null, 'lat+name']]).then(function() {
             check([381, 221], ['lon: 10°', null]);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
 
-describe('scattergeo bad data', function() {
+describe('scattergeo drawing', function() {
     var gd;
 
     beforeEach(function() {
@@ -362,7 +362,33 @@ describe('scattergeo bad data', function() {
             // only utopia logs - others are silently ignored
             expect(Lib.log).toHaveBeenCalledTimes(1);
         })
-        .catch(fail)
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('preserves order after hide/show', function(done) {
+        function getIndices() {
+            var out = [];
+            d3.selectAll('.scattergeo').each(function(d) { out.push(d[0].trace.index); });
+            return out;
+        }
+
+        Plotly.newPlot(gd, [
+            {type: 'scattergeo', lon: [10, 20], lat: [10, 20]},
+            {type: 'scattergeo', lon: [10, 20], lat: [10, 20]}
+        ])
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+            return Plotly.restyle(gd, 'visible', false, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([1]);
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(getIndices()).toEqual([0, 1]);
+        })
+        .catch(failTest)
         .then(done);
     });
 });

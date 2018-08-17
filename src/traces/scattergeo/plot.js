@@ -24,22 +24,13 @@ module.exports = function plot(gd, geo, calcData) {
         calcGeoJSON(calcData[i], geo.topojson);
     }
 
-    function keyFunc(d) { return d[0].trace.uid; }
-
     function removeBADNUM(d, node) {
         if(d.lonlat[0] === BADNUM) {
             d3.select(node).remove();
         }
     }
 
-    var gTraces = geo.layers.frontplot.select('.scatterlayer')
-        .selectAll('g.trace.scattergeo')
-        .data(calcData, keyFunc);
-
-    gTraces.enter().append('g')
-        .attr('class', 'trace scattergeo');
-
-    gTraces.exit().remove();
+    var gTraces = Lib.makeTraceGroups(geo.layers.frontplot, calcData, 'trace scattergeo');
 
     // TODO find a way to order the inner nodes on update
     gTraces.selectAll('*').remove();
