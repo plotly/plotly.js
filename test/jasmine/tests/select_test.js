@@ -2,7 +2,9 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
+var DBLCLICKDELAY = require('../../../src/constants/interactions').DBLCLICKDELAY;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -75,7 +77,9 @@ function resetEvents(gd) {
         });
 
         gd.on('plotly_selected', function(data) {
-            assertSelectionNodes(0, 2);
+            // TODO reconsider this if(data) condition when it's clear when
+            // and how plotly_selected event is emitted in context of click-to-select.
+            if(data) assertSelectionNodes(0, 2);
             selectedCnt++;
             selectedData = data;
             resolve();
@@ -108,6 +112,265 @@ var NOEVENTS = [0, 0, 0];
 var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
 var LASSOEVENTS = [4, 2, 1];
+
+var SELECT_PATH = [[93, 193], [143, 193]];
+var LASSO_PATH = [[316, 171], [318, 239], [335, 243], [328, 169]];
+
+describe('Click-to-select', function() {
+    var mock14Pts = {
+        '1': { x: 134, y: 116 },
+        '7': { x: 270, y: 160 },
+        '10': { x: 324, y: 198 },
+        '35': { x: 685, y: 341 }
+    };
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function plotMock14() {
+        var mock = require('@mocks/14.json');
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.layout.dragmode = 'select';
+        mockCopy.layout.hovermode = 'closest';
+
+        return Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+    }
+
+    /**
+     * Executes a click and before resets selection event handlers.
+     * By default, click is executed with a delay to prevent unwanted double clicks.
+     * Returns the `selectedPromise` promise for convenience.
+     */
+    function _click(x, y, clickOpts, immediate) {
+        resetEvents(gd);
+
+        // Too fast subsequent calls of `click` would
+        // produce an unwanted double click, thus we need
+        // to delay the click.
+        if(immediate) {
+            click(x, y, clickOpts);
+        } else {
+            setTimeout(function() {
+                click(x, y, clickOpts);
+            }, DBLCLICKDELAY * 1.01);
+        }
+
+        return selectedPromise;
+    }
+
+    function _clickPt(coords, clickOpts, immediate) {
+        expect(coords).toBeDefined('coords needs to be defined');
+        expect(coords.x).toBeDefined('coords.x needs to be defined');
+        expect(coords.y).toBeDefined('coords.y needs to be defined');
+
+        return _click(coords.x, coords.y, clickOpts, immediate);
+    }
+
+    /**
+     * Convenient helper to execute a click immediately.
+     */
+    function _immediateClickPt(coords, clickOpts) {
+        return _clickPt(coords, clickOpts, true);
+    }
+
+    /**
+     * Asserting selected points.
+     *
+     * @param expected can be a point number, an array
+     * of point numbers (for a single trace) or an array of point number
+     * arrays in case of multiple traces.
+     */
+    function assertSelectedPoints(expected) {
+        var expectedPtsPerTrace;
+        var expectedPts;
+        var traceNum;
+
+        if(Array.isArray(expected)) {
+            if(Array.isArray(expected[0])) {
+                expectedPtsPerTrace = expected;
+            } else {
+                expectedPtsPerTrace = [expected];
+            }
+        } else {
+            expectedPtsPerTrace = [[expected]];
+        }
+
+        for(traceNum = 0; traceNum < expectedPtsPerTrace.length; traceNum++) {
+            expectedPts = expectedPtsPerTrace[traceNum];
+            expect(gd._fullData[traceNum].selectedpoints).toEqual(expectedPts);
+            expect(gd.data[traceNum].selectedpoints).toEqual(expectedPts);
+        }
+    }
+
+    function assertSelectionCleared() {
+        gd._fullData.forEach(function(fullDataItem) {
+            expect(fullDataItem.selectedpoints).toBeUndefined();
+        });
+    }
+
+    it('selects a single data point when being clicked', function(done) {
+        plotMock14()
+          .then(function() { return _immediateClickPt(mock14Pts[7]); })
+          .then(function() { assertSelectedPoints(7); })
+          .catch(failTest)
+          .then(done);
+    });
+
+    describe('clears entire selection when the last selected data point', function() {
+        [{
+            desc: 'is clicked',
+            clickOpts: {}
+        }, {
+            desc: 'is clicked while add/subtract modifier keys are active',
+            clickOpts: { shiftKey: true }
+        }].forEach(function(testData) {
+            it(testData.desc, function(done) {
+                plotMock14()
+                  .then(function() { return _immediateClickPt(mock14Pts[7]); })
+                  .then(function() {
+                      assertSelectedPoints(7);
+                      _clickPt(mock14Pts[7], testData.opts);
+                      return deselectPromise;
+                  })
+                  .then(assertSelectionCleared)
+                  .catch(failTest)
+                  .then(done);
+            });
+        });
+    });
+
+    it('supports adding to an existing selection', function(done) {
+        plotMock14()
+          .then(function() { return _immediateClickPt(mock14Pts[7]); })
+          .then(function() {
+              assertSelectedPoints(7);
+              return _clickPt(mock14Pts[35], { shiftKey: true });
+          })
+          .then(function() { assertSelectedPoints([7, 35]); })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('supports subtracting from an existing selection', function(done) {
+        plotMock14()
+          .then(function() { return _immediateClickPt(mock14Pts[7]); })
+          .then(function() {
+              assertSelectedPoints(7);
+              return _clickPt(mock14Pts[35], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([7, 35]);
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() { assertSelectedPoints(35); })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('can be used interchangeably with lasso/box select', function(done) {
+        plotMock14()
+          .then(function() {
+              return _immediateClickPt(mock14Pts[35]);
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              drag(SELECT_PATH, { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 1, 35]);
+              return _immediateClickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 1, 7, 35]);
+              return _clickPt(mock14Pts[1], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7, 35]);
+              return Plotly.relayout(gd, 'dragmode', 'lasso');
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7, 35]);
+              drag(LASSO_PATH, { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7, 10, 35]);
+              return _clickPt(mock14Pts[10], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7, 35]);
+              drag([[670, 330], [695, 330], [695, 350], [670, 350]],
+                { shiftKey: true, altKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7]);
+              return _clickPt(mock14Pts[35], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([0, 7, 35]);
+              return _clickPt(mock14Pts[7]);
+          })
+          .then(function() {
+              assertSelectedPoints([7]);
+              return doubleClick(650, 100);
+          })
+          .then(function() {
+              assertSelectionCleared();
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('works in a multi-trace plot', function(done) {
+        Plotly.plot(gd, [
+            {
+                x: [1, 3, 5, 4, 10, 12, 12, 7],
+                y: [2, 7, 6, 1, 0, 13, 6, 12],
+                type: 'scatter',
+                mode: 'markers',
+                marker: { size: 20 }
+            }, {
+                x: [1, 7, 6, 2],
+                y: [2, 3, 5, 4],
+                type: 'bar'
+            }, {
+                x: [7, 8, 9, 10],
+                y: [7, 9, 13, 21],
+                type: 'scattergl',
+                mode: 'markers',
+                marker: { size: 20 }
+            }
+        ], { width: 400, height: 600, hovermode: 'closest', dragmode: 'select' })
+          .then(function() {
+              return _click(136, 369, {}, true); })
+          .then(function() {
+              assertSelectedPoints([[1], [], []]);
+              return _click(245, 136, { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([[1], [], [3]]);
+              return _click(183, 470, { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([[1], [2], [3]]);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    // it('is supported in pan/zoom mode', function() {
+    // });
+
+    // describe('is disabled when clickmode does not include select', function() {
+    // })
+
+    // describe('is supported by', function() {
+    // })
+});
 
 describe('@flaky Test select box and lasso in general:', function() {
     var mock = require('@mocks/14.json');

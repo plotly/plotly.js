@@ -370,6 +370,11 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
                 drawSelection(dragOptions.mergedPolygons, outlines);
 
+                // TODO with click-to-select arriving before v2, consider emitting
+                // plotly_selected only if a point has been selected. Also consider the
+                // actual clickmode and adapt Jasmine tests that are aware of this current
+                // behavior.
+
                 // TODO: remove in v2 - this was probably never intended to work as it does,
                 // but in case anyone depends on it we don't want to break it now.
                 gd.emit('plotly_selected', undefined);
