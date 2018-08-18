@@ -115,5 +115,17 @@ module.exports = {
             'Sets the width of the open/close tick marks',
             'relative to the *x* minimal interval.'
         ].join(' ')
-    }
+    },
+
+    hoveron: {
+        valType: 'flaglist',
+        flags: ['ohlc', 'points'],
+        dflt: 'points',
+        role: 'info',
+        editType: 'style',
+        description: [
+            'Do the hover effects show info in separate tooltips',
+            'or a single tooltip?'
+        ].join(' ')
+    },
 };
