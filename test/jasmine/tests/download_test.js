@@ -61,7 +61,7 @@ describe('Plotly.downloadImage', function() {
         downloadTest(gd, 'svg', done);
     }, LONG_TIMEOUT_INTERVAL);
 
-   it('should work when passing graph div id', function(done) {
+    it('should work when passing graph div id', function(done) {
         downloadTest('graph', 'svg', done);
     }, LONG_TIMEOUT_INTERVAL);
 
