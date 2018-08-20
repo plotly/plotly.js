@@ -4,6 +4,7 @@
 set +e
 set +o pipefail
 
+ROOT=$(dirname $0)/..
 EXIT_STATE=0
 MAX_AUTO_RETRY=5
 
@@ -34,7 +35,12 @@ case $1 in
         ;;
 
     jasmine2)
-        retry npm run test-jasmine -- --tags=gl --skip-tags=noCI,flaky
+        SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=gl))
+
+        for s in ${SHARDS[@]}; do
+            retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI,flaky
+        done
+
         retry npm run test-jasmine -- --tags=flaky --skip-tags=noCI
         exit $EXIT_STATE
         ;;
