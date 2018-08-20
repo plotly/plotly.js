@@ -5,8 +5,8 @@ var falafel = require('falafel');
 var glob = require('glob');
 var minimist = require('minimist');
 
-var constants = require('./util/constants');
-var pathToJasmineTests = constants.pathToJasmineTests;
+var pathToJasmineTests = require('./util/constants').pathToJasmineTests;
+var isJasmineTestIt = require('./util/common').isJasmineTestIt;
 
 var argv = minimist(process.argv.slice(2), {
     string: ['tag', 'limit'],
@@ -32,7 +32,7 @@ glob(path.join(pathToJasmineTests, '*.js'), function(err, files) {
         var bn = path.basename(file);
 
         falafel(code, function(node) {
-            if(isTestDescription(node, tag)) {
+            if(isJasmineTestIt(node, tag)) {
                 if(file2cnt[bn]) {
                     file2cnt[bn]++;
                 } else {
@@ -92,21 +92,3 @@ glob(path.join(pathToJasmineTests, '*.js'), function(err, files) {
     // print result to stdout
     console.log(runs.join('\n'));
 });
-
-function isTestDescription(node, tag) {
-    var isDescription = (
-        node.type === 'Literal' &&
-        node.parent &&
-        node.parent.type === 'CallExpression' &&
-        node.parent.callee &&
-        node.parent.callee.type === 'Identifier' &&
-        node.parent.callee.name === 'it'
-    );
-
-    if(!tag) return isDescription;
-
-    return (
-        isDescription &&
-        node.source().indexOf('@' + tag) !== -1
-    );
-}

@@ -8,6 +8,11 @@ var readLastLines = require('read-last-lines');
 var eslint = require('eslint');
 var trueCasePath = require('true-case-path');
 
+var common = require('./util/common');
+var isJasmineTestIt = common.isJasmineTestIt;
+var isJasmineTestDescribe = common.isJasmineTestDescribe;
+var hasJasmineTestTag = common.hasJasmineTestTag;
+
 var constants = require('./util/constants');
 var srcGlob = path.join(constants.pathToSrc, '**/*.js');
 var libGlob = path.join(constants.pathToLib, '**/*.js');
@@ -28,26 +33,55 @@ assertES5();
 // check for for focus and exclude jasmine blocks
 function assertJasmineSuites() {
     var BLACK_LIST = ['fdescribe', 'fit', 'xdescribe', 'xit'];
+    var TAGS = ['noCI', 'noCIdep', 'gl', 'flaky'];
     var logs = [];
 
     glob(combineGlobs([testGlob, bundleTestGlob]), function(err, files) {
         files.forEach(function(file) {
             var code = fs.readFileSync(file, 'utf-8');
+            var bn = path.basename(file);
 
             falafel(code, {locations: true}, function(node) {
+                var lineInfo = '[line ' + node.loc.start.line + '] :';
+
                 if(node.type === 'Identifier' && BLACK_LIST.indexOf(node.name) !== -1) {
                     logs.push([
-                        path.basename(file),
-                        '[line ' + node.loc.start.line + '] :',
+                        bn, lineInfo,
                         'contains either a *fdescribe*, *fit*,',
                         '*xdescribe* or *xit* block.'
                     ].join(' '));
                 }
-            });
 
+                if(isJasmineTestIt(node)) {
+                    if(hasJasmineTestTag(node)) {
+                        if(TAGS.every(function(t) { return !hasJasmineTestTag(node, t); })) {
+                            logs.push([
+                                bn, lineInfo,
+                                'contains an unrecognized tag,',
+                                'not one of: ' + TAGS.map(function(t) { return '\@' + t; }).join(', ')
+                            ].join(' '));
+                        }
+                    }
+
+                    if(hasJasmineTestTag(node, 'gl') && hasJasmineTestTag(node, 'flaky')) {
+                        logs.push([
+                            bn, lineInfo,
+                            'contains a @gl tag AND a @flaky tag, which is not allowed'
+                        ].join(' '));
+                    }
+                }
+
+                if(isJasmineTestDescribe(node, 'gl')) {
+                    logs.push([
+                        bn, lineInfo,
+                        'contains a @gl tag is a *describe* block,',
+                        '@gl tags are allowed only in jasmine *it* blocks.'
+                    ].join(' '));
+                }
+            });
         });
 
-        log('no jasmine suites focus/exclude blocks', logs);
+        log('no jasmine suites focus/exclude blocks or wrong tag patterns', logs);
     });
 }
 
