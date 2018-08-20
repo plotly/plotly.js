@@ -152,7 +152,7 @@ module.exports = function plot(gd, calcData) {
         var tooltip = Fx.loneHover({
             x: hoverCenterX - rootBBox.left,
             y: hoverCenterY - rootBBox.top,
-            name: d3.format(d.valueFormat)(d.link.value) + d.valueSuffix,
+            name: Lib.numSeparate(d3.format(d.valueFormat)(d.link.value),gd._fullLayout.separators,d.separatethousands) + d.valueSuffix,
             text: [
                 d.link.label || '',
                 sourceLabel + d.link.source.label,
@@ -213,7 +213,7 @@ module.exports = function plot(gd, calcData) {
             x0: hoverCenterX0,
             x1: hoverCenterX1,
             y: hoverCenterY,
-            name: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix,
+            name: Lib.numSeparate(d3.format(d.valueFormat)(d.node.value),gd._fullLayout.separators,d.separatethousands) + d.valueSuffix,
             text: [
                 d.node.label,
                 incomingLabel + d.node.targetLinks.length,

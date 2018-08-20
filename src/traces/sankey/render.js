@@ -81,6 +81,7 @@ function sankeyModel(layout, d, traceIndex) {
     var linkLineWidth = trace.link.line.width;
     var valueFormat = trace.valueformat;
     var valueSuffix = trace.valuesuffix;
+    var separatethousands = trace.separatethousands;
     var textFont = trace.textfont;
 
     var width = layout.width * (domain.x[1] - domain.x[0]);
@@ -171,6 +172,7 @@ function sankeyModel(layout, d, traceIndex) {
         linkLineWidth: linkLineWidth,
         valueFormat: valueFormat,
         valueSuffix: valueSuffix,
+        separatethousands: separatethousands,
         textFont: textFont,
         translateX: domain.x[0] * width + layout.margin.l,
         translateY: layout.height - domain.y[1] * layout.height + layout.margin.t,
@@ -209,6 +211,7 @@ function linkModel(uniqueKeys, d, l) {
         linkLineWidth: d.linkLineWidth,
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
+        separatethousands: d.separatethousands,
         sankey: d.sankey,
         interactionState: d.interactionState
     };
@@ -255,6 +258,7 @@ function nodeModel(uniqueKeys, d, n) {
         tinyColorAlpha: tc.getAlpha(),
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
+        separatethousands: d.separatethousands,
         sankey: d.sankey,
         arrangement: d.arrangement,
         uniqueNodeLabelPathId: [d.guid, d.key, key].join(' '),

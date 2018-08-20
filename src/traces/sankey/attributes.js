@@ -54,6 +54,16 @@ module.exports = overrideAll({
         ].join(' ')
     },
 
+    separatethousands: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        editType: 'calc',
+        description: [
+            'If "true", even 4-digit integers are separated'
+        ].join(' ')
+    },
+
     arrangement: {
         valType: 'enumerated',
         values: ['snap', 'perpendicular', 'freeform', 'fixed'],
