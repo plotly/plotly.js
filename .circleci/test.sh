@@ -13,12 +13,14 @@ retry () {
     local n=0
 
     until [ $n -ge $MAX_AUTO_RETRY ]; do
+        if [ $n -ge 1 ]; then
+            echo ''
+            echo run $n of $MAX_AUTO_RETRY failed, trying again ...
+            echo ''
+            sleep 15
+        fi
         "$@" && break
         n=$[$n+1]
-        echo ''
-        echo run $n of $MAX_AUTO_RETRY failed, trying again ...
-        echo ''
-        sleep 15
     done
 
     if [ $n -eq $MAX_AUTO_RETRY ]; then
