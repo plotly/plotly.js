@@ -248,7 +248,7 @@ describe('Test gl2d plots', function() {
         });
     }
 
-    it('@gl @flaky should respond to drag interactions', function(done) {
+    it('@gl should respond to drag interactions', function(done) {
         var _mock = Lib.extendDeep({}, mock);
 
         var relayoutCallback = jasmine.createSpy('relayoutCallback');
@@ -354,7 +354,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@gl @flaky should be able to toggle visibility', function(done) {
+    it('@gl should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock);
         _mock.data[0].line.width = 5;
 
@@ -534,7 +534,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@gl @flaky supports 1D and 2D Zoom', function(done) {
+    it('@gl supports 1D and 2D Zoom', function(done) {
         var centerX;
         var centerY;
 
@@ -587,7 +587,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@gl @flaky supports axis constraints with zoom', function(done) {
+    it('@gl supports axis constraints with zoom', function(done) {
         var centerX;
         var centerY;
 
@@ -654,7 +654,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@gl @flaky should change plot type with incomplete data', function(done) {
+    it('@gl should change plot type with incomplete data', function(done) {
         Plotly.plot(gd, [{}]);
         expect(function() {
             Plotly.restyle(gd, {type: 'scattergl', x: [[1]]}, 0);
@@ -667,7 +667,7 @@ describe('Test gl2d plots', function() {
         done();
     });
 
-    it('@gl @flaky data-referenced annotations should update on drag', function(done) {
+    it('@gl data-referenced annotations should update on drag', function(done) {
         function assertAnnotation(xy) {
             var ann = d3.select('g.annotation-text-g').select('g');
             var translate = Drawing.getTranslate(ann);
@@ -710,7 +710,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@gl @flaky should not scroll document while panning', function(done) {
+    it('@gl should not scroll document while panning', function(done) {
         var mock = {
             data: [
                 { type: 'scattergl', y: [1, 2, 3], x: [1, 2, 3] }
@@ -872,7 +872,7 @@ describe('Test gl2d plots', function() {
         .then(done);
     });
 
-    it('@gl @flaky should remove fill2d', function(done) {
+    it('@gl should remove fill2d', function(done) {
         var mock = require('@mocks/gl2d_axes_labels2.json');
 
         Plotly.plot(gd, mock.data, mock.layout)

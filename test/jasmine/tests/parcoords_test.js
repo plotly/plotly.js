@@ -1014,7 +1014,7 @@ describe('parcoords basic use', function() {
         .then(done);
     });
 
-    it('@gl @flaky Calling `Plotly.animate` with patches targeting `dimensions` attributes should do the right thing', function(done) {
+    it('@gl Calling `Plotly.animate` with patches targeting `dimensions` attributes should do the right thing', function(done) {
         Plotly.react(gd, [{
             type: 'parcoords',
             line: {color: 'blue'},
