@@ -1143,7 +1143,7 @@ function dragDimensionEnd(d) {
 
             restyleData['dimensions[' + d.model.containerInd + '].categoryarray'] = [newCategoryArray];
             restyleData['dimensions[' + d.model.containerInd + '].categorylabels'] = [newCategoryLabels];
-            restyleData['dimensions[' + d.model.containerInd + '].categoryorder'] = ['array'];
+            restyleData['dimensions[' + d.model.containerInd + '].categoryorder'] = 'array';
         }
     }
 

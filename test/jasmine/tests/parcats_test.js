@@ -366,22 +366,22 @@ describe('Dimension reordered parcats trace', function() {
                     {dimensionInd: 1, displayInd: 2, dimensionLabel: 'Two'});
 
                 checkCategoryCalc(gd, 1, 0, {
-                    categoryLabel: 'A',
-                    dimensionInd: 1,
-                    categoryInd: 0,
-                    displayInd: 1});
-
-                checkCategoryCalc(gd, 1, 1, {
                     categoryLabel: 'B',
                     dimensionInd: 1,
+                    categoryInd: 0,
+                    displayInd: 0});
+
+                checkCategoryCalc(gd, 1, 1, {
+                    categoryLabel: 'A',
+                    dimensionInd: 1,
                     categoryInd: 1,
-                    displayInd: 2});
+                    displayInd: 1});
 
                 checkCategoryCalc(gd, 1, 2, {
                     categoryLabel: 'C',
                     dimensionInd: 1,
                     categoryInd: 2,
-                    displayInd: 0});
+                    displayInd: 2});
 
                 // ### Dimension 2 ###
                 checkDimensionCalc(gd, 2,
@@ -401,9 +401,6 @@ describe('Dimension reordered parcats trace', function() {
 
         // Define bad display indexes [0, 2, 0]
         mock.data[0].dimensions[2].displayindex = 0;
-
-        //  catDisplayInds for dimension 1 as [0, 2, 0]
-        mock.data[0].dimensions[1].catDisplayInds[0] = 0;
 
         Plotly.newPlot(gd, mock)
             .then(function() {
@@ -440,12 +437,12 @@ describe('Dimension reordered parcats trace', function() {
                     {dimensionInd: 1, displayInd: 1, dimensionLabel: 'Two'});
 
                 checkCategoryCalc(gd, 1, 0, {
-                    categoryLabel: 'A',
+                    categoryLabel: 'B',
                     categoryInd: 0,
                     displayInd: 0});
 
                 checkCategoryCalc(gd, 1, 1, {
-                    categoryLabel: 'B',
+                    categoryLabel: 'A',
                     categoryInd: 1,
                     displayInd: 1});
 
@@ -737,7 +734,9 @@ describe('Drag to reordered dimensions and categories', function() {
                     {'dimensions[0].displayindex': 0,
                         'dimensions[1].displayindex': 2,
                         'dimensions[2].displayindex': 1,
-                        'dimensions[1].catDisplayInds': [[ 1, 2, 0 ]]},
+                        'dimensions[1].categoryorder': 'array',
+                        'dimensions[1].categoryarray': [['C', 'A', 'B' ]],
+                        'dimensions[1].categorylabels': [['C', 'A', 'B' ]]},
                     [0]]);
 
                 restyleCallback.calls.reset();
