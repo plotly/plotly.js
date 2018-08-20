@@ -1941,6 +1941,35 @@ describe('Test axes', function() {
             ]);
         });
 
+        it('supports e/E format on log axes', function() {
+            ['e', 'E'].forEach(function(e) {
+                var textOut = mockCalc({
+                    type: 'log',
+                    tickmode: 'linear',
+                    exponentformat: e,
+                    showexponent: 'all',
+                    tick0: 0,
+                    dtick: 'D2',
+                    range: [-4.1, 4.1]
+                });
+
+                var oep = '1' + e + '+';
+                var oem = '1' + e + '\u2212';
+
+                expect(textOut).toEqual([
+                    oem + '4', '2', '5',
+                    oem + '3', '2', '5',
+                    '0.01', '2', '5',
+                    '0.1', '2', '5',
+                    '1', '2', '5',
+                    '10', '2', '5',
+                    '100', '2', '5',
+                    oep + '3', '2', '5',
+                    oep + '4'
+                ]);
+            });
+        });
+
         it('provides a new date suffix whenever the suffix changes', function() {
             var ax = {
                 type: 'date',
