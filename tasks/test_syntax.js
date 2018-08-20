@@ -34,7 +34,10 @@ assertES5();
 function assertJasmineSuites() {
     var BLACK_LIST = ['fdescribe', 'fit', 'xdescribe', 'xit'];
     var TAGS = ['noCI', 'noCIdep', 'gl', 'flaky'];
+    var IT_ONLY_TAGS = ['gl', 'flaky'];
     var logs = [];
+
+    var addTagPrefix = function(t) { return '@' + t; };
 
     glob(combineGlobs([testGlob, bundleTestGlob]), function(err, files) {
         files.forEach(function(file) {
@@ -58,7 +61,7 @@ function assertJasmineSuites() {
                             logs.push([
                                 bn, lineInfo,
                                 'contains an unrecognized tag,',
-                                'not one of: ' + TAGS.map(function(t) { return '\@' + t; }).join(', ')
+                                'not one of: ' + TAGS.map(addTagPrefix).join(', ')
                             ].join(' '));
                         }
                     }
@@ -71,13 +74,15 @@ function assertJasmineSuites() {
                     }
                 }
 
-                if(isJasmineTestDescribe(node, 'gl')) {
-                    logs.push([
-                        bn, lineInfo,
-                        'contains a @gl tag is a *describe* block,',
-                        '@gl tags are allowed only in jasmine *it* blocks.'
-                    ].join(' '));
-                }
+                IT_ONLY_TAGS.forEach(function(t) {
+                    if(isJasmineTestDescribe(node, t)) {
+                        logs.push([
+                            bn, lineInfo,
+                            'contains a', addTagPrefix(t), 'tag is a *describe* block,',
+                            addTagPrefix(t), 'tags are only allowed in jasmine *it* blocks.'
+                        ].join(' '));
+                    }
+                });
             });
         });
 
