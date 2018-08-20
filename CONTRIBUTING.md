@@ -34,12 +34,12 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 #### Prerequisites
 
 - git
-- [node.js](https://nodejs.org/en/). We recommend using node.js v8.x, but all
+- [node.js](https://nodejs.org/en/). We recommend using node.js v10.x, but all
   versions starting from v6 should work.  Upgrading and managing node versions
   can be easily done using [`nvm`](https://github.com/creationix/nvm) or its
   Windows alternatives.
-- [`npm`](https://www.npmjs.com/) v5.x and up (which ships by default with
-  node.js v8.x) to ensure that the
+- [`npm`](https://www.npmjs.com/) v6.x and up (which ships by default with
+  node.js v10.x) to ensure that the
   [`package-lock.json`](https://docs.npmjs.com/files/package-lock.json) file is
   used and updated correctly.
 
