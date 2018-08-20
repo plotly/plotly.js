@@ -66,7 +66,7 @@ var mock4 = {
     layout: {}
 };
 
-describe('@flaky Test hover and click interactions', function() {
+describe('Test hover and click interactions', function() {
     var gd;
 
     function makeHoverFn(gd, x, y) {
