@@ -500,7 +500,8 @@ function buildPointsArrayForPath(d) {
  * @param {PathViewModel} d
  */
 function clickPath(d) {
-    if(d.parcatsViewModel.hovermode !== 'none') {
+    if (d.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
+        // hoverinfo it's skip, so interaction events aren't disabled
         var points = buildPointsArrayForPath(d);
         d.parcatsViewModel.graphDiv.emit('plotly_click', {points: points, event: d3.event});
     }
@@ -738,9 +739,33 @@ function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
     };
 }
 
-
 /**
  * Create hover label for a band element's category (for use when hovermode === 'category')
+ *
+ * @param {ClientRect} rootBBox
+ *  Client bounding box for root of figure
+ * @param {HTMLElement} bandElement
+ *  HTML element for band
+ *
+ */
+function createHoverLabelForDimensionHovermode(rootBBox, bandElement) {
+
+    var allHoverlabels = [];
+
+    d3.select(bandElement.parentNode.parentNode)
+        .selectAll('g.category')
+        .select('rect.catrect')
+        .each(function() {
+            var bandNode = this;
+            allHoverlabels.push(createHoverLabelForCategoryHovermode(rootBBox, bandNode));
+        });
+
+    console.log(allHoverlabels);
+    return allHoverlabels
+}
+
+/**
+ * Create hover labels for a band element's category (for use when hovermode === 'dimension')
  *
  * @param {ClientRect} rootBBox
  *  Client bounding box for root of figure
@@ -866,25 +891,27 @@ function mouseoverCategoryBand(bandViewModel) {
             var bandElement = this;
 
             // Handle style and events
-            if (hovermode === 'category') {
-                styleForCategoryHovermode(bandElement);
-                emitPointsEventCategoryHovermode(bandElement, 'plotly_hover', d3.event);
-            } else if (hovermode === 'color') {
+            if (hovermode === 'color') {
                 styleForColorHovermode(bandElement);
                 emitPointsEventColorHovermode(bandElement, 'plotly_hover', d3.event);
+            } else {
+                styleForCategoryHovermode(bandElement);
+                emitPointsEventCategoryHovermode(bandElement, 'plotly_hover', d3.event);
             }
 
             // Handle hover label
             if(bandViewModel.parcatsViewModel.hoverinfoItems.indexOf('none') === -1) {
-                var hoverItem;
+                var hoverItems;
                 if (hovermode === 'category') {
-                    hoverItem = createHoverLabelForCategoryHovermode(rootBBox, bandElement);
+                    hoverItems = createHoverLabelForCategoryHovermode(rootBBox, bandElement);
                 } else if (hovermode === 'color') {
-                    hoverItem = createHoverLabelForColorHovermode(rootBBox, bandElement);
+                    hoverItems = createHoverLabelForColorHovermode(rootBBox, bandElement);
+                } else if (hovermode === 'dimension') {
+                    hoverItems = createHoverLabelForDimensionHovermode(rootBBox, bandElement);
                 }
 
-                if (hoverItem) {
-                    Fx.loneHover(hoverItem, {
+                if (hoverItems) {
+                    Fx.multiHovers(hoverItems, {
                         container: fullLayout._hoverlayer.node(),
                         outerContainer: fullLayout._paper.node(),
                         gd: gd
@@ -1152,7 +1179,7 @@ function dragDimensionEnd(d) {
     if(!d.dragHasMoved && d.potentialClickBand) {
         if(d.parcatsViewModel.hovermode === 'color') {
             emitPointsEventColorHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
-        } else if(d.parcatsViewModel.hovermode === 'category') {
+        } else {
             emitPointsEventCategoryHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
         }
     }
@@ -1861,7 +1888,7 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
  * @property {Number} y
  *  Y position of this trace with respect to the Figure (pixels)
  * @property {String} hovermode
- *  Hover mode. One of: 'none', 'category', or 'color'
+ *  Hover mode. One of: 'none', 'category', 'color', or 'dimension'
  * @property {Array.<String>} hoverinfoItems
  *  Info to display on hover. Array with a combination of 'counts' and/or 'probabilities', or 'none', or 'skip'
  * @property {String} arrangement

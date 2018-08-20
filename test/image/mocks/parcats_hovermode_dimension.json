@@ -1,0 +1,21 @@
+{
+  "data": [
+    {"type": "parcats",
+      "domain": {"x": [0.125, 0.625],"y": [0.25, 0.75]},
+      "hovermode": "dimension",
+      "hoverinfo": "probability+count",
+      "dimensions":[
+        {"label": "One", "values": [1, 1, 2, 1, 2, 1, 1, 2, 1]},
+        {"label": "Two",
+          "values": ["A", "A", "A", "B", "A", "A", "A", "A", "C"],
+          "categoryorder": "category descending"},
+        {"label": "Three", "values": [11, 11, 11, 11, 11, 11, 11, 11, 11]}]
+    }
+  ],
+  "layout": {
+    "height": 602,
+    "width": 592,
+    "margin": {
+      "l": 40, "r": 40, "t": 50, "b": 40
+    }}
+}

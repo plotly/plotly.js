@@ -153,8 +153,7 @@ exports.loneHover = function loneHover(hoverItem, opts) {
     return hoverLabel.node();
 };
 
-// TODO: replace loneHover?
-exports.customHovers = function customHovers(hoverItems, opts) {
+exports.multiHovers = function multiHovers(hoverItems, opts) {
 
     if(!Array.isArray(hoverItems)) {
         hoverItems = [hoverItems];

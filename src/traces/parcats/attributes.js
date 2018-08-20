@@ -39,7 +39,7 @@ module.exports = {
     }),
     hovermode: {
         valType: 'enumerated',
-        values: ['category', 'color'],
+        values: ['category', 'color', 'dimension'],
         dflt: 'category',
         role: 'info',
         editType: 'plot',
