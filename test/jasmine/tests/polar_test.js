@@ -1077,7 +1077,7 @@ describe('Test polar interactions:', function() {
         .then(done);
     });
 
-    describe('@gl should update scene during drag interactions on radial and angular drag area', function() {
+    describe('should update scene during drag interactions on radial and angular drag area', function() {
         var objs = ['scatter2d', 'line2d'];
         var scene, gl, nTraces;
 
@@ -1132,7 +1132,7 @@ describe('Test polar interactions:', function() {
         }];
 
         specs.forEach(function(s) {
-            it('- ' + s.desc, function(done) {
+            it('@gl - ' + s.desc, function(done) {
                 var fig = Lib.extendDeep({}, require('@mocks/glpolar_scatter.json'));
                 scene = null;
                 gl = null;

@@ -3,7 +3,7 @@ var Plotly = require('@lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-describe('@gl date axis', function() {
+describe('date axis', function() {
 
     var gd;
 
@@ -13,7 +13,7 @@ describe('@gl date axis', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('should use the fancy gl-vis/gl-scatter2d', function() {
+    it('@gl should use the fancy gl-vis/gl-scatter2d', function() {
         Plotly.plot(gd, [{
             type: 'scattergl',
             'marker': {
@@ -40,7 +40,7 @@ describe('@gl date axis', function() {
         expect(scene.line2d).not.toBeUndefined();
     });
 
-    it('should use the fancy gl-vis/gl-scatter2d once again', function() {
+    it('@gl should use the fancy gl-vis/gl-scatter2d once again', function() {
         Plotly.plot(gd, [{
             type: 'scattergl',
             'marker': {
@@ -66,7 +66,7 @@ describe('@gl date axis', function() {
         expect(scene.line2d).toBeDefined();
     });
 
-    it('should now use the non-fancy gl-vis/gl-scatter2d', function() {
+    it('@gl should now use the non-fancy gl-vis/gl-scatter2d', function() {
         Plotly.plot(gd, [{
             type: 'scattergl',
             mode: 'markers',
@@ -85,7 +85,7 @@ describe('@gl date axis', function() {
         expect(scene.line2d).toBeDefined();
     });
 
-    it('should use the non-fancy gl-vis/gl-scatter2d with string dates', function() {
+    it('@gl should use the non-fancy gl-vis/gl-scatter2d with string dates', function() {
         Plotly.plot(gd, [{
             type: 'scattergl',
             mode: 'markers',

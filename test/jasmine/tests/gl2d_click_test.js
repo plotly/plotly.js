@@ -66,7 +66,7 @@ var mock4 = {
     layout: {}
 };
 
-describe('@gl @flaky Test hover and click interactions', function() {
+describe('@flaky Test hover and click interactions', function() {
     var gd;
 
     function makeHoverFn(gd, x, y) {
@@ -185,7 +185,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         destroyGraphDiv();
     });
 
-    it('should output correct event data for scattergl', function(done) {
+    it('@gl should output correct event data for scattergl', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
 
         _mock.layout.hoverlabel = {
@@ -222,7 +222,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
-    it('should output correct event data for scattergl in *select* dragmode', function(done) {
+    it('@gl should output correct event data for scattergl in *select* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
 
         _mock.layout.dragmode = 'select';
@@ -261,7 +261,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
-    it('should output correct event data for scattergl in *lasso* dragmode', function(done) {
+    it('@gl should output correct event data for scattergl in *lasso* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
 
         _mock.layout.dragmode = 'lasso';
@@ -300,7 +300,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
-    it('should output correct event data for scattergl with hoverinfo: \'none\'', function(done) {
+    it('@gl should output correct event data for scattergl with hoverinfo: \'none\'', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
         _mock.data[0].hoverinfo = 'none';
 
@@ -320,7 +320,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
-    it('should show correct label for scattergl when hovertext is set', function(done) {
+    it('@gl should show correct label for scattergl when hovertext is set', function(done) {
         var _mock = Lib.extendDeep({}, mock1);
         _mock.data[0].hovertext = 'text';
         _mock.data[0].hovertext = 'HoVeRtExT';
@@ -347,7 +347,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
-    it('should output correct event data for pointcloud', function(done) {
+    it('@gl should output correct event data for pointcloud', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         _mock.layout.hoverlabel = { font: {size: 8} };
@@ -375,7 +375,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
-    it('should output correct event data for heatmapgl', function(done) {
+    it('@gl should output correct event data for heatmapgl', function(done) {
         var _mock = Lib.extendDeep({}, mock3);
         _mock.data[0].type = 'heatmapgl';
 
@@ -408,7 +408,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
-    it('should output correct event data for heatmapgl (asymmetric case) ', function(done) {
+    it('@gl should output correct event data for heatmapgl (asymmetric case) ', function(done) {
         var _mock = {
             data: [{
                 type: 'heatmapgl',
@@ -441,7 +441,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
-    it('should output correct event data for scattergl after visibility restyle', function(done) {
+    it('@gl should output correct event data for scattergl after visibility restyle', function(done) {
         var _mock = Lib.extendDeep({}, mock4);
 
         var run = makeRunner([435, 216], {
@@ -483,7 +483,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
-    it('should output correct event data for scattergl-fancy', function(done) {
+    it('@gl should output correct event data for scattergl-fancy', function(done) {
         var _mock = Lib.extendDeep({}, mock4);
         _mock.data[0].mode = 'markers+lines';
         _mock.data[1].mode = 'markers+lines';
@@ -531,7 +531,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
         .then(done);
     });
 
-    it('should output correct event data contourgl', function(done) {
+    it('@gl should output correct event data contourgl', function(done) {
         var _mock = Lib.extendDeep({}, mock3);
 
         _mock.data[0].hoverlabel = {
@@ -560,7 +560,7 @@ describe('@gl @flaky Test hover and click interactions', function() {
     });
 });
 
-describe('@noCI @gl Test gl2d lasso/select:', function() {
+describe('@noCI Test gl2d lasso/select:', function() {
     var mockFancy = require('@mocks/gl2d_14.json');
     delete mockFancy.layout.xaxis.autorange;
     delete mockFancy.layout.yaxis.autorange;
@@ -630,7 +630,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
     }
 
 
-    it('should work under fast mode with *select* dragmode', function(done) {
+    it('@gl should work under fast mode with *select* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFast);
         _mock.layout.dragmode = 'select';
         gd = createGraphDiv();
@@ -657,7 +657,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .then(done);
     });
 
-    it('should work under fast mode with *lasso* dragmode', function(done) {
+    it('@gl should work under fast mode with *lasso* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFast);
         _mock.layout.dragmode = 'lasso';
         gd = createGraphDiv();
@@ -681,7 +681,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .then(done);
     });
 
-    it('should work under fancy mode with *select* dragmode', function(done) {
+    it('@gl should work under fancy mode with *select* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFancy);
         _mock.layout.dragmode = 'select';
         gd = createGraphDiv();
@@ -701,7 +701,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .then(done);
     });
 
-    it('should work under fancy mode with *lasso* dragmode', function(done) {
+    it('@gl should work under fancy mode with *lasso* dragmode', function(done) {
         var _mock = Lib.extendDeep({}, mockFancy);
         _mock.layout.dragmode = 'lasso';
         gd = createGraphDiv();
@@ -720,7 +720,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .then(done);
     });
 
-    it('should work on trace with enabled transforms', function(done) {
+    it('@gl should work on trace with enabled transforms', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl2d_transforms.json'));
         fig.layout.dragmode = 'select';
         fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
@@ -743,7 +743,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .then(done);
     });
 
-    it('should work on gl text charts', function(done) {
+    it('@gl should work on gl text charts', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_basic.json'));
         fig.layout.dragmode = 'select';
         fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
@@ -826,7 +826,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .then(done);
     });
 
-    it('should work on gl text charts with array textfont.color', function(done) {
+    it('@gl should work on gl text charts with array textfont.color', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl2d_text_chart_arrays.json'));
         fig.layout.dragmode = 'select';
         fig.layout.margin = {t: 0, b: 0, l: 0, r: 0};
@@ -906,7 +906,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .then(done);
     });
 
-    it('should work after a width/height relayout', function(done) {
+    it('@gl should work after a width/height relayout', function(done) {
         gd = createGraphDiv();
 
         var w = 500;
@@ -965,7 +965,7 @@ describe('@noCI @gl Test gl2d lasso/select:', function() {
         .then(done);
     });
 
-    it('should behave correctly during select+doubleclick+pan scenarios', function(done) {
+    it('@gl should behave correctly during select+doubleclick+pan scenarios', function(done) {
         gd = createGraphDiv();
 
         // See https://github.com/plotly/plotly.js/issues/2767
