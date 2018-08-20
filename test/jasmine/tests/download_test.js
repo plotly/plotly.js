@@ -61,6 +61,10 @@ describe('Plotly.downloadImage', function() {
         downloadTest(gd, 'svg', done);
     }, LONG_TIMEOUT_INTERVAL);
 
+   it('should work when passing graph div id', function(done) {
+        downloadTest('graph', 'svg', done);
+    }, LONG_TIMEOUT_INTERVAL);
+
     it('should produce the right SVG output in IE', function(done) {
         // mock up IE behavior
         spyOn(Lib, 'isIE').and.callFake(function() { return true; });
@@ -127,7 +131,7 @@ function downloadTest(gd, format, done) {
         });
     });
 
-    Plotly.plot(gd, textchartMock.data, textchartMock.layout).then(function(gd) {
+    Plotly.plot(gd, textchartMock.data, textchartMock.layout).then(function() {
         // start observing dom
         // configuration of the observer:
         var config = { childList: true };
@@ -136,7 +140,8 @@ function downloadTest(gd, format, done) {
         observer.observe(target, config);
 
         return Plotly.downloadImage(gd, {format: format, height: 300, width: 300, filename: 'plotly_download'});
-    }).then(function(filename) {
+    })
+    .then(function(filename) {
         // stop observing
         observer.disconnect();
         // look for an added and removed link
@@ -150,8 +155,9 @@ function downloadTest(gd, format, done) {
 
         // check that link removed
         expect(linkadded).toBe(linkdeleted);
-        done();
-    });
+    })
+    .catch(failTest)
+    .then(done);
 }
 
 
