@@ -15,7 +15,7 @@ var d3 = require('d3');
 
 var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
-var stringMappings = require('../constants/string_mappings');
+var entityToUnicode = require('../constants/string_mappings').entityToUnicode;
 var LINE_SPACING = require('../constants/alignment').LINE_SPACING;
 
 // text converter
@@ -223,13 +223,6 @@ var PROTOCOLS = ['http:', 'https:', 'mailto:', '', undefined, ':'];
 
 var STRIP_TAGS = new RegExp('</?(' + Object.keys(TAG_STYLES).join('|') + ')( [^>]*)?/?>', 'g');
 
-var ENTITY_TO_UNICODE = Object.keys(stringMappings.entityToUnicode).map(function(k) {
-    return {
-        regExp: new RegExp('&' + k + ';', 'g'),
-        sub: stringMappings.entityToUnicode[k]
-    };
-});
-
 var NEWLINES = /(\r\n?|\n)/g;
 
 var SPLIT_TAGS = /(<[^<>]*>)/;
@@ -254,6 +247,14 @@ var BR_TAG = /<br(\s+.*)?>/i;
  *
  * Because we hack in other attributes with style (sub & sup), drop any trailing
  * semicolon in user-supplied styles so we can consistently append the tag-dependent style
+ *
+ * These are for tag attributes; Chrome anyway will convert entities in
+ * attribute values, but not in attribute names
+ * you can test this by for example:
+ * > p = document.createElement('p')
+ * > p.innerHTML = '<span styl&#x65;="font-color:r&#x65;d;">Hi</span>'
+ * > p.innerHTML
+ * <- '<span styl&#x65;="font-color:red;">Hi</span>'
  */
 var STYLEMATCH = /(^|[\s"'])style\s*=\s*("([^"]*);?"|'([^']*);?')/i;
 var HREFMATCH = /(^|[\s"'])href\s*=\s*("([^"]*)"|'([^']*)')/i;
@@ -265,7 +266,8 @@ var POPUPMATCH = /(^|[\s"'])popup\s*=\s*("([\w=,]*)"|'([\w=,]*)')/i;
 function getQuotedMatch(_str, re) {
     if(!_str) return null;
     var match = _str.match(re);
-    return match && (match[3] || match[4]);
+    var result = match && (match[3] || match[4]);
+    return result && convertEntities(result);
 }
 
 var COLORMATCH = /(^|;)\s*color:/;
@@ -276,19 +278,45 @@ exports.plainText = function(_str) {
     return (_str || '').replace(STRIP_TAGS, ' ');
 };
 
-function replaceFromMapObject(_str, list) {
-    if(!_str) return '';
-
-    for(var i = 0; i < list.length; i++) {
-        var item = list[i];
-        _str = _str.replace(item.regExp, item.sub);
-    }
-
-    return _str;
-}
-
+// NOTE: in general entities can contain uppercase too (so [a-zA-Z]) but all the
+// ones we support use only lowercase. If we ever change that, update the regex.
+var ENTITY_MATCH = /&(#\d+|#x[\da-fA-F]+|[a-z]+);/g;
 function convertEntities(_str) {
-    return replaceFromMapObject(_str, ENTITY_TO_UNICODE);
+    return _str.replace(ENTITY_MATCH, function(fullMatch, innerMatch) {
+        var outChar;
+        if(innerMatch.charAt(0) === '#') {
+            // cannot use String.fromCodePoint in IE
+            outChar = fromCodePoint(
+                innerMatch.charAt(1) === 'x' ?
+                    parseInt(innerMatch.substr(2), 16) :
+                    parseInt(innerMatch.substr(1), 10)
+            );
+        }
+        else outChar = entityToUnicode[innerMatch];
+
+        // as in regular HTML, if we didn't decode the entity just
+        // leave the raw text in place.
+        return outChar || fullMatch;
+    });
+}
+exports.convertEntities = convertEntities;
+
+// but also in other browsers we don't want to overflow
+var stringFromCodePoint = String.fromCodePoint;
+var stringFromCharCode = String.fromCharCode;
+function fromCodePoint(code) {
+    // Don't allow overflow. In Chrome this turns into � but I feel like it's
+    // more useful to just not convert it at all.
+    if(code > 0x10FFFF) return;
+    if(stringFromCodePoint) return stringFromCodePoint(code);
+
+    // IE doesn't have String.fromCodePoint
+    // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCodePoint
+    if(code <= 0xFFFF) return stringFromCharCode(code);
+    return stringFromCharCode(
+        (code >> 10) + 0xD7C0,
+        (code % 0x400) + 0xDC00
+    );
 }
 
 /*
@@ -302,15 +330,14 @@ function convertEntities(_str) {
  *   somewhat differently if it does, so just keep track of this when it happens.
  */
 function buildSVGText(containerNode, str) {
-    str = convertEntities(str)
-        /*
-         * Normalize behavior between IE and others wrt newlines and whitespace:pre
-         * this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
-         * Chrome and FF display \n, \r, or \r\n as a space in this mode.
-         * I feel like at some point we turned these into <br> but currently we don't so
-         * I'm just going to cement what we do now in Chrome and FF
-         */
-        .replace(NEWLINES, ' ');
+    /*
+     * Normalize behavior between IE and others wrt newlines and whitespace:pre
+     * this combination makes IE barf https://github.com/plotly/plotly.js/issues/746
+     * Chrome and FF display \n, \r, or \r\n as a space in this mode.
+     * I feel like at some point we turned these into <br> but currently we don't so
+     * I'm just going to cement what we do now in Chrome and FF
+     */
+    str = str.replace(NEWLINES, ' ');
 
     var hasLink = false;
 
@@ -435,7 +462,7 @@ function buildSVGText(containerNode, str) {
             newLine();
         }
         else if(tagStyle === undefined) {
-            addTextNode(currentNode, parti);
+            addTextNode(currentNode, convertEntities(parti));
         }
         else {
             // tag - open or close

@@ -12,30 +12,21 @@
 // N.B. HTML entities are listed without the leading '&' and trailing ';'
 // https://www.freeformatter.com/html-entities.html
 
+// FWIW if we wanted to support the full set, it has 2261 entries:
+// https://www.w3.org/TR/html5/entities.json
+// though I notice that some of these are duplicates and/or are missing ";"
+// eg: "&amp;", "&amp", "&AMP;", and "&AMP" all map to "&"
+// We no longer need to include numeric entities here, these are now handled
+// by String.fromCodePoint/fromCharCode in svg_text_utils
 module.exports = {
     entityToUnicode: {
-        'mu': 'μ',
-        '#956': 'μ',
-
-        'amp': '&',
-        '#28': '&',
-
-        'lt': '<',
-        '#60': '<',
-
-        'gt': '>',
-        '#62': '>',
-
-        'nbsp': ' ',
-        '#160': ' ',
-
-        'times': '×',
-        '#215': '×',
-
-        'plusmn': '±',
-        '#177': '±',
-
-        'deg': '°',
-        '#176': '°'
+        mu: 'μ',
+        amp: '&',
+        lt: '<',
+        gt: '>',
+        nbsp: ' ',
+        times: '×',
+        plusmn: '±',
+        deg: '°'
     }
 };
