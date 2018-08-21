@@ -138,7 +138,7 @@ var plotData = {
     }
 };
 
-describe('@gl pointcloud traces', function() {
+describe('pointcloud traces', function() {
 
     var gd;
 
@@ -151,13 +151,13 @@ describe('@gl pointcloud traces', function() {
         destroyGraphDiv();
     });
 
-    it('renders without raising an error', function(done) {
+    it('@gl renders without raising an error', function(done) {
         Plotly.plot(gd, plotData)
         .catch(failTest)
         .then(done);
     });
 
-    it('should update properly', function(done) {
+    it('@gl should update properly', function(done) {
         var mock = plotData;
         var scene2d;
 
