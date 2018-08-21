@@ -29,7 +29,12 @@ var line = extendFlat({
             dflt: 'linear',
             role: 'info',
             editType: 'plot',
-            description: 'Sets the shape of the paths'},
+            description: [
+                'Sets the shape of the paths.',
+                'If `linear`, paths are composed of straight lines.',
+                'If `hspline`, paths are composed of horizontal curved splines'
+            ].join(' ')
+        }
     });
 
 module.exports = {
@@ -37,6 +42,7 @@ module.exports = {
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['count', 'probability'],
         editType: 'plot'
+        // plotAttrs.hoverinfo description is appropriate
     }),
     hovermode: {
         valType: 'enumerated',
@@ -44,7 +50,12 @@ module.exports = {
         dflt: 'category',
         role: 'info',
         editType: 'plot',
-        description: 'Sets the hover mode of the parcats diagram'
+        description: [
+            'Sets the hover mode of the parcats diagram.',
+            'If `category`, hover interaction take place per category.',
+            'If `color`, hover interactions take place per color per category.',
+            'If `dimension`, hover interactions take across all categories per dimension.'
+        ].join(' ')
     },
     arrangement: {
         valType: 'enumerated',
@@ -53,9 +64,10 @@ module.exports = {
         role: 'style',
         editType: 'plot',
         description: [
-            'If value is `perpendicular`, the categories can only move along a line perpendicular to the paths.',
-            'If value is `freeform`, the categories can freely move on the plane.',
-            'If value is `fixed`, the categories and dimensions are stationary.'
+            'Sets the drag interaction mode for categories and dimensions.',
+            'If `perpendicular`, the categories can only move along a line perpendicular to the paths.',
+            'If `freeform`, the categories can freely move on the plane.',
+            'If `fixed`, the categories and dimensions are stationary.'
         ].join(' ')
     },
     bundlecolors: {
@@ -63,7 +75,7 @@ module.exports = {
         dflt: true,
         role: 'info',
         editType: 'plot',
-        description: 'Sort paths so that like colors are bundled together'
+        description: 'Sort paths so that like colors are bundled together within each category.'
     },
     sortpaths: {
         valType: 'enumerated',
@@ -72,8 +84,9 @@ module.exports = {
         role: 'info',
         editType: 'plot',
         description: [
-            'If `forward` then sort paths based on dimensions from left to right.',
-            'If `backward` sort based on dimensions from right to left.'
+            'Sets the path sorting algorithm.',
+            'If `forward`, sort paths based on dimension categories from left to right.',
+            'If `backward`, sort paths based on dimensions categories from right to left.'
         ].join(' ')
     },
     labelfont: fontAttrs({
@@ -141,7 +154,7 @@ module.exports = {
             description: [
                 'Dimension values. `values[n]` represents the category value of the `n`th point in the dataset,',
                 'therefore the `values` vector for all dimensions must be the same (longer vectors',
-                'will be truncated). Each value must an element of `catValues`.'
+                'will be truncated).'
             ].join(' ')
         },
         displayindex: {
@@ -161,7 +174,7 @@ module.exports = {
             role: 'info',
             editType: 'calc',
             description: 'Shows the dimension when set to `true` (the default). Hides the dimension for `false`.'
-        },
+        }
     },
 
     line: line,
