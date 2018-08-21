@@ -8,6 +8,16 @@ describe('svg+text utils', function() {
 
     describe('convertToTspans', function() {
 
+        var stringFromCodePoint;
+
+        beforeAll(function() {
+            stringFromCodePoint = String.fromCodePoint;
+        });
+
+        afterEach(function() {
+            String.fromCodePoint = stringFromCodePoint;
+        });
+
         function mockTextSVGElement(txt) {
             return d3.select('body')
                 .append('svg')
@@ -321,6 +331,28 @@ describe('svg+text utils', function() {
                     '; = &#x' + n.toString(16).toUpperCase() + ';'
                 );
                 var char = String.fromCodePoint(n);
+                expect(node.text()).toBe(char + ' = ' + char + ' = ' + char, n);
+                i++;
+            }
+            // not really necessary to assert this, but we tested  355 characters,
+            // weighted toward the low end but continuing all the way to the
+            // end of the unicode definition
+            expect(i).toBe(355);
+        });
+
+        it('decodes arbitrary decimal and hex number entities (IE case)', function() {
+            // IE does not have String.fromCodePoint
+            String.fromCodePoint = undefined;
+            expect(String.fromCodePoint).toBeUndefined();
+
+            var i = 0;
+            for(var n = 33; n < 0x10FFFF; n = Math.round(n * 1.03)) {
+                var node = mockTextSVGElement(
+                    '&#x' + n.toString(16) +
+                    '; = &#' + n.toString() +
+                    '; = &#x' + n.toString(16).toUpperCase() + ';'
+                );
+                var char = stringFromCodePoint(n);
                 expect(node.text()).toBe(char + ' = ' + char + ' = ' + char, n);
                 i++;
             }

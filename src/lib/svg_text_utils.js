@@ -301,17 +301,16 @@ function convertEntities(_str) {
 }
 exports.convertEntities = convertEntities;
 
-// but also in other browsers we don't want to overflow
-var stringFromCodePoint = String.fromCodePoint;
-var stringFromCharCode = String.fromCharCode;
 function fromCodePoint(code) {
     // Don't allow overflow. In Chrome this turns into � but I feel like it's
     // more useful to just not convert it at all.
     if(code > 0x10FFFF) return;
+    var stringFromCodePoint = String.fromCodePoint;
     if(stringFromCodePoint) return stringFromCodePoint(code);
 
     // IE doesn't have String.fromCodePoint
     // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCodePoint
+    var stringFromCharCode = String.fromCharCode;
     if(code <= 0xFFFF) return stringFromCharCode(code);
     return stringFromCharCode(
         (code >> 10) + 0xD7C0,
