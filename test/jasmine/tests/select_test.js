@@ -77,9 +77,13 @@ function resetEvents(gd) {
         });
 
         gd.on('plotly_selected', function(data) {
-            // TODO reconsider this if(data) condition when it's clear when
-            // and how plotly_selected event is emitted in context of click-to-select.
-            if(data) assertSelectionNodes(0, 2);
+            // With click-to-select supported, selection nodes are only
+            // in the DOM in certain circumstances.
+            if(data &&
+              gd._fullLayout.dragmode.indexOf('select') > -1 &&
+              gd._fullLayout.dragmode.indexOf('lasso') > -1) {
+                assertSelectionNodes(0, 2);
+            }
             selectedCnt++;
             selectedData = data;
             resolve();
@@ -135,6 +139,7 @@ describe('Click-to-select', function() {
         var mock = require('@mocks/14.json');
         var defaultLayoutOpts = {
             layout: {
+                clickmode: 'event+select',
                 dragmode: 'select',
                 hovermode: 'closest'
             }
@@ -351,7 +356,13 @@ describe('Click-to-select', function() {
                 mode: 'markers',
                 marker: { size: 20 }
             }
-        ], { width: 400, height: 600, hovermode: 'closest', dragmode: 'select' })
+        ], {
+            width: 400,
+            height: 600,
+            hovermode: 'closest',
+            dragmode: 'select',
+            clickmode: 'event+select'
+        })
           .then(function() {
               return _click(136, 369, {}, true); })
           .then(function() {
@@ -388,7 +399,8 @@ describe('Click-to-select', function() {
           })
           .then(function() {
               assertSelectedPoints(35);
-              return _clickPt(mock14Pts[35], { shiftKey: true });
+              _clickPt(mock14Pts[35], { shiftKey: true });
+              return deselectPromise;
           })
           .then(function() {
               assertSelectionCleared();
@@ -425,8 +437,31 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    // describe('is disabled when clickmode does not include select', function() {
-    // })
+    describe('is disabled when clickmode does not include \'select\'', function() {
+        // TODO How to test for pan and zoom mode as well? Note, that
+        // in lasso and select mode, plotly_selected was emitted upon a single
+        // click although select-on-click wasn't supported. This behavior is kept
+        // for compatibility reasons and as a side affect allows to write this test
+        // for lasso and select. But in pan and zoom, how to be sure a click has been
+        // processed by plotly.js?
+        // ['pan', 'zoom', 'select', 'lasso']
+        ['select', 'lasso']
+          .forEach(function(dragmode) {
+              it('and dragmode is ' + dragmode, function(done) {
+                  plotMock14({ clickmode: 'event', dragmode: dragmode })
+                    .then(function() {
+                        // Still, the plotly_selected event should be thrown,
+                        // so return promise here
+                        return _immediateClickPt(mock14Pts[1]);
+                    })
+                    .then(function() {
+                        assertSelectionCleared();
+                    })
+                    .catch(failTest)
+                    .then(done);
+              });
+          });
+    });
 
     // describe('is supported by', function() {
     // })

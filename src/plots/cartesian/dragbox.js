@@ -223,14 +223,20 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function clickFn(numClicks, evt) {
+        var clickmode = gd._fullLayout.clickmode;
+
         removeZoombox(gd);
 
         if(numClicks === 2 && !singleEnd) doubleClick();
 
         if(isMainDrag) {
-            Fx.click(gd, evt, plotinfo.id);
-            // TODO Throttle needed here?
-            selectOnClick(evt, gd, xaxes, yaxes, plotinfo.id, dragOptions);
+            if(clickmode.indexOf('event') > -1) {
+                Fx.click(gd, evt, plotinfo.id);
+            }
+
+            if(clickmode.indexOf('select') > -1) {
+                selectOnClick(evt, gd, xaxes, yaxes, plotinfo.id, dragOptions);
+            }
         }
         else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya0 : xa0,
