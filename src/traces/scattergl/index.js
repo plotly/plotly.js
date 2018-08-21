@@ -840,7 +840,7 @@ function selectPoints(searchInfo, polygon) {
     if(polygon !== false && !polygon.degenerate) {
         els = [], unels = [];
         for(i = 0; i < stash.count; i++) {
-            if(polygon.contains([stash.xpx[i], stash.ypx[i]], false, i, searchInfo.cd[0].trace._expandedIndex)) {
+            if(polygon.contains([stash.xpx[i], stash.ypx[i]], false, i, searchInfo)) {
                 els.push(i);
                 selection.push({
                     pointNumber: i,

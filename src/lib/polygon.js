@@ -198,10 +198,10 @@ polygon.multitester = function multitester(list) {
         }
     }
 
-    function contains(pt, arg, index, expandedTraceIndex) {
+    function contains(pt, arg, pointNumber, searchInfo) {
         var yes = false;
         for(var i = 0; i < testers.length; i++) {
-            if(testers[i].contains(pt, arg, index, expandedTraceIndex)) {
+            if(testers[i].contains(pt, arg, pointNumber, searchInfo)) {
                 // if contained by subtract polygon - exclude the point
                 yes = testers[i].subtract === false;
             }

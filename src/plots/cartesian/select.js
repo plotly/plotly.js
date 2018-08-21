@@ -324,10 +324,8 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
             }
         } else {
             subtract = evt.shiftKey && pointSelected;
-            currentPolygon = createPtNumTester(clickedPtInfo.pointNumber,
-              clickedPtInfo.searchInfo.cd[0].trace._expandedIndex, subtract);
+            currentPolygon = createPtNumTester(clickedPtInfo.pointNumber, clickedPtInfo.searchInfo, subtract);
 
-            // var concatenatedPolygons = dragOptions.polygons.concat([currentPolygon]);
             var concatenatedPolygons = dragOptions.polygons.concat([currentPolygon]);
             testPoly = multipolygonTester(concatenatedPolygons);
 
@@ -498,8 +496,7 @@ function extractClickedPtInfo(hoverData, searchTraces) {
     };
 }
 
-// TODO What about passing a searchInfo instead of wantedExpandedTraceIndex?
-function createPtNumTester(wantedPointNumber, wantedExpandedTraceIndex, subtract) {
+function createPtNumTester(wantedPointNumber, wantedSearchInfo, subtract) {
     return {
         xmin: 0,
         xmax: 0,
@@ -507,8 +504,9 @@ function createPtNumTester(wantedPointNumber, wantedExpandedTraceIndex, subtract
         ymax: 0,
         pts: [],
         // TODO Consider making signature of contains more lean
-        contains: function(pt, omitFirstEdge, pointNumber, expandedTraceIndex) {
-            return expandedTraceIndex === wantedExpandedTraceIndex && pointNumber === wantedPointNumber;
+        contains: function(pt, omitFirstEdge, pointNumber, searchInfo) {
+            return searchInfo.cd[0].trace._expandedIndex === wantedSearchInfo.cd[0].trace._expandedIndex &&
+                pointNumber === wantedPointNumber;
         },
         isRect: false,
         degenerate: false,
