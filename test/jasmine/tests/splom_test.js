@@ -431,7 +431,7 @@ describe('Test splom trace calc step:', function() {
     });
 });
 
-describe('@gl Test splom interactions:', function() {
+describe('Test splom interactions:', function() {
     var gd;
 
     beforeEach(function() {
@@ -443,7 +443,7 @@ describe('@gl Test splom interactions:', function() {
         destroyGraphDiv();
     });
 
-    it('should destroy gl objects on Plots.cleanPlot', function(done) {
+    it('@gl should destroy gl objects on Plots.cleanPlot', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
 
         Plotly.plot(gd, fig).then(function() {
@@ -460,7 +460,7 @@ describe('@gl Test splom interactions:', function() {
         .then(done);
     });
 
-    it('when hasOnlyLargeSploms, should create correct regl-line2d data for grid', function(done) {
+    it('@gl when hasOnlyLargeSploms, should create correct regl-line2d data for grid', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_large.json'));
         var cnt = 1;
 
@@ -514,7 +514,7 @@ describe('@gl Test splom interactions:', function() {
         .then(done);
     });
 
-    it('should update properly in-and-out of hasOnlyLargeSploms regime', function(done) {
+    it('@gl should update properly in-and-out of hasOnlyLargeSploms regime', function(done) {
         var figLarge = Lib.extendDeep({}, require('@mocks/splom_large.json'));
         var dimsLarge = figLarge.data[0].dimensions;
         var dimsSmall = dimsLarge.slice(0, 5);
@@ -597,7 +597,7 @@ describe('@gl Test splom interactions:', function() {
         .then(done);
     });
 
-    it('should correctly move axis layers when relayouting *grid.(x|y)side*', function(done) {
+    it('@gl should correctly move axis layers when relayouting *grid.(x|y)side*', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_upper-nodiag.json'));
 
         function _assert(exp) {
@@ -639,7 +639,7 @@ describe('@gl Test splom interactions:', function() {
         .then(done);
     });
 
-    it('should work with typed arrays', function(done) {
+    it('@gl should work with typed arrays', function(done) {
         Plotly.plot(gd, [{
             type: 'splom',
             dimensions: [{
@@ -654,7 +654,7 @@ describe('@gl Test splom interactions:', function() {
         .then(done);
     });
 
-    it('should toggle trace correctly', function(done) {
+    it('@gl should toggle trace correctly', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
 
         function _assert(msg, exp) {
@@ -684,7 +684,7 @@ describe('@gl Test splom interactions:', function() {
     });
 });
 
-describe('@gl Test splom hover:', function() {
+describe('Test splom hover:', function() {
     var gd;
 
     afterEach(function() {
@@ -792,13 +792,13 @@ describe('@gl Test splom hover:', function() {
     }];
 
     specs.forEach(function(s) {
-        it('should generate correct hover labels ' + s.desc, function(done) {
+        it('@gl should generate correct hover labels ' + s.desc, function(done) {
             run(s, done);
         });
     });
 });
 
-describe('@gl Test splom drag:', function() {
+describe('Test splom drag:', function() {
     var gd;
 
     beforeEach(function() {
@@ -817,7 +817,7 @@ describe('@gl Test splom drag:', function() {
         return drag(node, dx, dy, null, p0[0], p0[1]);
     }
 
-    it('should update scattermatrix ranges on pan', function(done) {
+    it('@gl should update scattermatrix ranges on pan', function(done) {
         var fig = require('@mocks/splom_iris.json');
         fig.layout.dragmode = 'pan';
 
@@ -877,7 +877,7 @@ describe('@gl Test splom drag:', function() {
     });
 });
 
-describe('@gl Test splom select:', function() {
+describe('Test splom select:', function() {
     var gd;
     var ptData;
     var subplot;
@@ -922,7 +922,7 @@ describe('@gl Test splom select:', function() {
         });
     }
 
-    it('should emit correct event data and draw selection outlines', function(done) {
+    it('@gl should emit correct event data and draw selection outlines', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
         fig.layout = {
             dragmode: 'select',
@@ -1007,7 +1007,7 @@ describe('@gl Test splom select:', function() {
         .then(done);
     });
 
-    it('should redraw splom traces before scattergl trace (if any)', function(done) {
+    it('@gl should redraw splom traces before scattergl trace (if any)', function(done) {
         var fig = require('@mocks/splom_with-cartesian.json');
         fig.layout.dragmode = 'select';
         fig.layout.width = 400;
@@ -1045,7 +1045,7 @@ describe('@gl Test splom select:', function() {
         .then(done);
     });
 
-    it('should behave correctly during select->dblclick->pan scenarios', function(done) {
+    it('@gl should behave correctly during select->dblclick->pan scenarios', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/splom_0.json'));
         fig.layout = {
             width: 400,
