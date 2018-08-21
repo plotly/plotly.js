@@ -236,7 +236,10 @@ func.defaultConfig = {
         suppressSkipped: false,
         showSpecTiming: false,
         failFast: false
-    }
+    },
+
+    // e.g. when a test file does not container a given spec tags
+    failOnEmptyTestSuite: false
 };
 
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
