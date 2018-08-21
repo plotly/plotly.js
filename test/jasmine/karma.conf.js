@@ -124,7 +124,7 @@ function func(config) {
     //
     // See https://github.com/karma-runner/karma/commit/89a7a1c#commitcomment-21009216
     func.defaultConfig.browserConsoleLogOptions = {
-        level: 'log'
+        level: 'debug'
     };
 
     config.set(func.defaultConfig);
