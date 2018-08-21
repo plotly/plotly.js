@@ -131,12 +131,19 @@ describe('Click-to-select', function() {
 
     afterEach(destroyGraphDiv);
 
-    function plotMock14() {
+    function plotMock14(layoutOpts) {
         var mock = require('@mocks/14.json');
-        var mockCopy = Lib.extendDeep({}, mock);
-
-        mockCopy.layout.dragmode = 'select';
-        mockCopy.layout.hovermode = 'closest';
+        var defaultLayoutOpts = {
+            layout: {
+                dragmode: 'select',
+                hovermode: 'closest'
+            }
+        };
+        var mockCopy = Lib.extendDeep(
+          {},
+          mock,
+          defaultLayoutOpts,
+          { layout: layoutOpts });
 
         return Plotly.plot(gd, mockCopy.data, mockCopy.layout);
     }
@@ -362,8 +369,61 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    // it('is supported in pan/zoom mode', function() {
-    // });
+    it('is supported in pan/zoom mode', function(done) {
+        plotMock14({ dragmode: 'zoom' })
+          .then(function() {
+              return _immediateClickPt(mock14Pts[35]);
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([7, 35]);
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              drag(LASSO_PATH);
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              return _clickPt(mock14Pts[35], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectionCleared();
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('retains selected points when switching between pan and zoom mode', function(done) {
+        plotMock14({ dragmode: 'zoom' })
+          .then(function() {
+              return _immediateClickPt(mock14Pts[35]);
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              return Plotly.relayout(gd, 'dragmode', 'pan');
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints([7, 35]);
+              return Plotly.relayout(gd, 'dragmode', 'zoom');
+          })
+          .then(function() {
+              assertSelectedPoints([7, 35]);
+              return _clickPt(mock14Pts[7], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+          })
+          .catch(failTest)
+          .then(done);
+    });
 
     // describe('is disabled when clickmode does not include select', function() {
     // })

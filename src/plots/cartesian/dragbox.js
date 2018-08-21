@@ -30,6 +30,7 @@ var doTicksSingle = require('./axes').doTicksSingle;
 var getFromId = require('./axis_ids').getFromId;
 var prepSelect = require('./select').prepSelect;
 var clearSelect = require('./select').clearSelect;
+var selectOnClick = require('./select').selectOnClick;
 var scaleZoom = require('./scale_zoom');
 
 var constants = require('./constants');
@@ -148,7 +149,11 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     };
 
     dragOptions.prepFn = function(e, startX, startY) {
+        var dragModePrev = dragOptions.dragmode;
         var dragModeNow = gd._fullLayout.dragmode;
+        if(dragModeNow !== dragModePrev) {
+            dragOptions.dragmode = dragModeNow;
+        }
 
         recomputeAxisLists();
 
@@ -178,7 +183,18 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             prepSelect(e, startX, startY, dragOptions, dragModeNow);
         } else {
             dragOptions.clickFn = clickFn;
-            clearAndResetSelect();
+            if(isSelectOrLasso(dragModePrev)) {
+                // TODO Fix potential bug
+                // Note: clearing / resetting selection state only happens, when user
+                // triggers at least one interaction in pan/zoom mode. Otherwise, the
+                // select/lasso outlines are deleted (in plots.js.cleanPlot) but the selection
+                // cache isn't cleared. So when the user switches back to select/lasso and
+                // 'add to a selection' with Shift, the "old", seemingly removed outlines
+                // are redrawn again because the selection cache still holds their points.
+                // However, this isn't easily solved, since plots.js would need
+                // to have a reference to the dragOptions object.
+                clearAndResetSelect();
+            }
 
             if(!allFixedRanges) {
                 if(dragModeNow === 'zoom') {
@@ -213,6 +229,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         if(isMainDrag) {
             Fx.click(gd, evt, plotinfo.id);
+            // TODO Throttle needed here?
+            selectOnClick(evt, gd, xaxes, yaxes, plotinfo.id, dragOptions);
         }
         else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya0 : xa0,
