@@ -65,6 +65,20 @@ describe('Plotly.downloadImage', function() {
         downloadTest('graph', 'svg', done);
     }, LONG_TIMEOUT_INTERVAL);
 
+    it('should work when passing a figure object', function(done) {
+        var fig = {
+            data: [{y: [1, 2, 1]}]
+        };
+        Plotly.downloadImage(fig)
+        .then(function() {
+            expect(document.createElement).toHaveBeenCalledWith('canvas');
+            expect(gd._snapshotInProgress)
+                .toBe(undefined, 'should not attach _snapshotInProgress to figure objects');
+        })
+        .catch(failTest)
+        .then(done);
+    }, LONG_TIMEOUT_INTERVAL);
+
     it('should produce the right SVG output in IE', function(done) {
         // mock up IE behavior
         spyOn(Lib, 'isIE').and.callFake(function() { return true; });
@@ -131,7 +145,7 @@ function downloadTest(gd, format, done) {
         });
     });
 
-    Plotly.plot(gd, textchartMock.data, textchartMock.layout).then(function() {
+    Plotly.plot(gd, textchartMock.data, textchartMock.layout).then(function(_gd) {
         // start observing dom
         // configuration of the observer:
         var config = { childList: true };
@@ -139,7 +153,16 @@ function downloadTest(gd, format, done) {
         // pass in the target node and observer options
         observer.observe(target, config);
 
-        return Plotly.downloadImage(gd, {format: format, height: 300, width: 300, filename: 'plotly_download'});
+        var promise = Plotly.downloadImage(gd, {
+            format: format,
+            height: 300,
+            width: 300,
+            filename: 'plotly_download'
+        });
+
+        expect(_gd._snapshotInProgress).toBe(true, 'should attach _snapshotInProgress to graph divs');
+
+        return promise;
     })
     .then(function(filename) {
         // stop observing
@@ -159,7 +182,6 @@ function downloadTest(gd, format, done) {
     .catch(failTest)
     .then(done);
 }
-
 
 // Only chrome supports webp at the time of writing
 function checkWebp(cb) {
