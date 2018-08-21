@@ -136,6 +136,7 @@
     "karma": "^3.0.0",
     "karma-browserify": "^5.3.0",
     "karma-chrome-launcher": "^2.0.0",
+    "karma-fail-fast-reporter": "^1.0.5",
     "karma-firefox-launcher": "^1.0.1",
     "karma-jasmine": "^1.1.2",
     "karma-jasmine-spec-tags": "^1.0.1",

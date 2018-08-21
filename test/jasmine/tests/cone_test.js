@@ -60,7 +60,7 @@ describe('Test cone defaults', function() {
     });
 });
 
-describe('@gl Test cone autorange:', function() {
+describe('Test cone autorange:', function() {
     var gd;
 
     beforeEach(function() {
@@ -79,7 +79,7 @@ describe('@gl Test cone autorange:', function() {
         expect(sceneLayout.zaxis.range).toBeCloseToArray(zrng, 2, 'zaxis range - ' + msg);
     }
 
-    it('should add pad around cone position to make sure they fit on the scene', function(done) {
+    it('@gl should add pad around cone position to make sure they fit on the scene', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-autorange.json'));
         var rng0 = [0.103, 3.897];
 
@@ -177,7 +177,7 @@ describe('@gl Test cone autorange:', function() {
     });
 });
 
-describe('@gl Test cone interactions', function() {
+describe('Test cone interactions', function() {
     var gd;
 
     beforeEach(function() {
@@ -189,7 +189,7 @@ describe('@gl Test cone interactions', function() {
         destroyGraphDiv();
     });
 
-    it('should add/clear gl objects correctly', function(done) {
+    it('@gl should add/clear gl objects correctly', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-simple.json'));
         // put traces on same subplot
         delete fig.data[1].scene;
@@ -219,7 +219,7 @@ describe('@gl Test cone interactions', function() {
         .then(done);
     });
 
-    it('should not pass zero or infinite `coneSize` to gl-cone3d', function(done) {
+    it('@gl should not pass zero or infinite `coneSize` to gl-cone3d', function(done) {
         var base = {
             type: 'cone',
             x: [1, 2, 3],
@@ -254,7 +254,7 @@ describe('@gl Test cone interactions', function() {
         .then(done);
     });
 
-    it('should display hover labels', function(done) {
+    it('@gl should display hover labels', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-simple.json'));
         // only one trace on one scene
         fig.data = [fig.data[0]];
@@ -302,7 +302,7 @@ describe('@gl Test cone interactions', function() {
         .then(done);
     });
 
-    it('should display hover labels (multi-trace case)', function(done) {
+    it('@gl should display hover labels (multi-trace case)', function(done) {
         function _hover() {
             mouseEvent('mouseover', 282, 240);
             return delay(20)();

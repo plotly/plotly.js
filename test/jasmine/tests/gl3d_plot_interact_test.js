@@ -21,7 +21,7 @@ function countCanvases() {
     return d3.selectAll('canvas').size();
 }
 
-describe('@gl Test gl3d plots', function() {
+describe('Test gl3d plots', function() {
     var gd, ptData;
 
     var mock = require('@mocks/gl3d_marker-arrays.json');
@@ -74,7 +74,7 @@ describe('@gl Test gl3d plots', function() {
         destroyGraphDiv();
     });
 
-    it('@noCI should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
+    it('@noCI @gl should display correct hover labels and emit correct event data (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         function _hover() {
@@ -217,7 +217,7 @@ describe('@gl Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@noCI should display correct hover labels and emit correct event data (surface case)', function(done) {
+    it('@noCI @gl should display correct hover labels and emit correct event data (surface case)', function(done) {
         var _mock = Lib.extendDeep({}, mock3);
 
         function _hover() {
@@ -313,7 +313,7 @@ describe('@gl Test gl3d plots', function() {
         .then(done);
     });
 
-    it('@noCI should emit correct event data on click (scatter3d case)', function(done) {
+    it('@noCI @gl should emit correct event data on click (scatter3d case)', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         // N.B. gl3d click events are 'mouseover' events
@@ -338,7 +338,7 @@ describe('@gl Test gl3d plots', function() {
         .then(done);
     });
 
-    it('should display correct hover labels (mesh3d case)', function(done) {
+    it('@gl should display correct hover labels (mesh3d case)', function(done) {
         var x = [1, 1, 2, 3, 4, 2];
         var y = [2, 1, 3, 4, 5, 3];
         var z = [3, 7, 4, 5, 3.5, 2];
@@ -392,7 +392,7 @@ describe('@gl Test gl3d plots', function() {
         .then(done);
     });
 
-    it('should be able to reversibly change trace type', function(done) {
+    it('@gl should be able to reversibly change trace type', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
         var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
 
@@ -430,7 +430,7 @@ describe('@gl Test gl3d plots', function() {
         .then(done);
     });
 
-    it('should be able to delete the last trace', function(done) {
+    it('@gl should be able to delete the last trace', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
         Plotly.plot(gd, _mock)
@@ -446,7 +446,7 @@ describe('@gl Test gl3d plots', function() {
         .then(done);
     });
 
-    it('should be able to toggle visibility', function(done) {
+    it('@gl should be able to toggle visibility', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
         _mock.data[0].x = [0, 1, 3];
         _mock.data[0].y = [0, 1, 2];
@@ -512,7 +512,7 @@ describe('@gl Test gl3d plots', function() {
 
 });
 
-describe('@gl Test gl3d modebar handlers', function() {
+describe('Test gl3d modebar handlers', function() {
     var gd, modeBar;
 
     function assertScenes(cont, attr, val) {
@@ -562,7 +562,7 @@ describe('@gl Test gl3d modebar handlers', function() {
         destroyGraphDiv();
     });
 
-    it('button zoom3d should updates the scene dragmode and dragmode button', function() {
+    it('@gl button zoom3d should updates the scene dragmode and dragmode button', function() {
         var buttonTurntable = selectButton(modeBar, 'tableRotation');
         var buttonZoom3d = selectButton(modeBar, 'zoom3d');
 
@@ -583,7 +583,7 @@ describe('@gl Test gl3d modebar handlers', function() {
         expect(buttonZoom3d.isActive()).toBe(false);
     });
 
-    it('button pan3d should updates the scene dragmode and dragmode button', function() {
+    it('@gl button pan3d should updates the scene dragmode and dragmode button', function() {
         var buttonTurntable = selectButton(modeBar, 'tableRotation'),
             buttonPan3d = selectButton(modeBar, 'pan3d');
 
@@ -604,7 +604,7 @@ describe('@gl Test gl3d modebar handlers', function() {
         expect(buttonPan3d.isActive()).toBe(false);
     });
 
-    it('button orbitRotation should updates the scene dragmode and dragmode button', function() {
+    it('@gl button orbitRotation should updates the scene dragmode and dragmode button', function() {
         var buttonTurntable = selectButton(modeBar, 'tableRotation'),
             buttonOrbit = selectButton(modeBar, 'orbitRotation');
 
@@ -625,7 +625,7 @@ describe('@gl Test gl3d modebar handlers', function() {
         expect(buttonOrbit.isActive()).toBe(false);
     });
 
-    it('button hoverClosest3d should update the scene hovermode and spikes', function() {
+    it('@gl button hoverClosest3d should update the scene hovermode and spikes', function() {
         var buttonHover = selectButton(modeBar, 'hoverClosest3d');
 
         assertScenes(gd._fullLayout, 'hovermode', 'closest');
@@ -646,7 +646,7 @@ describe('@gl Test gl3d modebar handlers', function() {
         expect(buttonHover.isActive()).toBe(true);
     });
 
-    it('button resetCameraDefault3d should reset camera to default', function(done) {
+    it('@gl button resetCameraDefault3d should reset camera to default', function(done) {
         var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
 
         expect(gd._fullLayout.scene._scene.cameraInitial.eye).toEqual({ x: 0.1, y: 0.1, z: 1 });
@@ -666,7 +666,7 @@ describe('@gl Test gl3d modebar handlers', function() {
         buttonDefault.click();
     });
 
-    it('button resetCameraLastSave3d should reset camera to default', function(done) {
+    it('@gl button resetCameraLastSave3d should reset camera to default', function(done) {
         var buttonDefault = selectButton(modeBar, 'resetCameraDefault3d');
         var buttonLastSave = selectButton(modeBar, 'resetCameraLastSave3d');
 
@@ -740,7 +740,7 @@ describe('@gl Test gl3d modebar handlers', function() {
     });
 });
 
-describe('@gl Test gl3d drag and wheel interactions', function() {
+describe('Test gl3d drag and wheel interactions', function() {
     var gd;
 
     function scroll(target, amt) {
@@ -778,7 +778,7 @@ describe('@gl Test gl3d drag and wheel interactions', function() {
         destroyGraphDiv();
     });
 
-    it('should not scroll document while panning', function(done) {
+    it('@gl should not scroll document while panning', function(done) {
         var mock = {
             data: [
                 { type: 'scatter3d' }
@@ -821,7 +821,7 @@ describe('@gl Test gl3d drag and wheel interactions', function() {
         .then(done);
     });
 
-    it('should update the scene camera', function(done) {
+    it('@gl should update the scene camera', function(done) {
         var sceneLayout, sceneLayout2, sceneTarget, sceneTarget2, relayoutCallback;
 
         var mock = {
@@ -913,7 +913,7 @@ describe('@gl Test gl3d drag and wheel interactions', function() {
     });
 });
 
-describe('@gl Test gl3d relayout calls', function() {
+describe('Test gl3d relayout calls', function() {
     var gd;
 
     beforeEach(function() {
@@ -925,7 +925,7 @@ describe('@gl Test gl3d relayout calls', function() {
         destroyGraphDiv();
     });
 
-    it('should be able to adjust margins', function(done) {
+    it('@gl should be able to adjust margins', function(done) {
         var w = 500;
         var h = 500;
 
@@ -960,7 +960,7 @@ describe('@gl Test gl3d relayout calls', function() {
         .then(done);
     });
 
-    it('should skip root-level axis objects', function(done) {
+    it('@gl should skip root-level axis objects', function(done) {
         Plotly.newPlot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
@@ -979,7 +979,7 @@ describe('@gl Test gl3d relayout calls', function() {
     });
 });
 
-describe('@gl Test gl3d annotations', function() {
+describe('Test gl3d annotations', function() {
     var gd;
 
     beforeEach(function() {
@@ -1029,7 +1029,7 @@ describe('@gl Test gl3d annotations', function() {
         return delay(500)();
     }
 
-    it('should move with camera', function(done) {
+    it('@gl should move with camera', function(done) {
         Plotly.plot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
@@ -1067,7 +1067,7 @@ describe('@gl Test gl3d annotations', function() {
         .then(done);
     });
 
-    it('should be removed when beyond the scene axis ranges', function(done) {
+    it('@gl should be removed when beyond the scene axis ranges', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/gl3d_annotations'));
 
         // replace text with something easier to identify
@@ -1100,7 +1100,7 @@ describe('@gl Test gl3d annotations', function() {
         .then(done);
     });
 
-    it('should be able to add/remove and hide/unhide themselves via relayout', function(done) {
+    it('@gl should be able to add/remove and hide/unhide themselves via relayout', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/gl3d_annotations'));
 
         // replace text with something easier to identify
@@ -1150,7 +1150,7 @@ describe('@gl Test gl3d annotations', function() {
         .then(done);
     });
 
-    it('should work across multiple scenes', function(done) {
+    it('@gl should work across multiple scenes', function(done) {
         function assertAnnotationCntPerScene(id, cnt) {
             expect(d3.selectAll('g.annotation-' + id).size()).toEqual(cnt);
         }
@@ -1203,7 +1203,7 @@ describe('@gl Test gl3d annotations', function() {
         .then(done);
     });
 
-    it('should contribute to scene axis autorange', function(done) {
+    it('@gl should contribute to scene axis autorange', function(done) {
         function assertSceneAxisRanges(xRange, yRange, zRange) {
             var sceneLayout = gd._fullLayout.scene;
 
@@ -1237,7 +1237,7 @@ describe('@gl Test gl3d annotations', function() {
         .then(done);
     });
 
-    it('should allow text and tail position edits under `editable: true`', function(done) {
+    it('@gl should allow text and tail position edits under `editable: true`', function(done) {
         function editText(newText, expectation) {
             return new Promise(function(resolve) {
                 gd.once('plotly_relayout', function(eventData) {
@@ -1306,7 +1306,7 @@ describe('@gl Test gl3d annotations', function() {
         .then(done);
     });
 
-    it('should display hover labels and trigger *plotly_clickannotation* event', function(done) {
+    it('@gl should display hover labels and trigger *plotly_clickannotation* event', function(done) {
         function dispatch(eventType) {
             var target = d3.select('g.annotation-text-g').select('g').node();
             target.dispatchEvent(new MouseEvent(eventType));
@@ -1357,7 +1357,7 @@ describe('@gl Test gl3d annotations', function() {
     });
 });
 
-describe('@gl Test removal of gl contexts', function() {
+describe('Test removal of gl contexts', function() {
     var gd;
 
     beforeEach(function() {
@@ -1366,7 +1366,7 @@ describe('@gl Test removal of gl contexts', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('Plots.cleanPlot should remove gl context from the graph div of a gl3d plot', function(done) {
+    it('@gl Plots.cleanPlot should remove gl context from the graph div of a gl3d plot', function(done) {
         Plotly.plot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
@@ -1382,7 +1382,7 @@ describe('@gl Test removal of gl contexts', function() {
         .then(done);
     });
 
-    it('Plotly.newPlot should remove gl context from the graph div of a gl3d plot', function(done) {
+    it('@gl Plotly.newPlot should remove gl context from the graph div of a gl3d plot', function(done) {
         var firstGlplotObject, firstGlContext, firstCanvas;
 
         Plotly.plot(gd, [{
