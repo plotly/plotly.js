@@ -55,6 +55,7 @@ if(argv.info) {
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
         '  - `--nowatch (dflt: `false`, `true` on CI)`: run karma w/o `autoWatch` / multiple run mode',
+        '  - `--failFast` (dflt: `false`): exit karma upon first test failure',
         '  - `--verbose` (dflt: `false`): show test result using verbose reporter',
         '  - `--tags`: run only test with given tags (using the `jasmine-spec-tags` framework)',
         '  - `--width`(dflt: 1035): set width of the browser window',
