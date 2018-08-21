@@ -12,6 +12,7 @@ var d3 = require('d3');
 var Plotly = require('../../plot_api/plot_api');
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var Drawing = require('../../components/drawing');
 var tinycolor = require('tinycolor2');
 
 function performPlot(parcatsModels, graphDiv, layout, svg) {
@@ -247,7 +248,6 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
             'rgb(255, 255, 255)  1px  1px 2px, ' +
             'rgb(255, 255, 255)  1px -1px 2px, ' +
             'rgb(255, 255, 255) -1px -1px 2px')
-        .attr('font-size', 10)
         .style('fill', 'rgb(0, 0, 0)')
         .attr('x',
             function(d) {
@@ -264,7 +264,12 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         })
         .text(function(d) {
             return d.model.categoryLabel;
-        });
+        })
+        .each(
+            /** @param {CategoryViewModel} catModel*/
+            function(catModel){
+                Drawing.font(d3.select(this), catModel.parcatsViewModel.categorylabelfont);
+            });
 
     // Initialize dimension label
     categoryGroupEnterSelection
@@ -284,7 +289,6 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
                     return 'ew-resize'
                 }
             })
-        .attr('font-size', 14)
         .attr('x', function(d) {
             return d.width / 2;
         })
@@ -296,7 +300,12 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
             } else {
                 return null;
             }
-        });
+        })
+        .each(
+            /** @param {CategoryViewModel} catModel*/
+            function(catModel){
+                Drawing.font(d3.select(this), catModel.parcatsViewModel.labelfont);
+            });
 
     // Category hover
     // categorySelection.select('rect.catrect')
@@ -1443,6 +1452,8 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
         arrangement: trace.arrangement,
         bundlecolors: trace.bundlecolors,
         sortpaths: trace.sortpaths,
+        labelfont: trace.labelfont,
+        categorylabelfont: trace.categorylabelfont,
         pathShape: pathShape,
         dragDimension: null,
         margin: margin,
@@ -1869,6 +1880,15 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
  */
 
 /**
+ * @typedef {Object} Font
+ *  Object containing font information
+ *
+ * @property {Number} size: Font size
+ * @property {String} color: Font color
+ * @property {String} family: Font family
+ */
+
+/**
  * @typedef {Object} ParcatsViewModel
  *  Object containing calculated parcats view information
  *
@@ -1898,6 +1918,10 @@ function createDimensionViewModel(parcatsViewModel, dimensionModel) {
  * @property {String} sortpaths
  *  If 'forward' then sort paths based on dimensions from left to right. If 'backward' sort based on dimensions
  *  from right to left
+ * @property {Font} labelfont
+ *  Font for the dimension labels
+ * @property {Font} categorylabelfont
+ *  Font for the category labels
  * @property {String} pathShape
  *  The shape of the paths. Either 'linear' or 'hspline'.
  * @property {DimensionViewModel|null} dragDimension

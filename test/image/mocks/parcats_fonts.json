@@ -1,0 +1,19 @@
+{
+  "data": [
+    {"type": "parcats",
+      "domain": {"x": [0.125, 0.625],"y": [0.25, 0.75]},
+      "dimensions":[
+        {"label": "One", "values": [1, 1, 2, 1, 2, 1, 1, 2, 1]},
+        {"label": "Two", "values": ["A", "B", "A", "B", "C", "C", "A", "B", "C"]},
+        {"label": "Three", "values": [11, 11, 11, 11, 11, 11, 11, 11, 11]}],
+      "labelfont": {"family": "Rockwell", "size": 20, "color": "gray"},
+      "categorylabelfont": {"family": "Arial", "size": 10, "color": "firebrick"}
+    }
+  ],
+  "layout": {
+    "height": 602,
+    "width": 592,
+    "margin": {
+      "l": 40, "r": 40, "t": 50, "b": 40
+    }}
+}

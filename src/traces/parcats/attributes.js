@@ -10,6 +10,7 @@
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var plotAttrs = require('../../plots/attributes');
+var fontAttrs = require('../../plots/font_attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var scatterAttrs = require('../scatter/attributes');
@@ -75,15 +76,15 @@ module.exports = {
             'If `backward` sort based on dimensions from right to left.'
         ].join(' ')
     },
-    // labelfont: fontAttrs({
-    //     editType: 'calc',
-    //     description: 'Sets the font for the `dimension` labels.'
-    // }),
-    //
-    // catfont: fontAttrs({
-    //     editType: 'calc',
-    //     description: 'Sets the font for the `category` labels.'
-    // }),
+    labelfont: fontAttrs({
+        editType: 'calc',
+        description: 'Sets the font for the `dimension` labels.'
+    }),
+
+    categorylabelfont: fontAttrs({
+        editType: 'calc',
+        description: 'Sets the font for the `category` labels.'
+    }),
 
     dimensions: {
         _isLinkedToArray: 'dimension',

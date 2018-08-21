@@ -104,4 +104,20 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('bundlecolors');
     coerce('sortpaths');
     coerce('counts');
+
+    var labelfontDflt = {
+        family: layout.font.family,
+        size: Math.round(layout.font.size / 1.2),
+        color: layout.font.color
+    };
+
+    Lib.coerceFont(coerce, 'labelfont', labelfontDflt);
+
+    var categoryfontDefault = {
+        family: layout.font.family,
+        size: Math.round(layout.font.size / 1.4),
+        color: layout.font.color
+    };
+
+    Lib.coerceFont(coerce, 'categorylabelfont', categoryfontDefault);
 };
