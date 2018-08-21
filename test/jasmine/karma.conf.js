@@ -7,16 +7,18 @@ var constants = require('../../tasks/util/constants');
 var isCI = !!process.env.CIRCLECI;
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
-    'boolean': ['info', 'nowatch', 'verbose', 'Chrome', 'Firefox'],
+    'boolean': ['info', 'nowatch', 'failFast', 'verbose', 'Chrome', 'Firefox'],
     alias: {
         'Chrome': 'chrome',
         'Firefox': ['firefox', 'FF'],
         'bundleTest': ['bundletest', 'bundle_test'],
-        'nowatch': 'no-watch'
+        'nowatch': 'no-watch',
+        'failFast': 'fail-fast'
     },
     'default': {
         info: false,
         nowatch: isCI,
+        failFast: false,
         verbose: false,
         width: '1035',
         height: '617'
@@ -105,6 +107,10 @@ var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToIE9mock = path.join(__dirname, 'assets', 'ie9_mock.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 
+var reporters = (isFullSuite && !argv.tags) ? ['dots', 'spec'] : ['progress'];
+if(argv.failFast) reporters.push('fail-fast');
+if(argv.verbose) reporters.push('verbose');
+
 function func(config) {
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
@@ -154,7 +160,7 @@ func.defaultConfig = {
     // See note in CONTRIBUTING.md about more verbose reporting via karma-verbose-reporter:
     // https://www.npmjs.com/package/karma-verbose-reporter ('verbose')
     //
-    reporters: (isFullSuite && !argv.tags) ? ['dots', 'spec'] : ['progress'],
+    reporters: reporters,
 
     // web server port
     port: 9876,
@@ -235,6 +241,8 @@ func.defaultConfig = {
         suppressPassed: true,
         suppressSkipped: false,
         showSpecTiming: false,
+        // use 'karma-fail-fast-reporter' to fail fast w/o conflicting
+        // with other karma plugins
         failFast: false
     },
 
@@ -293,10 +301,5 @@ var browsers = func.defaultConfig.browsers;
 if(argv.Chrome) browsers.push('_Chrome');
 if(argv.Firefox) browsers.push('_Firefox');
 if(browsers.length === 0) browsers.push('_Chrome');
-
-// add verbose reporter if specified
-if(argv.verbose) {
-    func.defaultConfig.reporters.push('verbose');
-}
 
 module.exports = func;
