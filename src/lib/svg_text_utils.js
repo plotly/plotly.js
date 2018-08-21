@@ -15,7 +15,6 @@ var d3 = require('d3');
 
 var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
-var entityToUnicode = require('../constants/string_mappings').entityToUnicode;
 var LINE_SPACING = require('../constants/alignment').LINE_SPACING;
 
 // text converter
@@ -276,6 +275,32 @@ exports.plainText = function(_str) {
     // strip out our pseudo-html so we have a readable
     // version to put into text fields
     return (_str || '').replace(STRIP_TAGS, ' ');
+};
+
+/*
+ * N.B. HTML entities are listed without the leading '&' and trailing ';'
+ * https://www.freeformatter.com/html-entities.html
+ *
+ * FWIW if we wanted to support the full set, it has 2261 entries:
+ * https://www.w3.org/TR/html5/entities.json
+ * though I notice that some of these are duplicates and/or are missing ";"
+ * eg: "&amp;", "&amp", "&AMP;", and "&AMP" all map to "&"
+ * We no longer need to include numeric entities here, these are now handled
+ * by String.fromCodePoint/fromCharCode
+ *
+ * Anyway the only ones that are really important to allow are the HTML special
+ * chars <, >, and &, because these ones can trigger special processing if not
+ * replaced by the corresponding entity.
+ */
+var entityToUnicode = {
+    mu: 'μ',
+    amp: '&',
+    lt: '<',
+    gt: '>',
+    nbsp: ' ',
+    times: '×',
+    plusmn: '±',
+    deg: '°'
 };
 
 // NOTE: in general entities can contain uppercase too (so [a-zA-Z]) but all the
