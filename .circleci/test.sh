@@ -8,22 +8,27 @@ ROOT=$(dirname $0)/..
 EXIT_STATE=0
 MAX_AUTO_RETRY=5
 
+log () {
+    echo -e "\n$1"
+}
+
 # inspired by https://unix.stackexchange.com/a/82602
 retry () {
-    local n=0
+    local n=1
 
     until [ $n -ge $MAX_AUTO_RETRY ]; do
-        if [ $n -ge 1 ]; then
-            echo ''
-            echo run $n of $MAX_AUTO_RETRY failed, trying again ...
-            echo ''
-            sleep 15
-        fi
-        "$@" && break
+        "$@" --failFast && break
+        log "run $n of $MAX_AUTO_RETRY failed, trying again ..."
         n=$[$n+1]
     done
 
     if [ $n -eq $MAX_AUTO_RETRY ]; then
+        log "one last time, w/o failing fast"
+        "$@" && n=0
+    fi
+
+    if [ $n -eq $MAX_AUTO_RETRY ]; then
+        log "all $n runs failed, moving on."
         EXIT_STATE=1
     fi
 }
