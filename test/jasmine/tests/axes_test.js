@@ -2849,7 +2849,7 @@ describe('Test axes', function() {
             .then(done);
         });
 
-        it('works with multiple subplots', function(done) {
+        it('works with multiple coupled subplots', function(done) {
             Plotly.newPlot(gd, [
                 {x: [1, 2, 3], y: [1, 2, 3]},
                 {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x2'},
@@ -2879,6 +2879,47 @@ describe('Test axes', function() {
             .then(function() {
                 // allticks works the same as all
                 assertZeroLines(['x', 'y']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('works with multiple overlaid subplots', function(done) {
+            Plotly.newPlot(gd, [
+                {x: [1, 2, 3], y: [1, 2, 3]},
+                {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
+            ], {
+                xaxis: {range: [0, 4], showzeroline: true},
+                yaxis: {range: [0, 4], showzeroline: true},
+                xaxis2: {range: [0, 4], showzeroline: true, side: 'top', overlaying: 'x'},
+                yaxis2: {range: [0, 4], showzeroline: true, side: 'right', overlaying: 'y'},
+                width: 600,
+                height: 600
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y', 'x2', 'y2']);
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'yaxis.showline': true});
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {
+                    'xaxis.range': [4, 0],
+                    'yaxis.range': [4, 0],
+                    'xaxis2.range': [4, 0],
+                    'yaxis2.range': [4, 0]
+                });
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y', 'x2', 'y2']);
+                return Plotly.relayout(gd, {
+                    'xaxis.showline': false,
+                    'yaxis.showline': false,
+                    'xaxis2.showline': true,
+                    'yaxis2.showline': true
+                });
+            })
+            .then(function() {
+                assertZeroLines([]);
             })
             .catch(failTest)
             .then(done);
