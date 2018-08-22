@@ -2174,6 +2174,11 @@ axes.doTicksSingle = function(gd, arg, skipTitle) {
             0 : ax._length
         );
 
+        var plotinfo = fullLayout._plots[counterAxis._mainSubplot];
+        if(!(plotinfo.mainplotinfo || plotinfo).overlays.length) {
+            return lineNearZero(counterAxis, zeroPosition);
+        }
+
         var counterLetterAxes = axes.list(gd, counterLetter);
         for(var i = 0; i < counterLetterAxes.length; i++) {
             var counterAxis2 = counterLetterAxes[i];
