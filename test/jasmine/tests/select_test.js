@@ -443,9 +443,31 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    // it('is supported by scattergl in pan/zoom mode', function() {
-    //     failTest('Not implemented');
-    // });
+    it('is supported by scattergl in pan/zoom mode', function(done) {
+        Plotly.plot(gd, [
+            {
+                x: [7, 8, 9, 10],
+                y: [7, 9, 13, 21],
+                type: 'scattergl',
+                mode: 'markers',
+                marker: { size: 20 }
+            }
+        ], {
+            width: 400,
+            height: 600,
+            hovermode: 'closest',
+            dragmode: 'zoom',
+            clickmode: 'event+select'
+        })
+          .then(function() {
+              return _click(230, 340, {}, true);
+          })
+          .then(function() {
+              assertSelectedPoints(2);
+          })
+          .catch(failTest)
+          .then(done);
+    });
 
     it('deals correctly with histogram\'s binning in the persistent selection case', function(done) {
         var mock = require('@mocks/histogram_colorscale.json');

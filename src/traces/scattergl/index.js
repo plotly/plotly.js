@@ -523,6 +523,7 @@ function plot(gd, subplot, cdata) {
     scene.unselectBatch = null;
     var dragmode = fullLayout.dragmode;
     var selectMode = dragmode === 'lasso' || dragmode === 'select';
+    var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
 
     for(i = 0; i < cdata.length; i++) {
         var cd0 = cdata[i][0];
@@ -532,7 +533,7 @@ function plot(gd, subplot, cdata) {
         var x = stash.x;
         var y = stash.y;
 
-        if(trace.selectedpoints || selectMode) {
+        if(trace.selectedpoints || selectMode || clickSelectEnabled) {
             if(!selectMode) selectMode = true;
 
             if(!scene.selectBatch) {
