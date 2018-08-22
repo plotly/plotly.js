@@ -295,7 +295,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
     var testPoly;
     var traceSelection;
     var thisTracesSelection;
-    var pointSelected;
+    var pointOrBinSelected;
     var subtract;
     var eventData;
     var i;
@@ -304,12 +304,16 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
         coerceSelectionsCache(evt, gd, dragOptions);
         searchTraces = determineSearchTraces(gd, xAxes, yAxes, subplot);
         var clickedPtInfo = extractClickedPtInfo(hoverData, searchTraces);
+        var isBinnedTrace = clickedPtInfo.pointNumbers.length > 0;
 
         // TODO perf: call potentially costly operation (see impl comment) only when needed
-        pointSelected = isPointSelected(clickedPtInfo.searchInfo.cd[0].trace,
-          clickedPtInfo.pointNumber);
+        pointOrBinSelected = isPointOrBinSelected(clickedPtInfo);
 
-        if(pointSelected && isOnlyOnePointSelected(searchTraces)) {
+        if(pointOrBinSelected &&
+          (isBinnedTrace ?
+            isOnlyThisBinSelected(searchTraces, clickedPtInfo) :
+            isOnlyOnePointSelected(searchTraces)))
+        {
             // TODO DRY see doubleClick handling above
             if(polygonOutlines) polygonOutlines.remove();
             for(i = 0; i < searchTraces.length; i++) {
@@ -323,7 +327,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
                 gd.emit('plotly_deselect', null);
             }
         } else {
-            subtract = evt.shiftKey && pointSelected;
+            subtract = evt.shiftKey && pointOrBinSelected;
             currentPolygon = createPtNumTester(clickedPtInfo.pointNumber, clickedPtInfo.searchInfo, subtract);
 
             var concatenatedPolygons = dragOptions.polygons.concat([currentPolygon]);
@@ -514,7 +518,7 @@ function createPtNumTester(wantedPointNumber, wantedSearchInfo, subtract) {
     };
 }
 
-function isPointSelected(trace, pointNumber) {
+function isPointOrBinSelected(clickedPtInfo) {
     // TODO improve perf
     // Primarily we need this function to determine if a click adds or subtracts from a selection.
     //
@@ -533,7 +537,49 @@ function isPointSelected(trace, pointNumber) {
     //    So simply searching through those arrays in scattegl would be slow. Just imagine
     //    a user selecting all data points with one lasso polygon. So scattergl would require some
     //    work.
-    return trace.selectedpoints ? trace.selectedpoints.indexOf(pointNumber) > -1 : false;
+    var trace = clickedPtInfo.searchInfo.cd[0].trace;
+    var ptNum = clickedPtInfo.pointNumber;
+    var ptNums = clickedPtInfo.pointNumbers;
+    var ptNumsSet = ptNums.length > 0;
+
+    // When pointsNumbers is set (e.g. histogram's binning),
+    // it is assumed that when the first point of
+    // a bin is selected, all others are as well
+    var ptNumToTest = ptNumsSet ? ptNums[0] : ptNum;
+
+    return trace.selectedpoints ? trace.selectedpoints.indexOf(ptNumToTest) > -1 : false;
+}
+
+function isOnlyThisBinSelected(searchTraces, clickedPtInfo) {
+    var tracesWithSelectedPts = [];
+    var searchInfo;
+    var trace;
+    var isSameTrace;
+    var i;
+
+    for(i = 0; i < searchTraces.length; i++) {
+        searchInfo = searchTraces[i];
+        if(searchInfo.cd[0].trace.selectedpoints && searchInfo.cd[0].trace.selectedpoints.length > 0) {
+            tracesWithSelectedPts.push(searchInfo);
+        }
+    }
+
+    if(tracesWithSelectedPts.length === 1) {
+        isSameTrace = tracesWithSelectedPts[0] === clickedPtInfo.searchInfo;
+        if(isSameTrace) {
+            trace = clickedPtInfo.searchInfo.cd[0].trace;
+            if(trace.selectedpoints.length === clickedPtInfo.pointNumbers.length) {
+                for(i = 0; i > clickedPtInfo.pointNumbers.length; i++) {
+                    if(trace.selectedpoints.indexOf(clickedPtInfo.pointNumbers[i]) < 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 function isOnlyOnePointSelected(searchTraces) {

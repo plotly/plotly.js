@@ -437,6 +437,50 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
+    // it('is supported by scattergl in pan/zoom mode', function() {
+    //     failTest('Not implemented');
+    // });
+
+    it('deals correctly with histogram\'s binning in the persistent selection case', function(done) {
+        var mock = require('@mocks/histogram_colorscale.json');
+        var firstBinPts = [0];
+        var secondBinPts = [1, 2];
+        var thirdBinPts = [3, 4, 5];
+
+        mock.layout.clickmode = 'event+select';
+        Plotly.plot(gd, mock.data, mock.layout)
+          .then(function() {
+              return clickFirstBinImmediately();
+          })
+          .then(function() {
+              assertSelectedPoints(firstBinPts);
+              return shiftClickSecondBin();
+          })
+          .then(function() {
+              assertSelectedPoints([].concat(firstBinPts, secondBinPts));
+              return shiftClickThirdBin();
+          })
+          .then(function() {
+              assertSelectedPoints([].concat(firstBinPts, secondBinPts, thirdBinPts));
+              return clickFirstBin();
+          })
+          .then(function() {
+              assertSelectedPoints([].concat(firstBinPts));
+              clickFirstBin();
+              return deselectPromise;
+          })
+          .then(function() {
+              assertSelectionCleared();
+          })
+          .catch(failTest)
+          .then(done);
+
+        function clickFirstBinImmediately() { return _immediateClickPt({ x: 141, y: 358 }); }
+        function clickFirstBin() { return _click(141, 358); }
+        function shiftClickSecondBin() { return _click(239, 330, { shiftKey: true }); }
+        function shiftClickThirdBin() { return _click(351, 347, { shiftKey: true }); }
+    });
+
     describe('is disabled when clickmode does not include \'select\'', function() {
         // TODO How to test for pan and zoom mode as well? Note, that
         // in lasso and select mode, plotly_selected was emitted upon a single
@@ -463,8 +507,47 @@ describe('Click-to-select', function() {
           });
     });
 
-    // describe('is supported by', function() {
-    // })
+    describe('is supported by', function() {
+
+        // On loading mocks: note, that require functions are resolved at compile time
+        // and thus dynamically concatenated mock paths wont't work.
+        [testCase('histrogram', require('@mocks/histogram_colorscale.json'), 355, 301, [3, 4, 5])]
+          .forEach(function(testCase) {
+              it('trace type ' + testCase.traceType, function(done) {
+                  var defaultLayoutOpts = {
+                      layout: {
+                          clickmode: 'event+select',
+                          dragmode: 'pan',
+                          hovermode: 'closest'
+                      }
+                  };
+                  var mockCopy = Lib.extendDeep(
+                    {},
+                    testCase.mock,
+                    defaultLayoutOpts);
+
+                  Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                    .then(function() {
+                        return _immediateClickPt(testCase);
+                    })
+                    .then(function() {
+                        assertSelectedPoints(testCase.expectedPts);
+                    })
+                    .catch(failTest)
+                    .then(done);
+              });
+          });
+
+        function testCase(traceType, mock, x, y, expectedPts) {
+            return {
+                traceType: traceType,
+                mock: mock,
+                x: x,
+                y: y,
+                expectedPts: expectedPts
+            };
+        }
+    });
 });
 
 describe('@flaky Test select box and lasso in general:', function() {
