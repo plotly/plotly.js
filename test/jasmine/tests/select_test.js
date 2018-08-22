@@ -509,6 +509,39 @@ describe('Click-to-select', function() {
         function shiftClickThirdBin() { return _click(351, 347, { shiftKey: true }); }
     });
 
+    it('ignores clicks on boxes in a box trace type', function(done) {
+        var mock = require('@mocks/box_grouped_horz.json');
+
+        mock.layout.clickmode = 'event+select';
+        mock.layout.width = 1100;
+        mock.layout.height = 450;
+
+        Plotly.plot(gd, mock.data, mock.layout)
+          .then(function() {
+              return clickPtImmediately();
+          })
+          .then(function() {
+              assertSelectedPoints(2);
+              clickPt();
+              return deselectPromise;
+          })
+          .then(function() {
+              assertSelectionCleared();
+              clickBox();
+          })
+          .then(function() {
+              // TODO Be sure this is called "late enough" after clicking on box has been processed
+              // Maybe plotly_click event would get fired after any selection events?
+              assertSelectionCleared();
+          })
+          .catch(failTest)
+          .then(done);
+
+        function clickPtImmediately() { return _immediateClickPt({ x: 610, y: 342 }); }
+        function clickPt() { return _clickPt({ x: 610, y: 342 }); }
+        function clickBox() { return _clickPt({ x: 565, y: 329 }); }
+    });
+
     describe('is disabled when clickmode does not include \'select\'', function() {
         // TODO How to test for pan and zoom mode as well? Note, that
         // in lasso and select mode, plotly_selected was emitted upon a single
@@ -539,7 +572,10 @@ describe('Click-to-select', function() {
 
         // On loading mocks: note, that require functions are resolved at compile time
         // and thus dynamically concatenated mock paths wont't work.
-        [testCase('histrogram', require('@mocks/histogram_colorscale.json'), 355, 301, [3, 4, 5])]
+        [
+            testCase('histrogram', require('@mocks/histogram_colorscale.json'), 355, 301, [3, 4, 5]),
+            testCase('box', require('@mocks/box_grouped_horz.json'), 610, 342, [2])
+        ]
           .forEach(function(testCase) {
               it('trace type ' + testCase.traceType, function(done) {
                   var defaultLayoutOpts = {

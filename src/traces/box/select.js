@@ -29,7 +29,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
                 var x = xa.c2p(pt.x);
                 var y = ya.c2p(pt.y);
 
-                if(polygon.contains([x, y])) {
+                if(polygon.contains([x, y], null, pt.i, searchInfo)) {
                     selection.push({
                         pointNumber: pt.i,
                         x: xa.c2d(pt.x),
