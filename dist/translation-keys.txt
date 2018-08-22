@@ -4,7 +4,7 @@ Click to enter Colorscale title                        // plots/plots.js:330
 Click to enter Component A title                       // plots/ternary/ternary.js:390
 Click to enter Component B title                       // plots/ternary/ternary.js:405
 Click to enter Component C title                       // plots/ternary/ternary.js:416
-Click to enter Plot title                              // plot_api/plot_api.js:511
+Click to enter Plot title                              // plot_api/plot_api.js:534
 Click to enter X axis title                            // plots/plots.js:328
 Click to enter Y axis title                            // plots/plots.js:329
 Click to enter radial axis title                       // plots/polar/polar.js:446
