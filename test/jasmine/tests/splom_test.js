@@ -1,6 +1,7 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
+var plotApi = require('@src/plot_api/plot_api');
 var SUBPLOT_PATTERN = require('@src/plots/cartesian/constants').SUBPLOT_PATTERN;
 
 var d3 = require('d3');
@@ -678,6 +679,39 @@ describe('Test splom interactions:', function() {
         })
         .then(function() {
             _assert('all back', [1, 1, 1]);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('@gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
+
+        function assertDims(msg, w, h) {
+            var canvas = gd._fullLayout._glcanvas;
+            expect(canvas.node().width).toBe(w, msg);
+            expect(canvas.node().height).toBe(h, msg);
+
+            var gl = canvas.data()[0].regl._gl;
+            expect(gl.drawingBufferWidth).toBe(w, msg);
+            expect(gl.drawingBufferHeight).toBe(h, msg);
+        }
+
+        spyOn(plotApi, 'newPlot').and.callThrough();
+        spyOn(Lib, 'log');
+
+        Plotly.plot(gd, fig).then(function() {
+            expect(plotApi.newPlot).toHaveBeenCalledTimes(0);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+            assertDims('base', 600, 500);
+
+            return Plotly.relayout(gd, {width: 4810, height: 3656});
+        })
+        .then(function() {
+            expect(plotApi.newPlot).toHaveBeenCalledTimes(1);
+            expect(Lib.log)
+                .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match, due to browser/WebGL bug. Clearing graph and plotting again.');
+            assertDims('base', 4810, 3656);
         })
         .catch(failTest)
         .then(done);

@@ -242,6 +242,24 @@ exports.plot = function(gd, data, layout, config) {
             fullLayout._glcanvas
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
+
+
+            var regl = fullLayout._glcanvas.data()[0].regl;
+            if(regl) {
+                if(
+                    fullLayout.width !== regl._gl.drawingBufferWidth ||
+                    fullLayout.height !== regl._gl.drawingBufferHeight
+                 ) {
+                    // Unfortunately, this can happen when relayouting to large
+                    // width/height on some browsers.
+                    Lib.log([
+                        'WebGL context buffer and canvas dimensions do not match,',
+                        'due to browser/WebGL bug.',
+                        'Clearing graph and plotting again.'
+                    ].join(' '));
+                    exports.newPlot(gd, gd.data, gd.layout);
+                }
+            }
         }
 
         return Plots.previousPromises(gd);
