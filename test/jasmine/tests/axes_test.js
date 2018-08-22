@@ -2783,6 +2783,103 @@ describe('Test axes', function() {
 
         });
     });
+
+    describe('zeroline visibility logic', function() {
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
+        function assertZeroLines(expectedIDs) {
+            var sortedIDs = expectedIDs.slice().sort();
+            var zlIDs = [];
+            d3.select(gd).selectAll('.zl').each(function() {
+                var cls = d3.select(this).attr('class');
+                var clsMatch = cls.match(/[xy]\d*(?=zl)/g)[0];
+                zlIDs.push(clsMatch);
+            });
+            zlIDs.sort();
+            expect(zlIDs).toEqual(sortedIDs);
+        }
+
+        it('works with a single subplot', function(done) {
+            Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}], {
+                xaxis: {range: [0, 4], showzeroline: true, showline: true},
+                yaxis: {range: [0, 4], showzeroline: true, showline: true},
+                width: 600,
+                height: 600
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {'xaxis.showline': false});
+            })
+            .then(function() {
+                assertZeroLines(['y']);
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'yaxis.showline': false});
+            })
+            .then(function() {
+                assertZeroLines(['x']);
+                return Plotly.relayout(gd, {'yaxis.showline': true, 'yaxis.range': [4, 0]});
+            })
+            .then(function() {
+                assertZeroLines(['y']);
+                return Plotly.relayout(gd, {'xaxis.range': [4, 0], 'xaxis.side': 'top'});
+            })
+            .then(function() {
+                assertZeroLines(['x']);
+                return Plotly.relayout(gd, {'yaxis.side': 'right', 'xaxis.anchor': 'free', 'xaxis.position': 1});
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {'xaxis.range': [0, 4], 'yaxis.range': [0, 4]});
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y']);
+                return Plotly.relayout(gd, {'xaxis.mirror': 'all', 'yaxis.mirror': true});
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {'xaxis.range': [-0.1, 4], 'yaxis.range': [-0.1, 4]});
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('works with multiple subplots', function(done) {
+            Plotly.newPlot(gd, [
+                {x: [1, 2, 3], y: [1, 2, 3]},
+                {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x2'},
+                {x: [1, 2, 3], y: [1, 2, 3], yaxis: 'y2'}
+            ], {
+                xaxis: {range: [0, 4], showzeroline: true, domain: [0, 0.4]},
+                yaxis: {range: [0, 4], showzeroline: true, domain: [0, 0.4]},
+                xaxis2: {range: [0, 4], showzeroline: true, domain: [0.6, 1]},
+                yaxis2: {range: [0, 4], showzeroline: true, domain: [0.6, 1]},
+                width: 600,
+                height: 600
+            })
+            .then(function() {
+                assertZeroLines(['x', 'x', 'y', 'y', 'x2', 'y2']);
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'xaxis.mirror': 'all'});
+            })
+            .then(function() {
+                assertZeroLines(['x', 'x', 'y', 'x2']);
+                return Plotly.relayout(gd, {'yaxis.showline': true, 'yaxis.mirror': 'all'});
+            })
+            .then(function() {
+                // x axis still has a zero line on xy2, and y on x2y
+                // all the others have disappeared now
+                assertZeroLines(['x', 'y']);
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'xaxis.mirror': 'all'});
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
 });
 
 function getZoomInButton(gd) {
