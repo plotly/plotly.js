@@ -717,7 +717,6 @@ describe('Test splom interactions:', function() {
             });
             assertDims('base', 600, 500);
             expect(Lib.log).toHaveBeenCalledTimes(0);
-            expect(gd._fullLayout._redrawFromWrongGlDimensions).toBeUndefined();
 
             spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
 
@@ -732,7 +731,6 @@ describe('Test splom interactions:', function() {
             assertDims('after', 4810, 3656);
             expect(Lib.log)
                 .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug. Clearing graph and plotting again.');
-            expect(gd._fullLayout._redrawFromWrongGlDimensions).toBe(1);
         })
         .catch(failTest)
         .then(done);

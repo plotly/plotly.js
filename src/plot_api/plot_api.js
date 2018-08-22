@@ -199,6 +199,7 @@ exports.plot = function(gd, data, layout, config) {
 
     // draw framework first so that margin-pushing
     // components can position themselves correctly
+    var drawFrameworkCalls = 0;
     function drawFramework() {
         var basePlotModules = fullLayout._basePlotModules;
 
@@ -251,7 +252,7 @@ exports.plot = function(gd, data, layout, config) {
                     fullLayout.height !== regl._gl.drawingBufferHeight
                  ) {
                     var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
-                    if(fullLayout._redrawFromWrongGlDimensions) {
+                    if(drawFrameworkCalls) {
                         Lib.error(msg);
                     } else {
                         Lib.log(msg + ' Clearing graph and plotting again.');
@@ -259,7 +260,7 @@ exports.plot = function(gd, data, layout, config) {
                         Plots.supplyDefaults(gd);
                         fullLayout = gd._fullLayout;
                         Plots.doCalcdata(gd);
-                        fullLayout._redrawFromWrongGlDimensions = 1;
+                        drawFrameworkCalls++;
                         return drawFramework();
                     }
                 }
