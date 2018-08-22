@@ -573,7 +573,7 @@ module.exports = {
         valType: 'boolean',
         dflt: false,
         role: 'style',
-        editType: 'layoutstyle',
+        editType: 'ticks+layoutstyle',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
         ].join(' ')
