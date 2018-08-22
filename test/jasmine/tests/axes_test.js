@@ -2874,7 +2874,11 @@ describe('Test axes', function() {
                 // x axis still has a zero line on xy2, and y on x2y
                 // all the others have disappeared now
                 assertZeroLines(['x', 'y']);
-                return Plotly.relayout(gd, {'xaxis.showline': true, 'xaxis.mirror': 'all'});
+                return Plotly.relayout(gd, {'xaxis.mirror': 'allticks', 'yaxis.mirror': 'allticks'});
+            })
+            .then(function() {
+                // allticks works the same as all
+                assertZeroLines(['x', 'y']);
             })
             .catch(failTest)
             .then(done);
