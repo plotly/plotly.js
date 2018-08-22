@@ -243,21 +243,22 @@ exports.plot = function(gd, data, layout, config) {
                 .attr('width', fullLayout.width)
                 .attr('height', fullLayout.height);
 
-
             var regl = fullLayout._glcanvas.data()[0].regl;
             if(regl) {
-                if(
-                    fullLayout.width !== regl._gl.drawingBufferWidth ||
+                // Unfortunately, this can happen when relayouting to large
+                // width/height on some browsers.
+                if(fullLayout.width !== regl._gl.drawingBufferWidth ||
                     fullLayout.height !== regl._gl.drawingBufferHeight
                  ) {
-                    // Unfortunately, this can happen when relayouting to large
-                    // width/height on some browsers.
-                    Lib.log([
-                        'WebGL context buffer and canvas dimensions do not match,',
-                        'due to browser/WebGL bug.',
-                        'Clearing graph and plotting again.'
-                    ].join(' '));
-                    exports.newPlot(gd, gd.data, gd.layout);
+                    var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
+                    if(fullLayout._redrawFromWrongGlDimensions) {
+                        Lib.error(msg);
+                    } else {
+                        Lib.log(msg + ' Clearing graph and plotting again.');
+                        fullLayout._redrawFromWrongGlDimensions = 1;
+                        Plots.cleanPlot([], {}, gd._fullData, fullLayout, gd.calcdata);
+                        exports.plot(gd, gd.data, gd.layout);
+                    }
                 }
             }
         }

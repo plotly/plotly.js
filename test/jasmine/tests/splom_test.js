@@ -697,20 +697,22 @@ describe('Test splom interactions:', function() {
             expect(gl.drawingBufferHeight).toBe(h, msg);
         }
 
-        spyOn(plotApi, 'newPlot').and.callThrough();
+        spyOn(plotApi, 'plot').and.callThrough();
         spyOn(Lib, 'log');
 
         Plotly.plot(gd, fig).then(function() {
-            expect(plotApi.newPlot).toHaveBeenCalledTimes(0);
+            expect(plotApi.plot).toHaveBeenCalledTimes(0);
             expect(Lib.log).toHaveBeenCalledTimes(0);
+            expect(gd._fullLayout._redrawFromWrongGlDimensions).toBeUndefined();
             assertDims('base', 600, 500);
 
             return Plotly.relayout(gd, {width: 4810, height: 3656});
         })
         .then(function() {
-            expect(plotApi.newPlot).toHaveBeenCalledTimes(1);
+            expect(plotApi.plot).toHaveBeenCalledTimes(1);
             expect(Lib.log)
-                .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match, due to browser/WebGL bug. Clearing graph and plotting again.');
+                .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug. Clearing graph and plotting again.');
+            expect(gd._fullLayout._redrawFromWrongGlDimensions).toBe(1);
             assertDims('base', 4810, 3656);
         })
         .catch(failTest)
