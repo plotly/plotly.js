@@ -246,10 +246,16 @@ describe('Click-to-select', function() {
                   .then(function() { return _immediateClickPt(mock14Pts[7]); })
                   .then(function() {
                       assertSelectedPoints(7);
-                      _clickPt(mock14Pts[7], testData.opts);
+                      _clickPt(mock14Pts[7], testData.clickOpts);
                       return deselectPromise;
                   })
-                  .then(assertSelectionCleared)
+                  .then(function() {
+                      assertSelectionCleared();
+                      return _clickPt(mock14Pts[35], testData.clickOpts);
+                  })
+                  .then(function() {
+                      assertSelectedPoints(35);
+                  })
                   .catch(failTest)
                   .then(done);
             });

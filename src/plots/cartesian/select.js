@@ -314,7 +314,6 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
             isOnlyThisBinSelected(searchTraces, clickedPtInfo) :
             isOnlyOnePointSelected(searchTraces)))
         {
-            // TODO DRY see doubleClick handling above
             if(polygonOutlines) polygonOutlines.remove();
             for(i = 0; i < searchTraces.length; i++) {
                 searchInfo = searchTraces[i];
@@ -322,6 +321,10 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
             }
 
             updateSelectedState(gd, searchTraces);
+
+            // Clear selection cache to ensure a possible next selection
+            // starts from a clean slate.
+            dragOptions.polygons = [];
 
             if(sendEvents) {
                 gd.emit('plotly_deselect', null);
