@@ -255,9 +255,12 @@ exports.plot = function(gd, data, layout, config) {
                         Lib.error(msg);
                     } else {
                         Lib.log(msg + ' Clearing graph and plotting again.');
-                        fullLayout._redrawFromWrongGlDimensions = 1;
                         Plots.cleanPlot([], {}, gd._fullData, fullLayout, gd.calcdata);
-                        exports.plot(gd, gd.data, gd.layout);
+                        Plots.supplyDefaults(gd);
+                        fullLayout = gd._fullLayout;
+                        Plots.doCalcdata(gd);
+                        fullLayout._redrawFromWrongGlDimensions = 1;
+                        return drawFramework();
                     }
                 }
             }

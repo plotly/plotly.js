@@ -1,7 +1,6 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
-var plotApi = require('@src/plot_api/plot_api');
 var SUBPLOT_PATTERN = require('@src/plots/cartesian/constants').SUBPLOT_PATTERN;
 
 var d3 = require('d3');
@@ -697,23 +696,43 @@ describe('Test splom interactions:', function() {
             expect(gl.drawingBufferHeight).toBe(h, msg);
         }
 
-        spyOn(plotApi, 'plot').and.callThrough();
+        var methods = ['cleanPlot', 'supplyDefaults', 'doCalcdata'];
+
+        methods.forEach(function(m) { spyOn(Plots, m).and.callThrough(); });
+
+        function assetsFnCall(msg, exp) {
+            methods.forEach(function(m) {
+                expect(Plots[m]).toHaveBeenCalledTimes(exp[m], msg);
+                Plots[m].calls.reset();
+            });
+        }
+
         spyOn(Lib, 'log');
 
         Plotly.plot(gd, fig).then(function() {
-            expect(plotApi.plot).toHaveBeenCalledTimes(0);
+            assetsFnCall('base', {
+                cleanPlot: 1,       // called once from inside Plots.supplyDefaults
+                supplyDefaults: 1,
+                doCalcdata: 1
+            });
+            assertDims('base', 600, 500);
             expect(Lib.log).toHaveBeenCalledTimes(0);
             expect(gd._fullLayout._redrawFromWrongGlDimensions).toBeUndefined();
-            assertDims('base', 600, 500);
+
+            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
 
             return Plotly.relayout(gd, {width: 4810, height: 3656});
         })
         .then(function() {
-            expect(plotApi.plot).toHaveBeenCalledTimes(1);
+            assetsFnCall('after', {
+                cleanPlot: 4,       // 3 three from supplyDefaults, once in drawFramework
+                supplyDefaults: 3,  // 1 from relayout, 1 from automargin, 1 in drawFramework
+                doCalcdata: 1       // once in drawFramework
+            });
+            assertDims('after', 4810, 3656);
             expect(Lib.log)
                 .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug. Clearing graph and plotting again.');
             expect(gd._fullLayout._redrawFromWrongGlDimensions).toBe(1);
-            assertDims('base', 4810, 3656);
         })
         .catch(failTest)
         .then(done);
