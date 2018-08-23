@@ -54,11 +54,6 @@ jobs:
       - attach_workspace:
           at: ~/plotly.js
       - run:
-          name: Set timezone to Alaska time (arbitrary timezone to test date logic)
-          command: |
-            sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
-            export TZ='America/Anchorage'
-      - run:
           name: Run jasmine tests (batch 1)
           command: ./.circleci/test.sh jasmine
 
@@ -71,11 +66,6 @@ jobs:
       - checkout
       - attach_workspace:
           at: ~/plotly.js
-      - run:
-          name: Set timezone to Alaska time (arbitrary timezone to test date logic)
-          command: |
-            sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
-            export TZ='America/Anchorage'
       - run:
           name: Run jasmine tests (batch 2)
           command: ./.circleci/test.sh jasmine2
