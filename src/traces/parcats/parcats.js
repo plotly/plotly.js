@@ -769,7 +769,6 @@ function createHoverLabelForDimensionHovermode(rootBBox, bandElement) {
             allHoverlabels.push(createHoverLabelForCategoryHovermode(rootBBox, bandNode));
         });
 
-    console.log(allHoverlabels);
     return allHoverlabels
 }
 

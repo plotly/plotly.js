@@ -283,7 +283,11 @@ describe('Basic parcats trace', function() {
     it('should compute initial fullData properly', function(done) {
         Plotly.newPlot(gd, basic_mock)
             .then(function() {
-                // TODO: check that defaults are inferred properly
+                // Check that some of the defaults are computed properly
+                var fullTrace = gd._fullData[0];
+                expect(fullTrace.arrangement).toBe('perpendicular');
+                expect(fullTrace.bundlecolors).toBe(true);
+                expect(fullTrace.dimensions[1].visible).toBe(true);
             })
             .catch(failTest)
             .then(done);
@@ -485,7 +489,7 @@ describe('Dimension reordered parcats trace', function() {
     });
 });
 
-describe('Drag to reordered dimensions and categories', function() {
+describe('Drag to reordered dimensions', function() {
 
     // Variable declarations
     // ---------------------
@@ -503,56 +507,93 @@ describe('Drag to reordered dimensions and categories', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('It should support dragging dimension label to reorder dimensions', function(done) {
+    function getMousePositions(parcatsViewModel) {
+    // Compute Mouse positions
+        // -----------------------
+        // Start mouse in the middle of the dimension label on the
+        // second dimensions (dimension display index 1)
+        var dragDimStartX = parcatsViewModel.dimensions[1].x;
+        var mouseStartY = parcatsViewModel.y - 5,
+            mouseStartX = parcatsViewModel.x + dragDimStartX + dimWidth / 2;
+
+        // Pause mouse half-way between the original location of
+        // the first and second dimensions. Also move mosue
+        // downward a bit to make sure drag 'sticks'
+        var mouseMidY = parcatsViewModel.y + 50,
+            mouseMidX = mouseStartX + dimDx / 2;
+
+        // End mouse drag in the middle of the original
+        // position of the dimension label of the third dimension
+        // (dimension display index 2)
+        var mouseEndY = parcatsViewModel.y + 100,
+            mouseEndX = parcatsViewModel.x + parcatsViewModel.dimensions[2].x + dimWidth / 2;
+        return {
+            mouseStartY: mouseStartY,
+            mouseStartX: mouseStartX,
+            mouseMidY: mouseMidY,
+            mouseMidX: mouseMidX,
+            mouseEndY: mouseEndY,
+            mouseEndX: mouseEndX
+        };
+    }
+
+    function checkInitialDimensions() {
+        checkDimensionCalc(gd, 0,
+            {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
+        checkDimensionCalc(gd, 1,
+            {dimensionInd: 1, displayInd: 1, dragX: null, dimensionLabel: 'Two', count: 9});
+        checkDimensionCalc(gd, 2,
+            {dimensionInd: 2, displayInd: 2, dragX: null, dimensionLabel: 'Three', count: 9});
+    }
+
+    function checkReorderedDimensions() {
+        checkDimensionCalc(gd, 0,
+            {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
+        checkDimensionCalc(gd, 1,
+            {dimensionInd: 1, displayInd: 2, dragX: null, dimensionLabel: 'Two', count: 9});
+        checkDimensionCalc(gd, 2,
+            {dimensionInd: 2, displayInd: 1, dragX: null, dimensionLabel: 'Three', count: 9});
+    }
+
+    function checkMidDragDimensions(dragDimStartX) {
+        checkDimensionCalc(gd, 0,
+            {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
+        checkDimensionCalc(gd, 1,
+            {dimensionInd: 1, displayInd: 1, dragX: dragDimStartX + dimDx / 2, dimensionLabel: 'Two', count: 9});
+        checkDimensionCalc(gd, 2,
+            {dimensionInd: 2, displayInd: 2, dragX: null, dimensionLabel: 'Three', count: 9});
+    }
+
+    it('should support dragging dimension label to reorder dimensions in freeform arrangement', function(done) {
+
+        // Set arrangement
+        mock.data[0].arrangement =  'freeform';
+
         Plotly.newPlot(gd, mock)
             .then(function() {
-
                 restyleCallback = jasmine.createSpy('restyleCallback');
                 gd.on('plotly_restyle', restyleCallback);
 
                 /** @type {ParcatsViewModel} */
                 var parcatsViewModel = d3.select('g.trace.parcats').datum();
 
-                // Compute Mouse positions
-                // -----------------------
-                // Start mouse in the middle of the dimension label on the
-                // second dimensions (dimension display index 1)
                 var dragDimStartX = parcatsViewModel.dimensions[1].x;
-                var mouseStartY = parcatsViewModel.y - 5,
-                    mouseStartX = parcatsViewModel.x + dragDimStartX + dimWidth / 2;
-
-                // Pause mouse half-way between the original location of
-                // the first and second dimensions. Also move mosue
-                // downward a bit to make sure drag 'sticks'
-                var mouseMidY = parcatsViewModel.y + 50,
-                    mouseMidX = mouseStartX + dimDx / 2;
-
-                // End mouse drag in the middle of the original
-                // position of the dimension label of the third dimension
-                // (dimension display index 2)
-                var mouseEndY = parcatsViewModel.y + 100,
-                    mouseEndX = parcatsViewModel.x + parcatsViewModel.dimensions[2].x + dimWidth / 2;
+                var pos = getMousePositions(parcatsViewModel);
 
                 // Check initial dimension order
                 // -----------------------------
-                checkDimensionCalc(gd, 0,
-                    {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
-                checkDimensionCalc(gd, 1,
-                    {dimensionInd: 1, displayInd: 1, dragX: null, dimensionLabel: 'Two', count: 9});
-                checkDimensionCalc(gd, 2,
-                    {dimensionInd: 2, displayInd: 2, dragX: null, dimensionLabel: 'Three', count: 9});
-
+                checkInitialDimensions();
 
                 // Position mouse for start of drag
                 // --------------------------------
-                mouseEvent('mousemove', mouseStartX, mouseStartY);
+                mouseEvent('mousemove', pos.mouseStartX, pos.mouseStartY);
 
                 // Perform drag
                 // ------------
-                mouseEvent('mousedown', mouseStartX, mouseStartY);
+                mouseEvent('mousedown', pos.mouseStartX, pos.mouseStartY);
 
                 // ### Pause at drag mid-point
-                mouseEvent('mousemove', mouseMidX, mouseMidY
+                mouseEvent('mousemove', pos.mouseMidX, pos.mouseMidY
                     // {buttons: 1}  // Left click
                     );
 
@@ -561,34 +602,24 @@ describe('Drag to reordered dimensions and categories', function() {
 
                 // Make sure dimensions haven't changed order yet, but that
                 // we do have a drag in progress on the middle dimension
-                checkDimensionCalc(gd, 0,
-                    {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
-                checkDimensionCalc(gd, 1,
-                    {dimensionInd: 1, displayInd: 1, dragX: dragDimStartX + dimDx / 2, dimensionLabel: 'Two', count: 9});
-                checkDimensionCalc(gd, 2,
-                    {dimensionInd: 2, displayInd: 2, dragX: null, dimensionLabel: 'Three', count: 9});
+                checkMidDragDimensions(dragDimStartX);
 
                 // ### Move to drag end-point
-                mouseEvent('mousemove', mouseEndX, mouseEndY);
+                mouseEvent('mousemove', pos.mouseEndX, pos.mouseEndY);
 
                 // Make sure we're still dragging the middle dimension
                 expect(parcatsViewModel.dragDimension.model.dimensionLabel).toEqual('Two');
 
                 // End drag
                 // --------
-                mouseEvent('mouseup', mouseEndX, mouseEndY);
+                mouseEvent('mouseup', pos.mouseEndX, pos.mouseEndY);
 
                 // Make sure we've cleared drag dimension
                 expect(parcatsViewModel.dragDimension).toEqual(null);
 
                 // Check final dimension order
                 // -----------------------------
-                checkDimensionCalc(gd, 0,
-                    {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
-                checkDimensionCalc(gd, 1,
-                    {dimensionInd: 1, displayInd: 2, dragX: null, dimensionLabel: 'Two', count: 9});
-                checkDimensionCalc(gd, 2,
-                    {dimensionInd: 2, displayInd: 1, dragX: null, dimensionLabel: 'Three', count: 9});
+                checkReorderedDimensions();
             })
             .then(delay(CALLBACK_DELAY))
             .then(function() {
@@ -596,10 +627,87 @@ describe('Drag to reordered dimensions and categories', function() {
                 // -------------------------------------------
                 expect(restyleCallback).toHaveBeenCalledTimes(1);
                 expect(restyleCallback).toHaveBeenCalledWith([
-                    {'dimensions[0].displayindex': 0,
+                    {
+                        'dimensions[0].displayindex': 0,
                         'dimensions[1].displayindex': 2,
-                        'dimensions[2].displayindex': 1},
-                    [0]]);
+                        'dimensions[2].displayindex': 1
+                    },
+                [0]]);
+                restyleCallback.calls.reset();
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should support dragging dimension label to reorder dimensions in perpendicular arrangement', function(done) {
+
+        // Set arrangement
+        mock.data[0].arrangement  = 'perpendicular';
+
+        Plotly.newPlot(gd, mock)
+            .then(function() {
+                restyleCallback = jasmine.createSpy('restyleCallback');
+                gd.on('plotly_restyle', restyleCallback);
+
+                /** @type {ParcatsViewModel} */
+                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+
+                var dragDimStartX = parcatsViewModel.dimensions[1].x;
+                var pos = getMousePositions(parcatsViewModel);
+
+                // Check initial dimension order
+                // -----------------------------
+                checkInitialDimensions();
+
+                // Position mouse for start of drag
+                // --------------------------------
+                mouseEvent('mousemove', pos.mouseStartX, pos.mouseStartY);
+
+                // Perform drag
+                // ------------
+                mouseEvent('mousedown', pos.mouseStartX, pos.mouseStartY);
+
+                // ### Pause at drag mid-point
+                mouseEvent('mousemove', pos.mouseMidX, pos.mouseMidY
+                    // {buttons: 1}  // Left click
+                    );
+
+                // Make sure we're dragging the middle dimension
+                expect(parcatsViewModel.dragDimension.model.dimensionLabel).toEqual('Two');
+
+                // Make sure dimensions haven't changed order yet, but that
+                // we do have a drag in progress on the middle dimension
+                checkMidDragDimensions(dragDimStartX);
+
+                // ### Move to drag end-point
+                mouseEvent('mousemove', pos.mouseEndX, pos.mouseEndY);
+
+                // Make sure we're still dragging the middle dimension
+                expect(parcatsViewModel.dragDimension.model.dimensionLabel).toEqual('Two');
+
+                // End drag
+                // --------
+                mouseEvent('mouseup', pos.mouseEndX, pos.mouseEndY);
+
+                // Make sure we've cleared drag dimension
+                expect(parcatsViewModel.dragDimension).toEqual(null);
+
+                // Check final dimension order
+                // -----------------------------
+                checkReorderedDimensions();
+            })
+            .then(delay(CALLBACK_DELAY))
+            .then(function() {
+                // Check that proper restyle event was emitted
+                // -------------------------------------------
+                expect(restyleCallback).toHaveBeenCalledTimes(1);
+                expect(restyleCallback).toHaveBeenCalledWith([
+                    {
+                        'dimensions[0].displayindex': 0,
+                        'dimensions[1].displayindex': 2,
+                        'dimensions[2].displayindex': 1
+                    },
+                [0]]);
 
                 restyleCallback.calls.reset();
             })
@@ -607,7 +715,210 @@ describe('Drag to reordered dimensions and categories', function() {
             .then(done);
     });
 
-    it('It should support dragging category to reorder categories and dimensions', function(done) {
+    it('should NOT support dragging dimension label to reorder dimensions in fixed arrangement', function(done) {
+
+        // Set arrangement
+        mock.data[0].arrangement = 'fixed';
+
+        Plotly.newPlot(gd, mock)
+            .then(function() {
+                console.log(gd.data);
+                restyleCallback = jasmine.createSpy('restyleCallback');
+                gd.on('plotly_restyle', restyleCallback);
+
+                /** @type {ParcatsViewModel} */
+                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+
+                var dragDimStartX = parcatsViewModel.dimensions[1].x;
+                var pos = getMousePositions(parcatsViewModel);
+
+                // Check initial dimension order
+                // -----------------------------
+                checkInitialDimensions();
+
+                // Position mouse for start of drag
+                // --------------------------------
+                mouseEvent('mousemove', pos.mouseStartX, pos.mouseStartY);
+
+                // Perform drag
+                // ------------
+                mouseEvent('mousedown', pos.mouseStartX, pos.mouseStartY);
+
+                // ### Pause at drag mid-point
+                mouseEvent('mousemove', pos.mouseMidX, pos.mouseMidY
+                    // {buttons: 1}  // Left click
+                    );
+
+                // Make sure we're not dragging any dimension
+                expect(parcatsViewModel.dragDimension).toEqual(null);
+
+                // Make sure dimensions haven't changed order yet
+                checkInitialDimensions();
+
+                // ### Move to drag end-point
+                mouseEvent('mousemove', pos.mouseEndX, pos.mouseEndY);
+
+                // Make sure we're still not dragging a dimension
+                expect(parcatsViewModel.dragDimension).toEqual(null);
+
+                // End drag
+                // --------
+                mouseEvent('mouseup', pos.mouseEndX, pos.mouseEndY);
+
+                // Make sure dimensions haven't changed
+                // ------------------------------------
+                checkInitialDimensions();
+            })
+            .then(delay(CALLBACK_DELAY))
+            .then(function() {
+                // Check that no restyle event was emitted
+                // ---------------------------------------
+                expect(restyleCallback).toHaveBeenCalledTimes(0);
+                restyleCallback.calls.reset();
+            })
+            .catch(failTest)
+            .then(done);
+    });
+});
+
+describe('Drag to reordered categories', function() {
+
+    // Variable declarations
+    // ---------------------
+    // ### Trace level ###
+    var gd,
+        restyleCallback,
+        mock;
+
+    // Fixtures
+    // --------
+    beforeEach(function() {
+        gd = createGraphDiv();
+        mock = Lib.extendDeep({}, require('@mocks/parcats_basic_freeform.json'));
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function getDragPositions(parcatsViewModel) {
+        var dragDimStartX = parcatsViewModel.dimensions[1].x;
+
+        var mouseStartY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y,
+            mouseStartX = parcatsViewModel.x + dragDimStartX + dimWidth / 2;
+
+        // Pause mouse half-way between the original location of
+        // the first and second dimensions. Also move mouse
+        // upward enough to swap position with middle category
+        var mouseMidY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[1].y,
+            mouseMidX = mouseStartX + dimDx / 2;
+
+        // End mouse drag in the middle of the original
+        // position of the dimension label of the third dimension
+        // (dimension display index 2), and at the height of the original top category
+        var mouseEndY = parcatsViewModel.y,
+            mouseEndX = parcatsViewModel.x + parcatsViewModel.dimensions[2].x + dimWidth / 2;
+        return {
+            dragDimStartX: dragDimStartX,
+            mouseStartY: mouseStartY,
+            mouseStartX: mouseStartX,
+            mouseMidY: mouseMidY,
+            mouseMidX: mouseMidX,
+            mouseEndY: mouseEndY,
+            mouseEndX: mouseEndX
+        };
+    }
+
+    function checkInitialDimensions() {
+        checkDimensionCalc(gd, 0,
+            {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
+        checkDimensionCalc(gd, 1,
+            {dimensionInd: 1, displayInd: 1, dragX: null, dimensionLabel: 'Two', count: 9});
+        checkDimensionCalc(gd, 2,
+            {dimensionInd: 2, displayInd: 2, dragX: null, dimensionLabel: 'Three', count: 9});
+    }
+
+    function checkMidDragDimensions(dragDimStartX) {
+        checkDimensionCalc(gd, 0,
+            {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
+        checkDimensionCalc(gd, 1,
+            {dimensionInd: 1, displayInd: 1, dragX: dragDimStartX + dimDx / 2, dimensionLabel: 'Two', count: 9});
+        checkDimensionCalc(gd, 2,
+            {dimensionInd: 2, displayInd: 2, dragX: null, dimensionLabel: 'Three', count: 9});
+    }
+
+    function checkInitialCategories() {
+        checkCategoryCalc(gd, 1, 0, {
+            categoryLabel: 'A',
+            categoryInd: 0,
+            displayInd: 0
+        });
+
+        checkCategoryCalc(gd, 1, 1, {
+            categoryLabel: 'B',
+            categoryInd: 1,
+            displayInd: 1
+        });
+
+        checkCategoryCalc(gd, 1, 2, {
+            categoryLabel: 'C',
+            categoryInd: 2,
+            displayInd: 2
+        });
+    }
+
+    function checkMidDragCategories() {
+        checkCategoryCalc(gd, 1, 0, {
+            categoryLabel: 'A',
+            categoryInd: 0,
+            displayInd: 0
+        });
+
+        checkCategoryCalc(gd, 1, 1, {
+            categoryLabel: 'B',
+            categoryInd: 1,
+            displayInd: 2
+        });
+
+        checkCategoryCalc(gd, 1, 2, {
+            categoryLabel: 'C',
+            categoryInd: 2,
+            displayInd: 1
+        });
+    }
+
+    function checkFinalDimensions() {
+        checkDimensionCalc(gd, 0,
+            {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
+        checkDimensionCalc(gd, 1,
+            {dimensionInd: 1, displayInd: 2, dragX: null, dimensionLabel: 'Two', count: 9});
+        checkDimensionCalc(gd, 2,
+            {dimensionInd: 2, displayInd: 1, dragX: null, dimensionLabel: 'Three', count: 9});
+    }
+
+    function checkFinalCategories() {
+        checkCategoryCalc(gd, 1, 0, {
+            categoryLabel: 'A',
+            categoryInd: 0,
+            displayInd: 1
+        });
+
+        checkCategoryCalc(gd, 1, 1, {
+            categoryLabel: 'B',
+            categoryInd: 1,
+            displayInd: 2
+        });
+
+        checkCategoryCalc(gd, 1, 2, {
+            categoryLabel: 'C',
+            categoryInd: 2,
+            displayInd: 0
+        });
+    }
+
+    it('should support dragging category to reorder categories and dimensions in freeform arrangement', function(done) {
+
+        // Set arrangement
+        mock.data[0].arrangement =  'freeform';
+
         Plotly.newPlot(gd, mock)
             .then(function() {
 
@@ -621,108 +932,56 @@ describe('Drag to reordered dimensions and categories', function() {
                 // -----------------------
                 // Start mouse in the middle of the lowest category
                 // second dimensions (dimension display index 1)
-                var dragDimStartX = parcatsViewModel.dimensions[1].x;
-
-                var mouseStartY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y,
-                    mouseStartX = parcatsViewModel.x + dragDimStartX + dimWidth / 2;
-
-                // Pause mouse half-way between the original location of
-                // the first and second dimensions. Also move mouse
-                // upward enough to swap position with middle category
-                var mouseMidY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[1].y,
-                    mouseMidX = mouseStartX + dimDx / 2;
-
-                // End mouse drag in the middle of the original
-                // position of the dimension label of the third dimension
-                // (dimension display index 2), and at the height of the original top category
-                var mouseEndY = parcatsViewModel.y,
-                    mouseEndX = parcatsViewModel.x + parcatsViewModel.dimensions[2].x + dimWidth / 2;
+                var pos = getDragPositions(parcatsViewModel);
 
                 // Check initial dimension order
                 // -----------------------------
-                checkDimensionCalc(gd, 0,
-                    {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
-                checkDimensionCalc(gd, 1,
-                    {dimensionInd: 1, displayInd: 1, dragX: null, dimensionLabel: 'Two', count: 9});
-                checkDimensionCalc(gd, 2,
-                    {dimensionInd: 2, displayInd: 2, dragX: null, dimensionLabel: 'Three', count: 9});
+                checkInitialDimensions();
+
+                // Check initial categories
+                // ------------------------
+                checkInitialCategories();
 
                 // Position mouse for start of drag
                 // --------------------------------
-                mouseEvent('mousemove', mouseStartX, mouseStartY);
+                mouseEvent('mousemove', pos.mouseStartX, pos.mouseStartY);
 
                 // Perform drag
                 // ------------
-                mouseEvent('mousedown', mouseStartX, mouseStartY);
+                mouseEvent('mousedown', pos.mouseStartX, pos.mouseStartY);
 
                 // ### Pause at drag mid-point
-                mouseEvent('mousemove', mouseMidX, mouseMidY);
+                mouseEvent('mousemove', pos.mouseMidX, pos.mouseMidY);
 
                 // Make sure we're dragging the middle dimension
                 expect(parcatsViewModel.dragDimension.model.dimensionLabel).toEqual('Two');
 
                 // Make sure dimensions haven't changed order yet, but that
                 // we do have a drag in progress on the middle dimension
-                checkDimensionCalc(gd, 0,
-                    {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
-                checkDimensionCalc(gd, 1,
-                    {dimensionInd: 1, displayInd: 1, dragX: dragDimStartX + dimDx / 2, dimensionLabel: 'Two', count: 9});
-                checkDimensionCalc(gd, 2,
-                    {dimensionInd: 2, displayInd: 2, dragX: null, dimensionLabel: 'Three', count: 9});
+                checkMidDragDimensions(pos.dragDimStartX);
 
                 // Make sure categories in dimension 1 have changed already
-                checkCategoryCalc(gd, 1, 0, {
-                    categoryLabel: 'A',
-                    categoryInd: 0,
-                    displayInd: 0});
-
-                checkCategoryCalc(gd, 1, 1, {
-                    categoryLabel: 'B',
-                    categoryInd: 1,
-                    displayInd: 2});
-
-                checkCategoryCalc(gd, 1, 2, {
-                    categoryLabel: 'C',
-                    categoryInd: 2,
-                    displayInd: 1});
+                checkMidDragCategories();
 
                 // ### Move to drag end-point
-                mouseEvent('mousemove', mouseEndX, mouseEndY);
+                mouseEvent('mousemove', pos.mouseEndX, pos.mouseEndY);
 
                 // Make sure we're still dragging the middle dimension
                 expect(parcatsViewModel.dragDimension.model.dimensionLabel).toEqual('Two');
 
                 // End drag
                 // --------
-                mouseEvent('mouseup', mouseEndX, mouseEndY);
+                mouseEvent('mouseup', pos.mouseEndX, pos.mouseEndY);
 
                 // Make sure we've cleared drag dimension
                 expect(parcatsViewModel.dragDimension).toEqual(null);
 
                 // Check final dimension order
                 // -----------------------------
-                checkDimensionCalc(gd, 0,
-                    {dimensionInd: 0, displayInd: 0, dragX: null, dimensionLabel: 'One', count: 9});
-                checkDimensionCalc(gd, 1,
-                    {dimensionInd: 1, displayInd: 2, dragX: null, dimensionLabel: 'Two', count: 9});
-                checkDimensionCalc(gd, 2,
-                    {dimensionInd: 2, displayInd: 1, dragX: null, dimensionLabel: 'Three', count: 9});
+                checkFinalDimensions();
 
                 // Make sure categories in dimension 1 have changed already
-                checkCategoryCalc(gd, 1, 0, {
-                    categoryLabel: 'A',
-                    categoryInd: 0,
-                    displayInd: 1});
-
-                checkCategoryCalc(gd, 1, 1, {
-                    categoryLabel: 'B',
-                    categoryInd: 1,
-                    displayInd: 2});
-
-                checkCategoryCalc(gd, 1, 2, {
-                    categoryLabel: 'C',
-                    categoryInd: 2,
-                    displayInd: 0});
+                checkFinalCategories();
 
             })
             .then(delay(CALLBACK_DELAY))
@@ -744,27 +1003,186 @@ describe('Drag to reordered dimensions and categories', function() {
             .catch(failTest)
             .then(done);
     });
+
+    it('should support dragging category to reorder categories only in perpendicular arrangement', function(done) {
+
+        // Set arrangement
+        mock.data[0].arrangement =  'perpendicular';
+
+        Plotly.newPlot(gd, mock)
+            .then(function() {
+
+                restyleCallback = jasmine.createSpy('restyleCallback');
+                gd.on('plotly_restyle', restyleCallback);
+
+                /** @type {ParcatsViewModel} */
+                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+
+                // Compute Mouse positions
+                // -----------------------
+                var pos = getDragPositions(parcatsViewModel);
+
+                // Check initial dimension order
+                // -----------------------------
+                checkInitialDimensions();
+
+                // Check initial categories
+                // ------------------------
+                checkInitialCategories();
+
+                // Position mouse for start of drag
+                // --------------------------------
+                mouseEvent('mousemove', pos.mouseStartX, pos.mouseStartY);
+
+                // Perform drag
+                // ------------
+                mouseEvent('mousedown', pos.mouseStartX, pos.mouseStartY);
+
+                // ### Pause at drag mid-point
+                mouseEvent('mousemove', pos.mouseMidX, pos.mouseMidY);
+
+                // Make sure we're dragging the middle dimension
+                expect(parcatsViewModel.dragDimension.model.dimensionLabel).toEqual('Two');
+
+                // Make sure dimensions haven't changed order or position
+                checkInitialDimensions();
+
+                // Make sure categories in dimension 1 have changed already
+                checkMidDragCategories();
+
+                // ### Move to drag end-point
+                mouseEvent('mousemove', pos.mouseEndX, pos.mouseEndY);
+
+                // Make sure we're still dragging the middle dimension
+                expect(parcatsViewModel.dragDimension.model.dimensionLabel).toEqual('Two');
+
+                // End drag
+                // --------
+                mouseEvent('mouseup', pos.mouseEndX, pos.mouseEndY);
+
+                // Make sure we've cleared drag dimension
+                expect(parcatsViewModel.dragDimension).toEqual(null);
+
+                // Check final dimension order
+                // ---------------------------
+                // Dimension order should not have changed
+                checkInitialDimensions();
+
+                // Make sure categories in dimension 1 have changed already
+                checkFinalCategories();
+            })
+            .then(delay(CALLBACK_DELAY))
+            .then(function() {
+                // Check that proper restyle event was emitted
+                // -------------------------------------------
+                expect(restyleCallback).toHaveBeenCalledTimes(1);
+                expect(restyleCallback).toHaveBeenCalledWith([
+                    {
+                        'dimensions[1].categoryorder': 'array',
+                        'dimensions[1].categoryarray': [['C', 'A', 'B' ]],
+                        'dimensions[1].categorylabels': [['C', 'A', 'B' ]]},
+                    [0]]);
+
+                restyleCallback.calls.reset();
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('should NOT support dragging category to reorder categories or dimensions in fixed arrangement', function(done) {
+
+        // Set arrangement
+        mock.data[0].arrangement =  'fixed';
+
+        Plotly.newPlot(gd, mock)
+            .then(function() {
+
+                restyleCallback = jasmine.createSpy('restyleCallback');
+                gd.on('plotly_restyle', restyleCallback);
+
+                /** @type {ParcatsViewModel} */
+                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+
+                // Compute Mouse positions
+                // -----------------------
+                var pos = getDragPositions(parcatsViewModel);
+
+                // Check initial dimension order
+                // -----------------------------
+                checkInitialDimensions();
+
+                // Check initial categories
+                // ------------------------
+                checkInitialCategories();
+
+                // Position mouse for start of drag
+                // --------------------------------
+                mouseEvent('mousemove', pos.mouseStartX, pos.mouseStartY);
+
+                // Perform drag
+                // ------------
+                mouseEvent('mousedown', pos.mouseStartX, pos.mouseStartY);
+
+                // ### Pause at drag mid-point
+                mouseEvent('mousemove', pos.mouseMidX, pos.mouseMidY);
+
+                // Make sure we're not dragging a dimension
+                expect(parcatsViewModel.dragDimension).toEqual(null);
+
+                // Make sure dimensions and categories haven't changed order
+                checkInitialDimensions();
+                checkInitialCategories();
+
+                // ### Move to drag end-point
+                mouseEvent('mousemove', pos.mouseEndX, pos.mouseEndY);
+
+                // Make sure we're still not dragging a dimension
+                expect(parcatsViewModel.dragDimension).toEqual(null);
+
+                // End drag
+                // --------
+                mouseEvent('mouseup', pos.mouseEndX, pos.mouseEndY);
+
+                // Check final dimension order
+                // ---------------------------
+                // Dimension and category order should not have changed
+                checkInitialDimensions();
+                checkInitialCategories();
+            })
+            .then(delay(CALLBACK_DELAY))
+            .then(function() {
+                // Check that no restyle event was emitted
+                // ---------------------------------------
+                expect(restyleCallback).toHaveBeenCalledTimes(0);
+                restyleCallback.calls.reset();
+            })
+            .catch(failTest)
+            .then(done);
+    });
 });
 
 // To Test
 // -------
-// ### Drag to reorder categories and dimensions
-//  - Models before / after
-//  - View models before / after
-//  - SVG before / after (include cat/dim labels)
-//  - Emit restyle event
-
-// ### Restyle / Animate
-
-// ### Events
-// - Hover events (category, path)
-// - Click events (category, path)
-
-// ### Hover mode
-// - SVG display for each category hover mode
-// - SVG display for path hover mode
-// - Test tooltip message with counts set
-
+// ### Hovering
+//  - [ ] Path hover label
+//  - [ ] Category hover label for 'category', 'color', and 'dimension', `hovermode`
+//  - [ ] No category hover label for 'none', 'skip' `hovermode
+//  - [ ] Events emitted on path hover
+//  - [ ] Events emitted on category hover in 'category', 'color', 'dimension', and 'none' `hovermode`
+//  - [ ] No events emitted on category or path in 'skip' `hovermode`
+//  In each case, check hoverinfo text
+//
+// ### Clicking
+//  - [ ] Path click events fired unless `hovermode` is 'skip'
+//  - [ ] Category/color click events fired unless `hovermode` is 'skip'
+//
+// ### Test that properties have the desired effect on models
+//  - [ ] visible
+//  - [ ] counts
+//  - [ ] bundlecolors
+//  - [ ] sortpaths
+//
+//
 // ### Test Font styles ###
 
 // ### Test visible
