@@ -1184,11 +1184,13 @@ function dragDimensionEnd(d) {
 
     // Handle potential click event
     // ----------------------------
-    if(!d.dragHasMoved && d.potentialClickBand) {
-        if(d.parcatsViewModel.hovermode === 'color') {
-            emitPointsEventColorHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
-        } else {
-            emitPointsEventCategoryHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
+    if(d.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
+        if (!d.dragHasMoved && d.potentialClickBand) {
+            if (d.parcatsViewModel.hovermode === 'color') {
+                emitPointsEventColorHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
+            } else {
+                emitPointsEventCategoryHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
+            }
         }
     }
 
