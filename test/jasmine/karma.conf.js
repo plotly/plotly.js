@@ -195,7 +195,10 @@ func.defaultConfig = {
                 '--touch-events',
                 '--window-size=' + argv.width + ',' + argv.height,
                 isCI ? '--ignore-gpu-blacklist' : '',
-                (isBundleTest && basename(testFileGlob) === 'no_webgl') ? '--disable-webgl' : ''
+                (isBundleTest && basename(testFileGlob) === 'no_webgl') ? '--disable-webgl' : '',
+                // just look at /etc/localtime, so that we test lib_date_test.js
+                // in arbitrary timezones
+                '--disable-fine-grained-time-zone-detection'
             ]
         },
         _Firefox: {
