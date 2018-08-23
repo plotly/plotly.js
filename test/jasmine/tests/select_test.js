@@ -531,7 +531,7 @@ describe('Click-to-select', function() {
     });
 
     it('ignores clicks on boxes in a box trace type', function(done) {
-        var mock = require('@mocks/box_grouped_horz.json');
+        var mock = Lib.extendDeep({}, require('@mocks/box_grouped_horz.json'));
 
         mock.layout.clickmode = 'event+select';
         mock.layout.width = 1100;
@@ -595,7 +595,10 @@ describe('Click-to-select', function() {
         // and thus dynamically concatenated mock paths wont't work.
         [
             testCase('histrogram', require('@mocks/histogram_colorscale.json'), 355, 301, [3, 4, 5]),
-            testCase('box', require('@mocks/box_grouped_horz.json'), 610, 342, [2])
+            testCase('box', require('@mocks/box_grouped_horz.json'), 610, 342, [[2], [], []],
+              { width: 1100, height: 450 }),
+            testCase('violin', require('@mocks/violin_grouped.json'), 166, 187, [[3], [], []],
+              { width: 1100, height: 450 })
         ]
           .forEach(function(testCase) {
               it('trace type ' + testCase.traceType, function(done) {
@@ -606,10 +609,14 @@ describe('Click-to-select', function() {
                           hovermode: 'closest'
                       }
                   };
+                  var customLayoutOptions = {
+                      layout: testCase.layoutOptions
+                  };
                   var mockCopy = Lib.extendDeep(
                     {},
                     testCase.mock,
-                    defaultLayoutOpts);
+                    defaultLayoutOpts,
+                    customLayoutOptions);
 
                   Plotly.plot(gd, mockCopy.data, mockCopy.layout)
                     .then(function() {
@@ -623,10 +630,11 @@ describe('Click-to-select', function() {
               });
           });
 
-        function testCase(traceType, mock, x, y, expectedPts) {
+        function testCase(traceType, mock, x, y, expectedPts, layoutOptions) {
             return {
                 traceType: traceType,
                 mock: mock,
+                layoutOptions: layoutOptions,
                 x: x,
                 y: y,
                 expectedPts: expectedPts
