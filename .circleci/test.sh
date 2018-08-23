@@ -33,16 +33,27 @@ retry () {
     fi
 }
 
+# set timezone to Alaska time (arbitrary timezone to test date logic)
+set_tz () {
+    sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
+    export TZ='America/Anchorage'
+}
+
 case $1 in
 
     jasmine)
+        set_tz
+
         npm run test-jasmine -- --skip-tags=gl,noCI,flaky || EXIT_STATE=$?
         retry npm run test-jasmine -- --tags=flaky --skip-tags=noCI
         npm run test-bundle || EXIT_STATE=$?
+
         exit $EXIT_STATE
         ;;
 
     jasmine2)
+        set_tz
+
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --tag=gl))
 
         for s in ${SHARDS[@]}; do
