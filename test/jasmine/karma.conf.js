@@ -198,6 +198,8 @@ func.defaultConfig = {
                 (isBundleTest && basename(testFileGlob) === 'no_webgl') ? '--disable-webgl' : '',
                 // just look at /etc/localtime, so that we test lib_date_test.js
                 // in arbitrary timezones
+                '--disable-per-user-timezone',
+                '--disable-system-timezone-automatic-detection',
                 '--disable-fine-grained-time-zone-detection'
             ]
         },
