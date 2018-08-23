@@ -246,6 +246,9 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 }
 
                 updateSelectedState(gd, searchTraces);
+
+                clearSelectionsCache(dragOptions);
+
                 gd.emit('plotly_deselect', null);
             } else {
                 if(clickmode.indexOf('select') > -1) {
@@ -322,9 +325,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
 
             updateSelectedState(gd, searchTraces);
 
-            // Clear selection cache to ensure a possible next selection
-            // starts from a clean slate.
-            dragOptions.polygons = [];
+            clearSelectionsCache(dragOptions);
 
             if(sendEvents) {
                 gd.emit('plotly_deselect', null);
@@ -387,10 +388,7 @@ function coerceSelectionsCache(evt, gd, dragOptions) {
       (!evt.shiftKey && !evt.altKey) ||
       ((evt.shiftKey || evt.altKey) && !plotinfo.selection)
     ) {
-        // create new polygons, if shift mode or selecting across different subplots
-        plotinfo.selection = {};
-        plotinfo.selection.polygons = dragOptions.polygons = [];
-        plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
+        clearSelectionsCache(dragOptions);
     }
 
     // clear selection outline when selecting a different subplot
@@ -398,6 +396,14 @@ function coerceSelectionsCache(evt, gd, dragOptions) {
         clearSelect(zoomLayer);
         fullLayout._lastSelectedSubplot = plotinfo.id;
     }
+}
+
+function clearSelectionsCache(dragOptions) {
+    var plotinfo = dragOptions.plotinfo;
+
+    plotinfo.selection = {};
+    plotinfo.selection.polygons = dragOptions.polygons = [];
+    plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
 }
 
 function determineSearchTraces(gd, xAxes, yAxes, subplot) {

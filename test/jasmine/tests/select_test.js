@@ -262,6 +262,27 @@ describe('Click-to-select', function() {
         });
     });
 
+    it('cleanly clears and starts selections although add/subtract mode on', function(done) {
+        plotMock14()
+          .then(function() {
+              return _immediateClickPt(mock14Pts[7]);
+          })
+          .then(function() {
+              assertSelectedPoints(7);
+              _clickPt(mock14Pts[7], { shiftKey: true });
+              return deselectPromise;
+          })
+          .then(function() {
+              assertSelectionCleared();
+              return _clickPt(mock14Pts[35], { shiftKey: true });
+          })
+          .then(function() {
+              assertSelectedPoints(35);
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
     it('supports adding to an existing selection', function(done) {
         plotMock14()
           .then(function() { return _immediateClickPt(mock14Pts[7]); })
@@ -1132,6 +1153,38 @@ describe('@flaky Test select box and lasso in general:', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    it('should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, require('@mocks/0.json'));
+
+        fig.layout.dragmode = 'select';
+        Plotly.plot(gd, fig)
+          .then(function() {
+              return drag([[350, 100], [400, 400]]);
+          })
+          .then(function() {
+              _assertSelectedPoints([49, 50, 51, 52, 53, 54, 55, 56, 57]);
+              return doubleClick(500, 200, { shiftKey: true });
+          })
+          .then(function() {
+              _assertSelectedPoints(null);
+              return drag([[450, 100], [500, 400]], { shiftKey: true });
+          })
+          .then(function() {
+              _assertSelectedPoints([67, 68, 69, 70, 71, 72, 73, 74]);
+          })
+          .catch(failTest)
+          .then(done);
+
+        function _assertSelectedPoints(selPts) {
+            if(selPts) {
+                expect(gd.data[0].selectedpoints).toEqual(selPts);
+            } else {
+                expect('selectedpoints' in gd.data[0]).toBe(false);
+            }
+        }
     });
 
     it('should clear selected points on double click only on pan/lasso modes', function(done) {
