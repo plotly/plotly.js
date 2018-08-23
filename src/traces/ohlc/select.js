@@ -26,7 +26,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
         for(i = 0; i < cd.length; i++) {
             var di = cd[i];
 
-            if(polygon.contains([xa.c2p(di.pos + posOffset), ya.c2p(di.yc)])) {
+            if(polygon.contains([xa.c2p(di.pos + posOffset), ya.c2p(di.yc)], null, di.i, searchInfo)) {
                 selection.push({
                     pointNumber: di.i,
                     x: xa.c2d(di.pos),

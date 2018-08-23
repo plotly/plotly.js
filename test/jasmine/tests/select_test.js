@@ -598,7 +598,9 @@ describe('Click-to-select', function() {
             testCase('box', require('@mocks/box_grouped_horz.json'), 610, 342, [[2], [], []],
               { width: 1100, height: 450 }),
             testCase('violin', require('@mocks/violin_grouped.json'), 166, 187, [[3], [], []],
-              { width: 1100, height: 450 })
+              { width: 1100, height: 450 }),
+            testCase('ohlc', require('@mocks/ohlc_first.json'), 669, 165, [9]),
+            testCase('candlestick', require('@mocks/finance_style.json'), 331, 162, [[], [5]])
         ]
           .forEach(function(testCase) {
               it('trace type ' + testCase.traceType, function(done) {
