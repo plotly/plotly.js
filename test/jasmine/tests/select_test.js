@@ -600,7 +600,8 @@ describe('Click-to-select', function() {
             testCase('violin', require('@mocks/violin_grouped.json'), 166, 187, [[3], [], []],
               { width: 1100, height: 450 }),
             testCase('ohlc', require('@mocks/ohlc_first.json'), 669, 165, [9]),
-            testCase('candlestick', require('@mocks/finance_style.json'), 331, 162, [[], [5]])
+            testCase('candlestick', require('@mocks/finance_style.json'), 331, 162, [[], [5]]),
+            testCase('choropleth', require('@mocks/geo_choropleth-text.json'), 440, 163, [6])
         ]
           .forEach(function(testCase) {
               it('trace type ' + testCase.traceType, function(done) {
@@ -1909,7 +1910,7 @@ describe('@flaky Test select box and lasso per trace:', function() {
         })
         .then(function() {
             return _run(
-                [[370, 120], [500, 200]], null, [280, 190], NOEVENTS, 'choropleth pan'
+                [[370, 120], [500, 200]], null, [200, 180], NOEVENTS, 'choropleth pan'
             );
         })
         .catch(failTest)

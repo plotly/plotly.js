@@ -21,6 +21,7 @@ var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 var dragElement = require('../../components/dragelement');
 var prepSelect = require('../cartesian/select').prepSelect;
+var selectOnClick = require('../cartesian/select').selectOnClick;
 
 var createGeoZoom = require('./zoom');
 var constants = require('./constants');
@@ -354,6 +355,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
     var gd = _this.graphDiv;
     var bgRect = _this.bgRect;
     var dragMode = fullLayout.dragmode;
+    var clickMode = fullLayout.clickmode;
 
     if(_this.isStatic) return;
 
@@ -376,6 +378,43 @@ proto.updateFx = function(fullLayout, geoLayout) {
         ]);
     }
 
+    var fillRangeItems;
+
+    if(dragMode === 'select') {
+        fillRangeItems = function(eventData, poly) {
+            var ranges = eventData.range = {};
+            ranges[_this.id] = [
+                invert([poly.xmin, poly.ymin]),
+                invert([poly.xmax, poly.ymax])
+            ];
+        };
+    } else if(dragMode === 'lasso') {
+        fillRangeItems = function(eventData, poly, pts) {
+            var dataPts = eventData.lassoPoints = {};
+            dataPts[_this.id] = pts.filtered.map(invert);
+        };
+    }
+
+    // Note: dragOptions is needed to be declared for all dragmodes because
+    // it's the object that holds persistent selection state.
+    var dragOptions = {
+        element: _this.bgRect.node(),
+        gd: gd,
+        plotinfo: {
+            xaxis: _this.xaxis,
+            yaxis: _this.yaxis,
+            fillRangeItems: fillRangeItems
+        },
+        xaxes: [_this.xaxis],
+        yaxes: [_this.yaxis],
+        subplot: _this.id,
+        clickFn: function(numClicks) {
+            if(numClicks === 2) {
+                fullLayout._zoomlayer.selectAll('.select-outline').remove();
+            }
+        }
+    };
+
     if(dragMode === 'pan') {
         bgRect.node().onmousedown = null;
         bgRect.call(createGeoZoom(_this, geoLayout));
@@ -383,41 +422,6 @@ proto.updateFx = function(fullLayout, geoLayout) {
     }
     else if(dragMode === 'select' || dragMode === 'lasso') {
         bgRect.on('.zoom', null);
-
-        var fillRangeItems;
-
-        if(dragMode === 'select') {
-            fillRangeItems = function(eventData, poly) {
-                var ranges = eventData.range = {};
-                ranges[_this.id] = [
-                    invert([poly.xmin, poly.ymin]),
-                    invert([poly.xmax, poly.ymax])
-                ];
-            };
-        } else if(dragMode === 'lasso') {
-            fillRangeItems = function(eventData, poly, pts) {
-                var dataPts = eventData.lassoPoints = {};
-                dataPts[_this.id] = pts.filtered.map(invert);
-            };
-        }
-
-        var dragOptions = {
-            element: _this.bgRect.node(),
-            gd: gd,
-            plotinfo: {
-                xaxis: _this.xaxis,
-                yaxis: _this.yaxis,
-                fillRangeItems: fillRangeItems
-            },
-            xaxes: [_this.xaxis],
-            yaxes: [_this.yaxis],
-            subplot: _this.id,
-            clickFn: function(numClicks) {
-                if(numClicks === 2) {
-                    fullLayout._zoomlayer.selectAll('.select-outline').remove();
-                }
-            }
-        };
 
         dragOptions.prepFn = function(e, startX, startY) {
             prepSelect(e, startX, startY, dragOptions, dragMode);
@@ -440,15 +444,28 @@ proto.updateFx = function(fullLayout, geoLayout) {
     });
 
     bgRect.on('mouseout', function() {
-        dragElement.unhover(gd, d3.event);
+        // TODO Find a way to reactivate this, but with it enabled
+        // gd._hoverdata would get purged an click-to-select won't
+        // work.
+        // dragElement.unhover(gd, d3.event);
     });
 
     bgRect.on('click', function() {
-        // TODO: like pie and mapbox, this doesn't support right-click
-        // actually this one is worse, as right-click starts a pan, or leaves
-        // select in a weird state.
-        // Also, only tangentially related, we should cancel hover during pan
-        Fx.click(gd, d3.event);
+        // For select and lasso the dragElement is handling clicks
+        if(dragMode !== 'select' && dragMode !== 'lasso') {
+            if(clickMode.indexOf('event') > -1) {
+                // TODO: like pie and mapbox, this doesn't support right-click
+                // actually this one is worse, as right-click starts a pan, or leaves
+                // select in a weird state.
+                // Also, only tangentially related, we should cancel hover during pan
+                Fx.click(gd, d3.event);
+            }
+
+            if(clickMode.indexOf('select') > -1) {
+                selectOnClick(d3.event, gd, [_this.xaxis], [_this.yaxis],
+                  _this.id, dragOptions);
+            }
+        }
     });
 };
 
