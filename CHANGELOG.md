@@ -10,6 +10,22 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.40.1] -- 2018-08-22
+
+### Changed
+- Bump `browserify` to `v16` [#2923]
+- Bump `glslify` to `v6.2.1` [#2923]
+- Use `color-normlize@1.3.0` throughout code base [#2923]
+
+### Fixed
+- Fix logic for hiding zero lines when they conflict with axis lines [#2936]
+- Fix `exponentformat` values `'e'` and `'E'` on log axes [#2921]
+- Fix dynamic layer ordering of `heatmap` and `carpet` traces [#2917]
+- Fix `Plotly.downloadImage` when using graph id or figure object
+  as first argument [#2931]
+- Fix regl-based rendering when WebGL buffer dimensions don't match canvas
+  dimensions [#2939]
+
 ## [1.40.0] -- 2018-08-16
 
 ### Added

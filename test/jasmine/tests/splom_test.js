@@ -682,6 +682,59 @@ describe('Test splom interactions:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should clear graph and replot when canvas and WebGL context dimensions do not match', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/splom_iris.json'));
+
+        function assertDims(msg, w, h) {
+            var canvas = gd._fullLayout._glcanvas;
+            expect(canvas.node().width).toBe(w, msg);
+            expect(canvas.node().height).toBe(h, msg);
+
+            var gl = canvas.data()[0].regl._gl;
+            expect(gl.drawingBufferWidth).toBe(w, msg);
+            expect(gl.drawingBufferHeight).toBe(h, msg);
+        }
+
+        var methods = ['cleanPlot', 'supplyDefaults', 'doCalcdata'];
+
+        methods.forEach(function(m) { spyOn(Plots, m).and.callThrough(); });
+
+        function assetsFnCall(msg, exp) {
+            methods.forEach(function(m) {
+                expect(Plots[m]).toHaveBeenCalledTimes(exp[m], msg);
+                Plots[m].calls.reset();
+            });
+        }
+
+        spyOn(Lib, 'log');
+
+        Plotly.plot(gd, fig).then(function() {
+            assetsFnCall('base', {
+                cleanPlot: 1,       // called once from inside Plots.supplyDefaults
+                supplyDefaults: 1,
+                doCalcdata: 1
+            });
+            assertDims('base', 600, 500);
+            expect(Lib.log).toHaveBeenCalledTimes(0);
+
+            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
+
+            return Plotly.relayout(gd, {width: 4810, height: 3656});
+        })
+        .then(function() {
+            assetsFnCall('after', {
+                cleanPlot: 4,       // 3 three from supplyDefaults, once in drawFramework
+                supplyDefaults: 3,  // 1 from relayout, 1 from automargin, 1 in drawFramework
+                doCalcdata: 1       // once in drawFramework
+            });
+            assertDims('after', 4810, 3656);
+            expect(Lib.log)
+                .toHaveBeenCalledWith('WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug. Clearing graph and plotting again.');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test splom hover:', function() {
