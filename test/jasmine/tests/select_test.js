@@ -120,7 +120,7 @@ var LASSOEVENTS = [4, 2, 1];
 var SELECT_PATH = [[93, 193], [143, 193]];
 var LASSO_PATH = [[316, 171], [318, 239], [335, 243], [328, 169]];
 
-describe('Click-to-select', function() {
+describe('@flaky Click-to-select', function() {
     var mock14Pts = {
         '1': { x: 134, y: 116 },
         '7': { x: 270, y: 160 },
