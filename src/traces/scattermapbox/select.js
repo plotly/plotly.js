@@ -35,7 +35,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
                 var lonlat2 = [Lib.wrap180(lonlat[0]), lonlat[1]];
                 var xy = [xa.c2p(lonlat2), ya.c2p(lonlat2)];
 
-                if(polygon.contains(xy)) {
+                if(polygon.contains(xy, null, i, searchInfo)) {
                     selection.push({
                         pointNumber: i,
                         lon: lonlat[0],

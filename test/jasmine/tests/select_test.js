@@ -601,7 +601,9 @@ describe('Click-to-select', function() {
               { width: 1100, height: 450 }),
             testCase('ohlc', require('@mocks/ohlc_first.json'), 669, 165, [9]),
             testCase('candlestick', require('@mocks/finance_style.json'), 331, 162, [[], [5]]),
-            testCase('choropleth', require('@mocks/geo_choropleth-text.json'), 440, 163, [6])
+            testCase('choropleth', require('@mocks/geo_choropleth-text.json'), 440, 163, [6]),
+            testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ]
           .forEach(function(testCase) {
               it('trace type ' + testCase.traceType, function(done) {
@@ -615,15 +617,31 @@ describe('Click-to-select', function() {
                   var customLayoutOptions = {
                       layout: testCase.layoutOptions
                   };
+                  var customConfigOptions = {
+                      config: testCase.configOptions
+                  };
                   var mockCopy = Lib.extendDeep(
                     {},
                     testCase.mock,
                     defaultLayoutOpts,
-                    customLayoutOptions);
+                    customLayoutOptions,
+                    customConfigOptions);
 
-                  Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                  Plotly.plot(gd, mockCopy.data, mockCopy.layout, mockCopy.config)
                     .then(function() {
                         return _immediateClickPt(testCase);
+                    })
+                    .then(function() {
+                        assertSelectedPoints(testCase.expectedPts);
+                        return Plotly.relayout(gd, 'dragmode', 'lasso');
+                    })
+                    .then(function() {
+                        _clickPt(testCase);
+                        return deselectPromise;
+                    })
+                    .then(function() {
+                        assertSelectionCleared();
+                        return _clickPt(testCase);
                     })
                     .then(function() {
                         assertSelectedPoints(testCase.expectedPts);
@@ -633,14 +651,15 @@ describe('Click-to-select', function() {
               });
           });
 
-        function testCase(traceType, mock, x, y, expectedPts, layoutOptions) {
+        function testCase(traceType, mock, x, y, expectedPts, layoutOptions, configOptions) {
             return {
                 traceType: traceType,
                 mock: mock,
                 layoutOptions: layoutOptions,
                 x: x,
                 y: y,
-                expectedPts: expectedPts
+                expectedPts: expectedPts,
+                configOptions: configOptions
             };
         }
     });
