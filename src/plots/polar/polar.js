@@ -38,6 +38,8 @@ var rad2deg = Lib.rad2deg;
 var wrap360 = Lib.wrap360;
 var wrap180 = Lib.wrap180;
 var isFullCircle = Lib.isFullCircle;
+var isAngleInsideSector = Lib.isAngleInsideSector;
+var angleDelta = Lib.angleDelta;
 
 function Polar(gd, id) {
     this.id = id;
@@ -501,7 +503,9 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     // the range w.r.t sector, so that sectors that cross 360 can
     // show all their ticks.
     if(ax.type === 'category') {
-        ax._tickFilter = function(d) { return isAngleInSector(t2g(d), sector); };
+        ax._tickFilter = function(d) {
+            return isAngleInsideSector(t2g(d), sector);
+        };
     }
 
     ax._transfn = function(d) {
@@ -1194,16 +1198,12 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
 
 proto.isPtInside = function(d) {
     var sector = this.sector;
-    var thetag = this.angularAxis.c2g(d.theta);
-
-    if(!isAngleInSector(thetag, sector)) {
-        return false;
-    }
-
     var vangles = this.vangles;
+    var thetag = this.angularAxis.c2g(d.theta);
     var radialAxis = this.radialAxis;
     var radialRange = radialAxis.range;
     var r = radialAxis.c2r(d.r);
+    var rRng = radialAxis.range;
 
     var r0, r1;
     if(radialRange[1] >= radialRange[0]) {
@@ -1214,6 +1214,7 @@ proto.isPtInside = function(d) {
         r1 = radialRange[0];
     }
 
+    return Lib.isPtInsideSector(r, thetag, rRng, sector);
     if(vangles) {
         var polygonIn = polygonTester(makePolygon(r0, sector, vangles));
         var polygonOut = polygonTester(makePolygon(r1, sector, vangles));
@@ -1291,33 +1292,10 @@ function computeSectorBBox(sector) {
     return [x0, y0, x1, y1];
 }
 
-function isAngleInSector(rad, sector) {
-    if(isFullCircle(sector)) return true;
-
-    var s0 = wrap360(sector[0]);
-    var s1 = wrap360(sector[1]);
-    if(s0 > s1) s1 += 360;
-
-    var deg = wrap360(rad2deg(rad));
-    var nextTurnDeg = deg + 360;
-
-    return (deg >= s0 && deg <= s1) ||
-        (nextTurnDeg >= s0 && nextTurnDeg <= s1);
-}
-
 function snapToVertexAngle(a, vangles) {
-    function angleDeltaAbs(va) {
-        return Math.abs(angleDelta(a, va));
-    }
-
-    var ind = findIndexOfMin(vangles, angleDeltaAbs);
+    var fn = function(v) { return Lib.angleDist(a, v); };
+    var ind = findIndexOfMin(vangles, fn);
     return vangles[ind];
-}
-
-// taken from https://stackoverflow.com/a/2007279
-function angleDelta(a, b) {
-    var d = b - a;
-    return Math.atan2(Math.sin(d), Math.cos(d));
 }
 
 function findIndexOfMin(arr, fn) {
