@@ -337,7 +337,7 @@ proto.mockCartesianAxis = function(fullLayout, polarLayout, opts) {
     };
 
     ax.isPtWithinRange = axId === 'x' ?
-        function(d) { return _this.isPtWithinSector(d); } :
+        function(d) { return _this.isPtInside(d); } :
         function() { return true; };
 
     ax.setRange();
@@ -1192,7 +1192,7 @@ proto.updateAngularDrag = function(fullLayout, polarLayout) {
     dragElement.init(dragOpts);
 };
 
-proto.isPtWithinSector = function(d) {
+proto.isPtInside = function(d) {
     var sector = this.sector;
     var thetag = this.angularAxis.c2g(d.theta);
 

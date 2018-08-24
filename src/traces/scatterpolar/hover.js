@@ -27,7 +27,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     var cdi = newPointData.cd[newPointData.index];
     var trace = newPointData.trace;
 
-    if(!subplot.isPtWithinSector(cdi)) return;
+    if(!subplot.isPtInside(cdi)) return;
 
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
