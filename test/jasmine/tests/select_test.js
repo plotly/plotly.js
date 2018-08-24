@@ -625,8 +625,11 @@ describe('@flaky Click-to-select', function() {
             testCase('scattercarpet', require('@mocks/scattercarpet.json'), 532, 178,
               [undefined, [], [], [], [], [], [2]], { width: 1100, height: 450 }),
 
-            // scatterpolar does not support pan (the default), so set dragmode to zoom
+            // scatterpolar and scatterpolargl do not support pan (the default),
+            // so set dragmode to zoom
             testCase('scatterpolar', require('@mocks/polar_scatter.json'), 130, 290,
+              [[], [], [], [19], [], []], { dragmode: 'zoom' }),
+            testCase('scatterpolargl', require('@mocks/glpolar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' })
         ]
           .forEach(function(testCase) {
