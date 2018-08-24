@@ -203,16 +203,71 @@ function clampTiny(v) {
     return Math.abs(v) > 1e-10 ? v : 0;
 }
 
+function transformForSVG(pts0, cx, cy) {
+    cx = cx || 0;
+    cy = cy || 0;
+
+    var len = pts0.length;
+    var pts1 = new Array(len);
+
+    for(var i = 0; i < len; i++) {
+        var pt = pts0[i];
+        pts1[i] = [cx + pt[0], cy - pt[1]];
+    }
+    return pts1;
+}
+
+/* path polygon
+ *
+ * @param {number} r : polygon 'radius'
+ * @param {2-item array} sector : polar sector in which polygon is clipped
+ * @param {array} vangles : angles of polygon vertices in *radians*
+ * @param {number (optional)} cx : x coordinate of center
+ * @param {number (optional)} cy : y coordinate of center
+ * @return {string} svg path
+ *
+ */
+function pathPolygon(r, sector, vangles, cx, cy) {
+    var poly = makePolygon(r, sector, vangles);
+    return 'M' + transformForSVG(poly, cx, cy).join('L');
+}
+
+/* path a polygon 'annulus'
+ * i.e. a polygon with a concentric hole
+ *
+ * N.B. this routine uses the evenodd SVG rule
+ *
+ * @param {number} r0 : first radial coordinate
+ * @param {number} r1 : second radial coordinate
+ * @param {2-item array} sector : polar sector in which polygon is clipped
+ * @param {array} vangles : angles of polygon vertices in *radians*
+ * @param {number (optional)} cx : x coordinate of center
+ * @param {number (optional)} cy : y coordinate of center
+ * @return {string} svg path
+ *
+ */
+function pathPolygonAnnulus(r0, r1, sector, vangles, cx, cy) {
+    var rStart, rEnd;
+
+    if(r0 < r1) {
+        rStart = r0;
+        rEnd = r1;
+    } else {
+        rStart = r1;
+        rEnd = r0;
+    }
+
+    var inner = transformForSVG(makePolygon(rStart, sector, vangles), cx, cy);
+    var outer = transformForSVG(makePolygon(rEnd, sector, vangles), cx, cy);
+    return 'M' + outer.reverse().join('L') + 'M' + inner.join('L');
+}
+
 module.exports = {
     isPtInsidePolygon: isPtInsidePolygon,
-
-    makePolygon: makePolygon,
-    makeRegularPolygon: makeRegularPolygon,
-    makeClippedPolygon: makeClippedPolygon,
-
     findPolygonOffset: findPolygonOffset,
     findIntersectionXY: findIntersectionXY,
     findXYatLength: findXYatLength,
-
-    clampTiny: clampTiny
+    clampTiny: clampTiny,
+    pathPolygon: pathPolygon,
+    pathPolygonAnnulus: pathPolygonAnnulus
 };

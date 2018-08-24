@@ -115,6 +115,118 @@ function isPtInsideSector(r, a, rRng, sector) {
     return r >= r0 && r <= r1;
 }
 
+// common to pathArc, pathSector and pathAnnulus
+function _path(r0, r1, a0, a1, cx, cy, isClosed) {
+    cx = cx || 0;
+    cy = cy || 0;
+
+    var isCircle = isFullCircle([a0, a1].map(rad2deg));
+    var aStart, aMid, aEnd;
+    var rStart, rEnd;
+
+    if(isCircle) {
+        aStart = 0;
+        aMid = PI;
+        aEnd = 2 * PI;
+    } else {
+        if(a0 < a1) {
+            aStart = a0;
+            aEnd = a1;
+        } else {
+            aStart = a1;
+            aEnd = a0;
+        }
+    }
+
+    if(r0 < r1) {
+        rStart = r0;
+        rEnd = r1;
+    } else {
+        rStart = r1;
+        rEnd = r0;
+    }
+
+    // N.B. svg coordinates here, where y increases downward
+    function pt(r, a) {
+        return [r * Math.cos(a) + cx, cy - r * Math.sin(a)];
+    }
+
+    var largeArc = Math.abs(aEnd - aStart) <= PI ? 0 : 1;
+    function arc(r, a, cw) {
+        return 'A' + [r, r] + ' ' + [0, largeArc, cw] + ' ' + pt(r, a);
+    }
+
+    var p;
+
+    if(isCircle) {
+        if(rStart === null) {
+            p = 'M' + pt(rEnd, aStart) +
+                arc(rEnd, aMid, 0) +
+                arc(rEnd, aEnd, 0) + 'Z';
+        } else {
+            p = 'M' + pt(rStart, aStart) +
+                arc(rStart, aMid, 0) +
+                arc(rStart, aEnd, 0) + 'Z' +
+                'M' + pt(rEnd, aStart) +
+                arc(rEnd, aMid, 1) +
+                arc(rEnd, aEnd, 1) + 'Z';
+        }
+    } else {
+        if(rStart === null) {
+            p = 'M' + pt(rEnd, aStart) + arc(rEnd, aEnd, 0);
+            if(isClosed) p += 'L0,0Z';
+        } else {
+            p = 'M' + pt(rStart, aStart) +
+                'L' + pt(rEnd, aStart) +
+                arc(rEnd, aEnd, 0) +
+                'L' + pt(rStart, aEnd) +
+                arc(rStart, aStart, 1) + 'Z';
+        }
+    }
+
+    return p;
+}
+
+/* path an arc
+ *
+ * @param {number} r : radius
+ * @param {number} a0 : first angular coordinate
+ * @param {number} a1 : second angular coordinate
+ * @param {number (optional)} cx : x coordinate of center
+ * @param {number (optional)} cy : y coordinate of center
+ * @return {string} svg path
+ */
+function pathArc(r, a0, a1, cx, cy) {
+    return _path(null, r, a0, a1, cx, cy, 0);
+}
+
+/* path a sector
+ *
+ * @param {number} r : radius
+ * @param {number} a0 : first angular coordinate
+ * @param {number} a1 : second angular coordinate
+ * @param {number (optional)} cx : x coordinate of center
+ * @param {number (optional)} cy : y coordinate of center
+ * @return {string} svg path
+ */
+function pathSector(r, a0, a1, cx, cy) {
+    return _path(null, r, a0, a1, cx, cy, 1);
+}
+
+/* path an annulus
+ *
+ * @param {number} r0 : first radial coordinate
+ * @param {number} r1 : second radial coordinate
+ * @param {number} a0 : first angular coordinate
+ * @param {number} a1 : second angular coordinate
+ * @param {number (optional)} cx : x coordinate of center
+ * @param {number (optional)} cy : y coordinate of center
+ * @return {string} svg path
+ */
+function pathAnnulus(r0, r1, a0, a1, cx, cy) {
+    return _path(r0, r1, a0, a1, cx, cy, 1);
+}
+
 module.exports = {
     deg2rad: deg2rad,
     rad2deg: rad2deg,
@@ -124,5 +236,8 @@ module.exports = {
     angleDist: angleDist,
     isFullCircle: isFullCircle,
     isAngleInsideSector: isAngleInsideSector,
-    isPtInsideSector: isPtInsideSector
+    isPtInsideSector: isPtInsideSector,
+    pathArc: pathArc,
+    pathSector: pathSector,
+    pathAnnulus: pathAnnulus
 };

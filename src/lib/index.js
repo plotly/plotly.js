@@ -93,6 +93,9 @@ lib.angleDist = anglesModule.angleDist;
 lib.isFullCircle = anglesModule.isFullCircle;
 lib.isAngleInsideSector = anglesModule.isAngleInsideSector;
 lib.isPtInsideSector = anglesModule.isPtInsideSector;
+lib.pathArc = anglesModule.pathArc;
+lib.pathSector = anglesModule.pathSector;
+lib.pathAnnulus = anglesModule.pathAnnulus;
 
 var geom2dModule = require('./geometry2d');
 lib.segmentsIntersect = geom2dModule.segmentsIntersect;
