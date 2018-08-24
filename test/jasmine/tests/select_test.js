@@ -604,7 +604,8 @@ describe('@flaky Click-to-select', function() {
             testCase('choropleth', require('@mocks/geo_choropleth-text.json'), 440, 163, [6]),
             testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
-            testCase('scattergeo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1])
+            testCase('scattergeo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
+            testCase('scatterternary', require('@mocks/ternary_markers.json'), 485, 335, [7])
         ]
           .forEach(function(testCase) {
               it('trace type ' + testCase.traceType, function(done) {
