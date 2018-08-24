@@ -113,3 +113,44 @@ exports.roundUp = function(val, arrayIn, reverse) {
     }
     return arrayIn[low];
 };
+
+/**
+ * Tweak to Array.sort(sortFn) that improves performance for pre-sorted arrays
+ *
+ * Motivation: sometimes we need to sort arrays but the input is likely to
+ * already be sorted. Browsers don't seem to pick up on pre-sorted arrays,
+ * and in fact Chrome is actually *slower* sorting pre-sorted arrays than purely
+ * random arrays. FF is at least faster if the array is pre-sorted, but still
+ * not as fast as it could be.
+ * Here's how this plays out sorting a length-1e6 array:
+ *
+ * Calls to Sort FN  |  Chrome bare  |  FF bare  |  Chrome tweak  |  FF tweak
+ * ------------------+---------------+-----------+----------------+------------
+ * ordered           |  30.4e6       |  10.1e6   |  1e6           |  1e6
+ * reversed          |  29.4e6       |  9.9e6    |  1e6 + reverse |  1e6 + reverse
+ * random            |  ~21e6        |  ~18.7e6  |  ~21e6         |  ~18.7e6
+ *
+ * So this is a substantial win for pre-sorted (ordered or exactly reversed)
+ * arrays. Including this wrapper on an unsorted array adds a penalty that will
+ * in general be only a few calls to the sort function. The only case this
+ * penalty will be significant is if the array is mostly sorted but there are
+ * a few unsorted items near the end, but the penalty is still at most N calls
+ * out of (for N=1e6) ~20N total calls
+ *
+ * @param {Array} array: the array, to be sorted in place
+ * @param {function} sortFn: As in Array.sort, function(a, b) that puts
+ *     item a before item b if the return is negative, a after b if positive,
+ *     and no change if zero.
+ * @return {Array}: the original array, sorted in place.
+ */
+exports.sort = function(array, sortFn) {
+    var notOrdered = 0;
+    var notReversed = 0;
+    for(var i = 1; i < array.length; i++) {
+        var pairOrder = sortFn(array[i], array[i - 1]);
+        if(pairOrder < 0) notOrdered = 1;
+        else if(pairOrder > 0) notReversed = 1;
+        if(notOrdered && notReversed) return array.sort(sortFn);
+    }
+    return notReversed ? array : array.reverse();
+};
