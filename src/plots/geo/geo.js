@@ -401,6 +401,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
         element: _this.bgRect.node(),
         gd: gd,
         plotinfo: {
+            id: _this.id,
             xaxis: _this.xaxis,
             yaxis: _this.yaxis,
             fillRangeItems: fillRangeItems

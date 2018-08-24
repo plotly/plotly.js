@@ -603,7 +603,8 @@ describe('@flaky Click-to-select', function() {
             testCase('candlestick', require('@mocks/finance_style.json'), 331, 162, [[], [5]]),
             testCase('choropleth', require('@mocks/geo_choropleth-text.json'), 440, 163, [6]),
             testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
+            testCase('scattergeo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1])
         ]
           .forEach(function(testCase) {
               it('trace type ' + testCase.traceType, function(done) {
