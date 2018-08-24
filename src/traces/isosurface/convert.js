@@ -146,16 +146,18 @@ function findMaxIndex(xs, value) {
     return -1;
 }
 
+function toDataCoords(scene, arr, axisName) {
+    var sceneLayout = scene.fullSceneLayout;
+    var dataScale = scene.dataScale;
+    var ax = sceneLayout[axisName];
+    var scale = dataScale[axisName2scaleIndex[axisName]];
+    return simpleMap(arr, function(v) { return ax.d2l(v) * scale; });
+}
+
 function convert(scene, trace) {
     var sceneLayout = scene.fullSceneLayout;
     var dataScale = scene.dataScale;
     var isosurfaceOpts = {};
-
-    function toDataCoords(arr, axisName) {
-        var ax = sceneLayout[axisName];
-        var scale = dataScale[axisName2scaleIndex[axisName]];
-        return simpleMap(arr, function(v) { return ax.d2l(v) * scale; });
-    }
 
     var xs = getSequence(trace.x);
     var ys = getSequence(trace.y);
@@ -163,9 +165,9 @@ function convert(scene, trace) {
 
     isosurfaceOpts.dimensions = [xs.length, ys.length, zs.length];
     isosurfaceOpts.meshgrid = [
-        toDataCoords(xs, 'xaxis'),
-        toDataCoords(ys, 'yaxis'),
-        toDataCoords(zs, 'zaxis')
+        toDataCoords(scene, xs, 'xaxis'),
+        toDataCoords(scene, ys, 'yaxis'),
+        toDataCoords(scene, zs, 'zaxis')
     ];
 
 
@@ -232,6 +234,14 @@ function createIsosurfaceTrace(scene, data) {
 
     var meshData = convert(scene, data);
     var mesh = isosurfacePlot.createTriMesh(gl, meshData);
+    var trace = data;
+    var xbnds = toDataCoords(scene, trace._xbnds, 'xaxis');
+    var ybnds = toDataCoords(scene, trace._ybnds, 'yaxis');
+    var zbnds = toDataCoords(scene, trace._zbnds, 'zaxis');
+    mesh.bounds = [
+        [xbnds[0], ybnds[0], zbnds[0]],
+        [xbnds[1], ybnds[1], zbnds[1]],
+    ];
 
     var isosurface = new Isosurface(scene, data.uid);
     isosurface.mesh = mesh;
