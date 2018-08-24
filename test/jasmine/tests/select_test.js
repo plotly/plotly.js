@@ -630,7 +630,8 @@ describe('@flaky Click-to-select', function() {
             testCase('scatterpolar', require('@mocks/polar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' }),
             testCase('scatterpolargl', require('@mocks/glpolar_scatter.json'), 130, 290,
-              [[], [], [], [19], [], []], { dragmode: 'zoom' })
+              [[], [], [], [19], [], []], { dragmode: 'zoom' }),
+            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []])
         ]
           .forEach(function(testCase) {
               it('trace type ' + testCase.traceType, function(done) {

@@ -221,7 +221,9 @@ function plotOne(gd, cd0) {
         scene.matrix = createMatrix(regl);
     }
 
-    var selectMode = dragmode === 'lasso' || dragmode === 'select' || !!trace.selectedpoints;
+    var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
+    var selectMode = dragmode === 'lasso' || dragmode === 'select' ||
+      !!trace.selectedpoints || clickSelectEnabled;
     scene.selectBatch = null;
     scene.unselectBatch = null;
 
@@ -372,7 +374,7 @@ function selectPoints(searchInfo, polygon) {
     if(polygon !== false && !polygon.degenerate) {
         els = [], unels = [];
         for(i = 0; i < x.length; i++) {
-            if(polygon.contains([xpx[i], ypx[i]])) {
+            if(polygon.contains([xpx[i], ypx[i]], null, i, searchInfo)) {
                 els.push(i);
                 selection.push({
                     pointNumber: i,
