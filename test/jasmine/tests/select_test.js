@@ -195,27 +195,37 @@ describe('@flaky Click-to-select', function() {
      *
      * @param expected can be a point number, an array
      * of point numbers (for a single trace) or an array of point number
-     * arrays in case of multiple traces.
+     * arrays in case of multiple traces. undefined in an array of arrays
+     * is also allowed, e.g. useful when not all traces support selection.
      */
     function assertSelectedPoints(expected) {
-        var expectedPtsPerTrace;
+        var expectedPtsPerTrace = toArrayOfArrays(expected);
         var expectedPts;
         var traceNum;
-
-        if(Array.isArray(expected)) {
-            if(Array.isArray(expected[0])) {
-                expectedPtsPerTrace = expected;
-            } else {
-                expectedPtsPerTrace = [expected];
-            }
-        } else {
-            expectedPtsPerTrace = [[expected]];
-        }
 
         for(traceNum = 0; traceNum < expectedPtsPerTrace.length; traceNum++) {
             expectedPts = expectedPtsPerTrace[traceNum];
             expect(gd._fullData[traceNum].selectedpoints).toEqual(expectedPts);
             expect(gd.data[traceNum].selectedpoints).toEqual(expectedPts);
+        }
+
+        function toArrayOfArrays(expected) {
+            var isArrayInArray;
+            var i;
+
+            if(Array.isArray(expected)) {
+                isArrayInArray = false;
+                for(i = 0; i < expected.length; i++) {
+                    if(Array.isArray(expected[i])) {
+                        isArrayInArray = true;
+                        break;
+                    }
+                }
+
+                return isArrayInArray ? expected : [expected];
+            } else {
+                return [[expected]];
+            }
         }
     }
 
@@ -591,8 +601,11 @@ describe('@flaky Click-to-select', function() {
 
     describe('is supported by', function() {
 
-        // On loading mocks: note, that require functions are resolved at compile time
-        // and thus dynamically concatenated mock paths wont't work.
+        // On loading mocks:
+        // - Note, that `require` function calls are resolved at compile time
+        //   and thus dynamically concatenated mock paths won't work.
+        // - Some mocks don't specify a width and height, so this needs
+        //   to be set explicitly to ensure click coordinates fit.
         [
             testCase('histrogram', require('@mocks/histogram_colorscale.json'), 355, 301, [3, 4, 5]),
             testCase('box', require('@mocks/box_grouped_horz.json'), 610, 342, [[2], [], []],
@@ -605,7 +618,9 @@ describe('@flaky Click-to-select', function() {
             testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
             testCase('scattergeo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
-            testCase('scatterternary', require('@mocks/ternary_markers.json'), 485, 335, [7])
+            testCase('scatterternary', require('@mocks/ternary_markers.json'), 485, 335, [7]),
+            testCase('scattercarpet', require('@mocks/scattercarpet.json'), 532, 178,
+              [undefined, [], [], [], [], [], [2]], { width: 1100, height: 450 })
         ]
           .forEach(function(testCase) {
               it('trace type ' + testCase.traceType, function(done) {
