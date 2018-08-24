@@ -444,10 +444,8 @@ proto.updateFx = function(fullLayout, geoLayout) {
     });
 
     bgRect.on('mouseout', function() {
-        // TODO Find a way to reactivate this, but with it enabled
-        // gd._hoverdata would get purged an click-to-select won't
-        // work.
-        // dragElement.unhover(gd, d3.event);
+        if(gd._dragging) return;
+        dragElement.unhover(gd, d3.event);
     });
 
     bgRect.on('click', function() {
