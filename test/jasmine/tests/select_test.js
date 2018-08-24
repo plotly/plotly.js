@@ -619,8 +619,15 @@ describe('@flaky Click-to-select', function() {
               { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
             testCase('scattergeo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
             testCase('scatterternary', require('@mocks/ternary_markers.json'), 485, 335, [7]),
+
+            // Note that first trace (carpet) in mock doesn't support selection,
+            // thus undefined is expected
             testCase('scattercarpet', require('@mocks/scattercarpet.json'), 532, 178,
-              [undefined, [], [], [], [], [], [2]], { width: 1100, height: 450 })
+              [undefined, [], [], [], [], [], [2]], { width: 1100, height: 450 }),
+
+            // scatterpolar does not support pan (the default), so set dragmode to zoom
+            testCase('scatterpolar', require('@mocks/polar_scatter.json'), 130, 290,
+              [[], [], [], [19], [], []], { dragmode: 'zoom' })
         ]
           .forEach(function(testCase) {
               it('trace type ' + testCase.traceType, function(done) {
