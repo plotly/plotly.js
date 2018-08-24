@@ -27,10 +27,10 @@ var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select').prepSelect;
 var clearSelect = require('../cartesian/select').clearSelect;
 var setCursor = require('../../lib/setcursor');
-var polygonTester = require('../../lib/polygon').tester;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var constants = require('./constants');
+var helpers = require('./helpers');
 
 var _ = Lib._;
 var deg2rad = Lib.deg2rad;
@@ -40,6 +40,9 @@ var wrap180 = Lib.wrap180;
 var isFullCircle = Lib.isFullCircle;
 var isAngleInsideSector = Lib.isAngleInsideSector;
 var angleDelta = Lib.angleDelta;
+var clampTiny = helpers.clampTiny;
+var findXYatLength = helpers.findXYatLength;
+var makePolygon = helpers.makePolygon;
 
 function Polar(gd, id) {
     this.id = id;
@@ -795,7 +798,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     }
 
     function findEnclosingVertexAngles(a) {
-        var i0 = findIndexOfMin(vangles, function(v) {
+        var i0 = Lib.findIndexOfMin(vangles, function(v) {
             var adelta = angleDelta(v, a);
             return adelta > 0 ? adelta : Infinity;
         });
@@ -804,7 +807,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
     }
 
     function findPolygonRadius(x, y, va0, va1) {
-        var xy = findIntersectionXY(va0, va1, va0, [x - cxx, cyy - y]);
+        var xy = helpers.findIntersectionXY(va0, va1, va0, [x - cxx, cyy - y]);
         return norm(xy[0], xy[1]);
     }
 
@@ -860,7 +863,7 @@ proto.updateMainDrag = function(fullLayout, polarLayout) {
         // need to offset x/y as bbox center does not
         // match origin for asymmetric polygons
         if(vangles) {
-            var offset = findPolygonOffset(radius, sector, vangles);
+            var offset = helpers.findPolygonOffset(radius, sector, vangles);
             x0 += cxx + offset[0];
             y0 += cyy + offset[1];
         }
@@ -1201,28 +1204,12 @@ proto.isPtInside = function(d) {
     var vangles = this.vangles;
     var thetag = this.angularAxis.c2g(d.theta);
     var radialAxis = this.radialAxis;
-    var radialRange = radialAxis.range;
     var r = radialAxis.c2r(d.r);
     var rRng = radialAxis.range;
 
-    var r0, r1;
-    if(radialRange[1] >= radialRange[0]) {
-        r0 = radialRange[0];
-        r1 = radialRange[1];
-    } else {
-        r0 = radialRange[1];
-        r1 = radialRange[0];
-    }
-
-    return Lib.isPtInsideSector(r, thetag, rRng, sector);
-    if(vangles) {
-        var polygonIn = polygonTester(makePolygon(r0, sector, vangles));
-        var polygonOut = polygonTester(makePolygon(r1, sector, vangles));
-        var xy = [r * Math.cos(thetag), r * Math.sin(thetag)];
-        return polygonOut.contains(xy) && !polygonIn.contains(xy);
-    }
-
-    return r >= r0 && r <= r1;
+    return vangles ?
+        helpers.isPtInsidePolygon(r, thetag, rRng, sector, vangles) :
+        Lib.isPtInsideSector(r, thetag, rRng, sector);
 };
 
 proto.fillViewInitialKey = function(key, val) {
@@ -1294,173 +1281,8 @@ function computeSectorBBox(sector) {
 
 function snapToVertexAngle(a, vangles) {
     var fn = function(v) { return Lib.angleDist(a, v); };
-    var ind = findIndexOfMin(vangles, fn);
+    var ind = Lib.findIndexOfMin(vangles, fn);
     return vangles[ind];
-}
-
-function findIndexOfMin(arr, fn) {
-    fn = fn || Lib.identity;
-
-    var min = Infinity;
-    var ind;
-
-    for(var i = 0; i < arr.length; i++) {
-        var v = fn(arr[i]);
-        if(v < min) {
-            min = v;
-            ind = i;
-        }
-    }
-    return ind;
-}
-
-// find intersection of 'v0' <-> 'v1' edge with a ray at angle 'a'
-// (i.e. a line that starts from the origin at angle 'a')
-// given an (xp,yp) pair on the 'v0' <-> 'v1' line
-// (N.B. 'v0' and 'v1' are angles in radians)
-function findIntersectionXY(v0, v1, a, xpyp) {
-    var xstar, ystar;
-
-    var xp = xpyp[0];
-    var yp = xpyp[1];
-    var dsin = clampTiny(Math.sin(v1) - Math.sin(v0));
-    var dcos = clampTiny(Math.cos(v1) - Math.cos(v0));
-    var tanA = Math.tan(a);
-    var cotanA = clampTiny(1 / tanA);
-    var m = dsin / dcos;
-    var b = yp - m * xp;
-
-    if(cotanA) {
-        if(dsin && dcos) {
-            // given
-            //  g(x) := v0 -> v1 line = m*x + b
-            //  h(x) := ray at angle 'a' = m*x = tanA*x
-            // solve g(xstar) = h(xstar)
-            xstar = b / (tanA - m);
-            ystar = tanA * xstar;
-        } else if(dcos) {
-            // horizontal v0 -> v1
-            xstar = yp * cotanA;
-            ystar = yp;
-        } else {
-            // vertical v0 -> v1
-            xstar = xp;
-            ystar = xp * tanA;
-        }
-    } else {
-        // vertical ray
-        if(dsin && dcos) {
-            xstar = 0;
-            ystar = b;
-        } else if(dcos) {
-            xstar = 0;
-            ystar = yp;
-        } else {
-            // does this case exists?
-            xstar = ystar = NaN;
-        }
-    }
-
-    return [xstar, ystar];
-}
-
-// solves l^2 = (f(x)^2 - yp)^2 + (x - xp)^2
-// rearranged into 0 = a*x^2 + b * x + c
-//
-// where f(x) = m*x + t + yp
-// and   (x0, x1) = (-b +/- del) / (2*a)
-function findXYatLength(l, m, xp, yp) {
-    var t = -m * xp;
-    var a = m * m + 1;
-    var b = 2 * (m * t - xp);
-    var c = t * t + xp * xp - l * l;
-    var del = Math.sqrt(b * b - 4 * a * c);
-    var x0 = (-b + del) / (2 * a);
-    var x1 = (-b - del) / (2 * a);
-    return [
-        [x0, m * x0 + t + yp],
-        [x1, m * x1 + t + yp]
-    ];
-}
-
-function makeRegularPolygon(r, vangles) {
-    var len = vangles.length;
-    var vertices = new Array(len + 1);
-    var i;
-    for(i = 0; i < len; i++) {
-        var va = vangles[i];
-        vertices[i] = [r * Math.cos(va), r * Math.sin(va)];
-    }
-    vertices[i] = vertices[0].slice();
-    return vertices;
-}
-
-function makeClippedPolygon(r, sector, vangles) {
-    var len = vangles.length;
-    var vertices = [];
-    var i, j;
-
-    function a2xy(a) {
-        return [r * Math.cos(a), r * Math.sin(a)];
-    }
-
-    function findXY(va0, va1, s) {
-        return findIntersectionXY(va0, va1, s, a2xy(va0));
-    }
-
-    function cycleIndex(ind) {
-        return Lib.mod(ind, len);
-    }
-
-    var s0 = deg2rad(sector[0]);
-    var s1 = deg2rad(sector[1]);
-
-    // find index in sector closest to sector[0],
-    // use it to find intersection of v[i0] <-> v[i0-1] edge with sector radius
-    var i0 = findIndexOfMin(vangles, function(v) {
-        return isAngleInSector(v, sector) ? Math.abs(angleDelta(v, s0)) : Infinity;
-    });
-    var xy0 = findXY(vangles[i0], vangles[cycleIndex(i0 - 1)], s0);
-    vertices.push(xy0);
-
-    // fill in in-sector vertices
-    for(i = i0, j = 0; j < len; i++, j++) {
-        var va = vangles[cycleIndex(i)];
-        if(!isAngleInSector(va, sector)) break;
-        vertices.push(a2xy(va));
-    }
-
-    // find index in sector closest to sector[1],
-    // use it to find intersection of v[iN] <-> v[iN+1] edge with sector radius
-    var iN = findIndexOfMin(vangles, function(v) {
-        return isAngleInSector(v, sector) ? Math.abs(angleDelta(v, s1)) : Infinity;
-    });
-    var xyN = findXY(vangles[iN], vangles[cycleIndex(iN + 1)], s1);
-    vertices.push(xyN);
-
-    vertices.push([0, 0]);
-    vertices.push(vertices[0].slice());
-
-    return vertices;
-}
-
-function makePolygon(r, sector, vangles) {
-    return isFullCircle(sector) ?
-        makeRegularPolygon(r, vangles) :
-        makeClippedPolygon(r, sector, vangles);
-}
-
-function findPolygonOffset(r, sector, vangles) {
-    var minX = Infinity;
-    var minY = Infinity;
-    var vertices = makePolygon(r, sector, vangles);
-
-    for(var i = 0; i < vertices.length; i++) {
-        var v = vertices[i];
-        minX = Math.min(minX, v[0]);
-        minY = Math.min(minY, -v[1]);
-    }
-    return [minX, minY];
 }
 
 function invertY(pts0) {
@@ -1556,11 +1378,6 @@ function strTranslate(x, y) {
 
 function strRotate(angle) {
     return 'rotate(' + angle + ')';
-}
-
-// to more easily catch 'almost zero' numbers in if-else blocks
-function clampTiny(v) {
-    return Math.abs(v) > 1e-10 ? v : 0;
 }
 
 // because Math.sign(Math.cos(Math.PI / 2)) === 1

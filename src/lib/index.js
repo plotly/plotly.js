@@ -62,6 +62,7 @@ lib.sorterAsc = searchModule.sorterAsc;
 lib.sorterDes = searchModule.sorterDes;
 lib.distinctVals = searchModule.distinctVals;
 lib.roundUp = searchModule.roundUp;
+lib.findIndexOfMin = searchModule.findIndexOfMin;
 
 var statsModule = require('./stats');
 lib.aggNums = statsModule.aggNums;
