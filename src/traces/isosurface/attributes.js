@@ -43,6 +43,7 @@ var attrs = {
 
     value: {
         valType: 'data_array',
+        role: 'info',
         editType: 'calc',
         description: 'Sets the intensity values of the isosurface.'
     },
@@ -142,8 +143,8 @@ fromMesh3d.forEach(function(k) {
 
 attrs.hoverinfo = extendFlat({}, baseAttrs.hoverinfo, {
     editType: 'calc',
-    flags: ['x', 'y', 'z', 'intensity', 'text', 'name'],
-    dflt: 'x+y+z+intensity+text+name'
+    flags: ['x', 'y', 'z', 'value', 'text', 'name'],
+    dflt: 'x+y+z+value+text+name'
 });
 
 module.exports = attrs;
