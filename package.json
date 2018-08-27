@@ -86,7 +86,7 @@
     "gl-surface3d": "^1.3.5",
     "gl-streamtube3d": "^1.0.0",
     "@etpinard/gl-text": "^1.1.6",
-    "gl-volume3d": "git+https://github.com/gl-vis/gl-volume3d.git",
+    "gl-volume3d": "^0.5.0",
     "glslify": "^6.1.1",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
