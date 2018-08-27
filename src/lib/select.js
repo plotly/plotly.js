@@ -80,16 +80,15 @@ select.multiTester = function multiTester(list) {
         }
     }
 
-    // TODO Consider making signature of contains more lean
     /**
      * Tests if the given point is within this tester.
      *
-     * @param pt an object having an `x` and a `y` property defining the location
-     *        of the point
-     * @param arg parameter to pass additional arguments down to wrapped testers
-     * @param pointNumber the point number of the point
-     * @param searchInfo identifies the trace the point is contained in
-     * @return {boolean}
+     * @param {Array} pt - [0] is the x coordinate, [1] is the y coordinate of the point.
+     * @param {*} arg - An optional parameter to pass down to wrapped testers.
+     * @param {number} pointNumber - The point number of the point within the underlying data array.
+     * @param {number} searchInfo - An object identifying the trace the point is contained in.
+     *
+     * @return {boolean} true if point is considered to be selected, false otherwise.
      */
     function contains(pt, arg, pointNumber, searchInfo) {
         var yes = false;
