@@ -553,7 +553,7 @@ function isOnlyThisBinSelected(searchTraces, clickedPtInfo) {
         if(isSameTrace) {
             trace = clickedPtInfo.searchInfo.cd[0].trace;
             if(trace.selectedpoints.length === clickedPtInfo.pointNumbers.length) {
-                for(i = 0; i > clickedPtInfo.pointNumbers.length; i++) {
+                for(i = 0; i < clickedPtInfo.pointNumbers.length; i++) {
                     if(trace.selectedpoints.indexOf(clickedPtInfo.pointNumbers[i]) < 0) {
                         return false;
                     }
