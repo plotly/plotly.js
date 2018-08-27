@@ -120,7 +120,7 @@ var LASSOEVENTS = [4, 2, 1];
 var SELECT_PATH = [[93, 193], [143, 193]];
 var LASSO_PATH = [[316, 171], [318, 239], [335, 243], [328, 169]];
 
-describe('@flaky Click-to-select', function() {
+describe('Click-to-select', function() {
     var mock14Pts = {
         '1': { x: 134, y: 116 },
         '7': { x: 270, y: 160 },
@@ -243,7 +243,7 @@ describe('@flaky Click-to-select', function() {
           .then(done);
     });
 
-    describe('clears entire selection when the last selected data point', function() {
+    describe('@flaky clears entire selection when the last selected data point', function() {
         [{
             desc: 'is clicked',
             clickOpts: {}
@@ -272,7 +272,7 @@ describe('@flaky Click-to-select', function() {
         });
     });
 
-    it('cleanly clears and starts selections although add/subtract mode on', function(done) {
+    it('@flaky cleanly clears and starts selections although add/subtract mode on', function(done) {
         plotMock14()
           .then(function() {
               return _immediateClickPt(mock14Pts[7]);
@@ -293,7 +293,7 @@ describe('@flaky Click-to-select', function() {
           .then(done);
     });
 
-    it('supports adding to an existing selection', function(done) {
+    it('@flaky supports adding to an existing selection', function(done) {
         plotMock14()
           .then(function() { return _immediateClickPt(mock14Pts[7]); })
           .then(function() {
@@ -305,7 +305,7 @@ describe('@flaky Click-to-select', function() {
           .then(done);
     });
 
-    it('supports subtracting from an existing selection', function(done) {
+    it('@flaky supports subtracting from an existing selection', function(done) {
         plotMock14()
           .then(function() { return _immediateClickPt(mock14Pts[7]); })
           .then(function() {
@@ -321,7 +321,7 @@ describe('@flaky Click-to-select', function() {
           .then(done);
     });
 
-    it('can be used interchangeably with lasso/box select', function(done) {
+    it('@flaky can be used interchangeably with lasso/box select', function(done) {
         plotMock14()
           .then(function() {
               return _immediateClickPt(mock14Pts[35]);
@@ -374,7 +374,7 @@ describe('@flaky Click-to-select', function() {
           .then(done);
     });
 
-    it('works in a multi-trace plot', function(done) {
+    it('@flaky works in a multi-trace plot', function(done) {
         Plotly.plot(gd, [
             {
                 x: [1, 3, 5, 4, 10, 12, 12, 7],
@@ -417,7 +417,7 @@ describe('@flaky Click-to-select', function() {
           .then(done);
     });
 
-    it('is supported in pan/zoom mode', function(done) {
+    it('@flaky is supported in pan/zoom mode', function(done) {
         plotMock14({ dragmode: 'zoom' })
           .then(function() {
               return _immediateClickPt(mock14Pts[35]);
@@ -446,7 +446,7 @@ describe('@flaky Click-to-select', function() {
           .then(done);
     });
 
-    it('retains selected points when switching between pan and zoom mode', function(done) {
+    it('@flaky retains selected points when switching between pan and zoom mode', function(done) {
         plotMock14({ dragmode: 'zoom' })
           .then(function() {
               return _immediateClickPt(mock14Pts[35]);
@@ -474,7 +474,7 @@ describe('@flaky Click-to-select', function() {
           .then(done);
     });
 
-    it('is supported by scattergl in pan/zoom mode', function(done) {
+    it('@flaky is supported by scattergl in pan/zoom mode', function(done) {
         Plotly.plot(gd, [
             {
                 x: [7, 8, 9, 10],
@@ -500,7 +500,7 @@ describe('@flaky Click-to-select', function() {
           .then(done);
     });
 
-    it('deals correctly with histogram\'s binning in the persistent selection case', function(done) {
+    it('@flaky deals correctly with histogram\'s binning in the persistent selection case', function(done) {
         var mock = require('@mocks/histogram_colorscale.json');
         var firstBinPts = [0];
         var secondBinPts = [1, 2];
@@ -540,7 +540,7 @@ describe('@flaky Click-to-select', function() {
         function shiftClickThirdBin() { return _click(351, 347, { shiftKey: true }); }
     });
 
-    it('ignores clicks on boxes in a box trace type', function(done) {
+    it('@flaky ignores clicks on boxes in a box trace type', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/box_grouped_horz.json'));
 
         mock.layout.clickmode = 'event+select';
@@ -573,7 +573,7 @@ describe('@flaky Click-to-select', function() {
         function clickBox() { return _clickPt({ x: 565, y: 329 }); }
     });
 
-    describe('is disabled when clickmode does not include \'select\'', function() {
+    describe('@flaky is disabled when clickmode does not include \'select\'', function() {
         // TODO How to test for pan and zoom mode as well? Note, that
         // in lasso and select mode, plotly_selected was emitted upon a single
         // click although select-on-click wasn't supported. This behavior is kept
@@ -634,7 +634,7 @@ describe('@flaky Click-to-select', function() {
             testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []])
         ]
           .forEach(function(testCase) {
-              it('trace type ' + testCase.traceType, function(done) {
+              it('@flaky trace type ' + testCase.traceType, function(done) {
                   var defaultLayoutOpts = {
                       layout: {
                           clickmode: 'event+select',
