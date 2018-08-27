@@ -174,34 +174,31 @@ polygon.tester = function tester(ptsIn) {
     };
 };
 
+// TODO Somewhat redundant to multiTester in 'lib/select.js'
 /**
  * Test multiple polygons
  */
 polygon.multitester = function multitester(list) {
     var testers = [],
-        xmin = list[0].contains ? 0 : list[0][0][0],
+        xmin = list[0][0][0],
         xmax = xmin,
-        ymin = list[0].contains ? 0 : list[0][0][1],
+        ymin = list[0][0][1],
         ymax = ymin;
 
     for(var i = 0; i < list.length; i++) {
-        if(list[i].contains) {
-            testers.push(list[i]);
-        } else {
-            var tester = polygon.tester(list[i]);
-            tester.subtract = list[i].subtract;
-            testers.push(tester);
-            xmin = Math.min(xmin, tester.xmin);
-            xmax = Math.max(xmax, tester.xmax);
-            ymin = Math.min(ymin, tester.ymin);
-            ymax = Math.max(ymax, tester.ymax);
-        }
+        var tester = polygon.tester(list[i]);
+        tester.subtract = list[i].subtract;
+        testers.push(tester);
+        xmin = Math.min(xmin, tester.xmin);
+        xmax = Math.max(xmax, tester.xmax);
+        ymin = Math.min(ymin, tester.ymin);
+        ymax = Math.max(ymax, tester.ymax);
     }
 
-    function contains(pt, arg, pointNumber, searchInfo) {
+    function contains(pt, arg) {
         var yes = false;
         for(var i = 0; i < testers.length; i++) {
-            if(testers[i].contains(pt, arg, pointNumber, searchInfo)) {
+            if(testers[i].contains(pt, arg)) {
                 // if contained by subtract polygon - exclude the point
                 yes = testers[i].subtract === false;
             }

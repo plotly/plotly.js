@@ -11,7 +11,7 @@
 var subtypes = require('../scatter/subtypes');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-module.exports = function selectPoints(searchInfo, polygon) {
+module.exports = function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
@@ -23,7 +23,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
     if(hasOnlyLines) return [];
 
-    if(polygon === false) {
+    if(selectionTester === false) {
         for(i = 0; i < cd.length; i++) {
             cd[i].selected = 0;
         }
@@ -38,7 +38,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
             x = xa.c2p(lonlat);
             y = ya.c2p(lonlat);
 
-            if(polygon.contains([x, y], null, i, searchInfo)) {
+            if(selectionTester.contains([x, y], null, i, searchInfo)) {
                 selection.push({
                     pointNumber: i,
                     lon: lonlat[0],

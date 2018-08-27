@@ -816,7 +816,7 @@ function calcHover(pointData, x, y, trace) {
 }
 
 
-function selectPoints(searchInfo, polygon) {
+function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var selection = [];
     var trace = cd[0].trace;
@@ -838,10 +838,10 @@ function selectPoints(searchInfo, polygon) {
     var unels = null;
     // FIXME: clearing selection does not work here
     var i;
-    if(polygon !== false && !polygon.degenerate) {
+    if(selectionTester !== false && !selectionTester.degenerate) {
         els = [], unels = [];
         for(i = 0; i < stash.count; i++) {
-            if(polygon.contains([stash.xpx[i], stash.ypx[i]], false, i, searchInfo)) {
+            if(selectionTester.contains([stash.xpx[i], stash.ypx[i]], false, i, searchInfo)) {
                 els.push(i);
                 selection.push({
                     pointNumber: i,

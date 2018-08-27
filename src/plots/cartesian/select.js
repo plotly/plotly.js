@@ -16,6 +16,7 @@ var Color = require('../../components/color');
 var Fx = require('../../components/fx');
 
 var polygon = require('../../lib/polygon');
+var select = require('../../lib/select');
 var throttle = require('../../lib/throttle');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
 var getFromId = require('./axis_ids').getFromId;
@@ -26,7 +27,8 @@ var MINSELECT = constants.MINSELECT;
 
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
-var multipolygonTester = polygon.multitester;
+var pointSelectionDef = select.pointSelectionDef;
+var multiTester = select.multiTester;
 
 function getAxId(ax) { return ax._id; }
 
@@ -50,7 +52,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
     var subtract = e.altKey;
 
-    var filterPoly, testPoly, mergedPolygons, currentPolygon;
+    var filterPoly, selectionTester, mergedPolygons, currentPolygon;
     var i, searchInfo, eventData;
 
     coerceSelectionsCache(e, gd, dragOptions);
@@ -185,14 +187,14 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         }
 
         // create outline & tester
-        if(dragOptions.polygons && dragOptions.polygons.length) {
+        if(dragOptions.selectionDefs && dragOptions.selectionDefs.length) {
             mergedPolygons = mergePolygons(dragOptions.mergedPolygons, currentPolygon, subtract);
             currentPolygon.subtract = subtract;
-            testPoly = multipolygonTester(dragOptions.polygons.concat([currentPolygon]));
+            selectionTester = multiTester(dragOptions.selectionDefs.concat([currentPolygon]));
         }
         else {
             mergedPolygons = [currentPolygon];
-            testPoly = polygonTester(currentPolygon);
+            selectionTester = polygonTester(currentPolygon);
         }
 
         // draw selection
@@ -209,7 +211,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
 
-                    traceSelection = searchInfo._module.selectPoints(searchInfo, testPoly);
+                    traceSelection = searchInfo._module.selectPoints(searchInfo, selectionTester);
                     traceSelections.push(traceSelection);
 
                     thisSelection = fillSelectionItem(traceSelection, searchInfo);
@@ -276,10 +278,10 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             throttle.clear(throttleID);
             dragOptions.gd.emit('plotly_selected', eventData);
 
-            if(currentPolygon && dragOptions.polygons) {
+            if(currentPolygon && dragOptions.selectionDefs) {
                 // save last polygons
                 currentPolygon.subtract = subtract;
-                dragOptions.polygons.push(currentPolygon);
+                dragOptions.selectionDefs.push(currentPolygon);
 
                 // we have to keep reference to arrays container
                 dragOptions.mergedPolygons.length = 0;
@@ -296,8 +298,8 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
     var selection = [];
     var searchTraces;
     var searchInfo;
-    var currentPolygon;
-    var testPoly;
+    var currentSelectionDef;
+    var selectionTester;
     var traceSelection;
     var thisTracesSelection;
     var pointOrBinSelected;
@@ -338,13 +340,13 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
               (pointOrBinSelected !== undefined ?
                 pointOrBinSelected :
                 isPointOrBinSelected(clickedPtInfo));
-            currentPolygon = createPtNumTester(clickedPtInfo.pointNumber, clickedPtInfo.searchInfo, subtract);
+            currentSelectionDef = pointSelectionDef(clickedPtInfo.pointNumber, clickedPtInfo.searchInfo, subtract);
 
-            var concatenatedPolygons = dragOptions.polygons.concat([currentPolygon]);
-            testPoly = multipolygonTester(concatenatedPolygons);
+            var allSelectionDefs = dragOptions.selectionDefs.concat([currentSelectionDef]);
+            selectionTester = multiTester(allSelectionDefs);
 
             for(i = 0; i < searchTraces.length; i++) {
-                traceSelection = searchTraces[i]._module.selectPoints(searchTraces[i], testPoly);
+                traceSelection = searchTraces[i]._module.selectPoints(searchTraces[i], selectionTester);
                 thisTracesSelection = fillSelectionItem(traceSelection, searchTraces[i]);
 
                 if(selection.length) {
@@ -358,8 +360,8 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
             eventData = {points: selection};
             updateSelectedState(gd, searchTraces, eventData);
 
-            if(currentPolygon && dragOptions) {
-                dragOptions.polygons.push(currentPolygon);
+            if(currentSelectionDef && dragOptions) {
+                dragOptions.selectionDefs.push(currentSelectionDef);
             }
 
             if(polygonOutlines) drawSelection(dragOptions.mergedPolygons, polygonOutlines);
@@ -384,11 +386,11 @@ function coerceSelectionsCache(evt, gd, dragOptions) {
     if(
       selectingOnSameSubplot &&
       (evt.shiftKey || evt.altKey) &&
-      (plotinfo.selection && plotinfo.selection.polygons) &&
-      !dragOptions.polygons
+      (plotinfo.selection && plotinfo.selection.selectionDefs) &&
+      !dragOptions.selectionDefs
     ) {
-        // take over selection polygons from prev mode, if any
-        dragOptions.polygons = plotinfo.selection.polygons;
+        // take over selection definitions from prev mode, if any
+        dragOptions.selectionDefs = plotinfo.selection.selectionDefs;
         dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
     } else if(
       (!evt.shiftKey && !evt.altKey) ||
@@ -408,7 +410,7 @@ function clearSelectionsCache(dragOptions) {
     var plotinfo = dragOptions.plotinfo;
 
     plotinfo.selection = {};
-    plotinfo.selection.polygons = dragOptions.polygons = [];
+    plotinfo.selection.selectionDefs = dragOptions.selectionDefs = [];
     plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
 }
 
@@ -512,24 +514,6 @@ function extractClickedPtInfo(hoverData, searchTraces) {
         pointNumber: pointNumber,
         pointNumbers: pointNumbers,
         searchInfo: searchInfo
-    };
-}
-
-function createPtNumTester(wantedPointNumber, wantedSearchInfo, subtract) {
-    return {
-        xmin: 0,
-        xmax: 0,
-        ymin: 0,
-        ymax: 0,
-        pts: [],
-        // TODO Consider making signature of contains more lean
-        contains: function(pt, omitFirstEdge, pointNumber, searchInfo) {
-            return searchInfo.cd[0].trace._expandedIndex === wantedSearchInfo.cd[0].trace._expandedIndex &&
-                pointNumber === wantedPointNumber;
-        },
-        isRect: false,
-        degenerate: false,
-        subtract: subtract
     };
 }
 
