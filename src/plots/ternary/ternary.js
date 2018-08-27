@@ -464,10 +464,6 @@ proto.initInteractions = function() {
             dragOptions.xaxes = [_this.xaxis];
             dragOptions.yaxes = [_this.yaxis];
             var dragModeNow = gd._fullLayout.dragmode;
-            if(e.shiftKey) {
-                if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                else dragModeNow = 'pan';
-            }
 
             if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
             else dragOptions.minDrag = undefined;
