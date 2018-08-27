@@ -202,7 +202,7 @@ proto.dispose = function() {
     this.mesh.dispose();
 };
 
-function createvolumeTrace(scene, data) {
+function createVolumeTrace(scene, data) {
     var gl = scene.glplot.gl;
 
     var mesh = convert(gl, scene, data);
@@ -217,4 +217,4 @@ function createvolumeTrace(scene, data) {
     return volume;
 }
 
-module.exports = createvolumeTrace;
+module.exports = createVolumeTrace;
