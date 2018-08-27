@@ -10,44 +10,70 @@
 
 var subtypes = require('../scatter/subtypes');
 var BADNUM = require('../../constants/numerical').BADNUM;
+var arrayRange = require('array-range');
 
-module.exports = function selectPoints(searchInfo, polygon) {
+exports.getPointsIn = function(searchInfo, polygon) {
+    var pointsIn = [];
     var cd = searchInfo.cd;
+    var trace = cd[0].trace;
+    var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
-    var selection = [];
-    var trace = cd[0].trace;
+    var di;
+    var lonlat;
+    var x;
+    var y;
+    var i;
 
-    var di, lonlat, x, y, i;
-
-    var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
     if(hasOnlyLines) return [];
 
-    if(polygon === false) {
-        for(i = 0; i < cd.length; i++) {
-            cd[i].selected = 0;
+    for(i = 0; i < cd.length; i++) {
+        di = cd[i];
+        lonlat = di.lonlat;
+
+        // some projection types can't handle BADNUMs
+        if(lonlat[0] === BADNUM) continue;
+
+        x = xa.c2p(lonlat);
+        y = ya.c2p(lonlat);
+
+        if(polygon.contains([x, y])) {
+            pointsIn.push(i);
         }
-    } else {
-        for(i = 0; i < cd.length; i++) {
-            di = cd[i];
+    }
+
+    return pointsIn;
+};
+
+exports.toggleSelected = function(searchInfo, selected, pointIds) {
+    var selection = [];
+    var cd = searchInfo.cd;
+    var modifyAll = !Array.isArray(pointIds);
+    var di;
+    var pointId;
+    var lonlat;
+    var i;
+
+    if(modifyAll) {
+        pointIds = arrayRange(cd.length);
+    }
+
+    // Mutate state
+    for(i = 0; i < pointIds.length; i++) {
+        pointId = pointIds[i];
+        cd[pointId].selected = selected ? 1 : 0;
+    }
+
+    // Compute selection array from internal state
+    for(i = 0; i < cd.length; i++) {
+        di = cd[i];
+        if(di.selected === 1) {
             lonlat = di.lonlat;
-
-            // some projection types can't handle BADNUMs
-            if(lonlat[0] === BADNUM) continue;
-
-            x = xa.c2p(lonlat);
-            y = ya.c2p(lonlat);
-
-            if(polygon.contains([x, y])) {
-                selection.push({
-                    pointNumber: i,
-                    lon: lonlat[0],
-                    lat: lonlat[1]
-                });
-                di.selected = 1;
-            } else {
-                di.selected = 0;
-            }
+            selection.push({
+                pointNumber: i,
+                lon: lonlat[0],
+                lat: lonlat[1]
+            });
         }
     }
 

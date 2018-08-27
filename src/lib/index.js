@@ -72,6 +72,9 @@ lib.variance = statsModule.variance;
 lib.stdev = statsModule.stdev;
 lib.interp = statsModule.interp;
 
+var setOpsModule = require('./set_operations');
+lib.difference = setOpsModule.difference;
+
 var matrixModule = require('./matrix');
 lib.init2dArray = matrixModule.init2dArray;
 lib.transposeRagged = matrixModule.transposeRagged;

@@ -185,7 +185,6 @@ function areAllAxesFixed(fullLayout) {
 }
 
 // look for traces that support selection
-// to be updated as we add more selectPoints handlers
 function isSelectable(fullData) {
     var selectable = false;
 
@@ -194,7 +193,7 @@ function isSelectable(fullData) {
 
         var trace = fullData[i];
 
-        if(!trace._module || !trace._module.selectPoints) continue;
+        if(!trace._module || !trace._module.selectable) continue;
 
         if(Registry.traceIs(trace, 'scatter-like')) {
             if(scatterSubTypes.hasMarkers(trace) || scatterSubTypes.hasText(trace)) {
@@ -205,7 +204,7 @@ function isSelectable(fullData) {
                 selectable = true;
             }
         }
-        // assume that in general if the trace module has selectPoints,
+        // assume that in general if the trace module has getPointsIn and toggleSelected,
         // then it's selectable. Scatter is an exception to this because it must
         // have markers or text, not just be a scatter type.
         else selectable = true;

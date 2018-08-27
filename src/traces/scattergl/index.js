@@ -521,7 +521,9 @@ function plot(gd, subplot, cdata) {
     scene.selectBatch = null;
     scene.unselectBatch = null;
     var dragmode = fullLayout.dragmode;
-    var selectMode = dragmode === 'lasso' || dragmode === 'select';
+    // TODO get that from layout as soon as clickmode attribute has been added
+    var clickmode = 'click';
+    var selectMode = (dragmode === 'lasso' || dragmode === 'select' || clickmode === 'select');
 
     for(i = 0; i < cdata.length; i++) {
         var cd0 = cdata[i][0];
@@ -569,7 +571,6 @@ function plot(gd, subplot, cdata) {
             stash.xpx = stash.ypx = null;
         }
     }
-
 
     if(selectMode) {
         // create select2d
@@ -819,49 +820,91 @@ function calcHover(pointData, x, y, trace) {
     return pointData;
 }
 
+function getPointsIn(searchInfo, polygon) {
+    var pointsIn = [];
 
-function selectPoints(searchInfo, polygon) {
-    var cd = searchInfo.cd;
-    var selection = [];
-    var trace = cd[0].trace;
-    var stash = cd[0].t;
-    var x = stash.x;
-    var y = stash.y;
+    var calcData = searchInfo.cd;
+    var trace = calcData[0].trace;
+    var stash = calcData[0].t;
     var scene = stash._scene;
+    var i;
 
-    if(!scene) return selection;
+    if(!scene) return [];
 
     var hasText = subTypes.hasText(trace);
     var hasMarkers = subTypes.hasMarkers(trace);
     var hasOnlyLines = !hasMarkers && !hasText;
-    if(trace.visible !== true || hasOnlyLines) return selection;
+    if(trace.visible !== true || hasOnlyLines) return [];
 
-    // degenerate polygon does not enable selection
-    // filter out points by visible scatter ones
-    var els = null;
-    var unels = null;
-    // FIXME: clearing selection does not work here
-    var i;
     if(polygon !== false && !polygon.degenerate) {
-        els = [], unels = [];
         for(i = 0; i < stash.count; i++) {
             if(polygon.contains([stash.xpx[i], stash.ypx[i]])) {
-                els.push(i);
-                selection.push({
-                    pointNumber: i,
-                    x: x[i],
-                    y: y[i]
-                });
-            }
-            else {
-                unels.push(i);
+                pointsIn.push(i);
             }
         }
-    } else {
-        unels = arrayRange(stash.count);
     }
 
-    // make sure selectBatch is created
+    return pointsIn;
+}
+
+function toggleSelected(searchInfo, selected, pointIds) {
+    var clearSelection = selected === false && !Array.isArray(pointIds);
+    var selection = [];
+    var calcData = searchInfo.cd;
+    var stash = calcData[0].t;
+    var scene = stash._scene;
+    var trace = calcData[0].trace;
+    var hasText = subTypes.hasText(trace);
+    var hasMarkers = subTypes.hasMarkers(trace);
+    var oldEls;
+    var oldUnels;
+    var newEls;
+    var newUnels;
+    var i;
+
+    if(!Array.isArray(pointIds)) {
+        pointIds = arrayRange(stash.count);
+    }
+
+    // Mutate state
+    coerceSelectBatches(scene, stash, hasMarkers);
+    oldEls = scene.selectBatch[stash.index];
+    oldUnels = scene.unselectBatch[stash.index];
+
+    if(selected) {
+        newEls = oldEls.concat(Lib.difference(pointIds, oldEls));
+        newUnels = Lib.difference(oldUnels, pointIds);
+    } else {
+        newEls = Lib.difference(oldEls, pointIds);
+        newUnels = oldUnels.concat(Lib.difference(pointIds, oldUnels));
+    }
+
+    scene.selectBatch[stash.index] = clearSelection ? null : newEls;
+    scene.unselectBatch[stash.index] = clearSelection ? arrayRange(stash.count) : newUnels;
+
+    // Compute and return selection array from internal state
+    for(i = 0; i < newEls.length; i++) {
+        selection.push({
+            pointNumber: newEls[i],
+            x: stash.x[newEls[i]],
+            y: stash.y[newEls[i]]
+        });
+    }
+
+    if(hasText) {
+        styleTextSelection(calcData);
+    }
+
+    // TODO remove eventually
+    // console.log('els  : ' + JSON.stringify(scene.selectBatch[stash.index]));
+    // console.log('unels: ' + JSON.stringify(scene.unselectBatch[stash.index]));
+    // console.log('selection: ' + JSON.stringify(selection));
+    return selection;
+}
+
+function coerceSelectBatches(scene, stash, hasMarkers) {
+    var i;
+
     if(!scene.selectBatch) {
         scene.selectBatch = [];
         scene.unselectBatch = [];
@@ -873,21 +916,14 @@ function selectPoints(searchInfo, polygon) {
             scene.selectBatch[i] = [];
             scene.unselectBatch[i] = [];
         }
+
+        scene.unselectBatch[stash.index] = arrayRange(stash.count);
+
         // we should turn scatter2d into unselected once we have any points selected
         if(hasMarkers) {
             scene.scatter2d.update(scene.markerUnselectedOptions);
         }
     }
-
-    scene.selectBatch[stash.index] = els;
-    scene.unselectBatch[stash.index] = unels;
-
-    // update text options
-    if(hasText) {
-        styleTextSelection(cd);
-    }
-
-    return selection;
 }
 
 function style(gd, cds) {
@@ -910,8 +946,8 @@ function styleTextSelection(cd) {
     var stash = cd0.t;
     var scene = stash._scene;
     var index = stash.index;
-    var els = scene.selectBatch[index];
-    var unels = scene.unselectBatch[index];
+    var els = scene.selectBatch ? scene.selectBatch[index] : null;
+    var unels = scene.unselectBatch ? scene.unselectBatch[index] : null;
     var baseOpts = scene.textOptions[index];
     var selOpts = scene.textSelectedOptions[index] || {};
     var unselOpts = scene.textUnselectedOptions[index] || {};
@@ -955,7 +991,8 @@ module.exports = {
     plot: plot,
     hoverPoints: hoverPoints,
     style: style,
-    selectPoints: selectPoints,
+    getPointsIn: getPointsIn,
+    toggleSelected: toggleSelected,
 
     sceneOptions: sceneOptions,
     sceneUpdate: sceneUpdate,

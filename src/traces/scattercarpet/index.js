@@ -18,7 +18,8 @@ ScatterCarpet.plot = require('./plot');
 ScatterCarpet.style = require('../scatter/style').style;
 ScatterCarpet.styleOnSelect = require('../scatter/style').styleOnSelect;
 ScatterCarpet.hoverPoints = require('./hover');
-ScatterCarpet.selectPoints = require('../scatter/select');
+ScatterCarpet.getPointsIn = require('../scatter/select').getPointsIn;
+ScatterCarpet.toggleSelected = require('../scatter/select').toggleSelected;
 ScatterCarpet.eventData = require('./event_data');
 
 ScatterCarpet.moduleType = 'trace';

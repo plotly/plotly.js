@@ -15,6 +15,7 @@ var Registry = require('../../registry');
 var Color = require('../../components/color');
 var Fx = require('../../components/fx');
 
+var difference = require('../../lib/set_operations').difference;
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
@@ -26,7 +27,6 @@ var MINSELECT = constants.MINSELECT;
 
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
-var multipolygonTester = polygon.multitester;
 
 function getAxId(ax) { return ax._id; }
 
@@ -45,13 +45,12 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var path0 = 'M' + x0 + ',' + y0;
     var pw = dragOptions.xaxes[0]._length;
     var ph = dragOptions.yaxes[0]._length;
-    var xAxisIds = dragOptions.xaxes.map(getAxId);
-    var yAxisIds = dragOptions.yaxes.map(getAxId);
     var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
     var subtract = e.altKey;
 
-    var filterPoly, testPoly, mergedPolygons, currentPolygon;
-    var i, cd, trace, searchInfo, eventData;
+    var filterPoly, mergedPolygons, currentPolygon;
+    var pointsInPolygon = [];
+    var i, searchInfo, eventData;
 
     var selectingOnSameSubplot = (
         fullLayout._lastSelectedSubplot &&
@@ -71,7 +70,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         (!e.shiftKey && !e.altKey) ||
         ((e.shiftKey || e.altKey) && !plotinfo.selection)
     ) {
-        // create new polygons, if shift mode or selecting across different subplots
+        // create new polygons, if not shift mode or selecting across different subplots
         plotinfo.selection = {};
         plotinfo.selection.polygons = dragOptions.polygons = [];
         plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
@@ -106,52 +105,10 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         .attr('d', 'M0,0Z');
 
 
-    // find the traces to search for selection points
-    var searchTraces = [];
     var throttleID = fullLayout._uid + constants.SELECTID;
-    var selection = [];
 
-    for(i = 0; i < gd.calcdata.length; i++) {
-        cd = gd.calcdata[i];
-        trace = cd[0].trace;
-
-        if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
-
-        if(dragOptions.subplot) {
-            if(
-                trace.subplot === dragOptions.subplot ||
-                trace.geo === dragOptions.subplot
-            ) {
-                searchTraces.push({
-                    _module: trace._module,
-                    cd: cd,
-                    xaxis: dragOptions.xaxes[0],
-                    yaxis: dragOptions.yaxes[0]
-                });
-            }
-        } else if(
-            trace.type === 'splom' &&
-            // FIXME: make sure we don't have more than single axis for splom
-            trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
-        ) {
-            searchTraces.push({
-                _module: trace._module,
-                cd: cd,
-                xaxis: dragOptions.xaxes[0],
-                yaxis: dragOptions.yaxes[0]
-            });
-        } else {
-            if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
-            if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
-
-            searchTraces.push({
-                _module: trace._module,
-                cd: cd,
-                xaxis: getFromId(gd, trace.xaxis),
-                yaxis: getFromId(gd, trace.yaxis)
-            });
-        }
-    }
+    // find the traces to search for selection points
+    var searchTraces = determineSearchTraces(gd, dragOptions.xaxes, dragOptions.yaxes, dragOptions.subplot);
 
     function axValue(ax) {
         var index = (ax._id.charAt(0) === 'y') ? 1 : 0;
@@ -256,11 +213,9 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         if(dragOptions.polygons && dragOptions.polygons.length) {
             mergedPolygons = mergePolygons(dragOptions.mergedPolygons, currentPolygon, subtract);
             currentPolygon.subtract = subtract;
-            testPoly = multipolygonTester(dragOptions.polygons.concat([currentPolygon]));
         }
         else {
             mergedPolygons = [currentPolygon];
-            testPoly = polygonTester(currentPolygon);
         }
 
         // draw selection
@@ -276,14 +231,27 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
             throttleID,
             constants.SELECTDELAY,
             function() {
-                selection = [];
+                var selection = [],
+                    retainSelection = shouldRetainSelection(e),
+                    module,
+                    searchInfo,
+                    i;
 
-                var thisSelection, traceSelections = [], traceSelection;
+                var thisSelection, traceSelection;
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
+                    module = searchInfo._module;
 
-                    traceSelection = searchInfo._module.selectPoints(searchInfo, testPoly);
-                    traceSelections.push(traceSelection);
+                    if(!retainSelection) module.toggleSelected(searchInfo, false);
+
+                    var currentPolygonTester = polygonTester(currentPolygon);
+                    var pointsInCurrentPolygon = module.getPointsIn(searchInfo, currentPolygonTester);
+                    module.toggleSelected(searchInfo, !subtract, pointsInCurrentPolygon);
+
+                    var pointsNoLongerSelected = difference(pointsInPolygon[i], pointsInCurrentPolygon);
+
+                    traceSelection = module.toggleSelected(searchInfo, false, pointsNoLongerSelected);
+                    pointsInPolygon[i] = pointsInCurrentPolygon;
 
                     thisSelection = fillSelectionItem(traceSelection, searchInfo);
 
@@ -308,18 +276,24 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
         throttle.done(throttleID).then(function() {
             throttle.clear(throttleID);
+
             if(numClicks === 2) {
-                // clear selection on doubleclick
-                outlines.remove();
                 for(i = 0; i < searchTraces.length; i++) {
                     searchInfo = searchTraces[i];
-                    searchInfo._module.selectPoints(searchInfo, false);
+                    searchInfo._module.toggleSelected(searchInfo, false);
                 }
 
+                // clear visual boundaries of selection area if displayed
+                outlines.remove();
+
                 updateSelectedState(gd, searchTraces);
+
                 gd.emit('plotly_deselect', null);
             }
             else {
+                // TODO What to do with the code below because we now have behavior for a single click
+                selectOnClick(gd, numClicks, evt, dragOptions.xaxes, dragOptions.yaxes, outlines, dragOptions.subplot);
+
                 // TODO: remove in v2 - this was probably never intended to work as it does,
                 // but in case anyone depends on it we don't want to break it now.
                 gd.emit('plotly_selected', undefined);
@@ -349,11 +323,233 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 }
 
+// Missing features
+// ----------------
+// TODO handle clearing selection when no point is clicked (based on hoverData)
+// TODO remove console.log statements
+function selectOnClick(gd, numClicks, evt, xAxes, yAxes, outlines, subplot) {
+    var hoverData = gd._hoverdata;
+    var retainSelection = shouldRetainSelection(evt);
+    var searchTraces;
+    var searchInfo;
+    var trace;
+    var clearEntireSelection;
+    var clickedPts;
+    var clickedPt;
+    var shouldSelect;
+    var traceSelection;
+    var allSelectionItems;
+    var eventData;
+    var i;
+    var j;
+
+    if(numClicks === 1 && isHoverDataSet(hoverData)) {
+        allSelectionItems = [];
+
+        searchTraces = determineSearchTraces(gd, xAxes, yAxes, subplot);
+        clearEntireSelection = entireSelectionToBeCleared(searchTraces, hoverData);
+
+        for(i = 0; i < searchTraces.length; i++) {
+            searchInfo = searchTraces[i];
+            trace = searchInfo.cd[0].trace;
+
+            // Clear old selection if needed
+            if(!retainSelection || clearEntireSelection) {
+                searchInfo._module.toggleSelected(searchInfo, false);
+                if(outlines) outlines.remove();
+
+                if(clearEntireSelection) continue;
+            }
+
+            // Determine clicked points,
+            // call selection modification functions of the trace's module
+            // and collect the resulting set of selected points
+            clickedPts = clickedPtsFor(searchInfo, hoverData);
+            if(clickedPts.length > 0) {
+                for(j = 0; j < clickedPts.length; j++) {
+                    clickedPt = clickedPts[j];
+                    var ptSelected = isPointSelected(trace, clickedPt);
+                    shouldSelect = !ptSelected || (ptSelected && !clearEntireSelection && !retainSelection);
+                    traceSelection = searchInfo._module.toggleSelected(searchInfo, shouldSelect, [clickedPt.pointNumber]);
+                }
+            } else {
+                // If current trace has no pts clicked, we at least call toggleSelected
+                // with an empty array to obtain currently selected points for this trace.
+                traceSelection = searchInfo._module.toggleSelected(searchInfo, true, []);
+            }
+
+            // Merge this trace's selection with the other ones
+            // to prepare the grand selection state update
+            allSelectionItems = allSelectionItems.concat(fillSelectionItem(traceSelection, searchInfo));
+        }
+
+        // Grand selection state update needs to be done once for the entire plot
+        // console.log('allSelItems '  + allSelectionItems.map(asi => asi.pointNumber));
+        if(clearEntireSelection) {
+            updateSelectedState(gd, searchTraces);
+        } else {
+            eventData = {points: allSelectionItems};
+            updateSelectedState(gd, searchTraces, eventData);
+        }
+    }
+
+    function isHoverDataSet(hoverData) {
+        return hoverData &&
+          Array.isArray(hoverData) &&
+          hoverData[0].hoverOnBox !== true;
+    }
+
+    /**
+     * Function to determine the clicked points for the given searchInfo (trace)
+     * based on the passed hoverData.
+     *
+     * Function assumes the following about hoverData:
+     * - when hoverData has more than one element (e.g. box trace),
+     *   if a point is hovered upon, the clicked point is the first
+     *   element in the array. It is assumed that fx/hover.js and satellite
+     *   modules are doing that correctly.
+     * - at the moment only one point at a time is considered to be selected
+     *   upon one click.
+     *
+     * Function also encapsulates special knowledge about the slight
+     * inconsistencies in what hoverData can look like for different
+     * trace types. As hoverData will become more homogeneous, this
+     * logic will become cleaner.
+     *
+     * See https://github.com/plotly/plotly.js/issues/1852 for the
+     * respective discussion.
+     */
+    function clickedPtsFor(searchInfo, hoverData) {
+        var clickedPts = [];
+        var hoverDatum;
+
+        if(hoverData.length > 0) {
+            hoverDatum = hoverData[0];
+            if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
+                // Special case for box (and violin)
+                if(hoverDatum.hoverOnBox === true) return clickedPts;
+
+                // TODO hoverDatum not having a pointNumber but a binNumber seems to be an oddity of histogram only
+                // Not deleting .pointNumber in histogram/event_data.js would simplify code here and in addition
+                // would not break the hover event structure
+                // documented at https://plot.ly/javascript/hover-events/
+                if(hoverDatum.pointNumber !== undefined) {
+                    clickedPts.push({
+                        pointNumber: hoverDatum.pointNumber
+                    });
+                } else if(hoverDatum.binNumber !== undefined) {
+                    clickedPts.push({
+                        pointNumber: hoverDatum.binNumber,
+                        pointNumbers: hoverDatum.pointNumbers
+                    });
+                }
+            }
+        }
+
+        return clickedPts;
+    }
+}
+
+function determineSearchTraces(gd, xAxes, yAxes, subplot) {
+    var searchTraces = [];
+    var xAxisIds = xAxes.map(getAxId);
+    var yAxisIds = yAxes.map(getAxId);
+    var cd;
+    var trace;
+    var i;
+
+    for(i = 0; i < gd.calcdata.length; i++) {
+        cd = gd.calcdata[i];
+        trace = cd[0].trace;
+
+        if(trace.visible !== true || !trace._module || !trace._module.selectable) continue;
+
+        if(subplot && (trace.subplot === subplot || trace.geo === subplot)) {
+            searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
+        } else if(
+          trace.type === 'splom' &&
+          // FIXME: make sure we don't have more than single axis for splom
+          trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
+        ) {
+            searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
+        } else {
+            if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
+            if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
+
+            searchTraces.push(createSearchInfo(trace._module, cd,
+              getFromId(gd, trace.xaxis), getFromId(gd, trace.yaxis)));
+        }
+    }
+
+    return searchTraces;
+}
+
+function createSearchInfo(module, calcData, xaxis, yaxis) {
+    return {
+        _module: module,
+        cd: calcData,
+        xaxis: xaxis,
+        yaxis: yaxis
+    };
+}
+
+function shouldRetainSelection(evt) {
+    return evt.shiftKey;
+}
+
+// TODO Clean up
+function entireSelectionToBeCleared(searchTraces, hoverData) {
+    var somePointsSelected = false;
+    for(var i = 0; i < searchTraces.length; i++) {
+        var searchInfo = searchTraces[i];
+        var trace = searchInfo.cd[0].trace;
+        if(trace.selectedpoints && trace.selectedpoints.length > 0) {
+            somePointsSelected = true;
+            var selectedPtsCopy = trace.selectedpoints.slice();
+
+            for(var j = 0; j < hoverData.length; j++) {
+                var hoverDatum = hoverData[j];
+                if(hoverDatum.fullData._expandedIndex === trace._expandedIndex) {
+                    selectedPtsCopy = difference(selectedPtsCopy, hoverDatum.pointNumbers || [hoverDatum.pointNumber]);
+                }
+            }
+
+            if(selectedPtsCopy.length > 0) {
+                return false;
+            }
+        }
+    }
+    return somePointsSelected ? true : false;
+}
+
+function isPointSelected(trace, point) {
+    if(!trace.selectedpoints && !Array.isArray(trace.selectedpoints)) return false;
+    if(point.pointNumbers) {
+        for(var i = 0; i < point.pointNumbers.length; i++) {
+            if(trace.selectedpoints.indexOf(point.pointNumbers[i]) < 0) return false;
+        }
+        return true;
+    }
+    return trace.selectedpoints.indexOf(point.pointNumber) > -1;
+}
+
+/**
+ * Updates the selection state properties of the passed traces
+ * and initiates proper selection styling.
+ *
+ * If no eventData is passed, the selection state is cleared
+ * for the traces passed.
+ *
+ * @param gd
+ * @param searchTraces
+ * @param eventData
+ */
 function updateSelectedState(gd, searchTraces, eventData) {
     var i, j, searchInfo, trace;
 
     if(eventData) {
-        var pts = eventData.points || [];
+        // var pts = eventData.points || []; TODO remove eventually
+        var pts = eventData.points;
 
         for(i = 0; i < searchTraces.length; i++) {
             trace = searchTraces[i].cd[0].trace;
@@ -471,5 +667,6 @@ function clearSelect(zoomlayer) {
 
 module.exports = {
     prepSelect: prepSelect,
-    clearSelect: clearSelect
+    clearSelect: clearSelect,
+    selectOnClick: selectOnClick
 };

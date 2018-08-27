@@ -18,7 +18,8 @@ ScatterMapbox.calc = require('../scattergeo/calc');
 ScatterMapbox.plot = require('./plot');
 ScatterMapbox.hoverPoints = require('./hover');
 ScatterMapbox.eventData = require('./event_data');
-ScatterMapbox.selectPoints = require('./select');
+ScatterMapbox.getPointsIn = require('./select').getPointsIn;
+ScatterMapbox.toggleSelected = require('./select').toggleSelected;
 
 ScatterMapbox.style = function(_, cd) {
     if(cd) {

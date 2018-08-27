@@ -23,7 +23,8 @@ Bar.plot = require('./plot');
 Bar.style = require('./style').style;
 Bar.styleOnSelect = require('./style').styleOnSelect;
 Bar.hoverPoints = require('./hover');
-Bar.selectPoints = require('./select');
+Bar.getPointsIn = require('./select').getPointsIn;
+Bar.toggleSelected = require('./select').toggleSelected;
 
 Bar.moduleType = 'trace';
 Bar.name = 'bar';

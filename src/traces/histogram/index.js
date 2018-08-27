@@ -37,7 +37,8 @@ Histogram.style = require('../bar/style').style;
 Histogram.styleOnSelect = require('../bar/style').styleOnSelect;
 Histogram.colorbar = require('../scatter/marker_colorbar');
 Histogram.hoverPoints = require('./hover');
-Histogram.selectPoints = require('../bar/select');
+Histogram.getPointsIn = require('../bar/select').getPointsIn;
+Histogram.toggleSelected = require('../bar/select').toggleSelected;
 Histogram.eventData = require('./event_data');
 
 Histogram.moduleType = 'trace';

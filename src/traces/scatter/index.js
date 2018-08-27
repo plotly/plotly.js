@@ -27,7 +27,8 @@ Scatter.colorbar = require('./marker_colorbar');
 Scatter.style = require('./style').style;
 Scatter.styleOnSelect = require('./style').styleOnSelect;
 Scatter.hoverPoints = require('./hover');
-Scatter.selectPoints = require('./select');
+Scatter.getPointsIn = require('./select').getPointsIn;
+Scatter.toggleSelected = require('./select').toggleSelected;
 Scatter.animatable = true;
 
 Scatter.moduleType = 'trace';

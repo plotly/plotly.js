@@ -241,6 +241,8 @@ function registerTraceModule(_module) {
         exports.allCategories[categoriesIn[i]] = true;
     }
 
+    _module.selectable = _module.getPointsIn && _module.toggleSelected;
+
     exports.modules[thisType] = {
         _module: _module,
         categories: categoryObj

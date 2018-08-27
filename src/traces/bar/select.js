@@ -8,34 +8,65 @@
 
 'use strict';
 
-module.exports = function selectPoints(searchInfo, polygon) {
-    var cd = searchInfo.cd;
-    var xa = searchInfo.xaxis;
-    var ya = searchInfo.yaxis;
+// TODO DRY
+function _togglePointSelectedState(searchInfo, pointIds, selected) {
     var selection = [];
-    var i;
 
-    if(polygon === false) {
-        // clear selection
-        for(i = 0; i < cd.length; i++) {
-            cd[i].selected = 0;
-        }
-    } else {
-        for(i = 0; i < cd.length; i++) {
-            var di = cd[i];
+    var calcData = searchInfo.cd,
+        xAxis = searchInfo.xaxis,
+        yAxis = searchInfo.yaxis;
 
-            if(polygon.contains(di.ct)) {
-                selection.push({
-                    pointNumber: i,
-                    x: xa.c2d(di.x),
-                    y: ya.c2d(di.y)
-                });
-                di.selected = 1;
-            } else {
-                di.selected = 0;
-            }
+    // TODO use foreach?!
+    // Mutate state
+    for(var j = 0; j < pointIds.length; j++) {
+        var pointId = pointIds[j];
+        calcData[pointId].selected = selected ? 1 : 0;
+    }
+
+    // Compute selection array from internal state
+    for(var i = 0; i < calcData.length; i++) {
+        if(calcData[i].selected === 1) {
+            selection.push(_newSelectionItem(
+              i,
+              xAxis.c2d(calcData[i].x),
+              yAxis.c2d(calcData[i].y)));
         }
     }
 
     return selection;
+}
+
+// TODO DRY
+function _newSelectionItem(pointNumber, xInData, yInData) {
+    return {
+        pointNumber: pointNumber,
+        x: xInData,
+        y: yInData
+    };
+}
+
+exports.getPointsIn = function(searchInfo, polygon) {
+    var pointsIn = [];
+
+    var calcData = searchInfo.cd,
+        i;
+
+    for(i = 0; i < calcData.length; i++) {
+        if(polygon.contains(calcData[i].ct)) {
+            pointsIn.push(i);
+        }
+    }
+
+    return pointsIn;
+};
+
+exports.toggleSelected = function(searchInfo, selected, pointIds) {
+    if(!Array.isArray(pointIds)) {
+        // TODO Use arrayRange maybe
+        pointIds = [];
+        for(var i = 0; i < searchInfo.cd.length; i++) {
+            pointIds.push(i);
+        }
+    }
+    return _togglePointSelectedState(searchInfo, pointIds, selected);
 };

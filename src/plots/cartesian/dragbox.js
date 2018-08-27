@@ -30,6 +30,8 @@ var doTicksSingle = require('./axes').doTicksSingle;
 var getFromId = require('./axis_ids').getFromId;
 var prepSelect = require('./select').prepSelect;
 var clearSelect = require('./select').clearSelect;
+var selectOnClick = require('./select').selectOnClick;
+
 var scaleZoom = require('./scale_zoom');
 
 var constants = require('./constants');
@@ -158,7 +160,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 // to pan (or to zoom if it already is pan) on shift
                 if(e.shiftKey) {
                     if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else if(!isSelectOrLasso(dragModeNow)) dragModeNow = 'pan';
+                    else if(!isBoxOrLassoSelect(dragModeNow)) dragModeNow = 'pan';
                 }
                 else if(e.ctrlKey) {
                     dragModeNow = 'pan';
@@ -171,10 +173,11 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
         else dragOptions.minDrag = undefined;
 
-        if(isSelectOrLasso(dragModeNow)) {
+        if(isBoxOrLassoSelect(dragModeNow)) {
             dragOptions.xaxes = xaxes;
             dragOptions.yaxes = yaxes;
             // this attaches moveFn, clickFn, doneFn on dragOptions
+            // TODO Maybe rename the function to prepSelectOnDrag
             prepSelect(e, startX, startY, dragOptions, dragModeNow);
         } else {
             dragOptions.clickFn = clickFn;
@@ -212,8 +215,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(numClicks === 2 && !singleEnd) doubleClick();
 
         if(isMainDrag) {
-            Fx.click(gd, evt, plotinfo.id);
+            handleClickInMainDrag(gd, numClicks, evt, xaxes, yaxes, plotinfo.id);
         }
+        // Allow manual editing of range bounds through an input field
+        // TODO consider extracting that to a method for clarity
         else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya0 : xa0,
                 end = (ns === 's' || ew === 'w') ? 0 : 1,
@@ -620,6 +625,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         redrawObjs(gd._fullLayout.images || [], Registry.getComponentMethod('images', 'draw'), true);
     }
 
+    function handleClickInMainDrag(gd, numClicks, evt, xaxes, yaxes, subplot) {
+        // TODO differentiate based on `clickmode` attr here as soon as it is available
+        selectOnClick(gd, numClicks, evt, xaxes, yaxes);
+        Fx.click(gd, evt, subplot);
+    }
+
     function doubleClick() {
         if(gd._transitioningWithDuration) return;
 
@@ -1013,7 +1024,7 @@ function showDoubleClickNotifier(gd) {
     }
 }
 
-function isSelectOrLasso(dragmode) {
+function isBoxOrLassoSelect(dragmode) {
     return dragmode === 'lasso' || dragmode === 'select';
 }
 

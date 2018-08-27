@@ -19,7 +19,8 @@ module.exports = {
     style: require('./style'),
     styleOnSelect: require('../scatter/style').styleOnSelect,
     hoverPoints: require('./hover'),
-    selectPoints: require('../box/select'),
+    getPointsIn: require('../box/select').getPointsIn,
+    toggleSelected: require('../box/select').toggleSelected,
 
     moduleType: 'trace',
     name: 'violin',
