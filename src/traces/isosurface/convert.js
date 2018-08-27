@@ -21,9 +21,9 @@
     for (var z=0; z<depth; z++)
     for (var y=0; y<height; y++)
     for (var x=0; x<width; x++) {
-        xs.push(x/width);
-        ys.push(y/height);
-        zs.push(z/depth);
+        xs.push(2*x/width);
+        ys.push(2*y/height);
+        zs.push(2*z/depth);
         var value = 1500 + 500 * (
             Math.sin(2 * 2*Math.PI*(z/depth-0.5)) +
             Math.cos(3 * 2*Math.PI*(x/width-0.5)) +
@@ -51,15 +51,8 @@
 
       singlemesh: true,
 
-      colorscale: 'Portland',
-      capscolorscale: 'Jet'
-    }], {
-      scene: {
-        xaxis: {range: [0, 1]},
-        yaxis: {range: [0, 1]},
-        zaxis: {range: [0, 1]}
-      }
-    })
+      colorscale: 'Portland'
+    }])
 
 */
 'use strict';
