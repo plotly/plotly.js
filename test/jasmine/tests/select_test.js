@@ -243,7 +243,7 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    describe('@flaky clears entire selection when the last selected data point', function() {
+    describe('clears entire selection when the last selected data point', function() {
         [{
             desc: 'is clicked',
             clickOpts: {}
@@ -251,7 +251,7 @@ describe('Click-to-select', function() {
             desc: 'is clicked while add/subtract modifier keys are active',
             clickOpts: { shiftKey: true }
         }].forEach(function(testData) {
-            it(testData.desc, function(done) {
+            it('@flaky ' + testData.desc, function(done) {
                 plotMock14()
                   .then(function() { return _immediateClickPt(mock14Pts[7]); })
                   .then(function() {
@@ -573,7 +573,7 @@ describe('Click-to-select', function() {
         function clickBox() { return _clickPt({ x: 565, y: 329 }); }
     });
 
-    describe('@flaky is disabled when clickmode does not include \'select\'', function() {
+    describe('is disabled when clickmode does not include \'select\'', function() {
         // TODO How to test for pan and zoom mode as well? Note, that
         // in lasso and select mode, plotly_selected was emitted upon a single
         // click although select-on-click wasn't supported. This behavior is kept
@@ -583,7 +583,7 @@ describe('Click-to-select', function() {
         // ['pan', 'zoom', 'select', 'lasso']
         ['select', 'lasso']
           .forEach(function(dragmode) {
-              it('and dragmode is ' + dragmode, function(done) {
+              it('@flaky and dragmode is ' + dragmode, function(done) {
                   plotMock14({ clickmode: 'event', dragmode: dragmode })
                     .then(function() {
                         // Still, the plotly_selected event should be thrown,
