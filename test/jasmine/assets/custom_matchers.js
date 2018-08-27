@@ -34,7 +34,7 @@ var matchers = {
             var i;
             if(Array.isArray(x)) {
                 for(i = 0; i < x.length; i++) {
-                    x[i] = x[i];
+                    if(x[i] === undefined) x[i] = undefined;
                 }
             } else if(isPlainObject(x)) {
                 var keys = Object.keys(x);

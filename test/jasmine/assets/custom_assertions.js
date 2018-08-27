@@ -247,3 +247,66 @@ exports.assertPlotSize = function(opts, msg) {
     if(widthLessThan) expect(actualWidth).toBeLessThan(widthLessThan - 1, 'widthLessThan' + msgPlus);
     if(heightLessThan) expect(actualHeight).toBeLessThan(heightLessThan - 1, 'heightLessThan' + msgPlus);
 };
+
+/**
+ * Ordering test - since SVG layering is purely dependent on ordering in the
+ * node tree, this tells you if the items are layered correctly.
+ * Note that we only take the first matching node for each selector, and it's
+ * not necessary that the nodes be siblings or at the same level of nesting.
+ *
+ * @param {string} selectorBehind: css selector for the node that should be behind
+ * @param {string} selectorInFront: css selector for the node that should be in front
+ * @param {string} msg: context for debugging
+ */
+exports.assertNodeOrder = function(selectorBehind, selectorInFront, msg) {
+    var nodeBehind = document.querySelector(selectorBehind);
+    var nodeInFront = document.querySelector(selectorInFront);
+    if(!nodeBehind) {
+        fail(selectorBehind + ' not found (' + msg + ')');
+    }
+    else if(!nodeInFront) {
+        fail(selectorInFront + ' not found (' + msg + ')');
+    }
+    else {
+        var parentsBehind = getParents(nodeBehind);
+        var parentsInFront = getParents(nodeInFront);
+
+        var commonParent = null;
+        var siblingBehind = null;
+        var siblingInFront = null;
+        for(var i = 0; i < parentsBehind.length; i++) {
+            if(parentsBehind[i] === parentsInFront[i]) {
+                commonParent = parentsBehind[i];
+            }
+            else {
+                siblingBehind = parentsBehind[i];
+                siblingInFront = parentsInFront[i];
+                break;
+            }
+        }
+        var allSiblings = collectionToArray(commonParent.children);
+        var behindIndex = allSiblings.indexOf(siblingBehind);
+        var frontIndex = allSiblings.indexOf(siblingInFront);
+
+        // sanity check - if these fail there's just something wrong in this routine
+        expect(behindIndex).toBeGreaterThan(-1, 'error in assertNodeOrder: ' + msg);
+        expect(frontIndex).toBeGreaterThan(-1, 'error in assertNodeOrder: ' + msg);
+
+        // the real test
+        expect(frontIndex).toBeGreaterThan(behindIndex,
+            '"' + selectorBehind + '" is not behind "' + selectorInFront + '": ' + msg);
+    }
+};
+
+function getParents(node) {
+    var parent = node.parentNode;
+    if(parent) return getParents(parent).concat(node);
+    return [node];
+}
+
+function collectionToArray(collection) {
+    var len = collection.length;
+    var a = new Array(len);
+    for(var i = 0; i < len; i++) a[i] = collection[i];
+    return a;
+}

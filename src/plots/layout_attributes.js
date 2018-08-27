@@ -173,7 +173,13 @@ module.exports = {
         valType: 'boolean',
         role: 'info',
         editType: 'legend',
-        description: 'Determines whether or not a legend is drawn.'
+        description: [
+            'Determines whether or not a legend is drawn.',
+            'Default is `true` if there is a trace to show and any of these:',
+            'a) Two or more traces would by default be shown in the legend.',
+            'b) One pie trace is shown in the legend.',
+            'c) One trace is explicitly given with `showlegend: true`.'
+        ].join(' ')
     },
     colorway: {
         valType: 'colorlist',

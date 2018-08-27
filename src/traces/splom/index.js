@@ -36,20 +36,48 @@ function calc(gd, trace) {
     // only differ here for log axes, pass ldata to createMatrix as 'data'
     var cdata = opts.cdata = [];
     var ldata = opts.data = [];
-    var i, k, dim;
+    // keep track of visible dimensions
+    var visibleDims = stash.visibleDims = [];
+    var i, k, dim, xa, ya;
+
+    function makeCalcdata(ax, dim) {
+        // call makeCalcdata with fake input
+        var ccol = ax.makeCalcdata({
+            v: dim.values,
+            vcalendar: trace.calendar
+        }, 'v');
+
+        for(var j = 0; j < ccol.length; j++) {
+            ccol[j] = ccol[j] === BADNUM ? NaN : ccol[j];
+        }
+        cdata.push(ccol);
+        ldata.push(ax.type === 'log' ? Lib.simpleMap(ccol, ax.c2l) : ccol);
+    }
 
     for(i = 0; i < dimensions.length; i++) {
         dim = dimensions[i];
 
         if(dim.visible) {
-            var axId = trace._diag[i][0] || trace._diag[i][1];
-            var ax = AxisIDs.getFromId(gd, axId);
-            if(ax) {
-                var ccol = makeCalcdata(ax, trace, dim);
-                var lcol = ax.type === 'log' ? Lib.simpleMap(ccol, ax.c2l) : ccol;
-                cdata.push(ccol);
-                ldata.push(lcol);
+            xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+            ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+
+            // if corresponding x & y axes don't have matching types, skip dim
+            if(xa && ya && xa.type !== ya.type) {
+                Lib.log('Skipping splom dimension ' + i + ' with conflicting axis types');
+                continue;
             }
+
+            if(xa) {
+                makeCalcdata(xa, dim);
+                if(ya && ya.type === 'category') {
+                    ya._categories = xa._categories.slice();
+                }
+            } else {
+                // should not make it here, if both xa and ya undefined
+                makeCalcdata(ya, dim);
+            }
+
+            visibleDims.push(i);
         }
     }
 
@@ -59,26 +87,24 @@ function calc(gd, trace) {
     var visibleLength = cdata.length;
     var hasTooManyPoints = (visibleLength * commonLength) > TOO_MANY_POINTS;
 
-    for(i = 0, k = 0; i < dimensions.length; i++) {
+    for(k = 0; k < visibleDims.length; k++) {
+        i = visibleDims[k];
         dim = dimensions[i];
 
-        if(dim.visible) {
-            var xa = AxisIDs.getFromId(gd, trace._diag[i][0]) || {};
-            var ya = AxisIDs.getFromId(gd, trace._diag[i][1]) || {};
+        xa = AxisIDs.getFromId(gd, trace._diag[i][0]) || {};
+        ya = AxisIDs.getFromId(gd, trace._diag[i][1]) || {};
 
-            // Reuse SVG scatter axis expansion routine.
-            // For graphs with very large number of points and array marker.size,
-            // use average marker size instead to speed things up.
-            var ppad;
-            if(hasTooManyPoints) {
-                ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
-            } else {
-                ppad = calcMarkerSize(trace, commonLength);
-            }
-
-            calcAxisExpansion(gd, trace, xa, ya, cdata[k], cdata[k], ppad);
-            k++;
+        // Reuse SVG scatter axis expansion routine.
+        // For graphs with very large number of points and array marker.size,
+        // use average marker size instead to speed things up.
+        var ppad;
+        if(hasTooManyPoints) {
+            ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
+        } else {
+            ppad = calcMarkerSize(trace, commonLength);
         }
+
+        calcAxisExpansion(gd, trace, xa, ya, cdata[k], cdata[k], ppad);
     }
 
     var scene = stash._scene = sceneUpdate(gd, stash);
@@ -89,20 +115,6 @@ function calc(gd, trace) {
     scene.unselectedOptions = convertMarkerSelection(trace, trace.unselected);
 
     return [{x: false, y: false, t: stash, trace: trace}];
-}
-
-function makeCalcdata(ax, trace, dim) {
-    // call makeCalcdata with fake input
-    var ccol = ax.makeCalcdata({
-        v: dim.values,
-        vcalendar: trace.calendar
-    }, 'v');
-
-    for(var i = 0; i < ccol.length; i++) {
-        ccol[i] = ccol[i] === BADNUM ? NaN : ccol[i];
-    }
-
-    return ccol;
 }
 
 function sceneUpdate(gd, stash) {
@@ -126,9 +138,7 @@ function sceneUpdate(gd, stash) {
             // draw traces in selection mode
             if(scene.matrix && scene.selectBatch) {
                 scene.matrix.draw(scene.unselectBatch, scene.selectBatch);
-            }
-
-            else if(scene.matrix) {
+            } else if(scene.matrix) {
                 scene.matrix.draw();
             }
 
@@ -184,34 +194,32 @@ function plotOne(gd, cd0) {
     matrixOpts.upper = trace.showlowerhalf;
     matrixOpts.diagonal = trace.diagonal.visible;
 
-    var dimensions = trace.dimensions;
+    var visibleDims = stash.visibleDims;
     var visibleLength = cdata.length;
     var viewOpts = {};
     viewOpts.ranges = new Array(visibleLength);
     viewOpts.domains = new Array(visibleLength);
 
-    for(i = 0, k = 0; i < dimensions.length; i++) {
-        if(trace.dimensions[i].visible) {
-            var rng = viewOpts.ranges[k] = new Array(4);
-            var dmn = viewOpts.domains[k] = new Array(4);
+    for(k = 0; k < visibleDims.length; k++) {
+        i = visibleDims[k];
 
-            xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
-            if(xa) {
-                rng[0] = xa._rl[0];
-                rng[2] = xa._rl[1];
-                dmn[0] = xa.domain[0];
-                dmn[2] = xa.domain[1];
-            }
+        var rng = viewOpts.ranges[k] = new Array(4);
+        var dmn = viewOpts.domains[k] = new Array(4);
 
-            ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
-            if(ya) {
-                rng[1] = ya._rl[0];
-                rng[3] = ya._rl[1];
-                dmn[1] = ya.domain[0];
-                dmn[3] = ya.domain[1];
-            }
+        xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+        if(xa) {
+            rng[0] = xa._rl[0];
+            rng[2] = xa._rl[1];
+            dmn[0] = xa.domain[0];
+            dmn[2] = xa.domain[1];
+        }
 
-            k++;
+        ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+        if(ya) {
+            rng[1] = ya._rl[0];
+            rng[3] = ya._rl[1];
+            dmn[1] = ya.domain[0];
+            dmn[3] = ya.domain[1];
         }
     }
 
@@ -255,25 +263,23 @@ function plotOne(gd, cd0) {
         var xpx = stash.xpx = new Array(visibleLength);
         var ypx = stash.ypx = new Array(visibleLength);
 
-        for(i = 0, k = 0; i < dimensions.length; i++) {
-            if(trace.dimensions[i].visible) {
-                xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
-                if(xa) {
-                    xpx[k] = new Array(commonLength);
-                    for(j = 0; j < commonLength; j++) {
-                        xpx[k][j] = xa.c2p(cdata[k][j]);
-                    }
-                }
+        for(k = 0; k < visibleDims.length; k++) {
+            i = visibleDims[k];
 
-                ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
-                if(ya) {
-                    ypx[k] = new Array(commonLength);
-                    for(j = 0; j < commonLength; j++) {
-                        ypx[k][j] = ya.c2p(cdata[k][j]);
-                    }
+            xa = AxisIDs.getFromId(gd, trace._diag[i][0]);
+            if(xa) {
+                xpx[k] = new Array(commonLength);
+                for(j = 0; j < commonLength; j++) {
+                    xpx[k][j] = xa.c2p(cdata[k][j]);
                 }
+            }
 
-                k++;
+            ya = AxisIDs.getFromId(gd, trace._diag[i][1]);
+            if(ya) {
+                ypx[k] = new Array(commonLength);
+                for(j = 0; j < commonLength; j++) {
+                    ypx[k][j] = ya.c2p(cdata[k][j]);
+                }
             }
         }
 
@@ -288,8 +294,8 @@ function plotOne(gd, cd0) {
         }
     }
     else {
-        scene.matrix.update(matrixOpts);
-        scene.matrix.update(viewOpts);
+        scene.matrix.update(matrixOpts, null);
+        scene.matrix.update(viewOpts, null);
         stash.xpx = stash.ypx = null;
     }
 
@@ -308,8 +314,8 @@ function hoverPoints(pointData, xval, yval) {
     var ypx = ya.c2p(yval);
     var maxDistance = pointData.distance;
 
-    var xi = getDimIndex(trace, xa);
-    var yi = getDimIndex(trace, ya);
+    var xi = getDimIndex(trace, stash, xa);
+    var yi = getDimIndex(trace, stash, ya);
     if(xi === false || yi === false) return [pointData];
 
     var x = cdata[xi];
@@ -358,8 +364,8 @@ function selectPoints(searchInfo, selectionTester) {
     var hasOnlyLines = (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace));
     if(trace.visible !== true || hasOnlyLines) return selection;
 
-    var xi = getDimIndex(trace, xa);
-    var yi = getDimIndex(trace, ya);
+    var xi = getDimIndex(trace, stash, xa);
+    var yi = getDimIndex(trace, stash, ya);
     if(xi === false || yi === false) return selection;
 
     var xpx = stash.xpx[xi];
@@ -440,17 +446,15 @@ function style(gd, cds) {
     }
 }
 
-function getDimIndex(trace, ax) {
+function getDimIndex(trace, stash, ax) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var ind = {x: 0, y: 1}[axLetter];
-    var dimensions = trace.dimensions;
+    var visibleDims = stash.visibleDims;
 
-    for(var i = 0, k = 0; i < dimensions.length; i++) {
-        if(dimensions[i].visible) {
-            if(trace._diag[i][ind] === axId) return k;
-            k++;
-        }
+    for(var k = 0; k < visibleDims.length; k++) {
+        var i = visibleDims[k];
+        if(trace._diag[i][ind] === axId) return k;
     }
     return false;
 }

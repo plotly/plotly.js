@@ -15,17 +15,11 @@ var arraysToCalcdata = require('./arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 
 module.exports = function calc(gd, trace) {
-    // depending on bar direction, set position and size axes
-    // and data ranges
-    // note: this logic for choosing orientation is
-    // duplicated in graph_obj->setstyles
+    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
+    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
+    var size, pos;
 
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
-        ya = Axes.getFromId(gd, trace.yaxis || 'y'),
-        orientation = trace.orientation || ((trace.x && !trace.y) ? 'h' : 'v'),
-        pos, size, i;
-
-    if(orientation === 'h') {
+    if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x');
         pos = ya.makeCalcdata(trace, 'y');
     } else {
@@ -38,7 +32,7 @@ module.exports = function calc(gd, trace) {
     var cd = new Array(serieslen);
 
     // set position and size
-    for(i = 0; i < serieslen; i++) {
+    for(var i = 0; i < serieslen; i++) {
         cd[i] = { p: pos[i], s: size[i] };
 
         if(trace.ids) {

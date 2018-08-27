@@ -1941,6 +1941,35 @@ describe('Test axes', function() {
             ]);
         });
 
+        it('supports e/E format on log axes', function() {
+            ['e', 'E'].forEach(function(e) {
+                var textOut = mockCalc({
+                    type: 'log',
+                    tickmode: 'linear',
+                    exponentformat: e,
+                    showexponent: 'all',
+                    tick0: 0,
+                    dtick: 'D2',
+                    range: [-4.1, 4.1]
+                });
+
+                var oep = '1' + e + '+';
+                var oem = '1' + e + '\u2212';
+
+                expect(textOut).toEqual([
+                    oem + '4', '2', '5',
+                    oem + '3', '2', '5',
+                    '0.01', '2', '5',
+                    '0.1', '2', '5',
+                    '1', '2', '5',
+                    '10', '2', '5',
+                    '100', '2', '5',
+                    oep + '3', '2', '5',
+                    oep + '4'
+                ]);
+            });
+        });
+
         it('provides a new date suffix whenever the suffix changes', function() {
             var ax = {
                 type: 'date',
@@ -2054,6 +2083,33 @@ describe('Test axes', function() {
                 '00:00:00.0079',
                 '00:00:00.0091'
             ];
+            expect(textOut).toEqual(expectedText);
+        });
+
+        it('never gives date dtick < 100 microseconds (autotick case)', function() {
+            var ax = {
+                type: 'date',
+                tickmode: 'auto',
+                nticks: '100',
+                range: ['2017-02-08 05:21:18.145', '2017-02-08 05:21:18.1451']
+            };
+
+            var textOut = mockCalc(ax);
+            var expectedText = ['05:21:18.145<br>Feb 8, 2017', '05:21:18.1451'];
+            expect(textOut).toEqual(expectedText);
+        });
+
+        it('never gives date dtick < 100 microseconds (explicit tick case)', function() {
+            var ax = {
+                type: 'date',
+                tickmode: 'linear',
+                tick0: '2000-01-01',
+                dtick: 0.01,
+                range: ['2017-02-08 05:21:18.145', '2017-02-08 05:21:18.1451']
+            };
+
+            var textOut = mockCalc(ax);
+            var expectedText = ['05:21:18.145<br>Feb 8, 2017', '05:21:18.1451'];
             expect(textOut).toEqual(expectedText);
         });
 
@@ -2725,6 +2781,148 @@ describe('Test axes', function() {
             .catch(failTest)
             .then(done);
 
+        });
+    });
+
+    describe('zeroline visibility logic', function() {
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+        afterEach(destroyGraphDiv);
+
+        function assertZeroLines(expectedIDs) {
+            var sortedIDs = expectedIDs.slice().sort();
+            var zlIDs = [];
+            d3.select(gd).selectAll('.zl').each(function() {
+                var cls = d3.select(this).attr('class');
+                var clsMatch = cls.match(/[xy]\d*(?=zl)/g)[0];
+                zlIDs.push(clsMatch);
+            });
+            zlIDs.sort();
+            expect(zlIDs).toEqual(sortedIDs);
+        }
+
+        it('works with a single subplot', function(done) {
+            Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}], {
+                xaxis: {range: [0, 4], showzeroline: true, showline: true},
+                yaxis: {range: [0, 4], showzeroline: true, showline: true},
+                width: 600,
+                height: 600
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {'xaxis.showline': false});
+            })
+            .then(function() {
+                assertZeroLines(['y']);
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'yaxis.showline': false});
+            })
+            .then(function() {
+                assertZeroLines(['x']);
+                return Plotly.relayout(gd, {'yaxis.showline': true, 'yaxis.range': [4, 0]});
+            })
+            .then(function() {
+                assertZeroLines(['y']);
+                return Plotly.relayout(gd, {'xaxis.range': [4, 0], 'xaxis.side': 'top'});
+            })
+            .then(function() {
+                assertZeroLines(['x']);
+                return Plotly.relayout(gd, {'yaxis.side': 'right', 'xaxis.anchor': 'free', 'xaxis.position': 1});
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {'xaxis.range': [0, 4], 'yaxis.range': [0, 4]});
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y']);
+                return Plotly.relayout(gd, {'xaxis.mirror': 'all', 'yaxis.mirror': true});
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {'xaxis.range': [-0.1, 4], 'yaxis.range': [-0.1, 4]});
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('works with multiple coupled subplots', function(done) {
+            Plotly.newPlot(gd, [
+                {x: [1, 2, 3], y: [1, 2, 3]},
+                {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x2'},
+                {x: [1, 2, 3], y: [1, 2, 3], yaxis: 'y2'}
+            ], {
+                xaxis: {range: [0, 4], showzeroline: true, domain: [0, 0.4]},
+                yaxis: {range: [0, 4], showzeroline: true, domain: [0, 0.4]},
+                xaxis2: {range: [0, 4], showzeroline: true, domain: [0.6, 1]},
+                yaxis2: {range: [0, 4], showzeroline: true, domain: [0.6, 1]},
+                width: 600,
+                height: 600
+            })
+            .then(function() {
+                assertZeroLines(['x', 'x', 'y', 'y', 'x2', 'y2']);
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'xaxis.mirror': 'all'});
+            })
+            .then(function() {
+                assertZeroLines(['x', 'x', 'y', 'x2']);
+                return Plotly.relayout(gd, {'yaxis.showline': true, 'yaxis.mirror': 'all'});
+            })
+            .then(function() {
+                // x axis still has a zero line on xy2, and y on x2y
+                // all the others have disappeared now
+                assertZeroLines(['x', 'y']);
+                return Plotly.relayout(gd, {'xaxis.mirror': 'allticks', 'yaxis.mirror': 'allticks'});
+            })
+            .then(function() {
+                // allticks works the same as all
+                assertZeroLines(['x', 'y']);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('works with multiple overlaid subplots', function(done) {
+            Plotly.newPlot(gd, [
+                {x: [1, 2, 3], y: [1, 2, 3]},
+                {x: [1, 2, 3], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
+            ], {
+                xaxis: {range: [0, 4], showzeroline: true},
+                yaxis: {range: [0, 4], showzeroline: true},
+                xaxis2: {range: [0, 4], showzeroline: true, side: 'top', overlaying: 'x'},
+                yaxis2: {range: [0, 4], showzeroline: true, side: 'right', overlaying: 'y'},
+                width: 600,
+                height: 600
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y', 'x2', 'y2']);
+                return Plotly.relayout(gd, {'xaxis.showline': true, 'yaxis.showline': true});
+            })
+            .then(function() {
+                assertZeroLines([]);
+                return Plotly.relayout(gd, {
+                    'xaxis.range': [4, 0],
+                    'yaxis.range': [4, 0],
+                    'xaxis2.range': [4, 0],
+                    'yaxis2.range': [4, 0]
+                });
+            })
+            .then(function() {
+                assertZeroLines(['x', 'y', 'x2', 'y2']);
+                return Plotly.relayout(gd, {
+                    'xaxis.showline': false,
+                    'yaxis.showline': false,
+                    'xaxis2.showline': true,
+                    'yaxis2.showline': true
+                });
+            })
+            .then(function() {
+                assertZeroLines([]);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });

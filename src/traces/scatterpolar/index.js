@@ -15,7 +15,7 @@ module.exports = {
     categories: ['polar', 'symbols', 'showLegend', 'scatter-like'],
 
     attributes: require('./attributes'),
-    supplyDefaults: require('./defaults'),
+    supplyDefaults: require('./defaults').supplyDefaults,
     colorbar: require('../scatter/marker_colorbar'),
     calc: require('./calc'),
     plot: require('./plot'),

@@ -17,61 +17,45 @@ var orientText = require('./orient_text');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Lib = require('../../lib');
 var alignmentConstants = require('../../constants/alignment');
-var getUidsFromCalcData = require('../../plots/get_data').getUidsFromCalcData;
 
 module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
-    var uidLookup = getUidsFromCalcData(cdcarpet);
-
-    carpetLayer.selectAll('g.trace').each(function() {
-        var classString = d3.select(this).attr('class');
-        var oldUid = classString.split('carpet')[1].split(/\s/)[0];
-
-        if(!uidLookup[oldUid]) {
-            d3.select(this).remove();
-        }
-    });
-
-    for(var i = 0; i < cdcarpet.length; i++) {
-        plotOne(gd, plotinfo, cdcarpet[i], carpetLayer);
-    }
-};
-
-function plotOne(gd, plotinfo, cd, carpetLayer) {
-    var t = cd[0];
-    var trace = cd[0].trace,
-        xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
-        aax = trace.aaxis,
-        bax = trace.baxis,
-        fullLayout = gd._fullLayout;
-
+    var xa = plotinfo.xaxis;
+    var ya = plotinfo.yaxis;
+    var fullLayout = gd._fullLayout;
     var clipLayer = fullLayout._clips;
 
-    var axisLayer = Lib.ensureSingle(carpetLayer, 'g', 'carpet' + trace.uid).classed('trace', true);
-    var minorLayer = Lib.ensureSingle(axisLayer, 'g', 'minorlayer');
-    var majorLayer = Lib.ensureSingle(axisLayer, 'g', 'majorlayer');
-    var boundaryLayer = Lib.ensureSingle(axisLayer, 'g', 'boundarylayer');
-    var labelLayer = Lib.ensureSingle(axisLayer, 'g', 'labellayer');
+    Lib.makeTraceGroups(carpetLayer, cdcarpet, 'trace').each(function(cd) {
+        var axisLayer = d3.select(this);
+        var cd0 = cd[0];
+        var trace = cd0.trace;
+        var aax = trace.aaxis;
+        var bax = trace.baxis;
 
-    axisLayer.style('opacity', trace.opacity);
+        var minorLayer = Lib.ensureSingle(axisLayer, 'g', 'minorlayer');
+        var majorLayer = Lib.ensureSingle(axisLayer, 'g', 'majorlayer');
+        var boundaryLayer = Lib.ensureSingle(axisLayer, 'g', 'boundarylayer');
+        var labelLayer = Lib.ensureSingle(axisLayer, 'g', 'labellayer');
 
-    drawGridLines(xa, ya, majorLayer, aax, 'a', aax._gridlines, true);
-    drawGridLines(xa, ya, majorLayer, bax, 'b', bax._gridlines, true);
-    drawGridLines(xa, ya, minorLayer, aax, 'a', aax._minorgridlines, true);
-    drawGridLines(xa, ya, minorLayer, bax, 'b', bax._minorgridlines, true);
+        axisLayer.style('opacity', trace.opacity);
 
-    // NB: These are not ommitted if the lines are not active. The joins must be executed
-    // in order for them to get cleaned up without a full redraw
-    drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
-    drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
+        drawGridLines(xa, ya, majorLayer, aax, 'a', aax._gridlines, true);
+        drawGridLines(xa, ya, majorLayer, bax, 'b', bax._gridlines, true);
+        drawGridLines(xa, ya, minorLayer, aax, 'a', aax._minorgridlines, true);
+        drawGridLines(xa, ya, minorLayer, bax, 'b', bax._minorgridlines, true);
 
-    var labelOrientationA = drawAxisLabels(gd, xa, ya, trace, t, labelLayer, aax._labels, 'a-label');
-    var labelOrientationB = drawAxisLabels(gd, xa, ya, trace, t, labelLayer, bax._labels, 'b-label');
+        // NB: These are not ommitted if the lines are not active. The joins must be executed
+        // in order for them to get cleaned up without a full redraw
+        drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
+        drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);
 
-    drawAxisTitles(gd, labelLayer, trace, t, xa, ya, labelOrientationA, labelOrientationB);
+        var labelOrientationA = drawAxisLabels(gd, xa, ya, trace, cd0, labelLayer, aax._labels, 'a-label');
+        var labelOrientationB = drawAxisLabels(gd, xa, ya, trace, cd0, labelLayer, bax._labels, 'b-label');
 
-    drawClipPath(trace, t, clipLayer, xa, ya);
-}
+        drawAxisTitles(gd, labelLayer, trace, cd0, xa, ya, labelOrientationA, labelOrientationB);
+
+        drawClipPath(trace, cd0, clipLayer, xa, ya);
+    });
+};
 
 function drawClipPath(trace, t, layer, xaxis, yaxis) {
     var seg, xp, yp, i;

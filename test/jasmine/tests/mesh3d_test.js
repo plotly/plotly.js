@@ -1,7 +1,7 @@
 var Plotly = require('@lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 describe('Test mesh3d restyle', function() {
     afterEach(destroyGraphDiv);
@@ -51,7 +51,7 @@ describe('Test mesh3d restyle', function() {
 
             return Plotly.purge(gd);
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });

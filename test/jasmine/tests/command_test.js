@@ -3,7 +3,7 @@ var Registry = require('@src/registry');
 var Plots = Plotly.Plots;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var Lib = require('@src/lib');
 
 describe('Plots.executeAPICommand', function() {
@@ -34,7 +34,9 @@ describe('Plots.executeAPICommand', function() {
                 expect(m.calls.argsFor(0)).toEqual([gd, 'foo', 'bar']);
 
                 expect(value).toEqual('resolution');
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
     });
@@ -47,14 +49,16 @@ describe('Plots.executeAPICommand', function() {
         });
 
         it('calls the API method and rejects', function(done) {
-            Plots.executeAPICommand(gd, 'restyle', ['foo', 'bar']).then(fail, function(value) {
+            Plots.executeAPICommand(gd, 'restyle', ['foo', 'bar']).then(failTest, function(value) {
                 var m = Registry.apiMethodRegistry.restyle;
                 expect(m).toHaveBeenCalled();
                 expect(m.calls.count()).toEqual(1);
                 expect(m.calls.argsFor(0)).toEqual([gd, 'foo', 'bar']);
 
                 expect(value).toEqual('rejection');
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
     });
@@ -62,7 +66,7 @@ describe('Plots.executeAPICommand', function() {
     describe('with the skip command', function() {
         it('resolves immediately', function(done) {
             Plots.executeAPICommand(gd, 'skip')
-                .catch(fail).then(done);
+                .catch(failTest).then(done);
         });
     });
 });
@@ -514,7 +518,9 @@ describe('component bindings', function() {
             return Plotly.restyle(gd, 'marker.width', 8);
         }).then(function() {
             expect(count).toEqual(1);
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('logs a warning if unable to create an observer', function() {
@@ -536,7 +542,9 @@ describe('component bindings', function() {
 
         Plotly.restyle(gd, 'marker.color', 'blue').then(function() {
             expect(gd.layout.sliders[0].active).toBe(4);
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('does not update the component if the value is not present', function(done) {
@@ -544,7 +552,9 @@ describe('component bindings', function() {
 
         Plotly.restyle(gd, 'marker.color', 'black').then(function() {
             expect(gd.layout.sliders[0].active).toBe(0);
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('udpates bound components when the computed value changes', function(done) {
@@ -555,7 +565,9 @@ describe('component bindings', function() {
         // nonetheless is bound by value to the component.
         Plotly.restyle(gd, 'line.color', 'blue').then(function() {
             expect(gd.layout.sliders[0].active).toBe(4);
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 });
 
@@ -623,7 +635,9 @@ describe('attaching component bindings', function() {
             // Bindings are no longer simple, so check to ensure they have
             // been removed
             expect(gd._internalEv._events.plotly_animatingframe).toBeUndefined();
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 
     it('attaches and updates bindings for updatemenus', function(done) {
@@ -676,6 +690,8 @@ describe('attaching component bindings', function() {
             // Bindings are no longer simple, so check to ensure they have
             // been removed
             expect(gd._internalEv._events.plotly_animatingframe).toBeUndefined();
-        }).catch(fail).then(done);
+        })
+        .catch(failTest)
+        .then(done);
     });
 });

@@ -27,3 +27,8 @@ exports.wrap180 = function(deg) {
     if(Math.abs(deg) > 180) deg -= Math.round(deg / 360) * 360;
     return deg;
 };
+
+exports.isFullCircle = function(sector) {
+    var arc = Math.abs(sector[1] - sector[0]);
+    return arc === 360;
+};
