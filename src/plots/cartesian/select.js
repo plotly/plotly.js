@@ -259,6 +259,8 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 if(clickmode === 'event') {
                     // TODO: remove in v2 - this was probably never intended to work as it does,
                     // but in case anyone depends on it we don't want to break it now.
+                    // Note that click-to-select introduced pre v2 also emitts proper
+                    // event data when clickmode is having 'select' in its flag list.
                     gd.emit('plotly_selected', undefined);
                 }
             }
@@ -528,24 +530,6 @@ function createPtNumTester(wantedPointNumber, wantedSearchInfo, subtract) {
 }
 
 function isPointOrBinSelected(clickedPtInfo) {
-    // TODO improve perf
-    // Primarily we need this function to determine if a click adds or subtracts from a selection.
-    //
-    // IME best user experience would be
-    // - that Shift+Click an unselected points adds to selection
-    // - and Shift+Click a selected point subtracts from selection.
-    //
-    // Several options:
-    // 1. Avoid problem at all by binding subtract-selection-by-click operation to Shift+Alt-Click.
-    //    Slightly less intuitive. A lot of programs deselect an already selected element when you
-    //    Shift+Click it.
-    // 2. Delegate decision to the traces module through an additional
-    //    isSelected(searchInfo, pointNumber) function. Traces like scatter or bar have
-    //    a selected flag attached to each calcData element, thus access to that information
-    //    would be fast. However, scattergl only maintains selectBatch and unselectBatch arrays.
-    //    So simply searching through those arrays in scattegl would be slow. Just imagine
-    //    a user selecting all data points with one lasso polygon. So scattergl would require some
-    //    work.
     var trace = clickedPtInfo.searchInfo.cd[0].trace;
     var ptNum = clickedPtInfo.pointNumber;
     var ptNums = clickedPtInfo.pointNumbers;
@@ -556,6 +540,11 @@ function isPointOrBinSelected(clickedPtInfo) {
     // a bin is selected, all others are as well
     var ptNumToTest = ptNumsSet ? ptNums[0] : ptNum;
 
+    // TODO potential performance improvement
+    // Primarily we need this function to determine if a click adds
+    // or subtracts from a selection.
+    // In cases `trace.selectedpoints` is a huge array, indexOf
+    // might be slow. One remedy would be to introduce a hash somewhere.
     return trace.selectedpoints ? trace.selectedpoints.indexOf(ptNumToTest) > -1 : false;
 }
 

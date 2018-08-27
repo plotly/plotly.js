@@ -189,10 +189,11 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 // triggers at least one interaction in pan/zoom mode. Otherwise, the
                 // select/lasso outlines are deleted (in plots.js.cleanPlot) but the selection
                 // cache isn't cleared. So when the user switches back to select/lasso and
-                // 'add to a selection' with Shift, the "old", seemingly removed outlines
-                // are redrawn again because the selection cache still holds their points.
+                // 'adds to a selection' with Shift, the "old", seemingly removed outlines
+                // are redrawn again because the selection cache still holds their coordinates.
                 // However, this isn't easily solved, since plots.js would need
-                // to have a reference to the dragOptions object.
+                // to have a reference to the dragOptions object (which holds the
+                // selection cache).
                 clearAndResetSelect();
             }
 
