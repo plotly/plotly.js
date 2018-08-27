@@ -17,7 +17,8 @@ var angleDelta = Lib.angleDelta;
 var angleDist = Lib.angleDist;
 var deg2rad = Lib.deg2rad;
 
-/* is pt (r,a) inside polygon made up vertices at angles 'vangles'
+/**
+ * is pt (r,a) inside polygon made up vertices at angles 'vangles'
  * inside a given polar sector
  *
  * @param {number} r : pt's radial coordinate
@@ -199,7 +200,8 @@ function findPolygonOffset(r, sector, vangles) {
     return [minX, minY];
 }
 
-/* find vertex angles (in 'vangles') the enclose angle 'a'
+/**
+ * find vertex angles (in 'vangles') the enclose angle 'a'
  *
  * @param {number} a : angle in *radians*
  * @param {array} vangles : angles of polygon vertices in *radians*
@@ -234,7 +236,8 @@ function transformForSVG(pts0, cx, cy) {
     return pts1;
 }
 
-/* path polygon
+/**
+ * path polygon
  *
  * @param {number} r : polygon 'radius'
  * @param {2-item array} sector : polar sector in which polygon is clipped
@@ -249,7 +252,8 @@ function pathPolygon(r, sector, vangles, cx, cy) {
     return 'M' + transformForSVG(poly, cx, cy).join('L');
 }
 
-/* path a polygon 'annulus'
+/**
+ * path a polygon 'annulus'
  * i.e. a polygon with a concentric hole
  *
  * N.B. this routine uses the evenodd SVG rule

@@ -28,7 +28,8 @@ function wrap180(deg) {
     return deg;
 }
 
-/* is sector a full circle?
+/**
+ * is sector a full circle?
  * ... this comes up a lot in SVG path-drawing routines
  *
  * @param {2-item array} sector sector angles in *degrees*
@@ -39,8 +40,8 @@ function isFullCircle(sector) {
     return arc === 360;
 }
 
-/* angular delta between angle 'a' and 'b'
- *
+/**
+ * angular delta between angle 'a' and 'b'
  * solution taken from: https://stackoverflow.com/a/2007279
  *
  * @param {number} a : first angle in *radians*
@@ -52,7 +53,8 @@ function angleDelta(a, b) {
     return Math.atan2(Math.sin(d), Math.cos(d));
 }
 
-/* angular distance between angle 'a' and 'b'
+/**
+ * angular distance between angle 'a' and 'b'
  *
  * @param {number} a : first angle in *radians*
  * @param {number} b : second angle in *radians*
@@ -62,7 +64,8 @@ function angleDist(a, b) {
     return Math.abs(angleDelta(a, b));
 }
 
-/* is angle inside sector?
+/**
+ * is angle inside sector?
  *
  * @param {number} a : angle to test in *radians*
  * @param {2-item array} sector : sector angles in *degrees*
@@ -91,7 +94,8 @@ function isAngleInsideSector(a, sector) {
     return (a0 >= s0 && a0 <= s1) || (a1 >= s0 && a1 <= s1);
 }
 
-/* is pt (r,a) inside sector?
+/**
+ * is pt (r,a) inside sector?
  *
  * @param {number} r : pt's radial coordinate
  * @param {number} a : pt's angular coordinate in *radians*
@@ -187,7 +191,8 @@ function _path(r0, r1, a0, a1, cx, cy, isClosed) {
     return p;
 }
 
-/* path an arc
+/**
+ * path an arc
  *
  * @param {number} r : radius
  * @param {number} a0 : first angular coordinate
@@ -200,7 +205,8 @@ function pathArc(r, a0, a1, cx, cy) {
     return _path(null, r, a0, a1, cx, cy, 0);
 }
 
-/* path a sector
+/**
+ * path a sector
  *
  * @param {number} r : radius
  * @param {number} a0 : first angular coordinate
@@ -213,7 +219,8 @@ function pathSector(r, a0, a1, cx, cy) {
     return _path(null, r, a0, a1, cx, cy, 1);
 }
 
-/* path an annulus
+/**
+ * path an annulus
  *
  * @param {number} r0 : first radial coordinate
  * @param {number} r1 : second radial coordinate

@@ -115,7 +115,8 @@ exports.roundUp = function(val, arrayIn, reverse) {
     return arrayIn[low];
 };
 
-/* find index in array 'arr' that minimizes 'fn'
+/**
+ * find index in array 'arr' that minimizes 'fn'
  *
  * @param {array} arr : array where to search
  * @param {fn (optional)} fn : function to minimize,
