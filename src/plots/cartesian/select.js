@@ -311,13 +311,14 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
         var clickedPtInfo = extractClickedPtInfo(hoverData, searchTraces);
         var isBinnedTrace = clickedPtInfo.pointNumbers.length > 0;
 
-        // TODO perf: call potentially costly operation (see impl comment) only when needed
-        pointOrBinSelected = isPointOrBinSelected(clickedPtInfo);
 
-        if(pointOrBinSelected &&
-          (isBinnedTrace ?
+        // Note: potentially costly operation isPointOrBinSelected is
+        // called as late as possible through the use of an assignment
+        // in an if condition.
+        if((isBinnedTrace ?
             isOnlyThisBinSelected(searchTraces, clickedPtInfo) :
-            isOnlyOnePointSelected(searchTraces)))
+            isOnlyOnePointSelected(searchTraces)) &&
+          (pointOrBinSelected = isPointOrBinSelected(clickedPtInfo)))
         {
             if(polygonOutlines) polygonOutlines.remove();
             for(i = 0; i < searchTraces.length; i++) {
@@ -333,7 +334,10 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
                 gd.emit('plotly_deselect', null);
             }
         } else {
-            subtract = evt.shiftKey && pointOrBinSelected;
+            subtract = evt.shiftKey &&
+              (pointOrBinSelected !== undefined ?
+                pointOrBinSelected :
+                isPointOrBinSelected(clickedPtInfo));
             currentPolygon = createPtNumTester(clickedPtInfo.pointNumber, clickedPtInfo.searchInfo, subtract);
 
             var concatenatedPolygons = dragOptions.polygons.concat([currentPolygon]);
