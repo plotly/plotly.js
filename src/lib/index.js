@@ -729,7 +729,7 @@ lib.ensureSingle = function(parent, nodeType, className, enterFn) {
     var sel = parent.select(nodeType + (className ? '.' + className : ''));
     if(sel.size()) return sel;
 
-    var layer = parent.append(nodeType).classed(className, true);
+    var layer = parent.append(nodeType).classed(className || '', true);
     if(enterFn) layer.call(enterFn);
 
     return layer;
