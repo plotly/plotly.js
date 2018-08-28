@@ -22,7 +22,7 @@ Bar.arraysToCalcdata = require('./arrays_to_calcdata');
 Bar.plot = require('./plot');
 Bar.style = require('./style').style;
 Bar.styleOnSelect = require('./style').styleOnSelect;
-Bar.hoverPoints = require('./hover');
+Bar.hoverPoints = require('./hover').hoverPoints;
 Bar.selectPoints = require('./select');
 
 Bar.moduleType = 'trace';

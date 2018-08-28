@@ -55,10 +55,10 @@ module.exports = function plot(gd, subplot, cdbar) {
             var s0 = di.s0 = di.b;
             var s1 = di.s1 = s0 + di.s;
 
-            var rp0 = radialAxis.c2p(s0);
-            var rp1 = radialAxis.c2p(s1);
-            var thetag0 = angularAxis.c2g(p0);
-            var thetag1 = angularAxis.c2g(p1);
+            var rp0 = di.rp0 = radialAxis.c2p(s0);
+            var rp1 = di.rp1 = radialAxis.c2p(s1);
+            var thetag0 = di.thetag0 = angularAxis.c2g(p0);
+            var thetag1 = di.thetag1 = angularAxis.c2g(p1);
 
             var dPath;
 

@@ -9,7 +9,7 @@
 
 'use strict';
 
-var barHover = require('../bar/hover');
+var barHover = require('../bar/hover').hoverPoints;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
