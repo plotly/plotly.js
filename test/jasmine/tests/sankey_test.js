@@ -537,17 +537,41 @@ describe('sankey tests', function() {
             mouseEvent('mouseout', pos[0], pos[1]);
         });
 
-        it('should output correct hover/click/unhover event data', function(done) {
+        function _assert(d, expectedPtData) {
+            expect(d.event).toBeDefined('original event reference');
+
+            var ptData = d.points[0];
+            Object.keys(expectedPtData).forEach(function(k) {
+                expect(ptData[k]).toBe(expectedPtData[k], 'point data for ' + k);
+            });
+        }
+
+        it('should output correct click event data', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
-            function _assert(d, expectedPtData) {
-                expect(d.event).toBeDefined('original event reference');
-
-                var ptData = d.points[0];
-                Object.keys(expectedPtData).forEach(function(k) {
-                    expect(ptData[k]).toBe(expectedPtData[k], 'point data for ' + k);
+            Plotly.plot(gd, fig)
+            .then(function() { return _click('node'); })
+            .then(function(d) {
+                _assert(d, {
+                    curveNumber: 0,
+                    pointNumber: 4,
+                    label: 'Solid'
                 });
-            }
+            })
+            .then(function() { return _click('link'); })
+            .then(function(d) {
+                _assert(d, {
+                    curveNumber: 0,
+                    pointNumber: 61,
+                    value: 46.477
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('should output correct hover/unhover event data', function(done) {
+            var fig = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, fig)
             .then(function() { return _hover('node'); })
@@ -559,22 +583,6 @@ describe('sankey tests', function() {
                 });
             })
             .then(function() { return _hover('link'); })
-            .then(function(d) {
-                _assert(d, {
-                    curveNumber: 0,
-                    pointNumber: 61,
-                    value: 46.477
-                });
-            })
-            .then(function() { return _click('node'); })
-            .then(function(d) {
-                _assert(d, {
-                    curveNumber: 0,
-                    pointNumber: 4,
-                    label: 'Solid'
-                });
-            })
-            .then(function() { return _click('link'); })
             .then(function(d) {
                 _assert(d, {
                     curveNumber: 0,
@@ -599,6 +607,30 @@ describe('sankey tests', function() {
                 });
             })
             .catch(failTest)
+            .then(done);
+        });
+
+        it('should not output hover/unhover event data when hovermoder is false', function(done) {
+            var fig = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, fig)
+            .then(function() { return Plotly.relayout(gd, 'hovermode', false); })
+            .then(function() { return _hover('node'); })
+            .then(failTest).catch(function(err) {
+                expect(err).toBe('plotly_hover did not get called!');
+            })
+            .then(function() { return _unhover('node'); })
+            .then(failTest).catch(function(err) {
+                expect(err).toBe('plotly_unhover did not get called!');
+            })
+            .then(function() { return _hover('link'); })
+            .then(failTest).catch(function(err) {
+                expect(err).toBe('plotly_hover did not get called!');
+            })
+            .then(function() { return _unhover('link'); })
+            .then(failTest).catch(function(err) {
+                expect(err).toBe('plotly_unhover did not get called!');
+            })
             .then(done);
         });
     });
