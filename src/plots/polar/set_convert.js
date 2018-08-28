@@ -79,8 +79,7 @@ function setConvertRadial(ax, polarLayout) {
             return ax.l2c(v + rl0);
         };
 
-        // TODO might need to r2l these range values?
-        var m = polarLayout._subplot.radius / (rng[1] - rng[0]);
+        var m = polarLayout._subplot.radius / (rl1 - rl0);
 
         ax.g2p = function(v) { return v * m; };
         ax.c2p = function(v) { return ax.g2p(ax.c2g(v)); };
