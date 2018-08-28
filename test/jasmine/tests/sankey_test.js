@@ -388,15 +388,15 @@ describe('sankey tests', function() {
     describe('Test hover/click interactions:', function() {
         afterEach(destroyGraphDiv);
 
+        function _hover(px, py) {
+            mouseEvent('mousemove', px, py);
+            mouseEvent('mouseover', px, py);
+            Lib.clearThrottle();
+        }
+
         it('should show the correct hover labels', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
-
-            function _hover(px, py) {
-                mouseEvent('mousemove', px, py);
-                mouseEvent('mouseover', px, py);
-                Lib.clearThrottle();
-            }
 
             Plotly.plot(gd, mockCopy).then(function() {
                 _hover(404, 302);
@@ -464,12 +464,6 @@ describe('sankey tests', function() {
             var mockCopy = Lib.extendDeep({}, mock);
             delete mockCopy.data[0].link.label;
 
-            function _hover(px, py) {
-                mouseEvent('mousemove', px, py);
-                mouseEvent('mouseover', px, py);
-                Lib.clearThrottle();
-            }
-
             Plotly.plot(gd, mockCopy)
                 .then(function() {
                     _hover(450, 300);
@@ -486,12 +480,6 @@ describe('sankey tests', function() {
         it('should not show labels if hovermode is false', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
-
-            function _hover(px, py) {
-                mouseEvent('mousemove', px, py);
-                mouseEvent('mouseover', px, py);
-                Lib.clearThrottle();
-            }
 
             Plotly.plot(gd, mockCopy).then(function() {
                 return Plotly.relayout(gd, 'hovermode', false);
@@ -645,5 +633,5 @@ function assertLabel(content, style) {
 
 function assertNoLabel() {
     var g = d3.selectAll('.hovertext');
-    expect(g[0].length).toBe(0);
+    expect(g.size()).toBe(0);
 }
