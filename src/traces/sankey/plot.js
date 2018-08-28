@@ -177,6 +177,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkUnhover = function(element, d, sankey) {
+        if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
         gd.emit('plotly_unhover', {
             event: d3.event,
@@ -240,6 +241,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeUnhover = function(element, d, sankey) {
+        if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         gd.emit('plotly_unhover', {
             event: d3.event,
