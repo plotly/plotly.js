@@ -482,6 +482,28 @@ describe('sankey tests', function() {
                 .catch(failTest)
                 .then(done);
         });
+
+        it('should not show labels if hovermode is false', function(done) {
+            var gd = createGraphDiv();
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            function _hover(px, py) {
+                mouseEvent('mousemove', px, py);
+                mouseEvent('mouseover', px, py);
+                Lib.clearThrottle();
+            }
+
+            Plotly.plot(gd, mockCopy).then(function() {
+                return Plotly.relayout(gd, 'hovermode', false);
+            })
+            .then(function() {
+                _hover(404, 302);
+
+                assertNoLabel();
+            })
+            .catch(failTest)
+            .then(done);
+        });
     });
 
     describe('Test hover/click event data:', function() {
@@ -619,4 +641,9 @@ function assertLabel(content, style) {
         fontFamily: style[3],
         fontColor: style[4]
     });
+}
+
+function assertNoLabel() {
+    var g = d3.selectAll('.hovertext');
+    expect(g[0].length).toBe(0);
 }
