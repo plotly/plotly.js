@@ -63,26 +63,26 @@ module.exports = function setConvert(ax, polarLayout, fullLayout) {
 
 function setConvertRadial(ax, polarLayout) {
     ax.setGeometry = function() {
-        var rng = ax.range;
+        var rl0 = ax._rl[0];
+        var rl1 = ax._rl[1];
 
-        var rFilter = rng[0] > rng[1] ?
+        var rFilter = rl0 > rl1 ?
             function(v) { return v <= 0; } :
             function(v) { return v >= 0; };
 
         ax.c2g = function(v) {
-            var r = ax.c2r(v) - rng[0];
+            var r = ax.c2l(v) - rl0;
             return rFilter(r) ? r : 0;
         };
 
         ax.g2c = function(v) {
-            return ax.r2c(v + rng[0]);
+            return ax.l2c(v + rl0);
         };
 
         // TODO might need to r2l these range values?
         var m = polarLayout._subplot.radius / (rng[1] - rng[0]);
 
         ax.g2p = function(v) { return v * m; };
-
         ax.c2p = function(v) { return ax.g2p(ax.c2g(v)); };
     };
 }
