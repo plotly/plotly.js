@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "values": [
+        50, 49, 48, 47, 46, 45, 44, 43, 42, 41
+      ],
+      "pull": [
+        0, 0.5, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0.5
+      ],
+      "sort": false,
+      "type": "pie",
+      "textposition": "inside",
+      "title": "Withering Flower"
+    }
+  ],
+  "layout": {
+    "height": 600,
+    "width": 400,
+    "showlegend": false
+  }
+}

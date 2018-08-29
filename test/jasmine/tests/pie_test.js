@@ -182,6 +182,53 @@ describe('Pie traces:', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('shows title in hole', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [2, 2, 2, 2],
+            title: 'Pie',
+            titleposition: 'inhole',
+            hole: 0.5,
+            type: 'pie',
+        }], {height: 300, width: 300})
+        .then(function() {
+            var title = d3.selectAll('.titletext text');
+            expect(title.size()).toBe(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not show title inside if there is no hole', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [2, 2, 2, 2],
+            title: 'Pie',
+            titleposition: 'inhole',
+            hole: 0,
+            type: 'pie',
+        }], {height: 300, width: 300})
+        .then(function() {
+            var title = d3.selectAll('.titletext text');
+            expect(title.size()).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('shows title outside', function(done) {
+        Plotly.newPlot(gd, [{
+            values: [1, 1, 1, 1, 2],
+            title: 'Pie',
+            titleposition: 'outside',
+            type: 'pie',
+        }], {height: 300, width: 300})
+        .then(function() {
+            var title = d3.selectAll('.titletext text');
+            expect(title.size()).toBe(1);
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('pie hovering', function() {

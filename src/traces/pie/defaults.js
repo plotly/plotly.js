@@ -65,6 +65,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
+    var title = coerce('title');
+    if(title) {
+        var titlePosition = coerce('titleposition');
+
+        if(titlePosition === 'inhole' || titlePosition === 'outside') {
+            coerceFont(coerce, 'titlefont', layout.font);
+        }
+    }
+
     handleDomainDefaults(traceOut, layout, coerce);
 
     coerce('hole');

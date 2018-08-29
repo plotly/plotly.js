@@ -308,6 +308,53 @@ module.exports = function plot(gd, cdpie) {
                 });
             });
 
+            // add the title
+            var hasTitle = trace.title &&
+                ((trace.titleposition === 'inhole' && trace.hole > 0) ||
+                 (trace.titleposition === 'outside'));
+            var titleTextGroup = d3.select(this).selectAll('g.titletext')
+                .data(hasTitle ? [0] : []);
+
+            titleTextGroup.enter().append('g')
+                .classed('titletext', true);
+            titleTextGroup.exit().remove();
+
+            titleTextGroup.each(function() {
+                var titleText = Lib.ensureSingle(d3.select(this), 'text', '', function(s) {
+                    // prohibit tex interpretation as above
+                    s.attr('data-notex', 1);
+                });
+
+                titleText.text(trace.title)
+                    .attr({
+                        'class': 'titletext',
+                        transform: '',
+                        'text-anchor': 'middle'
+                    })
+                .call(Drawing.font, trace.titlefont)
+                .call(svgTextUtils.convertToTspans, gd);
+
+
+                var titleBB = Drawing.bBox(titleText.node());
+                // translation and scaling for the title text box.
+                // The translation is for the center point.
+                var transform;
+
+                if(trace.titleposition === 'outside') {
+                    transform = positionTitleOutside(titleBB, cd0, fullLayout._size);
+                } else {
+                    transform = positionTitleInside(titleBB, cd0);
+                }
+
+                titleText.attr('transform',
+                    'translate(' + transform.x + ',' + transform.y + ')' +
+                    (transform.scale < 1 ? ('scale(' + transform.scale + ')') : '') +
+                    'translate(' +
+                            (-(titleBB.left + titleBB.right) / 2) + ',' +
+                            (-(titleBB.top + titleBB.bottom) / 2) +
+                        ')');
+            });
+
             // now make sure no labels overlap (at least within one pie)
             if(hasOutsideText) scootLabels(quadrants, trace);
             slices.each(function(pt) {
@@ -454,6 +501,72 @@ function transformOutsideText(textBB, pt) {
     };
 }
 
+function positionTitleInside(titleBB, cd0) {
+    var textDiameter = Math.sqrt(titleBB.width * titleBB.width + titleBB.height * titleBB.height);
+    return {
+        x: cd0.cx,
+        y: cd0.cy,
+        scale: cd0.trace.hole * cd0.r * 2 / textDiameter
+    };
+}
+
+function positionTitleOutside(titleBB, cd0, plotSize) {
+    var scaleX, scaleY, chartWidth, titleSpace, titleShift, maxPull;
+    var trace = cd0.trace;
+
+    maxPull = getMaxPull(trace);
+    chartWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
+    scaleX = chartWidth / titleBB.width;
+    if(isSinglePie(trace)) {
+        titleShift = trace.titlefont.size / 2;
+        // we need to leave enough free space for an outside label
+        if(trace.outsidetextfont) titleShift += 3 * trace.outsidetextfont.size / 2;
+        else titleShift += trace.titlefont.size / 4;
+        return {
+            x: cd0.cx,
+            y: cd0.cy - (1 + maxPull) * cd0.r - titleShift,
+            scale: scaleX
+        };
+    }
+    titleSpace = getTitleSpace(trace, plotSize);
+    // we previously left a free space of height titleSpace.
+    // The text must fit in this space.
+    scaleY = titleSpace / titleBB.height;
+    return {
+        x: cd0.cx,
+        y: cd0.cy - (1 + maxPull) * cd0.r - (titleSpace / 2),
+        scale: Math.min(scaleX, scaleY)
+    };
+}
+
+function isSinglePie(trace) {
+    // check if there is a single pie per y-column
+    if(trace.domain.y[0] === 0 && trace.domain.y[1] === 1) return true;
+    return false;
+}
+
+function getTitleSpace(trace, plotSize) {
+    var chartHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
+    // leave 3/2 * titlefont.size free space. We need at least titlefont.size
+    // space, and the 1/2 * titlefont.size is a small buffer to avoid the text
+    // touching the pie.
+    var titleSpace = (trace.title && trace.titleposition === 'outside') ?
+        (3 * trace.titlefont.size / 2) : 0;
+    if(chartHeight > titleSpace) return titleSpace;
+    else return chartHeight / 2;
+}
+
+function getMaxPull(trace) {
+    var maxPull = trace.pull, j;
+    if(Array.isArray(maxPull)) {
+        maxPull = 0;
+        for(j = 0; j < trace.pull.length; j++) {
+            if(trace.pull[j] > maxPull) maxPull = trace.pull[j];
+        }
+    }
+    return maxPull;
+}
+
 function scootLabels(quadrants, trace) {
     var xHalf, yHalf, equatorFirst, farthestX, farthestY,
         xDiffSign, yDiffSign, thisQuad, oppositeQuad,
@@ -570,21 +683,18 @@ function scalePies(cdpie, plotSize) {
     for(i = 0; i < cdpie.length; i++) {
         cd0 = cdpie[i][0];
         trace = cd0.trace;
+
         pieBoxWidth = plotSize.w * (trace.domain.x[1] - trace.domain.x[0]);
         pieBoxHeight = plotSize.h * (trace.domain.y[1] - trace.domain.y[0]);
+        // leave some space for the title, if it will be displayed outside
+        if(!isSinglePie(trace)) pieBoxHeight -= getTitleSpace(trace, plotSize);
 
-        maxPull = trace.pull;
-        if(Array.isArray(maxPull)) {
-            maxPull = 0;
-            for(j = 0; j < trace.pull.length; j++) {
-                if(trace.pull[j] > maxPull) maxPull = trace.pull[j];
-            }
-        }
+        maxPull = getMaxPull(trace);
 
         cd0.r = Math.min(pieBoxWidth, pieBoxHeight) / (2 + 2 * maxPull);
 
         cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
-        cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0]) / 2;
+        cd0.cy = plotSize.t + plotSize.h * (1 - trace.domain.y[0]) - pieBoxHeight / 2;
 
         if(trace.scalegroup && scaleGroups.indexOf(trace.scalegroup) === -1) {
             scaleGroups.push(trace.scalegroup);
