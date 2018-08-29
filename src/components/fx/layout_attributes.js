@@ -26,17 +26,18 @@ module.exports = {
         editType: 'plot',
         description: [
             'Determines the mode of single click interactions.',
-            '*event* is the default value and only emits *plotly_selected*',
-            'events with no event data (kept for compatibility reasons) in dragmodes',
-            '*lasso* and *select*. The *select* flag enables selecting single',
-            'data points by click. Its behavior is closely tied to *hovermode*. The',
-            'data point that is being currently hovered on, will be the data point',
-            'to be selected. So setting *hovermode* to *closest* may be the best fit',
-            'for most applications. Click-to-select also supports persistent selections,',
+            '*event* is the default value and emits the `plotly_click`',
+            'event. In addition this mode emits the `plotly_selected` event',
+            'in drag modes *lasso* and *select*, but with no event data attached',
+            '(kept for compatibility reasons).',
+            'The *select* flag enables selecting single',
+            'data points via click. This mode also supports persistent selections,',
             'meaning that pressing Shift while clicking, adds to / subtracts from an',
-            'existing selection.',
-            'When *clickmode* is being set to *select+event*, click-to-select is enabled',
-            'and select events are sent with corresponding eventData attached.'
+            'existing selection. *select* with `hovermode`: *x* can be confusing, consider',
+            'explicitly setting `hovermode`: *closest* when using this feature.',
+            'Selection events are sent accordingly as long as *event* flag is set as well.',
+            'When the *event* flag is missing, `plotly_click` and `plotly_selected`',
+            'events are not fired.'
         ].join(' ')
     },
     dragmode: {
