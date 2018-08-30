@@ -24,6 +24,7 @@ module.exports = {
         flags: ['event', 'select'],
         dflt: 'event',
         editType: 'plot',
+        extras: ['none'],
         description: [
             'Determines the mode of single click interactions.',
             '*event* is the default value and emits the `plotly_click`',
