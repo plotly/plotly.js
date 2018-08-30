@@ -16,7 +16,6 @@ var Color = require('../../components/color');
 var Fx = require('../../components/fx');
 
 var polygon = require('../../lib/polygon');
-var select = require('../../lib/select');
 var throttle = require('../../lib/throttle');
 var makeEventData = require('../../components/fx/helpers').makeEventData;
 var getFromId = require('./axis_ids').getFromId;
@@ -27,8 +26,6 @@ var MINSELECT = constants.MINSELECT;
 
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
-var pointSelectionDef = select.pointSelectionDef;
-var multiTester = select.multiTester;
 
 function getAxId(ax) { return ax._id; }
 
@@ -330,7 +327,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
               (pointOrBinSelected !== undefined ?
                 pointOrBinSelected :
                 isPointOrBinSelected(clickedPtInfo));
-            currentSelectionDef = pointSelectionDef(clickedPtInfo.pointNumber, clickedPtInfo.searchInfo, subtract);
+            currentSelectionDef = newPointSelectionDef(clickedPtInfo.pointNumber, clickedPtInfo.searchInfo, subtract);
 
             var allSelectionDefs = dragOptions.selectionDefs.concat([currentSelectionDef]);
             selectionTester = multiTester(allSelectionDefs);
@@ -361,6 +358,107 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
             }
         }
     }
+}
+
+/**
+ * Constructs a new point selection definition object.
+ */
+function newPointSelectionDef(pointNumber, searchInfo, subtract) {
+    return {
+        pointNumber: pointNumber,
+        searchInfo: searchInfo,
+        subtract: subtract
+    };
+}
+
+function isPointSelectionDef(o) {
+    return 'pointNumber' in o && 'searchInfo' in o;
+}
+
+/*
+ * Constructs a new point number tester.
+ */
+function newPointNumTester(pointSelectionDef) {
+    return {
+        xmin: 0,
+        xmax: 0,
+        ymin: 0,
+        ymax: 0,
+        pts: [],
+        contains: function(pt, omitFirstEdge, pointNumber, searchInfo) {
+            var idxWantedTrace = pointSelectionDef.searchInfo.cd[0].trace._expandedIndex;
+            var idxActualTrace = searchInfo.cd[0].trace._expandedIndex;
+            return idxActualTrace === idxWantedTrace &&
+              pointNumber === pointSelectionDef.pointNumber;
+        },
+        isRect: false,
+        degenerate: false,
+        subtract: pointSelectionDef.subtract
+    };
+}
+
+/**
+ * Wraps multiple selection testers.
+ *
+ * @param {Array} list - An array of selection testers.
+ *
+ * @return a selection tester object with a contains function
+ * that can be called to evaluate a point against all wrapped
+ * selection testers that were passed in list.
+ */
+function multiTester(list) {
+    var testers = [];
+    var xmin = isPointSelectionDef(list[0]) ? 0 : list[0][0][0];
+    var xmax = xmin;
+    var ymin = isPointSelectionDef(list[0]) ? 0 : list[0][0][1];
+    var ymax = ymin;
+
+    for(var i = 0; i < list.length; i++) {
+        if(isPointSelectionDef(list[i])) {
+            testers.push(newPointNumTester(list[i]));
+        } else {
+            var tester = polygon.tester(list[i]);
+            tester.subtract = list[i].subtract;
+            testers.push(tester);
+            xmin = Math.min(xmin, tester.xmin);
+            xmax = Math.max(xmax, tester.xmax);
+            ymin = Math.min(ymin, tester.ymin);
+            ymax = Math.max(ymax, tester.ymax);
+        }
+    }
+
+    /**
+     * Tests if the given point is within this tester.
+     *
+     * @param {Array} pt - [0] is the x coordinate, [1] is the y coordinate of the point.
+     * @param {*} arg - An optional parameter to pass down to wrapped testers.
+     * @param {number} pointNumber - The point number of the point within the underlying data array.
+     * @param {number} searchInfo - An object identifying the trace the point is contained in.
+     *
+     * @return {boolean} true if point is considered to be selected, false otherwise.
+     */
+    function contains(pt, arg, pointNumber, searchInfo) {
+        var contained = false;
+        for(var i = 0; i < testers.length; i++) {
+            if(testers[i].contains(pt, arg, pointNumber, searchInfo)) {
+                // if contained by subtract tester - exclude the point
+                contained = testers[i].subtract === false;
+            }
+        }
+
+        return contained;
+    }
+
+    return {
+        xmin: xmin,
+        xmax: xmax,
+        ymin: ymin,
+        ymax: ymax,
+        pts: [],
+        contains: contains,
+        isRect: false,
+        degenerate: false
+    };
 }
 
 function coerceSelectionsCache(evt, gd, dragOptions) {
