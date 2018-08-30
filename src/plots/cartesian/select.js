@@ -294,16 +294,8 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
     var clickmode = gd._fullLayout.clickmode;
     var sendEvents = clickmode.indexOf('event') > -1;
     var selection = [];
-    var searchTraces;
-    var searchInfo;
-    var currentSelectionDef;
-    var selectionTester;
-    var traceSelection;
-    var thisTracesSelection;
-    var pointOrBinSelected;
-    var subtract;
-    var eventData;
-    var i;
+    var searchTraces, searchInfo, currentSelectionDef, selectionTester, traceSelection;
+    var thisTracesSelection, pointOrBinSelected, subtract, eventData, i;
 
     if(isHoverDataSet(hoverData)) {
         coerceSelectionsCache(evt, gd, dragOptions);
@@ -416,9 +408,7 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
     var searchTraces = [];
     var xAxisIds = xAxes.map(getAxId);
     var yAxisIds = yAxes.map(getAxId);
-    var cd;
-    var trace;
-    var i;
+    var cd, trace, i;
 
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
@@ -457,8 +447,7 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
 
 function drawSelection(polygons, outlines) {
     var paths = [];
-    var i;
-    var d;
+    var i, d;
 
     for(i = 0; i < polygons.length; i++) {
         var ppts = polygons[i];
@@ -481,8 +470,7 @@ function extractClickedPtInfo(hoverData, searchTraces) {
     var hoverDatum = hoverData[0];
     var pointNumber = -1;
     var pointNumbers = [];
-    var searchInfo;
-    var i;
+    var searchInfo, i;
 
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
@@ -536,10 +524,7 @@ function isPointOrBinSelected(clickedPtInfo) {
 
 function isOnlyThisBinSelected(searchTraces, clickedPtInfo) {
     var tracesWithSelectedPts = [];
-    var searchInfo;
-    var trace;
-    var isSameTrace;
-    var i;
+    var searchInfo, trace, isSameTrace, i;
 
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
@@ -568,9 +553,7 @@ function isOnlyThisBinSelected(searchTraces, clickedPtInfo) {
 
 function isOnlyOnePointSelected(searchTraces) {
     var len = 0;
-    var searchInfo;
-    var trace;
-    var i;
+    var searchInfo, trace, i;
 
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];

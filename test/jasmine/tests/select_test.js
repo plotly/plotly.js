@@ -200,8 +200,7 @@ describe('Click-to-select', function() {
      */
     function assertSelectedPoints(expected) {
         var expectedPtsPerTrace = toArrayOfArrays(expected);
-        var expectedPts;
-        var traceNum;
+        var expectedPts, traceNum;
 
         for(traceNum = 0; traceNum < expectedPtsPerTrace.length; traceNum++) {
             expectedPts = expectedPtsPerTrace[traceNum];
@@ -210,8 +209,7 @@ describe('Click-to-select', function() {
         }
 
         function toArrayOfArrays(expected) {
-            var isArrayInArray;
-            var i;
+            var isArrayInArray, i;
 
             if(Array.isArray(expected)) {
                 isArrayInArray = false;
