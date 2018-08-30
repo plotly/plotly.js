@@ -474,10 +474,10 @@ function extractClickedPtInfo(hoverData, searchTraces) {
                 break;
             }
 
-            // TODO hoverDatum not having a pointNumber but a binNumber seems to be an oddity of histogram only
-            // Not deleting .pointNumber in histogram/event_data.js would simplify code here and in addition
-            // would not break the hover event structure
-            // documented at https://plot.ly/javascript/hover-events/
+            // Hint: in some traces like histogram, one graphical element
+            // doesn't correspond to one particular data point, but to
+            // bins of data points. Thus, hoverDatum can have a binNumber
+            // property instead of pointNumber.
             if(hoverDatum.pointNumber !== undefined) {
                 pointNumber = hoverDatum.pointNumber;
             } else if(hoverDatum.binNumber !== undefined) {
