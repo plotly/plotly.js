@@ -315,10 +315,10 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
         // Note: potentially costly operation isPointOrBinSelected is
         // called as late as possible through the use of an assignment
         // in an if condition.
-        if((isBinnedTrace ?
+        if(isBinnedTrace ?
             isOnlyThisBinSelected(searchTraces, clickedPtInfo) :
-            isOnlyOnePointSelected(searchTraces)) &&
-          (pointOrBinSelected = isPointOrBinSelected(clickedPtInfo)))
+            isOnlyOnePointSelected(searchTraces) &&
+                (pointOrBinSelected = isPointOrBinSelected(clickedPtInfo)))
         {
             if(polygonOutlines) polygonOutlines.remove();
             for(i = 0; i < searchTraces.length; i++) {
