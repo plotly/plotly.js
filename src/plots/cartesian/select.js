@@ -372,20 +372,13 @@ function coerceSelectionsCache(evt, gd, dragOptions) {
       fullLayout._lastSelectedSubplot &&
       fullLayout._lastSelectedSubplot === plotinfo.id
     );
-
-    if(
-      selectingOnSameSubplot &&
-      (evt.shiftKey || evt.altKey) &&
-      (plotinfo.selection && plotinfo.selection.selectionDefs) &&
-      !dragOptions.selectionDefs
-    ) {
+    var hasModifierKey = evt.shiftKey || evt.altKey;
+    if(selectingOnSameSubplot && hasModifierKey &&
+      (plotinfo.selection && plotinfo.selection.selectionDefs) && !dragOptions.selectionDefs) {
         // take over selection definitions from prev mode, if any
         dragOptions.selectionDefs = plotinfo.selection.selectionDefs;
         dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
-    } else if(
-      (!evt.shiftKey && !evt.altKey) ||
-      ((evt.shiftKey || evt.altKey) && !plotinfo.selection)
-    ) {
+    } else if(!hasModifierKey || !plotinfo.selection) {
         clearSelectionsCache(dragOptions);
     }
 
