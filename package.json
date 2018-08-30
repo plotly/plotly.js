@@ -56,7 +56,6 @@
   },
   "dependencies": {
     "3d-view": "^2.0.0",
-    "@etpinard/gl-text": "^1.1.6",
     "@plotly/d3-sankey": "^0.5.0",
     "alpha-shape": "^1.0.0",
     "array-range": "^1.0.1",
@@ -85,6 +84,7 @@
     "gl-spikes2d": "^1.0.1",
     "gl-streamtube3d": "^1.0.0",
     "gl-surface3d": "^1.3.5",
+    "gl-text": "^1.1.6",
     "glslify": "^6.2.1",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
