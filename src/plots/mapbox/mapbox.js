@@ -420,6 +420,10 @@ proto.updateFx = function(fullLayout) {
         subplot: self.id
     });
 
+    // Unregister the old handler before potentially registering
+    // a new one. Otherwise multiple click handlers might
+    // be registered resulting in unwanted behavior.
+    map.off('click', self.onClickInPanHandler);
     if(dragMode === 'select' || dragMode === 'lasso') {
         map.dragPan.disable();
         map.on('zoomstart', self.clearSelect);
@@ -430,8 +434,6 @@ proto.updateFx = function(fullLayout) {
         };
 
         dragElement.init(self.dragOptions);
-
-        map.off('click', self.onClickInPanHandler);
     } else {
         map.dragPan.enable();
         map.off('zoomstart', self.clearSelect);
