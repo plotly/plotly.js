@@ -91,15 +91,15 @@ select.multiTester = function multiTester(list) {
      * @return {boolean} true if point is considered to be selected, false otherwise.
      */
     function contains(pt, arg, pointNumber, searchInfo) {
-        var yes = false;
+        var contained = false;
         for(var i = 0; i < testers.length; i++) {
             if(testers[i].contains(pt, arg, pointNumber, searchInfo)) {
                 // if contained by subtract tester - exclude the point
-                yes = testers[i].subtract === false;
+                contained = testers[i].subtract === false;
             }
         }
 
-        return yes;
+        return contained;
     }
 
     return {
