@@ -374,7 +374,7 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    it('@flaky works in a multi-trace plot', function(done) {
+    it('@gl works in a multi-trace plot', function(done) {
         Plotly.plot(gd, [
             {
                 x: [1, 3, 5, 4, 10, 12, 12, 7],
@@ -474,7 +474,7 @@ describe('Click-to-select', function() {
           .then(done);
     });
 
-    it('@flaky is supported by scattergl in pan/zoom mode', function(done) {
+    it('@gl is supported by scattergl in pan/zoom mode', function(done) {
         Plotly.plot(gd, [
             {
                 x: [7, 8, 9, 10],
@@ -630,11 +630,12 @@ describe('Click-to-select', function() {
             testCase('scatterpolar', require('@mocks/polar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' }),
             testCase('scatterpolargl', require('@mocks/glpolar_scatter.json'), 130, 290,
-              [[], [], [], [19], [], []], { dragmode: 'zoom' }),
-            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []])
+              [[], [], [], [19], [], []], { dragmode: 'zoom' }).enableGl(),
+            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []]).enableGl()
         ]
           .forEach(function(testCase) {
-              it('@flaky trace type ' + testCase.traceType, function(done) {
+              var ciAnnotation = testCase.gl ? 'gl' : 'flaky';
+              it('@' + ciAnnotation + ' trace type ' + testCase.traceType, function(done) {
                   var defaultLayoutOpts = {
                       layout: {
                           clickmode: 'event+select',
@@ -687,7 +688,12 @@ describe('Click-to-select', function() {
                 x: x,
                 y: y,
                 expectedPts: expectedPts,
-                configOptions: configOptions
+                configOptions: configOptions,
+                gl: false,
+                enableGl: function() {
+                    this.gl = true;
+                    return this;
+                }
             };
         }
     });
