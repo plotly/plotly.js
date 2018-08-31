@@ -111,13 +111,10 @@ function makePathFn(subplot) {
                 a1 = _a0;
             }
 
-            var tip = (a0 + a1) / 2;
             var va0 = helpers.findEnclosingVertexAngles(a0, subplot.vangles)[0];
             var va1 = helpers.findEnclosingVertexAngles(a1, subplot.vangles)[1];
-            var vaBar = [va0, tip, va1];
-            var clip = [a0, a1].map(Lib.rad2deg);
-
-            return helpers.pathPolygonAnnulus(r0, r1, clip, vaBar, cxx, cyy);
+            var vaBar = [va0, (a0 + a1) / 2, va1];
+            return helpers.pathPolygonAnnulus(r0, r1, a0, a1, vaBar, cxx, cyy);
         };
     }
 

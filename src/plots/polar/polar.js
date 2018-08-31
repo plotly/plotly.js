@@ -201,7 +201,8 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var xLength = _this.xLength = gs.w * (xDomain[1] - xDomain[0]);
     var yLength = _this.yLength = gs.h * (yDomain[1] - yDomain[0]);
     // sector to plot
-    var sector = _this.sector = polarLayout.sector;
+    var sector = polarLayout.sector;
+    _this.sectorInRad = sector.map(deg2rad);
     var sectorBBox = _this.sectorBBox = computeSectorBBox(sector);
     var dxSectorBBox = sectorBBox[2] - sectorBBox[0];
     var dySectorBBox = sectorBBox[3] - sectorBBox[1];
@@ -374,8 +375,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var cx = _this.cx;
     var cy = _this.cy;
     var radialLayout = polarLayout.radialaxis;
-    var sector = polarLayout.sector;
-    var a0 = wrap360(sector[0]);
+    var a0 = wrap360(polarLayout.sector[0]);
     var ax = _this.radialAxis;
 
     _this.fillViewInitialKey('radialaxis.angle', radialLayout.angle);
@@ -483,7 +483,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var cx = _this.cx;
     var cy = _this.cy;
     var angularLayout = polarLayout.angularaxis;
-    var sector = polarLayout.sector;
     var ax = _this.angularAxis;
 
     _this.fillViewInitialKey('angularaxis.rotation', angularLayout.rotation);
@@ -509,7 +508,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     // show all their ticks.
     if(ax.type === 'category') {
         ax._tickFilter = function(d) {
-            return Lib.isAngleInsideSector(t2g(d), sector);
+            return Lib.isAngleInsideSector(t2g(d), _this.sectorInRad);
         };
     }
 
@@ -620,7 +619,7 @@ proto.updateMainDrag = function(fullLayout) {
     var cy = _this.cy;
     var cxx = _this.cxx;
     var cyy = _this.cyy;
-    var sector = _this.sector;
+    var sectorInRad = _this.sectorInRad;
     var vangles = _this.vangles;
     var clampTiny = helpers.clampTiny;
     var findXYatLength = helpers.findXYatLength;
@@ -855,7 +854,7 @@ proto.updateMainDrag = function(fullLayout) {
         // need to offset x/y as bbox center does not
         // match origin for asymmetric polygons
         if(vangles) {
-            var offset = helpers.findPolygonOffset(radius, sector, vangles);
+            var offset = helpers.findPolygonOffset(radius, sectorInRad[0], sectorInRad[1], vangles);
             x0 += cxx + offset[0];
             y0 += cyy + offset[1];
         }
@@ -1049,7 +1048,6 @@ proto.updateAngularDrag = function(fullLayout) {
     var cy = _this.cy;
     var cxx = _this.cxx;
     var cyy = _this.cyy;
-    var sector = _this.sector;
     var dbs = constants.angularDragBoxSize;
 
     var angularDrag = dragBox.makeDragger(layers, 'path', 'angulardrag', 'move');
@@ -1130,7 +1128,7 @@ proto.updateAngularDrag = function(fullLayout) {
 
         doTicksSingle(gd, angularAxis, true);
 
-        if(_this._hasClipOnAxisFalse && !Lib.isFullCircle(sector)) {
+        if(_this._hasClipOnAxisFalse && !Lib.isFullCircle(_this.sectorInRad)) {
             scatterTraces.call(Drawing.hideOutsideRangePoints, _this);
         }
 
@@ -1175,7 +1173,7 @@ proto.updateAngularDrag = function(fullLayout) {
     };
 
     // I don't what we should do in this case, skip we now
-    if(_this.vangles && !Lib.isFullCircle(sector)) {
+    if(_this.vangles && !Lib.isFullCircle(_this.sectorInRad)) {
         dragOpts.prepFn = Lib.noop;
         setCursor(d3.select(angularDrag), null);
     }
@@ -1184,36 +1182,38 @@ proto.updateAngularDrag = function(fullLayout) {
 };
 
 proto.isPtInside = function(d) {
-    var sector = this.sector;
+    var sectorInRad = this.sectorInRad;
     var vangles = this.vangles;
     var thetag = this.angularAxis.c2g(d.theta);
     var radialAxis = this.radialAxis;
     var r = radialAxis.c2l(d.r);
     var rl = radialAxis._rl;
 
-    return vangles ?
-        helpers.isPtInsidePolygon(r, thetag, rl, sector, vangles) :
-        Lib.isPtInsideSector(r, thetag, rl, sector);
+    var fn = vangles ? helpers.isPtInsidePolygon : Lib.isPtInsideSector;
+    return fn(r, thetag, rl, sectorInRad, vangles);
 };
 
 proto.pathArc = function(r) {
     r = r || this.radius;
-    return this.vangles ?
-        helpers.pathPolygon(r, this.sector, this.vangles) :
-        Lib.pathArc(r, deg2rad(this.sector[0]), deg2rad(this.sector[1]));
+    var sectorInRad = this.sectorInRad;
+    var vangles = this.vangles;
+    var fn = vangles ? helpers.pathPolygon : Lib.pathArc;
+    return fn(r, sectorInRad[0], sectorInRad[1], vangles);
 };
 
 proto.pathSector = function(r) {
     r = r || this.radius;
-    return this.vangles ?
-        helpers.pathPolygon(r, this.sector, this.vangles) :
-        Lib.pathSector(r, deg2rad(this.sector[0]), deg2rad(this.sector[1]));
+    var sectorInRad = this.sectorInRad;
+    var vangles = this.vangles;
+    var fn = vangles ? helpers.pathPolygon : Lib.pathSector;
+    return fn(r, sectorInRad[0], sectorInRad[1], vangles);
 };
 
 proto.pathAnnulus = function(r0, r1) {
-    return this.vangles ?
-        helpers.pathPolygonAnnulus(r0, r1, this.sector, this.vangles) :
-        Lib.pathAnnulus(r0, r1, deg2rad(this.sector[0]), deg2rad(this.sector[1]));
+    var sectorInRad = this.sectorInRad;
+    var vangles = this.vangles;
+    var fn = vangles ? helpers.pathPolygonAnnulus : Lib.pathAnnulus;
+    return fn(r0, r1, sectorInRad[0], sectorInRad[1], vangles);
 };
 
 proto.fillViewInitialKey = function(key, val) {
@@ -1232,7 +1232,7 @@ function strTickLayout(axLayout) {
 // inspired by https://math.stackexchange.com/q/1852703
 //
 // assumes:
-// - sector[1] < sector[0]
+// - sector[0] < sector[1]
 // - counterclockwise rotation
 function computeSectorBBox(sector) {
     var s0 = sector[0];

@@ -15,7 +15,6 @@ var findIndexOfMin = Lib.findIndexOfMin;
 var isAngleInsideSector = Lib.isAngleInsideSector;
 var angleDelta = Lib.angleDelta;
 var angleDist = Lib.angleDist;
-var deg2rad = Lib.deg2rad;
 
 /**
  * is pt (r,a) inside polygon made up vertices at angles 'vangles'
@@ -23,26 +22,26 @@ var deg2rad = Lib.deg2rad;
  *
  * @param {number} r : pt's radial coordinate
  * @param {number} a : pt's angular coordinate in *radians*
- * @param {2-item array} rRng : sector's radial range
- * @param {2-item array} sector : sector angles in *degrees*
+ * @param {2-item array} rBnds : sector's radial bounds
+ * @param {2-item array} aBnds : sector's angular bounds *radians*
  * @param {array} vangles : angles of polygon vertices in *radians*
  * @return {boolean}
  */
-function isPtInsidePolygon(r, a, rRng, sector, vangles) {
-    if(!isAngleInsideSector(a, sector)) return false;
+function isPtInsidePolygon(r, a, rBnds, aBnds, vangles) {
+    if(!isAngleInsideSector(a, aBnds)) return false;
 
     var r0, r1;
 
-    if(rRng[0] < rRng[1]) {
-        r0 = rRng[0];
-        r1 = rRng[1];
+    if(rBnds[0] < rBnds[1]) {
+        r0 = rBnds[0];
+        r1 = rBnds[1];
     } else {
-        r0 = rRng[1];
-        r1 = rRng[0];
+        r0 = rBnds[1];
+        r1 = rBnds[0];
     }
 
-    var polygonIn = polygonTester(makePolygon(r0, sector, vangles));
-    var polygonOut = polygonTester(makePolygon(r1, sector, vangles));
+    var polygonIn = polygonTester(makePolygon(r0, aBnds[0], aBnds[1], vangles));
+    var polygonOut = polygonTester(makePolygon(r1, aBnds[0], aBnds[1], vangles));
     var xy = [r * Math.cos(a), r * Math.sin(a)];
     return polygonOut.contains(xy) && !polygonIn.contains(xy);
 }
@@ -128,7 +127,7 @@ function makeRegularPolygon(r, vangles) {
     return vertices;
 }
 
-function makeClippedPolygon(r, sector, vangles) {
+function makeClippedPolygon(r, a0, a1, vangles) {
     var len = vangles.length;
     var vertices = [];
     var i, j;
@@ -146,18 +145,15 @@ function makeClippedPolygon(r, sector, vangles) {
     }
 
     function isInside(v) {
-        return isAngleInsideSector(v, sector);
+        return isAngleInsideSector(v, [a0, a1]);
     }
 
-    var s0 = deg2rad(sector[0]);
-    var s1 = deg2rad(sector[1]);
-
-    // find index in sector closest to sector[0],
+    // find index in sector closest to a0
     // use it to find intersection of v[i0] <-> v[i0-1] edge with sector radius
     var i0 = findIndexOfMin(vangles, function(v) {
-        return isInside(v) ? angleDist(v, s0) : Infinity;
+        return isInside(v) ? angleDist(v, a0) : Infinity;
     });
-    var xy0 = findXY(vangles[i0], vangles[cycleIndex(i0 - 1)], s0);
+    var xy0 = findXY(vangles[i0], vangles[cycleIndex(i0 - 1)], a0);
     vertices.push(xy0);
 
     // fill in in-sector vertices
@@ -167,12 +163,12 @@ function makeClippedPolygon(r, sector, vangles) {
         vertices.push(a2xy(va));
     }
 
-    // find index in sector closest to sector[1],
+    // find index in sector closest to a1,
     // use it to find intersection of v[iN] <-> v[iN+1] edge with sector radius
     var iN = findIndexOfMin(vangles, function(v) {
-        return isInside(v) ? angleDist(v, s1) : Infinity;
+        return isInside(v) ? angleDist(v, a1) : Infinity;
     });
-    var xyN = findXY(vangles[iN], vangles[cycleIndex(iN + 1)], s1);
+    var xyN = findXY(vangles[iN], vangles[cycleIndex(iN + 1)], a1);
     vertices.push(xyN);
 
     vertices.push([0, 0]);
@@ -181,16 +177,16 @@ function makeClippedPolygon(r, sector, vangles) {
     return vertices;
 }
 
-function makePolygon(r, sector, vangles) {
-    return Lib.isFullCircle(sector) ?
+function makePolygon(r, a0, a1, vangles) {
+    return Lib.isFullCircle([a0, a1]) ?
         makeRegularPolygon(r, vangles) :
-        makeClippedPolygon(r, sector, vangles);
+        makeClippedPolygon(r, a0, a1, vangles);
 }
 
-function findPolygonOffset(r, sector, vangles) {
+function findPolygonOffset(r, a0, a1, vangles) {
     var minX = Infinity;
     var minY = Infinity;
-    var vertices = makePolygon(r, sector, vangles);
+    var vertices = makePolygon(r, a0, a1, vangles);
 
     for(var i = 0; i < vertices.length; i++) {
         var v = vertices[i];
@@ -240,15 +236,16 @@ function transformForSVG(pts0, cx, cy) {
  * path polygon
  *
  * @param {number} r : polygon 'radius'
- * @param {2-item array} sector : polar sector in which polygon is clipped
+ * @param {number} a0 : first angular coordinate in *radians*
+ * @param {number} a1 : second angular coordinate in *radians*
  * @param {array} vangles : angles of polygon vertices in *radians*
  * @param {number (optional)} cx : x coordinate of center
  * @param {number (optional)} cy : y coordinate of center
  * @return {string} svg path
  *
  */
-function pathPolygon(r, sector, vangles, cx, cy) {
-    var poly = makePolygon(r, sector, vangles);
+function pathPolygon(r, a0, a1, vangles, cx, cy) {
+    var poly = makePolygon(r, a0, a1, vangles);
     return 'M' + transformForSVG(poly, cx, cy).join('L');
 }
 
@@ -260,14 +257,15 @@ function pathPolygon(r, sector, vangles, cx, cy) {
  *
  * @param {number} r0 : first radial coordinate
  * @param {number} r1 : second radial coordinate
- * @param {2-item array} sector : polar sector in which polygon is clipped
+ * @param {number} a0 : first angular coordinate in *radians*
+ * @param {number} a1 : second angular coordinate in *radians*
  * @param {array} vangles : angles of polygon vertices in *radians*
  * @param {number (optional)} cx : x coordinate of center
  * @param {number (optional)} cy : y coordinate of center
  * @return {string} svg path
  *
  */
-function pathPolygonAnnulus(r0, r1, sector, vangles, cx, cy) {
+function pathPolygonAnnulus(r0, r1, a0, a1, vangles, cx, cy) {
     var rStart, rEnd;
 
     if(r0 < r1) {
@@ -278,8 +276,8 @@ function pathPolygonAnnulus(r0, r1, sector, vangles, cx, cy) {
         rEnd = r0;
     }
 
-    var inner = transformForSVG(makePolygon(rStart, sector, vangles), cx, cy);
-    var outer = transformForSVG(makePolygon(rEnd, sector, vangles), cx, cy);
+    var inner = transformForSVG(makePolygon(rStart, a0, a1, vangles), cx, cy);
+    var outer = transformForSVG(makePolygon(rEnd, a0, a1, vangles), cx, cy);
     return 'M' + outer.reverse().join('L') + 'M' + inner.join('L');
 }
 

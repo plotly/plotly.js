@@ -21,7 +21,8 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var subplot = pointData.subplot;
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
-    var inboxFn = subplot.vangles ? isPtInsidePolygon : Lib.isPtInsideSector;
+    var vangles = subplot.vangles;
+    var inboxFn = vangles ? isPtInsidePolygon : Lib.isPtInsideSector;
     var maxHoverDistance = pointData.maxHoverDistance;
     var period = angularAxis._period || 2 * Math.PI;
 
@@ -35,11 +36,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var thetaVal = Math.atan2(yval, xval);
 
     var distFn = function(di) {
-        if(inboxFn(rVal, thetaVal,
-            [di.rp0, di.rp1],
-            [di.thetag0, di.thetag1].map(Lib.rad2deg),
-            subplot.vangles)
-        ) {
+        if(inboxFn(rVal, thetaVal, [di.rp0, di.rp1], [di.thetag0, di.thetag1], vangles)) {
             return maxHoverDistance +
                 // add a little to the pseudo-distance for wider bars, so that like scatter,
                 // if you are over two overlapping bars, the narrower one wins.

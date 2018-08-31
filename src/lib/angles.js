@@ -9,6 +9,7 @@
 'use strict';
 
 var PI = Math.PI;
+var twoPI = 2 * PI;
 
 function deg2rad(deg) {
     return deg / 180 * PI;
@@ -32,12 +33,11 @@ function wrap180(deg) {
  * is sector a full circle?
  * ... this comes up a lot in SVG path-drawing routines
  *
- * @param {2-item array} sector sector angles in *degrees*
+ * @param {2-item array} aBnds : angular bounds in *radians*
  * @return {boolean}
  */
-function isFullCircle(sector) {
-    var arc = Math.abs(sector[1] - sector[0]);
-    return arc === 360;
+function isFullCircle(aBnds) {
+    return Math.abs(aBnds[1] - aBnds[0]) === twoPI;
 }
 
 /**
@@ -68,24 +68,24 @@ function angleDist(a, b) {
  * is angle inside sector?
  *
  * @param {number} a : angle to test in *radians*
- * @param {2-item array} sector : sector angles in *degrees*
+ * @param {2-item array} aBnds : sector's angular bounds in *radians*
  * @param {boolean}
  */
-function isAngleInsideSector(a, sector) {
-    if(isFullCircle(sector)) return true;
+function isAngleInsideSector(a, aBnds) {
+    if(isFullCircle(aBnds)) return true;
 
     var s0, s1;
 
-    if(sector[0] < sector[1]) {
-        s0 = sector[0];
-        s1 = sector[1];
+    if(aBnds[0] < aBnds[1]) {
+        s0 = aBnds[0];
+        s1 = aBnds[1];
     } else {
-        s0 = sector[1];
-        s1 = sector[0];
+        s0 = aBnds[1];
+        s1 = aBnds[0];
     }
 
-    s0 = wrap360(s0);
-    s1 = wrap360(s1);
+    s0 = wrap360(rad2deg(s0));
+    s1 = wrap360(rad2deg(s1));
     if(s0 > s1) s1 += 360;
 
     var a0 = wrap360(rad2deg(a));
@@ -99,21 +99,21 @@ function isAngleInsideSector(a, sector) {
  *
  * @param {number} r : pt's radial coordinate
  * @param {number} a : pt's angular coordinate in *radians*
- * @param {2-item array} rRng : sector's radial range
- * @param {2-item array} sector : sector angles in *degrees*
+ * @param {2-item array} rBnds : sector's radial bounds
+ * @param {2-item array} aBnds : sector's angular bounds in *radians*
  * @return {boolean}
  */
-function isPtInsideSector(r, a, rRng, sector) {
-    if(!isAngleInsideSector(a, sector)) return false;
+function isPtInsideSector(r, a, rBnds, aBnds) {
+    if(!isAngleInsideSector(a, aBnds)) return false;
 
     var r0, r1;
 
-    if(rRng[0] < rRng[1]) {
-        r0 = rRng[0];
-        r1 = rRng[1];
+    if(rBnds[0] < rBnds[1]) {
+        r0 = rBnds[0];
+        r1 = rBnds[1];
     } else {
-        r0 = rRng[1];
-        r1 = rRng[0];
+        r0 = rBnds[1];
+        r1 = rBnds[0];
     }
 
     return r >= r0 && r <= r1;
@@ -124,14 +124,14 @@ function _path(r0, r1, a0, a1, cx, cy, isClosed) {
     cx = cx || 0;
     cy = cy || 0;
 
-    var isCircle = isFullCircle([a0, a1].map(rad2deg));
+    var isCircle = isFullCircle([a0, a1]);
     var aStart, aMid, aEnd;
     var rStart, rEnd;
 
     if(isCircle) {
         aStart = 0;
         aMid = PI;
-        aEnd = 2 * PI;
+        aEnd = twoPI;
     } else {
         if(a0 < a1) {
             aStart = a0;
@@ -195,8 +195,8 @@ function _path(r0, r1, a0, a1, cx, cy, isClosed) {
  * path an arc
  *
  * @param {number} r : radius
- * @param {number} a0 : first angular coordinate
- * @param {number} a1 : second angular coordinate
+ * @param {number} a0 : first angular coordinate in *radians*
+ * @param {number} a1 : second angular coordinate in *radians*
  * @param {number (optional)} cx : x coordinate of center
  * @param {number (optional)} cy : y coordinate of center
  * @return {string} svg path
@@ -209,8 +209,8 @@ function pathArc(r, a0, a1, cx, cy) {
  * path a sector
  *
  * @param {number} r : radius
- * @param {number} a0 : first angular coordinate
- * @param {number} a1 : second angular coordinate
+ * @param {number} a0 : first angular coordinate in *radians*
+ * @param {number} a1 : second angular coordinate in *radians*
  * @param {number (optional)} cx : x coordinate of center
  * @param {number (optional)} cy : y coordinate of center
  * @return {string} svg path
@@ -224,8 +224,8 @@ function pathSector(r, a0, a1, cx, cy) {
  *
  * @param {number} r0 : first radial coordinate
  * @param {number} r1 : second radial coordinate
- * @param {number} a0 : first angular coordinate
- * @param {number} a1 : second angular coordinate
+ * @param {number} a0 : first angular coordinate in *radians*
+ * @param {number} a1 : second angular coordinate in *radians*
  * @param {number (optional)} cx : x coordinate of center
  * @param {number (optional)} cy : y coordinate of center
  * @return {string} svg path
