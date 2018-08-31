@@ -26,14 +26,13 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     var maxHoverDistance = pointData.maxHoverDistance;
     var period = angularAxis._period || 2 * Math.PI;
 
-    // polar.(x|y)axis.p2c doesn't get the reversed radial axis range case right
-    if(radialAxis.range[0] > radialAxis.range[1]) {
-        xval *= -1;
-        yval *= -1;
-    }
-
     var rVal = Math.abs(radialAxis.g2p(Math.sqrt(xval * xval + yval * yval)));
     var thetaVal = Math.atan2(yval, xval);
+
+    // polar.(x|y)axis.p2c doesn't get the reversed radial axis range case right
+    if(radialAxis.range[0] > radialAxis.range[1]) {
+        thetaVal += Math.PI;
+    }
 
     var distFn = function(di) {
         if(inboxFn(rVal, thetaVal, [di.rp0, di.rp1], [di.thetag0, di.thetag1], vangles)) {
