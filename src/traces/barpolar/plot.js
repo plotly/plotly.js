@@ -71,7 +71,7 @@ module.exports = function plot(gd, subplot, cdbar) {
                 // can skip calling _module.style during interactions
                 dPath = 'M0,0Z';
             } else {
-                // TODO is this where we want for to select for barpolar?
+                // this 'center' pt is used for selections and hover labels
                 var rg1 = radialAxis.c2g(s1);
                 var thetagMid = (thetag0 + thetag1) / 2;
                 di.ct = [
