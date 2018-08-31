@@ -135,9 +135,9 @@ exports.loneHover = function loneHover(hoverItem, opts) {
         index: 0
     };
 
-    var container3 = d3.select(opts.container),
-        outerContainer3 = opts.outerContainer ?
-            d3.select(opts.outerContainer) : container3;
+    var container3 = d3.select(opts.container);
+    var outerContainer3 = opts.outerContainer ?
+        d3.select(opts.outerContainer) : container3;
 
     var fullOpts = {
         hovermode: 'closest',
@@ -216,37 +216,26 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var spikedistance = fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance;
 
     // hoverData: the set of candidate points we've found to highlight
-    var hoverData = [],
+    var hoverData = [];
 
-        // searchData: the data to search in. Mostly this is just a copy of
-        // gd.calcdata, filtered to the subplot and overlays we're on
-        // but if a point array is supplied it will be a mapping
-        // of indicated curves
-        searchData = [],
+    // searchData: the data to search in. Mostly this is just a copy of
+    // gd.calcdata, filtered to the subplot and overlays we're on
+    // but if a point array is supplied it will be a mapping
+    // of indicated curves
+    var searchData = [];
 
-        // [x|y]valArray: the axis values of the hover event
-        // mapped onto each of the currently selected overlaid subplots
-        xvalArray,
-        yvalArray,
+    // [x|y]valArray: the axis values of the hover event
+    // mapped onto each of the currently selected overlaid subplots
+    var xvalArray, yvalArray;
 
-        // used in loops
-        itemnum,
-        curvenum,
-        cd,
-        trace,
-        subplotId,
-        subploti,
-        mode,
-        xval,
-        yval,
-        pointData,
-        closedataPreviousLength,
+    var itemnum, curvenum, cd, trace, subplotId, subploti, mode,
+        xval, yval, pointData, closedataPreviousLength;
 
-        // spikePoints: the set of candidate points we've found to draw spikes to
-        spikePoints = {
-            hLinePoint: null,
-            vLinePoint: null
-        };
+    // spikePoints: the set of candidate points we've found to draw spikes to
+    var spikePoints = {
+        hLinePoint: null,
+        vLinePoint: null
+    };
 
     // Figure out what we're hovering on:
     // mouse location or user-supplied data
@@ -273,8 +262,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // [x|y]px: the pixels (from top left) of the mouse location
         // on the currently selected plot area
         // add pointerX|Y property for drawing the spikes in spikesnap 'cursor' situation
-        var hasUserCalledHover = !evt.target,
-            xpx, ypx;
+        var hasUserCalledHover = !evt.target;
+        var xpx, ypx;
 
         if(hasUserCalledHover) {
             if('xpx' in evt) xpx = evt.xpx;
@@ -576,8 +565,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
     // lastly, emit custom hover/unhover events
-    var oldhoverdata = gd._hoverdata,
-        newhoverdata = [];
+    var oldhoverdata = gd._hoverdata;
+    var newhoverdata = [];
 
     // pull out just the data that's useful to
     // other people and send it to the event
@@ -677,8 +666,8 @@ function createHoverText(hoverData, opts, gd) {
     // all hover traces hoverinfo must contain the hovermode
     // to have common labels
     if(showCommonLabel) {
-        var i, traceHoverinfo;
         var allHaveZ = true;
+        var i, traceHoverinfo;
         for(i = 0; i < hoverData.length; i++) {
             if(allHaveZ && hoverData[i].zLabel === undefined) allHaveZ = false;
 
@@ -802,9 +791,9 @@ function createHoverText(hoverData, opts, gd) {
     // then put the text in, position the pointer to the data,
     // and figure out sizes
     hoverLabels.each(function(d) {
-        var g = d3.select(this).attr('transform', ''),
-            name = '',
-            text = '';
+        var g = d3.select(this).attr('transform', '');
+        var name = '';
+        var text = '';
 
             // combine possible non-opaque trace color with bgColor
         var baseColor = Color.opacity(d.color) ? d.color : Color.defaultLine;
@@ -872,8 +861,8 @@ function createHoverText(hoverData, opts, gd) {
             .call(svgTextUtils.positionText, 0, 0)
             .call(svgTextUtils.convertToTspans, gd);
 
-        var tx2 = g.select('text.name'),
-            tx2width = 0;
+        var tx2 = g.select('text.name');
+        var tx2width = 0;
 
         // secondary label for non-empty 'name'
         if(name && name !== text) {
@@ -897,14 +886,13 @@ function createHoverText(hoverData, opts, gd) {
                 fill: traceColor,
                 stroke: contrastColor
             });
-        var tbb = tx.node().getBoundingClientRect(),
-            htx = d.xa._offset + (d.x0 + d.x1) / 2,
-            hty = d.ya._offset + (d.y0 + d.y1) / 2,
-            dx = Math.abs(d.x1 - d.x0),
-            dy = Math.abs(d.y1 - d.y0),
-            txTotalWidth = tbb.width + HOVERARROWSIZE + HOVERTEXTPAD + tx2width,
-            anchorStartOK,
-            anchorEndOK;
+        var tbb = tx.node().getBoundingClientRect();
+        var htx = d.xa._offset + (d.x0 + d.x1) / 2;
+        var hty = d.ya._offset + (d.y0 + d.y1) / 2;
+        var dx = Math.abs(d.x1 - d.x0);
+        var dy = Math.abs(d.y1 - d.y0);
+        var txTotalWidth = tbb.width + HOVERARROWSIZE + HOVERTEXTPAD + tx2width;
+        var anchorStartOK, anchorEndOK;
 
         d.ty0 = outerTop - tbb.top;
         d.bx = tbb.width + 2 * HOVERTEXTPAD;
@@ -961,33 +949,30 @@ function createHoverText(hoverData, opts, gd) {
 // the other, though it hardly matters - there's just too much
 // information then.
 function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
-    var nummoves = 0,
+    var nummoves = 0;
 
         // make groups of touching points
-        pointgroups = hoverData
-            .map(function(d, i) {
-                var axis = d[ax];
-                return [{
-                    i: i,
-                    dp: 0,
-                    pos: d.pos,
-                    posref: d.posref,
-                    size: d.by * (axis._id.charAt(0) === 'x' ? YFACTOR : 1) / 2,
-                    pmin: 0,
-                    pmax: (axis._id.charAt(0) === 'x' ? fullLayout.width : fullLayout.height)
-                }];
-            })
-            .sort(function(a, b) { return a[0].posref - b[0].posref; }),
-        donepositioning,
-        topOverlap,
-        bottomOverlap,
-        i, j,
-        pti,
-        sumdp;
+    var pointgroups = hoverData.map(function(d, i) {
+        var axis = d[ax];
+        return [{
+            i: i,
+            dp: 0,
+            pos: d.pos,
+            posref: d.posref,
+            size: d.by * (axis._id.charAt(0) === 'x' ? YFACTOR : 1) / 2,
+            pmin: 0,
+            pmax: (axis._id.charAt(0) === 'x' ? fullLayout.width : fullLayout.height)
+        }];
+    })
+    .sort(function(a, b) {
+        return a[0].posref - b[0].posref;
+    });
+
+    var donepositioning, topOverlap, bottomOverlap, i, j, pti, sumdp;
 
     function constrainGroup(grp) {
-        var minPt = grp[0],
-            maxPt = grp[grp.length - 1];
+        var minPt = grp[0];
+        var maxPt = grp[grp.length - 1];
 
         // overlap with the top - positive vals are overlaps
         topOverlap = minPt.pmin - minPt.pos - minPt.dp + minPt.size;
@@ -1071,13 +1056,13 @@ function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
         i = 0;
         while(i < pointgroups.length - 1) {
                 // the higher (g0) and lower (g1) point group
-            var g0 = pointgroups[i],
-                g1 = pointgroups[i + 1],
+            var g0 = pointgroups[i];
+            var g1 = pointgroups[i + 1];
 
-                // the lowest point in the higher group (p0)
-                // the highest point in the lower group (p1)
-                p0 = g0[g0.length - 1],
-                p1 = g1[0];
+            // the lowest point in the higher group (p0)
+            // the highest point in the lower group (p1)
+            var p0 = g0[g0.length - 1];
+            var p1 = g1[0];
             topOverlap = p0.pos + p0.dp + p0.size - p1.pos - p1.dp + p1.size;
 
             // Only group points that lie on the same axes
@@ -1107,8 +1092,8 @@ function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
     for(i = pointgroups.length - 1; i >= 0; i--) {
         var grp = pointgroups[i];
         for(j = grp.length - 1; j >= 0; j--) {
-            var pt = grp[j],
-                hoverPt = hoverData[pt.i];
+            var pt = grp[j];
+            var hoverPt = hoverData[pt.i];
             hoverPt.offset = pt.dp;
             hoverPt.del = pt.del;
         }
@@ -1124,13 +1109,15 @@ function alignHoverText(hoverLabels, rotateLabels) {
             g.remove();
             return;
         }
-        var horzSign = d.anchor === 'end' ? -1 : 1,
-            tx = g.select('text.nums'),
-            alignShift = {start: 1, end: -1, middle: 0}[d.anchor],
-            txx = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD),
-            tx2x = txx + alignShift * (d.txwidth + HOVERTEXTPAD),
-            offsetX = 0,
-            offsetY = d.offset;
+
+        var horzSign = d.anchor === 'end' ? -1 : 1;
+        var tx = g.select('text.nums');
+        var alignShift = {start: 1, end: -1, middle: 0}[d.anchor];
+        var txx = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD);
+        var tx2x = txx + alignShift * (d.txwidth + HOVERTEXTPAD);
+        var offsetX = 0;
+        var offsetY = d.offset;
+
         if(d.anchor === 'middle') {
             txx -= d.tx2width / 2;
             tx2x += d.txwidth / 2 + HOVERTEXTPAD;
@@ -1266,11 +1253,10 @@ function createSpikelines(closestPoints, opts) {
     var container = opts.container;
     var fullLayout = opts.fullLayout;
     var evt = opts.event;
-    var xa,
-        ya;
-
     var showY = !!closestPoints.hLinePoint;
     var showX = !!closestPoints.vLinePoint;
+
+    var xa, ya;
 
     // Remove old spikeline items
     container.selectAll('.spikeline').remove();
@@ -1281,9 +1267,9 @@ function createSpikelines(closestPoints, opts) {
 
     // Horizontal line (to y-axis)
     if(showY) {
-        var hLinePoint = closestPoints.hLinePoint,
-            hLinePointX,
-            hLinePointY;
+        var hLinePoint = closestPoints.hLinePoint;
+        var hLinePointX, hLinePointY;
+
         xa = hLinePoint && hLinePoint.xa;
         ya = hLinePoint && hLinePoint.ya;
         var ySnap = ya.spikesnap;
@@ -1297,13 +1283,12 @@ function createSpikelines(closestPoints, opts) {
         }
         var dfltHLineColor = tinycolor.readability(hLinePoint.color, contrastColor) < 1.5 ?
             Color.contrast(contrastColor) : hLinePoint.color;
-        var yMode = ya.spikemode,
-            yThickness = ya.spikethickness,
-            yColor = ya.spikecolor || dfltHLineColor,
-            yBB = ya._boundingBox,
-            xEdge = ((yBB.left + yBB.right) / 2) < hLinePointX ? yBB.right : yBB.left,
-            xBase,
-            xEndSpike;
+        var yMode = ya.spikemode;
+        var yThickness = ya.spikethickness;
+        var yColor = ya.spikecolor || dfltHLineColor;
+        var yBB = ya._boundingBox;
+        var xEdge = ((yBB.left + yBB.right) / 2) < hLinePointX ? yBB.right : yBB.left;
+        var xBase, xEndSpike;
 
         if(yMode.indexOf('toaxis') !== -1 || yMode.indexOf('across') !== -1) {
             if(yMode.indexOf('toaxis') !== -1) {
@@ -1318,12 +1303,12 @@ function createSpikelines(closestPoints, opts) {
             // Foreground horizontal line (to y-axis)
             container.insert('line', ':first-child')
                 .attr({
-                    'x1': xBase,
-                    'x2': xEndSpike,
-                    'y1': hLinePointY,
-                    'y2': hLinePointY,
+                    x1: xBase,
+                    x2: xEndSpike,
+                    y1: hLinePointY,
+                    y2: hLinePointY,
                     'stroke-width': yThickness,
-                    'stroke': yColor,
+                    stroke: yColor,
                     'stroke-dasharray': Drawing.dashStyle(ya.spikedash, yThickness)
                 })
                 .classed('spikeline', true)
@@ -1332,12 +1317,12 @@ function createSpikelines(closestPoints, opts) {
             // Background horizontal Line (to y-axis)
             container.insert('line', ':first-child')
                 .attr({
-                    'x1': xBase,
-                    'x2': xEndSpike,
-                    'y1': hLinePointY,
-                    'y2': hLinePointY,
+                    x1: xBase,
+                    x2: xEndSpike,
+                    y1: hLinePointY,
+                    y2: hLinePointY,
                     'stroke-width': yThickness + 2,
-                    'stroke': contrastColor
+                    stroke: contrastColor
                 })
                 .classed('spikeline', true)
                 .classed('crisp', true);
@@ -1346,19 +1331,18 @@ function createSpikelines(closestPoints, opts) {
         if(yMode.indexOf('marker') !== -1) {
             container.insert('circle', ':first-child')
                 .attr({
-                    'cx': xEdge + (ya.side !== 'right' ? yThickness : -yThickness),
-                    'cy': hLinePointY,
-                    'r': yThickness,
-                    'fill': yColor
+                    cx: xEdge + (ya.side !== 'right' ? yThickness : -yThickness),
+                    cy: hLinePointY,
+                    r: yThickness,
+                    fill: yColor
                 })
                 .classed('spikeline', true);
         }
     }
 
     if(showX) {
-        var vLinePoint = closestPoints.vLinePoint,
-            vLinePointX,
-            vLinePointY;
+        var vLinePoint = closestPoints.vLinePoint;
+        var vLinePointX, vLinePointY;
 
         xa = vLinePoint && vLinePoint.xa;
         ya = vLinePoint && vLinePoint.ya;
@@ -1372,14 +1356,13 @@ function createSpikelines(closestPoints, opts) {
             vLinePointY = ya._offset + vLinePoint.y;
         }
         var dfltVLineColor = tinycolor.readability(vLinePoint.color, contrastColor) < 1.5 ?
-        Color.contrast(contrastColor) : vLinePoint.color;
-        var xMode = xa.spikemode,
-            xThickness = xa.spikethickness,
-            xColor = xa.spikecolor || dfltVLineColor,
-            xBB = xa._boundingBox,
-            yEdge = ((xBB.top + xBB.bottom) / 2) < vLinePointY ? xBB.bottom : xBB.top,
-            yBase,
-            yEndSpike;
+            Color.contrast(contrastColor) : vLinePoint.color;
+        var xMode = xa.spikemode;
+        var xThickness = xa.spikethickness;
+        var xColor = xa.spikecolor || dfltVLineColor;
+        var xBB = xa._boundingBox;
+        var yEdge = ((xBB.top + xBB.bottom) / 2) < vLinePointY ? xBB.bottom : xBB.top;
+        var yBase, yEndSpike;
 
         if(xMode.indexOf('toaxis') !== -1 || xMode.indexOf('across') !== -1) {
             if(xMode.indexOf('toaxis') !== -1) {
@@ -1394,12 +1377,12 @@ function createSpikelines(closestPoints, opts) {
             // Foreground vertical line (to x-axis)
             container.insert('line', ':first-child')
                 .attr({
-                    'x1': vLinePointX,
-                    'x2': vLinePointX,
-                    'y1': yBase,
-                    'y2': yEndSpike,
+                    x1: vLinePointX,
+                    x2: vLinePointX,
+                    y1: yBase,
+                    y2: yEndSpike,
                     'stroke-width': xThickness,
-                    'stroke': xColor,
+                    stroke: xColor,
                     'stroke-dasharray': Drawing.dashStyle(xa.spikedash, xThickness)
                 })
                 .classed('spikeline', true)
@@ -1408,12 +1391,12 @@ function createSpikelines(closestPoints, opts) {
             // Background vertical line (to x-axis)
             container.insert('line', ':first-child')
                 .attr({
-                    'x1': vLinePointX,
-                    'x2': vLinePointX,
-                    'y1': yBase,
-                    'y2': yEndSpike,
+                    x1: vLinePointX,
+                    x2: vLinePointX,
+                    y1: yBase,
+                    y2: yEndSpike,
                     'stroke-width': xThickness + 2,
-                    'stroke': contrastColor
+                    stroke: contrastColor
                 })
                 .classed('spikeline', true)
                 .classed('crisp', true);
@@ -1423,10 +1406,10 @@ function createSpikelines(closestPoints, opts) {
         if(xMode.indexOf('marker') !== -1) {
             container.insert('circle', ':first-child')
                 .attr({
-                    'cx': vLinePointX,
-                    'cy': yEdge - (xa.side !== 'top' ? xThickness : -xThickness),
-                    'r': xThickness,
-                    'fill': xColor
+                    cx: vLinePointX,
+                    cy: yEdge - (xa.side !== 'top' ? xThickness : -xThickness),
+                    r: xThickness,
+                    fill: xColor
                 })
                 .classed('spikeline', true);
         }
@@ -1438,8 +1421,8 @@ function hoverChanged(gd, evt, oldhoverdata) {
     if(!oldhoverdata || oldhoverdata.length !== gd._hoverdata.length) return true;
 
     for(var i = oldhoverdata.length - 1; i >= 0; i--) {
-        var oldPt = oldhoverdata[i],
-            newPt = gd._hoverdata[i];
+        var oldPt = oldhoverdata[i];
+        var newPt = gd._hoverdata[i];
         if(oldPt.curveNumber !== newPt.curveNumber ||
                 String(oldPt.pointNumber) !== String(newPt.pointNumber)) {
             return true;
