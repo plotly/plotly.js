@@ -403,6 +403,24 @@ describe('Test axes', function() {
             });
         });
 
+        it('only allows rangemode with linear axes', function() {
+            layoutIn = {
+                xaxis: {type: 'log', rangemode: 'tozero'},
+                yaxis: {type: 'date', rangemode: 'tozero'},
+                xaxis2: {type: 'category', rangemode: 'tozero'},
+                yaxis2: {type: 'linear', rangemode: 'tozero'}
+            };
+            layoutOut._subplots.cartesian.push('x2y2');
+            layoutOut._subplots.yaxis.push('x2', 'y2');
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.rangemode).toBeUndefined();
+            expect(layoutOut.yaxis.rangemode).toBeUndefined();
+            expect(layoutOut.xaxis2.rangemode).toBeUndefined();
+            expect(layoutOut.yaxis2.rangemode).toBe('tozero');
+        });
+
         it('finds scaling groups and calculates relative scales', function() {
             layoutIn = {
                 // first group: linked in series, scales compound
