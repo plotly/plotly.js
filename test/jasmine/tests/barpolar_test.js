@@ -252,7 +252,8 @@ describe('Test barpolar hover:', function() {
             x: 200,
             y: 247.5,
             extraText: 'r: −5<br>θ: 270°',
-            color: '#1f77b4'
+            color: '#1f77b4',
+            idealAlign: 'left'
         }
     }, {
         desc: 'works on reversed radial axis ranges',

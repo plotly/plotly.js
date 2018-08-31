@@ -62,5 +62,9 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.color = getTraceColor(trace, cdi);
     pointData.xLabelVal = pointData.yLabelVal = undefined;
 
+    if(cdi.s < 0) {
+        pointData.idealAlign = 'left';
+    }
+
     return [pointData];
 };
