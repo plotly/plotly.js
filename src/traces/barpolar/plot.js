@@ -79,9 +79,6 @@ module.exports = function plot(gd, subplot, cdbar) {
                     ya.c2p(rg1 * Math.sin(thetagMid))
                 ];
 
-                // TODO round up bar borders?
-                // if so, factor out that logic from Bar.plot
-
                 dPath = pathFn(rp0, rp1, thetag0, thetag1);
             }
 
