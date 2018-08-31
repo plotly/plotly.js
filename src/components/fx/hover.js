@@ -951,21 +951,32 @@ function createHoverText(hoverData, opts, gd) {
 function hoverAvoidOverlaps(hoverData, ax, fullLayout) {
     var nummoves = 0;
 
-        // make groups of touching points
+    var axSign = 1;
+
+    // make groups of touching points
     var pointgroups = hoverData.map(function(d, i) {
         var axis = d[ax];
+        var axIsX = axis._id.charAt(0) === 'x';
+        var rng = axis.range;
+        if(!i && rng && ((rng[0] > rng[1]) !== axIsX)) axSign = -1;
         return [{
             i: i,
+            traceIndex: d.trace.index,
             dp: 0,
             pos: d.pos,
             posref: d.posref,
-            size: d.by * (axis._id.charAt(0) === 'x' ? YFACTOR : 1) / 2,
+            size: d.by * (axIsX ? YFACTOR : 1) / 2,
             pmin: 0,
-            pmax: (axis._id.charAt(0) === 'x' ? fullLayout.width : fullLayout.height)
+            pmax: (axIsX ? fullLayout.width : fullLayout.height)
         }];
     })
     .sort(function(a, b) {
-        return a[0].posref - b[0].posref;
+        return (a[0].posref - b[0].posref) ||
+            // for equal positions, sort trace indices increasing or decreasing
+            // depending on whether the axis is reversed or not... so stacked
+            // traces will generally keep their order even if one trace adds
+            // nothing to the stack.
+            (axSign * (b[0].traceIndex - a[0].traceIndex));
     });
 
     var donepositioning, topOverlap, bottomOverlap, i, j, pti, sumdp;
