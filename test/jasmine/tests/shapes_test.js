@@ -1072,9 +1072,9 @@ describe('A fixed size shape', function() {
     // and (ii) line has a different resize behavior.
     var shapeAndResizeTypes = combinations([{type: 'rect'}, {type: 'circle'}], resizeTypes);
     shapeAndResizeTypes.forEach(function(testCase) {
-        describe('@flaky of type ' + testCase.type + ' can be ' + testCase.resizeDisplayName, function() {
+        describe('of type ' + testCase.type + ' can be ' + testCase.resizeDisplayName, function() {
             resizeDirections.forEach(function(direction) {
-                it('over direction ' + direction, function(done) {
+                it('@flaky over direction ' + direction, function(done) {
                     layout.shapes[0].type = testCase.type;
 
                     Plotly.plot(gd, data, layout, {editable: true})
@@ -1102,14 +1102,14 @@ describe('A fixed size shape', function() {
         });
     });
 
-    describe('@flaky of type line', function() {
+    describe('of type line', function() {
         beforeEach(function() {
             layout.shapes[0].type = 'line';
             layout.shapes[0].yanchor = 3;
 
         });
 
-        it('can be moved by dragging the middle', function(done) {
+        it('@flaky can be moved by dragging the middle', function(done) {
             Plotly.plot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
@@ -1130,7 +1130,7 @@ describe('A fixed size shape', function() {
               });
         });
 
-        it('can be resized by dragging the start point', function(done) {
+        it('@flaky can be resized by dragging the start point', function(done) {
             Plotly.plot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
@@ -1153,7 +1153,7 @@ describe('A fixed size shape', function() {
               });
         });
 
-        it('can be resized by dragging the end point', function(done) {
+        it('@flaky can be resized by dragging the end point', function(done) {
             Plotly.plot(gd, data, layout, {editable: true})
               .then(function() {
                   var shapeNodeBeforeDrag = getFirstShapeNode();
@@ -1266,7 +1266,7 @@ describe('A fixed size shape', function() {
     });
 });
 
-describe('@flaky Test shapes', function() {
+describe('Test shapes', function() {
     'use strict';
 
     var gd, data, layout, config;
@@ -1308,7 +1308,7 @@ describe('@flaky Test shapes', function() {
     ];
 
     testCases.forEach(function(testCase) {
-        it(testCase.title + ' should be draggable', function(done) {
+        it('@flaky ' + testCase.title + ' should be draggable', function(done) {
             setupLayout(testCase, [{type: 'line'}, {type: 'rect'}, {type: 'circle'}, {type: 'path'}]);
             testDragEachShape(done);
         });
@@ -1319,7 +1319,7 @@ describe('@flaky Test shapes', function() {
             var testTitle = testCase.title +
                 ' should be resizeable over direction ' +
                 direction;
-            it(testTitle, function(done) {
+            it('@flaky ' + testTitle, function(done) {
                 // Exclude line because it has a different resize behavior
                 setupLayout(testCase, [{type: 'rect'}, {type: 'circle'}, {type: 'path'}]);
                 testResizeEachShape(direction, done);
@@ -1331,7 +1331,7 @@ describe('@flaky Test shapes', function() {
         ['start', 'end'].forEach(function(linePoint) {
             var testTitle = 'Line shape ' + testCase.title +
               ' should be resizable by dragging the ' + linePoint + ' point';
-            it(testTitle, function(done) {
+            it('@flaky ' + testTitle, function(done) {
                 setupLayout(testCase, [{type: 'line'}]);
                 testLineResize(linePoint, done);
             });

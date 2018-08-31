@@ -5,7 +5,6 @@ var Lib = require('@src/lib');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var failTest = require('../assets/fail_test');
 
@@ -763,7 +762,7 @@ describe('Test Plots', function() {
                 // some special Plots.style logic.
                 expect(Drawing.pointStyle).toHaveBeenCalledTimes(3);
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });
@@ -829,7 +828,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy']}, 'totally blank');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -838,7 +837,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['x3y4']}, 'blank with axis objects');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -856,7 +855,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy', 'x2y2', 'x3y3', 'x5y5']}, 'visible components');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -874,7 +873,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy', 'x2y2', 'x3y3', 'x5y5']}, 'invisible components');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
 
@@ -893,7 +892,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({pie: 1}, 'just pie');
             })
-            .catch(fail)
+            .catch(failTest)
             .then(done);
         });
     });

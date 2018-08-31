@@ -300,11 +300,10 @@ function sceneUpdate(gd, subplot) {
             if(scene.select2d) {
                 clearViewport(scene.select2d, vp);
             }
-            if(scene.scatter2d) {
-                clearViewport(scene.scatter2d, vp);
-            } else if(scene.glText) {
-                clearViewport(scene.glText[0], vp);
-            }
+
+            var anyComponent = scene.scatter2d || scene.line2d ||
+                (scene.glText || [])[0] || scene.fill2d || scene.error2d;
+            if(anyComponent) clearViewport(anyComponent, vp);
         };
 
         // remove scene resources
@@ -597,6 +596,12 @@ function plot(gd, subplot, cdata) {
                     styleTextSelection(cdscatter);
                 }
             });
+        }
+    } else {
+        if(scene.scatter2d) {
+            // reset scatter2d opts to base opts,
+            // thus unsetting markerUnselectedOptions from selection
+            scene.scatter2d.update(scene.markerOptions);
         }
     }
 

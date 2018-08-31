@@ -152,7 +152,8 @@ function findAccessToken(gd, mapboxIds) {
     throw new Error(constants.noAccessTokenErrorMsg);
 }
 
-exports.updateFx = function(fullLayout) {
+exports.updateFx = function(gd) {
+    var fullLayout = gd._fullLayout;
     var subplotIds = fullLayout._subplots[MAPBOX];
 
     for(var i = 0; i < subplotIds.length; i++) {

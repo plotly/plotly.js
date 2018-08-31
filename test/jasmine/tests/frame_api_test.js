@@ -3,7 +3,7 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 
 describe('Test frame api', function() {
     'use strict';
@@ -72,50 +72,66 @@ describe('Test frame api', function() {
                 .then(function() {
                     // Five (`var numericNameWarningCountLimit = 5`) warnings and one warning saying that there won't be more warnings
                     expect(Lib.warn.calls.count()).toEqual(5 + 1);
-                }).catch(fail).then(done);
+                })
+                .catch(failTest)
+                .then(done);
         });
 
         it('treats an undefined list as a noop', function(done) {
             Plotly.addFrames(gd, undefined).then(function() {
                 expect(Object.keys(h)).toEqual([]);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('compresses garbage when adding frames', function(done) {
             Plotly.addFrames(gd, [null, 'garbage', 14, true, false, {name: 'test'}, null]).then(function() {
                 expect(Object.keys(h)).toEqual(['test']);
                 expect(f).toEqual([{name: 'test'}]);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('treats a null list as a noop', function(done) {
             Plotly.addFrames(gd, null).then(function() {
                 expect(Object.keys(h)).toEqual([]);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('treats an empty list as a noop', function(done) {
             Plotly.addFrames(gd, []).then(function() {
                 expect(Object.keys(h)).toEqual([]);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('names an unnamed frame', function(done) {
             Plotly.addFrames(gd, [{}]).then(function() {
                 expect(Object.keys(h)).toEqual(['frame 0']);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('casts names to strings', function(done) {
             Plotly.addFrames(gd, [{name: 5}]).then(function() {
                 expect(Object.keys(h)).toEqual(['5']);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('creates multiple unnamed frames at the same time', function(done) {
             Plotly.addFrames(gd, [{}, {}]).then(function() {
                 expect(f).toEqual([{name: 'frame 0'}, {name: 'frame 1'}]);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('creates multiple unnamed frames in series', function(done) {
@@ -123,13 +139,17 @@ describe('Test frame api', function() {
                 return Plotly.addFrames(gd, [{}]);
             }).then(function() {
                 expect(f).toEqual([{name: 'frame 0'}, {name: 'frame 1'}]);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('casts number names to strings on insertion', function(done) {
             Plotly.addFrames(gd, [{name: 2}]).then(function() {
                 expect(f).toEqual([{name: '2'}]);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('updates frames referenced by number', function(done) {
@@ -137,7 +157,9 @@ describe('Test frame api', function() {
                 return Plotly.addFrames(gd, [{name: 2, layout: {foo: 'bar'}}]);
             }).then(function() {
                 expect(f).toEqual([{name: '2', layout: {foo: 'bar'}}]);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('avoids name collisions', function(done) {
@@ -147,7 +169,9 @@ describe('Test frame api', function() {
                 return Plotly.addFrames(gd, [{}, {name: 'foobar'}, {}]);
             }).then(function() {
                 expect(f).toEqual([{name: 'frame 0'}, {name: 'frame 2'}, {name: 'frame 1'}, {name: 'foobar'}, {name: 'frame 3'}]);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('inserts frames at specific indices', function(done) {
@@ -171,7 +195,10 @@ describe('Test frame api', function() {
                 expect(f[10]).toEqual({name: 'frame10', data: [3]});
 
                 return Plotly.Queue.undo(gd);
-            }).then(validate).catch(fail).then(done);
+            })
+            .then(validate)
+            .catch(failTest)
+            .then(done);
         });
 
         it('inserts frames at specific indices (reversed)', function(done) {
@@ -195,7 +222,10 @@ describe('Test frame api', function() {
                 expect(f[10]).toEqual({name: 'frame10', data: [3]});
 
                 return Plotly.Queue.undo(gd);
-            }).then(validate).catch(fail).then(done);
+            })
+            .then(validate)
+            .catch(failTest)
+            .then(done);
         });
 
         it('implements undo/redo', function(done) {
@@ -211,7 +241,10 @@ describe('Test frame api', function() {
                 expect(h).toEqual({});
 
                 return Plotly.Queue.redo(gd);
-            }).then(validate).catch(fail).then(done);
+            })
+            .then(validate)
+            .catch(failTest)
+            .then(done);
         });
 
         it('overwrites frames', function(done) {
@@ -234,7 +267,9 @@ describe('Test frame api', function() {
             }).then(function() {
                 expect(f).toEqual([{name: 'test1'}, {name: 'test2'}, {name: 'test3'}]);
                 expect(Object.keys(h)).toEqual(['test1', 'test2', 'test3']);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 
@@ -257,7 +292,9 @@ describe('Test frame api', function() {
             }).then(function() {
                 expect(f).toEqual([]);
                 expect(Object.keys(h)).toEqual([]);
-            }).catch(fail).then(done);
+            })
+            .catch(failTest)
+            .then(done);
         });
 
         it('deletes multiple frames', function(done) {
@@ -285,7 +322,10 @@ describe('Test frame api', function() {
                 }
 
                 return Plotly.Queue.redo(gd);
-            }).then(validate).catch(fail).then(done);
+            })
+            .then(validate)
+            .catch(failTest)
+            .then(done);
         });
 
         it('deletes all frames if frameList is falsey', function(done) {
@@ -317,7 +357,10 @@ describe('Test frame api', function() {
             }).then(validateCount(n)).then(function() {
                 // Delete with undefined:
                 return Plotly.deleteFrames(gd, undefined);
-            }).then(validateCount(0)).catch(fail).then(done);
+            })
+            .then(validateCount(0))
+            .catch(failTest)
+            .then(done);
         });
 
         it('deleteFrames is a no-op with empty array', function(done) {
@@ -337,7 +380,10 @@ describe('Test frame api', function() {
             Plotly.addFrames(gd, frames).then(function() {
                 // Delete with no args:
                 return Plotly.deleteFrames(gd, []);
-            }).then(validateCount(n)).catch(fail).then(done);
+            })
+            .then(validateCount(n))
+            .catch(failTest)
+            .then(done);
         });
     });
 });

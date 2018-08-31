@@ -5,7 +5,7 @@ var ScatterTernary = require('@src/traces/scatterternary');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var fail = require('../assets/fail_test');
+var failTest = require('../assets/fail_test');
 var customAssertions = require('../assets/custom_assertions');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -398,6 +398,7 @@ describe('scatterternary hover', function() {
             expect(scatterPointData[0].yLabelVal).toBeUndefined();
             expect(scatterPointData[0].text).toEqual('orange');
         })
+        .catch(failTest)
         .then(done);
     });
 
@@ -503,7 +504,7 @@ describe('Test scatterternary *cliponaxis*', function() {
                 [true, 1]
            );
         })
-        .catch(fail)
+        .catch(failTest)
         .then(done);
     });
 });
