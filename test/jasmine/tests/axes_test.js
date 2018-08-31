@@ -1558,7 +1558,7 @@ describe('Test axes', function() {
             expect(getAutoRange(gd, ax)).toEqual([7.5, 0]);
         });
 
-        it('expands empty positive range to something including 0 with rangemode tozero', function() {
+        it('expands empty positive range to include 0 with rangemode tozero', function() {
             gd = mockGd([
                 {val: 5, pad: 0}
             ], [
@@ -1567,7 +1567,7 @@ describe('Test axes', function() {
             ax = mockAx();
             ax.rangemode = 'tozero';
 
-            expect(getAutoRange(gd, ax)).toEqual([0, 6]);
+            expect(getAutoRange(gd, ax)).toEqual([0, 5]);
         });
 
         it('expands empty negative range to something including 0 with rangemode tozero', function() {
@@ -1579,7 +1579,63 @@ describe('Test axes', function() {
             ax = mockAx();
             ax.rangemode = 'tozero';
 
-            expect(getAutoRange(gd, ax)).toEqual([-6, 0]);
+            expect(getAutoRange(gd, ax)).toEqual([-5, 0]);
+        });
+
+        it('pads an empty range, but not past center, with rangemode tozero', function() {
+            gd = mockGd([
+                {val: 5, pad: 50} // this min pad gets ignored
+            ], [
+                {val: 5, pad: 20}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'tozero';
+
+            expect(getAutoRange(gd, ax)).toBeCloseToArray([0, 6.25], 0.01);
+
+            gd = mockGd([
+                {val: -5, pad: 80}
+            ], [
+                {val: -5, pad: 0}
+            ]);
+            ax = mockAx();
+            ax.rangemode = 'tozero';
+
+            expect(getAutoRange(gd, ax)).toBeCloseToArray([-10, 0], 0.01);
+        });
+
+        it('shows the data even if it cannot show the padding', function() {
+            gd = mockGd([
+                {val: 0, pad: 44}
+            ], [
+                {val: 1, pad: 44}
+            ]);
+            ax = mockAx();
+
+            // this one is *just* on the allowed side of padding
+            // ie data span is just over 10% of the axis
+            expect(getAutoRange(gd, ax)).toBeCloseToArray([-3.67, 4.67]);
+
+            gd = mockGd([
+                {val: 0, pad: 46}
+            ], [
+                {val: 1, pad: 46}
+            ]);
+            ax = mockAx();
+
+            // this one the padded data span would be too small, so we delete
+            // the padding
+            expect(getAutoRange(gd, ax)).toEqual([0, 1]);
+
+            gd = mockGd([
+                {val: 0, pad: 400}
+            ], [
+                {val: 1, pad: 0}
+            ]);
+            ax = mockAx();
+
+            // this one the padding is simply impossible to accept!
+            expect(getAutoRange(gd, ax)).toEqual([0, 1]);
         });
 
         it('never returns a negative range when rangemode nonnegative is set with positive and negative points', function() {
@@ -1614,16 +1670,42 @@ describe('Test axes', function() {
             expect(getAutoRange(gd, ax)).toEqual([0, 1]);
         });
 
-        it('expands empty range to something nonnegative with rangemode nonnegative', function() {
+        it('never returns a negative range when rangemode nonnegative is set with only nonpositive points', function() {
             gd = mockGd([
-                {val: -5, pad: 0}
+                {val: -10, pad: 20},
+                {val: -8, pad: 0},
+                {val: -9, pad: 10}
             ], [
-                {val: -5, pad: 0}
+                {val: -5, pad: 20},
+                {val: 0, pad: 0},
+                {val: -6, pad: 10}
             ]);
             ax = mockAx();
             ax.rangemode = 'nonnegative';
 
             expect(getAutoRange(gd, ax)).toEqual([0, 1]);
+        });
+
+        it('expands empty range to something nonnegative with rangemode nonnegative', function() {
+            [
+                [-5, [0, 1]],
+                [0, [0, 1]],
+                [0.5, [0, 1.5]],
+                [1, [0, 2]],
+                [5, [4, 6]]
+            ].forEach(function(testCase) {
+                var val = testCase[0];
+                var expected = testCase[1];
+                gd = mockGd([
+                    {val: val, pad: 0}
+                ], [
+                    {val: val, pad: 0}
+                ]);
+                ax = mockAx();
+                ax.rangemode = 'nonnegative';
+
+                expect(getAutoRange(gd, ax)).toEqual(expected, val);
+            });
         });
     });
 
