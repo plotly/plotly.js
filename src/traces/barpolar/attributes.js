@@ -8,6 +8,7 @@
 
 'use strict';
 
+var extendFlat = require('../../lib/extend').extendFlat;
 var scatterPolarAttrs = require('../scatterpolar/attributes');
 var barAttrs = require('../bar/attributes');
 
@@ -28,11 +29,34 @@ module.exports = {
     //     description: 'Sets the orientation of the bars.'
     // },
 
-    base: barAttrs.base,
-    offset: barAttrs.offset,
-    width: barAttrs.width,
+    base: extendFlat({}, barAttrs.base, {
+        description: [
+            'Sets where the bar base is drawn (in radial axis units).',
+            'In *stack* barmode,',
+            'traces that set *base* will be excluded',
+            'and drawn in *overlay* mode instead.'
+        ].join(' ')
+    }),
+    offset: extendFlat({}, barAttrs.offset, {
+        description: [
+            'Shifts the angular position where the bar is drawn',
+            '(in *thetatunit* units).'
+        ].join(' ')
+    }),
+    width: extendFlat({}, barAttrs.width, {
+        description: [
+            'Sets the bar angular width (in *thetaunit* units).'
+        ].join(' ')
+    }),
 
-    text: barAttrs.text,
+    text: extendFlat({}, barAttrs.text, {
+        description: [
+            'Sets hover text elements associated with each bar.',
+            'If a single string, the same string appears over all bars.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s coordinates.'
+        ].join(' ')
+    }),
     // hovertext: barAttrs.hovertext,
 
     // textposition: {},
