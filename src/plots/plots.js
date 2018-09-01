@@ -391,6 +391,11 @@ plots.supplyDefaults = function(gd, opts) {
     // initialize splom grid defaults
     newFullLayout._splomGridDflt = {};
 
+    // for stacked area traces to share config across traces
+    newFullLayout._scatterStackOpts = {};
+    // for the first scatter trace on each subplot (so it knows tonext->tozero)
+    newFullLayout._firstScatter = {};
+
     // for traces to request a default rangeslider on their x axes
     // eg set `_requestRangeslider.x2 = true` for xaxis2
     newFullLayout._requestRangeslider = {};
@@ -938,8 +943,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout, fullLayout) {
         fullTrace.uid = fullLayout._traceUids[i];
         plots.supplyTraceDefaults(trace, fullTrace, colorCnt, fullLayout, i);
 
-        fullTrace.uid = fullLayout._traceUids[i];
-
         fullTrace.index = i;
         fullTrace._input = trace;
         fullTrace._expandedIndex = cnt;
@@ -1177,6 +1180,14 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
         }
 
         plots.supplyTransformDefaults(traceIn, traceOut, layout);
+    }
+    else if(_module && Registry.traceIs(traceOut, 'alwaysSupplyDefaults')) {
+        // Some types need *something* from supplyDefaults always, even if
+        // visible: false. Looking at you scatter: stack options even from
+        // hidden traces can control other traces in the stack.
+        // These types should bail out ASAP if visible is false.
+        // But we don't need any other cross-module attrs ^^ in this case.
+        _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
     }
 
     return traceOut;
@@ -1556,7 +1567,6 @@ plots.purge = function(gd) {
     // (and to have a record of them...)
     delete gd._promises;
     delete gd._redrawTimer;
-    delete gd.firstscatter;
     delete gd._hmlumcount;
     delete gd._hmpixcount;
     delete gd._transitionData;
@@ -2421,8 +2431,6 @@ plots.doCalcdata = function(gd, traces) {
     gd.calcdata = calcdata;
 
     // extra helper variables
-    // firstscatter: fill-to-next on the first trace goes to zero
-    gd.firstscatter = true;
 
     // how many box/violins plots do we have (in case they're grouped)
     fullLayout._numBoxes = 0;

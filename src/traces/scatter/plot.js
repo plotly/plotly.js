@@ -386,7 +386,15 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
 
     function visFilter(d) {
+        return d.filter(function(v) { return !v.gap && v.vis; });
+    }
+
+    function visFilterWithGaps(d) {
         return d.filter(function(v) { return v.vis; });
+    }
+
+    function gapFilter(d) {
+        return d.filter(function(v) { return !v.gap; });
     }
 
     function keyFunc(d) {
@@ -416,12 +424,24 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         var markerFilter = hideFilter;
         var textFilter = hideFilter;
 
-        if(showMarkers) {
-            markerFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : Lib.identity;
-        }
+        if(showMarkers || showText) {
+            var showFilter = Lib.identity;
+            // if we're stacking, "infer zero" gap mode gets markers in the
+            // gap points - because we've inferred a zero there - but other
+            // modes (currently "interpolate", later "interrupt" hopefully)
+            // we don't draw generated markers
+            var stackGroup = trace.stackgroup;
+            var isInferZero = stackGroup && (
+                gd._fullLayout._scatterStackOpts[xa._id + ya._id][stackGroup].stackgaps === 'infer zero');
+            if(trace.marker.maxdisplayed || trace._needsCull) {
+                showFilter = isInferZero ? visFilterWithGaps : visFilter;
+            }
+            else if(stackGroup && !isInferZero) {
+                showFilter = gapFilter;
+            }
 
-        if(showText) {
-            textFilter = (trace.marker.maxdisplayed || trace._needsCull) ? visFilter : Lib.identity;
+            if(showMarkers) markerFilter = showFilter;
+            if(showText) textFilter = showFilter;
         }
 
         // marker points

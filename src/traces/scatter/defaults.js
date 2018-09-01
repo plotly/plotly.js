@@ -15,6 +15,7 @@ var attributes = require('./attributes');
 var constants = require('./constants');
 var subTypes = require('./subtypes');
 var handleXYDefaults = require('./xy_defaults');
+var handleStackDefaults = require('./stack_defaults');
 var handleMarkerDefaults = require('./marker_defaults');
 var handleLineDefaults = require('./line_defaults');
 var handleLineShapeDefaults = require('./line_shape_defaults');
@@ -26,14 +27,15 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYDefaults(traceIn, traceOut, layout, coerce),
-        // TODO: default mode by orphan points...
-        defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
-    if(!len) {
-        traceOut.visible = false;
-        return;
-    }
+    var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
 
+    var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
+    if(!len) traceOut.visible = false;
+
+    if(!traceOut.visible) return;
+
+    var defaultMode = !stackGroupOpts && (len < constants.PTS_LINESONLY) ?
+        'lines+markers' : 'lines';
     coerce('text');
     coerce('hovertext');
     coerce('mode', defaultMode);
@@ -61,7 +63,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         dfltHoverOn.push('points');
     }
 
-    coerce('fill');
+    // It's possible for this default to be changed by a later trace.
+    // We handle that case in some hacky code inside handleStackDefaults.
+    coerce('fill', stackGroupOpts ? stackGroupOpts.fillDflt : 'none');
     if(traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
         if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
