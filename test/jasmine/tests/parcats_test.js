@@ -1428,24 +1428,310 @@ describe('Click events with hovermode color', function() {
     });
 });
 
-// To Test
-// -------
+describe('Hover events', function() {
 
-// ### Hovering
-//   - Hover down to top middle category, and top path.
-//  - [ ] Path hover label
-//  - [ ] Category hover label for 'category', 'color', and 'dimension', `hovermode`
-//  - [ ] No category hover label for 'none', 'skip' `hovermode
-//  - [ ] Events emitted on path hover
-//  - [ ] Events emitted on category hover in 'category', 'color', 'dimension', and 'none' `hovermode`
-//  - [ ] No events emitted on category or path in 'skip' `hovermode`
-//  In each case, check hoverinfo text
+    // Variable declarations
+    // ---------------------
+    // ### Trace level ###
+    var gd,
+        mock;
 
-// ### Test that properties have the desired effect on models
-//  - [ ] visible
-//  - [ ] counts
-//  - [ ] bundlecolors
-//  - [ ] sortpaths
-//
-//
-// ### Test Font styles ###
+    // Fixtures
+    // --------
+    beforeEach(function() {
+        gd = createGraphDiv();
+        mock = Lib.extendDeep({}, require('@mocks/parcats_basic_freeform.json'));
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('hover and unhover should fire on category', function(done) {
+
+        var hoverData,
+            unhoverData,
+            mouseY0,
+            mouseX0;
+
+        Plotly.newPlot(gd, mock)
+            .then(function() {
+                /** @type {ParcatsViewModel} */
+                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+
+                gd.on('plotly_hover', function(data) {
+                    hoverData = data;
+                });
+
+                gd.on('plotly_unhover', function(data) {
+                    unhoverData = data;
+                });
+
+                // Hover over top category of middle dimension (category "A")
+                var dimStartX = parcatsViewModel.dimensions[1].x;
+
+                mouseY0 = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+                mouseX0 = parcatsViewModel.x + dimStartX + dimWidth / 2;
+
+                // Position mouse for start of drag
+                // --------------------------------
+                mouseEvent('mousemove', mouseX0, mouseY0);
+                mouseEvent('mouseover', mouseX0, mouseY0);
+                Lib.clearThrottle();
+            })
+            .then(delay(CALLBACK_DELAY))
+            .then(function() {
+                // Check that hover callback was called
+                expect(hoverData).toBeDefined();
+
+                // Check that the right points were reported
+                var pts = hoverData.points.sort(function(a, b) {
+                        return a.pointNumber - b.pointNumber;
+                    });
+                expect(pts).toEqual([
+                    {curveNumber: 0, pointNumber: 4},
+                    {curveNumber: 0, pointNumber: 5},
+                    {curveNumber: 0, pointNumber: 8}]);
+
+                // Check that unhover is still undefined
+                expect(unhoverData).toBeUndefined();
+            })
+            .then(function(){
+                // Unhover
+                mouseEvent('mouseout', mouseX0, mouseY0);
+                Lib.clearThrottle();
+            })
+            .then(function(){
+                // Check that unhover callback was called
+                expect(unhoverData).toBeDefined();
+
+                // Check that the right points were reported
+                var pts = unhoverData.points.sort(function(a, b) {
+                        return a.pointNumber - b.pointNumber;
+                    });
+                expect(pts).toEqual([
+                    {curveNumber: 0, pointNumber: 4},
+                    {curveNumber: 0, pointNumber: 5},
+                    {curveNumber: 0, pointNumber: 8}]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('hover and unhover should fire on path', function(done) {
+
+        var hoverData,
+            unhoverData,
+            mouseY0,
+            mouseX0;
+
+        Plotly.newPlot(gd, mock)
+            .then(function() {
+                /** @type {ParcatsViewModel} */
+                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+
+                gd.on('plotly_hover', function(data) {
+                    hoverData = data;
+                });
+
+                gd.on('plotly_unhover', function(data) {
+                    unhoverData = data;
+                });
+
+
+                var dimStartX = parcatsViewModel.dimensions[1].x;
+                mouseY0 = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+                mouseX0 = parcatsViewModel.x + dimStartX + dimWidth + 10;
+
+                // Position mouse for start of drag
+                // --------------------------------
+                mouseEvent('mousemove', mouseX0, mouseY0);
+                mouseEvent('mouseover', mouseX0, mouseY0);
+                Lib.clearThrottle();
+            })
+            .then(delay(CALLBACK_DELAY))
+            .then(function() {
+                // Check that hover callback was called
+                expect(hoverData).toBeDefined();
+
+                // Check that the right points were reported
+                var pts = hoverData.points.sort(function(a, b) {
+                        return a.pointNumber - b.pointNumber;
+                    });
+                expect(pts).toEqual([
+                    {curveNumber: 0, pointNumber: 5},
+                    {curveNumber: 0, pointNumber: 8}]);
+
+                // Check that unhover is still undefined
+                expect(unhoverData).toBeUndefined();
+            })
+            .then(function(){
+                // Unhover
+                mouseEvent('mouseout', mouseX0, mouseY0);
+                Lib.clearThrottle();
+            })
+            .then(function(){
+                // Check that unhover callback was called
+                expect(unhoverData).toBeDefined();
+
+                // Check that the right points were reported
+                var pts = unhoverData.points.sort(function(a, b) {
+                        return a.pointNumber - b.pointNumber;
+                    });
+                expect(pts).toEqual([
+                    {curveNumber: 0, pointNumber: 5},
+                    {curveNumber: 0, pointNumber: 8}]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+});
+
+describe('Hover events with hovermode color', function() {
+
+    // Variable declarations
+    // ---------------------
+    // ### Trace level ###
+    var gd,
+        mock;
+
+    // Fixtures
+    // --------
+    beforeEach(function() {
+        gd = createGraphDiv();
+        mock = Lib.extendDeep({}, require('@mocks/parcats_hovermode_color.json'));
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('hover and unhover should fire on category hovermode color', function(done) {
+
+        var hoverData,
+            unhoverData,
+            mouseY0,
+            mouseX0;
+
+        Plotly.newPlot(gd, mock)
+            .then(function() {
+                /** @type {ParcatsViewModel} */
+                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+
+                gd.on('plotly_hover', function(data) {
+                    hoverData = data;
+                });
+
+                gd.on('plotly_unhover', function(data) {
+                    unhoverData = data;
+                });
+
+                // Hover over top category of middle dimension (category "A")
+                var dimStartX = parcatsViewModel.dimensions[1].x;
+
+                mouseY0 = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+                mouseX0 = parcatsViewModel.x + dimStartX + dimWidth / 2;
+
+                // Position mouse for start of drag
+                // --------------------------------
+                mouseEvent('mousemove', mouseX0, mouseY0);
+                mouseEvent('mouseover', mouseX0, mouseY0);
+                Lib.clearThrottle();
+            })
+            .then(delay(CALLBACK_DELAY))
+            .then(function() {
+                // Check that hover callback was called
+                expect(hoverData).toBeDefined();
+
+                // Check that the right points were reported
+                var pts = hoverData.points.sort(function(a, b) {
+                        return a.pointNumber - b.pointNumber;
+                    });
+                expect(pts).toEqual([
+                    {curveNumber: 0, pointNumber: 5}]);
+
+                // Check that unhover is still undefined
+                expect(unhoverData).toBeUndefined();
+            })
+            .then(function(){
+                // Unhover
+                mouseEvent('mouseout', mouseX0, mouseY0);
+                Lib.clearThrottle();
+            })
+            .then(function(){
+                // Check that unhover callback was called
+                expect(unhoverData).toBeDefined();
+
+                // Check that the right points were reported
+                var pts = unhoverData.points.sort(function(a, b) {
+                        return a.pointNumber - b.pointNumber;
+                    });
+                expect(pts).toEqual([
+                    {curveNumber: 0, pointNumber: 5}]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+    it('hover and unhover should fire on path hovermode color', function(done) {
+
+        var hoverData,
+            unhoverData,
+            mouseY0,
+            mouseX0;
+
+        Plotly.newPlot(gd, mock)
+            .then(function() {
+                /** @type {ParcatsViewModel} */
+                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+
+                gd.on('plotly_hover', function(data) {
+                    hoverData = data;
+                });
+
+                gd.on('plotly_unhover', function(data) {
+                    unhoverData = data;
+                });
+
+
+                var dimStartX = parcatsViewModel.dimensions[1].x;
+                mouseY0 = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
+                mouseX0 = parcatsViewModel.x + dimStartX + dimWidth + 10;
+
+                // Position mouse for start of drag
+                // --------------------------------
+                mouseEvent('mousemove', mouseX0, mouseY0);
+                mouseEvent('mouseover', mouseX0, mouseY0);
+                Lib.clearThrottle();
+            })
+            .then(delay(CALLBACK_DELAY))
+            .then(function() {
+                // Check that hover callback was called
+                expect(hoverData).toBeDefined();
+
+                // Check that the right points were reported
+                var pts = hoverData.points.sort(function(a, b) {
+                        return a.pointNumber - b.pointNumber;
+                    });
+                expect(pts).toEqual([
+                    {curveNumber: 0, pointNumber: 5}]);
+
+                // Check that unhover is still undefined
+                expect(unhoverData).toBeUndefined();
+            })
+            .then(function(){
+                // Unhover
+                mouseEvent('mouseout', mouseX0, mouseY0);
+                Lib.clearThrottle();
+            })
+            .then(function(){
+                // Check that unhover callback was called
+                expect(unhoverData).toBeDefined();
+
+                // Check that the right points were reported
+                var pts = unhoverData.points.sort(function(a, b) {
+                        return a.pointNumber - b.pointNumber;
+                    });
+                expect(pts).toEqual([
+                    {curveNumber: 0, pointNumber: 5}]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+});
