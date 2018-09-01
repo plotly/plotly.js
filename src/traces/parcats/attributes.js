@@ -162,7 +162,7 @@ module.exports = {
             role: 'info',
             editType: 'calc',
             description: [
-                'The display index of dimension, from left to right, zero indexed, defaults to dimension' +
+                'The display index of dimension, from left to right, zero indexed, defaults to dimension',
                 'index.'
             ].join(' ')
         },
@@ -186,8 +186,8 @@ module.exports = {
         role: 'info',
         editType: 'calc',
         description: [
-            'The number of observations represented by each state. Defaults to 1 so that each state represents ' +
-                'one observation'
-        ]
+            'The number of observations represented by each state. Defaults to 1 so that each state represents',
+            'one observation'
+        ].join(' ')
     }
 };
