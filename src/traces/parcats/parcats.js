@@ -311,9 +311,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     // categorySelection.select('rect.catrect')
     categorySelection.selectAll('rect.bandrect')
         .on('mouseover', mouseoverCategoryBand)
-        .on('mouseout', function(d) {
-            mouseoutCategory(d.parcatsViewModel);
-        });
+        .on('mouseout', mouseoutCategory);
 
     // Remove unused categories
     categorySelection.exit().remove();
@@ -481,6 +479,12 @@ function mouseoutPath(d) {
 
         // Restore path order
         d.parcatsViewModel.pathSelection.sort(compareRawColor);
+
+        // Emit unhover event
+        if(d.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
+            var points = buildPointsArrayForPath(d);
+            d.parcatsViewModel.graphDiv.emit('plotly_unhover', {points: points, event: d3.event});
+        }
     }
 }
 
@@ -930,11 +934,14 @@ function mouseoverCategoryBand(bandViewModel) {
     }
 }
 
+
 /**
- * Handle dimension mouseout
- * @param {ParcatsViewModel} parcatsViewModel
+ * Handle dimension mouseover
+ * @param {CategoryBandViewModel} bandViewModel
  */
-function mouseoutCategory(parcatsViewModel) {
+function mouseoutCategory(bandViewModel) {
+
+    var parcatsViewModel = bandViewModel.parcatsViewModel;
 
     if(!parcatsViewModel.dragDimension) {
         // We're not dragging anything
@@ -949,6 +956,21 @@ function mouseoutCategory(parcatsViewModel) {
 
         // Restore path order
         parcatsViewModel.pathSelection.sort(compareRawColor);
+
+        // Emit unhover event
+        if(parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
+
+            var hovermode = bandViewModel.parcatsViewModel.hovermode;
+            var bandElement = this;
+
+            // Handle style and events
+            if (hovermode === 'color') {
+                emitPointsEventColorHovermode(bandElement, 'plotly_unhover', d3.event);
+            } else {
+                console.log('mouseoutCategory: ' + hovermode);
+                emitPointsEventCategoryHovermode(bandElement, 'plotly_unhover', d3.event);
+            }
+        }
     }
 }
 
