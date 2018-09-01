@@ -210,14 +210,14 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('cursor',
             /** @param {CategoryBandViewModel} bandModel*/
             function(bandModel) {
-                if (bandModel.parcatsViewModel.arrangement === 'fixed') {
-                    return 'default'
-                } else if (bandModel.parcatsViewModel.arrangement === 'perpendicular') {
-                    return 'ns-resize'
+                if(bandModel.parcatsViewModel.arrangement === 'fixed') {
+                    return 'default';
+                } else if(bandModel.parcatsViewModel.arrangement === 'perpendicular') {
+                    return 'ns-resize';
                 } else {
-                    return 'move'
-            }
-        });
+                    return 'move';
+                }
+            });
 
     styleBandsNoHover(bandsSelectionEnter);
 
@@ -267,7 +267,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         })
         .each(
             /** @param {CategoryViewModel} catModel*/
-            function(catModel){
+            function(catModel) {
                 Drawing.font(d3.select(this), catModel.parcatsViewModel.categorylabelfont);
             });
 
@@ -283,10 +283,10 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('cursor',
              /** @param {CategoryViewModel} catModel*/
             function(catModel) {
-                if (catModel.parcatsViewModel.arrangement === 'fixed') {
+                if(catModel.parcatsViewModel.arrangement === 'fixed') {
                     return 'default';
                 } else {
-                    return 'ew-resize'
+                    return 'ew-resize';
                 }
             })
         .attr('x', function(d) {
@@ -303,7 +303,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         })
         .each(
             /** @param {CategoryViewModel} catModel*/
-            function(catModel){
+            function(catModel) {
                 Drawing.font(d3.select(this), catModel.parcatsViewModel.labelfont);
             });
 
@@ -436,10 +436,10 @@ function mouseoverPath(d) {
 
                 // Build hover text
                 var hovertextParts = [];
-                if (d.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
+                if(d.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
                     hovertextParts.push(['Count:', d.model.count].join(' '));
                 }
-                if (d.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
+                if(d.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
                     hovertextParts.push(['P:', (d.model.count / d.parcatsViewModel.model.count).toFixed(3)].join(' '));
                 }
 
@@ -513,7 +513,7 @@ function buildPointsArrayForPath(d) {
  * @param {PathViewModel} d
  */
 function clickPath(d) {
-    if (d.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
+    if(d.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
         // hoverinfo it's skip, so interaction events aren't disabled
         var points = buildPointsArrayForPath(d);
         d.parcatsViewModel.graphDiv.emit('plotly_click', {points: points, event: d3.event});
@@ -729,13 +729,13 @@ function createHoverLabelForCategoryHovermode(rootBBox, bandElement) {
 
     // Hover label text
     var hoverinfoParts = [];
-    if (catViewModel.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
-        hoverinfoParts.push(['Count:', catViewModel.model.count].join(' '))
+    if(catViewModel.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
+        hoverinfoParts.push(['Count:', catViewModel.model.count].join(' '));
     }
-    if (catViewModel.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
+    if(catViewModel.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
         hoverinfoParts.push([
             'P(' + catViewModel.model.categoryLabel + '):',
-            (catViewModel.model.count / catViewModel.parcatsViewModel.model.count).toFixed(3)].join(' '))
+            (catViewModel.model.count / catViewModel.parcatsViewModel.model.count).toFixed(3)].join(' '));
     }
 
     var hovertext = hoverinfoParts.join('<br>');
@@ -773,7 +773,7 @@ function createHoverLabelForDimensionHovermode(rootBBox, bandElement) {
             allHoverlabels.push(createHoverLabelForCategoryHovermode(rootBBox, bandNode));
         });
 
-    return allHoverlabels
+    return allHoverlabels;
 }
 
 /**
@@ -837,10 +837,10 @@ function createHoverLabelForColorHovermode(rootBBox, bandElement) {
 
     // Hover label text
     var hoverinfoParts = [];
-    if (catViewModel.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
-        hoverinfoParts.push(['Count:', bandColorCount].join(' '))
+    if(catViewModel.parcatsViewModel.hoverinfoItems.indexOf('count') !== -1) {
+        hoverinfoParts.push(['Count:', bandColorCount].join(' '));
     }
-    if (catViewModel.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
+    if(catViewModel.parcatsViewModel.hoverinfoItems.indexOf('probability') !== -1) {
         var pColorAndCatLable = 'P(color ∩ ' + catLabel + '): ';
         var pColorAndCatValue = (bandColorCount / totalCount).toFixed(3);
         var pColorAndCatRow = pColorAndCatLable + pColorAndCatValue;
@@ -889,7 +889,7 @@ function mouseoverCategoryBand(bandViewModel) {
 
             // Mouse
             var mouseY = d3.mouse(this)[1];
-            if (mouseY < -1) {
+            if(mouseY < -1) {
                 // Hover is above above the category rectangle (probably the dimension title text)
                 return;
             }
@@ -903,7 +903,7 @@ function mouseoverCategoryBand(bandViewModel) {
             var bandElement = this;
 
             // Handle style and events
-            if (hovermode === 'color') {
+            if(hovermode === 'color') {
                 styleForColorHovermode(bandElement);
                 emitPointsEventColorHovermode(bandElement, 'plotly_hover', d3.event);
             } else {
@@ -914,15 +914,15 @@ function mouseoverCategoryBand(bandViewModel) {
             // Handle hover label
             if(bandViewModel.parcatsViewModel.hoverinfoItems.indexOf('none') === -1) {
                 var hoverItems;
-                if (hovermode === 'category') {
+                if(hovermode === 'category') {
                     hoverItems = createHoverLabelForCategoryHovermode(rootBBox, bandElement);
-                } else if (hovermode === 'color') {
+                } else if(hovermode === 'color') {
                     hoverItems = createHoverLabelForColorHovermode(rootBBox, bandElement);
-                } else if (hovermode === 'dimension') {
+                } else if(hovermode === 'dimension') {
                     hoverItems = createHoverLabelForDimensionHovermode(rootBBox, bandElement);
                 }
 
-                if (hoverItems) {
+                if(hoverItems) {
                     Fx.multiHovers(hoverItems, {
                         container: fullLayout._hoverlayer.node(),
                         outerContainer: fullLayout._paper.node(),
@@ -964,10 +964,9 @@ function mouseoutCategory(bandViewModel) {
             var bandElement = this;
 
             // Handle style and events
-            if (hovermode === 'color') {
+            if(hovermode === 'color') {
                 emitPointsEventColorHovermode(bandElement, 'plotly_unhover', d3.event);
             } else {
-                console.log('mouseoutCategory: ' + hovermode);
                 emitPointsEventCategoryHovermode(bandElement, 'plotly_unhover', d3.event);
             }
         }
@@ -982,8 +981,8 @@ function mouseoutCategory(bandViewModel) {
 function dragDimensionStart(d) {
 
     // Check if dragging is supported
-    if (d.parcatsViewModel.arrangement === 'fixed') {
-        return
+    if(d.parcatsViewModel.arrangement === 'fixed') {
+        return;
     }
 
     // Save off initial drag indexes for dimension
@@ -1044,8 +1043,8 @@ function dragDimensionStart(d) {
 function dragDimension(d) {
 
     // Check if dragging is supported
-    if (d.parcatsViewModel.arrangement === 'fixed') {
-        return
+    if(d.parcatsViewModel.arrangement === 'fixed') {
+        return;
     }
 
     d.dragHasMoved = true;
@@ -1103,15 +1102,15 @@ function dragDimension(d) {
     }
 
     // Update dimension position
-    if (d.dragCategoryDisplayInd === null || d.parcatsViewModel.arrangement === 'freeform') {
+    if(d.dragCategoryDisplayInd === null || d.parcatsViewModel.arrangement === 'freeform') {
         dragDimension.model.dragX = d3.event.x;
 
         // Check for dimension swaps
         var prevDimension = d.parcatsViewModel.dimensions[prevDimInd];
         var nextDimension = d.parcatsViewModel.dimensions[nextDimInd];
 
-        if (prevDimension !== undefined) {
-            if (dragDimension.model.dragX < (prevDimension.x + prevDimension.width)) {
+        if(prevDimension !== undefined) {
+            if(dragDimension.model.dragX < (prevDimension.x + prevDimension.width)) {
 
                 // Swap display inds
                 dragDimension.model.displayInd = prevDimension.model.displayInd;
@@ -1119,8 +1118,8 @@ function dragDimension(d) {
             }
         }
 
-        if (nextDimension !== undefined) {
-            if ((dragDimension.model.dragX + dragDimension.width) > nextDimension.x) {
+        if(nextDimension !== undefined) {
+            if((dragDimension.model.dragX + dragDimension.width) > nextDimension.x) {
 
                 // Swap display inds
                 dragDimension.model.displayInd = nextDimension.model.displayInd;
@@ -1149,8 +1148,8 @@ function dragDimension(d) {
 function dragDimensionEnd(d) {
 
     // Check if dragging is supported
-    if (d.parcatsViewModel.arrangement === 'fixed') {
-        return
+    if(d.parcatsViewModel.arrangement === 'fixed') {
+        return;
     }
 
     if(d.dragDimensionDisplayInd === null) {
@@ -1192,11 +1191,11 @@ function dragDimensionEnd(d) {
 
             // Sort a shallow copy of the category models by display index
             var sortedCategoryModels = d.model.categories.slice().sort(
-                function (a, b) { return a.displayInd - b.displayInd });
+                function(a, b) { return a.displayInd - b.displayInd; });
 
             // Get new categoryarray and categorylabels values
-            var newCategoryArray = sortedCategoryModels.map(function (v) { return v.categoryValue });
-            var newCategoryLabels = sortedCategoryModels.map(function (v) { return v.categoryLabel });
+            var newCategoryArray = sortedCategoryModels.map(function(v) { return v.categoryValue; });
+            var newCategoryLabels = sortedCategoryModels.map(function(v) { return v.categoryLabel; });
 
             restyleData['dimensions[' + d.model.containerInd + '].categoryarray'] = [newCategoryArray];
             restyleData['dimensions[' + d.model.containerInd + '].categorylabels'] = [newCategoryLabels];
@@ -1207,8 +1206,8 @@ function dragDimensionEnd(d) {
     // Handle potential click event
     // ----------------------------
     if(d.parcatsViewModel.hoverinfoItems.indexOf('skip') === -1) {
-        if (!d.dragHasMoved && d.potentialClickBand) {
-            if (d.parcatsViewModel.hovermode === 'color') {
+        if(!d.dragHasMoved && d.potentialClickBand) {
+            if(d.parcatsViewModel.hovermode === 'color') {
                 emitPointsEventColorHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
             } else {
                 emitPointsEventCategoryHovermode(d.potentialClickBand, 'plotly_click', d3.event.sourceEvent);
@@ -1455,7 +1454,7 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
     // Handle hover info
     // -----------------
     var hoverinfoItems;
-    if (trace.hoverinfo === 'all') {
+    if(trace.hoverinfo === 'all') {
         hoverinfoItems = ['count', 'probability'];
     } else {
         hoverinfoItems = trace.hoverinfo.split('+');

@@ -568,7 +568,7 @@ describe('Drag to reordered dimensions', function() {
     it('should support dragging dimension label to reorder dimensions in freeform arrangement', function(done) {
 
         // Set arrangement
-        mock.data[0].arrangement =  'freeform';
+        mock.data[0].arrangement = 'freeform';
 
         Plotly.newPlot(gd, mock)
             .then(function() {
@@ -643,7 +643,7 @@ describe('Drag to reordered dimensions', function() {
     it('should support dragging dimension label to reorder dimensions in perpendicular arrangement', function(done) {
 
         // Set arrangement
-        mock.data[0].arrangement  = 'perpendicular';
+        mock.data[0].arrangement = 'perpendicular';
 
         Plotly.newPlot(gd, mock)
             .then(function() {
@@ -729,8 +729,6 @@ describe('Drag to reordered dimensions', function() {
 
                 /** @type {ParcatsViewModel} */
                 var parcatsViewModel = d3.select('g.trace.parcats').datum();
-
-                var dragDimStartX = parcatsViewModel.dimensions[1].x;
                 var pos = getMousePositions(parcatsViewModel);
 
                 // Check initial dimension order
@@ -918,7 +916,7 @@ describe('Drag to reordered categories', function() {
     it('should support dragging category to reorder categories and dimensions in freeform arrangement', function(done) {
 
         // Set arrangement
-        mock.data[0].arrangement =  'freeform';
+        mock.data[0].arrangement = 'freeform';
 
         Plotly.newPlot(gd, mock)
             .then(function() {
@@ -1008,7 +1006,7 @@ describe('Drag to reordered categories', function() {
     it('should support dragging category to reorder categories only in perpendicular arrangement', function(done) {
 
         // Set arrangement
-        mock.data[0].arrangement =  'perpendicular';
+        mock.data[0].arrangement = 'perpendicular';
 
         Plotly.newPlot(gd, mock)
             .then(function() {
@@ -1208,8 +1206,8 @@ describe('Click events', function() {
 
                 // Check that the right points were reported
                 var pts = clickData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
 
                 // Check points
                 expect(pts).toEqual([
@@ -1285,8 +1283,8 @@ describe('Click events', function() {
 
                 // Check that the right points were reported
                 var pts = clickData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
 
                 // Check points
                 expect(pts).toEqual([
@@ -1375,8 +1373,8 @@ describe('Click events with hovermode color', function() {
 
                 // Check that the right points were reported
                 var pts = clickData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
 
                 // Check points
                 expect(pts).toEqual([
@@ -1416,8 +1414,8 @@ describe('Click events with hovermode color', function() {
 
                 // Check that the right points were reported
                 var pts = clickData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
 
                 // Check points
                 expect(pts).toEqual([
@@ -1484,8 +1482,8 @@ describe('Hover events', function() {
 
                 // Check that the right points were reported
                 var pts = hoverData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 4},
                     {curveNumber: 0, pointNumber: 5},
@@ -1494,19 +1492,19 @@ describe('Hover events', function() {
                 // Check that unhover is still undefined
                 expect(unhoverData).toBeUndefined();
             })
-            .then(function(){
+            .then(function() {
                 // Unhover
                 mouseEvent('mouseout', mouseX0, mouseY0);
                 Lib.clearThrottle();
             })
-            .then(function(){
+            .then(function() {
                 // Check that unhover callback was called
                 expect(unhoverData).toBeDefined();
 
                 // Check that the right points were reported
                 var pts = unhoverData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 4},
                     {curveNumber: 0, pointNumber: 5},
@@ -1554,8 +1552,8 @@ describe('Hover events', function() {
 
                 // Check that the right points were reported
                 var pts = hoverData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5},
                     {curveNumber: 0, pointNumber: 8}]);
@@ -1563,19 +1561,19 @@ describe('Hover events', function() {
                 // Check that unhover is still undefined
                 expect(unhoverData).toBeUndefined();
             })
-            .then(function(){
+            .then(function() {
                 // Unhover
                 mouseEvent('mouseout', mouseX0, mouseY0);
                 Lib.clearThrottle();
             })
-            .then(function(){
+            .then(function() {
                 // Check that unhover callback was called
                 expect(unhoverData).toBeDefined();
 
                 // Check that the right points were reported
                 var pts = unhoverData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5},
                     {curveNumber: 0, pointNumber: 8}]);
@@ -1641,27 +1639,27 @@ describe('Hover events with hovermode color', function() {
 
                 // Check that the right points were reported
                 var pts = hoverData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5}]);
 
                 // Check that unhover is still undefined
                 expect(unhoverData).toBeUndefined();
             })
-            .then(function(){
+            .then(function() {
                 // Unhover
                 mouseEvent('mouseout', mouseX0, mouseY0);
                 Lib.clearThrottle();
             })
-            .then(function(){
+            .then(function() {
                 // Check that unhover callback was called
                 expect(unhoverData).toBeDefined();
 
                 // Check that the right points were reported
                 var pts = unhoverData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5}]);
             })
@@ -1707,27 +1705,27 @@ describe('Hover events with hovermode color', function() {
 
                 // Check that the right points were reported
                 var pts = hoverData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5}]);
 
                 // Check that unhover is still undefined
                 expect(unhoverData).toBeUndefined();
             })
-            .then(function(){
+            .then(function() {
                 // Unhover
                 mouseEvent('mouseout', mouseX0, mouseY0);
                 Lib.clearThrottle();
             })
-            .then(function(){
+            .then(function() {
                 // Check that unhover callback was called
                 expect(unhoverData).toBeDefined();
 
                 // Check that the right points were reported
                 var pts = unhoverData.points.sort(function(a, b) {
-                        return a.pointNumber - b.pointNumber;
-                    });
+                    return a.pointNumber - b.pointNumber;
+                });
                 expect(pts).toEqual([
                     {curveNumber: 0, pointNumber: 5}]);
             })

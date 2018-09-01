@@ -45,17 +45,17 @@ module.exports = function calc(gd, trace) {
     // UniqueInfo per dimension
     var uniqueInfoDims = trace.dimensions.filter(visible).map(function(dim) {
         var categoryValues;
-        if (dim.categoryorder === 'trace') {
+        if(dim.categoryorder === 'trace') {
             // Use order of first occurrence in trace
             categoryValues = null;
-        } else if (dim.categoryorder === 'array') {
+        } else if(dim.categoryorder === 'array') {
             // Use categories specified in `categoryarray` first, then add extra to the end in trace order
             categoryValues = dim.categoryarray;
         } else {
             // Get all categories up front so we can order them
             // Should we check for numbers as sort numerically?
             categoryValues = filterUnique(dim.values).sort();
-            if (dim.categoryorder === 'category descending') {
+            if(dim.categoryorder === 'category descending') {
                 categoryValues = categoryValues.reverse();
             }
         }

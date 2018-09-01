@@ -14,7 +14,6 @@ var colorscaleDefaults = require('../../components/colorscale/defaults');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleArrayContainerDefaults = require('../../plots/array_container_defaults');
 
-var handleCategoryOrderDefaults = require('../../plots/cartesian/category_order_defaults');
 var attributes = require('./attributes');
 var mergeLength = require('../parcoords/merge_length');
 
