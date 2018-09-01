@@ -1330,9 +1330,109 @@ describe('Click events', function() {
     });
 });
 
+describe('Click events with hovermode color', function() {
+
+    // Variable declarations
+    // ---------------------
+    // ### Trace level ###
+    var gd,
+        mock;
+
+    // Fixtures
+    // --------
+    beforeEach(function() {
+        gd = createGraphDiv();
+        mock = Lib.extendDeep({}, require('@mocks/parcats_hovermode_color.json'));
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should fire on category click', function(done) {
+
+        var clickData;
+        Plotly.newPlot(gd, mock)
+            .then(function() {
+                /** @type {ParcatsViewModel} */
+                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+
+                gd.on('plotly_click', function(data) {
+                    clickData = data;
+                });
+
+                // Click on the top of the lowest category in the middle dimension (category "C")
+                var dimStartX = parcatsViewModel.dimensions[1].x;
+                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10,
+                    mouseX = parcatsViewModel.x + dimStartX + dimWidth / 2;
+
+                // Position mouse for start of drag
+                // --------------------------------
+                click(mouseX, mouseY);
+            })
+            .then(delay(CALLBACK_DELAY))
+            .then(function() {
+                // Check that click callback was called
+                expect(clickData).toBeDefined();
+
+                // Check that the right points were reported
+                var pts = clickData.points.sort(function(a, b) {
+                        return a.pointNumber - b.pointNumber;
+                    });
+
+                // Check points
+                expect(pts).toEqual([
+                    {curveNumber: 0, pointNumber: 5}]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+
+
+    it('should fire on path click', function(done) {
+
+        var clickData;
+
+        Plotly.newPlot(gd, mock)
+            .then(function() {
+                /** @type {ParcatsViewModel} */
+                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+
+                gd.on('plotly_click', function(data) {
+                    clickData = data;
+                });
+
+                // Click on the top path to the right of the lowest category in the middle dimension (category "C")
+                var dimStartX = parcatsViewModel.dimensions[1].x;
+                var mouseY = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10,
+                    mouseX = parcatsViewModel.x + dimStartX + dimWidth + 10;
+
+                // Position mouse for start of drag
+                // --------------------------------
+                click(mouseX, mouseY);
+            })
+            .then(delay(CALLBACK_DELAY))
+            .then(function() {
+                // Check that click callback was called
+                expect(clickData).toBeDefined();
+
+                // Check that the right points were reported
+                var pts = clickData.points.sort(function(a, b) {
+                        return a.pointNumber - b.pointNumber;
+                    });
+
+                // Check points
+                expect(pts).toEqual([
+                    {curveNumber: 0, pointNumber: 5}]);
+            })
+            .catch(failTest)
+            .then(done);
+    });
+});
+
 // To Test
 // -------
+
 // ### Hovering
+//   - Hover down to top middle category, and top path.
 //  - [ ] Path hover label
 //  - [ ] Category hover label for 'category', 'color', and 'dimension', `hovermode`
 //  - [ ] No category hover label for 'none', 'skip' `hovermode
@@ -1349,7 +1449,3 @@ describe('Click events', function() {
 //
 //
 // ### Test Font styles ###
-
-// ### Test visible
-
-// ### Test colorscale with numeric colors
