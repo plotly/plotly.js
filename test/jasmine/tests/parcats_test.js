@@ -1463,7 +1463,7 @@ describe('Hover events', function() {
                     unhoverData = data;
                 });
 
-                // Hover over top category of middle dimension (category "A")
+                // Hover over top of bottom category of middle dimension (category "C")
                 var dimStartX = parcatsViewModel.dimensions[1].x;
 
                 mouseY0 = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
@@ -1620,7 +1620,7 @@ describe('Hover events with hovermode color', function() {
                     unhoverData = data;
                 });
 
-                // Hover over top category of middle dimension (category "A")
+                // Hover over top of bottom category of middle dimension (category "C")
                 var dimStartX = parcatsViewModel.dimensions[1].x;
 
                 mouseY0 = parcatsViewModel.y + parcatsViewModel.dimensions[1].categories[2].y + 10;
