@@ -1,0 +1,55 @@
+{
+  "data": [
+    {
+	"x": [      1,         2,         3,           4, 	  5
+      ],
+	"y": [ null  ,       100,       100,null        ,null
+      ],
+	"type": "scattergl",
+	"fill": "tozeroy",
+	"mode": "none",
+	"showlegend": false,
+	"fillcolor": "#90ff70",
+	"line": { "color": "#90ff70" }
+	
+    },
+    {
+	"x": [         1,        2,        3,          4,	  5
+      ],
+	"y": [null    ,null    ,null      ,        100,        100
+      ],
+	"type": "scattergl",
+	"fill": "tozeroy",
+	"mode": "none",
+	"showlegend": false,
+	"fillcolor": "#f02f20",
+	 "line": { "color": "#f02f20" }
+    },
+    {
+	"x": [         1,        2,        3,          4,	  5
+      ],
+	"y": [20        ,20    ,35      ,        50,        50
+      ],
+	"type": "scattergl",
+	"mode": "lines+markers",
+	"showlegend": false,
+	"marker": { "color": "#4020f0","size": 8     },
+	"line": {  "color": "#4020f0",  "width": 4, "shape": "linear" }
+    },	
+    {
+	"x": [         1,        2,        3,          4,	  5
+	     ],
+	"y": [100       ,100    ,   80   ,        80,        100
+	     ],
+	"type": "scattergl",
+	"mode": "lines+markers",
+	"showlegend": false,
+	"marker": {      "color": "#4020f0",      "size": 4    },
+	"line": {  "color": "#000000",      "width": 2,      "shape": "linear"    }
+    }
+  ],
+  "layout": {
+	"margin": {"l": 100, "r": 100, "t": 100, "b": 100},
+	"yaxis": { "title": "Y axis 2 ", "type": "linear", "rangemode": "tozero", "nticks": 3 } 
+  }
+}
