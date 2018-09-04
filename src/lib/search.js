@@ -125,6 +125,7 @@ exports.roundUp = function(val, arrayIn, reverse) {
  * Here's how this plays out sorting a length-1e6 array:
  *
  * Calls to Sort FN  |  Chrome bare  |  FF bare  |  Chrome tweak  |  FF tweak
+ *                   |  v68.0 Mac    |  v61.0 Mac|                |
  * ------------------+---------------+-----------+----------------+------------
  * ordered           |  30.4e6       |  10.1e6   |  1e6           |  1e6
  * reversed          |  29.4e6       |  9.9e6    |  1e6 + reverse |  1e6 + reverse
