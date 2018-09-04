@@ -28,6 +28,6 @@
         "yaxis2": {"title": "log", "type": "log"},
         "grid": {"columns": 2, "rows": 2},
         "showlegend": false,
-        "title": "Lines to invalid log values"
+        "title": "<b>Lines to invalid log values</b><br>4 copies of the same self-filled trace, on all combinations of log & linear axes<br>Purple points should lie exactly on an off-to-infinity log-log line to verify that its slope is 1"
     }
 }
