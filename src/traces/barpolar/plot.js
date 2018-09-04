@@ -35,6 +35,8 @@ module.exports = function plot(gd, subplot, cdbar) {
         var bars = pointGroup.selectAll('g.point').data(Lib.identity);
 
         bars.enter().append('g')
+            .style('vector-effect', 'non-scaling-stroke')
+            .style('stroke-miterlimit', 2)
             .classed('point', true);
 
         bars.exit().remove();
@@ -82,9 +84,7 @@ module.exports = function plot(gd, subplot, cdbar) {
                 dPath = pathFn(rp0, rp1, thetag0, thetag1);
             }
 
-            Lib.ensureSingle(bar, 'path')
-                .style('vector-effect', 'non-scaling-stroke')
-                .attr('d', dPath);
+            Lib.ensureSingle(bar, 'path').attr('d', dPath);
         });
 
         // clip plotGroup, when trace layer isn't clipped

@@ -6,12 +6,15 @@
     "opacity": 0.7
   }, {
     "type": "barpolar",
-    "r": [1, 2, 3],
-    "theta": [180, 90, 360],
-    "opacity": 0.7
+    "r": [3, 3],
+    "theta": [0, 45],
+    "opacity": 0.7,
+    "marker": {
+      "line": {"width": 5}
+    }
   }],
   "layout": {
-    "polar": {"barmode": "overlay" },
+    "polar": {"barmode": "overlay"},
     "width": 500,
     "height": 500
   }
