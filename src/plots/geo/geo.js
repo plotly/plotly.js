@@ -452,17 +452,17 @@ proto.updateFx = function(fullLayout, geoLayout) {
     bgRect.on('click', function() {
         // For select and lasso the dragElement is handling clicks
         if(dragMode !== 'select' && dragMode !== 'lasso') {
+            if(clickMode.indexOf('select') > -1) {
+                selectOnClick(d3.event, gd, [_this.xaxis], [_this.yaxis],
+                  _this.id, dragOptions);
+            }
+
             if(clickMode.indexOf('event') > -1) {
                 // TODO: like pie and mapbox, this doesn't support right-click
                 // actually this one is worse, as right-click starts a pan, or leaves
                 // select in a weird state.
                 // Also, only tangentially related, we should cancel hover during pan
                 Fx.click(gd, d3.event);
-            }
-
-            if(clickMode.indexOf('select') > -1) {
-                selectOnClick(d3.event, gd, [_this.xaxis], [_this.yaxis],
-                  _this.id, dragOptions);
             }
         }
     });

@@ -231,12 +231,12 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(numClicks === 2 && !singleEnd) doubleClick();
 
         if(isMainDrag) {
-            if(clickmode.indexOf('event') > -1) {
-                Fx.click(gd, evt, plotinfo.id);
-            }
-
             if(clickmode.indexOf('select') > -1) {
                 selectOnClick(evt, gd, xaxes, yaxes, plotinfo.id, dragOptions);
+            }
+
+            if(clickmode.indexOf('event') > -1) {
+                Fx.click(gd, evt, plotinfo.id);
             }
         }
         else if(numClicks === 1 && singleEnd) {

@@ -649,28 +649,8 @@ describe('Click-to-select', function() {
         ]
           .forEach(function(testCase) {
               var ciAnnotation = testCase.gl ? 'gl' : 'flaky';
-              it('@' + ciAnnotation + ' trace type ' + testCase.traceType, function(done) {
-                  var defaultLayoutOpts = {
-                      layout: {
-                          clickmode: 'event+select',
-                          dragmode: 'pan',
-                          hovermode: 'closest'
-                      }
-                  };
-                  var customLayoutOptions = {
-                      layout: testCase.layoutOptions
-                  };
-                  var customConfigOptions = {
-                      config: testCase.configOptions
-                  };
-                  var mockCopy = Lib.extendDeep(
-                    {},
-                    testCase.mock,
-                    defaultLayoutOpts,
-                    customLayoutOptions,
-                    customConfigOptions);
-
-                  Plotly.plot(gd, mockCopy.data, mockCopy.layout, mockCopy.config)
+              it('@' + ciAnnotation + ' trace type ' + testCase.label, function(done) {
+                  Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
                     .then(function() {
                         return _immediateClickPt(testCase);
                     })
@@ -693,24 +673,78 @@ describe('Click-to-select', function() {
                     .then(done);
               });
           });
-
-        function testCase(traceType, mock, x, y, expectedPts, layoutOptions, configOptions) {
-            return {
-                traceType: traceType,
-                mock: mock,
-                layoutOptions: layoutOptions,
-                x: x,
-                y: y,
-                expectedPts: expectedPts,
-                configOptions: configOptions,
-                gl: false,
-                enableGl: function() {
-                    this.gl = true;
-                    return this;
-                }
-            };
-        }
     });
+
+    describe('triggers \'plotly_selected\' before \'plotly_click\'', function() {
+        [
+            testCase('cartesian', require('@mocks/14.json'), 270, 160, [7]),
+            testCase('geo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
+            testCase('ternary', require('@mocks/ternary_markers.json'), 485, 335, [7]),
+            testCase('mapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
+            testCase('polar', require('@mocks/polar_scatter.json'), 130, 290,
+              [[], [], [], [19], [], []], { dragmode: 'zoom' })
+        ].forEach(function(testCase) {
+            it('@flaky for base plot ' + testCase.label, function(done) {
+                Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
+                  .then(function() {
+                      var clickHandlerCalled = false;
+                      var selectedHandlerCalled = false;
+
+                      gd.on('plotly_selected', function() {
+                          expect(clickHandlerCalled).toBe(false);
+                          selectedHandlerCalled = true;
+                      });
+                      gd.on('plotly_click', function() {
+                          clickHandlerCalled = true;
+                          expect(selectedHandlerCalled).toBe(true);
+                          done();
+                      });
+
+                      return click(testCase.x, testCase.y);
+                  })
+                  .catch(failTest)
+                  .then(done);
+            });
+        });
+    });
+
+    function testCase(label, mock, x, y, expectedPts, layoutOptions, configOptions) {
+        var defaultLayoutOpts = {
+            layout: {
+                clickmode: 'event+select',
+                dragmode: 'pan',
+                hovermode: 'closest'
+            }
+        };
+        var customLayoutOptions = {
+            layout: layoutOptions
+        };
+        var customConfigOptions = {
+            config: configOptions
+        };
+        var mockCopy = Lib.extendDeep(
+          {},
+          mock,
+          defaultLayoutOpts,
+          customLayoutOptions,
+          customConfigOptions);
+
+        return {
+            label: label,
+            mock: mockCopy,
+            layoutOptions: layoutOptions,
+            x: x,
+            y: y,
+            expectedPts: expectedPts,
+            configOptions: configOptions,
+            gl: false,
+            enableGl: function() {
+                this.gl = true;
+                return this;
+            }
+        };
+    }
 });
 
 describe('Test select box and lasso in general:', function() {

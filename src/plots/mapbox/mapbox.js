@@ -177,15 +177,6 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         Fx.hover(gd, evt, self.id);
     });
 
-    map.on('click', function(evt) {
-        // TODO: this does not support right-click. If we want to support it, we
-        // would likely need to change mapbox to use dragElement instead of straight
-        // mapbox event binding. Or perhaps better, make a simple wrapper with the
-        // right mousedown, mousemove, and mouseup handlers just for a left/right click
-        // pie would use this too.
-        Fx.click(gd, evt.originalEvent);
-    });
-
     function unhover() {
         Fx.loneUnhover(fullLayout._toppaper);
     }
@@ -236,12 +227,17 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         return function(evt) {
             var clickMode = gd._fullLayout.clickmode;
 
-            if(clickMode.indexOf('event') > -1) {
-                Fx.click(gd, evt.originalEvent);
-            }
-
             if(clickMode.indexOf('select') > -1) {
                 selectOnClick(evt.originalEvent, gd, [self.xaxis], [self.yaxis], self.id, dragOptions);
+            }
+
+            if(clickMode.indexOf('event') > -1) {
+                // TODO: this does not support right-click. If we want to support it, we
+                // would likely need to change mapbox to use dragElement instead of straight
+                // mapbox event binding. Or perhaps better, make a simple wrapper with the
+                // right mousedown, mousemove, and mouseup handlers just for a left/right click
+                // pie would use this too.
+                Fx.click(gd, evt.originalEvent);
             }
         };
     };

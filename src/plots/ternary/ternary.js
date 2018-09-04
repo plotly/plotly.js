@@ -503,12 +503,12 @@ proto.initInteractions = function() {
             Registry.call('relayout', gd, attrs);
         }
 
-        if(clickMode.indexOf('event') > -1) {
-            Fx.click(gd, evt, _this.id);
-        }
-
         if(clickMode.indexOf('select') > -1 && numClicks === 1) {
             selectOnClick(evt, gd, [_this.xaxis], [_this.yaxis], _this.id, dragOptions);
+        }
+
+        if(clickMode.indexOf('event') > -1) {
+            Fx.click(gd, evt, _this.id);
         }
     }
 
