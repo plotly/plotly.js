@@ -54,7 +54,7 @@ function assertSelectionNodes(cornerCnt, outlineCnt, _msg) {
 }
 
 var selectingCnt, selectingData, selectedCnt, selectedData, deselectCnt, doubleClickData;
-var selectedPromise, deselectPromise;
+var selectedPromise, deselectPromise, clickedPromise;
 
 function resetEvents(gd) {
     selectingCnt = 0;
@@ -95,6 +95,12 @@ function resetEvents(gd) {
             assertSelectionNodes(0, 0);
             deselectCnt++;
             doubleClickData = data;
+            resolve();
+        });
+    });
+
+    clickedPromise = new Promise(function(resolve) {
+        gd.on('plotly_click', function() {
             resolve();
         });
     });
@@ -557,10 +563,9 @@ describe('Click-to-select', function() {
           .then(function() {
               assertSelectionCleared();
               clickBox();
+              return clickedPromise;
           })
           .then(function() {
-              // TODO Be sure this is called "late enough" after clicking on box has been processed
-              // Maybe plotly_click event would get fired after any selection events?
               assertSelectionCleared();
           })
           .catch(failTest)
@@ -572,13 +577,6 @@ describe('Click-to-select', function() {
     });
 
     describe('is disabled when clickmode does not include \'select\'', function() {
-        // TODO How to test for pan and zoom mode as well? Note, that
-        // in lasso and select mode, plotly_selected was emitted upon a single
-        // click although select-on-click wasn't supported. This behavior is kept
-        // for compatibility reasons and as a side affect allows to write this test
-        // for lasso and select. But in pan and zoom, how to be sure a click has been
-        // processed by plotly.js?
-        // ['pan', 'zoom', 'select', 'lasso']
         ['select', 'lasso']
           .forEach(function(dragmode) {
               it('@flaky and dragmode is ' + dragmode, function(done) {
@@ -587,6 +585,24 @@ describe('Click-to-select', function() {
                         // Still, the plotly_selected event should be thrown,
                         // so return promise here
                         return _immediateClickPt(mock14Pts[1]);
+                    })
+                    .then(function() {
+                        assertSelectionCleared();
+                    })
+                    .catch(failTest)
+                    .then(done);
+              });
+          });
+    });
+
+    describe('is disabled when clickmode does not include \'select\'', function() {
+        ['pan', 'zoom']
+          .forEach(function(dragmode) {
+              it('@flaky and dragmode is ' + dragmode, function(done) {
+                  plotMock14({ clickmode: 'event', dragmode: dragmode })
+                    .then(function() {
+                        _immediateClickPt(mock14Pts[1]);
+                        return clickedPromise;
                     })
                     .then(function() {
                         assertSelectionCleared();
