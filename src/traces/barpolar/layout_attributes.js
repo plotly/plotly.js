@@ -25,16 +25,16 @@ module.exports = {
     },
     bargap: {
         valType: 'number',
-        // TODO is this correct?
-        // I think 0.2 (like for bars) is a little much, maybe 0.1 would work better?
-        dflt: 0.2,
+        dflt: 0.1,
         min: 0,
         max: 1,
         role: 'style',
         editType: 'calc',
         description: [
-            'Sets the gap (in plot ??angular?? fraction) between bars of',
-            'adjacent location coordinates.'
+            'Sets the gap between bars of',
+            'adjacent location coordinates.',
+            'Values are unitless, they represent fractions of the minimum difference',
+            'in bar positions in the data.'
         ].join(' ')
     }
 };

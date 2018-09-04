@@ -93,8 +93,8 @@ describe('Test barpolar hover:', function() {
         yval: 0,
         exp: {
             index: 1,
-            x: 302.48,
-            y: 125.55,
+            x: 296.32,
+            y: 117.74,
             extraText: 'r: 2<br>θ: 90°',
             color: '#1f77b4'
         }
