@@ -136,10 +136,6 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
             sumj = cd0[j][valAttr] = cd0[j].s;
             for(i = 1; i < indices.length; i++) {
                 cd = calcTraces[indices[i]];
-                if(cd.length !== serieslen) {
-                    // TODO: verify this never happens and remove
-                    throw new Error('length mismatch!');
-                }
                 cd[0].trace._rawLength = cd[0].trace._length;
                 cd[0].trace._length = serieslen;
                 sumj += cd[j].s;
