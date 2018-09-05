@@ -18,7 +18,7 @@ function mod(v, d) {
 }
 
 /**
- * sanitized modulus function that always returns in the range [-1.5*d, 1.5*d]
+ * sanitized modulus function that always returns in the range [-d/2, d/2]
  * rather than (-d, 0] if v is negative
  */
 function modHalf(v, d) {
