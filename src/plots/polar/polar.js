@@ -1121,7 +1121,7 @@ proto.updateAngularDrag = function(fullLayout) {
         });
 
         // update rotation -> range -> _m,_b
-        angularAxis.rotation = Lib.modHalf(rot1, 180);
+        angularAxis.rotation = Lib.modHalf(rot1, 360);
         angularAxis.setGeometry();
         angularAxis.setScale();
 

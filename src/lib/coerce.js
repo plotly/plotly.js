@@ -186,7 +186,7 @@ exports.valObjectMeta = {
         coerceFunction: function(v, propOut, dflt) {
             if(v === 'auto') propOut.set('auto');
             else if(!isNumeric(v)) propOut.set(dflt);
-            else propOut.set(modHalf(+v, 180));
+            else propOut.set(modHalf(+v, 360));
         }
     },
     subplotid: {

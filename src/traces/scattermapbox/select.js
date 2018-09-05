@@ -32,7 +32,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
             var lonlat = di.lonlat;
 
             if(lonlat[0] !== BADNUM) {
-                var lonlat2 = [Lib.modHalf(lonlat[0], 180), lonlat[1]];
+                var lonlat2 = [Lib.modHalf(lonlat[0], 360), lonlat[1]];
                 var xy = [xa.c2p(lonlat2), ya.c2p(lonlat2)];
 
                 if(polygon.contains(xy)) {

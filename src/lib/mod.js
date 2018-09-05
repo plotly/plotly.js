@@ -22,9 +22,8 @@ function mod(v, d) {
  * rather than (-d, 0] if v is negative
  */
 function modHalf(v, d) {
-    var d2 = 2 * d;
-    return Math.abs(v) > d ?
-        v - Math.round(v / d2) * d2 :
+    return Math.abs(v) > (d / 2) ?
+        v - Math.round(v / d) * d :
         v;
 }
 

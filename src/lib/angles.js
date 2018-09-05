@@ -8,7 +8,9 @@
 
 'use strict';
 
-var mod = require('./mod').mod;
+var modModule = require('./mod');
+var mod = modModule.mod;
+var modHalf = modModule.modHalf;
 
 var PI = Math.PI;
 var twoPI = 2 * PI;
@@ -37,7 +39,7 @@ function isFullCircle(aBnds) {
  * @return {number} angular delta in *radians*
  */
 function angleDelta(a, b) {
-    return mod((b - a) - PI, twoPI) - PI;
+    return modHalf(b - a, twoPI);
 }
 
 /**
