@@ -566,7 +566,7 @@ describe('config argument', function() {
             .then(function() {
                 viewport.set(newWidth, newHeight);
             })
-            // Wait for resize to happen (Plotly.resize has a 100ms timeout)
+            // Wait for resize to happen (Plotly.Plots.resize has a 100ms timeout)
             .then(delay(200))
             // Check final figure size
             .then(function() {
