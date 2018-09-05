@@ -385,6 +385,15 @@ function emitAfterPlot(gd) {
         fullLayout._redrawFromAutoMarginCount--;
     } else {
         gd.emit('plotly_afterplot');
+
+        // make the figure responsive
+        if(gd._context.responsive && !gd._responsiveChartHandler) {
+            // Keep a reference to the resize handler to purge it down the road
+            gd._responsiveChartHandler = function() {Plots.resize(gd);};
+
+            // Listen to window resize
+            window.addEventListener('resize', gd._responsiveChartHandler);
+        }
     }
 }
 
@@ -3154,6 +3163,11 @@ exports.purge = function purge(gd) {
     var fullLayout = gd._fullLayout || {};
     var fullData = gd._fullData || [];
     var calcdata = gd.calcdata || [];
+
+    // remove responsive handler
+    if(gd._responsiveChartHandler) {
+        window.removeEventListener('resize', gd._responsiveChartHandler);
+    }
 
     // remove gl contexts
     Plots.cleanPlot([], {}, fullData, fullLayout, calcdata);

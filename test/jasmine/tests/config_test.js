@@ -6,6 +6,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
 var mouseEvent = require('../assets/mouse_event');
 var failTest = require('../assets/fail_test');
+var delay = require('../assets/delay');
 
 describe('config argument', function() {
 
@@ -527,6 +528,52 @@ describe('config argument', function() {
                 delete window.PLOTLY_ENV;
                 done();
             });
+        });
+    });
+
+    describe('responsive figure', function() {
+        var gd;
+        var data = [{x: [1, 2, 3, 4], y: [5, 10, 2, 8]}];
+
+        beforeEach(function() {
+            viewport.reset();
+            gd = createGraphDiv();
+
+            // Make the graph fill the parent
+            gd.style.width = '100%';
+            gd.style.height = '100%';
+        });
+
+        afterEach(function() {
+            destroyGraphDiv();
+            // Reset window size
+            viewport.reset();
+        });
+
+        function checkLayoutSize(width, height) {
+            expect(gd._fullLayout.width).toBe(width);
+            expect(gd._fullLayout.height).toBe(height);
+
+            var svg = document.getElementsByClassName('main-svg')[0];
+            expect(+svg.getAttribute('width')).toBe(width);
+            expect(+svg.getAttribute('height')).toBe(height);
+        }
+
+        it('should resize when the viewport width/height changes', function(done) {
+            var newWidth = 400, newHeight = 700;
+            Plotly.newPlot(gd, data, {}, {responsive: true})
+            // Resize viewport
+            .then(function() {
+                viewport.set(newWidth, newHeight);
+            })
+            // Wait for resize to happen (Plotly.resize has a 100ms timeout)
+            .then(delay(200))
+            // Check final figure size
+            .then(function() {
+                checkLayoutSize(newWidth, newHeight);
+            })
+            .catch(failTest)
+            .then(done);
         });
     });
 });
