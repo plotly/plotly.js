@@ -615,11 +615,37 @@ describe('Click-to-select', function() {
 
     describe('is supported by', function() {
 
+        function _run(testCase, doneFn) {
+            Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
+              .then(function() {
+                  return _immediateClickPt(testCase);
+              })
+              .then(function() {
+                  assertSelectedPoints(testCase.expectedPts);
+                  return Plotly.relayout(gd, 'dragmode', 'lasso');
+              })
+              .then(function() {
+                  _clickPt(testCase);
+                  return deselectPromise;
+              })
+              .then(function() {
+                  assertSelectionCleared();
+                  return _clickPt(testCase);
+              })
+              .then(function() {
+                  assertSelectedPoints(testCase.expectedPts);
+              })
+              .catch(failTest)
+              .then(doneFn);
+        }
+
         // On loading mocks:
         // - Note, that `require` function calls are resolved at compile time
         //   and thus dynamically concatenated mock paths won't work.
         // - Some mocks don't specify a width and height, so this needs
         //   to be set explicitly to ensure click coordinates fit.
+
+        // The non-gl traces: use @flaky CI annotation
         [
             testCase('histrogram', require('@mocks/histogram_colorscale.json'), 355, 301, [3, 4, 5]),
             testCase('box', require('@mocks/box_grouped_horz.json'), 610, 342, [[2], [], []],
@@ -643,34 +669,22 @@ describe('Click-to-select', function() {
             // so set dragmode to zoom
             testCase('scatterpolar', require('@mocks/polar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' }),
-            testCase('scatterpolargl', require('@mocks/glpolar_scatter.json'), 130, 290,
-              [[], [], [], [19], [], []], { dragmode: 'zoom' }).enableGl(),
-            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []]).enableGl()
         ]
           .forEach(function(testCase) {
-              var ciAnnotation = testCase.gl ? 'gl' : 'flaky';
-              it('@' + ciAnnotation + ' trace type ' + testCase.label, function(done) {
-                  Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
-                    .then(function() {
-                        return _immediateClickPt(testCase);
-                    })
-                    .then(function() {
-                        assertSelectedPoints(testCase.expectedPts);
-                        return Plotly.relayout(gd, 'dragmode', 'lasso');
-                    })
-                    .then(function() {
-                        _clickPt(testCase);
-                        return deselectPromise;
-                    })
-                    .then(function() {
-                        assertSelectionCleared();
-                        return _clickPt(testCase);
-                    })
-                    .then(function() {
-                        assertSelectedPoints(testCase.expectedPts);
-                    })
-                    .catch(failTest)
-                    .then(done);
+              it('@flaky trace type ' + testCase.label, function(done) {
+                  _run(testCase, done);
+              });
+          });
+
+        // The gl traces: use @gl CI annotation
+        [
+            testCase('scatterpolargl', require('@mocks/glpolar_scatter.json'), 130, 290,
+              [[], [], [], [19], [], []], { dragmode: 'zoom' }),
+            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []])
+        ]
+          .forEach(function(testCase) {
+              it('@gl trace type ' + testCase.label, function(done) {
+                  _run(testCase, done);
               });
           });
     });
@@ -737,12 +751,7 @@ describe('Click-to-select', function() {
             x: x,
             y: y,
             expectedPts: expectedPts,
-            configOptions: configOptions,
-            gl: false,
-            enableGl: function() {
-                this.gl = true;
-                return this;
-            }
+            configOptions: configOptions
         };
     }
 });
