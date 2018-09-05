@@ -37,8 +37,7 @@ function isFullCircle(aBnds) {
  * @return {number} angular delta in *radians*
  */
 function angleDelta(a, b) {
-    var d = b - a;
-    return Math.atan2(Math.sin(d), Math.cos(d));
+    return mod((b - a) - PI, twoPI) - PI;
 }
 
 /**
