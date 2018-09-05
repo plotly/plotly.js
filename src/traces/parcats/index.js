@@ -23,7 +23,7 @@ Parcats.colorbar = {
 Parcats.moduleType = 'trace';
 Parcats.name = 'parcats';
 Parcats.basePlotModule = require('./base_plot');
-Parcats.categories = ['noOpacity', 'markerColorscale'];
+Parcats.categories = ['noOpacity'];
 Parcats.meta = {
     description: [
         'Parallel categories diagram for multidimensional categorical data.'
