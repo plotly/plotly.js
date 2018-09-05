@@ -64,10 +64,10 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
         // coerce 'categoryarray' only in array order case
         if(order === 'array') {
             coerce('categoryarray');
-            coerce('categorylabels');
+            coerce('ticktext');
         } else {
             delete dimensionIn.categoryarray;
-            delete dimensionIn.categorylabels;
+            delete dimensionIn.ticktext;
         }
 
         // cannot set 'categoryorder' to 'array' with an invalid 'categoryarray'
@@ -118,5 +118,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         color: layout.font.color
     };
 
-    Lib.coerceFont(coerce, 'categorylabelfont', categoryfontDefault);
+    Lib.coerceFont(coerce, 'tickfont', categoryfontDefault);
 };

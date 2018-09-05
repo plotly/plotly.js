@@ -178,7 +178,7 @@ module.exports = function calc(gd, trace) {
 
             if(cats[catInd] === undefined) {
                 var catValue = trace.dimensions[containerInd].categoryarray[catInd];
-                var catLabel = trace.dimensions[containerInd].categorylabels[catInd];
+                var catLabel = trace.dimensions[containerInd].ticktext[catInd];
                 cats[catInd] = createCategoryModel(d, catInd, catValue, catLabel);
             }
 
@@ -485,17 +485,17 @@ function validateCategoryProperties(dim, uniqueInfoDim) {
     // Update categoryarray
     dim.categoryarray = uniqueInfoDim.uniqueValues;
 
-    // Handle categorylabels
-    if(dim.categorylabels === null || dim.categorylabels === undefined) {
-        dim.categorylabels = [];
+    // Handle ticktext
+    if(dim.ticktext === null || dim.ticktext === undefined) {
+        dim.ticktext = [];
     } else {
         // Shallow copy to avoid modifying input array
-        dim.categorylabels = dim.categorylabels.slice();
+        dim.ticktext = dim.ticktext.slice();
     }
 
-    // Extend categorylabels with elements from uniqueInfoDim.uniqueValues
-    for(var i = dim.categorylabels.length; i < uniqueInfoDim.uniqueValues.length; i++) {
-        dim.categorylabels.push(uniqueInfoDim.uniqueValues[i]);
+    // Extend ticktext with elements from uniqueInfoDim.uniqueValues
+    for(var i = dim.ticktext.length; i < uniqueInfoDim.uniqueValues.length; i++) {
+        dim.ticktext.push(uniqueInfoDim.uniqueValues[i]);
     }
 }
 

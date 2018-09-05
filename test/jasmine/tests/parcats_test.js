@@ -355,13 +355,13 @@ describe('Dimension reordered parcats trace', function() {
                     {dimensionInd: 0, displayInd: 0, dimensionLabel: 'One'});
 
                 checkCategoryCalc(gd, 0, 0, {
-                    categoryLabel: 1,
+                    categoryLabel: "One",
                     dimensionInd: 0,
                     categoryInd: 0,
                     displayInd: 0});
 
                 checkCategoryCalc(gd, 0, 1, {
-                    categoryLabel: 2,
+                    categoryLabel: "Two",
                     dimensionInd: 0,
                     categoryInd: 1,
                     displayInd: 1});
@@ -428,12 +428,12 @@ describe('Dimension reordered parcats trace', function() {
                     {dimensionInd: 0, displayInd: 0, dimensionLabel: 'One'});
 
                 checkCategoryCalc(gd, 0, 0, {
-                    categoryLabel: 1,
+                    categoryLabel: "One",
                     categoryInd: 0,
                     displayInd: 0});
 
                 checkCategoryCalc(gd, 0, 1, {
-                    categoryLabel: 2,
+                    categoryLabel: "Two",
                     categoryInd: 1,
                     displayInd: 1});
 
@@ -994,7 +994,7 @@ describe('Drag to reordered categories', function() {
                         'dimensions[2].displayindex': 1,
                         'dimensions[1].categoryorder': 'array',
                         'dimensions[1].categoryarray': [['C', 'A', 'B' ]],
-                        'dimensions[1].categorylabels': [['C', 'A', 'B' ]]},
+                        'dimensions[1].ticktext': [['C', 'A', 'B' ]]},
                     [0]]);
 
                 restyleCallback.calls.reset();
@@ -1079,7 +1079,7 @@ describe('Drag to reordered categories', function() {
                     {
                         'dimensions[1].categoryorder': 'array',
                         'dimensions[1].categoryarray': [['C', 'A', 'B' ]],
-                        'dimensions[1].categorylabels': [['C', 'A', 'B' ]]},
+                        'dimensions[1].ticktext': [['C', 'A', 'B' ]]},
                     [0]]);
 
                 restyleCallback.calls.reset();

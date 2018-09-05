@@ -94,7 +94,7 @@ module.exports = {
         description: 'Sets the font for the `dimension` labels.'
     }),
 
-    categorylabelfont: fontAttrs({
+    tickfont: fontAttrs({
         editType: 'calc',
         description: 'Sets the font for the `category` labels.'
     }),
@@ -135,12 +135,12 @@ module.exports = {
                 'Used with `categoryorder`.'
             ].join(' ')
         },
-        categorylabels: {
+        ticktext: {
             valType: 'data_array',
             role: 'info',
             editType: 'calc',
             description: [
-                'Sets alternative labels for the categories in this dimension.',
+                'Sets alternative tick labels for the categories in this dimension.',
                 'Only has an effect if `categoryorder` is set to *array*.',
                 'Should be an array the same length as `categoryarray`',
                 'Used with `categoryorder`.'

@@ -1193,12 +1193,12 @@ function dragDimensionEnd(d) {
             var sortedCategoryModels = d.model.categories.slice().sort(
                 function(a, b) { return a.displayInd - b.displayInd; });
 
-            // Get new categoryarray and categorylabels values
+            // Get new categoryarray and ticktext values
             var newCategoryArray = sortedCategoryModels.map(function(v) { return v.categoryValue; });
             var newCategoryLabels = sortedCategoryModels.map(function(v) { return v.categoryLabel; });
 
             restyleData['dimensions[' + d.model.containerInd + '].categoryarray'] = [newCategoryArray];
-            restyleData['dimensions[' + d.model.containerInd + '].categorylabels'] = [newCategoryLabels];
+            restyleData['dimensions[' + d.model.containerInd + '].ticktext'] = [newCategoryLabels];
             restyleData['dimensions[' + d.model.containerInd + '].categoryorder'] = 'array';
         }
     }
@@ -1475,7 +1475,7 @@ function createParcatsViewModel(graphDiv, layout, wrappedParcatsModel) {
         bundlecolors: trace.bundlecolors,
         sortpaths: trace.sortpaths,
         labelfont: trace.labelfont,
-        categorylabelfont: trace.categorylabelfont,
+        categorylabelfont: trace.tickfont,
         pathShape: pathShape,
         dragDimension: null,
         margin: margin,
