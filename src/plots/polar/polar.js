@@ -33,10 +33,9 @@ var constants = require('./constants');
 var helpers = require('./helpers');
 
 var _ = Lib._;
+var mod = Lib.mod;
 var deg2rad = Lib.deg2rad;
 var rad2deg = Lib.rad2deg;
-var wrap360 = Lib.wrap360;
-var wrap180 = Lib.wrap180;
 
 function Polar(gd, id) {
     this.id = id;
@@ -375,7 +374,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var cx = _this.cx;
     var cy = _this.cy;
     var radialLayout = polarLayout.radialaxis;
-    var a0 = wrap360(polarLayout.sector[0]);
+    var a0 = mod(polarLayout.sector[0], 360);
     var ax = _this.radialAxis;
 
     _this.fillViewInitialKey('radialaxis.angle', radialLayout.angle);
@@ -1122,7 +1121,7 @@ proto.updateAngularDrag = function(fullLayout) {
         });
 
         // update rotation -> range -> _m,_b
-        angularAxis.rotation = wrap180(rot1);
+        angularAxis.rotation = Lib.modHalf(rot1, 180);
         angularAxis.setGeometry();
         angularAxis.setScale();
 
@@ -1238,7 +1237,7 @@ function computeSectorBBox(sector) {
     var s0 = sector[0];
     var s1 = sector[1];
     var arc = s1 - s0;
-    var a0 = wrap360(s0);
+    var a0 = mod(s0, 360);
     var a1 = a0 + arc;
 
     var ax0 = Math.cos(deg2rad(a0));

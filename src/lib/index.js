@@ -22,10 +22,13 @@ lib.nestedProperty = require('./nested_property');
 lib.keyedContainer = require('./keyed_container');
 lib.relativeAttr = require('./relative_attr');
 lib.isPlainObject = require('./is_plain_object');
-lib.mod = require('./mod');
 lib.toLogRange = require('./to_log_range');
 lib.relinkPrivateKeys = require('./relink_private');
 lib.ensureArray = require('./ensure_array');
+
+var modModule = require('./mod');
+lib.mod = modModule.mod;
+lib.modHalf = modModule.modHalf;
 
 var isArrayModule = require('./is_array');
 lib.isTypedArray = isArrayModule.isTypedArray;
@@ -86,8 +89,6 @@ lib.apply2DTransform2 = matrixModule.apply2DTransform2;
 var anglesModule = require('./angles');
 lib.deg2rad = anglesModule.deg2rad;
 lib.rad2deg = anglesModule.rad2deg;
-lib.wrap360 = anglesModule.wrap360;
-lib.wrap180 = anglesModule.wrap180;
 lib.angleDelta = anglesModule.angleDelta;
 lib.angleDist = anglesModule.angleDist;
 lib.isFullCircle = anglesModule.isFullCircle;

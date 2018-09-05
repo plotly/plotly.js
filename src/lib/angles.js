@@ -8,26 +8,14 @@
 
 'use strict';
 
+var mod = require('./mod').mod;
+
 var PI = Math.PI;
 var twoPI = 2 * PI;
 
-function deg2rad(deg) {
-    return deg / 180 * PI;
-}
+function deg2rad(deg) { return deg / 180 * PI; }
 
-function rad2deg(rad) {
-    return rad / PI * 180;
-}
-
-function wrap360(deg) {
-    var out = deg % 360;
-    return out < 0 ? out + 360 : out;
-}
-
-function wrap180(deg) {
-    if(Math.abs(deg) > 180) deg -= Math.round(deg / 360) * 360;
-    return deg;
-}
+function rad2deg(rad) { return rad / PI * 180; }
 
 /**
  * is sector a full circle?
@@ -84,12 +72,12 @@ function isAngleInsideSector(a, aBnds) {
         s1 = aBnds[0];
     }
 
-    s0 = wrap360(rad2deg(s0));
-    s1 = wrap360(rad2deg(s1));
-    if(s0 > s1) s1 += 360;
+    s0 = mod(s0, twoPI);
+    s1 = mod(s1, twoPI);
+    if(s0 > s1) s1 += twoPI;
 
-    var a0 = wrap360(rad2deg(a));
-    var a1 = a0 + 360;
+    var a0 = mod(a, twoPI);
+    var a1 = a0 + twoPI;
 
     return (a0 >= s0 && a0 <= s1) || (a1 >= s0 && a1 <= s1);
 }
@@ -237,8 +225,6 @@ function pathAnnulus(r0, r1, a0, a1, cx, cy) {
 module.exports = {
     deg2rad: deg2rad,
     rad2deg: rad2deg,
-    wrap360: wrap360,
-    wrap180: wrap180,
     angleDelta: angleDelta,
     angleDist: angleDist,
     isFullCircle: isFullCircle,
