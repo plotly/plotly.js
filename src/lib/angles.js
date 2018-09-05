@@ -37,7 +37,7 @@ function wrap180(deg) {
  * @return {boolean}
  */
 function isFullCircle(aBnds) {
-    return Math.abs(aBnds[1] - aBnds[0]) === twoPI;
+    return Math.abs(Math.abs(aBnds[1] - aBnds[0]) - twoPI) < 1e-15;
 }
 
 /**
