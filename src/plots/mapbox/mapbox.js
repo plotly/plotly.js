@@ -424,7 +424,6 @@ proto.updateFx = function(fullLayout) {
         map.dragPan.disable();
         map.on('zoomstart', self.clearSelect);
 
-
         self.dragOptions.prepFn = function(e, startX, startY) {
             prepSelect(e, startX, startY, self.dragOptions, dragMode);
         };

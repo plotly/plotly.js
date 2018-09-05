@@ -655,8 +655,6 @@ describe('Click-to-select', function() {
             testCase('ohlc', require('@mocks/ohlc_first.json'), 669, 165, [9]),
             testCase('candlestick', require('@mocks/finance_style.json'), 331, 162, [[], [5]]),
             testCase('choropleth', require('@mocks/geo_choropleth-text.json'), 440, 163, [6]),
-            testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
             testCase('scattergeo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
             testCase('scatterternary', require('@mocks/ternary_markers.json'), 485, 335, [7]),
 
@@ -687,6 +685,17 @@ describe('Click-to-select', function() {
                   _run(testCase, done);
               });
           });
+
+        // The mapbox traces: use @noCI annotation cause they are usually too resource-intensive
+        [
+            testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+        ]
+          .forEach(function(testCase) {
+              it('@noCI trace type ' + testCase.label, function(done) {
+                  _run(testCase, done);
+              });
+          });
     });
 
     describe('triggers \'plotly_selected\' before \'plotly_click\'', function() {
@@ -694,33 +703,45 @@ describe('Click-to-select', function() {
             testCase('cartesian', require('@mocks/14.json'), 270, 160, [7]),
             testCase('geo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
             testCase('ternary', require('@mocks/ternary_markers.json'), 485, 335, [7]),
-            testCase('mapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
             testCase('polar', require('@mocks/polar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' })
         ].forEach(function(testCase) {
             it('@flaky for base plot ' + testCase.label, function(done) {
-                Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
-                  .then(function() {
-                      var clickHandlerCalled = false;
-                      var selectedHandlerCalled = false;
-
-                      gd.on('plotly_selected', function() {
-                          expect(clickHandlerCalled).toBe(false);
-                          selectedHandlerCalled = true;
-                      });
-                      gd.on('plotly_click', function() {
-                          clickHandlerCalled = true;
-                          expect(selectedHandlerCalled).toBe(true);
-                          done();
-                      });
-
-                      return click(testCase.x, testCase.y);
-                  })
-                  .catch(failTest)
-                  .then(done);
+                _run(testCase, done);
             });
         });
+
+        // The mapbox traces: use @noCI annotation cause they are usually too resource-intensive
+        [
+            testCase('mapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+        ].forEach(function(testCase) {
+            it('@noCI for base plot ' + testCase.label, function(done) {
+                _run(testCase, done);
+            });
+        });
+
+        function _run(testCase, doneFn) {
+            Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
+              .then(function() {
+                  var clickHandlerCalled = false;
+                  var selectedHandlerCalled = false;
+
+                  gd.on('plotly_selected', function() {
+                      expect(clickHandlerCalled).toBe(false);
+                      selectedHandlerCalled = true;
+                  });
+                  gd.on('plotly_click', function() {
+                      clickHandlerCalled = true;
+                      expect(selectedHandlerCalled).toBe(true);
+                      doneFn();
+                  });
+
+                  return click(testCase.x, testCase.y);
+              })
+              .catch(failTest)
+              .then(doneFn);
+        }
     });
 
     function testCase(label, mock, x, y, expectedPts, layoutOptions, configOptions) {
