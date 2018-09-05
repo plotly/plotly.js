@@ -191,6 +191,15 @@ exports.plot = function(gd, data, layout, config) {
         gd.calcdata[i][0].trace = gd._fullData[i];
     }
 
+    // make the figure responsive
+    if(gd._context.responsive && !gd._responsiveChartHandler) {
+        // Keep a reference to the resize handler to purge it down the road
+        gd._responsiveChartHandler = function() {Plots.resize(gd);};
+
+        // Listen to window resize
+        window.addEventListener('resize', gd._responsiveChartHandler);
+    }
+
     /*
      * start async-friendly code - now we're actually drawing things
      */
@@ -385,15 +394,6 @@ function emitAfterPlot(gd) {
         fullLayout._redrawFromAutoMarginCount--;
     } else {
         gd.emit('plotly_afterplot');
-
-        // make the figure responsive
-        if(gd._context.responsive && !gd._responsiveChartHandler) {
-            // Keep a reference to the resize handler to purge it down the road
-            gd._responsiveChartHandler = function() {Plots.resize(gd);};
-
-            // Listen to window resize
-            window.addEventListener('resize', gd._responsiveChartHandler);
-        }
     }
 }
 
@@ -2243,6 +2243,9 @@ exports.react = function(gd, data, layout, config) {
             gd._context = undefined;
             setPlotContext(gd, config);
             configChanged = diffConfig(oldConfig, gd._context);
+
+            // remove responsive handler
+            Lib.clearResponsive(gd);
         }
 
         gd.data = data || [];
@@ -3163,11 +3166,6 @@ exports.purge = function purge(gd) {
     var fullLayout = gd._fullLayout || {};
     var fullData = gd._fullData || [];
     var calcdata = gd.calcdata || [];
-
-    // remove responsive handler
-    if(gd._responsiveChartHandler) {
-        window.removeEventListener('resize', gd._responsiveChartHandler);
-    }
 
     // remove gl contexts
     Plots.cleanPlot([], {}, fullData, fullLayout, calcdata);
