@@ -614,31 +614,6 @@ describe('Click-to-select', function() {
     });
 
     describe('is supported by', function() {
-
-        function _run(testCase, doneFn) {
-            Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
-              .then(function() {
-                  return _immediateClickPt(testCase);
-              })
-              .then(function() {
-                  assertSelectedPoints(testCase.expectedPts);
-                  return Plotly.relayout(gd, 'dragmode', 'lasso');
-              })
-              .then(function() {
-                  _clickPt(testCase);
-                  return deselectPromise;
-              })
-              .then(function() {
-                  assertSelectionCleared();
-                  return _clickPt(testCase);
-              })
-              .then(function() {
-                  assertSelectedPoints(testCase.expectedPts);
-              })
-              .catch(failTest)
-              .then(doneFn);
-        }
-
         // On loading mocks:
         // - Note, that `require` function calls are resolved at compile time
         //   and thus dynamically concatenated mock paths won't work.
@@ -696,6 +671,30 @@ describe('Click-to-select', function() {
                   _run(testCase, done);
               });
           });
+
+        function _run(testCase, doneFn) {
+            Plotly.plot(gd, testCase.mock.data, testCase.mock.layout, testCase.mock.config)
+              .then(function() {
+                  return _immediateClickPt(testCase);
+              })
+              .then(function() {
+                  assertSelectedPoints(testCase.expectedPts);
+                  return Plotly.relayout(gd, 'dragmode', 'lasso');
+              })
+              .then(function() {
+                  _clickPt(testCase);
+                  return deselectPromise;
+              })
+              .then(function() {
+                  assertSelectionCleared();
+                  return _clickPt(testCase);
+              })
+              .then(function() {
+                  assertSelectedPoints(testCase.expectedPts);
+              })
+              .catch(failTest)
+              .then(doneFn);
+        }
     });
 
     describe('triggers \'plotly_selected\' before \'plotly_click\'', function() {
