@@ -65,20 +65,23 @@ module.exports = function handleStackDefaults(traceIn, traceOut, layout, coerce)
                     }
 
                     if(traceHasAttr) {
-                        // TODO: this will show a value here even if it's invalid
-                        // in which case it will revert to default. Is that what we
-                        // want, or should we only take the first *valid* value?
+                        // Note: this will show a value here even if it's invalid
+                        // in which case it will revert to default.
                         groupOpts[attrFound] = true;
 
-                        // TODO: should we copy the new value to the first trace instead?
-                        // if we did that, the editor could show controls in the
-                        // first trace always; otherwise it would only show controls
-                        // in a later trace, if that trace happens to already have a value...
-                        // I think it's probably better to ignore the editor for this
-                        // purpose though, as it's probably going to have to use some
-                        // special logic anyway, it will likely want to just
-                        // take the value out of layout._scatterStackOpts, set the
-                        // new value into the first trace, and clear all later traces.
+                        // Note: only one trace in the stack will get a _fullData
+                        // entry for a given stack-wide attribute. If no traces
+                        // (or the first trace) specify that attribute, the
+                        // first trace will get it. If the first trace does NOT
+                        // specify it but some later trace does, then it gets
+                        // removed from the first trace and only included in the
+                        // one that specified it. This is mostly important for
+                        // editors (that want to see the full values to know
+                        // what settings are available) and Plotly.react diffing.
+                        // Editors may want to use fullLayout._scatterStackOpts
+                        // directly and make these settings available from all
+                        // traces in the stack... then set the new value into
+                        // the first trace, and clear all later traces.
                         if(!firstTrace) {
                             delete groupOpts.traces[0][attr];
 
