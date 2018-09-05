@@ -112,7 +112,9 @@ module.exports = {
             'Sets the normalization for the sum of this `stackgroup`.',
             'With *fraction*, the value of each trace at each location is',
             'divided by the sum of all trace values at that location.',
-            '*percent* is the same but multiplied by 100 to show percentages.'
+            '*percent* is the same but multiplied by 100 to show percentages.',
+            'If there are multiple subplots, or multiple `stackgroup`s on one',
+            'subplot, each will be normalized within its own set.'
         ].join(' ')
     },
     stackgaps: {
