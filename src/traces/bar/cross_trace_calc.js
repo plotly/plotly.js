@@ -683,22 +683,32 @@ function collectExtents(calcTraces, pa) {
         return String(Math.round(roundFactor * (p - pMin)));
     };
 
+    var poffset, poffsetIsArray;
+
     for(i = 0; i < calcTraces.length; i++) {
         cd = calcTraces[i];
         cd[0].t.extents = extents;
+        poffset = cd[0].t.poffset;
+        poffsetIsArray = Array.isArray(poffset);
+
         for(j = 0; j < cd.length; j++) {
             var di = cd[j];
             var p0 = di[posLetter] - di.w / 2;
+
             if(isNumeric(p0)) {
                 var p1 = di[posLetter] + di.w / 2;
                 var pVal = round(di.p);
                 if(extents[pVal]) {
                     extents[pVal] = [Math.min(p0, extents[pVal][0]), Math.max(p1, extents[pVal][1])];
-                }
-                else {
+                } else {
                     extents[pVal] = [p0, p1];
                 }
             }
+
+            di.p0 = di.p + ((poffsetIsArray) ? poffset[j] : poffset);
+            di.p1 = di.p0 + di.w;
+            di.s0 = di.b;
+            di.s1 = di.s0 + di.s;
         }
     }
 }

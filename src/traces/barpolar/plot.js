@@ -24,13 +24,7 @@ module.exports = function plot(gd, subplot, cdbar) {
     var barLayer = subplot.layers.frontplot.select('g.barlayer');
 
     Lib.makeTraceGroups(barLayer, cdbar, 'trace bars').each(function(cd) {
-        var cd0 = cd[0];
-        var plotGroup = cd0.node3 = d3.select(this);
-        var t = cd0.t;
-
-        var poffset = t.poffset;
-        var poffsetIsArray = Array.isArray(poffset);
-
+        var plotGroup = cd[0].node3 = d3.select(this);
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
         var bars = pointGroup.selectAll('g.point').data(Lib.identity);
 
@@ -41,26 +35,13 @@ module.exports = function plot(gd, subplot, cdbar) {
 
         bars.exit().remove();
 
-        bars.each(function(di, i) {
+        bars.each(function(di) {
             var bar = d3.select(this);
 
-            // TODO move this block to Bar.setPositions?
-            //
-            // now display the bar
-            // clipped xf/yf (2nd arg true): non-positive
-            // log values go off-screen by plotwidth
-            // so you see them continue if you drag the plot
-            //
-            // this gets reused in ./hover.js
-            var p0 = di.p0 = di.p + ((poffsetIsArray) ? poffset[i] : poffset);
-            var p1 = di.p1 = p0 + di.w;
-            var s0 = di.s0 = di.b;
-            var s1 = di.s1 = s0 + di.s;
-
-            var rp0 = di.rp0 = radialAxis.c2p(s0);
-            var rp1 = di.rp1 = radialAxis.c2p(s1);
-            var thetag0 = di.thetag0 = angularAxis.c2g(p0);
-            var thetag1 = di.thetag1 = angularAxis.c2g(p1);
+            var rp0 = di.rp0 = radialAxis.c2p(di.s0);
+            var rp1 = di.rp1 = radialAxis.c2p(di.s1);
+            var thetag0 = di.thetag0 = angularAxis.c2g(di.p0);
+            var thetag1 = di.thetag1 = angularAxis.c2g(di.p1);
 
             var dPath;
 
@@ -74,7 +55,7 @@ module.exports = function plot(gd, subplot, cdbar) {
                 dPath = 'M0,0Z';
             } else {
                 // this 'center' pt is used for selections and hover labels
-                var rg1 = radialAxis.c2g(s1);
+                var rg1 = radialAxis.c2g(di.s1);
                 var thetagMid = (thetag0 + thetag1) / 2;
                 di.ct = [
                     xa.c2p(rg1 * Math.cos(thetagMid)),
