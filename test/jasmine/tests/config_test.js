@@ -572,6 +572,24 @@ describe('config argument', function() {
             .catch(failTest);
         }
 
+        it('should only have one resize handler when plotted more than once', function(done) {
+            var cntWindowResize = 0;
+            window.addEventListener('resize', function() {cntWindowResize++;});
+            spyOn(Plotly.Plots, 'resize').and.callThrough();
+
+            Plotly.plot(gd, data, {}, {responsive: true})
+            .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
+            .then(function() {viewport.set(newWidth, newHeight);})
+            .then(delay(200))
+            // .then(function() {viewport.set(newWidth, 2 * newHeight);}).then(delay(200))
+            .then(function() {
+                expect(cntWindowResize).toBe(1);
+                expect(Plotly.Plots.resize.calls.count()).toBe(1);
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
         it('should resize when the viewport width/height changes', function(done) {
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(testResponsive)
@@ -589,23 +607,6 @@ describe('config argument', function() {
             Plotly.plot(gd, data, {}, {responsive: true})
             .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
             .then(testResponsive)
-            .then(done);
-        });
-
-        it('should only have one resize handler when plotted more than once', function(done) {
-            var cntWindowResize = 0;
-            window.addEventListener('resize', function() {cntWindowResize++;});
-            spyOn(Plotly.Plots, 'resize').and.callThrough();
-
-            Plotly.plot(gd, data, {}, {responsive: true})
-            .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
-            .then(function() {viewport.set(newWidth, newHeight);})
-            .then(delay(200))
-            .then(function() {
-                expect(cntWindowResize).toBe(1);
-                expect(Plotly.Plots.resize.calls.count()).toBe(4);
-            })
-            .catch(failTest)
             .then(done);
         });
 
