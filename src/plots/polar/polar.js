@@ -126,9 +126,9 @@ proto.updateLayers = function(fullLayout, polarLayout) {
 
             switch(d) {
                 case 'frontplot':
-                    sel.append('g').classed('scatterlayer', true);
                     // TODO add option to place in 'backplot' layer??
                     sel.append('g').classed('barlayer', true);
+                    sel.append('g').classed('scatterlayer', true);
                     break;
                 case 'backplot':
                     sel.append('g').classed('maplayer', true);
