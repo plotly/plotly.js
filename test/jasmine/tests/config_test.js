@@ -551,24 +551,6 @@ describe('config argument', function() {
             viewport.reset();
         });
 
-        function testResponsive(promise) {
-            return promise
-            .then(function() {
-                checkLayoutSize(startWidth, startHeight);
-            })
-            // Resize viewport
-            .then(function() {
-                viewport.set(newWidth, newHeight);
-            })
-            // Wait for resize to happen (Plotly.resize has an internal timeout)
-            .then(delay(200))
-            // Check final figure size
-            .then(function() {
-                checkLayoutSize(newWidth, newHeight);
-            })
-            .catch(failTest);
-        }
-
         function checkLayoutSize(width, height) {
             expect(gd._fullLayout.width).toBe(width);
             expect(gd._fullLayout.height).toBe(height);
@@ -578,63 +560,74 @@ describe('config argument', function() {
             expect(+svg.getAttribute('height')).toBe(height);
         }
 
-        it('should resize when the viewport width/height changes', function(done) {
-            var promise = Plotly.plot(gd, data, {}, {responsive: true});
+        function testResponsive() {
+            checkLayoutSize(startWidth, startHeight);
+            viewport.set(newWidth, newHeight);
 
-            testResponsive(promise)
+            return Promise.resolve()
+            .then(delay(200))
+            .then(function() {
+                checkLayoutSize(newWidth, newHeight);
+            })
+            .catch(failTest);
+        }
+
+        it('should resize when the viewport width/height changes', function(done) {
+            Plotly.plot(gd, data, {}, {responsive: true})
+            .then(testResponsive)
             .then(done);
         });
 
-        it('should still be responsive if the plot is redrawn', function(done) {
-            var promise = Plotly.plot(gd, data, {}, {responsive: true})
-            .then(function() {
-                Plotly.restyle(gd, 'y[0]', data[0].y[0] * 2);
-            });
-
-            testResponsive(promise)
+        it('should still be responsive if the plot is edited', function(done) {
+            Plotly.plot(gd, data, {}, {responsive: true})
+            .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
+            .then(testResponsive)
             .then(done);
         });
 
         it('should still be responsive if the plot is purged and replotted', function(done) {
-            var promise = Plotly.plot(gd, data, {}, {responsive: true})
-            .then(function() {
-                Plotly.newPlot(gd, data, {}, {responsive: true});
-            });
-
-            testResponsive(promise)
+            Plotly.plot(gd, data, {}, {responsive: true})
+            .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
+            .then(testResponsive)
             .then(done);
         });
 
-        it('should become responsive if configured to be so by Plotly.react', function(done) {
-            var promise = Plotly.plot(gd, data, {}, {responsive: false})
-            .then(function() {
-                Plotly.react(gd, data, {}, {responsive: true});
-            });
+        it('should only have one resize handler when plotted more than once', function(done) {
+            var cntWindowResize = 0;
+            window.addEventListener('resize', function() {cntWindowResize++;});
+            spyOn(Plotly.Plots, 'resize').and.callThrough();
 
-            testResponsive(promise)
+            Plotly.plot(gd, data, {}, {responsive: true})
+            .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
+            .then(function() {viewport.set(newWidth, newHeight);})
+            .then(delay(200))
+            .then(function() {
+                expect(cntWindowResize).toBe(1);
+                expect(Plotly.Plots.resize.calls.count()).toBe(4);
+            })
+            .catch(failTest)
             .then(done);
         });
 
-        it('should stop being responsive if configured to be so by Plotly.react', function(done) {
+        it('should become responsive if configured as such via Plotly.react', function(done) {
+            Plotly.plot(gd, data, {}, {responsive: false})
+            .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
+            .then(testResponsive)
+            .then(done);
+        });
+
+        it('should stop being responsive if configured as such via Plotly.react', function(done) {
             Plotly.plot(gd, data, {}, {responsive: true})
             // Check initial size
-            .then(function() {
-                checkLayoutSize(startWidth, startHeight);
-            })
+            .then(function() {checkLayoutSize(startWidth, startHeight);})
             // Turn off responsiveness
-            .then(function() {
-                Plotly.react(gd, data, {}, {responsive: false});
-            })
+            .then(function() {return Plotly.react(gd, data, {}, {responsive: false});})
             // Resize viewport
-            .then(function() {
-                viewport.set(newWidth, newHeight);
-            })
+            .then(function() {viewport.set(newWidth, newHeight);})
             // Wait for resize to happen (Plotly.resize has an internal timeout)
             .then(delay(200))
-            // Check final figure size hasn't changed
-            .then(function() {
-                checkLayoutSize(startWidth, startHeight);
-            })
+            // Check that final figure's size hasn't changed
+            .then(function() {checkLayoutSize(startWidth, startHeight);})
             .catch(failTest)
             .then(done);
         });
