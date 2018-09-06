@@ -12,6 +12,7 @@ var failTest = require('../assets/fail_test');
 
 var assertClip = customAssertions.assertClip;
 var assertNodeDisplay = customAssertions.assertNodeDisplay;
+var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
 
 var getOpacity = function(node) { return Number(node.style.opacity); };
 var getFillOpacity = function(node) { return Number(node.style['fill-opacity']); };
@@ -627,6 +628,98 @@ describe('end-to-end scatter tests', function() {
         })
         .catch(failTest)
         .then(done);
+    });
+
+    it('should keep layering correct as mode & fill change', function(done) {
+        var fillCase = {name: 'fill', edit: {mode: 'none', fill: 'tonexty'}};
+        var i, j;
+
+        var cases = [fillCase];
+        var modeParts = ['lines', 'markers', 'text'];
+        for(i = 0; i < modeParts.length; i++) {
+            var modePart = modeParts[i];
+            var prevCasesLength = cases.length;
+
+            cases.push({name: modePart, edit: {mode: modePart, fill: 'none'}});
+            for(j = 0; j < prevCasesLength; j++) {
+                var prevCase = cases[j];
+                cases.push({
+                    name: prevCase.name + '_' + modePart,
+                    edit: {
+                        mode: (prevCase.edit.mode === 'none' ? '' : (prevCase.edit.mode + '+')) + modePart,
+                        fill: prevCase.edit.fill
+                    }
+                });
+            }
+        }
+
+        // visit each case N times, in an order that covers each *transition*
+        // from any case to any other case.
+        var indices = [];
+        var curIndex = 0;
+        for(i = 1; i < cases.length; i++) {
+            for(j = 0; j < cases.length; j++) {
+                indices.push(curIndex);
+                curIndex = (curIndex + i) % cases.length;
+            }
+        }
+
+        var p = Plotly.plot(gd, [
+            {y: [1, 2], text: 'a'},
+            {y: [2, 3], text: 'b'},
+            {y: [3, 4], text: 'c'}
+        ]);
+
+        function setMode(i) { return function() {
+            return Plotly.restyle(gd, cases[indices[i]].edit);
+        }; }
+
+        function testOrdering(i) { return function() {
+            var name = cases[indices[i]].name;
+            var hasFills = name.indexOf('fill') !== -1;
+            var hasLines = name.indexOf('lines') !== -1;
+            var hasMarkers = name.indexOf('markers') !== -1;
+            var hasText = name.indexOf('text') !== -1;
+            var tracei, prefix;
+
+            // construct the expected ordering based on case name
+            var selectorArray = [];
+            for(tracei = 0; tracei < 3; tracei++) {
+                prefix = '.xy .trace:nth-child(' + (tracei + 1) + ') ';
+
+                // two fills are attached to the first trace, one to the second
+                if(hasFills) {
+                    if(tracei === 0) {
+                        selectorArray.push(
+                            prefix + 'g:first-child>.js-fill',
+                            prefix + 'g:last-child>.js-fill');
+                    }
+                    else if(tracei === 1) selectorArray.push(prefix + 'g:last-child>.js-fill');
+                }
+                if(hasLines) selectorArray.push(prefix + '.js-line');
+                if(hasMarkers) selectorArray.push(prefix + '.point');
+                if(hasText) selectorArray.push(prefix + '.textpoint');
+            }
+
+            // ordering in the legend
+            for(tracei = 0; tracei < 3; tracei++) {
+                prefix = '.legend .traces:nth-child(' + (tracei + 1) + ') ';
+                if(hasFills) selectorArray.push(prefix + '.js-fill');
+                if(hasLines) selectorArray.push(prefix + '.js-line');
+                if(hasMarkers) selectorArray.push(prefix + '.scatterpts');
+                if(hasText) selectorArray.push(prefix + '.pointtext');
+            }
+
+            var msg = i ? ('from ' + cases[indices[i - 1]].name + ' to ') : 'from default to ';
+            msg += name;
+            assertMultiNodeOrder(selectorArray, msg);
+        }; }
+
+        for(i = 0; i < indices.length; i++) {
+            p = p.then(setMode(i)).then(testOrdering(i));
+        }
+
+        p.catch(failTest).then(done);
     });
 
     function _assertNodes(ptStyle, txContent) {
