@@ -1307,6 +1307,11 @@ describe('Test select box and lasso in general:', function() {
           })
           .then(function() {
               _assertSelectedPoints([49, 50, 51, 52, 53, 54, 55, 56, 57]);
+
+              // Note: although Shift has no behavioral effect on clearing a selection
+              // with a double click, users might hold the Shift key by accident.
+              // This test ensures selection is cleared as expected although
+              // the Shift key is held and no selection state is retained in any way.
               return doubleClick(500, 200, { shiftKey: true });
           })
           .then(function() {
