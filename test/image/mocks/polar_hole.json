@@ -1,0 +1,80 @@
+{
+  "data": [
+    {
+        "type": "barpolar",
+        "r": [10, 12, 15]
+    },
+    {
+        "type": "scatterpolar",
+        "r": [10, 12, 15],
+        "theta0": 90
+    },
+
+    {
+        "type": "scatterpolar",
+        "subplot": "polar2",
+        "r": [100, 50, 200]
+    },
+    {
+        "type": "barpolar",
+        "subplot": "polar2",
+        "r": [100, 50, 200]
+    },
+
+    {
+        "type": "barpolar",
+        "subplot": "polar3",
+        "theta": ["a", "b", "c", "d", "b", "f", "a", "a"]
+    },
+    {
+        "type": "scatterpolar",
+        "subplot": "polar3",
+        "theta": ["a", "b", "c", "d", "b", "f", "a", "a"]
+    },
+
+    {
+        "type": "barpolar",
+        "subplot": "polar4",
+        "r": [10, 12, 15]
+    },
+    {
+        "type": "scatterpolar",
+        "subplot": "polar4",
+        "r": [10, 12, 15],
+        "theta0": 90
+    }
+  ],
+  "layout": {
+    "width": 600,
+    "height": 600,
+    "margin": {"l": 40, "r": 40, "b": 40, "t": 40, "pad": 0},
+    "grid": {
+      "rows": 2,
+      "columns": 2,
+      "ygap": 0.2
+    },
+    "polar": {
+      "hole": 0.1,
+      "domain": {"row": 0, "column": 0}
+    },
+    "polar2": {
+      "hole": 0.4,
+      "domain": {"row": 0, "column": 1},
+      "radialaxis": {"type": "log"}
+    },
+    "polar3": {
+      "hole": 0.2,
+      "gridshape": "linear",
+      "angularaxis": {"direction": "clockwise"},
+      "domain": {"row": 1, "column": 0}
+    },
+    "polar4": {
+      "hole": 0.4,
+      "domain": {"row": 1, "column": 1},
+      "sector": [0, 180],
+      "angularaxis": {"direction": "clockwise"},
+      "radialaxis": {"angle": 90, "side": "counterclockwise"}
+    },
+    "showlegend": false
+  }
+}
