@@ -597,6 +597,9 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     }
     _this.vangles = vangles;
 
+    // TODO maybe two arcs is better here?
+    // maybe split style attributes between inner and outer angular axes?
+
     updateElement(layers['angular-line'].select('path'), angularLayout.showline, {
         d: _this.pathSubplot(),
         transform: strTranslate(cx, cy)
@@ -936,6 +939,8 @@ proto.updateRadialDrag = function(fullLayout) {
     var dragOpts = {element: radialDrag, gd: gd};
     var tx = cx + (radius + bl2) * Math.cos(angle0);
     var ty = cy - (radius + bl2) * Math.sin(angle0);
+
+    // TODO add 'inner' drag box when innerRadius > 0 !!
 
     d3.select(radialDrag)
         .attr('transform', strTranslate(tx, ty));
