@@ -16,14 +16,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
 
-    coerce('clickmode');
+    var clickmode = coerce('clickmode');
 
     var dragMode = coerce('dragmode');
     if(dragMode === 'select') coerce('selectdirection');
 
     var hovermodeDflt;
     if(layoutOut._has('cartesian')) {
-        if(layoutOut.clickmode.indexOf('select') > -1) {
+        if(clickmode.indexOf('select') > -1) {
             hovermodeDflt = 'closest';
         } else {
             // flag for 'horizontal' plots:
