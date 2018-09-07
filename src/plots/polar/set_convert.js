@@ -34,7 +34,7 @@ var rad2deg = Lib.rad2deg;
  *
  * Radial axis coordinate systems:
  * - d, c and l: same as for cartesian axes
- * - g: like calcdata but translated about `radialaxis.range[0]`
+ * - g: like calcdata but translated about `radialaxis.range[0]` & `polar.hole`
  *
  * Angular axis coordinate systems:
  * - d: data, in whatever form it's provided
