@@ -639,12 +639,12 @@ function computeLegendDimensions(gd, groups, traces) {
         });
 
         // check if legend fits in one row
-        oneRowLegend = (fullLayout.width - (fullLayout._size.r + fullLayout._size.l)) > borderwidth + fullTracesWidth - traceGap;
+        oneRowLegend = fullLayout._size.w > borderwidth + fullTracesWidth - traceGap;
         traces.each(function(d) {
             var legendItem = d[0],
                 traceWidth = oneRowLegend ? 40 + d[0].width : maxTraceWidth;
 
-            if((borderwidth + offsetX + traceGap + traceWidth) > (fullLayout.width - (fullLayout._size.r + fullLayout._size.l))) {
+            if((borderwidth + offsetX + traceGap + traceWidth) > fullLayout._size.w) {
                 offsetX = 0;
                 rowHeight = rowHeight + maxTraceHeight;
                 opts._height = opts._height + maxTraceHeight;
