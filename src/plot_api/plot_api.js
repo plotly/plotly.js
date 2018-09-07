@@ -192,12 +192,16 @@ exports.plot = function(gd, data, layout, config) {
     }
 
     // make the figure responsive
-    if(gd._context.responsive && !gd._responsiveChartHandler) {
-        // Keep a reference to the resize handler to purge it down the road
-        gd._responsiveChartHandler = function() {Plots.resize(gd);};
+    if(gd._context.responsive) {
+        if(!gd._responsiveChartHandler) {
+            // Keep a reference to the resize handler to purge it down the road
+            gd._responsiveChartHandler = function() {Plots.resize(gd);};
 
-        // Listen to window resize
-        window.addEventListener('resize', gd._responsiveChartHandler);
+            // Listen to window resize
+            window.addEventListener('resize', gd._responsiveChartHandler);
+        }
+    } else {
+        Lib.clearResponsive(gd);
     }
 
     /*
@@ -2243,9 +2247,6 @@ exports.react = function(gd, data, layout, config) {
             gd._context = undefined;
             setPlotContext(gd, config);
             configChanged = diffConfig(oldConfig, gd._context);
-
-            // remove responsive handler
-            Lib.clearResponsive(gd);
         }
 
         gd.data = data || [];
