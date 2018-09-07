@@ -89,7 +89,7 @@ proto.plot = function(polarCalcData, fullLayout) {
     _this.updateLayers(fullLayout, polarLayout);
     _this.updateLayout(fullLayout, polarLayout);
     Plots.generalUpdatePerTraceModule(_this.gd, _this, polarCalcData, polarLayout);
-    _this.updateFx(fullLayout);
+    _this.updateFx(fullLayout, polarLayout);
 };
 
 proto.updateLayers = function(fullLayout, polarLayout) {
@@ -606,10 +606,11 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     .call(Color.stroke, angularLayout.linecolor);
 };
 
-proto.updateFx = function(fullLayout) {
+proto.updateFx = function(fullLayout, polarLayout) {
     if(!this.gd._context.staticPlot) {
         this.updateAngularDrag(fullLayout);
-        this.updateRadialDrag(fullLayout);
+        this.updateRadialDrag(fullLayout, polarLayout, 1);
+        if(this.innerRadius) this.updateRadialDrag(fullLayout, polarLayout, 0);
         this.updateMainDrag(fullLayout);
     }
 };
@@ -913,11 +914,12 @@ proto.updateMainDrag = function(fullLayout) {
     dragElement.init(dragOpts);
 };
 
-proto.updateRadialDrag = function(fullLayout) {
+proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
     var _this = this;
     var gd = _this.gd;
     var layers = _this.layers;
     var radius = _this.radius;
+    var innerRadius = _this.innerRadius;
     var cx = _this.cx;
     var cy = _this.cy;
     var radialAxis = _this.radialAxis;
@@ -925,28 +927,34 @@ proto.updateRadialDrag = function(fullLayout) {
     if(!radialAxis.visible) return;
 
     var angle0 = deg2rad(_this.radialAxisAngle);
-    var rl0 = radialAxis._rl[0];
-    var rl1 = radialAxis._rl[1];
-    var drl = rl1 - rl0;
+    var rl = radialAxis._rl;
+    var rl0 = rl[0];
+    var rl1 = rl[1];
+    var rbase = rl[rngIndex];
+    var m = 0.75 * (rl[1] - rl[0]) / (1 - polarLayout.hole) / radius;
 
     var bl = constants.radialDragBoxSize;
     var bl2 = bl / 2;
-    var radialDrag = dragBox.makeRectDragger(layers, 'radialdrag', 'crosshair', -bl2, -bl2, bl, bl);
+    var className = 'radialdrag' + (rngIndex ? '' : '-inner');
+    var radialDrag = dragBox.makeRectDragger(layers, className, 'crosshair', -bl2, -bl2, bl, bl);
     var dragOpts = {element: radialDrag, gd: gd};
-    var tx = cx + (radius + bl2) * Math.cos(angle0);
-    var ty = cy - (radius + bl2) * Math.sin(angle0);
 
-    // TODO add 'inner' drag box when innerRadius > 0 !!
-
-    d3.select(radialDrag)
-        .attr('transform', strTranslate(tx, ty));
+    var tx, ty;
+    if(rngIndex) {
+        tx = cx + (radius + bl2) * Math.cos(angle0);
+        ty = cy - (radius + bl2) * Math.sin(angle0);
+    } else {
+        tx = cx + (innerRadius - bl2) * Math.cos(angle0);
+        ty = cy - (innerRadius - bl2) * Math.sin(angle0);
+    }
+    d3.select(radialDrag).attr('transform', strTranslate(tx, ty));
 
     // move function (either rotate or re-range flavor)
     var moveFn2;
     // rotate angle on done
     var angle1;
-    // re-range range[1] on done
-    var rng1;
+    // re-range range[1] (or range[0]) on done
+    var rprime;
 
     function moveFn(dx, dy) {
         if(moveFn2) {
@@ -967,12 +975,15 @@ proto.updateRadialDrag = function(fullLayout) {
     function doneFn() {
         if(angle1 !== null) {
             Registry.call('relayout', gd, _this.id + '.radialaxis.angle', angle1);
-        } else if(rng1 !== null) {
-            Registry.call('relayout', gd, _this.id + '.radialaxis.range[1]', rng1);
+        } else if(rprime !== null) {
+            Registry.call('relayout', gd, _this.id + '.radialaxis.range[' + rngIndex + ']', rprime);
         }
     }
 
     function rotateMove(dx, dy) {
+        // disable for inner drag boxes
+        if(rngIndex === 0) return;
+
         var x1 = tx + dx;
         var y1 = ty + dy;
 
@@ -992,14 +1003,17 @@ proto.updateRadialDrag = function(fullLayout) {
     function rerangeMove(dx, dy) {
         // project (dx, dy) unto unit radial axis vector
         var dr = Lib.dot([dx, -dy], [Math.cos(angle0), Math.sin(angle0)]);
-        rng1 = rl1 - drl * dr / radius * 0.75;
+        rprime = rbase - m * dr;
 
-        // make sure new range[1] does not change the range[0] -> range[1] sign
-        if((drl > 0) !== (rng1 > rl0)) return;
+        // make sure rprime does not change the range[0] -> range[1] sign
+        if((m > 0) !== (rngIndex ? rprime > rl0 : rprime < rl1)) {
+            rprime = null;
+            return;
+        }
 
         // update radial range -> update c2g -> update _m,_b
-        radialAxis.range[1] = rng1;
-        radialAxis._rl[1] = rng1;
+        radialAxis.range[rngIndex] = rprime;
+        radialAxis._rl[rngIndex] = rprime;
         radialAxis.setGeometry();
         radialAxis.setScale();
 
@@ -1027,7 +1041,7 @@ proto.updateRadialDrag = function(fullLayout) {
     dragOpts.prepFn = function() {
         moveFn2 = null;
         angle1 = null;
-        rng1 = null;
+        rprime = null;
 
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;

@@ -1019,6 +1019,45 @@ describe('Test polar interactions:', function() {
         .then(done);
     });
 
+    it('should response to drag interactions on inner radial drag area', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        fig.layout.polar.hole = 0.2;
+        // to avoid dragging on hover labels
+        fig.layout.hovermode = false;
+        // adjust margins so that middle of plot area is at 300x300
+        // with its middle at [200,200]
+        fig.layout.width = 400;
+        fig.layout.height = 400;
+        fig.layout.margin = {l: 50, t: 50, b: 50, r: 50};
+
+        var dragPos0 = [200, 200];
+
+        // use 'special' drag method - as we need two mousemove events
+        // to activate the radial drag mode
+        function _drag(p0, dp) {
+            var node = d3.select('.polar > .draglayer > .radialdrag-inner').node();
+            return drag(node, dp[0], dp[1], null, p0[0], p0[1], 2);
+        }
+
+        function _assert(rng, msg) {
+            expect(gd._fullLayout.polar.radialaxis.range)
+                .toBeCloseToArray(rng, 1, msg + ' - range');
+        }
+
+        _plot(fig)
+        .then(function() { return _drag(dragPos0, [-50, 0]); })
+        .then(function() {
+            _assert([3.55, 11.36], 'move inward');
+        })
+        .then(function() { return Plotly.relayout(gd, 'polar.radialaxis.autorange', true); })
+        .then(function() { return _drag(dragPos0, [50, 0]); })
+        .then(function() {
+            _assert([-3.55, 11.36], 'move outward');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should response to drag interactions on angular drag area', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
