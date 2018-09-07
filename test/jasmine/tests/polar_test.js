@@ -924,6 +924,13 @@ describe('Test polar interactions:', function() {
             expect(eventCnts.plotly_relayout)
                 .toBe(relayoutNumber, 'no new relayout events after *not far enough* cases');
         })
+        .then(_reset)
+        .then(function() { return Plotly.relayout(gd, 'polar.hole', 0.2); })
+        .then(function() { relayoutNumber++; })
+        .then(function() { return _drag([mid[0] + 30, mid[0] - 30], [50, -50]); })
+        .then(function() {
+            _assertDrag([1.15, 7.70], 'with polar.hole>0, from quadrant #1 move top-right');
+        })
         .catch(failTest)
         .then(done);
     });

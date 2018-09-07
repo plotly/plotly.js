@@ -629,6 +629,7 @@ proto.updateMainDrag = function(fullLayout) {
     var cyy = _this.cyy;
     var sectorInRad = _this.sectorInRad;
     var vangles = _this.vangles;
+    var radialAxis = _this.radialAxis;
     var clampTiny = helpers.clampTiny;
     var findXYatLength = helpers.findXYatLength;
     var findEnclosingVertexAngles = helpers.findEnclosingVertexAngles;
@@ -840,16 +841,13 @@ proto.updateMainDrag = function(fullLayout) {
 
         dragBox.showDoubleClickNotifier(gd);
 
-        var radialAxis = _this.radialAxis;
         var rl = radialAxis._rl;
-        var drl = rl[1] - rl[0];
-        var updateObj = {};
-        updateObj[_this.id + '.radialaxis.range'] = [
-            rl[0] + r0 * drl / radius,
-            rl[0] + r1 * drl / radius
+        var m = (rl[1] - rl[0]) / (1 - innerRadius / radius) / radius;
+        var newRng = [
+            rl[0] + (r0 - innerRadius) * m,
+            rl[0] + (r1 - innerRadius) * m
         ];
-
-        Registry.call('relayout', gd, updateObj);
+        Registry.call('relayout', gd, _this.id + '.radialaxis.range', newRng);
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {
