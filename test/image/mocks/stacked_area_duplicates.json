@@ -1,0 +1,42 @@
+{
+  "data": [
+    {
+        "x": [1,   2, 2, 2, 2,   3, 3, 3, 3,   4, 4, 4, 4,   6, 8],
+        "y": [1,   3, 2, 5, 4,   5, 4, 3, 2,   4, 6, 3, 5,   4, 3],
+        "stackgroup": "a", "mode": "lines+markers"
+    }, {
+        "x": [1,   2, 2, 2, 2,   3,   5, 5, 5, 5,   6, 6, 6, 6,   8],
+        "y": [4,   4, 4, 4, 6,   5,   6, 5, 7, 6,   5, 6, 7, 8,   7],
+        "stackgroup": "a", "mode": "lines+markers"
+    }, {
+        "x": [2, 2, 2, 2,   3,   4, 4, 4, 4,   5,   7, 7, 7, 7,   8],
+        "y": [5, 5, 4, 5,   6,   7, 6, 5, 4,   5,   4, 5, 6, 3,   4],
+        "stackgroup": "a", "mode": "lines+markers"
+    },
+
+    {
+        "x": [1,   2, 2, 2, 2,   3, 3, 3, 3,   4, 4, 4, 4,   6, 8],
+        "y": [1,   3, 2, 5, 4,   5, 4, 3, 2,   4, 6, 3, 5,   4, 3],
+        "stackgroup": "a", "mode": "lines+markers",
+        "xaxis": "x2", "yaxis": "y2", "stackgaps": "interpolate"
+    }, {
+        "x": [1,   2, 2, 2, 2,   3,   5, 5, 5, 5,   6, 6, 6, 6,   8],
+        "y": [4,   4, 4, 4, 6,   5,   6, 5, 7, 6,   5, 6, 7, 8,   7],
+        "stackgroup": "a", "mode": "lines+markers",
+        "xaxis": "x2", "yaxis": "y2", "stackgaps": "interpolate"
+    }, {
+        "x": [2, 2, 2, 2,   3,   4, 4, 4, 4,   5,   7, 7, 7, 7,   8],
+        "y": [5, 5, 4, 5,   6,   7, 6, 5, 4,   5,   4, 5, 6, 3,   4],
+        "stackgroup": "a", "mode": "lines+markers",
+        "xaxis": "x2", "yaxis": "y2", "stackgaps": "interpolate"
+    }
+  ],
+  "layout": {
+    "width": 500,
+    "height": 500,
+    "title": "Duplicate positions",
+    "xaxis": {"title": "infer zero"},
+    "xaxis2": {"title": "interpolate"},
+    "grid": {"columns": 1, "rows": 2, "pattern": "independent"}
+  }
+}

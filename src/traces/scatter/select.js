@@ -36,9 +36,9 @@ module.exports = function selectPoints(searchInfo, polygon) {
             x = xa.c2p(di.x);
             y = ya.c2p(di.y);
 
-            if(polygon.contains([x, y])) {
+            if((di.i !== null) && polygon.contains([x, y])) {
                 selection.push({
-                    pointNumber: i,
+                    pointNumber: di.i,
                     x: xa.c2d(di.x),
                     y: ya.c2d(di.y)
                 });
