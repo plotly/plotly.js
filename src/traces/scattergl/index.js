@@ -265,11 +265,11 @@ function sceneUpdate(gd, subplot) {
                 if(scene.fill2d && scene.fillOptions[i]) {
                     // must do all fills first
                     scene.fill2d.draw(i);
-                    if(scene.line2d && scene.lineOptions[i] && ( scene.fillOptions[i].fillmode === 'tozeroy' || scene.fillOptions[i].fillmode === 'tozerox' )) {
+                    if(scene.line2d && scene.lineOptions[i] && (scene.fillOptions[i].fillmode === 'tozeroy' || scene.fillOptions[i].fillmode === 'tozerox')) {
                         scene.line2d.draw(i);
                         allReadyDrawLines[i] = true;
                     }
-                    if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i]) && ( scene.fillOptions[i].fillmode === 'tozeroy' || scene.fillOptions[i].fillmode === 'tozerox' )) {
+                    if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i]) && (scene.fillOptions[i].fillmode === 'tozeroy' || scene.fillOptions[i].fillmode === 'tozerox')) {
                         // traces in no-selection mode
                         scene.scatter2d.draw(i);
                         allReadyDrawMarkers[i] = true;
@@ -563,7 +563,6 @@ function plot(gd, subplot, cdata) {
                     pos = pos.concat(prevLinePos);
                     fillOptions.hole = hole;
                 }
-	
                 fillOptions.fillmode = trace.fill;
                 fillOptions.opacity = trace.opacity;
                 fillOptions.positions = pos;
