@@ -104,17 +104,17 @@ proto.updateLayers = function(fullLayout, polarLayout) {
     var isAngularAxisBelowTraces = angularLayout.layer === 'below traces';
     var isRadialAxisBelowTraces = radialLayout.layer === 'below traces';
 
-    if(isAngularAxisBelowTraces) layerData.push('angular-axis');
-    if(isRadialAxisBelowTraces) layerData.push('radial-axis');
     if(isAngularAxisBelowTraces) layerData.push('angular-line');
     if(isRadialAxisBelowTraces) layerData.push('radial-line');
+    if(isAngularAxisBelowTraces) layerData.push('angular-axis');
+    if(isRadialAxisBelowTraces) layerData.push('radial-axis');
 
     layerData.push('frontplot');
 
-    if(!isAngularAxisBelowTraces) layerData.push('angular-axis');
-    if(!isRadialAxisBelowTraces) layerData.push('radial-axis');
     if(!isAngularAxisBelowTraces) layerData.push('angular-line');
     if(!isRadialAxisBelowTraces) layerData.push('radial-line');
+    if(!isAngularAxisBelowTraces) layerData.push('angular-axis');
+    if(!isRadialAxisBelowTraces) layerData.push('radial-axis');
 
     var join = _this.framework.selectAll('.polarsublayer')
         .data(layerData, String);

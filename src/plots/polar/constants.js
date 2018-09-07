@@ -22,13 +22,10 @@ module.exports = {
         'angular-grid',
         'radial-grid',
         'frontplot',
-        'angular-axis',
-        'radial-axis',
-        // TODO hmm, putting angular-line above radial-axis
-        // can sometimes hide radial ticks and label
-        // this happens especially for the 'inner' angular axis
         'angular-line',
-        'radial-line'
+        'radial-line',
+        'angular-axis',
+        'radial-axis'
     ],
 
     radialDragBoxSize: 50,

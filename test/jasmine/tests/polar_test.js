@@ -236,19 +236,19 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert([
                 'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'radial-axis', 'radial-line',
+                'radial-line', 'radial-axis',
                 'frontplot',
-                'angular-axis', 'angular-line'
+                'angular-line', 'angular-axis'
             ]);
             return Plotly.relayout(gd, 'polar.angularaxis.layer', 'below traces');
         })
         .then(function() {
             _assert([
                 'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'angular-axis',
-                'radial-axis',
                 'angular-line',
                 'radial-line',
+                'angular-axis',
+                'radial-axis',
                 'frontplot'
             ]);
             return Plotly.relayout(gd, 'polar.radialaxis.layer', 'above traces');
@@ -256,9 +256,9 @@ describe('Test relayout on polar subplots:', function() {
         .then(function() {
             _assert([
                 'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'angular-axis', 'angular-line',
+                'angular-line', 'angular-axis',
                 'frontplot',
-                'radial-axis', 'radial-line'
+                'radial-line', 'radial-axis'
             ]);
             return Plotly.relayout(gd, 'polar.angularaxis.layer', null);
         })
