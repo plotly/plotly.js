@@ -176,15 +176,17 @@ module.exports = function calc(gd, trace) {
                 b: 0
             };
 
-            // pts and p0/p1 don't seem to make much sense for cumulative distributions
+            // setup hover and event data fields,
+            // N.B. pts and "hover" positions ph0/ph1 don't seem to make much sense
+            // for cumulative distributions
             if(!cumulativeSpec.enabled) {
                 cdi.pts = inputPoints[i];
                 if(uniqueValsPerBin) {
-                    cdi.p0 = cdi.p1 = (inputPoints[i].length) ? pos0[inputPoints[i][0]] : pos[i];
+                    cdi.ph0 = cdi.ph1 = (inputPoints[i].length) ? pos0[inputPoints[i][0]] : pos[i];
                 }
                 else {
-                    cdi.p0 = roundFn(binEdges[i]);
-                    cdi.p1 = roundFn(binEdges[i + 1], true);
+                    cdi.ph0 = roundFn(binEdges[i]);
+                    cdi.ph1 = roundFn(binEdges[i + 1], true);
                 }
             }
             cd.push(cdi);

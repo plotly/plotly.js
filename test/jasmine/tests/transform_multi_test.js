@@ -207,6 +207,7 @@ describe('general transforms:', function() {
 
 describe('user-defined transforms:', function() {
     'use strict';
+    afterEach(destroyGraphDiv);
 
     it('should pass correctly arguments to transform methods', function() {
         var transformIn = { type: 'fake' };
@@ -283,7 +284,7 @@ describe('user-defined transforms:', function() {
         expect(calledSupplyLayoutDefaults).toBe(1);
     });
 
-    it('handles `makesData` transforms when the incoming trace has no data', function() {
+    it('handles `makesData` transforms when the incoming trace has no data', function(done) {
         var transformIn = {type: 'linemaker', x0: 3, y0: 2, x1: 5, y1: 10, n: 3};
         var dataIn = [{transforms: [transformIn], mode: 'lines+markers'}];
         var fullData = [];
@@ -317,7 +318,7 @@ describe('user-defined transforms:', function() {
                 expect(trace.marker).toBeUndefined();
 
                 // just put the input trace back in here, it'll get coerced again after the transform
-                var traceOut = Lib.extendFlat(trace._input, {x: x, y: y});
+                var traceOut = Lib.extendFlat({}, trace._input, {x: x, y: y});
 
                 return [traceOut];
             }
@@ -325,7 +326,6 @@ describe('user-defined transforms:', function() {
 
         Plotly.register(lineMakerModule);
         Plots.supplyDataDefaults(dataIn, fullData, layout, fullLayout);
-        delete Plots.transformsRegistry.linemaker;
 
         expect(fullData.length).toBe(1);
         var traceOut = fullData[0];
@@ -336,6 +336,34 @@ describe('user-defined transforms:', function() {
         expect(traceOut.mode).toBe('lines+markers');
         expect(traceOut.line).toBeDefined();
         expect(traceOut.marker).toBeDefined();
+
+        // make sure plot is really drawn, and changes in the base trace
+        // are propagated correctly on an edit (either restyle or react)
+        var gd = createGraphDiv();
+        function getLineWidth() {
+            var line = gd.querySelector('.js-line');
+            return line && parseFloat(line.style.strokeWidth);
+        }
+        Plotly.newPlot(gd, [{transforms: [transformIn], mode: 'lines+markers'}], layout)
+        .then(function() {
+            expect(getLineWidth()).toBe(2);
+
+            return Plotly.restyle(gd, 'line.width', 7);
+        })
+        .then(function() {
+            expect(getLineWidth()).toBe(7);
+
+            var data2 = [{transforms: [transformIn], mode: 'lines+markers', line: {width: 4}}];
+            return Plotly.react(gd, data2, layout);
+        })
+        .then(function() {
+            expect(getLineWidth()).toBe(4);
+        })
+        .catch(failTest)
+        .then(function() {
+            delete Plots.transformsRegistry.linemaker;
+        })
+        .then(done);
     });
 
 });

@@ -36,9 +36,9 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
             x = xa.c2p(di.x);
             y = ya.c2p(di.y);
 
-            if(selectionTester.contains([x, y], false, i, searchInfo)) {
+            if((di.i !== null) && selectionTester.contains([x, y], false, i, searchInfo)) {
                 selection.push({
-                    pointNumber: i,
+                    pointNumber: di.i,
                     x: xa.c2d(di.x),
                     y: ya.c2d(di.y)
                 });

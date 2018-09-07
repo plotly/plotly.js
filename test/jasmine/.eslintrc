@@ -3,5 +3,8 @@
   "env": {
     "browser": true,
     "jasmine": true
+  },
+  "globals": {
+    "viewport": true
   }
 }

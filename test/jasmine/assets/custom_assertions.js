@@ -122,6 +122,7 @@ exports.assertHoverLabelContent = function(expectation, msg) {
         expect(ptCnt)
             .toBe(expectation.name.length, ptMsg + ' # of visible labels');
 
+        var bboxes = [];
         d3.selectAll(ptSelector).each(function(_, i) {
             assertLabelContent(
                 d3.select(this).select('text.nums'),
@@ -133,7 +134,20 @@ exports.assertHoverLabelContent = function(expectation, msg) {
                 expectation.name[i],
                 ptMsg + ' (name ' + i + ')'
             );
+            bboxes.push({bbox: this.getBoundingClientRect(), index: i});
         });
+        if(expectation.vOrder) {
+            bboxes.sort(function(a, b) {
+                return (a.bbox.top + a.bbox.bottom - b.bbox.top - b.bbox.bottom) / 2;
+            });
+            expect(bboxes.map(function(d) { return d.index; })).toEqual(expectation.vOrder);
+        }
+        if(expectation.hOrder) {
+            bboxes.sort(function(a, b) {
+                return (b.bbox.left + b.bbox.right - a.bbox.left - a.bbox.right) / 2;
+            });
+            expect(bboxes.map(function(d) { return d.index; })).toEqual(expectation.hOrder);
+        }
     } else {
         if(expectation.nums) {
             fail(ptMsg + ': expecting *nums* labels, did not find any.');

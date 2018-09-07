@@ -1989,6 +1989,62 @@ describe('Test select box and lasso per trace:', function() {
         .then(done);
     });
 
+    it('@flaky should work on barpolar traces', function(done) {
+        var assertPoints = makeAssertPoints(['r', 'theta']);
+        var assertSelectedPoints = makeAssertSelectedPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/polar_wind-rose.json'));
+        fig.layout.showlegend = false;
+        fig.layout.width = 500;
+        fig.layout.height = 500;
+        fig.layout.dragmode = 'select';
+        addInvisible(fig);
+
+        Plotly.plot(gd, fig).then(function() {
+            return _run(
+                [[150, 150], [250, 250]],
+                function() {
+                    assertPoints([
+                        [62.5, 'N-W'], [55, 'N-W'], [40, 'North'],
+                        [40, 'N-W'], [20, 'North'], [22.5, 'N-W']
+                    ]);
+                    assertSelectedPoints({
+                        0: [7],
+                        1: [7],
+                        2: [0, 7],
+                        3: [0, 7]
+                    });
+                },
+                [200, 200],
+                BOXEVENTS, 'barpolar select'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run(
+                [[150, 150], [350, 150], [350, 250], [150, 250], [150, 150]],
+                function() {
+                    assertPoints([
+                        [62.5, 'N-W'], [50, 'N-E'], [55, 'N-W'], [40, 'North'],
+                        [30, 'N-E'], [40, 'N-W'], [20, 'North'], [7.5, 'N-E'], [22.5, 'N-W']
+                    ]);
+                    assertSelectedPoints({
+                        0: [7],
+                        1: [1, 7],
+                        2: [0, 1, 7],
+                        3: [0, 1, 7]
+                    });
+                },
+                [200, 200],
+                LASSOEVENTS, 'barpolar lasso'
+            );
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('@flaky should work on choropleth traces', function(done) {
         var assertPoints = makeAssertPoints(['location', 'z']);
         var assertSelectedPoints = makeAssertSelectedPoints();

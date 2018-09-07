@@ -8,7 +8,7 @@
 
 'use strict';
 
-var mod = require('./mod');
+var mod = require('./mod').mod;
 
 /*
  * look for intersection of two line segments

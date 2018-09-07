@@ -16,13 +16,13 @@ Bar.layoutAttributes = require('./layout_attributes');
 Bar.supplyDefaults = require('./defaults');
 Bar.supplyLayoutDefaults = require('./layout_defaults');
 Bar.calc = require('./calc');
-Bar.crossTraceCalc = require('./cross_trace_calc');
+Bar.crossTraceCalc = require('./cross_trace_calc').crossTraceCalc;
 Bar.colorbar = require('../scatter/marker_colorbar');
 Bar.arraysToCalcdata = require('./arrays_to_calcdata');
 Bar.plot = require('./plot');
 Bar.style = require('./style').style;
 Bar.styleOnSelect = require('./style').styleOnSelect;
-Bar.hoverPoints = require('./hover');
+Bar.hoverPoints = require('./hover').hoverPoints;
 Bar.selectPoints = require('./select');
 
 Bar.moduleType = 'trace';

@@ -2189,6 +2189,164 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('sort', function() {
+        var callCount;
+        beforeEach(function() {
+            callCount = 0;
+        });
+
+        function sortCounter(a, b) {
+            callCount++;
+            return a - b;
+        }
+
+        function sortCounterReversed(a, b) {
+            callCount++;
+            return b - a;
+        }
+
+        function ascending(n) {
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = i;
+            }
+            assertAscending(out);
+            return out;
+        }
+
+        function descending(n) {
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = n - 1 - i;
+            }
+            assertDescending(out);
+            return out;
+        }
+
+        function rand(n) {
+            Lib.seedPseudoRandom();
+            var out = new Array(n);
+            for(var i = 0; i < n; i++) {
+                out[i] = Lib.pseudoRandom();
+            }
+            return out;
+        }
+
+        function assertAscending(array) {
+            for(var i = 1; i < array.length; i++) {
+                if(array[i] < array[i - 1]) {
+                    // we already know this expect will fail,
+                    // just want to format the message nicely and then
+                    // quit so we don't get a million messages
+                    expect(array[i]).not.toBeLessThan(array[i - 1]);
+                    break;
+                }
+            }
+        }
+
+        function assertDescending(array) {
+            for(var i = 1; i < array.length; i++) {
+                if(array[i] < array[i - 1]) {
+                    expect(array[i]).not.toBeGreaterThan(array[i - 1]);
+                    break;
+                }
+            }
+        }
+
+        function _sort(array, sortFn) {
+            var arrayOut = Lib.sort(array, sortFn);
+            expect(arrayOut).toBe(array);
+            return array;
+        }
+
+        it('sorts ascending arrays ascending in N-1 calls', function() {
+            var arrayIn = _sort(ascending(100000), sortCounter);
+            expect(callCount).toBe(99999);
+            assertAscending(arrayIn);
+        });
+
+        it('sorts descending arrays ascending in N-1 calls', function() {
+            var arrayIn = _sort(descending(100000), sortCounter);
+            expect(callCount).toBe(99999);
+            assertAscending(arrayIn);
+        });
+
+        it('sorts ascending arrays descending in N-1 calls', function() {
+            var arrayIn = _sort(ascending(100000), sortCounterReversed);
+            expect(callCount).toBe(99999);
+            assertDescending(arrayIn);
+        });
+
+        it('sorts descending arrays descending in N-1 calls', function() {
+            var arrayIn = _sort(descending(100000), sortCounterReversed);
+            expect(callCount).toBe(99999);
+            assertDescending(arrayIn);
+        });
+
+        it('sorts random arrays ascending in a few more calls than bare sort', function() {
+            var arrayIn = _sort(rand(100000), sortCounter);
+            assertAscending(arrayIn);
+
+            var ourCallCount = callCount;
+            callCount = 0;
+            rand(100000).sort(sortCounter);
+            // in general this will be ~N*log_2(N)
+            expect(callCount).toBeGreaterThan(1e6);
+            // This number (2) is only repeatable because we used Lib.pseudoRandom
+            // should always be at least 2 and less than N - 1, and if
+            // the input array is really not sorted it will be close to 2. It will
+            // only be large if the array is sorted until near the end.
+            expect(ourCallCount - callCount).toBe(2);
+        });
+
+        it('sorts random arrays descending in a few more calls than bare sort', function() {
+            var arrayIn = _sort(rand(100000), sortCounterReversed);
+            assertDescending(arrayIn);
+
+            var ourCallCount = callCount;
+            callCount = 0;
+            rand(100000).sort(sortCounterReversed);
+            expect(callCount).toBeGreaterThan(1e6);
+            expect(ourCallCount - callCount).toBe(2);
+        });
+
+        it('supports short arrays', function() {
+            expect(_sort([], sortCounter)).toEqual([]);
+            expect(_sort([1], sortCounter)).toEqual([1]);
+            expect(callCount).toBe(0);
+
+            expect(_sort([1, 2], sortCounter)).toEqual([1, 2]);
+            expect(_sort([2, 3], sortCounterReversed)).toEqual([3, 2]);
+            expect(callCount).toBe(2);
+        });
+
+        function dupes() {
+            return [0, 1, 1, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 6, 7, 8, 9];
+        }
+
+        it('still short-circuits in order with duplicates', function() {
+            expect(_sort(dupes(), sortCounter))
+                .toEqual(dupes());
+
+            expect(callCount).toEqual(18);
+
+            callCount = 0;
+            dupes().sort(sortCounter);
+            expect(callCount).toBeGreaterThan(18);
+        });
+
+        it('still short-circuits reversed with duplicates', function() {
+            expect(_sort(dupes(), sortCounterReversed))
+                .toEqual(dupes().reverse());
+
+            expect(callCount).toEqual(18);
+
+            callCount = 0;
+            dupes().sort(sortCounterReversed);
+            expect(callCount).toBeGreaterThan(18);
+        });
+    });
+
     describe('relinkPrivateKeys', function() {
         it('ignores customdata and ids', function() {
             var fromContainer = {

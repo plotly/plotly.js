@@ -32,7 +32,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
             var lonlat = di.lonlat;
 
             if(lonlat[0] !== BADNUM) {
-                var lonlat2 = [Lib.wrap180(lonlat[0]), lonlat[1]];
+                var lonlat2 = [Lib.modHalf(lonlat[0], 360), lonlat[1]];
                 var xy = [xa.c2p(lonlat2), ya.c2p(lonlat2)];
 
                 if(selectionTester.contains(xy, null, i, searchInfo)) {
