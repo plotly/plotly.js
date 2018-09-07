@@ -142,6 +142,7 @@
     "karma-jasmine-spec-tags": "^1.0.1",
     "karma-spec-reporter": "0.0.32",
     "karma-verbose-reporter": "0.0.6",
+    "karma-viewport": "^1.0.2",
     "madge": "^3.2.0",
     "minify-stream": "^1.2.0",
     "minimist": "^1.2.0",

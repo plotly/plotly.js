@@ -925,6 +925,32 @@ describe('end-to-end scatter tests', function() {
         .then(done);
     });
 
+    it('correctly autoranges fill tonext traces across multiple subplots', function(done) {
+        Plotly.newPlot(gd, [
+            {y: [3, 4, 5], fill: 'tonexty'},
+            {y: [4, 5, 6], fill: 'tonexty'},
+            {y: [3, 4, 5], fill: 'tonexty', yaxis: 'y2'},
+            {y: [4, 5, 6], fill: 'tonexty', yaxis: 'y2'}
+        ], {})
+        .then(function() {
+            expect(gd._fullLayout.yaxis.range[0]).toBe(0);
+            // when we had a single `gd.firstscatter` this one was ~2.73
+            // even though the fill was correctly drawn down to zero
+            expect(gd._fullLayout.yaxis2.range[0]).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('correctly autoranges fill tonext traces with only one point', function(done) {
+        Plotly.newPlot(gd, [{y: [3], fill: 'tonexty'}])
+        .then(function() {
+            expect(gd._fullLayout.yaxis.range[0]).toBe(0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
     it('should work with typed arrays', function(done) {
         function _assert(colors, sizes) {
             var pts = d3.selectAll('.point');
@@ -1065,6 +1091,129 @@ describe('end-to-end scatter tests', function() {
         })
         .then(function() {
             _assert('back to visible:false', 0);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+});
+
+describe('stacked area', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+    afterEach(destroyGraphDiv);
+    var mock = require('@mocks/stacked_area');
+
+    it('updates ranges correctly when traces are toggled', function(done) {
+        function checkRanges(ranges, msg) {
+            for(var axId in ranges) {
+                var axName = axId.charAt(0) + 'axis' + axId.slice(1);
+                expect(gd._fullLayout[axName].range)
+                    .toBeCloseToArray(ranges[axId], 0.1, msg + ' - ' + axId);
+            }
+        }
+        Plotly.newPlot(gd, Lib.extendDeep({}, mock))
+        .then(function() {
+            // initial ranges, as in the baseline image
+            var xr = [1, 7];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 8.42], y2: [0, 10.53],
+                // TODO: for normalized data, perhaps we want to
+                // remove padding from the top (like we do from the zero)
+                // when data stay within the normalization limit?
+                // (y3&4 are more padded because they have markers)
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'base case');
+
+            return Plotly.restyle(gd, 'visible', 'legendonly', [0, 3, 6, 9, 12, 15]);
+        })
+        .then(function() {
+            var xr = [2, 6];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 4.21], y2: [0, 5.26],
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'bottom trace legendonly');
+
+            return Plotly.restyle(gd, 'visible', false, [0, 3, 6, 9, 12, 15]);
+        })
+        .then(function() {
+            var xr = [2, 6];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                // now we lose the explicit config from the bottom trace,
+                // which we kept when it was visible: 'legendonly'
+                y: [0, 4.21], y2: [0, 4.21],
+                y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
+            }, 'bottom trace visible: false');
+
+            // put the bottom traces back to legendonly so they still contribute
+            // config attributes, and hide the middles too
+            return Plotly.restyle(gd, 'visible', 'legendonly',
+                [0, 3, 6, 9, 12, 15, 1, 4, 7, 10, 13, 16]);
+        })
+        .then(function() {
+            var xr = [3, 5];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 2.11], y2: [0, 2.11],
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'only top trace showing');
+
+            return Plotly.restyle(gd, 'visible', true, [0, 3, 6, 9, 12, 15]);
+        })
+        .then(function() {
+            var xr = [1, 7];
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 7.37], y2: [0, 7.37],
+                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+            }, 'top and bottom showing');
+
+            return Plotly.restyle(gd, {x: null, y: null}, [0, 3, 6, 9, 12, 15]);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'visible', true, [1, 4, 7, 10, 13, 16]);
+        })
+        .then(function() {
+            var xr = [2, 6];
+            // an invalid trace (no data) implicitly has visible: false, and is
+            // equivalent to explicit visible: false in removing stack config.
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 4.21], y2: [0, 4.21],
+                y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
+            }, 'bottom trace *implicit* visible: false');
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not stack on date axes', function(done) {
+        Plotly.newPlot(gd, [
+            {y: ['2016-01-01', '2017-01-01'], stackgroup: 'a'},
+            {y: ['2016-01-01', '2017-01-01'], stackgroup: 'a'}
+        ])
+        .then(function() {
+            expect(gd.layout.yaxis.range.map(function(v) { return v.slice(0, 4); }))
+                // if we had stacked, this would go into the 2060s since we'd be
+                // adding milliseconds since 1970
+                .toEqual(['2015', '2017']);
+        })
+        .catch(failTest)
+        .then(done);
+    });
+
+    it('does not stack on category axes', function(done) {
+        Plotly.newPlot(gd, [
+            {y: ['a', 'b'], stackgroup: 'a'},
+            {y: ['b', 'c'], stackgroup: 'a'}
+        ])
+        .then(function() {
+            // if we had stacked, we'd calculate a new category 3
+            // and autorange to ~[-0.2, 3.2]
+            expect(gd.layout.yaxis.range).toBeCloseToArray([-0.1, 2.1], 1);
         })
         .catch(failTest)
         .then(done);
