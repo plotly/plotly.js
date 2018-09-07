@@ -93,7 +93,8 @@
     "polar5": {
       "hole": 0.5,
       "domain": {"row": 2, "column": 0},
-      "radialaxis": {"range": [20, 0]}
+      "radialaxis": {"range": [20, 0], "tickfont": {"color": "red", "size": 20}},
+      "angularaxis": {"linewidth": 3}
     },
     "showlegend": false
   }
