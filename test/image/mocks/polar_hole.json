@@ -13,7 +13,8 @@
     {
         "type": "scatterpolar",
         "subplot": "polar2",
-        "r": [100, 50, 200]
+        "r": [100, 50, 200],
+        "marker": {"size": 20}
     },
     {
         "type": "barpolar",
@@ -40,16 +41,29 @@
     {
         "type": "scatterpolar",
         "subplot": "polar4",
-        "r": [10, 12, 15],
-        "theta0": 90
+        "r": [10, 12, 5],
+        "theta": [0, 90, -90],
+        "cliponaxis": true,
+        "marker": {"size": 20}
+    },
+
+    {
+        "type": "barpolar",
+        "subplot": "polar5",
+        "r": [10, 12, 15]
+    },
+    {
+        "type": "scatterpolar",
+        "subplot": "polar5",
+        "r": [10, 12, 15]
     }
   ],
   "layout": {
     "width": 600,
-    "height": 600,
+    "height": 800,
     "margin": {"l": 40, "r": 40, "b": 40, "t": 40, "pad": 0},
     "grid": {
-      "rows": 2,
+      "rows": 3,
       "columns": 2,
       "ygap": 0.2
     },
@@ -60,7 +74,8 @@
     "polar2": {
       "hole": 0.4,
       "domain": {"row": 0, "column": 1},
-      "radialaxis": {"type": "log"}
+      "angularaxis": {"layer": "below traces"},
+      "radialaxis": {"type": "log", "range": [1.65, 2.35]}
     },
     "polar3": {
       "hole": 0.2,
@@ -73,7 +88,12 @@
       "domain": {"row": 1, "column": 1},
       "sector": [0, 180],
       "angularaxis": {"direction": "clockwise"},
-      "radialaxis": {"angle": 90, "side": "counterclockwise"}
+      "radialaxis": {"angle": 90, "side": "counterclockwise", "range": [5, 15]}
+    },
+    "polar5": {
+      "hole": 0.5,
+      "domain": {"row": 2, "column": 0},
+      "radialaxis": {"range": [20, 0]}
     },
     "showlegend": false
   }
