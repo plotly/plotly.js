@@ -11,6 +11,7 @@
 
 var isNumeric = require('fast-isnumeric');
 var loggers = require('./loggers');
+var identity = require('./identity');
 
 // don't trust floating point equality - fraction of bin size to call
 // "on the line" and ensure that they go the right way specified by
@@ -154,4 +155,28 @@ exports.sort = function(array, sortFn) {
         if(notOrdered && notReversed) return array.sort(sortFn);
     }
     return notReversed ? array : array.reverse();
+};
+
+/**
+ * find index in array 'arr' that minimizes 'fn'
+ *
+ * @param {array} arr : array where to search
+ * @param {fn (optional)} fn : function to minimize,
+ *   if not given, fn is the identity function
+ * @return {integer}
+ */
+exports.findIndexOfMin = function(arr, fn) {
+    fn = fn || identity;
+
+    var min = Infinity;
+    var ind;
+
+    for(var i = 0; i < arr.length; i++) {
+        var v = fn(arr[i]);
+        if(v < min) {
+            min = v;
+            ind = i;
+        }
+    }
+    return ind;
 };

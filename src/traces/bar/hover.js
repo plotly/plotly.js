@@ -14,7 +14,7 @@ var Registry = require('../../registry');
 var Color = require('../../components/color');
 var fillHoverText = require('../scatter/fill_hover_text');
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
+function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var t = cd[0].t;
@@ -117,12 +117,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     // the closest data point
     var index = pointData.index;
     var di = cd[index];
-    var mc = di.mcc || trace.marker.color;
-    var mlc = di.mlcc || trace.marker.line.color;
-    var mlw = di.mlw || trace.marker.line.width;
-
-    if(Color.opacity(mc)) pointData.color = mc;
-    else if(Color.opacity(mlc) && mlw) pointData.color = mlc;
 
     var size = (trace.base) ? di.b + di.s : di.s;
     pointData[sizeLetter + '0'] = pointData[sizeLetter + '1'] = sa.c2p(di[sizeLetter], true);
@@ -139,8 +133,23 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     // in case of bars shifted within groups
     pointData[posLetter + 'Spike'] = pa.c2p(di.p, true);
 
+    pointData.color = getTraceColor(trace, di);
     fillHoverText(di, trace, pointData);
     Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
     return [pointData];
+}
+
+function getTraceColor(trace, di) {
+    var mc = di.mcc || trace.marker.color;
+    var mlc = di.mlcc || trace.marker.line.color;
+    var mlw = di.mlw || trace.marker.line.width;
+
+    if(Color.opacity(mc)) return mc;
+    else if(Color.opacity(mlc) && mlw) return mlc;
+}
+
+module.exports = {
+    hoverPoints: hoverPoints,
+    getTraceColor: getTraceColor
 };
