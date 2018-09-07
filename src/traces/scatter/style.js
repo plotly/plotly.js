@@ -65,5 +65,6 @@ function styleOnSelect(gd, cd) {
 module.exports = {
     style: style,
     stylePoints: stylePoints,
+    styleText: styleText,
     styleOnSelect: styleOnSelect
 };

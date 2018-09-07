@@ -12,7 +12,9 @@ var d3 = require('d3');
 var Drawing = require('../../components/drawing');
 var Color = require('../../components/color');
 
-var stylePoints = require('../scatter/style').stylePoints;
+var scatterStyle = require('../scatter/style');
+var stylePoints = scatterStyle.stylePoints;
+var styleText = scatterStyle.styleText;
 
 module.exports = function style(gd, calcTrace) {
     if(calcTrace) styleTrace(gd, calcTrace);
@@ -25,6 +27,7 @@ function styleTrace(gd, calcTrace) {
     s.style('opacity', calcTrace[0].trace.opacity);
 
     stylePoints(s, trace, gd);
+    styleText(s, trace, gd);
 
     // this part is incompatible with Drawing.lineGroupStyle
     s.selectAll('path.js-line')
