@@ -439,10 +439,17 @@ function plot(gd, subplot, cdata) {
                 var pos = [], srcPos = (lineOptions && lineOptions.positions) || stash.positions;
 
                 if(trace.fill === 'tozeroy') {
-                    pos = [srcPos[0], 0];
-                    pos = pos.concat(srcPos);
-                    pos.push(srcPos[srcPos.length - 2]);
-                    pos.push(0);
+                    var firstdef = 1;
+                    while(isNaN(srcPos[firstdef])) {
+                        firstdef += 2;
+                    }
+                    var lastdef = srcPos.length - 1;
+                    while(isNaN(srcPos[lastdef])) {
+                        lastdef += -2;
+                    }
+                    pos = [ srcPos[firstdef - 1], 0 ];
+                    pos = pos.concat(srcPos.slice(firstdef - 1, lastdef + 1));
+                    pos = pos.concat([ srcPos[lastdef - 1], 0 ]);
                 }
                 else if(trace.fill === 'tozerox') {
                     pos = [0, srcPos[1]];
