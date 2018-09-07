@@ -337,9 +337,7 @@ proto.mockCartesianAxis = function(fullLayout, polarLayout, opts) {
         var sectorBBox = _this.sectorBBox;
         var ind = bboxIndices[axId];
         var rl = _this.radialAxis._rl;
-        var radius = _this.radius;
-        var innerRadius = _this.innerRadius;
-        var drl = radius * (rl[1] - rl[0]) / (radius - innerRadius);
+        var drl = (rl[1] - rl[0]) / (1 - polarLayout.hole);
         ax.range = [sectorBBox[ind[0]] * drl, sectorBBox[ind[1]] * drl];
     };
 
