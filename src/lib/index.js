@@ -128,6 +128,8 @@ lib.clearThrottle = throttleModule.clear;
 
 lib.getGraphDiv = require('./get_graph_div');
 
+lib.clearResponsive = require('./clear_responsive');
+
 lib.makeTraceGroups = require('./make_trace_groups');
 
 lib._ = require('./localize');
