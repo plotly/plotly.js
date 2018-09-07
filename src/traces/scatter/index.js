@@ -36,7 +36,7 @@ Scatter.name = 'scatter';
 Scatter.basePlotModule = require('../../plots/cartesian');
 Scatter.categories = [
     'cartesian', 'svg', 'symbols', 'errorBarsOK', 'showLegend', 'scatter-like',
-    'zoomScale', 'alwaysSupplyDefaults'
+    'zoomScale'
 ];
 Scatter.meta = {
     description: [

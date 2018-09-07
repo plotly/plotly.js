@@ -1049,11 +1049,16 @@ describe('stacked area', function() {
             var xr = [2, 6];
             checkRanges({
                 x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
-                y: [0, 4.21], y2: [0, 5.26],
-                y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
+                // now we lose the explicit config from the bottom trace,
+                // which we kept when it was visible: 'legendonly'
+                y: [0, 4.21], y2: [0, 4.21],
+                y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
             }, 'bottom trace visible: false');
 
-            return Plotly.restyle(gd, 'visible', false, [1, 4, 7, 10, 13, 16]);
+            // put the bottom traces back to legendonly so they still contribute
+            // config attributes, and hide the middles too
+            return Plotly.restyle(gd, 'visible', 'legendonly',
+                [0, 3, 6, 9, 12, 15, 1, 4, 7, 10, 13, 16]);
         })
         .then(function() {
             var xr = [3, 5];
@@ -1072,6 +1077,21 @@ describe('stacked area', function() {
                 y: [0, 7.37], y2: [0, 7.37],
                 y3: [0, 1.08], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 105.26]
             }, 'top and bottom showing');
+
+            return Plotly.restyle(gd, {x: null, y: null}, [0, 3, 6, 9, 12, 15]);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'visible', true, [1, 4, 7, 10, 13, 16]);
+        })
+        .then(function() {
+            var xr = [2, 6];
+            // an invalid trace (no data) implicitly has visible: false, and is
+            // equivalent to explicit visible: false in removing stack config.
+            checkRanges({
+                x: xr, x2: xr, x3: xr, x4: xr, x5: xr, x6: xr,
+                y: [0, 4.21], y2: [0, 4.21],
+                y3: [0, 4.32], y4: [0, 1.08], y5: [0, 105.26], y6: [0, 5.26]
+            }, 'bottom trace *implicit* visible: false');
         })
         .catch(failTest)
         .then(done);

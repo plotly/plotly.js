@@ -27,12 +27,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
-
     var len = handleXYDefaults(traceIn, traceOut, layout, coerce);
     if(!len) traceOut.visible = false;
 
     if(!traceOut.visible) return;
+
+    var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
 
     var defaultMode = !stackGroupOpts && (len < constants.PTS_LINESONLY) ?
         'lines+markers' : 'lines';

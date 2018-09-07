@@ -1181,14 +1181,6 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
 
         plots.supplyTransformDefaults(traceIn, traceOut, layout);
     }
-    else if(_module && Registry.traceIs(traceOut, 'alwaysSupplyDefaults')) {
-        // Some types need *something* from supplyDefaults always, even if
-        // visible: false. Looking at you scatter: stack options even from
-        // hidden traces can control other traces in the stack.
-        // These types should bail out ASAP if visible is false.
-        // But we don't need any other cross-module attrs ^^ in this case.
-        _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-    }
 
     return traceOut;
 };

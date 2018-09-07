@@ -95,7 +95,8 @@ module.exports = {
         editType: 'calc',
         description: [
             'Only relevant when `stackgroup` is used, and only the first',
-            '`orientation` found in the `stackgroup` will be used. Sets the',
+            '`orientation` found in the `stackgroup` will be used - including',
+            'if `visible` is *legendonly* but not if it is `false`. Sets the',
             'stacking direction. With *v* (*h*), the y (x) values of subsequent',
             'traces are added. Also affects the default value of `fill`.'
         ].join(' ')
@@ -108,7 +109,8 @@ module.exports = {
         editType: 'calc',
         description: [
             'Only relevant when `stackgroup` is used, and only the first',
-            '`groupnorm` found in the `stackgroup` will be used.',
+            '`groupnorm` found in the `stackgroup` will be used - including',
+            'if `visible` is *legendonly* but not if it is `false`.',
             'Sets the normalization for the sum of this `stackgroup`.',
             'With *fraction*, the value of each trace at each location is',
             'divided by the sum of all trace values at that location.',
@@ -125,7 +127,8 @@ module.exports = {
         editType: 'calc',
         description: [
             'Only relevant when `stackgroup` is used, and only the first',
-            '`stackgaps` found in the `stackgroup` will be used.',
+            '`stackgaps` found in the `stackgroup` will be used - including',
+            'if `visible` is *legendonly* but not if it is `false`.',
             'Determines how we handle locations at which other traces in this',
             'group have data but this one does not.',
             'With *infer zero* we insert a zero at these locations.',
