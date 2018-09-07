@@ -1,0 +1,108 @@
+{
+  "data": [
+    {
+      "x": [null, 3     ,        3,           null, null
+      ],
+	"y": [ 25,30,35,40        ,50      ],
+	"type": "scattergl",
+	"fill": "tozerox",
+	"mode": "none",
+	"showlegend": false, "xaxis": "x", "yaxis": "y" ,
+	"fillcolor": "#FF69B4",
+	"line": { "color": "#FF69B4" }
+	
+    },
+    {
+      "x": [
+        null,
+        null,
+        null,
+          5,
+	  5
+      ],
+	"y": [ 25,30,35,40        ,50      ],
+	"type": "scattergl",
+	"fill": "tozerox",
+	"mode": "markers+lines",
+	"showlegend": false, "xaxis": "x", "yaxis": "y" ,
+	"fillcolor": "#202ff0",
+	 "line": { "color": "#101ff0" }
+    },
+    {
+      "x": [
+        1,
+        2,
+        3,
+          4,
+	  5
+      ],
+      "y": [ null,       50,        50,null    ,null
+      ],
+	"type": "scattergl",
+	"fill": "tozeroy",
+	"mode": "none",
+	"showlegend": false,  "xaxis": "x2", "yaxis": "y2" ,
+	"fillcolor": "#90ff70",
+	"line": { "color": "#90ff70" }
+	
+    },
+    {
+      "x": [
+        1,
+        2,
+        3,
+          4,
+	  5
+      ],
+	"y": [null
+	    ,null
+	    ,null
+        ,
+        50,
+        50
+      ],
+	"type": "scattergl",
+	"fill": "tozeroy",
+	"mode": "markers+lines",
+	"showlegend": false,   "xaxis": "x2", "yaxis": "y2" ,
+	"fillcolor": "#f02f20",
+	 "line": { "color": "#f01f10" }
+    },
+    {
+	"x": [ 1,  1,  2,  3,  4,  5,5
+      ],
+	"y": [ 0,25,25,25,25,25,0
+      ],
+	"type": "scattergl",
+	"fill": "tozeroy",
+	"mode": "markers+lines",
+	"showlegend": false,    "xaxis": "x3", "yaxis": "y3" ,
+	"fillcolor": "#f02f20",
+	 "line": { "color": "#f01f10" }
+    },
+    {
+	"x": [ 1,  2,  2,  3,  4,  4,5
+      ],
+	"y": [ 0,  0,50,50,50,  0,0
+      ],
+	"type": "scattergl",
+	"fill": "tozeroy",
+	"mode": "none",
+	"showlegend": false,    "xaxis": "x3", "yaxis": "y3" ,
+	"fillcolor": "#90ff70",
+	"line": { "color": "#90ff70" }
+	
+    }
+  ],
+    "layout": {
+	"width": 800,"height": 800,
+	"margin": {"l": 100, "r": 100, "t": 100, "b": 100},
+	"grid": {"columns": 1, "rows": 3, "pattern": "independent", "roworder": "bottom to top"} ,
+	"xaxis" : { "title": "" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+	"xaxis2": { "title": "" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+	"xaxis3": { "title": "" , "type": "linear", "rangemode": "tozero", "nticks": 3 },
+	"yaxis" : { "title": "" , "type": "linear", "range": [0,60], "nticks": 3 },
+	"yaxis2": { "title": "" , "type": "linear", "range": [0,60], "nticks": 3 },
+	"yaxis3": { "title": "" , "type": "linear", "range": [0,60], "nticks": 3 }
+    }
+}
