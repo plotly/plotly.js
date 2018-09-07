@@ -1,0 +1,52 @@
+{
+  "data": [
+    {
+      "x": [
+        1,
+        2,
+        3,
+          4,
+	  5
+      ],
+      "y": [ null
+        ,
+        100,
+        100,null
+        ,null
+      ],
+	"type": "scattergl",
+	"fill": "tozeroy",
+	"mode": "none",
+	"showlegend": false,
+	"fillcolor": "#90ff70",
+	"line": { "color": "#90ff70" }
+	
+    },
+    {
+      "x": [
+        1,
+        2,
+        3,
+          4,
+	  5
+      ],
+	"y": [null
+	    ,null
+	    ,null
+        ,
+        100,
+        100
+      ],
+	"type": "scattergl",
+	"fill": "tozeroy",
+	"mode": "markers+lines",
+	"showlegend": false,
+	"fillcolor": "#f02f20",
+	 "line": { "color": "#f01f10" }
+    }
+  ],
+    "layout": {
+	"margin": {"l": 100, "r": 100, "t": 100, "b": 100},
+	"yaxis": { "title": "Y axis 2 ", "type": "linear", "rangemode": "tozero", "nticks": 3 } 
+    }
+}

@@ -259,15 +259,28 @@ function sceneUpdate(gd, subplot) {
         // draw traces in proper order
         scene.draw = function draw() {
             var i;
+            var allReadyDrawLines = Lib.repeat(false, scene.count);
+            var allReadyDrawMarkers = Lib.repeat(false, scene.count);
             for(i = 0; i < scene.count; i++) {
                 if(scene.fill2d && scene.fillOptions[i]) {
                     // must do all fills first
                     scene.fill2d.draw(i);
+                    if(scene.line2d && scene.lineOptions[i] && ( scene.fillOptions[i].fillmode === 'tozeroy' || scene.fillOptions[i].fillmode === 'tozerox' )) {
+                        scene.line2d.draw(i);
+                        allReadyDrawLines[i] = true;
+                    }
+                    if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i]) && ( scene.fillOptions[i].fillmode === 'tozeroy' || scene.fillOptions[i].fillmode === 'tozerox' )) {
+                        // traces in no-selection mode
+                        scene.scatter2d.draw(i);
+                        allReadyDrawMarkers[i] = true;
+                    }
                 }
             }
             for(i = 0; i < scene.count; i++) {
                 if(scene.line2d && scene.lineOptions[i]) {
-                    scene.line2d.draw(i);
+                    if(!allReadyDrawLines[i]) {
+                        scene.line2d.draw(i);
+                    }
                 }
                 if(scene.error2d && scene.errorXOptions[i]) {
                     scene.error2d.draw(i);
@@ -277,7 +290,9 @@ function sceneUpdate(gd, subplot) {
                 }
                 if(scene.scatter2d && scene.markerOptions[i] && (!scene.selectBatch || !scene.selectBatch[i])) {
                     // traces in no-selection mode
-                    scene.scatter2d.draw(i);
+                    if(!allReadyDrawMarkers[i]) {
+                        scene.scatter2d.draw(i);
+                    }
                 }
             }
 
@@ -419,6 +434,24 @@ function plot(gd, subplot, cdata) {
         }
         if(scene.line2d) {
             scene.line2d.update(scene.lineOptions);
+            scene.lineOptions = scene.lineOptions.map(function(lineOptions) {
+                if(lineOptions && lineOptions.positions) {
+                    var pos = [], srcPos = lineOptions.positions;
+
+                    var firstptdef = 0;
+                    while(isNaN(srcPos[firstptdef]) || isNaN(srcPos[firstptdef + 1])) {
+                        firstptdef += 2;
+                    }
+                    var lastptdef = srcPos.length - 2;
+                    while(isNaN(srcPos[lastptdef]) || isNaN(srcPos[lastptdef + 1])) {
+                        lastptdef += -2;
+                    }
+                    pos = pos.concat(srcPos.slice(firstptdef, lastptdef + 2));
+                    lineOptions.positions = pos;
+                }
+                return lineOptions;
+            });
+            scene.line2d.update(scene.lineOptions);
         }
         if(scene.error2d) {
             var errorBatch = (scene.errorXOptions || []).concat(scene.errorYOptions || []);
@@ -441,16 +474,38 @@ function plot(gd, subplot, cdata) {
                 var pos = [], srcPos = (lineOptions && lineOptions.positions) || stash.positions;
 
                 if(trace.fill === 'tozeroy') {
-                    pos = [srcPos[0], 0];
-                    pos = pos.concat(srcPos);
-                    pos.push(srcPos[srcPos.length - 2]);
-                    pos.push(0);
+                    var firstpdef = 0;
+                    while(isNaN(srcPos[firstpdef + 1])) {
+                        firstpdef += 2;
+                    }
+                    var lastpdef = srcPos.length - 2;
+                    while(isNaN(srcPos[lastpdef + 1])) {
+                        lastpdef += -2;
+                    }
+                    if(srcPos[firstpdef + 1] !== 0) {
+                        pos = [ srcPos[firstpdef], 0 ];
+                    }
+                    pos = pos.concat(srcPos.slice(firstpdef, lastpdef + 2));
+                    if(srcPos[lastpdef + 1] !== 0) {
+                        pos = pos.concat([ srcPos[lastpdef], 0 ]);
+                    }
                 }
                 else if(trace.fill === 'tozerox') {
-                    pos = [0, srcPos[1]];
-                    pos = pos.concat(srcPos);
-                    pos.push(0);
-                    pos.push(srcPos[srcPos.length - 1]);
+                    var firstptdef = 0;
+                    while(isNaN(srcPos[firstptdef])) {
+                        firstptdef += 2;
+                    }
+                    var lastptdef = srcPos.length - 2;
+                    while(isNaN(srcPos[lastptdef])) {
+                        lastptdef += -2;
+                    }
+                    if(srcPos[firstptdef] !== 0) {
+                        pos = [ 0, srcPos[firstptdef + 1] ];
+                    }
+                    pos = pos.concat(srcPos.slice(firstptdef, lastptdef + 2));
+                    if(srcPos[lastptdef] !== 0) {
+                        pos = pos.concat([ 0, srcPos[lastptdef + 1]]);
+                    }
                 }
                 else if(trace.fill === 'toself' || trace.fill === 'tonext') {
                     pos = [];
@@ -508,7 +563,8 @@ function plot(gd, subplot, cdata) {
                     pos = pos.concat(prevLinePos);
                     fillOptions.hole = hole;
                 }
-
+	
+                fillOptions.fillmode = trace.fill;
                 fillOptions.opacity = trace.opacity;
                 fillOptions.positions = pos;
 
