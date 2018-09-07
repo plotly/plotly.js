@@ -355,13 +355,13 @@ describe('Dimension reordered parcats trace', function() {
                     {dimensionInd: 0, displayInd: 0, dimensionLabel: 'One'});
 
                 checkCategoryCalc(gd, 0, 0, {
-                    categoryLabel: "One",
+                    categoryLabel: 'One',
                     dimensionInd: 0,
                     categoryInd: 0,
                     displayInd: 0});
 
                 checkCategoryCalc(gd, 0, 1, {
-                    categoryLabel: "Two",
+                    categoryLabel: 'Two',
                     dimensionInd: 0,
                     categoryInd: 1,
                     displayInd: 1});
@@ -428,12 +428,12 @@ describe('Dimension reordered parcats trace', function() {
                     {dimensionInd: 0, displayInd: 0, dimensionLabel: 'One'});
 
                 checkCategoryCalc(gd, 0, 0, {
-                    categoryLabel: "One",
+                    categoryLabel: 'One',
                     categoryInd: 0,
                     displayInd: 0});
 
                 checkCategoryCalc(gd, 0, 1, {
-                    categoryLabel: "Two",
+                    categoryLabel: 'Two',
                     categoryInd: 1,
                     displayInd: 1});
 
