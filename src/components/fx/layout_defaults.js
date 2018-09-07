@@ -23,10 +23,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     var hovermodeDflt;
     if(layoutOut._has('cartesian')) {
-        // flag for 'horizontal' plots:
-        // determines the state of the mode bar 'compare' hovermode button
-        layoutOut._isHoriz = isHoriz(fullData);
-        hovermodeDflt = layoutOut._isHoriz ? 'y' : 'x';
+        if(layoutOut.clickmode.indexOf('select') > -1) {
+            hovermodeDflt = 'closest';
+        } else {
+            // flag for 'horizontal' plots:
+            // determines the state of the mode bar 'compare' hovermode button
+            layoutOut._isHoriz = isHoriz(fullData);
+            hovermodeDflt = layoutOut._isHoriz ? 'y' : 'x';
+        }
     }
     else hovermodeDflt = 'closest';
 

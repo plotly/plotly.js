@@ -59,7 +59,16 @@ module.exports = {
         role: 'info',
         values: ['x', 'y', 'closest', false],
         editType: 'modebar',
-        description: 'Determines the mode of hover interactions.'
+        description: [
+            'Determines the mode of hover interactions.',
+            'If `clickmode` includes the *select* flag,',
+            '`hovermode` defaults to *closest*.',
+            'If `clickmode` lacks the *select* flag,',
+            'it defaults to *x* or *y* (depending on the trace\'s',
+            '`orientation` value) for plots based on',
+            'cartesian coordinates. For anything else the default',
+            'value is *closest*.',
+        ].join(' ')
     },
     hoverdistance: {
         valType: 'integer',
