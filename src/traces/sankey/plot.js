@@ -130,6 +130,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkHover = function(element, d, sankey) {
+        if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkHoveredStyle.bind(0, d, sankey, true));
         gd.emit('plotly_hover', {
             event: d3.event,
@@ -143,6 +144,7 @@ module.exports = function plot(gd, calcData) {
     var outgoingLabel = _(gd, 'outgoing flow count:') + ' ';
 
     var linkHoverFollow = function(element, d) {
+        if(gd._fullLayout.hovermode === false) return;
         var trace = d.link.trace;
         var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
         var boundingBox = element.getBoundingClientRect();
@@ -175,6 +177,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var linkUnhover = function(element, d, sankey) {
+        if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(linkNonHoveredStyle.bind(0, d, sankey, true));
         gd.emit('plotly_unhover', {
             event: d3.event,
@@ -193,6 +196,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeHover = function(element, d, sankey) {
+        if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeHoveredStyle, d, sankey);
         gd.emit('plotly_hover', {
             event: d3.event,
@@ -201,6 +205,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeHoverFollow = function(element, d) {
+        if(gd._fullLayout.hovermode === false) return;
         var trace = d.node.trace;
         var nodeRect = d3.select(element).select('.' + cn.nodeRect);
         var rootBBox = gd._fullLayout._paperdiv.node().getBoundingClientRect();
@@ -236,6 +241,7 @@ module.exports = function plot(gd, calcData) {
     };
 
     var nodeUnhover = function(element, d, sankey) {
+        if(gd._fullLayout.hovermode === false) return;
         d3.select(element).call(nodeNonHoveredStyle, d, sankey);
         gd.emit('plotly_unhover', {
             event: d3.event,

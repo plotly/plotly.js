@@ -520,7 +520,92 @@ describe('hover info', function() {
         Lib.clearThrottle();
     }
 
-    describe('\'hover info for x/y/z traces', function() {
+    describe('hover label order for stacked traces with zeros', function() {
+        var gd;
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        it('puts the top trace on top', function(done) {
+            Plotly.plot(gd, [
+                {y: [1, 2, 3], type: 'bar', name: 'a'},
+                {y: [2, 0, 1], type: 'bar', name: 'b'},
+                {y: [1, 0, 1], type: 'bar', name: 'c'},
+                {y: [2, 1, 0], type: 'bar', name: 'd'}
+            ], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0},
+                barmode: 'stack'
+            })
+            .then(function() {
+                _hover(gd, 250, 250);
+                assertHoverLabelContent({
+                    nums: ['2', '0', '0', '1'],
+                    name: ['a', 'b', 'c', 'd'],
+                    // a, b, c are all in the same place but keep their order
+                    // d is included mostly as a sanity check
+                    vOrder: [3, 2, 1, 0],
+                    axis: '1'
+                });
+
+                // reverse the axis, labels should reverse
+                return Plotly.relayout(gd, 'yaxis.range', gd.layout.yaxis.range.slice().reverse());
+            })
+            .then(function() {
+                _hover(gd, 250, 250);
+                assertHoverLabelContent({
+                    nums: ['2', '0', '0', '1'],
+                    name: ['a', 'b', 'c', 'd'],
+                    vOrder: [0, 1, 2, 3],
+                    axis: '1'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+
+        it('puts the right trace on the right', function(done) {
+            Plotly.plot(gd, [
+                {x: [1, 2, 3], type: 'bar', name: 'a', orientation: 'h'},
+                {x: [2, 0, 1], type: 'bar', name: 'b', orientation: 'h'},
+                {x: [1, 0, 1], type: 'bar', name: 'c', orientation: 'h'},
+                {x: [2, 1, 0], type: 'bar', name: 'd', orientation: 'h'}
+            ], {
+                width: 500,
+                height: 400,
+                margin: {l: 0, t: 0, r: 0, b: 0},
+                barmode: 'stack'
+            })
+            .then(function() {
+                _hover(gd, 250, 250);
+                assertHoverLabelContent({
+                    nums: ['2', '0', '0', '1'],
+                    name: ['a', 'b', 'c', 'd'],
+                    // a, b, c are all in the same place but keep their order
+                    // d is included mostly as a sanity check
+                    hOrder: [3, 2, 1, 0],
+                    axis: '1'
+                });
+
+                // reverse the axis, labels should reverse
+                return Plotly.relayout(gd, 'xaxis.range', gd.layout.xaxis.range.slice().reverse());
+            })
+            .then(function() {
+                _hover(gd, 250, 250);
+                assertHoverLabelContent({
+                    nums: ['2', '0', '0', '1'],
+                    name: ['a', 'b', 'c', 'd'],
+                    hOrder: [0, 1, 2, 3],
+                    axis: '1'
+                });
+            })
+            .catch(failTest)
+            .then(done);
+        });
+    });
+
+    describe('hover info for x/y/z traces', function() {
         var gd;
         beforeEach(function() {
             gd = createGraphDiv();

@@ -27,7 +27,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     var cdi = newPointData.cd[newPointData.index];
     var trace = newPointData.trace;
 
-    if(!subplot.isPtWithinSector(cdi)) return;
+    if(!subplot.isPtInside(cdi)) return;
 
     newPointData.xLabelVal = undefined;
     newPointData.yLabelVal = undefined;
@@ -52,7 +52,7 @@ function makeHoverPointText(cdi, trace, subplot) {
 
     if(parts.indexOf('all') !== -1) parts = ['r', 'theta'];
     if(parts.indexOf('r') !== -1) {
-        textPart(radialAxis, radialAxis.c2r(cdi.r));
+        textPart(radialAxis, radialAxis.c2l(cdi.r));
     }
     if(parts.indexOf('theta') !== -1) {
         var theta = cdi.theta;

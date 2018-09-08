@@ -21,6 +21,7 @@ var ensureNumber = Lib.ensureNumber;
 var numConstants = require('../../constants/numerical');
 var FP_SAFE = numConstants.FP_SAFE;
 var BADNUM = numConstants.BADNUM;
+var LOG_CLIP = numConstants.LOG_CLIP;
 
 var constants = require('./constants');
 var axisIds = require('./axis_ids');
@@ -59,20 +60,15 @@ module.exports = function setConvert(ax, fullLayout) {
 
     var axLetter = (ax._id || 'x').charAt(0);
 
-    // clipMult: how many axis lengths past the edge do we render?
-    // for panning, 1-2 would suffice, but for zooming more is nice.
-    // also, clipping can affect the direction of lines off the edge...
-    var clipMult = 10;
-
     function toLog(v, clip) {
         if(v > 0) return Math.log(v) / Math.LN10;
 
         else if(v <= 0 && clip && ax.range && ax.range.length === 2) {
-            // clip NaN (ie past negative infinity) to clipMult axis
+            // clip NaN (ie past negative infinity) to LOG_CLIP axis
             // length past the negative edge
             var r0 = ax.range[0],
                 r1 = ax.range[1];
-            return 0.5 * (r0 + r1 - 3 * clipMult * Math.abs(r0 - r1));
+            return 0.5 * (r0 + r1 - 2 * LOG_CLIP * Math.abs(r0 - r1));
         }
 
         else return BADNUM;

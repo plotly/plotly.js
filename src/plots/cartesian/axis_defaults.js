@@ -48,7 +48,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     setConvert(containerOut, layoutOut);
 
     var autoRange = coerce('autorange', !containerOut.isValidRange(containerIn.range));
-    if(autoRange) coerce('rangemode');
+    if(autoRange && (axType === 'linear' || axType === '-')) coerce('rangemode');
 
     coerce('range');
     containerOut.cleanRange();

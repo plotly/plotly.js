@@ -880,11 +880,11 @@ describe('Test splom drag:', function() {
         function _assertRanges(msg, xRanges, yRanges) {
             xaxes.forEach(function(n, i) {
                 expect(gd._fullLayout[n].range)
-                    .toBeCloseToArray(xRanges[i], 1, n + ' range - ' + msg);
+                    .toBeCloseToArray(xRanges[i], 0.5, n + ' range - ' + msg);
             });
             yaxes.forEach(function(n, i) {
                 expect(gd._fullLayout[n].range)
-                    .toBeCloseToArray(yRanges[i], 1, n + ' range - ' + msg);
+                    .toBeCloseToArray(yRanges[i], 0.5, n + ' range - ' + msg);
             });
         }
 
