@@ -23,8 +23,10 @@ var findExtremes = require('../../plots/cartesian/autorange').findExtremes;
 var Color = require('../../components/color');
 
 var subTypes = require('../scatter/subtypes');
-var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
-var calcAxisExpansion = require('../scatter/calc').calcAxisExpansion;
+var scatterCalc = require('../scatter/calc');
+var calcMarkerSize = scatterCalc.calcMarkerSize;
+var calcAxisExpansion = scatterCalc.calcAxisExpansion;
+var setFirstScatter = scatterCalc.setFirstScatter;
 var calcColorscales = require('../scatter/colorscale_calc');
 var linkTraces = require('../scatter/link_traces');
 var getTraceColor = require('../scatter/get_trace_color');
@@ -89,6 +91,7 @@ function calc(gd, trace) {
     // Reuse SVG scatter axis expansion routine.
     // For graphs with very large number of points and array marker.size,
     // use average marker size instead to speed things up.
+    setFirstScatter(fullLayout, trace);
     var ppad;
     if(count < TOO_MANY_POINTS) {
         ppad = calcMarkerSize(trace, count);
@@ -134,7 +137,6 @@ function calc(gd, trace) {
 
     scene.count++;
 
-    gd.firstscatter = false;
     return [{x: false, y: false, t: stash, trace: trace}];
 }
 

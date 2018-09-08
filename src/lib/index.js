@@ -65,6 +65,7 @@ lib.sorterAsc = searchModule.sorterAsc;
 lib.sorterDes = searchModule.sorterDes;
 lib.distinctVals = searchModule.distinctVals;
 lib.roundUp = searchModule.roundUp;
+lib.sort = searchModule.sort;
 lib.findIndexOfMin = searchModule.findIndexOfMin;
 
 var statsModule = require('./stats');
@@ -126,6 +127,8 @@ lib.throttleDone = throttleModule.done;
 lib.clearThrottle = throttleModule.clear;
 
 lib.getGraphDiv = require('./get_graph_div');
+
+lib.clearResponsive = require('./clear_responsive');
 
 lib.makeTraceGroups = require('./make_trace_groups');
 
