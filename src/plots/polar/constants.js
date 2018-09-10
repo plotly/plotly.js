@@ -22,10 +22,10 @@ module.exports = {
         'angular-grid',
         'radial-grid',
         'frontplot',
-        'angular-axis',
-        'radial-axis',
         'angular-line',
-        'radial-line'
+        'radial-line',
+        'angular-axis',
+        'radial-axis'
     ],
 
     radialDragBoxSize: 50,
