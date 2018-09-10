@@ -1,6 +1,4 @@
 var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var supplyDefaults = require('../assets/supply_defaults');
 var b64 = require('base64-arraybuffer');
 var mock1 = require('@mocks/typed_array_repr_scatter.json');
 
@@ -36,7 +34,7 @@ describe('Test TypedArray representations', function() {
                     }],
                 };
 
-                var gd = Plotly.import(raw);
+                var gd = Plotly.decode(raw);
 
                 expect(gd.data[0].y).toEqual(arraySpec[1]);
             });
@@ -60,7 +58,7 @@ describe('Test TypedArray representations', function() {
                     }],
                 };
 
-                var gd = Plotly.import(raw);
+                var gd = Plotly.decode(raw);
 
                 expect(gd.data[0].y).toEqual(arraySpec[1]);
             });
@@ -84,7 +82,7 @@ describe('Test TypedArray representations', function() {
                     }],
                 };
 
-                var gd = Plotly.import(raw);
+                var gd = Plotly.decode(raw);
 
                 expect(gd.data[0].y).toEqual(arraySpec[1]);
             });
@@ -108,16 +106,16 @@ describe('Test TypedArray representations', function() {
                     }],
                 };
 
-                var gd = Plotly.import(raw);
+                var gd = Plotly.decode(raw);
                 expect(gd.data[0].y).toEqual(arraySpec[1]);
             });
         });
     });
 
     describe('mock', function() {
-        it('should import representation as base 64 and Array in Mock', function() {
+        it('should decode representation as base 64 and Array in Mock', function() {
 
-            var gd = Plotly.import(mock1);
+            var gd = Plotly.decode(mock1);
             // Check x
             // data_array property
             expect(mock1.data[0].x).toEqual({

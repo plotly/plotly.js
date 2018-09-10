@@ -2203,18 +2203,18 @@ function primitiveTypedArrayReprToTypedArray(v) {
     return coercedV;
 }
 
-function performImport(v) {
+function performDecode(v) {
     if(Lib.isPrimitiveTypedArrayRepr(v)) {
         return primitiveTypedArrayReprToTypedArray(v);
     } else if(Lib.isTypedArray(v)) {
         return v;
     } else if(Array.isArray(v)) {
-        return v.map(performImport);
+        return v.map(performDecode);
     } else if(Lib.isPlainObject(v)) {
         var result = {};
         for(var k in v) {
             if(v.hasOwnProperty(k)) {
-                result[k] = performImport(v[k]);
+                result[k] = performDecode(v[k]);
             }
         }
         return result;
@@ -2224,13 +2224,13 @@ function performImport(v) {
 }
 
 /**
- * Plotly.import:
+ * Plotly.decode:
  * Import an object or array into... TODO
  * @param v
  * @returns {object}
  */
-exports.import = function(v) {
-    return performImport(v);
+exports.decode = function(v) {
+    return performDecode(v);
 };
 
 /**
