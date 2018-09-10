@@ -1,7 +1,7 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
 
-var supplyLayoutDefaults = require('@src/plots/ternary/layout/defaults');
+var supplyLayoutDefaults = require('@src/plots/ternary/layout_defaults');
 
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
