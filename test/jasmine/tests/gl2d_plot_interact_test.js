@@ -214,6 +214,27 @@ describe('Test gl plot side effects', function() {
         .catch(failTest)
         .then(done);
     });
+
+    it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
+        var _mock = Lib.extendDeep({}, require('@mocks/gl2d_12.json'));
+
+        Plotly.plot(gd, _mock).then(function() {
+            return new Promise(function(resolve, reject) {
+                gd.on('plotly_webglcontextlost', resolve);
+                setTimeout(reject, 10);
+
+                var ev = new window.WebGLContextEvent('webglcontextlost');
+                var canvas = gd.querySelector('.gl-canvas-context');
+                canvas.dispatchEvent(ev);
+            });
+        })
+        .then(function(eventData) {
+            expect((eventData || {}).event).toBeDefined();
+            expect((eventData || {}).layer).toBe('contextLayer');
+        })
+        .catch(failTest)
+        .then(done);
+    });
 });
 
 describe('Test gl2d plots', function() {
