@@ -83,12 +83,12 @@ proto.handlePick = function(selection) {
         ];
 
         var text = this.data.text;
-        selection.textLabel = "value: " + selection.data.intensity.toPrecision(3);
+        selection.textLabel = 'value: ' + selection.data.intensity.toPrecision(3);
 
         if(Array.isArray(text) && text[selectIndex] !== undefined) {
-            selection.textLabel = "<br>" + text[selectIndex];
+            selection.textLabel = '<br>' + text[selectIndex];
         } else if(text) {
-            selection.textLabel = "<br>" + text;
+            selection.textLabel = '<br>' + text;
         }
 
         return true;
@@ -131,7 +131,7 @@ function findMinIndex(xs, value) {
 // the range ending at xs[edge index].
 // That is, xs[edge index] <= value.
 function findMaxIndex(xs, value) {
-    for(var i = xs.length-1; i >= 0; i--) {
+    for(var i = xs.length - 1; i >= 0; i--) {
         if(xs[i] <= value) {
             return i;
         }
@@ -148,8 +148,6 @@ function toDataCoords(scene, arr, axisName) {
 }
 
 function convert(scene, trace) {
-    var sceneLayout = scene.fullSceneLayout;
-    var dataScale = scene.dataScale;
     var isosurfaceOpts = {};
 
     var xs = getSequence(trace.x);

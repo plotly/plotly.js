@@ -37,7 +37,7 @@ module.exports = function calc(gd, trace) {
     var zMax = -Infinity;
     var zMin = Infinity;
 
-    for(i = 0; i < len; i++) {
+    for(var i = 0; i < len; i++) {
         var xx = x[i];
         xMax = Math.max(xMax, xx);
         xMin = Math.min(xMin, xx);
@@ -55,5 +55,4 @@ module.exports = function calc(gd, trace) {
     trace._ybnds = [yMin, yMax];
     trace._zbnds = [zMin, zMax];
 
-    console.log(trace);
 };
