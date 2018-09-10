@@ -2454,3 +2454,52 @@ describe('hover distance', function() {
         });
     });
 });
+
+describe('hovermode defaults to', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('\'closest\' for cartesian plots if clickmode includes \'select\'', function(done) {
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [4, 5, 6] }], { clickmode: 'event+select' })
+          .then(function() {
+              expect(gd._fullLayout.hovermode).toBe('closest');
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('\'x\' for horizontal cartesian plots if clickmode lacks \'select\'', function(done) {
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'h' }], { clickmode: 'event' })
+          .then(function() {
+              expect(gd._fullLayout.hovermode).toBe('y');
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('\'y\' for vertical cartesian plots if clickmode lacks \'select\'', function(done) {
+        Plotly.plot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'v' }], { clickmode: 'event' })
+          .then(function() {
+              expect(gd._fullLayout.hovermode).toBe('x');
+          })
+          .catch(failTest)
+          .then(done);
+    });
+
+    it('\'closest\' for a non-cartesian plot', function(done) {
+        var mock = require('@mocks/polar_scatter.json');
+        expect(mock.layout.hovermode).toBeUndefined();
+
+        Plotly.plot(gd, mock.data, mock.layout)
+          .then(function() {
+              expect(gd._fullLayout.hovermode).toBe('closest');
+          })
+          .catch(failTest)
+          .then(done);
+    });
+});

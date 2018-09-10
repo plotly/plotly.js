@@ -169,6 +169,10 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         pointData2[vLetter + 'LabelVal'] = val;
         pointData2[vLetter + 'Label'] = (t.labels ? t.labels[attr] + ' ' : '') + Axes.hoverLabelText(vAxis, val);
 
+        // Note: introduced to be able to distinguish a
+        // clicked point from a box during click-to-select
+        pointData2.hoverOnBox = true;
+
         if(attr === 'mean' && ('sd' in di) && trace.boxmean === 'sd') {
             pointData2[vLetter + 'err'] = di.sd;
         }
